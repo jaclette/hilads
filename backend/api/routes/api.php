@@ -7878,9 +7878,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                 "🤝 New take-on request",
                 "{$acceptorName} wants to take on \"{$challenge['title']}\"",
                 [
-                    'challengeId'  => $challengeId,
-                    'acceptanceId' => $acceptance['id'],
-                    'acceptorName' => $acceptorName,
+                    'challengeId'    => $challengeId,
+                    'acceptanceId'   => $acceptance['id'],
+                    'acceptorName'   => $acceptorName,
+                    // Plumbed through so NotificationI18n templates can render
+                    // a localized body for non-EN recipients.
+                    'challengeTitle' => $challenge['title'] ?? '',
                 ],
             );
         }
@@ -7987,8 +7990,10 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
                 "✅ Take-on accepted",
                 "{$creatorName} accepted your take-on of \"{$challenge['title']}\". Time to plan!",
                 [
-                    'challengeId'  => $acceptance['challenge_id'],
-                    'acceptanceId' => $acceptanceId,
+                    'challengeId'    => $acceptance['challenge_id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'creatorName'    => $creatorName,
+                    'challengeTitle' => $challenge['title'] ?? '',
                 ],
             );
         }
@@ -8056,8 +8061,10 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
                 "✕ Take-on declined",
                 "{$creatorName} declined your take-on of \"{$challenge['title']}\".",
                 [
-                    'challengeId'  => $acceptance['challenge_id'],
-                    'acceptanceId' => $acceptanceId,
+                    'challengeId'    => $acceptance['challenge_id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'creatorName'    => $creatorName,
+                    'challengeTitle' => $challenge['title'] ?? '',
                 ],
             );
         }
@@ -8397,6 +8404,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', fun
                 'threadChannelId' => $acceptance['thread_channel_id'],
                 'senderUserId'    => $authUser['id'],
                 'senderName'      => $creatorName,
+                'challengeTitle'  => $title,
             ],
         );
     } catch (\Throwable $e) {
@@ -8451,6 +8459,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', func
                 'threadChannelId' => $acceptance['thread_channel_id'],
                 'senderUserId'    => $authUser['id'],
                 'senderName'      => $creatorName,
+                'challengeTitle'  => $title,
             ],
         );
     } catch (\Throwable $e) {
@@ -8691,9 +8700,12 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
                 "🤝 New take-on request",
                 "{$acceptorName} wants to take on \"{$challenge['title']}\"",
                 [
-                    'challengeId'  => $challengeId,
-                    'acceptanceId' => $acceptance['id'],
-                    'acceptorName' => $acceptorName,
+                    'challengeId'    => $challengeId,
+                    'acceptanceId'   => $acceptance['id'],
+                    'acceptorName'   => $acceptorName,
+                    // Plumbed through so NotificationI18n templates can render
+                    // a localized body for non-EN recipients.
+                    'challengeTitle' => $challenge['title'] ?? '',
                 ],
             );
         }

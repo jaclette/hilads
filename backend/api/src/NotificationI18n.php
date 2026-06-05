@@ -284,6 +284,115 @@ final class NotificationI18n
             'ru'      => ["{name} хочет присоединиться", "{name} запросил присоединение к {title}"],
             'ar'      => ["{name} يريد الانضمام", "{name} طلب الانضمام إلى {title}"],
         ],
+        // Take-on request — fires to the CREATOR when a registered user
+        // hits "Accept" on their open challenge. Body references the
+        // challenge title (proper user content, kept verbatim).
+        'challenge_takeon_request' => [
+            'fr'      => ["🤝 Nouvelle demande",                          "{name} veut relever « {title} »"],
+            'vi'      => ["🤝 Có người muốn tham gia",                     "{name} muốn nhận \"{title}\""],
+            'es'      => ["🤝 Nueva solicitud",                            "{name} quiere aceptar \"{title}\""],
+            'it'      => ["🤝 Nuova richiesta",                            "{name} vuole accettare \"{title}\""],
+            'pt-br'   => ["🤝 Nova solicitação",                           "{name} quer aceitar \"{title}\""],
+            'pt-pt'   => ["🤝 Novo pedido",                                "{name} quer aceitar \"{title}\""],
+            'de'      => ["🤝 Neue Anfrage",                               "{name} möchte \"{title}\" annehmen"],
+            'nl'      => ["🤝 Nieuw verzoek",                              "{name} wil \"{title}\" oppakken"],
+            'zh-hans' => ["🤝 新的接受请求",                                 "{name} 想接下\"{title}\""],
+            'zh-hant' => ["🤝 新的接受請求",                                 "{name} 想接下「{title}」"],
+            'ja'      => ["🤝 新しいリクエスト",                              "{name} が「{title}」に挑みたい"],
+            'ko'      => ["🤝 새 요청",                                     "{name} 님이 \"{title}\" 에 도전하고 싶어해요"],
+            'fil'     => ["🤝 Bagong request",                              "Gusto ni {name} kunin ang \"{title}\""],
+            'th'      => ["🤝 มีคำขอใหม่",                                   "{name} อยากรับ \"{title}\""],
+            'id'      => ["🤝 Permintaan baru",                             "{name} ingin menerima \"{title}\""],
+            'hi'      => ["🤝 नई रिक्वेस्ट",                                  "{name} \"{title}\" लेना चाहते हैं"],
+            'ru'      => ["🤝 Новая заявка",                                "{name} хочет принять «{title}»"],
+            'ar'      => ["🤝 طلب جديد",                                   "{name} يريد قبول \"{title}\""],
+        ],
+        // Take-on approved — fires to the ACCEPTOR when the creator
+        // accepts their request. Time to plan the meet-up.
+        'challenge_takeon_approved' => [
+            'fr'      => ["✅ Défi accepté",       "{name} a accepté ta demande pour « {title} ». Place au plan !"],
+            'vi'      => ["✅ Đã chấp nhận",        "{name} đồng ý cho bạn nhận \"{title}\". Lên kế hoạch thôi!"],
+            'es'      => ["✅ Reto aceptado",      "{name} aceptó tu solicitud para \"{title}\". ¡A planear!"],
+            'it'      => ["✅ Sfida accettata",    "{name} ha accettato la tua richiesta per \"{title}\". Pianifichiamo!"],
+            'pt-br'   => ["✅ Desafio aceito",     "{name} aceitou seu pedido para \"{title}\". Hora de planejar!"],
+            'pt-pt'   => ["✅ Desafio aceite",      "{name} aceitou o teu pedido para \"{title}\". Hora de planear!"],
+            'de'      => ["✅ Challenge angenommen", "{name} hat deine Anfrage zu \"{title}\" angenommen. Lass uns planen!"],
+            'nl'      => ["✅ Challenge geaccepteerd", "{name} accepteerde je verzoek voor \"{title}\". Tijd om te plannen!"],
+            'zh-hans' => ["✅ 挑战已被接受",         "{name} 接受了你的请求「{title}」。该约时间了！"],
+            'zh-hant' => ["✅ 挑戰已被接受",         "{name} 接受了你的請求「{title}」。該約時間了！"],
+            'ja'      => ["✅ チャレンジが承認",     "{name} があなたの「{title}」リクエストを承認。計画を立てよう！"],
+            'ko'      => ["✅ 챌린지 수락",         "{name} 님이 \"{title}\" 요청을 수락했어요. 계획 세우자!"],
+            'fil'     => ["✅ Tinanggap",          "Tinanggap ni {name} ang request mo para sa \"{title}\". Mag-plano na!"],
+            'th'      => ["✅ ตอบรับแล้ว",          "{name} ตอบรับคำขอของคุณสำหรับ \"{title}\" ถึงเวลาวางแผน!"],
+            'id'      => ["✅ Tantangan diterima", "{name} menerima permintaanmu untuk \"{title}\". Saatnya rencana!"],
+            'hi'      => ["✅ चैलेंज स्वीकार",        "{name} ने \"{title}\" के लिए आपकी रिक्वेस्ट स्वीकार की। प्लान करें!"],
+            'ru'      => ["✅ Заявка принята",      "{name} принял твою заявку на «{title}». Время планировать!"],
+            'ar'      => ["✅ تم قبول التحدي",      "{name} قبل طلبك لـ \"{title}\". وقت التخطيط!"],
+        ],
+        // Take-on rejected — same surface, less happy outcome.
+        'challenge_takeon_rejected' => [
+            'fr'      => ["✕ Demande refusée",        "{name} a refusé ta demande pour « {title} »."],
+            'vi'      => ["✕ Đã từ chối",              "{name} đã từ chối yêu cầu của bạn cho \"{title}\"."],
+            'es'      => ["✕ Solicitud rechazada",    "{name} rechazó tu solicitud para \"{title}\"."],
+            'it'      => ["✕ Richiesta rifiutata",    "{name} ha rifiutato la tua richiesta per \"{title}\"."],
+            'pt-br'   => ["✕ Pedido recusado",         "{name} recusou seu pedido para \"{title}\"."],
+            'pt-pt'   => ["✕ Pedido recusado",         "{name} recusou o teu pedido para \"{title}\"."],
+            'de'      => ["✕ Anfrage abgelehnt",       "{name} hat deine Anfrage zu \"{title}\" abgelehnt."],
+            'nl'      => ["✕ Verzoek geweigerd",       "{name} weigerde je verzoek voor \"{title}\"."],
+            'zh-hans' => ["✕ 请求被拒",                "{name} 拒绝了你对\"{title}\"的请求。"],
+            'zh-hant' => ["✕ 請求被拒",                "{name} 拒絕了你對「{title}」的請求。"],
+            'ja'      => ["✕ リクエストが拒否されました", "{name} があなたの「{title}」リクエストを拒否しました。"],
+            'ko'      => ["✕ 요청 거절됨",              "{name} 님이 \"{title}\" 요청을 거절했어요."],
+            'fil'     => ["✕ Tinanggihan",            "Tinanggihan ni {name} ang request mo para sa \"{title}\"."],
+            'th'      => ["✕ คำขอถูกปฏิเสธ",          "{name} ปฏิเสธคำขอของคุณสำหรับ \"{title}\""],
+            'id'      => ["✕ Permintaan ditolak",      "{name} menolak permintaanmu untuk \"{title}\"."],
+            'hi'      => ["✕ रिक्वेस्ट अस्वीकृत",         "{name} ने \"{title}\" के लिए आपकी रिक्वेस्ट अस्वीकार की।"],
+            'ru'      => ["✕ Заявка отклонена",        "{name} отклонил твою заявку на «{title}»."],
+            'ar'      => ["✕ تم رفض الطلب",            "{name} رفض طلبك لـ \"{title}\"."],
+        ],
+        // Verdict approved — fires to the ACCEPTOR after the meet-up,
+        // the creator marked it as done.
+        'challenge_verdict_approved' => [
+            'fr'      => ["🎉 Défi accompli",           "{name} a validé « {title} » comme accompli"],
+            'vi'      => ["🎉 Đã hoàn thành thử thách",  "{name} đã xác nhận \"{title}\" đã hoàn thành"],
+            'es'      => ["🎉 Reto cumplido",            "{name} marcó \"{title}\" como cumplido"],
+            'it'      => ["🎉 Sfida completata",         "{name} ha confermato \"{title}\" come completato"],
+            'pt-br'   => ["🎉 Desafio cumprido",         "{name} marcou \"{title}\" como cumprido"],
+            'pt-pt'   => ["🎉 Desafio cumprido",         "{name} marcou \"{title}\" como cumprido"],
+            'de'      => ["🎉 Challenge geschafft",      "{name} hat \"{title}\" als erledigt markiert"],
+            'nl'      => ["🎉 Challenge geslaagd",       "{name} markeerde \"{title}\" als voltooid"],
+            'zh-hans' => ["🎉 挑战完成",                  "{name} 将\"{title}\"标记为完成"],
+            'zh-hant' => ["🎉 挑戰完成",                  "{name} 將「{title}」標記為完成"],
+            'ja'      => ["🎉 チャレンジ達成",             "{name} が「{title}」を達成済みに"],
+            'ko'      => ["🎉 챌린지 완료",                "{name} 님이 \"{title}\" 을(를) 완료로 표시했어요"],
+            'fil'     => ["🎉 Natapos!",                  "Minarkahan ni {name} ang \"{title}\" bilang tapos na"],
+            'th'      => ["🎉 ทำชาเลนจ์สำเร็จ",            "{name} ทำเครื่องหมาย \"{title}\" ว่าเสร็จแล้ว"],
+            'id'      => ["🎉 Tantangan selesai",         "{name} menandai \"{title}\" sebagai selesai"],
+            'hi'      => ["🎉 चैलेंज पूरा",                  "{name} ने \"{title}\" को पूरा किया हुआ चिह्नित किया"],
+            'ru'      => ["🎉 Челлендж выполнен",          "{name} отметил «{title}» как выполненный"],
+            'ar'      => ["🎉 تم إنجاز التحدي",            "{name} وضع علامة على \"{title}\" بأنه منتهي"],
+        ],
+        // Verdict rejected — same surface, no-show / didn't really meet.
+        'challenge_verdict_rejected' => [
+            'fr'      => ["Défi clôturé",            "{name} a clôturé « {title} »"],
+            'vi'      => ["Thử thách đã đóng",       "{name} đã đóng \"{title}\""],
+            'es'      => ["Reto cerrado",            "{name} cerró \"{title}\""],
+            'it'      => ["Sfida chiusa",            "{name} ha chiuso \"{title}\""],
+            'pt-br'   => ["Desafio encerrado",        "{name} encerrou \"{title}\""],
+            'pt-pt'   => ["Desafio encerrado",        "{name} encerrou \"{title}\""],
+            'de'      => ["Challenge geschlossen",    "{name} hat \"{title}\" geschlossen"],
+            'nl'      => ["Challenge gesloten",       "{name} sloot \"{title}\""],
+            'zh-hans' => ["挑战已关闭",                "{name} 关闭了\"{title}\""],
+            'zh-hant' => ["挑戰已關閉",                "{name} 關閉了「{title}」"],
+            'ja'      => ["チャレンジが終了",            "{name} が「{title}」を終了しました"],
+            'ko'      => ["챌린지 종료",                "{name} 님이 \"{title}\" 을(를) 종료했어요"],
+            'fil'     => ["Sinarado",                "Isinara ni {name} ang \"{title}\""],
+            'th'      => ["ปิดชาเลนจ์แล้ว",            "{name} ปิด \"{title}\" แล้ว"],
+            'id'      => ["Tantangan ditutup",        "{name} menutup \"{title}\""],
+            'hi'      => ["चैलेंज बंद",                  "{name} ने \"{title}\" बंद किया"],
+            'ru'      => ["Челлендж закрыт",           "{name} закрыл «{title}»"],
+            'ar'      => ["تم إغلاق التحدي",          "{name} أغلق \"{title}\""],
+        ],
         // Personal challenge invitation: "🔥 {name} challenges you" with the
         // challenge title kept verbatim in the body (the title is a proper
         // piece of user content — translating it would change the meaning).
@@ -419,7 +528,9 @@ final class NotificationI18n
         $params = [
             '{name}'  => self::name($type, $data),
             '{city}'  => (string) ($data['cityName'] ?? ''),
-            '{title}' => (string) ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['title'] ?? ''),
+            // challengeTitle joins the fallback chain so the challenge_* push
+            // bodies can interpolate the challenge name from their callers.
+            '{title}' => (string) ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['challengeTitle'] ?? $data['title'] ?? ''),
         ];
 
         if ($type === 'mention') {
@@ -450,6 +561,11 @@ final class NotificationI18n
             'profile_view'             => 'viewerName',
             'join_request'             => 'requesterName',
             'challenge_invitation'     => 'inviterName',
+            'challenge_takeon_request' => 'acceptorName',
+            'challenge_takeon_approved',
+            'challenge_takeon_rejected' => 'creatorName',
+            // verdict_* both already pass senderName=creatorName, so the
+            // default key picks it up — no explicit mapping needed.
             default                    => 'senderName',
         };
         return (string) ($data[$key] ?? $data['name'] ?? $data['senderName'] ?? '');
