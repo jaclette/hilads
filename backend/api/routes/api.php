@@ -9636,13 +9636,11 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
-    if ($challenge['mode'] !== 'local') {
-        Response::json([
-            'error' => 'International challenges are always public',
-            'code'  => 'intl_locked',
-        ], 422);
-    }
 
+    // Participant gate. International rows are not refused here anymore —
+    // the panel still has real work to do for them (current-visibility line,
+    // anonymize-me, intl-locked note). The `mode` field in the response
+    // tells the UI whether the vote block should render.
     $isCreator  = ($challenge['created_by'] ?? null) === $userId;
     $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
     $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
@@ -9650,7 +9648,10 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
         Response::json(['error' => 'Not a participant'], 403);
     }
 
-    $votes        = ChallengePrivacyRepository::getByChallenge($challengeId);
+    $mode         = $challenge['mode'] ?? 'local';
+    $votes        = ($mode === 'local')
+        ? ChallengePrivacyRepository::getByChallenge($challengeId)
+        : [];
     $byUser       = [];
     foreach ($votes as $v) { $byUser[$v['user_id']] = $v; }
     $myVote       = $byUser[$userId]['status']                     ?? null;
@@ -9660,12 +9661,18 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     $acceptorVote = $acceptorId !== null ? ($byUser[$acceptorId]['status'] ?? null) : null;
 
     Response::json([
+        'mode'              => $mode,
         'currentVisibility' => $challenge['visibility'] ?? 'public',
         'myVote'            => $myVote,
         'creatorVote'       => $creatorVote,
         'acceptorVote'      => $acceptorVote,
         'acceptorUserId'    => $acceptorId,
-        'canVote'           => $acceptorId !== null && ($challenge['visibility'] ?? 'public') !== 'private',
+        // canVote = Local + counterparty exists + not already private. The
+        // panel hides the vote block when this is false (and shows the
+        // appropriate hint instead).
+        'canVote'           => $mode === 'local'
+                                 && $acceptorId !== null
+                                 && ($challenge['visibility'] ?? 'public') !== 'private',
         'votes'             => $votes,
     ]);
 });
