@@ -283,5 +283,11 @@
       "title": "Someone's on this one right now",
       "body": "A traveler is taking on this challenge. When they wrap up, it'll be free again — check back soon."
     }
-  }
+  },
+  "typeFilter": {
+    "label": "Filter by type",
+    "all": "All",
+    "empty": "Nothing in this category right now."
+  },
+  "seeAllChallenges": "See all challenges →"
 }

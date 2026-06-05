@@ -283,5 +283,11 @@
     "accept": "Accept",
     "ignore": "Ignore"
   },
-  "byCreator": "{{name}} द्वारा"
+  "byCreator": "{{name}} द्वारा",
+  "typeFilter": {
+    "label": "टाइप से फ़िल्टर",
+    "all": "सभी",
+    "empty": "इस श्रेणी में अभी कुछ नहीं।"
+  },
+  "seeAllChallenges": "सभी चैलेंज देखें →"
 }

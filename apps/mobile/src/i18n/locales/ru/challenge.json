@@ -283,5 +283,11 @@
     "accept": "Принять",
     "ignore": "Пропустить"
   },
-  "byCreator": "от {{name}}"
+  "byCreator": "от {{name}}",
+  "typeFilter": {
+    "label": "Фильтр по типу",
+    "all": "Все",
+    "empty": "В этой категории сейчас пусто."
+  },
+  "seeAllChallenges": "Все челленджи →"
 }

@@ -283,5 +283,11 @@
     "accept": "接受",
     "ignore": "忽略"
   },
-  "byCreator": "由 {{name}} 發起"
+  "byCreator": "由 {{name}} 發起",
+  "typeFilter": {
+    "label": "按類型篩選",
+    "all": "全部",
+    "empty": "這個類別現在什麼都沒有。"
+  },
+  "seeAllChallenges": "查看所有挑戰 →"
 }

@@ -283,5 +283,11 @@
     "accept": "承諾",
     "ignore": "無視"
   },
-  "byCreator": "{{name}} さん"
+  "byCreator": "{{name}} さん",
+  "typeFilter": {
+    "label": "タイプで絞り込み",
+    "all": "すべて",
+    "empty": "このカテゴリには何もない。"
+  },
+  "seeAllChallenges": "すべて見る →"
 }

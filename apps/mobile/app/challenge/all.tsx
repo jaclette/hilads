@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
+  View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,10 +10,18 @@ import { Ionicons } from '@expo/vector-icons';
 import { fetchCityChallenges, fetchValidatedChallenges } from '@/api/challenges';
 import { ChallengeCard } from '@/components/ChallengeCard';
 import { track } from '@/services/analytics';
-import type { Challenge } from '@/types';
+import type { Challenge, ChallengeType } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 type Tab = 'open' | 'validated';
+type TypeFilter = 'all' | ChallengeType;
+const TYPE_FILTERS: { key: TypeFilter; emoji: string }[] = [
+  { key: 'all',     emoji: '✨' },
+  { key: 'food',    emoji: '🍜' },
+  { key: 'place',   emoji: '📍' },
+  { key: 'culture', emoji: '🎭' },
+  { key: 'help',    emoji: '🤝' },
+];
 
 export default function AllChallengesScreen() {
   const router = useRouter();
@@ -22,6 +30,7 @@ export default function AllChallengesScreen() {
   const channelId = typeof params.channelId === 'string' ? params.channelId : null;
 
   const [tab,        setTab]        = useState<Tab>('open');
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
   const [openList,   setOpenList]   = useState<Challenge[]>([]);
   const [pastList,   setPastList]   = useState<Challenge[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -47,7 +56,11 @@ export default function AllChallengesScreen() {
 
   useEffect(() => { load(); }, [load]);
 
-  const data = tab === 'open' ? openList : pastList;
+  const dataRaw = tab === 'open' ? openList : pastList;
+  const data = useMemo(
+    () => typeFilter === 'all' ? dataRaw : dataRaw.filter(c => c.challenge_type === typeFilter),
+    [dataRaw, typeFilter],
+  );
 
   if (!channelId) {
     return (
@@ -84,6 +97,32 @@ export default function AllChallengesScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* Type sub-filter chips — all / food / place / culture / help.
+          Compact pills sitting just below the tab row so the user can
+          narrow the list to a single challenge type without leaving the
+          screen. Horizontally scrollable for future types. */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.typeChipsRow}
+      >
+        {TYPE_FILTERS.map(({ key, emoji }) => {
+          const active = typeFilter === key;
+          return (
+            <TouchableOpacity
+              key={key}
+              style={[styles.typeChip, active && styles.typeChipActive]}
+              onPress={() => setTypeFilter(key)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.typeChipText, active && styles.typeChipTextActive]}>
+                {emoji} {key === 'all' ? t('typeFilter.all') : t(`tp.${key}`)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
       {loading && !refreshing ? (
         <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>
@@ -161,6 +200,27 @@ const styles = StyleSheet.create({
   },
   tabPillText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
   tabPillTextActive: { color: '#FF7A3C' },
+
+  typeChipsRow: {
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.sm,
+    paddingBottom:     Spacing.xs,
+    gap:               6,
+  },
+  typeChip: {
+    paddingHorizontal: 10,
+    paddingVertical:   5,
+    borderRadius:      Radius.full,
+    borderWidth:       1,
+    borderColor:       'rgba(255,255,255,0.10)',
+    backgroundColor:   'rgba(255,255,255,0.04)',
+  },
+  typeChipActive: {
+    borderColor:     'rgba(255,122,60,0.45)',
+    backgroundColor: 'rgba(255,122,60,0.14)',
+  },
+  typeChipText:       { fontSize: 12, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
+  typeChipTextActive: { color: '#FF7A3C' },
 
   list:   { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl * 2 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },

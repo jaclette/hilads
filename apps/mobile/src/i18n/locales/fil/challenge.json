@@ -283,5 +283,11 @@
     "accept": "Tanggapin",
     "ignore": "Huwag pansinin"
   },
-  "byCreator": "ni {{name}}"
+  "byCreator": "ni {{name}}",
+  "typeFilter": {
+    "label": "I-filter ayon sa uri",
+    "all": "Lahat",
+    "empty": "Wala sa kategoryang ito ngayon."
+  },
+  "seeAllChallenges": "Tingnan lahat →"
 }

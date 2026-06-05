@@ -425,9 +425,14 @@ export default function ChatTab() {
     setChallengeFeedItems([]);
 
     fetchCityChallenges(channelId).then(chs => {
+      // Cap the chat-feed prompts at the 5 newest. Older challenges still
+      // surface in the NOW feed (paginated) and the Challenges filter; the
+      // chat surface is meant to feel "live" — too many prompts at once
+      // pushes real conversation off the screen.
+      const newest = chs.slice(0, 5);
       const now = Date.now() / 1000;
       const fresh: Message[] = [];
-      for (const c of chs) {
+      for (const c of newest) {
         if (!seenChallengeIds.current.has(c.id)) {
           seenChallengeIds.current.add(c.id);
           // participants_preview[0] is the creator (auto-joined at create

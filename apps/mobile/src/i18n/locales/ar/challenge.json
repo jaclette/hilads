@@ -283,5 +283,11 @@
     "accept": "قبول",
     "ignore": "تجاهل"
   },
-  "byCreator": "بواسطة {{name}}"
+  "byCreator": "بواسطة {{name}}",
+  "typeFilter": {
+    "label": "تصفية حسب النوع",
+    "all": "الكل",
+    "empty": "لا شيء في هذه الفئة الآن."
+  },
+  "seeAllChallenges": "عرض كل التحديات →"
 }

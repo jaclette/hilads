@@ -283,5 +283,11 @@
     "accept": "Accepteren",
     "ignore": "Negeren"
   },
-  "byCreator": "door {{name}}"
+  "byCreator": "door {{name}}",
+  "typeFilter": {
+    "label": "Filter op type",
+    "all": "Alle",
+    "empty": "Niets in deze categorie nu."
+  },
+  "seeAllChallenges": "Alle challenges →"
 }

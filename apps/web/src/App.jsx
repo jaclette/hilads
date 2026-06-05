@@ -993,6 +993,38 @@ export default function App() {
     return () => { tabScrollTops.current.now = el.scrollTop }
   }, [showEventDrawer])
 
+  // Reset the challenges paginator + sub-filter whenever the parent filter
+  // leaves/enters 'challenges'. Without this, switching between filters and
+  // back would leak whatever state the user paginated to last time.
+  useEffect(() => {
+    setChallengesShownCount(NOW_CHALLENGES_CAP)
+    if (nowFilter !== 'challenges') setChallengeTypeFilter('all')
+  }, [nowFilter])
+
+  // Reset the visible-count when the type sub-filter changes — switching
+  // from "food" to "place" should land the user at the top of that bucket.
+  useEffect(() => {
+    setChallengesShownCount(NOW_CHALLENGES_CAP)
+  }, [challengeTypeFilter])
+
+  // Scroll-to-load-more on the Challenges filter. When the user is within
+  // ~240px of the bottom of the page-body, bump the cap by 5. Cheap (a
+  // single scroll listener while the filter is active) and respects the
+  // existing scroll-restore effect because we don't reset scrollTop here.
+  useEffect(() => {
+    if (nowFilter !== 'challenges') return
+    const el = nowBodyRef.current
+    if (!el) return
+    const onScroll = () => {
+      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
+      if (remaining < 240) {
+        setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
+      }
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [nowFilter])
+
   useEffect(() => {
     if (!showPeopleDrawer) return
     const el = hereBodyRef.current
@@ -1025,6 +1057,13 @@ export default function App() {
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
   const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'challenges' | 'events' | 'topics'
+  // Sub-filter chips inside the Challenges filter — food / place / culture /
+  // help. Reset to 'all' whenever the parent filter leaves 'challenges'.
+  const [challengeTypeFilter, setChallengeTypeFilter] = useState('all')
+  // Visible-cap for the Challenges feed. Starts at 5; scroll-to-bottom on
+  // the .page-body bumps it by 5 until we've shown every loaded challenge.
+  const NOW_CHALLENGES_CAP = 5
+  const [challengesShownCount, setChallengesShownCount] = useState(NOW_CHALLENGES_CAP)
   const [cityChallenges,     setCityChallenges]     = useState([])
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
@@ -3534,8 +3573,12 @@ export default function App() {
       return
     }
     if (cityChallenges.length > prevChallengeCountRef.current) {
-      const newOnes = cityChallenges.slice(prevChallengeCountRef.current)
-      newOnes.forEach(ch => {
+      // Cap the chat-feed challenge prompts at the 5 newest — older
+      // challenges still live in the NOW feed and the Challenges filter
+      // (paginated). Without this cap a freshly-rebuilt feed would inject
+      // every challenge ever created in the city.
+      const newest = cityChallenges.slice(0, 5)
+      newest.forEach(ch => {
         const id = `challenge-msg-${ch.id}`
         setFeed(prev => {
           if (prev.some(f => f.id === id)) return prev
@@ -4798,16 +4841,51 @@ export default function App() {
           </div>
           <div className="page-body" ref={nowBodyRef}>
             {/* Challenges strip — shown on All + Challenges filters per spec.
-                Up to 5 cards by created_at DESC; tap → opens the challenge
-                detail page (Phase 10 ChallengeChatPage). */}
-            {(nowFilter === 'all' || nowFilter === 'challenges') && cityChallenges.length > 0 && (
+                On 'all'      → top 5 newest + "See all" CTA when there are more.
+                On 'challenges' → type sub-filter chips, paginated cap with
+                                  scroll-to-load (5 at a time). */}
+            {(nowFilter === 'all' || nowFilter === 'challenges') && cityChallenges.length > 0 && (() => {
+              // Type-filter only meaningful inside the Challenges filter.
+              const filteredChallenges = nowFilter === 'challenges' && challengeTypeFilter !== 'all'
+                ? cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
+                : cityChallenges
+              const visibleCap = nowFilter === 'challenges' ? challengesShownCount : NOW_CHALLENGES_CAP
+              const visibleChallenges = filteredChallenges.slice(0, visibleCap)
+              const hasMoreInFilter   = filteredChallenges.length > visibleChallenges.length
+              const hasMoreTotal      = cityChallenges.length > NOW_CHALLENGES_CAP
+              return (
               <div className="now-challenges-section">
                 {nowFilter === 'all' && (
                   <p className="events-group-label" style={{ padding: '10px 12px 2px', color: '#FF7A3C' }}>
                     🔥 {t('noun', { ns: 'challenge' })}
                   </p>
                 )}
-                {cityChallenges.slice(0, nowFilter === 'challenges' ? 50 : 5).map(c => {
+                {nowFilter === 'challenges' && (
+                  <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
+                    {[
+                      { key: 'all',     emoji: '✨' },
+                      { key: 'food',    emoji: '🍜' },
+                      { key: 'place',   emoji: '📍' },
+                      { key: 'culture', emoji: '🎭' },
+                      { key: 'help',    emoji: '🤝' },
+                    ].map(({ key, emoji }) => (
+                      <button
+                        key={key}
+                        type="button"
+                        role="tab"
+                        aria-selected={challengeTypeFilter === key}
+                        className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
+                        onClick={() => setChallengeTypeFilter(key)}
+                      >
+                        <span aria-hidden="true">{emoji}</span>
+                        <span>{key === 'all'
+                          ? t('typeFilter.all', { ns: 'challenge' })
+                          : t(`tp.${key}`, { ns: 'challenge' })}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {visibleChallenges.map(c => {
                   const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
                   const audienceLabel = c.audience === 'locals'
                     ? t('forLocals',    { ns: 'challenge' })
@@ -4850,8 +4928,35 @@ export default function App() {
                     </button>
                   )
                 })}
+                {/* "See all challenges" CTA on the All filter — switches the
+                    parent filter to 'challenges' so the user lands inside
+                    the full list (with type chips + pagination). */}
+                {nowFilter === 'all' && hasMoreTotal && (
+                  <button
+                    type="button"
+                    className="challenge-see-all"
+                    onClick={() => setNowFilter('challenges')}
+                  >
+                    {t('seeAllChallenges', { ns: 'challenge', defaultValue: 'See all challenges →' })}
+                  </button>
+                )}
+                {/* Type-bucket empty state — the user picked a type that has
+                    no challenges right now. Sit silent on the parent feed; a
+                    tiny inline hint is enough. */}
+                {nowFilter === 'challenges' && filteredChallenges.length === 0 && (
+                  <div className="challenge-type-empty">
+                    {t('typeFilter.empty', { ns: 'challenge', defaultValue: 'Nothing in this category right now.' })}
+                  </div>
+                )}
+                {/* Inline loader hint when there are more challenges to show.
+                    The scroll listener bumps challengesShownCount; the array
+                    re-slices and the hint disappears on its own. */}
+                {nowFilter === 'challenges' && hasMoreInFilter && (
+                  <div className="challenge-load-more-hint">…</div>
+                )}
               </div>
-            )}
+              )
+            })()}
 
             {/* Empty state for the 'challenges' filter — only fires when the
                 whole challenges array is empty (no validated either). */}

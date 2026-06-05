@@ -283,5 +283,11 @@
     "accept": "รับ",
     "ignore": "ข้าม"
   },
-  "byCreator": "โดย {{name}}"
+  "byCreator": "โดย {{name}}",
+  "typeFilter": {
+    "label": "กรองตามประเภท",
+    "all": "ทั้งหมด",
+    "empty": "ไม่มีอะไรในหมวดนี้ตอนนี้"
+  },
+  "seeAllChallenges": "ดูทั้งหมด →"
 }

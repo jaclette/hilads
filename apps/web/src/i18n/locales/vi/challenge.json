@@ -283,5 +283,11 @@
     "accept": "Chấp nhận",
     "ignore": "Bỏ qua"
   },
-  "byCreator": "của {{name}}"
+  "byCreator": "của {{name}}",
+  "typeFilter": {
+    "label": "Lọc theo loại",
+    "all": "Tất cả",
+    "empty": "Không có gì trong mục này."
+  },
+  "seeAllChallenges": "Xem tất cả thử thách →"
 }

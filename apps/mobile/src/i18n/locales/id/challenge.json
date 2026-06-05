@@ -283,5 +283,11 @@
     "accept": "Terima",
     "ignore": "Abaikan"
   },
-  "byCreator": "oleh {{name}}"
+  "byCreator": "oleh {{name}}",
+  "typeFilter": {
+    "label": "Filter berdasarkan tipe",
+    "all": "Semua",
+    "empty": "Tidak ada di kategori ini sekarang."
+  },
+  "seeAllChallenges": "Lihat semua challenge →"
 }

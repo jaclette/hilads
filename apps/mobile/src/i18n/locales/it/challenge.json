@@ -283,5 +283,11 @@
     "accept": "Accetta",
     "ignore": "Ignora"
   },
-  "byCreator": "da {{name}}"
+  "byCreator": "da {{name}}",
+  "typeFilter": {
+    "label": "Filtra per tipo",
+    "all": "Tutte",
+    "empty": "Niente in questa categoria adesso."
+  },
+  "seeAllChallenges": "Vedi tutte →"
 }

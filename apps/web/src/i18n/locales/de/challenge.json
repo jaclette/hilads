@@ -283,5 +283,11 @@
     "accept": "Annehmen",
     "ignore": "Ignorieren"
   },
-  "byCreator": "von {{name}}"
+  "byCreator": "von {{name}}",
+  "typeFilter": {
+    "label": "Nach Typ filtern",
+    "all": "Alle",
+    "empty": "Hier ist gerade nichts los."
+  },
+  "seeAllChallenges": "Alle Challenges →"
 }

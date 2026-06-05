@@ -283,5 +283,11 @@
     "accept": "수락",
     "ignore": "무시"
   },
-  "byCreator": "{{name}}님"
+  "byCreator": "{{name}}님",
+  "typeFilter": {
+    "label": "타입으로 필터",
+    "all": "전체",
+    "empty": "이 카테고리에 지금 없어."
+  },
+  "seeAllChallenges": "전체 보기 →"
 }
