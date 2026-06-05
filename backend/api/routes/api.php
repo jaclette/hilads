@@ -9568,6 +9568,272 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     Response::json($message, 201);
 });
 
+// ── Challenge privacy votes ─────────────────────────────────────────────────
+//
+// Mutual go-private flow for Local challenges (International is always
+// public, enforced in ChallengeRepository::update/create). Both the creator
+// and the single acceptor must vote 'agreed' before the channel flips to
+// visibility='private'. Spec confirmed: no notification fires on the
+// public → private transition itself (silent flip), only on the initial
+// request so the other party knows to respond.
+
+// GET /api/v1/challenges/{challengeId}/privacy
+// Returns both vote rows (if any) + a small `state` summary the UI uses
+// to render the privacy panel. Available to creator + acceptor only.
+$router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    $userId    = $authUser['id'];
+    // Unchecked — privacy view is gated by participation (creator OR
+    // acceptor); we don't want to leak the row's existence to friends
+    // who happen to see it on the public surface.
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($challenge['mode'] !== 'local') {
+        Response::json([
+            'error' => 'International challenges are always public',
+            'code'  => 'intl_locked',
+        ], 422);
+    }
+
+    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
+    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    if (!$isCreator && !$isAcceptor) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+
+    $votes        = ChallengePrivacyRepository::getByChallenge($challengeId);
+    $byUser       = [];
+    foreach ($votes as $v) { $byUser[$v['user_id']] = $v; }
+    $myVote       = $byUser[$userId]['status']                     ?? null;
+    $creatorVote  = $byUser[$challenge['created_by'] ?? '']['status'] ?? null;
+    $acceptorRow  = ChallengeAcceptanceRepository::getByChallenge($challengeId)[0] ?? null;
+    $acceptorId   = $acceptorRow['acceptor_user_id'] ?? null;
+    $acceptorVote = $acceptorId !== null ? ($byUser[$acceptorId]['status'] ?? null) : null;
+
+    Response::json([
+        'currentVisibility' => $challenge['visibility'] ?? 'public',
+        'myVote'            => $myVote,
+        'creatorVote'       => $creatorVote,
+        'acceptorVote'      => $acceptorVote,
+        'acceptorUserId'    => $acceptorId,
+        'canVote'           => $acceptorId !== null && ($challenge['visibility'] ?? 'public') !== 'private',
+        'votes'             => $votes,
+    ]);
+});
+
+// POST /api/v1/challenges/{challengeId}/privacy/vote — body { vote: 'agreed' | 'denied' }
+// Records the caller's vote. On the second 'agreed' we flip visibility to
+// 'private' and clear the vote rows (so a future round starts clean).
+$router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if ($challenge['mode'] !== 'local') {
+        Response::json(['error' => 'International challenges are always public', 'code' => 'intl_locked'], 422);
+    }
+    if (($challenge['visibility'] ?? 'public') === 'private') {
+        Response::json(['error' => 'Already private', 'code' => 'already_private'], 409);
+    }
+
+    $body = Request::json();
+    $vote = is_array($body) ? ($body['vote'] ?? null) : null;
+    if (!in_array($vote, ChallengePrivacyRepository::ALLOWED_STATUSES, true)) {
+        Response::json([
+            'error' => 'vote must be "agreed" or "denied"',
+            'code'  => 'invalid_vote',
+        ], 400);
+    }
+
+    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
+    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    if (!$isCreator && !$isAcceptor) {
+        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
+    }
+
+    // Need a counterparty for the mutual flow — refuse the vote if the
+    // challenge is still available (no acceptor yet) or the acceptor's
+    // row is rejected. Frontend should hide the action in those states
+    // anyway; this is defence-in-depth.
+    $acceptances = ChallengeAcceptanceRepository::getByChallenge($challengeId);
+    $acceptorId  = null;
+    foreach ($acceptances as $a) {
+        if (($a['phase'] ?? null) !== 'rejected') {
+            $acceptorId = $a['acceptor_user_id'];
+            break;
+        }
+    }
+    if ($acceptorId === null) {
+        Response::json([
+            'error' => 'No counterparty — challenge has not been taken on yet',
+            'code'  => 'no_counterparty',
+        ], 409);
+    }
+
+    enforceRateLimit('challenge_privacy_vote', 20, 300, $challengeId);
+
+    ChallengePrivacyRepository::vote($challengeId, $userId, $vote);
+
+    $creatorId = $challenge['created_by'] ?? null;
+    $flipped   = false;
+    if ($vote === 'agreed' && $creatorId !== null
+        && ChallengePrivacyRepository::bothAgreed($challengeId, $creatorId, $acceptorId)) {
+        // Use the internal setVisibility — update()'s owner gate would
+        // reject the acceptor as caller, and update()'s input rule strips
+        // 'private'. Both are correct for the regular edit form; the
+        // mutual flow is the one exception.
+        ChallengeRepository::setVisibility($challengeId, 'private');
+        ChallengePrivacyRepository::reset($challengeId);
+        $flipped = true;
+    }
+
+    // Notify the other party of the vote (only on first signal, not on the
+    // silent flip — spec). We don't push when the action was 'agreed' AND
+    // it caused the flip — the other side already voted 'agreed', they
+    // know what's happening; the visibility change itself is intentionally
+    // quiet (no surprise UI for them).
+    if (!$flipped) {
+        $otherId = $userId === $creatorId ? $acceptorId : $creatorId;
+        if ($otherId !== null) {
+            try {
+                $voterUser  = UserRepository::findById($userId);
+                $voterName  = $voterUser['display_name'] ?? 'Someone';
+                $title      = $challenge['title']        ?? 'this challenge';
+                $body       = $vote === 'agreed'
+                    ? "{$voterName} wants to make \"{$title}\" private — your turn to vote"
+                    : "{$voterName} declined to make \"{$title}\" private";
+                NotificationRepository::create(
+                    $otherId,
+                    'challenge_privacy_vote',
+                    $vote === 'agreed' ? '🔒 Go private?' : '🔓 Stays public',
+                    $body,
+                    [
+                        'challengeId' => $challengeId,
+                        'vote'        => $vote,
+                        'voterUserId' => $userId,
+                        'voterName'   => $voterName,
+                    ]
+                );
+            } catch (\Throwable $e) {
+                error_log('[challenges] privacy-vote notif failed (non-fatal): ' . $e->getMessage());
+            }
+        }
+    }
+
+    Response::json([
+        'ok'              => true,
+        'myVote'          => $vote,
+        'flippedToPrivate' => $flipped,
+        'visibility'      => $flipped ? 'private' : ($challenge['visibility'] ?? 'public'),
+    ]);
+});
+
+// DELETE /api/v1/challenges/{challengeId}/privacy/vote
+// Withdraw the caller's vote. Used when a user opens the privacy flow
+// then changes their mind before the other party has responded.
+$router->add('DELETE', '/api/v1/challenges/{challengeId}/privacy/vote', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    $cleared = ChallengePrivacyRepository::clearVote($challengeId, $userId);
+    Response::json(['ok' => true, 'cleared' => $cleared]);
+});
+
+// ── Challenge anonymization (display mask) ──────────────────────────────────
+//
+// Any participant (creator or acceptor) can flip their own display info to
+// "Anonymous" on a single challenge. Idempotent, reversible, display-only —
+// the user keeps receiving notifications and remains an actual participant.
+
+// POST /api/v1/challenges/{challengeId}/anonymize-me
+$router->add('POST', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    // Participant gate — same shape as the privacy vote endpoint.
+    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
+    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    if (!$isCreator && !$isAcceptor) {
+        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
+    }
+
+    ChallengeAnonymizationRepository::anonymize($challengeId, $userId);
+    Response::json(['ok' => true, 'anonymized' => true]);
+});
+
+// DELETE /api/v1/challenges/{challengeId}/anonymize-me
+// Reverses the mask. Same participant gate.
+$router->add('DELETE', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
+    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    if (!$isCreator && !$isAcceptor) {
+        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
+    }
+
+    $removed = ChallengeAnonymizationRepository::removeAnonymization($challengeId, $userId);
+    Response::json(['ok' => true, 'anonymized' => false, 'removed' => $removed]);
+});
+
+// GET /api/v1/challenges/{challengeId}/anonymize-me
+// Cheap check used by the UI to render the toggle state without reloading
+// the full challenge. Auth required.
+$router->add('GET', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    Response::json([
+        'anonymized' => ChallengeAnonymizationRepository::isAnonymized($challengeId, $authUser['id']),
+    ]);
+});
+
 // GET /api/v1/sitemap/challenges
 // All indexable challenges (open + validated) across every city. Validated
 // ones stay indexed — they're permanent content, not removed pages. Used by
