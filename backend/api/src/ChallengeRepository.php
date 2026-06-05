@@ -59,6 +59,7 @@ class ChallengeRepository
             -- gate the row out of sitemap, public city feed, and crawler-visible
             -- surfaces at the route layer.
             cc.visibility,
+            cc.closed_to_new_joins,
             -- Creator's display info — surfaced on cards + detail header so
             -- the user sees who owns a challenge. LEFT JOIN: pure-guest
             -- challenges (created_by IS NULL) fall back to cc.guest_id /
@@ -123,6 +124,7 @@ class ChallengeRepository
             'proof_requirements'   => $row['proof_requirements'] ?? null,
             // Visibility — 'public' default for pre-migration rows.
             'visibility'           => $row['visibility']         ?? 'public',
+            'closed_to_new_joins'  => (bool) ($row['closed_to_new_joins'] ?? false),
             // Creator display — null for pure-guest challenges (created_by IS NULL).
             // Cards + the detail header render "by {creator_display_name}".
             'creator_display_name'     => $row['creator_display_name']     ?? null,
@@ -220,6 +222,7 @@ class ChallengeRepository
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.visibility,
+            cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.created_at DESC
@@ -261,6 +264,7 @@ class ChallengeRepository
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.visibility,
+            cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
@@ -295,6 +299,7 @@ class ChallengeRepository
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.visibility,
+            cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
         ");
@@ -324,6 +329,7 @@ class ChallengeRepository
                      cc.max_participants, cc.return_clause,
                      cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.visibility,
+            cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
         ");
@@ -365,6 +371,7 @@ class ChallengeRepository
                    cc.max_participants, cc.return_clause,
                    cc.mode, cc.target_city_id, cc.proof_requirements,
                    cc.visibility,
+            cc.closed_to_new_joins,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS validated_at,
                    EXTRACT(EPOCH FROM cc.created_at)::INTEGER   AS created_at
             FROM channels c

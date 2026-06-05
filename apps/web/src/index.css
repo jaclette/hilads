@@ -12261,6 +12261,64 @@ body.has-app-promo-banner .page-header {
   .challenge-takeon-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
+/* ── Participation gate — non-participant view ──────────────────────────── */
+.challenge-join-gate {
+  margin: 24px auto 40px;
+  max-width: 480px;
+  padding: 28px 24px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+.challenge-join-gate-icon { font-size: 28px; opacity: 0.85; }
+.challenge-join-gate-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text);
+}
+.challenge-join-gate-body {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.challenge-join-gate-cta {
+  margin-top: 6px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1a0f00;
+  border: none;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.challenge-join-gate-cta:disabled { opacity: 0.5; cursor: progress; }
+.challenge-join-gate-error {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: #fca5a5;
+}
+.challenge-leave-btn {
+  display: block;
+  margin: 12px auto 0;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.challenge-leave-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+
 /* ── "Message creator" DM shortcut (taker-only) ──────────────────────────── */
 .challenge-dm-creator {
   display: block;

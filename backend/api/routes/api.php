@@ -7924,58 +7924,231 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/unvalidate', function (ar
 });
 
 // POST /api/v1/challenges/{challengeId}/participants/toggle
-// Accept / leave a challenge. Mirrors event participants/toggle — guests
-// allowed (guestId is the participant key).
+// LEGACY toggle for the existing mobile build. Routes through the new
+// ChallengeParticipantRepository so the kick + closed_to_new_joins gates
+// can't be bypassed. New web/mobile builds use /join + DELETE /participants/me.
 $router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
+    $authUser  = AuthService::requireAuth();
+    $userId    = $authUser['id'];
 
     // Visibility-aware: anon hitting a friends/private challenge URL gets
-    // 404, same surface as the read path. Returning logged-in viewers
-    // who are out-of-scope (e.g. non-friend on a friends-only row) get
-    // the same.
-    $viewerId  = AuthService::currentUser()['id'] ?? null;
-    $challenge = ChallengeRepository::findById($challengeId, $viewerId);
+    // 404, same surface as the read path.
+    $challenge = ChallengeRepository::findById($challengeId, $userId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
-    $body = Request::json();
-    if ($body === null) {
-        Response::json(['error' => 'Invalid JSON body'], 400);
-    }
-
-    $guestId = $body['guestId'] ?? null;
-    if (!isValidGuestId($guestId)) {
-        Response::json(['error' => 'guestId is required'], 400);
-    }
-    $nickname = isset($body['nickname']) ? mb_substr(trim((string) $body['nickname']), 0, 32) : null;
-
     enforceRateLimit('challenge_participant_toggle', 60, 300, $challengeId);
 
-    $currentUser = AuthService::currentUser();
-    $userId      = $currentUser['id'] ?? null;
-
-    $wasIn = ChallengeRepository::isParticipant($challengeId, $guestId);
-    if ($wasIn) {
-        ChallengeRepository::removeParticipant($challengeId, $guestId);
+    $alreadyIn = ChallengeParticipantRepository::isParticipant($challengeId, $userId);
+    if ($alreadyIn) {
+        ChallengeParticipantRepository::leave($challengeId, $userId);
         $isIn = false;
     } else {
-        ChallengeRepository::addParticipant($challengeId, $guestId, $userId, $nickname);
+        if (ChallengeParticipantRepository::isKicked($challengeId, $userId)) {
+            Response::json(['error' => "You can't join — you've been removed from this challenge.", 'code' => 'kicked'], 403);
+        }
+        if (!empty($challenge['closed_to_new_joins'])) {
+            Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
+        }
+        ChallengeParticipantRepository::join($challengeId, $userId);
         $isIn = true;
     }
-    $count = ChallengeRepository::participantCount($challengeId);
+    $count = ChallengeParticipantRepository::countForChannel($challengeId);
 
     if ($isIn) {
-        AnalyticsService::defer('accepted_challenge', $userId ?? $guestId, [
-            'challenge_id' => $challengeId,
-            'is_guest'     => $userId === null,
-        ]);
+        AnalyticsService::defer('joined_challenge', $userId, ['challenge_id' => $challengeId]);
     }
 
     Response::json(['count' => $count, 'isIn' => $isIn]);
+});
+
+// POST /api/v1/challenges/{challengeId}/join
+// Explicit join — instant, registered-only, idempotent. Refused on kick,
+// closed_to_new_joins, or visibility scope (the read gate catches the latter
+// via findById). Returns the updated count + isIn=true so the client can
+// flip to the participant view in one round-trip.
+$router->add('POST', '/api/v1/challenges/{challengeId}/join', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findById($challengeId, $userId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (ChallengeParticipantRepository::isKicked($challengeId, $userId)) {
+        Response::json(['error' => "You can't join — you've been removed from this challenge.", 'code' => 'kicked'], 403);
+    }
+    if (!empty($challenge['closed_to_new_joins'])) {
+        Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
+    }
+    enforceRateLimit('challenge_join', 30, 300, $challengeId);
+
+    ChallengeParticipantRepository::join($challengeId, $userId);
+    $count = ChallengeParticipantRepository::countForChannel($challengeId);
+    AnalyticsService::defer('joined_challenge', $userId, ['challenge_id' => $challengeId]);
+
+    Response::json(['count' => $count, 'isIn' => true]);
+});
+
+// DELETE /api/v1/challenges/{challengeId}/participants/me
+// Caller leaves the channel. No notifications, no penalty. The creator
+// can't "leave" their own challenge — they delete it instead, which is a
+// different endpoint.
+$router->add('DELETE', '/api/v1/challenges/{challengeId}/participants/me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) === $userId) {
+        Response::json([
+            'error' => "You're the creator — delete the challenge instead of leaving.",
+            'code'  => 'cant_leave_own_challenge',
+        ], 422);
+    }
+
+    $removed = ChallengeParticipantRepository::leave($challengeId, $userId);
+    $count   = ChallengeParticipantRepository::countForChannel($challengeId);
+    Response::json(['ok' => true, 'isIn' => false, 'removed' => $removed, 'count' => $count]);
+});
+
+// POST /api/v1/challenges/{challengeId}/participants/{userId}/kick
+// Remove a participant + ban re-join. Creator OR active acceptor only.
+// Creator can never be kicked (the repo refuses). Optional { reason } in
+// body — server-side log only, not surfaced to the kicked user beyond a
+// generic "removed" notification.
+$router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kick', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    $targetId    = $params['userId']      ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    if (!preg_match('/^[a-f0-9]{32}$/', $targetId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    $callerId  = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    // Authority: creator OR active (non-rejected) acceptor.
+    $isCreator   = ($challenge['created_by'] ?? null) === $callerId;
+    $acceptance  = ChallengeAcceptanceRepository::findExisting($challengeId, $callerId);
+    $isActiveTaker = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    if (!$isCreator && !$isActiveTaker) {
+        Response::json(['error' => 'Creator or current taker only.', 'code' => 'not_authorized'], 403);
+    }
+    if ($targetId === $callerId) {
+        Response::json(['error' => "You can't kick yourself — leave instead.", 'code' => 'cant_kick_self'], 422);
+    }
+
+    $body   = Request::json();
+    $reason = is_array($body) && isset($body['reason']) && is_string($body['reason'])
+        ? mb_substr(trim($body['reason']), 0, 200) : null;
+
+    $ok = ChallengeParticipantRepository::kick($challengeId, $targetId, $callerId, $reason ?: null);
+    if (!$ok) {
+        Response::json(['error' => "Can't kick the creator.", 'code' => 'cant_kick_creator'], 422);
+    }
+
+    error_log("[challenges] kick challenge={$challengeId} target={$targetId} by={$callerId} reason=" . ($reason ?? '-'));
+    Response::json(['ok' => true]);
+});
+
+// POST /api/v1/challenges/{challengeId}/close-to-new-joins
+// Creator-only toggle. Body { closed: bool } — when true, /join refuses
+// new participants. Existing participants stay.
+$router->add('POST', '/api/v1/challenges/{challengeId}/close-to-new-joins', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    $userId    = $authUser['id'];
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Creator-only', 'code' => 'not_creator'], 403);
+    }
+
+    $body   = Request::json();
+    $closed = is_array($body) ? (bool) ($body['closed'] ?? true) : true;
+
+    Database::pdo()->prepare("
+        UPDATE channel_challenges SET closed_to_new_joins = ?, updated_at = now()
+        WHERE channel_id = ?
+    ")->execute([$closed ? 1 : 0, $challengeId]);
+
+    Response::json(['ok' => true, 'closed_to_new_joins' => $closed]);
+});
+
+// POST /api/v1/challenges/{challengeId}/notification-preference
+// Per-participant preference: 'milestones' (default), 'all', or 'off'.
+// Caller must be a participant (the row to update exists for them).
+$router->add('POST', '/api/v1/challenges/{challengeId}/notification-preference', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $body = Request::json();
+    $pref = is_array($body) ? ($body['preference'] ?? null) : null;
+    if (!in_array($pref, ChallengeParticipantRepository::ALLOWED_NOTIFICATION_PREFERENCES, true)) {
+        Response::json([
+            'error' => "preference must be one of: " . implode(', ', ChallengeParticipantRepository::ALLOWED_NOTIFICATION_PREFERENCES),
+            'code'  => 'invalid_preference',
+        ], 400);
+    }
+    $ok = ChallengeParticipantRepository::setNotificationPreference($challengeId, $userId, $pref);
+    if (!$ok) {
+        Response::json(['error' => 'Not a participant — join the challenge first.', 'code' => 'not_participant'], 403);
+    }
+    Response::json(['ok' => true, 'preference' => $pref]);
+});
+
+// GET /api/v1/challenges/{challengeId}/participants/me
+// Cheap "am I in?" probe used by the detail page to decide whether to render
+// the public hero or the participant chat. Returns the caller's
+// participant + notification state.
+$router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null) {
+        Response::json(['isIn' => false, 'reason' => 'anon']);
+    }
+    $isIn = ChallengeParticipantRepository::isParticipant($challengeId, $userId);
+    Response::json([
+        'isIn'                 => $isIn,
+        'isKicked'             => ChallengeParticipantRepository::isKicked($challengeId, $userId),
+        'notificationPreference' => $isIn
+            ? ChallengeParticipantRepository::getNotificationPreference($challengeId, $userId)
+            : null,
+    ]);
 });
 
 // ── Challenge acceptances (PR2 — new take-on flow) ────────────────────────────
@@ -9393,9 +9566,11 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (a
 });
 
 // GET /api/v1/challenges/{challengeId}/messages
-// Chat messages for a challenge. Challenges are open (no members-only gate
-// like hangouts), so any authenticated or guest user can read. Cursor
-// pagination via before_id, capped at 100 messages per page.
+// Channel chat — participation-gated. Creator + active acceptor are implicit
+// participants; everyone else needs a challenge_participants row (created by
+// clicking "Join this challenge"). Non-participants get 403 with
+// code:'not_participant' so the client can render the public detail page
+// instead of the chat.
 $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -9403,11 +9578,19 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
     }
 
     try {
+        $viewerId = AuthService::currentUser()['id'] ?? null;
         // Visibility-aware existence check — anon/out-of-scope viewers
         // can't read messages on a friends/private challenge.
-        $viewerId = AuthService::currentUser()['id'] ?? null;
         if (ChallengeRepository::findById($challengeId, $viewerId) === null) {
             Response::json(['error' => 'Challenge not found'], 404);
+        }
+        // Participation gate. Anon viewers never pass; registered viewers
+        // pass on creator / active-taker / join-row branches.
+        if (!ChallengeParticipantRepository::isParticipant($challengeId, $viewerId)) {
+            Response::json([
+                'error' => 'Join this challenge to read the conversation.',
+                'code'  => 'not_participant',
+            ], 403);
         }
 
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
@@ -9421,9 +9604,9 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 });
 
 // POST /api/v1/challenges/{challengeId}/messages
-// Send a message to a challenge. Mirrors events (guests allowed) — challenges
-// are open by design, NOT members-only like hangouts. Rate limit + size +
-// image-URL validation match the topic-message endpoint.
+// Send a message in the participation-gated channel. Only participants
+// (creator / active taker implicitly, anyone else who joined) can post.
+// Guest senders no longer have a path in — the new model is registered-only.
 $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -9435,6 +9618,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     $viewerIdForVisibility = AuthService::currentUser()['id'] ?? null;
     if (ChallengeRepository::findById($challengeId, $viewerIdForVisibility) === null) {
         Response::json(['error' => 'Challenge not found'], 404);
+    }
+    // Participation gate — same shape as the GET. Non-participants get a
+    // friendlier 403 so the client can prompt them to Join first.
+    if (!ChallengeParticipantRepository::isParticipant($challengeId, $viewerIdForVisibility)) {
+        Response::json([
+            'error' => 'Join this challenge to post in the conversation.',
+            'code'  => 'not_participant',
+        ], 403);
     }
 
     $body = Request::json();

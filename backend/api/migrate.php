@@ -1269,4 +1269,34 @@ run($pdo, "DROP TABLE IF EXISTS challenge_anonymized_users CASCADE", 'drop chall
 // DROP IF EXISTS keeps prod idempotent.
 run($pdo, "DROP TABLE IF EXISTS challenge_comments CASCADE", 'drop challenge_comments');
 
+// ── Participation-gated channel (new model) ──────────────────────────────────
+// The challenge channel is no longer freely readable. Only joined participants
+// (plus the implicit creator + active acceptor) can read or post in the
+// channel. Non-participants see the SSR detail page only.
+//
+//   - challenge_participants.notification_preference: 'milestones' (default;
+//     taker accept + proof submit + final validation), 'all' (every message),
+//     'off' (silent — the user still gets read access, just no pings)
+//   - channel_challenges.closed_to_new_joins: creator can freeze the
+//     participant list at any point (existing participants stay; new join
+//     requests refused). Per-challenge toggle, default FALSE.
+//   - challenge_kicks: per-(challenge, user) ban issued by the creator OR
+//     the active taker. Kicked users can't re-join until the row is removed
+//     (no UI for unkicking in v1; ops-only).
+run($pdo, "ALTER TABLE challenge_participants ADD COLUMN IF NOT EXISTS notification_preference TEXT NOT NULL DEFAULT 'milestones'", 'challenge_participants.notification_preference');
+run($pdo, "ALTER TABLE channel_challenges     ADD COLUMN IF NOT EXISTS closed_to_new_joins     BOOLEAN NOT NULL DEFAULT FALSE",      'channel_challenges.closed_to_new_joins');
+
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_kicks (
+        challenge_id      TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        user_id           TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        kicked_by_user_id TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        kicked_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reason            TEXT,
+        PRIMARY KEY (challenge_id, user_id)
+    )
+", 'challenge_kicks');
+
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chkick_user ON challenge_kicks (user_id)", 'idx_chkick_user');
+
 echo "\nDone.\n";

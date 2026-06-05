@@ -1666,6 +1666,90 @@ export async function fetchLinkPreview(url) {
 //   { currentVisibility, myVote, creatorVote, acceptorVote, acceptorUserId,
 //     canVote, votes: [...] }
 // 404 when caller isn't creator/acceptor; UI should hide the panel in that case.
+// ── Challenge participation (join / leave / moderation) ─────────────────────
+
+// "Am I in?" probe. Returns { isIn, isKicked, notificationPreference }.
+// Anon viewer always gets { isIn:false, reason:'anon' }.
+export async function fetchMyChallengeParticipation(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/me`, {
+    credentials: 'include',
+  })
+  if (!res.ok) return { isIn: false }
+  return res.json()
+}
+
+export async function joinChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/join`, {
+    method: 'POST',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to join')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json() // { count, isIn:true }
+}
+
+export async function leaveChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/me`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to leave')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json()
+}
+
+export async function kickChallengeParticipant(challengeId, userId, reason = null) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/${encodeURIComponent(userId)}/kick`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(reason ? { reason } : {}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to remove participant')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json()
+}
+
+export async function setChallengeCloseToJoins(challengeId, closed) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/close-to-new-joins`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ closed }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to update')
+  }
+  return res.json()
+}
+
+export async function setChallengeNotificationPreference(challengeId, preference) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/notification-preference`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ preference }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to update')
+  }
+  return res.json()
+}
+
 export async function fetchChallengePrivacy(challengeId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/privacy`, {
     credentials: 'include',

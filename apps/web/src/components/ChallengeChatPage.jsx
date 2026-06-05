@@ -18,6 +18,8 @@ import {
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, proposeDate,
   approveTakeOn, rejectTakeOn,
+  fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
+  kickChallengeParticipant, setChallengeCloseToJoins,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -103,10 +105,18 @@ export default function ChallengeChatPage({
   // ChallengePipeline rendering. Null when I have no acceptance for this
   // challenge (visitor or creator on their own ad).
   const [myAcceptance, setMyAcceptance] = useState(null)
+
+  // Participation gate (the channel is now members-only). null = still
+  // loading; false = visitor sees public detail page only; true = visitor
+  // sees the full chat. We don't try to be clever about the initial value —
+  // a single GET /participants/me on mount resolves it.
+  const [iAmParticipant, setIAmParticipant] = useState(null)
+  const [joiningChannel, setJoiningChannel] = useState(false)
+  const [joinError,      setJoinError]      = useState(null)
+
   // Unified challenge channel chat — replaces the prior 1:1 thread surface.
-  // The chat mounts for everyone (anon or registered); send is gated on
-  // a registered account at the route layer. Schedule + verdict UIs still
-  // gate on myAcceptance further down.
+  // Reads + sends both gated on participation server-side; the chat block
+  // simply doesn't mount when iAmParticipant !== true.
   const [messages, setMessages] = useState([])
   const [composer, setComposer] = useState('')
   const [sending,  setSending]  = useState(false)
@@ -239,13 +249,58 @@ export default function ChallengeChatPage({
 
   useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
 
+  // Participation probe. Resolves to true for creator + active acceptor
+  // implicitly (server-side); for everyone else it's the join-row check.
+  // Re-fires whenever the user-id or the acceptance-state changes so a
+  // fresh acceptance flips the gate without a manual refresh.
+  const loadParticipation = useCallback(async () => {
+    if (!id) { setIAmParticipant(null); return }
+    if (!account?.id) { setIAmParticipant(false); return }
+    try {
+      const res = await fetchMyChallengeParticipation(id)
+      setIAmParticipant(!!res?.isIn)
+    } catch { setIAmParticipant(false) }
+  }, [id, account?.id])
+  useEffect(() => { loadParticipation() }, [loadParticipation, myAcceptance?.id, challenge?.created_by])
+
+  async function handleJoinChannel() {
+    if (joiningChannel || !account?.id) {
+      if (!account?.id) onNeedAuth?.('join_challenge')
+      return
+    }
+    setJoiningChannel(true)
+    setJoinError(null)
+    try {
+      await joinChallenge(id)
+      setIAmParticipant(true)
+      // Refresh public participant list so the new viewer shows up
+      // immediately on the detail page they just left behind.
+      loadParticipants()
+    } catch (err) {
+      if (err?.code === 'kicked')              setJoinError(t('join.errKicked'))
+      else if (err?.code === 'closed_to_new_joins') setJoinError(t('join.errClosed'))
+      else                                     setJoinError(err?.message || t('join.errGeneric'))
+    } finally {
+      setJoiningChannel(false)
+    }
+  }
+
+  async function handleLeaveChannel() {
+    if (!account?.id) return
+    try {
+      await leaveChallenge(id)
+      setIAmParticipant(false)
+      loadParticipants()
+    } catch { /* silent — UI will re-probe on next visit */ }
+  }
+
   // ── Unified challenge channel chat — load + WS + auto-scroll. Mounts
   // (data-wise) whenever we know the challenge id; the chat surface is
   // public so anyone (including anon) can read. Send is still gated on a
   // registered account in the composer + server.
 
   useEffect(() => {
-    if (!id) { setMessages([]); knownIds.current = new Set(); return }
+    if (!id || iAmParticipant !== true) { setMessages([]); knownIds.current = new Set(); return }
     let cancelled = false
     fetchChallengeMessages(id, { limit: 50 }).then(data => {
       if (cancelled) return
@@ -254,10 +309,10 @@ export default function ChallengeChatPage({
       setMessages(msgs)
     }).catch(() => {})
     return () => { cancelled = true }
-  }, [id])
+  }, [id, iAmParticipant])
 
   useEffect(() => {
-    if (!socket || !sessionId || !id) return
+    if (!socket || !sessionId || !id || iAmParticipant !== true) return
     socket.joinChallenge(id, sessionId)
     const offMsg = socket.on('newMessage', (data) => {
       if (data.channelId !== id) return
@@ -275,7 +330,7 @@ export default function ChallengeChatPage({
       })
     })
     return () => { offMsg(); socket.leaveChallenge(id, sessionId) }
-  }, [id, socket, sessionId])
+  }, [id, iAmParticipant, socket, sessionId])
 
   // Refresh acceptance on any lifecycle push so the pipeline + schedule band update live.
   useEffect(() => {
@@ -778,10 +833,35 @@ export default function ChallengeChatPage({
         return null
       })()}
 
-      {/* Unified challenge channel chat — public, always mounted. Anyone
-          can read; posting requires a registered account (gated server-
-          side + by the composer's onFocus auth prompt). The
-          ThreadScheduleBlock + DM-to-creator surfaces sit alongside. */}
+      {/* Non-participant gate — until the viewer joins (or is implicitly
+          a participant via creator/active-taker), they see the join CTA
+          where the chat would be. Detail-page meta above stays visible. */}
+      {iAmParticipant === false && (
+        <div className="challenge-join-gate">
+          <span className="challenge-join-gate-icon" aria-hidden="true">🔓</span>
+          <h3 className="challenge-join-gate-title">{t('join.gateTitle')}</h3>
+          <p className="challenge-join-gate-body">
+            {t('join.gateBody', { count: otherParticipants.length })}
+          </p>
+          <button
+            type="button"
+            className="challenge-join-gate-cta"
+            onClick={handleJoinChannel}
+            disabled={joiningChannel}
+          >
+            {joiningChannel ? '…' : t('join.cta')}
+          </button>
+          {joinError && (
+            <p className="challenge-join-gate-error" role="alert">{joinError}</p>
+          )}
+        </div>
+      )}
+
+      {/* Unified challenge channel chat — participation-gated. Mounts only
+          for participants (creator + active acceptor implicitly, joined
+          users explicitly). Reads + sends are both server-side gated; the
+          UI just doesn't render this surface for non-participants. */}
+      {iAmParticipant === true && (
       <>
           <div
             className="topic-chat-feed"
@@ -857,13 +937,23 @@ export default function ChallengeChatPage({
             placeholder={t('chatPlaceholder')}
             showEmojiButton={false}
           />
+          {/* Leave the channel — available to non-creators who joined.
+              Creator can't leave their own challenge. */}
+          {!isOwner && iAmParticipant && !myAcceptance && (
+            <button
+              type="button"
+              className="challenge-leave-btn"
+              onClick={handleLeaveChannel}
+            >
+              {t('join.leaveCta')}
+            </button>
+          )}
       </>
+      )}
 
-      {/* "Message creator" — DM shortcut for the active taker. The thread
-          chat was the auto-private surface; now the public channel handles
-          coordination, and a private DM is opt-in via this button. The
-          DM uses the existing 1:1 DM system (App-level onSendDm prop). */}
-      {!isOwner && myAcceptance && account?.id && challenge.created_by && (
+      {/* "Message creator" — DM shortcut for the active taker. Private
+          coordination is opt-in; the public channel above handles the rest. */}
+      {iAmParticipant && !isOwner && myAcceptance && account?.id && challenge.created_by && (
         <button
           type="button"
           className="challenge-dm-creator"

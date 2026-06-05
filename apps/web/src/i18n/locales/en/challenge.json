@@ -116,8 +116,17 @@
       }
     }
   },
-  "chatPlaceholder": "Join the conversation…",
+  "chatPlaceholder": "Say something to the channel…",
   "messageCreator": "Message {{name}} privately",
+  "join": {
+    "gateTitle": "Join to see the conversation",
+    "gateBody":  "{{count}} people are already in. One click and you're in too.",
+    "cta":       "Join this challenge",
+    "leaveCta":  "Leave the channel",
+    "errKicked": "You've been removed from this challenge. You can't re-join.",
+    "errClosed": "This challenge is closed to new joins.",
+    "errGeneric":"Couldn't join — try again."
+  },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
