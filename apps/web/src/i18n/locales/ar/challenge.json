@@ -344,5 +344,9 @@
       "submitFailBody": "تحقّق من الاتصال.",
       "reviewFailTitle": "تعذّر حفظ الحكم"
     }
+  },
+  "modeFilter": {
+    "label": "تصفية حسب الوضع",
+    "all": "الكل"
   }
 }

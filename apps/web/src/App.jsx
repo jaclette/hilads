@@ -1028,6 +1028,10 @@ export default function App() {
   // Sub-filter chips inside the Challenges filter — food / place / culture /
   // help. Reset to 'all' whenever the parent filter leaves 'challenges'.
   const [challengeTypeFilter, setChallengeTypeFilter] = useState('all')
+  // Mode sub-filter inside the Challenges filter — Local/International/All.
+  // Asymmetric per spec: Local is the hero (default exists, but the badge is
+  // suppressed on cards), International is the "always alive" growth lane.
+  const [challengeModeFilter, setChallengeModeFilter] = useState('all')
   // Visible-cap for the Challenges feed. Starts at 5; scroll-to-bottom on
   // the .page-body bumps it by 5 until we've shown every loaded challenge.
   const NOW_CHALLENGES_CAP = 5
@@ -1057,21 +1061,33 @@ export default function App() {
   // leak whatever cap the user paginated to last time.
   useEffect(() => {
     setChallengesShownCount(NOW_CHALLENGES_CAP)
-    if (nowFilter !== 'challenges') setChallengeTypeFilter('all')
+    if (nowFilter !== 'challenges') {
+      setChallengeTypeFilter('all')
+      setChallengeModeFilter('all')
+    }
   }, [nowFilter])
 
-  // Reset the visible-count when the type sub-filter changes — switching
-  // from "food" to "place" should land the user at the top of that bucket.
+  // Reset the visible-count when either sub-filter changes — switching from
+  // "food" to "place" (or Local→Intl) should land the user at the top of
+  // that bucket.
   useEffect(() => {
     setChallengesShownCount(NOW_CHALLENGES_CAP)
-  }, [challengeTypeFilter])
+  }, [challengeTypeFilter, challengeModeFilter])
 
-  // Filtered-by-type challenges. Shared by the JSX render and the scroll
-  // guard so they can't drift.
+  // Filtered-by-type-AND-mode challenges. Shared by the JSX render and the
+  // scroll guard so they can't drift. Outside the Challenges filter the list
+  // is passed through unchanged (the NOW "all" view caps at 5 anyway).
   const filteredChallenges = useMemo(() => {
-    if (nowFilter !== 'challenges' || challengeTypeFilter === 'all') return cityChallenges
-    return cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
-  }, [cityChallenges, nowFilter, challengeTypeFilter])
+    if (nowFilter !== 'challenges') return cityChallenges
+    let pool = cityChallenges
+    if (challengeModeFilter !== 'all') {
+      pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
+    }
+    if (challengeTypeFilter !== 'all') {
+      pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
+    }
+    return pool
+  }, [cityChallenges, nowFilter, challengeTypeFilter, challengeModeFilter])
 
   // Scroll-to-load-more — three gates so we never spam the rendering loop
   // (and, when backend pagination lands, the API):
@@ -4884,36 +4900,62 @@ export default function App() {
                   </p>
                 )}
                 {nowFilter === 'challenges' && (
-                  <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
-                    {[
-                      { key: 'all',     emoji: '✨' },
-                      { key: 'food',    emoji: '🍜' },
-                      { key: 'place',   emoji: '📍' },
-                      { key: 'culture', emoji: '🎭' },
-                      { key: 'help',    emoji: '🤝' },
-                    ].map(({ key, emoji }) => (
-                      <button
-                        key={key}
-                        type="button"
-                        role="tab"
-                        aria-selected={challengeTypeFilter === key}
-                        className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                        onClick={() => setChallengeTypeFilter(key)}
-                      >
-                        <span aria-hidden="true">{emoji}</span>
-                        <span>{key === 'all'
-                          ? t('typeFilter.all', { ns: 'challenge' })
-                          : t(`tp.${key}`, { ns: 'challenge' })}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    {/* Mode sub-filter — All / Local / International */}
+                    <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
+                      {[
+                        { key: 'all',           emoji: '✨' },
+                        { key: 'local',         emoji: '🏙️' },
+                        { key: 'international', emoji: '🌐' },
+                      ].map(({ key, emoji }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          role="tab"
+                          aria-selected={challengeModeFilter === key}
+                          className={`challenge-type-chip${challengeModeFilter === key ? ' challenge-type-chip--active' : ''}`}
+                          onClick={() => setChallengeModeFilter(key)}
+                        >
+                          <span aria-hidden="true">{emoji}</span>
+                          <span>{key === 'all'
+                            ? t('modeFilter.all',           { ns: 'challenge' })
+                            : t(`mode.${key}`,              { ns: 'challenge' })}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {/* Type sub-filter — Food / Place / Culture / Help */}
+                    <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
+                      {[
+                        { key: 'all',     emoji: '✨' },
+                        { key: 'food',    emoji: '🍜' },
+                        { key: 'place',   emoji: '📍' },
+                        { key: 'culture', emoji: '🎭' },
+                        { key: 'help',    emoji: '🤝' },
+                      ].map(({ key, emoji }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          role="tab"
+                          aria-selected={challengeTypeFilter === key}
+                          className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
+                          onClick={() => setChallengeTypeFilter(key)}
+                        >
+                          <span aria-hidden="true">{emoji}</span>
+                          <span>{key === 'all'
+                            ? t('typeFilter.all', { ns: 'challenge' })
+                            : t(`tp.${key}`, { ns: 'challenge' })}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {visibleChallenges.map(c => {
                   const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
                   const audienceLabel = c.audience === 'locals'
                     ? t('forLocals',    { ns: 'challenge' })
                     : t('forExplorers', { ns: 'challenge' })
-                  const isValidated = c.status === 'validated'
+                  const isValidated     = c.status === 'validated'
+                  const isInternational = (c.mode ?? 'local') === 'international'
                   return (
                     <button
                       key={c.id}
@@ -4926,7 +4968,15 @@ export default function App() {
                         <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`, { ns: 'challenge' })}</span>
                       </div>
                       <div className="er-badges">
-                        <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+                        {isInternational
+                          ? (
+                            <span className="challenge-badge challenge-badge--international">
+                              🌐 {t('mode.international', { ns: 'challenge' })}
+                            </span>
+                          )
+                          : (
+                            <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+                          )}
                         {isValidated ? (
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}

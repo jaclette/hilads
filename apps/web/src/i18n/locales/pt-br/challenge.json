@@ -344,5 +344,9 @@
       "submitFailBody": "Verifique a conexão e tente de novo.",
       "reviewFailTitle": "Não foi possível salvar o veredicto"
     }
+  },
+  "modeFilter": {
+    "label": "Filtrar por modo",
+    "all": "Todos"
   }
 }

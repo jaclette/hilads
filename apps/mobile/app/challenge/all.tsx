@@ -23,6 +23,13 @@ const TYPE_FILTERS: { key: TypeFilter; emoji: string }[] = [
   { key: 'help',    emoji: '🤝' },
 ];
 
+type ModeFilter = 'all' | 'local' | 'international';
+const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
+  { key: 'all',           emoji: '✨' },
+  { key: 'local',         emoji: '🏙️' },
+  { key: 'international', emoji: '🌐' },
+];
+
 export default function AllChallengesScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -31,6 +38,7 @@ export default function AllChallengesScreen() {
 
   const [tab,        setTab]        = useState<Tab>('open');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
   const [openList,   setOpenList]   = useState<Challenge[]>([]);
   const [pastList,   setPastList]   = useState<Challenge[]>([]);
   const [loading,    setLoading]    = useState(true);
@@ -58,8 +66,13 @@ export default function AllChallengesScreen() {
 
   const dataRaw = tab === 'open' ? openList : pastList;
   const data = useMemo(
-    () => typeFilter === 'all' ? dataRaw : dataRaw.filter(c => c.challenge_type === typeFilter),
-    [dataRaw, typeFilter],
+    () => {
+      let pool = dataRaw;
+      if (modeFilter !== 'all') pool = pool.filter(c => (c.mode ?? 'local') === modeFilter);
+      if (typeFilter !== 'all') pool = pool.filter(c => c.challenge_type === typeFilter);
+      return pool;
+    },
+    [dataRaw, typeFilter, modeFilter],
   );
 
   if (!channelId) {
@@ -97,6 +110,31 @@ export default function AllChallengesScreen() {
           </TouchableOpacity>
         ))}
       </View>
+
+      {/* Mode sub-filter — All / Local / International. Sits above the
+          type chips. Asymmetric per spec: International gets a distinct
+          chip + label, Local is treated as the default. */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.typeChipsRow}
+      >
+        {MODE_FILTERS.map(({ key, emoji }) => {
+          const active = modeFilter === key;
+          return (
+            <TouchableOpacity
+              key={key}
+              style={[styles.typeChip, active && styles.typeChipActive]}
+              onPress={() => setModeFilter(key)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.typeChipText, active && styles.typeChipTextActive]}>
+                {emoji} {key === 'all' ? t('modeFilter.all') : t(`mode.${key}`)}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
 
       {/* Type sub-filter chips — all / food / place / culture / help.
           Compact pills sitting just below the tab row so the user can

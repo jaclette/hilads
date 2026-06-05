@@ -344,5 +344,9 @@
       "submitFailBody": "检查网络后重试。",
       "reviewFailTitle": "判定未保存"
     }
+  },
+  "modeFilter": {
+    "label": "按模式筛选",
+    "all": "全部"
   }
 }

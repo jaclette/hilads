@@ -344,5 +344,9 @@
       "submitFailBody": "Verifica a ligação e tenta de novo.",
       "reviewFailTitle": "Não foi possível guardar o veredicto"
     }
+  },
+  "modeFilter": {
+    "label": "Filtrar por modo",
+    "all": "Todos"
   }
 }

@@ -344,5 +344,9 @@
       "submitFailBody": "Controlla la connessione e riprova.",
       "reviewFailTitle": "Verdetto non salvato"
     }
+  },
+  "modeFilter": {
+    "label": "Filtra per modalità",
+    "all": "Tutte"
   }
 }

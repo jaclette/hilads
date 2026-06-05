@@ -344,5 +344,9 @@
       "submitFailBody": "Cek koneksi.",
       "reviewFailTitle": "Keputusan gagal disimpan"
     }
+  },
+  "modeFilter": {
+    "label": "Filter berdasarkan mode",
+    "all": "Semua"
   }
 }

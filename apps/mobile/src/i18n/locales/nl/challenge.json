@@ -344,5 +344,9 @@
       "submitFailBody": "Check je verbinding en probeer opnieuw.",
       "reviewFailTitle": "Oordeel niet opgeslagen"
     }
+  },
+  "modeFilter": {
+    "label": "Filter op modus",
+    "all": "Alle"
   }
 }

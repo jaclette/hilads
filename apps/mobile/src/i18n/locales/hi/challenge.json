@@ -344,5 +344,9 @@
       "submitFailBody": "कनेक्शन देखें।",
       "reviewFailTitle": "फैसला सेव नहीं हुआ"
     }
+  },
+  "modeFilter": {
+    "label": "मोड से फ़िल्टर",
+    "all": "सभी"
   }
 }

@@ -47,20 +47,27 @@ export function ChallengeCard({
   //   - Available → 🔓 neutral pill ("free to take on")
   // The validated branch wins if both are true (closed is final).
   const isInProgress = !isValidated && challenge.is_in_progress === true;
+  const isInternational = (challenge.mode ?? 'local') === 'international';
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
       {/* Top row — type-specific badge (DÉFI BOUFFE / FOOD CHALLENGE / etc.)
-          + audience pill + (when validated) badge. Type-specific instead of
-          generic so the scanner reads what kind of challenge it is without
-          opening the card. */}
+          + audience/mode pill + (when validated) badge. International rows
+          swap the audience pill for a 🌐 International chip (the audience
+          concept doesn't apply — no locals/travelers split). */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
           <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
         </View>
-        <View style={styles.audiencePill}>
-          <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
-        </View>
+        {isInternational ? (
+          <View style={styles.intlPill}>
+            <Text style={styles.intlPillText}>🌐 {t('mode.international')}</Text>
+          </View>
+        ) : (
+          <View style={styles.audiencePill}>
+            <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
+          </View>
+        )}
         {isValidated ? (
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
@@ -152,6 +159,18 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(139,92,246,0.32)',
   },
   audiencePillText: { fontSize: 10, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
+
+  // International badge — cyan tint, distinct from audience violet so Local
+  // vs Intl reads at a glance.
+  intlPill: {
+    backgroundColor:   'rgba(56,189,248,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(56,189,248,0.36)',
+  },
+  intlPillText: { fontSize: 10, fontWeight: '700', color: '#38bdf8', letterSpacing: 0.3 },
 
   validatedBadge: {
     backgroundColor:   'rgba(34,197,94,0.10)',

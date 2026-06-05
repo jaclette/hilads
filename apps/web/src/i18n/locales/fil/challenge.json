@@ -344,5 +344,9 @@
       "submitFailBody": "Tingnan ang koneksyon.",
       "reviewFailTitle": "Hindi naitala ang verdict"
     }
+  },
+  "modeFilter": {
+    "label": "I-filter ayon sa mode",
+    "all": "Lahat"
   }
 }

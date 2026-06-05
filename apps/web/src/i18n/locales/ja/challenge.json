@@ -344,5 +344,9 @@
       "submitFailBody": "接続を確認して再試行。",
       "reviewFailTitle": "判定を保存できなかった"
     }
+  },
+  "modeFilter": {
+    "label": "モードで絞り込み",
+    "all": "すべて"
   }
 }

@@ -10866,6 +10866,14 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(139, 92, 246, 0.32);
   color: #A78BFA;
 }
+/* International mode — distinct from audience violet so Local/Intl read
+   apart at a glance. Cyan: feels "global" without competing with brand
+   orange or the green/red status pills. */
+.challenge-badge--international {
+  background: rgba(56, 189, 248, 0.12);
+  border-color: rgba(56, 189, 248, 0.36);
+  color: #38bdf8;
+}
 .challenge-badge--validated {
   background: rgba(34, 197, 94, 0.10);
   border-color: rgba(34, 197, 94, 0.20);

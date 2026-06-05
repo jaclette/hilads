@@ -344,5 +344,9 @@
       "submitFailBody": "Vérifie ta connexion et réessaie.",
       "reviewFailTitle": "Verdict non enregistré"
     }
+  },
+  "modeFilter": {
+    "label": "Filtrer par mode",
+    "all": "Tous"
   }
 }

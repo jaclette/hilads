@@ -344,5 +344,9 @@
       "submitFailBody": "Verbindung prüfen und nochmal versuchen.",
       "reviewFailTitle": "Urteil nicht gespeichert"
     }
+  },
+  "modeFilter": {
+    "label": "Nach Modus filtern",
+    "all": "Alle"
   }
 }

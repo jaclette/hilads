@@ -344,5 +344,9 @@
       "submitFailBody": "Check your connection and try again.",
       "reviewFailTitle": "Could not save verdict"
     }
+  },
+  "modeFilter": {
+    "label": "Filter by mode",
+    "all": "All"
   }
 }

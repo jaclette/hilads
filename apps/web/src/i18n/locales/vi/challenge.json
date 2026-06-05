@@ -344,5 +344,9 @@
       "submitFailBody": "Kiểm tra kết nối.",
       "reviewFailTitle": "Không lưu được phán quyết"
     }
+  },
+  "modeFilter": {
+    "label": "Lọc theo chế độ",
+    "all": "Tất cả"
   }
 }

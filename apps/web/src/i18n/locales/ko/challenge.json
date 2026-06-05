@@ -344,5 +344,9 @@
       "submitFailBody": "연결 확인 후 다시.",
       "reviewFailTitle": "판정 저장 실패"
     }
+  },
+  "modeFilter": {
+    "label": "모드로 필터",
+    "all": "전체"
   }
 }

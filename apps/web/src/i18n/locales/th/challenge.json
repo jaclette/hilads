@@ -344,5 +344,9 @@
       "submitFailBody": "ตรวจการเชื่อมต่อ",
       "reviewFailTitle": "บันทึกคำตัดสินไม่ได้"
     }
+  },
+  "modeFilter": {
+    "label": "กรองตามโหมด",
+    "all": "ทั้งหมด"
   }
 }
