@@ -68,7 +68,7 @@ class ChallengeRepository
             -- device (see isOwner notes elsewhere).
             u.display_name             AS creator_display_name,
             u.username                 AS creator_username,
-            u.profile_thumb_photo_url  AS creator_thumb_avatar_url,
+            COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url,
             COUNT(m.id)                                            AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER         AS last_activity_at,
             EXTRACT(EPOCH FROM cc.validated_at)::INTEGER           AS validated_at,

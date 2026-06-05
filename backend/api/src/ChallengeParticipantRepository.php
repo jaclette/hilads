@@ -212,7 +212,8 @@ class ChallengeParticipantRepository
     {
         $limit = max(1, min(500, $limit));
         $stmt = Database::pdo()->prepare("
-            SELECT u.id, u.display_name, u.username, u.profile_thumb_photo_url,
+            SELECT u.id, u.display_name, u.username,
+                   u.profile_thumb_photo_url, u.profile_photo_url,
                    EXTRACT(EPOCH FROM cp.joined_at)::INTEGER AS joined_at
             FROM challenge_participants cp
             JOIN users u ON u.id = cp.user_id AND u.deleted_at IS NULL
@@ -225,7 +226,10 @@ class ChallengeParticipantRepository
             'id'             => $r['id'],
             'displayName'    => $r['display_name'] ?? null,
             'username'       => $r['username']     ?? null,
-            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? null,
+            // Falls back to the full-size photo when no thumbnail exists —
+            // matches participantPreview / city-roster behaviour so legacy
+            // users without a thumb still get an avatar.
+            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
             'joinedAt'       => (int) $r['joined_at'],
         ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }

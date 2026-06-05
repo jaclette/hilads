@@ -592,6 +592,20 @@ export default function ChallengeChatPage({
           <span aria-hidden="true">↗</span>
           <span className="challenge-share-pill-text">{t('shareCta')}</span>
         </button>
+        {/* Leave the channel — inline pill in the meta row, right of the
+            share button. Visible only for joined participants who aren't
+            the creator or the active taker (those two leave via different
+            flows: delete-challenge / cancel-acceptance). */}
+        {iAmParticipant === true && !isOwner && !myAcceptance && (
+          <button
+            type="button"
+            className="challenge-share-pill challenge-share-pill--inline challenge-leave-pill"
+            onClick={handleLeaveChannel}
+          >
+            <span aria-hidden="true">↩</span>
+            <span className="challenge-share-pill-text">{t('join.leaveCta')}</span>
+          </button>
+        )}
       </div>
 
       {/* Lifecycle pipeline (replaces the old "in progress / accomplished"
@@ -735,25 +749,6 @@ export default function ChallengeChatPage({
               <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
             </button>
           )}
-        </div>
-      )}
-
-      {/* Channel actions row — sits right under "Take on the challenge"
-          for participants. Group of:
-            - "Leave the channel" (joined participants only; creator can't
-              leave their own challenge, active taker uses the acceptance
-              flow to bow out)
-          The members strip + notifications toggle live in the toolbar
-          rendered immediately below (compact, near the header). */}
-      {iAmParticipant === true && !isOwner && !myAcceptance && (
-        <div className="challenge-channel-actions">
-          <button
-            type="button"
-            className="challenge-leave-btn"
-            onClick={handleLeaveChannel}
-          >
-            {t('join.leaveCta')}
-          </button>
         </div>
       )}
 

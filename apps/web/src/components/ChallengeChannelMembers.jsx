@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchChannelParticipants, kickChallengeParticipant } from '../api'
+import { avatarColors } from '../lib/avatarColors'
 import AttendeeAvatars from './AttendeeAvatars'
 
 /**
@@ -124,22 +125,24 @@ export default function ChallengeChannelMembers({
             <div className="going-modal-body">
               {rows.map(r => {
                 const showKick = canKick && r.role !== 'challenger' && r.id !== currentUserId
+                const [c1, c2] = avatarColors(r.displayName ?? r.id ?? '?')
                 return (
                   <div key={r.id} className="people-drawer-row">
-                    {r.thumbAvatarUrl ? (
-                      <img src={r.thumbAvatarUrl} className="online-avatar" alt="" />
-                    ) : (
-                      <span className="online-avatar online-avatar--blank" aria-hidden="true">
-                        {(r.displayName ?? '?')[0].toUpperCase()}
-                      </span>
-                    )}
-                    <div className="people-drawer-content">
-                      <span className="people-drawer-name">{r.displayName}</span>
-                      {r.role !== 'participant' && (
-                        <span className={`challenge-role-badge challenge-role-badge--${r.role === 'challenger' ? 'challenger' : 'taker'}`}>
-                          {t(`badge.${r.role === 'challenger' ? 'challenger' : 'taker'}`)}
+                    {r.thumbAvatarUrl
+                      ? <img className="online-avatar" src={r.thumbAvatarUrl} alt={r.displayName ?? ''} style={{ objectFit: 'cover' }} />
+                      : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                          {(r.displayName ?? '?')[0].toUpperCase()}
                         </span>
-                      )}
+                    }
+                    <div className="people-drawer-content">
+                      <div className="people-drawer-name-row">
+                        <span className="people-drawer-name">{r.displayName}</span>
+                        {r.role !== 'participant' && (
+                          <span className={`challenge-role-badge challenge-role-badge--${r.role}`}>
+                            {t(`badge.${r.role}`)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     {showKick && (
                       <button

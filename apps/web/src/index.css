@@ -12220,6 +12220,21 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(74, 222, 128, 0.28);
 }
 
+/* Members modal — keep the badge inline next to the name (the parent
+   .people-drawer-content is a flex column whose children would otherwise
+   stretch the badge to full width). */
+.people-drawer-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.people-drawer-name-row .challenge-role-badge {
+  flex: 0 0 auto;
+  margin-left: 0;
+}
+
 /* ── Locked-CTA passive state on the challenge detail screen ────────────── */
 .challenge-cta-passive {
   display: block;
