@@ -8569,7 +8569,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
             NotificationRepository::create(
                 $inviteeId,
                 'challenge_invitation',
-                "🤝 {$inviterName} wants you to take this on",
+                "🔥 {$inviterName} challenges you",
                 $title,
                 [
                     'challengeId'   => $challengeId,
