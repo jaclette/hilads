@@ -7503,6 +7503,25 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
     }
 
+    // Moderation gate — title + return clause + proof requirements all run
+    // through the blocklist/regex check. First hit wins and the create is
+    // refused with 422; we never leak the offending word so spammers don't
+    // get a sneaky test loop. Server-side log captures the hit + field for
+    // ops review.
+    $modHit = ModerationService::checkBundle([
+        'title'              => $title,
+        'returnClause'       => $returnClause,
+        'proofRequirements'  => $proofRequirements,
+    ]);
+    if ($modHit !== null) {
+        error_log("[moderation] challenge create blocked field={$modHit['field']} reason={$modHit['reason']} hit={$modHit['hit']}");
+        Response::json([
+            'error' => 'Your text was flagged by moderation — please rephrase.',
+            'code'  => 'moderation_blocked',
+            'field' => $modHit['field'],
+        ], 422);
+    }
+
     // Resolve + validate target city channel for International mode. Client
     // sends the numeric channel id (matching the rest of the API surface);
     // we translate to the 'city_<id>' channels-row id stored on the row.
@@ -7731,6 +7750,21 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
             'error' => "visibility must be 'public' or 'friends' on edit; 'private' is reachable only via the mutual privacy flow",
             'code'  => 'visibility_invalid',
         ], 400);
+    }
+
+    // Moderation gate — same shape as the create path.
+    $modHitEdit = ModerationService::checkBundle([
+        'title'              => $title,
+        'returnClause'       => $returnClause,
+        'proofRequirements'  => $proofRequirements,
+    ]);
+    if ($modHitEdit !== null) {
+        error_log("[moderation] challenge edit blocked challengeId={$challengeId} field={$modHitEdit['field']} reason={$modHitEdit['reason']} hit={$modHitEdit['hit']}");
+        Response::json([
+            'error' => 'Your text was flagged by moderation — please rephrase.',
+            'code'  => 'moderation_blocked',
+            'field' => $modHitEdit['field'],
+        ], 422);
     }
 
     // Optional target-city change. Validated only if the row is actually
@@ -9545,6 +9579,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
         if (strlen($content) > 1000) {
             Response::json(['error' => 'content must not exceed 1000 characters'], 400);
         }
+        $modMsgHit = ModerationService::check($content);
+        if ($modMsgHit !== null) {
+            error_log("[moderation] challenge message blocked challengeId={$challengeId} reason={$modMsgHit['reason']} hit={$modMsgHit['hit']}");
+            Response::json([
+                'error' => 'Your message was flagged by moderation — please rephrase.',
+                'code'  => 'moderation_blocked',
+            ], 422);
+        }
         try {
             $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null);
             $mentions  = sanitizeMentions($body['mentions'] ?? null, 'challenge', $challengeId, $content);
@@ -9832,6 +9874,160 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/anonymize-me', function (a
     Response::json([
         'anonymized' => ChallengeAnonymizationRepository::isAnonymized($challengeId, $authUser['id']),
     ]);
+});
+
+// ── Challenge comments (spectator lane) ─────────────────────────────────────
+//
+// Public surface only. The 1:1 active conversation lives in the
+// `messages` table on the challenge_thread channel; comments are the
+// crowd commentary on the public challenge page, kept separate so the
+// noindex / visibility / moderation toggles stay clean.
+
+// GET /api/v1/challenges/{challengeId}/comments?before=<id>&limit=50
+$router->add('GET', '/api/v1/challenges/{challengeId}/comments', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    // Visibility-aware lookup. Anon viewers reading a non-public row get
+    // 404 (same surface as the rest of the challenge API).
+    $viewerId  = AuthService::currentUser()['id'] ?? null;
+    $challenge = ChallengeRepository::findById($challengeId, $viewerId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    // Spectator lane exists on PUBLIC rows only. Friends/private rows
+    // return an empty list (kept distinct from 404 — the surface exists,
+    // there just aren't comments).
+    if (($challenge['visibility'] ?? 'public') !== 'public') {
+        Response::json([
+            'comments'   => [],
+            'hasMore'    => false,
+            'disabled'   => true,
+            'reason'     => 'visibility',
+        ]);
+    }
+
+    $before = isset($_GET['before']) && is_string($_GET['before']) ? trim($_GET['before']) : null;
+    $limit  = isset($_GET['limit'])  ? (int) $_GET['limit']         : 50;
+
+    // is_hidden rows are surfaced to the creator (their moderation view)
+    // and hidden from everyone else. Cheap branch — no extra DB call.
+    $isCreator     = $viewerId !== null && ($challenge['created_by'] ?? null) === $viewerId;
+    $includeHidden = $isCreator;
+
+    $comments = ChallengeCommentRepository::listForChallenge($challengeId, $before, $limit, $includeHidden);
+    Response::json([
+        'comments' => $comments,
+        'hasMore'  => count($comments) === max(1, min(100, $limit)),
+        'disabled' => false,
+    ]);
+});
+
+// POST /api/v1/challenges/{challengeId}/comments — body { body: string }
+$router->add('POST', '/api/v1/challenges/{challengeId}/comments', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $viewerId  = $userId;
+    $challenge = ChallengeRepository::findById($challengeId, $viewerId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['visibility'] ?? 'public') !== 'public') {
+        Response::json([
+            'error' => 'Comments are disabled on non-public challenges',
+            'code'  => 'comments_disabled',
+        ], 403);
+    }
+
+    $body = Request::json();
+    $text = is_array($body) ? ($body['body'] ?? null) : null;
+    if (empty($text) || !is_string($text)) {
+        Response::json(['error' => 'body is required'], 400);
+    }
+    $text = mb_substr(trim(strip_tags($text)), 0, 500);
+    if ($text === '') {
+        Response::json(['error' => 'body must not be empty'], 400);
+    }
+
+    enforceRateLimit('challenge_comment', 20, 300, $challengeId);
+
+    $hit = ModerationService::check($text);
+    if ($hit !== null) {
+        error_log("[moderation] challenge comment blocked challengeId={$challengeId} userId={$userId} reason={$hit['reason']} hit={$hit['hit']}");
+        Response::json([
+            'error' => 'Your comment was flagged by moderation — please rephrase.',
+            'code'  => 'moderation_blocked',
+        ], 422);
+    }
+
+    try {
+        $comment = ChallengeCommentRepository::create($challengeId, $userId, $text);
+    } catch (\Throwable $e) {
+        error_log("[challenge-comments] insert failed challengeId={$challengeId} userId={$userId}: " . $e->getMessage());
+        Response::json(['error' => 'Failed to save comment'], 500);
+    }
+
+    Response::json($comment, 201);
+});
+
+// DELETE /api/v1/challenges/{challengeId}/comments/{commentId}
+// Owner deletes their own row (hard delete). Creator of the challenge can
+// soft-hide via the /hide endpoint below.
+$router->add('DELETE', '/api/v1/challenges/{challengeId}/comments/{commentId}', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    $commentId   = $params['commentId']   ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId) || !preg_match('/^[a-f0-9]{32}$/', $commentId)) {
+        Response::json(['error' => 'Invalid id'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $existing = ChallengeCommentRepository::findById($commentId);
+    if ($existing === null || $existing['challenge_id'] !== $challengeId) {
+        Response::json(['error' => 'Comment not found'], 404);
+    }
+    if ($existing['user_id'] !== $userId) {
+        Response::json(['error' => 'Not your comment'], 403);
+    }
+    $deleted = ChallengeCommentRepository::deleteByOwner($commentId, $userId);
+    Response::json(['ok' => true, 'deleted' => $deleted]);
+});
+
+// POST /api/v1/challenges/{challengeId}/comments/{commentId}/hide
+// Soft-hide — challenge creator only. Row stays for audit; the public
+// surface excludes it; the creator's view (includeHidden=true above) keeps
+// it visible so they can spot-check moderation actions.
+$router->add('POST', '/api/v1/challenges/{challengeId}/comments/{commentId}/hide', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    $commentId   = $params['commentId']   ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId) || !preg_match('/^[a-f0-9]{32}$/', $commentId)) {
+        Response::json(['error' => 'Invalid id'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Creator-only'], 403);
+    }
+
+    $existing = ChallengeCommentRepository::findById($commentId);
+    if ($existing === null || $existing['challenge_id'] !== $challengeId) {
+        Response::json(['error' => 'Comment not found'], 404);
+    }
+    $hidden = ChallengeCommentRepository::hide($commentId);
+    Response::json(['ok' => true, 'hidden' => $hidden]);
 });
 
 // GET /api/v1/sitemap/challenges
