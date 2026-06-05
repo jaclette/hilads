@@ -170,6 +170,14 @@ export default function ChallengeChatPage({
     loadParticipants()
   }, [loadParticipants])
 
+  // Mount-refresh the challenge from the API so we capture channelId +
+  // cityName (used by the invite-people picker). The prop carries the row
+  // from the city feed but not those extras; without this load the picker
+  // mounts with a null channelId and sits in the loading state forever.
+  useEffect(() => {
+    loadChallenge()
+  }, [loadChallenge])
+
   // ── WS subscriptions — challenge status flips (open ⇄ validated) only.
   // Per-thread chat messages aren't on this surface anymore (PR4+) — the
   // public chat that used to live here moved into per-acceptance threads.

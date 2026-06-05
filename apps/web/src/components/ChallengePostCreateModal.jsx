@@ -101,7 +101,14 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
 
   useEffect(() => {
     let active = true
-    if (!cityChannelId) return
+    if (!cityChannelId) {
+      // Caller hasn't resolved the city yet (e.g. fetchChallengeById still
+      // in flight). Stay in loading state so the cached useEffect re-fires
+      // as soon as the prop transitions to a real id; meanwhile leave the
+      // members array empty so we don't render stale rows.
+      setLoading(true)
+      return
+    }
     setLoading(true); setError(null); setFellBack(false)
 
     const filterUsable = (arr) => (arr ?? []).filter(m =>
