@@ -343,6 +343,11 @@
     "label": "Who can see this?",
     "public": "🌍 Public",
     "friends": "👯 Friends",
+    "badge": {
+      "public":  "🌍 Public",
+      "friends": "👯 Friends",
+      "private": "🔒 Private"
+    },
     "publicHint": "Anyone in the city can see and accept this.",
     "friendsHint": "Only your friends and people you invite can see this.",
     "intlLocked": "International challenges are always public.",

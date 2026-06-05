@@ -12092,6 +12092,23 @@ body.has-app-promo-banner .page-header {
   color: var(--text);
 }
 
+/* ── Inline visibility / close-to-joins pills (meta row) ────────────────── */
+/* Reuse the .challenge-share-pill skeleton, just retint per state. */
+.challenge-visibility-pill--friends {
+  background:   rgba(147, 197, 253, 0.08);
+  border-color: rgba(147, 197, 253, 0.32);
+}
+.challenge-visibility-pill--friends .challenge-share-pill-text { color: #93c5fd; }
+.challenge-visibility-pill--private {
+  background:   rgba(252, 165, 165, 0.08);
+  border-color: rgba(252, 165, 165, 0.32);
+}
+.challenge-visibility-pill--private .challenge-share-pill-text { color: #fca5a5; }
+.challenge-share-pill--on {
+  background:   rgba(255, 122, 60, 0.16);
+  border-color: rgba(255, 122, 60, 0.45);
+}
+
 /* ── Visibility badge on challenge detail meta row ───────────────────────── */
 .challenge-badge--visibility {
   background: rgba(255, 255, 255, 0.04);

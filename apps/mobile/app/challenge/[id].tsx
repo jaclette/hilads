@@ -22,7 +22,7 @@ import {
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
-  setChallengeCloseToJoins,
+  setChallengeCloseToJoins, setChallengeVisibility,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
@@ -258,6 +258,27 @@ export default function ChallengeChatScreen() {
       setValidateBusy(false);
     }
   }, [id, identity, challenge, t]);
+
+  // Creator-only visibility flip (Public ↔ Friends). Private isn't
+  // reachable here — that's the mutual go-private flow. International
+  // rows are forced Public; the pill renders read-only for them.
+  const [visBusy, setVisBusy] = useState(false);
+  const handleToggleVisibility = useCallback(async () => {
+    if (!challenge || visBusy) return;
+    if ((challenge.mode ?? 'local') === 'international') return;
+    const current = challenge.visibility ?? 'public';
+    if (current === 'private') return; // can't flip out of private here
+    const next: 'public' | 'friends' = current === 'public' ? 'friends' : 'public';
+    setVisBusy(true);
+    try {
+      await setChallengeVisibility(id, next);
+      setChallenge(prev => prev ? { ...prev, visibility: next } : prev);
+    } catch {
+      Alert.alert(t('errSave'));
+    } finally {
+      setVisBusy(false);
+    }
+  }, [id, challenge, visBusy, t]);
 
   // Creator-only close-to-new-joins toggle. Existing participants stay;
   // /join refuses new ones while this is on.
@@ -665,6 +686,57 @@ export default function ChallengeChatScreen() {
           {iAmParticipant === true && account?.id && (
             <ChallengeNotificationPill challengeId={id} currentUserId={account.id} />
           )}
+          {/* Visibility pill — creator-tappable Public ↔ Friends; read-only
+              label for everyone else / for International / for Private. */}
+          {(() => {
+            if (!challenge) return null;
+            const v       = challenge.visibility ?? 'public';
+            const isIntl  = (challenge.mode ?? 'local') === 'international';
+            const tapable = isOwner && !isIntl && v !== 'private';
+            const labelKey = `visibility.badge.${v}`;
+            const pillTint =
+              v === 'friends' ? styles.visibilityPillFriends :
+              v === 'private' ? styles.visibilityPillPrivate :
+              styles.visibilityPillPublic;
+            const textTint =
+              v === 'friends' ? styles.visibilityPillTextFriends :
+              v === 'private' ? styles.visibilityPillTextPrivate :
+              styles.visibilityPillTextPublic;
+            return (
+              <TouchableOpacity
+                style={[styles.sharePillInline, pillTint]}
+                onPress={tapable ? handleToggleVisibility : undefined}
+                disabled={!tapable || visBusy}
+                activeOpacity={tapable ? 0.75 : 1}
+              >
+                <Text style={[styles.sharePillInlineText, textTint]} numberOfLines={1}>
+                  {visBusy ? '…' : t(labelKey)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })()}
+          {/* Close-to-new-joins pill — creator-only, sits next to the
+              audience badge. Tap toggles closed/open. */}
+          {isOwner && challenge && (
+            <TouchableOpacity
+              style={[styles.sharePillInline, challenge.closed_to_new_joins && styles.closedPillOn]}
+              onPress={handleToggleClosedToJoins}
+              disabled={closeBusy}
+              activeOpacity={0.75}
+              accessibilityLabel={challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
+            >
+              {closeBusy
+                ? <ActivityIndicator size="small" color="#FF7A3C" />
+                : <Ionicons
+                    name={challenge.closed_to_new_joins ? 'lock-closed' : 'lock-open-outline'}
+                    size={14}
+                    color="#FF7A3C"
+                  />}
+              <Text style={styles.sharePillInlineText} numberOfLines={1}>
+                {challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -750,26 +822,6 @@ export default function ChallengeChatScreen() {
             <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
               <Ionicons name="trash-outline" size={16} color={Colors.muted} />
               <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
-            </TouchableOpacity>
-            {/* Close to new joins — existing participants stay, /join refuses
-                new ones. Per-challenge toggle, creator-only. */}
-            <TouchableOpacity
-              style={styles.ownerIconBtn}
-              onPress={handleToggleClosedToJoins}
-              activeOpacity={0.75}
-              disabled={closeBusy}
-              accessibilityLabel={challenge?.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
-            >
-              {closeBusy
-                ? <ActivityIndicator size="small" color={Colors.muted} />
-                : <Ionicons
-                    name={challenge?.closed_to_new_joins ? 'lock-closed' : 'lock-open-outline'}
-                    size={16}
-                    color={challenge?.closed_to_new_joins ? '#FFB37A' : Colors.muted}
-                  />}
-              <Text style={[styles.ownerIconLabel, challenge?.closed_to_new_joins && { color: '#FFB37A' }]} numberOfLines={1}>
-                {challenge?.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
-              </Text>
             </TouchableOpacity>
           </View>
         )}
@@ -1226,6 +1278,23 @@ const styles = StyleSheet.create({
     borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
   },
   sharePillInlineText: { fontSize: 11, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.3 },
+
+  // Visibility pill tints — applied to BOTH the TouchableOpacity (for
+  // background + borderColor) and the inner Text (for color). Split into
+  // pill/text objects so the View vs Text types stay clean.
+  visibilityPillPublic:      { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.30)' },
+  visibilityPillFriends:     { backgroundColor: 'rgba(147,197,253,0.10)', borderColor: 'rgba(147,197,253,0.30)' },
+  visibilityPillPrivate:     { backgroundColor: 'rgba(252,165,165,0.10)', borderColor: 'rgba(252,165,165,0.30)' },
+  visibilityPillTextPublic:  { color: '#FFB37A' },
+  visibilityPillTextFriends: { color: '#93c5fd' },
+  visibilityPillTextPrivate: { color: '#fca5a5' },
+
+  // Close-to-new-joins pill — on-state retints to a deeper orange so the
+  // creator can see at a glance whether the channel is locked.
+  closedPillOn: {
+    backgroundColor: 'rgba(255,122,60,0.20)',
+    borderColor:     'rgba(255,122,60,0.55)',
+  },
 
   // (Old status-pill styles removed — the ChallengePipeline component owns
   // the lifecycle visual now. The close-challenge action moved to the

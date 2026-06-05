@@ -507,6 +507,16 @@ export async function kickChallengeParticipant(challengeId: string, userId: stri
   );
 }
 
+export async function setChallengeVisibility(
+  challengeId: string,
+  visibility: 'public' | 'friends',
+): Promise<{ ok: boolean; visibility: 'public' | 'friends' }> {
+  return api.post<{ ok: boolean; visibility: 'public' | 'friends' }>(
+    `/challenges/${challengeId}/visibility`,
+    { visibility },
+  );
+}
+
 export async function setChallengeCloseToJoins(challengeId: string, closed: boolean): Promise<{ ok: boolean; closed_to_new_joins: boolean }> {
   return api.post<{ ok: boolean; closed_to_new_joins: boolean }>(
     `/challenges/${challengeId}/close-to-new-joins`,

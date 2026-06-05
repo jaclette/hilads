@@ -1733,6 +1733,22 @@ export async function kickChallengeParticipant(challengeId, userId, reason = nul
   return res.json()
 }
 
+export async function setChallengeVisibility(challengeId, visibility) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/visibility`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ visibility }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to update visibility')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json()
+}
+
 export async function setChallengeCloseToJoins(challengeId, closed) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/close-to-new-joins`, {
     method: 'POST',

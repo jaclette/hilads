@@ -8073,6 +8073,43 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kic
     Response::json(['ok' => true]);
 });
 
+// POST /api/v1/challenges/{challengeId}/visibility
+// Creator-only flip between 'public' and 'friends'. 'private' is NOT
+// reachable here — that's the mutual go-private flow (kept in the
+// privacy_requests endpoints) and refusing here keeps the simple pill
+// inline on the detail page from gaining hidden states. International
+// rows are forced 'public' regardless (the repo's setVisibility refuses
+// to write a non-public value on mode='international').
+$router->add('POST', '/api/v1/challenges/{challengeId}/visibility', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    $userId    = $authUser['id'];
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Creator-only', 'code' => 'not_creator'], 403);
+    }
+    if (($challenge['mode'] ?? 'local') === 'international') {
+        Response::json(['error' => 'International challenges are always public', 'code' => 'intl_locked'], 422);
+    }
+
+    $body = Request::json();
+    $viz  = is_array($body) ? ($body['visibility'] ?? null) : null;
+    if (!in_array($viz, ['public', 'friends'], true)) {
+        Response::json([
+            'error' => "visibility must be 'public' or 'friends'",
+            'code'  => 'invalid_visibility',
+        ], 400);
+    }
+    ChallengeRepository::setVisibility($challengeId, $viz);
+    Response::json(['ok' => true, 'visibility' => $viz]);
+});
+
 // POST /api/v1/challenges/{challengeId}/close-to-new-joins
 // Creator-only toggle. Body { closed: bool } — when true, /join refuses
 // new participants. Existing participants stay.

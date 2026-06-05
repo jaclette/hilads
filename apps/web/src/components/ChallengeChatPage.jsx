@@ -19,14 +19,13 @@ import {
   fetchChallengeMessages, sendChallengeMessage, proposeDate,
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
-  kickChallengeParticipant, setChallengeCloseToJoins,
+  kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
 } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
-import ChallengePrivacyPanel from './ChallengePrivacyPanel'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
 import ChallengeNotificationToggle from './ChallengeNotificationToggle'
 import ConfirmDialog from './ConfirmDialog'
@@ -99,6 +98,10 @@ export default function ChallengeChatPage({
   const [challenge,    setChallenge]    = useState(initialChallenge)
   const [participants, setParticipants] = useState([])
   const [busy,         setBusy]         = useState(null) // 'accept' | 'status' | 'delete' | null
+  // Inline creator pills (visibility flip + close-to-new-joins) — small
+  // dedicated busy flags so they don't fight the main `busy` channel.
+  const [visBusy,    setVisBusy]    = useState(false)
+  const [closeBusy,  setCloseBusy]  = useState(false)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   // Themed in-app alert. Replaces window.alert() (which renders the ugly
   // "hilads.live says" browser modal). Shape: { emoji?, title, body, actionLabel?, onAction? }.
@@ -294,6 +297,44 @@ export default function ChallengeChatPage({
       setIAmParticipant(false)
       loadParticipants()
     } catch { /* silent — UI will re-probe on next visit */ }
+  }
+
+  // Creator-only visibility flip (Public ↔ Friends). Private isn't
+  // reachable from this pill — the mutual go-private flow handles that
+  // and the backend route rejects 'private' here. International rows
+  // are forced public and the pill is hidden.
+  async function handleToggleVisibility() {
+    if (visBusy || !challenge) return
+    const current = challenge.visibility ?? 'public'
+    const next    = current === 'public' ? 'friends' : 'public'
+    setVisBusy(true)
+    try {
+      await setChallengeVisibility(id, next)
+      // Optimistic: mirror the change locally so the pill updates without
+      // a round-trip; the parent re-fetches via loadChallenge for the
+      // SSR-friendly visibility chip elsewhere.
+      setChallenge(prev => prev ? { ...prev, visibility: next } : prev)
+      loadChallenge()
+    } catch (err) {
+      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+    } finally {
+      setVisBusy(false)
+    }
+  }
+
+  // Creator-only close-to-new-joins toggle (was inside the privacy panel).
+  async function handleToggleClosedToJoins() {
+    if (closeBusy || !challenge) return
+    const next = !challenge.closed_to_new_joins
+    setCloseBusy(true)
+    try {
+      await setChallengeCloseToJoins(id, next)
+      setChallenge(prev => prev ? { ...prev, closed_to_new_joins: next } : prev)
+    } catch (err) {
+      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+    } finally {
+      setCloseBusy(false)
+    }
   }
 
   // ── Unified challenge channel chat — load + WS + auto-scroll. Mounts
@@ -567,22 +608,23 @@ export default function ChallengeChatPage({
         ) : (
           <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         )}
-        {/* Visibility badge — Public is the default and we only surface it
-            when explicitly non-public, OR when the row is private (the only
-            case where the owner+acceptor really need to see "🔒"). Public
-            is the assumed surface so we keep the row uncluttered. */}
-        {(() => {
-          const v = challenge.visibility ?? 'public'
-          if (v === 'public') return null
-          return (
-            <span
-              className={`challenge-badge challenge-badge--visibility challenge-badge--visibility-${v}`}
-              title={t(`visibility.${v}Hint`, { ns: 'challenge', defaultValue: '' })}
-            >
-              {t(`visibility.badge.${v}`, { ns: 'challenge' })}
+        {/* Close-to-new-joins pill — creator-only, sits next to the
+            audience / target-city badge. Lock-open ↔ lock-closed icon. */}
+        {isOwner && (
+          <button
+            type="button"
+            className={`challenge-share-pill challenge-share-pill--inline ${challenge.closed_to_new_joins ? 'challenge-share-pill--on' : ''}`}
+            onClick={handleToggleClosedToJoins}
+            disabled={closeBusy}
+            aria-pressed={!!challenge.closed_to_new_joins}
+            title={challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
+          >
+            <span aria-hidden="true">{challenge.closed_to_new_joins ? '🔒' : '🔓'}</span>
+            <span className="challenge-share-pill-text">
+              {closeBusy ? '…' : (challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta'))}
             </span>
-          )
-        })()}
+          </button>
+        )}
         <button
           type="button"
           className="challenge-share-pill challenge-share-pill--inline"
@@ -592,10 +634,37 @@ export default function ChallengeChatPage({
           <span aria-hidden="true">↗</span>
           <span className="challenge-share-pill-text">{t('shareCta')}</span>
         </button>
-        {/* Leave the channel — inline pill in the meta row, right of the
-            share button. Visible only for joined participants who aren't
-            the creator or the active taker (those two leave via different
-            flows: delete-challenge / cancel-acceptance). */}
+        {/* Visibility pill — creator tappable (Public ↔ Friends);
+            read-only label for everyone else. International always
+            renders "Public" with no tap target. Private renders as a
+            label too (only reachable via the mutual go-private flow,
+            which has no UI surface in this build). */}
+        {(() => {
+          const v       = challenge.visibility ?? 'public'
+          const isIntl  = (challenge.mode ?? 'local') === 'international'
+          const label   = t(`visibility.badge.${v}`, { ns: 'challenge' })
+          const tapable = isOwner && !isIntl && v !== 'private'
+          if (!tapable) {
+            return (
+              <span className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${v}`}>
+                <span className="challenge-share-pill-text">{label}</span>
+              </span>
+            )
+          }
+          return (
+            <button
+              type="button"
+              className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${v}`}
+              onClick={handleToggleVisibility}
+              disabled={visBusy}
+              title={v === 'public' ? t('visibility.friendsHint') : t('visibility.publicHint')}
+            >
+              <span className="challenge-share-pill-text">{visBusy ? '…' : label}</span>
+            </button>
+          )
+        })()}
+        {/* Leave the channel — joined participants who aren't the creator
+            or the active taker. */}
         {iAmParticipant === true && !isOwner && !myAcceptance && (
           <button
             type="button"
@@ -1008,14 +1077,11 @@ export default function ChallengeChatPage({
           page (right under "Take on the challenge") — see the toolbar
           block above the chat. */}
 
-      {/* Privacy controls — participants-only. Mutual go-private +
-          notification preference + close-to-new-joins live here (the
-          last two are wired in this PR). */}
-      <ChallengePrivacyPanel
-        challenge={challenge}
-        currentUserId={account?.id ?? null}
-        onVisibilityChanged={() => loadChallenge()}
-      />
+      {/* Privacy panel dropped — visibility + close-to-new-joins now live
+          as inline pills in the meta row next to "Challenge your friends"
+          (visibility) and the audience badge (close). The mutual
+          go-private flow's backend routes remain (challenge_privacy_requests
+          + /privacy/vote) but the dedicated UI surface is gone. */}
 
       <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
 
