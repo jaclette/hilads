@@ -110,44 +110,23 @@ export default function ChallengeChatScreen() {
 
   // Probe whether I already have an acceptance for this challenge — drives
   // the Accept (+) button morph AND the lifecycle pipeline below.
-  // With legacy multi-acceptance data, a single challenge may carry N rows
-  // for the same user (creator view). Surface the most-actionable one so
-  // the pipeline shows what NEEDS attention rather than something passive.
-  // The same priority + tiebreaker runs on web (ChallengeChatPage) so both
-  // surfaces converge on the SAME row for the same data.
+  //
+  // The backend stamps exactly one row per (challenge, viewer) with
+  // `is_primary_for_challenge=true`, using a deterministic "most actionable
+  // first" priority. That's the source of truth — no client-side priority
+  // sort to keep in sync between mobile and web.
   const loadMyAcceptance = useCallback(() => {
     if (!id || !account?.id) { setMyAcceptance(null); return; }
     fetchMyAcceptances()
       .then(threads => {
-        const mine = threads.filter(thr => thr.challenge_id === id);
-        if (mine.length === 0) { setMyAcceptance(null); return; }
-        // Finer than commit 2's coarse 0/1/2: each lifecycle phase gets its
-        // own slot so accepted/scheduled/debrief no longer tie. Order is
-        // "needs action first":
-        //   pending  → creator review or acceptor waiting for it
-        //   debrief  → verdict pending
-        //   accepted → date concertation (with or without proposal)
-        //   scheduled→ awaiting the meet-up
-        //   terminal → approved / rejected
-        // Tiebreaker: created_at DESC then id (lexicographic) so the choice
-        // is fully deterministic across surfaces.
-        const slot = (t: ChallengeThreadSummary): number => {
-          const p = t.effective_phase ?? t.phase;
-          if (p === 'pending')   return 0;
-          if (p === 'debrief')   return 1;
-          if (p === 'accepted')  return 2;
-          if (p === 'scheduled') return 3;
-          return 4;
-        };
-        const sorted = [...mine].sort((a, b) => {
-          const ds = slot(a) - slot(b);
-          if (ds !== 0) return ds;
-          const da = a.created_at ?? 0;
-          const db = b.created_at ?? 0;
-          if (db !== da) return db - da;          // newer first within a slot
-          return (a.id ?? '').localeCompare(b.id ?? '');
-        });
-        setMyAcceptance(sorted[0]);
+        const primary = threads.find(thr =>
+          thr.challenge_id === id && thr.is_primary_for_challenge,
+        );
+        if (primary) { setMyAcceptance(primary); return; }
+        // Back-compat: older API builds didn't stamp is_primary_for_challenge.
+        // Fall back to whatever matches; the data is single-acceptance now so
+        // the wrong row picked here is rare and self-corrects on next deploy.
+        setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null);
       })
       .catch(() => setMyAcceptance(null));
   }, [id, account?.id]);

@@ -316,8 +316,59 @@ class ChallengeAcceptanceRepository
                 'last_message_content' => $r['last_message_content'],
                 'i_am_creator'         => $isCreator,
                 'counterparty'         => $counterparty,
+                // Stamped below — filled per (challenge_id, viewer) group.
+                'is_primary_for_challenge' => false,
             ];
         }
+
+        // Stamp `is_primary_for_challenge` for the single "most actionable"
+        // acceptance per (challenge_id, viewer). Lets clients render a
+        // challenge's lifecycle pipeline off a single deterministic row,
+        // even when legacy data left several rows on the same challenge.
+        //
+        // Priority slots: pending (review) → debrief (verdict) → accepted
+        // (date concertation) → scheduled (awaiting meet-up) → terminal.
+        // Tiebreak: most-recent activity first, then id (lex) so the choice
+        // is fully deterministic across surfaces — mobile, web, future
+        // clients all converge on the same row.
+        //
+        // This is the source of truth: front-ends just .find(thr =>
+        // thr.challenge_id === id && thr.is_primary_for_challenge). No
+        // client-side priority sort to keep in sync.
+        $slot = static function (array $t): int {
+            $p = $t['effective_phase'] ?? $t['phase'];
+            return match ($p) {
+                'pending'   => 0,
+                'debrief'   => 1,
+                'accepted'  => 2,
+                'scheduled' => 3,
+                default     => 4,
+            };
+        };
+        $cmp = static function (array $a, array $b) use ($slot): int {
+            $ds = $slot($a) - $slot($b);
+            if ($ds !== 0) return $ds;
+            // Newer activity wins. Fall back to created_at if no messages yet.
+            $la = $a['last_message_at'] ?? $a['created_at'];
+            $lb = $b['last_message_at'] ?? $b['created_at'];
+            if ($lb !== $la) return $lb - $la;
+            return strcmp($a['id'], $b['id']);
+        };
+        $bestByChallenge = []; // challenge_id => best $out index so far
+        foreach ($out as $i => $t) {
+            $cid = $t['challenge_id'];
+            if (!isset($bestByChallenge[$cid])) {
+                $bestByChallenge[$cid] = $i;
+                continue;
+            }
+            if ($cmp($t, $out[$bestByChallenge[$cid]]) < 0) {
+                $bestByChallenge[$cid] = $i;
+            }
+        }
+        foreach ($bestByChallenge as $i) {
+            $out[$i]['is_primary_for_challenge'] = true;
+        }
+
         return $out;
     }
 

@@ -143,6 +143,10 @@ export interface ChallengeThreadSummary {
   last_message_at:      number | null;
   last_message_content: string | null;
   i_am_creator:         boolean;
+  /** Server-stamped primary acceptance for this (viewer, challenge) — the
+   *  single "most actionable" row per challenge. Clients render the challenge
+   *  pipeline off this without re-implementing the priority logic. */
+  is_primary_for_challenge?: boolean;
   counterparty: {
     id:             string;
     displayName:    string;

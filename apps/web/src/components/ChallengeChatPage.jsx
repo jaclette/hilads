@@ -186,30 +186,15 @@ export default function ChallengeChatPage({
     if (!account?.id || !id) { setMyAcceptance(null); return }
     try {
       const threads = await fetchMyAcceptances()
-      const mine = threads.filter(thr => thr.challenge_id === id)
-      if (mine.length === 0) { setMyAcceptance(null); return }
-      // Same finer-grained "needs action first" priority as mobile
-      // (app/challenge/[id].tsx). Surfaces pending review > debrief verdict
-      // > accepted date concertation > scheduled wait > terminal. Deterministic
-      // tiebreak (created_at DESC, then id) so web + mobile converge on the
-      // SAME row for the same data.
-      const slot = (t) => {
-        const p = t.effective_phase ?? t.phase
-        if (p === 'pending')   return 0
-        if (p === 'debrief')   return 1
-        if (p === 'accepted')  return 2
-        if (p === 'scheduled') return 3
-        return 4
-      }
-      const sorted = [...mine].sort((a, b) => {
-        const ds = slot(a) - slot(b)
-        if (ds !== 0) return ds
-        const da = a.created_at ?? 0
-        const db = b.created_at ?? 0
-        if (db !== da) return db - da
-        return (a.id ?? '').localeCompare(b.id ?? '')
-      })
-      setMyAcceptance(sorted[0])
+      // Server stamps exactly one row per (challenge, viewer) with
+      // is_primary_for_challenge=true using a deterministic "most actionable
+      // first" priority — the source of truth. No client-side priority sort.
+      const primary = threads.find(thr =>
+        thr.challenge_id === id && thr.is_primary_for_challenge,
+      )
+      if (primary) { setMyAcceptance(primary); return }
+      // Back-compat for older API builds that don't stamp the flag.
+      setMyAcceptance(threads.find(thr => thr.challenge_id === id) ?? null)
     } catch { setMyAcceptance(null) }
   }, [id, account?.id])
 
