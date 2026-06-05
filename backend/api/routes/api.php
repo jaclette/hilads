@@ -3951,7 +3951,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
     $hangouts = in_array($type, ['both', 'hangouts'],   true) ? EventRepository::getPastOneOff($channelId, $before, $limit, $fromTs, $toTs) : [];
     $pulses   = in_array($type, ['both', 'pulses'],     true) ? TopicRepository::getPastByCity($channelId, $before, $limit, $fromTs, $toTs) : [];
     $challenges = in_array($type, ['both', 'challenges'], true)
-        ? ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $before)
+        ? ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $before, $membersViewerUserId)
         : [];
 
     // Attach participant_count + avatar preview to hangouts (mirror the now feed).
@@ -7392,9 +7392,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges', function (array $
         Response::json(['error' => 'Channel not found'], 404);
     }
 
-    $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
+    $limit    = isset($_GET['limit']) ? (int) $_GET['limit'] : 50;
+    $viewerId = AuthService::currentUser()['id'] ?? null;
     try {
-        $challenges = ChallengeRepository::getByCity('city_' . $channelId, $limit);
+        $challenges = ChallengeRepository::getByCity('city_' . $channelId, $limit, $viewerId);
         Response::json(['challenges' => $challenges]);
     } catch (\Throwable $e) {
         error_log('[challenges] GET list failed ch=' . $channelId . ': ' . $e->getMessage());
@@ -7416,8 +7417,9 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', functio
 
     $limit    = isset($_GET['limit'])  ? (int) $_GET['limit']  : 30;
     $beforeTs = isset($_GET['before']) ? (int) $_GET['before'] : null;
+    $viewerId = AuthService::currentUser()['id'] ?? null;
     try {
-        $challenges = ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $beforeTs);
+        $challenges = ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $beforeTs, $viewerId);
         Response::json(['challenges' => $challenges]);
     } catch (\Throwable $e) {
         error_log('[challenges] GET validated failed ch=' . $channelId . ': ' . $e->getMessage());
@@ -7636,7 +7638,12 @@ $router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params)
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
 
-    $challenge = ChallengeRepository::findById($challengeId);
+    // Visibility-aware: returns null when the viewer isn't entitled to see
+    // this challenge (anon viewing a friends/private row, non-friend
+    // viewing a friends row, third party viewing a private row). 404 is
+    // the right surface — "doesn't exist" from the caller's POV.
+    $viewerId  = AuthService::currentUser()['id'] ?? null;
+    $challenge = ChallengeRepository::findById($challengeId, $viewerId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -7891,7 +7898,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', fun
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
 
-    $challenge = ChallengeRepository::findById($challengeId);
+    // Visibility-aware: anon hitting a friends/private challenge URL gets
+    // 404, same surface as the read path. Returning logged-in viewers
+    // who are out-of-scope (e.g. non-friend on a friends-only row) get
+    // the same.
+    $viewerId  = AuthService::currentUser()['id'] ?? null;
+    $challenge = ChallengeRepository::findById($challengeId, $viewerId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -7956,7 +7968,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     $authUser = AuthService::requireAuth();
     $userId   = $authUser['id'];
 
-    $challenge = ChallengeRepository::findById($challengeId);
+    // Visibility-aware: out-of-scope viewers get a 404 (matches read path).
+    // Invitees on private/friends challenges go through the invitation
+    // /respond endpoint instead, which uses findByIdUnchecked.
+    $challenge = ChallengeRepository::findById($challengeId, $userId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8112,7 +8127,7 @@ function gateTakeOnReview(string $acceptanceId): array
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8288,7 +8303,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (arra
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8351,7 +8366,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8443,7 +8458,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', fun
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8493,7 +8508,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8554,7 +8569,7 @@ function gateForVerdict(string $acceptanceId): array
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8709,7 +8724,7 @@ function gateProofSubmit(string $acceptanceId): array
     if ($acceptance['acceptor_user_id'] !== $authUser['id']) {
         Response::json(['error' => 'Not your acceptance'], 403);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -8740,7 +8755,7 @@ function gateProofReview(string $proofId): array
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -9020,7 +9035,7 @@ $router->add('GET', '/api/v1/acceptances/{acceptanceId}/proofs', function (array
     if ($acceptance === null) {
         Response::json(['error' => 'Acceptance not found'], 404);
     }
-    $challenge = ChallengeRepository::findById($acceptance['challenge_id']);
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -9056,7 +9071,10 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (ar
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
     $authUser  = AuthService::requireAuth();
-    $challenge = ChallengeRepository::findById($challengeId);
+    // Creator-only — own gate via created_by check below, so visibility
+    // is irrelevant here (creator always passes the visibility filter
+    // anyway, but unchecked makes the intent explicit).
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
     if ($challenge === null || $challenge['created_by'] !== $authUser['id']) {
         Response::json(['error' => 'Not allowed'], 403);
     }
@@ -9080,7 +9098,9 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     $authUser = AuthService::requireAuth();
     $inviter  = $authUser['id'];
 
-    $challenge = ChallengeRepository::findById($challengeId);
+    // Unchecked — creator gate below is the real authorization; creator
+    // always passes visibility anyway.
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
@@ -9184,7 +9204,10 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
     // invitation is marked accepted but we surface the gate error so the
     // client can deep-link them to the challenge page with the right toast.
     $challengeId = $invitation['challenge_id'];
-    $challenge   = ChallengeRepository::findById($challengeId);
+    // Unchecked — the invitation row itself is the authorization. Invitees
+    // need to reach private/friends challenges even when they aren't yet
+    // in the visibility scope.
+    $challenge   = ChallengeRepository::findByIdUnchecked($challengeId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found', 'code' => 'gone'], 404);
     }
@@ -9400,7 +9423,12 @@ $router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params
         Response::json(['challenges' => []]);
         return;
     }
-    Response::json(['challenges' => ChallengeRepository::getByUser($user['id'])]);
+    // Visibility-aware: anon visitor sees public-only; logged-in viewer
+    // also sees friends rows the profile-owner is in (via friend-of-creator
+    // OR friend-of-acceptor branches in the helper) + private rows when
+    // the viewer is the counterparty.
+    $viewerId = AuthService::currentUser()['id'] ?? null;
+    Response::json(['challenges' => ChallengeRepository::getByUser($user['id'], $viewerId)]);
 });
 
 // GET /api/v1/challenges/{challengeId}/participants
@@ -9428,7 +9456,10 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
     }
 
     try {
-        if (ChallengeRepository::findById($challengeId) === null) {
+        // Visibility-aware existence check — anon/out-of-scope viewers
+        // can't read messages on a friends/private challenge.
+        $viewerId = AuthService::currentUser()['id'] ?? null;
+        if (ChallengeRepository::findById($challengeId, $viewerId) === null) {
             Response::json(['error' => 'Challenge not found'], 404);
         }
 
@@ -9452,7 +9483,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
 
-    if (ChallengeRepository::findById($challengeId) === null) {
+    // Visibility-aware — anon/out-of-scope can't post to a friends/private
+    // challenge.
+    $viewerIdForVisibility = AuthService::currentUser()['id'] ?? null;
+    if (ChallengeRepository::findById($challengeId, $viewerIdForVisibility) === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
@@ -9544,6 +9578,9 @@ $router->add('GET', '/api/v1/sitemap/challenges', function () {
     // change-signal — Google re-crawls when the <lastmod> moves. Pre-migration
     // rows defaulted to migration time, so they had a single "everything
     // changed" wave once and then went quiet.
+    // Only public challenges are indexable. Friends/private rows are kept
+    // out of the sitemap and rely on the per-page meta tag (`noindex` for
+    // non-public) to keep crawlers from caching them via direct URL.
     $stmt = Database::pdo()->query("
         SELECT cc.channel_id                              AS id,
                cc.title                                   AS title,
@@ -9551,6 +9588,7 @@ $router->add('GET', '/api/v1/sitemap/challenges', function () {
         FROM channel_challenges cc
         JOIN channels c ON c.id = cc.channel_id
         WHERE c.status = 'active'
+          AND cc.visibility = 'public'
         ORDER BY cc.updated_at DESC
         LIMIT 40000
     ");

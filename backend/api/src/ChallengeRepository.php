@@ -148,15 +148,18 @@ class ChallengeRepository
      */
     public static function getCountsPerCity(): array
     {
+        // Public-only — the city-list summary feeds the always-visible
+        // city picker (anon viewers, crawlers). Friends/private rows must
+        // not bump the count or they'd leak existence to non-viewers.
         $stmt = Database::pdo()->prepare("
             WITH all_active AS (
                 SELECT cc.city_id        AS surface_city_id FROM channel_challenges cc
                 JOIN channels c ON c.id = cc.channel_id
-                WHERE c.status = 'active' AND cc.status = 'open'
+                WHERE c.status = 'active' AND cc.status = 'open' AND cc.visibility = 'public'
                 UNION ALL
                 SELECT cc.target_city_id AS surface_city_id FROM channel_challenges cc
                 JOIN channels c ON c.id = cc.channel_id
-                WHERE c.status = 'active' AND cc.status = 'open'
+                WHERE c.status = 'active' AND cc.status = 'open' AND cc.visibility = 'public'
                   AND cc.target_city_id IS NOT NULL
                   AND cc.target_city_id <> cc.city_id
             )
@@ -181,7 +184,7 @@ class ChallengeRepository
      * $limit is capped at 200 — feed is meant for "top 5" display anyway, but
      * the See-All screen can request more.
      */
-    public static function getByCity(string $cityId, int $limit = 50): array
+    public static function getByCity(string $cityId, int $limit = 50, ?string $viewerUserId = null): array
     {
         $limit = max(1, min(200, $limit));
         $pdo   = Database::pdo();
@@ -196,6 +199,14 @@ class ChallengeRepository
         // target-side scan; "anywhere" intl rows (target_city_id IS NULL)
         // stay origin-only because NULL doesn't satisfy either clause for
         // any city other than the creator's.
+        //
+        // Visibility: viewer-aware via visibilityWhereClause(). Anonymous
+        // viewers see public-only; logged-in viewers also see friends-of-
+        // them and challenges they're a participant in.
+        $visClause = self::visibilityWhereClause($viewerUserId);
+        $params    = ['city_id' => $cityId];
+        if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
+
         $stmt = $pdo->prepare(self::SELECT . "
             WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id)
               AND c.status   = 'active'
@@ -203,6 +214,7 @@ class ChallengeRepository
                 cc.status = 'open'
                 OR (cc.status = 'validated' AND cc.validated_at > now() - interval '1 day')
               )
+              AND $visClause
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
@@ -213,7 +225,7 @@ class ChallengeRepository
             ORDER BY cc.created_at DESC
             LIMIT $limit
         ");
-        $stmt->execute(['city_id' => $cityId]);
+        $stmt->execute($params);
         $rows = $stmt->fetchAll();
         if (empty($rows)) return [];
 
@@ -225,7 +237,7 @@ class ChallengeRepository
      * Validated (archived) challenges for a city — feeds the "See past
      * challenges" CTA. Most-recently-validated first.
      */
-    public static function getValidatedByCity(string $cityId, int $limit = 30, ?int $beforeTs = null): array
+    public static function getValidatedByCity(string $cityId, int $limit = 30, ?int $beforeTs = null, ?string $viewerUserId = null): array
     {
         $limit  = max(1, min(100, $limit));
         $params = ['city_id' => $cityId];
@@ -233,7 +245,10 @@ class ChallengeRepository
         // (otherwise they're still showing in the active feed via getByCity()).
         // Same mirroring rule as getByCity — past archive of a city includes
         // international challenges that targeted it.
-        $where  = "(cc.city_id = :city_id OR cc.target_city_id = :city_id) AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day'";
+        $visClause = self::visibilityWhereClause($viewerUserId);
+        if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
+
+        $where  = "(cc.city_id = :city_id OR cc.target_city_id = :city_id) AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day' AND $visClause";
         if ($beforeTs !== null) {
             $where             .= " AND cc.validated_at < to_timestamp(:before)";
             $params['before']   = $beforeTs;
@@ -258,7 +273,48 @@ class ChallengeRepository
         return self::enrichWithParticipants(array_map(static fn(array $r): array => self::format($r), $rows));
     }
 
-    public static function findById(string $challengeId): ?array
+    /**
+     * Single-challenge detail. When $viewerUserId is provided, the visibility
+     * clause hides friends/private rows the viewer can't see — caller treats
+     * a null return as 404 (same as deleted/never-existed). Default null
+     * viewer = anonymous, so callers that DON'T pass a viewer effectively
+     * see public-only. Crawlers + the prerender pipeline hit this path.
+     */
+    public static function findById(string $challengeId, ?string $viewerUserId = null): ?array
+    {
+        $visClause = self::visibilityWhereClause($viewerUserId);
+        $params    = ['id' => $challengeId];
+        if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
+
+        $stmt = Database::pdo()->prepare(self::SELECT . "
+            WHERE c.id     = :id
+              AND c.status = 'active'
+              AND $visClause
+            GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
+                     cc.title, cc.challenge_type, cc.audience, cc.status,
+                     cc.max_participants, cc.return_clause,
+                     cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.visibility,
+                     cc.validated_at, cc.created_at,
+                     u.display_name, u.username, u.profile_thumb_photo_url
+        ");
+        $stmt->execute($params);
+        $row = $stmt->fetch();
+        if (!$row) return null;
+
+        $item                       = self::format($row);
+        $item['participant_count']  = self::participantCount($challengeId);
+        $item['participants_preview'] = self::participantPreview($challengeId, 5);
+        return $item;
+    }
+
+    /**
+     * Server-internal lookup that bypasses the visibility gate. Use only for
+     * authorisation flows that need to know the row exists regardless of who
+     * the caller is (e.g. take-on accept, proof submit, mutual-private flow,
+     * anonymization). Callers must apply their own access check after.
+     */
+    public static function findByIdUnchecked(string $challengeId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE c.id     = :id
@@ -275,8 +331,8 @@ class ChallengeRepository
         $row = $stmt->fetch();
         if (!$row) return null;
 
-        $item                       = self::format($row);
-        $item['participant_count']  = self::participantCount($challengeId);
+        $item                         = self::format($row);
+        $item['participant_count']    = self::participantCount($challengeId);
         $item['participants_preview'] = self::participantPreview($challengeId, 5);
         return $item;
     }
@@ -293,14 +349,22 @@ class ChallengeRepository
      * Without the second EXISTS, the profile would silently omit every
      * challenge taken on after the model switch.
      */
-    public static function getByUser(string $userId): array
+    public static function getByUser(string $userId, ?string $viewerUserId = null): array
     {
         $pdo  = Database::pdo();
+        // Visibility gating happens against the VIEWER (the person browsing
+        // the profile), not the profile-owner. Helper expects `cc`/`c`
+        // aliases in scope — they are.
+        $visClause = self::visibilityWhereClause($viewerUserId);
+        $params    = ['owner_id' => $userId, 'part_id' => $userId, 'acc_id' => $userId];
+        if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
+
         $stmt = $pdo->prepare("
             SELECT c.id, cc.city_id, cc.created_by, cc.guest_id, cc.title,
                    cc.challenge_type, cc.audience, cc.status,
                    cc.max_participants, cc.return_clause,
                    cc.mode, cc.target_city_id, cc.proof_requirements,
+                   cc.visibility,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS validated_at,
                    EXTRACT(EPOCH FROM cc.created_at)::INTEGER   AS created_at
             FROM channels c
@@ -311,10 +375,11 @@ class ChallengeRepository
                               WHERE cp.channel_id = c.id AND cp.user_id = :part_id)
                    OR EXISTS (SELECT 1 FROM challenge_acceptances ca
                               WHERE ca.challenge_id = c.id AND ca.acceptor_user_id = :acc_id))
+              AND $visClause
             ORDER BY cc.created_at DESC
             LIMIT 50
         ");
-        $stmt->execute(['owner_id' => $userId, 'part_id' => $userId, 'acc_id' => $userId]);
+        $stmt->execute($params);
         $challenges = $stmt->fetchAll();
         if (empty($challenges)) return [];
 
@@ -347,6 +412,7 @@ class ChallengeRepository
                 'mode'               => $ch['mode']               ?? 'local',
                 'target_city_id'     => $ch['target_city_id']     ?? null,
                 'proof_requirements' => $ch['proof_requirements'] ?? null,
+                'visibility'         => $ch['visibility']         ?? 'public',
                 'message_count'      => $stats['message_count']    ?? 0,
                 'last_activity_at'   => $stats['last_activity_at'] ?? null,
                 'validated_at'       => $ch['validated_at'],
@@ -864,4 +930,53 @@ class ChallengeRepository
     public static function allowedAudiences(): array { return self::ALLOWED_AUDIENCES; }
     public static function allowedModes(): array     { return self::ALLOWED_MODES; }
     public static function allowedVisibilitiesAtInput(): array { return self::ALLOWED_VISIBILITIES_AT_INPUT; }
+
+    /**
+     * SQL fragment for the visibility WHERE clause. Goes inside the WHERE of
+     * any query that lists challenges to a viewer. Caller must:
+     *   - splice it into the WHERE,
+     *   - bind :viewer_id to $viewerUserId when one is given (or skip the
+     *     bind entirely for the anonymous branch),
+     *   - have `cc` aliased to channel_challenges and `c` to channels in the
+     *     surrounding query (the existing SELECT does both).
+     *
+     * Rules baked in:
+     *   - anonymous viewer (crawler / signed-out)   → public only
+     *   - registered viewer                          → public, or visibility=
+     *     'friends' where the viewer is a friend of the creator OR a friend
+     *     of an acceptor, or the viewer is the creator / acceptor themselves
+     *     (this catches the visibility='private' case too — only participants
+     *     ever see private rows).
+     *
+     * `user_friends` is symmetric (both directions inserted at friendship
+     * acceptance — see FriendRequestRepository::insertFriendship), so the
+     * EXISTS clauses only need a single direction.
+     */
+    public static function visibilityWhereClause(?string $viewerUserId): string
+    {
+        if ($viewerUserId === null) {
+            return "cc.visibility = 'public'";
+        }
+        return "(
+            cc.visibility = 'public'
+            OR cc.created_by = :viewer_id
+            OR EXISTS (
+                SELECT 1 FROM challenge_acceptances ca_vis
+                WHERE ca_vis.challenge_id = c.id
+                  AND ca_vis.acceptor_user_id = :viewer_id
+            )
+            OR (cc.visibility = 'friends' AND (
+                EXISTS (
+                    SELECT 1 FROM user_friends f
+                    WHERE f.user_id = :viewer_id AND f.friend_id = cc.created_by
+                )
+                OR EXISTS (
+                    SELECT 1 FROM challenge_acceptances ca_fri
+                    JOIN user_friends f ON f.user_id = :viewer_id
+                                       AND f.friend_id = ca_fri.acceptor_user_id
+                    WHERE ca_fri.challenge_id = c.id
+                )
+            ))
+        )";
+    }
 }
