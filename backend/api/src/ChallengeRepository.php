@@ -48,6 +48,13 @@ class ChallengeRepository
             cc.status,
             cc.max_participants,
             cc.return_clause,
+            -- International-mode columns (PR1 schema). 'local' for all
+            -- pre-International rows by DEFAULT; target_city_id null for
+            -- local rows (and for 'anywhere' international); proof_requirements
+            -- only set on international.
+            cc.mode,
+            cc.target_city_id,
+            cc.proof_requirements,
             -- Creator's display info — surfaced on cards + detail header so
             -- the user sees who owns a challenge. LEFT JOIN: pure-guest
             -- challenges (created_by IS NULL) fall back to cc.guest_id /
@@ -103,6 +110,13 @@ class ChallengeRepository
             // Defaults to false on rows that pre-date the column (eg. cached
             // formats) — safe because the route still rechecks at /accept.
             'is_in_progress'       => isset($row['is_in_progress']) ? (bool) $row['is_in_progress'] : false,
+            // International mode shape. 'local' is the default for every row
+            // that pre-dates the migration. target_city_id is null for local
+            // and for "anywhere" international rows; proof_requirements only
+            // populated on international.
+            'mode'                 => $row['mode']               ?? 'local',
+            'target_city_id'       => $row['target_city_id']     ?? null,
+            'proof_requirements'   => $row['proof_requirements'] ?? null,
             // Creator display — null for pure-guest challenges (created_by IS NULL).
             // Cards + the detail header render "by {creator_display_name}".
             'creator_display_name'     => $row['creator_display_name']     ?? null,
@@ -164,6 +178,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
+                     cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.created_at DESC
@@ -198,6 +213,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
+                     cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
@@ -218,6 +234,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
+                     cc.mode, cc.target_city_id, cc.proof_requirements,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username, u.profile_thumb_photo_url
         ");
@@ -300,6 +317,8 @@ class ChallengeRepository
      * Auto-joins the creator as the first participant (mirror events).
      * Returns the freshly-built challenge via findById (consistent shape).
      */
+    public const ALLOWED_MODES = ['local', 'international'];
+
     public static function create(
         string $cityId,
         string $guestId,
@@ -308,16 +327,36 @@ class ChallengeRepository
         string $title,
         string $challengeType,
         string $audience,
-        ?string $returnClause = null
+        ?string $returnClause = null,
+        string $mode = 'local',
+        ?string $targetCityId = null,
+        ?string $proofRequirements = null
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
+        if (!in_array($mode,          self::ALLOWED_MODES,     true)) $mode          = 'local';
 
         // Normalize return_clause: trim, treat empty string as null. Client is
         // expected to send the per-type template pre-filled; nulls fall back to
         // a generic clause at the display layer.
         $returnClause = $returnClause !== null ? trim($returnClause) : null;
         if ($returnClause === '') $returnClause = null;
+
+        // International-mode hygiene:
+        //   - target_city_id only meaningful when mode='international'; force
+        //     null for local so a misbehaving client can't smuggle a target.
+        //   - proof_requirements same logic — local stores nothing.
+        //   - audience is irrelevant for international (no in-person meetup);
+        //     keep the column populated (NOT NULL) but force a stable value
+        //     so int'l rows don't accidentally surface in audience-filtered
+        //     queries written for local.
+        if ($mode !== 'international') {
+            $targetCityId      = null;
+            $proofRequirements = null;
+        } else {
+            $proofRequirements = $proofRequirements !== null ? trim($proofRequirements) : null;
+            if ($proofRequirements === '') $proofRequirements = null;
+        }
 
         $pdo = Database::pdo();
         $id  = bin2hex(random_bytes(8));
@@ -339,18 +378,23 @@ class ChallengeRepository
         // migration once the new model has run stable.
         $pdo->prepare("
             INSERT INTO channel_challenges
-                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause)
+                (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause,
+                 mode, target_city_id, proof_requirements)
             VALUES
-                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause)
+                (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause,
+                 :mode, :target_city_id, :proof_requirements)
         ")->execute([
-            'channel_id'       => $id,
-            'city_id'          => $cityId,
-            'created_by'       => $userId,
-            'guest_id'         => $guestId,
-            'title'            => $title,
-            'challenge_type'   => $challengeType,
-            'audience'         => $audience,
-            'return_clause'    => $returnClause,
+            'channel_id'         => $id,
+            'city_id'            => $cityId,
+            'created_by'         => $userId,
+            'guest_id'           => $guestId,
+            'title'              => $title,
+            'challenge_type'     => $challengeType,
+            'audience'           => $audience,
+            'return_clause'      => $returnClause,
+            'mode'               => $mode,
+            'target_city_id'     => $targetCityId,
+            'proof_requirements' => $proofRequirements,
         ]);
 
         // Auto-join the creator (guests included).
@@ -366,6 +410,9 @@ class ChallengeRepository
             'audience'             => $audience,
             'status'               => 'open',
             'return_clause'        => $returnClause,
+            'mode'                 => $mode,
+            'target_city_id'       => $targetCityId,
+            'proof_requirements'   => $proofRequirements,
             'message_count'        => 0,
             'last_activity_at'     => null,
             'validated_at'         => null,
@@ -390,7 +437,9 @@ class ChallengeRepository
         string $title,
         string $challengeType,
         string $audience,
-        ?string $returnClause = null
+        ?string $returnClause = null,
+        ?string $targetCityId = null,
+        ?string $proofRequirements = null
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
@@ -400,21 +449,42 @@ class ChallengeRepository
         $returnClause = $returnClause !== null ? trim($returnClause) : null;
         if ($returnClause === '') $returnClause = null;
 
+        // Mode is intentionally NOT editable here — flipping mode mid-flight
+        // would invalidate any in-flight acceptances (local-style phases vs
+        // international's proof flow). If a creator wants the other mode, the
+        // expected path is delete + recreate. We do let International creators
+        // re-target the city + adjust the proof requirements (common edits).
         $pdo = Database::pdo();
+        $modeRow = $pdo->prepare("SELECT mode FROM channel_challenges WHERE channel_id = :id");
+        $modeRow->execute(['id' => $challengeId]);
+        $currentMode = $modeRow->fetchColumn() ?: 'local';
+        if ($currentMode !== 'international') {
+            // Local rows ignore international-only fields on edit.
+            $targetCityId      = null;
+            $proofRequirements = null;
+        } else {
+            $proofRequirements = $proofRequirements !== null ? trim($proofRequirements) : null;
+            if ($proofRequirements === '') $proofRequirements = null;
+        }
+
         $pdo->prepare("
             UPDATE channel_challenges
-            SET title = :t,
-                challenge_type = :tp,
-                audience = :a,
-                return_clause = :rc,
-                updated_at = now()
+            SET title              = :t,
+                challenge_type     = :tp,
+                audience           = :a,
+                return_clause      = :rc,
+                target_city_id     = :tci,
+                proof_requirements = :pr,
+                updated_at         = now()
             WHERE channel_id = :id
         ")->execute([
-            't'  => $title,
-            'tp' => $challengeType,
-            'a'  => $audience,
-            'rc' => $returnClause,
-            'id' => $challengeId,
+            't'   => $title,
+            'tp'  => $challengeType,
+            'a'   => $audience,
+            'rc'  => $returnClause,
+            'tci' => $targetCityId,
+            'pr'  => $proofRequirements,
+            'id'  => $challengeId,
         ]);
 
         // Keep the channel name in sync with the title (used as display name).
@@ -705,4 +775,5 @@ class ChallengeRepository
 
     public static function allowedTypes(): array     { return self::ALLOWED_TYPES; }
     public static function allowedAudiences(): array { return self::ALLOWED_AUDIENCES; }
+    public static function allowedModes(): array     { return self::ALLOWED_MODES; }
 }

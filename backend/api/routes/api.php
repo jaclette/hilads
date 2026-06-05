@@ -7436,6 +7436,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     // `maxParticipants` may still arrive from older clients — accept it
     // silently but ignore (the model is 1:1 now; column stays at DB default).
     $returnClause    = $body['returnClause']    ?? null;
+    // International mode (PR2 schema reads). Optional everywhere — older
+    // clients omit them and we default mode to 'local'.
+    $mode               = $body['mode']               ?? 'local';
+    $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
+    $proofRequirements  = $body['proofRequirements']   ?? null;
 
     enforceRateLimit('challenge_create', 5, 3600, (string) $channelId);
 
@@ -7455,11 +7460,33 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     if (!in_array($audience, ChallengeRepository::allowedAudiences(), true)) {
         Response::json(['error' => 'audience must be one of: ' . implode(', ', ChallengeRepository::allowedAudiences())], 400);
     }
+    if (!in_array($mode, ChallengeRepository::ALLOWED_MODES, true)) {
+        Response::json(['error' => 'mode must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_MODES)], 400);
+    }
     if ($nickname !== null) {
         $nickname = mb_substr(trim(strip_tags((string) $nickname)), 0, 32) ?: null;
     }
     if ($returnClause !== null) {
         $returnClause = mb_substr(trim(strip_tags((string) $returnClause)), 0, 200);
+    }
+    if ($proofRequirements !== null) {
+        $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
+    }
+
+    // Resolve + validate target city channel for International mode. Client
+    // sends the numeric channel id (matching the rest of the API surface);
+    // we translate to the 'city_<id>' channels-row id stored on the row.
+    // For Local, the field is ignored regardless of what's sent.
+    $targetCityId = null;
+    if ($mode === 'international' && $targetChannelIdRaw !== null && $targetChannelIdRaw !== '') {
+        $tc = filter_var($targetChannelIdRaw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($tc === false) {
+            Response::json(['error' => 'targetCityChannelId must be a positive integer'], 400);
+        }
+        if (CityRepository::findById($tc) === null) {
+            Response::json(['error' => 'targetCityChannelId references an unknown city'], 400);
+        }
+        $targetCityId = 'city_' . $tc;
     }
 
     // Registered account required — mirrors event creation. Guests get a
@@ -7478,6 +7505,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             $challengeType,
             $audience,
             $returnClause,
+            $mode,
+            $targetCityId,
+            $proofRequirements,
         );
 
         try {
@@ -7486,10 +7516,22 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             // only), but the city-feed pill on web + mobile needs it for
             // "{name} défie les locaux : {title}". Falls back to a generic
             // placeholder if the client didn't pass one (rare guest path).
-            broadcastNewChallengeToWs(
-                $channelId,
-                array_merge($challenge, ['nickname' => $nickname ?? 'Someone']),
-            );
+            $wsPayload = array_merge($challenge, ['nickname' => $nickname ?? 'Someone']);
+            broadcastNewChallengeToWs($channelId, $wsPayload);
+
+            // International mirroring: when a target city is set, the SAME
+            // challenge surfaces in the target city's chat feed + NOW feed.
+            // Reuses the existing broadcast — clients in the target room
+            // listen on the same event name and inject the feed pill.
+            // "Anywhere" challenges (target_city_id IS NULL) intentionally
+            // do NOT fan out: per spec, origin-only with a future Discover
+            // surface picking them up later.
+            if ($mode === 'international' && $targetCityId !== null) {
+                $targetChannelInt = (int) str_replace('city_', '', $targetCityId);
+                if ($targetChannelInt > 0) {
+                    broadcastNewChallengeToWs($targetChannelInt, $wsPayload);
+                }
+            }
         } catch (\Throwable $e) {
             error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
         }
@@ -7498,6 +7540,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             'challenge_id'   => $challenge['id'],
             'challenge_type' => $challengeType,
             'audience'       => $audience,
+            'mode'           => $mode,
+            'target_city_id' => $targetCityId,
             'city_id'        => $channelId,
             'is_guest'       => $userId === null,
         ]);
@@ -7553,6 +7597,11 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     $audience        = $body['audience']        ?? null;
     // `maxParticipants` silently accepted but ignored (1:1 model).
     $returnClause    = $body['returnClause']    ?? null;
+    // International edit-time fields. The repo ignores them on local rows
+    // (resolved from the DB row's mode). target_city_id can be re-targeted;
+    // proof requirements can be revised. Mode itself is NOT editable here.
+    $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
+    $proofRequirements  = $body['proofRequirements']   ?? null;
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -7573,12 +7622,34 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     if ($returnClause !== null) {
         $returnClause = mb_substr(trim(strip_tags((string) $returnClause)), 0, 200);
     }
+    if ($proofRequirements !== null) {
+        $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
+    }
+
+    // Optional target-city change. Validated only if the row is actually
+    // international (the repo will ignore the field for local rows). We
+    // can't see the row's mode here without an extra read; validate the
+    // format anyway so a bad client value 400s rather than silently
+    // bypasses on local.
+    $targetCityId = null;
+    if ($targetChannelIdRaw !== null && $targetChannelIdRaw !== '') {
+        $tc = filter_var($targetChannelIdRaw, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($tc === false) {
+            Response::json(['error' => 'targetCityChannelId must be a positive integer'], 400);
+        }
+        if (CityRepository::findById($tc) === null) {
+            Response::json(['error' => 'targetCityChannelId references an unknown city'], 400);
+        }
+        $targetCityId = 'city_' . $tc;
+    }
 
     $userId  = AuthService::currentUser()['id'] ?? null;
     $updated = ChallengeRepository::update(
         $challengeId, $guestId, $userId,
         $title, $challengeType, $audience,
         $returnClause,
+        $targetCityId,
+        $proofRequirements,
     );
     if ($updated === null) {
         Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
