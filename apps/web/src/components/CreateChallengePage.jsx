@@ -386,8 +386,12 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
   useEffect(() => {
     let active = true
     setLoading(true)
+    // Web's fetchChannels returns the raw envelope `{channels: [...]}` — NOT
+    // a bare array like the mobile client does. Unwrap so the .filter()
+    // below operates on a list. Without the unwrap we threw "o.filter is
+    // not a function" the moment the picker opened.
     fetchChannels()
-      .then(list => { if (active) setCities(list ?? []) })
+      .then(data => { if (active) setCities(Array.isArray(data?.channels) ? data.channels : []) })
       .catch(() => { if (active) setCities([]) })
       .finally(() => { if (active) setLoading(false) })
     return () => { active = false }
@@ -398,7 +402,10 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
     const q = query.trim().toLowerCase()
     if (q === '') return pool
     return pool.filter(c =>
-      (c.name ?? '').toLowerCase().includes(q)
+      // Web's /channels payload uses `city` (display name) — mobile's
+      // fetchChannels remaps it to `name`. Read both so a future shape
+      // unification doesn't silently break search.
+      (c.city ?? c.name ?? '').toLowerCase().includes(q)
       || (c.country ?? '').toLowerCase().includes(q),
     )
   }, [cities, currentCityChannelId, query])
@@ -431,7 +438,8 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
                 {selected === null ? <span aria-hidden="true">✓</span> : null}
               </button>
               {filtered.map(c => {
-                const isSel = selected?.channelId === String(c.channelId)
+                const isSel    = selected?.channelId === String(c.channelId)
+                const cityName = c.city ?? c.name ?? ''
                 return (
                   <button
                     key={c.channelId}
@@ -439,11 +447,11 @@ function TargetCityPicker({ currentCityChannelId, selected, onClose, onSelect })
                     className={`cef-city-modal-row${isSel ? ' selected' : ''}`}
                     onClick={() => onSelect({
                       channelId: String(c.channelId),
-                      name:      c.name,
+                      name:      cityName,
                       country:   c.country,
                     })}
                   >
-                    <span>{c.name}{c.country ? ` · ${c.country}` : ''}</span>
+                    <span>{cityName}{c.country ? ` · ${c.country}` : ''}</span>
                     {isSel ? <span aria-hidden="true">✓</span> : null}
                   </button>
                 )
