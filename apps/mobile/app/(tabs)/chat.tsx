@@ -670,6 +670,7 @@ export default function ChatTab() {
     setPromptItems(prev   => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     setEventFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     setTopicFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
+    setChallengeFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
     pulseNow();
   }
 
@@ -1021,7 +1022,14 @@ export default function ChatTab() {
                   onReplyQuotePress={scrollToMessage}
                   isHighlighted={highlightedMsgId === item.id}
                   onReact={handleReact}
-                  autoDismiss={item.type === 'event' || item.type === 'topic' || item.type === 'prompt' || item.type === 'activity'}
+                  autoDismiss={
+                    item.type === 'event'
+                    || item.type === 'topic'
+                    || item.type === 'challenge'
+                    || item.type === 'challenge_validated'
+                    || item.type === 'prompt'
+                    || item.type === 'activity'
+                  }
                   onAutoDismiss={handleAutoDismiss}
                   reduceMotion={reduceMotion}
                 />
