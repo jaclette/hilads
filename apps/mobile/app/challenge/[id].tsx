@@ -20,7 +20,8 @@ import {
   fetchChallengeById, fetchChallengeParticipants,
   validateChallenge, unvalidateChallenge, deleteChallenge,
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
-  fetchThreadMessages, sendThreadMessage, sendThreadImageMessage,
+  fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
+  fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
@@ -75,7 +76,12 @@ export default function ChallengeChatScreen() {
   // summary so the lifecycle pipeline can render my current phase + the
   // Accept button can morph into "Open thread →".
   const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
-  const myThreadChannelId = myAcceptance?.thread_channel_id ?? null;
+
+  // Participation gate (the channel is now members-only). null = still
+  // loading, false = visitor sees public detail page only, true = visitor
+  // sees the full chat. Resolves via a single GET /participants/me probe.
+  const [iAmParticipant, setIAmParticipant] = useState<boolean | null>(null);
+  const [joiningChannel, setJoiningChannel] = useState(false);
   // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
   // has its own picker inside ThreadScheduleBlock; this one is reached from
   // the pipeline's "Propose a date →" sub-CTA so we don't double up.
@@ -285,7 +291,7 @@ export default function ChallengeChatScreen() {
     if (acceptBusy) return;
 
     // Already accepted? No-op — the inline chat is right here.
-    if (myThreadChannelId) return;
+    if (myAcceptance) return;
 
     // Guest? Send them to register first.
     if (!account?.id) {
@@ -322,7 +328,7 @@ export default function ChallengeChatScreen() {
     } finally {
       setAcceptBusy(false);
     }
-  }, [id, account?.id, acceptBusy, myThreadChannelId, loadMyAcceptance, router, t]);
+  }, [id, account?.id, acceptBusy, myAcceptance, loadMyAcceptance, router, t]);
 
   // Listen for WS status flips (validated ⇄ open) for this exact challenge
   // so the pill flips live when the creator toggles from another device.
@@ -363,52 +369,98 @@ export default function ChallengeChatScreen() {
     return () => { off1(); off2(); off3(); off4(); off5(); off6(); };
   }, [loadMyAcceptance]);
 
-  // ── Inline thread chat ───────────────────────────────────────────────────
-  // The chat below is the per-acceptance THREAD chat (channels.type=
-  // 'challenge_thread'), folded into the challenge channel surface so users
-  // see + use one screen. `myAcceptance` is the viewer's thread on this
-  // challenge — for acceptors that's their relationship with the creator;
-  // for creators with N acceptances /me/acceptances returns the most-recently-
-  // active one (server ORDER BY last_message_at DESC) — good default.
-  const threadChannelId = myThreadChannelId;
+  // ── Unified challenge channel chat ───────────────────────────────────────
+  // Replaces the per-acceptance THREAD chat. Reads + sends both gate on
+  // participation server-side (creator + active taker are implicit
+  // participants; everyone else clicks Join). The chat only mounts when
+  // iAmParticipant === true; the participation gate decides which surface
+  // the user sees.
+  const guestIdForChat = identity?.guestId ?? '';
+  const nicknameForChat = nickname ?? '';
 
   const loadMessagesFn = useCallback(
     (opts?: { beforeId?: string }) =>
-      threadChannelId
-        ? fetchThreadMessages(threadChannelId, opts)
+      id && iAmParticipant === true
+        ? fetchChallengeMessages(id, opts)
         : Promise.resolve({ messages: [], hasMore: false }),
-    [threadChannelId],
+    [id, iAmParticipant],
   );
   const postTextFn = useCallback(
     (content: string): Promise<Message> =>
-      threadChannelId
-        ? sendThreadMessage(threadChannelId, content)
-        : Promise.reject(new Error('No thread')),
-    [threadChannelId],
+      id && account?.id
+        ? sendChallengeMessage(id, account.id, nicknameForChat || 'You', content)
+        : Promise.reject(new Error('No challenge channel')),
+    [id, account?.id, nicknameForChat],
   );
   const postImageFn = useCallback(
     (imageUrl: string): Promise<Message> =>
-      threadChannelId
-        ? sendThreadImageMessage(threadChannelId, imageUrl)
-        : Promise.reject(new Error('No thread')),
-    [threadChannelId],
+      id && account?.id
+        ? sendChallengeImageMessage(id, account.id, nicknameForChat || 'You', imageUrl)
+        : Promise.reject(new Error('No challenge channel')),
+    [id, account?.id, nicknameForChat],
   );
 
   const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
           sendText, sendImage, loadOlder } = useMessages({
-    channelId: threadChannelId ?? '__no_thread__',
+    channelId: id ?? '__no_challenge__',
     loadFn:    loadMessagesFn,
     postTextFn,
     postImageFn,
   });
 
-  // Join the thread WS room (for live newMessage broadcasts) only when we
-  // actually have a thread to join. Leaves on unmount / thread change.
+  // Join the challenge channel's WS room for live newMessage broadcasts.
+  // Only join once we're a confirmed participant — non-participants don't
+  // need the firehose. Leaves on unmount / challenge change.
   useEffect(() => {
-    if (!threadChannelId || !sessionId) return;
-    socket.joinChallengeThread(threadChannelId, sessionId);
-    return () => socket.leaveChallengeThread(threadChannelId, sessionId);
-  }, [threadChannelId, sessionId]);
+    if (!id || !sessionId || iAmParticipant !== true) return;
+    socket.joinChallenge(id, sessionId);
+    return () => socket.leaveChallenge(id, sessionId);
+  }, [id, iAmParticipant, sessionId]);
+
+  // Resolve participation on mount + whenever acceptance flips (a fresh
+  // acceptance makes the user an implicit participant via the creator/
+  // active-taker branches in the backend).
+  const loadParticipation = useCallback(async () => {
+    if (!id) { setIAmParticipant(null); return; }
+    if (!account?.id) { setIAmParticipant(false); return; }
+    try {
+      const res = await fetchMyChallengeParticipation(id);
+      setIAmParticipant(!!res?.isIn);
+    } catch { setIAmParticipant(false); }
+  }, [id, account?.id]);
+  useEffect(() => { loadParticipation(); }, [loadParticipation, myAcceptance?.id]);
+
+  async function handleJoinChannel() {
+    if (joiningChannel || !id) return;
+    if (!account?.id) {
+      router.push('/auth-gate?reason=join_challenge' as never);
+      return;
+    }
+    setJoiningChannel(true);
+    try {
+      await joinChallengeChannel(id);
+      setIAmParticipant(true);
+      loadParticipants();
+    } catch (err) {
+      const e = err as { code?: string; message?: string };
+      if (e?.code === 'kicked')                  Alert.alert(t('join.errKicked'));
+      else if (e?.code === 'closed_to_new_joins') Alert.alert(t('join.errClosed'));
+      else                                       Alert.alert(e?.message || t('join.errGeneric'));
+    } finally {
+      setJoiningChannel(false);
+    }
+  }
+
+  async function handleLeaveChannel() {
+    if (!id || !account?.id) return;
+    try {
+      await leaveChallengeChannel(id);
+      setIAmParticipant(false);
+      loadParticipants();
+    } catch { /* silent — re-probe on next visit */ }
+  }
+  // Silence unused-var warnings when the channel-chat branch is hidden.
+  void guestIdForChat;
 
   // Web parity: separate the creator (Challenger) from the rest of the
   // participants. The creator match uses the same ownership rule as isOwner
@@ -576,6 +628,20 @@ export default function ChallengeChatScreen() {
             <Ionicons name="share-social-outline" size={14} color="#FF7A3C" />
             <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('shareCta')}</Text>
           </TouchableOpacity>
+          {/* Leave the channel — joined participants who aren't the creator
+              or active taker. Lives next to the share pill so the channel
+              actions stay grouped at the top of the page. */}
+          {iAmParticipant === true && !isOwner && !myAcceptance && (
+            <TouchableOpacity
+              style={styles.sharePillInline}
+              onPress={handleLeaveChannel}
+              activeOpacity={0.75}
+              accessibilityLabel={t('join.leaveCta')}
+            >
+              <Ionicons name="exit-outline" size={14} color="#FF7A3C" />
+              <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('join.leaveCta')}</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -730,7 +796,7 @@ export default function ChallengeChatScreen() {
                   {t('participantsLabel')} · {otherParticipants.length}
                 </Text>
               </TouchableOpacity>
-              {!isOwner && !isValidated && !myThreadChannelId && !inProgress && (
+              {!isOwner && !isValidated && !myAcceptance && !inProgress && (
                 <TouchableOpacity
                   style={styles.acceptCompact}
                   onPress={handleAccept}
@@ -746,7 +812,14 @@ export default function ChallengeChatScreen() {
                       </>}
                 </TouchableOpacity>
               )}
+              {!isOwner && !isValidated && !myAcceptance && inProgress && (
+                <Text style={styles.participantsEmpty} numberOfLines={1}>
+                  {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
+                </Text>
+              )}
             </>
+          ) : isValidated && !isOwner ? (
+            <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
           ) : inProgress ? (
             <Text style={styles.participantsEmpty}>⏳ {t('card.inProgress')}</Text>
           ) : (
@@ -781,7 +854,7 @@ export default function ChallengeChatScreen() {
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
         behavior="padding"
       >
-        {myAcceptance && account?.id && myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected' ? (
+        {iAmParticipant === true && (!myAcceptance || (myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected')) ? (
           <>
             <FlatList
               /* Filter out type='event' messages — they were auto-injected by
@@ -824,11 +897,12 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band — Local-only. International acceptances don't
-                have date concertation (no meetup); the proof block above
-                replaces this entirely. Hiding it here keeps the chat input
-                anchored right below the proof flow. */}
-            {(challenge.mode ?? 'local') === 'local' && (
+            {/* Schedule band — Local-only AND only for the creator + active
+                taker (they're the ones with a myAcceptance row). Regular
+                channel participants who only Joined have myAcceptance=null
+                and don't need this block — without the guard
+                ThreadScheduleBlock crashes on thread.proposed_starts_at. */}
+            {(challenge.mode ?? 'local') === 'local' && myAcceptance && account?.id && (
               <ThreadScheduleBlock
                 thread={myAcceptance}
                 myUserId={account.id}
@@ -847,14 +921,37 @@ export default function ChallengeChatScreen() {
             />
           </>
         ) : (
-          /* Locked / pending / rejected state — chat is hidden. Branches:
-             - Creator + pending acceptance → review banner with accept/reject buttons.
-             - Acceptor + pending           → "Waiting for review" state.
-             - Acceptor + rejected          → "Your take-on was declined" state.
-             - Visitor + cap full           → "Challenge full" state.
-             - Visitor + free slots         → "Take on the challenge" nudge.
-             - Creator + no acceptances     → "Waiting for someone to take it on" state. */
+          /* Non-chat surface. Branches (in priority order):
+             - iAmParticipant === false → Join CTA (the channel is gated)
+             - Creator + pending acceptance → review banner with accept/reject
+             - Acceptor + pending           → "Waiting for review"
+             - Acceptor + rejected          → "Your take-on was declined" */
           (() => {
+            // Non-participant — show the Join CTA in place of the chat.
+            // Hide while iAmParticipant is still null (probe in flight) to
+            // avoid a brief flash of the visitor surface.
+            if (iAmParticipant === false) {
+              return (
+                <View style={styles.lockedWrap}>
+                  <Text style={styles.lockedEmoji}>🔓</Text>
+                  <Text style={styles.lockedTitle}>{t('join.gateTitle')}</Text>
+                  <Text style={styles.lockedBody}>
+                    {t('join.gateBody', { count: otherParticipants.length })}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.joinCta}
+                    onPress={handleJoinChannel}
+                    disabled={joiningChannel}
+                    activeOpacity={0.85}
+                  >
+                    {joiningChannel
+                      ? <ActivityIndicator color="#1a0f00" size="small" />
+                      : <Text style={styles.joinCtaText}>{t('join.cta')}</Text>}
+                  </TouchableOpacity>
+                </View>
+              );
+            }
+
             const isPending  = myAcceptance?.phase === 'pending';
             const isRejected = myAcceptance?.phase === 'rejected';
 
@@ -1237,6 +1334,20 @@ const styles = StyleSheet.create({
   lockedEmoji: { fontSize: 40, opacity: 0.7 },
   lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'center' },
   lockedBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', maxWidth: 320 },
+
+  // Join-the-channel CTA shown to non-participants in place of the chat.
+  joinCta: {
+    marginTop:       Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical:   Spacing.sm + 2,
+    borderRadius:      Radius.full,
+    backgroundColor:   '#FF7A3C',
+  },
+  joinCtaText: {
+    color:      '#1a0f00',
+    fontSize:   FontSizes.md,
+    fontWeight: '800',
+  },
 
   // PR5 — creator's review banner inside the locked state. Inline Reject /
   // Accept buttons let the creator triage without leaving the challenge page.

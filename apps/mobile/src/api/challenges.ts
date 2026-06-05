@@ -455,3 +455,71 @@ export async function sendChallengeImageMessage(
     type: 'image',
   });
 }
+
+// ── Channel participation (Join / Leave / Kick / settings) ───────────────────
+
+export interface ChannelMember {
+  id:             string;
+  displayName:    string | null;
+  username:       string | null;
+  thumbAvatarUrl: string | null;
+  joinedAt:       number;
+}
+
+/** Publicly visible joined-member list (creator + active taker NOT included
+ *  here — they're surfaced separately on the detail page). */
+export async function fetchChannelParticipants(challengeId: string): Promise<{ members: ChannelMember[]; count: number }> {
+  try {
+    return await api.get<{ members: ChannelMember[]; count: number }>(`/challenges/${challengeId}/channel-participants`);
+  } catch {
+    return { members: [], count: 0 };
+  }
+}
+
+export interface MyParticipation {
+  isIn:                   boolean;
+  isKicked?:              boolean;
+  notificationPreference?: 'milestones' | 'all' | 'off' | null;
+  reason?:                string;
+}
+
+/** "Am I in this channel?" probe. Anon viewers always get isIn=false. */
+export async function fetchMyChallengeParticipation(challengeId: string): Promise<MyParticipation> {
+  try {
+    return await api.get<MyParticipation>(`/challenges/${challengeId}/participants/me`);
+  } catch {
+    return { isIn: false };
+  }
+}
+
+export async function joinChallengeChannel(challengeId: string): Promise<{ count: number; isIn: boolean }> {
+  return api.post<{ count: number; isIn: boolean }>(`/challenges/${challengeId}/join`, {});
+}
+
+export async function leaveChallengeChannel(challengeId: string): Promise<{ ok: boolean; isIn: false; count: number }> {
+  return api.delete<{ ok: boolean; isIn: false; count: number }>(`/challenges/${challengeId}/participants/me`);
+}
+
+export async function kickChallengeParticipant(challengeId: string, userId: string, reason?: string): Promise<{ ok: boolean }> {
+  return api.post<{ ok: boolean }>(
+    `/challenges/${challengeId}/participants/${userId}/kick`,
+    reason ? { reason } : {},
+  );
+}
+
+export async function setChallengeCloseToJoins(challengeId: string, closed: boolean): Promise<{ ok: boolean; closed_to_new_joins: boolean }> {
+  return api.post<{ ok: boolean; closed_to_new_joins: boolean }>(
+    `/challenges/${challengeId}/close-to-new-joins`,
+    { closed },
+  );
+}
+
+export async function setChallengeNotificationPreference(
+  challengeId: string,
+  preference: 'milestones' | 'all' | 'off',
+): Promise<{ ok: boolean; preference: string }> {
+  return api.post<{ ok: boolean; preference: string }>(
+    `/challenges/${challengeId}/notification-preference`,
+    { preference },
+  );
+}

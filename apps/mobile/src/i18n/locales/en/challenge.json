@@ -116,9 +116,41 @@
       }
     }
   },
+  "chatPlaceholder": "Say something to the channel…",
+  "messageCreator": "Message {{name}} privately",
+  "badge": {
+    "challenger": "Challenger",
+    "taker":      "Taker"
+  },
+  "cta": {
+    "takenBy": "Currently being taken by {{name}}",
+    "closed":  "This challenge is closed"
+  },
+  "join": {
+    "gateTitle":  "Join to see the conversation",
+    "gateBody":   "{{count}} people are already in. One tap and you're in too.",
+    "cta":        "Join this challenge",
+    "leaveCta":   "Leave the channel",
+    "errKicked":  "You've been removed from this challenge.",
+    "errClosed":  "This challenge is closed to new joins.",
+    "errGeneric": "Couldn't join — try again."
+  },
+  "members": {
+    "title":    "In the channel",
+    "countIn":  "{{count}} in the channel",
+    "seeAll":   "See all →",
+    "empty":    "Nobody's joined yet — be the first.",
+    "kickCta":  "Remove",
+    "kickAria": "Remove {{name}} from the channel",
+    "errKick":  "Couldn't remove — try again."
+  },
+  "notif": {
+    "on":  "Notifications on",
+    "off": "Notifications off"
+  },
   "thread": {
     "notFound": "Thread not found",
-    "empty": "Say hi 👋 and plan when you'll meet up.",
+    "empty": "Be the first to say something.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",
