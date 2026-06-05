@@ -393,6 +393,103 @@ final class NotificationI18n
             'ru'      => ["Челлендж закрыт",           "{name} закрыл «{title}»"],
             'ar'      => ["تم إغلاق التحدي",          "{name} أغلق \"{title}\""],
         ],
+        // ── International mode notifications ────────────────────────────────
+        // Proof submitted — fires to the CREATOR when the acceptor uploads
+        // a proof. Body carries the challenge title verbatim.
+        'challenge_proof_submitted' => [
+            'fr'      => ["📸 Nouvelle preuve à valider",        "{name} a envoyé une preuve pour « {title} »"],
+            'vi'      => ["📸 Bằng chứng mới cần xem",           "{name} đã gửi bằng chứng cho \"{title}\""],
+            'es'      => ["📸 Nueva prueba para revisar",        "{name} envió una prueba para \"{title}\""],
+            'it'      => ["📸 Nuova prova da rivedere",          "{name} ha inviato una prova per \"{title}\""],
+            'pt-br'   => ["📸 Nova prova pra revisar",           "{name} mandou uma prova pra \"{title}\""],
+            'pt-pt'   => ["📸 Nova prova para rever",            "{name} enviou uma prova para \"{title}\""],
+            'de'      => ["📸 Neuer Beweis zu prüfen",           "{name} hat einen Beweis für \"{title}\" geschickt"],
+            'nl'      => ["📸 Nieuw bewijs om te beoordelen",    "{name} heeft bewijs gestuurd voor \"{title}\""],
+            'zh-hans' => ["📸 有新证据需审核",                     "{name} 为「{title}」发来了证据"],
+            'zh-hant' => ["📸 有新證據需審核",                     "{name} 為「{title}」發來了證據"],
+            'ja'      => ["📸 確認すべき新しい証拠",                "{name} が「{title}」の証拠を送信"],
+            'ko'      => ["📸 검토할 새 증거",                     "{name} 님이 \"{title}\" 증거를 보냈어요"],
+            'fil'     => ["📸 May bagong proof na suriin",        "Nagpadala si {name} ng proof para sa \"{title}\""],
+            'th'      => ["📸 มีหลักฐานใหม่ต้องตรวจ",              "{name} ส่งหลักฐานสำหรับ \"{title}\""],
+            'id'      => ["📸 Bukti baru untuk ditinjau",         "{name} mengirim bukti untuk \"{title}\""],
+            'hi'      => ["📸 नया प्रूफ देखें",                       "{name} ने \"{title}\" का प्रूफ भेजा"],
+            'ru'      => ["📸 Новое доказательство",              "{name} прислал доказательство для «{title}»"],
+            'ar'      => ["📸 دليل جديد للمراجعة",                "{name} أرسل دليلاً لـ \"{title}\""],
+        ],
+        // Proof approved — fires to the ACCEPTOR after the creator's verdict.
+        // Final terminal state for the acceptance.
+        'challenge_proof_approved' => [
+            'fr'      => ["🎉 Preuve validée",         "{name} a validé ta preuve pour « {title} »"],
+            'vi'      => ["🎉 Bằng chứng được chấp nhận", "{name} đã chấp nhận bằng chứng cho \"{title}\""],
+            'es'      => ["🎉 Prueba aprobada",        "{name} aprobó tu prueba para \"{title}\""],
+            'it'      => ["🎉 Prova approvata",        "{name} ha approvato la tua prova per \"{title}\""],
+            'pt-br'   => ["🎉 Prova aprovada",         "{name} aprovou sua prova de \"{title}\""],
+            'pt-pt'   => ["🎉 Prova aprovada",         "{name} aprovou a tua prova para \"{title}\""],
+            'de'      => ["🎉 Beweis genehmigt",       "{name} hat deinen Beweis für \"{title}\" genehmigt"],
+            'nl'      => ["🎉 Bewijs goedgekeurd",     "{name} keurde je bewijs voor \"{title}\" goed"],
+            'zh-hans' => ["🎉 证据已通过",              "{name} 批准了你为「{title}」提交的证据"],
+            'zh-hant' => ["🎉 證據已通過",              "{name} 批准了你為「{title}」提交的證據"],
+            'ja'      => ["🎉 証拠が承認された",         "{name} があなたの「{title}」証拠を承認"],
+            'ko'      => ["🎉 증거 승인됨",              "{name} 님이 \"{title}\" 증거를 승인했어요"],
+            'fil'     => ["🎉 Tinanggap ang proof",   "Tinanggap ni {name} ang proof mo para sa \"{title}\""],
+            'th'      => ["🎉 ผ่านการตรวจ",            "{name} ผ่านหลักฐานของคุณสำหรับ \"{title}\""],
+            'id'      => ["🎉 Bukti diterima",         "{name} menerima buktimu untuk \"{title}\""],
+            'hi'      => ["🎉 प्रूफ स्वीकृत",             "{name} ने \"{title}\" का आपका प्रूफ स्वीकार किया"],
+            'ru'      => ["🎉 Доказательство принято", "{name} принял твоё доказательство для «{title}»"],
+            'ar'      => ["🎉 تم قبول الدليل",         "{name} قبل دليلك لـ \"{title}\""],
+        ],
+        // Proof rejected — fires to the ACCEPTOR. The reason is intentionally
+        // NOT in the localized body: it's user-typed content that the creator
+        // wrote in their own language, and the recipient sees it in full on
+        // the in-app screen. Keeping the push short + the screen detailed
+        // reads better than a 200-char rejection in the notification tray.
+        'challenge_proof_rejected' => [
+            'fr'      => ["✕ Preuve refusée",        "{name} a refusé ta preuve pour « {title} »"],
+            'vi'      => ["✕ Bằng chứng bị từ chối",   "{name} đã từ chối bằng chứng cho \"{title}\""],
+            'es'      => ["✕ Prueba rechazada",      "{name} rechazó tu prueba para \"{title}\""],
+            'it'      => ["✕ Prova rifiutata",        "{name} ha rifiutato la tua prova per \"{title}\""],
+            'pt-br'   => ["✕ Prova rejeitada",        "{name} rejeitou sua prova de \"{title}\""],
+            'pt-pt'   => ["✕ Prova rejeitada",        "{name} rejeitou a tua prova para \"{title}\""],
+            'de'      => ["✕ Beweis abgelehnt",      "{name} hat deinen Beweis für \"{title}\" abgelehnt"],
+            'nl'      => ["✕ Bewijs afgewezen",      "{name} wees je bewijs voor \"{title}\" af"],
+            'zh-hans' => ["✕ 证据未通过",              "{name} 拒绝了你为「{title}」提交的证据"],
+            'zh-hant' => ["✕ 證據未通過",              "{name} 拒絕了你為「{title}」提交的證據"],
+            'ja'      => ["✕ 証拠が拒否された",        "{name} があなたの「{title}」証拠を拒否"],
+            'ko'      => ["✕ 증거 거절됨",             "{name} 님이 \"{title}\" 증거를 거절했어요"],
+            'fil'     => ["✕ Tinanggihan ang proof", "Tinanggihan ni {name} ang proof mo para sa \"{title}\""],
+            'th'      => ["✕ หลักฐานถูกปฏิเสธ",        "{name} ปฏิเสธหลักฐานของคุณสำหรับ \"{title}\""],
+            'id'      => ["✕ Bukti ditolak",          "{name} menolak buktimu untuk \"{title}\""],
+            'hi'      => ["✕ प्रूफ अस्वीकृत",            "{name} ने \"{title}\" का आपका प्रूफ अस्वीकार किया"],
+            'ru'      => ["✕ Доказательство отклонено", "{name} отклонил твоё доказательство для «{title}»"],
+            'ar'      => ["✕ تم رفض الدليل",          "{name} رفض دليلك لـ \"{title}\""],
+        ],
+        // Cross-city heads-up — fires to users in CITY B when someone in
+        // CITY A creates an international challenge targeting them. Two
+        // city placeholders: {originCity} = where the challenge came from,
+        // {city} = recipient's own city (target). No actor name — the
+        // creator's identity is intentionally generic on this fan-out
+        // (it's a city-wide ping, not a personal invite — those use
+        // challenge_invitation for individual targeting).
+        'challenge_international_target' => [
+            'fr'      => ["🌐 Nouveau défi international",       "Quelqu'un de {originCity} cherche un challenger à {city}"],
+            'vi'      => ["🌐 Thử thách quốc tế mới",             "Ai đó ở {originCity} đang tìm người ở {city}"],
+            'es'      => ["🌐 Nuevo reto internacional",          "Alguien en {originCity} busca un challenger en {city}"],
+            'it'      => ["🌐 Nuova sfida internazionale",        "Qualcuno da {originCity} cerca un challenger a {city}"],
+            'pt-br'   => ["🌐 Novo desafio internacional",        "Alguém em {originCity} procura um challenger em {city}"],
+            'pt-pt'   => ["🌐 Novo desafio internacional",        "Alguém em {originCity} procura um challenger em {city}"],
+            'de'      => ["🌐 Neue internationale Challenge",     "Jemand aus {originCity} sucht jemanden in {city}"],
+            'nl'      => ["🌐 Nieuwe internationale challenge",   "Iemand uit {originCity} zoekt iemand in {city}"],
+            'zh-hans' => ["🌐 新的跨城挑战",                       "{originCity} 的某人在 {city} 寻找挑战者"],
+            'zh-hant' => ["🌐 新的跨城挑戰",                       "{originCity} 的某人在 {city} 尋找挑戰者"],
+            'ja'      => ["🌐 新しい国際チャレンジ",                 "{originCity} の誰かが {city} で挑戦者を募集中"],
+            'ko'      => ["🌐 새 국제 챌린지",                      "{originCity}의 누군가가 {city}에서 도전자를 찾아요"],
+            'fil'     => ["🌐 Bagong international challenge",     "May naghahanap ng challenger sa {city} mula sa {originCity}"],
+            'th'      => ["🌐 ชาเลนจ์ระหว่างเมืองใหม่",              "มีคนใน {originCity} หาคนรับใน {city}"],
+            'id'      => ["🌐 Tantangan internasional baru",      "Seseorang di {originCity} mencari penantang di {city}"],
+            'hi'      => ["🌐 नया अंतरराष्ट्रीय चैलेंज",                "{originCity} से कोई {city} में चैलेंजर ढूंढ रहा है"],
+            'ru'      => ["🌐 Новый международный челлендж",      "Кто-то из {originCity} ищет участника в {city}"],
+            'ar'      => ["🌐 تحدي دولي جديد",                   "أحدهم من {originCity} يبحث عن متحدٍ في {city}"],
+        ],
         // Personal challenge invitation: "🔥 {name} challenges you" with the
         // challenge title kept verbatim in the body (the title is a proper
         // piece of user content — translating it would change the meaning).
@@ -526,11 +623,14 @@ final class NotificationI18n
         if (!in_array($locale, self::SUPPORTED, true)) return [null, null];
 
         $params = [
-            '{name}'  => self::name($type, $data),
-            '{city}'  => (string) ($data['cityName'] ?? ''),
+            '{name}'       => self::name($type, $data),
+            '{city}'       => (string) ($data['cityName']       ?? ''),
+            // Cross-city heads-up: {originCity} is where the challenge was
+            // CREATED, {city} is the RECIPIENT's city (where they live).
+            '{originCity}' => (string) ($data['originCityName'] ?? ''),
             // challengeTitle joins the fallback chain so the challenge_* push
             // bodies can interpolate the challenge name from their callers.
-            '{title}' => (string) ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['challengeTitle'] ?? $data['title'] ?? ''),
+            '{title}'      => (string) ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['challengeTitle'] ?? $data['title'] ?? ''),
         ];
 
         if ($type === 'mention') {
@@ -561,11 +661,15 @@ final class NotificationI18n
             'profile_view'             => 'viewerName',
             'join_request'             => 'requesterName',
             'challenge_invitation'     => 'inviterName',
-            'challenge_takeon_request' => 'acceptorName',
+            'challenge_takeon_request',
+            'challenge_proof_submitted' => 'acceptorName',
             'challenge_takeon_approved',
-            'challenge_takeon_rejected' => 'creatorName',
+            'challenge_takeon_rejected',
+            'challenge_proof_approved',
+            'challenge_proof_rejected' => 'creatorName',
             // verdict_* both already pass senderName=creatorName, so the
             // default key picks it up — no explicit mapping needed.
+            // challenge_international_target uses {originCity} not {name}.
             default                    => 'senderName',
         };
         return (string) ($data[$key] ?? $data['name'] ?? $data['senderName'] ?? '');
