@@ -110,23 +110,43 @@ export default function ChallengeChatScreen() {
 
   // Probe whether I already have an acceptance for this challenge — drives
   // the Accept (+) button morph AND the lifecycle pipeline below.
-  // When the viewer is the CREATOR with multiple acceptances on this
-  // challenge (some pending, some active, some rejected), prefer pending
-  // ones so the review banner surfaces — otherwise the creator could miss a
-  // request because an older, in-progress thread sorts above.
+  // With legacy multi-acceptance data, a single challenge may carry N rows
+  // for the same user (creator view). Surface the most-actionable one so
+  // the pipeline shows what NEEDS attention rather than something passive.
+  // The same priority + tiebreaker runs on web (ChallengeChatPage) so both
+  // surfaces converge on the SAME row for the same data.
   const loadMyAcceptance = useCallback(() => {
     if (!id || !account?.id) { setMyAcceptance(null); return; }
     fetchMyAcceptances()
       .then(threads => {
         const mine = threads.filter(thr => thr.challenge_id === id);
         if (mine.length === 0) { setMyAcceptance(null); return; }
-        const priority = (t: ChallengeThreadSummary): number => {
+        // Finer than commit 2's coarse 0/1/2: each lifecycle phase gets its
+        // own slot so accepted/scheduled/debrief no longer tie. Order is
+        // "needs action first":
+        //   pending  → creator review or acceptor waiting for it
+        //   debrief  → verdict pending
+        //   accepted → date concertation (with or without proposal)
+        //   scheduled→ awaiting the meet-up
+        //   terminal → approved / rejected
+        // Tiebreaker: created_at DESC then id (lexicographic) so the choice
+        // is fully deterministic across surfaces.
+        const slot = (t: ChallengeThreadSummary): number => {
           const p = t.effective_phase ?? t.phase;
-          if (p === 'pending') return 0;   // creator needs to review
-          if (p === 'accepted' || p === 'scheduled' || p === 'debrief') return 1;
-          return 2;                         // approved / rejected — terminal
+          if (p === 'pending')   return 0;
+          if (p === 'debrief')   return 1;
+          if (p === 'accepted')  return 2;
+          if (p === 'scheduled') return 3;
+          return 4;
         };
-        const sorted = [...mine].sort((a, b) => priority(a) - priority(b));
+        const sorted = [...mine].sort((a, b) => {
+          const ds = slot(a) - slot(b);
+          if (ds !== 0) return ds;
+          const da = a.created_at ?? 0;
+          const db = b.created_at ?? 0;
+          if (db !== da) return db - da;          // newer first within a slot
+          return (a.id ?? '').localeCompare(b.id ?? '');
+        });
         setMyAcceptance(sorted[0]);
       })
       .catch(() => setMyAcceptance(null));

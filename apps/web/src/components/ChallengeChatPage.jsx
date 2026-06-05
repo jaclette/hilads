@@ -188,13 +188,27 @@ export default function ChallengeChatPage({
       const threads = await fetchMyAcceptances()
       const mine = threads.filter(thr => thr.challenge_id === id)
       if (mine.length === 0) { setMyAcceptance(null); return }
-      const priority = (t) => {
+      // Same finer-grained "needs action first" priority as mobile
+      // (app/challenge/[id].tsx). Surfaces pending review > debrief verdict
+      // > accepted date concertation > scheduled wait > terminal. Deterministic
+      // tiebreak (created_at DESC, then id) so web + mobile converge on the
+      // SAME row for the same data.
+      const slot = (t) => {
         const p = t.effective_phase ?? t.phase
-        if (p === 'pending') return 0
-        if (p === 'accepted' || p === 'scheduled' || p === 'debrief') return 1
-        return 2
+        if (p === 'pending')   return 0
+        if (p === 'debrief')   return 1
+        if (p === 'accepted')  return 2
+        if (p === 'scheduled') return 3
+        return 4
       }
-      const sorted = [...mine].sort((a, b) => priority(a) - priority(b))
+      const sorted = [...mine].sort((a, b) => {
+        const ds = slot(a) - slot(b)
+        if (ds !== 0) return ds
+        const da = a.created_at ?? 0
+        const db = b.created_at ?? 0
+        if (db !== da) return db - da
+        return (a.id ?? '').localeCompare(b.id ?? '')
+      })
       setMyAcceptance(sorted[0])
     } catch { setMyAcceptance(null) }
   }, [id, account?.id])
