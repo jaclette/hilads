@@ -5974,7 +5974,13 @@ export default function App() {
           guest={guest}
           nickname={activeNickname}
           account={account}
-          onBack={() => setActiveChallenge(null)}
+          onBack={() => {
+            // Back lands on the Now feed (where the user usually arrives
+            // from anyway), not the city chat — matches the mental model
+            // "I was browsing challenges, take me back to browsing".
+            setActiveChallenge(null)
+            setShowEventDrawer(true)
+          }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
           onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
