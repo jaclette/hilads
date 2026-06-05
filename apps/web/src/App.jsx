@@ -993,66 +993,6 @@ export default function App() {
     return () => { tabScrollTops.current.now = el.scrollTop }
   }, [showEventDrawer])
 
-  // Reset the challenges paginator + sub-filter whenever the parent filter
-  // leaves/enters 'challenges'. Without this, switching between filters and
-  // back would leak whatever state the user paginated to last time.
-  useEffect(() => {
-    setChallengesShownCount(NOW_CHALLENGES_CAP)
-    if (nowFilter !== 'challenges') setChallengeTypeFilter('all')
-  }, [nowFilter])
-
-  // Reset the visible-count when the type sub-filter changes — switching
-  // from "food" to "place" should land the user at the top of that bucket.
-  useEffect(() => {
-    setChallengesShownCount(NOW_CHALLENGES_CAP)
-  }, [challengeTypeFilter])
-
-  // Filtered-by-type challenges (used by both the JSX render and the
-  // scroll-throttle guard below — kept in one place so they can't drift).
-  const filteredChallenges = useMemo(() => {
-    if (nowFilter !== 'challenges' || challengeTypeFilter === 'all') return cityChallenges
-    return cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
-  }, [cityChallenges, nowFilter, challengeTypeFilter])
-
-  // Scroll-to-load-more on the Challenges filter.
-  //
-  // Three gates keep the API call budget bounded (and the re-render rate
-  // sane today, when scrolling slices an already-fetched array):
-  //   1. Throttle — at most one bump per BUMP_THROTTLE_MS regardless of how
-  //      fast the user scrolls. Without this, scroll fires ~60×/s and would
-  //      schedule a state update on every tick.
-  //   2. Cap guard — we read filteredChallengesLengthRef synchronously and
-  //      skip the bump if we're already showing everything. No-op renders
-  //      avoided, and (when backend pagination lands) no wasted fetch.
-  //   3. Distance threshold — only fires when within ~240px of the bottom,
-  //      not on every scroll position.
-  const BUMP_THROTTLE_MS = 400
-  const lastBumpAtRef = useRef(0)
-  // Mirrors the live filtered length so the scroll closure can read it
-  // without rebinding on every state change.
-  const filteredChallengesLengthRef = useRef(0)
-  useEffect(() => {
-    filteredChallengesLengthRef.current = filteredChallenges.length
-  }, [filteredChallenges])
-  useEffect(() => {
-    if (nowFilter !== 'challenges') return
-    const el = nowBodyRef.current
-    if (!el) return
-    const onScroll = () => {
-      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
-      if (remaining >= 240) return
-      // Cap reached for the current filter? Don't bump — saves a re-render
-      // every scroll tick once the user reaches the bottom of the bucket.
-      if (challengesShownCount >= filteredChallengesLengthRef.current) return
-      const now = Date.now()
-      if (now - lastBumpAtRef.current < BUMP_THROTTLE_MS) return
-      lastBumpAtRef.current = now
-      setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
-    }
-    el.addEventListener('scroll', onScroll, { passive: true })
-    return () => el.removeEventListener('scroll', onScroll)
-  }, [nowFilter, challengesShownCount])
-
   useEffect(() => {
     if (!showPeopleDrawer) return
     const el = hereBodyRef.current
@@ -1104,6 +1044,62 @@ export default function App() {
   const [activeThreadChannelId, setActiveThreadChannelId] = useState(null)  // opens ThreadChatPage
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
+
+  // ── Challenges feed pagination + type sub-filter ─────────────────────────
+  // Lives next to the state it depends on (cityChallenges + the filter
+  // state above) so the reads happen AFTER their declarations — placing
+  // these effects earlier in the function triggers a TDZ ReferenceError
+  // at module bundle minification because `const` reads above the
+  // declaration line are not hoisted.
+
+  // Reset the paginator + sub-filter whenever the parent filter leaves /
+  // enters 'challenges'. Without this, switching back to Challenges would
+  // leak whatever cap the user paginated to last time.
+  useEffect(() => {
+    setChallengesShownCount(NOW_CHALLENGES_CAP)
+    if (nowFilter !== 'challenges') setChallengeTypeFilter('all')
+  }, [nowFilter])
+
+  // Reset the visible-count when the type sub-filter changes — switching
+  // from "food" to "place" should land the user at the top of that bucket.
+  useEffect(() => {
+    setChallengesShownCount(NOW_CHALLENGES_CAP)
+  }, [challengeTypeFilter])
+
+  // Filtered-by-type challenges. Shared by the JSX render and the scroll
+  // guard so they can't drift.
+  const filteredChallenges = useMemo(() => {
+    if (nowFilter !== 'challenges' || challengeTypeFilter === 'all') return cityChallenges
+    return cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
+  }, [cityChallenges, nowFilter, challengeTypeFilter])
+
+  // Scroll-to-load-more — three gates so we never spam the rendering loop
+  // (and, when backend pagination lands, the API):
+  //   1. Throttle (BUMP_THROTTLE_MS) — at most one bump per ~3 frames.
+  //   2. Cap guard — bail when shownCount already covers the filter.
+  //   3. Distance threshold — only fire within ~240px of the bottom.
+  const BUMP_THROTTLE_MS = 400
+  const lastBumpAtRef = useRef(0)
+  const filteredChallengesLengthRef = useRef(0)
+  useEffect(() => {
+    filteredChallengesLengthRef.current = filteredChallenges.length
+  }, [filteredChallenges])
+  useEffect(() => {
+    if (nowFilter !== 'challenges') return
+    const el = nowBodyRef.current
+    if (!el) return
+    const onScroll = () => {
+      const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
+      if (remaining >= 240) return
+      if (challengesShownCount >= filteredChallengesLengthRef.current) return
+      const now = Date.now()
+      if (now - lastBumpAtRef.current < BUMP_THROTTLE_MS) return
+      lastBumpAtRef.current = now
+      setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
+    }
+    el.addEventListener('scroll', onScroll, { passive: true })
+    return () => el.removeEventListener('scroll', onScroll)
+  }, [nowFilter, challengesShownCount])
 
   // Hangouts are members-only — gate guests to signup, otherwise open the channel.
   const openHangout = (topic) => {
