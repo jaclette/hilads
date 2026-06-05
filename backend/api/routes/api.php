@@ -7872,25 +7872,29 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json($existing);
     }
 
-    // Gate: mode matches audience. audience='locals' → must have mode='local';
-    // audience='explorers' → must have mode='exploring'. Users with null mode
-    // must pick one first (the client handles the prompt).
-    $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
-    $actualMode   = $authUser['mode'] ?? null;
-    if (empty($actualMode)) {
-        Response::json([
-            'error'         => 'Set your mode (local or traveler) before accepting challenges',
-            'code'          => 'mode_required',
-            'required_mode' => $expectedMode,
-        ], 403);
-    }
-    if ($actualMode !== $expectedMode) {
-        $needLabel = $expectedMode === 'local' ? 'locals' : 'travelers';
-        Response::json([
-            'error'         => "Only {$needLabel} can accept this challenge",
-            'code'          => 'mode_mismatch',
-            'required_mode' => $expectedMode,
-        ], 403);
+    // Mode/audience gate — Local-only. International challenges target
+    // anyone (or anyone in city B) and have no in-person meetup, so neither
+    // the user's local/traveler mode nor the challenge.audience field gates
+    // take-on. The proof verdict is the gate that matters.
+    $isInternational = ($challenge['mode'] ?? 'local') === 'international';
+    if (!$isInternational) {
+        $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
+        $actualMode   = $authUser['mode'] ?? null;
+        if (empty($actualMode)) {
+            Response::json([
+                'error'         => 'Set your mode (local or traveler) before accepting challenges',
+                'code'          => 'mode_required',
+                'required_mode' => $expectedMode,
+            ], 403);
+        }
+        if ($actualMode !== $expectedMode) {
+            $needLabel = $expectedMode === 'local' ? 'locals' : 'travelers';
+            Response::json([
+                'error'         => "Only {$needLabel} can accept this challenge",
+                'code'          => 'mode_mismatch',
+                'required_mode' => $expectedMode,
+            ], 403);
+        }
     }
 
     // 1:1 gate — refuse a new take-on while the challenge has any
@@ -7899,6 +7903,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     // point the row frees and the next traveler can take it on. Commit 3
     // adds a lazy "ghosted taker" rule so a long-stale debrief also frees
     // the challenge without manual intervention.
+    //
+    // International challenges share the same 1:1 lock at the data layer
+    // (one open acceptance at a time) — but the lock releases on proof
+    // verdict instead of meetup completion. Same semantics, different flow.
     if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
         Response::json([
             'error' => "Someone's already on this one — check back when it's done",
@@ -7908,8 +7916,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
 
     enforceRateLimit('challenge_accept', 20, 3600, $userId);
 
+    // International challenges auto-approve the take-on (no IRL filter step).
+    // Local stays gated at 'pending' so the creator can vet the meet-up.
+    $initialPhase = $isInternational ? 'accepted' : 'pending';
+
     try {
-        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId);
+        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
     } catch (\Throwable $e) {
         error_log('[challenges] accept failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to accept challenge'], 500);
@@ -7924,6 +7936,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                     'id'             => $challenge['id'],
                     'title'          => $challenge['title'],
                     'challenge_type' => $challenge['challenge_type'],
+                    'mode'           => $challenge['mode'] ?? 'local',
                 ],
                 'acceptor' => [
                     'id'             => $userId,
@@ -7936,18 +7949,26 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
-    // Push notification to the creator — new take-on request needs review.
-    // Tapping the push opens the challenge page where the creator can
-    // accept/reject; no in-notification action buttons (the screen carries
-    // the full review UI with both buttons).
+    // Push notification to the creator — copy differs by mode:
+    //   Local         → "take-on REQUEST" (creator must review)
+    //   International → "challenge accepted" (auto-approved; creator just
+    //                   knows someone's on it, waiting for proof)
+    // Same type for now (challenge_takeon_request) — keeps NotificationI18n
+    // and the bell row simple. Future step can split if the difference
+    // becomes UX-meaningful, but for now the body distinction below is
+    // enough — clients render off `data.mode` to differentiate CTAs.
     try {
         if (!empty($challenge['created_by'])) {
             $acceptorName = $authUser['display_name'] ?? 'Someone';
+            $title = $isInternational ? "🌐 Challenge accepted" : "🤝 New take-on request";
+            $body  = $isInternational
+                ? "{$acceptorName} accepted \"{$challenge['title']}\". Wait for the proof."
+                : "{$acceptorName} wants to take on \"{$challenge['title']}\"";
             NotificationRepository::create(
                 $challenge['created_by'],
                 'challenge_takeon_request',
-                "🤝 New take-on request",
-                "{$acceptorName} wants to take on \"{$challenge['title']}\"",
+                $title,
+                $body,
                 [
                     'challengeId'    => $challengeId,
                     'acceptanceId'   => $acceptance['id'],
@@ -7955,6 +7976,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                     // Plumbed through so NotificationI18n templates can render
                     // a localized body for non-EN recipients.
                     'challengeTitle' => $challenge['title'] ?? '',
+                    'mode'           => $challenge['mode'] ?? 'local',
                 ],
             );
         }
@@ -7965,6 +7987,8 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     AnalyticsService::defer('challenge_take_on', $userId, [
         'challenge_id'  => $challengeId,
         'acceptance_id' => $acceptance['id'],
+        'mode'          => $challenge['mode'] ?? 'local',
+        'auto_approved' => $isInternational,
     ]);
 
     Response::json($acceptance, 201);
@@ -9072,15 +9096,20 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         Response::json(['acceptance' => $existing, 'challengeId' => $challengeId]);
     }
 
-    $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
-    $actualMode   = $authUser['mode'] ?? null;
-    if (empty($actualMode) || $actualMode !== $expectedMode) {
-        Response::json([
-            'error'         => 'Mode required',
-            'code'          => empty($actualMode) ? 'mode_required' : 'mode_mismatch',
-            'required_mode' => $expectedMode,
-            'challengeId'   => $challengeId,
-        ], 403);
+    // Local-only audience gate (international skips — same logic as
+    // POST /challenges/:id/accept).
+    $isInternational = ($challenge['mode'] ?? 'local') === 'international';
+    if (!$isInternational) {
+        $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
+        $actualMode   = $authUser['mode'] ?? null;
+        if (empty($actualMode) || $actualMode !== $expectedMode) {
+            Response::json([
+                'error'         => 'Mode required',
+                'code'          => empty($actualMode) ? 'mode_required' : 'mode_mismatch',
+                'required_mode' => $expectedMode,
+                'challengeId'   => $challengeId,
+            ], 403);
+        }
     }
     if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
         Response::json([
@@ -9090,8 +9119,11 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         ], 403);
     }
 
+    // International invitations auto-approve at take-on; Local stays gated.
+    $initialPhase = $isInternational ? 'accepted' : 'pending';
+
     try {
-        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId);
+        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
     } catch (\Throwable $e) {
         error_log('[invite-accept] take-on create failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to take on'], 500);

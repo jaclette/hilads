@@ -261,6 +261,8 @@ class ChallengeAcceptanceRepository
                 cc.title                                             AS challenge_title,
                 cc.challenge_type,
                 cc.audience,
+                cc.mode                                              AS challenge_mode,
+                cc.target_city_id                                    AS challenge_target_city_id,
                 cc.created_by                                        AS creator_user_id,
                 creator.display_name                                 AS creator_display_name,
                 creator.profile_thumb_photo_url                      AS creator_thumb,
@@ -279,7 +281,7 @@ class ChallengeAcceptanceRepository
                                        AND m.type IN ('text','image')
             WHERE ca.acceptor_user_id = :uid OR cc.created_by = :uid
             GROUP BY ca.id,
-                     cc.title, cc.challenge_type, cc.audience, cc.created_by,
+                     cc.title, cc.challenge_type, cc.audience, cc.mode, cc.target_city_id, cc.created_by,
                      creator.display_name, creator.profile_thumb_photo_url,
                      acceptor.display_name, acceptor.profile_thumb_photo_url
             ORDER BY COALESCE(MAX(m.created_at), ca.created_at) DESC
@@ -294,11 +296,17 @@ class ChallengeAcceptanceRepository
                 ? ['id' => $r['acceptor_user_id'], 'displayName' => $r['acceptor_display_name'], 'thumbAvatarUrl' => $r['acceptor_thumb']]
                 : ['id' => $r['creator_user_id'],  'displayName' => $r['creator_display_name'],  'thumbAvatarUrl' => $r['creator_thumb']];
             $out[] = [
-                'id'                   => $r['acceptance_id'],
-                'challenge_id'         => $r['challenge_id'],
-                'challenge_title'      => $r['challenge_title'],
-                'challenge_type'       => $r['challenge_type'],
-                'thread_channel_id'    => $r['thread_channel_id'],
+                'id'                       => $r['acceptance_id'],
+                'challenge_id'             => $r['challenge_id'],
+                'challenge_title'          => $r['challenge_title'],
+                'challenge_type'           => $r['challenge_type'],
+                // Mode + target city surfaced so the client can pick the
+                // right phase pipeline (Local: accept→date→meet→wrap,
+                // International: accept→proof→verdict) without an extra
+                // /challenges/:id roundtrip per thread.
+                'challenge_mode'           => $r['challenge_mode'] ?? 'local',
+                'challenge_target_city_id' => $r['challenge_target_city_id'] ?? null,
+                'thread_channel_id'        => $r['thread_channel_id'],
                 'debrief_event_id'     => $r['debrief_event_id'] ?? null,
                 'phase'                => $r['phase'],
                 'effective_phase'      => $r['effective_phase'] ?? $r['phase'],
@@ -338,11 +346,15 @@ class ChallengeAcceptanceRepository
         $slot = static function (array $t): int {
             $p = $t['effective_phase'] ?? $t['phase'];
             return match ($p) {
-                'pending'   => 0,
-                'debrief'   => 1,
-                'accepted'  => 2,
-                'scheduled' => 3,
-                default     => 4,
+                // International review queue lives at the same priority as
+                // Local pending — both surface "you have something to look
+                // at" CTAs (review the proof / review the take-on request).
+                'pending'         => 0,
+                'proof_submitted' => 0,
+                'debrief'         => 1,
+                'accepted'        => 2,
+                'scheduled'       => 3,
+                default           => 4,
             };
         };
         $cmp = static function (array $a, array $b) use ($slot): int {
@@ -380,8 +392,18 @@ class ChallengeAcceptanceRepository
      * Caller is responsible for ALL gates (mode/audience, cap, not-creator,
      * idempotency). This is the raw write. Returns the freshly-built acceptance.
      */
-    public static function create(string $challengeId, string $acceptorUserId): array
+    public static function create(string $challengeId, string $acceptorUserId, string $initialPhase = 'pending'): array
     {
+        // Local challenges: 'pending' (the IRL meetup requires the creator to
+        // filter who joins). International challenges: 'accepted' (the friction
+        // lives on the proof verdict — there's nothing to filter at take-on,
+        // and an in-flight review step would just delay the proof submission).
+        // Caller passes the resolved value; we whitelist here so a stray value
+        // can't smuggle through.
+        if (!in_array($initialPhase, ['pending', 'accepted'], true)) {
+            $initialPhase = 'pending';
+        }
+
         $pdo = Database::pdo();
         $pdo->beginTransaction();
         try {
@@ -397,21 +419,22 @@ class ChallengeAcceptanceRepository
                 VALUES (:id, 'challenge_thread', :parent_id, 'thread', 'active', now(), now())
             ")->execute(['id' => $threadId, 'parent_id' => $challengeId]);
 
-            // phase='pending' — the creator must approve the take-on request
-            // before the acceptor can chat. The thread channel is created
-            // upfront (so the WS room exists for both parties) but the chat
-            // surface is gated by phase on the client. Flips to 'accepted'
-            // via approveTakeOn() or to 'rejected' via rejectTakeOn().
+            // phase: 'pending' for Local (gated take-on review), 'accepted'
+            // for International (auto-approved — proof verdict is the gate).
+            // The thread channel is created upfront either way so the WS room
+            // exists for both parties; the client decides surface visibility
+            // based on phase + challenge.mode.
             $pdo->prepare("
                 INSERT INTO challenge_acceptances
                     (id, challenge_id, acceptor_user_id, thread_channel_id, phase, created_at, updated_at)
                 VALUES
-                    (:id, :cid, :uid, :tcid, 'pending', now(), now())
+                    (:id, :cid, :uid, :tcid, :phase, now(), now())
             ")->execute([
-                'id'   => $accId,
-                'cid'  => $challengeId,
-                'uid'  => $acceptorUserId,
-                'tcid' => $threadId,
+                'id'    => $accId,
+                'cid'   => $challengeId,
+                'uid'   => $acceptorUserId,
+                'tcid'  => $threadId,
+                'phase' => $initialPhase,
             ]);
 
             $pdo->commit();
