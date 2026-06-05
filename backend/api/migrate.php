@@ -1189,4 +1189,105 @@ run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km
 // international acceptances. Local flow keeps the existing pending→accepted
 // →scheduled→debrief→approved|rejected chain.
 
+// ── Visibility layer (Round 2: privacy/public-by-default) ────────────────────
+// New axis on top of the existing mode (local/international): every challenge
+// has a visibility level that gates who can read it + whether crawlers index it.
+//
+//   public  (default): visible to everyone, indexed by Google, surfaces in
+//                      city feed + NOW + profile + sitemap.
+//   friends (Local only): visible to creator + their friends; not indexed;
+//                         dropped from public surfaces.
+//   private (Local only, post-acceptance via MUTUAL agreement):
+//                      visible to creator + acceptor only; not indexed;
+//                      spectator comments hidden but preserved.
+//
+// International is enforced 'public' at the route layer regardless of input
+// (cross-city content can't be private — defeats the model). No CHECK
+// constraint on the column itself so we can flex later without a migration.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public'", 'channel_challenges.visibility');
+
+// Sitemap + feed + profile queries all gate on visibility — index it.
+// Composite with status covers the common path (visibility='public' AND
+// status='open'); single-column is fine for the smaller branches.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_visibility ON channel_challenges (visibility)", 'idx_channel_challenges_visibility');
+
+// ── First-time public opt-in flag ────────────────────────────────────────────
+// Flipped to TRUE the first time the user dismisses the public-default opt-in
+// modal on the create form. Persists per-user so we only educate once.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS has_seen_public_optin BOOLEAN NOT NULL DEFAULT FALSE", 'users.has_seen_public_optin');
+
+// ── challenge_privacy_requests (mutual go-private flow) ──────────────────────
+// Local challenges flip from public → private only when BOTH the creator and
+// the acceptor have agreed. Each side posts a request (one row per user
+// per challenge); the route layer flips visibility=private when both rows
+// reach status='agreed'.
+//
+//   status: 'pending' (just opened by this user, waiting for the other side)
+//         | 'agreed'  (this user has confirmed)
+//         | 'denied'  (this user explicitly declined; visibility stays public)
+//
+// UNIQUE (challenge_id, user_id) — one row per user; resubmitting the
+// request updates the row rather than spawning duplicates.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_privacy_requests (
+        id           TEXT        PRIMARY KEY,
+        challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        status       TEXT        NOT NULL DEFAULT 'pending',
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (challenge_id, user_id)
+    )
+", 'challenge_privacy_requests');
+
+// Walked by challenge_id (read the two rows, check both 'agreed') and by
+// user_id (a user's pending privacy requests across challenges, future inbox).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_challenge ON challenge_privacy_requests (challenge_id)", 'idx_chprivreq_challenge');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_user      ON challenge_privacy_requests (user_id, status)", 'idx_chprivreq_user');
+
+// ── challenge_anonymized_users (retroactive display mask) ────────────────────
+// Any participant can request "remove my name from this challenge" — display
+// flips to "Anonymous user" with no avatar / no profile link in public render
+// paths. Row preserves audit; the user keeps receiving notifications + can
+// still act on the challenge (anonymization is a display mask, not a withdrawal).
+//
+// Composite PK (challenge_id, user_id): one row per (challenge, user); ON
+// CONFLICT DO NOTHING in the route makes the action idempotent.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_anonymized_users (
+        challenge_id  TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        user_id       TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        anonymized_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (challenge_id, user_id)
+    )
+", 'challenge_anonymized_users');
+
+// Per-user "all challenges where I've anonymized myself" lookup (profile +
+// account-settings surfaces). Bounded by participation count, no LIMIT needed.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chanon_user ON challenge_anonymized_users (user_id)", 'idx_chanon_user');
+
+// ── challenge_comments (spectator lane on Public challenges) ─────────────────
+// Separate table from `messages` so the active-participant thread (creator +
+// acceptor chat in the existing challenge_thread channel) stays cleanly
+// separated from the public spectator commentary. Decisions baked in:
+//   - Separate table → simpler noindex toggle, easier moderation scoping
+//   - Visibility check happens at the route layer (read gates on
+//     challenge.visibility = 'public' OR viewer is participant)
+//   - is_hidden lets moderation soft-hide a row without deleting it
+//     (audit + retroactive review preserved)
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_comments (
+        id           TEXT        PRIMARY KEY,
+        challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        body         TEXT        NOT NULL,
+        is_hidden    BOOLEAN     NOT NULL DEFAULT FALSE,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'challenge_comments');
+
+// Read path: comments for a challenge, newest first (or oldest-first depending
+// on UX — the index supports both via ORDER BY direction).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chcomments_challenge ON challenge_comments (challenge_id, created_at DESC)", 'idx_chcomments_challenge');
+
 echo "\nDone.\n";
