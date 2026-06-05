@@ -261,5 +261,25 @@
       "title": "Já tem alguém nessa agora",
       "body": "Um viajante está topando esse desafio. Quando terminar, fica livre de novo — passa aqui em breve."
     }
+  },
+  "postCreate": {
+    "title": "Seu desafio está no ar",
+    "subtitle": "Agora semeie — faça alguém aceitar nas próximas horas.",
+    "thisCity": "esta cidade",
+    "ctaInvite": "Mande pra alguém em {{city}}",
+    "ctaInviteSub": "Escolha alguns {{audience}} — a gente pinga.",
+    "ctaShare": "Compartilhe fora do Hilads",
+    "skip": "Talvez depois",
+    "pickerTitle": "{{audience}} em {{city}}",
+    "pickerSubtitle": "Toque pra selecionar. Eles recebem um push com Aceitar / Ignorar.",
+    "pickerEmpty": "Nenhum {{audience}} por aqui agora. Compartilhe fora.",
+    "sendCta": "Enviar pra {{count}}",
+    "sendCtaEmpty": "Escolha alguém primeiro",
+    "sentTitle": "Enviado pra {{count}}",
+    "sentSubtitle": "Eles vão receber uma notificação push."
+  },
+  "invitation": {
+    "accept": "Aceitar",
+    "ignore": "Ignorar"
   }
 }

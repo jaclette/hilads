@@ -102,8 +102,10 @@ export default function CreateChallengeScreen() {
         trimmedReturnClause,
       );
       // Land the creator on the freshly-created challenge so they can share
-      // it + watch participants accept in real time.
-      router.replace(`/challenge/${created.id}` as never);
+      // it + watch participants accept in real time. The ?postCreate=1 query
+      // param triggers the "seed it" sheet on the detail screen so the
+      // creator is nudged to invite specific city members or share externally.
+      router.replace(`/challenge/${created.id}?postCreate=1` as never);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('errStart'));
     } finally {

@@ -261,5 +261,25 @@
       "title": "今、別の人が挑戦中です",
       "body": "ある旅行者がこのチャレンジを受けています。終わったら、また受付が再開します — 近いうちにまた見てみてください。"
     }
+  },
+  "postCreate": {
+    "title": "チャレンジが公開された",
+    "subtitle": "種を蒔こう — 1時間以内に誰かに引き受けてもらう。",
+    "thisCity": "この街",
+    "ctaInvite": "{{city}}の誰かに送る",
+    "ctaInviteSub": "{{audience}}を何人か選ぶと通知を送る。",
+    "ctaShare": "Hilads外でシェア",
+    "skip": "あとで",
+    "pickerTitle": "{{city}}の{{audience}}",
+    "pickerSubtitle": "タップで選択。承諾 / 無視のプッシュが届く。",
+    "pickerEmpty": "近くに{{audience}}がいない。外でシェアしよう。",
+    "sendCta": "{{count}}人に送る",
+    "sendCtaEmpty": "まず選ぶ",
+    "sentTitle": "{{count}}人に送信",
+    "sentSubtitle": "今プッシュ通知が届く。"
+  },
+  "invitation": {
+    "accept": "承諾",
+    "ignore": "無視"
   }
 }

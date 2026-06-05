@@ -261,5 +261,25 @@
       "title": "Quelqu'un est dessus en ce moment",
       "body": "Un voyageur est en train de relever ce défi. Quand il aura fini, il sera de nouveau libre — repasse bientôt."
     }
+  },
+  "postCreate": {
+    "title": "Ton défi est lancé",
+    "subtitle": "Maintenant, plante la graine — fais en sorte que quelqu'un le relève dans l'heure.",
+    "thisCity": "cette ville",
+    "ctaInvite": "Envoie-le à quelqu'un à {{city}}",
+    "ctaInviteSub": "Choisis quelques {{audience}} — on les ping.",
+    "ctaShare": "Partage-le en dehors de Hilads",
+    "skip": "Peut-être plus tard",
+    "pickerTitle": "{{audience}} à {{city}}",
+    "pickerSubtitle": "Tape pour sélectionner. Ils reçoivent un push avec Accepter / Ignorer.",
+    "pickerEmpty": "Pas de {{audience}} dans le coin pour l'instant. Partage-le plutôt en dehors.",
+    "sendCta": "Envoyer à {{count}}",
+    "sendCtaEmpty": "Sélectionne quelqu'un d'abord",
+    "sentTitle": "Envoyé à {{count}}",
+    "sentSubtitle": "Ils vont recevoir une notification push."
+  },
+  "invitation": {
+    "accept": "Accepter",
+    "ignore": "Ignorer"
   }
 }

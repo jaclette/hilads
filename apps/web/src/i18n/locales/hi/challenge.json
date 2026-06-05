@@ -261,5 +261,25 @@
       "title": "अभी कोई इसमें लगा है",
       "body": "एक यात्री यह चुनौती ले रहा है। जब वे पूरा कर लेंगे, यह फिर से खुल जाएगी — जल्द ही वापस आना।"
     }
+  },
+  "postCreate": {
+    "title": "आपकी चैलेंज लाइव है",
+    "subtitle": "अब इसे फैलाओ — किसी से अगले एक घंटे में उठवाओ।",
+    "thisCity": "इस शहर",
+    "ctaInvite": "{{city}} में किसी को भेजो",
+    "ctaInviteSub": "कुछ {{audience}} चुनो — हम पिंग करेंगे।",
+    "ctaShare": "Hilads के बाहर शेयर करो",
+    "skip": "बाद में",
+    "pickerTitle": "{{city}} में {{audience}}",
+    "pickerSubtitle": "टैप करके चुनो। उन्हें Accept / Ignore वाली पुश मिलेगी।",
+    "pickerEmpty": "अभी कोई {{audience}} पास नहीं। बाहर शेयर करो।",
+    "sendCta": "{{count}} को भेजो",
+    "sendCtaEmpty": "पहले किसी को चुनो",
+    "sentTitle": "{{count}} को भेज दिया",
+    "sentSubtitle": "उन्हें अभी पुश मिल जाएगा।"
+  },
+  "invitation": {
+    "accept": "Accept",
+    "ignore": "Ignore"
   }
 }

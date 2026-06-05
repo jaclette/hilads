@@ -1095,4 +1095,28 @@ run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_b
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_at         TIMESTAMPTZ", 'challenge_acceptances.proposed_at');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS date_approved_at    TIMESTAMPTZ", 'challenge_acceptances.date_approved_at');
 
+// ── Challenge invitations ─────────────────────────────────────────────────────
+// After publishing, the creator can hand-pick city members and ping them.
+// Each row = one (challenge, invitee) ping. status pending → accepted | ignored.
+// Accept is just "the invitee tapped Accept on the push or in-app" — it does
+// NOT bypass the regular take-on flow; it deep-links them to the challenge
+// where the existing accept path runs (with same gating + pending review).
+// We keep this as a separate table so we can: (a) show the creator who they
+// already invited, (b) close the loop via push action buttons by invitation_id.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_invitations (
+        id            TEXT        PRIMARY KEY,
+        challenge_id  TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        inviter_user_id TEXT      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        invitee_user_id TEXT      NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        status        TEXT        NOT NULL DEFAULT 'pending',
+        created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+        responded_at  TIMESTAMPTZ,
+        UNIQUE (challenge_id, invitee_user_id)
+    )
+", 'challenge_invitations');
+
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_invitee   ON challenge_invitations (invitee_user_id, created_at DESC)", 'idx_chinv_invitee');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_challenge ON challenge_invitations (challenge_id,    created_at DESC)", 'idx_chinv_challenge');
+
 echo "\nDone.\n";

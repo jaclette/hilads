@@ -261,5 +261,25 @@
       "title": "Ada yang lagi ngambil sekarang",
       "body": "Seorang pelancong lagi ngambil tantangan ini. Pas mereka selesai, bakal kosong lagi — cek lagi nanti."
     }
+  },
+  "postCreate": {
+    "title": "Tantanganmu sudah tayang",
+    "subtitle": "Sebarkan sekarang — biar ada yang ambil dalam jam ini.",
+    "thisCity": "kota ini",
+    "ctaInvite": "Kirim ke seseorang di {{city}}",
+    "ctaInviteSub": "Pilih beberapa {{audience}} — kami yang ping.",
+    "ctaShare": "Bagikan di luar Hilads",
+    "skip": "Nanti aja",
+    "pickerTitle": "{{audience}} di {{city}}",
+    "pickerSubtitle": "Ketuk untuk pilih. Mereka dapat push dengan Terima / Abaikan.",
+    "pickerEmpty": "Tidak ada {{audience}} di sekitar. Bagikan ke luar.",
+    "sendCta": "Kirim ke {{count}}",
+    "sendCtaEmpty": "Pilih dulu",
+    "sentTitle": "Terkirim ke {{count}}",
+    "sentSubtitle": "Mereka akan dapat push sekarang."
+  },
+  "invitation": {
+    "accept": "Terima",
+    "ignore": "Abaikan"
   }
 }

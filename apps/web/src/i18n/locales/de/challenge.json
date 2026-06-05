@@ -261,5 +261,25 @@
       "title": "Da ist gerade jemand dran",
       "body": "Ein Reisender nimmt diese Challenge gerade an. Wenn er fertig ist, ist sie wieder frei — schau bald wieder vorbei."
     }
+  },
+  "postCreate": {
+    "title": "Deine Challenge ist live",
+    "subtitle": "Jetzt anstoßen — sorge dafür, dass jemand sie in der nächsten Stunde annimmt.",
+    "thisCity": "diese Stadt",
+    "ctaInvite": "Schick sie an jemanden in {{city}}",
+    "ctaInviteSub": "Wähle ein paar {{audience}} — wir pingen sie an.",
+    "ctaShare": "Außerhalb von Hilads teilen",
+    "skip": "Vielleicht später",
+    "pickerTitle": "{{audience}} in {{city}}",
+    "pickerSubtitle": "Antippen zum Auswählen. Sie bekommen einen Push mit Annehmen / Ignorieren.",
+    "pickerEmpty": "Gerade keine {{audience}} in der Nähe. Teil sie extern.",
+    "sendCta": "An {{count}} senden",
+    "sendCtaEmpty": "Erst jemanden auswählen",
+    "sentTitle": "An {{count}} gesendet",
+    "sentSubtitle": "Sie bekommen jetzt eine Push-Benachrichtigung."
+  },
+  "invitation": {
+    "accept": "Annehmen",
+    "ignore": "Ignorieren"
   }
 }

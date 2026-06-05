@@ -261,5 +261,25 @@
       "title": "지금 누가 하고 있어요",
       "body": "여행자가 이 챌린지를 받고 있어요. 끝나면 다시 열려요 — 곧 다시 와봐요."
     }
+  },
+  "postCreate": {
+    "title": "챌린지가 공개됐어",
+    "subtitle": "이제 씨앗을 뿌리자 — 한 시간 안에 누군가 받게 해.",
+    "thisCity": "이 도시",
+    "ctaInvite": "{{city}}의 누군가에게 보내기",
+    "ctaInviteSub": "{{audience}} 몇 명 선택 — 푸시 보낼게.",
+    "ctaShare": "Hilads 밖에서 공유",
+    "skip": "나중에",
+    "pickerTitle": "{{city}}의 {{audience}}",
+    "pickerSubtitle": "탭해서 선택. 수락 / 무시 푸시가 가.",
+    "pickerEmpty": "지금 {{audience}}가 없어. 밖에서 공유해.",
+    "sendCta": "{{count}}명에게 보내기",
+    "sendCtaEmpty": "먼저 선택해",
+    "sentTitle": "{{count}}명에게 전송",
+    "sentSubtitle": "지금 푸시 알림이 가."
+  },
+  "invitation": {
+    "accept": "수락",
+    "ignore": "무시"
   }
 }

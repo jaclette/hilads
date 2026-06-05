@@ -238,6 +238,10 @@ class NotificationRepository
             // Admin broadcasts can include a custom deepLink; falls back to
             // the notifications screen so the row is at least viewable.
             'admin_announcement'              => $data['deepLink'] ?? '/notifications',
+            // Tap → open the challenge. Push action buttons (Accept / Ignore)
+            // close the loop on the invitation directly without the user
+            // having to land in the app.
+            'challenge_invitation'            => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -262,6 +266,7 @@ class NotificationRepository
             'join_request'            => 'joinreq-'       . ($data['requestId'] ?? 'r'),
             'join_request_accepted'   => 'joinacc-'       . ($data['topicId'] ?? 'topic'),
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
+            'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
             default                   => 'hilads-' . $type,
         };
     }

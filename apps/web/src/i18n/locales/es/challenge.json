@@ -261,5 +261,25 @@
       "title": "Alguien está con esto ahora",
       "body": "Un viajero está aceptando este reto. Cuando acabe, volverá a estar libre — pásate pronto."
     }
+  },
+  "postCreate": {
+    "title": "Tu reto está activo",
+    "subtitle": "Ahora siembra la semilla — consigue que alguien lo asuma en la próxima hora.",
+    "thisCity": "esta ciudad",
+    "ctaInvite": "Envíalo a alguien en {{city}}",
+    "ctaInviteSub": "Elige unos cuantos {{audience}} — les avisamos.",
+    "ctaShare": "Compártelo fuera de Hilads",
+    "skip": "Quizás más tarde",
+    "pickerTitle": "{{audience}} en {{city}}",
+    "pickerSubtitle": "Toca para seleccionar. Reciben un push con Aceptar / Ignorar.",
+    "pickerEmpty": "No hay {{audience}} por aquí ahora. Compártelo fuera mejor.",
+    "sendCta": "Enviar a {{count}}",
+    "sendCtaEmpty": "Selecciona a alguien primero",
+    "sentTitle": "Enviado a {{count}}",
+    "sentSubtitle": "Recibirán una notificación push."
+  },
+  "invitation": {
+    "accept": "Aceptar",
+    "ignore": "Ignorar"
   }
 }

@@ -287,6 +287,36 @@ export async function sendThreadImageMessage(threadChannelId: string, imageUrl: 
   return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
 }
 
+// ── Personal invitations ────────────────────────────────────────────────────
+
+/** Hand-pick city members to ping with a personal invitation to take this on. */
+export async function inviteToChallenge(
+  challengeId: string,
+  userIds: string[],
+): Promise<{ invited: string[]; count: number; duplicates: number }> {
+  return api.post<{ invited: string[]; count: number; duplicates: number }>(
+    `/challenges/${challengeId}/invite`,
+    { userIds },
+  );
+}
+
+/** Accept an invitation. May fall through to the regular take-on flow's gates
+ *  (in_progress, mode_mismatch, …) — surfaces the same code shape. */
+export async function acceptInvitation(invitationId: string): Promise<{
+  acceptance?: ChallengeAcceptance;
+  challengeId: string;
+}> {
+  return api.post<{ acceptance?: ChallengeAcceptance; challengeId: string }>(
+    `/invitations/${invitationId}/accept`,
+    {},
+  );
+}
+
+/** Dismiss an invitation. Silent — does not notify the inviter. */
+export async function ignoreInvitation(invitationId: string): Promise<void> {
+  await api.post(`/invitations/${invitationId}/ignore`, {});
+}
+
 // ── Participants + chat (detail screen) ──────────────────────────────────────
 
 /** Full participant list for the members modal. */

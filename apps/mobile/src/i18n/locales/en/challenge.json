@@ -244,6 +244,26 @@
       "rejectedBody": "{{name}} declined this one. You can still pick another challenge."
     }
   },
+  "postCreate": {
+    "title": "Your challenge is live",
+    "subtitle": "Now seed it — get someone to take it on in the next hour.",
+    "thisCity": "this city",
+    "ctaInvite": "Send it to someone in {{city}}",
+    "ctaInviteSub": "Pick a few {{audience}} — we'll ping them.",
+    "ctaShare": "Share it outside Hilads",
+    "skip": "Maybe later",
+    "pickerTitle": "{{audience}} in {{city}}",
+    "pickerSubtitle": "Tap to select. They get a push with Accept / Ignore.",
+    "pickerEmpty": "No {{audience}} around right now. Share it externally instead.",
+    "sendCta": "Send to {{count}}",
+    "sendCtaEmpty": "Pick someone first",
+    "sentTitle": "Sent to {{count}}",
+    "sentSubtitle": "They'll get a push notification now."
+  },
+  "invitation": {
+    "accept": "Accept",
+    "ignore": "Ignore"
+  },
   "locked": {
     "visitor": {
       "title": "Take on the challenge to unlock the chat",

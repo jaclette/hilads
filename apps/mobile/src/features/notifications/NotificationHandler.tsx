@@ -17,6 +17,7 @@ import { useApp } from '@/context/AppContext';
 import { setupNotificationChannel, setupNotificationCategories } from '@/services/push';
 import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests';
 import { resolveHangoutJoinRequest } from '@/api/topics';
+import { acceptInvitation, ignoreInvitation } from '@/api/challenges';
 import { track } from '@/services/analytics';
 
 // ── Cold-start notification — resolved at module load ─────────────────────────
@@ -44,7 +45,7 @@ async function consumeColdStart(): Promise<string | null> {
   _coldStartConsumed = true;
   const data     = response.notification.request.content.data as NotifData;
   const actionId = response.actionIdentifier;
-  if (actionId === 'accept' || actionId === 'decline' || actionId === 'join') {
+  if (actionId === 'accept' || actionId === 'decline' || actionId === 'join' || actionId === 'ignore') {
     return handleNotificationAction(data, actionId);
   }
   return resolveRoute(data);
@@ -89,6 +90,9 @@ type NotifData = {
   actorId?:         string;
   actorName?:       string;
   vibeId?:          number;
+  challengeId?:     string; // challenge_invitation / takeon_request
+  invitationId?:    string; // challenge_invitation — id of the invitation row
+  inviterName?:     string;
 };
 
 Notifications.setNotificationHandler({
@@ -146,6 +150,22 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
       .catch(err => console.warn('[push-action] join request failed:', String(err)));
     // After accepting, open the hangout so the host sees it actually worked.
     return action === 'accept' ? `/topic/${data.topicId}` : null;
+  }
+
+  // Personal challenge invitation. Accept runs the take-on path server-side
+  // and we deep-link to the challenge so the invitee sees their pending review.
+  // Ignore is silent.
+  if (data.type === 'challenge_invitation' && data.invitationId) {
+    if (action === 'accept') {
+      acceptInvitation(data.invitationId)
+        .catch(err => console.warn('[push-action] invitation accept failed:', String(err)));
+      return data.challengeId ? `/challenge/${data.challengeId}` : null;
+    }
+    if (action === 'ignore') {
+      ignoreInvitation(data.invitationId)
+        .catch(err => console.warn('[push-action] invitation ignore failed:', String(err)));
+      return null;
+    }
   }
 
   return null;
@@ -219,6 +239,13 @@ function resolveRoute(data: NotifData): string | null {
       if (data.senderUserId) return `/user/${data.senderUserId}`;
       return null;
 
+    case 'challenge_invitation':
+      // Tap on the body (no action button) → open the challenge page; user can
+      // take it on there with the standard CTA. Action buttons (Accept / Ignore)
+      // are handled separately in handleNotificationAction.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
     default:
       return null;
   }
@@ -280,7 +307,7 @@ export function NotificationHandler() {
       // Action button tapped (Join / Accept / Decline) → run its side-effect,
       // then navigate to the route it returns (Join → event, Accept → hangout).
       const actionId = response.actionIdentifier;
-      if (actionId === 'accept' || actionId === 'decline' || actionId === 'join') {
+      if (actionId === 'accept' || actionId === 'decline' || actionId === 'join' || actionId === 'ignore') {
         const actionRoute = handleNotificationAction(data, actionId);
         if (actionRoute) {
           if (bootingRef.current) pendingRoute.current = actionRoute;

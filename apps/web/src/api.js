@@ -647,6 +647,43 @@ export async function acceptChallenge(challengeId) {
   return res.json()  // ChallengeAcceptance row
 }
 
+// ── Personal challenge invitations ──────────────────────────────────────────
+
+export async function inviteToChallenge(challengeId, userIds) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/invite`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ userIds }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || `Invite failed (HTTP ${res.status})`)
+  }
+  return res.json() // { invited: [...], count, duplicates }
+}
+
+export async function acceptInvitation(invitationId) {
+  const res = await fetch(`${BASE}/invitations/${encodeURIComponent(invitationId)}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  // Don't throw on 403 — the gate codes (in_progress / mode_mismatch) are
+  // meaningful state the caller wants to surface.
+  return res.json().catch(() => ({}))
+}
+
+export async function ignoreInvitation(invitationId) {
+  await fetch(`${BASE}/invitations/${encodeURIComponent(invitationId)}/ignore`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+}
+
 export async function cancelAcceptance(acceptanceId) {
   const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/cancel`, {
     method: 'POST',

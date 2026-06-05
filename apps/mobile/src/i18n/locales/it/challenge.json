@@ -261,5 +261,25 @@
       "title": "Qualcuno la sta facendo ora",
       "body": "Un viaggiatore sta accettando questa sfida. Quando avrà finito, sarà di nuovo libera — ripassa presto."
     }
+  },
+  "postCreate": {
+    "title": "La tua sfida è online",
+    "subtitle": "Ora seminala — fai in modo che qualcuno la accetti entro un'ora.",
+    "thisCity": "questa città",
+    "ctaInvite": "Manda a qualcuno a {{city}}",
+    "ctaInviteSub": "Scegli qualche {{audience}} — gli mandiamo un ping.",
+    "ctaShare": "Condividi fuori da Hilads",
+    "skip": "Forse dopo",
+    "pickerTitle": "{{audience}} a {{city}}",
+    "pickerSubtitle": "Tocca per selezionare. Ricevono un push con Accetta / Ignora.",
+    "pickerEmpty": "Nessun {{audience}} qui ora. Condividila fuori.",
+    "sendCta": "Manda a {{count}}",
+    "sendCtaEmpty": "Scegli qualcuno prima",
+    "sentTitle": "Mandato a {{count}}",
+    "sentSubtitle": "Riceveranno una notifica push."
+  },
+  "invitation": {
+    "accept": "Accetta",
+    "ignore": "Ignora"
   }
 }

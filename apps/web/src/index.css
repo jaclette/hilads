@@ -11334,3 +11334,194 @@ body.has-app-promo-banner .page-header {
 .challenge-participants-strip {
   /* inherits .topic-members-strip rules — no overrides for now */
 }
+
+/* ── Post-create "seed it" modal ───────────────────────────────────────────
+   Fires once right after publishing a challenge. Two CTAs in the seed step
+   (invite city members / share externally), then a multi-select picker for
+   the invite path. Sits inside the shared .modal-overlay / .modal-panel
+   skeleton so it shares the slide-up animation + responsive sizing. */
+
+.challenge-post-create {
+  padding: 18px 16px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 85vh;
+}
+
+.cpcm-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+}
+.cpcm-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+  margin-bottom: 6px;
+}
+
+/* Primary CTA — the orange "invite city members" tile. */
+.cpcm-cta-primary {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #FF7A3C;
+  color: #fff;
+  padding: 14px 14px;
+  border-radius: 14px;
+  text-align: left;
+  width: 100%;
+  font: inherit;
+}
+.cpcm-cta-primary:hover { background: #ff8753; }
+.cpcm-cta-icon  { font-size: 20px; }
+.cpcm-cta-body  { flex: 1; display: flex; flex-direction: column; }
+.cpcm-cta-line  { font-size: 15px; font-weight: 800; }
+.cpcm-cta-sub   { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); margin-top: 2px; }
+.cpcm-cta-arrow { font-size: 22px; color: rgba(255,255,255,0.75); font-weight: 600; }
+
+/* Secondary CTA — outlined orange "share externally". */
+.cpcm-cta-secondary {
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255,122,60,0.08);
+  border: 1px solid rgba(255,122,60,0.4);
+  color: #FF7A3C;
+  padding: 12px 14px;
+  border-radius: 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  width: 100%;
+}
+.cpcm-cta-secondary:hover { background: rgba(255,122,60,0.14); }
+
+.cpcm-skip {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 0 0;
+}
+.cpcm-skip:hover { color: var(--text); }
+
+/* Picker view */
+.cpcm-picker-head { display: flex; align-items: flex-start; gap: 8px; }
+.cpcm-back {
+  appearance: none;
+  cursor: pointer;
+  background: rgba(255,255,255,0.06);
+  border: 0;
+  color: var(--muted);
+  width: 28px; height: 28px;
+  border-radius: 14px;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+.cpcm-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 8px -4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 360px;
+}
+.cpcm-loading,
+.cpcm-empty,
+.cpcm-error {
+  color: var(--muted);
+  text-align: center;
+  padding: 24px 12px;
+  font-size: 13px;
+}
+.cpcm-error { color: #ef4444; }
+
+.cpcm-row {
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  width: 100%;
+  text-align: left;
+  font: inherit;
+}
+.cpcm-row:hover  { background: rgba(255,255,255,0.04); }
+.cpcm-row--selected { background: rgba(255,122,60,0.10); }
+.cpcm-avatar {
+  width: 36px; height: 36px; border-radius: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.cpcm-row-info { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.cpcm-row-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.cpcm-row-handle { font-size: 12px; color: var(--muted); }
+.cpcm-check {
+  width: 22px; height: 22px; border-radius: 11px;
+  border: 2px solid rgba(255,255,255,0.18);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.cpcm-check--on {
+  background: #FF7A3C;
+  border-color: #FF7A3C;
+}
+
+.cpcm-send {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  background: #FF7A3C;
+  color: #fff;
+  padding: 13px 14px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  width: 100%;
+  margin-top: 8px;
+}
+.cpcm-send:hover:not(:disabled) { background: #ff8753; }
+.cpcm-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.cpcm-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 24px 8px;
+  text-align: center;
+}
+.cpcm-success-emoji { font-size: 40px; }

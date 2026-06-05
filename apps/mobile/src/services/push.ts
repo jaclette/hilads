@@ -82,6 +82,13 @@ export async function setupNotificationCategories(): Promise<void> {
     await Notifications.setNotificationCategoryAsync('new_event', [
       { identifier: 'join', buttonTitle: i18n.t('join', { ns: 'event' }), options: { opensAppToForeground: true } },
     ]);
+
+    // Personal challenge invitation: Accept opens the challenge (so the user
+    // sees they're now in the take-on review queue). Ignore stays silent.
+    await Notifications.setNotificationCategoryAsync('challenge_invitation', [
+      { identifier: 'accept', buttonTitle: i18n.t('invitation.accept', { ns: 'challenge', defaultValue: 'Accept' }), options: { opensAppToForeground: true } },
+      { identifier: 'ignore', buttonTitle: i18n.t('invitation.ignore', { ns: 'challenge', defaultValue: 'Ignore' }), options: { opensAppToForeground: false, isDestructive: true } },
+    ]);
     console.log('[push-mobile] notification categories registered');
   } catch (e) {
     console.warn('[push-mobile] setNotificationCategoryAsync failed:', String(e));

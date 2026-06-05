@@ -170,6 +170,7 @@ class MobilePushService
                 'friend_request_received' => 'friend_request',
                 'join_request'            => 'join_request',
                 'new_event'               => 'new_event',
+                'challenge_invitation'    => 'challenge_invitation',
                 default                   => null,
             };
 

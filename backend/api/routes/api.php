@@ -8505,6 +8505,214 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (ar
     ]);
 });
 
+// ── Personal invitations ─────────────────────────────────────────────────────
+// After publishing, the creator can hand-pick city members and ping them with
+// an in-app notification + push (with Accept / Ignore action buttons in the
+// notification tray on native). Accepting just runs the same gated take-on
+// path everyone else uses — invitations don't bypass mode/in-progress checks.
+
+// POST /api/v1/challenges/{challengeId}/invite — body { userIds: [...] }
+$router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $inviter  = $authUser['id'];
+
+    $challenge = ChallengeRepository::findById($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    // Creator-only (the "invite people to take this on" button only shows for
+    // the creator anyway — defence in depth).
+    if (($challenge['created_by'] ?? null) !== $inviter) {
+        Response::json(['error' => 'Only the creator can invite'], 403);
+    }
+
+    $body    = json_decode(file_get_contents('php://input'), true) ?? [];
+    $userIds = array_values(array_filter(array_unique($body['userIds'] ?? []), fn($v) => is_string($v) && $v !== ''));
+    if (empty($userIds)) {
+        Response::json(['error' => 'No invitees'], 400);
+    }
+    // Cap fan-out per call — keeps the in-request loop bounded on non-FPM
+    // (every send is in-request). 50 is plenty for a hand-picked list.
+    if (count($userIds) > 50) {
+        Response::json(['error' => 'Too many invitees (max 50)'], 400);
+    }
+    // No self-invite.
+    $userIds = array_values(array_filter($userIds, fn($u) => $u !== $inviter));
+
+    enforceRateLimit('challenge_invite', 60, 3600, $inviter);
+
+    $inviterName = $authUser['display_name'] ?? 'Someone';
+    $title       = $challenge['title'] ?? '';
+
+    $sent = [];
+    foreach ($userIds as $inviteeId) {
+        try {
+            $invitation = ChallengeInvitationRepository::create($challengeId, $inviter, $inviteeId);
+            if ($invitation === null) {
+                continue; // already invited, idempotent skip
+            }
+            // In-app notification + push. Push payload carries invitationId so
+            // the mobile push category's Accept/Ignore actions can resolve the
+            // row server-side without an extra round-trip.
+            NotificationRepository::create(
+                $inviteeId,
+                'challenge_invitation',
+                "🤝 {$inviterName} wants you to take this on",
+                $title,
+                [
+                    'challengeId'   => $challengeId,
+                    'invitationId'  => $invitation['id'],
+                    'inviterUserId' => $inviter,
+                    'inviterName'   => $inviterName,
+                    'challengeTitle'=> $title,
+                ],
+            );
+            $sent[] = $inviteeId;
+        } catch (\Throwable $e) {
+            error_log('[challenges] invite send failed inv=' . $inviteeId . ': ' . $e->getMessage());
+        }
+    }
+
+    Response::json([
+        'invited'    => $sent,
+        'count'      => count($sent),
+        'duplicates' => count($userIds) - count($sent),
+    ], 201);
+});
+
+// POST /api/v1/invitations/{invitationId}/accept
+// Called from the push action button OR from the in-app notification list.
+// Marks the invitation accepted, then forwards into the standard take-on path
+// (same gating: mode match, not creator, no in-progress acceptance). If the
+// take-on can't proceed (mode mismatch, in-progress…), we still mark the
+// invitation accepted but return the gate error so the client can show it.
+$router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (array $params) {
+    $invitationId = $params['invitationId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $invitationId)) {
+        Response::json(['error' => 'Invalid invitationId'], 400);
+    }
+    $authUser   = AuthService::requireAuth();
+    $userId     = $authUser['id'];
+
+    $invitation = ChallengeInvitationRepository::findById($invitationId);
+    if ($invitation === null) {
+        Response::json(['error' => 'Invitation not found'], 404);
+    }
+    if ($invitation['invitee_user_id'] !== $userId) {
+        Response::json(['error' => 'Not your invitation'], 403);
+    }
+
+    ChallengeInvitationRepository::respond($invitationId, $userId, 'accepted');
+
+    // Mirror the same gates as /challenges/:id/accept. If any fails, the
+    // invitation is marked accepted but we surface the gate error so the
+    // client can deep-link them to the challenge page with the right toast.
+    $challengeId = $invitation['challenge_id'];
+    $challenge   = ChallengeRepository::findById($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found', 'code' => 'gone'], 404);
+    }
+    if ($challenge['created_by'] === $userId) {
+        Response::json(['error' => 'You created this', 'code' => 'not_creator', 'challengeId' => $challengeId], 403);
+    }
+
+    $existing = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    if ($existing !== null) {
+        Response::json(['acceptance' => $existing, 'challengeId' => $challengeId]);
+    }
+
+    $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
+    $actualMode   = $authUser['mode'] ?? null;
+    if (empty($actualMode) || $actualMode !== $expectedMode) {
+        Response::json([
+            'error'         => 'Mode required',
+            'code'          => empty($actualMode) ? 'mode_required' : 'mode_mismatch',
+            'required_mode' => $expectedMode,
+            'challengeId'   => $challengeId,
+        ], 403);
+    }
+    if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
+        Response::json([
+            'error'       => 'In progress',
+            'code'        => 'in_progress',
+            'challengeId' => $challengeId,
+        ], 403);
+    }
+
+    try {
+        $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId);
+    } catch (\Throwable $e) {
+        error_log('[invite-accept] take-on create failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to take on'], 500);
+    }
+
+    // Broadcast + push to the creator (same as POST /challenges/:id/accept).
+    try {
+        if (!empty($challenge['created_by'])) {
+            broadcastChallengeAcceptedToWs($challenge['created_by'], [
+                'acceptance' => $acceptance,
+                'challenge'  => [
+                    'id'             => $challenge['id'],
+                    'title'          => $challenge['title'],
+                    'challenge_type' => $challenge['challenge_type'],
+                ],
+                'acceptor' => [
+                    'id'             => $userId,
+                    'displayName'    => $authUser['display_name'] ?? null,
+                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                ],
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[invite-accept] ws broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+    try {
+        if (!empty($challenge['created_by'])) {
+            $acceptorName = $authUser['display_name'] ?? 'Someone';
+            NotificationRepository::create(
+                $challenge['created_by'],
+                'challenge_takeon_request',
+                "🤝 New take-on request",
+                "{$acceptorName} wants to take on \"{$challenge['title']}\"",
+                [
+                    'challengeId'  => $challengeId,
+                    'acceptanceId' => $acceptance['id'],
+                    'acceptorName' => $acceptorName,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[invite-accept] takeon-request push failed: ' . $e->getMessage());
+    }
+
+    Response::json(['acceptance' => $acceptance, 'challengeId' => $challengeId], 201);
+});
+
+// POST /api/v1/invitations/{invitationId}/ignore
+$router->add('POST', '/api/v1/invitations/{invitationId}/ignore', function (array $params) {
+    $invitationId = $params['invitationId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $invitationId)) {
+        Response::json(['error' => 'Invalid invitationId'], 400);
+    }
+    $authUser   = AuthService::requireAuth();
+    $userId     = $authUser['id'];
+
+    $invitation = ChallengeInvitationRepository::findById($invitationId);
+    if ($invitation === null) {
+        Response::json(['error' => 'Invitation not found'], 404);
+    }
+    if ($invitation['invitee_user_id'] !== $userId) {
+        Response::json(['error' => 'Not your invitation'], 403);
+    }
+
+    $updated = ChallengeInvitationRepository::respond($invitationId, $userId, 'ignored');
+    Response::json($updated);
+});
+
 // ── Thread channel chat (PR2) ─────────────────────────────────────────────────
 // Same shape as the topic message endpoints, but the membership gate uses
 // challenge_acceptances (acceptor + creator are the 2 parties).

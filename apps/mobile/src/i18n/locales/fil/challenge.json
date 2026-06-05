@@ -261,5 +261,25 @@
       "title": "May kumukuha na ngayon",
       "body": "May biyaherong kumukuha ng challenge na ito. Pag tapos na sila, magiging available ulit — balikan mo soon."
     }
+  },
+  "postCreate": {
+    "title": "Live na ang challenge mo",
+    "subtitle": "Iseed mo na — paganahin sa loob ng isang oras.",
+    "thisCity": "lungsod na ito",
+    "ctaInvite": "Ipadala kay kahit sino sa {{city}}",
+    "ctaInviteSub": "Pumili ng ilang {{audience}} — pi-ping namin.",
+    "ctaShare": "Ibahagi sa labas ng Hilads",
+    "skip": "Mamaya na lang",
+    "pickerTitle": "{{audience}} sa {{city}}",
+    "pickerSubtitle": "I-tap para piliin. Makakatanggap sila ng push na may Tanggapin / Huwag pansinin.",
+    "pickerEmpty": "Walang {{audience}} sa paligid ngayon. I-share sa labas na lang.",
+    "sendCta": "Ipadala kay {{count}}",
+    "sendCtaEmpty": "Pumili muna ng tao",
+    "sentTitle": "Naipadala sa {{count}}",
+    "sentSubtitle": "Tatanggap sila ng push ngayon."
+  },
+  "invitation": {
+    "accept": "Tanggapin",
+    "ignore": "Huwag pansinin"
   }
 }

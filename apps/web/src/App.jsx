@@ -26,6 +26,7 @@ import CreateEventPage from './components/CreateEventModal'
 import CreateTopicPage from './components/CreateTopicPage'
 import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
+import ChallengePostCreateModal from './components/ChallengePostCreateModal'
 import ThreadChatPage     from './components/ThreadChatPage'
 import ThreadsListPage    from './components/ThreadsListPage'
 import CreateChallengePage from './components/CreateChallengePage'
@@ -1029,6 +1030,9 @@ export default function App() {
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
   const [editChallengeObj,    setEditChallengeObj]    = useState(null)  // challenge being edited (owner)
+  // Floating "seed it" modal shown immediately after a challenge is created.
+  // Carries the new challenge so the modal can fetch city members + invite.
+  const [postCreateChallenge, setPostCreateChallenge] = useState(null)
   // PR2 — per-acceptance threads
   const [activeThreadChannelId, setActiveThreadChannelId] = useState(null)  // opens ThreadChatPage
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
@@ -5882,9 +5886,39 @@ export default function App() {
           guest={guest}
           account={account}
           editChallenge={editChallengeObj}
-          onCreated={(ch) => { setShowCreateChallenge(false); setActiveChallenge(ch) }}
+          onCreated={(ch) => {
+            setShowCreateChallenge(false)
+            setActiveChallenge(ch)
+            // Fire the post-create "seed it" modal so the creator is nudged
+            // to invite city members or share externally right away.
+            setPostCreateChallenge(ch)
+          }}
           onUpdated={(ch) => { setEditChallengeObj(null); setActiveChallenge(ch) }}
           onBack={() => { setShowCreateChallenge(false); setEditChallengeObj(null) }}
+        />
+      )}
+
+      {/* Post-create "seed it" floating modal. Two CTAs: invite city members
+          to take it on (with push) OR share externally. Fires once per create. */}
+      {postCreateChallenge && (
+        <ChallengePostCreateModal
+          challenge={postCreateChallenge}
+          cityChannelId={channelId}
+          cityName={city}
+          currentUserId={account?.id ?? null}
+          onClose={() => setPostCreateChallenge(null)}
+          onShare={async () => {
+            try {
+              await navigator.share?.({
+                title: postCreateChallenge.title,
+                text:  postCreateChallenge.title,
+                url:   `${window.location.origin}/challenge/${postCreateChallenge.id}`,
+              })
+            } catch {
+              // Fallback: copy URL to clipboard.
+              try { await navigator.clipboard?.writeText(`${window.location.origin}/challenge/${postCreateChallenge.id}`) } catch {}
+            }
+          }}
         />
       )}
 

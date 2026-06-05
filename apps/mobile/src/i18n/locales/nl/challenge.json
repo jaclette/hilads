@@ -261,5 +261,25 @@
       "title": "Iemand is hier nu mee bezig",
       "body": "Een reiziger pakt deze challenge nu op. Als ze klaar zijn, komt 'ie weer vrij — kom snel terug."
     }
+  },
+  "postCreate": {
+    "title": "Je challenge is live",
+    "subtitle": "Zaai het nu — zorg dat iemand het binnen het uur oppakt.",
+    "thisCity": "deze stad",
+    "ctaInvite": "Stuur het naar iemand in {{city}}",
+    "ctaInviteSub": "Kies een paar {{audience}} — wij pingen ze.",
+    "ctaShare": "Deel buiten Hilads",
+    "skip": "Misschien later",
+    "pickerTitle": "{{audience}} in {{city}}",
+    "pickerSubtitle": "Tik om te selecteren. Ze krijgen een push met Accepteren / Negeren.",
+    "pickerEmpty": "Geen {{audience}} in de buurt. Deel het anders extern.",
+    "sendCta": "Stuur naar {{count}}",
+    "sendCtaEmpty": "Kies eerst iemand",
+    "sentTitle": "Gestuurd naar {{count}}",
+    "sentSubtitle": "Ze krijgen nu een push-melding."
+  },
+  "invitation": {
+    "accept": "Accepteren",
+    "ignore": "Negeren"
   }
 }

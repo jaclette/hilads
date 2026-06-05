@@ -28,6 +28,7 @@ import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { MembersSheet } from '@/components/MembersSheet';
+import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
@@ -52,12 +53,19 @@ export default function ChallengeChatScreen() {
   // Tab-bar height when our screen is nested under (tabs); 0 otherwise so
   // routes opened from elsewhere don't get phantom dead space at the bottom.
   const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id, postCreate } = useLocalSearchParams<{ id: string; postCreate?: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
   const [challenge,        setChallenge]        = useState<Challenge | null>(null);
   const [challengeLoading, setChallengeLoading] = useState(true);
+  // Carry these alongside the challenge so the post-create modal can fetch
+  // city members and label them by city name without re-querying.
+  const [challengeCityName,    setChallengeCityName]    = useState<string | null>(null);
+  const [challengeCityChannel, setChallengeCityChannel] = useState<string | null>(null);
+  // Post-create sheet: visible when /challenge/:id?postCreate=1 (the create
+  // form navigates there on success). Owner-only.
+  const [postCreateOpen, setPostCreateOpen] = useState(false);
   const [participants,     setParticipants]     = useState<UserDTO[]>([]);
   const [membersOpen,      setMembersOpen]      = useState(false);
   const [acceptBusy,       setAcceptBusy]       = useState(false);
@@ -96,7 +104,11 @@ export default function ChallengeChatScreen() {
   const loadChallenge = useCallback(() => {
     if (!id) return;
     fetchChallengeById(id)
-      .then(({ challenge: c }) => setChallenge(c))
+      .then(({ challenge: c, channelId, cityName }) => {
+        setChallenge(c);
+        setChallengeCityName(cityName);
+        setChallengeCityChannel(channelId != null ? String(channelId) : null);
+      })
       .catch(() => setChallenge(null))
       .finally(() => setChallengeLoading(false));
   }, [id]);
@@ -136,6 +148,17 @@ export default function ChallengeChatScreen() {
     loadParticipants();
     loadMyAcceptance();
   }, [loadChallenge, loadParticipants, loadMyAcceptance]);
+
+  // Post-create modal: fired by the create form via ?postCreate=1. We wait
+  // until the challenge has loaded so the modal knows the audience/city, then
+  // strip the param from the URL so a back-nav doesn't re-open it.
+  useEffect(() => {
+    if (postCreate === '1' && challenge && !challengeLoading) {
+      setPostCreateOpen(true);
+      // Replace URL to drop the trigger so a refresh / back-nav doesn't re-fire.
+      router.setParams({ postCreate: undefined } as never);
+    }
+  }, [postCreate, challenge, challengeLoading, router]);
 
   // ── Owner actions ───────────────────────────────────────────────────────────
 
@@ -853,6 +876,18 @@ export default function ChallengeChatScreen() {
           setMembersOpen(false);
           router.push({ pathname: '/user/[id]', params: { id: uid } });
         }}
+      />
+
+      {/* Post-create "seed it" sheet — first opens with two CTAs (invite city
+          members / share externally), then morphs into a multi-select picker. */}
+      <ChallengePostCreateSheet
+        visible={postCreateOpen}
+        challenge={challenge}
+        cityChannelId={challengeCityChannel}
+        cityName={challengeCityName}
+        currentUserId={account?.id ?? null}
+        onClose={() => setPostCreateOpen(false)}
+        onShare={handleShare}
       />
     </SafeAreaView>
   );

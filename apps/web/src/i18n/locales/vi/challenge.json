@@ -261,5 +261,25 @@
       "title": "Có người đang nhận ngay bây giờ",
       "body": "Một du khách đang nhận thử thách này. Khi họ xong, nó sẽ trống trở lại — ghé lại sớm nhé."
     }
+  },
+  "postCreate": {
+    "title": "Thử thách của bạn đã ra mắt",
+    "subtitle": "Giờ gieo hạt — kéo ai đó nhận trong một tiếng tới.",
+    "thisCity": "thành phố này",
+    "ctaInvite": "Gửi cho ai đó ở {{city}}",
+    "ctaInviteSub": "Chọn vài {{audience}} — bọn mình ping họ.",
+    "ctaShare": "Chia sẻ ngoài Hilads",
+    "skip": "Để sau",
+    "pickerTitle": "{{audience}} ở {{city}}",
+    "pickerSubtitle": "Chạm để chọn. Họ nhận push với Chấp nhận / Bỏ qua.",
+    "pickerEmpty": "Không có {{audience}} quanh đây. Chia sẻ ngoài thay vì.",
+    "sendCta": "Gửi cho {{count}}",
+    "sendCtaEmpty": "Chọn ai đó trước",
+    "sentTitle": "Đã gửi cho {{count}}",
+    "sentSubtitle": "Họ sẽ nhận thông báo push ngay."
+  },
+  "invitation": {
+    "accept": "Chấp nhận",
+    "ignore": "Bỏ qua"
   }
 }

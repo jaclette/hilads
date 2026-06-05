@@ -261,5 +261,25 @@
       "title": "现在有人在接",
       "body": "一位旅行者正在接这个挑战。等他完成后又会空出来 — 稍后再回来看看。"
     }
+  },
+  "postCreate": {
+    "title": "你的挑战已上线",
+    "subtitle": "现在播下种子 — 让有人在一小时内接下它。",
+    "thisCity": "这座城市",
+    "ctaInvite": "发给{{city}}的某个人",
+    "ctaInviteSub": "挑几个{{audience}} — 我们去 ping 他们。",
+    "ctaShare": "在 Hilads 之外分享",
+    "skip": "稍后",
+    "pickerTitle": "{{city}}的{{audience}}",
+    "pickerSubtitle": "点击选择。他们会收到带「接受 / 忽略」的推送。",
+    "pickerEmpty": "附近暂时没有{{audience}}。换种方式在外面分享吧。",
+    "sendCta": "发送给 {{count}}",
+    "sendCtaEmpty": "先选一个人",
+    "sentTitle": "已发送给 {{count}}",
+    "sentSubtitle": "他们现在会收到推送。"
+  },
+  "invitation": {
+    "accept": "接受",
+    "ignore": "忽略"
   }
 }
