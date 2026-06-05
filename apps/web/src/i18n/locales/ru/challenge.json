@@ -276,7 +276,8 @@
     "sendCta": "Отправить ({{count}})",
     "sendCtaEmpty": "Сначала выбери кого-нибудь",
     "sentTitle": "Отправлено: {{count}}",
-    "sentSubtitle": "Сейчас придёт пуш-уведомление."
+    "sentSubtitle": "Сейчас придёт пуш-уведомление.",
+    "pickerSubtitleAll": "Точного совпадения нет — показываем всех в {{city}}."
   },
   "invitation": {
     "accept": "Принять",

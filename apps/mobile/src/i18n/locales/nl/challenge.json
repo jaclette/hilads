@@ -276,7 +276,8 @@
     "sendCta": "Stuur naar {{count}}",
     "sendCtaEmpty": "Kies eerst iemand",
     "sentTitle": "Gestuurd naar {{count}}",
-    "sentSubtitle": "Ze krijgen nu een push-melding."
+    "sentSubtitle": "Ze krijgen nu een push-melding.",
+    "pickerSubtitleAll": "Geen exacte match — iedereen in {{city}} wordt getoond."
   },
   "invitation": {
     "accept": "Accepteren",

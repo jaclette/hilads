@@ -259,7 +259,8 @@
     "sendCta": "Send to {{count}}",
     "sendCtaEmpty": "Pick someone first",
     "sentTitle": "Sent to {{count}}",
-    "sentSubtitle": "They'll get a push notification now."
+    "sentSubtitle": "They'll get a push notification now.",
+    "pickerSubtitleAll": "No exact match — showing everyone in {{city}}."
   },
   "invitation": {
     "accept": "Accept",

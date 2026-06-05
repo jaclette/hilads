@@ -276,7 +276,8 @@
     "sendCta": "Gửi cho {{count}}",
     "sendCtaEmpty": "Chọn ai đó trước",
     "sentTitle": "Đã gửi cho {{count}}",
-    "sentSubtitle": "Họ sẽ nhận thông báo push ngay."
+    "sentSubtitle": "Họ sẽ nhận thông báo push ngay.",
+    "pickerSubtitleAll": "Không ai khớp chính xác — hiển thị tất cả ở {{city}}."
   },
   "invitation": {
     "accept": "Chấp nhận",

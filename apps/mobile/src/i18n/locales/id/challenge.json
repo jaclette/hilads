@@ -276,7 +276,8 @@
     "sendCta": "Kirim ke {{count}}",
     "sendCtaEmpty": "Pilih dulu",
     "sentTitle": "Terkirim ke {{count}}",
-    "sentSubtitle": "Mereka akan dapat push sekarang."
+    "sentSubtitle": "Mereka akan dapat push sekarang.",
+    "pickerSubtitleAll": "Tidak ada yang persis cocok — menampilkan semua di {{city}}."
   },
   "invitation": {
     "accept": "Terima",

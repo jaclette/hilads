@@ -276,7 +276,8 @@
     "sendCta": "ส่งให้ {{count}}",
     "sendCtaEmpty": "เลือกใครก่อน",
     "sentTitle": "ส่งให้ {{count}} แล้ว",
-    "sentSubtitle": "เขาจะได้รับ push เลย"
+    "sentSubtitle": "เขาจะได้รับ push เลย",
+    "pickerSubtitleAll": "ไม่มีคนตรงเป๊ะ — แสดงทุกคนใน {{city}}"
   },
   "invitation": {
     "accept": "รับ",

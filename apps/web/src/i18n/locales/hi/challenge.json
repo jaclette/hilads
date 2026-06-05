@@ -276,7 +276,8 @@
     "sendCta": "{{count}} को भेजो",
     "sendCtaEmpty": "पहले किसी को चुनो",
     "sentTitle": "{{count}} को भेज दिया",
-    "sentSubtitle": "उन्हें अभी पुश मिल जाएगा।"
+    "sentSubtitle": "उन्हें अभी पुश मिल जाएगा।",
+    "pickerSubtitleAll": "{{city}} में सटीक मैच नहीं — सबको दिखा रहे हैं।"
   },
   "invitation": {
     "accept": "Accept",

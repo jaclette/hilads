@@ -92,21 +92,46 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
   const [selected,  setSelected]  = useState(() => new Set())
   const [sending,   setSending]   = useState(false)
   const [sentCount, setSentCount] = useState(null)
+  // When the strict mode='local'/'exploring' filter returns no rows (most
+  // accounts have mode IS NULL — they joined before mode was a thing) we
+  // fall back to the full city roster so the picker isn't a dead-end. We
+  // expose `fellBack` to the UI so we can show a small "showing everyone"
+  // hint instead of pretending nothing is wrong.
+  const [fellBack,  setFellBack]  = useState(false)
 
   useEffect(() => {
     let active = true
     if (!cityChannelId) return
-    setLoading(true); setError(null)
-    fetchCityMembers(cityChannelId, { limit: 50, mode })
-      .then(res => {
+    setLoading(true); setError(null); setFellBack(false)
+
+    const filterUsable = (arr) => (arr ?? []).filter(m =>
+      m.accountType === 'registered' && m.id !== currentUserId,
+    )
+
+    ;(async () => {
+      try {
+        // 1. Try strict mode filter first — respects the audience.
+        const strict = await fetchCityMembers(cityChannelId, { limit: 50, mode })
         if (!active) return
-        const list = (res.members ?? []).filter(m =>
-          m.accountType === 'registered' && m.id !== currentUserId,
-        )
+        let list = filterUsable(strict.members)
+        // 2. Strict filter is empty? Most users in low-traffic cities have
+        //    mode IS NULL — show the whole city so the creator can still pick
+        //    someone. The accept path re-checks mode and surfaces a clear
+        //    error if the invitee can't take it on.
+        if (list.length === 0) {
+          const all = await fetchCityMembers(cityChannelId, { limit: 50 })
+          if (!active) return
+          list = filterUsable(all.members)
+          if (list.length > 0) setFellBack(true)
+        }
         setMembers(list)
-      })
-      .catch(e => { if (active) setError(e.message || 'Failed to load') })
-      .finally(() => { if (active) setLoading(false) })
+      } catch (e) {
+        if (active) setError(e.message || 'Failed to load')
+      } finally {
+        if (active) setLoading(false)
+      }
+    })()
+
     return () => { active = false }
   }, [cityChannelId, mode, currentUserId])
 
@@ -151,7 +176,11 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
         <button type="button" className="cpcm-back" onClick={onBack} aria-label="Back">‹</button>
         <div>
           <div className="cpcm-title">{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</div>
-          <div className="cpcm-sub">{t('postCreate.pickerSubtitle')}</div>
+          <div className="cpcm-sub">
+            {fellBack
+              ? t('postCreate.pickerSubtitleAll', { city: city || t('postCreate.thisCity') })
+              : t('postCreate.pickerSubtitle')}
+          </div>
         </div>
       </div>
 

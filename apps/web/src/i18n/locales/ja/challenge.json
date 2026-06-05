@@ -276,7 +276,8 @@
     "sendCta": "{{count}}人に送る",
     "sendCtaEmpty": "まず選ぶ",
     "sentTitle": "{{count}}人に送信",
-    "sentSubtitle": "今プッシュ通知が届く。"
+    "sentSubtitle": "今プッシュ通知が届く。",
+    "pickerSubtitleAll": "完全な一致なし — {{city}}の全員を表示中。"
   },
   "invitation": {
     "accept": "承諾",

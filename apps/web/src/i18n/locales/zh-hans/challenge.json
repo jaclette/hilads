@@ -276,7 +276,8 @@
     "sendCta": "发送给 {{count}}",
     "sendCtaEmpty": "先选一个人",
     "sentTitle": "已发送给 {{count}}",
-    "sentSubtitle": "他们现在会收到推送。"
+    "sentSubtitle": "他们现在会收到推送。",
+    "pickerSubtitleAll": "没有完全匹配 — 显示 {{city}} 的所有人。"
   },
   "invitation": {
     "accept": "接受",

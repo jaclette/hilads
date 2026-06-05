@@ -11349,6 +11349,25 @@ body.has-app-promo-banner .page-header {
   max-height: 85vh;
 }
 
+/* Lift the modal above the mobile tab bar — the panel anchors to bottom: 0
+   of the viewport but the fixed .bottom-nav (~64-80px tall, inc. safe area)
+   sits in the same band. Without an explicit reserve the bottom CTAs hide
+   behind the nav. We push the panel up + give the inner content extra
+   bottom padding so nothing overlaps even on devices where :has() isn't
+   honoured by the browser. */
+@media (max-width: 767px) {
+  .modal-panel:has(.challenge-post-create),
+  .modal-panel:has(.cpcm-title) {
+    margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
+  }
+  .challenge-post-create {
+    padding-bottom: calc(22px + env(safe-area-inset-bottom));
+    /* Take the tab-bar reserve out of the available height so the
+       slide-up + max-height combo doesn't clip the top edge. */
+    max-height: calc(85vh - var(--mobile-tabbar-height) - env(safe-area-inset-bottom));
+  }
+}
+
 .cpcm-title {
   font-size: 18px;
   font-weight: 800;

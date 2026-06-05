@@ -276,7 +276,8 @@
     "sendCta": "Envoyer à {{count}}",
     "sendCtaEmpty": "Sélectionne quelqu'un d'abord",
     "sentTitle": "Envoyé à {{count}}",
-    "sentSubtitle": "Ils vont recevoir une notification push."
+    "sentSubtitle": "Ils vont recevoir une notification push.",
+    "pickerSubtitleAll": "Personne ne colle exactement — on montre tout {{city}}."
   },
   "invitation": {
     "accept": "Accepter",

@@ -276,7 +276,8 @@
     "sendCta": "Ipadala kay {{count}}",
     "sendCtaEmpty": "Pumili muna ng tao",
     "sentTitle": "Naipadala sa {{count}}",
-    "sentSubtitle": "Tatanggap sila ng push ngayon."
+    "sentSubtitle": "Tatanggap sila ng push ngayon.",
+    "pickerSubtitleAll": "Walang eksaktong tugma — pinapakita lahat sa {{city}}."
   },
   "invitation": {
     "accept": "Tanggapin",

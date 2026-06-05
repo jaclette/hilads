@@ -276,7 +276,8 @@
     "sendCta": "{{count}}명에게 보내기",
     "sendCtaEmpty": "먼저 선택해",
     "sentTitle": "{{count}}명에게 전송",
-    "sentSubtitle": "지금 푸시 알림이 가."
+    "sentSubtitle": "지금 푸시 알림이 가.",
+    "pickerSubtitleAll": "딱 맞는 사람은 없어 — {{city}} 전체를 보여줄게."
   },
   "invitation": {
     "accept": "수락",

@@ -276,7 +276,8 @@
     "sendCta": "إرسال إلى {{count}}",
     "sendCtaEmpty": "اختر أحدًا أولًا",
     "sentTitle": "أُرسل إلى {{count}}",
-    "sentSubtitle": "سيصلهم إشعار الآن."
+    "sentSubtitle": "سيصلهم إشعار الآن.",
+    "pickerSubtitleAll": "لا يوجد تطابق دقيق — نعرض الجميع في {{city}}."
   },
   "invitation": {
     "accept": "قبول",

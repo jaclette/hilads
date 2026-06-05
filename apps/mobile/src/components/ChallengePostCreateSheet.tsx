@@ -132,6 +132,12 @@ function PickerView({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [sending,  setSending]  = useState(false);
   const [sentCount, setSentCount] = useState<number | null>(null);
+  // Most users have mode IS NULL (joined before the local/traveler picker
+  // existed) so the strict mode filter often returns 0 rows in low-traffic
+  // cities. Fall back to the whole city roster when that happens so the
+  // picker is never a dead-end. The accept path re-checks mode server-side
+  // and surfaces a clear error if the invitee can't actually take it on.
+  const [fellBack, setFellBack] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -139,17 +145,25 @@ function PickerView({
       if (!cityChannelId) return;
       setLoading(true);
       setError(null);
+      setFellBack(false);
+
+      const filterUsable = (arr: UserDTO[] | undefined) => (arr ?? []).filter(m =>
+        m.accountType === 'registered' && m.id !== currentUserId,
+      );
+
       try {
-        // Paginate up to ~200 members. The picker is a hand-pick UX — capping
-        // the page at 50 keeps the request snappy; for very dense cities we
-        // could add a search field later.
-        const res = await fetchCityMembers(cityChannelId, { limit: 50, mode });
+        // 1. Strict mode filter first.
+        const strict = await fetchCityMembers(cityChannelId, { limit: 50, mode });
         if (!active) return;
-        // Drop self + non-registered (invitations need a user_id).
-        const filtered = (res.members ?? []).filter(m =>
-          m.accountType === 'registered' && m.id !== currentUserId,
-        );
-        setMembers(filtered);
+        let list = filterUsable(strict.members);
+        // 2. Empty? Re-fetch without the filter so we still show the roster.
+        if (list.length === 0) {
+          const all = await fetchCityMembers(cityChannelId, { limit: 50 });
+          if (!active) return;
+          list = filterUsable(all.members);
+          if (list.length > 0) setFellBack(true);
+        }
+        setMembers(list);
       } catch (e) {
         if (!active) return;
         setError(e instanceof Error ? e.message : 'Failed to load members');
@@ -204,7 +218,11 @@ function PickerView({
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</Text>
-          <Text style={styles.subtitle}>{t('postCreate.pickerSubtitle')}</Text>
+          <Text style={styles.subtitle}>
+            {fellBack
+              ? t('postCreate.pickerSubtitleAll', { city: city || t('postCreate.thisCity') })
+              : t('postCreate.pickerSubtitle')}
+          </Text>
         </View>
       </View>
 
