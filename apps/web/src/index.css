@@ -12261,6 +12261,15 @@ body.has-app-promo-banner .page-header {
   .challenge-takeon-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
+/* ── Channel actions row — sits right under the Take-on CTA ──────────── */
+.challenge-channel-actions {
+  display: flex;
+  justify-content: center;
+  padding: 0 14px 4px;
+  margin: 0 auto;
+  max-width: 640px;
+}
+
 /* ── Channel toolbar (compact members strip + notifications toggle) ─────── */
 .challenge-channel-toolbar {
   display: flex;

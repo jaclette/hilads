@@ -738,6 +738,44 @@ export default function ChallengeChatPage({
         </div>
       )}
 
+      {/* Channel actions row — sits right under "Take on the challenge"
+          for participants. Group of:
+            - "Leave the channel" (joined participants only; creator can't
+              leave their own challenge, active taker uses the acceptance
+              flow to bow out)
+          The members strip + notifications toggle live in the toolbar
+          rendered immediately below (compact, near the header). */}
+      {iAmParticipant === true && !isOwner && !myAcceptance && (
+        <div className="challenge-channel-actions">
+          <button
+            type="button"
+            className="challenge-leave-btn"
+            onClick={handleLeaveChannel}
+          >
+            {t('join.leaveCta')}
+          </button>
+        </div>
+      )}
+
+      {/* Compact members strip + notifications toggle — mounted high on
+          the page so participants don't have to scroll past the chat
+          surface to find them. Sits just below the participants row,
+          before the chat block. */}
+      {iAmParticipant === true && (
+        <div className="challenge-channel-toolbar">
+          <ChallengeChannelMembers
+            challenge={challenge}
+            activeTaker={otherParticipants[0] ?? null}
+            currentUserId={account?.id ?? null}
+            onMembersChanged={() => { loadParticipants() }}
+          />
+          <ChallengeNotificationToggle
+            challengeId={challenge.id}
+            currentUserId={account?.id ?? null}
+          />
+        </div>
+      )}
+
       {/* Share + Accept moved into the .challenge-creator-row above as
           icon-only quick buttons. The toast (copy-link fallback) still
           fires on desktop, but now appears as a small status pill below
@@ -941,17 +979,6 @@ export default function ChallengeChatPage({
             placeholder={t('chatPlaceholder')}
             showEmojiButton={false}
           />
-          {/* Leave the channel — available to non-creators who joined.
-              Creator can't leave their own challenge. */}
-          {!isOwner && iAmParticipant && !myAcceptance && (
-            <button
-              type="button"
-              className="challenge-leave-btn"
-              onClick={handleLeaveChannel}
-            >
-              {t('join.leaveCta')}
-            </button>
-          )}
       </>
       )}
 
@@ -982,24 +1009,9 @@ export default function ChallengeChatPage({
         />
       )}
 
-      {/* Compact "who's in" bar (matches the topic/event strip). Tap
-          opens a modal with Challenger/Taker/Participant role labels and
-          kick buttons for the creator + active taker. Notifications
-          toggle sits in the same row so the channel header stays tight. */}
-      {iAmParticipant === true && (
-        <div className="challenge-channel-toolbar">
-          <ChallengeChannelMembers
-            challenge={challenge}
-            activeTaker={otherParticipants[0] ?? null}
-            currentUserId={account?.id ?? null}
-            onMembersChanged={() => { loadParticipants() }}
-          />
-          <ChallengeNotificationToggle
-            challengeId={challenge.id}
-            currentUserId={account?.id ?? null}
-          />
-        </div>
-      )}
+      {/* Members strip + notifications toggle moved to the top of the
+          page (right under "Take on the challenge") — see the toolbar
+          block above the chat. */}
 
       {/* Privacy controls — participants-only. Mutual go-private +
           notification preference + close-to-new-joins live here (the
