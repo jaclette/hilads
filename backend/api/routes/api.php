@@ -9637,18 +9637,27 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
-    // Participant gate. International rows are not refused here anymore —
-    // the panel still has real work to do for them (current-visibility line,
-    // anonymize-me, intl-locked note). The `mode` field in the response
-    // tells the UI whether the vote block should render.
+    // Participation is signalled as a flag, not a status code, so the
+    // browser console stays clean. Non-participants get a minimal payload
+    // (mode + isParticipant=false) — enough for the client to silently
+    // hide the panel. International rows are also kept on the 200 path
+    // (the panel still has work to do for them: anonymize-me + the
+    // intl-locked explainer).
     $isCreator  = ($challenge['created_by'] ?? null) === $userId;
     $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
     $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
+    $mode       = $challenge['mode'] ?? 'local';
+
     if (!$isCreator && !$isAcceptor) {
-        Response::json(['error' => 'Not a participant'], 403);
+        Response::json([
+            'mode'              => $mode,
+            'currentVisibility' => $challenge['visibility'] ?? 'public',
+            'isParticipant'     => false,
+            'canVote'           => false,
+            'votes'             => [],
+        ]);
     }
 
-    $mode         = $challenge['mode'] ?? 'local';
     $votes        = ($mode === 'local')
         ? ChallengePrivacyRepository::getByChallenge($challengeId)
         : [];
@@ -9663,6 +9672,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     Response::json([
         'mode'              => $mode,
         'currentVisibility' => $challenge['visibility'] ?? 'public',
+        'isParticipant'     => true,
         'myVote'            => $myVote,
         'creatorVote'       => $creatorVote,
         'acceptorVote'      => $acceptorVote,

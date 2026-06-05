@@ -103,10 +103,12 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     }
   }
 
-  // If the privacy endpoint returns null/403, the caller isn't a
-  // participant — render nothing. Keep the Anonymize section out too;
-  // only participants can anonymize themselves on the challenge anyway.
+  // Non-participants get a 200 with isParticipant=false (the route used
+  // to 403; we keep the gate but stop logging a red error in the console).
+  // The Anonymize section is participants-only anyway, so the entire
+  // panel collapses to nothing for visitors and friends-only viewers.
   if (!privacy) return null
+  if (privacy.isParticipant === false) return null
   if (!currentUserId) return null
 
   const v = privacy.currentVisibility ?? 'public'
