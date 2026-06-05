@@ -1253,28 +1253,12 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_user      ON challenge_priva
 // cleaned up on the next migrate.
 run($pdo, "DROP TABLE IF EXISTS challenge_anonymized_users CASCADE", 'drop challenge_anonymized_users');
 
-// ── challenge_comments (spectator lane on Public challenges) ─────────────────
-// Separate table from `messages` so the active-participant thread (creator +
-// acceptor chat in the existing challenge_thread channel) stays cleanly
-// separated from the public spectator commentary. Decisions baked in:
-//   - Separate table → simpler noindex toggle, easier moderation scoping
-//   - Visibility check happens at the route layer (read gates on
-//     challenge.visibility = 'public' OR viewer is participant)
-//   - is_hidden lets moderation soft-hide a row without deleting it
-//     (audit + retroactive review preserved)
-run($pdo, "
-    CREATE TABLE IF NOT EXISTS challenge_comments (
-        id           TEXT        PRIMARY KEY,
-        challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
-        user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
-        body         TEXT        NOT NULL,
-        is_hidden    BOOLEAN     NOT NULL DEFAULT FALSE,
-        created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
-    )
-", 'challenge_comments');
-
-// Read path: comments for a challenge, newest first (or oldest-first depending
-// on UX — the index supports both via ORDER BY direction).
-run($pdo, "CREATE INDEX IF NOT EXISTS idx_chcomments_challenge ON challenge_comments (challenge_id, created_at DESC)", 'idx_chcomments_challenge');
+// challenge_comments dropped — Hilads channels are conversational by design,
+// so splitting "spectator chatter" from "participant chat" added a layer that
+// contradicts the rest of the app. Single unified message thread per
+// challenge channel (existing `messages` table on the challenge's channel_id)
+// is the model now; participant roles surface as render-time badges instead.
+// DROP IF EXISTS keeps prod idempotent.
+run($pdo, "DROP TABLE IF EXISTS challenge_comments CASCADE", 'drop challenge_comments');
 
 echo "\nDone.\n";

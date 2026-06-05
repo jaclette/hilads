@@ -341,18 +341,13 @@
     "needCounterparty": "Available once someone takes on this challenge.",
     "errVote":      "Couldn't save your vote — try again."
   },
-  "comments": {
-    "title": "Comments",
-    "subtitle": "Public chatter on this challenge — separate from the private thread between the challenger and the taker.",
-    "placeholder": "Say something nice…",
-    "sendCta": "Post",
-    "empty": "Be the first to comment.",
-    "disabledFriends": "Comments are off — this challenge isn't public.",
-    "disabledPrivate": "Comments are off — this challenge is private.",
-    "hidden": "This comment was hidden by the challenger.",
-    "deleteCta": "Delete",
-    "hideCta":   "Hide (creator)",
-    "loginToComment": "Sign in to leave a comment."
+  "badge": {
+    "challenger": "Challenger",
+    "taker":      "Taker"
+  },
+  "cta": {
+    "takenBy": "Currently being taken by {{name}}",
+    "closed":  "This challenge is closed"
   },
   "intl": {
     "targetCityLabel": "Target city",

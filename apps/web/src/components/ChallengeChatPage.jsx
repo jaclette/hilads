@@ -25,7 +25,6 @@ import ChallengePipeline from './ChallengePipeline'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengePrivacyPanel from './ChallengePrivacyPanel'
-import ChallengeCommentsLane from './ChallengeCommentsLane'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
@@ -628,14 +627,18 @@ export default function ChallengeChatPage({
           when somebody else has accepted, since they can't accept their own
           challenge. For validated challenges, the row is shown if anyone
           accepted (acceptor history), without the button. */}
-      {/* Participants row — three layouts:
-            A) acceptors exist → avatars + count on left, labeled compact Accept on right.
-            B) no acceptors, viewer can take on → single full-width labeled Accept button.
-            C) full → "Challenge full" label, no button.
-          Skipped for owners on a validated challenge (nothing to do). */}
+      {/* Participants row — four layouts in the no-queue / 1:1 model:
+            A) viewer is a non-owner AND validated → passive "closed" line
+            B) acceptor exists → avatars + count + passive "taken by X" line
+               (CTA disabled regardless of viewer, no one else can accept
+               while the slot is held).
+            C) no acceptor, viewer can take on → full-width Accept button.
+            D) owner with no acceptor → just the meta row, no button. */}
       {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
         <div className="challenge-participants-row">
-          {otherParticipants.length > 0 ? (
+          {isValidated && !isOwner ? (
+            <span className="challenge-cta-passive">{t('cta.closed')}</span>
+          ) : otherParticipants.length > 0 ? (
             <>
               <div className="challenge-participants-info">
                 <AttendeeAvatars
@@ -649,21 +652,12 @@ export default function ChallengeChatPage({
                   {t('participantsLabel')} · {otherParticipants.length}
                 </span>
               </div>
-              {!isValidated && !isOwner && !myThreadChannelId && !isFull && (
-                <button
-                  type="button"
-                  className="challenge-accept-pill challenge-accept-pill--compact"
-                  onClick={handleAccept}
-                  disabled={busy === 'accept'}
-                  aria-label={t('acceptCta')}
-                >
-                  <span aria-hidden="true">+</span>
-                  <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
-                </button>
+              {!isValidated && !isOwner && !myThreadChannelId && (
+                <span className="challenge-cta-passive">
+                  {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
+                </span>
               )}
             </>
-          ) : isFull ? (
-            <span className="challenge-participants-empty">⏳ {t('card.inProgress')}</span>
           ) : (
             <button
               type="button"
@@ -840,25 +834,45 @@ export default function ChallengeChatPage({
                 <span>{t('thread.empty')}</span>
               </div>
             )}
-            {messages.filter(m => m.type !== 'event').map((m, idx) => {
-              const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)
-              const prev      = messages[idx - 1]
-              const isGrouped = prev && (prev.userId === m.userId || prev.guestId === m.guestId)
-              const opacity   = m.status === 'failed' ? 0.5 : m.status === 'sending' ? 0.7 : 1
-              return (
-                <div key={m.id ?? idx} className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : ''].filter(Boolean).join(' ')}>
-                  {!isMine && !isGrouped && (
-                    <div className="msg-meta">
-                      <span className="msg-author">{m.nickname}</span>
+            {(() => {
+              // Active-taker user id — 1:1 model means at most one entry
+              // in otherParticipants. The badge falls off retroactively if
+              // the row transitions to rejected/closed (the API filter
+              // already excludes non-active acceptances from the preview).
+              const takerUserId     = otherParticipants[0]?.id ?? null
+              const creatorUserId   = challenge.created_by ?? null
+              const renderRoleBadge = (senderId) => {
+                if (!senderId) return null
+                if (senderId === creatorUserId) {
+                  return <span className="challenge-role-badge challenge-role-badge--challenger">{t('badge.challenger')}</span>
+                }
+                if (senderId === takerUserId) {
+                  return <span className="challenge-role-badge challenge-role-badge--taker">{t('badge.taker')}</span>
+                }
+                return null
+              }
+              return messages.filter(m => m.type !== 'event').map((m, idx) => {
+                const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)
+                const prev      = messages[idx - 1]
+                const isGrouped = prev && (prev.userId === m.userId || prev.guestId === m.guestId)
+                const opacity   = m.status === 'failed' ? 0.5 : m.status === 'sending' ? 0.7 : 1
+                const badge     = !isMine && !isGrouped ? renderRoleBadge(m.userId ?? null) : null
+                return (
+                  <div key={m.id ?? idx} className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : ''].filter(Boolean).join(' ')}>
+                    {!isMine && !isGrouped && (
+                      <div className="msg-meta">
+                        <span className="msg-author">{m.nickname}</span>
+                        {badge}
+                      </div>
+                    )}
+                    <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''}`} style={{ opacity }}>
+                      <div className="msg-content"><span className="msg-text">{m.content}</span></div>
                     </div>
-                  )}
-                  <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''}`} style={{ opacity }}>
-                    <div className="msg-content"><span className="msg-text">{m.content}</span></div>
+                    <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
                   </div>
-                  <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
-                </div>
-              )
-            })}
+                )
+              })
+            })()}
           </div>
 
           {/* Schedule band — Local only. International has the proof block
@@ -902,24 +916,12 @@ export default function ChallengeChatPage({
       )}
 
       {/* Privacy controls — only renders if the caller is a participant
-          (the server's privacy endpoint 404s for non-participants and the
-          panel hides itself). Mutual go-private + anonymize-me live here. */}
+          (the server returns isParticipant=false for non-participants and the
+          panel hides itself). Mutual go-private + current-visibility live here. */}
       <ChallengePrivacyPanel
         challenge={challenge}
         currentUserId={account?.id ?? null}
         onVisibilityChanged={() => loadChallenge()}
-      />
-
-      {/* Spectator comments — public surface only. Renders the "off" note
-          on friends/private so non-participants understand the discussion
-          exists; this is the natural place to engage on a public row when
-          you can't take it on yourself. */}
-      <ChallengeCommentsLane
-        challengeId={challenge.id}
-        visibility={challenge.visibility ?? 'public'}
-        currentUserId={account?.id ?? null}
-        isOwner={isOwner}
-        onNeedAuth={onNeedAuth}
       />
 
       <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
