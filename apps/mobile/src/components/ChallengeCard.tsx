@@ -68,8 +68,10 @@ export function ChallengeCard({
             <Text style={styles.statusPillText}>⏳ {t('card.inProgress')}</Text>
           </View>
         ) : (
-          <View style={styles.statusPill}>
-            <Text style={styles.statusPillText}>🔓 {t('card.available')}</Text>
+          // "Available" — green dot + green text to clearly signal "go for it"
+          // rather than the older padlock which read as locked/closed at a glance.
+          <View style={styles.availablePill}>
+            <Text style={styles.availablePillText}>🟢 {t('card.available')}</Text>
           </View>
         )}
       </View>
@@ -134,8 +136,8 @@ const styles = StyleSheet.create({
   },
   validatedBadgeText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  // Status pill — neutral white-on-translucent (no extra color noise; the
-  // emoji carries the semantic). Sized to match the audience + kind pills.
+  // In-progress pill — neutral, same skeleton as the kind/audience pills.
+  // Emoji carries the semantic ("⏳").
   statusPill: {
     backgroundColor:   'rgba(255,255,255,0.06)',
     borderRadius:      Radius.full,
@@ -145,6 +147,19 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(255,255,255,0.12)',
   },
   statusPillText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
+
+  // Available pill — green tint so it visibly invites action (mirrors the
+  // validated badge's green-on-translucent palette but with a different hue
+  // so the two states stay distinguishable at a glance).
+  availablePill: {
+    backgroundColor:   'rgba(34,197,94,0.10)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(34,197,94,0.25)',
+  },
+  availablePillText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
   titleRow:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
   titleEmoji: { fontSize: 22, lineHeight: 24 },

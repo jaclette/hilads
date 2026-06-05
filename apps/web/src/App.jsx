@@ -4826,11 +4826,13 @@ export default function App() {
                           <span className="challenge-badge challenge-badge--validated">
                             ✓ {t('validatedBadge', { ns: 'challenge' })}
                           </span>
-                        ) : (
+                        ) : c.is_in_progress ? (
                           <span className="challenge-badge challenge-badge--status">
-                            {c.is_in_progress
-                              ? `⏳ ${t('card.inProgress', { ns: 'challenge' })}`
-                              : `🔓 ${t('card.available', { ns: 'challenge' })}`}
+                            ⏳ {t('card.inProgress', { ns: 'challenge' })}
+                          </span>
+                        ) : (
+                          <span className="challenge-badge challenge-badge--available">
+                            🟢 {t('card.available', { ns: 'challenge' })}
                           </span>
                         )}
                       </div>
