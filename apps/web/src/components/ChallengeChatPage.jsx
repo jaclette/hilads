@@ -916,9 +916,11 @@ export default function ChallengeChatPage({
             })()}
           </div>
 
-          {/* Schedule band — Local only. International has the proof block
-              above as its action surface and no date concertation. */}
-          {(challenge.mode ?? 'local') === 'local' && (
+          {/* Schedule band — Local + the viewer is the creator OR active
+              acceptor (myAcceptance non-null). Channel participants who
+              only Joined don't have an acceptance row, so the schedule
+              block would crash on `thread.proposed_starts_at`. */}
+          {(challenge.mode ?? 'local') === 'local' && myAcceptance && account?.id && (
             <ThreadScheduleBlock
               thread={myAcceptance}
               myUserId={account.id}
