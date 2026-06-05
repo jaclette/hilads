@@ -1699,38 +1699,6 @@ export async function clearChallengePrivacyVote(challengeId) {
   return res.json()
 }
 
-export async function anonymizeMeOnChallenge(challengeId) {
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
-    method: 'POST',
-    credentials: 'include',
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to anonymize')
-  }
-  return res.json() // { ok, anonymized: true }
-}
-
-export async function unanonymizeMeOnChallenge(challengeId) {
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
-    method: 'DELETE',
-    credentials: 'include',
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || 'Failed to undo')
-  }
-  return res.json()
-}
-
-export async function fetchIsAnonymizedOnChallenge(challengeId) {
-  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/anonymize-me`, {
-    credentials: 'include',
-  })
-  if (!res.ok) return { anonymized: false }
-  return res.json()
-}
-
 // ── Challenge comments (spectator lane on public rows) ───────────────────────
 
 export async function fetchChallengeComments(challengeId, { before = null, limit = 50 } = {}) {

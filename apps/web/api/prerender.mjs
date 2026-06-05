@@ -1460,10 +1460,14 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
     url:           canonicalUrl,
     inLanguage:    payload?.locale || 'en',
     dateCreated:   ch.created_at ? new Date(ch.created_at * 1000).toISOString() : undefined,
-    // author always present — anonymous guests still count as the platform.
+    // Generic author — pseudonymous-by-default identities mean we never
+    // surface a member's chosen username in indexable structured data.
+    // The in-app UI still renders the real name; this is purely the
+    // crawler-facing path. Replaces the previous {name: ch.creator_nickname}
+    // shape which would have leaked usernames into JSON-LD.
     author: {
       '@type': 'Person',
-      name:    ch.creator_nickname || 'Hilads member',
+      name:    'Hilads member',
       // Mirror the Event-organizer fix: include a url field so Google's
       // Person rich result validation doesn't warn on missing url.
       url:     SITE_BASE,

@@ -1245,26 +1245,13 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_challenge ON challenge_privacy_requests (challenge_id)", 'idx_chprivreq_challenge');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_user      ON challenge_privacy_requests (user_id, status)", 'idx_chprivreq_user');
 
-// ── challenge_anonymized_users (retroactive display mask) ────────────────────
-// Any participant can request "remove my name from this challenge" — display
-// flips to "Anonymous user" with no avatar / no profile link in public render
-// paths. Row preserves audit; the user keeps receiving notifications + can
-// still act on the challenge (anonymization is a display mask, not a withdrawal).
-//
-// Composite PK (challenge_id, user_id): one row per (challenge, user); ON
-// CONFLICT DO NOTHING in the route makes the action idempotent.
-run($pdo, "
-    CREATE TABLE IF NOT EXISTS challenge_anonymized_users (
-        challenge_id  TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
-        user_id       TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
-        anonymized_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-        PRIMARY KEY (challenge_id, user_id)
-    )
-", 'challenge_anonymized_users');
-
-// Per-user "all challenges where I've anonymized myself" lookup (profile +
-// account-settings surfaces). Bounded by participation count, no LIMIT needed.
-run($pdo, "CREATE INDEX IF NOT EXISTS idx_chanon_user ON challenge_anonymized_users (user_id)", 'idx_chanon_user');
+// challenge_anonymized_users dropped — pseudonymous-by-default identities
+// (chosen username + avatar) already serve this need. Existing levers (change
+// username, leave the challenge, delete account) cover the "I want to
+// disappear" use case without a separate display-mask layer. DROP is
+// idempotent so production environments where the table got created get
+// cleaned up on the next migrate.
+run($pdo, "DROP TABLE IF EXISTS challenge_anonymized_users CASCADE", 'drop challenge_anonymized_users');
 
 // ── challenge_comments (spectator lane on Public challenges) ─────────────────
 // Separate table from `messages` so the active-participant thread (creator +

@@ -81,17 +81,7 @@ class ChallengeRepository
                 -- references channels(id) so either works semantically.
                 WHERE ca.challenge_id = c.id
                   AND " . \ChallengeAcceptanceRepository::IS_ACTIVE_SQL . "
-            )                                                       AS is_in_progress,
-            -- Creator anonymization mask. EXISTS lookup against the
-            -- challenge_anonymized_users PK (challenge_id, user_id) — cheap
-            -- and avoids the N+1 we'd have if format() asked per-row.
-            -- Acceptor masking is still resolved per-call inside
-            -- participantPreview*/getParticipants, where the result set
-            -- already runs in batch.
-            EXISTS (
-                SELECT 1 FROM challenge_anonymized_users an
-                WHERE an.challenge_id = c.id AND an.user_id = cc.created_by
-            )                                                       AS creator_is_anonymized
+            )                                                       AS is_in_progress
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
         LEFT JOIN users u           ON u.id = cc.created_by
@@ -100,23 +90,6 @@ class ChallengeRepository
 
     private static function format(array $row): array
     {
-        // Creator-side anonymization mask. The SELECT emits a precomputed
-        // boolean (creator_is_anonymized) via an EXISTS lookup, so list
-        // paths don't pay an N+1 cost. The row's created_by is preserved
-        // (FK integrity, internal gates), only the public-facing display
-        // fields flip below.
-        $creatorAnonymized = !empty($row['creator_is_anonymized']);
-
-        $creatorDisplayName  = $creatorAnonymized
-            ? ChallengeAnonymizationRepository::DISPLAY_NAME
-            : ($row['creator_display_name'] ?? null);
-        $creatorUsername     = $creatorAnonymized
-            ? ChallengeAnonymizationRepository::DISPLAY_HANDLE
-            : ($row['creator_username'] ?? null);
-        $creatorAvatarUrl    = $creatorAnonymized
-            ? null
-            : ($row['creator_thumb_avatar_url'] ?? null);
-
         return [
             'id'                   => $row['id'],
             'city_id'              => $row['city_id'],
@@ -152,12 +125,9 @@ class ChallengeRepository
             'visibility'           => $row['visibility']         ?? 'public',
             // Creator display — null for pure-guest challenges (created_by IS NULL).
             // Cards + the detail header render "by {creator_display_name}".
-            // Values pass through the anonymization mask above before landing
-            // here, so any post-mask read just sees the safe shape.
-            'creator_display_name'     => $creatorDisplayName,
-            'creator_username'         => $creatorUsername,
-            'creator_thumb_avatar_url' => $creatorAvatarUrl,
-            'creator_is_anonymized'    => $creatorAnonymized,
+            'creator_display_name'     => $row['creator_display_name']     ?? null,
+            'creator_username'         => $row['creator_username']         ?? null,
+            'creator_thumb_avatar_url' => $row['creator_thumb_avatar_url'] ?? null,
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
@@ -870,9 +840,8 @@ class ChallengeRepository
     /** Up to $limit acceptor avatar previews (most-recent first). */
     public static function participantPreview(string $challengeId, int $limit = 5): array
     {
-        $limit  = max(1, min(20, $limit));
-        $anon   = ChallengeAnonymizationRepository::getForChallenge($challengeId);
-        $stmt   = Database::pdo()->prepare("
+        $limit = max(1, min(20, $limit));
+        $stmt  = Database::pdo()->prepare("
             SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
             FROM challenge_acceptances ca
             JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
@@ -880,19 +849,11 @@ class ChallengeRepository
             ORDER BY ca.created_at DESC
             LIMIT " . $limit);
         $stmt->execute([$challengeId]);
-        return array_map(static function (array $r) use ($anon): array {
-            $masked = isset($anon[$r['id']]);
-            return [
-                'id'             => $r['id'],
-                'displayName'    => $masked
-                    ? ChallengeAnonymizationRepository::DISPLAY_NAME
-                    : ($r['display_name'] ?? 'Member'),
-                'thumbAvatarUrl' => $masked
-                    ? null
-                    : ($r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null),
-                'isAnonymized'   => $masked,
-            ];
-        }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+        return array_map(static fn(array $r): array => [
+            'id'             => $r['id'],
+            'displayName'    => $r['display_name'] ?? 'Member',
+            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+        ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
     /** Batched preview for the NOW feed (one windowed query). */
@@ -901,7 +862,6 @@ class ChallengeRepository
         if (empty($challengeIds)) return [];
         $limit = max(1, min(20, $limit));
         $in    = implode(',', array_fill(0, count($challengeIds), '?'));
-        $anon  = ChallengeAnonymizationRepository::getForChallengeBatch($challengeIds);
         $stmt  = Database::pdo()->prepare("
             SELECT challenge_id, id, display_name, thumb_url, full_url FROM (
                 SELECT ca.challenge_id, u.id, u.display_name,
@@ -915,17 +875,10 @@ class ChallengeRepository
         $stmt->execute(array_values($challengeIds));
         $map = [];
         foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
-            $cid    = $r['challenge_id'];
-            $masked = isset($anon[$cid][$r['id']]);
-            $map[$cid][] = [
+            $map[$r['challenge_id']][] = [
                 'id'             => $r['id'],
-                'displayName'    => $masked
-                    ? ChallengeAnonymizationRepository::DISPLAY_NAME
-                    : ($r['display_name'] ?? 'Member'),
-                'thumbAvatarUrl' => $masked
-                    ? null
-                    : ($r['thumb_url'] ?? $r['full_url'] ?? null),
-                'isAnonymized'   => $masked,
+                'displayName'    => $r['display_name'] ?? 'Member',
+                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'] ?? null,
             ];
         }
         return $map;

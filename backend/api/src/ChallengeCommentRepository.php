@@ -82,11 +82,7 @@ class ChallengeCommentRepository
         ");
         $stmt->execute($params);
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
-
-        // Anonymization mask — per-challenge user set; one lookup, applied
-        // by id while formatting. Same pattern as participantPreview.
-        $anon = ChallengeAnonymizationRepository::getForChallenge($challengeId);
-        return array_map(static fn(array $r): array => self::formatWithAnon($r, $anon), $rows);
+        return array_map(static fn(array $r): array => self::format($r), $rows);
     }
 
     public static function findById(string $id): ?array
@@ -104,8 +100,7 @@ class ChallengeCommentRepository
         $stmt->execute([$id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if (!$row) return null;
-        $anon = ChallengeAnonymizationRepository::getForChallenge($row['challenge_id']);
-        return self::formatWithAnon($row, $anon);
+        return self::format($row);
     }
 
     /**
@@ -151,13 +146,6 @@ class ChallengeCommentRepository
             $row['user_username']         = $userRow['username']                ?? null;
             $row['user_thumb_avatar_url'] = $userRow['profile_thumb_photo_url'] ?? null;
         }
-        $anon = ChallengeAnonymizationRepository::getForChallenge($row['challenge_id']);
-        return self::formatWithAnon($row, $anon);
-    }
-
-    private static function formatWithAnon(array $row, array $anonSet): array
-    {
-        $masked = isset($anonSet[$row['user_id']]);
         return [
             'id'           => $row['id'],
             'challenge_id' => $row['challenge_id'],
@@ -167,16 +155,9 @@ class ChallengeCommentRepository
             'created_at'   => isset($row['created_at']) ? (int) $row['created_at'] : null,
             'user' => [
                 'id'             => $row['user_id'],
-                'displayName'    => $masked
-                    ? ChallengeAnonymizationRepository::DISPLAY_NAME
-                    : ($row['user_display_name'] ?? null),
-                'username'       => $masked
-                    ? ChallengeAnonymizationRepository::DISPLAY_HANDLE
-                    : ($row['user_username'] ?? null),
-                'thumbAvatarUrl' => $masked
-                    ? null
-                    : ($row['user_thumb_avatar_url'] ?? null),
-                'isAnonymized'   => $masked,
+                'displayName'    => $row['user_display_name']     ?? null,
+                'username'       => $row['user_username']         ?? null,
+                'thumbAvatarUrl' => $row['user_thumb_avatar_url'] ?? null,
             ],
         ];
     }

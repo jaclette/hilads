@@ -9640,9 +9640,9 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     // Participation is signalled as a flag, not a status code, so the
     // browser console stays clean. Non-participants get a minimal payload
     // (mode + isParticipant=false) — enough for the client to silently
-    // hide the panel. International rows are also kept on the 200 path
-    // (the panel still has work to do for them: anonymize-me + the
-    // intl-locked explainer).
+    // hide the panel. International rows are kept on the 200 path too (the
+    // panel still has work to do for them: the intl-locked explainer +
+    // the current-visibility line).
     $isCreator  = ($challenge['created_by'] ?? null) === $userId;
     $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
     $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
@@ -9822,76 +9822,11 @@ $router->add('DELETE', '/api/v1/challenges/{challengeId}/privacy/vote', function
     Response::json(['ok' => true, 'cleared' => $cleared]);
 });
 
-// ── Challenge anonymization (display mask) ──────────────────────────────────
-//
-// Any participant (creator or acceptor) can flip their own display info to
-// "Anonymous" on a single challenge. Idempotent, reversible, display-only —
-// the user keeps receiving notifications and remains an actual participant.
-
-// POST /api/v1/challenges/{challengeId}/anonymize-me
-$router->add('POST', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-
-    // Participant gate — same shape as the privacy vote endpoint.
-    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
-    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
-    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
-    if (!$isCreator && !$isAcceptor) {
-        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
-    }
-
-    ChallengeAnonymizationRepository::anonymize($challengeId, $userId);
-    Response::json(['ok' => true, 'anonymized' => true]);
-});
-
-// DELETE /api/v1/challenges/{challengeId}/anonymize-me
-// Reverses the mask. Same participant gate.
-$router->add('DELETE', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    $userId   = $authUser['id'];
-
-    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
-    if ($challenge === null) {
-        Response::json(['error' => 'Challenge not found'], 404);
-    }
-    $isCreator  = ($challenge['created_by'] ?? null) === $userId;
-    $acceptance = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
-    $isAcceptor = $acceptance !== null && ($acceptance['phase'] ?? null) !== 'rejected';
-    if (!$isCreator && !$isAcceptor) {
-        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
-    }
-
-    $removed = ChallengeAnonymizationRepository::removeAnonymization($challengeId, $userId);
-    Response::json(['ok' => true, 'anonymized' => false, 'removed' => $removed]);
-});
-
-// GET /api/v1/challenges/{challengeId}/anonymize-me
-// Cheap check used by the UI to render the toggle state without reloading
-// the full challenge. Auth required.
-$router->add('GET', '/api/v1/challenges/{challengeId}/anonymize-me', function (array $params) {
-    $challengeId = $params['challengeId'] ?? '';
-    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
-        Response::json(['error' => 'Invalid challengeId'], 400);
-    }
-    $authUser = AuthService::requireAuth();
-    Response::json([
-        'anonymized' => ChallengeAnonymizationRepository::isAnonymized($challengeId, $authUser['id']),
-    ]);
-});
+// Challenge anonymization endpoints removed — pseudonymous-by-default
+// identities already serve this purpose. The SSR layer strips participant
+// usernames from indexable HTML/JSON-LD (see composeChallengeJsonLd) so
+// crawlers never index member display names anyway; in-app the UI keeps
+// showing the real username (chosen by the user, expected by them).
 
 // ── Challenge comments (spectator lane) ─────────────────────────────────────
 //

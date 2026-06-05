@@ -4,20 +4,19 @@ import {
   fetchChallengePrivacy,
   voteChallengePrivacy,
   clearChallengePrivacyVote,
-  fetchIsAnonymizedOnChallenge,
-  anonymizeMeOnChallenge,
-  unanonymizeMeOnChallenge,
 } from '../api'
 
 /**
  * Per-challenge privacy controls. Visible only to participants (creator or
- * acceptor) — non-participants get the 404 from the privacy endpoint and we
- * render nothing.
+ * acceptor) — non-participants get isParticipant=false and we render nothing.
  *
  * Sections:
- *   1. Current visibility line (Public / Friends / Private)
- *   2. Mutual go-private vote (Local only; Intl is locked Public with a note)
- *   3. Anonymize-me toggle (display mask on this single challenge)
+ *   1. Current visibility line (Public / Friends / Private) — trust signal.
+ *   2. Mutual go-private vote (Local only; Intl is locked Public with a note).
+ *
+ * Retroactive anonymization was dropped — pseudonymous-by-default identities
+ * (chosen username + avatar) already serve that need, and the SSR layer keeps
+ * member usernames out of indexable HTML/JSON-LD.
  *
  * Props:
  *   challenge — full challenge object (we read visibility + mode + created_by)
@@ -29,10 +28,9 @@ import {
 export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisibilityChanged }) {
   const { t } = useTranslation('challenge')
 
-  const [privacy,    setPrivacy]    = useState(null) // { currentVisibility, myVote, ... }
-  const [anonymized, setAnonymized] = useState(false)
-  const [busy,       setBusy]       = useState(null) // 'vote' | 'withdraw' | 'anon' | 'unanon'
-  const [error,      setError]      = useState(null)
+  const [privacy, setPrivacy] = useState(null) // { currentVisibility, myVote, ... }
+  const [busy,    setBusy]    = useState(null) // 'vote' | 'withdraw'
+  const [error,   setError]   = useState(null)
 
   const challengeId = challenge?.id ?? null
   const mode        = challenge?.mode ?? 'local'
@@ -44,14 +42,7 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     setPrivacy(data) // null is fine; UI hides the vote block
   }, [challengeId])
 
-  const loadAnonymized = useCallback(async () => {
-    if (!challengeId) return
-    const data = await fetchIsAnonymizedOnChallenge(challengeId)
-    setAnonymized(!!data?.anonymized)
-  }, [challengeId])
-
-  useEffect(() => { loadPrivacy() },    [loadPrivacy])
-  useEffect(() => { loadAnonymized() }, [loadAnonymized])
+  useEffect(() => { loadPrivacy() }, [loadPrivacy])
 
   async function handleVote(vote) {
     if (busy) return
@@ -79,25 +70,6 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
       await loadPrivacy()
     } catch (err) {
       setError(err?.message || t('privacy.errVote'))
-    } finally {
-      setBusy(null)
-    }
-  }
-
-  async function handleAnonymizeToggle() {
-    if (busy) return
-    const target = !anonymized
-    setBusy(target ? 'anon' : 'unanon')
-    setError(null)
-    try {
-      if (target) await anonymizeMeOnChallenge(challengeId)
-      else        await unanonymizeMeOnChallenge(challengeId)
-      setAnonymized(target)
-      // The display mask only affects what readers see; the panel itself
-      // doesn't need to mutate the challenge row beyond the toggle state.
-      onVisibilityChanged?.(privacy?.currentVisibility ?? null)
-    } catch (err) {
-      setError(err?.message || t('privacy.errAnonymize'))
     } finally {
       setBusy(null)
     }
@@ -199,35 +171,6 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
           )}
         </div>
       )}
-
-      {/* Anonymize-me — display mask. Available to creator + acceptor (the
-          privacy endpoint already gates this client-side via the 404). */}
-      <div className="challenge-privacy-anon">
-        <h4 className="challenge-privacy-subtitle">{t('privacy.anonymizeTitle')}</h4>
-        <p className="challenge-privacy-hint">{t('privacy.anonymizeBody')}</p>
-        {anonymized ? (
-          <>
-            <p className="challenge-privacy-status">{t('privacy.anonymizedBadge')}</p>
-            <button
-              type="button"
-              className="challenge-privacy-btn challenge-privacy-btn--ghost"
-              onClick={handleAnonymizeToggle}
-              disabled={busy !== null}
-            >
-              {busy === 'unanon' ? '…' : t('privacy.removeAnonymizeCta')}
-            </button>
-          </>
-        ) : (
-          <button
-            type="button"
-            className="challenge-privacy-btn challenge-privacy-btn--ghost"
-            onClick={handleAnonymizeToggle}
-            disabled={busy !== null}
-          >
-            {busy === 'anon' ? '…' : t('privacy.anonymizeCta')}
-          </button>
-        )}
-      </div>
 
       {error && <p className="challenge-privacy-error" role="alert">{error}</p>}
     </section>

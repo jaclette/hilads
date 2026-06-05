@@ -339,13 +339,7 @@
     "voteDeniedCta":  "Decline",
     "withdrawCta":    "Withdraw my vote",
     "needCounterparty": "Available once someone takes on this challenge.",
-    "anonymizeTitle":      "Anonymize my name",
-    "anonymizeBody":       "Replace your name and avatar with “Anonymous” on this challenge. You still get notifications and can still act on it.",
-    "anonymizeCta":         "Anonymize me",
-    "anonymizedBadge":      "You are anonymized here",
-    "removeAnonymizeCta":   "Show my name again",
-    "errVote":      "Couldn't save your vote — try again.",
-    "errAnonymize": "Couldn't update — try again."
+    "errVote":      "Couldn't save your vote — try again."
   },
   "comments": {
     "title": "Comments",
