@@ -554,7 +554,7 @@ export default function ChallengeChatPage({
             className="challenge-owner-invite-cta"
             onClick={() => setInvitePeopleOpen(true)}
           >
-            <span aria-hidden="true">👥</span>
+            <span aria-hidden="true">⚡</span>
             <span>{t('postCreate.ctaInvite', { city: cityNameForInvite ?? t('postCreate.thisCity') })}</span>
           </button>
         </div>

@@ -623,7 +623,7 @@ export default function ChallengeChatScreen() {
             activeOpacity={0.85}
             accessibilityLabel={t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
           >
-            <Ionicons name="people" size={16} color="#FF7A3C" />
+            <Text style={styles.ownerInviteCtaIcon}>⚡</Text>
             <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
               {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
             </Text>
@@ -1101,9 +1101,12 @@ const styles = StyleSheet.create({
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 
-  // Primary owner CTA — "Challenge someone in {city}". Outlined orange to
-  // match the brand share pill above but bigger / more inviting so the eye
-  // lands on it when the challenge is still empty.
+  // Primary owner CTA — "Send it to someone in {city}". Cyan rather than
+  // orange so it visually separates from the share pill above (which IS
+  // orange — both stacked oranges read as the same call repeated). Cyan
+  // also echoes the 🌐 International badge in the row above it on intl
+  // rows, so the visual link "this is the targeting CTA" reads at a
+  // glance.
   ownerInviteCta: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -1113,12 +1116,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.4)',
-    backgroundColor:   'rgba(255,122,60,0.08)',
+    borderColor:       'rgba(56,189,248,0.45)',
+    backgroundColor:   'rgba(56,189,248,0.10)',
     marginTop:         Spacing.sm,
     alignSelf:         'center',
   },
-  ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#FF7A3C', flexShrink: 1 },
+  ownerInviteCtaIcon: { fontSize: 14, lineHeight: 18 },
+  ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#38bdf8', flexShrink: 1 },
 
   // Challenger row — the creator, distinguished from regular participants
   // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating

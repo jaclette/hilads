@@ -11575,8 +11575,10 @@ body.has-app-promo-banner .page-header {
 }
 
 /* Owner-side "Challenge someone in {city}" CTA — visible on the challenge
-   detail page while the challenge is still free. Outlined orange so it
-   reads as a brand action without competing with the Accept primary CTA. */
+   detail page while the challenge is still free. Cyan rather than orange
+   so it visually separates from the share pill above (which IS orange —
+   stacking two oranges reads as the same call repeated). Cyan also echoes
+   the 🌐 International badge in the row above on intl rows. */
 .challenge-owner-invite-cta {
   appearance: none;
   cursor: pointer;
@@ -11585,15 +11587,15 @@ body.has-app-promo-banner .page-header {
   gap: 8px;
   padding: 8px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255,122,60,0.4);
-  background: rgba(255,122,60,0.08);
-  color: #FF7A3C;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.10);
+  color: #38bdf8;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.challenge-owner-invite-cta:hover { background: rgba(255,122,60,0.14); }
+.challenge-owner-invite-cta:hover { background: rgba(56, 189, 248, 0.16); }
 
 /* ── Challenges filter — type sub-chips + see-all + load-more ─────────────
    Sit at the top of the Challenges filter strip. Compact pills so they
