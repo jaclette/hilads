@@ -28,6 +28,7 @@ import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengePrivacyPanel from './ChallengePrivacyPanel'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
+import ChallengeNotificationToggle from './ChallengeNotificationToggle'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
@@ -981,17 +982,24 @@ export default function ChallengeChatPage({
         />
       )}
 
-      {/* Publicly visible channel-member list. Renders for everyone (the
-          list itself is public per spec). Kick buttons surface only for
-          creator + active taker. The active taker is otherParticipants[0]
-          in the 1:1 model. */}
-      <ChallengeChannelMembers
-        challengeId={challenge.id}
-        currentUserId={account?.id ?? null}
-        isCreator={isOwner}
-        isActiveTaker={!!myAcceptance && myAcceptance.acceptor_user_id === account?.id}
-        onMembersChanged={() => loadParticipants()}
-      />
+      {/* Compact "who's in" bar (matches the topic/event strip). Tap
+          opens a modal with Challenger/Taker/Participant role labels and
+          kick buttons for the creator + active taker. Notifications
+          toggle sits in the same row so the channel header stays tight. */}
+      {iAmParticipant === true && (
+        <div className="challenge-channel-toolbar">
+          <ChallengeChannelMembers
+            challenge={challenge}
+            activeTaker={otherParticipants[0] ?? null}
+            currentUserId={account?.id ?? null}
+            onMembersChanged={() => { loadParticipants() }}
+          />
+          <ChallengeNotificationToggle
+            challengeId={challenge.id}
+            currentUserId={account?.id ?? null}
+          />
+        </div>
+      )}
 
       {/* Privacy controls — participants-only. Mutual go-private +
           notification preference + close-to-new-joins live here (the

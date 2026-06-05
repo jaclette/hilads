@@ -4,12 +4,8 @@ import {
   fetchChallengePrivacy,
   voteChallengePrivacy,
   clearChallengePrivacyVote,
-  fetchMyChallengeParticipation,
-  setChallengeNotificationPreference,
   setChallengeCloseToJoins,
 } from '../api'
-
-const NOTIF_OPTIONS = ['milestones', 'all', 'off']
 
 /**
  * Per-challenge privacy controls. Visible only to participants (creator or
@@ -33,10 +29,9 @@ const NOTIF_OPTIONS = ['milestones', 'all', 'off']
 export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisibilityChanged }) {
   const { t } = useTranslation('challenge')
 
-  const [privacy,        setPrivacy]        = useState(null) // { currentVisibility, myVote, ... }
-  const [participation,  setParticipation]  = useState(null) // { isIn, notificationPreference }
-  const [busy,           setBusy]           = useState(null) // 'vote' | 'withdraw' | 'notif' | 'close'
-  const [error,          setError]          = useState(null)
+  const [privacy, setPrivacy] = useState(null) // { currentVisibility, myVote, ... }
+  const [busy,    setBusy]    = useState(null) // 'vote' | 'withdraw' | 'close'
+  const [error,   setError]   = useState(null)
 
   // Local mirror of the close-to-joins flag so the toggle reflects state
   // immediately on flip without waiting for the parent to re-fetch the
@@ -53,14 +48,7 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     setPrivacy(data)
   }, [challengeId])
 
-  const loadParticipation = useCallback(async () => {
-    if (!challengeId || !currentUserId) { setParticipation(null); return }
-    const data = await fetchMyChallengeParticipation(challengeId)
-    setParticipation(data ?? null)
-  }, [challengeId, currentUserId])
-
-  useEffect(() => { loadPrivacy() },       [loadPrivacy])
-  useEffect(() => { loadParticipation() }, [loadParticipation])
+  useEffect(() => { loadPrivacy() }, [loadPrivacy])
 
   async function handleVote(vote) {
     if (busy) return
@@ -93,21 +81,6 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     }
   }
 
-  async function handleNotifChange(pref) {
-    if (busy) return
-    setBusy('notif')
-    setError(null)
-    try {
-      await setChallengeNotificationPreference(challengeId, pref)
-      // Optimistic; the server already validated the enum.
-      setParticipation(prev => prev ? { ...prev, notificationPreference: pref } : prev)
-    } catch (err) {
-      setError(err?.message || t('privacy.errSave'))
-    } finally {
-      setBusy(null)
-    }
-  }
-
   async function handleToggleClosed() {
     if (busy) return
     const next = !closedToJoins
@@ -124,32 +97,22 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
     }
   }
 
-  // The panel renders for anyone in the channel — creator + active taker
-  // (privacy.isParticipant=true) get the mutual-vote block; channel joiners
-  // also see the visibility line + notification preference. Non-channel
-  // viewers collapse the whole surface.
-  const isInChannel = !!participation?.isIn
-  if (!privacy)         return null
-  if (!currentUserId)   return null
-  if (!isInChannel)     return null
-
-  const v = privacy.currentVisibility ?? 'public'
+  // Panel narrows to creator + active taker only. Regular channel
+  // participants see the compact notifications toggle alongside the
+  // members bar instead — the visibility line + per-message radio that
+  // used to live here added noise without value for them.
+  const v          = privacy.currentVisibility ?? 'public'
   const isCreator  = challenge?.created_by === currentUserId
-  // Acceptor inference — the server returns acceptorUserId on the privacy
-  // payload so we don't have to fetch acceptances here.
   const isAcceptor = privacy.acceptorUserId === currentUserId
-  const showVote   = (isCreator || isAcceptor) && mode === 'local' && v !== 'private'
+  if (!privacy)                     return null
+  if (!currentUserId)               return null
+  if (!isCreator && !isAcceptor)    return null
+
+  const showVote = mode === 'local' && v !== 'private'
 
   return (
     <section className="challenge-privacy">
       <h3 className="challenge-privacy-title">{t('privacy.panelTitle')}</h3>
-
-      {/* Current state — a single line that mirrors what visitors see. */}
-      <p className={`challenge-privacy-line challenge-privacy-line--${v}`}>
-        {t(v === 'private' ? 'privacy.currentPrivate'
-            : v === 'friends' ? 'privacy.currentFriends'
-            : 'privacy.currentPublic')}
-      </p>
 
       {/* International note — the mutual flow is locked off. */}
       {mode === 'international' && (
@@ -222,32 +185,10 @@ export default function ChallengePrivacyPanel({ challenge, currentUserId, onVisi
         </div>
       )}
 
-      {/* Notification preference — any channel participant can tune this.
-          'milestones' (default) = taker accept + proof submit + final
-          validation. 'all' = every message. 'off' = silent (still has
-          read access). */}
-      <div className="challenge-privacy-notif">
-        <h4 className="challenge-privacy-subtitle">{t('privacy.notifTitle')}</h4>
-        <div className="challenge-privacy-notif-options" role="radiogroup">
-          {NOTIF_OPTIONS.map(opt => {
-            const selected = (participation?.notificationPreference ?? 'milestones') === opt
-            return (
-              <button
-                key={opt}
-                type="button"
-                role="radio"
-                aria-checked={selected}
-                disabled={busy === 'notif'}
-                className={`challenge-privacy-notif-opt ${selected ? 'challenge-privacy-notif-opt--active' : ''}`}
-                onClick={() => handleNotifChange(opt)}
-              >
-                <span className="challenge-privacy-notif-opt-label">{t(`privacy.notif.${opt}`)}</span>
-                <span className="challenge-privacy-notif-opt-hint">{t(`privacy.notifHint.${opt}`)}</span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
+      {/* Notification preference moved out of this panel. Channel
+          participants get the compact on/off pill in the toolbar above
+          (ChallengeNotificationToggle); creator/taker access it the
+          same way. */}
 
       {/* Close-to-new-joins — creator-only toggle. Existing participants
           stay; the Join CTA on the public detail page refuses new joins

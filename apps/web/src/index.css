@@ -12261,64 +12261,52 @@ body.has-app-promo-banner .page-header {
   .challenge-takeon-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
-/* ── Channel members list (publicly visible, kick UI for creator/taker) ── */
-.challenge-members {
-  margin: 24px auto 0;
-  max-width: 640px;
-  padding: 18px 18px 20px;
-  background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 16px;
-}
-.challenge-members-title {
-  margin: 0 0 12px;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--muted2);
-}
-.challenge-members-empty {
-  margin: 0;
-  font-size: 0.92rem;
-  color: var(--muted);
-  font-style: italic;
-}
-.challenge-members-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* ── Channel toolbar (compact members strip + notifications toggle) ─────── */
+.challenge-channel-toolbar {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.challenge-member {
-  display: grid;
-  grid-template-columns: 36px 1fr auto;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 12px;
-  padding: 6px 4px;
+  gap: 10px;
+  padding: 10px 14px;
+  margin: 8px auto 0;
+  max-width: 640px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-.challenge-member-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: var(--surface2);
-}
-.challenge-member-avatar--blank {
-  background: linear-gradient(135deg, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
-}
-.challenge-member-name {
-  font-size: 0.94rem;
-  color: var(--text);
+.challenge-members-strip { flex: 1 1 auto; min-width: 0; }
+
+/* Notifications on/off pill — sits in the toolbar next to the members strip. */
+.challenge-notif-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  font-size: 0.82rem;
   font-weight: 600;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
+.challenge-notif-toggle:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.20);
+  color: var(--text);
+}
+.challenge-notif-toggle--on {
+  background: rgba(255, 122, 0, 0.10);
+  color: #FFB37A;
+  border-color: rgba(255, 122, 0, 0.42);
+}
+.challenge-notif-toggle:disabled { opacity: 0.5; cursor: progress; }
+.challenge-notif-toggle-icon  { font-size: 14px; }
+.challenge-notif-toggle-label { line-height: 1; }
+
+/* Members modal rows (the body inside .going-modal-body) — keep aligned
+   with the people-drawer pattern + add a kick button on the right. */
 .challenge-member-kick {
+  margin-left: auto;
   padding: 5px 10px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -12334,55 +12322,18 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-member-kick:disabled { opacity: 0.5; cursor: progress; }
 .challenge-members-error {
-  margin: 10px 0 0;
+  margin: 10px 14px 0;
   font-size: 0.85rem;
   color: #fca5a5;
 }
 
-/* ── Notification-preference radio + close-to-joins block in privacy ────── */
-.challenge-privacy-notif,
+/* Close-to-new-joins is the only block still inside the privacy panel. */
 .challenge-privacy-closed {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   padding-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.challenge-privacy-notif-options {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 4px;
-}
-.challenge-privacy-notif-opt {
-  text-align: left;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  -webkit-tap-highlight-color: transparent;
-}
-.challenge-privacy-notif-opt:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.18);
-}
-.challenge-privacy-notif-opt--active {
-  background: rgba(255, 122, 0, 0.10);
-  border-color: rgba(255, 122, 0, 0.42);
-}
-.challenge-privacy-notif-opt:disabled { opacity: 0.5; cursor: progress; }
-.challenge-privacy-notif-opt-label {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-.challenge-privacy-notif-opt--active .challenge-privacy-notif-opt-label { color: #FFB37A; }
-.challenge-privacy-notif-opt-hint {
-  font-size: 0.82rem;
-  color: var(--muted);
 }
 
 /* ── Participation gate — non-participant view ──────────────────────────── */

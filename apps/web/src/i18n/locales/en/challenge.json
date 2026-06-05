@@ -369,11 +369,17 @@
     "closedReopenCta": "Re-open to new joins"
   },
   "members": {
-    "title":    "In the channel",
-    "empty":    "Nobody's joined yet — be the first.",
-    "kickCta":  "Remove",
-    "kickAria": "Remove {{name}} from the channel",
-    "errKick":  "Couldn't remove — try again."
+    "title":     "In the channel",
+    "countIn":   "{{count}} in the channel",
+    "seeAll":    "See all →",
+    "empty":     "Nobody's joined yet — be the first.",
+    "kickCta":   "Remove",
+    "kickAria":  "Remove {{name}} from the channel",
+    "errKick":   "Couldn't remove — try again."
+  },
+  "notif": {
+    "on":  "Notifications on",
+    "off": "Notifications off"
   },
   "badge": {
     "challenger": "Challenger",
