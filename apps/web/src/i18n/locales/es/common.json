@@ -58,7 +58,11 @@
     },
     "next": "Siguiente",
     "done": "¡Entendido!",
-    "skip": "Saltar ✕"
+    "skip": "Saltar ✕",
+    "slide6": {
+      "title": "Más allá de tu ciudad",
+      "body": "Reta a cualquiera en cualquier parte. Te envían una prueba — foto o vídeo con geoetiqueta — y validas a distancia. Local o global, cada reto cuenta."
+    }
   },
   "share": {
     "title": "Comparte algo 👀",

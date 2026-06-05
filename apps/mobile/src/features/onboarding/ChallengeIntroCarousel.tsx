@@ -28,6 +28,10 @@ function buildSlides(t: TFunction): Slide[] {
     { emoji: '🤝', title: t('challengeIntro.slide3.title'), body: t('challengeIntro.slide3.body') },
     { emoji: '👋', title: t('challengeIntro.slide4.title'), body: t('challengeIntro.slide4.body') },
     { emoji: '✨', title: t('challengeIntro.slide5.title'), body: t('challengeIntro.slide5.body') },
+    // International mode (PR13). Sits after the Local flow so the carousel
+    // reads "this is how it works in your city, AND beyond it." Spec:
+    // "Local or global, every challenge counts."
+    { emoji: '🌐', title: t('challengeIntro.slide6.title'), body: t('challengeIntro.slide6.body') },
   ];
 }
 

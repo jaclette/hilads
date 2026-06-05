@@ -58,7 +58,11 @@
     },
     "next": "Next",
     "done": "Got it!",
-    "skip": "Skip ✕"
+    "skip": "Skip ✕",
+    "slide6": {
+      "title": "Beyond your city",
+      "body": "Challenge anyone, anywhere. They send proof — a photo or video with geotag — and you validate from afar. Local or global, every challenge counts."
+    }
   },
   "share": {
     "title": "Share something 👀",

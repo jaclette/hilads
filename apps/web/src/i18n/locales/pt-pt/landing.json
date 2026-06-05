@@ -92,5 +92,16 @@
     "eyebrow": "Junta-te",
     "titleCity": "{{city}} está ao vivo agora mesmo.",
     "titleGeneric": "A tua cidade está ao vivo agora mesmo."
+  },
+  "international": {
+    "badge": "Entre cidades",
+    "tagline": "Lança um desafio entre cidades. Recebe a prova em vídeo.",
+    "sub": "Quando a tua cidade está calma, o mundo não está. Desafia alguém em qualquer lugar — envia-te uma prova, tu validas à distância.",
+    "bullets": [
+      "Aponta a uma cidade específica, ou deixa aberto a qualquer pessoa em qualquer lugar.",
+      "Foto ou vídeo com geotag — prova de que aconteceu.",
+      "Validas do sofá. Recusas com um motivo se não bater certo."
+    ],
+    "cta": "Testar um desafio global"
   }
 }

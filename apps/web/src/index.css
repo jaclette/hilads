@@ -11925,3 +11925,77 @@ body.has-app-promo-banner .page-header {
 }
 .proof-reject-submit:hover:not(:disabled) { background: #dc2626; }
 .proof-reject-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ── Landing — International / cross-city section ────────────────────────────
+   Sits between the Local/Exploring split block and "How it works". Text-
+   heavy, single-column, no phone mockup — alternates the visual rhythm of
+   the page (split rows above are dense; this one is breathing room). The
+   cyan ribbon up top echoes the 🌐 International badge on challenge cards
+   so the connection between the tagline here and the in-app feature is
+   visual + obvious. */
+
+.lp-international {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.04) 0%, transparent 100%);
+}
+.lp-international-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.lp-international-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.36);
+  color: #38bdf8;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.lp-international-tagline {
+  font-size: clamp(22px, 4vw, 32px);
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+  margin: 0;
+}
+.lp-international-sub {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 540px;
+  margin: 0;
+}
+.lp-international-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+.lp-international-bullets li {
+  position: relative;
+  padding-left: 18px;
+  text-align: left;
+  max-width: 460px;
+}
+.lp-international-bullets li::before {
+  content: '→';
+  color: #38bdf8;
+  position: absolute;
+  left: 0;
+  font-weight: 800;
+}

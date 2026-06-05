@@ -58,7 +58,11 @@
     },
     "next": "Sunod",
     "done": "Gets!",
-    "skip": "Skip ✕"
+    "skip": "Skip ✕",
+    "slide6": {
+      "title": "Lampas sa lungsod mo",
+      "body": "Hamunin kahit sino kahit saan. Magpapadala sila ng proof — litrato o video na may geotag — at i-validate mo mula sa malayo. Lokal o global, mahalaga bawat challenge."
+    }
   },
   "share": {
     "title": "Magbahagi ng kahit ano 👀",

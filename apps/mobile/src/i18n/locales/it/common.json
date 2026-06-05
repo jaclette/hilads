@@ -52,7 +52,11 @@
     },
     "next": "Avanti",
     "done": "Capito!",
-    "skip": "Salta ✕"
+    "skip": "Salta ✕",
+    "slide6": {
+      "title": "Oltre la tua città",
+      "body": "Sfida chiunque ovunque. Ti mandano una prova — foto o video con geotag — e validi a distanza. Locale o globale, ogni sfida conta."
+    }
   },
   "share": {
     "title": "Condividi qualcosa 👀",

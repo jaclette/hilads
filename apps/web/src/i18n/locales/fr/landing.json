@@ -92,5 +92,16 @@
     "eyebrow": "Lance-toi",
     "titleCity": "{{city}} est en direct, maintenant.",
     "titleGeneric": "Ta ville est en direct, maintenant."
+  },
+  "international": {
+    "badge": "Inter-villes",
+    "tagline": "Lance un défi entre villes. Reçois la preuve en vidéo.",
+    "sub": "Quand ta ville est calme, le monde ne l'est pas. Défie quelqu'un n'importe où — il envoie la preuve, tu valides à distance.",
+    "bullets": [
+      "Cible une ville précise, ou laisse ouvert à n'importe qui, n'importe où.",
+      "Photo ou vidéo avec géoloc — la preuve que ça a eu lieu.",
+      "Tu valides depuis ton canapé. Refuse avec une raison si ça ne colle pas."
+    ],
+    "cta": "Tester un défi global"
   }
 }

@@ -52,7 +52,11 @@
     },
     "next": "Lanjut",
     "done": "Mengerti!",
-    "skip": "Lewati ✕"
+    "skip": "Lewati ✕",
+    "slide6": {
+      "title": "Di luar kotamu",
+      "body": "Tantang siapa pun di mana pun. Mereka kirim bukti — foto atau video dengan geotag — dan kamu validasi dari jauh. Lokal atau global, setiap tantangan berarti."
+    }
   },
   "share": {
     "title": "Bagikan sesuatu 👀",

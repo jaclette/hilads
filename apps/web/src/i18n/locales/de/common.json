@@ -58,7 +58,11 @@
     },
     "next": "Weiter",
     "done": "Verstanden!",
-    "skip": "Überspringen ✕"
+    "skip": "Überspringen ✕",
+    "slide6": {
+      "title": "Über deine Stadt hinaus",
+      "body": "Fordere jemanden überall heraus. Er schickt einen Beweis — Foto oder Video mit Geotag — und du bestätigst aus der Ferne. Lokal oder global, jede Challenge zählt."
+    }
   },
   "share": {
     "title": "Teile etwas 👀",

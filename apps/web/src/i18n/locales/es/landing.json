@@ -92,5 +92,16 @@
     "eyebrow": "Lánzate",
     "titleCity": "{{city}} está en directo, ahora.",
     "titleGeneric": "Tu ciudad está en directo, ahora."
+  },
+  "international": {
+    "badge": "Entre ciudades",
+    "tagline": "Manda un reto entre ciudades. Recibe la prueba en vídeo.",
+    "sub": "Cuando tu ciudad está tranquila, el mundo no lo está. Reta a alguien en cualquier parte — te envía una prueba, tú validas a distancia.",
+    "bullets": [
+      "Apunta a una ciudad concreta, o déjalo abierto a cualquiera en cualquier parte.",
+      "Foto o vídeo con geoetiqueta — prueba de que pasó.",
+      "Validas desde el sofá. Rechazas con motivo si no encaja."
+    ],
+    "cta": "Prueba un reto global"
   }
 }

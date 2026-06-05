@@ -498,6 +498,29 @@ export default function LandingPage({
 
       </section>
 
+      {/* ── 2b. INTERNATIONAL — cross-city growth lane ──────────────────────
+          Hero is local-flavored (the soul of the app). This section frames
+          International as the always-available alternative that keeps every
+          city alive when local activity is quiet. Tagline + 3 bullets +
+          single CTA back to join. No phone mockup here — text-heavy by
+          design so the page rhythm alternates with the visual-heavy split
+          rows above. */}
+      <section className="lp-section lp-international">
+        <div className="lp-international-inner">
+          <div className="lp-international-badge">{t('international.badge')}</div>
+          <h2 className="lp-international-tagline">{t('international.tagline')}</h2>
+          <p className="lp-international-sub">{t('international.sub')}</p>
+          <ul className="lp-international-bullets">
+            {(t('international.bullets', { returnObjects: true }) ?? []).map((b, i) => (
+              <li key={i}>{b}</li>
+            ))}
+          </ul>
+          <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
+            {t('international.cta')}
+          </button>
+        </div>
+      </section>
+
       {/* ── 3. HOW IT WORKS ─────────────────────────────────────────────────── */}
       <section className="lp-section lp-how">
         <p className="lp-section-eyebrow">{t('how.eyebrow')}</p>

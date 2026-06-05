@@ -92,5 +92,16 @@
     "eyebrow": "Gabung",
     "titleCity": "{{city}} sedang live sekarang.",
     "titleGeneric": "Kotamu sedang live sekarang."
+  },
+  "international": {
+    "badge": "Lintas kota",
+    "tagline": "Kirim tantangan lintas kota. Terima video sebagai bukti.",
+    "sub": "Kalau kotamu sepi, dunia tidak. Tantang siapa pun di mana pun — mereka kirim bukti, kamu validasi dari jauh.",
+    "bullets": [
+      "Targetkan kota tertentu, atau buka untuk siapa pun di mana pun.",
+      "Foto atau video dengan geotag — bukti bahwa terjadi.",
+      "Validasi dari sofa. Tolak dengan alasan kalau tidak cocok."
+    ],
+    "cta": "Coba tantangan global"
   }
 }

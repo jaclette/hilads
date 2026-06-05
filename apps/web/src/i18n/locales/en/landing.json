@@ -92,5 +92,16 @@
     "eyebrow": "Jump in",
     "titleCity": "{{city}} is live right now.",
     "titleGeneric": "Your city is live right now."
+  },
+  "international": {
+    "badge": "Cross-city",
+    "tagline": "Send a challenge across cities. Get a video back.",
+    "sub": "When your city is quiet, the world isn't. Challenge someone anywhere — they send proof, you validate from afar.",
+    "bullets": [
+      "Target a specific city, or leave it open to anyone, anywhere.",
+      "They submit a photo or video with geotag — proof it happened.",
+      "You validate from your couch. Reject with a reason if it's off."
+    ],
+    "cta": "Try a global challenge"
   }
 }

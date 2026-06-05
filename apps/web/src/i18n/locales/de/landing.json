@@ -92,5 +92,16 @@
     "eyebrow": "Leg los",
     "titleCity": "{{city}} ist gerade jetzt live.",
     "titleGeneric": "Deine Stadt ist gerade jetzt live."
+  },
+  "international": {
+    "badge": "Cross-City",
+    "tagline": "Schick eine Challenge in eine andere Stadt. Bekomm ein Video zurück.",
+    "sub": "Wenn deine Stadt ruhig ist, ist die Welt es nicht. Fordere jemanden überall heraus — er schickt einen Beweis, du bestätigst aus der Ferne.",
+    "bullets": [
+      "Ziele auf eine konkrete Stadt oder lass es offen für alle, überall.",
+      "Foto oder Video mit Geotag — Beweis, dass es passiert ist.",
+      "Du bestätigst vom Sofa. Lehne mit Begründung ab, wenn was nicht stimmt."
+    ],
+    "cta": "Globale Challenge ausprobieren"
   }
 }
