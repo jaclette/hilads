@@ -1007,23 +1007,51 @@ export default function App() {
     setChallengesShownCount(NOW_CHALLENGES_CAP)
   }, [challengeTypeFilter])
 
-  // Scroll-to-load-more on the Challenges filter. When the user is within
-  // ~240px of the bottom of the page-body, bump the cap by 5. Cheap (a
-  // single scroll listener while the filter is active) and respects the
-  // existing scroll-restore effect because we don't reset scrollTop here.
+  // Filtered-by-type challenges (used by both the JSX render and the
+  // scroll-throttle guard below — kept in one place so they can't drift).
+  const filteredChallenges = useMemo(() => {
+    if (nowFilter !== 'challenges' || challengeTypeFilter === 'all') return cityChallenges
+    return cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
+  }, [cityChallenges, nowFilter, challengeTypeFilter])
+
+  // Scroll-to-load-more on the Challenges filter.
+  //
+  // Three gates keep the API call budget bounded (and the re-render rate
+  // sane today, when scrolling slices an already-fetched array):
+  //   1. Throttle — at most one bump per BUMP_THROTTLE_MS regardless of how
+  //      fast the user scrolls. Without this, scroll fires ~60×/s and would
+  //      schedule a state update on every tick.
+  //   2. Cap guard — we read filteredChallengesLengthRef synchronously and
+  //      skip the bump if we're already showing everything. No-op renders
+  //      avoided, and (when backend pagination lands) no wasted fetch.
+  //   3. Distance threshold — only fires when within ~240px of the bottom,
+  //      not on every scroll position.
+  const BUMP_THROTTLE_MS = 400
+  const lastBumpAtRef = useRef(0)
+  // Mirrors the live filtered length so the scroll closure can read it
+  // without rebinding on every state change.
+  const filteredChallengesLengthRef = useRef(0)
+  useEffect(() => {
+    filteredChallengesLengthRef.current = filteredChallenges.length
+  }, [filteredChallenges])
   useEffect(() => {
     if (nowFilter !== 'challenges') return
     const el = nowBodyRef.current
     if (!el) return
     const onScroll = () => {
       const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
-      if (remaining < 240) {
-        setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
-      }
+      if (remaining >= 240) return
+      // Cap reached for the current filter? Don't bump — saves a re-render
+      // every scroll tick once the user reaches the bottom of the bucket.
+      if (challengesShownCount >= filteredChallengesLengthRef.current) return
+      const now = Date.now()
+      if (now - lastBumpAtRef.current < BUMP_THROTTLE_MS) return
+      lastBumpAtRef.current = now
+      setChallengesShownCount(c => c + NOW_CHALLENGES_CAP)
     }
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
-  }, [nowFilter])
+  }, [nowFilter, challengesShownCount])
 
   useEffect(() => {
     if (!showPeopleDrawer) return
@@ -4845,10 +4873,9 @@ export default function App() {
                 On 'challenges' → type sub-filter chips, paginated cap with
                                   scroll-to-load (5 at a time). */}
             {(nowFilter === 'all' || nowFilter === 'challenges') && cityChallenges.length > 0 && (() => {
-              // Type-filter only meaningful inside the Challenges filter.
-              const filteredChallenges = nowFilter === 'challenges' && challengeTypeFilter !== 'all'
-                ? cityChallenges.filter(c => c.challenge_type === challengeTypeFilter)
-                : cityChallenges
+              // filteredChallenges + reset effects live above; we just slice
+              // here to respect the visible-cap (paginated on the Challenges
+              // filter, hard 5 on the All filter).
               const visibleCap = nowFilter === 'challenges' ? challengesShownCount : NOW_CHALLENGES_CAP
               const visibleChallenges = filteredChallenges.slice(0, visibleCap)
               const hasMoreInFilter   = filteredChallenges.length > visibleChallenges.length
