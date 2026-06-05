@@ -1119,4 +1119,74 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_invitee   ON challenge_invitations (invitee_user_id, created_at DESC)", 'idx_chinv_invitee');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_challenge ON challenge_invitations (challenge_id,    created_at DESC)", 'idx_chinv_challenge');
 
+// ── Défi — International mode (PR1: schema only) ──────────────────────────────
+// The existing challenge model is "Local mode" implicitly: creator + acceptor
+// in the same city, ends with an IRL meetup. International mode is the growth
+// engine — creator in city A challenges someone from anywhere (or a specific
+// city B). No meetup; the acceptor sends visual proof (photo/video w/ geotag)
+// and the creator validates from afar. Single source of truth — discriminator
+// column on the existing channel_challenges table, NOT a parallel table.
+//
+//   mode               : 'local' (default — all existing rows) | 'international'
+//   target_city_id     : nullable. For local rows: unused. For international:
+//                        NULL = "anywhere" (no fan-out, origin city only);
+//                        non-null = mirror into target city's feed + push.
+//   proof_requirements : creator-authored text shown to the acceptor before
+//                        they submit the proof. Local rows: NULL.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS mode               TEXT NOT NULL DEFAULT 'local'", 'channel_challenges.mode');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS target_city_id     TEXT REFERENCES channels(id)", 'channel_challenges.target_city_id');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS proof_requirements TEXT",                          'channel_challenges.proof_requirements');
+
+// Filter queries: NOW feed sub-chip "Local | International | All" — common
+// path lands on (mode, status, created_at DESC); reuse the existing city
+// index for the city filter and let this one short-list mode within it.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_mode ON channel_challenges (mode)", 'idx_channel_challenges_mode');
+// Target-city lookups (mirrored feed + reverse fan-out from city B back to
+// the creator's challenge). Partial — most rows have target_city_id IS NULL.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_target_city ON channel_challenges (target_city_id) WHERE target_city_id IS NOT NULL", 'idx_channel_challenges_target_city');
+
+// ── challenge_proofs — one row per submission attempt ─────────────────────────
+// Acceptor submits a proof (image or short video) with mandatory geotag. The
+// creator reviews + approves or rejects with a mandatory reason (1–200 chars).
+// Max 3 attempts per acceptance (enforced in the route, not as a DB constraint
+// — keeps the migration simple and lets us tune later).
+//
+//   status: 'pending' (just submitted) | 'approved' | 'rejected'
+//   geotag_verified: server-side bbox check result at submit time (cached so
+//                    the review UI doesn't recompute on every paint).
+//   rejection_reason: NOT NULL when status='rejected'; required by the route.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_proofs (
+        id               TEXT        PRIMARY KEY,
+        acceptance_id    TEXT        NOT NULL REFERENCES challenge_acceptances(id) ON DELETE CASCADE,
+        media_url        TEXT        NOT NULL,
+        media_type       TEXT        NOT NULL,
+        geotag_lat       DOUBLE PRECISION NOT NULL,
+        geotag_lng       DOUBLE PRECISION NOT NULL,
+        geotag_verified  BOOLEAN     NOT NULL DEFAULT FALSE,
+        status           TEXT        NOT NULL DEFAULT 'pending',
+        rejection_reason TEXT,
+        submitted_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        reviewed_at      TIMESTAMPTZ
+    )
+", 'challenge_proofs');
+
+// Creator's review queue + acceptor's history per acceptance — both walk by
+// acceptance_id, newest first.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chproofs_acceptance ON challenge_proofs (acceptance_id, submitted_at DESC)", 'idx_chproofs_acceptance');
+
+// ── Per-city geotag tolerance (server-side config, env fallback) ──────────────
+// 30 km default (set via env CHALLENGE_PROOF_TOLERANCE_KM at the read site).
+// Per-city override for sprawling metros (Saigon, LA-style basins) — leave
+// NULL for now; an admin tool / SQL update can tune individual cities later
+// without a code change.
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km INT", 'cities.proof_geotag_tolerance_km');
+
+// ── challenge_acceptances — phase=‘proof_submitted’ for international flow ────
+// No schema change needed; phase is TEXT and the column already exists. This
+// comment documents that the route layer will emit 'proof_submitted' as a
+// new value (between 'pending' and 'approved'|'rejected') ONLY for
+// international acceptances. Local flow keeps the existing pending→accepted
+// →scheduled→debrief→approved|rejected chain.
+
 echo "\nDone.\n";
