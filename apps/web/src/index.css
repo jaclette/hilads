@@ -11296,6 +11296,19 @@ body.has-app-promo-banner .page-header {
 .challenge-share-pill:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-share-pill:active { transform: scale(0.98); }
 .challenge-share-pill-text { font-size: 12px; font-weight: 800; }
+
+/* Inline variant — sits in the badge row next to kind + audience pills, so
+   the height and padding match a `.challenge-badge`, not the taller stand-
+   alone share pill from the (now retired) creator-row. */
+.challenge-share-pill--inline {
+  height: auto;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  gap: 4px;
+  align-self: center;
+}
+.challenge-share-pill--inline .challenge-share-pill-text { font-size: 11px; }
 .challenge-quick-btn:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-quick-btn:active { transform: scale(0.96); }
 .challenge-quick-btn:disabled { opacity: 0.6; cursor: default; }

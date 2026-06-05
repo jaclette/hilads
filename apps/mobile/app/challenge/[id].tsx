@@ -472,6 +472,20 @@ export default function ChallengeChatScreen() {
           <View style={styles.audiencePill}>
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>
+          {/* Share — always visible. Previously lived in the challenger row,
+              which was hidden when there were no acceptors (1:1 model =
+              no participants until someone takes on), so the CTA disappeared
+              entirely. Placing it next to the audience pill keeps it on the
+              page at every lifecycle stage. */}
+          <TouchableOpacity
+            style={styles.sharePillInline}
+            onPress={handleShare}
+            activeOpacity={0.75}
+            accessibilityLabel={t('shareCta')}
+          >
+            <Ionicons name="share-social-outline" size={14} color="#FF7A3C" />
+            <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('shareCta')}</Text>
+          </TouchableOpacity>
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -561,20 +575,9 @@ export default function ChallengeChatScreen() {
             </View>
           </TouchableOpacity>
 
-          <View style={styles.quickActions}>
-            {/* Share gets the only inline action — the verb ("Challenge
-                your friends ✨" / "Lance-le à tes potes ✨") is the social
-                hook. Accept moved to the participants row below. */}
-            <TouchableOpacity
-              style={styles.sharePill}
-              onPress={handleShare}
-              activeOpacity={0.75}
-              accessibilityLabel={t('shareCta')}
-            >
-              <Ionicons name="share-social-outline" size={16} color="#FF7A3C" />
-              <Text style={styles.sharePillText} numberOfLines={1}>{t('shareCta')}</Text>
-            </TouchableOpacity>
-          </View>
+          {/* Share moved up next to the audience pill in the badge row so
+              it's visible at every lifecycle stage (not just when there's a
+              creator-participant row). */}
         </View>
       )}
 
@@ -912,6 +915,18 @@ const styles = StyleSheet.create({
     borderWidth:       1, borderColor: 'rgba(139,92,246,0.32)',
   },
   audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
+
+  // Share inline pill — same height/padding as the kind + audience pills so
+  // the three sit on a single row without alignment drift. Orange brand tint
+  // because Share is the most user-facing growth lever on this screen.
+  sharePillInline: {
+    flexDirection: 'row', alignItems: 'center', gap: 4,
+    backgroundColor:   'rgba(255,122,60,0.10)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8, paddingVertical: 2,
+    borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
+  },
+  sharePillInlineText: { fontSize: 11, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.3 },
 
   // (Old status-pill styles removed — the ChallengePipeline component owns
   // the lifecycle visual now. The close-challenge action moved to the

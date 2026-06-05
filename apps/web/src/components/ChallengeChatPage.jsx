@@ -438,13 +438,25 @@ export default function ChallengeChatPage({
           height + opacity) when the chat is scrolled OR the composer is
           focused, mirroring the event-channel pattern. */}
       <div className={`challenge-collapsible${headerCollapsed ? ' challenge-collapsible--collapsed' : ''}`}>
-      {/* Description band — type + audience badges only. The lifecycle
-          visualisation moved into <ChallengePipeline> below. */}
+      {/* Description band — type + audience badges + share. Share sits on
+          this row (rather than the challenger row below) so it's visible at
+          every lifecycle stage; the challenger row only appears when an
+          acceptor exists, and we don't want growth nudges to disappear with
+          it. */}
       <div className="topic-chat-desc challenge-meta-row">
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
         <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
+        <button
+          type="button"
+          className="challenge-share-pill challenge-share-pill--inline"
+          onClick={handleShare}
+          aria-label={t('shareCta')}
+        >
+          <span aria-hidden="true">↗</span>
+          <span className="challenge-share-pill-text">{t('shareCta')}</span>
+        </button>
       </div>
 
       {/* Lifecycle pipeline (replaces the old "in progress / accomplished"
@@ -504,17 +516,8 @@ export default function ChallengeChatPage({
             <span className="challenge-creator-name">{creator.displayName}</span>
             <span className="challenge-creator-tag">👑 {t('challengerTag')}</span>
           </div>
-          <div className="challenge-creator-actions">
-            <button
-              type="button"
-              className="challenge-share-pill"
-              onClick={handleShare}
-              aria-label={t('shareCta')}
-            >
-              <span aria-hidden="true">↗</span>
-              <span className="challenge-share-pill-text">{t('shareCta')}</span>
-            </button>
-          </div>
+          {/* Share moved up to the badge row so it's visible at every
+              lifecycle stage (not just when there's a creator-participant). */}
         </div>
       )}
 
