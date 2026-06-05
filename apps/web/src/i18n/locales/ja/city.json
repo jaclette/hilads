@@ -226,7 +226,8 @@
     "challengeLocals": "🔥 {{name}} がローカル向けに挑戦：{{title}}",
     "challengeExplorers": "🔥 {{name}} が旅行者向けに挑戦：{{title}}",
     "challengeCta": "見る →",
-    "challengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。"
+    "challengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。",
+    "challengeInternational": "🌐 {{name}} がクロスシティのチャレンジを開始：{{title}}"
   },
   "replyPreview": {
     "photo": "📷 写真"

@@ -564,10 +564,17 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 
   // ── Challenge feed item — orange pill, "{name} défie les locaux : {title}".
   // Mirrors the web .feed-prompt--challenge layout. Tap → /challenge/{id}.
+  //
+  // Mode-aware copy:
+  //   - International rows use a single key (no audience distinction — the
+  //     locals/travelers split doesn't apply for cross-city challenges).
+  //   - Local rows keep the existing locals/travelers variants.
   if (message.type === 'challenge') {
-    const textKey = message.audience === 'explorers'
-      ? 'bannerChallengeExplorers'
-      : 'bannerChallengeLocals';
+    const textKey = message.challengeMode === 'international'
+      ? 'bannerChallengeInternational'
+      : message.audience === 'explorers'
+        ? 'bannerChallengeExplorers'
+        : 'bannerChallengeLocals';
     // (Commit 1) Status sub-pill removed alongside max_participants. Commit 2
     // brings it back with 1:1 semantics (Available / In progress / Closed).
     const cEmoji: string | null = null;

@@ -87,5 +87,6 @@
   "photoSavePermSettings": "Izinkan akses foto di Pengaturan untuk menyimpan gambar.",
   "bannerChallengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
-  "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\"."
+  "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
+  "bannerChallengeInternational": "🌐 {{name}} mengirim tantangan lintas kota: {{title}}"
 }

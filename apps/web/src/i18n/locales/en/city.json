@@ -226,7 +226,8 @@
     "challengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
     "challengeExplorers": "🔥 {{name}} challenges the travelers: {{title}}",
     "challengeCta": "View →",
-    "challengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\"."
+    "challengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\".",
+    "challengeInternational": "🌐 {{name}} sent a cross-city challenge: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Photo"

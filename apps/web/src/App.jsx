@@ -3629,6 +3629,7 @@ export default function App() {
             title:       ch.title,
             nickname:    ch.nickname,
             audience:    ch.audience,
+            mode:        ch.mode ?? 'local',
           }]
         })
       })
@@ -4291,11 +4292,14 @@ export default function App() {
             }
 
             // Challenge feed item — parallel shape to events. The text key
-            // varies by target audience (locals vs travelers); tapping
-            // "Voir →" opens the ChallengeChatPage via setActiveChallenge.
+            // varies by mode (international stands apart) then by audience
+            // (locals vs travelers) for Local rows. Tapping "Voir →" opens
+            // the ChallengeChatPage via setActiveChallenge.
             if (item.type === 'challenge') {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)
-              const textKey   = item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
+              const textKey   = item.mode === 'international'
+                ? 'feedNew.challengeInternational'
+                : item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
               // (Commit 1) Status sub-pill removed with max_participants.
               // Commit 2 brings it back with 1:1 semantics.
               return (

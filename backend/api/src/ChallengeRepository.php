@@ -133,16 +133,31 @@ class ChallengeRepository
     /**
      * Active (open) challenge count per city — for the city list summary.
      * Returns an array keyed by integer city channel ID (e.g. 3), value = count.
+     *
+     * Counts both:
+     *   - rows whose city_id is this city (origin), and
+     *   - international rows whose target_city_id is this city (mirrored),
+     * unioned into a single per-city tally so the city list reflects what the
+     * user would actually see in the feed when they tap in.
      */
     public static function getCountsPerCity(): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT cc.city_id, COUNT(*) AS challenge_count
-            FROM channel_challenges cc
-            JOIN channels c ON c.id = cc.channel_id
-            WHERE c.status   = 'active'
-              AND cc.status  = 'open'
-            GROUP BY cc.city_id
+            WITH all_active AS (
+                SELECT cc.city_id        AS surface_city_id FROM channel_challenges cc
+                JOIN channels c ON c.id = cc.channel_id
+                WHERE c.status = 'active' AND cc.status = 'open'
+                UNION ALL
+                SELECT cc.target_city_id AS surface_city_id FROM channel_challenges cc
+                JOIN channels c ON c.id = cc.channel_id
+                WHERE c.status = 'active' AND cc.status = 'open'
+                  AND cc.target_city_id IS NOT NULL
+                  AND cc.target_city_id <> cc.city_id
+            )
+            SELECT surface_city_id AS city_id, COUNT(*) AS challenge_count
+            FROM all_active
+            WHERE surface_city_id IS NOT NULL
+            GROUP BY surface_city_id
         ");
         $stmt->execute();
         $result = [];
@@ -168,8 +183,15 @@ class ChallengeRepository
         // 24h grace window: validated challenges stay in the active feed for 1 day
         // after validated_at, so the city sees "Défi relevé" status before it
         // drops into the past archive. After 24h, getValidatedByCity() picks it up.
+        //
+        // (cc.city_id = :cid OR cc.target_city_id = :cid) — International
+        // challenges targeting this city mirror into its feed (per spec). The
+        // partial index `idx_channel_challenges_target_city` covers the
+        // target-side scan; "anywhere" intl rows (target_city_id IS NULL)
+        // stay origin-only because NULL doesn't satisfy either clause for
+        // any city other than the creator's.
         $stmt = $pdo->prepare(self::SELECT . "
-            WHERE cc.city_id = :city_id
+            WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id)
               AND c.status   = 'active'
               AND (
                 cc.status = 'open'
@@ -202,7 +224,9 @@ class ChallengeRepository
         $params = ['city_id' => $cityId];
         // Past archive — only challenges that are past the 24h grace window
         // (otherwise they're still showing in the active feed via getByCity()).
-        $where  = "cc.city_id = :city_id AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day'";
+        // Same mirroring rule as getByCity — past archive of a city includes
+        // international challenges that targeted it.
+        $where  = "(cc.city_id = :city_id OR cc.target_city_id = :city_id) AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day'";
         if ($beforeTs !== null) {
             $where             .= " AND cc.validated_at < to_timestamp(:before)";
             $params['before']   = $beforeTs;

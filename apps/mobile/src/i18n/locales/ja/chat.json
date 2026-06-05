@@ -87,5 +87,6 @@
   "photoSavePermSettings": "設定で写真へのアクセスを許可してください。",
   "bannerChallengeLocals": "🔥 {{name}} がローカル向けに挑戦:{{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} が旅行者向けに挑戦:{{title}}",
-  "bannerChallengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。"
+  "bannerChallengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。",
+  "bannerChallengeInternational": "🌐 {{name}} がクロスシティのチャレンジを開始：{{title}}"
 }

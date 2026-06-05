@@ -383,6 +383,10 @@ export interface Message {
   topicId?: string;               // for type === 'topic' synthetic feed items
   challengeId?: string;           // for type === 'challenge' synthetic feed items
   audience?: 'locals' | 'explorers'; // for type === 'challenge': picks the locale-aware verb template
+  /** For type === 'challenge': the challenge's mode. Drives the
+   *  international-specific copy variant (no audience distinction since
+   *  the cross-city flow doesn't have locals/travelers semantics). */
+  challengeMode?: 'local' | 'international';
   // Snapshot of the challenge's open/validated state at the time the feed
   // pill is emitted. (Commit 1) `challengeCount` / `challengeMax` removed
   // with the cap model; commit 2 brings the field back with 1:1 semantics.

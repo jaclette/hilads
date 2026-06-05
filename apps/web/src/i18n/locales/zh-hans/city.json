@@ -226,7 +226,8 @@
     "challengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
     "challengeExplorers": "🔥 {{name}} 向旅行者发起挑战：{{title}}",
     "challengeCta": "查看 →",
-    "challengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。"
+    "challengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。",
+    "challengeInternational": "🌐 {{name}} 发起了一个跨城挑战：{{title}}"
   },
   "replyPreview": {
     "photo": "📷 照片"

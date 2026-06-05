@@ -446,6 +446,7 @@ export default function ChatTab() {
             content:     c.title,
             nickname:    creatorName,
             audience:    c.audience,
+            challengeMode: c.mode ?? 'local',
             challengeStatus: c.status,
             createdAt:   now,
           });
@@ -468,6 +469,7 @@ export default function ChatTab() {
         content:     (ch?.title as string) ?? '',
         nickname:    (ch?.nickname as string) ?? '',
         audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
+        challengeMode: ((ch?.mode as 'local' | 'international') ?? 'local'),
         challengeStatus: (ch?.status as 'open' | 'validated') ?? 'open',
         createdAt:   Date.now() / 1000,
       }]);

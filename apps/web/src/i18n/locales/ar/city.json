@@ -242,7 +242,8 @@
     "challengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
     "challengeExplorers": "🔥 {{name}} يتحدّى المسافرين: {{title}}",
     "challengeCta": "عرض →",
-    "challengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\"."
+    "challengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\".",
+    "challengeInternational": "🌐 أطلق {{name}} تحديًا بين المدن: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 صورة"

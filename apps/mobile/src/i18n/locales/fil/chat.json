@@ -87,5 +87,6 @@
   "photoSavePermSettings": "Payagan ang access sa larawan sa Settings para makapag-save.",
   "bannerChallengeLocals": "🔥 Hinahamon ni {{name}} ang mga lokal: {{title}}",
   "bannerChallengeExplorers": "🔥 Hinahamon ni {{name}} ang mga biyahero: {{title}}",
-  "bannerChallengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\"."
+  "bannerChallengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
+  "bannerChallengeInternational": "🌐 Nagpadala si {{name}} ng cross-city challenge: {{title}}"
 }

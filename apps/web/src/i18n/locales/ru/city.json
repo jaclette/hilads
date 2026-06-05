@@ -234,7 +234,8 @@
     "challengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
     "challengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
     "challengeCta": "Смотреть →",
-    "challengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}»."
+    "challengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}».",
+    "challengeInternational": "🌐 {{name}} запустил межгородской челлендж: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Фото"

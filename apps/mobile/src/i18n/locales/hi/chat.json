@@ -87,5 +87,6 @@
   "photoSavePermSettings": "इमेज सहेजने के लिए सेटिंग्स में फ़ोटो एक्सेस की अनुमति दें।",
   "bannerChallengeLocals": "🔥 {{name}} ने स्थानीयों को चुनौती दी: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} ने यात्रियों को चुनौती दी: {{title}}",
-  "bannerChallengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।"
+  "bannerChallengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।",
+  "bannerChallengeInternational": "🌐 {{name}} ने एक क्रॉस-सिटी चैलेंज भेजा: {{title}}"
 }

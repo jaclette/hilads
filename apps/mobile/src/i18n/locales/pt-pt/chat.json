@@ -87,5 +87,6 @@
   "photoSavePermSettings": "Permite o acesso a fotos em Definições para guardar imagens.",
   "bannerChallengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
-  "bannerChallengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\"."
+  "bannerChallengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\".",
+  "bannerChallengeInternational": "🌐 {{name}} lançou um desafio entre cidades: {{title}}"
 }

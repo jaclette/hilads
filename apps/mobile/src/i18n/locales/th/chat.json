@@ -87,5 +87,6 @@
   "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป",
   "bannerChallengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} ท้าทายนักเดินทาง: {{title}}",
-  "bannerChallengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\""
+  "bannerChallengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
+  "bannerChallengeInternational": "🌐 {{name}} ส่งชาเลนจ์ข้ามเมือง: {{title}}"
 }
