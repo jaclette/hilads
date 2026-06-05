@@ -284,6 +284,29 @@ final class NotificationI18n
             'ru'      => ["{name} хочет присоединиться", "{name} запросил присоединение к {title}"],
             'ar'      => ["{name} يريد الانضمام", "{name} طلب الانضمام إلى {title}"],
         ],
+        // Personal challenge invitation: "🔥 {name} challenges you" with the
+        // challenge title kept verbatim in the body (the title is a proper
+        // piece of user content — translating it would change the meaning).
+        'challenge_invitation' => [
+            'fr'      => ["🔥 {name} te défie",                 null],
+            'vi'      => ["🔥 {name} thách bạn",                null],
+            'es'      => ["🔥 {name} te reta",                  null],
+            'it'      => ["🔥 {name} ti sfida",                 null],
+            'pt-br'   => ["🔥 {name} te desafia",               null],
+            'pt-pt'   => ["🔥 {name} desafia-te",               null],
+            'de'      => ["🔥 {name} fordert dich heraus",      null],
+            'nl'      => ["🔥 {name} daagt je uit",             null],
+            'zh-hans' => ["🔥 {name} 向你发起挑战",              null],
+            'zh-hant' => ["🔥 {name} 向你發起挑戰",              null],
+            'ja'      => ["🔥 {name} があなたに挑戦",            null],
+            'ko'      => ["🔥 {name} 님이 당신에게 도전",         null],
+            'fil'     => ["🔥 Hinahamon ka ni {name}",          null],
+            'th'      => ["🔥 {name} ท้าคุณ",                    null],
+            'id'      => ["🔥 {name} menantangmu",              null],
+            'hi'      => ["🔥 {name} ने आपको चैलेंज किया",        null],
+            'ru'      => ["🔥 {name} бросает тебе вызов",        null],
+            'ar'      => ["🔥 {name} يتحداك",                    null],
+        ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
             'vi' => ["Bạn được nhận! 🎉",   "{name} đã thêm bạn vào {title}"],
@@ -426,6 +449,7 @@ final class NotificationI18n
             'vibe_received'            => 'actorName',
             'profile_view'             => 'viewerName',
             'join_request'             => 'requesterName',
+            'challenge_invitation'     => 'inviterName',
             default                    => 'senderName',
         };
         return (string) ($data[$key] ?? $data['name'] ?? $data['senderName'] ?? '');
