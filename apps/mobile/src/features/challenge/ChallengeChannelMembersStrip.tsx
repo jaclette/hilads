@@ -66,10 +66,18 @@ export function ChallengeChannelMembersStrip({
     preview.push({ id: m.id, displayName: m.displayName ?? '—', thumbAvatarUrl: m.thumbAvatarUrl });
     if (preview.length >= 5) break;
   }
-  // Total includes synthesized rows (challenger + taker) that aren't in
-  // the join table — match the modal's count.
-  const synthesized = (creatorUserId ? 1 : 0) + (takerUserId && takerUserId !== creatorUserId ? 1 : 0);
-  const total = count + synthesized;
+  // Total = unique participants. The creator and the taker auto-join the
+  // channel on create / accept, so they're typically IN the join table —
+  // simply summing `count + synthesized` double-counts them. Match the web
+  // modal's behaviour (ChallengeChannelMembers.jsx): only add a synthesized
+  // row when that user_id is NOT already in the members list.
+  // (`count` parity with the API is preserved for callers that ever need
+  // the raw join-table count; we don't expose it here.)
+  void count;
+  const memberIds = new Set(members.map(m => m.id));
+  let total = members.length;
+  if (creatorUserId && !memberIds.has(creatorUserId)) total += 1;
+  if (takerUserId && takerUserId !== creatorUserId && !memberIds.has(takerUserId)) total += 1;
 
   if (preview.length === 0) return null;
 
