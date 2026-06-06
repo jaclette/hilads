@@ -162,11 +162,13 @@
     "picker": {
       "title": "เจอกันเมื่อไหร่?",
       "whenLabel": "เมื่อไหร่",
-      "timeLabel": "เวลา",
+      "timeLabel": "เวลาเริ่ม",
       "whereLabel": "ที่ไหน (ไม่บังคับ)",
       "wherePlaceholder": "เช่น Le Comptoir, 17 rue de la Paix",
       "otherDate": "วันอื่น",
-      "otherTime": "เวลาอื่น"
+      "otherTime": "เวลาอื่น",
+      "endTimeLabel": "เวลาจบ",
+      "endAfterStart": "เวลาจบต้องอยู่หลังเวลาเริ่ม"
     },
     "err": {
       "proposeFailed": "เสนอวันที่ไม่สำเร็จ ลองอีกครั้ง",

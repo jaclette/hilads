@@ -162,11 +162,13 @@
     "picker": {
       "title": "Quando se vão encontrar?",
       "whenLabel": "QUANDO",
-      "timeLabel": "HORA",
+      "timeLabel": "HORA DE INÍCIO",
       "whereLabel": "ONDE (OPCIONAL)",
       "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Outra data",
-      "otherTime": "Outra hora"
+      "otherTime": "Outra hora",
+      "endTimeLabel": "HORA DE FIM",
+      "endAfterStart": "A hora de fim deve ser depois do início."
     },
     "err": {
       "proposeFailed": "Não foi possível propor a data. Tenta novamente.",

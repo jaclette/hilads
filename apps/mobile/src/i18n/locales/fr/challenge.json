@@ -162,11 +162,13 @@
     "picker": {
       "title": "Quand vous voyez-vous ?",
       "whenLabel": "QUAND",
-      "timeLabel": "HEURE",
+      "timeLabel": "HEURE DE DÉBUT",
       "whereLabel": "OÙ (OPTIONNEL)",
       "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Autre date",
-      "otherTime": "Autre heure"
+      "otherTime": "Autre heure",
+      "endTimeLabel": "HEURE DE FIN",
+      "endAfterStart": "L’heure de fin doit être après le début."
     },
     "err": {
       "proposeFailed": "Impossible de proposer la date. Réessaie.",

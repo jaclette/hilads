@@ -162,11 +162,13 @@
     "picker": {
       "title": "Wann trefft ihr euch?",
       "whenLabel": "WANN",
-      "timeLabel": "UHRZEIT",
+      "timeLabel": "STARTZEIT",
       "whereLabel": "WO (OPTIONAL)",
       "wherePlaceholder": "z. B. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Anderes Datum",
-      "otherTime": "Andere Zeit"
+      "otherTime": "Andere Zeit",
+      "endTimeLabel": "ENDZEIT",
+      "endAfterStart": "Endzeit muss nach der Startzeit liegen."
     },
     "err": {
       "proposeFailed": "Termin konnte nicht vorgeschlagen werden. Versuch's nochmal.",

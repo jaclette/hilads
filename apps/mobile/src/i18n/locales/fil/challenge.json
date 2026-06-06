@@ -162,11 +162,13 @@
     "picker": {
       "title": "Kailan kayo magkikita?",
       "whenLabel": "KAILAN",
-      "timeLabel": "ORAS",
+      "timeLabel": "START TIME",
       "whereLabel": "SAAN (OPTIONAL)",
       "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Ibang petsa",
-      "otherTime": "Ibang oras"
+      "otherTime": "Ibang oras",
+      "endTimeLabel": "END TIME",
+      "endAfterStart": "Ang end time ay dapat pagkatapos ng start."
     },
     "err": {
       "proposeFailed": "Hindi na-propose ang petsa. Subukan ulit.",

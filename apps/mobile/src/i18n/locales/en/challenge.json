@@ -262,7 +262,9 @@
     "picker": {
       "title": "When are you meeting?",
       "whenLabel": "WHEN",
-      "timeLabel": "TIME",
+      "timeLabel": "START TIME",
+      "endTimeLabel": "END TIME",
+      "endAfterStart": "End time must be after start.",
       "whereLabel": "WHERE (OPTIONAL)",
       "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Other date",

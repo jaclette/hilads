@@ -162,11 +162,13 @@
     "picker": {
       "title": "什麼時候見面?",
       "whenLabel": "什麼時候",
-      "timeLabel": "時間",
+      "timeLabel": "開始時間",
       "whereLabel": "在哪裡（選填）",
       "wherePlaceholder": "例如 Le Comptoir, 17 rue de la Paix",
       "otherDate": "其他日期",
-      "otherTime": "其他時間"
+      "otherTime": "其他時間",
+      "endTimeLabel": "結束時間",
+      "endAfterStart": "結束時間必須晚於開始時間。"
     },
     "err": {
       "proposeFailed": "無法提議日期，請再試一次。",

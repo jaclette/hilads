@@ -162,11 +162,13 @@
     "picker": {
       "title": "Wanneer zien jullie elkaar?",
       "whenLabel": "WANNEER",
-      "timeLabel": "TIJD",
+      "timeLabel": "BEGINTIJD",
       "whereLabel": "WAAR (OPTIONEEL)",
       "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Andere datum",
-      "otherTime": "Andere tijd"
+      "otherTime": "Andere tijd",
+      "endTimeLabel": "EINDTIJD",
+      "endAfterStart": "Eindtijd moet na begintijd liggen."
     },
     "err": {
       "proposeFailed": "Datum voorstellen mislukt. Probeer opnieuw.",

@@ -162,11 +162,13 @@
     "picker": {
       "title": "いつ会いますか？",
       "whenLabel": "いつ",
-      "timeLabel": "時間",
+      "timeLabel": "開始時刻",
       "whereLabel": "どこで（任意）",
       "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix",
       "otherDate": "別の日付",
-      "otherTime": "別の時間"
+      "otherTime": "別の時間",
+      "endTimeLabel": "終了時刻",
+      "endAfterStart": "終了時刻は開始時刻より後にしてください。"
     },
     "err": {
       "proposeFailed": "日程を提案できませんでした。もう一度お試しください。",

@@ -162,11 +162,13 @@
     "picker": {
       "title": "Когда встречаетесь?",
       "whenLabel": "КОГДА",
-      "timeLabel": "ВРЕМЯ",
+      "timeLabel": "НАЧАЛО",
       "whereLabel": "ГДЕ (НЕОБЯЗАТЕЛЬНО)",
       "wherePlaceholder": "напр. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Другая дата",
-      "otherTime": "Другое время"
+      "otherTime": "Другое время",
+      "endTimeLabel": "КОНЕЦ",
+      "endAfterStart": "Время окончания должно быть позже начала."
     },
     "err": {
       "proposeFailed": "Не удалось предложить дату. Попробуй ещё раз.",

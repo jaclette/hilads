@@ -134,6 +134,7 @@ export function ThreadScheduleBlock({
             }}
             submitLabel={t('schedule.editCta')}
             initialStartsAt={thread.proposed_starts_at}
+            initialEndsAt={thread.proposed_ends_at}
             initialVenue={thread.proposed_venue ?? undefined}
           />
         )}
@@ -253,6 +254,7 @@ export function ThreadScheduleBlock({
         onSubmit={handlePicker}
         submitLabel={t('schedule.counterCta')}
         initialStartsAt={thread.proposed_starts_at}
+        initialEndsAt={thread.proposed_ends_at}
         initialVenue={thread.proposed_venue}
       />
     </>

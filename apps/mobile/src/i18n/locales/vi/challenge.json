@@ -162,11 +162,13 @@
     "picker": {
       "title": "Khi nào gặp nhau?",
       "whenLabel": "KHI NÀO",
-      "timeLabel": "GIỜ",
+      "timeLabel": "GIỜ BẮT ĐẦU",
       "whereLabel": "Ở ĐÂU (TÙY CHỌN)",
       "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Ngày khác",
-      "otherTime": "Giờ khác"
+      "otherTime": "Giờ khác",
+      "endTimeLabel": "GIỜ KẾT THÚC",
+      "endAfterStart": "Giờ kết thúc phải sau giờ bắt đầu."
     },
     "err": {
       "proposeFailed": "Không đề xuất được ngày. Thử lại nhé.",

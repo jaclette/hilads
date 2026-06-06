@@ -6,6 +6,7 @@ import { Linking } from 'react-native';
 import { acceptEula } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
+import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -212,6 +213,11 @@ function RootLayoutInner() {
         username={account?.username ?? account?.display_name ?? ''}
         onClose={() => setShowAccountWelcome(false)}
       />
+
+      {/* PR11 — auto-open the RateSheet once per cold start if the caller
+          has any rate-eligible meet-up (proposed_ends_at < now() and not
+          yet rated). Replaces the abandoned rate-ready push. */}
+      <RatePromptLaunchGate />
     </>
   );
 }

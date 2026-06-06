@@ -162,11 +162,13 @@
     "picker": {
       "title": "आप कब मिल रहे हैं?",
       "whenLabel": "कब",
-      "timeLabel": "समय",
+      "timeLabel": "शुरू का समय",
       "whereLabel": "कहाँ (वैकल्पिक)",
       "wherePlaceholder": "जैसे Le Comptoir, 17 rue de la Paix",
       "otherDate": "दूसरी तारीख़",
-      "otherTime": "दूसरा समय"
+      "otherTime": "दूसरा समय",
+      "endTimeLabel": "खत्म का समय",
+      "endAfterStart": "खत्म का समय शुरू के बाद होना चाहिए।"
     },
     "err": {
       "proposeFailed": "तारीख़ नहीं सुझा सके। फिर से कोशिश करें।",

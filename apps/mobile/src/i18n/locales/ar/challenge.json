@@ -162,11 +162,13 @@
     "picker": {
       "title": "متى ستلتقيان؟",
       "whenLabel": "متى",
-      "timeLabel": "الوقت",
+      "timeLabel": "وقت البدء",
       "whereLabel": "أين (اختياري)",
       "wherePlaceholder": "مثل Le Comptoir, 17 rue de la Paix",
       "otherDate": "تاريخ آخر",
-      "otherTime": "وقت آخر"
+      "otherTime": "وقت آخر",
+      "endTimeLabel": "وقت الانتهاء",
+      "endAfterStart": "يجب أن يكون وقت الانتهاء بعد وقت البدء."
     },
     "err": {
       "proposeFailed": "تعذّر اقتراح الموعد. أعد المحاولة.",

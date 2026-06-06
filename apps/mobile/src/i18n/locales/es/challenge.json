@@ -162,11 +162,13 @@
     "picker": {
       "title": "¿Cuándo os veis?",
       "whenLabel": "CUÁNDO",
-      "timeLabel": "HORA",
+      "timeLabel": "HORA DE INICIO",
       "whereLabel": "DÓNDE (OPCIONAL)",
       "wherePlaceholder": "ej. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Otra fecha",
-      "otherTime": "Otra hora"
+      "otherTime": "Otra hora",
+      "endTimeLabel": "HORA DE FIN",
+      "endAfterStart": "La hora de fin debe ser posterior al inicio."
     },
     "err": {
       "proposeFailed": "No se pudo proponer la fecha. Inténtalo de nuevo.",

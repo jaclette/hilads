@@ -246,12 +246,6 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
-    case 'rate_ready':
-      // PR11 — rating window just opened. Land on /threads where the
-      // rate-prompt banner already picks this acceptance up; tapping
-      // the banner opens the RateSheet with the right counterparty.
-      return '/threads';
-
     default:
       return null;
   }

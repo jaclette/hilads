@@ -162,11 +162,13 @@
     "picker": {
       "title": "Kapan kalian bertemu?",
       "whenLabel": "KAPAN",
-      "timeLabel": "JAM",
+      "timeLabel": "WAKTU MULAI",
       "whereLabel": "DI MANA (OPSIONAL)",
       "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Tanggal lain",
-      "otherTime": "Jam lain"
+      "otherTime": "Jam lain",
+      "endTimeLabel": "WAKTU SELESAI",
+      "endAfterStart": "Waktu selesai harus setelah waktu mulai."
     },
     "err": {
       "proposeFailed": "Gagal mengusulkan tanggal. Coba lagi.",
