@@ -20,6 +20,7 @@ import EventsSidebar from './components/EventsSidebar'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
 import { splitContentByMentions } from './lib/mentions'
+import { countryToFlag } from './lib/countryFlag'
 import { linkifyText, extractFirstUrl } from './linkify.jsx'
 import LinkPreviewCard from './components/LinkPreviewCard'
 import CreateEventPage from './components/CreateEventModal'
@@ -4974,11 +4975,23 @@ export default function App() {
                       </div>
                       <div className="er-badges">
                         {isInternational
-                          ? (
-                            <span className="challenge-badge challenge-badge--international">
-                              🌐 {t('mode.international', { ns: 'challenge' })}
-                            </span>
-                          )
+                          ? (() => {
+                              // 🇩🇪 → 🇻🇳 when both countries are known. Falls
+                              // back to "🌍" for the target when "anywhere"
+                              // (no target_city_id) or unknown. Origin always
+                              // has a country since challenges are created
+                              // from a city.
+                              const fromFlag = countryToFlag(c.country)
+                              const toFlag   = countryToFlag(c.target_country) || '🌍'
+                              const label    = fromFlag
+                                ? `${fromFlag} → ${toFlag}`
+                                : `🌐 ${t('mode.international', { ns: 'challenge' })}`
+                              return (
+                                <span className="challenge-badge challenge-badge--international">
+                                  {label}
+                                </span>
+                              )
+                            })()
                           : (
                             <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
                           )}

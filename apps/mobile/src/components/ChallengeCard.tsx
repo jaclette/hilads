@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import type { Challenge, ChallengeType, ChallengeAudience } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { countryToFlag } from '@/lib/countryFlag';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { avatarColor } from '@/lib/avatarColors';
 
@@ -59,11 +60,18 @@ export function ChallengeCard({
         <View style={styles.kindBadge}>
           <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
         </View>
-        {isInternational ? (
-          <View style={styles.intlPill}>
-            <Text style={styles.intlPillText}>🌐 {t('mode.international')}</Text>
-          </View>
-        ) : (
+        {isInternational ? (() => {
+          // 🇩🇪 → 🇻🇳 (or "🌍" target for anywhere). Falls back to the
+          // legacy "🌐 International" if the origin country is unknown.
+          const fromFlag = countryToFlag(challenge.country ?? null);
+          const toFlag   = countryToFlag(challenge.target_country ?? null) || '🌍';
+          const label    = fromFlag ? `${fromFlag} → ${toFlag}` : `🌐 ${t('mode.international')}`;
+          return (
+            <View style={styles.intlPill}>
+              <Text style={styles.intlPillText}>{label}</Text>
+            </View>
+          );
+        })() : (
           <View style={styles.audiencePill}>
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>

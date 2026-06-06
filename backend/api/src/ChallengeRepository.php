@@ -89,6 +89,18 @@ class ChallengeRepository
         LEFT JOIN messages m        ON m.channel_id = c.id AND m.type IN ('text', 'image')
     ";
 
+    /**
+     * Resolve an ISO-2 country code for a 'city_<int>' channel id via the
+     * APCU-cached city list. Returns null for null / malformed input or
+     * cities we don't know about. Cheap — no DB round-trip after warmup.
+     */
+    private static function countryForCityId(?string $cityId): ?string
+    {
+        if (!is_string($cityId) || !preg_match('/^city_(\d+)$/', $cityId, $m)) return null;
+        $city = CityRepository::findById((int) $m[1]);
+        return $city['country'] ?? null;
+    }
+
     private static function format(array $row): array
     {
         return [
@@ -122,6 +134,12 @@ class ChallengeRepository
             'mode'                 => $row['mode']               ?? 'local',
             'target_city_id'       => $row['target_city_id']     ?? null,
             'proof_requirements'   => $row['proof_requirements'] ?? null,
+            // Origin + target country (ISO-2). Resolved via the cached
+            // CityRepository so we avoid a SQL join + GROUP BY rewrite.
+            // Used by clients to render flag emojis on the International
+            // pill ("🇩🇪 → 🇻🇳" etc.). Null for guest-only or unknown rows.
+            'country'              => self::countryForCityId($row['city_id']        ?? null),
+            'target_country'       => self::countryForCityId($row['target_city_id'] ?? null),
             // Visibility — 'public' default for pre-migration rows.
             'visibility'           => $row['visibility']         ?? 'public',
             'closed_to_new_joins'  => (bool) ($row['closed_to_new_joins'] ?? false),

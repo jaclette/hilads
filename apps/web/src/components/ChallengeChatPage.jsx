@@ -21,6 +21,7 @@ import {
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
   kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
 } from '../api'
+import { countryToFlag } from '../lib/countryFlag'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
@@ -670,11 +671,18 @@ export default function ChallengeChatPage({
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
-        {(challenge.mode ?? 'local') === 'international' ? (
-          <span className="challenge-badge challenge-badge--international">
-            🌐 {targetCityNameOnly || t('mode.international')}
-          </span>
-        ) : (
+        {(challenge.mode ?? 'local') === 'international' ? (() => {
+          // Origin → target flag rendering. Falls back to "🌍" for the
+          // target when "anywhere" (no target_city_id) or unknown.
+          const fromFlag = countryToFlag(challenge.country)
+          const toFlag   = countryToFlag(challenge.target_country) || '🌍'
+          const label    = fromFlag
+            ? `${fromFlag} → ${toFlag}${targetCityNameOnly ? '  ·  ' + targetCityNameOnly : ''}`
+            : `🌐 ${targetCityNameOnly || t('mode.international')}`
+          return (
+            <span className="challenge-badge challenge-badge--international">{label}</span>
+          )
+        })() : (
           <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         )}
         <button

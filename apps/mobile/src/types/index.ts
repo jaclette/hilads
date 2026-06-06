@@ -185,6 +185,11 @@ export interface Challenge {
   /** Target city for International mode. Null = "anywhere" (no fan-out).
    *  Format: 'city_<int>' matching channels.id. Local rows: null. */
   target_city_id?:       string | null;
+  /** ISO-2 country codes for the origin + target cities (server-resolved
+   *  via the cached CityRepository). Used to render flag emojis on the
+   *  International pill. target_country is null for "anywhere" / unknown. */
+  country?:              string | null;
+  target_country?:       string | null;
   /** Creator-authored proof spec shown to acceptors before they upload.
    *  International only — null on local rows. */
   proof_requirements?:   string | null;

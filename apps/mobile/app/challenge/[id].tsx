@@ -31,6 +31,7 @@ import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
+import { countryToFlag } from '@/lib/countryFlag';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
@@ -699,14 +700,22 @@ export default function ChallengeChatScreen() {
           {/* Audience / mode pill — Local rows get the audience target
               (locals vs travelers); International rows swap it for a 🌐
               chip since audience doesn't apply (no IRL meetup). */}
-          {(challenge.mode ?? 'local') === 'international' ? (
-            <View style={styles.intlPill}>
-              <Text style={styles.intlPillText} numberOfLines={1}>
-                🌐 {t('mode.international')}
-                {challengeTargetCityName ? `  ·  ${challengeTargetCityName}` : ''}
-              </Text>
-            </View>
-          ) : (
+          {(challenge.mode ?? 'local') === 'international' ? (() => {
+            // 🇩🇪 → 🇻🇳 when both countries are known. Fallback to "🌍" for
+            // the target on "anywhere" challenges; legacy fallback to the
+            // existing 🌐 label when origin is unknown.
+            const fromFlag = countryToFlag(challenge.country ?? null);
+            const toFlag   = countryToFlag(challenge.target_country ?? null) || '🌍';
+            const cityTail = challengeTargetCityName ? `  ·  ${challengeTargetCityName}` : '';
+            const label    = fromFlag
+              ? `${fromFlag} → ${toFlag}${cityTail}`
+              : `🌐 ${t('mode.international')}${cityTail}`;
+            return (
+              <View style={styles.intlPill}>
+                <Text style={styles.intlPillText} numberOfLines={1}>{label}</Text>
+              </View>
+            );
+          })() : (
             <View style={styles.audiencePill}>
               <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
             </View>
