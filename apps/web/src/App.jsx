@@ -29,6 +29,7 @@ import TopicChatPage from './components/TopicChatPage'
 import ChallengeChatPage from './components/ChallengeChatPage'
 import ChallengePostCreateModal from './components/ChallengePostCreateModal'
 import ThreadsListPage    from './components/ThreadsListPage'
+import LeaderboardPage    from './components/LeaderboardPage'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import ChallengeIntroCarousel from './components/ChallengeIntroCarousel'
@@ -48,6 +49,7 @@ import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
 import { fetchIncomingFriendRequestCount } from './api'
+import { fetchLeaderboard } from './api'
 import BackButton from './components/BackButton'
 import DeleteAccountPage from './components/DeleteAccountPage'
 import InstallPromptBanner from './components/InstallPromptBanner'
@@ -1049,6 +1051,8 @@ export default function App() {
   // unified public challenge channel. State + setter kept off the tree
   // to avoid a dead handle lingering elsewhere.
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
+  const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
+  const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank — drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // ── Challenges feed pagination + type sub-filter ─────────────────────────
@@ -1398,6 +1402,23 @@ export default function App() {
     const offAccept = sock.on('friendRequestAccepted',  () => { /* I'm the sender; my outgoing went down, not incoming */ })
     return () => { offRecv(); offCxled(); offAccept() }
   }, [account?.id])
+
+  // PR7 — Leaderboard 🏆 chip in the city header. One bounded fetch per
+  // (account, channelId) change. limit=1 so we only round-trip the caller's
+  // me.rank/me.points — the list is fetched in full only when the user
+  // opens the dedicated screen.
+  useEffect(() => {
+    let cancelled = false
+    if (!account?.id || !channelId) { setMyCityRank(null); return }
+    fetchLeaderboard({
+      scope: 'city', period: 'month', limit: 1, offset: 0,
+      cityId: `city_${channelId}`,
+    }).then(res => {
+      if (cancelled) return
+      setMyCityRank(res?.me?.rank ?? null)
+    })
+    return () => { cancelled = true }
+  }, [account?.id, channelId])
 
   // Fetch notification unread count once on account load.
   // Badge is kept current via local state transitions:
@@ -3926,6 +3947,27 @@ export default function App() {
               <span className="online-pulse" />
               {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
             </button>
+            {account && (
+              <>
+                <span className="header-city-sep" aria-hidden="true">·</span>
+                <button
+                  type="button"
+                  className="header-city-leaderboard"
+                  onClick={() => setShowLeaderboard(true)}
+                  aria-label={
+                    myCityRank
+                      ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
+                      : t('leaderboard.chip.neutral', { ns: 'challenge' })
+                  }
+                >
+                  {myCityRank === null
+                    ? t('leaderboard.chip.neutral', { ns: 'challenge' })
+                    : myCityRank > 99
+                      ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
+                      : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
+                </button>
+              </>
+            )}
           </div>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
@@ -6268,6 +6310,16 @@ export default function App() {
           socket={socketRef.current}
           onBack={() => setShowThreadsList(false)}
           onOpenChallenge={(c) => { setShowThreadsList(false); setActiveChallenge(c) }}
+        />
+      )}
+
+      {/* PR7 — Leaderboard screen. Opened from the 🏆 chip in renderCityHero. */}
+      {showLeaderboard && (
+        <LeaderboardPage
+          account={account}
+          city={city}
+          cityChannelId={channelId}
+          onBack={() => setShowLeaderboard(false)}
         />
       )}
 

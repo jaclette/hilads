@@ -414,5 +414,31 @@
       "later": "あとで"
     },
     "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
+  },
+  "leaderboard": {
+    "title": "🏆 ランキング",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 トップチャレンジャー"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "世界"
+    },
+    "period": {
+      "month": "今月",
+      "alltime": "全期間"
+    },
+    "points": "{{points}} pt",
+    "me": {
+      "ranked": "あなた · #{{rank}} · {{points}} pt",
+      "unranked": "チャレンジを引き受けてランクインしよう"
+    },
+    "empty": {
+      "title": "ランキングはまだ空です",
+      "body": "最初にチャレンジを引き受けてポイントを獲得しましょう。"
+    },
+    "errLoad": "ランキングを読み込めませんでした。引いて再試行してください。"
   }
 }

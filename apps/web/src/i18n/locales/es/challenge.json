@@ -414,5 +414,31 @@
       "later": "Ahora no"
     },
     "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
+  },
+  "leaderboard": {
+    "title": "🏆 Clasificación",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top retadores"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Mundo"
+    },
+    "period": {
+      "month": "Este mes",
+      "alltime": "Histórico"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Tú · #{{rank}} · {{points}} pts",
+      "unranked": "Acepta un reto para entrar en la clasificación"
+    },
+    "empty": {
+      "title": "Nadie en la clasificación todavía",
+      "body": "Sé el primero en aceptar un reto y ganar puntos."
+    },
+    "errLoad": "No se pudo cargar la clasificación. Desliza para reintentar."
   }
 }

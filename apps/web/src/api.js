@@ -836,6 +836,36 @@ export async function submitRating(challengeId, stars, comment) {
   return res.json()
 }
 
+// ── PR7: leaderboard ────────────────────────────────────────────────────────
+
+/**
+ * Fetch the leaderboard for a given scope/period.
+ *
+ * Returns null on network error so the caller (header chip / screen) can
+ * render a neutral state without throwing. The chip uses this to silently
+ * fall back to "🏆 Top challengers".
+ *
+ * opts = { scope: 'city'|'world', period: 'month'|'alltime',
+ *          limit?: number, offset?: number, cityId?: string }
+ */
+export async function fetchLeaderboard(opts) {
+  const params = new URLSearchParams({
+    scope:  opts.scope,
+    period: opts.period,
+    limit:  String(opts.limit  ?? 50),
+    offset: String(opts.offset ?? 0),
+  })
+  if (opts.cityId) params.set('city_id', opts.cityId)
+  try {
+    const res = await fetch(`${BASE}/leaderboard?${params}`, { credentials: 'include' })
+    if (!res.ok) return null
+    return await res.json()
+  } catch (err) {
+    console.warn('[fetchLeaderboard] failed:', err)
+    return null
+  }
+}
+
 // Deprecated — kept for the historic mobile build still on the prior
 // release. New code uses fetchChallengeMessages on the public challenge
 // channel; thread channels are no longer auto-created on accept.

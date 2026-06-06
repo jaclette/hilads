@@ -414,5 +414,31 @@
       "later": "稍后"
     },
     "errSubmit": "评分提交失败，请重试。"
+  },
+  "leaderboard": {
+    "title": "🏆 排行榜",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 顶尖挑战者"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "全球"
+    },
+    "period": {
+      "month": "本月",
+      "alltime": "总榜"
+    },
+    "points": "{{points}} 分",
+    "me": {
+      "ranked": "你 · #{{rank}} · {{points}} 分",
+      "unranked": "接受挑战，登上排行榜"
+    },
+    "empty": {
+      "title": "排行榜还空着",
+      "body": "成为第一个接受挑战并获得分数的人。"
+    },
+    "errLoad": "加载排行榜失败，下拉重试。"
   }
 }

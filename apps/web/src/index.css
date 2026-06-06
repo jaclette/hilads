@@ -679,6 +679,140 @@ html, body, #root {
   50%       { transform: scale(1.25); opacity: 1;   box-shadow: 0 0 0 5px rgba(194, 74, 56, 0); }
 }
 
+/* PR7 — Leaderboard chip in renderCityHero. Sibling of .header-city-online,
+   amber accent so it reads as the scoring/rank surface (vs. the warm-orange
+   presence pulse). */
+.header-city-leaderboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FFC93C;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  background: none;
+  border: none;
+  opacity: 0.9;
+  transition: opacity 0.15s;
+}
+.header-city-leaderboard:hover  { opacity: 1; }
+.header-city-leaderboard:active { opacity: 0.7; }
+
+/* ── PR7 — Leaderboard screen ──────────────────────────────── */
+
+.leaderboard-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.leaderboard-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px 4px;
+}
+
+.leaderboard-seg {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.leaderboard-seg-item {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: var(--muted, #b3b3b3);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.leaderboard-seg-item.is-active {
+  background: rgba(255, 255, 255, 0.10);
+  color: var(--text, #fff);
+}
+
+/* Primary toggle (My city / World) uses the orange gradient on active. */
+.leaderboard-seg--primary .leaderboard-seg-item.is-active {
+  background: linear-gradient(135deg, #FF7A3C, #C24A38);
+  color: #fff;
+  font-weight: 800;
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.leaderboard-row.is-me {
+  background: rgba(255, 122, 60, 0.08);
+}
+.leaderboard-rank {
+  min-width: 44px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--muted-2, #888);
+}
+.leaderboard-row.is-me .leaderboard-rank {
+  color: #FF7A3C;
+}
+.leaderboard-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.leaderboard-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text, #fff);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaderboard-row.is-me .leaderboard-name {
+  font-weight: 800;
+}
+.leaderboard-points {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted, #b3b3b3);
+}
+.leaderboard-row.is-me .leaderboard-points {
+  color: #FF7A3C;
+  font-weight: 800;
+}
+
+.leaderboard-pinned {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg, #0d0b09);
+}
+.leaderboard-unranked {
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted, #b3b3b3);
+}
+
 /* ── New mobile header — 3-section redesign ──────────────── */
 
 /* Shown only on mobile; desktop uses header-desktop-layout */

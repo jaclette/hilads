@@ -414,5 +414,31 @@
       "later": "Để sau"
     },
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
+  },
+  "leaderboard": {
+    "title": "🏆 Bảng xếp hạng",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top thử thách"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Thế giới"
+    },
+    "period": {
+      "month": "Tháng này",
+      "alltime": "Mọi thời điểm"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Bạn · #{{rank}} · {{points}} pts",
+      "unranked": "Nhận một thử thách để lên bảng"
+    },
+    "empty": {
+      "title": "Chưa ai trên bảng",
+      "body": "Hãy là người đầu tiên nhận thử thách và kiếm điểm."
+    },
+    "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại."
   }
 }

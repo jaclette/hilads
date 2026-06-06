@@ -414,5 +414,31 @@
       "later": "나중에"
     },
     "errSubmit": "평가를 보내지 못했어요. 다시 시도해 주세요."
+  },
+  "leaderboard": {
+    "title": "🏆 리더보드",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 톱 챌린저"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "세계"
+    },
+    "period": {
+      "month": "이번 달",
+      "alltime": "전체"
+    },
+    "points": "{{points}}점",
+    "me": {
+      "ranked": "나 · #{{rank}} · {{points}}점",
+      "unranked": "챌린지를 시작해서 리더보드에 올라가요"
+    },
+    "empty": {
+      "title": "아직 리더보드가 비어 있어요",
+      "body": "가장 먼저 챌린지를 시작하고 포인트를 얻어요."
+    },
+    "errLoad": "리더보드를 불러오지 못했어요. 당겨서 다시 시도해 주세요."
   }
 }

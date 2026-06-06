@@ -168,6 +168,32 @@
     },
     "errSubmit": "Couldn't submit your rating. Try again."
   },
+  "leaderboard": {
+    "title": "🏆 Leaderboard",
+    "chip": {
+      "ranked":     "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral":    "🏆 Top challengers"
+    },
+    "scope": {
+      "city":  "My city",
+      "world": "World"
+    },
+    "period": {
+      "month":   "This month",
+      "alltime": "All-time"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked":   "You · #{{rank}} · {{points}} pts",
+      "unranked": "Take a challenge to get on the board"
+    },
+    "empty": {
+      "title": "Nobody's on the board yet",
+      "body":  "Be the first to take a challenge and earn points."
+    },
+    "errLoad": "Couldn't load the leaderboard. Pull to retry."
+  },
   "schedule": {
     "proposeCta": "Propose a date 📅",
     "counterCta": "Counter-propose",

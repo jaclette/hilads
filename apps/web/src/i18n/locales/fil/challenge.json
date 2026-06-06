@@ -414,5 +414,31 @@
       "later": "Mamaya na"
     },
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
+  },
+  "leaderboard": {
+    "title": "🏆 Leaderboard",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top challengers"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "World"
+    },
+    "period": {
+      "month": "Ngayong buwan",
+      "alltime": "All-time"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Ikaw · #{{rank}} · {{points}} pts",
+      "unranked": "Mag-take ng challenge para mapunta sa board"
+    },
+    "empty": {
+      "title": "Wala pang nasa board",
+      "body": "Maging una sa pag-take ng challenge at makakuha ng points."
+    },
+    "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit."
   }
 }

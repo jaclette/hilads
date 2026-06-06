@@ -414,5 +414,31 @@
       "later": "Plus tard"
     },
     "errSubmit": "Impossible d’envoyer la note. Réessaie."
+  },
+  "leaderboard": {
+    "title": "🏆 Classement",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top challengers"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Monde"
+    },
+    "period": {
+      "month": "Ce mois-ci",
+      "alltime": "Tout temps"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Toi · #{{rank}} · {{points}} pts",
+      "unranked": "Lance-toi pour entrer dans le classement"
+    },
+    "empty": {
+      "title": "Personne au classement",
+      "body": "Sois le premier à relever un défi et marquer des points."
+    },
+    "errLoad": "Impossible de charger le classement. Tire pour réessayer."
   }
 }
