@@ -1012,6 +1012,16 @@ html, body, #root {
   flex-shrink: 0;
 }
 
+/* PR7 — Leaderboard chip in the header-chips row. Amber to distinguish from
+   the red online chip + grey weather chip; matches mobile's chipLeaderboard. */
+.header-chip--leaderboard {
+  background: rgba(255, 201, 60, 0.12);
+  border-color: rgba(255, 201, 60, 0.32);
+  color: #FFC93C;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
 /* Safety net: only wrap on truly narrow viewports where even truncated
    chips together overflow. */
 @media (max-width: 340px) {
