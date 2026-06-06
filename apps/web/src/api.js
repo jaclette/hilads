@@ -799,6 +799,43 @@ export async function fetchMyAcceptances() {
   return data.threads ?? []
 }
 
+// ── PR6: rate-prompts + ratings ──────────────────────────────────────────────
+
+/**
+ * Caller's currently rate-eligible meet-ups. Returns [] on network error so
+ * the banner just doesn't render (non-blocking surface).
+ */
+export async function fetchRatePrompts() {
+  const res = await fetch(`${BASE}/me/rate-prompts`, { credentials: 'include' })
+  if (!res.ok) return []
+  const data = await res.json().catch(() => ({}))
+  return data.prompts ?? []
+}
+
+/**
+ * Submit a rating for a challenge. Throws an Error tagged with .status so the
+ * UI can branch on 409 (already_rated) / 403 (not_rate_eligible) — both
+ * recoverable races: dismiss + refetch the prompts list.
+ */
+export async function submitRating(challengeId, stars, comment) {
+  const body = { stars }
+  if (comment && comment.length > 0) body.comment = comment
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/ratings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err = new Error(data?.error || 'Failed to submit rating')
+    err.status = res.status
+    err.code   = data?.code
+    throw err
+  }
+  return res.json()
+}
+
 // Deprecated — kept for the historic mobile build still on the prior
 // release. New code uses fetchChallengeMessages on the public challenge
 // channel; thread channels are no longer auto-created on accept.

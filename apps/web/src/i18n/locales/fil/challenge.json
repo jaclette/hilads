@@ -231,7 +231,8 @@
       "submitProof": "Ipadala ang patunay →",
       "waitingForProof": "Naghihintay ng patunay",
       "reviewProof": "Suriin ang patunay →",
-      "waitingForVerdict": "Naghihintay ng verdict"
+      "waitingForVerdict": "Naghihintay ng verdict",
+      "rateMeetup": "I-rate ang meet-up kay {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Itago ang detalye ng channel",
     "expandAria": "Ipakita ang detalye ng channel"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "I-rate ang meet-up mo kay {{name}}",
+      "titleUrgent": "Nag-rate na si {{name}} — ikaw na"
+    },
+    "sheet": {
+      "title": "Kumusta kay {{name}}?",
+      "starsAria": "{{n}} star",
+      "commentPlaceholder": "Anong na-stand out? (optional)",
+      "submit": "I-submit ang rating",
+      "later": "Mamaya na"
+    },
+    "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   }
 }

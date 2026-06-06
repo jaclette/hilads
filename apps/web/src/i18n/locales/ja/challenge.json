@@ -231,7 +231,8 @@
       "submitProof": "証拠を提出 →",
       "waitingForProof": "証拠待ち",
       "reviewProof": "証拠を確認 →",
-      "waitingForVerdict": "判定待ち"
+      "waitingForVerdict": "判定待ち",
+      "rateMeetup": "{{name}}さんとの集まりを評価 →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "チャンネル詳細を隠す",
     "expandAria": "チャンネル詳細を表示"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "{{name}}さんとの集まりを評価しよう",
+      "titleUrgent": "{{name}}さんは評価済み — あなたの番"
+    },
+    "sheet": {
+      "title": "{{name}}さんとはどうでしたか？",
+      "starsAria": "{{n}}つ星",
+      "commentPlaceholder": "印象に残ったことは？（任意）",
+      "submit": "評価を送信",
+      "later": "あとで"
+    },
+    "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
   }
 }

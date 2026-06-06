@@ -8188,6 +8188,292 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
     ]);
 });
 
+// ── Challenge ratings (PR6 — mutual rating + scoring) ─────────────────────────
+// Scope: Local challenges only. International challenges keep their existing
+// proof → creator-verdict flow (ChallengeProofBlock + /submit-proof, /approve,
+// /reject) untouched. The rating endpoints below 422-out on mode='international'.
+//
+// All scoring + the phase='approved' flip are handled by the DB trigger
+// trg_chrate_mutual_complete (see migrate.php:1524). PHP NEVER computes points.
+//
+// Mutual-reveal: a rating about the caller is exposed via the visible_ratings
+// view only once BOTH parties have rated. /of-me returns { revealed: false }
+// until that happens — the UI can show "waiting for X to rate".
+
+// POST /api/v1/challenges/{challengeId}/ratings
+// Body: { stars: 1..5, comment?: string<=500 }
+//
+// Resolves caller's role: challenger if cc.created_by, taker if the active
+// (non-rejected) acceptor. Other party = ratee. Inserts one challenge_ratings
+// row. UNIQUE(challenge_id, rater_id) → 409 on second submit from same user.
+//
+// Rate-eligibility (Local only): there must be a non-rejected acceptance for
+// this challenge whose effective_phase is 'debrief' (meetup ended) or
+// 'approved' (legacy verdict already fired, or the trigger has — but a second
+// distinct rater still slots in). Otherwise 403 with code='not_rate_eligible'.
+//
+// Returns { rating, revealed } — revealed=true when this insert was the
+// second rating (so the trigger just fired). Lets the client refetch /of-me
+// in the same tick without polling.
+$router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+
+    // International challenges have no IRL meetup — their truth is the proof
+    // verdict, not a mutual rating. Refuse cleanly so a confused client doesn't
+    // double-write into two outcome systems.
+    if (($challenge['mode'] ?? 'local') === 'international') {
+        Response::json([
+            'error' => 'International challenges use proof verdicts, not ratings.',
+            'code'  => 'intl_no_ratings',
+        ], 422);
+    }
+
+    // Body validation.
+    $body = Request::json();
+    if ($body === null) {
+        Response::json(['error' => 'Invalid JSON body'], 400);
+    }
+    $stars = filter_var(
+        $body['stars'] ?? null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1, 'max_range' => 5]],
+    );
+    if ($stars === false) {
+        Response::json(['error' => 'stars must be an integer between 1 and 5'], 400);
+    }
+    $comment = $body['comment'] ?? null;
+    if ($comment !== null) {
+        $comment = mb_substr(trim(strip_tags((string) $comment)), 0, 500);
+        if ($comment === '') $comment = null;
+    }
+
+    // Moderation gate — same shape as challenge create/edit. Hits log the
+    // field for ops review; client gets a tailored 422 + code.
+    if ($comment !== null) {
+        $modHit = ModerationService::checkBundle(['comment' => $comment]);
+        if ($modHit !== null) {
+            error_log("[moderation] rating blocked challengeId={$challengeId} reason={$modHit['reason']} hit={$modHit['hit']}");
+            Response::json([
+                'error' => 'Your comment was flagged by moderation — please rephrase.',
+                'code'  => 'moderation_blocked',
+                'field' => 'comment',
+            ], 422);
+        }
+    }
+
+    // Modest rate limit — the UNIQUE constraint is the real dedup; this just
+    // bounds malformed-body spam attempts.
+    enforceRateLimit('rating_create', 10, 600, $callerId);
+
+    // Active acceptance (non-rejected, most recent — matches the trigger's
+    // ORDER BY ca.created_at DESC LIMIT 1). Used for both role resolution
+    // and the effective_phase gate. Single read.
+    $stmt = Database::pdo()->prepare("
+        SELECT ca.id
+        FROM challenge_acceptances ca
+        WHERE ca.challenge_id = :cid
+          AND ca.phase <> 'rejected'
+        ORDER BY ca.created_at DESC
+        LIMIT 1
+    ");
+    $stmt->execute(['cid' => $challengeId]);
+    $accId = $stmt->fetchColumn();
+    if ($accId === false) {
+        Response::json([
+            'error' => "No one has taken on this challenge yet — nothing to rate.",
+            'code'  => 'no_acceptance',
+        ], 403);
+    }
+    // findById gives us the derived effective_phase alongside the row.
+    $acceptance = ChallengeAcceptanceRepository::findById((string) $accId);
+
+    // Rate-eligibility — meetup must be over. 'debrief' = scheduled + meetup
+    // end is past. 'approved' = trigger already fired OR legacy verdict path.
+    // A second distinct rater still slots in cleanly on 'approved'.
+    if (!in_array($acceptance['effective_phase'], ['debrief', 'approved'], true)) {
+        $msg = $acceptance['phase'] === 'pending'
+            ? "Wait until the creator accepts your take-on."
+            : ($acceptance['phase'] === 'accepted'
+                ? "Lock in a meet-up date first."
+                : "Wait until the meet-up is over.");
+        Response::json([
+            'error' => $msg,
+            'code'  => 'not_rate_eligible',
+            'phase' => $acceptance['effective_phase'],
+        ], 403);
+    }
+
+    // Role resolution. Either party may rate; nobody else.
+    $isChallenger = $challenge['created_by']        === $callerId;
+    $isTaker      = $acceptance['acceptor_user_id'] === $callerId;
+    if (!$isChallenger && !$isTaker) {
+        Response::json([
+            'error' => "You're not a party to this challenge.",
+            'code'  => 'not_a_party',
+        ], 403);
+    }
+    $raterRole = $isChallenger ? 'challenger' : 'taker';
+    $rateeId   = $isChallenger ? $acceptance['acceptor_user_id'] : $challenge['created_by'];
+
+    // Insert. The trigger handles all scoring + the phase flip on the second
+    // rating; we never touch score_events.
+    $ratingId = bin2hex(random_bytes(8));
+    try {
+        Database::pdo()->prepare("
+            INSERT INTO challenge_ratings
+                (id, challenge_id, rater_id, ratee_id, rater_role, stars, comment)
+            VALUES
+                (:id, :cid, :rater, :ratee, :role, :stars, :comment)
+        ")->execute([
+            'id'      => $ratingId,
+            'cid'     => $challengeId,
+            'rater'   => $callerId,
+            'ratee'   => $rateeId,
+            'role'    => $raterRole,
+            'stars'   => $stars,
+            'comment' => $comment,
+        ]);
+    } catch (\PDOException $e) {
+        // 23505 = unique_violation on (challenge_id, rater_id).
+        if ($e->getCode() === '23505') {
+            Response::json([
+                'error' => "You already rated this challenge.",
+                'code'  => 'already_rated',
+            ], 409);
+        }
+        error_log('[ratings] insert failed ch=' . $challengeId . ' uid=' . $callerId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to submit rating'], 500);
+    }
+
+    // Did this insert trigger the mutual-reveal? Cheap: count ratings for
+    // this challenge — 2 means the trigger has fired (or is firing).
+    $stmt = Database::pdo()->prepare("
+        SELECT COUNT(*) FROM challenge_ratings WHERE challenge_id = ?
+    ");
+    $stmt->execute([$challengeId]);
+    $revealed = ((int) $stmt->fetchColumn()) >= 2;
+
+    AnalyticsService::defer('challenge_rated', $callerId, [
+        'challenge_id' => $challengeId,
+        'rater_role'   => $raterRole,
+        'stars'        => $stars,
+        'revealed'     => $revealed,
+    ]);
+
+    Response::json([
+        'rating' => [
+            'id'           => $ratingId,
+            'challenge_id' => $challengeId,
+            'rater_id'     => $callerId,
+            'ratee_id'     => $rateeId,
+            'rater_role'   => $raterRole,
+            'stars'        => $stars,
+            'comment'      => $comment,
+        ],
+        'revealed' => $revealed,
+    ], 201);
+});
+
+// GET /api/v1/challenges/{challengeId}/ratings/mine
+// The caller's own rating — always visible to its writer (no mutual-reveal
+// gate on the rater's own row). Returns { rating: null } when the caller
+// hasn't rated yet so the client can branch cleanly without catching a 404.
+$router->add('GET', '/api/v1/challenges/{challengeId}/ratings/mine', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $stmt = Database::pdo()->prepare("
+        SELECT id, challenge_id, rater_id, ratee_id, rater_role, stars, comment,
+               EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+        FROM challenge_ratings
+        WHERE challenge_id = :cid AND rater_id = :uid
+        LIMIT 1
+    ");
+    $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
+    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        Response::json(['rating' => null]);
+    }
+
+    Response::json([
+        'rating' => [
+            'id'           => $row['id'],
+            'challenge_id' => $row['challenge_id'],
+            'rater_id'     => $row['rater_id'],
+            'ratee_id'     => $row['ratee_id'],
+            'rater_role'   => $row['rater_role'],
+            'stars'        => (int) $row['stars'],
+            'comment'      => $row['comment'],
+            'created_at'   => (int) $row['created_at'],
+        ],
+    ]);
+});
+
+// GET /api/v1/challenges/{challengeId}/ratings/of-me
+// The rating ABOUT the caller — mutual-reveal gated. Reads from
+// visible_ratings, which only exposes a row once both parties have rated
+// (see migrate.php:1538). Filtering by ratee_id = caller.id therefore yields:
+//   - waiting on caller to rate          → empty (revealed=false)
+//   - waiting on the other party to rate → empty (revealed=false)
+//   - both rated                         → the row, revealed=true
+// The two empty cases are intentionally indistinguishable here; the client
+// disambiguates "I haven't rated yet" vs. "the other party hasn't rated yet"
+// by also calling /ratings/mine, which is paid-for in the same UI tick.
+$router->add('GET', '/api/v1/challenges/{challengeId}/ratings/of-me', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $stmt = Database::pdo()->prepare("
+        SELECT id, challenge_id, rater_id, ratee_id, rater_role, stars, comment,
+               EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+        FROM visible_ratings
+        WHERE challenge_id = :cid AND ratee_id = :uid
+        LIMIT 1
+    ");
+    $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
+    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (!$row) {
+        Response::json(['revealed' => false]);
+    }
+
+    Response::json([
+        'revealed' => true,
+        'rating' => [
+            'id'           => $row['id'],
+            'challenge_id' => $row['challenge_id'],
+            'rater_id'     => $row['rater_id'],
+            'ratee_id'     => $row['ratee_id'],
+            'rater_role'   => $row['rater_role'],
+            'stars'        => (int) $row['stars'],
+            'comment'      => $row['comment'],
+            'created_at'   => (int) $row['created_at'],
+        ],
+    ]);
+});
+
 // ── Challenge acceptances (PR2 — new take-on flow) ────────────────────────────
 // The old /participants/toggle above is the legacy pooled-acceptance path
 // (kept for backward-compat with the live mobile build until the next app
@@ -9303,6 +9589,228 @@ $router->add('GET', '/api/v1/me/acceptances', function () {
     $authUser = AuthService::requireAuth();
     Response::json([
         'threads' => ChallengeAcceptanceRepository::getMineWithMeta($authUser['id']),
+    ]);
+});
+
+// GET /api/v1/me/scores
+// Caller's cached scores (alltime + this month) and bounded ranks in their
+// current city + globally — both alltime and this-month.
+//
+// "Bounded" means each rank query is capped at scanning at most TOP_N+1 = 101
+// candidate rows. We use the strictly-greater COUNT trick wrapped in a LIMIT:
+//
+//   SELECT COUNT(*) FROM (
+//     SELECT 1 FROM users
+//     WHERE score_alltime > :caller_score AND deleted_at IS NULL
+//     LIMIT 101
+//   ) bounded
+//
+// The inner LIMIT caps work at 101 ROWS RETURNED — for callers in the top 100
+// the scan stops near-immediately. For callers below the top 100 the scan may
+// continue further (up to a full table scan without an index — see indexing
+// note below) but the result is still capped at "out of top 100" and the
+// inner LIMIT ensures we never emit more than 101 rows over the network.
+//
+// Rank semantics: standard competition ranking. N users with strictly higher
+// scores → caller rank = N+1, so a tie at the top is rank 1 for everyone tied.
+// Beyond TOP_N → rank=null, the response carries top_n so the client can
+// render "100+" or "—".
+//
+// Indexes: idx_users_current_city already exists for the city slice;
+// users_score_alltime_desc + users_score_month_desc are added in migrate.php
+// in the same patch as this route. They make the global queries truly
+// bounded regardless of caller rank.
+//
+// Stale score_month: the trigger only refreshes users.score_month on the
+// next earning event, so a user who earned in May and not since carries May's
+// score on the row through June. We compare users.score_month_ref to the
+// current calendar month (UTC, same expression the trigger uses) and treat
+// any mismatch as 0 — both for the caller and for the global comparand.
+$router->add('GET', '/api/v1/me/scores', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $pdo = Database::pdo();
+
+    $stmt = $pdo->prepare("
+        SELECT score_alltime, score_month, score_month_ref, current_city_id
+        FROM users
+        WHERE id = ?
+    ");
+    $stmt->execute([$callerId]);
+    $me = $stmt->fetch(\PDO::FETCH_ASSOC);
+    if (!$me) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    $alltime      = (int) $me['score_alltime'];
+    $cachedMonth  = (int) $me['score_month'];
+    $monthRef     = $me['score_month_ref'];   // 'YYYY-MM' or null
+    $cityId       = $me['current_city_id'];   // 'city_<int>' or null
+
+    $currentMonth   = gmdate('Y-m');
+    $effectiveMonth = ($monthRef === $currentMonth) ? $cachedMonth : 0;
+
+    $TOP_N = 100;
+
+    $boundedRank = function (string $whereExtra, array $bind) use ($pdo, $TOP_N): array {
+        $sql = "
+            SELECT COUNT(*) FROM (
+                SELECT 1 FROM users
+                WHERE {$whereExtra} AND deleted_at IS NULL
+                LIMIT " . ($TOP_N + 1) . "
+            ) bounded
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($bind);
+        $cnt    = (int) $stmt->fetchColumn();
+        $inTopN = $cnt < $TOP_N;
+        return [$inTopN ? $cnt + 1 : null, $inTopN];
+    };
+
+    // Alltime — global.
+    [$alltimeGlobalRank] = $boundedRank(
+        'score_alltime > :s',
+        ['s' => $alltime],
+    );
+
+    // Alltime — city (skipped when caller has no current_city_id).
+    $alltimeCityRank = null;
+    if ($cityId !== null) {
+        [$alltimeCityRank] = $boundedRank(
+            'score_alltime > :s AND current_city_id = :c',
+            ['s' => $alltime, 'c' => $cityId],
+        );
+    }
+
+    // Monthly — global. Comparand restricted to users whose cached month_ref
+    // matches the current month, so a stale row from a prior month never
+    // outranks an active player whose effective month score is 0.
+    [$monthGlobalRank] = $boundedRank(
+        'score_month > :s AND score_month_ref = :m',
+        ['s' => $effectiveMonth, 'm' => $currentMonth],
+    );
+
+    // Monthly — city.
+    $monthCityRank = null;
+    if ($cityId !== null) {
+        [$monthCityRank] = $boundedRank(
+            'score_month > :s AND score_month_ref = :m AND current_city_id = :c',
+            ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
+        );
+    }
+
+    Response::json([
+        'score_alltime' => $alltime,
+        'score_month'   => $effectiveMonth,
+        'month_ref'     => $currentMonth,
+        'top_n'         => $TOP_N,
+        'rank_alltime' => [
+            'city'   => $alltimeCityRank,
+            'global' => $alltimeGlobalRank,
+        ],
+        'rank_month' => [
+            'city'   => $monthCityRank,
+            'global' => $monthGlobalRank,
+        ],
+    ]);
+});
+
+// GET /api/v1/me/rate-prompts
+// Single bounded read returning the caller's currently rate-eligible
+// challenges. The client polls this on app open / threads-screen mount and
+// surfaces an in-app prompt; there is intentionally NO server-driven push,
+// per the on-app-open decision in the (B) audit.
+//
+// Eligibility — same gate as POST /ratings, expressed as a list filter:
+//   - mode='local'                              (International uses proofs)
+//   - caller is creator OR active acceptor
+//   - acceptance phase = 'scheduled' AND meetup ended  (effective 'debrief'),
+//       OR phase = 'approved'                          (legacy / post-trigger)
+//   - caller has NOT already rated this challenge
+//
+// `other_rated` lets the UI warm the prompt copy ("they're waiting on you")
+// vs. neutral. Sorted oldest-meetup-first so the most-overdue prompt is at
+// the top of the banner stack. LIMIT 50 — above any realistic backlog; we
+// log if we hit it.
+$router->add('GET', '/api/v1/me/rate-prompts', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $LIMIT = 50;
+
+    $stmt = Database::pdo()->prepare("
+        SELECT
+            ca.id                                                AS acceptance_id,
+            cc.channel_id                                        AS challenge_id,
+            cc.title                                             AS challenge_title,
+            cc.created_by                                        AS creator_user_id,
+            ca.acceptor_user_id,
+            EXTRACT(EPOCH FROM
+                COALESCE(ca.proposed_ends_at, ca.proposed_starts_at)
+            )::INTEGER                                           AS meetup_ended_at,
+            ca.phase                                             AS phase,
+            creator.display_name                                 AS creator_display_name,
+            creator.profile_thumb_photo_url                      AS creator_thumb,
+            acceptor.display_name                                AS acceptor_display_name,
+            acceptor.profile_thumb_photo_url                     AS acceptor_thumb,
+            EXISTS(
+                SELECT 1 FROM challenge_ratings cr_other
+                WHERE cr_other.challenge_id = cc.channel_id
+                  AND cr_other.rater_id = CASE
+                      WHEN cc.created_by = :uid THEN ca.acceptor_user_id
+                      ELSE cc.created_by
+                  END
+            )                                                    AS other_rated
+        FROM challenge_acceptances ca
+        JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
+        JOIN users creator         ON creator.id    = cc.created_by
+        JOIN users acceptor        ON acceptor.id   = ca.acceptor_user_id
+        WHERE
+            (cc.created_by = :uid OR ca.acceptor_user_id = :uid)
+            AND cc.mode = 'local'
+            AND (
+                (ca.phase = 'scheduled'
+                 AND ca.proposed_starts_at IS NOT NULL
+                 AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now())
+                OR ca.phase = 'approved'
+            )
+            AND NOT EXISTS (
+                SELECT 1 FROM challenge_ratings cr_me
+                WHERE cr_me.challenge_id = cc.channel_id
+                  AND cr_me.rater_id     = :uid
+            )
+        ORDER BY COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) ASC
+        LIMIT {$LIMIT}
+    ");
+    $stmt->execute(['uid' => $callerId]);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    if (count($rows) >= $LIMIT) {
+        error_log("[rate-prompts] caller {$callerId} hit LIMIT {$LIMIT} — backlog unusually large");
+    }
+
+    $prompts = [];
+    foreach ($rows as $r) {
+        $isChallenger = $r['creator_user_id'] === $callerId;
+        $prompts[] = [
+            'acceptance_id'   => $r['acceptance_id'],
+            'challenge_id'    => $r['challenge_id'],
+            'challenge_title' => $r['challenge_title'],
+            'role'            => $isChallenger ? 'challenger' : 'taker',
+            'counterparty'    => [
+                'id'             => $isChallenger ? $r['acceptor_user_id']        : $r['creator_user_id'],
+                'displayName'    => $isChallenger ? $r['acceptor_display_name']   : $r['creator_display_name'],
+                'thumbAvatarUrl' => $isChallenger ? $r['acceptor_thumb']          : $r['creator_thumb'],
+            ],
+            'meetup_ended_at' => isset($r['meetup_ended_at']) ? (int) $r['meetup_ended_at'] : null,
+            'other_rated'     => (bool) $r['other_rated'],
+        ];
+    }
+
+    Response::json([
+        'prompts' => $prompts,
+        'count'   => count($prompts),
     ]);
 });
 

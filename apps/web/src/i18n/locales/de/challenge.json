@@ -231,7 +231,8 @@
       "submitProof": "Beweis senden →",
       "waitingForProof": "Warte auf den Beweis",
       "reviewProof": "Beweis prüfen →",
-      "waitingForVerdict": "Warte auf das Urteil"
+      "waitingForVerdict": "Warte auf das Urteil",
+      "rateMeetup": "Bewerte dein Treffen mit {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Kanal-Details verbergen",
     "expandAria": "Kanal-Details anzeigen"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Bewerte dein Treffen mit {{name}}",
+      "titleUrgent": "{{name}} hat bewertet — du bist dran"
+    },
+    "sheet": {
+      "title": "Wie war’s mit {{name}}?",
+      "starsAria": "{{n}} Stern",
+      "commentPlaceholder": "Was ist dir aufgefallen? (optional)",
+      "submit": "Bewertung senden",
+      "later": "Später"
+    },
+    "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
   }
 }

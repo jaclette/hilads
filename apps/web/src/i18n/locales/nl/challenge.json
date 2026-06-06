@@ -231,7 +231,8 @@
       "submitProof": "Stuur je bewijs →",
       "waitingForProof": "Wachten op het bewijs",
       "reviewProof": "Bewijs beoordelen →",
-      "waitingForVerdict": "Wachten op het oordeel"
+      "waitingForVerdict": "Wachten op het oordeel",
+      "rateMeetup": "Beoordeel je ontmoeting met {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Kanaaldetails verbergen",
     "expandAria": "Kanaaldetails tonen"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Beoordeel je ontmoeting met {{name}}",
+      "titleUrgent": "{{name}} heeft beoordeeld — jij bent"
+    },
+    "sheet": {
+      "title": "Hoe was het met {{name}}?",
+      "starsAria": "{{n}} ster",
+      "commentPlaceholder": "Wat viel je op? (optioneel)",
+      "submit": "Beoordeling versturen",
+      "later": "Niet nu"
+    },
+    "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   }
 }

@@ -231,7 +231,8 @@
       "submitProof": "提交你的证据 →",
       "waitingForProof": "等待证据",
       "reviewProof": "审核证据 →",
-      "waitingForVerdict": "等待判定"
+      "waitingForVerdict": "等待判定",
+      "rateMeetup": "给和{{name}}的见面评分 →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "隐藏频道详情",
     "expandAria": "显示频道详情"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "给和{{name}}的见面评分",
+      "titleUrgent": "{{name}}已评分 — 轮到你了"
+    },
+    "sheet": {
+      "title": "和{{name}}的见面怎么样？",
+      "starsAria": "{{n}}星",
+      "commentPlaceholder": "什么让你印象深刻？（可选）",
+      "submit": "提交评分",
+      "later": "稍后"
+    },
+    "errSubmit": "评分提交失败，请重试。"
   }
 }

@@ -231,7 +231,8 @@
       "submitProof": "提交你的證據 →",
       "waitingForProof": "等待證據",
       "reviewProof": "審核證據 →",
-      "waitingForVerdict": "等待判定"
+      "waitingForVerdict": "等待判定",
+      "rateMeetup": "為與{{name}}的見面評分 →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "隱藏頻道詳情",
     "expandAria": "顯示頻道詳情"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "為與{{name}}的見面評分",
+      "titleUrgent": "{{name}}已評分 — 輪到你了"
+    },
+    "sheet": {
+      "title": "和{{name}}的見面怎麼樣？",
+      "starsAria": "{{n}}星",
+      "commentPlaceholder": "什麼讓你印象深刻？（可選）",
+      "submit": "送出評分",
+      "later": "稍後"
+    },
+    "errSubmit": "評分送出失敗，請重試。"
   }
 }

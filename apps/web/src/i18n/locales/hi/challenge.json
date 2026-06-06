@@ -231,7 +231,8 @@
       "submitProof": "अपना प्रूफ भेजें →",
       "waitingForProof": "प्रूफ का इंतज़ार",
       "reviewProof": "प्रूफ देखें →",
-      "waitingForVerdict": "फैसले का इंतज़ार"
+      "waitingForVerdict": "फैसले का इंतज़ार",
+      "rateMeetup": "{{name}} के साथ मुलाक़ात रेट करें →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "चैनल विवरण छिपाएं",
     "expandAria": "चैनल विवरण दिखाएं"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "{{name}} के साथ अपनी मुलाक़ात रेट करें",
+      "titleUrgent": "{{name}} ने रेट कर दिया — आपकी बारी"
+    },
+    "sheet": {
+      "title": "{{name}} के साथ कैसा रहा?",
+      "starsAria": "{{n}} स्टार",
+      "commentPlaceholder": "क्या ख़ास लगा? (वैकल्पिक)",
+      "submit": "रेटिंग भेजें",
+      "later": "बाद में"
+    },
+    "errSubmit": "रेटिंग नहीं भेज सके। दोबारा कोशिश करें।"
   }
 }

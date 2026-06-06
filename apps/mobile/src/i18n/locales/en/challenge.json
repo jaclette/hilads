@@ -187,6 +187,20 @@
       "body": "Threads are 1:1 conversations between you and the challenger. You need an account to start one."
     }
   },
+  "ratePrompts": {
+    "banner": {
+      "title": "Rate your meet-up with {{name}}",
+      "titleUrgent": "{{name}} rated — your turn"
+    },
+    "sheet": {
+      "title": "How was it with {{name}}?",
+      "starsAria": "{{n}} star",
+      "commentPlaceholder": "What stood out? (optional)",
+      "submit": "Submit rating",
+      "later": "Not now"
+    },
+    "errSubmit": "Couldn't submit your rating. Try again."
+  },
   "schedule": {
     "proposeCta": "Propose a date 📅",
     "counterCta": "Counter-propose",
@@ -271,6 +285,7 @@
       "meetSoon": "See you on {{date}}",
       "creatorVerdict": "How did it go with {{name}}? →",
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
+      "rateMeetup": "Rate your meet-up with {{name}} →",
       "accomplished": "Challenge accomplished 🎉",
       "closed": "Challenge closed",
       "submitProof": "Submit your proof →",

@@ -9,10 +9,11 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
-import { fetchMyAcceptances } from '@/api/challenges';
+import { fetchMyAcceptances, fetchRatePrompts } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
+import { RateSheet } from '@/components/RateSheet';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
-import type { ChallengeThreadSummary, ChallengeType } from '@/types';
+import type { ChallengeThreadSummary, ChallengeType, RatePrompt } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
@@ -38,13 +39,26 @@ export default function ThreadsListScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // Rate-prompts banner — driven by GET /me/rate-prompts. Sorted oldest-first
+  // by the server; the banner shows index 0 (the oldest unrated meet-up) and
+  // an "+N more" pill when there are extras. RateSheet pops the active prompt
+  // on submit and the next one auto-surfaces.
+  const [ratePrompts, setRatePrompts] = useState<RatePrompt[]>([]);
+  const [activePrompt, setActivePrompt] = useState<RatePrompt | null>(null);
+
   const load = useCallback(async () => {
-    if (!account?.id) { setThreads([]); setLoading(false); return; }
+    if (!account?.id) { setThreads([]); setRatePrompts([]); setLoading(false); return; }
     try {
-      const data = await fetchMyAcceptances();
+      // Fetch in parallel — both are cheap bounded reads.
+      const [data, prompts] = await Promise.all([
+        fetchMyAcceptances(),
+        fetchRatePrompts(),
+      ]);
       setThreads(data);
+      setRatePrompts(prompts);
     } catch {
       setThreads([]);
+      setRatePrompts([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -68,6 +82,12 @@ export default function ThreadsListScreen() {
 
   const onRefresh = () => { setRefreshing(true); load(); };
 
+  // Optimistic: drop the just-rated prompt from local state. A background
+  // refetch happens via useFocusEffect when the user dismisses anyway.
+  const handleRatingSubmitted = useCallback((challengeId: string) => {
+    setRatePrompts(prev => prev.filter(p => p.challenge_id !== challengeId));
+  }, []);
+
   if (!account?.id) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
@@ -81,13 +101,16 @@ export default function ThreadsListScreen() {
     );
   }
 
+  const topPrompt = ratePrompts[0] ?? null;
+  const extraPromptCount = Math.max(0, ratePrompts.length - 1);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Header title={t('threads.title')} onBack={() => router.back()} t={t} />
 
       {loading && threads.length === 0 ? (
         <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
-      ) : threads.length === 0 ? (
+      ) : threads.length === 0 && !topPrompt ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyEmoji}>🤝</Text>
           <Text style={styles.emptyTitle}>{t('threads.empty.title')}</Text>
@@ -98,6 +121,14 @@ export default function ThreadsListScreen() {
           data={threads}
           keyExtractor={(t) => t.id}
           contentContainerStyle={styles.list}
+          ListHeaderComponent={topPrompt ? (
+            <RatePromptBanner
+              prompt={topPrompt}
+              extraCount={extraPromptCount}
+              onPress={() => setActivePrompt(topPrompt)}
+              t={t}
+            />
+          ) : null}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
           renderItem={({ item }) => {
             const icon    = TYPE_ICONS[item.challenge_type] ?? '🔥';
@@ -141,7 +172,58 @@ export default function ThreadsListScreen() {
           ItemSeparatorComponent={() => <View style={styles.sep} />}
         />
       )}
+
+      <RateSheet
+        prompt={activePrompt}
+        visible={activePrompt !== null}
+        onClose={() => setActivePrompt(null)}
+        onSubmitted={handleRatingSubmitted}
+      />
     </SafeAreaView>
+  );
+}
+
+function RatePromptBanner({
+  prompt, extraCount, onPress, t,
+}: {
+  prompt: RatePrompt;
+  extraCount: number;
+  onPress: () => void;
+  t: (k: string, opts?: Record<string, unknown>) => string;
+}) {
+  const cp = prompt.counterparty;
+  const titleKey = prompt.other_rated
+    ? 'ratePrompts.banner.titleUrgent'
+    : 'ratePrompts.banner.title';
+  return (
+    <TouchableOpacity style={styles.banner} onPress={onPress} activeOpacity={0.85}>
+      <View style={[styles.bannerAvatar, { backgroundColor: avatarColor(cp.id) }]}>
+        {cp.thumbAvatarUrl ? (
+          <Image
+            source={{ uri: cp.thumbAvatarUrl }}
+            style={StyleSheet.absoluteFill}
+            cachePolicy="memory-disk"
+            contentFit="cover"
+            transition={120}
+          />
+        ) : (
+          <Text style={styles.bannerAvatarLetter}>{(cp.displayName?.[0] ?? '?').toUpperCase()}</Text>
+        )}
+      </View>
+      <View style={styles.bannerBody}>
+        <Text style={styles.bannerTitle} numberOfLines={1}>
+          <Text style={styles.bannerStar}>⭐ </Text>
+          {t(titleKey, { name: cp.displayName })}
+        </Text>
+        <Text style={styles.bannerSubtitle} numberOfLines={1}>{prompt.challenge_title}</Text>
+      </View>
+      {extraCount > 0 && (
+        <View style={styles.bannerExtraPill}>
+          <Text style={styles.bannerExtraPillText}>+{extraCount}</Text>
+        </View>
+      )}
+      <Ionicons name="chevron-forward" size={18} color="rgba(255,255,255,0.7)" />
+    </TouchableOpacity>
   );
 }
 
@@ -209,4 +291,36 @@ const styles = StyleSheet.create({
   emptyEmoji: { fontSize: 48 },
   emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
   emptyBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+
+  // Rate-prompt banner (above the threads list)
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: Radius.lg,
+    backgroundColor: 'rgba(255,122,60,0.12)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,122,60,0.35)',
+  },
+  bannerAvatar: {
+    width: 40, height: 40, borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  bannerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  bannerBody: { flex: 1, minWidth: 0 },
+  bannerStar: { color: '#FFC93C' },
+  bannerTitle: { fontSize: FontSizes.sm + 1, fontWeight: '800', color: Colors.text },
+  bannerSubtitle: { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 1 },
+  bannerExtraPill: {
+    paddingHorizontal: 8, paddingVertical: 3,
+    borderRadius: Radius.full,
+    backgroundColor: '#FF7A3C',
+  },
+  bannerExtraPillText: { color: Colors.white, fontSize: FontSizes.xs, fontWeight: '800' },
 });

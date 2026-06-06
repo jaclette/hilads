@@ -231,7 +231,8 @@
       "submitProof": "Kirim bukti →",
       "waitingForProof": "Menunggu bukti",
       "reviewProof": "Tinjau bukti →",
-      "waitingForVerdict": "Menunggu keputusan"
+      "waitingForVerdict": "Menunggu keputusan",
+      "rateMeetup": "Beri rating pertemuan sama {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Sembunyikan detail kanal",
     "expandAria": "Tampilkan detail kanal"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Beri rating pertemuanmu sama {{name}}",
+      "titleUrgent": "{{name}} sudah ngerating — giliranmu"
+    },
+    "sheet": {
+      "title": "Gimana sama {{name}}?",
+      "starsAria": "{{n}} bintang",
+      "commentPlaceholder": "Apa yang berkesan? (opsional)",
+      "submit": "Kirim rating",
+      "later": "Nanti aja"
+    },
+    "errSubmit": "Gagal kirim rating. Coba lagi."
   }
 }

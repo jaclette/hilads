@@ -231,7 +231,8 @@
       "submitProof": "Envía tu prueba →",
       "waitingForProof": "Esperando la prueba",
       "reviewProof": "Revisa la prueba →",
-      "waitingForVerdict": "Esperando el veredicto"
+      "waitingForVerdict": "Esperando el veredicto",
+      "rateMeetup": "Valora tu encuentro con {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Ocultar detalles del canal",
     "expandAria": "Mostrar detalles del canal"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Valora tu encuentro con {{name}}",
+      "titleUrgent": "{{name}} ya valoró — te toca"
+    },
+    "sheet": {
+      "title": "¿Cómo te fue con {{name}}?",
+      "starsAria": "{{n}} estrella",
+      "commentPlaceholder": "¿Qué destacó? (opcional)",
+      "submit": "Enviar valoración",
+      "later": "Ahora no"
+    },
+    "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
   }
 }

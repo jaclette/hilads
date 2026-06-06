@@ -231,7 +231,8 @@
       "submitProof": "ส่งหลักฐาน →",
       "waitingForProof": "รอหลักฐาน",
       "reviewProof": "ตรวจหลักฐาน →",
-      "waitingForVerdict": "รอคำตัดสิน"
+      "waitingForVerdict": "รอคำตัดสิน",
+      "rateMeetup": "ให้คะแนนการเจอกับ {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "ซ่อนรายละเอียดช่อง",
     "expandAria": "แสดงรายละเอียดช่อง"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "ให้คะแนนการเจอกับ {{name}}",
+      "titleUrgent": "{{name}} ให้คะแนนแล้ว — ตาคุณแล้ว"
+    },
+    "sheet": {
+      "title": "เจอ {{name}} เป็นยังไงบ้าง?",
+      "starsAria": "{{n}} ดาว",
+      "commentPlaceholder": "อะไรประทับใจที่สุด? (ไม่บังคับ)",
+      "submit": "ส่งคะแนน",
+      "later": "ไว้ก่อน"
+    },
+    "errSubmit": "ส่งคะแนนไม่สำเร็จ ลองอีกครั้ง"
   }
 }

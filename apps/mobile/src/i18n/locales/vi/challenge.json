@@ -231,7 +231,8 @@
       "submitProof": "Gửi bằng chứng →",
       "waitingForProof": "Chờ bằng chứng",
       "reviewProof": "Xem bằng chứng →",
-      "waitingForVerdict": "Chờ phán quyết"
+      "waitingForVerdict": "Chờ phán quyết",
+      "rateMeetup": "Đánh giá buổi gặp với {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Ẩn chi tiết kênh",
     "expandAria": "Hiện chi tiết kênh"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Đánh giá buổi gặp với {{name}}",
+      "titleUrgent": "{{name}} đã đánh giá — đến lượt bạn"
+    },
+    "sheet": {
+      "title": "Buổi gặp với {{name}} thế nào?",
+      "starsAria": "{{n}} sao",
+      "commentPlaceholder": "Điều gì ấn tượng nhất? (tuỳ chọn)",
+      "submit": "Gửi đánh giá",
+      "later": "Để sau"
+    },
+    "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
   }
 }

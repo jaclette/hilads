@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { proposeDate, withdrawProposal, approveDate, approveChallenge, rejectChallenge } from '../api'
+import { proposeDate, withdrawProposal, approveDate } from '../api'
 import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 
@@ -64,33 +64,6 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
     finally { setBusy(null) }
   }
 
-  // PR4 — verdict (creator only, in debrief phase). Both kinds are final, so
-  // confirm before running. Reject is destructive.
-  function handleVerdict(kind) {
-    setDialog({
-      emoji: kind === 'approve' ? '🎉' : '🚫',
-      title: t(`debrief.confirm.${kind}.title`),
-      body:  t(`debrief.confirm.${kind}.body`),
-      primary: {
-        label: t(`debrief.confirm.${kind}.confirm`),
-        destructive: kind === 'reject',
-        onPress: async () => {
-          setBusy('verdict')
-          try {
-            if (kind === 'approve') await approveChallenge(thread.id)
-            else                    await rejectChallenge(thread.id)
-            onChange?.()
-          } catch {
-            setDialog({ emoji: '😬', title: t(`debrief.err.${kind}Failed`) })
-          } finally {
-            setBusy(null)
-          }
-        },
-      },
-      secondary: {},
-    })
-  }
-
   // ── Render: phase='scheduled' ─────────────────────────────────────────────
   // Either party can tap ✏️ to reschedule — the backend flips phase back to
   // 'accepted', clears date_approved_at, and the other party re-approves the
@@ -130,46 +103,11 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
     )
   }
 
-  // ── PR4: debrief (meetup over, creator decides) ─────────────────────────
-  if (phase === 'debrief') {
-    if (iAmCreator) {
-      return (
-        <>
-          <div style={{ ...bandBase, ...bandDebrief }}>
-            <span style={{ fontSize: 16 }}>❓</span>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.creatorPrompt.title')}</div>
-              <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-                {t('debrief.creatorPrompt.body', { name: thread.counterparty.displayName })}
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <button type="button" onClick={() => handleVerdict('reject')} disabled={busy !== null}
-                title={t('debrief.confirm.reject.confirm')} style={iconBtnSecondary}>
-                {busy === 'verdict' ? '…' : '✕'}
-              </button>
-              <button type="button" onClick={() => handleVerdict('approve')} disabled={busy !== null}
-                title={t('debrief.confirm.approve.confirm')} style={iconBtnPrimary}>
-                {busy === 'verdict' ? '…' : '✓'}
-              </button>
-            </div>
-          </div>
-          <ConfirmDialog dialog={dialog} onClose={() => setDialog(null)} />
-        </>
-      )
-    }
-    return (
-      <div style={{ ...bandBase, ...bandDebrief }}>
-        <span style={{ fontSize: 16 }}>⏳</span>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('debrief.acceptorWaiting.title')}</div>
-          <div style={{ fontSize: 12, color: 'var(--muted, #b3b3b3)', marginTop: 2 }}>
-            {t('debrief.acceptorWaiting.body', { name: thread.counterparty.displayName })}
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // PR6 — the manual creator-verdict block that used to live here was retired
+  // when the mutual-rating flow shipped. The DB trigger on challenge_ratings
+  // now flips phase to 'approved' on the second rating, so 'debrief' is a
+  // transient phase the user resolves by tapping the rate-prompt banner on
+  // /threads (see RateSheet). No band rendered while in 'debrief'.
 
   if (phase === 'approved') {
     return (
@@ -339,7 +277,6 @@ const bandBase = {
   borderBottom: '1px solid rgba(255,122,60,0.18)',
 }
 const bandProposal  = { background: 'rgba(255,122,60,0.10)' }
-const bandDebrief   = { background: 'rgba(255,122,60,0.10)' }
 const bandScheduled = {
   background:   'rgba(34,197,94,0.08)',
   borderTop:    '1px solid rgba(34,197,94,0.20)',

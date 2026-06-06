@@ -231,7 +231,8 @@
       "submitProof": "أرسل دليلك →",
       "waitingForProof": "بانتظار الدليل",
       "reviewProof": "راجع الدليل →",
-      "waitingForVerdict": "بانتظار الحكم"
+      "waitingForVerdict": "بانتظار الحكم",
+      "rateMeetup": "قيّم لقاءك مع {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "إخفاء تفاصيل القناة",
     "expandAria": "إظهار تفاصيل القناة"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "قيّم لقاءك مع {{name}}",
+      "titleUrgent": "قيّم {{name}} — دورك الآن"
+    },
+    "sheet": {
+      "title": "كيف كانت مع {{name}}؟",
+      "starsAria": "{{n}} نجمة",
+      "commentPlaceholder": "ما الذي ميّز اللقاء؟ (اختياري)",
+      "submit": "إرسال التقييم",
+      "later": "لاحقًا"
+    },
+    "errSubmit": "تعذّر إرسال تقييمك. حاول مرة أخرى."
   }
 }

@@ -1381,6 +1381,20 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_challenge ON challenge_ratings (challenge_id)", 'idx_chrate_challenge');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_ratee     ON challenge_ratings (ratee_id)",     'idx_chrate_ratee');
 
+// Leaderboard indexes — power the bounded rank queries on GET /me/scores.
+// Without these, the global rank query scans the users table for callers
+// whose rank is outside the top 100 (no full-table read past the inner
+// LIMIT 101, but the cliff exists). With them, the index covers the sort.
+// idx_users_current_city already exists for the city-scoped queries.
+run($pdo, "
+    CREATE INDEX IF NOT EXISTS users_score_alltime_desc
+        ON users (score_alltime DESC) WHERE deleted_at IS NULL
+", 'users_score_alltime_desc');
+run($pdo, "
+    CREATE INDEX IF NOT EXISTS users_score_month_desc
+        ON users (score_month_ref, score_month DESC) WHERE deleted_at IS NULL
+", 'users_score_month_desc');
+
 // ── Trigger: sync cached users.score_* on every score_events INSERT ────────
 run($pdo, "
     CREATE OR REPLACE FUNCTION sync_user_scores() RETURNS TRIGGER AS \$\$

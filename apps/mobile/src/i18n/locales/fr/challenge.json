@@ -231,7 +231,8 @@
       "submitProof": "Envoie ta preuve →",
       "waitingForProof": "En attente de la preuve",
       "reviewProof": "Valider la preuve →",
-      "waitingForVerdict": "En attente du verdict"
+      "waitingForVerdict": "En attente du verdict",
+      "rateMeetup": "Note ta rencontre avec {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Masquer les détails du canal",
     "expandAria": "Afficher les détails du canal"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Note ta rencontre avec {{name}}",
+      "titleUrgent": "{{name}} a noté — à toi"
+    },
+    "sheet": {
+      "title": "Ça s’est passé comment avec {{name}} ?",
+      "starsAria": "{{n}} étoile",
+      "commentPlaceholder": "Qu’est-ce qui t’a marqué ? (facultatif)",
+      "submit": "Envoyer la note",
+      "later": "Plus tard"
+    },
+    "errSubmit": "Impossible d’envoyer la note. Réessaie."
   }
 }

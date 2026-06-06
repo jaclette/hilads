@@ -231,7 +231,8 @@
       "submitProof": "증거 보내기 →",
       "waitingForProof": "증거 기다리는 중",
       "reviewProof": "증거 확인 →",
-      "waitingForVerdict": "판정 기다리는 중"
+      "waitingForVerdict": "판정 기다리는 중",
+      "rateMeetup": "{{name}}님과의 만남 평가하기 →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "채널 세부 정보 숨기기",
     "expandAria": "채널 세부 정보 표시"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "{{name}}님과의 만남을 평가해 주세요",
+      "titleUrgent": "{{name}}님이 평가했어요 — 이제 차례예요"
+    },
+    "sheet": {
+      "title": "{{name}}님과 어땠어요?",
+      "starsAria": "{{n}}점",
+      "commentPlaceholder": "기억에 남는 게 있나요? (선택)",
+      "submit": "평가 보내기",
+      "later": "나중에"
+    },
+    "errSubmit": "평가를 보내지 못했어요. 다시 시도해 주세요."
   }
 }

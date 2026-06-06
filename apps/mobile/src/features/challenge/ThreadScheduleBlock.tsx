@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { proposeDate, withdrawProposal, approveDate, approveChallenge, rejectChallenge } from '@/api/challenges';
+import { proposeDate, withdrawProposal, approveDate } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { ChallengeThreadSummary } from '@/types';
 import { DatePickerModal } from './DatePickerModal';
@@ -38,7 +38,7 @@ export function ThreadScheduleBlock({
 }) {
   const { t, i18n }  = useTranslation('challenge');
   const locale = i18n.language;
-  const [busy, setBusy] = useState<'propose' | 'approve' | 'withdraw' | 'verdict' | null>(null);
+  const [busy, setBusy] = useState<'propose' | 'approve' | 'withdraw' | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   const hasProposal  = thread.proposed_starts_at !== null;
@@ -96,33 +96,6 @@ export function ThreadScheduleBlock({
     }
   }
 
-  // PR4 — debrief verdicts. Both are final, so confirm via Alert before firing.
-  function handleVerdict(kind: 'approve' | 'reject') {
-    Alert.alert(
-      t(`debrief.confirm.${kind}.title`),
-      t(`debrief.confirm.${kind}.body`),
-      [
-        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-        {
-          text: t(`debrief.confirm.${kind}.confirm`),
-          style: kind === 'reject' ? 'destructive' : 'default',
-          onPress: async () => {
-            setBusy('verdict');
-            try {
-              if (kind === 'approve') await approveChallenge(thread.id);
-              else                    await rejectChallenge(thread.id);
-              onChange();
-            } catch {
-              Alert.alert(t(`debrief.err.${kind}Failed`));
-            } finally {
-              setBusy(null);
-            }
-          },
-        },
-      ],
-    );
-  }
-
   // ── Render: phase='scheduled' (meetup in the future) ──────────────────────
   // Either party can tap ✏️ to reschedule — the backend flips phase back to
   // 'accepted', clears date_approved_at, and the other party re-approves
@@ -168,58 +141,11 @@ export function ThreadScheduleBlock({
     );
   }
 
-  // ── PR4: debrief (meetup is over, creator decides) ─────────────────────────
-  if (phase === 'debrief') {
-    if (iAmCreator) {
-      return (
-        <View style={[styles.band, styles.bandDebrief]}>
-          <Ionicons name="help-circle-outline" size={18} color="#FF7A3C" />
-          <View style={styles.bandTextWrap}>
-            <Text style={styles.bandTitle}>{t('debrief.creatorPrompt.title')}</Text>
-            <Text style={styles.bandSubtitle} numberOfLines={1}>
-              {t('debrief.creatorPrompt.body', { name: thread.counterparty.displayName })}
-            </Text>
-          </View>
-          <View style={styles.bandActions}>
-            <TouchableOpacity
-              style={styles.actionReject}
-              onPress={() => handleVerdict('reject')}
-              activeOpacity={0.85}
-              disabled={busy !== null}
-              accessibilityLabel={t('debrief.confirm.reject.confirm')}
-            >
-              {busy === 'verdict'
-                ? <ActivityIndicator size="small" color={Colors.muted} />
-                : <Ionicons name="close" size={18} color={Colors.muted} />}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionPrimary}
-              onPress={() => handleVerdict('approve')}
-              activeOpacity={0.85}
-              disabled={busy !== null}
-              accessibilityLabel={t('debrief.confirm.approve.confirm')}
-            >
-              {busy === 'verdict'
-                ? <ActivityIndicator size="small" color={Colors.white} />
-                : <Ionicons name="checkmark" size={18} color={Colors.white} />}
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-    // Acceptor side — show a passive "waiting" pill.
-    return (
-      <View style={[styles.band, styles.bandDebrief]}>
-        <Ionicons name="time-outline" size={18} color="#FF7A3C" />
-        <View style={styles.bandTextWrap}>
-          <Text style={styles.bandTitle}>{t('debrief.acceptorWaiting.title')}</Text>
-          <Text style={styles.bandSubtitle} numberOfLines={1}>
-            {t('debrief.acceptorWaiting.body', { name: thread.counterparty.displayName })}
-          </Text>
-        </View>
-      </View>
-    );
-  }
+  // PR6 — the manual creator-verdict block that used to live here was retired
+  // when the mutual-rating flow shipped. The DB trigger on challenge_ratings
+  // now flips phase to 'approved' on the second rating, so 'debrief' is a
+  // transient phase the user resolves by tapping the rate-prompt banner on
+  // /threads (see RateSheet). No band rendered while in 'debrief'.
 
   // ── PR4: approved (final ✅) ────────────────────────────────────────────────
   if (phase === 'approved') {
@@ -389,22 +315,12 @@ const styles = StyleSheet.create({
     borderTopColor:    'rgba(34,197,94,0.20)',
     borderBottomColor: 'rgba(34,197,94,0.20)',
   },
-  bandDebrief: {
-    backgroundColor:   'rgba(255,122,60,0.10)',
-  },
   bandRejected: {
     backgroundColor:   'rgba(255,255,255,0.03)',
     borderTopColor:    'rgba(255,255,255,0.08)',
     borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   verdictEmoji: { fontSize: 18, marginLeft: 1 },
-  actionReject: {
-    width: 32, height: 32, borderRadius: 16,
-    alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.10)',
-  },
   bandTextWrap: { flex: 1, minWidth: 0 },
   bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
   bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: '#22c55e' },

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fetchMyAcceptances } from '../api'
+import { fetchMyAcceptances, fetchRatePrompts } from '../api'
 import BackButton from './BackButton'
+import RateSheet from './RateSheet'
 
 /**
  * PR2 — "My challenge threads" index. Lists every relationship I'm in
@@ -29,12 +30,18 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
 
   const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(true)
+  // PR6 — rate-prompt banner state. Top entry (oldest unrated) is rendered
+  // above the threads list; "+N" pill when there's a stack.
+  const [ratePrompts,  setRatePrompts]  = useState([])
+  const [activePrompt, setActivePrompt] = useState(null)
 
   const load = useCallback(async () => {
-    if (!account?.id) { setThreads([]); setLoading(false); return }
+    if (!account?.id) { setThreads([]); setRatePrompts([]); setLoading(false); return }
     try {
-      setThreads(await fetchMyAcceptances())
-    } catch { setThreads([]) }
+      const [thr, prompts] = await Promise.all([fetchMyAcceptances(), fetchRatePrompts()])
+      setThreads(thr)
+      setRatePrompts(prompts)
+    } catch { setThreads([]); setRatePrompts([]) }
     finally { setLoading(false) }
   }, [account?.id])
 
@@ -47,6 +54,14 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
     const off2 = socket.on('challenge_acceptance_cancelled', () => load())
     return () => { off1(); off2() }
   }, [socket, load])
+
+  // Optimistic: drop the just-rated prompt from local state.
+  const handleRatingSubmitted = useCallback((challengeId) => {
+    setRatePrompts(prev => prev.filter(p => p.challenge_id !== challengeId))
+  }, [])
+
+  const topPrompt = ratePrompts[0] ?? null
+  const extraPromptCount = Math.max(0, ratePrompts.length - 1)
 
   if (!account?.id) {
     return (
@@ -65,9 +80,17 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
     <div className="full-page">
       <div className="page-header"><BackButton onClick={onBack} /><span className="page-title">{t('threads.title')}</span></div>
       <div className="page-body" style={{ padding: 0 }}>
+        {topPrompt && (
+          <RatePromptBanner
+            prompt={topPrompt}
+            extraCount={extraPromptCount}
+            onClick={() => setActivePrompt(topPrompt)}
+            t={t}
+          />
+        )}
         {loading && threads.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted, #b3b3b3)' }}>…</div>
-        ) : threads.length === 0 ? (
+        ) : threads.length === 0 && !topPrompt ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
             <span style={{ fontSize: 48 }}>🤝</span>
             <h3 style={{ margin: 0 }}>{t('threads.empty.title')}</h3>
@@ -124,6 +147,73 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
           </ul>
         )}
       </div>
+
+      <RateSheet
+        prompt={activePrompt}
+        visible={activePrompt !== null}
+        onClose={() => setActivePrompt(null)}
+        onSubmitted={handleRatingSubmitted}
+      />
     </div>
+  )
+}
+
+function RatePromptBanner({ prompt, extraCount, onClick, t }) {
+  const cp = prompt.counterparty
+  const [c1, c2] = avatarColors(cp.displayName)
+  const titleKey = prompt.other_rated
+    ? 'ratePrompts.banner.titleUrgent'
+    : 'ratePrompts.banner.title'
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        width: 'calc(100% - 32px)',
+        margin: '12px 16px',
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '12px 14px',
+        borderRadius: 14,
+        background: 'rgba(255,122,60,0.12)',
+        border: '1px solid rgba(255,122,60,0.35)',
+        color: 'inherit', textAlign: 'left', cursor: 'pointer',
+      }}
+    >
+      <span style={{
+        width: 40, height: 40, borderRadius: 20,
+        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        background: `linear-gradient(135deg, ${c1}, ${c2})`,
+        color: '#fff', fontWeight: 700, fontSize: 16,
+        overflow: 'hidden', flexShrink: 0,
+      }}>
+        {cp.thumbAvatarUrl
+          ? <img src={cp.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : (cp.displayName ?? '?')[0].toUpperCase()}
+      </span>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
+          fontSize: 14, fontWeight: 800, color: 'var(--text, #fff)',
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          <span style={{ color: '#FFC93C' }}>⭐ </span>
+          {t(titleKey, { name: cp.displayName })}
+        </div>
+        <div style={{
+          fontSize: 13, color: 'var(--muted, #b3b3b3)', marginTop: 1,
+          overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+        }}>
+          {prompt.challenge_title}
+        </div>
+      </div>
+      {extraCount > 0 && (
+        <span style={{
+          padding: '3px 8px', borderRadius: 999,
+          background: '#FF7A3C', color: '#fff', fontSize: 11, fontWeight: 800,
+        }}>
+          +{extraCount}
+        </span>
+      )}
+      <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 18 }}>›</span>
+    </button>
   )
 }

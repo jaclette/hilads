@@ -8,6 +8,7 @@ import type {
   AcceptFailureCode,
   Message,
   UserDTO,
+  RatePrompt,
 } from '@/types';
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
@@ -288,6 +289,37 @@ export async function rejectChallenge(acceptanceId: string): Promise<ChallengeAc
 export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
   const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');
   return data.threads ?? [];
+}
+
+// ── PR6: rate-prompts + ratings ─────────────────────────────────────────────
+
+/** Caller's currently rate-eligible meet-ups. Sorted oldest-first. Returns
+ *  [] on network error (banner just doesn't render — non-blocking surface). */
+export async function fetchRatePrompts(): Promise<RatePrompt[]> {
+  try {
+    const data = await api.get<{ prompts: RatePrompt[] }>('/me/rate-prompts');
+    return data.prompts ?? [];
+  } catch (err) {
+    console.warn('[fetchRatePrompts] failed:', err);
+    return [];
+  }
+}
+
+/** Submit a rating for a challenge. Throws ApiError on 4xx so the sheet can
+ *  branch — in particular code='already_rated' (409) and code='not_rate_eligible'
+ *  (403) are recoverable by dismissing + refetching the prompts list. */
+export async function submitRating(
+  challengeId: string,
+  stars: number,
+  comment: string | null,
+): Promise<{ revealed: boolean }> {
+  const body: Record<string, unknown> = { stars };
+  if (comment !== null && comment.length > 0) body.comment = comment;
+  const data = await api.post<{ rating: unknown; revealed: boolean }>(
+    `/challenges/${challengeId}/ratings`,
+    body,
+  );
+  return { revealed: !!data?.revealed };
 }
 
 /** Creator's view of who took on a specific challenge. */

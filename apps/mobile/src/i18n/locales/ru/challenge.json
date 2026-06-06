@@ -231,7 +231,8 @@
       "submitProof": "Отправь доказательство →",
       "waitingForProof": "Ждём доказательство",
       "reviewProof": "Проверить доказательство →",
-      "waitingForVerdict": "Ждём вердикт"
+      "waitingForVerdict": "Ждём вердикт",
+      "rateMeetup": "Оцени встречу с {{name}} →"
     }
   },
   "takeon": {
@@ -399,5 +400,19 @@
   "details": {
     "collapseAria": "Скрыть детали канала",
     "expandAria": "Показать детали канала"
+  },
+  "ratePrompts": {
+    "banner": {
+      "title": "Оцени встречу с {{name}}",
+      "titleUrgent": "{{name}} оценил(а) — твоя очередь"
+    },
+    "sheet": {
+      "title": "Как прошло с {{name}}?",
+      "starsAria": "{{n}} звезда",
+      "commentPlaceholder": "Что запомнилось? (необязательно)",
+      "submit": "Отправить оценку",
+      "later": "Позже"
+    },
+    "errSubmit": "Не удалось отправить оценку. Попробуй ещё раз."
   }
 }

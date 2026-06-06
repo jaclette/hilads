@@ -157,12 +157,14 @@ function derive(
     };
   }
   if (phase === 'debrief') {
+    // PR6 — mutual rating. Both sides see the same prompt; the rate-prompt
+    // banner on /threads (B.2) owns the urgency copy via `other_rated`.
     return {
       active: 'wrap',
       done: new Set<Step>(['accept', 'date', 'meet']),
       rejected: false,
-      subCtaKey: iAmCreator ? 'pipeline.subcta.creatorVerdict' : 'pipeline.subcta.acceptorWaitingVerdict',
-      subCtaName: iAmCreator ? cpName : cpName,
+      subCtaKey: 'pipeline.subcta.rateMeetup',
+      subCtaName: cpName,
     };
   }
   if (phase === 'approved') {
