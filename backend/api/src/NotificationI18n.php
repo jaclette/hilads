@@ -393,6 +393,31 @@ final class NotificationI18n
             'ru'      => ["Челлендж закрыт",           "{name} закрыл «{title}»"],
             'ar'      => ["تم إغلاق التحدي",          "{name} أغلق \"{title}\""],
         ],
+        // PR11 — rating window opened (meet-up reached its proposed end +
+        // the 1h auto-end window). Fires to BOTH parties via Option B
+        // piggyback (NotificationRepository::maybeTickRatePushes). {name}
+        // resolves from data.counterpartyName (the OTHER side's display
+        // name) so each recipient's body references the person they met.
+        'rate_ready' => [
+            'fr'      => ["⭐ Note ta rencontre",          "Comment ça s'est passé avec {name} ? Tape pour noter."],
+            'vi'      => ["⭐ Đánh giá buổi gặp",          "Buổi gặp với {name} thế nào? Chạm để đánh giá."],
+            'es'      => ["⭐ Valora tu encuentro",        "¿Cómo te fue con {name}? Toca para valorar."],
+            'it'      => ["⭐ Valuta il tuo incontro",     "Com'è andata con {name}? Tocca per valutare."],
+            'pt-br'   => ["⭐ Avalie seu encontro",        "Como foi com {name}? Toque para avaliar."],
+            'pt-pt'   => ["⭐ Avalia o teu encontro",      "Como foi com {name}? Toca para avaliar."],
+            'de'      => ["⭐ Bewerte dein Treffen",       "Wie war's mit {name}? Tippe zum Bewerten."],
+            'nl'      => ["⭐ Beoordeel je ontmoeting",    "Hoe was het met {name}? Tik om te beoordelen."],
+            'zh-hans' => ["⭐ 给见面打分",                  "和 {name} 的见面怎么样？点击评分。"],
+            'zh-hant' => ["⭐ 為見面評分",                  "和 {name} 的見面怎麼樣？點擊評分。"],
+            'ja'      => ["⭐ 集まりを評価しよう",           "{name} さんとはどうでしたか？タップして評価しよう。"],
+            'ko'      => ["⭐ 만남을 평가해 주세요",         "{name} 님과 어땠어요? 탭해서 평가해 주세요."],
+            'fil'     => ["⭐ I-rate ang meet-up mo",     "Kumusta kay {name}? I-tap para i-rate."],
+            'th'      => ["⭐ ให้คะแนนการเจอกัน",          "เจอ {name} เป็นยังไงบ้าง? แตะเพื่อให้คะแนน"],
+            'id'      => ["⭐ Beri rating pertemuanmu",   "Gimana sama {name}? Ketuk untuk memberi rating."],
+            'hi'      => ["⭐ अपनी मुलाक़ात रेट करें",      "{name} के साथ कैसा रहा? रेट करने के लिए टैप करें।"],
+            'ru'      => ["⭐ Оцени встречу",              "Как прошло с {name}? Нажми, чтобы оценить."],
+            'ar'      => ["⭐ قيّم لقاءك",                  "كيف كانت مع {name}؟ اضغط لتقييم."],
+        ],
         // ── International mode notifications ────────────────────────────────
         // Proof submitted — fires to the CREATOR when the acceptor uploads
         // a proof. Body carries the challenge title verbatim.
@@ -667,6 +692,9 @@ final class NotificationI18n
             'challenge_takeon_rejected',
             'challenge_proof_approved',
             'challenge_proof_rejected' => 'creatorName',
+            // PR11 — rate_ready fires to both sides; each recipient's
+            // body references the OTHER party via counterpartyName.
+            'rate_ready'               => 'counterpartyName',
             // verdict_* both already pass senderName=creatorName, so the
             // default key picks it up — no explicit mapping needed.
             // challenge_international_target uses {originCity} not {name}.

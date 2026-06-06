@@ -568,6 +568,11 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS join_re
 $jrBackfill = $pdo->exec("UPDATE notification_preferences SET join_request_push = TRUE WHERE join_request_push = FALSE");
 echo "  OK  backfilled join_request_push=TRUE for " . (int) $jrBackfill . " row(s)\n";
 
+// PR11: rate_ready_push — fires when a meet-up's rating window opens
+// (start + 1h, via Option B piggyback). High-signal social loop closer;
+// default TRUE so users get the nudge unless they opt out.
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS rate_ready_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.rate_ready_push');
+
 // ══════════════════════════════════════════════════════════════════════════════
 // ADDITIVE COLUMNS — safe no-ops when columns already exist
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1102,6 +1107,18 @@ run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_v
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'challenge_acceptances.proposed_by_user_id');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_at         TIMESTAMPTZ", 'challenge_acceptances.proposed_at');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS date_approved_at    TIMESTAMPTZ", 'challenge_acceptances.date_approved_at');
+
+// PR11: rate-ready push tracking. Set the moment we fire the "rate your
+// meet-up" push (Option B piggyback — see NotificationRepository::
+// maybeTickRatePushes). Dedupes the global scan so the same acceptance
+// can't be pushed twice. NULL = not yet pushed; partial index below
+// keeps the scan O(few rows) regardless of table size.
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS rate_push_sent_at TIMESTAMPTZ", 'challenge_acceptances.rate_push_sent_at');
+run($pdo, "
+    CREATE INDEX IF NOT EXISTS idx_chacc_rate_push_pending
+        ON challenge_acceptances (COALESCE(proposed_ends_at, proposed_starts_at))
+        WHERE phase = 'scheduled' AND rate_push_sent_at IS NULL
+", 'idx_chacc_rate_push_pending');
 
 // ── Challenge invitations ─────────────────────────────────────────────────────
 // After publishing, the creator can hand-pick city members and ping them.

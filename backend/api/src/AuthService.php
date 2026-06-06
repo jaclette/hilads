@@ -249,6 +249,13 @@ class AuthService
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
             if ($row) {
                 self::$cached = $row;
+                // PR11: piggyback rate-ready push tick (Option B). Runs once
+                // per request because of the request-level $resolved cache
+                // above. Bounded LIMIT 3 + partial index keep per-call cost
+                // <1ms; the push fan-out is queued and flushed at shutdown
+                // alongside the rest of MobilePushService's queue. Anon
+                // requests skip this branch entirely.
+                try { NotificationRepository::maybeTickRatePushes(); } catch (\Throwable) { /* never break the host request */ }
                 return self::$cached;
             }
         }

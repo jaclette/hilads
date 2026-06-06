@@ -101,6 +101,9 @@ class NotificationRepository
             // Admin-triggered broadcasts (from /admin/push). Default-on so
             // users get product announcements unless they opt out.
             'admin_announcement'                                        => 'admin_announcement_push',
+            // PR11: rate-ready push (fires when a meet-up's rating window
+            // opens, start + 1h). High-signal social loop closer.
+            'rate_ready'                                                => 'rate_ready_push',
             default                                                     => null,
         };
     }
@@ -122,6 +125,7 @@ class NotificationRepository
             'new_topic_push'       => false,
             'join_request_push'    => true,
             'admin_announcement_push' => true,
+            'rate_ready_push'      => true,
         ];
     }
 
@@ -245,6 +249,9 @@ class NotificationRepository
             // Cross-city heads-up — tap lands the user on the challenge so
             // they can decide whether to take it on.
             'challenge_international_target'  => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/(tabs)/now',
+            // PR11: tap → /threads where the rate-prompt banner picks up
+            // this acceptance and surfaces the rate sheet on tap.
+            'rate_ready'                      => '/threads',
             default                           => '/',
         };
     }
@@ -270,6 +277,7 @@ class NotificationRepository
             'join_request_accepted'   => 'joinacc-'       . ($data['topicId'] ?? 'topic'),
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
+            'rate_ready'              => 'rate-'          . ($data['acceptanceId'] ?? 'x'),
             default                   => 'hilads-' . $type,
         };
     }
@@ -727,6 +735,113 @@ class NotificationRepository
             if ($enabled[$uid] ?? true) {
                 self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
             }
+        }
+    }
+
+    /**
+     * PR11 — "rate_ready" push tick. Piggy-backs on any authenticated request:
+     * called once per request from AuthService::currentUser() when a user
+     * resolves. Looks for acceptances whose rating window just opened and
+     * haven't been pushed yet, fires one push per side, stamps
+     * rate_push_sent_at to dedupe.
+     *
+     * Why no cron: Hilads runs on Render (mod_php, no fastcgi_finish_request)
+     * and we don't ship a Cron Job service. This approach borrows from real
+     * user traffic — bounded LIMIT 3 + a partial index keep per-request cost
+     * <1ms. The push send itself is queued via register_shutdown_function in
+     * MobilePushService, so it doesn't block the response any worse than
+     * other already-fired pushes.
+     *
+     * Index path: idx_chacc_rate_push_pending (partial on
+     * `phase='scheduled' AND rate_push_sent_at IS NULL`) keeps the scan to
+     * a handful of rows at any time — they drain as soon as someone hits
+     * an authenticated endpoint.
+     */
+    public static function maybeTickRatePushes(): void
+    {
+        try {
+            $stmt = Database::pdo()->prepare("
+                SELECT ca.id              AS acceptance_id,
+                       ca.challenge_id,
+                       ca.acceptor_user_id,
+                       cc.created_by,
+                       cc.title           AS challenge_title
+                FROM challenge_acceptances ca
+                JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
+                WHERE ca.phase = 'scheduled'
+                  AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now()
+                  AND ca.rate_push_sent_at IS NULL
+                ORDER BY COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) ASC
+                LIMIT 3
+            ");
+            $stmt->execute();
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            if (empty($rows)) return;
+
+            // Fetch counterparty display names in one batch query
+            $userIds = [];
+            foreach ($rows as $r) {
+                $userIds[] = $r['created_by'];
+                $userIds[] = $r['acceptor_user_id'];
+            }
+            $userIds = array_values(array_unique(array_filter($userIds)));
+            $byId = [];
+            if (!empty($userIds)) {
+                $ph = implode(',', array_fill(0, count($userIds), '?'));
+                $ns = Database::pdo()->prepare("SELECT id, display_name FROM users WHERE id IN ($ph)");
+                $ns->execute($userIds);
+                foreach ($ns->fetchAll(\PDO::FETCH_ASSOC) as $u) {
+                    $byId[$u['id']] = $u['display_name'];
+                }
+            }
+
+            foreach ($rows as $r) {
+                // Atomic claim. If two concurrent requests scanned the same
+                // ripe row, only one UPDATE flips the timestamp from NULL,
+                // the other gets rowCount() === 0 and skips firing.
+                $claim = Database::pdo()->prepare("
+                    UPDATE challenge_acceptances
+                    SET rate_push_sent_at = now(), updated_at = now()
+                    WHERE id = ? AND rate_push_sent_at IS NULL
+                ");
+                $claim->execute([$r['acceptance_id']]);
+                if ($claim->rowCount() === 0) continue;
+
+                $creatorName  = $byId[$r['created_by']]        ?? 'someone';
+                $acceptorName = $byId[$r['acceptor_user_id']]  ?? 'someone';
+                $title        = (string) ($r['challenge_title'] ?? '');
+
+                // Push to both parties. Each gets the OTHER party's name in
+                // the body (via the data array — NotificationI18n resolves
+                // {name} from 'counterpartyName' for type='rate_ready').
+                foreach ([
+                    ['uid' => $r['created_by'],       'name' => $acceptorName],
+                    ['uid' => $r['acceptor_user_id'], 'name' => $creatorName],
+                ] as $target) {
+                    if (!$target['uid']) continue;
+                    try {
+                        self::create(
+                            $target['uid'],
+                            'rate_ready',
+                            "⭐ Rate your meet-up",
+                            "How was it with {$target['name']}? Tap to rate.",
+                            [
+                                'challengeId'      => $r['challenge_id'],
+                                'acceptanceId'     => $r['acceptance_id'],
+                                'counterpartyName' => $target['name'],
+                                'challengeTitle'   => $title,
+                            ],
+                        );
+                    } catch (\Throwable $e) {
+                        error_log("[rate-push] create failed acceptance={$r['acceptance_id']} uid={$target['uid']}: " . $e->getMessage());
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Never let the tick break the host request — silent error_log
+            // and continue. The acceptances stay un-stamped and the next
+            // authenticated request picks them up.
+            error_log('[rate-push] tick scan failed: ' . $e->getMessage());
         }
     }
 

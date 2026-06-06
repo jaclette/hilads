@@ -154,7 +154,10 @@ export function DatePickerModal({
     }
     d.setHours(h, m, 0, 0);
     const startsAt = Math.floor(d.getTime() / 1000);
-    onSubmit(startsAt, startsAt + 2 * 3600, venue.trim() || null);
+    // PR11: auto-end shortened from +2h to +1h. The rating window opens at
+    // proposed_ends_at (see ChallengeAcceptanceRepository::EFFECTIVE_PHASE);
+    // shorter window = faster rate-ready push, which keeps the loop tight.
+    onSubmit(startsAt, startsAt + 1 * 3600, venue.trim() || null);
   }
 
   return (
