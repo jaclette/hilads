@@ -47,6 +47,7 @@ import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeWeather } from '@/lib/weather';
+import { fetchLeaderboard } from '@/api/leaderboard';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
 // ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
@@ -187,6 +188,25 @@ export default function ChatTab() {
   }, [city?.channelId]);
 
   const channelId = city?.channelId ?? '';
+
+  // ── Leaderboard chip — caller's monthly city rank ─────────────────────────
+  // One bounded fetch per city change. limit=1 to skip the list payload;
+  // we only need me.rank/me.points. Silent failure → neutral chip copy.
+  // Re-fires on city switch so the chip reflects the new city's standings.
+  const [myCityRank,   setMyCityRank]   = useState<number | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (!account?.id || !channelId) { setMyCityRank(null); return; }
+    (async () => {
+      const res = await fetchLeaderboard({
+        scope: 'city', period: 'month', limit: 1, offset: 0,
+        cityId: `city_${channelId}`,
+      });
+      if (cancelled) return;
+      setMyCityRank(res?.me?.rank ?? null);
+    })();
+    return () => { cancelled = true; };
+  }, [account?.id, channelId]);
 
   // ── Typing indicators ─────────────────────────────────────────────────────
   // Server broadcasts typingUsers to the city room whenever typingStart/Stop fires.
@@ -955,6 +975,26 @@ export default function ChatTab() {
               {onlineCount != null ? t('online', { count: onlineCount }) : t('liveNow')}
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.chip, styles.chipLeaderboard]}
+            activeOpacity={0.75}
+            onPress={() => router.push('/leaderboard' as never)}
+            accessibilityRole="button"
+            accessibilityLabel={
+              myCityRank
+                ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
+                : t('leaderboard.chip.neutral', { ns: 'challenge' })
+            }
+          >
+            <Text style={styles.chipLeaderboardText}>
+              {myCityRank === null
+                ? t('leaderboard.chip.neutral', { ns: 'challenge' })
+                : myCityRank > 99
+                  ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
+                  : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
+            </Text>
+          </TouchableOpacity>
         </View>
 
       </View>
@@ -1337,6 +1377,18 @@ const styles = StyleSheet.create({
     borderRadius:    4,
     backgroundColor: '#ef4444',
     flexShrink:      0,
+  },
+  // Leaderboard chip — amber/orange tint, distinct from online (red) and
+  // weather (grey) so it reads at a glance as the "scoring/rank" affordance.
+  chipLeaderboard: {
+    backgroundColor: 'rgba(255,201,60,0.12)',
+    borderColor:     'rgba(255,201,60,0.32)',
+    flexShrink:      0,
+  },
+  chipLeaderboardText: {
+    fontSize:   12,
+    fontWeight: '700',
+    color:      '#FFC93C',
   },
 
   // ── Error banner ─────────────────────────────────────────────────────────

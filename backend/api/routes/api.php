@@ -9814,6 +9814,216 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
     ]);
 });
 
+// GET /api/v1/leaderboard
+// Powers the MY CITY pill ("You're #N in {city}") AND the dedicated
+// Leaderboard screen. Single bounded read; same shape for both surfaces.
+//
+// Query params:
+//   - scope  : 'city' (default) | 'world'
+//   - period : 'month' (default) | 'alltime'
+//   - limit  : 1..100, default 50
+//   - offset : 0..10000, default 0
+//   - city_id: optional override for scope='city'; format 'city_<int>'.
+//              Falls back to caller's current_city_id when omitted.
+//
+// All queries are bounded:
+//   - World: ORDER BY users.score_alltime / score_month DESC LIMIT/OFFSET on
+//     users_score_alltime_desc / users_score_month_desc (idx in migrate.php).
+//   - City : aggregates score_events via idx_score_events_city_month. Bounded
+//     by city activity (rated challenges × 5 events each), NOT user count.
+//
+// Caller's own row (me.rank/points) computed with a strictly-greater COUNT
+// against the same indexed scan, so a caller outside the page still gets
+// their real rank. me.rank=null when the caller has no points in this
+// scope/period — UI shows the "play to get on the board" prompt instead.
+//
+// List ranks are offset+i+1 (no tie-dedup — paginated leaderboard standard).
+// me.rank uses true competition ranking, so ties at the top all show
+// me.rank=1 if the caller is one of them.
+$router->add('GET', '/api/v1/leaderboard', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $scope  = in_array($_GET['scope']  ?? '', ['city', 'world'],   true) ? $_GET['scope']  : 'city';
+    $period = in_array($_GET['period'] ?? '', ['month', 'alltime'], true) ? $_GET['period'] : 'month';
+
+    $limit  = (int) ($_GET['limit']  ?? 50);
+    if ($limit < 1)   $limit = 1;
+    if ($limit > 100) $limit = 100;
+
+    $offset = (int) ($_GET['offset'] ?? 0);
+    if ($offset < 0)     $offset = 0;
+    if ($offset > 10000) $offset = 10000;
+
+    $currentMonth = gmdate('Y-m');
+
+    // ── Resolve city for scope='city' ─────────────────────────────────────
+    $cityId = null;
+    if ($scope === 'city') {
+        $cityIdRaw = $_GET['city_id'] ?? null;
+        if ($cityIdRaw !== null && $cityIdRaw !== '') {
+            if (!preg_match('/^city_[0-9]+$/', (string) $cityIdRaw)) {
+                Response::json([
+                    'error' => 'city_id must look like city_<integer>',
+                    'code'  => 'invalid_city_id',
+                ], 400);
+            }
+            $intId = (int) substr((string) $cityIdRaw, 5);
+            if (CityRepository::findById($intId) === null) {
+                Response::json(['error' => 'Unknown city', 'code' => 'unknown_city'], 404);
+            }
+            $cityId = $cityIdRaw;
+        } else {
+            $stmt = Database::pdo()->prepare("SELECT current_city_id FROM users WHERE id = ?");
+            $stmt->execute([$callerId]);
+            $cityId = $stmt->fetchColumn() ?: null;
+            if ($cityId === null) {
+                Response::json([
+                    'error' => 'No city set — pick a city before viewing the leaderboard.',
+                    'code'  => 'no_city',
+                ], 400);
+            }
+        }
+    }
+
+    $pdo = Database::pdo();
+    $listRows = [];
+    $myPoints = 0;
+    $myRank   = null;
+
+    if ($scope === 'world') {
+        if ($period === 'alltime') {
+            $list = $pdo->prepare("
+                SELECT id, display_name, profile_thumb_photo_url, score_alltime AS points
+                FROM users
+                WHERE deleted_at IS NULL AND score_alltime > 0
+                ORDER BY score_alltime DESC, id ASC
+                LIMIT :limit OFFSET :offset
+            ");
+            $list->execute([':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            $me = $pdo->prepare("
+                SELECT u.score_alltime AS my_points,
+                       (SELECT COUNT(*) FROM users u2
+                          WHERE u2.deleted_at IS NULL
+                            AND u2.score_alltime > u.score_alltime) + 1 AS my_rank
+                FROM users u
+                WHERE u.id = ?
+            ");
+            $me->execute([$callerId]);
+            $row = $me->fetch(\PDO::FETCH_ASSOC);
+            $myPoints = $row ? (int) $row['my_points'] : 0;
+            $myRank   = ($row && $myPoints > 0) ? (int) $row['my_rank'] : null;
+        } else {
+            $list = $pdo->prepare("
+                SELECT id, display_name, profile_thumb_photo_url, score_month AS points
+                FROM users
+                WHERE deleted_at IS NULL
+                  AND score_month > 0
+                  AND score_month_ref = :month
+                ORDER BY score_month DESC, id ASC
+                LIMIT :limit OFFSET :offset
+            ");
+            $list->execute([':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            $me1 = $pdo->prepare("SELECT score_month, score_month_ref FROM users WHERE id = ?");
+            $me1->execute([$callerId]);
+            $r1 = $me1->fetch(\PDO::FETCH_ASSOC);
+            $myPoints = ($r1 && $r1['score_month_ref'] === $currentMonth) ? (int) $r1['score_month'] : 0;
+
+            if ($myPoints > 0) {
+                $me2 = $pdo->prepare("
+                    SELECT COUNT(*) + 1 FROM users
+                    WHERE deleted_at IS NULL
+                      AND score_month_ref = :month
+                      AND score_month > :mine
+                ");
+                $me2->execute([':month' => $currentMonth, ':mine' => $myPoints]);
+                $myRank = (int) $me2->fetchColumn();
+            }
+        }
+    } else {
+        $monthFilterSql = $period === 'month' ? "AND month_ref = :month" : "";
+
+        $list = $pdo->prepare("
+            WITH per_user AS (
+                SELECT user_id, SUM(points) AS points
+                FROM score_events
+                WHERE city_id = :city
+                  {$monthFilterSql}
+                GROUP BY user_id
+                HAVING SUM(points) > 0
+            )
+            SELECT u.id, u.display_name, u.profile_thumb_photo_url, pu.points
+            FROM per_user pu
+            JOIN users u ON u.id = pu.user_id
+            WHERE u.deleted_at IS NULL
+            ORDER BY pu.points DESC, u.id ASC
+            LIMIT :limit OFFSET :offset
+        ");
+        $bind = [':city' => $cityId, ':limit' => $limit, ':offset' => $offset];
+        if ($period === 'month') $bind[':month'] = $currentMonth;
+        $list->execute($bind);
+        $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+        $me1 = $pdo->prepare("
+            SELECT COALESCE(SUM(points), 0) AS my_points
+            FROM score_events
+            WHERE city_id = :city AND user_id = :uid
+              {$monthFilterSql}
+        ");
+        $b1 = [':city' => $cityId, ':uid' => $callerId];
+        if ($period === 'month') $b1[':month'] = $currentMonth;
+        $me1->execute($b1);
+        $myPoints = (int) $me1->fetchColumn();
+
+        if ($myPoints > 0) {
+            $me2 = $pdo->prepare("
+                SELECT COUNT(*) + 1 FROM (
+                    SELECT user_id
+                    FROM score_events
+                    WHERE city_id = :city
+                      {$monthFilterSql}
+                    GROUP BY user_id
+                    HAVING SUM(points) > :mine
+                ) higher
+            ");
+            $b2 = [':city' => $cityId, ':mine' => $myPoints];
+            if ($period === 'month') $b2[':month'] = $currentMonth;
+            $me2->execute($b2);
+            $myRank = (int) $me2->fetchColumn();
+        }
+    }
+
+    $entries = [];
+    foreach ($listRows as $i => $r) {
+        $entries[] = [
+            'rank'           => $offset + $i + 1,
+            'user_id'        => $r['id'],
+            'displayName'    => $r['display_name'],
+            'thumbAvatarUrl' => $r['profile_thumb_photo_url'],
+            'points'         => (int) $r['points'],
+        ];
+    }
+
+    Response::json([
+        'scope'      => $scope,
+        'period'     => $period,
+        'city_id'    => $scope === 'city' ? $cityId : null,
+        'month_ref'  => $period === 'month' ? $currentMonth : null,
+        'limit'      => $limit,
+        'offset'     => $offset,
+        'entries'    => $entries,
+        'me' => [
+            'user_id' => $callerId,
+            'rank'    => $myRank,
+            'points'  => $myPoints,
+        ],
+    ]);
+});
+
 // GET /api/v1/challenges/{challengeId}/acceptances
 // Creator-only — list of who took on this challenge. For the challenge
 // detail "Threads" tab in the new UI.

@@ -163,6 +163,37 @@ export interface ChallengeThreadSummary {
 // in case an older API build returns it. `in_progress` is the new code.
 export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress';
 
+/** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard. */
+export type LeaderboardScope  = 'city' | 'world';
+export type LeaderboardPeriod = 'month' | 'alltime';
+
+/** One row of the leaderboard list. */
+export interface LeaderboardEntry {
+  rank:           number;
+  user_id:        string;
+  displayName:    string;
+  thumbAvatarUrl: string | null;
+  points:         number;
+}
+
+/** Full response shape for GET /api/v1/leaderboard. `me.rank` is null when
+ *  the caller has no points in the requested scope/period — UI shows the
+ *  "play to get on the board" prompt instead of a pinned row. */
+export interface LeaderboardResponse {
+  scope:     LeaderboardScope;
+  period:    LeaderboardPeriod;
+  city_id:   string | null;
+  month_ref: string | null;
+  limit:     number;
+  offset:    number;
+  entries:   LeaderboardEntry[];
+  me: {
+    user_id: string;
+    rank:    number | null;
+    points:  number;
+  };
+}
+
 /** A single rate-eligible meet-up the caller has not rated yet — surfaced by
  *  GET /me/rate-prompts. The in-app banner on the threads screen reads off
  *  these; the rating sheet posts back to POST /challenges/:id/ratings. */
