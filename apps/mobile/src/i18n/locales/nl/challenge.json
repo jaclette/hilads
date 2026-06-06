@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Geen nieuwe deelnemers",
     "closedReopenCta": "Heropen voor deelnemers"
+  },
+  "details": {
+    "collapseAria": "Kanaaldetails verbergen",
+    "expandAria": "Kanaaldetails tonen"
   }
 }

@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Chiudi a nuovi ingressi",
     "closedReopenCta": "Riapri ai nuovi ingressi"
+  },
+  "details": {
+    "collapseAria": "Nascondi i dettagli del canale",
+    "expandAria": "Mostra i dettagli del canale"
   }
 }

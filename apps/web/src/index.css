@@ -11317,6 +11317,62 @@ body.has-app-promo-banner .page-header {
   align-self: center;
 }
 .challenge-share-pill--inline .challenge-share-pill-text { font-size: 11px; }
+/* Share-specific tint — the only pill that surfaces a social/growth verb,
+   so it gets a distinct violet so it doesn't read as just another orange
+   action. The rest of the inline meta-row pills (Manage, Visibility,
+   Leave, Notif) keep the orange brand tint. */
+.challenge-share-pill--share {
+  background: rgba(167, 139, 250, 0.10);
+  border-color: rgba(167, 139, 250, 0.35);
+  color: #c4b5fd;
+}
+.challenge-share-pill--share:hover { background: rgba(167, 139, 250, 0.18); }
+.challenge-share-pill--share .challenge-share-pill-text { color: #c4b5fd; }
+
+/* Collapse chevron next to the share pill — toggles the channel-header
+   details block (second pill row + pipeline + proof + members strip). */
+.challenge-details-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px; height: 28px;
+  margin-left: 2px;
+  padding: 0;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease;
+}
+.challenge-details-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.20);
+}
+.challenge-details-toggle-chevron {
+  display: inline-block;
+  font-size: 11px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.challenge-details-toggle-chevron.is-open { transform: rotate(180deg); }
+
+/* Channel-header details — collapsible block. CSS max-height + opacity
+   give the slide animation. 1000px is a generous upper bound so the
+   transition always engages from a known endpoint; the overflow stays
+   hidden so the contents clip cleanly during transition. */
+.challenge-details {
+  overflow: hidden;
+  transition: max-height 0.28s ease, opacity 0.18s ease;
+  max-height: 1000px;
+  opacity: 1;
+}
+.challenge-details.is-closed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.challenge-meta-row--secondary { padding-top: 4px; }
 .challenge-quick-btn:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-quick-btn:active { transform: scale(0.96); }
 .challenge-quick-btn:disabled { opacity: 0.6; cursor: default; }

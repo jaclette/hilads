@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Sarado sa bagong miyembro",
     "closedReopenCta": "Buksang muli sa mga sasali"
+  },
+  "details": {
+    "collapseAria": "Itago ang detalye ng channel",
+    "expandAria": "Ipakita ang detalye ng channel"
   }
 }

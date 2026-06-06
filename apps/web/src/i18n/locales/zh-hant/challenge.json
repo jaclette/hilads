@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "停止新成員加入",
     "closedReopenCta": "重新開放加入"
+  },
+  "details": {
+    "collapseAria": "隱藏頻道詳情",
+    "expandAria": "顯示頻道詳情"
   }
 }

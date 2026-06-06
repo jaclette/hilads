@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Cerrar a nuevas incorporaciones",
     "closedReopenCta": "Reabrir a incorporaciones"
+  },
+  "details": {
+    "collapseAria": "Ocultar detalles del canal",
+    "expandAria": "Mostrar detalles del canal"
   }
 }

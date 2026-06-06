@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "नए सदस्यों के लिए बंद करें",
     "closedReopenCta": "जुड़ने के लिए फिर खोलें"
+  },
+  "details": {
+    "collapseAria": "चैनल विवरण छिपाएं",
+    "expandAria": "चैनल विवरण दिखाएं"
   }
 }

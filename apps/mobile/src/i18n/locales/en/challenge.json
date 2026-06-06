@@ -156,6 +156,10 @@
     "cta":   "Manage",
     "title": "Manage challenge"
   },
+  "details": {
+    "collapseAria": "Hide channel details",
+    "expandAria":   "Show channel details"
+  },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",

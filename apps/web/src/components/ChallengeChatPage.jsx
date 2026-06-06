@@ -114,6 +114,12 @@ export default function ChallengeChatPage({
   // the inline pill. "Private" maps to closed_to_new_joins=true (the
   // mutual go-private vote backend isn't surfaced here).
   const [visMenuOpen, setVisMenuOpen] = useState(false)
+  // Channel-header details (visibility pill, manage pill, pipeline, proof
+  // block, members strip) collapse behind a chevron next to the share
+  // pill — frees vertical space for the conversation. Default expanded
+  // so first-load reveals the context; tap to fold. Sticks across the
+  // session for this challenge.
+  const [detailsOpen, setDetailsOpen] = useState(true)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   // Themed in-app alert. Replaces window.alert() (which renders the ugly
   // "hilads.live says" browser modal). Shape: { emoji?, title, body, actionLabel?, onAction? }.
@@ -657,13 +663,13 @@ export default function ChallengeChatPage({
           every lifecycle stage; the challenger row only appears when an
           acceptor exists, and we don't want growth nudges to disappear with
           it. */}
+      {/* Always-visible row: type badge + Berlin/audience + share pill
+          + collapse chevron. Everything else (visibility/manage/leave
+          pills, pipeline, proof, members strip) folds behind the chevron. */}
       <div className="topic-chat-desc challenge-meta-row">
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
-        {/* Audience vs Intl pill — same swap as the NOW card (step 8):
-            Local rows show the audience target, International rows show
-            🌐 + the target city (or "International" when no target). */}
         {(challenge.mode ?? 'local') === 'international' ? (
           <span className="challenge-badge challenge-badge--international">
             🌐 {targetCityNameOnly || t('mode.international')}
@@ -673,18 +679,34 @@ export default function ChallengeChatPage({
         )}
         <button
           type="button"
-          className="challenge-share-pill challenge-share-pill--inline"
+          className="challenge-share-pill challenge-share-pill--inline challenge-share-pill--share"
           onClick={handleShare}
           aria-label={t('shareCta')}
         >
           <span aria-hidden="true">↗</span>
           <span className="challenge-share-pill-text">{t('shareCta')}</span>
         </button>
-        {/* Visibility dropdown — creator-tappable selector that bundles
-            Public / Friends / Private (Private = closed_to_new_joins).
-            Read-only label for everyone else. International always reads
-            "🌍 Public" with no tap target. The chevron signals the
-            dropdown affordance. */}
+        {/* Collapse chevron — toggles all the channel-header detail (the
+            row below + the pipeline + proof + members strip). Default
+            open. Reads as "more details ↓" / "less ↑". */}
+        <button
+          type="button"
+          className="challenge-details-toggle"
+          onClick={() => setDetailsOpen(v => !v)}
+          aria-expanded={detailsOpen}
+          aria-label={detailsOpen ? t('details.collapseAria') : t('details.expandAria')}
+        >
+          <span aria-hidden="true" className={`challenge-details-toggle-chevron ${detailsOpen ? 'is-open' : ''}`}>▾</span>
+        </button>
+      </div>
+
+      {/* Collapsible details — second pill row (Public / Manage / Leave)
+          plus pipeline + proof + members strip. CSS max-height transition
+          gives the slide animation; opacity dims so the collapse reads as
+          intentional rather than glitchy. */}
+      <div className={`challenge-details ${detailsOpen ? 'is-open' : 'is-closed'}`}>
+      <div className="topic-chat-desc challenge-meta-row challenge-meta-row--secondary">
+        {/* Visibility dropdown — Public / Friends / Private. */}
         {(() => {
           const isIntl = (challenge.mode ?? 'local') === 'international'
           const v      = challenge.visibility ?? 'public'
@@ -714,8 +736,6 @@ export default function ChallengeChatPage({
             </button>
           )
         })()}
-        {/* Manage challenge — creator-only pill. Bundles Edit / Close /
-            Delete in a popin so the bottom of the screen stays clean. */}
         {isOwner && (
           <button
             type="button"
@@ -727,8 +747,6 @@ export default function ChallengeChatPage({
             <span className="challenge-share-pill-text">{t('manage.cta')}</span>
           </button>
         )}
-        {/* Leave the channel — joined participants who aren't the creator
-            or the active taker. */}
         {iAmParticipant === true && !isOwner && !myAcceptance && (
           <button
             type="button"
@@ -788,6 +806,7 @@ export default function ChallengeChatPage({
           onMembersChanged={() => { loadParticipants() }}
         />
       )}
+      </div>{/* /.challenge-details (collapsible) */}
 
       {/* Close-challenge — moved from the old status pill toggle. Same
           /validate endpoint, just smaller affordance + only visible to the

@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "신규 참여 마감",
     "closedReopenCta": "다시 참여 받기"
+  },
+  "details": {
+    "collapseAria": "채널 세부 정보 숨기기",
+    "expandAria": "채널 세부 정보 표시"
   }
 }

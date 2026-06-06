@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View, Text, ActivityIndicator, Animated, Modal,
+  View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -295,6 +295,14 @@ export default function ChallengeChatScreen() {
   // to closed_to_new_joins=true; Public / Friends clear that flag and
   // align the visibility column.
   const [visMenuOpen, setVisMenuOpen] = useState(false);
+  // Channel-header details (second pill row + pipeline + proof + members
+  // strip) collapse behind a chevron next to the share pill — frees
+  // vertical space for the chat. Default expanded.
+  const [detailsOpen, setDetailsOpen] = useState(true);
+  const toggleDetails = useCallback(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setDetailsOpen(v => !v);
+  }, []);
   const handlePickVisibility = useCallback(async (choice: 'public' | 'friends' | 'private') => {
     if (visBusy || closeBusy || !challenge) return;
     setVisMenuOpen(false);
@@ -703,23 +711,42 @@ export default function ChallengeChatScreen() {
               <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
             </View>
           )}
-          {/* Share — always visible. Previously lived in the challenger row,
-              which was hidden when there were no acceptors (1:1 model =
-              no participants until someone takes on), so the CTA disappeared
-              entirely. Placing it next to the audience pill keeps it on the
-              page at every lifecycle stage. */}
+          {/* Share — distinct violet tint so it doesn't blur in with the
+              orange admin pills below. The verb is the social growth hook
+              of the screen; it deserves its own color. */}
           <TouchableOpacity
-            style={styles.sharePillInline}
+            style={[styles.sharePillInline, styles.sharePillInlineShare]}
             onPress={handleShare}
             activeOpacity={0.75}
             accessibilityLabel={t('shareCta')}
           >
-            <Ionicons name="share-social-outline" size={14} color="#FF7A3C" />
-            <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('shareCta')}</Text>
+            <Ionicons name="share-social-outline" size={14} color="#c4b5fd" />
+            <Text style={[styles.sharePillInlineText, styles.sharePillInlineShareText]} numberOfLines={1}>
+              {t('shareCta')}
+            </Text>
           </TouchableOpacity>
+          {/* Collapse chevron — toggles all the details below (visibility
+              pill, manage pill, pipeline, proof block, members strip).
+              Default expanded; tap to fold for more chat space. */}
+          <TouchableOpacity
+            style={styles.detailsToggle}
+            onPress={toggleDetails}
+            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={detailsOpen ? t('details.collapseAria') : t('details.expandAria')}
+          >
+            <Text style={[styles.detailsToggleChevron, !detailsOpen && styles.detailsToggleChevronClosed]}>▾</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Collapsible details — everything below the always-visible badge
+            row. Conditional render + LayoutAnimation gives the slide-up
+            collapse without a heavy Reanimated dep. */}
+        {detailsOpen && (
+        <View style={styles.detailsBlock}>
+        <View style={[styles.hero, { paddingTop: 0 }]}>
           {/* Leave the channel — joined participants who aren't the creator
-              or active taker. Lives next to the share pill so the channel
-              actions stay grouped at the top of the page. */}
+              or active taker. */}
           {iAmParticipant === true && !isOwner && !myAcceptance && (
             <TouchableOpacity
               style={styles.sharePillInline}
@@ -833,6 +860,8 @@ export default function ChallengeChatScreen() {
             onOpen={() => setMembersOpen(true)}
           />
         )}
+        </View>
+        )}{/* /detailsOpen */}
 
         {/* Owner re-invite CTA — only while the challenge is genuinely free.
             Opens the same "seed it" sheet shown right after creation, so the
@@ -1397,6 +1426,31 @@ const styles = StyleSheet.create({
     borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
   },
   sharePillInlineText: { fontSize: 11, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.3 },
+
+  // Share gets its own violet tint — distinct from the orange admin
+  // pills (Manage / Leave / Visibility-public-default).
+  sharePillInlineShare: {
+    backgroundColor: 'rgba(167,139,250,0.10)',
+    borderColor:     'rgba(167,139,250,0.35)',
+  },
+  sharePillInlineShareText: { color: '#c4b5fd' },
+
+  // Collapse chevron next to the share pill — toggles the channel-header
+  // details (second pill row + pipeline + proof + members strip).
+  detailsToggle: {
+    width: 26, height: 26, borderRadius: 13,
+    alignItems: 'center', justifyContent: 'center',
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    marginLeft: 2,
+  },
+  detailsToggleChevron: {
+    fontSize: 11, color: Colors.muted, lineHeight: 12,
+  },
+  detailsToggleChevronClosed: { transform: [{ rotate: '-90deg' }] },
+
+  // Detail block — wraps the collapsible content below the always-visible
+  // hero row. LayoutAnimation handles the height transition.
+  detailsBlock: { },
 
   // Visibility pill tints — applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into

@@ -385,6 +385,10 @@
     "cta":    "Manage",
     "title":  "Manage challenge"
   },
+  "details": {
+    "collapseAria": "Hide channel details",
+    "expandAria":   "Show channel details"
+  },
   "badge": {
     "challenger": "Challenger",
     "taker":      "Taker"

@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "新規参加を締め切る",
     "closedReopenCta": "新規参加を再開する"
+  },
+  "details": {
+    "collapseAria": "チャンネル詳細を隠す",
+    "expandAria": "チャンネル詳細を表示"
   }
 }

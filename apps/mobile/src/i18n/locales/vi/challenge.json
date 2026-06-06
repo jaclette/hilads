@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Đóng nhận thành viên mới",
     "closedReopenCta": "Mở lại nhận thành viên"
+  },
+  "details": {
+    "collapseAria": "Ẩn chi tiết kênh",
+    "expandAria": "Hiện chi tiết kênh"
   }
 }

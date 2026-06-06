@@ -395,5 +395,9 @@
   "privacy": {
     "closedCloseCta": "Tutup untuk anggota baru",
     "closedReopenCta": "Buka kembali untuk anggota"
+  },
+  "details": {
+    "collapseAria": "Sembunyikan detail kanal",
+    "expandAria": "Tampilkan detail kanal"
   }
 }
