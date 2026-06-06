@@ -192,6 +192,10 @@ class UserRepository
         $allowed = [
             'display_name', 'email', 'password_hash', 'birth_year',
             'profile_photo_url', 'home_city', 'interests', 'vibe', 'is_fake',
+            // PR14: admin override of the cached leaderboard scores. Direct
+            // mutation of users.score_* — bypasses score_events but useful
+            // for moderation / corrections / seed-data tweaks from the BO.
+            'score_alltime', 'score_month', 'score_month_ref',
         ];
         $sets   = [];
         $values = [];

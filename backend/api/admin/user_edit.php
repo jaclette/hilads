@@ -26,13 +26,17 @@ $currentInterests = json_decode($user['interests'] ?? '[]', true) ?: [];
 
 // Use POST values on error re-render, otherwise user record values
 $post = $method === 'POST' ? $_POST : [
-    'display_name' => $user['display_name'] ?? '',
-    'email'        => $user['email']        ?? '',
-    'home_city'    => $user['home_city']    ?? '',
-    'vibe'         => $user['vibe']         ?? 'chill',
-    'birth_year'   => $user['birth_year']   ?? '',
-    'is_fake'      => $user['is_fake'] ? '1' : '',
-    'interests'    => $currentInterests,
+    'display_name'  => $user['display_name'] ?? '',
+    'email'         => $user['email']        ?? '',
+    'home_city'     => $user['home_city']    ?? '',
+    'vibe'          => $user['vibe']         ?? 'chill',
+    'birth_year'    => $user['birth_year']   ?? '',
+    'is_fake'       => $user['is_fake'] ? '1' : '',
+    'interests'     => $currentInterests,
+    // PR14 — pre-fill the score inputs with the current cached values
+    // so the admin sees what they're starting from.
+    'score_alltime' => (string) ($user['score_alltime'] ?? 0),
+    'score_month'   => (string) ($user['score_month']   ?? 0),
 ];
 
 if ($method === 'POST') {
@@ -94,6 +98,16 @@ if ($method === 'POST') {
         }
     }
 
+    // PR14 — leaderboard score override. Blank input = leave unchanged.
+    // Non-negative ints only; we force score_month_ref to the current UTC
+    // month when a month score is provided, so the value is attributed to
+    // the right monthly bucket (otherwise it'd be stranded under an old
+    // month_ref and look weird in the leaderboard).
+    $scoreAlltimeRaw = $post['score_alltime'] ?? '';
+    $scoreMonthRaw   = $post['score_month']   ?? '';
+    $scoreAlltime = $scoreAlltimeRaw !== '' ? max(0, (int) $scoreAlltimeRaw) : null;
+    $scoreMonth   = $scoreMonthRaw   !== '' ? max(0, (int) $scoreMonthRaw)   : null;
+
     if (empty($errors)) {
         $fields = [
             'display_name'      => $displayName,
@@ -107,6 +121,18 @@ if ($method === 'POST') {
         ];
         if ($newPassword !== '') {
             $fields['password_hash'] = password_hash($newPassword, PASSWORD_BCRYPT);
+        }
+        // Audit-log the score changes before the UPDATE so the old values
+        // are captured. Direct error_log call — the admin journal lives in
+        // ops logs alongside push-broadcast / event-edit entries.
+        if ($scoreAlltime !== null && $scoreAlltime !== (int) ($user['score_alltime'] ?? 0)) {
+            $fields['score_alltime'] = $scoreAlltime;
+            error_log("[admin-score] user={$userId} score_alltime " . ((int) ($user['score_alltime'] ?? 0)) . " → {$scoreAlltime}");
+        }
+        if ($scoreMonth !== null) {
+            $fields['score_month']     = $scoreMonth;
+            $fields['score_month_ref'] = gmdate('Y-m');
+            error_log("[admin-score] user={$userId} score_month " . ((int) ($user['score_month'] ?? 0)) . " → {$scoreMonth} (ref=" . gmdate('Y-m') . ")");
         }
         $user = UserRepository::adminUpdate($userId, $fields);
         flash_set('success', 'User updated successfully.');
@@ -316,6 +342,45 @@ admin_nav('/admin/users');
                 <input type="checkbox" name="is_fake" value="1" <?= !empty($post['is_fake']) ? 'checked' : '' ?> style="width:auto">
                 <span>Fake / seeded user <span style="color:#555;font-size:11px">(admin-only, never shown to users)</span></span>
             </label>
+        </div>
+
+        <hr class="section-divider">
+
+        <!-- PR14 — leaderboard score override. Direct mutation of the cached
+             users.score_* columns; bypasses the score_events ledger. Used for
+             moderation / seed-data corrections / leaderboard tuning. The
+             score_month_ref is force-set to the current UTC month when the
+             month value changes, so the value lands in the right bucket. -->
+        <div style="margin-bottom:8px">
+            <h3 style="margin:0 0 4px;font-size:14px;font-weight:700">🏆 Leaderboard score</h3>
+            <p style="margin:0 0 12px;color:#888;font-size:12px">
+                Direct override of <code>users.score_alltime</code> / <code>users.score_month</code>.
+                Bypasses the <code>score_events</code> ledger. Leave blank to keep current.
+            </p>
+        </div>
+        <div class="form-group" style="display:flex;gap:12px">
+            <div style="flex:1">
+                <label>All-time points</label>
+                <input
+                    type="number"
+                    name="score_alltime"
+                    min="0"
+                    step="1"
+                    value="<?= htmlspecialchars((string) ($post['score_alltime'] ?? ''), ENT_QUOTES) ?>"
+                    placeholder="0"
+                >
+            </div>
+            <div style="flex:1">
+                <label>This month (<?= htmlspecialchars(gmdate('Y-m'), ENT_QUOTES) ?>)</label>
+                <input
+                    type="number"
+                    name="score_month"
+                    min="0"
+                    step="1"
+                    value="<?= htmlspecialchars((string) ($post['score_month'] ?? ''), ENT_QUOTES) ?>"
+                    placeholder="0"
+                >
+            </div>
         </div>
 
         <div class="form-actions">
