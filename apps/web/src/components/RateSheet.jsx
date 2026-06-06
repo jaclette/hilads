@@ -48,10 +48,15 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
       onSubmitted?.(prompt.challenge_id)
       onClose?.()
     } catch (err) {
-      // Recoverable race: parent just refetches.
+      // Stale-prompt race: the acceptance state changed between fetch and
+      // submit (typical cause: counter-proposal flipped phase 'scheduled'
+      // → 'accepted'). Surface the server's specific message inline so
+      // the user understands WHY it failed, pop the stale prompt from
+      // parent state, and keep the sheet open so they can read + close.
       if (err?.status === 409 || err?.status === 403) {
+        setError(err?.message || t('ratePrompts.errSubmit'))
+        setBusy(false)
         onSubmitted?.(prompt.challenge_id)
-        onClose?.()
         return
       }
       setError(t('ratePrompts.errSubmit'))

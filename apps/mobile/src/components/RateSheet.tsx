@@ -54,10 +54,16 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
       onSubmitted(prompt.challenge_id);
       onClose();
     } catch (err) {
-      // Recoverable races: the prompt list got stale between fetch + submit.
-      // Dismiss the sheet and let the parent refetch — no error toast needed
-      // because the row will simply disappear.
+      // Stale-prompt race: the acceptance state changed between fetch and
+      // submit. Surface the server's specific message (e.g. "Lock in a
+      // meet-up date first.") via an Alert so the user understands WHY it
+      // failed instead of seeing a silent dismiss. Pop the stale prompt
+      // from parent state so it doesn't re-appear on the next interaction.
       if (err instanceof ApiError && (err.status === 409 || err.status === 403)) {
+        Alert.alert(
+          t('ratePrompts.staleTitle', { defaultValue: "Can't rate this yet" }),
+          err.message || t('ratePrompts.errSubmit'),
+        );
         onSubmitted(prompt.challenge_id);
         onClose();
         return;
