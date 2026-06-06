@@ -414,5 +414,31 @@
       "later": "Niet nu"
     },
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
+  },
+  "leaderboard": {
+    "title": "🏆 Klassement",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top-uitdagers"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Wereld"
+    },
+    "period": {
+      "month": "Deze maand",
+      "alltime": "Aller tijden"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Jij · #{{rank}} · {{points}} pts",
+      "unranked": "Doe mee aan een challenge om op het bord te komen"
+    },
+    "empty": {
+      "title": "Nog niemand op het bord",
+      "body": "Wees de eerste die een challenge aangaat en punten scoort."
+    },
+    "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen."
   }
 }

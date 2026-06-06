@@ -414,5 +414,31 @@
       "later": "Nanti aja"
     },
     "errSubmit": "Gagal kirim rating. Coba lagi."
+  },
+  "leaderboard": {
+    "title": "🏆 Papan peringkat",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top challengers"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Dunia"
+    },
+    "period": {
+      "month": "Bulan ini",
+      "alltime": "Sepanjang masa"
+    },
+    "points": "{{points}} poin",
+    "me": {
+      "ranked": "Kamu · #{{rank}} · {{points}} poin",
+      "unranked": "Terima challenge buat masuk papan"
+    },
+    "empty": {
+      "title": "Belum ada di papan",
+      "body": "Jadi yang pertama menerima challenge dan dapat poin."
+    },
+    "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi."
   }
 }

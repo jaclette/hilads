@@ -414,5 +414,31 @@
       "later": "Später"
     },
     "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
+  },
+  "leaderboard": {
+    "title": "🏆 Bestenliste",
+    "chip": {
+      "ranked": "🏆 #{{rank}}",
+      "rankedOver": "🏆 #100+",
+      "neutral": "🏆 Top Challenger"
+    },
+    "scope": {
+      "city": "My city",
+      "world": "Welt"
+    },
+    "period": {
+      "month": "Diesen Monat",
+      "alltime": "Allzeit"
+    },
+    "points": "{{points}} pts",
+    "me": {
+      "ranked": "Du · #{{rank}} · {{points}} pts",
+      "unranked": "Nimm eine Challenge an, um auf die Liste zu kommen"
+    },
+    "empty": {
+      "title": "Noch niemand auf der Liste",
+      "body": "Sei der/die Erste, der/die eine Challenge annimmt und Punkte sammelt."
+    },
+    "errLoad": "Bestenliste konnte nicht geladen werden. Zum Erneutversuchen ziehen."
   }
 }
