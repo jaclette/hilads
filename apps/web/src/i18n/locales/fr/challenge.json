@@ -361,13 +361,13 @@
     "closed": "Ce défi est terminé"
   },
   "join": {
-    "gateTitle": "Rejoins pour voir la conversation",
-    "gateBody": "Déjà {{count}} personnes à l'intérieur. Un clic et tu en es aussi.",
-    "cta": "Rejoindre ce défi",
+    "gateTitle": "Tape pour débloquer le chat",
+    "gateBody": "{{count}} déjà dans. Saute dedans pour voir la conversation.",
+    "cta": "Entrer",
     "leaveCta": "Quitter le canal",
     "errKicked": "Tu as été retiré de ce défi. Tu ne peux pas le rejoindre.",
     "errClosed": "Ce défi est fermé aux nouvelles arrivées.",
-    "errGeneric": "Impossible de rejoindre — réessaie."
+    "errGeneric": "Impossible d’entrer — réessaie."
   },
   "members": {
     "title": "Dans le canal",

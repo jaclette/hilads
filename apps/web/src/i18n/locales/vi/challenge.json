@@ -361,13 +361,13 @@
     "closed": "Thử thách này đã kết thúc"
   },
   "join": {
-    "gateTitle": "Tham gia để xem cuộc trò chuyện",
-    "gateBody": "{{count}} người đã tham gia. Một cú nhấn là bạn cũng vào.",
-    "cta": "Tham gia thử thách này",
+    "gateTitle": "Chạm để mở khoá cuộc trò chuyện",
+    "gateBody": "{{count}} đã ở trong. Vào xem cuộc trò chuyện.",
+    "cta": "Vào xem",
     "leaveCta": "Rời kênh",
     "errKicked": "Bạn đã bị xóa khỏi thử thách này. Không thể tham gia lại.",
     "errClosed": "Thử thách này đã đóng nhận thành viên mới.",
-    "errGeneric": "Không thể tham gia — thử lại."
+    "errGeneric": "Không vào được — thử lại nhé."
   },
   "members": {
     "title": "Trong kênh",

@@ -361,13 +361,13 @@
     "closed": "Diese Challenge ist geschlossen"
   },
   "join": {
-    "gateTitle": "Tritt bei, um die Konversation zu sehen",
-    "gateBody": "{{count}} Leute sind schon dabei. Ein Klick und du bist auch drin.",
-    "cta": "Bei dieser Challenge mitmachen",
+    "gateTitle": "Tippe, um den Chat freizuschalten",
+    "gateBody": "{{count}} schon dabei. Spring rein, um die Unterhaltung zu sehen.",
+    "cta": "Reinhüpfen",
     "leaveCta": "Kanal verlassen",
     "errKicked": "Du wurdest aus dieser Challenge entfernt. Du kannst nicht erneut beitreten.",
     "errClosed": "Diese Challenge nimmt keine neuen Teilnehmer mehr auf.",
-    "errGeneric": "Beitritt fehlgeschlagen — versuch's noch mal."
+    "errGeneric": "Konnte nicht reinspringen — versuch's nochmal."
   },
   "members": {
     "title": "Im Kanal",

@@ -361,13 +361,13 @@
     "closed": "Questa sfida è chiusa"
   },
   "join": {
-    "gateTitle": "Unisciti per vedere la conversazione",
-    "gateBody": "{{count}} persone sono già dentro. Un click e ci sei anche tu.",
-    "cta": "Unisciti a questa sfida",
+    "gateTitle": "Tocca per sbloccare la chat",
+    "gateBody": "{{count}} già dentro. Salta dentro per vedere la conversazione.",
+    "cta": "Entra",
     "leaveCta": "Esci dal canale",
     "errKicked": "Sei stato rimosso da questa sfida. Non puoi ri-unirti.",
     "errClosed": "Questa sfida non accetta nuovi partecipanti.",
-    "errGeneric": "Impossibile unirsi — riprova."
+    "errGeneric": "Impossibile entrare — riprova."
   },
   "members": {
     "title": "Nel canale",

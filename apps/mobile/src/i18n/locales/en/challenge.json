@@ -127,13 +127,13 @@
     "closed": "This challenge is closed"
   },
   "join": {
-    "gateTitle": "Join to see the conversation",
-    "gateBody": "{{count}} people are already in. One tap and you're in too.",
-    "cta": "Join this challenge",
+    "gateTitle": "Tap to unlock the chat",
+    "gateBody": "{{count}} already in. Hop in to see the conversation.",
+    "cta": "Hop in",
     "leaveCta": "Leave the channel",
     "errKicked": "You've been removed from this challenge.",
     "errClosed": "This challenge is closed to new joins.",
-    "errGeneric": "Couldn't join — try again."
+    "errGeneric": "Couldn't hop in — try again."
   },
   "members": {
     "title": "In the channel",

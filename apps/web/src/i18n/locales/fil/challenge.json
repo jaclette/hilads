@@ -361,13 +361,13 @@
     "closed": "Sarado na ang challenge na ito"
   },
   "join": {
-    "gateTitle": "Sumali para makita ang usapan",
-    "gateBody": "{{count}} ang nakapasok na. Isang tap at kasama ka na.",
-    "cta": "Sumali sa challenge",
+    "gateTitle": "I-tap para ma-unlock ang chat",
+    "gateBody": "{{count}} na ang nakapasok. Sumali para makita ang usapan.",
+    "cta": "Pumasok",
     "leaveCta": "Lumabas sa channel",
     "errKicked": "Inalis ka sa challenge na ito. Hindi ka na puwedeng sumali ulit.",
     "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",
-    "errGeneric": "Hindi nakapasok — subukan ulit."
+    "errGeneric": "Hindi pumasok — subukan ulit."
   },
   "members": {
     "title": "Nasa channel",

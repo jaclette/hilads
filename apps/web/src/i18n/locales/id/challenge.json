@@ -361,13 +361,13 @@
     "closed": "Tantangan ini sudah ditutup"
   },
   "join": {
-    "gateTitle": "Bergabung untuk melihat percakapan",
-    "gateBody": "Sudah ada {{count}} orang di dalam. Sekali ketuk dan kamu juga ikut.",
-    "cta": "Ikut tantangan ini",
+    "gateTitle": "Ketuk untuk buka obrolan",
+    "gateBody": "{{count}} sudah masuk. Gabung yuk, lihat obrolannya.",
+    "cta": "Masuk",
     "leaveCta": "Keluar dari kanal",
     "errKicked": "Kamu telah dikeluarkan dari tantangan ini. Tidak bisa bergabung lagi.",
     "errClosed": "Tantangan ini tidak menerima anggota baru.",
-    "errGeneric": "Gagal bergabung — coba lagi."
+    "errGeneric": "Gagal masuk — coba lagi."
   },
   "members": {
     "title": "Di kanal",

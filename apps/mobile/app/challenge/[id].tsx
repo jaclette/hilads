@@ -493,12 +493,29 @@ export default function ChallengeChatScreen() {
   );
 
   const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
-          sendText, sendImage, loadOlder } = useMessages({
+          sendText, sendImage, loadOlder, reload } = useMessages({
     channelId: id ?? '__no_challenge__',
     loadFn:    loadMessagesFn,
     postTextFn,
     postImageFn,
   });
+
+  // Re-fetch messages on the moment iAmParticipant flips false/null → true.
+  // The useMessages mount-effect keys on channelId alone, so on a re-entry
+  // (Now → challenge), the initial fetch fires before iAmParticipant is
+  // resolved, loadMessagesFn returns empty, and the chat stays blank even
+  // when the backend has history. Re-firing on the transition fixes it.
+  const participantRef = useRef(false);
+  useEffect(() => {
+    if (iAmParticipant === true) {
+      if (!participantRef.current) {
+        participantRef.current = true;
+        reload();
+      }
+    } else {
+      participantRef.current = false;
+    }
+  }, [iAmParticipant, reload]);
 
   // Join the challenge channel's WS room for live newMessage broadcasts.
   // Only join once we're a confirmed participant — non-participants don't

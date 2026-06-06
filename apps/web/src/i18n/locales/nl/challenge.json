@@ -361,13 +361,13 @@
     "closed": "Deze challenge is gesloten"
   },
   "join": {
-    "gateTitle": "Doe mee om het gesprek te zien",
-    "gateBody": "{{count}} mensen zijn er al. Eén klik en jij ook.",
-    "cta": "Doe mee aan deze challenge",
+    "gateTitle": "Tik om de chat te ontgrendelen",
+    "gateBody": "{{count}} al binnen. Spring erbij om de chat te zien.",
+    "cta": "Erin springen",
     "leaveCta": "Verlaat het kanaal",
     "errKicked": "Je bent uit deze challenge verwijderd. Je kunt niet opnieuw meedoen.",
     "errClosed": "Deze challenge is gesloten voor nieuwe deelnemers.",
-    "errGeneric": "Niet gelukt — probeer het opnieuw."
+    "errGeneric": "Lukte niet — probeer opnieuw."
   },
   "members": {
     "title": "In het kanaal",

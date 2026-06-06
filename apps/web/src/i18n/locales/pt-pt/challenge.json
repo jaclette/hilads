@@ -361,9 +361,9 @@
     "closed": "Este desafio está fechado"
   },
   "join": {
-    "gateTitle": "Junta-te para ver a conversa",
-    "gateBody": "{{count}} pessoas já estão dentro. Um clique e tu também.",
-    "cta": "Junta-te a este desafio",
+    "gateTitle": "Toca para abrir o chat",
+    "gateBody": "{{count}} já lá. Salta para dentro para ver a conversa.",
+    "cta": "Entrar",
     "leaveCta": "Sair do canal",
     "errKicked": "Foste removido deste desafio. Não podes voltar a entrar.",
     "errClosed": "Este desafio não aceita novos participantes.",

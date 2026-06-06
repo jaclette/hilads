@@ -361,13 +361,13 @@
     "closed": "此挑战已结束"
   },
   "join": {
-    "gateTitle": "加入即可查看对话",
-    "gateBody": "已有 {{count}} 人加入。一键你也加入。",
-    "cta": "加入这个挑战",
+    "gateTitle": "点击解锁聊天",
+    "gateBody": "已有 {{count}} 人加入。点进来看看聊天。",
+    "cta": "进来",
     "leaveCta": "退出频道",
     "errKicked": "你已被移出此挑战，无法重新加入。",
     "errClosed": "此挑战已关闭新成员加入。",
-    "errGeneric": "加入失败 — 请重试。"
+    "errGeneric": "进不去，请重试。"
   },
   "members": {
     "title": "在频道中",
