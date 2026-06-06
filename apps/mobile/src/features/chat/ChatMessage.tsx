@@ -234,6 +234,11 @@ interface Props {
   autoDismiss?:   boolean;
   onAutoDismiss?: (id: string) => void;
   reduceMotion?:  boolean;
+  /** PR9 — Challenger / Taker pill next to the nickname on the unified
+   *  challenge channel. Computed by the parent against challenge.created_by
+   *  and the active acceptor, passed in per message. Mirrors the web
+   *  challenge-role-badge in ChallengeChatPage.jsx. */
+  roleBadge?:     'challenger' | 'taker' | null;
 }
 
 // ── Join-request feed card (hangout request-to-join) ──────────────────────────
@@ -393,6 +398,35 @@ const badgeStyles = StyleSheet.create({
   },
 });
 
+// PR9 — role badge (Challenger / Taker) on unified challenge channel rows.
+// Mirrors the web .challenge-role-badge tokens — orange tint for challenger
+// (matches the app's brand accent), green tint for taker (the "accomplished"
+// color used in the pipeline approved state).
+const roleStyles = StyleSheet.create({
+  pill: {
+    borderRadius:      999,
+    paddingHorizontal: 7,
+    paddingVertical:   1,
+    borderWidth:       1,
+  },
+  pillChallenger: {
+    backgroundColor: 'rgba(255,122,60,0.14)',
+    borderColor:     'rgba(255,122,60,0.30)',
+  },
+  pillTaker: {
+    backgroundColor: 'rgba(74,222,128,0.12)',
+    borderColor:     'rgba(74,222,128,0.28)',
+  },
+  text: {
+    fontSize:      11,
+    fontWeight:    '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
+  },
+  textChallenger: { color: '#FFB37A' },
+  textTaker:      { color: '#4ADE80' },
+});
+
 // ── Vibe emoji lookup ─────────────────────────────────────────────────────────
 
 const VIBE_EMOJI: Record<string, string> = {
@@ -405,7 +439,7 @@ const MODE_EMOJI: Record<string, string> = {
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -415,9 +449,12 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   contextBadge?: Badge | null;
   vibe?:         string;
   mode?:         string;
+  /** PR9 — see ChatMessage Props. */
+  roleBadge?:    'challenger' | 'taker' | null;
 }) {
   const router  = useRouter();
   const { t }   = useTranslation('common');
+  const { t: tChallenge } = useTranslation('challenge');
   const { account } = useApp();
 
   // Navigate to a registered profile only when viewer is registered.
@@ -455,6 +492,19 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
         <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
       )}
       {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
+      {roleBadge && (
+        <View style={[
+          roleStyles.pill,
+          roleBadge === 'challenger' ? roleStyles.pillChallenger : roleStyles.pillTaker,
+        ]}>
+          <Text style={[
+            roleStyles.text,
+            roleBadge === 'challenger' ? roleStyles.textChallenger : roleStyles.textTaker,
+          ]}>
+            {tChallenge(`badge.${roleBadge}`)}
+          </Text>
+        </View>
+      )}
     </>
   );
 
@@ -475,7 +525,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false }: Props) {
+export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null }: Props) {
   const router = useRouter();
   const { t } = useTranslation('chat');
   const { account } = useApp();
@@ -740,6 +790,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
                 guestId={message.guestId}
                 primaryBadge={message.primaryBadge}
                 contextBadge={message.contextBadge}
+                roleBadge={roleBadge}
                 vibe={message.vibe}
                 mode={message.mode}
               />
@@ -785,6 +836,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
               guestId={message.guestId}
               primaryBadge={message.primaryBadge}
               contextBadge={message.contextBadge}
+              roleBadge={roleBadge}
               vibe={message.vibe}
               mode={message.mode}
             />
@@ -847,6 +899,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
             guestId={message.guestId}
             primaryBadge={message.primaryBadge}
             contextBadge={message.contextBadge}
+            roleBadge={roleBadge}
             vibe={message.vibe}
             mode={message.mode}
           />
