@@ -736,7 +736,9 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
           {/* Collapse chevron — toggles all the details below (visibility
               pill, manage pill, pipeline, proof block, members strip).
-              Default expanded; tap to fold for more chat space. */}
+              Default expanded; tap to fold for more chat space.
+              marginLeft:'auto' pushes it to the far right of badgeRow so
+              its "fold the section below" role reads at a glance. */}
           <TouchableOpacity
             style={styles.detailsToggle}
             onPress={toggleDetails}
@@ -744,7 +746,11 @@ export default function ChallengeChatScreen() {
             accessibilityRole="button"
             accessibilityLabel={detailsOpen ? t('details.collapseAria') : t('details.expandAria')}
           >
-            <Text style={[styles.detailsToggleChevron, !detailsOpen && styles.detailsToggleChevronClosed]}>▾</Text>
+            <Ionicons
+              name={detailsOpen ? 'chevron-up' : 'chevron-down'}
+              size={16}
+              color={Colors.muted}
+            />
           </TouchableOpacity>
         </View>
 
@@ -754,6 +760,10 @@ export default function ChallengeChatScreen() {
         {detailsOpen && (
         <View style={styles.detailsBlock}>
         <View style={[styles.hero, { paddingTop: 0 }]}>
+        {/* Same badgeRow shape as the top row above so the pills sit on a
+            wrapping row at their natural width instead of stretching to
+            full container width inside the column-laid hero. */}
+        <View style={styles.badgeRow}>
           {/* Leave the channel — joined participants who aren't the creator
               or active taker. */}
           {iAmParticipant === true && !isOwner && !myAcceptance && (
@@ -821,6 +831,7 @@ export default function ChallengeChatScreen() {
           )}
           {/* Close-to-new-joins pill removed — Private inside the
               visibility dropdown above maps to closed_to_new_joins. */}
+        </View>
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -1444,18 +1455,16 @@ const styles = StyleSheet.create({
   },
   sharePillInlineShareText: { color: '#c4b5fd' },
 
-  // Collapse chevron next to the share pill — toggles the channel-header
-  // details (second pill row + pipeline + proof + members strip).
+  // Collapse chevron at the far right of badgeRow — toggles the channel-
+  // header details (second pill row + pipeline + proof + members strip).
+  // marginLeft:'auto' floats it right so the role reads as "fold what's
+  // below", not as another inline pill.
   detailsToggle: {
     width: 26, height: 26, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
     borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
-    marginLeft: 2,
+    marginLeft: 'auto',
   },
-  detailsToggleChevron: {
-    fontSize: 11, color: Colors.muted, lineHeight: 12,
-  },
-  detailsToggleChevronClosed: { transform: [{ rotate: '-90deg' }] },
 
   // Detail block — wraps the collapsible content below the always-visible
   // hero row. LayoutAnimation handles the height transition.
