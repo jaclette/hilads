@@ -30,6 +30,7 @@ import ChallengeChatPage from './components/ChallengeChatPage'
 import ChallengePostCreateModal from './components/ChallengePostCreateModal'
 import ThreadsListPage    from './components/ThreadsListPage'
 import LeaderboardPage    from './components/LeaderboardPage'
+import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import ChallengeIntroCarousel from './components/ChallengeIntroCarousel'
@@ -6339,6 +6340,11 @@ export default function App() {
           onBack={() => setShowLeaderboard(false)}
         />
       )}
+
+      {/* PR11 — auto-open the RateSheet once per page load when the caller
+          has a rate-eligible meet-up (web parity with mobile's
+          RatePromptLaunchGate). The /threads banner stays as fallback. */}
+      <RatePromptLaunchGate account={account} />
 
       {/* Desktop-only sidebar — always rendered to preserve 3-column layout */}
       <aside className="online-sidebar">
