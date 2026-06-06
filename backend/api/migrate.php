@@ -1332,15 +1332,24 @@ run($pdo, "
     )
 ", 'score_rules');
 
+// PR10: meetup folded into debrief (no separate user-visible signal, no
+// cron for "meetup ended"). Totals at the user level are unchanged:
+//   challenger 5 + 30 = 35  (was 5 + 10 + 20)
+//   taker      0 + 40 = 40  (was 0 + 15 + 25)
+// Existing 'meetup' rule rows are deleted; existing 'debrief' rules get
+// the new combined points via ON CONFLICT DO UPDATE. Historical
+// score_events of kind='meetup' from prior runs are LEFT INTACT — they
+// already contribute the old 10/15 points to alltime totals, and the
+// per-challenge sum is preserved.
+run($pdo, "DELETE FROM score_rules WHERE kind = 'meetup'", 'score_rules drop meetup');
+
 run($pdo, "
     INSERT INTO score_rules (kind, role, points) VALUES
-        ('accepted', 'challenger', 5),
-        ('meetup',   'challenger', 10),
-        ('meetup',   'taker',      15),
-        ('debrief',  'challenger', 20),
-        ('debrief',  'taker',      25),
-        ('ghost',    'taker',      0)
-    ON CONFLICT (kind, role) DO NOTHING
+        ('accepted', 'challenger',  5),
+        ('debrief',  'challenger', 30),
+        ('debrief',  'taker',      40),
+        ('ghost',    'taker',       0)
+    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points
 ", 'score_rules seed');
 
 // Append-only ledger. UNIQUE (user_id, challenge_id, role, kind) enforces
@@ -1466,11 +1475,11 @@ run($pdo, "
 
 // ── Trigger: mutual-rating → meetup + debrief + phase flip ────────────────
 //
-// STRICT mutual-rating model: meetup + debrief fire ONLY when BOTH
-// parties have rated. If one person never rates, NEITHER earns
-// meetup/debrief points — not even the one who did rate. This is
-// intentional. The double-rating is a stronger meetup proof than a
-// one-sided claim.
+// STRICT mutual-rating model: debrief fires ONLY when BOTH parties have
+// rated. If one person never rates, NEITHER earns debrief points — not
+// even the one who did rate. This is intentional. The double-rating is
+// a stronger meetup proof than a one-sided claim. PR10 folded the old
+// 'meetup' event into 'debrief'; same totals at the user level.
 //
 // TODO: time-based fallback. If only one party has rated after N days,
 // consider awarding partial points (reveal + award the lone rater) and
@@ -1484,8 +1493,6 @@ run($pdo, "
         challenger_id  TEXT;
         taker_id       TEXT;
         origin_city    TEXT;
-        pts_meetup_c   INT;
-        pts_meetup_t   INT;
         pts_debrief_c  INT;
         pts_debrief_t  INT;
         current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
@@ -1510,15 +1517,16 @@ run($pdo, "
 
         IF challenger_id IS NULL OR taker_id IS NULL THEN RETURN NEW; END IF;
 
-        SELECT points INTO pts_meetup_c  FROM score_rules WHERE kind = 'meetup'  AND role = 'challenger';
-        SELECT points INTO pts_meetup_t  FROM score_rules WHERE kind = 'meetup'  AND role = 'taker';
+        -- PR10: meetup events no longer written. The combined points live
+        -- on debrief now (30 + 40). cnt<2 short-circuit above, ON CONFLICT
+        -- idempotency, and the phase='approved' flip below are unchanged.
+        -- The 'meetup' value stays allowed in the score_events kind CHECK
+        -- so historical rows from earlier runs keep validating.
         SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
         SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
 
         INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
         VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meetup',  COALESCE(pts_meetup_c,  0), origin_city, current_month),
-          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meetup',  COALESCE(pts_meetup_t,  0), origin_city, current_month),
           (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month),
           (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), origin_city, current_month)
         ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
