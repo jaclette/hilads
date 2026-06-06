@@ -226,15 +226,12 @@ export default function ChallengeProofBlock({
   }
 
   // No pending — submission CTA (acceptor) or waiting line (creator).
+  // The "what the creator asked for" card used to live here; it's now
+  // reachable from the pipeline's "Waiting for the proof" pill (parent
+  // mounts the read-only popin on tap).
   const lastRejected = latest?.status === 'rejected' ? latest : null
   return (
     <div className="proof-block">
-      {proofRequirements ? (
-        <div className="proof-reqs">
-          <span className="proof-reqs-label">{t('intl.proof.requirementsLabel')}</span>
-          <span className="proof-reqs-text">{proofRequirements}</span>
-        </div>
-      ) : null}
       {lastRejected ? (
         <span className="proof-reason">{t('intl.proof.lastReason', { reason: lastRejected.rejection_reason ?? '' })}</span>
       ) : null}

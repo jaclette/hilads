@@ -152,6 +152,10 @@
     "closedCloseCta":  "Close to new joins",
     "closedReopenCta": "Re-open to joins"
   },
+  "manage": {
+    "cta":   "Manage",
+    "title": "Manage challenge"
+  },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",

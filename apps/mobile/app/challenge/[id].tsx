@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  View, Text, ActivityIndicator, Animated,
+  View, Text, ActivityIndicator, Animated, Modal,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -30,6 +30,7 @@ import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
+import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
@@ -258,6 +259,13 @@ export default function ChallengeChatScreen() {
       setValidateBusy(false);
     }
   }, [id, identity, challenge, t]);
+
+  // Owner-only "Manage challenge" modal — opens from the inline pill in
+  // the meta row. Bundles Edit / Close (lifecycle) / Delete.
+  const [manageOpen, setManageOpen] = useState(false);
+  // International proof-spec popin — tapping the pipeline's "Waiting for
+  // the proof" pill opens this read-only sheet.
+  const [proofSpecOpen, setProofSpecOpen] = useState(false);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here — that's the mutual go-private flow. International
@@ -618,6 +626,12 @@ export default function ChallengeChatScreen() {
               <Text style={styles.navCreatorText} numberOfLines={1}>
                 {t('byCreator', { name: challenge.creator_display_name })}
               </Text>
+              {/* Notifications pill — joined participants only. Lives next
+                  to the creator name at the very top so subscription state
+                  is visible without scrolling past the meta row. */}
+              {iAmParticipant === true && account?.id && (
+                <ChallengeNotificationPill challengeId={id} currentUserId={account.id} />
+              )}
             </View>
           ) : null}
         </View>
@@ -682,10 +696,7 @@ export default function ChallengeChatScreen() {
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('join.leaveCta')}</Text>
             </TouchableOpacity>
           )}
-          {/* Notifications on/off pill — participants only. */}
-          {iAmParticipant === true && account?.id && (
-            <ChallengeNotificationPill challengeId={id} currentUserId={account.id} />
-          )}
+          {/* Notifications pill moved to the header (next to "by creator"). */}
           {/* Visibility pill — creator-tappable Public ↔ Friends; read-only
               label for everyone else / for International / for Private. */}
           {(() => {
@@ -715,6 +726,19 @@ export default function ChallengeChatScreen() {
               </TouchableOpacity>
             );
           })()}
+          {/* Manage challenge — creator-only pill. Opens a modal with
+              Edit / Close challenge / Delete to keep the meta row tight. */}
+          {isOwner && challenge && (
+            <TouchableOpacity
+              style={styles.sharePillInline}
+              onPress={() => setManageOpen(true)}
+              activeOpacity={0.75}
+              accessibilityLabel={t('manage.cta')}
+            >
+              <Ionicons name="settings-outline" size={14} color="#FF7A3C" />
+              <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('manage.cta')}</Text>
+            </TouchableOpacity>
+          )}
           {/* Close-to-new-joins pill — creator-only, sits next to the
               audience badge. Tap toggles closed/open. */}
           {isOwner && challenge && (
@@ -751,12 +775,16 @@ export default function ChallengeChatScreen() {
           acceptance={myAcceptance}
           iAmCreator={isOwner}
           mode={challenge.mode ?? 'local'}
-          onPress={
-            (challenge.mode ?? 'local') === 'local'
-              && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
-              ? () => setPickerOpen(true)
-              : undefined
-          }
+          onPress={(() => {
+            if ((challenge.mode ?? 'local') === 'local'
+                && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
+              return () => setPickerOpen(true);
+            }
+            if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
+              return () => setProofSpecOpen(true);
+            }
+            return undefined;
+          })()}
         />
 
         {/* International — proof submission + verdict block. Renders only
@@ -769,6 +797,16 @@ export default function ChallengeChatScreen() {
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}
             proofRequirements={challenge.proof_requirements ?? null}
+          />
+        )}
+
+        {/* Channel members strip — mounted directly under the pipeline /
+            proof block. Tap opens the full members sheet. */}
+        {iAmParticipant === true && (
+          <ChallengeChannelMembersStrip
+            challenge={challenge}
+            activeTaker={otherParticipants[0] ?? null}
+            onOpen={() => setMembersOpen(true)}
           />
         )}
 
@@ -791,40 +829,8 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
         )}
 
-        {isOwner && (
-          <View style={styles.ownerSecondaryRow}>
-            <TouchableOpacity style={styles.ownerIconBtn} onPress={handleEdit} activeOpacity={0.75} accessibilityLabel={t('editTitle')}>
-              <Ionicons name="create-outline" size={16} color={Colors.muted} />
-              <Text style={styles.ownerIconLabel}>{t('editTitle')}</Text>
-            </TouchableOpacity>
-            {/* Close-challenge — moved here from the old PR2 status-pill toggle.
-                Same /validate endpoint, just a smaller affordance now that the
-                pipeline owns the visible lifecycle. Green check icon when
-                already closed; tapping flips back. */}
-            <TouchableOpacity
-              style={styles.ownerIconBtn}
-              onPress={handleToggleStatus}
-              activeOpacity={0.75}
-              disabled={validateBusy}
-              accessibilityLabel={isValidated ? t('reopenCta') : t('closeCta')}
-            >
-              {validateBusy
-                ? <ActivityIndicator size="small" color={Colors.muted} />
-                : <Ionicons
-                    name={isValidated ? 'checkmark-circle' : 'lock-closed-outline'}
-                    size={16}
-                    color={isValidated ? '#22c55e' : Colors.muted}
-                  />}
-              <Text style={[styles.ownerIconLabel, isValidated && { color: '#22c55e' }]}>
-                {isValidated ? t('reopenCta') : t('closeCta')}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.ownerIconBtn} onPress={handleDelete} activeOpacity={0.75} accessibilityLabel={t('deleteConfirm')}>
-              <Ionicons name="trash-outline" size={16} color={Colors.muted} />
-              <Text style={styles.ownerIconLabel}>{t('deleteConfirm')}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        {/* Edit / Close challenge / Delete moved into the Manage modal
+            opened from the inline pill in the meta row. */}
 
       </View>
 
@@ -873,68 +879,49 @@ export default function ChallengeChatScreen() {
                button (replaces the old "Be the first to accept" + small + duo).
             C) full → "Challenge full" label, no button.
           Skipped entirely for owners on a validated challenge (nothing to do). */}
-      {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
-        <View style={styles.participantsRow}>
-          {otherParticipants.length > 0 ? (
-            <>
+      {/* Lifecycle-state row (was "Participants · N" + accept-pill row).
+          Legacy avatar strip dropped — the channel-members strip above
+          covers the "who's in" panel for everyone. Three passive states +
+          the Accept CTA remain. */}
+      {(() => {
+        if (isValidated && !isOwner) {
+          return (
+            <View style={styles.participantsRow}>
+              <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
+            </View>
+          );
+        }
+        if (otherParticipants.length > 0 && !isValidated && !isOwner && !myAcceptance) {
+          return (
+            <View style={styles.participantsRow}>
+              <Text style={styles.participantsEmpty} numberOfLines={1}>
+                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
+              </Text>
+            </View>
+          );
+        }
+        if (otherParticipants.length === 0 && !isOwner && !isValidated) {
+          return (
+            <View style={styles.participantsRow}>
               <TouchableOpacity
-                style={styles.participantsInfo}
-                activeOpacity={0.75}
-                onPress={() => setMembersOpen(true)}
+                style={styles.acceptCtaFull}
+                onPress={handleAccept}
+                activeOpacity={0.85}
+                disabled={acceptBusy}
+                accessibilityLabel={t('acceptCta')}
               >
-                <AttendeeAvatars
-                  preview={otherParticipants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
-                  total={otherParticipants.length}
-                  borderColor={Colors.bg}
-                />
-                <Text style={styles.membersLabel}>
-                  {t('participantsLabel')} · {otherParticipants.length}
-                </Text>
+                {acceptBusy
+                  ? <ActivityIndicator color="#FF7A3C" size="small" />
+                  : <>
+                      <Ionicons name="add" size={20} color="#FF7A3C" />
+                      <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
+                    </>}
               </TouchableOpacity>
-              {!isOwner && !isValidated && !myAcceptance && !inProgress && (
-                <TouchableOpacity
-                  style={styles.acceptCompact}
-                  onPress={handleAccept}
-                  activeOpacity={0.7}
-                  disabled={acceptBusy}
-                  accessibilityLabel={t('acceptCta')}
-                >
-                  {acceptBusy
-                    ? <ActivityIndicator color="#FF7A3C" size="small" />
-                    : <>
-                        <Ionicons name="add" size={18} color="#FF7A3C" />
-                        <Text style={styles.acceptCompactText}>{t('pipeline.subcta.tapToAccept')}</Text>
-                      </>}
-                </TouchableOpacity>
-              )}
-              {!isOwner && !isValidated && !myAcceptance && inProgress && (
-                <Text style={styles.participantsEmpty} numberOfLines={1}>
-                  {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
-                </Text>
-              )}
-            </>
-          ) : isValidated && !isOwner ? (
-            <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
-          ) : inProgress ? (
-            <Text style={styles.participantsEmpty}>⏳ {t('card.inProgress')}</Text>
-          ) : (
-            <TouchableOpacity
-              style={styles.acceptCtaFull}
-              onPress={handleAccept}
-              activeOpacity={0.85}
-              disabled={acceptBusy}
-              accessibilityLabel={t('acceptCta')}
-            >
-              {acceptBusy
-                ? <ActivityIndicator color="#FF7A3C" size="small" />
-                : <>
-                    <Ionicons name="add" size={20} color="#FF7A3C" />
-                    <Text style={styles.acceptCtaFullText}>{t('pipeline.subcta.tapToAccept')}</Text>
-                  </>}
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
+            </View>
+          );
+        }
+        return null;
+      })()}
       </Animated.View>
 
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
@@ -1178,6 +1165,76 @@ export default function ChallengeChatScreen() {
           }}
           onMembersChanged={() => loadParticipants()}
         />
+      )}
+
+      {/* Manage challenge modal — Edit / Close / Delete bundled. */}
+      {challenge && (
+        <Modal
+          visible={manageOpen && isOwner}
+          animationType="fade"
+          transparent
+          onRequestClose={() => setManageOpen(false)}
+        >
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setManageOpen(false)} />
+          <View style={styles.manageSheet}>
+            <Text style={styles.manageTitle}>{t('manage.title')}</Text>
+            <TouchableOpacity
+              style={styles.manageRow}
+              onPress={() => { setManageOpen(false); handleEdit(); }}
+              activeOpacity={0.75}
+            >
+              <Ionicons name="create-outline" size={18} color={Colors.text} />
+              <Text style={styles.manageRowText}>{t('editTitle')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.manageRow}
+              onPress={() => { setManageOpen(false); handleToggleStatus(); }}
+              disabled={validateBusy}
+              activeOpacity={0.75}
+            >
+              <Ionicons
+                name={isValidated ? 'checkmark-circle' : 'lock-closed-outline'}
+                size={18}
+                color={isValidated ? '#22c55e' : Colors.text}
+              />
+              <Text style={[styles.manageRowText, isValidated && { color: '#22c55e' }]}>
+                {isValidated ? t('reopenCta') : t('closeCta')}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.manageRow, styles.manageRowDanger]}
+              onPress={() => { setManageOpen(false); handleDelete(); }}
+              activeOpacity={0.75}
+            >
+              <Ionicons name="trash-outline" size={18} color="#fca5a5" />
+              <Text style={[styles.manageRowText, { color: '#fca5a5' }]}>{t('deleteConfirm')}</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
+
+      {/* Proof-spec popin — read-only sheet showing what the creator asked
+          for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
+      {challenge?.proof_requirements && (
+        <Modal
+          visible={proofSpecOpen}
+          animationType="fade"
+          transparent
+          onRequestClose={() => setProofSpecOpen(false)}
+        >
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setProofSpecOpen(false)} />
+          <View style={styles.manageSheet}>
+            <Text style={styles.manageTitle}>{t('intl.proof.requirementsLabel')}</Text>
+            <Text style={styles.proofSpecBody}>{challenge.proof_requirements}</Text>
+            <TouchableOpacity
+              style={[styles.manageRow, { justifyContent: 'center' }]}
+              onPress={() => setProofSpecOpen(false)}
+              activeOpacity={0.75}
+            >
+              <Text style={[styles.manageRowText, { color: '#FF7A3C' }]}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
       )}
 
       {/* Post-create "seed it" sheet — first opens with two CTAs (invite city
@@ -1466,6 +1523,40 @@ const styles = StyleSheet.create({
     color:      '#1a0f00',
     fontSize:   FontSizes.md,
     fontWeight: '800',
+  },
+
+  // Manage / proof-spec modal — bottom-sheet style with backdrop. Reuses
+  // the same shape as the existing MembersSheet (handle + header) but
+  // simpler: stacked rows.
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+  manageSheet: {
+    position: 'absolute', left: 0, right: 0, bottom: 0,
+    backgroundColor: Colors.bg2,
+    borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
+    paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xl,
+    gap: Spacing.sm,
+  },
+  manageTitle: {
+    fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text,
+    marginBottom: Spacing.sm,
+  },
+  manageRow: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm + 2,
+    paddingVertical: Spacing.sm + 2,
+    paddingHorizontal: Spacing.md,
+    borderRadius: Radius.md,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  manageRowDanger: { backgroundColor: 'rgba(252,165,165,0.06)' },
+  manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  proofSpecBody:   {
+    fontSize: FontSizes.sm, lineHeight: FontSizes.sm * 1.5,
+    color: Colors.text,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   Spacing.sm + 2,
+    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderRadius:      Radius.md,
   },
 
   // PR5 — creator's review banner inside the locked state. Inline Reject /

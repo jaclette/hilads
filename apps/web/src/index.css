@@ -12078,6 +12078,25 @@ body.has-app-promo-banner .page-header {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.22);
 }
+.modal-btn--danger {
+  background: transparent;
+  color: #fca5a5;
+  border: 1px solid rgba(252, 165, 165, 0.28);
+}
+.modal-btn--danger:hover { border-color: rgba(252, 165, 165, 0.50); }
+
+/* Manage / proof-spec modals reuse the .modal-panel skeleton. Both want
+   a real headline title (not the small uppercase eyebrow) — override. */
+.modal-panel--challenge-manage .modal-title,
+.modal-panel--proof-spec       .modal-title {
+  display: block;
+  padding: 20px 22px 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
 
 /* The opt-in modal title needs the full-line treatment (the generic
    .modal-title is the small uppercase header used by other modals — the

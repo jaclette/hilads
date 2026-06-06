@@ -266,16 +266,12 @@ export function ChallengeProofBlock({
   // No pending proof yet — either fresh acceptance or after a non-terminal
   // rejection. The acceptor sees the submit CTA; the creator sees a waiting
   // line with the last rejection reason if any.
+  // The "what the creator asked for" card used to live here; it's now
+  // reachable from the pipeline's "Waiting for the proof" pill (parent
+  // mounts a popin on tap).
   const lastRejected = latest?.status === 'rejected' ? latest : null;
   return (
     <View style={styles.card}>
-      {proofRequirements ? (
-        <View style={styles.reqsBlock}>
-          <Text style={styles.reqsLabel}>{t('intl.proof.requirementsLabel')}</Text>
-          <Text style={styles.reqsText}>{proofRequirements}</Text>
-        </View>
-      ) : null}
-
       {lastRejected ? (
         <Text style={styles.reasonLine} numberOfLines={3}>
           {t('intl.proof.lastReason', { reason: lastRejected.rejection_reason ?? '' })}

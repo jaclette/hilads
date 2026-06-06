@@ -381,6 +381,10 @@
     "on":  "Notifications on",
     "off": "Notifications off"
   },
+  "manage": {
+    "cta":    "Manage",
+    "title":  "Manage challenge"
+  },
   "badge": {
     "challenger": "Challenger",
     "taker":      "Taker"

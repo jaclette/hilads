@@ -102,6 +102,14 @@ export default function ChallengeChatPage({
   // dedicated busy flags so they don't fight the main `busy` channel.
   const [visBusy,    setVisBusy]    = useState(false)
   const [closeBusy,  setCloseBusy]  = useState(false)
+  // Owner-only "Manage challenge" modal — opens from the inline pill in
+  // the meta row. Bundles Edit / Close (lifecycle) / Delete.
+  const [manageOpen, setManageOpen] = useState(false)
+  // International proof-spec popin — tap on the "Waiting for the proof"
+  // pill (the pipeline subCta) on Intl rows opens this small read-only
+  // sheet so the acceptor can re-read what was asked without scrolling
+  // back through the chat.
+  const [proofSpecOpen, setProofSpecOpen] = useState(false)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   // Themed in-app alert. Replaces window.alert() (which renders the ugly
   // "hilads.live says" browser modal). Shape: { emoji?, title, body, actionLabel?, onAction? }.
@@ -578,6 +586,15 @@ export default function ChallengeChatPage({
                 ? <img src={challenge.creator_thumb_avatar_url} alt="" className="challenge-header-creator-avatar" />
                 : null}
               <span>{t('byCreator', { name: challenge.creator_display_name })}</span>
+              {/* Notifications pill — joined participants only. Lives next
+                  to the creator name at the very top so subscription state
+                  is visible without scrolling past the meta row. */}
+              {iAmParticipant === true && account?.id && (
+                <ChallengeNotificationToggle
+                  challengeId={challenge.id}
+                  currentUserId={account.id}
+                />
+              )}
             </span>
           )}
         </div>
@@ -663,6 +680,19 @@ export default function ChallengeChatPage({
             </button>
           )
         })()}
+        {/* Manage challenge — creator-only pill. Bundles Edit / Close /
+            Delete in a popin so the bottom of the screen stays clean. */}
+        {isOwner && (
+          <button
+            type="button"
+            className="challenge-share-pill challenge-share-pill--inline"
+            onClick={() => setManageOpen(true)}
+            title={t('manage.cta')}
+          >
+            <span aria-hidden="true">⚙️</span>
+            <span className="challenge-share-pill-text">{t('manage.cta')}</span>
+          </button>
+        )}
         {/* Leave the channel — joined participants who aren't the creator
             or the active taker. */}
         {iAmParticipant === true && !isOwner && !myAcceptance && (
@@ -685,12 +715,20 @@ export default function ChallengeChatPage({
         acceptance={myAcceptance}
         iAmCreator={isOwner}
         mode={challenge.mode ?? 'local'}
-        onClick={
-          (challenge.mode ?? 'local') === 'local'
-            && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted'
-            ? () => setPickerOpen(true)
-            : undefined
-        }
+        onClick={(() => {
+          // Local: tap pipeline subCta to open the date picker (existing).
+          if ((challenge.mode ?? 'local') === 'local'
+              && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
+            return () => setPickerOpen(true)
+          }
+          // International: tap the "Waiting for the proof" pill to re-read
+          // what the creator asked for (acceptor + creator). Only matters
+          // when there's a spec to show.
+          if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
+            return () => setProofSpecOpen(true)
+          }
+          return undefined
+        })()}
       />
 
       {/* International — proof submission + verdict surface. Renders only
@@ -702,6 +740,18 @@ export default function ChallengeChatPage({
           iAmCreator={isOwner}
           iAmAcceptor={!isOwner}
           proofRequirements={challenge.proof_requirements ?? null}
+        />
+      )}
+
+      {/* Members strip — moved up here, right under the pipeline / proof
+          block. Was at the bottom of the page; participants kept
+          missing it. Tap opens the full list modal. */}
+      {iAmParticipant === true && (
+        <ChallengeChannelMembers
+          challenge={challenge}
+          activeTaker={otherParticipants[0] ?? null}
+          currentUserId={account?.id ?? null}
+          onMembersChanged={() => { loadParticipants() }}
         />
       )}
 
@@ -725,26 +775,8 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {isOwner && (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 12px' }}>
-          <button
-            type="button"
-            onClick={handleToggleStatus}
-            disabled={busy !== null}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
-              padding: '6px 12px', borderRadius: 999,
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.10)',
-              color: isValidated ? '#22c55e' : 'var(--muted, #b3b3b3)',
-              fontSize: 12, fontWeight: 700, cursor: 'pointer',
-            }}
-          >
-            <span aria-hidden="true">{isValidated ? '✓' : '🔒'}</span>
-            <span>{isValidated ? t('reopenCta') : t('closeCta')}</span>
-          </button>
-        </div>
-      )}
+      {/* The standalone Close-challenge button is gone — folded into the
+          Manage modal opened from the inline pill in the meta row. */}
 
       {/* Challenger — explicitly distinguished from other participants. The
           crown emoji + Challenger pill make the originating user visible at
@@ -770,75 +802,53 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Participants row — always rendered for visitors who can accept (so
-          there's a place for the + button). For the owner it only appears
-          when somebody else has accepted, since they can't accept their own
-          challenge. For validated challenges, the row is shown if anyone
-          accepted (acceptor history), without the button. */}
-      {/* Participants row — four layouts in the no-queue / 1:1 model:
-            A) viewer is a non-owner AND validated → passive "closed" line
-            B) acceptor exists → avatars + count + passive "taken by X" line
-               (CTA disabled regardless of viewer, no one else can accept
-               while the slot is held).
-            C) no acceptor, viewer can take on → full-width Accept button.
-            D) owner with no acceptor → just the meta row, no button. */}
-      {(otherParticipants.length > 0 || (!isOwner && !isValidated)) && (
-        <div className="challenge-participants-row">
-          {isValidated && !isOwner ? (
-            <span className="challenge-cta-passive">{t('cta.closed')}</span>
-          ) : otherParticipants.length > 0 ? (
-            <>
-              <div className="challenge-participants-info">
-                <AttendeeAvatars
-                  preview={otherParticipants.slice(0, 5).map(p => ({
-                    id: p.id, displayName: p.displayName,
-                    thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl,
-                  }))}
-                  total={otherParticipants.length}
-                />
-                <span className="topic-members-label">
-                  {t('participantsLabel')} · {otherParticipants.length}
-                </span>
-              </div>
-              {!isValidated && !isOwner && !myAcceptance && (
-                <span className="challenge-cta-passive">
-                  {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
-                </span>
-              )}
-            </>
-          ) : (
-            <button
-              type="button"
-              className="challenge-accept-pill challenge-accept-pill--full"
-              onClick={handleAccept}
-              disabled={busy === 'accept'}
-              aria-label={t('acceptCta')}
-            >
-              <span aria-hidden="true">+</span>
-              <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
-            </button>
-          )}
-        </div>
-      )}
+      {/* Lifecycle-state row (was "Participants · N" + accept-pill row). The
+          legacy "Participants · 1" avatar strip is gone — the channel-members
+          strip above covers the "who's in" panel for everyone. We keep just
+          three passive states + the Accept CTA:
+            A) viewer non-owner + validated → "This challenge is closed"
+            B) acceptor exists + viewer is neither creator nor taker → passive
+               "Currently being taken by X"
+            C) no acceptor + non-owner + not validated → full-width Accept CTA. */}
+      {(() => {
+        if (isValidated && !isOwner) {
+          return (
+            <div className="challenge-participants-row">
+              <span className="challenge-cta-passive">{t('cta.closed')}</span>
+            </div>
+          )
+        }
+        if (otherParticipants.length > 0 && !isValidated && !isOwner && !myAcceptance) {
+          return (
+            <div className="challenge-participants-row">
+              <span className="challenge-cta-passive">
+                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
+              </span>
+            </div>
+          )
+        }
+        if (otherParticipants.length === 0 && !isOwner && !isValidated) {
+          return (
+            <div className="challenge-participants-row">
+              <button
+                type="button"
+                className="challenge-accept-pill challenge-accept-pill--full"
+                onClick={handleAccept}
+                disabled={busy === 'accept'}
+                aria-label={t('acceptCta')}
+              >
+                <span aria-hidden="true">+</span>
+                <span>{busy === 'accept' ? '…' : t('pipeline.subcta.tapToAccept')}</span>
+              </button>
+            </div>
+          )
+        }
+        return null
+      })()}
 
-      {/* Compact members strip + notifications toggle — mounted high on
-          the page so participants don't have to scroll past the chat
-          surface to find them. Sits just below the participants row,
-          before the chat block. */}
-      {iAmParticipant === true && (
-        <div className="challenge-channel-toolbar">
-          <ChallengeChannelMembers
-            challenge={challenge}
-            activeTaker={otherParticipants[0] ?? null}
-            currentUserId={account?.id ?? null}
-            onMembersChanged={() => { loadParticipants() }}
-          />
-          <ChallengeNotificationToggle
-            challengeId={challenge.id}
-            currentUserId={account?.id ?? null}
-          />
-        </div>
-      )}
+      {/* Members strip moved out of this slot and mounted directly under
+          the pipeline / proof block (see further up). Notifications pill
+          lives in the header next to the creator name. */}
 
       {/* Share + Accept moved into the .challenge-creator-row above as
           icon-only quick buttons. The toast (copy-link fallback) still
@@ -850,22 +860,8 @@ export default function ChallengeChatPage({
         </p>
       )}
 
-      {/* Owner housekeeping — Edit + Delete only. The status CTA lives above
-          (visible to everyone, tappable only for the owner). */}
-      {isOwner && (
-        <div className="challenge-owner-actions">
-          <div className="challenge-owner-secondary">
-            <button type="button" className="challenge-owner-iconbtn" onClick={handleEdit} disabled={busy !== null}>
-              <span aria-hidden="true">✏️</span>
-              <span>{t('editBtn')}</span>
-            </button>
-            <button type="button" className="challenge-owner-iconbtn challenge-owner-iconbtn--danger" onClick={handleDelete} disabled={busy !== null}>
-              <span aria-hidden="true">🗑️</span>
-              <span>{busy === 'delete' ? '…' : t('deleteBtn')}</span>
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Edit / Delete / Close challenge moved into the Manage modal
+          opened from the inline pill in the meta row. */}
       </div>{/* /.challenge-collapsible */}
 
       {/* Take-on review banners — surface ABOVE the chat instead of
@@ -1082,6 +1078,63 @@ export default function ChallengeChatPage({
           (visibility) and the audience badge (close). The mutual
           go-private flow's backend routes remain (challenge_privacy_requests
           + /privacy/vote) but the dedicated UI surface is gone. */}
+
+      {/* Owner-only Manage modal (Edit / Close lifecycle / Delete). The
+          backing handlers (handleEdit / handleToggleStatus / handleDelete)
+          stay untouched; this is purely a presentational rollup. */}
+      {manageOpen && isOwner && (
+        <div className="modal-overlay" onClick={() => setManageOpen(false)}>
+          <div className="modal-panel modal-panel--challenge-manage" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">{t('manage.title')}</h3>
+            <div className="modal-actions modal-actions--stack">
+              <button
+                type="button"
+                className="modal-btn modal-btn--ghost"
+                onClick={() => { setManageOpen(false); handleEdit() }}
+                disabled={busy !== null}
+              >
+                ✏️ {t('editBtn')}
+              </button>
+              <button
+                type="button"
+                className="modal-btn modal-btn--ghost"
+                onClick={() => { setManageOpen(false); handleToggleStatus() }}
+                disabled={busy !== null}
+              >
+                {isValidated ? `✓ ${t('reopenCta')}` : `🔒 ${t('closeCta')}`}
+              </button>
+              <button
+                type="button"
+                className="modal-btn modal-btn--danger"
+                onClick={() => { setManageOpen(false); handleDelete() }}
+                disabled={busy !== null}
+              >
+                🗑️ {busy === 'delete' ? '…' : t('deleteBtn')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Proof-spec popin — tap on the "Waiting for the proof" pipeline pill
+          opens this read-only sheet showing what the creator asked for. */}
+      {proofSpecOpen && challenge.proof_requirements && (
+        <div className="modal-overlay" onClick={() => setProofSpecOpen(false)}>
+          <div className="modal-panel modal-panel--proof-spec" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">{t('intl.proof.requirementsLabel')}</h3>
+            <p className="modal-body">{challenge.proof_requirements}</p>
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="modal-btn modal-btn--primary"
+                onClick={() => setProofSpecOpen(false)}
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog dialog={alertModal} onClose={() => setAlertModal(null)} />
 
