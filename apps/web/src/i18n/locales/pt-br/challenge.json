@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filtrar por modo",
     "all": "Todos"
+  },
+  "chatPlaceholder": "Diga algo no canal…",
+  "messageCreator": "Mande mensagem privada para {{name}}",
+  "badge": {
+    "challenger": "Desafiador",
+    "taker": "Aceitante"
+  },
+  "cta": {
+    "takenBy": "Sendo aceito por {{name}}",
+    "closed": "Este desafio está encerrado"
+  },
+  "join": {
+    "gateTitle": "Entre para ver a conversa",
+    "gateBody": "{{count}} pessoas já estão dentro. Um clique e você também.",
+    "cta": "Entrar neste desafio",
+    "leaveCta": "Sair do canal",
+    "errKicked": "Você foi removido deste desafio. Não pode entrar novamente.",
+    "errClosed": "Este desafio não está aceitando novas participações.",
+    "errGeneric": "Não foi possível entrar — tente de novo."
+  },
+  "members": {
+    "title": "No canal",
+    "countIn": "{{count}} no canal",
+    "seeAll": "Ver todos →",
+    "empty": "Ninguém entrou ainda — seja o primeiro.",
+    "kickCta": "Remover",
+    "kickAria": "Remover {{name}} do canal",
+    "errKick": "Não foi possível remover — tente de novo."
+  },
+  "notif": {
+    "on": "Notificações ativadas",
+    "off": "Notificações desativadas"
+  },
+  "manage": {
+    "cta": "Gerenciar",
+    "title": "Gerenciar desafio"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Público",
+      "friends": "👯 Amigos",
+      "private": "🔒 Privado"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Fechar a novas entradas",
+    "closedReopenCta": "Reabrir para entradas"
   }
 }

@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filter op modus",
     "all": "Alle"
+  },
+  "chatPlaceholder": "Zeg iets in het kanaal…",
+  "messageCreator": "Stuur {{name}} privé een bericht",
+  "badge": {
+    "challenger": "Uitdager",
+    "taker": "Acceptant"
+  },
+  "cta": {
+    "takenBy": "Op dit moment opgepakt door {{name}}",
+    "closed": "Deze challenge is gesloten"
+  },
+  "join": {
+    "gateTitle": "Doe mee om het gesprek te zien",
+    "gateBody": "{{count}} mensen zijn er al. Eén klik en jij ook.",
+    "cta": "Doe mee aan deze challenge",
+    "leaveCta": "Verlaat het kanaal",
+    "errKicked": "Je bent uit deze challenge verwijderd. Je kunt niet opnieuw meedoen.",
+    "errClosed": "Deze challenge is gesloten voor nieuwe deelnemers.",
+    "errGeneric": "Niet gelukt — probeer het opnieuw."
+  },
+  "members": {
+    "title": "In het kanaal",
+    "countIn": "{{count}} in het kanaal",
+    "seeAll": "Toon alles →",
+    "empty": "Nog niemand meegedaan — wees de eerste.",
+    "kickCta": "Verwijderen",
+    "kickAria": "{{name}} uit het kanaal verwijderen",
+    "errKick": "Verwijderen mislukt — probeer het opnieuw."
+  },
+  "notif": {
+    "on": "Meldingen aan",
+    "off": "Meldingen uit"
+  },
+  "manage": {
+    "cta": "Beheren",
+    "title": "Challenge beheren"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Openbaar",
+      "friends": "👯 Vrienden",
+      "private": "🔒 Privé"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Geen nieuwe deelnemers",
+    "closedReopenCta": "Heropen voor deelnemers"
   }
 }

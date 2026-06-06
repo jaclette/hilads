@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filter berdasarkan mode",
     "all": "Semua"
+  },
+  "chatPlaceholder": "Tulis sesuatu di kanal…",
+  "messageCreator": "Kirim pesan pribadi ke {{name}}",
+  "badge": {
+    "challenger": "Penantang",
+    "taker": "Penerima"
+  },
+  "cta": {
+    "takenBy": "Sedang dikerjakan oleh {{name}}",
+    "closed": "Tantangan ini sudah ditutup"
+  },
+  "join": {
+    "gateTitle": "Bergabung untuk melihat percakapan",
+    "gateBody": "Sudah ada {{count}} orang di dalam. Sekali ketuk dan kamu juga ikut.",
+    "cta": "Ikut tantangan ini",
+    "leaveCta": "Keluar dari kanal",
+    "errKicked": "Kamu telah dikeluarkan dari tantangan ini. Tidak bisa bergabung lagi.",
+    "errClosed": "Tantangan ini tidak menerima anggota baru.",
+    "errGeneric": "Gagal bergabung — coba lagi."
+  },
+  "members": {
+    "title": "Di kanal",
+    "countIn": "{{count}} di kanal",
+    "seeAll": "Lihat semua →",
+    "empty": "Belum ada yang bergabung — jadilah yang pertama.",
+    "kickCta": "Hapus",
+    "kickAria": "Hapus {{name}} dari kanal",
+    "errKick": "Gagal menghapus — coba lagi."
+  },
+  "notif": {
+    "on": "Notifikasi aktif",
+    "off": "Notifikasi nonaktif"
+  },
+  "manage": {
+    "cta": "Kelola",
+    "title": "Kelola tantangan"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Publik",
+      "friends": "👯 Teman",
+      "private": "🔒 Pribadi"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Tutup untuk anggota baru",
+    "closedReopenCta": "Buka kembali untuk anggota"
   }
 }

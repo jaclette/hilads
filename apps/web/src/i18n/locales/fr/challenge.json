@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filtrer par mode",
     "all": "Tous"
+  },
+  "chatPlaceholder": "Dis quelque chose dans le canal…",
+  "messageCreator": "Envoyer un message privé à {{name}}",
+  "badge": {
+    "challenger": "Lanceur",
+    "taker": "Receveur"
+  },
+  "cta": {
+    "takenBy": "Actuellement relevé par {{name}}",
+    "closed": "Ce défi est terminé"
+  },
+  "join": {
+    "gateTitle": "Rejoins pour voir la conversation",
+    "gateBody": "Déjà {{count}} personnes à l'intérieur. Un clic et tu en es aussi.",
+    "cta": "Rejoindre ce défi",
+    "leaveCta": "Quitter le canal",
+    "errKicked": "Tu as été retiré de ce défi. Tu ne peux pas le rejoindre.",
+    "errClosed": "Ce défi est fermé aux nouvelles arrivées.",
+    "errGeneric": "Impossible de rejoindre — réessaie."
+  },
+  "members": {
+    "title": "Dans le canal",
+    "countIn": "{{count}} dans le canal",
+    "seeAll": "Voir tout →",
+    "empty": "Personne n'a encore rejoint — sois le premier.",
+    "kickCta": "Retirer",
+    "kickAria": "Retirer {{name}} du canal",
+    "errKick": "Impossible de retirer — réessaie."
+  },
+  "notif": {
+    "on": "Notifications activées",
+    "off": "Notifications désactivées"
+  },
+  "manage": {
+    "cta": "Gérer",
+    "title": "Gérer le défi"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Public",
+      "friends": "👯 Amis",
+      "private": "🔒 Privé"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Fermer aux nouveaux",
+    "closedReopenCta": "Rouvrir aux nouveaux"
   }
 }

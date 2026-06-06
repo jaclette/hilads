@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "모드로 필터",
     "all": "전체"
+  },
+  "chatPlaceholder": "채널에 메시지 남기기…",
+  "messageCreator": "{{name}}님에게 비공개 메시지",
+  "badge": {
+    "challenger": "도전 만든 사람",
+    "taker": "도전자"
+  },
+  "cta": {
+    "takenBy": "{{name}}님이 진행 중",
+    "closed": "이 챌린지는 종료되었습니다"
+  },
+  "join": {
+    "gateTitle": "참여하면 대화를 볼 수 있어요",
+    "gateBody": "이미 {{count}}명이 함께하고 있어요. 한 번 누르면 참여 완료.",
+    "cta": "이 챌린지에 참여",
+    "leaveCta": "채널 나가기",
+    "errKicked": "이 챌린지에서 제외되었어요. 다시 참여할 수 없어요.",
+    "errClosed": "이 챌린지는 신규 참여를 마감했어요.",
+    "errGeneric": "참여하지 못했어요 — 다시 시도해 주세요."
+  },
+  "members": {
+    "title": "채널 안",
+    "countIn": "{{count}}명이 채널에 있어요",
+    "seeAll": "모두 보기 →",
+    "empty": "아직 아무도 참여하지 않았어요 — 가장 먼저 참여해 보세요.",
+    "kickCta": "내보내기",
+    "kickAria": "{{name}}님을 채널에서 내보내기",
+    "errKick": "내보내지 못했어요 — 다시 시도해 주세요."
+  },
+  "notif": {
+    "on": "알림 켜짐",
+    "off": "알림 꺼짐"
+  },
+  "manage": {
+    "cta": "관리",
+    "title": "챌린지 관리"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 공개",
+      "friends": "👯 친구",
+      "private": "🔒 비공개"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "신규 참여 마감",
+    "closedReopenCta": "다시 참여 받기"
   }
 }

@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Lọc theo chế độ",
     "all": "Tất cả"
+  },
+  "chatPlaceholder": "Nói gì đó trong kênh…",
+  "messageCreator": "Nhắn tin riêng cho {{name}}",
+  "badge": {
+    "challenger": "Người ra thử thách",
+    "taker": "Người nhận"
+  },
+  "cta": {
+    "takenBy": "Đang được {{name}} nhận",
+    "closed": "Thử thách này đã kết thúc"
+  },
+  "join": {
+    "gateTitle": "Tham gia để xem cuộc trò chuyện",
+    "gateBody": "{{count}} người đã tham gia. Một cú nhấn là bạn cũng vào.",
+    "cta": "Tham gia thử thách này",
+    "leaveCta": "Rời kênh",
+    "errKicked": "Bạn đã bị xóa khỏi thử thách này. Không thể tham gia lại.",
+    "errClosed": "Thử thách này đã đóng nhận thành viên mới.",
+    "errGeneric": "Không thể tham gia — thử lại."
+  },
+  "members": {
+    "title": "Trong kênh",
+    "countIn": "{{count}} người trong kênh",
+    "seeAll": "Xem tất cả →",
+    "empty": "Chưa có ai tham gia — hãy là người đầu tiên.",
+    "kickCta": "Xoá",
+    "kickAria": "Xoá {{name}} khỏi kênh",
+    "errKick": "Không thể xoá — thử lại."
+  },
+  "notif": {
+    "on": "Bật thông báo",
+    "off": "Tắt thông báo"
+  },
+  "manage": {
+    "cta": "Quản lý",
+    "title": "Quản lý thử thách"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Công khai",
+      "friends": "👯 Bạn bè",
+      "private": "🔒 Riêng tư"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Đóng nhận thành viên mới",
+    "closedReopenCta": "Mở lại nhận thành viên"
   }
 }

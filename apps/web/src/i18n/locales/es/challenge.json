@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filtrar por modo",
     "all": "Todos"
+  },
+  "chatPlaceholder": "Di algo en el canal…",
+  "messageCreator": "Enviar mensaje privado a {{name}}",
+  "badge": {
+    "challenger": "Retador",
+    "taker": "Aceptante"
+  },
+  "cta": {
+    "takenBy": "Ahora la está aceptando {{name}}",
+    "closed": "Este reto está cerrado"
+  },
+  "join": {
+    "gateTitle": "Únete para ver la conversación",
+    "gateBody": "Ya hay {{count}} personas dentro. Un clic y estás también.",
+    "cta": "Únete a este reto",
+    "leaveCta": "Salir del canal",
+    "errKicked": "Te han eliminado de este reto. No puedes volver a unirte.",
+    "errClosed": "Este reto está cerrado a nuevas incorporaciones.",
+    "errGeneric": "No pudimos unirte — inténtalo de nuevo."
+  },
+  "members": {
+    "title": "En el canal",
+    "countIn": "{{count}} en el canal",
+    "seeAll": "Ver todo →",
+    "empty": "Aún nadie se ha unido — sé el primero.",
+    "kickCta": "Eliminar",
+    "kickAria": "Eliminar a {{name}} del canal",
+    "errKick": "No se pudo eliminar — inténtalo de nuevo."
+  },
+  "notif": {
+    "on": "Notificaciones activadas",
+    "off": "Notificaciones desactivadas"
+  },
+  "manage": {
+    "cta": "Gestionar",
+    "title": "Gestionar reto"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Público",
+      "friends": "👯 Amigos",
+      "private": "🔒 Privado"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Cerrar a nuevas incorporaciones",
+    "closedReopenCta": "Reabrir a incorporaciones"
   }
 }

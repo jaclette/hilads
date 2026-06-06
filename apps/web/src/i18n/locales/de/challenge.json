@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Nach Modus filtern",
     "all": "Alle"
+  },
+  "chatPlaceholder": "Schreib etwas in den Kanal …",
+  "messageCreator": "{{name}} privat schreiben",
+  "badge": {
+    "challenger": "Challenger",
+    "taker": "Annehmer"
+  },
+  "cta": {
+    "takenBy": "Wird aktuell von {{name}} angenommen",
+    "closed": "Diese Challenge ist geschlossen"
+  },
+  "join": {
+    "gateTitle": "Tritt bei, um die Konversation zu sehen",
+    "gateBody": "{{count}} Leute sind schon dabei. Ein Klick und du bist auch drin.",
+    "cta": "Bei dieser Challenge mitmachen",
+    "leaveCta": "Kanal verlassen",
+    "errKicked": "Du wurdest aus dieser Challenge entfernt. Du kannst nicht erneut beitreten.",
+    "errClosed": "Diese Challenge nimmt keine neuen Teilnehmer mehr auf.",
+    "errGeneric": "Beitritt fehlgeschlagen — versuch's noch mal."
+  },
+  "members": {
+    "title": "Im Kanal",
+    "countIn": "{{count}} im Kanal",
+    "seeAll": "Alle anzeigen →",
+    "empty": "Noch niemand dabei — sei der Erste.",
+    "kickCta": "Entfernen",
+    "kickAria": "{{name}} aus dem Kanal entfernen",
+    "errKick": "Entfernen fehlgeschlagen — versuch's noch mal."
+  },
+  "notif": {
+    "on": "Benachrichtigungen an",
+    "off": "Benachrichtigungen aus"
+  },
+  "manage": {
+    "cta": "Verwalten",
+    "title": "Challenge verwalten"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Öffentlich",
+      "friends": "👯 Freunde",
+      "private": "🔒 Privat"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Für neue Beitritte schließen",
+    "closedReopenCta": "Wieder für Beitritte öffnen"
   }
 }

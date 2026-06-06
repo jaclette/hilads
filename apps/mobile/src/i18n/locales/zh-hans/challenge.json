@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "按模式筛选",
     "all": "全部"
+  },
+  "chatPlaceholder": "在频道里说点什么…",
+  "messageCreator": "私信 {{name}}",
+  "badge": {
+    "challenger": "发起人",
+    "taker": "接受者"
+  },
+  "cta": {
+    "takenBy": "正在由 {{name}} 接受中",
+    "closed": "此挑战已结束"
+  },
+  "join": {
+    "gateTitle": "加入即可查看对话",
+    "gateBody": "已有 {{count}} 人加入。一键你也加入。",
+    "cta": "加入这个挑战",
+    "leaveCta": "退出频道",
+    "errKicked": "你已被移出此挑战，无法重新加入。",
+    "errClosed": "此挑战已关闭新成员加入。",
+    "errGeneric": "加入失败 — 请重试。"
+  },
+  "members": {
+    "title": "在频道中",
+    "countIn": "频道中 {{count}} 人",
+    "seeAll": "查看全部 →",
+    "empty": "还没有人加入 — 来当第一个吧。",
+    "kickCta": "移除",
+    "kickAria": "将 {{name}} 从频道移除",
+    "errKick": "移除失败 — 请重试。"
+  },
+  "notif": {
+    "on": "通知已开启",
+    "off": "通知已关闭"
+  },
+  "manage": {
+    "cta": "管理",
+    "title": "管理挑战"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 公开",
+      "friends": "👯 朋友",
+      "private": "🔒 私密"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "停止新成员加入",
+    "closedReopenCta": "重新开放加入"
   }
 }

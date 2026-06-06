@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "I-filter ayon sa mode",
     "all": "Lahat"
+  },
+  "chatPlaceholder": "Magsabi sa channel…",
+  "messageCreator": "I-message si {{name}} nang pribado",
+  "badge": {
+    "challenger": "Challenger",
+    "taker": "Taker"
+  },
+  "cta": {
+    "takenBy": "Kasalukuyang ginagawa ni {{name}}",
+    "closed": "Sarado na ang challenge na ito"
+  },
+  "join": {
+    "gateTitle": "Sumali para makita ang usapan",
+    "gateBody": "{{count}} ang nakapasok na. Isang tap at kasama ka na.",
+    "cta": "Sumali sa challenge",
+    "leaveCta": "Lumabas sa channel",
+    "errKicked": "Inalis ka sa challenge na ito. Hindi ka na puwedeng sumali ulit.",
+    "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",
+    "errGeneric": "Hindi nakapasok — subukan ulit."
+  },
+  "members": {
+    "title": "Nasa channel",
+    "countIn": "{{count}} sa channel",
+    "seeAll": "Tingnan lahat →",
+    "empty": "Wala pang sumali — ikaw ang mauna.",
+    "kickCta": "Tanggalin",
+    "kickAria": "Tanggalin si {{name}} sa channel",
+    "errKick": "Hindi naalis — subukan ulit."
+  },
+  "notif": {
+    "on": "Naka-on ang notifications",
+    "off": "Naka-off ang notifications"
+  },
+  "manage": {
+    "cta": "Pamahalaan",
+    "title": "Pamahalaan ang challenge"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Pampubliko",
+      "friends": "👯 Mga kaibigan",
+      "private": "🔒 Pribado"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Sarado sa bagong miyembro",
+    "closedReopenCta": "Buksang muli sa mga sasali"
   }
 }

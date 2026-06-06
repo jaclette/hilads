@@ -348,5 +348,52 @@
   "modeFilter": {
     "label": "Filtra per modalità",
     "all": "Tutte"
+  },
+  "chatPlaceholder": "Scrivi qualcosa nel canale…",
+  "messageCreator": "Scrivi a {{name}} in privato",
+  "badge": {
+    "challenger": "Challenger",
+    "taker": "Sfidante"
+  },
+  "cta": {
+    "takenBy": "Attualmente accettata da {{name}}",
+    "closed": "Questa sfida è chiusa"
+  },
+  "join": {
+    "gateTitle": "Unisciti per vedere la conversazione",
+    "gateBody": "{{count}} persone sono già dentro. Un click e ci sei anche tu.",
+    "cta": "Unisciti a questa sfida",
+    "leaveCta": "Esci dal canale",
+    "errKicked": "Sei stato rimosso da questa sfida. Non puoi ri-unirti.",
+    "errClosed": "Questa sfida non accetta nuovi partecipanti.",
+    "errGeneric": "Impossibile unirsi — riprova."
+  },
+  "members": {
+    "title": "Nel canale",
+    "countIn": "{{count}} nel canale",
+    "seeAll": "Vedi tutti →",
+    "empty": "Nessuno è ancora dentro — sii il primo.",
+    "kickCta": "Rimuovi",
+    "kickAria": "Rimuovi {{name}} dal canale",
+    "errKick": "Impossibile rimuovere — riprova."
+  },
+  "notif": {
+    "on": "Notifiche attive",
+    "off": "Notifiche spente"
+  },
+  "manage": {
+    "cta": "Gestisci",
+    "title": "Gestisci sfida"
+  },
+  "visibility": {
+    "badge": {
+      "public": "🌍 Pubblico",
+      "friends": "👯 Amici",
+      "private": "🔒 Privato"
+    }
+  },
+  "privacy": {
+    "closedCloseCta": "Chiudi a nuovi ingressi",
+    "closedReopenCta": "Riapri ai nuovi ingressi"
   }
 }
