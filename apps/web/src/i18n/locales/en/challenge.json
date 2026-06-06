@@ -58,7 +58,7 @@
   "participantsLabel": "Participants",
   "editBtn": "Edit",
   "deleteBtn": "Delete",
-  "shareCta": "Challenge your friends ✨",
+  "shareCta": "Share",
   "shareInvite": "Take on this challenge with me!",
   "shareCopied": "Link copied ✓",
   "noun": "Challenge",
@@ -120,12 +120,12 @@
   "messageCreator": "Message {{name}} privately",
   "join": {
     "gateTitle": "Join to see the conversation",
-    "gateBody":  "{{count}} people are already in. One click and you're in too.",
-    "cta":       "Join this challenge",
-    "leaveCta":  "Leave the channel",
+    "gateBody": "{{count}} people are already in. One click and you're in too.",
+    "cta": "Join this challenge",
+    "leaveCta": "Leave the channel",
     "errKicked": "You've been removed from this challenge. You can't re-join.",
     "errClosed": "This challenge is closed to new joins.",
-    "errGeneric":"Couldn't join — try again."
+    "errGeneric": "Couldn't join — try again."
   },
   "thread": {
     "notFound": "Thread not found",
@@ -323,7 +323,7 @@
     "intlLocked": "International challenges are always public.",
     "moderationBlocked": "Your text was flagged — please rephrase.",
     "badge": {
-      "public":  "🌍 Public",
+      "public": "🌍 Public",
       "friends": "👯 Friends",
       "private": "🔒 Private"
     },
@@ -337,65 +337,65 @@
   },
   "privacy": {
     "panelTitle": "Privacy",
-    "currentPublic":  "This challenge is public — anyone can see it.",
+    "currentPublic": "This challenge is public — anyone can see it.",
     "currentFriends": "This challenge is shared with friends only.",
     "currentPrivate": "This challenge is private — only you two can see it.",
     "intlNote": "International challenges are always public.",
     "goPrivateCta": "Go private (both must agree)",
-    "myVoteAgreed":   "You voted yes — waiting for the other person.",
-    "myVoteDenied":   "You declined. Tap below to change your mind.",
+    "myVoteAgreed": "You voted yes — waiting for the other person.",
+    "myVoteDenied": "You declined. Tap below to change your mind.",
     "otherVoteAgreed": "They voted yes — your turn to decide.",
     "otherVoteDenied": "They declined.",
-    "voteAgreedCta":  "Agree — go private",
-    "voteDeniedCta":  "Decline",
-    "withdrawCta":    "Withdraw my vote",
+    "voteAgreedCta": "Agree — go private",
+    "voteDeniedCta": "Decline",
+    "withdrawCta": "Withdraw my vote",
     "needCounterparty": "Available once someone takes on this challenge.",
-    "errVote":      "Couldn't save your vote — try again.",
-    "errSave":      "Couldn't save — try again.",
-    "notifTitle":   "Notifications for this challenge",
+    "errVote": "Couldn't save your vote — try again.",
+    "errSave": "Couldn't save — try again.",
+    "notifTitle": "Notifications for this challenge",
     "notif": {
       "milestones": "Milestones",
-      "all":        "Every message",
-      "off":        "Off"
+      "all": "Every message",
+      "off": "Off"
     },
     "notifHint": {
       "milestones": "Taker acceptance, proof submission, final validation.",
-      "all":        "Ping me for every new message in the channel.",
-      "off":        "Stay quiet — I'll check the channel myself."
+      "all": "Ping me for every new message in the channel.",
+      "off": "Stay quiet — I'll check the channel myself."
     },
-    "closedTitle":     "Close to new joins",
-    "closedBody":      "Existing participants stay. The Join button stops accepting new people until you re-open it.",
-    "closedCloseCta":  "Close the channel to new joins",
+    "closedTitle": "Close to new joins",
+    "closedBody": "Existing participants stay. The Join button stops accepting new people until you re-open it.",
+    "closedCloseCta": "Close the channel to new joins",
     "closedReopenCta": "Re-open to new joins"
   },
   "members": {
-    "title":     "In the channel",
-    "countIn":   "{{count}} in the channel",
-    "seeAll":    "See all →",
-    "empty":     "Nobody's joined yet — be the first.",
-    "kickCta":   "Remove",
-    "kickAria":  "Remove {{name}} from the channel",
-    "errKick":   "Couldn't remove — try again."
+    "title": "In the channel",
+    "countIn": "{{count}} in the channel",
+    "seeAll": "See all →",
+    "empty": "Nobody's joined yet — be the first.",
+    "kickCta": "Remove",
+    "kickAria": "Remove {{name}} from the channel",
+    "errKick": "Couldn't remove — try again."
   },
   "notif": {
-    "on":  "Notifications on",
+    "on": "Notifications on",
     "off": "Notifications off"
   },
   "manage": {
-    "cta":    "Manage",
-    "title":  "Manage challenge"
+    "cta": "Manage",
+    "title": "Manage challenge"
   },
   "details": {
     "collapseAria": "Hide channel details",
-    "expandAria":   "Show channel details"
+    "expandAria": "Show channel details"
   },
   "badge": {
     "challenger": "Challenger",
-    "taker":      "Taker"
+    "taker": "Taker"
   },
   "cta": {
     "takenBy": "Currently being taken by {{name}}",
-    "closed":  "This challenge is closed"
+    "closed": "This challenge is closed"
   },
   "intl": {
     "targetCityLabel": "Target city",

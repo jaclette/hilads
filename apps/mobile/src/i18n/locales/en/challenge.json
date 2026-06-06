@@ -58,7 +58,7 @@
   "participantsLabel": "Participants",
   "editBtn": "Edit",
   "deleteBtn": "Delete",
-  "shareCta": "Challenge your friends ✨",
+  "shareCta": "Share",
   "shareInvite": "Take on this challenge with me!",
   "shareCopied": "Link copied ✓",
   "noun": "Challenge",
@@ -120,45 +120,45 @@
   "messageCreator": "Message {{name}} privately",
   "badge": {
     "challenger": "Challenger",
-    "taker":      "Taker"
+    "taker": "Taker"
   },
   "cta": {
     "takenBy": "Currently being taken by {{name}}",
-    "closed":  "This challenge is closed"
+    "closed": "This challenge is closed"
   },
   "join": {
-    "gateTitle":  "Join to see the conversation",
-    "gateBody":   "{{count}} people are already in. One tap and you're in too.",
-    "cta":        "Join this challenge",
-    "leaveCta":   "Leave the channel",
-    "errKicked":  "You've been removed from this challenge.",
-    "errClosed":  "This challenge is closed to new joins.",
+    "gateTitle": "Join to see the conversation",
+    "gateBody": "{{count}} people are already in. One tap and you're in too.",
+    "cta": "Join this challenge",
+    "leaveCta": "Leave the channel",
+    "errKicked": "You've been removed from this challenge.",
+    "errClosed": "This challenge is closed to new joins.",
     "errGeneric": "Couldn't join — try again."
   },
   "members": {
-    "title":    "In the channel",
-    "countIn":  "{{count}} in the channel",
-    "seeAll":   "See all →",
-    "empty":    "Nobody's joined yet — be the first.",
-    "kickCta":  "Remove",
+    "title": "In the channel",
+    "countIn": "{{count}} in the channel",
+    "seeAll": "See all →",
+    "empty": "Nobody's joined yet — be the first.",
+    "kickCta": "Remove",
     "kickAria": "Remove {{name}} from the channel",
-    "errKick":  "Couldn't remove — try again."
+    "errKick": "Couldn't remove — try again."
   },
   "notif": {
-    "on":  "Notifications on",
+    "on": "Notifications on",
     "off": "Notifications off"
   },
   "privacy": {
-    "closedCloseCta":  "Close to new joins",
+    "closedCloseCta": "Close to new joins",
     "closedReopenCta": "Re-open to joins"
   },
   "manage": {
-    "cta":   "Manage",
+    "cta": "Manage",
     "title": "Manage challenge"
   },
   "details": {
     "collapseAria": "Hide channel details",
-    "expandAria":   "Show channel details"
+    "expandAria": "Show channel details"
   },
   "thread": {
     "notFound": "Thread not found",
@@ -352,7 +352,7 @@
     "public": "🌍 Public",
     "friends": "👯 Friends",
     "badge": {
-      "public":  "🌍 Public",
+      "public": "🌍 Public",
       "friends": "👯 Friends",
       "private": "🔒 Private"
     },
