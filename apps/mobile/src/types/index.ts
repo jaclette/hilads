@@ -174,6 +174,12 @@ export interface LeaderboardEntry {
   displayName:    string;
   thumbAvatarUrl: string | null;
   points:         number;
+  /** PR13 — caller's city + ISO country (e.g. "VN"). World-scope rendering
+   *  uses this to show a flag pill next to the displayName; city scope hides
+   *  it (everyone in the list is in the same city). Null if the user has no
+   *  current_city_id set. */
+  cityName?:      string | null;
+  cityCountry?:   string | null;
 }
 
 /** Full response shape for GET /api/v1/leaderboard. `me.rank` is null when

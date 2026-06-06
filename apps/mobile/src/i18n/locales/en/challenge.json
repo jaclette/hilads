@@ -240,7 +240,11 @@
       "title": "Nobody's on the board yet",
       "body":  "Be the first to take a challenge and earn points."
     },
-    "errLoad": "Couldn't load the leaderboard. Pull to retry."
+    "errLoad": "Couldn't load the leaderboard. Pull to retry.",
+    "cityPicker": {
+      "searchPlaceholder": "Search cities…",
+      "empty": "No cities match."
+    }
   },
   "schedule": {
     "proposeCta": "Propose a date 📅",

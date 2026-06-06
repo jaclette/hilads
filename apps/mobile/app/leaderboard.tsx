@@ -11,7 +11,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import { avatarColor } from '@/lib/avatarColors';
+import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
+import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import type {
   LeaderboardResponse, LeaderboardScope, LeaderboardPeriod, LeaderboardEntry,
@@ -38,12 +40,21 @@ export default function LeaderboardScreen() {
   const [scope,  setScope]  = useState<LeaderboardScope>('city');
   const [period, setPeriod] = useState<LeaderboardPeriod>('month');
 
+  // PR13 — picker-overridden city for the leaderboard view. Null = use the
+  // caller's current city (default behaviour). Setting this DOES NOT change
+  // the user's actual current_city anywhere else in the app.
+  const [pickedCity, setPickedCity] = useState<{ channelId: string; name: string } | null>(null);
+  const [cityPickerOpen, setCityPickerOpen] = useState(false);
+
   const [data,    setData]    = useState<LeaderboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error,   setError]   = useState<string | null>(null);
 
-  const cityId = city?.channelId ? `city_${city.channelId}` : undefined;
+  // The picker overrides the default; fall back to the caller's current city.
+  const effectiveChannelId = pickedCity?.channelId ?? city?.channelId ?? null;
+  const cityId = effectiveChannelId ? `city_${effectiveChannelId}` : undefined;
+  const effectiveCityName  = pickedCity?.name ?? city?.name ?? null;
 
   const load = useCallback(async () => {
     if (!account?.id) { setData(null); setLoading(false); return; }
@@ -84,7 +95,8 @@ export default function LeaderboardScreen() {
       <Selectors
         scope={scope}      onScope={setScope}
         period={period}    onPeriod={setPeriod}
-        cityLabel={localizeCityName(city?.name) ?? t('leaderboard.scope.city')}
+        cityLabel={localizeCityName(effectiveCityName) ?? t('leaderboard.scope.city')}
+        onCityTap={scope === 'city' ? () => setCityPickerOpen(true) : undefined}
         t={t}
       />
 
@@ -108,7 +120,12 @@ export default function LeaderboardScreen() {
           contentContainerStyle={styles.list}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
           renderItem={({ item }) => (
-            <Row entry={item} isMe={item.user_id === me?.user_id} t={t} />
+            <Row
+              entry={item}
+              isMe={item.user_id === me?.user_id}
+              showCity={scope === 'world'}
+              t={t}
+            />
           )}
           ItemSeparatorComponent={() => <View style={styles.sep} />}
         />
@@ -125,8 +142,11 @@ export default function LeaderboardScreen() {
                 displayName:    account?.display_name ?? '',
                 thumbAvatarUrl: account?.thumbAvatarUrl ?? account?.profile_photo_url ?? null,
                 points:         me.points,
+                cityName:       city?.name    ?? null,
+                cityCountry:    city?.country ?? null,
               }}
               isMe
+              showCity={scope === 'world'}
               t={t}
             />
           ) : (
@@ -136,6 +156,19 @@ export default function LeaderboardScreen() {
           )}
         </View>
       )}
+
+      {/* PR13 — city picker sheet. Selecting a city overrides the
+          leaderboard's view scope to that city, without touching the user's
+          actual current_city anywhere else in the app. */}
+      <LeaderboardCityPickerSheet
+        visible={cityPickerOpen}
+        selectedChannelId={effectiveChannelId}
+        onSelect={(channelId, picked) => {
+          setPickedCity({ channelId, name: picked.name });
+          setCityPickerOpen(false);
+        }}
+        onClose={() => setCityPickerOpen(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -160,26 +193,79 @@ function Header({
 }
 
 function Selectors({
-  scope, onScope, period, onPeriod, cityLabel, t,
+  scope, onScope, period, onPeriod, cityLabel, onCityTap, t,
 }: {
   scope:  LeaderboardScope;
   onScope: (v: LeaderboardScope) => void;
   period: LeaderboardPeriod;
   onPeriod: (v: LeaderboardPeriod) => void;
   cityLabel: string;
+  /** Provided when scope='city' — tapping the city segment opens the picker.
+   *  When scope='world', undefined and the tap behaves like a normal scope
+   *  switch (back to city). */
+  onCityTap?: () => void;
   t: (k: string) => string;
 }) {
+  // Primary toggle (city ⇄ world) — custom layout instead of the generic
+  // Segmented because the city pill carries a chevron when active to signal
+  // it's tappable (opens the picker).
+  const cityActive  = scope === 'city';
+  const worldActive = scope === 'world';
   return (
     <View style={styles.selectorsWrap}>
-      <Segmented
-        items={[
-          { value: 'city',  label: cityLabel },
-          { value: 'world', label: t('leaderboard.scope.world') },
-        ]}
-        active={scope}
-        onChange={(v) => onScope(v as LeaderboardScope)}
-        gradient
-      />
+      <View style={styles.segWrap}>
+        <TouchableOpacity
+          style={[styles.segItem, !cityActive && undefined]}
+          onPress={() => (cityActive && onCityTap ? onCityTap() : onScope('city'))}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityState={{ selected: cityActive }}
+        >
+          {cityActive && (
+            <LinearGradient
+              colors={Gradients.primary.colors}
+              start={Gradients.primary.start}
+              end={Gradients.primary.end}
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <View style={styles.cityLabelRow}>
+            <Text
+              style={[styles.segText, cityActive && styles.segTextActiveGradient]}
+              numberOfLines={1}
+            >
+              {cityLabel}
+            </Text>
+            {cityActive && (
+              <Ionicons name="chevron-down" size={14} color={Colors.white} style={{ marginLeft: 4 }} />
+            )}
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.segItem}
+          onPress={() => onScope('world')}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityState={{ selected: worldActive }}
+        >
+          {worldActive && (
+            <LinearGradient
+              colors={Gradients.primary.colors}
+              start={Gradients.primary.start}
+              end={Gradients.primary.end}
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <Text
+            style={[styles.segText, worldActive && styles.segTextActiveGradient]}
+            numberOfLines={1}
+          >
+            {t('leaderboard.scope.world')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <Segmented
         items={[
           { value: 'month',   label: t('leaderboard.period.month') },
@@ -242,12 +328,18 @@ function Segmented<T extends string>({
 // ── Row ──────────────────────────────────────────────────────────────────────
 
 function Row({
-  entry, isMe, t,
+  entry, isMe, showCity, t,
 }: {
   entry: LeaderboardEntry;
   isMe:  boolean;
+  /** PR13 — show the user's city + flag next to displayName. Only true on
+   *  world scope; city scope hides it as redundant (everyone in the list
+   *  shares the same city). */
+  showCity?: boolean;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const flag = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
+  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : null;
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>
       <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
@@ -264,9 +356,16 @@ function Row({
           <Text style={styles.avatarLetter}>{(entry.displayName?.[0] ?? '?').toUpperCase()}</Text>
         )}
       </View>
-      <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
-        {entry.displayName}
-      </Text>
+      <View style={styles.nameWrap}>
+        <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
+          {entry.displayName}
+        </Text>
+        {showCity && cityLabel && (
+          <Text style={styles.citySub} numberOfLines={1}>
+            {flag ? `${flag} ` : ''}{cityLabel}
+          </Text>
+        )}
+      </View>
       <Text style={[styles.points, isMe && styles.pointsMe]}>
         {t('leaderboard.points', { points: entry.points })}
       </Text>
@@ -319,6 +418,12 @@ const styles = StyleSheet.create({
   },
   segItemActiveFlat: { backgroundColor: 'rgba(255,255,255,0.10)' },
   segText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  // City segment label + chevron, centered as a row (active state only).
+  cityLabelRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    justifyContent:'center',
+  },
   segTextActiveFlat:    { color: Colors.text },
   segTextActiveGradient:{ color: Colors.white, fontWeight: '800' },
 
@@ -339,7 +444,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  name:   { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  // PR13 — wrapper allowing the city subtitle to stack under the displayName.
+  // Replaces the previous direct `name` flex layout when showCity is on.
+  nameWrap: { flex: 1, minWidth: 0, gap: 1 },
+  name:     { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  citySub:  { fontSize: FontSizes.xs, color: Colors.muted2, fontWeight: '600' },
   nameMe: { color: Colors.text, fontWeight: '800' },
   points:   { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
   pointsMe: { color: '#FF7A3C', fontWeight: '800' },

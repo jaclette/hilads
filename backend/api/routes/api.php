@@ -9931,10 +9931,13 @@ $router->add('GET', '/api/v1/leaderboard', function () {
     if ($scope === 'world') {
         if ($period === 'alltime') {
             $list = $pdo->prepare("
-                SELECT id, display_name, profile_thumb_photo_url, score_alltime AS points
-                FROM users
-                WHERE deleted_at IS NULL AND score_alltime > 0
-                ORDER BY score_alltime DESC, id ASC
+                SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.score_alltime AS points,
+                       city_ch.name AS city_name, city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch  ON city_ch.id        = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at IS NULL AND u.score_alltime > 0
+                ORDER BY u.score_alltime DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
             $list->execute([':limit' => $limit, ':offset' => $offset]);
@@ -9954,12 +9957,15 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $myRank   = ($row && $myPoints > 0) ? (int) $row['my_rank'] : null;
         } else {
             $list = $pdo->prepare("
-                SELECT id, display_name, profile_thumb_photo_url, score_month AS points
-                FROM users
-                WHERE deleted_at IS NULL
-                  AND score_month > 0
-                  AND score_month_ref = :month
-                ORDER BY score_month DESC, id ASC
+                SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.score_month AS points,
+                       city_ch.name AS city_name, city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at IS NULL
+                  AND u.score_month > 0
+                  AND u.score_month_ref = :month
+                ORDER BY u.score_month DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
             $list->execute([':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
@@ -9993,9 +9999,12 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 GROUP BY user_id
                 HAVING SUM(points) > 0
             )
-            SELECT u.id, u.display_name, u.profile_thumb_photo_url, pu.points
+            SELECT u.id, u.display_name, u.profile_thumb_photo_url, pu.points,
+                   city_ch.name AS city_name, city_meta.country AS city_country
             FROM per_user pu
             JOIN users u ON u.id = pu.user_id
+            LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+            LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
             WHERE u.deleted_at IS NULL
             ORDER BY pu.points DESC, u.id ASC
             LIMIT :limit OFFSET :offset
@@ -10042,6 +10051,11 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             'displayName'    => $r['display_name'],
             'thumbAvatarUrl' => $r['profile_thumb_photo_url'],
             'points'         => (int) $r['points'],
+            // PR13: city + country for world-scope rendering. Null when the
+            // user has no current_city_id set yet (rare). UI only renders
+            // the pill on scope='world'; city scope hides it as redundant.
+            'cityName'       => $r['city_name']    ?? null,
+            'cityCountry'    => $r['city_country'] ?? null,
         ];
     }
 
