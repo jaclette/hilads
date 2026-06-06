@@ -442,5 +442,20 @@
       "body": "Jadi yang pertama menerima challenge dan dapat poin."
     },
     "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi."
+  },
+  "scoringInfo": {
+    "aria": "Cara kerja poin",
+    "title": "🏆 Cara kerja poin",
+    "intro": "Tiap challenge memberi poin ke kedua belah pihak — masuk ke papan peringkat kota dan dunia.",
+    "colStep": "Langkah",
+    "steps": {
+      "accepted": "Challenge diterima",
+      "date": "Tanggal fix",
+      "meet": "Bertemu",
+      "rate": "Keduanya menilai"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total per challenge",
+    "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya."
   }
 }

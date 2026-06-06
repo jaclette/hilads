@@ -442,5 +442,20 @@
       "body": "Sei der/die Erste, der/die eine Challenge annimmt und Punkte sammelt."
     },
     "errLoad": "Bestenliste konnte nicht geladen werden. Zum Erneutversuchen ziehen."
+  },
+  "scoringInfo": {
+    "aria": "Wie Punkte vergeben werden",
+    "title": "🏆 Wie Punkte vergeben werden",
+    "intro": "Jede Challenge bringt beiden Seiten Punkte — sie fließen in deine Stadt- und Weltbestenliste ein.",
+    "colStep": "Schritt",
+    "steps": {
+      "accepted": "Challenge angenommen",
+      "date": "Termin steht",
+      "meet": "Treffen",
+      "rate": "Beide bewerten"
+    },
+    "noPoints": "—",
+    "totalLabel": "Gesamt pro Challenge",
+    "footnote": "Punkte gibt es nur, wenn beide das Treffen bewerten."
   }
 }

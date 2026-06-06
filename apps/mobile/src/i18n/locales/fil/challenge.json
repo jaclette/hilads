@@ -442,5 +442,20 @@
       "body": "Maging una sa pag-take ng challenge at makakuha ng points."
     },
     "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit."
+  },
+  "scoringInfo": {
+    "aria": "Paano gumagana ang points",
+    "title": "🏆 Paano gumagana ang points",
+    "intro": "Bawat challenge ay nagbibigay ng points sa parehong panig — pumupunta sa city + world leaderboards mo.",
+    "colStep": "Hakbang",
+    "steps": {
+      "accepted": "Take-on accepted",
+      "date": "May date na",
+      "meet": "Meet-up",
+      "rate": "Both nag-rate"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total kada challenge",
+    "footnote": "Binibigay lang ang points kapag pareho nang nag-rate ng meet-up."
   }
 }

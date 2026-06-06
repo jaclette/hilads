@@ -442,5 +442,20 @@
       "body": "Sé el primero en aceptar un reto y ganar puntos."
     },
     "errLoad": "No se pudo cargar la clasificación. Desliza para reintentar."
+  },
+  "scoringInfo": {
+    "aria": "Cómo funcionan los puntos",
+    "title": "🏆 Cómo funcionan los puntos",
+    "intro": "Cada reto da puntos a ambos lados — se suman a tu clasificación de ciudad y mundial.",
+    "colStep": "Paso",
+    "steps": {
+      "accepted": "Reto aceptado",
+      "date": "Fecha fijada",
+      "meet": "Encuentro",
+      "rate": "Ambos valoran"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total por reto",
+    "footnote": "Los puntos solo se otorgan cuando ambos valoran el encuentro."
   }
 }

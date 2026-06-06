@@ -442,5 +442,20 @@
       "body": "Sii il primo ad accettare una sfida e guadagnare punti."
     },
     "errLoad": "Impossibile caricare la classifica. Trascina per riprovare."
+  },
+  "scoringInfo": {
+    "aria": "Come funzionano i punti",
+    "title": "🏆 Come funzionano i punti",
+    "intro": "Ogni sfida dà punti a entrambe le parti — confluiscono nelle classifiche di città e mondiale.",
+    "colStep": "Passo",
+    "steps": {
+      "accepted": "Sfida accettata",
+      "date": "Data fissata",
+      "meet": "Incontro",
+      "rate": "Entrambi votano"
+    },
+    "noPoints": "—",
+    "totalLabel": "Totale per sfida",
+    "footnote": "I punti vengono assegnati solo quando entrambi valutano l’incontro."
   }
 }

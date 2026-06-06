@@ -26,6 +26,7 @@ import {
 } from '@/api/challenges';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
+import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
@@ -851,6 +852,13 @@ export default function ChallengeChatScreen() {
         </View>
         </View>
 
+        {/* Scoring info — small (i) button right-aligned just above the
+            pipeline. Same affordance as on the NOW Challenges section
+            header. Opens the points-per-step breakdown sheet. */}
+        <View style={styles.scoringInfoRow}>
+          <ScoringInfoButton />
+        </View>
+
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
             Visualises all 4 steps + highlights the viewer's current one.
             Tap behaviour depends on state:
@@ -1498,6 +1506,17 @@ const styles = StyleSheet.create({
   // Detail block — wraps the collapsible content below the always-visible
   // hero row. LayoutAnimation handles the height transition.
   detailsBlock: { },
+
+  // Right-aligned thin row above the pipeline that holds the (i) scoring-
+  // info button. paddingHorizontal matches the pipeline's so the icon
+  // aligns with the rightmost pipeline node.
+  scoringInfoRow: {
+    flexDirection:     'row',
+    justifyContent:    'flex-end',
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.sm,
+    paddingBottom:     Spacing.xs,
+  },
 
   // Visibility pill tints — applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into

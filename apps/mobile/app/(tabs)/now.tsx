@@ -17,6 +17,7 @@ import { fetchCanCreateEvent, fetchEventParticipants } from '@/api/events';
 import { fetchCityChallenges } from '@/api/challenges';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
+import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import type { FeedItem, HiladsEvent, UserDTO, Challenge } from '@/types';
 import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
 import { AppHeader } from '@/features/shell/AppHeader';
@@ -645,7 +646,19 @@ export default function NowScreen() {
           windowSize={5}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
-              return <Text style={styles.sectionLabel}>{item.label}</Text>;
+              // The Challenges section header carries the scoring-info (i)
+              // button on the right — same affordance as on the channel
+              // pipeline, so the user can learn the points rules from
+              // either entry point without hunting through settings.
+              const isChallenges = item.label === t('challengesSection');
+              return isChallenges ? (
+                <View style={styles.sectionRow}>
+                  <Text style={[styles.sectionLabel, styles.sectionLabelFlex]}>{item.label}</Text>
+                  <ScoringInfoButton />
+                </View>
+              ) : (
+                <Text style={styles.sectionLabel}>{item.label}</Text>
+              );
             }
             if (item.kind === 'challenge') {
               const ch = item.challenge;
@@ -861,6 +874,25 @@ const styles = StyleSheet.create({
     letterSpacing:     1.0,
     textTransform:     'uppercase',
     color:             Colors.muted,
+  },
+  // Row wrapper for section headers that need a trailing element (e.g. the
+  // scoring-info (i) button next to "CHALLENGES"). Keeps padding identical
+  // to .sectionLabel so the row aligns with plain-text sections above/below.
+  sectionRow: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.md,
+    paddingBottom:     Spacing.sm,
+    gap:               Spacing.sm,
+  },
+  // When .sectionLabel sits inside .sectionRow, its outer paddings already
+  // come from the row — zero them on the Text so the label hugs the row.
+  sectionLabelFlex: {
+    flex:              1,
+    paddingHorizontal: 0,
+    paddingTop:        0,
+    paddingBottom:     0,
   },
   // "See all challenges →" row that sits at the end of the inline strip.
   seeAllRow: {
