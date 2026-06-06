@@ -976,6 +976,7 @@ export default function ChatTab() {
             </Text>
           </TouchableOpacity>
 
+          {account && (
           <TouchableOpacity
             style={[styles.chip, styles.chipLeaderboard]}
             activeOpacity={0.75}
@@ -995,6 +996,7 @@ export default function ChatTab() {
                   : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
             </Text>
           </TouchableOpacity>
+          )}
         </View>
 
       </View>
