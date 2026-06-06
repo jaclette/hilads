@@ -164,7 +164,9 @@
       "whenLabel": "QUANDO",
       "timeLabel": "ORA",
       "whereLabel": "DOVE (OPZIONALE)",
-      "wherePlaceholder": "es. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "es. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Altra data",
+      "otherTime": "Altra ora"
     },
     "err": {
       "proposeFailed": "Impossibile proporre la data. Riprova.",

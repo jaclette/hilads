@@ -164,7 +164,9 @@
       "whenLabel": "कब",
       "timeLabel": "समय",
       "whereLabel": "कहाँ (वैकल्पिक)",
-      "wherePlaceholder": "जैसे Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "जैसे Le Comptoir, 17 rue de la Paix",
+      "otherDate": "दूसरी तारीख़",
+      "otherTime": "दूसरा समय"
     },
     "err": {
       "proposeFailed": "तारीख़ नहीं सुझा सके। फिर से कोशिश करें।",

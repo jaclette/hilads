@@ -164,7 +164,9 @@
       "whenLabel": "QUAND",
       "timeLabel": "HEURE",
       "whereLabel": "OÙ (OPTIONNEL)",
-      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Autre date",
+      "otherTime": "Autre heure"
     },
     "err": {
       "proposeFailed": "Impossible de proposer la date. Réessaie.",

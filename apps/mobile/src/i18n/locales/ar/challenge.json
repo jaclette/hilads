@@ -164,7 +164,9 @@
       "whenLabel": "متى",
       "timeLabel": "الوقت",
       "whereLabel": "أين (اختياري)",
-      "wherePlaceholder": "مثل Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "مثل Le Comptoir, 17 rue de la Paix",
+      "otherDate": "تاريخ آخر",
+      "otherTime": "وقت آخر"
     },
     "err": {
       "proposeFailed": "تعذّر اقتراح الموعد. أعد المحاولة.",

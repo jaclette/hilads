@@ -164,7 +164,9 @@
       "whenLabel": "언제",
       "timeLabel": "시간",
       "whereLabel": "어디서 (선택)",
-      "wherePlaceholder": "예: Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "예: Le Comptoir, 17 rue de la Paix",
+      "otherDate": "다른 날짜",
+      "otherTime": "다른 시간"
     },
     "err": {
       "proposeFailed": "날짜를 제안하지 못했어요. 다시 시도해 주세요.",

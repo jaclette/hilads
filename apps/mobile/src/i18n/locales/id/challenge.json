@@ -164,7 +164,9 @@
       "whenLabel": "KAPAN",
       "timeLabel": "JAM",
       "whereLabel": "DI MANA (OPSIONAL)",
-      "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "mis. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Tanggal lain",
+      "otherTime": "Jam lain"
     },
     "err": {
       "proposeFailed": "Gagal mengusulkan tanggal. Coba lagi.",

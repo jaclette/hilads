@@ -249,7 +249,9 @@
       "whenLabel": "WHEN",
       "timeLabel": "TIME",
       "whereLabel": "WHERE (OPTIONAL)",
-      "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Other date",
+      "otherTime": "Other time"
     },
     "err": {
       "proposeFailed": "Couldn't propose the date. Try again.",

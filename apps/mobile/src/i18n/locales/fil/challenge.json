@@ -164,7 +164,9 @@
       "whenLabel": "KAILAN",
       "timeLabel": "ORAS",
       "whereLabel": "SAAN (OPTIONAL)",
-      "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Ibang petsa",
+      "otherTime": "Ibang oras"
     },
     "err": {
       "proposeFailed": "Hindi na-propose ang petsa. Subukan ulit.",

@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import {
-  View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView,
+  View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView, Platform,
 } from 'react-native';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useTranslation } from 'react-i18next';
@@ -57,8 +58,17 @@ export function DatePickerModal({
   const [dayOffset, setDayOffset] = useState<number | null>(0);
   const [timeKey,   setTimeKey]   = useState<string | null>('19:00');
   const [venue,     setVenue]     = useState<string>(initialVenue ?? '');
+  // Free-form selections (any date / any time) that fall outside the chip
+  // grid. When set, the corresponding preset state is cleared (and vice-
+  // versa) so the picker always has exactly one selected value per axis.
+  const [customDate, setCustomDate] = useState<Date | null>(null);
+  const [customTime, setCustomTime] = useState<{ h: number; m: number } | null>(null);
+  const [showDate, setShowDate] = useState(false);
+  const [showTime, setShowTime] = useState(false);
 
-  // Pre-fill from existing proposal (counter-propose path).
+  // Pre-fill from existing proposal (counter-propose path). If the existing
+  // value matches a preset, use the chips; otherwise drop into custom state
+  // so the user sees the actual proposed date+time round-tripped correctly.
   useEffect(() => {
     if (!initialStartsAt) return;
     const d = new Date(initialStartsAt * 1000);
@@ -66,9 +76,22 @@ export function DatePickerModal({
     const offset = Math.round(
       (new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - todayMidnight.getTime()) / 86400000,
     );
-    if (offset >= 0 && offset <= 7) setDayOffset(offset);
+    if (offset >= 0 && offset <= 7) {
+      setDayOffset(offset);
+      setCustomDate(null);
+    } else {
+      setDayOffset(null);
+      const dd = new Date(d); dd.setHours(0, 0, 0, 0);
+      setCustomDate(dd);
+    }
     const matched = TIME_PRESETS.find(p => p.hours === d.getHours() && p.minutes === d.getMinutes());
-    if (matched) setTimeKey(matched.key);
+    if (matched) {
+      setTimeKey(matched.key);
+      setCustomTime(null);
+    } else {
+      setTimeKey(null);
+      setCustomTime({ h: d.getHours(), m: d.getMinutes() });
+    }
     if (initialVenue) setVenue(initialVenue);
   }, [initialStartsAt, initialVenue]);
 
@@ -80,14 +103,56 @@ export function DatePickerModal({
     return { offset: i, label: d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' }) };
   });
 
-  const canSubmit = dayOffset !== null && timeKey !== null;
+  // Min selectable date for the native picker — today, so users can't
+  // propose meet-ups in the past. Max = +90 days, plenty of headroom.
+  const minPickerDate = new Date(today);
+  const maxPickerDate = new Date(today); maxPickerDate.setDate(today.getDate() + 90);
+
+  const customDateLabel = customDate
+    ? customDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+    : t('schedule.picker.otherDate');
+  const customTimeLabel = customTime
+    ? `${String(customTime.h).padStart(2, '0')}:${String(customTime.m).padStart(2, '0')}`
+    : t('schedule.picker.otherTime');
+
+  const canSubmit = (dayOffset !== null || customDate !== null)
+                 && (timeKey   !== null || customTime !== null);
+
+  function handleDateChange(_: DateTimePickerEvent, picked?: Date) {
+    // iOS keeps the spinner open until manually dismissed; Android auto-
+    // closes after one tap. Either way, a non-null `picked` is the chosen
+    // value (or the wheel's current value on iOS). `dismissed` action sends
+    // no date — bail without mutating state.
+    if (Platform.OS !== 'ios') setShowDate(false);
+    if (!picked) return;
+    const d = new Date(picked); d.setHours(0, 0, 0, 0);
+    setCustomDate(d);
+    setDayOffset(null);
+  }
+
+  function handleTimeChange(_: DateTimePickerEvent, picked?: Date) {
+    if (Platform.OS !== 'ios') setShowTime(false);
+    if (!picked) return;
+    setCustomTime({ h: picked.getHours(), m: picked.getMinutes() });
+    setTimeKey(null);
+  }
 
   function submit() {
-    if (dayOffset === null || timeKey === null) return;
-    const preset = TIME_PRESETS.find(p => p.key === timeKey)!;
-    const d = new Date(); d.setHours(0, 0, 0, 0);
-    d.setDate(d.getDate() + dayOffset);
-    d.setHours(preset.hours, preset.minutes, 0, 0);
+    if (!canSubmit) return;
+    // Resolve date (custom overrides preset; both branches checked by canSubmit)
+    const d = customDate ? new Date(customDate) : (() => {
+      const x = new Date(); x.setHours(0, 0, 0, 0);
+      x.setDate(x.getDate() + (dayOffset ?? 0));
+      return x;
+    })();
+    // Resolve time
+    let h: number, m: number;
+    if (customTime) { h = customTime.h; m = customTime.m; }
+    else {
+      const preset = TIME_PRESETS.find(p => p.key === timeKey)!;
+      h = preset.hours; m = preset.minutes;
+    }
+    d.setHours(h, m, 0, 0);
     const startsAt = Math.floor(d.getTime() / 1000);
     onSubmit(startsAt, startsAt + 2 * 3600, venue.trim() || null);
   }
@@ -113,36 +178,123 @@ export function DatePickerModal({
             <Text style={styles.sectionLabel}>{t('schedule.picker.whenLabel')}</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillsRow}>
               {dayLabels.map(d => {
-                const selected = d.offset === dayOffset;
+                const selected = d.offset === dayOffset && customDate === null;
                 return (
                   <TouchableOpacity
                     key={d.offset}
                     style={[styles.pill, selected && styles.pillSelected]}
-                    onPress={() => setDayOffset(d.offset)}
+                    onPress={() => { setDayOffset(d.offset); setCustomDate(null); }}
                     activeOpacity={0.7}
                   >
                     <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{d.label}</Text>
                   </TouchableOpacity>
                 );
               })}
+              {/* Free-form date — opens the native calendar picker. When a
+                  custom date is set, the pill shows the chosen date and is
+                  treated as selected; tapping it again re-opens the picker. */}
+              <TouchableOpacity
+                style={[styles.pill, customDate !== null && styles.pillSelected]}
+                onPress={() => setShowDate(true)}
+                activeOpacity={0.7}
+                accessibilityLabel={t('schedule.picker.otherDate')}
+              >
+                <Ionicons
+                  name="calendar-outline"
+                  size={13}
+                  color={customDate !== null ? '#FF7A3C' : Colors.muted}
+                  style={{ marginRight: 4 }}
+                />
+                <Text style={[styles.pillText, customDate !== null && styles.pillTextSelected]}>
+                  {customDateLabel}
+                </Text>
+              </TouchableOpacity>
             </ScrollView>
 
             <Text style={styles.sectionLabel}>{t('schedule.picker.timeLabel')}</Text>
             <View style={styles.pillsGrid}>
               {TIME_PRESETS.map(p => {
-                const selected = p.key === timeKey;
+                const selected = p.key === timeKey && customTime === null;
                 return (
                   <TouchableOpacity
                     key={p.key}
                     style={[styles.pill, selected && styles.pillSelected]}
-                    onPress={() => setTimeKey(p.key)}
+                    onPress={() => { setTimeKey(p.key); setCustomTime(null); }}
                     activeOpacity={0.7}
                   >
                     <Text style={[styles.pillText, selected && styles.pillTextSelected]}>{p.key}</Text>
                   </TouchableOpacity>
                 );
               })}
+              {/* Free-form time. Same pattern as the date pill above. */}
+              <TouchableOpacity
+                style={[styles.pill, customTime !== null && styles.pillSelected]}
+                onPress={() => setShowTime(true)}
+                activeOpacity={0.7}
+                accessibilityLabel={t('schedule.picker.otherTime')}
+              >
+                <Ionicons
+                  name="time-outline"
+                  size={13}
+                  color={customTime !== null ? '#FF7A3C' : Colors.muted}
+                  style={{ marginRight: 4 }}
+                />
+                <Text style={[styles.pillText, customTime !== null && styles.pillTextSelected]}>
+                  {customTimeLabel}
+                </Text>
+              </TouchableOpacity>
             </View>
+
+            {/* Native pickers — iOS renders inline (default 'spinner'), so we
+                wrap in a small frame for visual consistency. Android renders
+                as a transient dialog and auto-dismisses on selection. */}
+            {showDate && (
+              <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
+                <DateTimePicker
+                  value={customDate ?? new Date()}
+                  mode="date"
+                  display={Platform.OS === 'ios' ? 'inline' : 'default'}
+                  minimumDate={minPickerDate}
+                  maximumDate={maxPickerDate}
+                  onChange={handleDateChange}
+                  themeVariant="dark"
+                />
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity
+                    style={styles.nativePickerDone}
+                    onPress={() => setShowDate(false)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+            {showTime && (
+              <View style={Platform.OS === 'ios' ? styles.nativePickerWrap : undefined}>
+                <DateTimePicker
+                  value={(() => {
+                    const d = new Date();
+                    if (customTime) d.setHours(customTime.h, customTime.m, 0, 0);
+                    return d;
+                  })()}
+                  mode="time"
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                  is24Hour
+                  onChange={handleTimeChange}
+                  themeVariant="dark"
+                />
+                {Platform.OS === 'ios' && (
+                  <TouchableOpacity
+                    style={styles.nativePickerDone}
+                    onPress={() => setShowTime(false)}
+                    activeOpacity={0.75}
+                  >
+                    <Text style={styles.nativePickerDoneText}>{t('done', { ns: 'common', defaultValue: 'Done' })}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
 
             <Text style={styles.sectionLabel}>{t('schedule.picker.whereLabel')}</Text>
             <TextInput
@@ -198,6 +350,7 @@ const styles = StyleSheet.create({
   pillsRow:  { gap: 8, paddingVertical: 4, paddingRight: Spacing.md },
   pillsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   pill: {
+    flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
     backgroundColor: Colors.bg2, borderWidth: 1, borderColor: Colors.border,
   },
@@ -210,6 +363,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.bg2, borderWidth: 1, borderColor: Colors.border,
     borderRadius: Radius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
     fontSize: FontSizes.md, color: Colors.text,
+  },
+  // Inline native picker frame (iOS) — Android renders as a separate dialog
+  // and doesn't need a wrapper. Border + bg matches the venue input + pills
+  // so it reads as another chip-grid section rather than a system overlay.
+  nativePickerWrap: {
+    backgroundColor: Colors.bg2,
+    borderWidth: 1, borderColor: Colors.border,
+    borderRadius: Radius.md,
+    paddingVertical: Spacing.xs,
+    marginTop: Spacing.xs,
+  },
+  nativePickerDone: {
+    alignSelf: 'flex-end',
+    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
+  },
+  nativePickerDoneText: {
+    color: '#FF7A3C', fontWeight: '800', fontSize: FontSizes.sm, letterSpacing: 0.2,
   },
   submit: {
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,

@@ -164,7 +164,9 @@
       "whenLabel": "いつ",
       "timeLabel": "時間",
       "whereLabel": "どこで（任意）",
-      "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "例：Le Comptoir, 17 rue de la Paix",
+      "otherDate": "別の日付",
+      "otherTime": "別の時間"
     },
     "err": {
       "proposeFailed": "日程を提案できませんでした。もう一度お試しください。",

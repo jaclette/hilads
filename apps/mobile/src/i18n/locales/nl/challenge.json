@@ -164,7 +164,9 @@
       "whenLabel": "WANNEER",
       "timeLabel": "TIJD",
       "whereLabel": "WAAR (OPTIONEEL)",
-      "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Andere datum",
+      "otherTime": "Andere tijd"
     },
     "err": {
       "proposeFailed": "Datum voorstellen mislukt. Probeer opnieuw.",

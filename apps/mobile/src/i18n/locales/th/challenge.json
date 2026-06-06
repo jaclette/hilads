@@ -164,7 +164,9 @@
       "whenLabel": "เมื่อไหร่",
       "timeLabel": "เวลา",
       "whereLabel": "ที่ไหน (ไม่บังคับ)",
-      "wherePlaceholder": "เช่น Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "เช่น Le Comptoir, 17 rue de la Paix",
+      "otherDate": "วันอื่น",
+      "otherTime": "เวลาอื่น"
     },
     "err": {
       "proposeFailed": "เสนอวันที่ไม่สำเร็จ ลองอีกครั้ง",

@@ -164,7 +164,9 @@
       "whenLabel": "KHI NÀO",
       "timeLabel": "GIỜ",
       "whereLabel": "Ở ĐÂU (TÙY CHỌN)",
-      "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Ngày khác",
+      "otherTime": "Giờ khác"
     },
     "err": {
       "proposeFailed": "Không đề xuất được ngày. Thử lại nhé.",

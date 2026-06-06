@@ -164,7 +164,9 @@
       "whenLabel": "КОГДА",
       "timeLabel": "ВРЕМЯ",
       "whereLabel": "ГДЕ (НЕОБЯЗАТЕЛЬНО)",
-      "wherePlaceholder": "напр. Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "напр. Le Comptoir, 17 rue de la Paix",
+      "otherDate": "Другая дата",
+      "otherTime": "Другое время"
     },
     "err": {
       "proposeFailed": "Не удалось предложить дату. Попробуй ещё раз.",

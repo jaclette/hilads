@@ -164,7 +164,9 @@
       "whenLabel": "什么时候",
       "timeLabel": "时间",
       "whereLabel": "在哪里（可选）",
-      "wherePlaceholder": "例如 Le Comptoir, 17 rue de la Paix"
+      "wherePlaceholder": "例如 Le Comptoir, 17 rue de la Paix",
+      "otherDate": "其他日期",
+      "otherTime": "其他时间"
     },
     "err": {
       "proposeFailed": "无法提议日期，请再试一次。",
