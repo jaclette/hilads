@@ -291,6 +291,41 @@ export default function ChallengeChatScreen() {
   // Creator-only close-to-new-joins toggle. Existing participants stay;
   // /join refuses new ones while this is on.
   const [closeBusy, setCloseBusy] = useState(false);
+  // Unified visibility picker — Public / Friends / Private. Private maps
+  // to closed_to_new_joins=true; Public / Friends clear that flag and
+  // align the visibility column.
+  const [visMenuOpen, setVisMenuOpen] = useState(false);
+  const handlePickVisibility = useCallback(async (choice: 'public' | 'friends' | 'private') => {
+    if (visBusy || closeBusy || !challenge) return;
+    setVisMenuOpen(false);
+    try {
+      if (choice === 'private') {
+        if (!challenge.closed_to_new_joins) {
+          setCloseBusy(true);
+          await setChallengeCloseToJoins(id, true);
+          setChallenge(prev => prev ? { ...prev, closed_to_new_joins: true } : prev);
+          setCloseBusy(false);
+        }
+        return;
+      }
+      if (challenge.closed_to_new_joins) {
+        setCloseBusy(true);
+        await setChallengeCloseToJoins(id, false);
+        setChallenge(prev => prev ? { ...prev, closed_to_new_joins: false } : prev);
+        setCloseBusy(false);
+      }
+      if ((challenge.visibility ?? 'public') !== choice) {
+        setVisBusy(true);
+        await setChallengeVisibility(id, choice);
+        setChallenge(prev => prev ? { ...prev, visibility: choice } : prev);
+        setVisBusy(false);
+      }
+    } catch {
+      setVisBusy(false); setCloseBusy(false);
+      Alert.alert(t('errSave'));
+    }
+  }, [id, challenge, visBusy, closeBusy, t]);
+
   const handleToggleClosedToJoins = useCallback(async () => {
     if (!challenge || closeBusy) return;
     const next = !challenge.closed_to_new_joins;
@@ -697,32 +732,41 @@ export default function ChallengeChatScreen() {
             </TouchableOpacity>
           )}
           {/* Notifications pill moved to the header (next to "by creator"). */}
-          {/* Visibility pill — creator-tappable Public ↔ Friends; read-only
-              label for everyone else / for International / for Private. */}
+          {/* Visibility dropdown — Public / Friends / Private. Private folds
+              the close-to-new-joins state into the same selector so the
+              meta row only carries one pill. Read-only for non-owners /
+              International (always Public). */}
           {(() => {
             if (!challenge) return null;
-            const v       = challenge.visibility ?? 'public';
-            const isIntl  = (challenge.mode ?? 'local') === 'international';
-            const tapable = isOwner && !isIntl && v !== 'private';
-            const labelKey = `visibility.badge.${v}`;
+            const isIntl    = (challenge.mode ?? 'local') === 'international';
+            const v         = challenge.visibility ?? 'public';
+            const effective: 'public' | 'friends' | 'private' =
+              challenge.closed_to_new_joins ? 'private' : (v === 'friends' ? 'friends' : 'public');
+            const tapable   = isOwner && !isIntl;
+            const labelKey  = `visibility.badge.${effective}`;
             const pillTint =
-              v === 'friends' ? styles.visibilityPillFriends :
-              v === 'private' ? styles.visibilityPillPrivate :
+              effective === 'friends' ? styles.visibilityPillFriends :
+              effective === 'private' ? styles.visibilityPillPrivate :
               styles.visibilityPillPublic;
             const textTint =
-              v === 'friends' ? styles.visibilityPillTextFriends :
-              v === 'private' ? styles.visibilityPillTextPrivate :
+              effective === 'friends' ? styles.visibilityPillTextFriends :
+              effective === 'private' ? styles.visibilityPillTextPrivate :
               styles.visibilityPillTextPublic;
+            const busyAny = visBusy || closeBusy;
             return (
               <TouchableOpacity
                 style={[styles.sharePillInline, pillTint]}
-                onPress={tapable ? handleToggleVisibility : undefined}
-                disabled={!tapable || visBusy}
+                onPress={tapable ? () => setVisMenuOpen(true) : undefined}
+                disabled={!tapable || busyAny}
                 activeOpacity={tapable ? 0.75 : 1}
+                accessibilityRole="button"
               >
                 <Text style={[styles.sharePillInlineText, textTint]} numberOfLines={1}>
-                  {visBusy ? '…' : t(labelKey)}
+                  {busyAny ? '…' : t(labelKey)}
                 </Text>
+                {tapable && (
+                  <Text style={[styles.sharePillInlineText, textTint, { fontSize: 9, marginLeft: 2 }]}>▾</Text>
+                )}
               </TouchableOpacity>
             );
           })()}
@@ -739,28 +783,8 @@ export default function ChallengeChatScreen() {
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('manage.cta')}</Text>
             </TouchableOpacity>
           )}
-          {/* Close-to-new-joins pill — creator-only, sits next to the
-              audience badge. Tap toggles closed/open. */}
-          {isOwner && challenge && (
-            <TouchableOpacity
-              style={[styles.sharePillInline, challenge.closed_to_new_joins && styles.closedPillOn]}
-              onPress={handleToggleClosedToJoins}
-              disabled={closeBusy}
-              activeOpacity={0.75}
-              accessibilityLabel={challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
-            >
-              {closeBusy
-                ? <ActivityIndicator size="small" color="#FF7A3C" />
-                : <Ionicons
-                    name={challenge.closed_to_new_joins ? 'lock-closed' : 'lock-open-outline'}
-                    size={14}
-                    color="#FF7A3C"
-                  />}
-              <Text style={styles.sharePillInlineText} numberOfLines={1}>
-                {challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
-              </Text>
-            </TouchableOpacity>
-          )}
+          {/* Close-to-new-joins pill removed — Private inside the
+              visibility dropdown above maps to closed_to_new_joins. */}
         </View>
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -1233,6 +1257,44 @@ export default function ChallengeChatScreen() {
             >
               <Text style={[styles.manageRowText, { color: '#FF7A3C' }]}>OK</Text>
             </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
+
+      {/* Visibility picker — Public / Friends / Private dropdown. */}
+      {challenge && (
+        <Modal
+          visible={visMenuOpen && isOwner}
+          animationType="fade"
+          transparent
+          onRequestClose={() => setVisMenuOpen(false)}
+        >
+          <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setVisMenuOpen(false)} />
+          <View style={styles.manageSheet}>
+            <Text style={styles.manageTitle}>{t('visibility.label')}</Text>
+            {(['public', 'friends', 'private'] as const).map(opt => {
+              const current: 'public' | 'friends' | 'private' =
+                challenge.closed_to_new_joins ? 'private' : ((challenge.visibility ?? 'public') === 'friends' ? 'friends' : 'public');
+              const selected = current === opt;
+              const hint =
+                opt === 'public'  ? t('visibility.publicHint')  :
+                opt === 'friends' ? t('visibility.friendsHint') :
+                t('privacy.closedBody', { defaultValue: 'Closed to new joins. Existing participants stay.' });
+              return (
+                <TouchableOpacity
+                  key={opt}
+                  style={[styles.manageRow, selected && { backgroundColor: 'rgba(255,122,60,0.10)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.40)' }]}
+                  onPress={() => handlePickVisibility(opt)}
+                  disabled={visBusy || closeBusy}
+                  activeOpacity={0.75}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
+                    <Text style={{ fontSize: FontSizes.sm - 1, color: Colors.muted, marginTop: 2 }}>{hint}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </Modal>
       )}

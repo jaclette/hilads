@@ -110,6 +110,10 @@ export default function ChallengeChatPage({
   // sheet so the acceptor can re-read what was asked without scrolling
   // back through the chat.
   const [proofSpecOpen, setProofSpecOpen] = useState(false)
+  // Visibility picker — Public / Friends / Private dropdown opened from
+  // the inline pill. "Private" maps to closed_to_new_joins=true (the
+  // mutual go-private vote backend isn't surfaced here).
+  const [visMenuOpen, setVisMenuOpen] = useState(false)
   const [shareToast,   setShareToast]   = useState(false) // shown briefly after the clipboard fallback fires
   // Themed in-app alert. Replaces window.alert() (which renders the ugly
   // "hilads.live says" browser modal). Shape: { emoji?, title, body, actionLabel?, onAction? }.
@@ -330,7 +334,49 @@ export default function ChallengeChatPage({
     }
   }
 
-  // Creator-only close-to-new-joins toggle (was inside the privacy panel).
+  // Unified visibility selector — Public / Friends / Private. The three
+  // options map to two backend flags:
+  //   public   → visibility=public,  closed_to_new_joins=false
+  //   friends  → visibility=friends, closed_to_new_joins=false
+  //   private  → closed_to_new_joins=true (visibility kept as-is)
+  // No mutual-vote round-trip — this is the simple creator-only flow.
+  async function handlePickVisibility(choice) {
+    if (visBusy || closeBusy || !challenge) return
+    setVisMenuOpen(false)
+    try {
+      if (choice === 'private') {
+        if (!challenge.closed_to_new_joins) {
+          setCloseBusy(true)
+          await setChallengeCloseToJoins(id, true)
+          setChallenge(prev => prev ? { ...prev, closed_to_new_joins: true } : prev)
+          setCloseBusy(false)
+        }
+        return
+      }
+      // 'public' or 'friends': make sure closed_to_new_joins is off, then
+      // align visibility. Two calls in sequence is fine — the UI shows a
+      // single busy state.
+      if (challenge.closed_to_new_joins) {
+        setCloseBusy(true)
+        await setChallengeCloseToJoins(id, false)
+        setChallenge(prev => prev ? { ...prev, closed_to_new_joins: false } : prev)
+        setCloseBusy(false)
+      }
+      if ((challenge.visibility ?? 'public') !== choice) {
+        setVisBusy(true)
+        await setChallengeVisibility(id, choice)
+        setChallenge(prev => prev ? { ...prev, visibility: choice } : prev)
+        loadChallenge()
+        setVisBusy(false)
+      }
+    } catch (err) {
+      setVisBusy(false); setCloseBusy(false)
+      setAlertModal({ emoji: '😬', title: err?.message || t('privacy.errSave') })
+    }
+  }
+
+  // Legacy close-to-new-joins handler — kept for now for any internal
+  // call sites; surface goes through the unified picker.
   async function handleToggleClosedToJoins() {
     if (closeBusy || !challenge) return
     const next = !challenge.closed_to_new_joins
@@ -625,23 +671,6 @@ export default function ChallengeChatPage({
         ) : (
           <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
         )}
-        {/* Close-to-new-joins pill — creator-only, sits next to the
-            audience / target-city badge. Lock-open ↔ lock-closed icon. */}
-        {isOwner && (
-          <button
-            type="button"
-            className={`challenge-share-pill challenge-share-pill--inline ${challenge.closed_to_new_joins ? 'challenge-share-pill--on' : ''}`}
-            onClick={handleToggleClosedToJoins}
-            disabled={closeBusy}
-            aria-pressed={!!challenge.closed_to_new_joins}
-            title={challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta')}
-          >
-            <span aria-hidden="true">{challenge.closed_to_new_joins ? '🔒' : '🔓'}</span>
-            <span className="challenge-share-pill-text">
-              {closeBusy ? '…' : (challenge.closed_to_new_joins ? t('privacy.closedReopenCta') : t('privacy.closedCloseCta'))}
-            </span>
-          </button>
-        )}
         <button
           type="button"
           className="challenge-share-pill challenge-share-pill--inline"
@@ -651,19 +680,20 @@ export default function ChallengeChatPage({
           <span aria-hidden="true">↗</span>
           <span className="challenge-share-pill-text">{t('shareCta')}</span>
         </button>
-        {/* Visibility pill — creator tappable (Public ↔ Friends);
-            read-only label for everyone else. International always
-            renders "Public" with no tap target. Private renders as a
-            label too (only reachable via the mutual go-private flow,
-            which has no UI surface in this build). */}
+        {/* Visibility dropdown — creator-tappable selector that bundles
+            Public / Friends / Private (Private = closed_to_new_joins).
+            Read-only label for everyone else. International always reads
+            "🌍 Public" with no tap target. The chevron signals the
+            dropdown affordance. */}
         {(() => {
-          const v       = challenge.visibility ?? 'public'
-          const isIntl  = (challenge.mode ?? 'local') === 'international'
-          const label   = t(`visibility.badge.${v}`, { ns: 'challenge' })
-          const tapable = isOwner && !isIntl && v !== 'private'
+          const isIntl = (challenge.mode ?? 'local') === 'international'
+          const v      = challenge.visibility ?? 'public'
+          const effective = challenge.closed_to_new_joins ? 'private' : v
+          const label  = t(`visibility.badge.${effective}`, { ns: 'challenge' })
+          const tapable = isOwner && !isIntl
           if (!tapable) {
             return (
-              <span className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${v}`}>
+              <span className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${effective}`}>
                 <span className="challenge-share-pill-text">{label}</span>
               </span>
             )
@@ -671,12 +701,16 @@ export default function ChallengeChatPage({
           return (
             <button
               type="button"
-              className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${v}`}
-              onClick={handleToggleVisibility}
-              disabled={visBusy}
-              title={v === 'public' ? t('visibility.friendsHint') : t('visibility.publicHint')}
+              className={`challenge-share-pill challenge-share-pill--inline challenge-visibility-pill--${effective}`}
+              onClick={() => setVisMenuOpen(true)}
+              disabled={visBusy || closeBusy}
+              aria-haspopup="menu"
+              aria-expanded={visMenuOpen}
             >
-              <span className="challenge-share-pill-text">{visBusy ? '…' : label}</span>
+              <span className="challenge-share-pill-text">
+                {(visBusy || closeBusy) ? '…' : label}
+              </span>
+              <span aria-hidden="true" className="challenge-share-pill-chevron">▾</span>
             </button>
           )
         })()}
@@ -1111,6 +1145,40 @@ export default function ChallengeChatPage({
               >
                 🗑️ {busy === 'delete' ? '…' : t('deleteBtn')}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Visibility picker — Public / Friends / Private (creator-only).
+          "Private" maps to closed_to_new_joins=true on the backend, no
+          mutual flow involved. Selecting Public / Friends also clears
+          closed_to_new_joins so the channel re-opens. */}
+      {visMenuOpen && isOwner && (
+        <div className="modal-overlay" onClick={() => setVisMenuOpen(false)}>
+          <div className="modal-panel modal-panel--visibility-menu" onClick={e => e.stopPropagation()}>
+            <h3 className="modal-title">{t('visibility.label')}</h3>
+            <div className="modal-actions modal-actions--stack">
+              {['public', 'friends', 'private'].map(opt => {
+                const current = challenge.closed_to_new_joins ? 'private' : (challenge.visibility ?? 'public')
+                const selected = current === opt
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={`modal-btn modal-btn--ghost challenge-visibility-opt ${selected ? 'is-selected' : ''}`}
+                    onClick={() => handlePickVisibility(opt)}
+                    disabled={visBusy || closeBusy}
+                  >
+                    <span className="challenge-visibility-opt-label">{t(`visibility.badge.${opt}`)}</span>
+                    <span className="challenge-visibility-opt-hint">
+                      {opt === 'public'  ? t('visibility.publicHint')
+                       : opt === 'friends' ? t('visibility.friendsHint')
+                       : t('privacy.closedBody', { defaultValue: 'Closed to new joins. Existing participants stay.' })}
+                    </span>
+                  </button>
+                )
+              })}
             </div>
           </div>
         </div>

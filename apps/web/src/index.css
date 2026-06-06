@@ -12111,7 +12111,7 @@ body.has-app-promo-banner .page-header {
   color: var(--text);
 }
 
-/* ── Inline visibility / close-to-joins pills (meta row) ────────────────── */
+/* ── Inline visibility pill (Public / Friends / Private dropdown) ────── */
 /* Reuse the .challenge-share-pill skeleton, just retint per state. */
 .challenge-visibility-pill--friends {
   background:   rgba(147, 197, 253, 0.08);
@@ -12123,9 +12123,31 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(252, 165, 165, 0.32);
 }
 .challenge-visibility-pill--private .challenge-share-pill-text { color: #fca5a5; }
-.challenge-share-pill--on {
-  background:   rgba(255, 122, 60, 0.16);
-  border-color: rgba(255, 122, 60, 0.45);
+.challenge-share-pill-chevron {
+  margin-left: 2px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Visibility picker menu rows — show the selected option + a hint line. */
+.challenge-visibility-opt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+}
+.challenge-visibility-opt.is-selected {
+  background: rgba(255, 122, 0, 0.10);
+  border-color: rgba(255, 122, 0, 0.42);
+}
+.challenge-visibility-opt-label {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.challenge-visibility-opt-hint {
+  font-size: 0.82rem;
+  color: var(--muted);
 }
 
 /* ── Visibility badge on challenge detail meta row ───────────────────────── */

@@ -225,17 +225,18 @@ export default function ChallengeProofBlock({
     )
   }
 
-  // No pending — submission CTA (acceptor) or waiting line (creator).
-  // The "what the creator asked for" card used to live here; it's now
-  // reachable from the pipeline's "Waiting for the proof" pill (parent
-  // mounts the read-only popin on tap).
+  // No pending — submission CTA (acceptor) or nothing (creator). The
+  // creator's "Waiting for the proof" line is gone — the pipeline pill
+  // already says it. Block returns null for creators with no action,
+  // so we don't surface an empty card.
   const lastRejected = latest?.status === 'rejected' ? latest : null
+  if (!iAmAcceptor && !lastRejected) return null
   return (
     <div className="proof-block">
       {lastRejected ? (
         <span className="proof-reason">{t('intl.proof.lastReason', { reason: lastRejected.rejection_reason ?? '' })}</span>
       ) : null}
-      {iAmAcceptor ? (
+      {iAmAcceptor && (
         <label className={`proof-submit-btn${busy ? ' is-busy' : ''}`}>
           {busy === 'submit' ? '…' : (lastRejected
             ? t('intl.proof.tryAgainCta', { count: attemptsLeft })
@@ -248,8 +249,6 @@ export default function ChallengeProofBlock({
             disabled={!!busy}
           />
         </label>
-      ) : (
-        <span className="proof-terminal">{t('intl.proof.waitingProof')}</span>
       )}
       {error ? <p className="proof-error">{error}</p> : null}
     </div>

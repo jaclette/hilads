@@ -264,12 +264,12 @@ export function ChallengeProofBlock({
   }
 
   // No pending proof yet — either fresh acceptance or after a non-terminal
-  // rejection. The acceptor sees the submit CTA; the creator sees a waiting
-  // line with the last rejection reason if any.
-  // The "what the creator asked for" card used to live here; it's now
-  // reachable from the pipeline's "Waiting for the proof" pill (parent
-  // mounts a popin on tap).
+  // rejection. The acceptor sees the submit CTA; the creator's "Waiting
+  // for the proof" line was redundant with the pipeline pill and is gone.
+  // Return null entirely when there's nothing for this viewer to do, so we
+  // don't surface an empty card under the pipeline.
   const lastRejected = latest?.status === 'rejected' ? latest : null;
+  if (!iAmAcceptor && !lastRejected) return null;
   return (
     <View style={styles.card}>
       {lastRejected ? (
@@ -278,7 +278,7 @@ export function ChallengeProofBlock({
         </Text>
       ) : null}
 
-      {iAmAcceptor ? (
+      {iAmAcceptor && (
         <TouchableOpacity
           style={[styles.submitBtn, busy && { opacity: 0.5 }]}
           onPress={handleSubmit}
@@ -295,8 +295,6 @@ export function ChallengeProofBlock({
               </Text>
             )}
         </TouchableOpacity>
-      ) : (
-        <Text style={styles.terminalLine}>{t('intl.proof.waitingProof')}</Text>
       )}
     </View>
   );
