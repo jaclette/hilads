@@ -1343,12 +1343,17 @@ run($pdo, "
 // per-challenge sum is preserved.
 run($pdo, "DELETE FROM score_rules WHERE kind = 'meetup'", 'score_rules drop meetup');
 
+// PR12: date-locked points. When the creator approves the taker's proposed
+// date (challenge_acceptances.date_approved_at flips NULL → set), both
+// parties earn +5. Trigger below writes the score_events.
 run($pdo, "
     INSERT INTO score_rules (kind, role, points) VALUES
-        ('accepted', 'challenger',  5),
-        ('debrief',  'challenger', 30),
-        ('debrief',  'taker',      40),
-        ('ghost',    'taker',       0)
+        ('accepted',    'challenger',  5),
+        ('date_locked', 'challenger',  5),
+        ('date_locked', 'taker',       5),
+        ('debrief',     'challenger', 30),
+        ('debrief',     'taker',      40),
+        ('ghost',       'taker',       0)
     ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points
 ", 'score_rules seed');
 
@@ -1361,7 +1366,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1371,6 +1376,17 @@ run($pdo, "
 ", 'score_events');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_user_month ON score_events (user_id, month_ref)", 'idx_score_events_user_month');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_city_month ON score_events (city_id, month_ref)", 'idx_score_events_city_month');
+
+// PR12: extend the kind CHECK to allow 'date_locked'. The CREATE TABLE
+// above carries the up-to-date constraint for fresh DBs; this DROP +
+// re-ADD updates a pre-existing table where the constraint was authored
+// before 'date_locked' existed. Both are idempotent at re-run.
+run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_check", 'score_events drop old kind check');
+run($pdo, "
+    ALTER TABLE score_events
+    ADD CONSTRAINT score_events_kind_check
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked'))
+", 'score_events add new kind check');
 
 // Mutual ratings. UNIQUE (challenge_id, rater_id) → one rating per
 // rater per challenge. Both parties rating is the meetup proof.
@@ -1472,6 +1488,66 @@ run($pdo, "
     AFTER INSERT ON challenge_acceptances
     FOR EACH ROW EXECUTE FUNCTION on_challenge_acceptance_insert()
 ", 'trg_chacc_accepted_score');
+
+// ── PR12: date-locked points trigger ──────────────────────────────────────
+// Fires when challenge_acceptances.date_approved_at flips from NULL to a
+// real timestamp — i.e. the moment the creator approves the taker's date
+// proposal. Writes two score_events (challenger +5, taker +5). The trigger
+// re-evaluates only on UPDATE OF date_approved_at, so the rest of the
+// acceptance lifecycle (proposals, withdrawals, rate-push stamps) doesn't
+// re-fire it.
+//
+// Idempotency: the UNIQUE (user_id, challenge_id, role, kind) constraint
+// on score_events + ON CONFLICT DO NOTHING means even if a date gets
+// approved, withdrawn, re-proposed, and re-approved on the same
+// acceptance, the points are awarded exactly once.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_date_approved() RETURNS TRIGGER AS \$\$
+    DECLARE
+        challenger_id  TEXT;
+        origin_city    TEXT;
+        pts_c          INT;
+        pts_t          INT;
+        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        -- Only fire on the NULL → set transition. A reschedule that clears
+        -- date_approved_at back to NULL (proposeDate sets it null again) and
+        -- then re-approves won't double-credit because of ON CONFLICT below,
+        -- but the guard here keeps us from re-entering the function body on
+        -- unrelated UPDATEs.
+        IF OLD.date_approved_at IS NOT NULL OR NEW.date_approved_at IS NULL THEN
+            RETURN NEW;
+        END IF;
+
+        SELECT cc.created_by, cc.city_id
+        INTO challenger_id, origin_city
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        IF challenger_id IS NULL OR NEW.acceptor_user_id IS NULL THEN
+            RETURN NEW;
+        END IF;
+
+        SELECT points INTO pts_c FROM score_rules WHERE kind = 'date_locked' AND role = 'challenger';
+        SELECT points INTO pts_t FROM score_rules WHERE kind = 'date_locked' AND role = 'taker';
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        VALUES
+          (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'date_locked', COALESCE(pts_c, 0), origin_city, current_month),
+          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), origin_city, current_month)
+        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_date_approved');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_date_locked ON challenge_acceptances", 'drop trg_chacc_date_locked');
+run($pdo, "
+    CREATE TRIGGER trg_chacc_date_locked
+    AFTER UPDATE OF date_approved_at ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_date_approved()
+", 'trg_chacc_date_locked');
 
 // ── Trigger: mutual-rating → meetup + debrief + phase flip ────────────────
 //

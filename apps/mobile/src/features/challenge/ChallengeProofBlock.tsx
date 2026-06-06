@@ -21,7 +21,7 @@
  *        already carries the canonical state; this block stays compact.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
   ActivityIndicator, Alert, Modal, TextInput, Pressable,
@@ -45,9 +45,15 @@ type Props = {
   proofRequirements: string | null;
 };
 
-export function ChallengeProofBlock({
+/** Imperative handle exposed via forwardRef so the parent (challenge/[id].tsx)
+ *  can trigger the photo-picker + GPS + submit flow from the pipeline's
+ *  "Submit your proof →" sub-CTA. Replaces the standalone big button that
+ *  used to live inside the block. */
+export type ChallengeProofBlockHandle = { submit: () => void };
+
+export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(function ChallengeProofBlock({
   acceptanceId, iAmCreator, iAmAcceptor, proofRequirements,
-}: Props) {
+}, ref) {
   const { t } = useTranslation('challenge');
   const [proofs,      setProofs]      = useState<ChallengeProof[]>([]);
   const [attempts,    setAttempts]    = useState(0);
@@ -124,6 +130,11 @@ export function ChallengeProofBlock({
       setBusy(null);
     }
   }, [busy, acceptanceId, load, t]);
+
+  // Expose submit() to the parent so the pipeline's "Submit your proof →"
+  // sub-CTA can trigger the same flow. The block no longer renders a
+  // standalone big button — the pipeline is the single CTA.
+  useImperativeHandle(ref, () => ({ submit: handleSubmit }), [handleSubmit]);
 
   // ── Creator: approve / reject ─────────────────────────────────────────────
   const handleApprove = useCallback(async () => {
@@ -264,12 +275,14 @@ export function ChallengeProofBlock({
   }
 
   // No pending proof yet — either fresh acceptance or after a non-terminal
-  // rejection. The acceptor sees the submit CTA; the creator's "Waiting
-  // for the proof" line was redundant with the pipeline pill and is gone.
-  // Return null entirely when there's nothing for this viewer to do, so we
-  // don't surface an empty card under the pipeline.
+  // rejection. The acceptor's "Submit your proof" CTA lives on the pipeline
+  // now (parent calls submit() via the forwardRef handle). This block keeps
+  // the rejection reason inline + a small "View requirements" link so the
+  // acceptor can re-read what the creator asked for before tapping the
+  // pipeline. Returns null when there's nothing for this viewer to see.
   const lastRejected = latest?.status === 'rejected' ? latest : null;
   if (!iAmAcceptor && !lastRejected) return null;
+  if (!lastRejected && !proofRequirements && !busy) return null;
   return (
     <View style={styles.card}>
       {lastRejected ? (
@@ -278,27 +291,26 @@ export function ChallengeProofBlock({
         </Text>
       ) : null}
 
-      {iAmAcceptor && (
-        <TouchableOpacity
-          style={[styles.submitBtn, busy && { opacity: 0.5 }]}
-          onPress={handleSubmit}
-          disabled={!!busy}
-          activeOpacity={0.85}
-        >
-          {busy === 'submit'
-            ? <ActivityIndicator color={Colors.white} />
-            : (
-              <Text style={styles.submitBtnText}>
-                {lastRejected
-                  ? t('intl.proof.tryAgainCta', { count: attemptsLeft })
-                  : t('intl.proof.submitCta')}
-              </Text>
-            )}
-        </TouchableOpacity>
+      {iAmAcceptor && proofRequirements && (
+        <Text style={styles.requirementsLine} numberOfLines={3}>
+          {t('intl.proof.requirementsInline', {
+            text: proofRequirements,
+            defaultValue: `📋 ${proofRequirements}`,
+          })}
+        </Text>
+      )}
+
+      {/* Loading indicator while the picker / upload / submit is in flight,
+          since we no longer have a button to show the spinner on. */}
+      {busy === 'submit' && (
+        <View style={styles.busyRow}>
+          <ActivityIndicator color={Colors.accent} size="small" />
+          <Text style={styles.busyText}>{t('intl.proof.submittingHint', { defaultValue: 'Submitting…' })}</Text>
+        </View>
       )}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   card: {
@@ -344,6 +356,21 @@ const styles = StyleSheet.create({
 
   terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, textAlign: 'center', paddingVertical: 4 },
   reasonLine:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 18 },
+  // Inline-rendered proof requirements (no popin, no separate button).
+  // The pipeline carries the "Submit your proof →" CTA; this just reminds
+  // the acceptor what the creator asked for.
+  requirementsLine: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.text,
+    lineHeight: 18,
+    marginTop:  Spacing.xs,
+  },
+  // Inline submitting indicator — replaces the old big-button spinner.
+  busyRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    marginTop: Spacing.sm,
+  },
+  busyText: { fontSize: FontSizes.sm, color: Colors.muted },
 
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
   modalSheet: {

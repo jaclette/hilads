@@ -29,7 +29,7 @@ import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
-import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
+import { ChallengeProofBlock, type ChallengeProofBlockHandle } from '@/features/challenge/ChallengeProofBlock';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
 import { countryToFlag } from '@/lib/countryFlag';
@@ -268,6 +268,11 @@ export default function ChallengeChatScreen() {
   // International proof-spec popin — tapping the pipeline's "Waiting for
   // the proof" pill opens this read-only sheet.
   const [proofSpecOpen, setProofSpecOpen] = useState(false);
+  // Imperative handle into ChallengeProofBlock so the pipeline's "Submit
+  // your proof →" sub-CTA can trigger the photo picker + GPS + upload
+  // flow directly. Replaces the standalone big button that used to live
+  // inside the proof block.
+  const proofRef = useRef<ChallengeProofBlockHandle>(null);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here — that's the mutual go-private flow. International
@@ -876,7 +881,15 @@ export default function ChallengeChatScreen() {
                 && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
               return () => setPickerOpen(true);
             }
+            if ((challenge.mode ?? 'local') === 'international' && myAcceptance && !isOwner) {
+              // Acceptor with an active acceptance — tapping the pipeline's
+              // "Submit your proof →" sub-CTA fires the photo picker + GPS
+              // + upload via the ChallengeProofBlock's imperative handle.
+              return () => proofRef.current?.submit();
+            }
             if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
+              // Creator (no submit action) — still useful to surface the
+              // requirements popin so they can re-read what they asked for.
               return () => setProofSpecOpen(true);
             }
             return undefined;
@@ -889,6 +902,7 @@ export default function ChallengeChatScreen() {
             educates them passively). */}
         {(challenge.mode ?? 'local') === 'international' && myAcceptance && (
           <ChallengeProofBlock
+            ref={proofRef}
             acceptanceId={myAcceptance.id}
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}

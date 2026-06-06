@@ -25,8 +25,10 @@ export function ScoringInfoModal({
 }) {
   const { t } = useTranslation('challenge');
 
-  // Step rows in pipeline order. Points are role-specific; null = no scoring
-  // happens at that step (the score_events ledger is silent for that pair).
+  // Step rows in pipeline order. Numbers mirror score_rules in migrate.php
+  // (PR12). null = no scoring at that step. The "Meet up" pipeline step is
+  // omitted from this table because it never awards points — keep the
+  // pipeline visual but skip the noise here.
   const steps: Array<{
     icon:        string;
     labelKey:    string;
@@ -34,9 +36,8 @@ export function ScoringInfoModal({
     taker:       number | null;
   }> = [
     { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: null },
-    { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: null, taker: null },
-    { icon: '👋', labelKey: 'scoringInfo.steps.meet',     challenger: null, taker: null },
-    { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40 },
+    { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
+    { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
   ];
 
   return (
@@ -70,8 +71,8 @@ export function ScoringInfoModal({
 
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{t('scoringInfo.totalLabel')}</Text>
-            <Text style={styles.totalValue}>35</Text>
             <Text style={styles.totalValue}>40</Text>
+            <Text style={styles.totalValue}>45</Text>
           </View>
 
           <Text style={styles.footnote}>{t('scoringInfo.footnote')}</Text>

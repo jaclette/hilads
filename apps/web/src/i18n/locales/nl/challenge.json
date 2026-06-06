@@ -440,5 +440,20 @@
       "body": "Wees de eerste die een challenge aangaat en punten scoort."
     },
     "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen."
+  },
+  "scoringInfo": {
+    "aria": "Hoe punten werken",
+    "title": "🏆 Hoe punten werken",
+    "intro": "Elke challenge levert beide kanten punten op — die tellen mee in je stad- en wereldklassement.",
+    "colStep": "Stap",
+    "steps": {
+      "accepted": "Challenge geaccepteerd",
+      "date": "Datum gepland",
+      "meet": "Meet-up",
+      "rate": "Beiden beoordelen"
+    },
+    "noPoints": "—",
+    "totalLabel": "Totaal per challenge",
+    "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen."
   }
 }

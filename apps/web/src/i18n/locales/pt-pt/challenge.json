@@ -440,5 +440,20 @@
       "body": "Sê o primeiro a aceitar um desafio e a ganhar pontos."
     },
     "errLoad": "Não foi possível carregar a classificação. Puxa para tentar de novo."
+  },
+  "scoringInfo": {
+    "aria": "Como funcionam os pontos",
+    "title": "🏆 Como funcionam os pontos",
+    "intro": "Cada desafio dá pontos aos dois lados — somam-se na tua classificação de cidade e mundial.",
+    "colStep": "Etapa",
+    "steps": {
+      "accepted": "Desafio aceite",
+      "date": "Data marcada",
+      "meet": "Encontro",
+      "rate": "Ambos avaliam"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total por desafio",
+    "footnote": "Os pontos só são atribuídos quando ambos avaliam o encontro."
   }
 }

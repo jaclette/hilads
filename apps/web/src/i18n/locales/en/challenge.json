@@ -168,6 +168,21 @@
     },
     "errSubmit": "Couldn't submit your rating. Try again."
   },
+  "scoringInfo": {
+    "aria": "How points work",
+    "title": "🏆 How points work",
+    "intro": "Each challenge earns points for both sides — they roll up into your city + world leaderboards.",
+    "colStep": "Step",
+    "steps": {
+      "accepted": "Take-on accepted",
+      "date": "Date locked",
+      "meet": "Meet up",
+      "rate": "Both rate"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total per challenge",
+    "footnote": "Points are awarded only when both parties rate the meet-up."
+  },
   "leaderboard": {
     "title": "🏆 Leaderboard",
     "chip": {

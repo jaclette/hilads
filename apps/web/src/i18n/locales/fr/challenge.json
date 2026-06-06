@@ -440,5 +440,20 @@
       "body": "Sois le premier à relever un défi et marquer des points."
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer."
+  },
+  "scoringInfo": {
+    "aria": "Comment marchent les points",
+    "title": "🏆 Comment marchent les points",
+    "intro": "Chaque défi rapporte des points aux deux côtés — ils alimentent ton classement de ville et mondial.",
+    "colStep": "Étape",
+    "steps": {
+      "accepted": "Take-on accepté",
+      "date": "Date fixée",
+      "meet": "Rencontre",
+      "rate": "Double note"
+    },
+    "noPoints": "—",
+    "totalLabel": "Total par défi",
+    "footnote": "Les points ne sont attribués qu’après la double notation."
   }
 }

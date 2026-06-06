@@ -31,6 +31,7 @@ import ChallengePostCreateModal from './components/ChallengePostCreateModal'
 import ThreadsListPage    from './components/ThreadsListPage'
 import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
+import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
 import ChallengeIntroCarousel from './components/ChallengeIntroCarousel'
@@ -4961,8 +4962,12 @@ export default function App() {
               return (
               <div className="now-challenges-section">
                 {nowFilter === 'all' && (
-                  <p className="events-group-label" style={{ padding: '10px 12px 2px', color: '#FF7A3C' }}>
-                    🔥 {t('noun', { ns: 'challenge' })}
+                  <p
+                    className="events-group-label"
+                    style={{ padding: '10px 12px 2px', color: '#FF7A3C', display: 'flex', alignItems: 'center', gap: 8 }}
+                  >
+                    <span style={{ flex: 1 }}>🔥 {t('noun', { ns: 'challenge' })}</span>
+                    <ScoringInfoButton />
                   </p>
                 )}
                 {nowFilter === 'challenges' && (

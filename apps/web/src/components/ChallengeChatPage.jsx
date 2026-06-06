@@ -25,6 +25,7 @@ import { countryToFlag } from '../lib/countryFlag'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
+import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
@@ -765,6 +766,12 @@ export default function ChallengeChatPage({
             <span className="challenge-share-pill-text">{t('join.leaveCta')}</span>
           </button>
         )}
+      </div>
+
+      {/* Scoring info (i) button — right-aligned thin row above the pipeline.
+          Same affordance as on the NOW Challenges section header. */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 12px 4px' }}>
+        <ScoringInfoButton />
       </div>
 
       {/* Lifecycle pipeline (replaces the old "in progress / accomplished"

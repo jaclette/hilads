@@ -813,6 +813,107 @@ html, body, #root {
   color: var(--muted, #b3b3b3);
 }
 
+/* ── PR12 — Scoring info (i) button + popin ──────────────── */
+
+.scoring-info-btn {
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  background:      rgba(255, 201, 60, 0.10);
+  border:          1px solid rgba(255, 201, 60, 0.30);
+  color:           #FFC93C;
+  cursor:          pointer;
+  padding:         0;
+  transition:      opacity 0.15s;
+}
+.scoring-info-btn:hover  { opacity: 0.85; }
+.scoring-info-btn:active { opacity: 0.65; transform: scale(0.96); }
+
+.scoring-info-panel {
+  max-width: 480px;
+  width: 92%;
+}
+.scoring-info-body {
+  padding: 4px 16px 16px;
+}
+.scoring-info-intro {
+  font-size: 13px;
+  color: var(--muted, #b3b3b3);
+  margin: 0 0 12px;
+}
+.scoring-info-header-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.scoring-info-col-step {
+  flex: 1;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted-2, #888);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.scoring-info-col {
+  width: 80px;
+  text-align: right;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted-2, #888);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.scoring-info-row {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+}
+.scoring-info-icon { width: 28px; font-size: 18px; }
+.scoring-info-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #fff);
+}
+.scoring-info-points {
+  width: 80px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 800;
+  color: #FF7A3C;
+}
+.scoring-info-points--muted {
+  color: var(--muted-2, #888);
+  font-weight: 600;
+}
+.scoring-info-total-row {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.scoring-info-total-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text, #fff);
+}
+.scoring-info-total-value {
+  width: 80px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 800;
+  color: #FFC93C;
+}
+.scoring-info-footnote {
+  margin: 12px 0 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--muted-2, #888);
+}
+
 /* ── New mobile header — 3-section redesign ──────────────── */
 
 /* Shown only on mobile; desktop uses header-desktop-layout */
