@@ -1299,4 +1299,251 @@ run($pdo, "
 
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chkick_user ON challenge_kicks (user_id)", 'idx_chkick_user');
 
+// ── Scores + ratings — Path A (PHP/PDO, no RLS) ─────────────────────────────
+// Cached score columns on users + a score_events ledger + a score_rules
+// config table + a challenge_ratings table + triggers that derive points
+// from the rules. Mutual ratings are the source of truth for "meetup
+// happened + we debriefed it" — the trigger on challenge_ratings flips
+// the active acceptance to phase='approved' on the second rating,
+// replacing the legacy manual creator-approve step.
+//
+// All city_id columns on score_events are anchored to cc.city_id (the
+// challenge's origin city) so the per-city leaderboard sums cleanly
+// across accepted / meetup / debrief for the same challenge.
+
+run($pdo, "CREATE EXTENSION IF NOT EXISTS pgcrypto", 'pgcrypto');
+
+// Cached scores on users — driven by triggers; never written by hand.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_alltime    INT  NOT NULL DEFAULT 0", 'users.score_alltime');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month      INT  NOT NULL DEFAULT 0", 'users.score_month');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",                    'users.score_month_ref');
+
+// Intentionally NO users.city_id — current_city_id already covers it
+// and a second FK would just create ambiguity. score_events.city_id is
+// always cc.city_id (the challenge's anchor), not the user's location.
+
+// Points config — single source of truth, tunable in prod via SQL UPDATE.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS score_rules (
+        kind    TEXT NOT NULL,
+        role    TEXT NOT NULL,
+        points  INT  NOT NULL,
+        PRIMARY KEY (kind, role)
+    )
+", 'score_rules');
+
+run($pdo, "
+    INSERT INTO score_rules (kind, role, points) VALUES
+        ('accepted', 'challenger', 5),
+        ('meetup',   'challenger', 10),
+        ('meetup',   'taker',      15),
+        ('debrief',  'challenger', 20),
+        ('debrief',  'taker',      25),
+        ('ghost',    'taker',      0)
+    ON CONFLICT (kind, role) DO NOTHING
+", 'score_rules seed');
+
+// Append-only ledger. UNIQUE (user_id, challenge_id, role, kind) enforces
+// "one event per kind per (user, challenge)" so triggers can re-fire
+// safely with ON CONFLICT DO NOTHING.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS score_events (
+        id           TEXT        PRIMARY KEY,
+        user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost')),
+        points       INT         NOT NULL,
+        city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
+        month_ref    TEXT        NOT NULL,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (user_id, challenge_id, role, kind)
+    )
+", 'score_events');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_user_month ON score_events (user_id, month_ref)", 'idx_score_events_user_month');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_city_month ON score_events (city_id, month_ref)", 'idx_score_events_city_month');
+
+// Mutual ratings. UNIQUE (challenge_id, rater_id) → one rating per
+// rater per challenge. Both parties rating is the meetup proof.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS challenge_ratings (
+        id           TEXT        PRIMARY KEY,
+        challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        rater_id     TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        ratee_id     TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
+        rater_role   TEXT        NOT NULL CHECK (rater_role IN ('challenger', 'taker')),
+        stars        INT         NOT NULL CHECK (stars BETWEEN 1 AND 5),
+        comment      TEXT,
+        created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (challenge_id, rater_id)
+    )
+", 'challenge_ratings');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_challenge ON challenge_ratings (challenge_id)", 'idx_chrate_challenge');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_ratee     ON challenge_ratings (ratee_id)",     'idx_chrate_ratee');
+
+// ── Trigger: sync cached users.score_* on every score_events INSERT ────────
+run($pdo, "
+    CREATE OR REPLACE FUNCTION sync_user_scores() RETURNS TRIGGER AS \$\$
+    BEGIN
+        UPDATE users
+        SET score_alltime   = score_alltime + NEW.points,
+            score_month     = CASE
+                WHEN score_month_ref IS NULL OR score_month_ref <> NEW.month_ref
+                    THEN NEW.points
+                ELSE score_month + NEW.points
+            END,
+            score_month_ref = NEW.month_ref
+        WHERE id = NEW.user_id;
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn sync_user_scores');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_score_events_sync ON score_events", 'drop trg_score_events_sync');
+run($pdo, "
+    CREATE TRIGGER trg_score_events_sync
+    AFTER INSERT ON score_events
+    FOR EACH ROW EXECUTE FUNCTION sync_user_scores()
+", 'trg_score_events_sync');
+
+// ── Trigger: accepted-points on first acceptance ───────────────────────────
+// City anchor = cc.city_id (the challenge's origin city). Matches the
+// mutual-rating trigger below so all score_events for one challenge
+// hit the same city bucket. UNIQUE on score_events blocks dupes when a
+// challenge is accepted, dropped, re-accepted — one accepted-event per
+// challenge total.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_acceptance_insert() RETURNS TRIGGER AS \$\$
+    DECLARE
+        challenger_id TEXT;
+        origin_city   TEXT;
+        pts           INT;
+        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        IF NEW.phase = 'rejected' THEN RETURN NEW; END IF;
+
+        SELECT cc.created_by, cc.city_id
+        INTO challenger_id, origin_city
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        IF challenger_id IS NULL THEN RETURN NEW; END IF;
+
+        SELECT points INTO pts FROM score_rules WHERE kind = 'accepted' AND role = 'challenger';
+        IF pts IS NULL THEN RETURN NEW; END IF;
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        VALUES (encode(gen_random_bytes(8), 'hex'),
+                challenger_id, NEW.challenge_id, 'challenger', 'accepted',
+                pts, origin_city, current_month)
+        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_acceptance_insert');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_accepted_score ON challenge_acceptances", 'drop trg_chacc_accepted_score');
+run($pdo, "
+    CREATE TRIGGER trg_chacc_accepted_score
+    AFTER INSERT ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_acceptance_insert()
+", 'trg_chacc_accepted_score');
+
+// ── Trigger: mutual-rating → meetup + debrief + phase flip ────────────────
+//
+// STRICT mutual-rating model: meetup + debrief fire ONLY when BOTH
+// parties have rated. If one person never rates, NEITHER earns
+// meetup/debrief points — not even the one who did rate. This is
+// intentional. The double-rating is a stronger meetup proof than a
+// one-sided claim.
+//
+// TODO: time-based fallback. If only one party has rated after N days,
+// consider awarding partial points (reveal + award the lone rater) and
+// separately flagging the no-show via the 'ghost' kind. Requires a
+// scheduled job — out of scope for this migration. score_rules.ghost.taker
+// is already seeded at 0 so the column exists when we wire that up.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_rating_insert() RETURNS TRIGGER AS \$\$
+    DECLARE
+        cnt            INT;
+        challenger_id  TEXT;
+        taker_id       TEXT;
+        origin_city    TEXT;
+        pts_meetup_c   INT;
+        pts_meetup_t   INT;
+        pts_debrief_c  INT;
+        pts_debrief_t  INT;
+        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        SELECT COUNT(DISTINCT rater_id) INTO cnt
+        FROM challenge_ratings
+        WHERE challenge_id = NEW.challenge_id;
+
+        IF cnt < 2 THEN RETURN NEW; END IF;
+
+        SELECT cc.created_by, cc.city_id
+        INTO challenger_id, origin_city
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        SELECT ca.acceptor_user_id INTO taker_id
+        FROM challenge_acceptances ca
+        WHERE ca.challenge_id = NEW.challenge_id
+          AND ca.phase <> 'rejected'
+        ORDER BY ca.created_at DESC
+        LIMIT 1;
+
+        IF challenger_id IS NULL OR taker_id IS NULL THEN RETURN NEW; END IF;
+
+        SELECT points INTO pts_meetup_c  FROM score_rules WHERE kind = 'meetup'  AND role = 'challenger';
+        SELECT points INTO pts_meetup_t  FROM score_rules WHERE kind = 'meetup'  AND role = 'taker';
+        SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
+        SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        VALUES
+          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meetup',  COALESCE(pts_meetup_c,  0), origin_city, current_month),
+          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meetup',  COALESCE(pts_meetup_t,  0), origin_city, current_month),
+          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month),
+          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), origin_city, current_month)
+        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+
+        UPDATE challenge_acceptances
+        SET phase       = 'approved',
+            approved_at = COALESCE(approved_at, now()),
+            updated_at  = now()
+        WHERE challenge_id = NEW.challenge_id
+          AND phase NOT IN ('approved', 'rejected');
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_rating_insert');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_chrate_mutual_complete ON challenge_ratings", 'drop trg_chrate_mutual_complete');
+run($pdo, "
+    CREATE TRIGGER trg_chrate_mutual_complete
+    AFTER INSERT ON challenge_ratings
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_rating_insert()
+", 'trg_chrate_mutual_complete');
+
+// ── Mutual-reveal view ──────────────────────────────────────────────────────
+// A challenge_ratings row is visible only when the ratee has also rated
+// the same challenge. Pure projection — no auth context (this app has
+// no Supabase RLS; the PHP route layer filters by viewer on top of this
+// view). Kept as documentation of the rule + a guarantee that "mutual"
+// is what we mean by visible. If we ever wire Supabase Auth, the same
+// view gets a policy: USING (ratee_id = auth.uid()).
+run($pdo, "
+    CREATE OR REPLACE VIEW visible_ratings AS
+    SELECT r.*
+    FROM challenge_ratings r
+    WHERE EXISTS (
+        SELECT 1 FROM challenge_ratings r2
+        WHERE r2.challenge_id = r.challenge_id
+          AND r2.rater_id     = r.ratee_id
+    )
+", 'visible_ratings view');
+
 echo "\nDone.\n";
