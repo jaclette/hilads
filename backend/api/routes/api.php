@@ -8276,23 +8276,57 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
     // bounds malformed-body spam attempts.
     enforceRateLimit('rating_create', 10, 600, $callerId);
 
-    // Active acceptance (non-rejected, most recent — matches the trigger's
-    // ORDER BY ca.created_at DESC LIMIT 1). Used for both role resolution
-    // and the effective_phase gate. Single read.
-    $stmt = Database::pdo()->prepare("
-        SELECT ca.id
-        FROM challenge_acceptances ca
-        WHERE ca.challenge_id = :cid
-          AND ca.phase <> 'rejected'
-        ORDER BY ca.created_at DESC
-        LIMIT 1
-    ");
-    $stmt->execute(['cid' => $challengeId]);
+    // Pick the rate-target acceptance for this caller + challenge.
+    //
+    // Bug fix (Jun 2026): the previous SELECT used `ORDER BY created_at DESC
+    // LIMIT 1` over all non-rejected rows. When a challenge has had multiple
+    // acceptances over time — e.g. an OLD phase='approved' (mutually
+    // completed, caller still hasn't written their rating) AND a NEWER
+    // phase='accepted' (a different taker just took it on) — that picker
+    // grabbed the new one and the effective_phase gate refused. The result
+    // was a 403 not_rate_eligible for a rating the caller legitimately
+    // wanted to leave on the older meet-up.
+    //
+    // Two-branch resolution that mirrors /me/rate-prompts exactly:
+    //   - Caller is creator → any rate-eligible acceptance on this challenge
+    //     (phase='approved', OR phase='scheduled' with end past). Most
+    //     recent first.
+    //   - Caller is acceptor → their own acceptance for this challenge
+    //     (unique per UNIQUE(challenge_id, acceptor_user_id)). The
+    //     downstream effective_phase check handles the gate.
+    $isChallengerEarly = $challenge['created_by'] === $callerId;
+    if ($isChallengerEarly) {
+        $stmt = Database::pdo()->prepare("
+            SELECT ca.id
+            FROM challenge_acceptances ca
+            WHERE ca.challenge_id = :cid
+              AND ca.phase <> 'rejected'
+              AND (
+                  ca.phase = 'approved'
+                  OR (ca.phase = 'scheduled'
+                      AND ca.proposed_starts_at IS NOT NULL
+                      AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now())
+              )
+            ORDER BY ca.created_at DESC
+            LIMIT 1
+        ");
+        $stmt->execute(['cid' => $challengeId]);
+    } else {
+        $stmt = Database::pdo()->prepare("
+            SELECT ca.id
+            FROM challenge_acceptances ca
+            WHERE ca.challenge_id = :cid AND ca.acceptor_user_id = :uid
+            LIMIT 1
+        ");
+        $stmt->execute(['cid' => $challengeId, 'uid' => $callerId]);
+    }
     $accId = $stmt->fetchColumn();
     if ($accId === false) {
         Response::json([
-            'error' => "No one has taken on this challenge yet — nothing to rate.",
-            'code'  => 'no_acceptance',
+            'error' => $isChallengerEarly
+                ? "No rate-eligible meet-up on this challenge yet."
+                : "You're not a party to this challenge.",
+            'code'  => $isChallengerEarly ? 'no_acceptance' : 'not_a_party',
         ], 403);
     }
     // findById gives us the derived effective_phase alongside the row.
@@ -8300,7 +8334,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
 
     // Rate-eligibility — meetup must be over. 'debrief' = scheduled + meetup
     // end is past. 'approved' = trigger already fired OR legacy verdict path.
-    // A second distinct rater still slots in cleanly on 'approved'.
+    // A second distinct rater still slots in cleanly on 'approved'. For the
+    // CREATOR branch above, the SQL already filtered to rate-eligible rows,
+    // so this check is effectively for the ACCEPTOR branch (whose own
+    // acceptance might be in pending / accepted / scheduled-not-past).
     if (!in_array($acceptance['effective_phase'], ['debrief', 'approved'], true)) {
         $msg = $acceptance['phase'] === 'pending'
             ? "Wait until the creator accepts your take-on."
