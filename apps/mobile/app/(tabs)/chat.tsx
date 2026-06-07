@@ -468,6 +468,11 @@ export default function ChatTab() {
             audience:    c.audience,
             challengeMode: c.mode ?? 'local',
             challengeStatus: c.status,
+            // International rows render with origin → target flags instead
+            // of the "{{name}} sent a cross-city challenge" wording; pass
+            // both codes through so ChatMessage can build the label.
+            challengeCountry:       c.country ?? null,
+            challengeTargetCountry: c.target_country ?? null,
             createdAt:   now,
           });
         }
@@ -491,6 +496,10 @@ export default function ChatTab() {
         audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
         challengeMode: ((ch?.mode as 'local' | 'international') ?? 'local'),
         challengeStatus: (ch?.status as 'open' | 'validated') ?? 'open',
+        // PR19 — origin + target flags for the international banner (see
+        // chat-list synthesis above).
+        challengeCountry:       (ch?.country        as string | null) ?? null,
+        challengeTargetCountry: (ch?.target_country as string | null) ?? null,
         createdAt:   Date.now() / 1000,
       }]);
     });

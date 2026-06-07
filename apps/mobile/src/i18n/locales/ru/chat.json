@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
   "bannerChallengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}».",
-  "bannerChallengeInternational": "🌐 {{name}} запустил межгородской челлендж: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}"
 }

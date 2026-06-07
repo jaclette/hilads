@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} が旅行者向けに挑戦：{{title}}",
     "challengeCta": "見る →",
     "challengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。",
-    "challengeInternational": "🌐 {{name}} がクロスシティのチャレンジを開始：{{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} 国際チャレンジ：{{title}}"
   },
   "replyPreview": {
     "photo": "📷 写真"

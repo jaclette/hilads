@@ -221,7 +221,7 @@
     "challengeExplorers": "🔥 {{name}} thách du khách: {{title}}",
     "challengeCta": "Xem →",
     "challengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-    "challengeInternational": "🌐 {{name}} đã tạo thử thách giữa các thành phố: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Ảnh"

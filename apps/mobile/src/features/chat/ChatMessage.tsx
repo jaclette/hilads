@@ -25,6 +25,7 @@ import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
+import { countryToFlag } from '@/lib/countryFlag';
 import { formatSmartTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
 import { useApp } from '@/context/AppContext';
@@ -620,11 +621,17 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   //     locals/travelers split doesn't apply for cross-city challenges).
   //   - Local rows keep the existing locals/travelers variants.
   if (message.type === 'challenge') {
-    const textKey = message.challengeMode === 'international'
+    const isIntl  = message.challengeMode === 'international';
+    const textKey = isIntl
       ? 'bannerChallengeInternational'
       : message.audience === 'explorers'
         ? 'bannerChallengeExplorers'
         : 'bannerChallengeLocals';
+    // PR19 — origin → target flag pair for the international banner. Falls
+    // back to 🌍 when target_country is null ("anywhere" intl). The local
+    // banners ignore these vars; i18next safely no-ops missing tokens.
+    const fromFlag = isIntl ? countryToFlag(message.challengeCountry ?? null) || '🌐' : '';
+    const toFlag   = isIntl ? countryToFlag(message.challengeTargetCountry ?? null) || '🌍' : '';
     // (Commit 1) Status sub-pill removed alongside max_participants. Commit 2
     // brings it back with 1:1 semantics (Available / In progress / Closed).
     const cEmoji: string | null = null;
@@ -636,7 +643,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           <View style={styles.challengePill}>
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={styles.challengeText} numberOfLines={2}>
-                {t(textKey, { name: message.nickname, title: message.content })}
+                {t(textKey, {
+                  name:     message.nickname,
+                  title:    message.content,
+                  fromFlag,
+                  toFlag,
+                })}
               </Text>
               {cEmoji && (
                 <View style={styles.challengeStatusPill}>

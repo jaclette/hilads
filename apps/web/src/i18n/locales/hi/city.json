@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} ने यात्रियों को चुनौती दी: {{title}}",
     "challengeCta": "देखें →",
     "challengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।",
-    "challengeInternational": "🌐 {{name}} ने एक क्रॉस-सिटी चैलेंज भेजा: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} अंतरराष्ट्रीय challenge: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 फ़ोटो"

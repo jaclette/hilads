@@ -243,7 +243,7 @@
     "challengeExplorers": "🔥 {{name}} يتحدّى المسافرين: {{title}}",
     "challengeCta": "عرض →",
     "challengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\".",
-    "challengeInternational": "🌐 أطلق {{name}} تحديًا بين المدن: {{title}}"
+    "challengeInternational": "{{fromFlag}} ← {{toFlag}} تحدٍ دولي: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 صورة"

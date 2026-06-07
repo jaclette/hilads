@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} 님이 여행자에게 도전: {{title}}",
     "challengeCta": "보기 →",
     "challengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요.",
-    "challengeInternational": "🌐 {{name}} 님이 도시 간 챌린지를 시작했어요: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} 국제 챌린지: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 사진"

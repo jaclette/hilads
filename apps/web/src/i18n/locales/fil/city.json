@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 Hinahamon ni {{name}} ang mga biyahero: {{title}}",
     "challengeCta": "Tingnan →",
     "challengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
-    "challengeInternational": "🌐 Nagpadala si {{name}} ng cross-city challenge: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} International na challenge: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Litrato"

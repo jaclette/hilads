@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\".",
-    "challengeInternational": "🌐 {{name}} lançou um desafio entre cidades: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Foto"

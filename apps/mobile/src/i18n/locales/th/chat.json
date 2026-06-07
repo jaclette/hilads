@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} ท้าทายนักเดินทาง: {{title}}",
   "bannerChallengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
-  "bannerChallengeInternational": "🌐 {{name}} ส่งชาเลนจ์ข้ามเมือง: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} ชาเลนจ์ระหว่างประเทศ: {{title}}"
 }

@@ -461,6 +461,12 @@ export interface Message {
    *  international-specific copy variant (no audience distinction since
    *  the cross-city flow doesn't have locals/travelers semantics). */
   challengeMode?: 'local' | 'international';
+  /** For type === 'challenge' with challengeMode='international': origin +
+   *  target ISO-2 country codes. Render as flag emojis in the banner so the
+   *  copy reads "🇫🇷 → 🇻🇳 International challenge: …" instead of leaning on
+   *  the user's name (creators stay anonymous in the city feed). */
+  challengeCountry?:       string | null;
+  challengeTargetCountry?: string | null;
   // Snapshot of the challenge's open/validated state at the time the feed
   // pill is emitted. (Commit 1) `challengeCount` / `challengeMax` removed
   // with the cap model; commit 2 brings the field back with 1:1 semantics.

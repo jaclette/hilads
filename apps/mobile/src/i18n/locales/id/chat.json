@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
   "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
-  "bannerChallengeInternational": "🌐 {{name}} mengirim tantangan lintas kota: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}"
 }

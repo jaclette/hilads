@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
     "challengeCta": "Lihat →",
     "challengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
-    "challengeInternational": "🌐 {{name}} mengirim tantangan lintas kota: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Foto"

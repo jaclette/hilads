@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 Hinahamon ni {{name}} ang mga lokal: {{title}}",
   "bannerChallengeExplorers": "🔥 Hinahamon ni {{name}} ang mga biyahero: {{title}}",
   "bannerChallengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
-  "bannerChallengeInternational": "🌐 Nagpadala si {{name}} ng cross-city challenge: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} International na challenge: {{title}}"
 }

@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} thách du khách: {{title}}",
   "bannerChallengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-  "bannerChallengeInternational": "🌐 {{name}} đã tạo thử thách giữa các thành phố: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}"
 }

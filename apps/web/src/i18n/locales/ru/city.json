@@ -235,7 +235,7 @@
     "challengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
     "challengeCta": "Смотреть →",
     "challengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}».",
-    "challengeInternational": "🌐 {{name}} запустил межгородской челлендж: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Фото"

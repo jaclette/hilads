@@ -227,7 +227,7 @@
     "challengeExplorers": "🔥 {{name}} ท้าทายนักเดินทาง: {{title}}",
     "challengeCta": "ดู →",
     "challengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
-    "challengeInternational": "🌐 {{name}} ส่งชาเลนจ์ข้ามเมือง: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} ชาเลนจ์ระหว่างประเทศ: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 รูปภาพ"

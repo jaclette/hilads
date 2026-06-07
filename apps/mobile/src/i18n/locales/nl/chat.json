@@ -88,5 +88,5 @@
   "bannerChallengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} daagt de reizigers uit: {{title}}",
   "bannerChallengeValidated": "🏆 Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd.",
-  "bannerChallengeInternational": "🌐 {{name}} startte een cross-city challenge: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Internationale challenge: {{title}}"
 }
