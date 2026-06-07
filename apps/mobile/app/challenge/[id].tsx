@@ -970,24 +970,12 @@ export default function ChallengeChatScreen() {
         </View>
         )}{/* /detailsOpen */}
 
-        {/* Owner re-invite CTA — only while the challenge is genuinely free.
-            Opens the same "seed it" sheet shown right after creation, so the
-            creator can ping more city members + re-share at any later moment.
-            Hidden once the challenge is in-progress or validated (the slot is
-            no longer available, no point inviting). */}
-        {isOwner && !isValidated && !challenge.is_in_progress && (
-          <TouchableOpacity
-            style={styles.ownerInviteCta}
-            onPress={() => setPostCreateOpen(true)}
-            activeOpacity={0.85}
-            accessibilityLabel={t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
-          >
-            <Text style={styles.ownerInviteCtaIcon}>⚡</Text>
-            <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
-              {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
-            </Text>
-          </TouchableOpacity>
-        )}
+        {/* PR54 — Owner re-invite CTA dropped. It was rendering between
+            the members strip and the chat with a glitchy clipped top
+            edge on intl creator views, and the same share affordance
+            already lives in the meta row (the "↗ Share" pill).
+            ChallengePostCreateSheet stays mounted; the post-create
+            handler still opens it once right after creation. */}
 
         {/* Edit / Close challenge / Delete moved into the Manage modal
             opened from the inline pill in the meta row. */}
