@@ -10175,7 +10175,13 @@ $router->add('GET', '/api/v1/leaderboard', function () {
     if ($scope === 'world') {
         if ($period === 'alltime') {
             $list = $pdo->prepare("
-                SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.score_alltime AS points,
+                SELECT u.id, u.display_name,
+                       -- PR39 — fall back to the full photo URL when the
+                       -- thumbnail column hasn't been backfilled (legacy
+                       -- uploads pre-date the thumb pipeline). Matches the
+                       -- UserResource serializer used everywhere else.
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
+                       u.score_alltime AS points,
                        city_ch.name AS city_name, city_meta.country AS city_country
                 FROM users u
                 LEFT JOIN channels city_ch  ON city_ch.id        = u.current_city_id
@@ -10201,7 +10207,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $myRank   = ($row && $myPoints > 0) ? (int) $row['my_rank'] : null;
         } else {
             $list = $pdo->prepare("
-                SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.score_month AS points,
+                SELECT u.id, u.display_name,
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
+                       u.score_month AS points,
                        city_ch.name AS city_name, city_meta.country AS city_country
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
@@ -10243,7 +10251,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 GROUP BY user_id
                 HAVING SUM(points) > 0
             )
-            SELECT u.id, u.display_name, u.profile_thumb_photo_url, pu.points,
+            SELECT u.id, u.display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
+                   pu.points,
                    city_ch.name AS city_name, city_meta.country AS city_country
             FROM per_user pu
             JOIN users u ON u.id = pu.user_id
