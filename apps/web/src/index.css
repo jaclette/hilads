@@ -7626,6 +7626,21 @@ img.pub-profile-avatar {
   animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+@media (max-width: 767px) {
+  /* PR37 — generalize the PR22 lift to every .modal-panel on mobile. The
+     fixed .bottom-nav has an opaque + blurred backdrop that visually
+     covers the bottom of any panel docked at viewport edge (z-index 400
+     > 300 isn't enough — the nav's backdrop-filter creates its own
+     compositing surface). Every bottom-sheet variant (.going-modal,
+     .modal-panel--visibility-menu, .modal-panel--challenge-manage,
+     .modal-panel--challenge-optin, .modal-panel--proof-spec) hit the
+     same issue — the visibility picker's "Private" option was clipped
+     in this round. Lifting at the .modal-panel level covers all of them. */
+  .modal-panel {
+    margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
+  }
+}
+
 @media (min-width: 768px) {
   .modal-overlay {
     align-items: center;
