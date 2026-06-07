@@ -366,9 +366,9 @@
     "closed": "Thử thách này đã kết thúc"
   },
   "join": {
-    "gateTitle": "Chạm để mở khoá cuộc trò chuyện",
-    "gateBody": "{{count}} đã ở trong. Vào xem cuộc trò chuyện.",
-    "cta": "Vào xem",
+    "gateTitle": "Vào với tư cách khán giả",
+    "gateBody": "Vào với tư cách khán giả để theo dõi cuộc trò chuyện và cổ vũ người tham gia.",
+    "cta": "Vào làm khán giả",
     "leaveCta": "Rời kênh",
     "errKicked": "Bạn đã bị xóa khỏi thử thách này. Không thể tham gia lại.",
     "errClosed": "Thử thách này đã đóng nhận thành viên mới.",

@@ -366,9 +366,9 @@
     "closed": "Sarado na ang challenge na ito"
   },
   "join": {
-    "gateTitle": "I-tap para ma-unlock ang chat",
-    "gateBody": "{{count}} na ang nakapasok. Sumali para makita ang usapan.",
-    "cta": "Pumasok",
+    "gateTitle": "Maging manonood",
+    "gateBody": "Pumasok bilang manonood para sundan ang usapan at i-cheer ang kalahok.",
+    "cta": "Pumasok bilang manonood",
     "leaveCta": "Lumabas sa channel",
     "errKicked": "Inalis ka sa challenge na ito. Hindi ka na puwedeng sumali ulit.",
     "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",

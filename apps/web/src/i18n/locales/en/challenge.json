@@ -119,9 +119,9 @@
   "chatPlaceholder": "Say something to the channel…",
   "messageCreator": "Message {{name}} privately",
   "join": {
-    "gateTitle": "Tap to unlock the chat",
-    "gateBody": "{{count}} already in. Hop in to see the conversation.",
-    "cta": "Hop in",
+    "gateTitle": "Become a spectator",
+    "gateBody": "Enter as a spectator to follow the conversation and cheer the taker on.",
+    "cta": "Enter as spectator",
     "leaveCta": "Leave the channel",
     "errKicked": "You've been removed from this challenge. You can't re-join.",
     "errClosed": "This challenge is closed to new joins.",

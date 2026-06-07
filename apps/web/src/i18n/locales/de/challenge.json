@@ -362,9 +362,9 @@
     "closed": "Diese Challenge ist geschlossen"
   },
   "join": {
-    "gateTitle": "Tippe, um den Chat freizuschalten",
-    "gateBody": "{{count}} schon dabei. Spring rein, um die Unterhaltung zu sehen.",
-    "cta": "Reinhüpfen",
+    "gateTitle": "Werde Zuschauer",
+    "gateBody": "Tritt als Zuschauer ein, um die Unterhaltung zu verfolgen und den Teilnehmer anzufeuern.",
+    "cta": "Als Zuschauer beitreten",
     "leaveCta": "Kanal verlassen",
     "errKicked": "Du wurdest aus dieser Challenge entfernt. Du kannst nicht erneut beitreten.",
     "errClosed": "Diese Challenge nimmt keine neuen Teilnehmer mehr auf.",

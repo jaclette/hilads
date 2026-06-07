@@ -366,9 +366,9 @@
     "closed": "Tantangan ini sudah ditutup"
   },
   "join": {
-    "gateTitle": "Ketuk untuk buka obrolan",
-    "gateBody": "{{count}} sudah masuk. Gabung yuk, lihat obrolannya.",
-    "cta": "Masuk",
+    "gateTitle": "Jadi penonton",
+    "gateBody": "Masuk sebagai penonton untuk mengikuti obrolan dan menyemangati peserta.",
+    "cta": "Masuk sebagai penonton",
     "leaveCta": "Keluar dari kanal",
     "errKicked": "Kamu telah dikeluarkan dari tantangan ini. Tidak bisa bergabung lagi.",
     "errClosed": "Tantangan ini tidak menerima anggota baru.",

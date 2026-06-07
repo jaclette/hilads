@@ -362,9 +362,9 @@
     "closed": "Este reto está cerrado"
   },
   "join": {
-    "gateTitle": "Toca para desbloquear el chat",
-    "gateBody": "{{count}} ya dentro. Únete para ver la conversación.",
-    "cta": "Entrar",
+    "gateTitle": "Conviértete en espectador",
+    "gateBody": "Entra como espectador para seguir la conversación y animar al participante.",
+    "cta": "Entrar como espectador",
     "leaveCta": "Salir del canal",
     "errKicked": "Te han eliminado de este reto. No puedes volver a unirte.",
     "errClosed": "Este reto está cerrado a nuevas incorporaciones.",

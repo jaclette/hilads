@@ -366,9 +366,9 @@
     "closed": "Questa sfida è chiusa"
   },
   "join": {
-    "gateTitle": "Tocca per sbloccare la chat",
-    "gateBody": "{{count}} già dentro. Salta dentro per vedere la conversazione.",
-    "cta": "Entra",
+    "gateTitle": "Diventa spettatore",
+    "gateBody": "Entra come spettatore per seguire la conversazione e fare il tifo per chi partecipa.",
+    "cta": "Entra come spettatore",
     "leaveCta": "Esci dal canale",
     "errKicked": "Sei stato rimosso da questa sfida. Non puoi ri-unirti.",
     "errClosed": "Questa sfida non accetta nuovi partecipanti.",

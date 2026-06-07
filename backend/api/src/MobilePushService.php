@@ -174,6 +174,16 @@ class MobilePushService
                 default                   => null,
             };
 
+            // PR35 — actionable pushes go out as heads-up (Android "high"
+            // priority, iOS time-sensitive). Without this the notification
+            // arrives collapsed in the system tray and the Accept / Ignore
+            // buttons are hidden until the user manually expands the card —
+            // the user complaint that triggered this change ("I don't see
+            // the Accept CTA on the push"). High priority surfaces the
+            // banner over the current screen with the action buttons
+            // visible immediately.
+            $isActionable = $category !== null;
+
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => array_filter([
                 'to'         => $token,
@@ -183,6 +193,10 @@ class MobilePushService
                 'sound'      => 'default',
                 'channelId'  => 'default', // Android channel defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
+                'priority'   => $isActionable ? 'high' : null,
+                // iOS-only — make actionable pushes time-sensitive so the
+                // system bypasses focus modes + shows the full banner.
+                '_displayInForeground' => $isActionable ? true : null,
             ], fn($v) => $v !== null), $tokens);
 
             // 5. Queue the messages — they're POSTed to Expo in batches at

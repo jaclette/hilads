@@ -362,9 +362,9 @@
     "closed": "此挑战已结束"
   },
   "join": {
-    "gateTitle": "点击解锁聊天",
-    "gateBody": "已有 {{count}} 人加入。点进来看看聊天。",
-    "cta": "进来",
+    "gateTitle": "成为观众",
+    "gateBody": "以观众身份进入，跟随对话并为挑战者加油打气。",
+    "cta": "以观众身份进入",
     "leaveCta": "退出频道",
     "errKicked": "你已被移出此挑战，无法重新加入。",
     "errClosed": "此挑战已关闭新成员加入。",

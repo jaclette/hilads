@@ -366,9 +366,9 @@
     "closed": "Ce défi est terminé"
   },
   "join": {
-    "gateTitle": "Tape pour débloquer le chat",
-    "gateBody": "{{count}} déjà dans. Saute dedans pour voir la conversation.",
-    "cta": "Entrer",
+    "gateTitle": "Deviens spectateur",
+    "gateBody": "Entre en tant que spectateur pour suivre la conversation et encourager le participant.",
+    "cta": "Entrer comme spectateur",
     "leaveCta": "Quitter le canal",
     "errKicked": "Tu as été retiré de ce défi. Tu ne peux pas le rejoindre.",
     "errClosed": "Ce défi est fermé aux nouvelles arrivées.",
