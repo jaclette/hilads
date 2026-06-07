@@ -154,8 +154,9 @@ export default function ChallengeChatPage({
   const [messages, setMessages] = useState([])
   const [composer, setComposer] = useState('')
   const [sending,  setSending]  = useState(false)
-  const feedRef  = useRef(null)
-  const knownIds = useRef(new Set())
+  const feedRef   = useRef(null)
+  const bottomRef = useRef(null) // PR28 — scrollIntoView target at the feed's tail
+  const knownIds  = useRef(new Set())
   // Collapse the badges / pipeline / participants block when the chat is
   // scrolled OR the composer is focused — mirrors the event channel header
   // collapse so the conversation gets vertical space when it matters.
@@ -461,30 +462,45 @@ export default function ChallengeChatPage({
     return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
   }, [socket, loadMyAcceptance])
 
-  // PR26 — smart auto-scroll. The old "snap to bottom on every
-  // messages.length change" fought the user the moment they tried to read
-  // older messages and could land near the top when the effect fired
-  // before layout was settled (e.g., right as iAmParticipant flipped and
-  // the feed mounted with partial content). The new contract:
-  //   - On initial mount of the feed, snap to bottom once (newest visible).
-  //   - On subsequent messages.length changes, only snap if the user is
-  //     already within ~120px of the bottom (active in the conversation).
-  //     If they scrolled up to read history, leave their position alone.
-  // useLayoutEffect runs before paint, so the user never sees the
-  // pre-snap frame; rAF inside guarantees the snap reads a final
-  // scrollHeight even when the effect lands mid-reflow (e.g., the
-  // collapsible header transitioning at the same time).
+  // PR26 — smart auto-scroll. The previous "snap to bottom on every
+  // messages.length change" fought the user and could land near the top
+  // when the effect fired before layout was settled. The new contract:
+  //   - On the FIRST render with messages.length > 0, snap to bottom
+  //     (regardless of the near-bottom flag — this is the open-the-chat
+  //     moment; the user expects newest content).
+  //   - On subsequent length changes, only snap if the user is within
+  //     ~120px of the bottom (otherwise they're reading history).
+  // PR28 — robustness: snap THREE times — synchronously in useLayoutEffect
+  // (catches the common case before paint), once via requestAnimationFrame
+  // (catches the case where the snap-time scrollHeight was still partial
+  // — e.g., MessageImage placeholders resolving, font swap), and once via
+  // setTimeout(0) (catches reflows triggered by sibling components like
+  // the schedule band mounting just under the feed). All three are
+  // idempotent; the final scrollTop is always el.scrollHeight.
   const isNearBottomRef = useRef(true)
   const didInitialScrollRef = useRef(false)
   useLayoutEffect(() => {
     const el = feedRef.current
     if (!el) return
-    const shouldSnap = !didInitialScrollRef.current || isNearBottomRef.current
+    // The "open the chat" moment: first time the feed has messages.
+    const isInitialLoad = !didInitialScrollRef.current && messages.length > 0
+    const shouldSnap = isInitialLoad || isNearBottomRef.current
     if (!shouldSnap) return
-    const snap = () => { el.scrollTop = el.scrollHeight }
-    // First paint after mount: rAF gives layout one frame to settle.
-    requestAnimationFrame(snap)
-    didInitialScrollRef.current = true
+    // scrollIntoView on the bottom sentinel is more reliable than
+    // scrollTop = scrollHeight: the browser figures out exactly how far
+    // to scroll the nearest ancestor scroll container to bring the
+    // element into the visible viewport, even when intermediate layout
+    // is still settling. We retry across three ticks so any reflow from
+    // siblings (schedule band, image placeholders) is absorbed.
+    const snap = () => {
+      const target = bottomRef.current
+      if (target) target.scrollIntoView({ block: 'end', behavior: 'auto' })
+    }
+    snap()                                        // before paint
+    requestAnimationFrame(snap)                   // after the next layout tick
+    const timeoutId = window.setTimeout(snap, 60) // catches late reflows
+    if (isInitialLoad) didInitialScrollRef.current = true
+    return () => window.clearTimeout(timeoutId)
   }, [messages.length])
 
   const handleSendMessage = useCallback(async (e) => {
@@ -1139,6 +1155,12 @@ export default function ChallengeChatPage({
                 )
               })
             })()}
+            {/* PR28 — bottom sentinel for scrollIntoView. More robust than
+                el.scrollTop = el.scrollHeight, which can miss when the
+                container's clientHeight is read mid-reflow (sibling
+                schedule band mounting, composer keyboard, etc.). The
+                snap-to-bottom effect calls bottomRef.scrollIntoView. */}
+            <div ref={bottomRef} aria-hidden="true" />
           </div>
 
           {/* Schedule band — Local + the viewer is the creator OR ACTIVE
