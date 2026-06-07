@@ -87,14 +87,27 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   const handleSubmit = useCallback(async () => {
     if (busy) return;
 
-    // 1. Permission + photo pick
-    const lib = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (lib.status !== 'granted') {
+    // 1. CAMERA permission + live capture. PR55 — proof MUST be an
+    //    instant photo (no gallery picker). Gallery uploads broke the
+    //    "I was here right now" contract behind the proof flow:
+    //    anyone could submit a stock food photo without ever being in
+    //    the target city. Camera-only kills that loophole — combined
+    //    with the mandatory GPS capture below, the proof now reflects
+    //    the acceptor's actual present moment.
+    const cam = await ImagePicker.requestCameraPermissionsAsync();
+    if (cam.status !== 'granted') {
       Alert.alert(t('intl.proof.permPhotoTitle'), t('intl.proof.permPhotoBody'));
       return;
     }
-    const pick = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'], quality: 0.85,
+    const pick = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images'],
+      quality:    0.85,
+      // Default to the rear camera — proofs are about the place / dish,
+      // not the acceptor's face.
+      cameraType: ImagePicker.CameraType.back,
+      // Skip the system "use this photo?" preview to keep the flow
+      // tight; the geotag + server submit happen seconds later.
+      allowsEditing: false,
     });
     if (pick.canceled || !pick.assets?.[0]) return;
     const asset = pick.assets[0];
