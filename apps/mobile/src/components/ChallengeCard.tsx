@@ -61,14 +61,23 @@ export function ChallengeCard({
           <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
         </View>
         {isInternational ? (() => {
-          // 🇩🇪 → 🇻🇳 (or "🌍" target for anywhere). Falls back to the
-          // legacy "🌐 International" if the origin country is unknown.
+          // 🇻🇳 → 🇩🇪 · Berlin — flags + target city NAME. The city name is
+          // appended unconditionally (when present) so the pill stays
+          // readable even if the device's emoji font doesn't render the
+          // target country flag (Android One UI gaps for some flags). Web
+          // doesn't need this fallback but ships the same field for
+          // consistency.
           const fromFlag = countryToFlag(challenge.country ?? null);
           const toFlag   = countryToFlag(challenge.target_country ?? null) || '🌍';
-          const label    = fromFlag ? `${fromFlag} → ${toFlag}` : `🌐 ${t('mode.international')}`;
+          const cityTail = challenge.target_city_name
+            ? `  ·  ${challenge.target_city_name}`
+            : '';
+          const label    = fromFlag
+            ? `${fromFlag} → ${toFlag}${cityTail}`
+            : `🌐 ${t('mode.international')}${cityTail}`;
           return (
             <View style={styles.intlPill}>
-              <Text style={styles.intlPillText}>{label}</Text>
+              <Text style={styles.intlPillText} numberOfLines={1}>{label}</Text>
             </View>
           );
         })() : (

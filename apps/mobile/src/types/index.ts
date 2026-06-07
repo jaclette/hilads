@@ -249,6 +249,10 @@ export interface Challenge {
    *  International pill. target_country is null for "anywhere" / unknown. */
   country?:              string | null;
   target_country?:       string | null;
+  /** PR15 — display name of the target city (e.g. "Berlin"). Surfaced in
+   *  the International pill so it stays readable even when the flag emoji
+   *  doesn't render on a given device. Null for "anywhere" / local rows. */
+  target_city_name?:     string | null;
   /** Creator-authored proof spec shown to acceptors before they upload.
    *  International only — null on local rows. */
   proof_requirements?:   string | null;

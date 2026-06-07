@@ -101,6 +101,19 @@ class ChallengeRepository
         return $city['country'] ?? null;
     }
 
+    /**
+     * Resolve the display city name for a 'city_<int>' channel id via the
+     * APCU-cached city list. Mirror of countryForCityId — used so the
+     * International pill can fall back to a readable city name when the
+     * flag emoji doesn't render on a given device's font.
+     */
+    private static function cityNameForCityId(?string $cityId): ?string
+    {
+        if (!is_string($cityId) || !preg_match('/^city_(\d+)$/', $cityId, $m)) return null;
+        $city = CityRepository::findById((int) $m[1]);
+        return $city['name'] ?? null;
+    }
+
     private static function format(array $row): array
     {
         return [
@@ -140,6 +153,11 @@ class ChallengeRepository
             // pill ("🇩🇪 → 🇻🇳" etc.). Null for guest-only or unknown rows.
             'country'              => self::countryForCityId($row['city_id']        ?? null),
             'target_country'       => self::countryForCityId($row['target_city_id'] ?? null),
+            // PR15 — target city DISPLAY NAME for the International pill on
+            // surfaces where the flag emoji might not render (Android font
+            // gaps on country flags). Resolved from the same APCU-cached
+            // city list as country. Null for "anywhere" / local rows.
+            'target_city_name'     => self::cityNameForCityId($row['target_city_id'] ?? null),
             // Visibility — 'public' default for pre-migration rows.
             'visibility'           => $row['visibility']         ?? 'public',
             'closed_to_new_joins'  => (bool) ($row['closed_to_new_joins'] ?? false),
