@@ -162,12 +162,17 @@ final class MentionService
             $stmt = $pdo->prepare("SELECT user_id FROM challenge_participants WHERE channel_id = ? AND user_id IS NOT NULL");
             $stmt->execute([$channelId]);
         } else { // city
-            // Mentionable in a city = registered users who are part of THIS city's
-            // conversation: either it's their home city (current_city_id) OR they've
-            // posted here recently. current_city_id alone is too narrow — it's a
-            // user's single sticky home city, so travellers chatting in another city
-            // (the common case for Hilads) couldn't be mentioned there. Repeats
-            // $channelId positionally (PDO can't reuse a named placeholder).
+            // PR29 — Mentionable in a city = ACTUAL members of that city only:
+            // current_city_id (the source of truth per the membership rule)
+            // OR an explicit row in user_city_memberships (legacy + the
+            // belt-and-braces upsert /me/city writes alongside current_city_id).
+            // The previous "OR posted recently in this channel" branch surfaced
+            // travellers who'd dropped a message but never became members —
+            // hence the bug where users like BigFatBison showed up as mention
+            // suggestions in Ho Chi Minh City despite not being a member.
+            // Travellers ARE city members of wherever they're currently in
+            // (current_city_id flips on geo arrival), so this gate doesn't
+            // exclude legitimate visitors.
             $stmt = $pdo->prepare("
                 SELECT u.id
                 FROM users u
@@ -175,9 +180,8 @@ final class MentionService
                   AND (
                         u.current_city_id = ?
                      OR EXISTS (
-                          SELECT 1 FROM messages m
-                          WHERE m.channel_id = ? AND m.user_id = u.id
-                            AND m.created_at > now() - interval '30 days'
+                          SELECT 1 FROM user_city_memberships ucm
+                          WHERE ucm.channel_id = ? AND ucm.user_id = u.id
                         )
                   )
             ");
@@ -240,12 +244,12 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
-        } else { // city — home-city members OR registered users active in this city's chat
-            // Mirror mentionableUserIds(): current_city_id (sticky home) is too
-            // narrow on its own, so also include anyone who's posted in this city
-            // channel recently — the people you'd actually @ in the conversation.
-            // (The old presence-based "active first" ordering was dead: presence
-            // rows never store user_id, so last_seen was always NULL.)
+        } else { // city — actual members of the city only
+            // PR29 — Mirror mentionableUserIds(): match on current_city_id
+            // OR an explicit user_city_memberships row. Previously the gate
+            // also fell through for "anyone who posted here in the last
+            // 30 days", which surfaced travellers / one-off posters as
+            // mention suggestions in a city they're not a member of.
             $sql = "
                 SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
                 FROM users u
@@ -255,9 +259,8 @@ final class MentionService
                   AND (
                         u.current_city_id = ?
                      OR EXISTS (
-                          SELECT 1 FROM messages m
-                          WHERE m.channel_id = ? AND m.user_id = u.id
-                            AND m.created_at > now() - interval '30 days'
+                          SELECT 1 FROM user_city_memberships ucm
+                          WHERE ucm.channel_id = ? AND ucm.user_id = u.id
                         )
                   )
                 ORDER BY u.username ASC
