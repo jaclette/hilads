@@ -1103,7 +1103,19 @@ export default function ChallengeChatScreen() {
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
         behavior="padding"
       >
-        {iAmParticipant === true && (!myAcceptance || (myAcceptance.phase !== 'pending' && myAcceptance.phase !== 'rejected')) ? (
+        {/* PR34 — show the chat for ALL participants once they're in the
+            channel, including acceptors with phase='pending'. The pipeline
+            above already conveys "waiting for the creator's review"; the
+            big "En attente" block was duplicative and worse, it hid the
+            very chat the acceptor needs to talk to the creator while
+            waiting. Two narrow exceptions still take over the surface:
+              - Creator with a pending acceptance — they need Accept/Reject
+                buttons, not the chat (those buttons live in the block).
+              - Acceptor whose take-on was rejected — terminal communication
+                that deserves its own surface so the user understands the
+                channel is closed for them.
+            Both branches are handled inside the non-chat IIFE below. */}
+        {iAmParticipant === true && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
           <>
             <FlatList
               /* Filter out type='event' messages — they were auto-injected by
