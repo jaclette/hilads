@@ -37,6 +37,9 @@ $post = $method === 'POST' ? $_POST : [
     // so the admin sees what they're starting from.
     'score_alltime' => (string) ($user['score_alltime'] ?? 0),
     'score_month'   => (string) ($user['score_month']   ?? 0),
+    // PR16 — pre-fill the current city so the picker shows the active
+    // selection. Empty string = unset (no city).
+    'current_city_id' => (string) ($user['current_city_id'] ?? ''),
 ];
 
 if ($method === 'POST') {
@@ -108,6 +111,26 @@ if ($method === 'POST') {
     $scoreAlltime = $scoreAlltimeRaw !== '' ? max(0, (int) $scoreAlltimeRaw) : null;
     $scoreMonth   = $scoreMonthRaw   !== '' ? max(0, (int) $scoreMonthRaw)   : null;
 
+    // PR16 — city-membership override. The admin picks a city from the
+    // searchable list; the form posts the channel id ("city_<int>") or an
+    // empty string to leave it untouched. We validate that the id parses
+    // and that the city exists in our static catalog before accepting it,
+    // otherwise the FK-less column would happily store garbage.
+    $cityIdRaw  = trim((string) ($post['current_city_id'] ?? ''));
+    $newCityId  = null; // null = no change
+    if ($cityIdRaw !== '') {
+        if (!preg_match('/^city_(\d+)$/', $cityIdRaw, $cm)) {
+            $errors[] = 'Invalid city selection.';
+        } else {
+            $cityIntId = (int) $cm[1];
+            if (CityRepository::findById($cityIntId) === null) {
+                $errors[] = 'Selected city does not exist.';
+            } else {
+                $newCityId = $cityIdRaw;
+            }
+        }
+    }
+
     if (empty($errors)) {
         $fields = [
             'display_name'      => $displayName,
@@ -134,7 +157,40 @@ if ($method === 'POST') {
             $fields['score_month_ref'] = gmdate('Y-m');
             error_log("[admin-score] user={$userId} score_month " . ((int) ($user['score_month'] ?? 0)) . " → {$scoreMonth} (ref=" . gmdate('Y-m') . ")");
         }
+
+        // PR16 — apply the city change. Only writes when the picker has a
+        // value AND it differs from what's on file (avoid bumping the
+        // set/confirmed timestamps when the admin saves the form without
+        // actually touching the city). Mirrors the timestamp behavior of
+        // POST /api/v1/me/city so the change reads as a deliberate switch.
+        $oldCityId = (string) ($user['current_city_id'] ?? '');
+        if ($newCityId !== null && $newCityId !== $oldCityId) {
+            // ISO 8601 with explicit UTC offset — TIMESTAMPTZ columns parse
+            // this unambiguously regardless of the Postgres session timezone.
+            $nowIso = gmdate('c');
+            $fields['current_city_id']                = $newCityId;
+            $fields['current_city_set_at']            = $nowIso;
+            $fields['current_city_last_confirmed_at'] = $nowIso;
+            error_log("[admin-city] user={$userId} current_city_id {$oldCityId} → {$newCityId}");
+        }
+
         $user = UserRepository::adminUpdate($userId, $fields);
+
+        // PR16 — alongside the current_city_id update, upsert the legacy
+        // user_city_memberships row so the user shows up in that city's
+        // members list under both feature-flag modes (same as POST /me/city).
+        if ($newCityId !== null && $newCityId !== $oldCityId) {
+            try {
+                Database::pdo()->prepare("
+                    INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+                    VALUES (?, ?, now(), now())
+                    ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+                ")->execute([$userId, $newCityId]);
+            } catch (\Throwable $e) {
+                error_log('[admin-city] membership upsert failed: ' . $e->getMessage());
+            }
+        }
+
         flash_set('success', 'User updated successfully.');
         admin_redirect("/admin/users/{$userId}/edit");
     }
@@ -296,6 +352,48 @@ admin_nav('/admin/users');
             </datalist>
         </div>
 
+        <!-- PR16 — Live city (current_city_id) override. Searchable list of
+             every city in the catalog. The admin picks one and Save commits:
+             writes users.current_city_id + bumps set/confirmed timestamps and
+             upserts user_city_memberships so the user appears in that city's
+             roster under both feature-flag modes. -->
+        <?php
+            $currentCityRaw = (string) ($post['current_city_id'] ?? '');
+            $currentCityNum = preg_match('/^city_(\d+)$/', $currentCityRaw, $cm) ? (int) $cm[1] : null;
+            $currentCityRow = $currentCityNum !== null ? CityRepository::findById($currentCityNum) : null;
+            $currentCityLbl = $currentCityRow
+                ? ($currentCityRow['name'] . ' (' . $currentCityRow['country'] . ')')
+                : '— none —';
+        ?>
+        <div class="form-group">
+            <label>Live city (current_city_id)</label>
+            <p style="margin:-2px 0 8px;color:#888;font-size:12px">
+                Drives city-member status, the NOW screen, and the city chat.
+                Current: <strong style="color:#ddd"><?= htmlspecialchars($currentCityLbl, ENT_QUOTES) ?></strong>
+            </p>
+            <input
+                type="text"
+                id="city-search"
+                placeholder="🔎 Search by city or country…"
+                autocomplete="off"
+                style="margin-bottom:6px"
+            >
+            <select id="current_city_id" name="current_city_id" size="8" style="width:100%;font-family:inherit;font-size:13px">
+                <option value="" <?= $currentCityRaw === '' ? 'selected' : '' ?>>— No city —</option>
+                <?php foreach ($cities as $c):
+                    $optVal   = 'city_' . $c['id'];
+                    $optLabel = $c['name'] . ' (' . $c['country'] . ')';
+                    $haystack = mb_strtolower($optLabel);
+                ?>
+                    <option value="<?= htmlspecialchars($optVal, ENT_QUOTES) ?>"
+                            data-search="<?= htmlspecialchars($haystack, ENT_QUOTES) ?>"
+                            <?= $currentCityRaw === $optVal ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($optLabel, ENT_QUOTES) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
         <div class="form-group">
             <label for="vibe">Vibe</label>
             <select id="vibe" name="vibe">
@@ -442,6 +540,24 @@ function handleAvatarChange(input) {
     };
     reader.readAsDataURL(file);
 }
+
+// PR16 — client-side filter for the live-city picker. The full city list
+// ships in the <select>; the search input hides options whose data-search
+// haystack ("name (country)" lowercased) doesn't include the query. Pure
+// JS, no deps, no network — works against ~hundreds of cities instantly.
+(function () {
+    const search = document.getElementById('city-search');
+    const select = document.getElementById('current_city_id');
+    if (!search || !select) return;
+    search.addEventListener('input', function (e) {
+        const q = (e.target.value || '').trim().toLowerCase();
+        for (const opt of select.options) {
+            if (!opt.value) continue; // keep "— No city —" visible
+            const hay = opt.dataset.search || opt.text.toLowerCase();
+            opt.hidden = q !== '' && !hay.includes(q);
+        }
+    });
+})();
 
 function handleRemoveToggle(cb) {
     const img = document.getElementById('avatar-preview-img');

@@ -2006,6 +2006,27 @@ $router->add('POST', '/api/v1/me/city', function () {
         'user_id' => $user['id'],
     ]);
 
+    // PR16 — also upsert the legacy user_city_memberships row so the manual
+    // switch counts as membership under BOTH feature-flag modes:
+    //   - MEMBERS_USE_CURRENT_CITY=on  → the UPDATE above already covers it
+    //     (members list filters on current_city_id).
+    //   - MEMBERS_USE_CURRENT_CITY=off (default) → members list unions on
+    //     user_city_memberships rows; without this insert, switching cities
+    //     wouldn't add the user to the new city's roster until they later
+    //     hit POST /channels/:id/join (the explicit join path).
+    // Same shape as the upsert in /channels/:id/join.
+    try {
+        Database::pdo()->prepare("
+            INSERT INTO user_city_memberships (user_id, channel_id, first_seen_at, last_seen_at)
+            VALUES (?, ?, now(), now())
+            ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
+        ")->execute([$user['id'], $channelId]);
+    } catch (\Throwable $e) {
+        // Non-fatal — the current_city_id update is the primary signal; the
+        // membership row is a belt-and-braces backup for the legacy union.
+        error_log('[me/city] membership upsert failed: ' . $e->getMessage());
+    }
+
     Response::json(['ok' => true, 'channelId' => $channelId]);
 });
 

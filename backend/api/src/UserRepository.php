@@ -196,6 +196,14 @@ class UserRepository
             // mutation of users.score_* — bypasses score_events but useful
             // for moderation / corrections / seed-data tweaks from the BO.
             'score_alltime', 'score_month', 'score_month_ref',
+            // PR16: admin override of the user's current city membership. The
+            // BO writes current_city_id directly (channel id like "city_42")
+            // and bumps the set/confirmed timestamps so the change reads as
+            // a deliberate switch, not stale geo data. The caller is
+            // responsible for upserting the legacy user_city_memberships row
+            // alongside this (see admin/user_edit.php) so the members list
+            // picks up the change under both feature-flag modes.
+            'current_city_id', 'current_city_set_at', 'current_city_last_confirmed_at',
         ];
         $sets   = [];
         $values = [];
