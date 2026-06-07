@@ -217,7 +217,13 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   if (latest?.status === 'pending') {
     return (
       <View style={styles.card}>
-        <Image source={{ uri: latest.media_url }} style={styles.media} contentFit="cover" />
+        {/* PR56 — the proof photo is now inserted into the channel chat
+            (PR43), so showing it here too duplicated the image AND
+            rendered with a clipped top edge in the proof card. Drop
+            the inline <Image>; both creator + acceptor see the photo
+            in the chat thread above. Keep the geotag chip (it's a
+            verdict signal, not a duplicate of the photo) + the
+            verdict buttons / waiting text. */}
         <View style={styles.geotagRow}>
           <Ionicons
             name={latest.geotag_verified ? 'location' : 'warning-outline'}
