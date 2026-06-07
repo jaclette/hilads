@@ -353,8 +353,8 @@
   "chatPlaceholder": "Dis quelque chose dans le canal…",
   "messageCreator": "Envoyer un message privé à {{name}}",
   "badge": {
-    "challenger": "Lanceur",
-    "taker": "Receveur",
+    "challenger": "Challenger",
+    "taker": "Preneur",
     "spectator": "Spectateur"
   },
   "cta": {
