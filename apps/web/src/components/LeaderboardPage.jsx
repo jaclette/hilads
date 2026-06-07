@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
 import { localizeCityName } from '../i18n/cityName'
 import { countryToFlag } from '../lib/countryFlag'
+import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
 
 /**
@@ -45,7 +46,17 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
 
-  const cityId = cityChannelId ? `city_${cityChannelId}` : undefined
+  // PR41 — picker-overridden city for the leaderboard view. Null = use the
+  // caller's current city (default behaviour). Setting this DOES NOT change
+  // the user's actual current_city anywhere else in the app — same scope as
+  // the mobile picker (PR13).
+  const [pickedCity,      setPickedCity]      = useState(null) // { channelId, name } | null
+  const [cityPickerOpen,  setCityPickerOpen]  = useState(false)
+
+  const fallbackChannelId = cityChannelId ? String(cityChannelId) : null
+  const effectiveChannelId = pickedCity?.channelId ?? fallbackChannelId
+  const effectiveCityName  = pickedCity?.name      ?? city?.name ?? city ?? null
+  const apiCityId = effectiveChannelId ? `city_${effectiveChannelId}` : undefined
 
   const load = useCallback(async () => {
     setError(null)
@@ -53,12 +64,12 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
       scope, period,
       limit:  PAGE_SIZE,
       offset: 0,
-      cityId: scope === 'city' ? cityId : undefined,
+      cityId: scope === 'city' ? apiCityId : undefined,
     })
     if (res === null) setError(t('leaderboard.errLoad'))
     else              setData(res)
     setLoading(false)
-  }, [scope, period, cityId, t])
+  }, [scope, period, apiCityId, t])
 
   useEffect(() => { setLoading(true); load() }, [load])
 
@@ -66,7 +77,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   const me      = data?.me
   const meInPage = !!me && me.rank !== null && entries.some(e => e.user_id === me.user_id)
 
-  const cityLabel = localizeCityName(city) || t('leaderboard.scope.city')
+  const cityLabel = localizeCityName(effectiveCityName) || t('leaderboard.scope.city')
 
   return (
     <div className="full-page leaderboard-page">
@@ -80,9 +91,20 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           <button
             type="button"
             className={`leaderboard-seg-item${scope === 'city' ? ' is-active' : ''}`}
-            onClick={() => setScope('city')}
+            // PR41 — first click selects the City scope; while the City
+            // tab is ALREADY active, the click instead opens the city
+            // picker. Mirrors the mobile gesture (tap the city pill →
+            // sheet appears) without taking a second slot of chrome.
+            onClick={() => {
+              if (scope === 'city') setCityPickerOpen(true)
+              else                  setScope('city')
+            }}
+            aria-haspopup={scope === 'city' ? 'dialog' : undefined}
           >
             {cityLabel}
+            {scope === 'city' && (
+              <span className="leaderboard-seg-chevron" aria-hidden="true">▾</span>
+            )}
           </button>
           <button
             type="button"
@@ -168,6 +190,19 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           )}
         </div>
       )}
+
+      {/* PR41 — city picker modal. Selecting a row overrides the
+          leaderboard's view scope; the user's actual current_city is
+          unchanged everywhere else. */}
+      <LeaderboardCityPickerModal
+        visible={cityPickerOpen}
+        selectedChannelId={effectiveChannelId}
+        onSelect={(channelId, picked) => {
+          setPickedCity({ channelId: String(channelId), name: picked.name })
+          setCityPickerOpen(false)
+        }}
+        onClose={() => setCityPickerOpen(false)}
+      />
     </div>
   )
 }

@@ -746,6 +746,84 @@ html, body, #root {
   font-weight: 800;
 }
 
+/* PR41 — chevron next to the active city label hints "tap me again to
+   open the city picker". Subtle so it doesn't dominate the pill. */
+.leaderboard-seg-chevron {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+/* PR41 — city picker modal rows. Sits inside .modal-panel which already
+   handles the bottom-sheet docking + nav clearance (PR37). */
+.leaderboard-city-picker {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+.leaderboard-city-picker-search {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.leaderboard-city-picker-search input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+  box-sizing: border-box;
+}
+.leaderboard-city-picker-search input:focus {
+  border-color: var(--accent, #FF7A3C);
+}
+.leaderboard-city-picker-list {
+  overflow-y: auto;
+  padding: 6px 0 16px;
+}
+.leaderboard-city-picker-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--muted2);
+  font-size: 14px;
+}
+.leaderboard-city-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+.leaderboard-city-picker-row:hover  { background: rgba(255, 255, 255, 0.04); }
+.leaderboard-city-picker-row:active { background: rgba(255, 255, 255, 0.06); }
+.leaderboard-city-picker-row.is-selected { background: rgba(255, 122, 60, 0.10); }
+.leaderboard-city-picker-row.is-selected .leaderboard-city-picker-name { color: #FF7A3C; }
+.leaderboard-city-picker-flag { font-size: 22px; line-height: 1; }
+.leaderboard-city-picker-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.leaderboard-city-picker-check { color: #FF7A3C; font-weight: 800; }
+
 .leaderboard-row {
   display: flex;
   align-items: center;
