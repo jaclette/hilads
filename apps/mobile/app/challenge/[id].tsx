@@ -1174,7 +1174,15 @@ export default function ChallengeChatScreen() {
               ListEmptyComponent={!msgsLoading ? (
                 <View style={styles.emptyChat}>
                   <Text style={styles.emptyChatEmoji}>👋</Text>
-                  <Text style={styles.emptyChatText}>{t('thread.empty')}</Text>
+                  {/* PR61 — the local copy talks about agreeing on a meet-up
+                      date; international challenges have no meet-up step
+                      (the flow is submit photo → verdict), so the date hint
+                      was confusing on intl. Pick the matching variant. */}
+                  <Text style={styles.emptyChatText}>
+                    {t((challenge?.mode ?? 'local') === 'international'
+                      ? 'thread.emptyIntl'
+                      : 'thread.empty')}
+                  </Text>
                 </View>
               ) : null}
             />

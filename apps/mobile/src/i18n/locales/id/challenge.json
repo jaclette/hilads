@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "Thread tidak ditemukan",
     "empty": "Sapa dulu 👋 dan rencanain kapan ketemu.",
+    "emptyIntl": "Sapa dulu 👋 — kirim bukti dari lokasi.",
     "cancel": {
       "creatorTitle": "Batalkan take-on ini?",
       "acceptorTitle": "Mundur dari challenge ini?",

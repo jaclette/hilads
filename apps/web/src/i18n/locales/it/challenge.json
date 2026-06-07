@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "Thread non trovato",
     "empty": "Saluta 👋 e organizzate quando vedervi.",
+    "emptyIntl": "Saluta 👋 — manda la tua prova dal posto.",
     "cancel": {
       "creatorTitle": "Annullare questo take-on?",
       "acceptorTitle": "Mollare questa sfida?",

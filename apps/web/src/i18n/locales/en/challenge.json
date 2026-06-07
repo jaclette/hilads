@@ -130,6 +130,7 @@
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
+    "emptyIntl": "Say hi 👋 — send your proof from the spot.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",

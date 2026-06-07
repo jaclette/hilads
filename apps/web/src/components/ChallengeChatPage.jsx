@@ -1102,7 +1102,11 @@ export default function ChallengeChatPage({
             {messages.length === 0 && (
               <div className="topic-chat-empty">
                 <span className="topic-chat-empty-icon">👋</span>
-                <span>{t('thread.empty')}</span>
+                {/* PR61 — date hint is local-only; international flow is
+                    photo → verdict, so pick the intl variant. */}
+                <span>{t((challenge?.mode ?? 'local') === 'international'
+                  ? 'thread.emptyIntl'
+                  : 'thread.empty')}</span>
               </div>
             )}
             {(() => {

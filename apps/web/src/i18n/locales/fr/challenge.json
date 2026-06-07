@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "Fil introuvable",
     "empty": "Dis bonjour 👋 et fixez une date pour vous retrouver.",
+    "emptyIntl": "Dis bonjour 👋 — envoie ta preuve depuis le lieu.",
     "cancel": {
       "creatorTitle": "Annuler ce take-on ?",
       "acceptorTitle": "Laisser tomber ce défi ?",

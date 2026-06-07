@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "找不到對話",
     "empty": "打聲招呼 👋,約一下見面時間。",
+    "emptyIntl": "打聲招呼 👋 — 在現場發出你的證據。",
     "cancel": {
       "creatorTitle": "取消這次take-on?",
       "acceptorTitle": "放棄這個挑戰?",

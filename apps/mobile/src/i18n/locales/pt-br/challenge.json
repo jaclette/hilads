@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "Thread não encontrado",
     "empty": "Diga oi 👋 e combinem quando se encontrar.",
+    "emptyIntl": "Diga oi 👋 — envie sua prova direto do local.",
     "cancel": {
       "creatorTitle": "Cancelar esse take-on?",
       "acceptorTitle": "Desistir desse desafio?",

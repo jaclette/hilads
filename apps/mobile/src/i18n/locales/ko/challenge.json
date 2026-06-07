@@ -118,6 +118,7 @@
   "thread": {
     "notFound": "스레드를 찾을 수 없어요",
     "empty": "인사 👋 하고 만날 시간을 정해요.",
+    "emptyIntl": "인사 👋 — 현장에서 인증을 보내요.",
     "cancel": {
       "creatorTitle": "이 take-on을 취소할까요?",
       "acceptorTitle": "이 챌린지를 포기할까요?",
