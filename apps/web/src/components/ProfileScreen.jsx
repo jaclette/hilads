@@ -617,7 +617,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                                 ? t('forLocals',    { ns: 'challenge' })
                                 : t('forExplorers', { ns: 'challenge' }))}
                         </span>
-                        <span className={`my-event-badge${c.status === 'validated' ? ' my-event-badge--recurring' : ''}`}>
+                        <span className={`my-event-badge ${c.status === 'validated' ? 'my-event-badge--recurring' : 'my-event-badge--open'}`}>
                           {c.status === 'validated'
                             ? t('validatedBadge', { ns: 'challenge' })
                             : t('openBadge',      { ns: 'challenge' })}
