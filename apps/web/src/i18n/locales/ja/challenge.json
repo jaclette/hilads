@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "1チャレンジ合計",
     "footnote": "ポイントは双方が集まりを評価したときに付与されます。"
+  },
+  "scoreCelebration": {
+    "unit": "ポイント",
+    "subtitle": {
+      "accepted": "チャレンジに参加しました 🤝",
+      "date_locked": "日程が決まりました — 行こう 🗓️",
+      "meetup": "ミッション達成 🎉",
+      "debrief": "ミッション達成 🎉",
+      "ghost": "次回頑張ろう 👻",
+      "default": "ランキングを駆け上がってる 🚀"
+    },
+    "rank": {
+      "city": "{{city}}で {{rank}}位",
+      "cityBeyond": "街のトップ{{topN}}圏外",
+      "world": "世界で {{rank}}位",
+      "worldBeyond": "世界のトップ{{topN}}圏外"
+    },
+    "cta": "いこう ⚡"
   }
 }

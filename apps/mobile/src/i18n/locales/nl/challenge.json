@@ -459,5 +459,23 @@
     "noPoints": "—",
     "totalLabel": "Totaal per challenge",
     "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen."
+  },
+  "scoreCelebration": {
+    "unit": "punten",
+    "subtitle": {
+      "accepted": "Je nam een challenge aan 🤝",
+      "date_locked": "Afspraak bevestigd — let’s go 🗓️",
+      "meetup": "Missie geslaagd 🎉",
+      "debrief": "Missie geslaagd 🎉",
+      "ghost": "Volgende keer beter 👻",
+      "default": "Je klimt in de ranglijst 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} in {{city}}",
+      "cityBeyond": "Buiten de top {{topN}} in jouw stad",
+      "world": "#{{rank}} wereldwijd",
+      "worldBeyond": "Buiten de top {{topN}} wereldwijd"
+    },
+    "cta": "Go ⚡"
   }
 }

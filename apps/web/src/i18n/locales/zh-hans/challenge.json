@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "每个挑战合计",
     "footnote": "只有双方都完成评分后才会发放积分。"
+  },
+  "scoreCelebration": {
+    "unit": "积分",
+    "subtitle": {
+      "accepted": "你接受了一个挑战 🤝",
+      "date_locked": "日程已确定 — 出发 🗓️",
+      "meetup": "任务完成 🎉",
+      "debrief": "任务完成 🎉",
+      "ghost": "下次再来 👻",
+      "default": "你正在榜上攀升 🚀"
+    },
+    "rank": {
+      "city": "{{city}} 第 {{rank}} 名",
+      "cityBeyond": "位列你所在城市前 {{topN}} 之外",
+      "world": "全球第 {{rank}} 名",
+      "worldBeyond": "位列全球前 {{topN}} 之外"
+    },
+    "cta": "出发 ⚡"
   }
 }

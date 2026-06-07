@@ -1318,6 +1318,15 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_alltime    INT  NOT 
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month      INT  NOT NULL DEFAULT 0", 'users.score_month');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",                    'users.score_month_ref');
 
+// PR17 — celebration popin watermark. Stores the max score_events.created_at
+// the user has already been shown in the "+X points!" popin. The endpoint
+// sums points earned strictly after this watermark; the client acks by
+// posting the new watermark back. Initialized to NOW() on first migration
+// so existing point ledgers don't trigger a giant "+1247 points!" surprise
+// on first launch after deploy.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_celebrated_at TIMESTAMPTZ", 'users.score_celebrated_at');
+run($pdo, "UPDATE users SET score_celebrated_at = now() WHERE score_celebrated_at IS NULL", 'users.score_celebrated_at backfill (now)');
+
 // Intentionally NO users.city_id — current_city_id already covers it
 // and a second FK would just create ambiguity. score_events.city_id is
 // always cc.city_id (the challenge's anchor), not the user's location.

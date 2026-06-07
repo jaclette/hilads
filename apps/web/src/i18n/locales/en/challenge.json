@@ -186,26 +186,26 @@
   "leaderboard": {
     "title": "🏆 Leaderboard",
     "chip": {
-      "ranked":     "🏆 #{{rank}}",
+      "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
-      "neutral":    "🏆 Top challengers"
+      "neutral": "🏆 Top challengers"
     },
     "scope": {
-      "city":  "My city",
+      "city": "My city",
       "world": "World"
     },
     "period": {
-      "month":   "This month",
+      "month": "This month",
       "alltime": "All-time"
     },
     "points": "{{points}} pts",
     "me": {
-      "ranked":   "You · #{{rank}} · {{points}} pts",
+      "ranked": "You · #{{rank}} · {{points}} pts",
       "unranked": "Take a challenge to get on the board"
     },
     "empty": {
       "title": "Nobody's on the board yet",
-      "body":  "Be the first to take a challenge and earn points."
+      "body": "Be the first to take a challenge and earn points."
     },
     "errLoad": "Couldn't load the leaderboard. Pull to retry."
   },
@@ -498,5 +498,23 @@
   "modeFilter": {
     "label": "Filter by mode",
     "all": "All"
+  },
+  "scoreCelebration": {
+    "unit": "points",
+    "subtitle": {
+      "accepted": "You took on a challenge 🤝",
+      "date_locked": "Date locked — let’s go 🗓️",
+      "meetup": "Mission accomplished 🎉",
+      "debrief": "Mission accomplished 🎉",
+      "ghost": "Better luck next time 👻",
+      "default": "You’re climbing the ranks 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} in {{city}}",
+      "cityBeyond": "Outside the top {{topN}} in your city",
+      "world": "#{{rank}} worldwide",
+      "worldBeyond": "Outside the top {{topN}} worldwide"
+    },
+    "cta": "Let’s go ⚡"
   }
 }

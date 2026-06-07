@@ -305,6 +305,40 @@ export async function fetchRatePrompts(): Promise<RatePrompt[]> {
   }
 }
 
+// PR17 — Score celebration popin (the "+X points!" launch surface).
+export interface ScoreCelebration {
+  points:       number;                          // 0 = nothing to show
+  event_count?: number;
+  top_kind?:    'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost' | null;
+  seen_until?:  string | null;                   // ISO timestamp; ack with this
+  city_id?:     string | null;
+  city_name?:   string | null;
+  city_country?: string | null;
+  top_n?:       number;
+  rank_alltime?: { city: number | null; global: number | null };
+  rank_month?:   { city: number | null; global: number | null };
+}
+
+/** Pending celebration delta. Returns { points: 0 } when nothing to show. */
+export async function fetchScoreCelebration(): Promise<ScoreCelebration> {
+  try {
+    return await api.get<ScoreCelebration>('/me/score-celebration');
+  } catch (err) {
+    console.warn('[fetchScoreCelebration] failed:', err);
+    return { points: 0 };
+  }
+}
+
+/** Ack the celebration so the next GET returns 0. seen_until comes from the
+ *  GET payload — it's the max event timestamp the server included in the sum. */
+export async function ackScoreCelebration(seenUntil: string): Promise<void> {
+  try {
+    await api.post('/me/score-celebration/seen', { seen_until: seenUntil });
+  } catch (err) {
+    console.warn('[ackScoreCelebration] failed:', err);
+  }
+}
+
 /** Submit a rating for a challenge. Throws ApiError on 4xx so the sheet can
  *  branch — in particular code='already_rated' (409) and code='not_rate_eligible'
  *  (403) are recoverable by dismissing + refetching the prompts list. */

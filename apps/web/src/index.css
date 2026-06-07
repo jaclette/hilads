@@ -12805,3 +12805,152 @@ body.has-app-promo-banner .page-header {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.18);
 }
+
+/* ── PR17: score celebration popin ──────────────────────────────────────────
+   "+X points!" launch surface fired once per page load when the user has
+   unacknowledged score_events. Same visual rhythm as the native modal:
+   warm-orange glow, trophy emoji that springs in, points headline that
+   counts up via JS, rank rows that stagger-fade-in. */
+.score-celebration-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  z-index: 3000;
+  animation: sc-backdrop-fade 0.22s ease-out both;
+}
+
+@keyframes sc-backdrop-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.score-celebration-card {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 122, 60, 0.32);
+  border-radius: 18px;
+  padding: 20px 22px 22px;
+  text-align: center;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.5),
+    0 0 36px rgba(255, 122, 60, 0.32);
+  animation: sc-card-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes sc-card-pop {
+  0%   { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.score-celebration-confetti {
+  font-size: 16px;
+  letter-spacing: 4px;
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.score-celebration-trophy {
+  font-size: 64px;
+  line-height: 1.1;
+  margin-bottom: 4px;
+  display: inline-block;
+  animation: sc-trophy-bounce 0.6s 0.12s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes sc-trophy-bounce {
+  0%   { opacity: 0; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.score-celebration-points {
+  font-size: 44px;
+  font-weight: 900;
+  color: #FF7A3C;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  margin-top: 4px;
+}
+
+.score-celebration-points-unit {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+
+.score-celebration-subtitle {
+  font-size: 15px;
+  color: var(--muted2);
+  margin: 6px 0 14px;
+}
+
+.score-celebration-divider {
+  width: 60%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0 auto 14px;
+}
+
+.score-celebration-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  /* stagger-fade in — delays match the native modal cadence (320 / 420ms) */
+  opacity: 0;
+  animation: sc-row-fade 0.28s ease-out forwards;
+}
+
+.score-celebration-row--1 { animation-delay: 0.32s; }
+.score-celebration-row--2 { animation-delay: 0.42s; }
+
+@keyframes sc-row-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.score-celebration-row-flag {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.score-celebration-row-label {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.score-celebration-cta {
+  display: block;
+  width: 100%;
+  margin-top: 16px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  border: none;
+  background: #FF7A3C;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  box-shadow:
+    0 8px 24px rgba(255, 122, 60, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.08s ease, opacity 0.12s ease;
+}
+
+.score-celebration-cta:hover  { opacity: 0.92; }
+.score-celebration-cta:active { transform: scale(0.98); opacity: 0.85; }

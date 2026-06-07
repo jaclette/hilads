@@ -7,6 +7,7 @@ import { acceptEula } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
+import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -213,6 +214,12 @@ function RootLayoutInner() {
         username={account?.username ?? account?.display_name ?? ''}
         onClose={() => setShowAccountWelcome(false)}
       />
+
+      {/* PR17 — "+X points!" popin once per cold start when the user has
+          unacknowledged score_events. Sits above RatePromptLaunchGate so
+          the celebration lands first (it's the upbeat moment; the rate
+          sheet comes after). Both gates are independent. */}
+      <ScoreCelebrationLaunchGate />
 
       {/* PR11 — auto-open the RateSheet once per cold start if the caller
           has any rate-eligible meet-up (proposed_ends_at < now() and not

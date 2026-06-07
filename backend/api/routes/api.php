@@ -9774,6 +9774,189 @@ $router->add('GET', '/api/v1/me/scores', function () {
     ]);
 });
 
+// PR17 ── Score celebration popin ─────────────────────────────────────────
+//
+// GET  /api/v1/me/score-celebration
+//   Returns the pending "+X points!" celebration: sum of score_events.points
+//   the caller has earned strictly AFTER users.score_celebrated_at, plus the
+//   current city + global ranks (alltime + this month, same shape as
+//   /me/scores). The client opens a popin when `points > 0`, displays the
+//   delta + ranks, then acks via POST below. Idempotent — calling twice
+//   without acking returns the same payload.
+//
+// POST /api/v1/me/score-celebration/seen { seen_until }
+//   Marks the caller's watermark up to `seen_until` (ISO timestamp returned
+//   by the GET). Server clamps so the watermark never decreases — multiple
+//   acks with stale timestamps are no-ops.
+//
+// Frequency: one popin per app open at most, gated client-side. The
+// watermark guarantees the same delta is never celebrated twice across
+// devices either: device A acks → device B's next GET returns 0.
+$router->add('GET', '/api/v1/me/score-celebration', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+    $pdo      = Database::pdo();
+
+    // Pull the watermark + cached scores in one shot (reused for the rank
+    // queries below — no need to re-read).
+    $stmt = $pdo->prepare("
+        SELECT score_alltime, score_month, score_month_ref,
+               current_city_id, score_celebrated_at
+        FROM users
+        WHERE id = ?
+    ");
+    $stmt->execute([$callerId]);
+    $me = $stmt->fetch(\PDO::FETCH_ASSOC);
+    if (!$me) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+
+    // Aggregate the unacknowledged events. `'-infinity'::timestamptz` is the
+    // canonical Postgres sentinel for "any timestamp is greater" — handles
+    // the very-first-launch case where the column might still be NULL
+    // despite the backfill (defensive; shouldn't happen post-migration).
+    // We also pull the top kind (largest single contribution) so the client
+    // can render a contextual subtitle per challenge step.
+    $watermark = $me['score_celebrated_at']; // may be NULL on a never-migrated row
+    $aggStmt   = $pdo->prepare("
+        SELECT
+            COALESCE(SUM(points), 0)                                  AS total_points,
+            COUNT(*)                                                  AS event_count,
+            COALESCE(MAX(created_at), NULL)                           AS max_created_at
+        FROM score_events
+        WHERE user_id = :uid
+          AND created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+    ");
+    $aggStmt->execute(['uid' => $callerId, 'wm' => $watermark]);
+    $agg          = $aggStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+    $totalPoints  = (int) ($agg['total_points'] ?? 0);
+    $eventCount   = (int) ($agg['event_count']  ?? 0);
+    $maxCreatedAt = $agg['max_created_at'] ?? null;
+
+    // Short-circuit when there's nothing to celebrate — keeps the wire
+    // payload tiny and the client's "has popin to show" check trivial.
+    if ($totalPoints <= 0) {
+        Response::json(['points' => 0]);
+    }
+
+    // Top-kind lookup — the kind that contributed the most. Ties broken by
+    // most recent first (so a +30 debrief outranks a stale +5 acceptance).
+    $topStmt = $pdo->prepare("
+        SELECT kind, SUM(points) AS pts
+        FROM score_events
+        WHERE user_id = :uid
+          AND created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+        GROUP BY kind
+        ORDER BY pts DESC, MAX(created_at) DESC
+        LIMIT 1
+    ");
+    $topStmt->execute(['uid' => $callerId, 'wm' => $watermark]);
+    $topRow  = $topStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+    $topKind = $topRow['kind'] ?? null;
+
+    // Ranks — same bounded-LIMIT-101 trick as /me/scores. The caller's
+    // cached score columns are already up to date (sync_user_scores trigger
+    // fired on each score_events INSERT), so we can rank against them
+    // directly without re-aggregating the ledger.
+    $alltime      = (int) $me['score_alltime'];
+    $cachedMonth  = (int) $me['score_month'];
+    $monthRef     = $me['score_month_ref'];
+    $cityId       = $me['current_city_id'];
+    $currentMonth = gmdate('Y-m');
+    $effectiveMonth = ($monthRef === $currentMonth) ? $cachedMonth : 0;
+    $TOP_N        = 100;
+
+    $boundedRank = function (string $whereExtra, array $bind) use ($pdo, $TOP_N): ?int {
+        $sql = "
+            SELECT COUNT(*) FROM (
+                SELECT 1 FROM users
+                WHERE {$whereExtra} AND deleted_at IS NULL
+                LIMIT " . ($TOP_N + 1) . "
+            ) bounded
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($bind);
+        $cnt = (int) $stmt->fetchColumn();
+        return $cnt < $TOP_N ? $cnt + 1 : null;
+    };
+
+    $alltimeGlobalRank = $boundedRank(
+        'score_alltime > :s',
+        ['s' => $alltime],
+    );
+    $alltimeCityRank = $cityId === null ? null : $boundedRank(
+        'score_alltime > :s AND current_city_id = :c',
+        ['s' => $alltime, 'c' => $cityId],
+    );
+    $monthGlobalRank = $boundedRank(
+        'score_month > :s AND score_month_ref = :m',
+        ['s' => $effectiveMonth, 'm' => $currentMonth],
+    );
+    $monthCityRank = $cityId === null ? null : $boundedRank(
+        'score_month > :s AND score_month_ref = :m AND current_city_id = :c',
+        ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
+    );
+
+    // City name for the popin's "in {{city}}" copy. The city catalog lookup
+    // is in-memory (CityRepository::load() caches per request) so this is
+    // free.
+    $cityName    = null;
+    $cityCountry = null;
+    if ($cityId !== null && preg_match('/^city_(\d+)$/', $cityId, $cm)) {
+        $cityRow = CityRepository::findById((int) $cm[1]);
+        if ($cityRow !== null) {
+            $cityName    = $cityRow['name']    ?? null;
+            $cityCountry = $cityRow['country'] ?? null;
+        }
+    }
+
+    Response::json([
+        'points'       => $totalPoints,
+        'event_count'  => $eventCount,
+        'top_kind'     => $topKind,
+        'seen_until'   => $maxCreatedAt, // client posts this back to ack
+        'city_id'      => $cityId,
+        'city_name'    => $cityName,
+        'city_country' => $cityCountry,
+        'top_n'        => $TOP_N,
+        'rank_alltime' => [
+            'city'   => $alltimeCityRank,
+            'global' => $alltimeGlobalRank,
+        ],
+        'rank_month' => [
+            'city'   => $monthCityRank,
+            'global' => $monthGlobalRank,
+        ],
+    ]);
+});
+
+$router->add('POST', '/api/v1/me/score-celebration/seen', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $body      = json_decode(file_get_contents('php://input') ?: '{}', true) ?: [];
+    $seenUntil = trim((string) ($body['seen_until'] ?? ''));
+    if ($seenUntil === '') {
+        Response::json(['error' => 'seen_until required'], 400);
+    }
+
+    // GREATEST clamps so a stale ack from a slow client can't roll the
+    // watermark back. Postgres' GREATEST(null, x) yields null, hence the
+    // explicit COALESCE — without it, a row whose score_celebrated_at is
+    // still NULL would stay NULL after this ack.
+    $stmt = Database::pdo()->prepare("
+        UPDATE users
+           SET score_celebrated_at = GREATEST(
+               COALESCE(score_celebrated_at, '-infinity'::timestamptz),
+               :su::timestamptz
+           )
+         WHERE id = :uid
+    ");
+    $stmt->execute(['su' => $seenUntil, 'uid' => $callerId]);
+
+    Response::json(['ok' => true]);
+});
+
 // GET /api/v1/me/rate-prompts
 // Single bounded read returning the caller's currently rate-eligible
 // challenges. The client polls this on app open / threads-screen mount and

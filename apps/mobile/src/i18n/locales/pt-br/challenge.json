@@ -459,5 +459,23 @@
     "noPoints": "—",
     "totalLabel": "Total por desafio",
     "footnote": "Os pontos só são concedidos quando os dois avaliam o encontro."
+  },
+  "scoreCelebration": {
+    "unit": "pontos",
+    "subtitle": {
+      "accepted": "Você topou um challenge 🤝",
+      "date_locked": "Encontro confirmado — bora 🗓️",
+      "meetup": "Missão cumprida 🎉",
+      "debrief": "Missão cumprida 🎉",
+      "ghost": "Mais sorte na próxima 👻",
+      "default": "Você está subindo no ranking 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} em {{city}}",
+      "cityBeyond": "Fora do top {{topN}} da sua cidade",
+      "world": "#{{rank}} no mundo",
+      "worldBeyond": "Fora do top {{topN}} mundial"
+    },
+    "cta": "Bora ⚡"
   }
 }

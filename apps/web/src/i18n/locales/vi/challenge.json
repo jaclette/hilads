@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "Tổng mỗi thử thách",
     "footnote": "Điểm chỉ được trao khi cả hai cùng đánh giá."
+  },
+  "scoreCelebration": {
+    "unit": "điểm",
+    "subtitle": {
+      "accepted": "Bạn đã nhận một challenge 🤝",
+      "date_locked": "Đã chốt lịch — đi thôi 🗓️",
+      "meetup": "Nhiệm vụ hoàn thành 🎉",
+      "debrief": "Nhiệm vụ hoàn thành 🎉",
+      "ghost": "May mắn lần sau 👻",
+      "default": "Bạn đang leo bảng xếp hạng 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} tại {{city}}",
+      "cityBeyond": "Ngoài top {{topN}} của thành phố bạn",
+      "world": "#{{rank}} toàn cầu",
+      "worldBeyond": "Ngoài top {{topN}} toàn cầu"
+    },
+    "cta": "Đi thôi ⚡"
   }
 }

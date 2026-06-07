@@ -459,5 +459,23 @@
     "noPoints": "—",
     "totalLabel": "प्रति चैलेंज कुल",
     "footnote": "पॉइंट्स तब मिलते हैं जब दोनों मुलाक़ात को रेट कर दें।"
+  },
+  "scoreCelebration": {
+    "unit": "अंक",
+    "subtitle": {
+      "accepted": "तूने एक challenge उठाया 🤝",
+      "date_locked": "मीटिंग पक्की — चलो 🗓️",
+      "meetup": "मिशन पूरा 🎉",
+      "debrief": "मिशन पूरा 🎉",
+      "ghost": "अगली बार बेहतर 👻",
+      "default": "तू रैंकिंग में ऊपर चढ़ रहा है 🚀"
+    },
+    "rank": {
+      "city": "{{city}} में #{{rank}}",
+      "cityBeyond": "अपने शहर में टॉप {{topN}} से बाहर",
+      "world": "दुनिया में #{{rank}}",
+      "worldBeyond": "दुनिया में टॉप {{topN}} से बाहर"
+    },
+    "cta": "चलो ⚡"
   }
 }

@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "챌린지당 합계",
     "footnote": "양쪽이 모두 만남을 평가했을 때 포인트가 부여돼요."
+  },
+  "scoreCelebration": {
+    "unit": "포인트",
+    "subtitle": {
+      "accepted": "챌린지에 참여했어요 🤝",
+      "date_locked": "약속 확정 — 가자 🗓️",
+      "meetup": "미션 성공 🎉",
+      "debrief": "미션 성공 🎉",
+      "ghost": "다음을 노려보자 👻",
+      "default": "랭킹을 오르고 있어요 🚀"
+    },
+    "rank": {
+      "city": "{{city}} {{rank}}위",
+      "cityBeyond": "도시 상위 {{topN}}위 밖",
+      "world": "전 세계 {{rank}}위",
+      "worldBeyond": "전 세계 상위 {{topN}}위 밖"
+    },
+    "cta": "가자 ⚡"
   }
 }

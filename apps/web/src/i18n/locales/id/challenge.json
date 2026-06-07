@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "Total per challenge",
     "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya."
+  },
+  "scoreCelebration": {
+    "unit": "poin",
+    "subtitle": {
+      "accepted": "Kamu menerima sebuah challenge 🤝",
+      "date_locked": "Janji terkunci — ayo 🗓️",
+      "meetup": "Misi selesai 🎉",
+      "debrief": "Misi selesai 🎉",
+      "ghost": "Semoga lebih beruntung lain kali 👻",
+      "default": "Kamu naik peringkat 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} di {{city}}",
+      "cityBeyond": "Di luar top {{topN}} di kotamu",
+      "world": "#{{rank}} sedunia",
+      "worldBeyond": "Di luar top {{topN}} sedunia"
+    },
+    "cta": "Ayo ⚡"
   }
 }

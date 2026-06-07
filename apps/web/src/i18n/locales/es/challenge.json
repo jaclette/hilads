@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "Total por reto",
     "footnote": "Los puntos solo se otorgan cuando ambos valoran el encuentro."
+  },
+  "scoreCelebration": {
+    "unit": "puntos",
+    "subtitle": {
+      "accepted": "¡Aceptaste un challenge! 🤝",
+      "date_locked": "Cita confirmada — ¡vamos! 🗓️",
+      "meetup": "¡Misión cumplida! 🎉",
+      "debrief": "¡Misión cumplida! 🎉",
+      "ghost": "¡Suerte la próxima! 👻",
+      "default": "¡Estás escalando posiciones! 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} en {{city}}",
+      "cityBeyond": "Fuera del top {{topN}} de tu ciudad",
+      "world": "#{{rank}} a nivel mundial",
+      "worldBeyond": "Fuera del top {{topN}} mundial"
+    },
+    "cta": "¡Vamos! ⚡"
   }
 }

@@ -455,5 +455,23 @@
     "noPoints": "—",
     "totalLabel": "Total kada challenge",
     "footnote": "Binibigay lang ang points kapag pareho nang nag-rate ng meet-up."
+  },
+  "scoreCelebration": {
+    "unit": "puntos",
+    "subtitle": {
+      "accepted": "Tinanggap mo ang isang challenge 🤝",
+      "date_locked": "Set na ang date — tara 🗓️",
+      "meetup": "Mission accomplished 🎉",
+      "debrief": "Mission accomplished 🎉",
+      "ghost": "Sa susunod ulit 👻",
+      "default": "Umaakyat ka sa ranking 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} sa {{city}}",
+      "cityBeyond": "Wala sa top {{topN}} ng inyong city",
+      "world": "#{{rank}} sa buong mundo",
+      "worldBeyond": "Wala sa top {{topN}} ng buong mundo"
+    },
+    "cta": "Tara ⚡"
   }
 }

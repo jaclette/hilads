@@ -459,5 +459,23 @@
     "noPoints": "—",
     "totalLabel": "Total par défi",
     "footnote": "Les points ne sont attribués qu’après la double notation."
+  },
+  "scoreCelebration": {
+    "unit": "points",
+    "subtitle": {
+      "accepted": "Tu as relevé un challenge 🤝",
+      "date_locked": "Rendez-vous confirmé — on y va 🗓️",
+      "meetup": "Mission accomplie 🎉",
+      "debrief": "Mission accomplie 🎉",
+      "ghost": "Tu feras mieux la prochaine fois 👻",
+      "default": "Tu grimpes au classement 🚀"
+    },
+    "rank": {
+      "city": "#{{rank}} à {{city}}",
+      "cityBeyond": "En dehors du top {{topN}} de ta ville",
+      "world": "#{{rank}} dans le monde",
+      "worldBeyond": "En dehors du top {{topN}} mondial"
+    },
+    "cta": "C’est parti ⚡"
   }
 }

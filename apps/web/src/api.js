@@ -836,6 +836,54 @@ export async function submitRating(challengeId, stars, comment) {
   return res.json()
 }
 
+// ── PR17: score celebration popin ───────────────────────────────────────────
+
+/**
+ * Pending "+X points!" celebration delta. Returns { points: 0 } when there's
+ * nothing to show (no unacknowledged events) or on network error.
+ *
+ * Response (when points > 0):
+ *   {
+ *     points:        number,
+ *     event_count:   number,
+ *     top_kind:      'accepted'|'date_locked'|'meetup'|'debrief'|'ghost'|null,
+ *     seen_until:    string,        // ISO — pass back to ackScoreCelebration
+ *     city_id:       string|null,
+ *     city_name:     string|null,
+ *     city_country:  string|null,   // ISO-2 country, fed into countryToFlag
+ *     top_n:         number,        // 100 — beyond this rank is null
+ *     rank_alltime:  { city: number|null, global: number|null },
+ *     rank_month:    { city: number|null, global: number|null },
+ *   }
+ */
+export async function fetchScoreCelebration() {
+  try {
+    const res = await fetch(`${BASE}/me/score-celebration`, { credentials: 'include' })
+    if (!res.ok) return { points: 0 }
+    return await res.json().catch(() => ({ points: 0 }))
+  } catch {
+    return { points: 0 }
+  }
+}
+
+/**
+ * Ack the celebration so the same delta is never shown twice. seen_until is
+ * the ISO timestamp returned by the GET above. Fire-and-forget — failure is
+ * harmless (worst case the popin re-shows next launch).
+ */
+export async function ackScoreCelebration(seenUntil) {
+  try {
+    await fetch(`${BASE}/me/score-celebration/seen`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ seen_until: seenUntil }),
+    })
+  } catch {
+    /* non-blocking */
+  }
+}
+
 // ── PR7: leaderboard ────────────────────────────────────────────────────────
 
 /**

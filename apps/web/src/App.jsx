@@ -31,6 +31,7 @@ import ChallengePostCreateModal from './components/ChallengePostCreateModal'
 import ThreadsListPage    from './components/ThreadsListPage'
 import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
+import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
@@ -6345,6 +6346,12 @@ export default function App() {
           onBack={() => setShowLeaderboard(false)}
         />
       )}
+
+      {/* PR17 — "+X points!" popin once per page load when the user has
+          unacknowledged score_events. Lands first so the celebratory moment
+          isn't blocked by the rate-sheet; the rate gate's effect is keyed
+          independently so it follows on the same screen. */}
+      <ScoreCelebrationLaunchGate account={account} />
 
       {/* PR11 — auto-open the RateSheet once per page load when the caller
           has a rate-eligible meet-up (web parity with mobile's
