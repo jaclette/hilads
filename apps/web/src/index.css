@@ -6053,6 +6053,14 @@ img.pub-profile-avatar {
 
 .topic-chat-feed {
   flex: 1;
+  /* min-height: 0 lets this flex child shrink below its content size, which
+     is what actually triggers overflow-y: auto. Without it, flex items
+     default to min-height: auto and grow to content height — the feed
+     swallows all sibling space, the composer slides offscreen, and the
+     user is stuck at the top with no way to reach the latest message.
+     Bites the challenge channel harder than the topic channel because
+     .challenge-collapsible eats more vertical room above the feed. */
+  min-height: 0;
   overflow-y: auto;
   padding: 12px 14px 8px;
   display: flex;
