@@ -19,7 +19,7 @@ import {
  * Media upload uses the existing /uploads POST (same as chat images).
  */
 export default function ChallengeProofBlock({
-  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements,
+  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase,
 }) {
   const { t } = useTranslation('challenge')
   const [proofs,      setProofs]      = useState([])
@@ -44,7 +44,11 @@ export default function ChallengeProofBlock({
     }
   }, [acceptanceId])
 
-  useEffect(() => { load() }, [load])
+  // PR57 — re-fetch when the parent's acceptancePhase changes. The
+  // parent's WS-driven loadMyAcceptance flips the phase string
+  // (proof_submitted → approved, etc.), and that's the signal that
+  // the proof list / verdict-row state probably needs to refresh too.
+  useEffect(() => { load() }, [load, acceptancePhase])
 
   const latest = proofs[0] ?? null
   const attemptsLeft = Math.max(0, maxAttempts - attempts)

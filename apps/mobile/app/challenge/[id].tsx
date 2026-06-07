@@ -955,6 +955,7 @@ export default function ChallengeChatScreen() {
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}
             proofRequirements={challenge.proof_requirements ?? null}
+            acceptancePhase={activeAcceptance.phase}
           />
         )}
 

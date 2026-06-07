@@ -43,6 +43,13 @@ type Props = {
   iAmCreator:   boolean;
   iAmAcceptor:  boolean;
   proofRequirements: string | null;
+  /** PR57 — when the parent's acceptance.phase changes (e.g. via a WS
+   *  refresh triggered by the OTHER party's submit/approve/reject),
+   *  the proof block re-fetches so the verdict buttons / banner switch
+   *  to the new state without an app relaunch. Optional — older
+   *  callers continue to work, but the WS-triggered refresh won't
+   *  fire unless they pass this. */
+  acceptancePhase?: string;
 };
 
 /** Imperative handle exposed via forwardRef so the parent (challenge/[id].tsx)
@@ -52,7 +59,7 @@ type Props = {
 export type ChallengeProofBlockHandle = { submit: () => void };
 
 export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(function ChallengeProofBlock({
-  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements,
+  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase,
 }, ref) {
   const { t } = useTranslation('challenge');
   const [proofs,      setProofs]      = useState<ChallengeProof[]>([]);
@@ -77,7 +84,12 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     }
   }, [acceptanceId]);
 
-  useEffect(() => { load(); }, [load]);
+  // PR57 — also re-fetches whenever the parent reports a new
+  // acceptancePhase. The phase string changes when the parent's
+  // WS-driven loadMyAcceptance returns (proof_submitted → approved,
+  // accepted → proof_submitted, etc.), so the proof card refreshes
+  // without an app relaunch on the OTHER party's side.
+  useEffect(() => { load(); }, [load, acceptancePhase]);
 
   const latest = proofs[0] ?? null;
   const attemptsLeft = Math.max(0, maxAttempts - attempts);

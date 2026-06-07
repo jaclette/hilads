@@ -850,6 +850,7 @@ export default function ChallengeChatPage({
           iAmCreator={isOwner}
           iAmAcceptor={!isOwner}
           proofRequirements={challenge.proof_requirements ?? null}
+          acceptancePhase={activeAcceptance.phase}
         />
       )}
 
