@@ -6074,6 +6074,15 @@ img.pub-profile-avatar {
      .challenge-collapsible eats more vertical room above the feed. */
   min-height: 0;
   overflow-y: auto;
+  /* PR26 — disable scroll anchoring. The collapsible header above the
+     feed shrinks/expands as the user scrolls (collapseHeader on every
+     onScroll). When content above a scroll container changes height,
+     Chrome's scroll anchoring tries to keep "visible" content in place
+     — which fights with our explicit scrollTop math (auto-snap-to-bottom
+     on new message, smart "preserve user position" check). Net result
+     was a tug-of-war that occasionally yanked the user to the top.
+     Disabling anchoring lets the JS layer own the scroll position. */
+  overflow-anchor: none;
   padding: 12px 14px 8px;
   display: flex;
   flex-direction: column;

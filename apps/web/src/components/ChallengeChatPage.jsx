@@ -8,7 +8,7 @@
  * reply — all deferred to mobile or a follow-up commit if needed.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
@@ -460,8 +460,30 @@ export default function ChallengeChatPage({
     return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
   }, [socket, loadMyAcceptance])
 
-  useEffect(() => {
-    if (feedRef.current) feedRef.current.scrollTop = feedRef.current.scrollHeight
+  // PR26 — smart auto-scroll. The old "snap to bottom on every
+  // messages.length change" fought the user the moment they tried to read
+  // older messages and could land near the top when the effect fired
+  // before layout was settled (e.g., right as iAmParticipant flipped and
+  // the feed mounted with partial content). The new contract:
+  //   - On initial mount of the feed, snap to bottom once (newest visible).
+  //   - On subsequent messages.length changes, only snap if the user is
+  //     already within ~120px of the bottom (active in the conversation).
+  //     If they scrolled up to read history, leave their position alone.
+  // useLayoutEffect runs before paint, so the user never sees the
+  // pre-snap frame; rAF inside guarantees the snap reads a final
+  // scrollHeight even when the effect lands mid-reflow (e.g., the
+  // collapsible header transitioning at the same time).
+  const isNearBottomRef = useRef(true)
+  const didInitialScrollRef = useRef(false)
+  useLayoutEffect(() => {
+    const el = feedRef.current
+    if (!el) return
+    const shouldSnap = !didInitialScrollRef.current || isNearBottomRef.current
+    if (!shouldSnap) return
+    const snap = () => { el.scrollTop = el.scrollHeight }
+    // First paint after mount: rAF gives layout one frame to settle.
+    requestAnimationFrame(snap)
+    didInitialScrollRef.current = true
   }, [messages.length])
 
   const handleSendMessage = useCallback(async (e) => {
@@ -1057,7 +1079,15 @@ export default function ChallengeChatPage({
           <div
             className="topic-chat-feed"
             ref={feedRef}
-            onScroll={e => collapseHeader(e.currentTarget.scrollTop > 30)}
+            onScroll={e => {
+              const el = e.currentTarget
+              // Within 120px of the bottom = "active in the conversation".
+              // Outside that band, the user is reading history; the next
+              // new message must NOT yank them back down.
+              const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
+              isNearBottomRef.current = distFromBottom < 120
+              collapseHeader(el.scrollTop > 30)
+            }}
           >
             {messages.length === 0 && (
               <div className="topic-chat-empty">
