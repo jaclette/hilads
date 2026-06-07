@@ -254,5 +254,10 @@
     "recurring": "↻ 定期",
     "upcoming": "即将开始",
     "delete": "删除活动"
+  },
+  "arrivalsBar": {
+    "label": "最近到达",
+    "sheetTitle": "到达",
+    "empty": "暂无到达"
   }
 }

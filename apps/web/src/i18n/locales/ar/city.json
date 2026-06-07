@@ -270,5 +270,10 @@
     "recurring": "↻ متكرر",
     "upcoming": "قادم",
     "delete": "حذف الفعالية"
+  },
+  "arrivalsBar": {
+    "label": "وصول حديث",
+    "sheetTitle": "الوصول",
+    "empty": "لا توجد وصول بعد"
   }
 }

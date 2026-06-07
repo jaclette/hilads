@@ -254,5 +254,10 @@
     "recurring": "↻ रेगुलर",
     "upcoming": "आगामी",
     "delete": "इवेंट डिलीट करें"
+  },
+  "arrivalsBar": {
+    "label": "हाल के आगमन",
+    "sheetTitle": "आगमन",
+    "empty": "अभी तक कोई नहीं आया"
   }
 }

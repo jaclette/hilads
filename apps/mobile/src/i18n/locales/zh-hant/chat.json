@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} 向本地人發起挑戰：{{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} 向旅行者發起挑戰：{{title}}",
   "bannerChallengeValidated": "🏆 挑戰完成！{{name}} 驗證了「{{title}}」。",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 國際挑戰：{{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 國際挑戰：{{title}}",
+  "arrivalsBar": {
+    "label": "最近抵達",
+    "sheetTitle": "抵達",
+    "empty": "尚無抵達"
+  }
 }

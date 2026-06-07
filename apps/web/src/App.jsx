@@ -6,6 +6,7 @@ import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
+import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -897,6 +898,7 @@ export default function App() {
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPastArchive, setShowPastArchive] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
+  const [showArrivalsSheet, setShowArrivalsSheet] = useState(false)
   const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
   const [crewMembers,  setCrewMembers]  = useState([])
   const [crewPage,     setCrewPage]     = useState(1)
@@ -4261,6 +4263,22 @@ export default function App() {
           )}
         </header>
 
+        {/* Arrivals strip — extracted from the main feed so real messages
+            aren't drowned by ambient join lines. Default shows a neutral
+            label; on a new arrival it morphs in-place for 3s. Same items as
+            before (post-throttle, post own-arrival filter from toFeedItem). */}
+        <ArrivalsBar
+          arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
+          onOpen={() => setShowArrivalsSheet(true)}
+          onTapUser={(a) => {
+            if (a.userId) {
+              openProfile(a.userId, a.nickname ?? '')
+            } else if (a.guestId) {
+              setGuestProfile({ guestId: a.guestId, nickname: a.nickname ?? '' })
+            }
+          }}
+        />
+
         <div className="messages" ref={messagesContainerRef}>
           {loadingOlder && (
             <div className="messages-load-older">
@@ -4287,6 +4305,8 @@ export default function App() {
           {feed.map((item, i) => {
             if (item.type === 'activity') {
               if (item.subtype === 'weather') return null
+              // Arrivals render in the ArrivalsBar / ArrivalsSheet, not inline.
+              if (item.subtype === 'join') return null
               const isClickable = item.subtype === 'join' && (item.userId || item.guestId)
               return (
                 <div
@@ -5763,6 +5783,20 @@ export default function App() {
           onBack={() => setGuestProfile(null)}
         />
       )}
+
+      <ArrivalsSheet
+        open={showArrivalsSheet}
+        arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
+        onClose={() => setShowArrivalsSheet(false)}
+        onTapUser={(a) => {
+          setShowArrivalsSheet(false)
+          if (a.userId) {
+            openProfile(a.userId, a.nickname ?? '')
+          } else if (a.guestId) {
+            setGuestProfile({ guestId: a.guestId, nickname: a.nickname ?? '' })
+          }
+        }}
+      />
 
       {showConversations && !activeDm && account && (
         <ConversationsScreen

@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} reta a los locales: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} reta a los viajeros: {{title}}",
   "bannerChallengeValidated": "🏆 ¡Reto cumplido! {{name}} validó \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}",
+  "arrivalsBar": {
+    "label": "Llegadas recientes",
+    "sheetTitle": "Llegadas",
+    "empty": "Aún no hay llegadas"
+  }
 }

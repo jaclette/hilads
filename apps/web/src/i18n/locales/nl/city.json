@@ -254,5 +254,10 @@
     "recurring": "↻ Terugkerend",
     "upcoming": "Binnenkort",
     "delete": "Evenement verwijderen"
+  },
+  "arrivalsBar": {
+    "label": "Recente aankomsten",
+    "sheetTitle": "Aankomsten",
+    "empty": "Nog geen aankomsten"
   }
 }

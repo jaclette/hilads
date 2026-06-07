@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
   "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}",
+  "arrivalsBar": {
+    "label": "Kedatangan terkini",
+    "sheetTitle": "Kedatangan",
+    "empty": "Belum ada kedatangan"
+  }
 }

@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} thách du khách: {{title}}",
   "bannerChallengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}",
+  "arrivalsBar": {
+    "label": "Vừa đến",
+    "sheetTitle": "Mới đến",
+    "empty": "Chưa có ai đến"
+  }
 }

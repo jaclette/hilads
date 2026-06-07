@@ -36,6 +36,8 @@ import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { ArrivalsBar } from '@/features/chat/ArrivalsBar';
+import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
@@ -767,7 +769,17 @@ export default function ChatTab() {
   }, []);
   const weatherActive = isFocused && appActive;
 
-  // Unified feed — weather excluded (shown in header only).
+  // Arrivals — extracted from the same `messages` stream and shown in the
+  // dedicated ArrivalsBar / ArrivalsSheet, NOT in the main feed. Newest-first
+  // to match the sheet's display order.
+  const arrivals = useMemo<Message[]>(
+    () => messages.filter(m => m.type === 'system' && m.event === 'join'),
+    [messages],
+  );
+  const [arrivalsSheetOpen, setArrivalsSheetOpen] = useState(false);
+
+  // Unified feed — weather AND join system messages excluded.
+  // Weather renders as a pill in the header; joins render in the ArrivalsBar.
   //
   // Sorted newest-first for the inverted FlatList:
   //   index 0 = bottom of screen (newest message, near input)
@@ -776,7 +788,9 @@ export default function ChatTab() {
   // Event/topic/prompt items are synthesised with createdAt ≈ load time.
   // Sorting by timestamp places them naturally at the bottom of history.
   const allMessages = useMemo<Message[]>(() => {
-    const chat = messages.filter(m => !(m.type === 'system' && m.event === 'weather'));
+    const chat = messages.filter(m =>
+      !(m.type === 'system' && (m.event === 'weather' || m.event === 'join'))
+    );
     return [...chat, ...eventFeedItems, ...topicFeedItems, ...challengeFeedItems, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
   }, [messages, eventFeedItems, topicFeedItems, challengeFeedItems, promptItems]);
@@ -1010,6 +1024,11 @@ export default function ChatTab() {
 
       </View>
 
+      {/* Arrivals strip — extracted from the main feed so real messages
+          aren't drowned out by ambient "X just landed" rows. Default shows a
+          neutral label; on a new arrival it morphs in-place for 3s. */}
+      <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} />
+
       {/* Error banner */}
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
@@ -1193,6 +1212,12 @@ export default function ChatTab() {
       <ChallengeIntroCarousel
         visible={showChallengeIntro}
         onClose={() => setShowChallengeIntro(false)}
+      />
+
+      <ArrivalsSheet
+        visible={arrivalsSheetOpen}
+        arrivals={arrivals}
+        onClose={() => setArrivalsSheetOpen(false)}
       />
     </SafeAreaView>
   );

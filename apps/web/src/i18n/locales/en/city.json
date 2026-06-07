@@ -254,5 +254,10 @@
     "recurring": "↻ Recurring",
     "upcoming": "Upcoming",
     "delete": "Delete event"
+  },
+  "arrivalsBar": {
+    "label": "Recent arrivals",
+    "sheetTitle": "Arrivals",
+    "empty": "No arrivals yet"
   }
 }

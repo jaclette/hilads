@@ -254,5 +254,10 @@
     "recurring": "↻ 固定舉辦",
     "upcoming": "即將登場",
     "delete": "刪除活動"
+  },
+  "arrivalsBar": {
+    "label": "最近抵達",
+    "sheetTitle": "抵達",
+    "empty": "尚無抵達"
   }
 }

@@ -254,5 +254,10 @@
     "recurring": "↻ 반복",
     "upcoming": "다가오는 일정",
     "delete": "이벤트 삭제"
+  },
+  "arrivalsBar": {
+    "label": "최근 도착",
+    "sheetTitle": "도착",
+    "empty": "아직 도착이 없습니다"
   }
 }

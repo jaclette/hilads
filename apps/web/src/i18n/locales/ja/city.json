@@ -254,5 +254,10 @@
     "recurring": "↻ 定期",
     "upcoming": "これから",
     "delete": "イベントを削除"
+  },
+  "arrivalsBar": {
+    "label": "最近の到着",
+    "sheetTitle": "到着",
+    "empty": "まだ到着なし"
   }
 }

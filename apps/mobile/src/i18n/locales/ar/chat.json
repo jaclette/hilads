@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} يتحدّى السكان المحليين: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} يتحدّى المسافرين: {{title}}",
   "bannerChallengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} ← {{toFlag}} تحدٍ دولي: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} ← {{toFlag}} تحدٍ دولي: {{title}}",
+  "arrivalsBar": {
+    "label": "وصول حديث",
+    "sheetTitle": "الوصول",
+    "empty": "لا توجد وصول بعد"
+  }
 }

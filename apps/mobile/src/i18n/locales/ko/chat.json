@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} 님이 여행자에게 도전: {{title}}",
   "bannerChallengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요.",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 국제 챌린지: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 국제 챌린지: {{title}}",
+  "arrivalsBar": {
+    "label": "최근 도착",
+    "sheetTitle": "도착",
+    "empty": "아직 도착이 없습니다"
+  }
 }

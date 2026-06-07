@@ -88,5 +88,10 @@
   "bannerChallengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} бросает вызов исследователям: {{title}}",
   "bannerChallengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}».",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}"
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}",
+  "arrivalsBar": {
+    "label": "Недавние прибытия",
+    "sheetTitle": "Прибытия",
+    "empty": "Пока никто не пришёл"
+  }
 }

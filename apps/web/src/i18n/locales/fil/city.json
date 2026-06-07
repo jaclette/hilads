@@ -254,5 +254,10 @@
     "recurring": "↻ Recurring",
     "upcoming": "Paparating",
     "delete": "I-delete ang event"
+  },
+  "arrivalsBar": {
+    "label": "Mga bagong dating",
+    "sheetTitle": "Mga dating",
+    "empty": "Wala pang bagong dating"
   }
 }
