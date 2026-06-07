@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
 import { localizeCityName } from '../i18n/cityName'
+import { countryToFlag } from '../lib/countryFlag'
 import BackButton from './BackButton'
 
 /**
@@ -130,6 +131,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
                 key={e.user_id}
                 entry={e}
                 isMe={e.user_id === me?.user_id}
+                showCity={scope === 'world'}
                 t={t}
               />
             ))}
@@ -150,8 +152,13 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
                               ?? account?.profile_photo_url
                               ?? null,
                 points:         me.points,
+                // PR40 — surface the caller's own city + flag on the pinned
+                // row when in world scope, same as the mobile row.
+                cityName:       city?.name    ?? null,
+                cityCountry:    city?.country ?? null,
               }}
               isMe
+              showCity={scope === 'world'}
               t={t}
             />
           ) : (
@@ -165,8 +172,15 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   )
 }
 
-function LeaderboardRow({ entry, isMe, t }) {
+function LeaderboardRow({ entry, isMe, showCity = false, t }) {
   const [c1, c2] = avatarColors(entry.displayName)
+  // PR40 — world-scope rows show a "🇫🇷 Paris" chip under the name so the
+  // user can see where each scorer is from. Matches the native row layout
+  // (apps/mobile/app/leaderboard.tsx) — uses countryToFlag + the same
+  // city-name localization helper.
+  const flag      = showCity && entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
+  const cityLabel = showCity && entry.cityName    ? localizeCityName(entry.cityName) : null
+  const hasCityChip = !!(flag || cityLabel)
   return (
     <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
       <span className="leaderboard-rank">#{entry.rank}</span>
@@ -178,7 +192,15 @@ function LeaderboardRow({ entry, isMe, t }) {
           ? <img src={entry.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : (entry.displayName ?? '?')[0].toUpperCase()}
       </span>
-      <span className="leaderboard-name">{entry.displayName}</span>
+      <span className="leaderboard-name-block">
+        <span className="leaderboard-name">{entry.displayName}</span>
+        {hasCityChip && (
+          <span className="leaderboard-city">
+            {flag && <span aria-hidden="true">{flag}</span>}
+            {cityLabel && <span className="leaderboard-city-name">{cityLabel}</span>}
+          </span>
+        )}
+      </span>
       <span className="leaderboard-points">
         {t('leaderboard.points', { points: entry.points })}
       </span>
