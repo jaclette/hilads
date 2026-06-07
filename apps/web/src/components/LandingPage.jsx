@@ -522,17 +522,32 @@ export default function LandingPage({
           rows above. */}
       <section className="lp-section lp-international">
         <div className="lp-international-inner">
-          <div className="lp-international-badge">{t('international.badge')}</div>
-          <h2 className="lp-international-tagline">{t('international.tagline')}</h2>
-          <p className="lp-international-sub">{t('international.sub')}</p>
-          <ul className="lp-international-bullets">
-            {(t('international.bullets', { returnObjects: true }) ?? []).map((b, i) => (
-              <li key={i}>{b}</li>
-            ))}
-          </ul>
-          <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
-            {t('international.cta')}
-          </button>
+          <div className="lp-international-text">
+            <div className="lp-international-badge">{t('international.badge')}</div>
+            <h2 className="lp-international-tagline">{t('international.tagline')}</h2>
+            <p className="lp-international-sub">{t('international.sub')}</p>
+            <ul className="lp-international-bullets">
+              {(t('international.bullets', { returnObjects: true }) ?? []).map((b, i) => (
+                <li key={i}>{b}</li>
+              ))}
+            </ul>
+            <button className="lp-split-cta lp-split-cta--exploring" onClick={scrollToJoin}>
+              {t('international.cta')}
+            </button>
+          </div>
+          {/* PR50 — real-product screenshot of an international challenge
+              channel (Berlin food challenge, "find me the best kebab")
+              so the section ships with the same visual rhythm as the
+              local + exploring rows above, instead of being text-only. */}
+          <div className="lp-international-visual">
+            <img
+              src="/landing/intl-challenge.png"
+              alt={t('international.badge')}
+              className="lp-international-screenshot"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
         </div>
       </section>
 
