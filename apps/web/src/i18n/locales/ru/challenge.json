@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "Прими челлендж",
       "creatorWaiting": "Ждём, кто его примет",
-      "creatorReviewPending": "Ответь на запрос {{name}} →",
+      "creatorReviewPending": "Ответь на запрос {{name}}",
       "acceptorAwaitingReview": "Ждём ответа от {{name}}",
-      "proposeDate": "Предложи дату →",
+      "proposeDate": "Предложи дату",
       "dateAwaiting": "Ждём подтверждения автора",
-      "approveDate": "Тебе предложили дату →",
+      "approveDate": "Тебе предложили дату",
       "meetSoon": "Увидимся {{date}}",
-      "creatorVerdict": "Как всё прошло с {{name}}? →",
+      "creatorVerdict": "Как всё прошло с {{name}}?",
       "acceptorWaitingVerdict": "Ждём подтверждения от {{name}}",
       "accomplished": "Челлендж пройден 🎉",
       "closed": "Челлендж закрыт",
-      "submitProof": "Отправь доказательство →",
+      "submitProof": "Отправь доказательство",
       "waitingForProof": "Ждём доказательство",
-      "reviewProof": "Проверить доказательство →",
+      "reviewProof": "Проверить доказательство",
       "waitingForVerdict": "Ждём вердикт",
-      "rateMeetup": "Оцени встречу с {{name}} →"
+      "rateMeetup": "Оцени встречу с {{name}}"
     }
   },
   "takeon": {

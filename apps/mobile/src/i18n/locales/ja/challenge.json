@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "チャレンジを受ける",
       "creatorWaiting": "誰かが受けてくれるのを待っています",
-      "creatorReviewPending": "{{name}}さんのリクエストに返事しよう →",
+      "creatorReviewPending": "{{name}}さんのリクエストに返事しよう",
       "acceptorAwaitingReview": "{{name}}さんの返事を待っています",
-      "proposeDate": "日程を提案する →",
+      "proposeDate": "日程を提案する",
       "dateAwaiting": "作成者の承認待ち",
-      "approveDate": "日程が提案されました →",
+      "approveDate": "日程が提案されました",
       "meetSoon": "{{date}}に会いましょう",
-      "creatorVerdict": "{{name}}さんとはどうでしたか? →",
+      "creatorVerdict": "{{name}}さんとはどうでしたか?",
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
       "accomplished": "チャレンジ達成 🎉",
       "closed": "チャレンジを終了しました",
-      "submitProof": "証拠を提出 →",
+      "submitProof": "証拠を提出",
       "waitingForProof": "証拠待ち",
-      "reviewProof": "証拠を確認 →",
+      "reviewProof": "証拠を確認",
       "waitingForVerdict": "判定待ち",
-      "rateMeetup": "{{name}}さんとの集まりを評価 →"
+      "rateMeetup": "{{name}}さんとの集まりを評価"
     }
   },
   "takeon": {

@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "Nhận thử thách này",
       "creatorWaiting": "Đang chờ ai đó nhận",
-      "creatorReviewPending": "Phản hồi yêu cầu của {{name}} →",
+      "creatorReviewPending": "Phản hồi yêu cầu của {{name}}",
       "acceptorAwaitingReview": "Đang chờ {{name}} phản hồi",
-      "proposeDate": "Đề xuất một ngày →",
+      "proposeDate": "Đề xuất một ngày",
       "dateAwaiting": "Đang chờ người tạo duyệt",
-      "approveDate": "Một ngày đã được đề xuất →",
+      "approveDate": "Một ngày đã được đề xuất",
       "meetSoon": "Hẹn gặp lúc {{date}}",
-      "creatorVerdict": "Buổi gặp với {{name}} thế nào? →",
+      "creatorVerdict": "Buổi gặp với {{name}} thế nào?",
       "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
       "accomplished": "Đã hoàn thành thử thách 🎉",
       "closed": "Thử thách đã đóng",
-      "submitProof": "Gửi bằng chứng →",
+      "submitProof": "Gửi bằng chứng",
       "waitingForProof": "Chờ bằng chứng",
-      "reviewProof": "Xem bằng chứng →",
+      "reviewProof": "Xem bằng chứng",
       "waitingForVerdict": "Chờ phán quyết",
-      "rateMeetup": "Đánh giá buổi gặp với {{name}} →"
+      "rateMeetup": "Đánh giá buổi gặp với {{name}}"
     }
   },
   "takeon": {

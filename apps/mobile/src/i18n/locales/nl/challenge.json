@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "Neem de challenge aan",
       "creatorWaiting": "Wachten tot iemand 'm oppakt",
-      "creatorReviewPending": "Reageer op het verzoek van {{name}} →",
+      "creatorReviewPending": "Reageer op het verzoek van {{name}}",
       "acceptorAwaitingReview": "Wachten op reactie van {{name}}",
-      "proposeDate": "Stel een datum voor →",
+      "proposeDate": "Stel een datum voor",
       "dateAwaiting": "Wachten op goedkeuring van de maker",
-      "approveDate": "Er is een datum voorgesteld →",
+      "approveDate": "Er is een datum voorgesteld",
       "meetSoon": "Tot {{date}}",
-      "creatorVerdict": "Hoe ging het met {{name}}? →",
+      "creatorVerdict": "Hoe ging het met {{name}}?",
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
       "accomplished": "Challenge gehaald 🎉",
       "closed": "Challenge afgesloten",
-      "submitProof": "Stuur je bewijs →",
+      "submitProof": "Stuur je bewijs",
       "waitingForProof": "Wachten op het bewijs",
-      "reviewProof": "Bewijs beoordelen →",
+      "reviewProof": "Bewijs beoordelen",
       "waitingForVerdict": "Wachten op het oordeel",
-      "rateMeetup": "Beoordeel je ontmoeting met {{name}} →"
+      "rateMeetup": "Beoordeel je ontmoeting met {{name}}"
     }
   },
   "takeon": {

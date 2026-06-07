@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "Ambil tantangan ini",
       "creatorWaiting": "Menunggu seseorang mengambilnya",
-      "creatorReviewPending": "Tanggapi permintaan {{name}} →",
+      "creatorReviewPending": "Tanggapi permintaan {{name}}",
       "acceptorAwaitingReview": "Menunggu jawaban {{name}}",
-      "proposeDate": "Usulkan tanggal →",
+      "proposeDate": "Usulkan tanggal",
       "dateAwaiting": "Menunggu persetujuan pembuat",
-      "approveDate": "Sebuah tanggal sudah diusulkan →",
+      "approveDate": "Sebuah tanggal sudah diusulkan",
       "meetSoon": "Sampai jumpa di {{date}}",
-      "creatorVerdict": "Bagaimana dengan {{name}}? →",
+      "creatorVerdict": "Bagaimana dengan {{name}}?",
       "acceptorWaitingVerdict": "Menunggu konfirmasi dari {{name}}",
       "accomplished": "Tantangan berhasil 🎉",
       "closed": "Tantangan ditutup",
-      "submitProof": "Kirim bukti →",
+      "submitProof": "Kirim bukti",
       "waitingForProof": "Menunggu bukti",
-      "reviewProof": "Tinjau bukti →",
+      "reviewProof": "Tinjau bukti",
       "waitingForVerdict": "Menunggu keputusan",
-      "rateMeetup": "Beri rating pertemuan sama {{name}} →"
+      "rateMeetup": "Beri rating pertemuan sama {{name}}"
     }
   },
   "takeon": {

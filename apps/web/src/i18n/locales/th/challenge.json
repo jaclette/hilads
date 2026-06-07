@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "รับชาเลนจ์นี้",
       "creatorWaiting": "รอใครสักคนมารับ",
-      "creatorReviewPending": "ตอบคำขอของ {{name}} →",
+      "creatorReviewPending": "ตอบคำขอของ {{name}}",
       "acceptorAwaitingReview": "รอ {{name}} ตอบกลับ",
-      "proposeDate": "เสนอวันนัด →",
+      "proposeDate": "เสนอวันนัด",
       "dateAwaiting": "รอผู้สร้างยืนยัน",
-      "approveDate": "มีคนเสนอวันนัดแล้ว →",
+      "approveDate": "มีคนเสนอวันนัดแล้ว",
       "meetSoon": "เจอกัน {{date}}",
-      "creatorVerdict": "เป็นไงบ้างกับ {{name}}? →",
+      "creatorVerdict": "เป็นไงบ้างกับ {{name}}?",
       "acceptorWaitingVerdict": "รอ {{name}} ยืนยัน",
       "accomplished": "ทำชาเลนจ์สำเร็จ 🎉",
       "closed": "ปิดชาเลนจ์แล้ว",
-      "submitProof": "ส่งหลักฐาน →",
+      "submitProof": "ส่งหลักฐาน",
       "waitingForProof": "รอหลักฐาน",
-      "reviewProof": "ตรวจหลักฐาน →",
+      "reviewProof": "ตรวจหลักฐาน",
       "waitingForVerdict": "รอคำตัดสิน",
-      "rateMeetup": "ให้คะแนนการเจอกับ {{name}} →"
+      "rateMeetup": "ให้คะแนนการเจอกับ {{name}}"
     }
   },
   "takeon": {

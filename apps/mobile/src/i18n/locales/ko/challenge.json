@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "챌린지를 받아요",
       "creatorWaiting": "받아 줄 사람을 기다리는 중",
-      "creatorReviewPending": "{{name}}님의 요청에 답해요 →",
+      "creatorReviewPending": "{{name}}님의 요청에 답해요",
       "acceptorAwaitingReview": "{{name}}님의 답을 기다리는 중",
-      "proposeDate": "날짜를 제안해요 →",
+      "proposeDate": "날짜를 제안해요",
       "dateAwaiting": "작성자의 승인을 기다리는 중",
-      "approveDate": "날짜가 제안됐어요 →",
+      "approveDate": "날짜가 제안됐어요",
       "meetSoon": "{{date}}에 만나요",
-      "creatorVerdict": "{{name}}님과는 어땠어요? →",
+      "creatorVerdict": "{{name}}님과는 어땠어요?",
       "acceptorWaitingVerdict": "{{name}}님의 확인을 기다리는 중",
       "accomplished": "챌린지 성공 🎉",
       "closed": "챌린지 종료",
-      "submitProof": "증거 보내기 →",
+      "submitProof": "증거 보내기",
       "waitingForProof": "증거 기다리는 중",
-      "reviewProof": "증거 확인 →",
+      "reviewProof": "증거 확인",
       "waitingForVerdict": "판정 기다리는 중",
-      "rateMeetup": "{{name}}님과의 만남 평가하기 →"
+      "rateMeetup": "{{name}}님과의 만남 평가하기"
     }
   },
   "takeon": {

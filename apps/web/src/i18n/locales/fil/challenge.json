@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "Tanggapin ang challenge",
       "creatorWaiting": "Hinihintay na may tumanggap",
-      "creatorReviewPending": "I-review ang request ni {{name}} →",
+      "creatorReviewPending": "I-review ang request ni {{name}}",
       "acceptorAwaitingReview": "Hinihintay si {{name}} mag-review",
-      "proposeDate": "Mag-suggest ng petsa →",
+      "proposeDate": "Mag-suggest ng petsa",
       "dateAwaiting": "Hinihintay ang approval ng creator",
-      "approveDate": "May naka-propose na petsa →",
+      "approveDate": "May naka-propose na petsa",
       "meetSoon": "See you on {{date}}",
-      "creatorVerdict": "Kumusta kay {{name}}? →",
+      "creatorVerdict": "Kumusta kay {{name}}?",
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
       "accomplished": "Tapos na ang challenge 🎉",
       "closed": "Sarado na ang challenge",
-      "submitProof": "Ipadala ang patunay →",
+      "submitProof": "Ipadala ang patunay",
       "waitingForProof": "Naghihintay ng patunay",
-      "reviewProof": "Suriin ang patunay →",
+      "reviewProof": "Suriin ang patunay",
       "waitingForVerdict": "Naghihintay ng verdict",
-      "rateMeetup": "I-rate ang meet-up kay {{name}} →"
+      "rateMeetup": "I-rate ang meet-up kay {{name}}"
     }
   },
   "takeon": {

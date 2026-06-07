@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "चैलेंज स्वीकारें",
       "creatorWaiting": "कोई इसे स्वीकारे इसका इंतज़ार है",
-      "creatorReviewPending": "{{name}} की रिक्वेस्ट का जवाब दें →",
+      "creatorReviewPending": "{{name}} की रिक्वेस्ट का जवाब दें",
       "acceptorAwaitingReview": "{{name}} के जवाब का इंतज़ार",
-      "proposeDate": "एक तारीख सुझाएँ →",
+      "proposeDate": "एक तारीख सुझाएँ",
       "dateAwaiting": "क्रिएटर की मंज़ूरी का इंतज़ार",
-      "approveDate": "एक तारीख सुझाई गई है →",
+      "approveDate": "एक तारीख सुझाई गई है",
       "meetSoon": "{{date}} को मिलते हैं",
-      "creatorVerdict": "{{name}} के साथ कैसा रहा? →",
+      "creatorVerdict": "{{name}} के साथ कैसा रहा?",
       "acceptorWaitingVerdict": "{{name}} की पुष्टि का इंतज़ार",
       "accomplished": "चैलेंज पूरा 🎉",
       "closed": "चैलेंज बंद",
-      "submitProof": "अपना प्रूफ भेजें →",
+      "submitProof": "अपना प्रूफ भेजें",
       "waitingForProof": "प्रूफ का इंतज़ार",
-      "reviewProof": "प्रूफ देखें →",
+      "reviewProof": "प्रूफ देखें",
       "waitingForVerdict": "फैसले का इंतज़ार",
-      "rateMeetup": "{{name}} के साथ मुलाक़ात रेट करें →"
+      "rateMeetup": "{{name}} के साथ मुलाक़ात रेट करें"
     }
   },
   "takeon": {

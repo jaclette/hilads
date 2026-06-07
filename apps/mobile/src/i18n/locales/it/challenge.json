@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "Accetta la sfida",
       "creatorWaiting": "In attesa che qualcuno la accetti",
-      "creatorReviewPending": "Rispondi alla richiesta di {{name}} →",
+      "creatorReviewPending": "Rispondi alla richiesta di {{name}}",
       "acceptorAwaitingReview": "In attesa della risposta di {{name}}",
-      "proposeDate": "Proponi una data →",
+      "proposeDate": "Proponi una data",
       "dateAwaiting": "In attesa dell'approvazione del creatore",
-      "approveDate": "È stata proposta una data →",
+      "approveDate": "È stata proposta una data",
       "meetSoon": "Ci vediamo il {{date}}",
-      "creatorVerdict": "Com'è andata con {{name}}? →",
+      "creatorVerdict": "Com'è andata con {{name}}?",
       "acceptorWaitingVerdict": "In attesa che {{name}} confermi",
       "accomplished": "Sfida superata 🎉",
       "closed": "Sfida chiusa",
-      "submitProof": "Invia la tua prova →",
+      "submitProof": "Invia la tua prova",
       "waitingForProof": "In attesa della prova",
-      "reviewProof": "Rivedi la prova →",
+      "reviewProof": "Rivedi la prova",
       "waitingForVerdict": "In attesa del verdetto",
-      "rateMeetup": "Valuta il tuo incontro con {{name}} →"
+      "rateMeetup": "Valuta il tuo incontro con {{name}}"
     }
   },
   "takeon": {

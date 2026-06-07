@@ -222,21 +222,21 @@
     "subcta": {
       "tapToAccept": "接下这个挑战",
       "creatorWaiting": "等人来接挑战",
-      "creatorReviewPending": "回复 {{name}} 的请求 →",
+      "creatorReviewPending": "回复 {{name}} 的请求",
       "acceptorAwaitingReview": "等待 {{name}} 回复",
-      "proposeDate": "提议一个日期 →",
+      "proposeDate": "提议一个日期",
       "dateAwaiting": "等待发起人确认",
-      "approveDate": "对方提议了一个日期 →",
+      "approveDate": "对方提议了一个日期",
       "meetSoon": "{{date}} 见",
-      "creatorVerdict": "和 {{name}} 见面怎么样？ →",
+      "creatorVerdict": "和 {{name}} 见面怎么样？",
       "acceptorWaitingVerdict": "等待 {{name}} 确认",
       "accomplished": "挑战完成 🎉",
       "closed": "挑战已关闭",
-      "submitProof": "提交你的证据 →",
+      "submitProof": "提交你的证据",
       "waitingForProof": "等待证据",
-      "reviewProof": "审核证据 →",
+      "reviewProof": "审核证据",
       "waitingForVerdict": "等待判定",
-      "rateMeetup": "给和{{name}}的见面评分 →"
+      "rateMeetup": "给和{{name}}的见面评分"
     }
   },
   "takeon": {

@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "接下這個挑戰",
       "creatorWaiting": "等人來接挑戰",
-      "creatorReviewPending": "回覆 {{name}} 的請求 →",
+      "creatorReviewPending": "回覆 {{name}} 的請求",
       "acceptorAwaitingReview": "等待 {{name}} 回覆",
-      "proposeDate": "提議一個日期 →",
+      "proposeDate": "提議一個日期",
       "dateAwaiting": "等待發起人確認",
-      "approveDate": "對方提議了一個日期 →",
+      "approveDate": "對方提議了一個日期",
       "meetSoon": "{{date}} 見",
-      "creatorVerdict": "和 {{name}} 見面如何？ →",
+      "creatorVerdict": "和 {{name}} 見面如何？",
       "acceptorWaitingVerdict": "等待 {{name}} 確認",
       "accomplished": "挑戰完成 🎉",
       "closed": "挑戰已關閉",
-      "submitProof": "提交你的證據 →",
+      "submitProof": "提交你的證據",
       "waitingForProof": "等待證據",
-      "reviewProof": "審核證據 →",
+      "reviewProof": "審核證據",
       "waitingForVerdict": "等待判定",
-      "rateMeetup": "為與{{name}}的見面評分 →"
+      "rateMeetup": "為與{{name}}的見面評分"
     }
   },
   "takeon": {

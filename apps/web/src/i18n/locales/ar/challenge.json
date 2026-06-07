@@ -218,21 +218,21 @@
     "subcta": {
       "tapToAccept": "اقبل التحدي",
       "creatorWaiting": "بانتظار من يقبله",
-      "creatorReviewPending": "ردّ على طلب {{name}} →",
+      "creatorReviewPending": "ردّ على طلب {{name}}",
       "acceptorAwaitingReview": "بانتظار ردّ {{name}}",
-      "proposeDate": "اقترح موعداً →",
+      "proposeDate": "اقترح موعداً",
       "dateAwaiting": "بانتظار موافقة المنشئ",
-      "approveDate": "تم اقتراح موعد →",
+      "approveDate": "تم اقتراح موعد",
       "meetSoon": "نراك في {{date}}",
-      "creatorVerdict": "كيف سار اللقاء مع {{name}}؟ →",
+      "creatorVerdict": "كيف سار اللقاء مع {{name}}؟",
       "acceptorWaitingVerdict": "بانتظار تأكيد {{name}}",
       "accomplished": "تم إنجاز التحدي 🎉",
       "closed": "أُغلق التحدي",
-      "submitProof": "أرسل دليلك →",
+      "submitProof": "أرسل دليلك",
       "waitingForProof": "بانتظار الدليل",
-      "reviewProof": "راجع الدليل →",
+      "reviewProof": "راجع الدليل",
       "waitingForVerdict": "بانتظار الحكم",
-      "rateMeetup": "قيّم لقاءك مع {{name}} →"
+      "rateMeetup": "قيّم لقاءك مع {{name}}"
     }
   },
   "takeon": {
