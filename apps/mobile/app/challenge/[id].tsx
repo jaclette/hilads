@@ -942,13 +942,16 @@ export default function ChallengeChatScreen() {
         />
 
         {/* International — proof submission + verdict block. Renders only
-            when there's an acceptance to act on; visitors and creators-
+            when there's an ACTIVE acceptance; visitors and creators-
             without-acceptance see no extra surface here (the pipeline
-            educates them passively). */}
-        {(challenge.mode ?? 'local') === 'international' && myAcceptance && (
+            educates them passively). PR46 — uses activeAcceptance so
+            a TERMINAL approved acceptance no longer keeps the
+            "🎉 Challenge accomplished" banner permanently locked on
+            the detail page after the challenge wrapped. */}
+        {(challenge.mode ?? 'local') === 'international' && activeAcceptance && (
           <ChallengeProofBlock
             ref={proofRef}
-            acceptanceId={myAcceptance.id}
+            acceptanceId={activeAcceptance.id}
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}
             proofRequirements={challenge.proof_requirements ?? null}

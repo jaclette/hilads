@@ -837,11 +837,16 @@ export default function ChallengeChatPage({
       />
 
       {/* International — proof submission + verdict surface. Renders only
-          when there's an acceptance; visitors and creators-without-acceptance
-          see no extra surface here (the pipeline above educates them). */}
-      {(challenge.mode ?? 'local') === 'international' && myAcceptance && (
+          when there's an ACTIVE acceptance; visitors and creators-without-
+          acceptance see no extra surface here (the pipeline above
+          educates them passively). PR46 — uses activeAcceptance instead
+          of myAcceptance so a TERMINAL approved acceptance no longer
+          keeps the "🎉 Challenge accomplished" banner permanently
+          locked on the detail page after the challenge wrapped. Same
+          shape as the pipeline + schedule-band fixes in PR18. */}
+      {(challenge.mode ?? 'local') === 'international' && activeAcceptance && (
         <ChallengeProofBlock
-          acceptanceId={myAcceptance.id}
+          acceptanceId={activeAcceptance.id}
           iAmCreator={isOwner}
           iAmAcceptor={!isOwner}
           proofRequirements={challenge.proof_requirements ?? null}
