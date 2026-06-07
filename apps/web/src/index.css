@@ -1246,6 +1246,18 @@ html, body, #root {
   display: flex;
   flex-direction: column;
 }
+@media (max-width: 767px) {
+  /* PR22 — lift the bottom-sheet above the fixed .bottom-nav. The members
+     list ("3 in the channel") was clipping its last row behind the nav on
+     mobile because .modal-overlay align-items:flex-end docks the panel at
+     viewport bottom, and the nav has its own opaque + blurred backdrop
+     that visually covers anything under it even though z-index 400 > 300.
+     Adding the same margin-bottom we already use for .dm-composer keeps
+     the modal docked above the nav, so every row stays scrollable. */
+  .going-modal {
+    margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
+  }
+}
 .going-modal-body {
   overflow-y: auto;
   display: flex;
