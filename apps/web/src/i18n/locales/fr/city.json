@@ -256,7 +256,7 @@
     "delete": "Supprimer l'événement"
   },
   "arrivalsBar": {
-    "label": "Arrivées récentes",
+    "label": "✈️ Arrivées récentes",
     "sheetTitle": "Arrivées",
     "empty": "Aucune arrivée pour l'instant"
   }

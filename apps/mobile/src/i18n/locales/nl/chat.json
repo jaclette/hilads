@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd.",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Internationale challenge: {{title}}",
   "arrivalsBar": {
-    "label": "Recente aankomsten",
+    "label": "✈️ Recente aankomsten",
     "sheetTitle": "Aankomsten",
     "empty": "Nog geen aankomsten"
   }

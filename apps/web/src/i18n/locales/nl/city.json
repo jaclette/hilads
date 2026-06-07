@@ -256,7 +256,7 @@
     "delete": "Evenement verwijderen"
   },
   "arrivalsBar": {
-    "label": "Recente aankomsten",
+    "label": "✈️ Recente aankomsten",
     "sheetTitle": "Aankomsten",
     "empty": "Nog geen aankomsten"
   }

@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 国际挑战：{{title}}",
   "arrivalsBar": {
-    "label": "最近到达",
+    "label": "✈️ 最近到达",
     "sheetTitle": "到达",
     "empty": "暂无到达"
   }

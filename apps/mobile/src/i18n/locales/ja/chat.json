@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 挑戦達成！{{name}} が「{{title}}」を承認しました。",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 国際チャレンジ：{{title}}",
   "arrivalsBar": {
-    "label": "最近の到着",
+    "label": "✈️ 最近の到着",
     "sheetTitle": "到着",
     "empty": "まだ到着なし"
   }

@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}",
   "arrivalsBar": {
-    "label": "Vừa đến",
+    "label": "✈️ Vừa đến",
     "sheetTitle": "Mới đến",
     "empty": "Chưa có ai đến"
   }

@@ -256,7 +256,7 @@
     "delete": "Hapus acara"
   },
   "arrivalsBar": {
-    "label": "Kedatangan terkini",
+    "label": "✈️ Kedatangan terkini",
     "sheetTitle": "Kedatangan",
     "empty": "Belum ada kedatangan"
   }

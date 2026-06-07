@@ -256,7 +256,7 @@
     "delete": "Event löschen"
   },
   "arrivalsBar": {
-    "label": "Letzte Ankünfte",
+    "label": "✈️ Letzte Ankünfte",
     "sheetTitle": "Ankünfte",
     "empty": "Noch keine Ankünfte"
   }

@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} ชาเลนจ์ระหว่างประเทศ: {{title}}",
   "arrivalsBar": {
-    "label": "มาถึงล่าสุด",
+    "label": "✈️ มาถึงล่าสุด",
     "sheetTitle": "การมาถึง",
     "empty": "ยังไม่มีใครมาถึง"
   }

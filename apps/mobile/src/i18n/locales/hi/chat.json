@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} अंतरराष्ट्रीय challenge: {{title}}",
   "arrivalsBar": {
-    "label": "हाल के आगमन",
+    "label": "✈️ हाल के आगमन",
     "sheetTitle": "आगमन",
     "empty": "अभी तक कोई नहीं आया"
   }

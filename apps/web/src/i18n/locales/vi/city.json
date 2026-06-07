@@ -250,7 +250,7 @@
     "delete": "Xóa sự kiện"
   },
   "arrivalsBar": {
-    "label": "Vừa đến",
+    "label": "✈️ Vừa đến",
     "sheetTitle": "Mới đến",
     "empty": "Chưa có ai đến"
   }

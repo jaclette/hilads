@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}",
   "arrivalsBar": {
-    "label": "Kedatangan terkini",
+    "label": "✈️ Kedatangan terkini",
     "sheetTitle": "Kedatangan",
     "empty": "Belum ada kedatangan"
   }

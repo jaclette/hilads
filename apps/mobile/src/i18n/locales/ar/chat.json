@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 اكتمل التحدّي! {{name}} وثّق \"{{title}}\".",
   "bannerChallengeInternational": "{{fromFlag}} ← {{toFlag}} تحدٍ دولي: {{title}}",
   "arrivalsBar": {
-    "label": "وصول حديث",
+    "label": "✈️ وصول حديث",
     "sheetTitle": "الوصول",
     "empty": "لا توجد وصول بعد"
   }

@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 Вызов выполнен! {{name}} подтвердил «{{title}}».",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}",
   "arrivalsBar": {
-    "label": "Недавние прибытия",
+    "label": "✈️ Недавние прибытия",
     "sheetTitle": "Прибытия",
     "empty": "Пока никто не пришёл"
   }

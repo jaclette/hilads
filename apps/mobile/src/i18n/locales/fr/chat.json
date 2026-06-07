@@ -90,7 +90,7 @@
   "bannerChallengeValidated": "🏆 Défi accompli ! {{name}} a validé « {{title}} ».",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge international : {{title}}",
   "arrivalsBar": {
-    "label": "Arrivées récentes",
+    "label": "✈️ Arrivées récentes",
     "sheetTitle": "Arrivées",
     "empty": "Aucune arrivée pour l'instant"
   }
