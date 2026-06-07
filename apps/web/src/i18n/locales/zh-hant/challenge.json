@@ -460,7 +460,7 @@
   "scoreCelebration": {
     "unit": "積分",
     "subtitle": {
-      "accepted": "你接下了一個挑戰 🤝",
+      "accepted": "你的挑戰被接受了 🤝",
       "date_locked": "時間敲定 — 出發 🗓️",
       "meetup": "任務完成 🎉",
       "debrief": "任務完成 🎉",

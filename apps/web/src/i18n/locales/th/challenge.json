@@ -460,7 +460,7 @@
   "scoreCelebration": {
     "unit": "คะแนน",
     "subtitle": {
-      "accepted": "คุณรับชาเลนจ์แล้ว 🤝",
+      "accepted": "ชาเลนจ์ของคุณถูกรับแล้ว 🤝",
       "date_locked": "นัดเรียบร้อย — ลุย 🗓️",
       "meetup": "ภารกิจสำเร็จ 🎉",
       "debrief": "ภารกิจสำเร็จ 🎉",

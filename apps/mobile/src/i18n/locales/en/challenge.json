@@ -482,7 +482,7 @@
   "scoreCelebration": {
     "unit": "points",
     "subtitle": {
-      "accepted": "You took on a challenge 🤝",
+      "accepted": "Your challenge was accepted 🤝",
       "date_locked": "Date locked — let’s go 🗓️",
       "meetup": "Mission accomplished 🎉",
       "debrief": "Mission accomplished 🎉",
