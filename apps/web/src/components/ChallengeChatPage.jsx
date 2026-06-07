@@ -8,7 +8,7 @@
  * reply — all deferred to mobile or a follow-up commit if needed.
  */
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
@@ -462,45 +462,18 @@ export default function ChallengeChatPage({
     return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
   }, [socket, loadMyAcceptance])
 
-  // PR26 — smart auto-scroll. The previous "snap to bottom on every
-  // messages.length change" fought the user and could land near the top
-  // when the effect fired before layout was settled. The new contract:
-  //   - On the FIRST render with messages.length > 0, snap to bottom
-  //     (regardless of the near-bottom flag — this is the open-the-chat
-  //     moment; the user expects newest content).
-  //   - On subsequent length changes, only snap if the user is within
-  //     ~120px of the bottom (otherwise they're reading history).
-  // PR28 — robustness: snap THREE times — synchronously in useLayoutEffect
-  // (catches the common case before paint), once via requestAnimationFrame
-  // (catches the case where the snap-time scrollHeight was still partial
-  // — e.g., MessageImage placeholders resolving, font swap), and once via
-  // setTimeout(0) (catches reflows triggered by sibling components like
-  // the schedule band mounting just under the feed). All three are
-  // idempotent; the final scrollTop is always el.scrollHeight.
-  const isNearBottomRef = useRef(true)
-  const didInitialScrollRef = useRef(false)
-  useLayoutEffect(() => {
-    const el = feedRef.current
-    if (!el) return
-    // The "open the chat" moment: first time the feed has messages.
-    const isInitialLoad = !didInitialScrollRef.current && messages.length > 0
-    const shouldSnap = isInitialLoad || isNearBottomRef.current
-    if (!shouldSnap) return
-    // scrollIntoView on the bottom sentinel is more reliable than
-    // scrollTop = scrollHeight: the browser figures out exactly how far
-    // to scroll the nearest ancestor scroll container to bring the
-    // element into the visible viewport, even when intermediate layout
-    // is still settling. We retry across three ticks so any reflow from
-    // siblings (schedule band, image placeholders) is absorbed.
-    const snap = () => {
-      const target = bottomRef.current
-      if (target) target.scrollIntoView({ block: 'end', behavior: 'auto' })
-    }
-    snap()                                        // before paint
-    requestAnimationFrame(snap)                   // after the next layout tick
-    const timeoutId = window.setTimeout(snap, 60) // catches late reflows
-    if (isInitialLoad) didInitialScrollRef.current = true
-    return () => window.clearTimeout(timeoutId)
+  // PR29 — auto-scroll matches the proven TopicChatPage pattern exactly:
+  // a plain useEffect on messages.length, calling scrollIntoView on the
+  // bottom sentinel. The earlier attempts at useLayoutEffect + rAF chains
+  // + scroll-position-aware gating fought the layout (the collapsible
+  // header above the feed transitions max-height as iAmParticipant
+  // resolves, and the snap fired before that transition completed,
+  // landing the user near the top). Letting React paint first, then
+  // snapping, sidesteps the race entirely.
+  const skipAutoScrollRef = useRef(false)
+  useEffect(() => {
+    if (skipAutoScrollRef.current) { skipAutoScrollRef.current = false; return }
+    bottomRef.current?.scrollIntoView({ behavior: 'auto' })
   }, [messages.length])
 
   const handleSendMessage = useCallback(async (e) => {
@@ -1097,15 +1070,7 @@ export default function ChallengeChatPage({
           <div
             className="topic-chat-feed"
             ref={feedRef}
-            onScroll={e => {
-              const el = e.currentTarget
-              // Within 120px of the bottom = "active in the conversation".
-              // Outside that band, the user is reading history; the next
-              // new message must NOT yank them back down.
-              const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
-              isNearBottomRef.current = distFromBottom < 120
-              collapseHeader(el.scrollTop > 30)
-            }}
+            onScroll={e => collapseHeader(e.currentTarget.scrollTop > 30)}
           >
             {messages.length === 0 && (
               <div className="topic-chat-empty">
