@@ -13064,6 +13064,28 @@ body.has-app-promo-banner .page-header {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* PR38 — tappable rank rows. Adds a subtle hover background + a chevron
+   on the right edge so the affordance reads as "tap me, go to the
+   leaderboard". The :focus-visible ring is for keyboard users. */
+.score-celebration-row--tappable {
+  cursor: pointer;
+  border-radius: 10px;
+  transition: background 0.12s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+}
+.score-celebration-row--tappable:hover  { background: rgba(255, 255, 255, 0.05); }
+.score-celebration-row--tappable:active { transform: scale(0.985); }
+.score-celebration-row--tappable:focus-visible {
+  outline: 2px solid rgba(255, 122, 60, 0.5);
+  outline-offset: 2px;
+}
+.score-celebration-row-chevron {
+  color: var(--muted2);
+  font-size: 18px;
+  line-height: 1;
+  margin-left: 2px;
+}
+
 .score-celebration-row-flag {
   font-size: 20px;
   line-height: 1;

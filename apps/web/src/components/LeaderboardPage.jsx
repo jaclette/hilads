@@ -31,10 +31,13 @@ function avatarColors(name = '') {
 
 const PAGE_SIZE = 50
 
-export default function LeaderboardPage({ account, city, cityChannelId, onBack }) {
+export default function LeaderboardPage({ account, city, cityChannelId, onBack, initialScope = 'city' }) {
   const { t } = useTranslation('challenge')
 
-  const [scope,  setScope]  = useState('city')
+  // PR38 — initialScope lets callers (e.g. the score celebration popin's
+  // rank rows) request a starting scope. Default 'city' preserves the
+  // existing entry from the trophy chip.
+  const [scope,  setScope]  = useState(initialScope === 'world' ? 'world' : 'city')
   const [period, setPeriod] = useState('month')
 
   const [data,    setData]    = useState(null)

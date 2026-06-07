@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import {
   ackScoreCelebration,
@@ -24,6 +25,7 @@ import { ScoreCelebrationModal } from './ScoreCelebrationModal';
  *   - Guests bail (account?.id required; the API is auth-gated anyway).
  */
 export function ScoreCelebrationLaunchGate() {
+  const router = useRouter();
   const { account } = useApp();
   const [data,   setData]   = useState<ScoreCelebration | null>(null);
   const [closed, setClosed] = useState(false);
@@ -41,11 +43,10 @@ export function ScoreCelebrationLaunchGate() {
     return () => { cancelled = true; };
   }, [account?.id, closed]);
 
-  function handleClose() {
-    // Ack BEFORE clearing local state so the watermark advances even if
-    // the user immediately backgrounds the app. Fire-and-forget — the
-    // ack helper swallows network errors (worst case the popin re-shows
-    // next launch, which is harmless).
+  // Shared cleanup — ack + close. Used by both the CTA path and the
+  // rank-row tap path so the watermark always advances when the modal
+  // closes for any reason.
+  function ackAndClose() {
     if (data?.seen_until) {
       void ackScoreCelebration(data.seen_until);
     }
@@ -53,11 +54,21 @@ export function ScoreCelebrationLaunchGate() {
     setClosed(true);
   }
 
+  // PR38 — tap a rank row → ack, close, navigate to the leaderboard
+  // pre-scoped to that lens via the /leaderboard?scope=world query param.
+  function handleOpenLeaderboard(scope: 'city' | 'world') {
+    ackAndClose();
+    router.push(scope === 'world'
+      ? { pathname: '/leaderboard', params: { scope: 'world' } }
+      : { pathname: '/leaderboard' });
+  }
+
   return (
     <ScoreCelebrationModal
       data={data}
       visible={data !== null}
-      onClose={handleClose}
+      onClose={ackAndClose}
+      onOpenLeaderboard={handleOpenLeaderboard}
     />
   );
 }

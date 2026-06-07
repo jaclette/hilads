@@ -1055,6 +1055,7 @@ export default function App() {
   // to avoid a dead handle lingering elsewhere.
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
+  const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 — initial scope when opened
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank — drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
@@ -6370,6 +6371,7 @@ export default function App() {
           account={account}
           city={city}
           cityChannelId={channelId}
+          initialScope={leaderboardScope}
           onBack={() => setShowLeaderboard(false)}
         />
       )}
@@ -6378,7 +6380,15 @@ export default function App() {
           unacknowledged score_events. Lands first so the celebratory moment
           isn't blocked by the rate-sheet; the rate gate's effect is keyed
           independently so it follows on the same screen. */}
-      <ScoreCelebrationLaunchGate account={account} />
+      <ScoreCelebrationLaunchGate
+        account={account}
+        onOpenLeaderboard={(scope) => {
+          // PR38 — rank-row tap on the celebration modal jumps straight
+          // to the leaderboard pre-scoped to that row's lens.
+          setLeaderboardScope(scope === 'world' ? 'world' : 'city')
+          setShowLeaderboard(true)
+        }}
+      />
 
       {/* PR11 — auto-open the RateSheet once per page load when the caller
           has a rate-eligible meet-up (web parity with mobile's

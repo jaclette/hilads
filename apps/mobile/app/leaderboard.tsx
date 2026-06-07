@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useFocusEffect } from 'expo-router';
+import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -37,7 +37,14 @@ export default function LeaderboardScreen() {
   const { t } = useTranslation('challenge');
   const { account, city } = useApp();
 
-  const [scope,  setScope]  = useState<LeaderboardScope>('city');
+  // PR38 — allow callers (score celebration popin) to request an initial
+  // scope via /leaderboard?scope=world. Only 'world' is honoured here;
+  // anything else (including the absence of the param) falls back to
+  // 'city', preserving the trophy-chip default.
+  const params = useLocalSearchParams<{ scope?: string }>();
+  const initialScope: LeaderboardScope = params.scope === 'world' ? 'world' : 'city';
+
+  const [scope,  setScope]  = useState<LeaderboardScope>(initialScope);
   const [period, setPeriod] = useState<LeaderboardPeriod>('month');
 
   // PR13 — picker-overridden city for the leaderboard view. Null = use the

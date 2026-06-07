@@ -11,6 +11,10 @@ type Props = {
   data:     ScoreCelebration | null; // null = closed
   visible:  boolean;
   onClose:  () => void;
+  // PR38 — tap a rank row to open the leaderboard pre-scoped to that
+  // lens. Receives 'city' or 'world'. Optional — when undefined, rows
+  // stay inert (older callers).
+  onOpenLeaderboard?: (scope: 'city' | 'world') => void;
 };
 
 // Per-kind subtitle key. Falls back to `default` when the server hasn't
@@ -53,7 +57,7 @@ const KIND_EMOJI: Record<string, string> = {
  * The CTA closes; the parent's onClose acks the server watermark so the
  * same delta is never celebrated twice.
  */
-export function ScoreCelebrationModal({ data, visible, onClose }: Props) {
+export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboard }: Props) {
   const { t } = useTranslation('challenge');
 
   // ── animation drivers ───────────────────────────────────────────────────
@@ -233,13 +237,45 @@ export function ScoreCelebrationModal({ data, visible, onClose }: Props) {
 
           <View style={styles.divider} />
 
-          <Animated.View style={[styles.row, { opacity: row1 }]}>
-            <Text style={styles.rowFlag}>{cityFlag}</Text>
-            <Text style={styles.rowLabel} numberOfLines={1}>{cityRankCopy}</Text>
+          {/* PR38 — rank rows are tappable when onOpenLeaderboard is
+              provided. Each row routes to the leaderboard pre-scoped
+              to its lens; the host is responsible for acking the
+              watermark before navigating. */}
+          <Animated.View style={[{ opacity: row1, width: '100%' }]}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.row,
+                onOpenLeaderboard && styles.rowTappable,
+                pressed && onOpenLeaderboard && styles.rowPressed,
+              ]}
+              disabled={!onOpenLeaderboard}
+              onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
+              accessibilityRole={onOpenLeaderboard ? 'button' : undefined}
+            >
+              <Text style={styles.rowFlag}>{cityFlag}</Text>
+              <Text style={styles.rowLabel} numberOfLines={1}>{cityRankCopy}</Text>
+              {onOpenLeaderboard && (
+                <Text style={styles.rowChevron} aria-hidden>›</Text>
+              )}
+            </Pressable>
           </Animated.View>
-          <Animated.View style={[styles.row, { opacity: row2 }]}>
-            <Text style={styles.rowFlag}>{worldFlag}</Text>
-            <Text style={styles.rowLabel} numberOfLines={1}>{worldRankCopy}</Text>
+          <Animated.View style={[{ opacity: row2, width: '100%' }]}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.row,
+                onOpenLeaderboard && styles.rowTappable,
+                pressed && onOpenLeaderboard && styles.rowPressed,
+              ]}
+              disabled={!onOpenLeaderboard}
+              onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
+              accessibilityRole={onOpenLeaderboard ? 'button' : undefined}
+            >
+              <Text style={styles.rowFlag}>{worldFlag}</Text>
+              <Text style={styles.rowLabel} numberOfLines={1}>{worldRankCopy}</Text>
+              {onOpenLeaderboard && (
+                <Text style={styles.rowChevron} aria-hidden>›</Text>
+              )}
+            </Pressable>
           </Animated.View>
 
           <Pressable
@@ -382,6 +418,15 @@ const styles = StyleSheet.create({
     paddingVertical:  8,
     paddingHorizontal: 12,
     width: '100%',
+    borderRadius: Radius.md,
+  },
+  // PR38 — visual affordance for tappable rank rows.
+  rowTappable: {
+    backgroundColor: 'rgba(255,255,255,0.02)',
+  },
+  rowPressed: {
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    transform: [{ scale: 0.985 }],
   },
   rowFlag: {
     fontSize:   20,
@@ -392,6 +437,11 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.md,
     fontWeight: '700',
     color:      Colors.text,
+  },
+  rowChevron: {
+    fontSize:   18,
+    lineHeight: 20,
+    color:      Colors.muted,
   },
   cta: {
     marginTop: 16,

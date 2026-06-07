@@ -13,7 +13,7 @@ import ScoreCelebrationModal from './ScoreCelebrationModal'
  *     delta is never re-celebrated across devices.
  *   - Anon viewers skip (the API is auth-gated).
  */
-export default function ScoreCelebrationLaunchGate({ account }) {
+export default function ScoreCelebrationLaunchGate({ account, onOpenLeaderboard }) {
   const [data,   setData]   = useState(null)
   const [closed, setClosed] = useState(false)
 
@@ -29,10 +29,10 @@ export default function ScoreCelebrationLaunchGate({ account }) {
     return () => { cancelled = true }
   }, [account?.id, closed])
 
-  function handleClose() {
-    // Ack BEFORE clearing local state so the watermark advances even if
-    // the user navigates away immediately. Network failure is non-fatal —
-    // the helper swallows errors; worst case the popin re-shows next load.
+  // Shared cleanup — acks the watermark and closes the modal. Used by
+  // both the "Let's go" CTA path and the row-tap → leaderboard path so
+  // navigating away always advances the watermark.
+  function ackAndClose() {
     if (data?.seen_until) {
       ackScoreCelebration(data.seen_until)
     }
@@ -44,7 +44,13 @@ export default function ScoreCelebrationLaunchGate({ account }) {
     <ScoreCelebrationModal
       data={data}
       visible={data !== null}
-      onClose={handleClose}
+      onClose={ackAndClose}
+      onOpenLeaderboard={onOpenLeaderboard ? (scope) => {
+        // Ack + close BEFORE invoking the host so the watermark is
+        // advanced even if the navigation interrupts our state updates.
+        ackAndClose()
+        onOpenLeaderboard(scope)
+      } : undefined}
     />
   )
 }

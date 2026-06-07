@@ -41,7 +41,7 @@ const KIND_EMOJI = {
  * The CTA + backdrop both fire onClose; the parent (LaunchGate) acks the
  * server watermark there so the same delta is never re-celebrated.
  */
-export default function ScoreCelebrationModal({ data, visible, onClose }) {
+export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboard }) {
   const { t } = useTranslation('challenge')
   const [displayPoints, setDisplayPoints] = useState(0)
   const rafRef = useRef(null)
@@ -143,14 +143,40 @@ export default function ScoreCelebrationModal({ data, visible, onClose }) {
 
         <div className="score-celebration-divider" />
 
-        <div className="score-celebration-row score-celebration-row--1">
-          <span className="score-celebration-row-flag" aria-hidden="true">{cityFlag}</span>
-          <span className="score-celebration-row-label">{cityRankCopy}</span>
-        </div>
-        <div className="score-celebration-row score-celebration-row--2">
-          <span className="score-celebration-row-flag" aria-hidden="true">{worldFlag}</span>
-          <span className="score-celebration-row-label">{worldRankCopy}</span>
-        </div>
+        {/* PR38 — rank rows are clickable when a handler is provided. Tap
+            opens the leaderboard pre-scoped to that row's lens (city or
+            world). The handler is responsible for acking the watermark
+            before navigating so the popin doesn't re-appear. */}
+        {(() => {
+          const cityTappable  = typeof onOpenLeaderboard === 'function'
+          const worldTappable = typeof onOpenLeaderboard === 'function'
+          return (
+            <>
+              <div
+                className={`score-celebration-row score-celebration-row--1${cityTappable ? ' score-celebration-row--tappable' : ''}`}
+                role={cityTappable ? 'button' : undefined}
+                tabIndex={cityTappable ? 0 : undefined}
+                onClick={cityTappable ? () => onOpenLeaderboard('city') : undefined}
+                onKeyDown={cityTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('city') } } : undefined}
+              >
+                <span className="score-celebration-row-flag" aria-hidden="true">{cityFlag}</span>
+                <span className="score-celebration-row-label">{cityRankCopy}</span>
+                {cityTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
+              </div>
+              <div
+                className={`score-celebration-row score-celebration-row--2${worldTappable ? ' score-celebration-row--tappable' : ''}`}
+                role={worldTappable ? 'button' : undefined}
+                tabIndex={worldTappable ? 0 : undefined}
+                onClick={worldTappable ? () => onOpenLeaderboard('world') : undefined}
+                onKeyDown={worldTappable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('world') } } : undefined}
+              >
+                <span className="score-celebration-row-flag" aria-hidden="true">{worldFlag}</span>
+                <span className="score-celebration-row-label">{worldRankCopy}</span>
+                {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
+              </div>
+            </>
+          )
+        })()}
 
         <button
           type="button"
