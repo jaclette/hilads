@@ -282,7 +282,11 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   // pipeline. Returns null when there's nothing for this viewer to see.
   const lastRejected = latest?.status === 'rejected' ? latest : null;
   if (!iAmAcceptor && !lastRejected) return null;
-  if (!lastRejected && !proofRequirements && !busy) return null;
+  // PR25 — proofRequirements no longer shown inline (the pipeline + popin
+  // already cover it). The card only renders when there's a rejection
+  // notice to surface OR an upload in flight; otherwise nothing useful
+  // would appear and we'd just leave an empty rectangle.
+  if (!lastRejected && !busy) return null;
   return (
     <View style={styles.card}>
       {lastRejected ? (
@@ -291,14 +295,12 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
         </Text>
       ) : null}
 
-      {iAmAcceptor && proofRequirements && (
-        <Text style={styles.requirementsLine} numberOfLines={3}>
-          {t('intl.proof.requirementsInline', {
-            text: proofRequirements,
-            defaultValue: `📋 ${proofRequirements}`,
-          })}
-        </Text>
-      )}
+      {/* PR25 — inline "📋 {requirements}" line removed. The pipeline's
+          camera step already conveys that a photo is expected, and tapping
+          the "Waiting for the proof" pill opens the full requirements
+          popin (proofSpecOpen) for the detail. Showing the same string
+          here twice felt redundant — the user explicitly asked for it
+          gone. */}
 
       {/* Loading indicator while the picker / upload / submit is in flight,
           since we no longer have a button to show the spinner on. */}
