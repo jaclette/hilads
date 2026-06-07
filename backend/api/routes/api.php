@@ -9659,6 +9659,30 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         error_log('[proof] approve push failed (non-fatal): ' . $e->getMessage());
     }
 
+    // PR62 — broadcast the verdict on the WS so the acceptor's screen
+    // (and the creator's other devices) flip to "approved" without a
+    // manual reload. Reuses the same channel as the proof_submitted
+    // event (PR43); existing client listeners just call loadMyAcceptance
+    // so we don't need a new event handler in the apps.
+    try {
+        if (!empty($challenge['created_by'])) {
+            broadcastChallengeAcceptedToWs($challenge['created_by'], [
+                'event'        => 'challenge_proof_approved',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+            ]);
+        }
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
+                'event'        => 'challenge_proof_approved',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] approve ws broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
     AnalyticsService::defer('challenge_proof_approved', $authUser['id'], [
         'challenge_id'  => $challenge['id'],
         'acceptance_id' => $acceptanceId,
@@ -9742,6 +9766,29 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
         }
     } catch (\Throwable $e) {
         error_log('[proof] reject push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // PR62 — broadcast the verdict on the WS so both sides refresh
+    // without a manual reload. Same pattern as the approve path above.
+    try {
+        if (!empty($challenge['created_by'])) {
+            broadcastChallengeAcceptedToWs($challenge['created_by'], [
+                'event'        => 'challenge_proof_rejected',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+                'isFinal'      => $isFinal,
+            ]);
+        }
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
+                'event'        => 'challenge_proof_rejected',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+                'isFinal'      => $isFinal,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] reject ws broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
     AnalyticsService::defer('challenge_proof_rejected', $authUser['id'], [

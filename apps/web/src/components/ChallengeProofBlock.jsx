@@ -143,6 +143,12 @@ export default function ChallengeProofBlock({
   }
 
   if (latest?.status === 'pending') {
+    // PR62 — creator's verdict UI moved into ProofReviewModal (opens
+    // from the pipeline's "Review the proof" sub-CTA). The photo lives
+    // in the chat thread above already, so leaving a duplicate photo +
+    // button pair here was noise. Skip the card entirely for creators;
+    // acceptors still see the "Waiting for verdict" line.
+    if (iAmCreator) return null
     return (
       <div className="proof-block">
         <img src={latest.media_url} alt="" className="proof-media" />

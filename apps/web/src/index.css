@@ -13288,3 +13288,41 @@ body.has-app-promo-banner .page-header {
 
 .score-celebration-cta:hover  { opacity: 0.92; }
 .score-celebration-cta:active { transform: scale(0.98); opacity: 0.85; }
+
+/* PR62 — Proof review modal (creator's "Review the proof" sub-CTA).
+   Big photo + Approve / Reject; reject swaps the body into a reason
+   prompt. Reuses .modal-overlay / .modal-panel from the base modal
+   skeleton; only the inner body + actions need their own rules. */
+.proof-review-panel { max-width: 480px; }
+.proof-review-panel .modal-title {
+  display: block;
+  padding: 20px 22px 6px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+.proof-review-body { padding: 8px 22px 22px; display: flex; flex-direction: column; gap: 12px; }
+.proof-review-loading,
+.proof-review-empty   { padding: 24px 0; text-align: center; color: var(--muted, #b3b3b3); font-size: 14px; }
+.proof-review-media   { width: 100%; max-height: 60vh; object-fit: cover; border-radius: 12px; background: #111; }
+.proof-review-actions { display: flex; gap: 10px; }
+.proof-review-btn {
+  flex: 1; padding: 12px 16px; border-radius: 10px; border: none;
+  font-size: 15px; font-weight: 800; cursor: pointer;
+  transition: opacity 0.12s ease;
+}
+.proof-review-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.proof-review-btn--approve   { background: #4ade80; color: #0b0d12; }
+.proof-review-btn--reject    { background: #ef4444; color: #fff; }
+.proof-review-btn--secondary { background: rgba(255,255,255,0.08); color: var(--muted, #b3b3b3); font-weight: 700; }
+.proof-review-reason  { display: flex; flex-direction: column; gap: 8px; }
+.proof-review-hint    { margin: 0; color: var(--muted, #b3b3b3); font-size: 13px; }
+.proof-review-reason-input {
+  width: 100%; padding: 10px 12px; border-radius: 10px; resize: vertical;
+  background: rgba(255,255,255,0.05); color: var(--text, #fff);
+  border: 1px solid rgba(255,255,255,0.08); font-size: 14px;
+}
+.proof-review-charcount { align-self: flex-end; font-size: 11px; color: var(--muted-2, #888); }
+.proof-review-error     { margin: 0; color: #ef4444; font-size: 13px; }

@@ -214,11 +214,15 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
 
   // Pending — creator reviews; acceptor waits.
   if (latest?.status === 'pending') {
+    // PR62 — creator's verdict UI moved into ProofReviewModal (opened
+    // from the pipeline's "Review the proof" sub-CTA). The photo lives
+    // in the chat thread above already, so leaving an inline button
+    // pair here with no photo was confusing. Skip the card entirely
+    // for creators; render the acceptor's "Waiting for verdict" line
+    // unchanged.
+    if (iAmCreator) return null;
     return (
       <View style={styles.card}>
-        {/* PR59 — geotag chip removed: no GPS prompt at submit, so a
-            "geotag verified" badge would be misleading. The photo +
-            verdict buttons / waiting text are the whole UI now. */}
         {iAmCreator ? (
           <View style={styles.verdictRow}>
             <TouchableOpacity

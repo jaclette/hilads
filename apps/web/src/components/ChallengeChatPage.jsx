@@ -29,6 +29,7 @@ import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
 import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
+import ProofReviewModal from './ProofReviewModal'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
 import ChallengeNotificationToggle from './ChallengeNotificationToggle'
@@ -115,6 +116,9 @@ export default function ChallengeChatPage({
   // sheet so the acceptor can re-read what was asked without scrolling
   // back through the chat.
   const [proofSpecOpen, setProofSpecOpen] = useState(false)
+  // PR62 — Creator's "Review the proof" modal. Opens from the pipeline
+  // sub-CTA on intl when phase='proof_submitted'.
+  const [proofReviewOpen, setProofReviewOpen] = useState(false)
   // Visibility picker — Public / Friends / Private dropdown opened from
   // the inline pill. "Private" maps to closed_to_new_joins=true (the
   // mutual go-private vote backend isn't surfaced here).
@@ -826,6 +830,13 @@ export default function ChallengeChatPage({
               && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
             return () => setPickerOpen(true)
           }
+          // PR62 — Creator + intl + acceptance at proof_submitted ⇒ open
+          // the modal review sheet. This is the "Review the proof" CTA path.
+          if ((challenge.mode ?? 'local') === 'international'
+              && isOwner
+              && activeAcceptance?.phase === 'proof_submitted') {
+            return () => setProofReviewOpen(true)
+          }
           // International: tap the "Waiting for the proof" pill to re-read
           // what the creator asked for (acceptor + creator). Only matters
           // when there's a spec to show.
@@ -1426,6 +1437,16 @@ export default function ChallengeChatPage({
             </div>
           </div>
         </div>
+      )}
+
+      {/* PR62 — Creator's "Review the proof" modal. */}
+      {(challenge.mode ?? 'local') === 'international' && isOwner && activeAcceptance && (
+        <ProofReviewModal
+          visible={proofReviewOpen}
+          onClose={() => setProofReviewOpen(false)}
+          acceptanceId={activeAcceptance.id}
+          onVerdict={() => { loadMyAcceptance() }}
+        />
       )}
 
       {/* Proof-spec popin — tap on the "Waiting for the proof" pipeline pill

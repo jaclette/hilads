@@ -35,6 +35,7 @@ import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock, type ChallengeProofBlockHandle } from '@/features/challenge/ChallengeProofBlock';
+import { ProofReviewModal } from '@/features/challenge/ProofReviewModal';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
 import { countryToFlag } from '@/lib/countryFlag';
@@ -293,6 +294,13 @@ export default function ChallengeChatScreen() {
   // flow directly. Replaces the standalone big button that used to live
   // inside the proof block.
   const proofRef = useRef<ChallengeProofBlockHandle>(null);
+  // PR62 — creator-side "Review the proof" modal. Opens from the pipeline
+  // sub-CTA on intl when phase='proof_submitted'. Shows the photo big +
+  // Approve / Reject buttons; reject swaps the same sheet into a reason
+  // prompt. Backend broadcasts the verdict on WS to both sides, so the
+  // pipeline + chat refresh elsewhere via the existing acceptance
+  // listener; the local screen also nudges loadMyAcceptance() on close.
+  const [proofReviewOpen, setProofReviewOpen] = useState(false);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here — that's the mutual go-private flow. International
@@ -932,6 +940,16 @@ export default function ChallengeChatScreen() {
               // + upload via the ChallengeProofBlock's imperative handle.
               return () => proofRef.current?.submit();
             }
+            // PR62 — Creator + intl + acceptance is at proof_submitted
+            // ⇒ open the modal review sheet. This is the "Review the proof"
+            // sub-CTA path; it surfaces the photo and Approve / Reject in
+            // one place instead of forcing the creator to scroll the chat
+            // for the photo then hunt for the inline verdict row.
+            if ((challenge.mode ?? 'local') === 'international'
+                && isOwner
+                && activeAcceptance?.phase === 'proof_submitted') {
+              return () => setProofReviewOpen(true);
+            }
             if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
               // Creator (no submit action) — still useful to surface the
               // requirements popin so they can re-read what they asked for.
@@ -1442,6 +1460,20 @@ export default function ChallengeChatScreen() {
             </TouchableOpacity>
           </View>
         </Modal>
+      )}
+
+      {/* PR62 — Creator's proof-review modal. Big photo + Approve / Reject
+          + reject-reason face. Mounted unconditionally for intl creators
+          (the modal renders nothing if no acceptance / no pending proof
+          exists). Visibility is gated on activeAcceptance so a recently-
+          resolved acceptance doesn't pop the sheet on remount. */}
+      {(challenge?.mode ?? 'local') === 'international' && isOwner && activeAcceptance && (
+        <ProofReviewModal
+          visible={proofReviewOpen}
+          onClose={() => setProofReviewOpen(false)}
+          acceptanceId={activeAcceptance.id}
+          onVerdict={() => { loadMyAcceptance(); loadChallenge(); }}
+        />
       )}
 
       {/* Proof-spec popin — read-only sheet showing what the creator asked
