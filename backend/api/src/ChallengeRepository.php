@@ -29,11 +29,14 @@ class ChallengeRepository
 
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
-    // is_in_progress: true iff the challenge has an active acceptance
-    // (1:1 model — the slot is busy). The "active" rule is shared with
-    // ChallengeAcceptanceRepository::hasActiveAcceptance() via the
-    // IS_ACTIVE_SQL constant — both call sites stay aligned, so the UI flag
-    // and the /accept gate never disagree on what counts as in-progress.
+    // is_in_progress: true iff the challenge has a POST-APPROVAL active
+    // acceptance — i.e., someone the creator has accepted and is actually
+    // working on the challenge. Uses IS_IN_PROGRESS_SQL (not IS_ACTIVE_SQL)
+    // so a pending request the creator hasn't reviewed yet still reads
+    // as "Available" on the city feed. The /accept gate keeps using
+    // IS_ACTIVE_SQL (wider — pending DOES block new requests) so two
+    // people can't race the same slot. See ChallengeAcceptanceRepository
+    // for the SQL fragments' contracts and PR36 for the UX rationale.
     // EXISTS sub-select runs once per row; bounded by the LIMIT on the
     // parent query (egress-safe).
     private const SELECT = "
@@ -81,7 +84,7 @@ class ChallengeRepository
                 -- columns are equal via the JOIN; ca.challenge_id's FK
                 -- references channels(id) so either works semantically.
                 WHERE ca.challenge_id = c.id
-                  AND " . \ChallengeAcceptanceRepository::IS_ACTIVE_SQL . "
+                  AND " . \ChallengeAcceptanceRepository::IS_IN_PROGRESS_SQL . "
             )                                                       AS is_in_progress
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id

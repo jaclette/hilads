@@ -165,14 +165,39 @@ class ChallengeAcceptanceRepository
      * verdict and we don't want to lock the challenge forever. Pending /
      * accepted rows never auto-ghost (no date yet to measure against).
      *
-     * Used both here (hasActiveAcceptance) and in ChallengeRepository's
-     * `is_in_progress` EXISTS sub-select. Keep both call sites pointing at
-     * this same fragment so the gate and the UI never disagree.
+     * Used by hasActiveAcceptance() — the /accept endpoint's gate. We
+     * INTENTIONALLY include 'pending' here so two users can't both create
+     * a request on the same slot; the creator picks one and the other is
+     * rejected. The UI-display flag (IS_IN_PROGRESS_SQL below) excludes
+     * 'pending' so the city feed still reads "Available" while the
+     * creator decides — see PR36.
      *
      * Caller must alias the table as `ca` in the surrounding query.
      */
     public const IS_ACTIVE_SQL = "
         ca.phase NOT IN ('approved', 'rejected')
+        AND (
+            ca.phase <> 'scheduled'
+            OR COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) IS NULL
+            OR COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) >= now() - interval '" . self::GHOST_GRACE_DAYS . " days'
+        )
+    ";
+
+    /**
+     * SQL fragment that selects acceptances treated as "in progress" by the
+     * UI (the green/orange status pill on the card, the locked CTA, etc.).
+     *
+     * Same shape as IS_ACTIVE_SQL but ALSO excludes 'pending' — a request
+     * the creator hasn't reviewed yet doesn't read as "in progress" to a
+     * city-feed viewer, it's still effectively available. Per user-reported
+     * UX (PR36): "I requested to take a challenge and the status became
+     * 'in progress' — it should still show available until the challenger
+     * accepts one taker."
+     *
+     * Caller must alias the table as `ca` in the surrounding query.
+     */
+    public const IS_IN_PROGRESS_SQL = "
+        ca.phase NOT IN ('pending', 'approved', 'rejected')
         AND (
             ca.phase <> 'scheduled'
             OR COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) IS NULL
