@@ -550,6 +550,13 @@ export interface User {
     timezone:  string;
   } | null;
   current_city_set_at?: string | null;
+  /**
+   * Badge keys mirroring UserResource::fromUser: primary first (ghost/fresh/
+   * regular), then 'host' appended when the user is an ambassador in any city.
+   * Used by isLegend() to gate the Legend-only manual city switch + other
+   * ambassador surfaces. Backend always emits the array.
+   */
+  badges?: BadgeKey[];
 }
 
 /** Friends list items — canonical UserDTO shape. */

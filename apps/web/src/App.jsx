@@ -7,6 +7,7 @@ import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessag
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
+import { isLegend } from './lib/canCreateEvent'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -3127,9 +3128,13 @@ export default function App() {
     setShowCityPicker(false)
     setCityCountry(newCityCountry ?? null)
 
-    // Commit the manual switch on the backend (registered users only —
-    // guests have no users row). Fire-and-forget.
-    if (account) setCurrentCity(newChannelId)
+    // Manual home-city overrides are Legend-only (backend enforces 403
+    // for everyone else). For normal registered users this switch is a
+    // UI peek: they browse the new city's chat / events / "Here" tab,
+    // but their home city stays where geolocation last placed them — so
+    // /me/scores, the city leaderboard, and notifications stay anchored.
+    // Guests are skipped entirely (no users row).
+    if (account && isLegend(account)) setCurrentCity(newChannelId)
 
     // stop everything tied to the previous room
     activeRef.current = false

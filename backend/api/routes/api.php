@@ -2002,6 +2002,21 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 // Body: { channelId: int | string }  — accepts either 42 or "city_42".
 $router->add('POST', '/api/v1/me/city', function () {
     $user = AuthService::requireAuth();
+
+    // Manual home-city overrides are restricted to Hilads Legends
+    // (city ambassadors). For everyone else, current_city_id is
+    // strictly geolocation-driven (set only by /location/resolve),
+    // so a normal user toggling cities in the UI changes what they
+    // see but never overwrites their actual home city. Legends are
+    // the explicit exception — they can claim a city from their
+    // profile even when they aren't physically geolocated to it.
+    if (!($user['_is_ambassador'] ?? false)) {
+        Response::json([
+            'error' => 'Only Hilads Legends can set their home city manually. Your home city follows your geolocation.',
+            'code'  => 'legend_only',
+        ], 403);
+    }
+
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
@@ -10490,60 +10505,93 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             }
         }
     } else {
-        $monthFilterSql = $period === 'month' ? "AND month_ref = :month" : "";
-
-        $list = $pdo->prepare("
-            WITH per_user AS (
-                SELECT user_id, SUM(points) AS points
-                FROM score_events
-                WHERE city_id = :city
-                  {$monthFilterSql}
-                GROUP BY user_id
-                HAVING SUM(points) > 0
-            )
-            SELECT u.id, u.display_name,
-                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
-                   pu.points,
-                   city_ch.name AS city_name, city_meta.country AS city_country
-            FROM per_user pu
-            JOIN users u ON u.id = pu.user_id
-            LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
-            LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-            WHERE u.deleted_at IS NULL
-            ORDER BY pu.points DESC, u.id ASC
-            LIMIT :limit OFFSET :offset
-        ");
-        $bind = [':city' => $cityId, ':limit' => $limit, ':offset' => $offset];
-        if ($period === 'month') $bind[':month'] = $currentMonth;
-        $list->execute($bind);
-        $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
-
-        $me1 = $pdo->prepare("
-            SELECT COALESCE(SUM(points), 0) AS my_points
-            FROM score_events
-            WHERE city_id = :city AND user_id = :uid
-              {$monthFilterSql}
-        ");
-        $b1 = [':city' => $cityId, ':uid' => $callerId];
-        if ($period === 'month') $b1[':month'] = $currentMonth;
-        $me1->execute($b1);
-        $myPoints = (int) $me1->fetchColumn();
-
-        if ($myPoints > 0) {
-            $me2 = $pdo->prepare("
-                SELECT COUNT(*) + 1 FROM (
-                    SELECT user_id
-                    FROM score_events
-                    WHERE city_id = :city
-                      {$monthFilterSql}
-                    GROUP BY user_id
-                    HAVING SUM(points) > :mine
-                ) higher
+        // City leaderboard — scoped by the USER's home city (the geolocated
+        // current_city_id), NOT by score_events.city_id. A user appears on a
+        // city's leaderboard iff they live there now; their total score (the
+        // cached users.score_alltime / score_month) carries with them when
+        // they move. Mirrors the world branch above and uses the same
+        // u.current_city_id source the World tab badges with, so the two
+        // views are always consistent.
+        //
+        // score_events.city_id is left intact as a historical tag (where
+        // each event was awarded) but no longer drives leaderboard scoping.
+        if ($period === 'alltime') {
+            $list = $pdo->prepare("
+                SELECT u.id, u.display_name,
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
+                       u.score_alltime AS points,
+                       city_ch.name AS city_name, city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at      IS NULL
+                  AND u.current_city_id = :city
+                  AND u.score_alltime   > 0
+                ORDER BY u.score_alltime DESC, u.id ASC
+                LIMIT :limit OFFSET :offset
             ");
-            $b2 = [':city' => $cityId, ':mine' => $myPoints];
-            if ($period === 'month') $b2[':month'] = $currentMonth;
-            $me2->execute($b2);
-            $myRank = (int) $me2->fetchColumn();
+            $list->execute([':city' => $cityId, ':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            $me1 = $pdo->prepare("
+                SELECT u.score_alltime, u.current_city_id
+                FROM users u WHERE u.id = ?
+            ");
+            $me1->execute([$callerId]);
+            $r1 = $me1->fetch(\PDO::FETCH_ASSOC);
+            $inThisCity = $r1 && $r1['current_city_id'] === $cityId;
+            $myPoints = $inThisCity ? (int) $r1['score_alltime'] : 0;
+
+            if ($inThisCity && $myPoints > 0) {
+                $me2 = $pdo->prepare("
+                    SELECT COUNT(*) + 1 FROM users
+                    WHERE deleted_at      IS NULL
+                      AND current_city_id = :city
+                      AND score_alltime   > :mine
+                ");
+                $me2->execute([':city' => $cityId, ':mine' => $myPoints]);
+                $myRank = (int) $me2->fetchColumn();
+            }
+        } else {
+            $list = $pdo->prepare("
+                SELECT u.id, u.display_name,
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
+                       u.score_month AS points,
+                       city_ch.name AS city_name, city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at      IS NULL
+                  AND u.current_city_id = :city
+                  AND u.score_month     > 0
+                  AND u.score_month_ref = :month
+                ORDER BY u.score_month DESC, u.id ASC
+                LIMIT :limit OFFSET :offset
+            ");
+            $list->execute([':city' => $cityId, ':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            $me1 = $pdo->prepare("
+                SELECT u.score_month, u.score_month_ref, u.current_city_id
+                FROM users u WHERE u.id = ?
+            ");
+            $me1->execute([$callerId]);
+            $r1 = $me1->fetch(\PDO::FETCH_ASSOC);
+            $inThisCity = $r1 && $r1['current_city_id'] === $cityId;
+            $myPoints   = ($inThisCity && $r1['score_month_ref'] === $currentMonth)
+                ? (int) $r1['score_month'] : 0;
+
+            if ($inThisCity && $myPoints > 0) {
+                $me2 = $pdo->prepare("
+                    SELECT COUNT(*) + 1 FROM users
+                    WHERE deleted_at      IS NULL
+                      AND current_city_id = :city
+                      AND score_month_ref = :month
+                      AND score_month     > :mine
+                ");
+                $me2->execute([':city' => $cityId, ':month' => $currentMonth, ':mine' => $myPoints]);
+                $myRank = (int) $me2->fetchColumn();
+            }
         }
     }
 

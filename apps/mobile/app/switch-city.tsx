@@ -33,6 +33,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { fetchChannels, joinChannel, setCurrentCity } from '@/api/channels';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
+import { isLegend } from '@/lib/canCreateEvent';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -192,9 +193,13 @@ export default function SwitchCityScreen() {
       // those leaked because they were never unsubscribed.
       socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
     }
-    // Commit the manual switch on the backend (registered users only — guests
-    // have no users row). Fire-and-forget; failures are non-blocking.
-    if (account) setCurrentCity(item.channelId);
+    // Manual home-city overrides are Legend-only (backend enforces 403 for
+    // everyone else). For normal registered users this switch is a UI peek:
+    // they get to browse the city's chat / events / "Here" tab, but their
+    // home city stays where geolocation last placed them — so /me/scores,
+    // the city leaderboard, and notifications stay correctly anchored.
+    // Guests are skipped entirely (no users row).
+    if (account && isLegend(account)) setCurrentCity(item.channelId);
     track('city_selected', { cityId: item.channelId, cityName: item.name });
     // replace (not push) — back from the City Channel shouldn't return here.
     router.replace('/(tabs)/chat');
