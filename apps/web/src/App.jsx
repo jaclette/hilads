@@ -6325,6 +6325,16 @@ export default function App() {
               setViewingProfile({ userId: account.id, nickname: account.display_name });
             }
           }}
+          onOpenProfile={(userId, nickname) => {
+            // PR27 — tapping a row in the channel-members modal opens that
+            // user's public profile. Routes through the same openProfile
+            // helper used by @mentions etc., so the ghost-viewer auth gate
+            // applies uniformly. Close the challenge page so the profile
+            // drawer lands on top of the city/now feed, matching the
+            // tap-mention-on-now flow.
+            setActiveChallenge(null);
+            openProfile(userId, nickname ?? '');
+          }}
           onSendDm={account ? async (targetUserId) => {
             // "Message creator" → standard DM. Reuses the same path the
             // profile card uses (createOrGetDirectConversation), so the DM

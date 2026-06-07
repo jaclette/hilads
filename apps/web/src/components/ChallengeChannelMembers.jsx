@@ -25,6 +25,10 @@ export default function ChallengeChannelMembers({
   activeTaker,
   currentUserId,
   onMembersChanged,
+  // PR27 — host-provided "open this user's profile" callback. Receives
+  // (userId, displayName). Falls through cleanly if not provided (older
+  // call sites: row stays inert).
+  onSelect,
 }) {
   const { t } = useTranslation('challenge')
 
@@ -126,8 +130,28 @@ export default function ChallengeChannelMembers({
               {rows.map(r => {
                 const showKick = canKick && r.role !== 'challenger' && r.id !== currentUserId
                 const [c1, c2] = avatarColors(r.displayName ?? r.id ?? '?')
+                // PR27 — make the row tappable. Closes the modal first
+                // (so the profile drawer lands without animation overlap),
+                // then hands off to the host's onSelect. Kick button
+                // sits to the right with stopPropagation so its tap
+                // doesn't also fire the row navigation.
+                const rowClickable = typeof onSelect === 'function' && !!r.id
+                const handleRowClick = () => {
+                  if (!rowClickable) return
+                  setOpen(false)
+                  onSelect(r.id, r.displayName ?? '')
+                }
                 return (
-                  <div key={r.id} className="people-drawer-row">
+                  <div
+                    key={r.id}
+                    className={`people-drawer-row${rowClickable ? ' people-drawer-row--tappable' : ''}`}
+                    onClick={rowClickable ? handleRowClick : undefined}
+                    role={rowClickable ? 'button' : undefined}
+                    tabIndex={rowClickable ? 0 : undefined}
+                    onKeyDown={rowClickable
+                      ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleRowClick() } }
+                      : undefined}
+                  >
                     {r.thumbAvatarUrl
                       ? <img className="online-avatar" src={r.thumbAvatarUrl} alt={r.displayName ?? ''} style={{ objectFit: 'cover' }} />
                       : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
@@ -149,7 +173,7 @@ export default function ChallengeChannelMembers({
                       <button
                         type="button"
                         className="challenge-member-kick"
-                        onClick={() => handleKick(r.id)}
+                        onClick={(e) => { e.stopPropagation(); handleKick(r.id); }}
                         disabled={busyId === r.id}
                         aria-label={t('members.kickAria', { name: r.displayName })}
                       >

@@ -92,6 +92,7 @@ export default function ChallengeChatPage({
   onNeedAuth,    // host routes guest to sign-up gate
   onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
   onSendDm,        // host opens a 1:1 DM with the given userId
+  onOpenProfile,   // host opens another user's public profile (PR27 — members modal row tap)
   socket,
   sessionId,
 }) {
@@ -854,6 +855,7 @@ export default function ChallengeChatPage({
           activeTaker={otherParticipants[0] ?? null}
           currentUserId={account?.id ?? null}
           onMembersChanged={() => { loadParticipants() }}
+          onSelect={onOpenProfile}
         />
       )}
       </div>{/* /.challenge-details (collapsible) */}

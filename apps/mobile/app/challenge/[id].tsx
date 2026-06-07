@@ -40,6 +40,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { avatarColor } from '@/lib/avatarColors';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { shareLink } from '@/lib/shareLink';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
@@ -1318,7 +1319,12 @@ export default function ChallengeChatScreen() {
           isActiveTaker={!!myAcceptance && !myAcceptance.i_am_creator}
           onClose={() => setMembersOpen(false)}
           onSelect={(uid) => {
+            // PR27 — close the sheet first so the navigation doesn't race
+            // its dismiss animation. Ghost / unauthenticated viewers go
+            // through the auth-gate (same guard used for @mentions in
+            // ChatMessage); registered users land on the public profile.
             setMembersOpen(false);
+            if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
             router.push({ pathname: '/user/[id]', params: { id: uid } });
           }}
           onMembersChanged={() => loadParticipants()}
