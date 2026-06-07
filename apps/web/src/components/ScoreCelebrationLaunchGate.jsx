@@ -13,7 +13,7 @@ import ScoreCelebrationModal from './ScoreCelebrationModal'
  *     delta is never re-celebrated across devices.
  *   - Anon viewers skip (the API is auth-gated).
  */
-export default function ScoreCelebrationLaunchGate({ account, onOpenLeaderboard }) {
+export default function ScoreCelebrationLaunchGate({ account, refetchKey = 0, onOpenLeaderboard }) {
   const [data,   setData]   = useState(null)
   const [closed, setClosed] = useState(false)
 
@@ -28,6 +28,16 @@ export default function ScoreCelebrationLaunchGate({ account, onOpenLeaderboard 
     })()
     return () => { cancelled = true }
   }, [account?.id, closed])
+
+  // PR47 — host bumps refetchKey on the WS 'mutual_rating_complete'
+  // event. Reset closed + data so the fetch effect above re-runs and
+  // surfaces the new debrief points popin without a page reload.
+  useEffect(() => {
+    if (refetchKey > 0) {
+      setClosed(false)
+      setData(null)
+    }
+  }, [refetchKey])
 
   // Shared cleanup — acks the watermark and closes the modal. Used by
   // both the "Let's go" CTA path and the row-tap → leaderboard path so

@@ -383,6 +383,20 @@ function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $paylo
     ]);
 }
 
+/** PR47 — mutual rating completed (the SECOND rater just submitted, so
+ *  both parties' debrief points landed). Fires to BOTH users so their
+ *  open ScoreCelebrationLaunchGate refetches /me/score-celebration and
+ *  surfaces the "+30/+40 points" popin without a manual refresh. */
+function broadcastMutualRatingCompleteToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → mutual-rating-complete target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'mutual_rating_complete',
+        'payload' => $payload,
+    ]);
+}
+
 /** PR4 — debrief verdicts. Same shape as proposed/approved/withdrawn. */
 function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
 {
@@ -8422,6 +8436,55 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
     ");
     $stmt->execute([$challengeId]);
     $revealed = ((int) $stmt->fetchColumn()) >= 2;
+
+    // PR47 — second rating landed → the mutual-rating trigger has just
+    // awarded debrief points to BOTH users. Two side-effects fire here:
+    //   1. WS broadcast to both — open clients refresh /me/score-celebration
+    //      so the "+30/+40 points" popin appears immediately. The
+    //      LaunchGate listens to 'mutual_rating_complete'.
+    //   2. Push to the FIRST rater (the OTHER party) — they're not the
+    //      one calling this endpoint, so they need to be pulled back
+    //      into the app. The just-submitting rater (caller) sees the
+    //      popin via the WS broadcast on their own open client; they
+    //      don't need a push (would be redundant).
+    if ($revealed) {
+        try {
+            // Both users get the WS event — the just-submitting rater's
+            // own client refetches the celebration too, so the popin
+            // surfaces without leaving the channel.
+            broadcastMutualRatingCompleteToWs($callerId, [
+                'challengeId' => $challengeId,
+                'role'        => $raterRole,
+            ]);
+            broadcastMutualRatingCompleteToWs($rateeId, [
+                'challengeId' => $challengeId,
+                'role'        => $raterRole === 'challenger' ? 'taker' : 'challenger',
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[ratings] mutual ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
+        // Push the FIRST rater. rateeId on this just-inserted row is who
+        // the CALLER rated — i.e. the other party — who is exactly the
+        // first rater (they had to have rated before this row was the
+        // SECOND one). Keep the type name self-describing for ops.
+        try {
+            $callerName = $authUser['display_name'] ?? 'Someone';
+            NotificationRepository::create(
+                $rateeId,
+                'challenge_rated_complete',
+                "⭐ {$callerName} rated you",
+                "Mutual rating done — your points just landed for \"{$challenge['title']}\"",
+                [
+                    'challengeId'    => $challengeId,
+                    'raterName'      => $callerName,
+                    'challengeTitle' => $challenge['title'] ?? '',
+                ],
+            );
+        } catch (\Throwable $e) {
+            error_log('[ratings] mutual push failed (non-fatal): ' . $e->getMessage());
+        }
+    }
 
     AnalyticsService::defer('challenge_rated', $callerId, [
         'challenge_id' => $challengeId,

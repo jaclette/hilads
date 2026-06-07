@@ -245,6 +245,10 @@ class NotificationRepository
             // Cross-city heads-up — tap lands the user on the challenge so
             // they can decide whether to take it on.
             'challenge_international_target'  => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/(tabs)/now',
+            // PR47 — mutual rating complete. Tap → channel; the
+            // ScoreCelebrationLaunchGate on app-open also surfaces the
+            // popin with the newly-earned debrief points.
+            'challenge_rated_complete'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -270,6 +274,7 @@ class NotificationRepository
             'join_request_accepted'   => 'joinacc-'       . ($data['topicId'] ?? 'topic'),
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
+            'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
             default                   => 'hilads-' . $type,
         };
     }

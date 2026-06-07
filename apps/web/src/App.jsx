@@ -1056,6 +1056,7 @@ export default function App() {
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 — initial scope when opened
+  const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 — bumps on WS mutual_rating_complete
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank — drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
@@ -2633,6 +2634,15 @@ export default function App() {
       // Real-time reaction animations — purely visual, no stored state changed.
       socket.on('reaction', ({ type, messageId }) => {
         triggerReactionBurstRef.current?.(type, messageId)
+      })
+
+      // PR47 — mutual rating just completed (for THIS user — server
+      // dispatched the event to both the rater + ratee). Bump the
+      // celebration refetch key so the launch gate refetches
+      // /me/score-celebration and surfaces the "+30/+40" debrief popin
+      // without a page reload.
+      socket.on('mutual_rating_complete', () => {
+        setCelebrationRefetchKey(k => k + 1)
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', session.guestId)
@@ -6382,6 +6392,7 @@ export default function App() {
           independently so it follows on the same screen. */}
       <ScoreCelebrationLaunchGate
         account={account}
+        refetchKey={celebrationRefetchKey}
         onOpenLeaderboard={(scope) => {
           // PR38 — rank-row tap on the celebration modal jumps straight
           // to the leaderboard pre-scoped to that row's lens.
