@@ -1454,21 +1454,32 @@ run($pdo, "
     FOR EACH ROW EXECUTE FUNCTION sync_user_scores()
 ", 'trg_score_events_sync');
 
-// ── Trigger: accepted-points on first acceptance ───────────────────────────
+// ── Trigger: accepted-points when the CREATOR approves a take-on ──────────
+// PR42 — the old logic awarded the challenger +5 on EVERY acceptance
+// insert, including phase='pending' (a request the creator hasn't seen
+// yet). Net result: a stranger requesting your challenge bumped your
+// score by 5 even though you might still REJECT them. Now the trigger
+// gates on `phase NOT IN ('pending', 'rejected')` — international
+// acceptances are created in phase='accepted' (auto-approved) so they
+// fire on INSERT; local acceptances start 'pending' and fire on the
+// UPDATE that approves them. UNIQUE (user_id, challenge_id, role, kind)
+// keeps the event single-shot even if the row re-transitions later.
+//
 // City anchor = cc.city_id (the challenge's origin city). Matches the
 // mutual-rating trigger below so all score_events for one challenge
-// hit the same city bucket. UNIQUE on score_events blocks dupes when a
-// challenge is accepted, dropped, re-accepted — one accepted-event per
-// challenge total.
+// hit the same city bucket.
 run($pdo, "
-    CREATE OR REPLACE FUNCTION on_challenge_acceptance_insert() RETURNS TRIGGER AS \$\$
+    CREATE OR REPLACE FUNCTION on_challenge_acceptance_score() RETURNS TRIGGER AS \$\$
     DECLARE
         challenger_id TEXT;
         origin_city   TEXT;
         pts           INT;
         current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
     BEGIN
-        IF NEW.phase = 'rejected' THEN RETURN NEW; END IF;
+        -- Gate: only fire when the take-on has been APPROVED. Pending
+        -- requests don't count (the creator may still reject); rejected
+        -- rows obviously don't earn anything either.
+        IF NEW.phase IN ('pending', 'rejected') THEN RETURN NEW; END IF;
 
         SELECT cc.created_by, cc.city_id
         INTO challenger_id, origin_city
@@ -1489,14 +1500,46 @@ run($pdo, "
         RETURN NEW;
     END;
     \$\$ LANGUAGE plpgsql;
-", 'fn on_challenge_acceptance_insert');
+", 'fn on_challenge_acceptance_score');
 
-run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_accepted_score ON challenge_acceptances", 'drop trg_chacc_accepted_score');
+// Drop the old INSERT-only trigger; recreate it covering INSERT OR
+// UPDATE OF phase so the local approval path (pending → accepted) also
+// fires it. The new function name keeps the legacy DROP guarded above.
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_accepted_score ON challenge_acceptances", 'drop trg_chacc_accepted_score (legacy)');
 run($pdo, "
     CREATE TRIGGER trg_chacc_accepted_score
-    AFTER INSERT ON challenge_acceptances
-    FOR EACH ROW EXECUTE FUNCTION on_challenge_acceptance_insert()
+    AFTER INSERT OR UPDATE OF phase ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_acceptance_score()
 ", 'trg_chacc_accepted_score');
+
+// PR42 cleanup: remove premature 'accepted' score_events whose
+// challenges still have NO approved acceptance. Idempotent — the
+// subquery returns nothing on re-run. Sync trigger only fires on
+// INSERT, so we recompute the affected users' cached aggregates by
+// hand after the delete.
+run($pdo, "
+    WITH bad AS (
+        DELETE FROM score_events se
+        WHERE se.kind = 'accepted'
+          AND NOT EXISTS (
+              SELECT 1 FROM challenge_acceptances ca
+              WHERE ca.challenge_id = se.challenge_id
+                AND ca.phase NOT IN ('pending', 'rejected')
+          )
+        RETURNING se.user_id
+    )
+    UPDATE users u
+    SET score_alltime = COALESCE((
+            SELECT SUM(points) FROM score_events WHERE user_id = u.id
+        ), 0),
+        score_month = COALESCE((
+            SELECT SUM(points) FROM score_events
+            WHERE user_id = u.id
+              AND month_ref = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM')
+        ), 0),
+        score_month_ref = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM')
+    WHERE u.id IN (SELECT DISTINCT user_id FROM bad)
+", 'PR42 — clean up premature accepted score_events + resync user aggregates');
 
 // ── PR12: date-locked points trigger ──────────────────────────────────────
 // Fires when challenge_acceptances.date_approved_at flips from NULL to a
