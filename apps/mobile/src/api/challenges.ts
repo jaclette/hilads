@@ -353,6 +353,22 @@ export async function ackScoreCelebration(seenUntil: string): Promise<void> {
   }
 }
 
+// PR33 — toggle a reaction on a challenge-channel message. Same allowed
+// emojis as the event/city reactions. Returns the updated reaction list
+// so callers can hydrate state without a separate fetch.
+export async function toggleChallengeReaction(
+  challengeId: string,
+  messageId:   string,
+  emoji:       string,
+  guestId:     string,
+): Promise<import('@/types').Reaction[]> {
+  const data = await api.post<{ reactions: import('@/types').Reaction[] }>(
+    `/challenges/${challengeId}/messages/${messageId}/reactions`,
+    { emoji, guestId },
+  );
+  return data.reactions;
+}
+
 /** Submit a rating for a challenge. Throws ApiError on 4xx so the sheet can
  *  branch — in particular code='already_rated' (409) and code='not_rate_eligible'
  *  (403) are recoverable by dismissing + refetching the prompts list. */

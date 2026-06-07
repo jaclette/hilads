@@ -22,8 +22,13 @@ import {
   acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
-  setChallengeCloseToJoins, setChallengeVisibility,
+  setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
 } from '@/api/challenges';
+import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
+import i18n from '@/i18n';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
@@ -517,12 +522,24 @@ export default function ChallengeChatScreen() {
   );
 
   const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
-          sendText, sendImage, loadOlder, reload } = useMessages({
+          sendText, sendImage, loadOlder, reload,
+          setMessageReactions, editMessage, deleteMessage } = useMessages({
     channelId: id ?? '__no_challenge__',
     loadFn:    loadMessagesFn,
     postTextFn,
     postImageFn,
   });
+
+  // PR33 — long-press → MessageActionSheet (react / reply / copy / edit /
+  // delete). Mirrors the event/[id].tsx wiring exactly; the underlying
+  // useMessages hook already exposes setMessageReactions / editMessage /
+  // deleteMessage, the new toggleChallengeReaction handles the network
+  // round-trip + WS broadcast.
+  const [actionSheetMsg, setActionSheetMsg] = useState<Message | null>(null);
+  const [replyingTo,     setReplyingTo]     = useState<import('@/types').ReplyRef | null>(null);
+  const [editingMsg,     setEditingMsg]     = useState<{ id: string; content: string } | null>(null);
+  const replyingToRef = useRef<import('@/types').ReplyRef | null>(null);
+  useEffect(() => { replyingToRef.current = replyingTo; }, [replyingTo]);
 
   // Re-fetch messages on the moment iAmParticipant flips false/null → true.
   // The useMessages mount-effect keys on channelId alone, so on a re-entry
@@ -1124,6 +1141,19 @@ export default function ChallengeChatScreen() {
                     showTime={showTime}
                     dateLabel={dateLabel}
                     roleBadge={roleBadge}
+                    onLongPress={(msg) => {
+                      if (!msg.id || msg.id.startsWith('local-')) return;
+                      setActionSheetMsg(msg);
+                    }}
+                    onReact={async (msg, emoji) => {
+                      if (!msg.id || !identity || !id) return;
+                      try {
+                        const reactions = await toggleChallengeReaction(id, msg.id, emoji, identity.guestId);
+                        setMessageReactions(msg.id, reactions);
+                      } catch (e) {
+                        console.warn('[challenge] reaction failed:', e);
+                      }
+                    }}
                   />
                 );
               }}
@@ -1164,8 +1194,26 @@ export default function ChallengeChatScreen() {
               onFocus={() => collapseTo(1)}
               onBlur={() => collapseTo(0)}
               dismissOnSend
-              onSendText={(text) => sendText(text, null)}
+              onSendText={(text) => {
+                const reply = replyingToRef.current;
+                setReplyingTo(null);
+                sendText(text, reply);
+              }}
               onSendImage={sendImage}
+              replyingTo={replyingTo}
+              onCancelReply={() => setReplyingTo(null)}
+              editing={editingMsg}
+              onSubmitEdit={async (text) => {
+                if (!editingMsg) return;
+                const idToEdit = editingMsg.id;
+                setEditingMsg(null);
+                try { await editMessage(idToEdit, text); }
+                catch (e) {
+                  console.warn('[challenge] edit failed:', e);
+                  Alert.alert(i18n.t('editFailed', { ns: 'chat' }));
+                }
+              }}
+              onCancelEdit={() => setEditingMsg(null)}
             />
           </>
         ) : (
@@ -1456,6 +1504,71 @@ export default function ChallengeChatScreen() {
         currentUserId={account?.id ?? null}
         onClose={() => setPostCreateOpen(false)}
         onShare={handleShare}
+      />
+
+      {/* PR33 — message action sheet (long-press on a chat bubble). Mirrors
+          the event-channel wiring: react / reply / copy / edit / delete.
+          Edit + delete only render when the message belongs to the caller. */}
+      <MessageActionSheet
+        visible={actionSheetMsg !== null}
+        reactions={actionSheetMsg?.reactions ?? []}
+        onReact={async (emoji) => {
+          if (!actionSheetMsg?.id || !identity || !id) return;
+          reactionEmitter.emit(actionSheetMsg.id, EMOJI_TO_TYPE[emoji] ?? 'heart');
+          try {
+            const reactions = await toggleChallengeReaction(id, actionSheetMsg.id, emoji, identity.guestId);
+            setMessageReactions(actionSheetMsg.id, reactions);
+          } catch (e) {
+            console.warn('[challenge] reaction failed:', e);
+          }
+        }}
+        onReply={actionSheetMsg ? () => {
+          setReplyingTo({
+            id:       actionSheetMsg.id!,
+            nickname: actionSheetMsg.nickname,
+            content:  actionSheetMsg.content ?? '',
+            type:     actionSheetMsg.type ?? 'text',
+          });
+        } : undefined}
+        onCopy={actionSheetMsg?.content ? () => {
+          Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+        } : undefined}
+        onEdit={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) ||
+                       (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          const editable = actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt &&
+                           !!actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍');
+          return mine && editable ? () => {
+            setReplyingTo(null);
+            setEditingMsg({ id: actionSheetMsg.id!, content: actionSheetMsg.content! });
+          } : undefined;
+        })()}
+        onDelete={(() => {
+          if (!actionSheetMsg) return undefined;
+          const mine = (account?.id && actionSheetMsg.userId === account.id) ||
+                       (identity?.guestId && actionSheetMsg.guestId === identity.guestId);
+          return mine && !actionSheetMsg.deletedAt ? () => {
+            const msgId = actionSheetMsg.id!;
+            Alert.alert(
+              i18n.t('deleteConfirmTitle', { ns: 'chat' }),
+              i18n.t('deleteConfirmBody',  { ns: 'chat' }),
+              [
+                { text: i18n.t('deleteConfirmCancel', { ns: 'chat' }), style: 'cancel' },
+                { text: i18n.t('deleteConfirmCta',    { ns: 'chat' }), style: 'destructive',
+                  onPress: async () => {
+                    try { await deleteMessage(msgId); }
+                    catch (e) {
+                      console.warn('[challenge] delete failed:', e);
+                      Alert.alert(i18n.t('deleteFailed', { ns: 'chat' }));
+                    }
+                  } },
+              ],
+            );
+          } : undefined;
+        })()}
+        onClose={() => setActionSheetMsg(null)}
       />
     </SafeAreaView>
   );

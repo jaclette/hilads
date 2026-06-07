@@ -10790,6 +10790,49 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     Response::json($message, 201);
 });
 
+// POST /api/v1/challenges/{challengeId}/messages/{messageId}/reactions
+// Toggle a reaction on a challenge-channel message. Mirrors the city +
+// event endpoints — same 5 allowed emojis, same toggleMessageReaction
+// semantics, broadcasts via WS to the challenge channel so other readers
+// see the pill update live without polling.
+$router->add('POST', '/api/v1/challenges/{challengeId}/messages/{messageId}/reactions', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    $messageId   = $params['messageId']   ?? '';
+
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    if ($messageId === '') {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body    = Request::json();
+    $emoji   = trim((string) ($body['emoji'] ?? ''));
+    $guestId = $body['guestId'] ?? null;
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId or auth token required'], 400);
+    }
+
+    // Participation gate — only people who can read the chat can react.
+    if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
+        Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
+    }
+
+    $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
+    // Use the challenge id directly — broadcastReactionToWs accepts string
+    // channel ids (mirrors how broadcastMessageToWs is called above).
+    broadcastReactionToWs($challengeId, $messageId, $result['reactions']);
+
+    Response::json(['reactions' => $result['reactions']]);
+});
+
 // ── Challenge privacy votes ─────────────────────────────────────────────────
 //
 // Mutual go-private flow for Local challenges (International is always

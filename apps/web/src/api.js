@@ -500,8 +500,9 @@ export async function fetchChallengeMessages(challengeId, { beforeId, limit } = 
   return res.json() // { messages, hasMore }
 }
 
-export async function sendChallengeMessage(challengeId, guestId, nickname, content, mentions = null) {
+export async function sendChallengeMessage(challengeId, guestId, nickname, content, replyToMessageId = null, mentions = null) {
   const body = { guestId, nickname, content }
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   if (mentions && mentions.length) body.mentions = mentions
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages`, {
     method: 'POST',
@@ -1640,6 +1641,19 @@ export async function postVibe(userId, { rating, message }) {
 
 export async function toggleChannelReaction(channelId, messageId, emoji, guestId) {
   const res = await fetch(`${BASE}/channels/${channelId}/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji, guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle reaction')
+  return res.json() // { reactions: [{emoji, count, self}] }
+}
+
+// PR33 — toggle a reaction on a challenge-channel message. Same shape /
+// allowed emojis as channels + events; broadcasts via WS.
+export async function toggleChallengeReaction(challengeId, messageId, emoji, guestId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages/${encodeURIComponent(messageId)}/reactions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
