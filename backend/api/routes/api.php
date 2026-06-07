@@ -8663,6 +8663,34 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                 'required_mode' => $expectedMode,
             ], 403);
         }
+    } else {
+        // PR49 — International challenge with a TARGET city: only users
+        // whose current_city_id matches that target can take it on.
+        // target_city_id IS NULL = "anywhere" → no gate (kept open).
+        // Example: someone from HCMC posts "find me the best kebab in
+        // Berlin" — only Berlin members should be allowed to take it.
+        $targetCityId = $challenge['target_city_id'] ?? null;
+        if (is_string($targetCityId) && $targetCityId !== '') {
+            $userCityId = $authUser['current_city_id'] ?? null;
+            if ($userCityId !== $targetCityId) {
+                // Try to resolve the target city name for a friendlier
+                // error message ("Only Berlin members…"). Falls back to
+                // generic copy if the lookup fails — never 500 on this.
+                $targetCityName = null;
+                if (preg_match('/^city_(\d+)$/', $targetCityId, $m)) {
+                    $row = CityRepository::findById((int) $m[1]);
+                    $targetCityName = $row['name'] ?? null;
+                }
+                Response::json([
+                    'error' => $targetCityName !== null
+                        ? "Only {$targetCityName} members can take this challenge."
+                        : "Only members of the target city can take this challenge.",
+                    'code'  => 'wrong_city',
+                    'required_city_id'   => $targetCityId,
+                    'required_city_name' => $targetCityName,
+                ], 403);
+            }
+        }
     }
 
     // 1:1 gate — refuse a new take-on while the challenge has any
