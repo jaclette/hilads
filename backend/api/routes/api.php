@@ -8250,15 +8250,16 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
-    // International challenges have no IRL meetup — their truth is the proof
-    // verdict, not a mutual rating. Refuse cleanly so a confused client doesn't
-    // double-write into two outcome systems.
-    if (($challenge['mode'] ?? 'local') === 'international') {
-        Response::json([
-            'error' => 'International challenges use proof verdicts, not ratings.',
-            'code'  => 'intl_no_ratings',
-        ], 422);
-    }
+    // PR44 — open mutual rating to international challenges too. The
+    // previous design treated the creator's proof verdict as the final
+    // outcome, but per UX feedback the verdict step should END with
+    // both parties rating each other (same as local). Phase='approved'
+    // — which on international is reached when the creator approves the
+    // proof, on local when both met up — gates eligibility uniformly
+    // (see /me/rate-prompts below + the effective_phase fall-through).
+    // The mutual-rating trigger in migrate.php already fires regardless
+    // of mode, so debrief points (+30 challenger / +40 taker) flow on
+    // international too once both rate.
 
     // Body validation.
     $body = Request::json();
@@ -10050,10 +10051,12 @@ $router->add('POST', '/api/v1/me/score-celebration/seen', function () {
 // per the on-app-open decision in the (B) audit.
 //
 // Eligibility — same gate as POST /ratings, expressed as a list filter:
-//   - mode='local'                              (International uses proofs)
 //   - caller is creator OR active acceptor
 //   - acceptance phase = 'scheduled' AND meetup ended  (effective 'debrief'),
-//       OR phase = 'approved'                          (legacy / post-trigger)
+//       OR phase = 'approved'                          (legacy / post-trigger
+//                                                       — on international,
+//                                                       this is the creator's
+//                                                       proof approval; PR44)
 //   - caller has NOT already rated this challenge
 //
 // `other_rated` lets the UI warm the prompt copy ("they're waiting on you")
@@ -10095,7 +10098,12 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
         JOIN users acceptor        ON acceptor.id   = ca.acceptor_user_id
         WHERE
             (cc.created_by = :uid OR ca.acceptor_user_id = :uid)
-            AND cc.mode = 'local'
+            -- PR44: dropped `cc.mode = 'local'` so the international
+            -- mutual-rating path (acceptor sends proof → creator
+            -- approves → both can rate) flows through this query too.
+            -- The 'scheduled+end-past' branch never matches intl
+            -- acceptances (no proposed_starts_at), and the 'approved'
+            -- branch covers both modes uniformly.
             AND (
                 (ca.phase = 'scheduled'
                  AND ca.proposed_starts_at IS NOT NULL
