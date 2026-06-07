@@ -358,7 +358,8 @@
   "messageCreator": "Stuur {{name}} privé een bericht",
   "badge": {
     "challenger": "Uitdager",
-    "taker": "Acceptant"
+    "taker": "Acceptant",
+    "spectator": "Toeschouwer"
   },
   "cta": {
     "takenBy": "Op dit moment opgepakt door {{name}}",

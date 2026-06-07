@@ -354,7 +354,8 @@
   "messageCreator": "ส่งข้อความส่วนตัวถึง {{name}}",
   "badge": {
     "challenger": "ผู้ท้า",
-    "taker": "ผู้รับ"
+    "taker": "ผู้รับ",
+    "spectator": "ผู้ชม"
   },
   "cta": {
     "takenBy": "ตอนนี้ {{name}} กำลังทำอยู่",

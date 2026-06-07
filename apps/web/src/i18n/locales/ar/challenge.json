@@ -354,7 +354,8 @@
   "messageCreator": "أرسل رسالة خاصة إلى {{name}}",
   "badge": {
     "challenger": "صاحب التحدي",
-    "taker": "متحدي"
+    "taker": "متحدي",
+    "spectator": "مشاهد"
   },
   "cta": {
     "takenBy": "يقوم بها حاليًا {{name}}",

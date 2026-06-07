@@ -137,11 +137,12 @@ export default function ChallengeChannelMembers({
                     <div className="people-drawer-content">
                       <div className="people-drawer-name-row">
                         <span className="people-drawer-name">{r.displayName}</span>
-                        {r.role !== 'participant' && (
-                          <span className={`challenge-role-badge challenge-role-badge--${r.role}`}>
-                            {t(`badge.${r.role}`)}
-                          </span>
-                        )}
+                        {/* PR23 — render a badge for every row: Challenger /
+                            Taker stay as before, "participant" rows (channel
+                            joiners who never accepted) now read Spectator. */}
+                        <span className={`challenge-role-badge challenge-role-badge--${r.role === 'participant' ? 'spectator' : r.role}`}>
+                          {t(`badge.${r.role === 'participant' ? 'spectator' : r.role}`)}
+                        </span>
                       </div>
                     </div>
                     {showKick && (

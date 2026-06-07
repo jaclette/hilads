@@ -358,7 +358,8 @@
   "messageCreator": "Написать {{name}} в личку",
   "badge": {
     "challenger": "Автор",
-    "taker": "Принявший"
+    "taker": "Принявший",
+    "spectator": "Зритель"
   },
   "cta": {
     "takenBy": "Сейчас принят {{name}}",

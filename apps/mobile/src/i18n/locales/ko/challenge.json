@@ -358,7 +358,8 @@
   "messageCreator": "{{name}}님에게 비공개 메시지",
   "badge": {
     "challenger": "도전 만든 사람",
-    "taker": "도전자"
+    "taker": "도전자",
+    "spectator": "관전자"
   },
   "cta": {
     "takenBy": "{{name}}님이 진행 중",

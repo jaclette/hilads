@@ -447,7 +447,8 @@
   },
   "badge": {
     "challenger": "Challenger",
-    "taker": "Taker"
+    "taker": "Taker",
+    "spectator": "Spectator"
   },
   "cta": {
     "takenBy": "Currently being taken by {{name}}",

@@ -155,19 +155,25 @@ export function ChallengeChannelMembersSheet({
                     <View style={styles.rowInfo}>
                       <View style={styles.nameRow}>
                         <Text style={styles.name} numberOfLines={1}>{r.displayName}</Text>
-                        {r.role !== 'participant' && (
-                          <View style={[
-                            styles.roleBadge,
-                            r.role === 'challenger' ? styles.roleBadgeChallenger : styles.roleBadgeTaker,
+                        {/* PR23 — every row carries a role chip:
+                            Challenger / Taker stay as before, "participant"
+                            (channel joiners with no acceptance) reads
+                            Spectator. */}
+                        <View style={[
+                          styles.roleBadge,
+                          r.role === 'challenger' ? styles.roleBadgeChallenger
+                            : r.role === 'taker'  ? styles.roleBadgeTaker
+                            : styles.roleBadgeSpectator,
+                        ]}>
+                          <Text style={[
+                            styles.roleBadgeText,
+                            r.role === 'challenger' ? styles.roleBadgeTextChallenger
+                              : r.role === 'taker'  ? styles.roleBadgeTextTaker
+                              : styles.roleBadgeTextSpectator,
                           ]}>
-                            <Text style={[
-                              styles.roleBadgeText,
-                              r.role === 'challenger' ? styles.roleBadgeTextChallenger : styles.roleBadgeTextTaker,
-                            ]}>
-                              {t(`badge.${r.role}`)}
-                            </Text>
-                          </View>
-                        )}
+                            {t(`badge.${r.role === 'participant' ? 'spectator' : r.role}`)}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -221,9 +227,11 @@ const styles = StyleSheet.create({
   roleBadge:  { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
   roleBadgeChallenger: { backgroundColor: 'rgba(255,122,60,0.14)', borderColor: 'rgba(255,122,60,0.30)' },
   roleBadgeTaker:      { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.28)' },
+  roleBadgeSpectator:  { backgroundColor: 'rgba(148,163,184,0.10)', borderColor: 'rgba(148,163,184,0.24)' },
   roleBadgeText:       { fontSize: 10, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.3 },
   roleBadgeTextChallenger: { color: '#FFB37A' },
   roleBadgeTextTaker:      { color: '#4ADE80' },
+  roleBadgeTextSpectator:  { color: '#94A3B8' },
 
   kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)' },
   kickBtnText:{ fontSize: 12, fontWeight: '700', color: Colors.muted },

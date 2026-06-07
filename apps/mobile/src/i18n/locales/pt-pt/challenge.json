@@ -358,7 +358,8 @@
   "messageCreator": "Manda mensagem privada a {{name}}",
   "badge": {
     "challenger": "Desafiador",
-    "taker": "Aceitante"
+    "taker": "Aceitante",
+    "spectator": "Espectador"
   },
   "cta": {
     "takenBy": "A ser aceite por {{name}}",

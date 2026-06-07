@@ -1080,7 +1080,10 @@ export default function ChallengeChatPage({
                 if (senderId === takerUserId) {
                   return <span className="challenge-role-badge challenge-role-badge--taker">{t('badge.taker')}</span>
                 }
-                return null
+                // PR23 — Spectator: registered users who joined the channel
+                // but are neither challenger nor active taker. Anonymous
+                // posters (no userId) already short-circuited above.
+                return <span className="challenge-role-badge challenge-role-badge--spectator">{t('badge.spectator')}</span>
               }
               return messages.filter(m => m.type !== 'event').map((m, idx) => {
                 const isMine    = (account?.id && m.userId === account.id) || (account?.id && m.guestId === account.id)

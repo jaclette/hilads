@@ -354,7 +354,8 @@
   "messageCreator": "{{name}}に個別メッセージ",
   "badge": {
     "challenger": "出題者",
-    "taker": "挑戦者"
+    "taker": "挑戦者",
+    "spectator": "観戦者"
   },
   "cta": {
     "takenBy": "現在 {{name}} さんが受けています",

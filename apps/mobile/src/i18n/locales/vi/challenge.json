@@ -358,7 +358,8 @@
   "messageCreator": "Nhắn tin riêng cho {{name}}",
   "badge": {
     "challenger": "Người ra thử thách",
-    "taker": "Người nhận"
+    "taker": "Người nhận",
+    "spectator": "Khán giả"
   },
   "cta": {
     "takenBy": "Đang được {{name}} nhận",

@@ -358,7 +358,8 @@
   "messageCreator": "Kirim pesan pribadi ke {{name}}",
   "badge": {
     "challenger": "Penantang",
-    "taker": "Penerima"
+    "taker": "Penerima",
+    "spectator": "Penonton"
   },
   "cta": {
     "takenBy": "Sedang dikerjakan oleh {{name}}",

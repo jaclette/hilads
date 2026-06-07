@@ -12598,6 +12598,14 @@ body.has-app-promo-banner .page-header {
   color:      #4ADE80;
   border-color: rgba(74, 222, 128, 0.28);
 }
+/* PR23 — Spectator: neutral, low-key palette so the badge reads "just
+   watching" without competing with the brand-orange Challenger or the
+   green Taker. */
+.challenge-role-badge--spectator {
+  background: rgba(148, 163, 184, 0.10);
+  color:      #94A3B8;
+  border-color: rgba(148, 163, 184, 0.24);
+}
 
 /* Members modal — keep the badge inline next to the name (the parent
    .people-drawer-content is a flex column whose children would otherwise

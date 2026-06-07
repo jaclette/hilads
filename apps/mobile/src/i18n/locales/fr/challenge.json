@@ -358,7 +358,8 @@
   "messageCreator": "Envoyer un message privé à {{name}}",
   "badge": {
     "challenger": "Lanceur",
-    "taker": "Receveur"
+    "taker": "Receveur",
+    "spectator": "Spectateur"
   },
   "cta": {
     "takenBy": "Actuellement relevé par {{name}}",

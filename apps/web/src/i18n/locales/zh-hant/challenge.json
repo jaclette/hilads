@@ -354,7 +354,8 @@
   "messageCreator": "私訊 {{name}}",
   "badge": {
     "challenger": "發起人",
-    "taker": "接受者"
+    "taker": "接受者",
+    "spectator": "觀眾"
   },
   "cta": {
     "takenBy": "正在由 {{name}} 接受中",

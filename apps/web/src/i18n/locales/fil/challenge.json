@@ -354,7 +354,8 @@
   "messageCreator": "I-message si {{name}} nang pribado",
   "badge": {
     "challenger": "Challenger",
-    "taker": "Taker"
+    "taker": "Taker",
+    "spectator": "Manonood"
   },
   "cta": {
     "takenBy": "Kasalukuyang ginagawa ni {{name}}",

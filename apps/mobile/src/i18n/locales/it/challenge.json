@@ -358,7 +358,8 @@
   "messageCreator": "Scrivi a {{name}} in privato",
   "badge": {
     "challenger": "Challenger",
-    "taker": "Sfidante"
+    "taker": "Sfidante",
+    "spectator": "Spettatore"
   },
   "cta": {
     "takenBy": "Attualmente accettata da {{name}}",

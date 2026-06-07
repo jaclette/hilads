@@ -120,7 +120,8 @@
   "messageCreator": "Message {{name}} privately",
   "badge": {
     "challenger": "Challenger",
-    "taker": "Taker"
+    "taker": "Taker",
+    "spectator": "Spectator"
   },
   "scoringInfo": {
     "aria": "How points work",

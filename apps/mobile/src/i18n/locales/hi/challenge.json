@@ -358,7 +358,8 @@
   "messageCreator": "{{name}} को निजी संदेश भेजें",
   "badge": {
     "challenger": "चुनौती देने वाला",
-    "taker": "स्वीकारकर्ता"
+    "taker": "स्वीकारकर्ता",
+    "spectator": "दर्शक"
   },
   "cta": {
     "takenBy": "अभी {{name}} इसे ले रहे हैं",

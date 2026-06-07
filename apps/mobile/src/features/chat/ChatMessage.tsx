@@ -238,8 +238,10 @@ interface Props {
   /** PR9 — Challenger / Taker pill next to the nickname on the unified
    *  challenge channel. Computed by the parent against challenge.created_by
    *  and the active acceptor, passed in per message. Mirrors the web
-   *  challenge-role-badge in ChallengeChatPage.jsx. */
-  roleBadge?:     'challenger' | 'taker' | null;
+   *  challenge-role-badge in ChallengeChatPage.jsx.
+   *  PR23 — Spectator added for posters who joined the channel but are
+   *  neither the challenger nor the active taker. */
+  roleBadge?:     'challenger' | 'taker' | 'spectator' | null;
 }
 
 // ── Join-request feed card (hangout request-to-join) ──────────────────────────
@@ -403,6 +405,8 @@ const badgeStyles = StyleSheet.create({
 // Mirrors the web .challenge-role-badge tokens — orange tint for challenger
 // (matches the app's brand accent), green tint for taker (the "accomplished"
 // color used in the pipeline approved state).
+// PR23 — Spectator added: neutral slate palette so the badge reads "just
+// watching" without competing with the brand colors of the two protagonists.
 const roleStyles = StyleSheet.create({
   pill: {
     borderRadius:      999,
@@ -418,6 +422,10 @@ const roleStyles = StyleSheet.create({
     backgroundColor: 'rgba(74,222,128,0.12)',
     borderColor:     'rgba(74,222,128,0.28)',
   },
+  pillSpectator: {
+    backgroundColor: 'rgba(148,163,184,0.10)',
+    borderColor:     'rgba(148,163,184,0.24)',
+  },
   text: {
     fontSize:      11,
     fontWeight:    '700',
@@ -426,6 +434,7 @@ const roleStyles = StyleSheet.create({
   },
   textChallenger: { color: '#FFB37A' },
   textTaker:      { color: '#4ADE80' },
+  textSpectator:  { color: '#94A3B8' },
 });
 
 // ── Vibe emoji lookup ─────────────────────────────────────────────────────────
@@ -451,7 +460,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   vibe?:         string;
   mode?:         string;
   /** PR9 — see ChatMessage Props. */
-  roleBadge?:    'challenger' | 'taker' | null;
+  roleBadge?:    'challenger' | 'taker' | 'spectator' | null;
 }) {
   const router  = useRouter();
   const { t }   = useTranslation('common');
@@ -496,11 +505,15 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       {roleBadge && (
         <View style={[
           roleStyles.pill,
-          roleBadge === 'challenger' ? roleStyles.pillChallenger : roleStyles.pillTaker,
+          roleBadge === 'challenger' ? roleStyles.pillChallenger
+            : roleBadge === 'taker'  ? roleStyles.pillTaker
+            : roleStyles.pillSpectator,
         ]}>
           <Text style={[
             roleStyles.text,
-            roleBadge === 'challenger' ? roleStyles.textChallenger : roleStyles.textTaker,
+            roleBadge === 'challenger' ? roleStyles.textChallenger
+              : roleBadge === 'taker'  ? roleStyles.textTaker
+              : roleStyles.textSpectator,
           ]}>
             {tChallenge(`badge.${roleBadge}`)}
           </Text>

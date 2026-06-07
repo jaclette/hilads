@@ -1093,17 +1093,21 @@ export default function ChallengeChatScreen() {
                 const isGrouped = !!olderMsg && olderMsg.guestId === item.guestId && olderMsg.type !== 'system' && item.type !== 'system';
                 const showTime = item.type !== 'system' && (!newerMsg || newerMsg.guestId !== item.guestId || newerMsg.type === 'system');
                 const dateLabel = !isSameDay(item.createdAt, olderMsg?.createdAt) ? formatDateLabel(item.createdAt) : undefined;
-                // PR9 — challenger/taker pill next to the nickname (web parity).
+                // PR9 — challenger / taker pill next to the nickname (web parity).
                 // Heuristic matches ChallengeChatPage.jsx: first non-creator
-                // channel participant = active taker. Falls back to null for
-                // pure visitors (joined the channel but didn't take it on).
+                // channel participant = active taker.
+                // PR23 — anyone else with a userId who posts in the channel
+                // is a Spectator (channel joiner without an active acceptance).
+                // Anonymous posters (no userId) get no badge.
                 const senderId = item.userId ?? null;
-                const roleBadge: 'challenger' | 'taker' | null =
-                    senderId && challenge.created_by && senderId === challenge.created_by
-                      ? 'challenger'
-                      : senderId && otherParticipants[0]?.id && senderId === otherParticipants[0].id
-                          ? 'taker'
-                          : null;
+                const roleBadge: 'challenger' | 'taker' | 'spectator' | null =
+                    !senderId
+                      ? null
+                      : (challenge.created_by && senderId === challenge.created_by)
+                          ? 'challenger'
+                          : (otherParticipants[0]?.id && senderId === otherParticipants[0].id)
+                              ? 'taker'
+                              : 'spectator';
                 return (
                   <ChatMessage
                     message={item}
