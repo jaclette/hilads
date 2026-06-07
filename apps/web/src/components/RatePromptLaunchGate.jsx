@@ -5,29 +5,56 @@ import RateSheet from './RateSheet'
 /**
  * Web parity for the mobile RatePromptLaunchGate.
  *
- * Auto-opens the RateSheet on app load when the caller has at least one
- * rate-eligible meet-up (proposed_ends_at < now() AND not yet rated).
+ * Auto-opens the RateSheet when the caller has at least one rate-eligible
+ * meet-up (proposed_ends_at < now() AND not yet rated). Three triggers:
  *
- * Mounted in App.jsx at the page-root level — sits above the threads /
- * city-chat surfaces so the sheet renders on top regardless of where the
- * user landed after login (city chat by default, deep-link target, etc.).
+ *   1. Cold start — the effect runs once `account.id` is known.
+ *   2. `refetchKey` bumped by App.jsx on the `rating_received` WS event:
+ *      the counterparty just submitted the first rating, surface our side
+ *      without a reload.
+ *   3. document `visibilitychange` → visible — covers the case where the
+ *      tab was hidden when the WS event fired (the socket may have been
+ *      torn down by the browser and not replayed any missed events).
  *
- * Per-session policy mirrors mobile:
- *   - Fires ONCE per fresh page load (the natural "session" boundary on web).
- *   - After submit OR dismiss ("Not now"), the gate doesn't re-open in the
- *     same session — the /threads banner remains the fallback surface.
+ * Per-session policy:
+ *   - After submit OR dismiss ("Not now"), the gate stays closed UNLESS
+ *     a fresh trigger above arrives. The refetchKey / visibilitychange
+ *     handlers clear `closed` so a new rating poke reopens it.
  *
- * Other gates:
- *   - Anon viewers skip entirely (the API requires auth; bail client-side
- *     so we don't spam a 401 into the network tab).
- *   - The fetch re-runs when account.id changes (account switch in same tab).
+ * Anon viewers skip entirely (the API requires auth; bail client-side
+ * so we don't spam a 401 into the network tab).
  *
- * Props mirror the mobile component:
- *   - account: { id, ... } | null
+ * Props:
+ *   - account:    { id, ... } | null
+ *   - refetchKey: number — bumps from App.jsx when WS says to re-look
  */
-export default function RatePromptLaunchGate({ account }) {
+export default function RatePromptLaunchGate({ account, refetchKey = 0 }) {
   const [prompt, setPrompt] = useState(null)
   const [closed, setClosed] = useState(false)
+  const [nonce,  setNonce]  = useState(0)
+
+  // Reopen logic — when refetchKey changes (WS), clear `closed` and bump
+  // the local nonce so the fetch effect re-runs even if `closed` was
+  // already false.
+  useEffect(() => {
+    if (refetchKey === 0) return // ignore the initial mount value
+    setClosed(false)
+    setPrompt(null)
+    setNonce(n => n + 1)
+  }, [refetchKey])
+
+  // visibilitychange → resync on every "back to visible" transition.
+  // Cheap (one HTTP call), covers hidden-tab → WS missed → push-tap-back.
+  useEffect(() => {
+    if (!account?.id) return
+    const onVis = () => {
+      if (document.visibilityState !== 'visible') return
+      setClosed(false)
+      setNonce(n => n + 1)
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+  }, [account?.id])
 
   useEffect(() => {
     let cancelled = false
@@ -39,7 +66,7 @@ export default function RatePromptLaunchGate({ account }) {
       setPrompt(prompts[0])
     })()
     return () => { cancelled = true }
-  }, [account?.id, closed])
+  }, [account?.id, closed, nonce])
 
   function handleClose() {
     setPrompt(null)

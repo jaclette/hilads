@@ -513,6 +513,29 @@ final class NotificationI18n
             'ru'      => ["🔥 {name} бросает тебе вызов",        null],
             'ar'      => ["🔥 {name} يتحداك",                    null],
         ],
+        // First rating just landed → the OTHER party (the recipient) hasn't
+        // rated yet. Tapping the push opens the challenge so the
+        // RatePromptLaunchGate surfaces the RateSheet.
+        'rating_received' => [
+            'fr'      => ["⭐ {name} t'a noté",                 "À ton tour de le noter"],
+            'vi'      => ["⭐ {name} đã chấm bạn",              "Đến lượt bạn chấm lại"],
+            'es'      => ["⭐ {name} te ha valorado",           "Te toca valorarle a ti"],
+            'it'      => ["⭐ {name} ti ha valutato",           "Tocca a te valutarlo"],
+            'pt-br'   => ["⭐ {name} te avaliou",               "Sua vez de avaliar"],
+            'pt-pt'   => ["⭐ {name} avaliou-te",               "É a tua vez de avaliar"],
+            'de'      => ["⭐ {name} hat dich bewertet",        "Du bist dran"],
+            'nl'      => ["⭐ {name} heeft je beoordeeld",      "Jouw beurt om te beoordelen"],
+            'zh-hans' => ["⭐ {name} 给你打分了",                "轮到你了"],
+            'zh-hant' => ["⭐ {name} 給你評分了",                "輪到你了"],
+            'ja'      => ["⭐ {name} があなたを評価しました",      "あなたの番です"],
+            'ko'      => ["⭐ {name} 님이 평가했어요",            "이제 당신 차례예요"],
+            'fil'     => ["⭐ Niranggo ka ni {name}",            "Ikaw na ang susunod"],
+            'th'      => ["⭐ {name} ให้คะแนนคุณแล้ว",            "ตาคุณแล้ว"],
+            'id'      => ["⭐ {name} sudah menilaimu",           "Giliranmu sekarang"],
+            'hi'      => ["⭐ {name} ने आपको रेट किया",           "अब आपकी बारी"],
+            'ru'      => ["⭐ {name} тебя оценил(а)",            "Твоя очередь"],
+            'ar'      => ["⭐ {name} قيّمك",                     "حان دورك"],
+        ],
         'join_request_accepted' => [
             'fr' => ["Tu y es ! 🎉",        "{name} t'a ajouté à {title}"],
             'vi' => ["Bạn được nhận! 🎉",   "{name} đã thêm bạn vào {title}"],

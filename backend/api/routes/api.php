@@ -397,6 +397,20 @@ function broadcastMutualRatingCompleteToWs(string $targetUserId, array $payload)
     ]);
 }
 
+/** FIRST rating landed → poke the OTHER party so their open
+ *  RatePromptLaunchGate refetches /me/rate-prompts and opens the
+ *  RateSheet for the challenge. Push backs this up for backgrounded
+ *  apps; the WS event is the in-session fast path. */
+function broadcastRatingReceivedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → rating-received target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'rating_received',
+        'payload' => $payload,
+    ]);
+}
+
 /** PR4 — debrief verdicts. Same shape as proposed/approved/withdrawn. */
 function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
 {
@@ -8483,6 +8497,39 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
             );
         } catch (\Throwable $e) {
             error_log('[ratings] mutual push failed (non-fatal): ' . $e->getMessage());
+        }
+    } else {
+        // FIRST rating just landed — the OTHER party hasn't rated yet.
+        // Two side-effects, both non-fatal so the rating insert is never
+        // rolled back because of a flaky push or WS:
+        //   1. WS poke so their open RatePromptLaunchGate refetches and
+        //      surfaces the RateSheet immediately.
+        //   2. Push so a backgrounded / killed app pulls them back to
+        //      finish the loop. NotificationI18n translates the title +
+        //      body per recipient locale (see rating_received entry).
+        $callerName = $authUser['display_name'] ?? 'Someone';
+        try {
+            broadcastRatingReceivedToWs($rateeId, [
+                'challengeId' => $challengeId,
+                'raterName'   => $callerName,
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[ratings] first-rating ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+        try {
+            NotificationRepository::create(
+                $rateeId,
+                'rating_received',
+                "⭐ {$callerName} rated you",
+                "Your turn to rate them back",
+                [
+                    'challengeId'    => $challengeId,
+                    'senderName'     => $callerName,
+                    'challengeTitle' => $challenge['title'] ?? '',
+                ],
+            );
+        } catch (\Throwable $e) {
+            error_log('[ratings] first-rating push failed (non-fatal): ' . $e->getMessage());
         }
     }
 

@@ -249,6 +249,10 @@ class NotificationRepository
             // ScoreCelebrationLaunchGate on app-open also surfaces the
             // popin with the newly-earned debrief points.
             'challenge_rated_complete'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // FIRST rating landed → push the counterparty back to the
+            // challenge so the RatePromptLaunchGate can surface the
+            // RateSheet for the side that hasn't rated yet.
+            'rating_received'                 => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -275,6 +279,7 @@ class NotificationRepository
             'admin_announcement'      => 'admin-'         . ($data['broadcastId'] ?? 'b'),
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
             'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
+            'rating_received'         => 'chrating-'     . ($data['challengeId'] ?? 'c'),
             default                   => 'hilads-' . $type,
         };
     }

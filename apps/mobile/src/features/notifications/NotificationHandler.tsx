@@ -246,6 +246,23 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
+    case 'rating_received':
+      // FIRST rating from the counterparty just landed. The
+      // RatePromptLaunchGate, mounted globally, refetches its prompts on
+      // app foreground (AppState 'active'), and surfaces the RateSheet
+      // automatically. Tap deep-links to the challenge as the visible
+      // context — the sheet appears over whatever screen renders.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
+    case 'challenge_rated_complete':
+      // SECOND rating landed → ScoreCelebrationLaunchGate surfaces the
+      // "+points" popin via the mutual_rating_complete WS event /
+      // /me/score-celebration refetch on foreground. Tap deep-links to
+      // the challenge so the popin renders on a coherent context.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
     default:
       return null;
   }

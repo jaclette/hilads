@@ -1059,6 +1059,7 @@ export default function App() {
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 — initial scope when opened
   const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 — bumps on WS mutual_rating_complete
+  const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank — drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
@@ -2645,6 +2646,14 @@ export default function App() {
       // without a page reload.
       socket.on('mutual_rating_complete', () => {
         setCelebrationRefetchKey(k => k + 1)
+      })
+
+      // First rating just landed — the counterparty rated US. Bump the
+      // rate-prompt refetch key so RatePromptLaunchGate re-runs its
+      // /me/rate-prompts fetch and surfaces the RateSheet for OUR side
+      // of the verdict without waiting for a reload or another nav.
+      socket.on('rating_received', () => {
+        setRatePromptRefetchKey(k => k + 1)
       })
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', session.guestId)
@@ -6457,7 +6466,7 @@ export default function App() {
       {/* PR11 — auto-open the RateSheet once per page load when the caller
           has a rate-eligible meet-up (web parity with mobile's
           RatePromptLaunchGate). The /threads banner stays as fallback. */}
-      <RatePromptLaunchGate account={account} />
+      <RatePromptLaunchGate account={account} refetchKey={ratePromptRefetchKey} />
 
       {/* Desktop-only sidebar — always rendered to preserve 3-column layout */}
       <aside className="online-sidebar">
