@@ -312,9 +312,9 @@
     "targetCityLabel": "目標城市",
     "targetCityAnywhere": "🌍 世界任何地方",
     "targetCityHint": "保留「任何地方」可觸達全球旅行者，或選擇一個城市定向。",
-    "proofRequirementsLabel": "想要什麼證據？",
-    "proofRequirementsPlaceholder": "例：日光下菜品照片，本人入鏡",
-    "proofRequirementsHint": "接受者提交前會看到，寫具體一點，驗證更容易。",
+    "proofRequirementsLabel": "照片要拍到什麼？",
+    "proofRequirementsPlaceholder": "例如：日光下的菜餚，本人入鏡",
+    "proofRequirementsHint": "證據是一張照片 📸。參與者提交前會看到這裡 — 寫得具體些。",
     "cityPicker": {
       "title": "選擇目標城市",
       "searchPlaceholder": "搜尋城市…",

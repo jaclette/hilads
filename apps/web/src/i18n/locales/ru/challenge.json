@@ -308,9 +308,9 @@
     "targetCityLabel": "Целевой город",
     "targetCityAnywhere": "🌍 Где угодно в мире",
     "targetCityHint": "Оставь «Где угодно», чтобы дойти до путешественников везде, или выбери город.",
-    "proofRequirementsLabel": "Какое доказательство нужно?",
-    "proofRequirementsPlaceholder": "напр. фото блюда при дневном свете, ты в кадре",
-    "proofRequirementsHint": "Принимающий видит это до отправки. Будь конкретным, чтобы вердикт был проще.",
+    "proofRequirementsLabel": "Что должно быть на фото?",
+    "proofRequirementsPlaceholder": "напр. Блюдо при дневном свете, ты в кадре",
+    "proofRequirementsHint": "Доказательство — это фото 📸. Участник видит это до отправки — будь конкретен.",
     "cityPicker": {
       "title": "Выбери целевой город",
       "searchPlaceholder": "Найти город…",

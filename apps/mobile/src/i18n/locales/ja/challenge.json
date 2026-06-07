@@ -312,9 +312,9 @@
     "targetCityLabel": "ターゲットの街",
     "targetCityAnywhere": "🌍 世界中どこでも",
     "targetCityHint": "「どこでも」のままなら世界中の旅人に届く。街を選ぶと絞り込める。",
-    "proofRequirementsLabel": "どんな証拠が必要？",
-    "proofRequirementsPlaceholder": "例：日中の料理の写真、本人がフレームに入っている",
-    "proofRequirementsHint": "受ける側は提出前にこれを見る。判定を簡単にするため具体的に。",
+    "proofRequirementsLabel": "写真に何を写しますか？",
+    "proofRequirementsPlaceholder": "例: 自然光で撮った料理、自分も写っているもの",
+    "proofRequirementsHint": "証拠は写真 📸 です。送信前に参加者がこれを見ます — 具体的に書いてください。",
     "cityPicker": {
       "title": "ターゲットの街を選ぶ",
       "searchPlaceholder": "街を検索…",

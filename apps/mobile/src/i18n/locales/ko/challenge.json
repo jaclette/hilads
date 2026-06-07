@@ -312,9 +312,9 @@
     "targetCityLabel": "타겟 도시",
     "targetCityAnywhere": "🌍 세계 어디든",
     "targetCityHint": "\"어디든\"으로 두면 어디든 여행자에게 닿아. 도시를 골라서 좁힐 수도 있어.",
-    "proofRequirementsLabel": "어떤 증거를 원해?",
-    "proofRequirementsPlaceholder": "예: 자연광 아래 음식 사진, 본인이 프레임에 들어와 있음",
-    "proofRequirementsHint": "수락한 사람이 제출 전에 봐. 판정을 쉽게 하려면 구체적으로.",
+    "proofRequirementsLabel": "사진에 무엇을 담아야 하나요?",
+    "proofRequirementsPlaceholder": "예: 자연광 아래 음식, 본인도 함께 프레임 안에",
+    "proofRequirementsHint": "증거는 사진 📸 입니다. 참가자가 제출 전에 확인해요 — 구체적으로 적어 주세요.",
     "cityPicker": {
       "title": "타겟 도시 고르기",
       "searchPlaceholder": "도시 검색…",

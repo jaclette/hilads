@@ -308,9 +308,9 @@
     "targetCityLabel": "Kota target",
     "targetCityAnywhere": "🌍 Di mana saja di dunia",
     "targetCityHint": "Biarkan \"Di mana saja\" untuk menjangkau pelancong di mana pun, atau pilih satu kota.",
-    "proofRequirementsLabel": "Bukti seperti apa?",
-    "proofRequirementsPlaceholder": "mis: foto makanan di siang hari, kamu masuk frame",
-    "proofRequirementsHint": "Yang menerima lihat ini sebelum kirim. Spesifik biar verdict-nya gampang.",
+    "proofRequirementsLabel": "Foto harus menunjukkan apa?",
+    "proofRequirementsPlaceholder": "misal: Hidangan di bawah cahaya siang, kamu di dalam frame",
+    "proofRequirementsHint": "Buktinya adalah foto 📸. Peserta melihat ini sebelum mengirim — tulis sespesifik mungkin.",
     "cityPicker": {
       "title": "Pilih kota target",
       "searchPlaceholder": "Cari kota…",

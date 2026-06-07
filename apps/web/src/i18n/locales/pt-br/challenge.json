@@ -308,9 +308,9 @@
     "targetCityLabel": "Cidade-alvo",
     "targetCityAnywhere": "🌍 Qualquer lugar do mundo",
     "targetCityHint": "Deixe em \"Qualquer lugar\" pra alcançar viajantes em qualquer lugar, ou escolha uma cidade.",
-    "proofRequirementsLabel": "Que prova você quer?",
-    "proofRequirementsPlaceholder": "ex.: foto do prato em luz natural, você no quadro",
-    "proofRequirementsHint": "Quem aceita vê isso antes de enviar. Seja específico pra facilitar o veredicto.",
+    "proofRequirementsLabel": "O que a foto deve mostrar?",
+    "proofRequirementsPlaceholder": "ex. O prato à luz do dia, com você no enquadramento",
+    "proofRequirementsHint": "A prova é uma foto 📸. O participante vê isso antes de enviar — seja específico.",
     "cityPicker": {
       "title": "Escolha uma cidade-alvo",
       "searchPlaceholder": "Buscar uma cidade…",

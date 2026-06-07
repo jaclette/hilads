@@ -312,9 +312,9 @@
     "targetCityLabel": "Ville cible",
     "targetCityAnywhere": "🌍 N'importe où dans le monde",
     "targetCityHint": "Laisse « N'importe où » pour toucher tout le monde, ou choisis une ville pour cibler.",
-    "proofRequirementsLabel": "Quelle preuve veux-tu ?",
-    "proofRequirementsPlaceholder": "ex : photo du plat en plein jour, toi dans le cadre",
-    "proofRequirementsHint": "Celui qui relève le voit avant d'envoyer. Sois précis pour faciliter la validation.",
+    "proofRequirementsLabel": "Que doit montrer la photo ?",
+    "proofRequirementsPlaceholder": "ex. Le plat à la lumière du jour, avec toi dans le cadre",
+    "proofRequirementsHint": "La preuve est une photo 📸. Le participant voit ça avant d’envoyer — sois précis.",
     "cityPicker": {
       "title": "Choisis une ville cible",
       "searchPlaceholder": "Cherche une ville…",

@@ -308,9 +308,9 @@
     "targetCityLabel": "Zielstadt",
     "targetCityAnywhere": "🌍 Überall auf der Welt",
     "targetCityHint": "Lass \"Überall\" stehen, um Reisende überall zu erreichen, oder wähl eine Stadt.",
-    "proofRequirementsLabel": "Welcher Beweis?",
-    "proofRequirementsPlaceholder": "z. B. Foto des Gerichts bei Tageslicht, du im Bild",
-    "proofRequirementsHint": "Der/die Annehmende sieht das vor dem Senden. Sei präzise für ein einfaches Urteil.",
+    "proofRequirementsLabel": "Was soll das Foto zeigen?",
+    "proofRequirementsPlaceholder": "z.B. Das Gericht im Tageslicht, du im Bild",
+    "proofRequirementsHint": "Der Beweis ist ein Foto 📸. Der Teilnehmer sieht das vor dem Absenden — sei konkret.",
     "cityPicker": {
       "title": "Zielstadt wählen",
       "searchPlaceholder": "Stadt suchen…",

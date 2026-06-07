@@ -312,9 +312,9 @@
     "targetCityLabel": "المدينة المستهدفة",
     "targetCityAnywhere": "🌍 أي مكان في العالم",
     "targetCityHint": "اترك \"أي مكان\" للوصول للمسافرين أينما كانوا، أو اختر مدينة محددة.",
-    "proofRequirementsLabel": "أي دليل تريد؟",
-    "proofRequirementsPlaceholder": "مثال: صورة للطبق في ضوء النهار، وأنت في الإطار",
-    "proofRequirementsHint": "يرى المتحدي هذا قبل الإرسال. كن دقيقًا لتسهيل الحكم لاحقًا.",
+    "proofRequirementsLabel": "ماذا يجب أن تُظهر الصورة؟",
+    "proofRequirementsPlaceholder": "مثال: الطبق في ضوء النهار، مع وجودك في الإطار",
+    "proofRequirementsHint": "الدليل هو صورة 📸. المشارك يراها قبل الإرسال — كن دقيقاً.",
     "cityPicker": {
       "title": "اختر مدينة مستهدفة",
       "searchPlaceholder": "ابحث عن مدينة…",

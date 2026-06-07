@@ -312,9 +312,9 @@
     "targetCityLabel": "Target na lungsod",
     "targetCityAnywhere": "🌍 Kahit saan sa mundo",
     "targetCityHint": "Iwanan sa \"Kahit saan\" para umabot kahit saan, o pumili ng isang lungsod.",
-    "proofRequirementsLabel": "Anong patunay ang gusto mo?",
-    "proofRequirementsPlaceholder": "hal. larawan ng ulam sa daylight, ikaw nasa frame",
-    "proofRequirementsHint": "Makikita ito ng tatanggap bago magsumite. Maging tiyak para madali ang verdict.",
+    "proofRequirementsLabel": "Ano ang dapat ipakita sa larawan?",
+    "proofRequirementsPlaceholder": "hal. Ang pagkain sa liwanag ng araw, ikaw nasa frame",
+    "proofRequirementsHint": "Ang patunay ay isang larawan 📸. Nakikita ito ng kalahok bago magpasa — maging tiyak.",
     "cityPicker": {
       "title": "Pumili ng target na lungsod",
       "searchPlaceholder": "Maghanap ng lungsod…",

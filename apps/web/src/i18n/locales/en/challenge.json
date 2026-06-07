@@ -457,9 +457,9 @@
     "targetCityLabel": "Target city",
     "targetCityAnywhere": "🌍 Anywhere in the world",
     "targetCityHint": "Leave as Anywhere to reach travelers everywhere, or pick a city for a focused fan-out.",
-    "proofRequirementsLabel": "What proof do you want?",
-    "proofRequirementsPlaceholder": "e.g. Photo of the dish in daylight, with you in frame",
-    "proofRequirementsHint": "The acceptor sees this before they submit. Be specific so the verdict is easy later.",
+    "proofRequirementsLabel": "What should the photo show?",
+    "proofRequirementsPlaceholder": "e.g. The dish in daylight, with you in frame",
+    "proofRequirementsHint": "The proof is a photo 📸. The acceptor sees this before submitting — be specific.",
     "cityPicker": {
       "title": "Pick a target city",
       "searchPlaceholder": "Search a city…",

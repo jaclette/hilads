@@ -312,9 +312,9 @@
     "targetCityLabel": "เมืองเป้าหมาย",
     "targetCityAnywhere": "🌍 ที่ไหนก็ได้ในโลก",
     "targetCityHint": "ปล่อย \"ที่ไหนก็ได้\" เพื่อเข้าถึงทุกที่ หรือเลือกเมืองเฉพาะ",
-    "proofRequirementsLabel": "อยากได้หลักฐานแบบไหน?",
-    "proofRequirementsPlaceholder": "เช่น รูปอาหารตอนกลางวัน มีคุณอยู่ในกรอบ",
-    "proofRequirementsHint": "ผู้รับจะเห็นก่อนส่ง ระบุชัด ๆ จะตัดสินง่ายขึ้น",
+    "proofRequirementsLabel": "รูปต้องโชว์อะไร?",
+    "proofRequirementsPlaceholder": "เช่น เมนูในแสงธรรมชาติ พร้อมตัวคุณในเฟรม",
+    "proofRequirementsHint": "หลักฐานคือรูปถ่าย 📸 ผู้เข้าร่วมจะเห็นข้อความนี้ก่อนส่ง — เขียนให้ชัดเจน",
     "cityPicker": {
       "title": "เลือกเมืองเป้าหมาย",
       "searchPlaceholder": "ค้นหาเมือง…",

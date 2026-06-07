@@ -308,9 +308,9 @@
     "targetCityLabel": "टारगेट शहर",
     "targetCityAnywhere": "🌍 दुनिया में कहीं भी",
     "targetCityHint": "\"कहीं भी\" छोड़ें ताकि हर जगह ट्रैवलर्स तक पहुंचे, या एक शहर चुनें।",
-    "proofRequirementsLabel": "क्या प्रूफ चाहिए?",
-    "proofRequirementsPlaceholder": "जैसे: डेलाइट में डिश की फोटो, आप फ्रेम में",
-    "proofRequirementsHint": "भेजने से पहले स्वीकार करने वाला यह देखेगा। फैसले को आसान करने के लिए स्पष्ट रहें।",
+    "proofRequirementsLabel": "फोटो में क्या दिखना चाहिए?",
+    "proofRequirementsPlaceholder": "जैसे डिश दिन की रोशनी में, तू भी फ्रेम में",
+    "proofRequirementsHint": "सबूत एक फोटो है 📸। भेजने से पहले participant यह देखता है — स्पष्ट रहो।",
     "cityPicker": {
       "title": "टारगेट शहर चुनें",
       "searchPlaceholder": "शहर खोजें…",
