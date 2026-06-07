@@ -9422,6 +9422,52 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         WHERE id = ?
     ")->execute([$acceptanceId]);
 
+    // PR43 — drop the proof photo into the challenge chat too, so it
+    // shows up inline for everyone in the channel (creator, taker,
+    // spectators). The proof submission used to be invisible to the
+    // chat surface; users reported "I sent a proof and nothing
+    // happened" because the chat didn't update. Mirrors the
+    // /events/:id/messages addImage call shape.
+    if ($mediaType === 'image') {
+        try {
+            $senderName = $authUser['display_name'] ?? 'Someone';
+            $proofMessage = MessageRepository::addImage(
+                $challenge['id'],            // challenge channel id
+                $authUser['id'],             // guest_id slot = user id (registered-only flow)
+                $senderName,
+                $mediaUrl,
+                $authUser['id'],
+            );
+            broadcastMessageToWs($challenge['id'], $proofMessage);
+        } catch (\Throwable $e) {
+            error_log('[proof] chat insert failed (non-fatal): ' . $e->getMessage());
+        }
+    }
+
+    // PR43 — broadcast the phase change so the detail page can refresh
+    // myAcceptance + the pipeline without a manual reload. Reuses the
+    // existing challenge_takeon_reviewed event shape (the client only
+    // cares that the acceptance state changed); no new client wiring
+    // beyond keeping the existing listener live.
+    try {
+        if (!empty($challenge['created_by'])) {
+            broadcastChallengeAcceptedToWs($challenge['created_by'], [
+                'event'        => 'challenge_proof_submitted',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+            ]);
+        }
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
+                'event'        => 'challenge_proof_submitted',
+                'challengeId'  => $challenge['id'],
+                'acceptanceId' => $acceptanceId,
+            ]);
+        }
+    } catch (\Throwable $e) {
+        error_log('[proof] ws broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
     // Push to the creator — they have a proof to review. English placeholder
     // body; step 5 wires NotificationI18n for the 18 non-EN locales.
     try {
