@@ -652,9 +652,16 @@ export default function ChallengeChatScreen() {
       useNativeDriver: false,
     }).start();
   }, [headerCollapse]);
-  const onChatScroll = useCallback((e: { nativeEvent: { contentOffset: { y: number } } }) => {
-    collapseTo(e.nativeEvent.contentOffset.y > 30 ? 1 : 0);
-  }, [collapseTo]);
+  // PR32 — onChatScroll no longer mutates the header collapse. The previous
+  // behavior (collapse on offset > 30) ran on every scroll tick while the
+  // user was pulling up to read older messages; animating the wrapper's
+  // maxHeight mid-gesture made the inverted FlatList snap back to offset 0
+  // (visually the bottom = newest), so trying to scroll UP threw the user
+  // BACK DOWN. The composer's onFocus already collapses the header for the
+  // keyboard-open case; the user can also use the chevron toggle. A
+  // no-op onScroll keeps the prop wired in case we want to re-introduce
+  // a debounced behavior later.
+  const onChatScroll = useCallback(() => {}, []);
   const collapsibleMaxHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [320, 0] });
   const collapsibleOpacity   = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
 

@@ -5,6 +5,7 @@ import {
   Platform, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authSignup, checkUsernameAvailability } from '@/api/auth';
@@ -34,6 +35,7 @@ export default function SignUpScreen() {
   const [username, setUsername] = useState('');
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [mode,     setMode]     = useState<string | null>(null);
   const [eula,     setEula]     = useState(false);
   const [loading,  setLoading]  = useState(false);
@@ -212,18 +214,34 @@ export default function SignUpScreen() {
 
             <View style={styles.field}>
               <Text style={styles.label}>{t('signUp.password')}</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder={t('signUp.passwordPlaceholder')}
-                placeholderTextColor={Colors.muted2}
-                secureTextEntry
-                autoComplete="new-password"
-                editable={!loading}
-                onSubmitEditing={handleSignUp}
-                returnKeyType="done"
-              />
+              {/* PR32 — show/hide eye toggle (parity with sign-in). */}
+              <View style={styles.passwordWrap}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder={t('signUp.passwordPlaceholder')}
+                  placeholderTextColor={Colors.muted2}
+                  secureTextEntry={!showPassword}
+                  autoComplete="new-password"
+                  editable={!loading}
+                  onSubmitEditing={handleSignUp}
+                  returnKeyType="done"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowPassword(v => !v)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color={Colors.muted2}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* EULA — Apple G1.2 requires explicit acceptance before account creation. */}
@@ -294,6 +312,18 @@ const styles = StyleSheet.create({
     color:             Colors.text,
     fontSize:          FontSizes.md,
     height:            48,
+  },
+  passwordWrap:    { position: 'relative' },
+  passwordInput:   { paddingRight: 44 },
+  passwordToggle: {
+    position:       'absolute',
+    right:          8,
+    top:            8,
+    width:          32,
+    height:         32,
+    alignItems:     'center',
+    justifyContent: 'center',
+    borderRadius:   8,
   },
 
   usernameRow: {

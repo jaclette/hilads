@@ -13,6 +13,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [tab, setTab]         = useState(initialTab) // 'signup' | 'login'
   const [email, setEmail]     = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
   const [mode, setMode]       = useState(null)
   const [eula, setEula]       = useState(false) // EULA — must start UNCHECKED (explicit user action)
@@ -145,14 +146,31 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
 
           <div className="modal-field">
             <label className="modal-label">{t('fields.password')}</label>
-            <input
-              className="modal-input"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder={tab === 'signup' ? t('fields.passwordPlaceholder') : ''}
-              required
-            />
+            {/* PR32 — show/hide eye toggle. The reveal helps users catch
+                typos in a long autocomplete-disabled password field
+                (the #1 source of "wrong password" abandons). Type swaps
+                between 'password' and 'text'; the input is otherwise
+                identical so autofill / password managers still work. */}
+            <div className="password-field">
+              <input
+                className="modal-input password-field-input"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder={tab === 'signup' ? t('fields.passwordPlaceholder') : ''}
+                required
+              />
+              <button
+                type="button"
+                className="password-field-toggle"
+                onClick={() => setShowPassword(v => !v)}
+                aria-label={showPassword ? t('fields.passwordHide', { defaultValue: 'Hide password' }) : t('fields.passwordShow', { defaultValue: 'Show password' })}
+                aria-pressed={showPassword}
+                tabIndex={-1}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           {tab === 'signup' && (

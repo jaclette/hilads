@@ -5,6 +5,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
   const [valid,    setValid]    = useState(null)  // null=checking, true, false
   const [password, setPassword] = useState('')
   const [confirm,  setConfirm]  = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [loading,  setLoading]  = useState(false)
   const [done,     setDone]     = useState(false)
   const [error,    setError]    = useState(null)
@@ -88,27 +89,51 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="modal-field">
             <label className="modal-label">New password</label>
-            <input
-              className="modal-input"
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-              required
-              autoFocus
-            />
+            <div className="password-field">
+              <input
+                className="modal-input password-field-input"
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                required
+                autoFocus
+              />
+              <button
+                type="button"
+                className="password-field-toggle"
+                onClick={() => setShowPassword(v => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                tabIndex={-1}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           <div className="modal-field">
             <label className="modal-label">Confirm password</label>
-            <input
-              className="modal-input"
-              type="password"
-              value={confirm}
-              onChange={e => setConfirm(e.target.value)}
-              placeholder="Repeat your new password"
-              required
-            />
+            <div className="password-field">
+              <input
+                className="modal-input password-field-input"
+                type={showPassword ? 'text' : 'password'}
+                value={confirm}
+                onChange={e => setConfirm(e.target.value)}
+                placeholder="Repeat your new password"
+                required
+              />
+              <button
+                type="button"
+                className="password-field-toggle"
+                onClick={() => setShowPassword(v => !v)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-pressed={showPassword}
+                tabIndex={-1}
+              >
+                {showPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
           </div>
 
           {error && <p className="auth-error">{error}</p>}

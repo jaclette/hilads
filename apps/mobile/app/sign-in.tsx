@@ -5,6 +5,7 @@ import {
   Platform, ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authLogin } from '@/api/auth';
@@ -28,6 +29,7 @@ export default function SignInScreen() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [loading,  setLoading]  = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
   async function handleSignIn() {
@@ -118,18 +120,37 @@ export default function SignInScreen() {
 
             <View style={styles.field}>
               <Text style={styles.label}>{t('signIn.password')}</Text>
-              <TextInput
-                style={styles.input}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="••••••••"
-                placeholderTextColor={Colors.muted2}
-                secureTextEntry
-                autoComplete="password"
-                editable={!loading}
-                onSubmitEditing={handleSignIn}
-                returnKeyType="done"
-              />
+              {/* PR32 — show/hide eye toggle. secureTextEntry disables the
+                  password mask when false; the input keeps the same
+                  autoComplete contract so iOS / Android password managers
+                  still recognise it. */}
+              <View style={styles.passwordWrap}>
+                <TextInput
+                  style={[styles.input, styles.passwordInput]}
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="••••••••"
+                  placeholderTextColor={Colors.muted2}
+                  secureTextEntry={!showPassword}
+                  autoComplete="password"
+                  editable={!loading}
+                  onSubmitEditing={handleSignIn}
+                  returnKeyType="done"
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowPassword(v => !v)}
+                  hitSlop={8}
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  <Ionicons
+                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                    size={20}
+                    color={Colors.muted2}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -198,6 +219,20 @@ const styles = StyleSheet.create({
     color:             Colors.text,
     fontSize:          FontSizes.md,
     height:            48,
+  },
+  // PR32 — password input wrapper. The TextInput keeps its full styling;
+  // we just add right padding so the value doesn't slide under the toggle.
+  passwordWrap:    { position: 'relative' },
+  passwordInput:   { paddingRight: 44 },
+  passwordToggle: {
+    position:       'absolute',
+    right:          8,
+    top:            8,
+    width:          32,
+    height:         32,
+    alignItems:     'center',
+    justifyContent: 'center',
+    borderRadius:   8,
   },
 
   submitBtn: {

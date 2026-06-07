@@ -22,6 +22,8 @@ import {
   kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
 } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
+import { linkifyText, extractFirstUrl } from '../linkify.jsx'
+import LinkPreviewCard from './LinkPreviewCard'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
@@ -1118,7 +1120,18 @@ export default function ChallengeChatPage({
                       </div>
                     )}
                     <div className={`msg-bubble-wrap ${isMine ? 'mine' : ''}`} style={{ opacity }}>
-                      <div className="msg-content"><span className="msg-text">{m.content}</span></div>
+                      <div className="msg-content">
+                        {/* PR31 — linkify URLs (matches TopicChatPage / city
+                            chat) and render a LinkPreviewCard for the first
+                            link in the message. Without these the challenge
+                            chat was the only surface where pasted URLs
+                            stayed inert. */}
+                        <span className="msg-text">{linkifyText(m.content ?? '', `c-${m.id ?? idx}-`)}</span>
+                        {(() => {
+                          const u = extractFirstUrl(m.content)
+                          return u ? <LinkPreviewCard url={u} /> : null
+                        })()}
+                      </div>
                     </div>
                     <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
                   </div>
