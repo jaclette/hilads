@@ -306,10 +306,24 @@ export async function fetchRatePrompts(): Promise<RatePrompt[]> {
 }
 
 // PR17 — Score celebration popin (the "+X points!" launch surface).
+export type ScoreEventKind = 'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost';
+
+export interface ScoreCelebrationEvent {
+  id:              string;
+  challenge_id:    string;
+  challenge_title: string | null; // null if the challenge was deleted
+  kind:            ScoreEventKind;
+  role:            'challenger' | 'taker';
+  points:          number;
+  created_at:      string;        // ISO
+}
+
 export interface ScoreCelebration {
   points:       number;                          // 0 = nothing to show
   event_count?: number;
-  top_kind?:    'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost' | null;
+  top_kind?:    ScoreEventKind | null;
+  events?:      ScoreCelebrationEvent[];         // newest first, capped server-side
+  events_truncated?: boolean;
   seen_until?:  string | null;                   // ISO timestamp; ack with this
   city_id?:     string | null;
   city_name?:   string | null;

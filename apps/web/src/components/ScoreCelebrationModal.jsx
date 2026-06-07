@@ -12,6 +12,23 @@ const KIND_KEYS = {
   ghost:       'scoreCelebration.subtitle.ghost',
 }
 
+// Short kind label + emoji for the per-event rows. Distinct keys from the
+// subtitle copy above (which is a full sentence for the headline path).
+const KIND_SHORT_KEYS = {
+  accepted:    'scoreCelebration.kindShort.accepted',
+  date_locked: 'scoreCelebration.kindShort.date_locked',
+  meetup:      'scoreCelebration.kindShort.meetup',
+  debrief:     'scoreCelebration.kindShort.debrief',
+  ghost:       'scoreCelebration.kindShort.ghost',
+}
+const KIND_EMOJI = {
+  accepted:    '🤝',
+  date_locked: '🗓️',
+  meetup:      '🎉',
+  debrief:     '🎉',
+  ghost:       '👻',
+}
+
 /**
  * Web "+X points!" celebration modal — parity with the native version.
  *
@@ -92,6 +109,37 @@ export default function ScoreCelebrationModal({ data, visible, onClose }) {
         <div className="score-celebration-subtitle">
           {t(subtitleKey)}
         </div>
+
+        {/* Per-event breakdown — same shape as the native modal. Each row
+            shows the challenge title + which step earned the points so the
+            popin reads as a recap, not just a number. */}
+        {data.events && data.events.length > 0 && (
+          <div className="score-celebration-events">
+            {data.events.map(ev => {
+              const emoji   = KIND_EMOJI[ev.kind] ?? '🏆'
+              const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default'
+              const title   = ev.challenge_title ?? t('scoreCelebration.event.deletedChallenge')
+              return (
+                <div key={ev.id} className="score-celebration-event">
+                  <span className="score-celebration-event-points">+{ev.points}</span>
+                  <span className="score-celebration-event-body">
+                    <span className="score-celebration-event-title">{title}</span>
+                    <span className="score-celebration-event-kind">
+                      {emoji} {t(kindKey)}
+                    </span>
+                  </span>
+                </div>
+              )
+            })}
+            {data.events_truncated && data.event_count != null && (
+              <div className="score-celebration-events-more">
+                {t('scoreCelebration.event.andMore', {
+                  count: Math.max(0, (data.event_count ?? 0) - data.events.length),
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="score-celebration-divider" />
 

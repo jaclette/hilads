@@ -476,6 +476,18 @@
       "world": "#{{rank}} weltweit",
       "worldBeyond": "Außerhalb der Top {{topN}} weltweit"
     },
-    "cta": "Auf geht’s ⚡"
+    "cta": "Auf geht’s ⚡",
+    "kindShort": {
+      "accepted": "Angenommen",
+      "date_locked": "Termin bestätigt",
+      "meetup": "Getroffen",
+      "debrief": "Beide bewertet",
+      "ghost": "Geghostet",
+      "default": "Verdient"
+    },
+    "event": {
+      "deletedChallenge": "Gelöschter Challenge",
+      "andMore": "und {{count}} weitere"
+    }
   }
 }

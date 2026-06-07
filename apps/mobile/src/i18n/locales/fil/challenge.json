@@ -476,6 +476,18 @@
       "world": "#{{rank}} sa buong mundo",
       "worldBeyond": "Wala sa top {{topN}} ng buong mundo"
     },
-    "cta": "Tara ⚡"
+    "cta": "Tara ⚡",
+    "kindShort": {
+      "accepted": "Tinanggap",
+      "date_locked": "Set na ang date",
+      "meetup": "Nagkita",
+      "debrief": "Parehong nag-rate",
+      "ghost": "Ghosted",
+      "default": "Nakuha"
+    },
+    "event": {
+      "deletedChallenge": "Tinanggal na challenge",
+      "andMore": "at {{count}} pa"
+    }
   }
 }

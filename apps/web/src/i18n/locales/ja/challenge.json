@@ -472,6 +472,18 @@
       "world": "世界で {{rank}}位",
       "worldBeyond": "世界のトップ{{topN}}圏外"
     },
-    "cta": "いこう ⚡"
+    "cta": "いこう ⚡",
+    "kindShort": {
+      "accepted": "参加",
+      "date_locked": "日程確定",
+      "meetup": "対面",
+      "debrief": "相互評価",
+      "ghost": "すっぽかし",
+      "default": "獲得"
+    },
+    "event": {
+      "deletedChallenge": "削除されたチャレンジ",
+      "andMore": "ほか {{count}}件"
+    }
   }
 }

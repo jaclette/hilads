@@ -472,6 +472,18 @@
       "world": "전 세계 {{rank}}위",
       "worldBeyond": "전 세계 상위 {{topN}}위 밖"
     },
-    "cta": "가자 ⚡"
+    "cta": "가자 ⚡",
+    "kindShort": {
+      "accepted": "참여",
+      "date_locked": "약속 확정",
+      "meetup": "만남 완료",
+      "debrief": "서로 평가",
+      "ghost": "잠수",
+      "default": "획득"
+    },
+    "event": {
+      "deletedChallenge": "삭제된 챌린지",
+      "andMore": "외 {{count}}건"
+    }
   }
 }

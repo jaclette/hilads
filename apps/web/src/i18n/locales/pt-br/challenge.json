@@ -472,6 +472,18 @@
       "world": "#{{rank}} no mundo",
       "worldBeyond": "Fora do top {{topN}} mundial"
     },
-    "cta": "Bora ⚡"
+    "cta": "Bora ⚡",
+    "kindShort": {
+      "accepted": "Aceito",
+      "date_locked": "Encontro marcado",
+      "meetup": "Se encontraram",
+      "debrief": "Ambos avaliaram",
+      "ghost": "Ghosted",
+      "default": "Ganhos"
+    },
+    "event": {
+      "deletedChallenge": "Challenge removido",
+      "andMore": "e mais {{count}}"
+    }
   }
 }

@@ -476,6 +476,18 @@
       "world": "#{{rank}} nel mondo",
       "worldBeyond": "Fuori dalla top {{topN}} mondiale"
     },
-    "cta": "Andiamo ⚡"
+    "cta": "Andiamo ⚡",
+    "kindShort": {
+      "accepted": "Accettato",
+      "date_locked": "Appuntamento",
+      "meetup": "Incontrati",
+      "debrief": "Entrambi valutati",
+      "ghost": "Ghostato",
+      "default": "Guadagnati"
+    },
+    "event": {
+      "deletedChallenge": "Challenge eliminato",
+      "andMore": "e altri {{count}}"
+    }
   }
 }

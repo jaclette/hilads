@@ -472,6 +472,18 @@
       "world": "#{{rank}} a nivel mundial",
       "worldBeyond": "Fuera del top {{topN}} mundial"
     },
-    "cta": "¡Vamos! ⚡"
+    "cta": "¡Vamos! ⚡",
+    "kindShort": {
+      "accepted": "Aceptado",
+      "date_locked": "Cita confirmada",
+      "meetup": "Encuentro",
+      "debrief": "Ambos valoraron",
+      "ghost": "Ghosted",
+      "default": "Ganados"
+    },
+    "event": {
+      "deletedChallenge": "Challenge eliminado",
+      "andMore": "y {{count}} más"
+    }
   }
 }

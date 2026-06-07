@@ -476,6 +476,18 @@
       "world": "#{{rank}} sedunia",
       "worldBeyond": "Di luar top {{topN}} sedunia"
     },
-    "cta": "Ayo ⚡"
+    "cta": "Ayo ⚡",
+    "kindShort": {
+      "accepted": "Diterima",
+      "date_locked": "Janji terkunci",
+      "meetup": "Sudah bertemu",
+      "debrief": "Saling beri rating",
+      "ghost": "Ghosting",
+      "default": "Diraih"
+    },
+    "event": {
+      "deletedChallenge": "Challenge dihapus",
+      "andMore": "dan {{count}} lainnya"
+    }
   }
 }

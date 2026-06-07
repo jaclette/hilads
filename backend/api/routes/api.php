@@ -9910,11 +9910,51 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         }
     }
 
+    // Per-event breakdown — the popin's "what did I just earn?" surface.
+    // Title comes from channel_challenges; LEFT JOIN handles the rare case
+    // of a deleted challenge (we keep the event row but render a fallback
+    // label client-side). Capped at EVENT_LIMIT to keep the wire small and
+    // the modal scannable — the headline +X covers totals beyond the cap.
+    $EVENT_LIMIT  = 6;
+    $eventStmt    = $pdo->prepare("
+        SELECT
+            se.id,
+            se.challenge_id,
+            se.kind,
+            se.role,
+            se.points,
+            se.created_at,
+            cc.title AS challenge_title
+        FROM score_events se
+        LEFT JOIN channel_challenges cc ON cc.channel_id = se.challenge_id
+        WHERE se.user_id = :uid
+          AND se.created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+        ORDER BY se.created_at DESC
+        LIMIT :lim
+    ");
+    $eventStmt->bindValue(':uid', $callerId);
+    $eventStmt->bindValue(':wm',  $watermark);
+    $eventStmt->bindValue(':lim', $EVENT_LIMIT, \PDO::PARAM_INT);
+    $eventStmt->execute();
+    $events = array_map(static function (array $row): array {
+        return [
+            'id'              => $row['id'],
+            'challenge_id'    => $row['challenge_id'],
+            'challenge_title' => $row['challenge_title'], // may be null if deleted
+            'kind'            => $row['kind'],
+            'role'            => $row['role'],
+            'points'          => (int) $row['points'],
+            'created_at'      => $row['created_at'],
+        ];
+    }, $eventStmt->fetchAll(\PDO::FETCH_ASSOC) ?: []);
+
     Response::json([
         'points'       => $totalPoints,
         'event_count'  => $eventCount,
         'top_kind'     => $topKind,
-        'seen_until'   => $maxCreatedAt, // client posts this back to ack
+        'events'       => $events,                                // PR17.1
+        'events_truncated' => $eventCount > $EVENT_LIMIT,         // PR17.1
+        'seen_until'   => $maxCreatedAt,
         'city_id'      => $cityId,
         'city_name'    => $cityName,
         'city_country' => $cityCountry,

@@ -23,6 +23,25 @@ const KIND_KEYS: Record<string, string> = {
   ghost:       'scoreCelebration.subtitle.ghost',
 };
 
+// Per-kind short-label key + emoji used in the event rows. These are the
+// "what happened" chips (e.g. "🤝 Accepted") that sit next to each
+// challenge title. Distinct from the subtitle keys above (which are full
+// sentences for the single-event lead).
+const KIND_SHORT_KEYS: Record<string, string> = {
+  accepted:    'scoreCelebration.kindShort.accepted',
+  date_locked: 'scoreCelebration.kindShort.date_locked',
+  meetup:      'scoreCelebration.kindShort.meetup',
+  debrief:     'scoreCelebration.kindShort.debrief',
+  ghost:       'scoreCelebration.kindShort.ghost',
+};
+const KIND_EMOJI: Record<string, string> = {
+  accepted:    '🤝',
+  date_locked: '🗓️',
+  meetup:      '🎉',
+  debrief:     '🎉',
+  ghost:       '👻',
+};
+
 /**
  * The "+X points!" launch popin. Fires once per cold start when the user
  * has unacknowledged score_events on the ledger. Friendly + animated:
@@ -177,6 +196,41 @@ export function ScoreCelebrationModal({ data, visible, onClose }: Props) {
             {t(subtitleKey)}
           </Text>
 
+          {/* Per-event breakdown — newest first, capped at 6 server-side.
+              When the user has more, the trailing "and N more" line keeps
+              the modal scannable without truncating the score itself
+              (the headline already shows the full delta). */}
+          {data.events && data.events.length > 0 && (
+            <View style={styles.events}>
+              {data.events.map((ev) => {
+                const emoji   = KIND_EMOJI[ev.kind] ?? '🏆';
+                const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default';
+                const title   = ev.challenge_title
+                  ?? t('scoreCelebration.event.deletedChallenge');
+                return (
+                  <View key={ev.id} style={styles.eventRow}>
+                    <View style={styles.eventPoints}>
+                      <Text style={styles.eventPointsText}>+{ev.points}</Text>
+                    </View>
+                    <View style={styles.eventBody}>
+                      <Text style={styles.eventTitle} numberOfLines={1}>{title}</Text>
+                      <Text style={styles.eventKind} numberOfLines={1}>
+                        {emoji} {t(kindKey)}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              })}
+              {data.events_truncated && data.event_count != null && (
+                <Text style={styles.eventsMore}>
+                  {t('scoreCelebration.event.andMore', {
+                    count: Math.max(0, (data.event_count ?? 0) - data.events.length),
+                  })}
+                </Text>
+              )}
+            </View>
+          )}
+
           <View style={styles.divider} />
 
           <Animated.View style={[styles.row, { opacity: row1 }]}>
@@ -261,6 +315,60 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 14,
   },
+  // Per-event breakdown block — sits between the subtitle and the rank
+  // divider. Each row is a compact "+pts | title / kind" card so the user
+  // sees exactly which challenge + step earned them what.
+  events: {
+    width: '100%',
+    gap:   6,
+    marginBottom: 12,
+  },
+  eventRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap: 10,
+    paddingVertical:   8,
+    paddingHorizontal: 10,
+    backgroundColor: 'rgba(255,122,60,0.07)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,122,60,0.18)',
+    borderRadius: Radius.md,
+  },
+  eventPoints: {
+    minWidth: 44,
+    paddingHorizontal: 8,
+    paddingVertical:   4,
+    backgroundColor:   'rgba(255,122,60,0.18)',
+    borderRadius:      Radius.full,
+    alignItems:        'center',
+  },
+  eventPointsText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '900',
+    color:      '#FF7A3C',
+    letterSpacing: 0.2,
+  },
+  eventBody: {
+    flex: 1,
+    gap:  1,
+  },
+  eventTitle: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.text,
+  },
+  eventKind: {
+    fontSize:   FontSizes.xs,
+    fontWeight: '600',
+    color:      Colors.muted,
+  },
+  eventsMore: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted,
+    textAlign:  'center',
+    marginTop:  2,
+  },
+
   divider: {
     width:   '60%',
     height:  1,

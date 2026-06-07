@@ -472,6 +472,18 @@
       "world": "全球第 {{rank}} 名",
       "worldBeyond": "位列全球前 {{topN}} 之外"
     },
-    "cta": "出发 ⚡"
+    "cta": "出发 ⚡",
+    "kindShort": {
+      "accepted": "已接受",
+      "date_locked": "日程已确定",
+      "meetup": "已见面",
+      "debrief": "双方评价",
+      "ghost": "放鸽子",
+      "default": "获得"
+    },
+    "event": {
+      "deletedChallenge": "已删除的挑战",
+      "andMore": "另外 {{count}} 项"
+    }
   }
 }

@@ -476,6 +476,18 @@
       "world": "#{{rank}} в мире",
       "worldBeyond": "Вне топ-{{topN}} в мире"
     },
-    "cta": "Поехали ⚡"
+    "cta": "Поехали ⚡",
+    "kindShort": {
+      "accepted": "Принят",
+      "date_locked": "Встреча подтверждена",
+      "meetup": "Встретились",
+      "debrief": "Оба оценили",
+      "ghost": "Гостинг",
+      "default": "Заработано"
+    },
+    "event": {
+      "deletedChallenge": "Удалённый челлендж",
+      "andMore": "и ещё {{count}}"
+    }
   }
 }

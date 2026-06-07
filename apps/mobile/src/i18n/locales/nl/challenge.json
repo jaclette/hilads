@@ -476,6 +476,18 @@
       "world": "#{{rank}} wereldwijd",
       "worldBeyond": "Buiten de top {{topN}} wereldwijd"
     },
-    "cta": "Go ⚡"
+    "cta": "Go ⚡",
+    "kindShort": {
+      "accepted": "Geaccepteerd",
+      "date_locked": "Afspraak bevestigd",
+      "meetup": "Ontmoet",
+      "debrief": "Beiden beoordeeld",
+      "ghost": "Geghost",
+      "default": "Verdiend"
+    },
+    "event": {
+      "deletedChallenge": "Verwijderde challenge",
+      "andMore": "en nog {{count}}"
+    }
   }
 }

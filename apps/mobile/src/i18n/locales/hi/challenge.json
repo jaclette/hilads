@@ -476,6 +476,18 @@
       "world": "दुनिया में #{{rank}}",
       "worldBeyond": "दुनिया में टॉप {{topN}} से बाहर"
     },
-    "cta": "चलो ⚡"
+    "cta": "चलो ⚡",
+    "kindShort": {
+      "accepted": "स्वीकृत",
+      "date_locked": "मीटिंग पक्की",
+      "meetup": "मिले",
+      "debrief": "दोनों ने रेट किया",
+      "ghost": "ग़ायब",
+      "default": "कमाए"
+    },
+    "event": {
+      "deletedChallenge": "हटाया गया challenge",
+      "andMore": "और {{count}} अधिक"
+    }
   }
 }

@@ -515,6 +515,18 @@
       "world": "#{{rank}} worldwide",
       "worldBeyond": "Outside the top {{topN}} worldwide"
     },
-    "cta": "Let’s go ⚡"
+    "cta": "Let’s go ⚡",
+    "kindShort": {
+      "accepted": "Accepted",
+      "date_locked": "Date locked",
+      "meetup": "Met up",
+      "debrief": "Both rated",
+      "ghost": "Ghosted",
+      "default": "Earned"
+    },
+    "event": {
+      "deletedChallenge": "Deleted challenge",
+      "andMore": "and {{count}} more"
+    }
   }
 }

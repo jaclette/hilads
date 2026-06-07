@@ -472,6 +472,18 @@
       "world": "#{{rank}} toàn cầu",
       "worldBeyond": "Ngoài top {{topN}} toàn cầu"
     },
-    "cta": "Đi thôi ⚡"
+    "cta": "Đi thôi ⚡",
+    "kindShort": {
+      "accepted": "Đã nhận",
+      "date_locked": "Đã chốt lịch",
+      "meetup": "Đã gặp",
+      "debrief": "Cả hai đã đánh giá",
+      "ghost": "Ghosted",
+      "default": "Đã đạt"
+    },
+    "event": {
+      "deletedChallenge": "Challenge đã xoá",
+      "andMore": "và {{count}} nữa"
+    }
   }
 }

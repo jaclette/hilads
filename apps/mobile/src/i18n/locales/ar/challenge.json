@@ -476,6 +476,18 @@
       "world": "#{{rank}} عالميًا",
       "worldBeyond": "خارج أفضل {{topN}} عالميًا"
     },
-    "cta": "يلا ⚡"
+    "cta": "يلا ⚡",
+    "kindShort": {
+      "accepted": "تم القبول",
+      "date_locked": "الموعد مؤكد",
+      "meetup": "تم اللقاء",
+      "debrief": "تقييم متبادل",
+      "ghost": "تجاهل",
+      "default": "مكتسبة"
+    },
+    "event": {
+      "deletedChallenge": "تحدي محذوف",
+      "andMore": "و {{count}} أخرى"
+    }
   }
 }

@@ -476,6 +476,18 @@
       "world": "อันดับ {{rank}} ของโลก",
       "worldBeyond": "นอก Top {{topN}} ของโลก"
     },
-    "cta": "ลุย ⚡"
+    "cta": "ลุย ⚡",
+    "kindShort": {
+      "accepted": "รับแล้ว",
+      "date_locked": "นัดเรียบร้อย",
+      "meetup": "เจอกันแล้ว",
+      "debrief": "ให้คะแนนแล้วทั้งคู่",
+      "ghost": "หายไป",
+      "default": "ได้รับ"
+    },
+    "event": {
+      "deletedChallenge": "ชาเลนจ์ที่ถูกลบ",
+      "andMore": "และอีก {{count}} รายการ"
+    }
   }
 }
