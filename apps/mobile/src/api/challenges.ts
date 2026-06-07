@@ -441,11 +441,13 @@ export async function fetchProofs(acceptanceId: string): Promise<ProofListResult
   return api.get<ProofListResult>(`/acceptances/${acceptanceId}/proofs`);
 }
 
-/** Acceptor submits a proof. Caller already has the media uploaded to R2
- *  via uploadFile() and the GPS coords from expo-location. */
+/** Acceptor submits a proof. Caller has the media uploaded to R2 via
+ *  uploadFile(). lat/lng are optional — PR59 dropped the GPS prompt;
+ *  the server stubs 0/0 + marks the proof verified when coords are
+ *  absent. */
 export async function submitProof(
   acceptanceId: string,
-  body: { mediaUrl: string; mediaType: 'image' | 'video'; lat: number; lng: number },
+  body: { mediaUrl: string; mediaType: 'image' | 'video'; lat?: number; lng?: number },
 ): Promise<{ proof: ChallengeProof; attempt: number; maxAttempts: number }> {
   return api.post<{ proof: ChallengeProof; attempt: number; maxAttempts: number }>(
     `/acceptances/${acceptanceId}/submit-proof`,

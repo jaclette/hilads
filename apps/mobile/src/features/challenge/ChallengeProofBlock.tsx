@@ -29,8 +29,6 @@ import {
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
-import * as Location from 'expo-location';
-import { Ionicons } from '@expo/vector-icons';
 import {
   fetchProofs, submitProof, approveProof, rejectProof,
   type ChallengeProof,
@@ -124,29 +122,18 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     if (pick.canceled || !pick.assets?.[0]) return;
     const asset = pick.assets[0];
 
-    // 2. GPS capture — mandatory per spec
-    const loc = await Location.requestForegroundPermissionsAsync();
-    if (loc.status !== 'granted') {
-      Alert.alert(t('intl.proof.permGpsTitle'), t('intl.proof.permGpsBody'));
-      return;
-    }
-    let pos: Location.LocationObject;
-    try {
-      pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
-    } catch {
-      Alert.alert(t('intl.proof.gpsFailTitle'), t('intl.proof.gpsFailBody'));
-      return;
-    }
+    // PR59 — GPS capture removed. The instant rear-camera photo is the
+    // entire "I was there now" signal; tacking on a location permission
+    // prompt was extra friction with no real upside. Submission now goes
+    // straight from capture → upload → submit.
 
-    // 3. Upload media → 4. Submit
+    // 2. Upload media → 3. Submit
     setBusy('submit');
     try {
       const { url } = await uploadFile(asset.uri, asset.mimeType ?? null);
       await submitProof(acceptanceId, {
         mediaUrl:  url,
         mediaType: 'image',
-        lat:       pos.coords.latitude,
-        lng:       pos.coords.longitude,
       });
       await load();
     } catch (e) {
@@ -229,23 +216,9 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   if (latest?.status === 'pending') {
     return (
       <View style={styles.card}>
-        {/* PR56 — the proof photo is now inserted into the channel chat
-            (PR43), so showing it here too duplicated the image AND
-            rendered with a clipped top edge in the proof card. Drop
-            the inline <Image>; both creator + acceptor see the photo
-            in the chat thread above. Keep the geotag chip (it's a
-            verdict signal, not a duplicate of the photo) + the
-            verdict buttons / waiting text. */}
-        <View style={styles.geotagRow}>
-          <Ionicons
-            name={latest.geotag_verified ? 'location' : 'warning-outline'}
-            size={13}
-            color={latest.geotag_verified ? '#4ade80' : '#fbbf24'}
-          />
-          <Text style={[styles.geotagText, latest.geotag_verified ? styles.geotagOk : styles.geotagWarn]}>
-            {latest.geotag_verified ? t('intl.proof.geotagOk') : t('intl.proof.geotagWarn')}
-          </Text>
-        </View>
+        {/* PR59 — geotag chip removed: no GPS prompt at submit, so a
+            "geotag verified" badge would be misleading. The photo +
+            verdict buttons / waiting text are the whole UI now. */}
         {iAmCreator ? (
           <View style={styles.verdictRow}>
             <TouchableOpacity
@@ -366,10 +339,6 @@ const styles = StyleSheet.create({
 
   media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: '#000' },
 
-  geotagRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 },
-  geotagText: { fontSize: 11, fontWeight: '600' },
-  geotagOk:   { color: '#4ade80' },
-  geotagWarn: { color: '#fbbf24' },
 
   verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: 4 },
   verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },

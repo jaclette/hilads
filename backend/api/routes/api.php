@@ -9466,13 +9466,21 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     if (!in_array($mediaType, ['image', 'video'], true)) {
         Response::json(['error' => "mediaType must be 'image' or 'video'"], 400);
     }
-    if (!is_numeric($latRaw) || !is_numeric($lngRaw)) {
-        Response::json(['error' => 'lat and lng are required and must be numeric'], 400);
-    }
-    $lat = (float) $latRaw;
-    $lng = (float) $lngRaw;
-    if ($lat < -90.0 || $lat > 90.0 || $lng < -180.0 || $lng > 180.0) {
-        Response::json(['error' => 'lat/lng out of range'], 400);
+    // PR59 — geolocation is no longer required for proof submission.
+    // The camera-only capture flow (PR55) is enough: an instant rear-cam
+    // photo without GPS-prompt friction. Clients that still send lat/lng
+    // (older builds, mid-deploy) keep working; new clients omit them and
+    // we stub 0/0 to satisfy the NOT NULL columns without a migration.
+    $hasCoords = is_numeric($latRaw) && is_numeric($lngRaw);
+    if ($hasCoords) {
+        $lat = (float) $latRaw;
+        $lng = (float) $lngRaw;
+        if ($lat < -90.0 || $lat > 90.0 || $lng < -180.0 || $lng > 180.0) {
+            Response::json(['error' => 'lat/lng out of range'], 400);
+        }
+    } else {
+        $lat = 0.0;
+        $lng = 0.0;
     }
 
     // 3-attempt cap. We enforce in the route (not the DB) so we can flex
@@ -9489,10 +9497,13 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         ], 403);
     }
 
-    // Geotag verification (only when target_city_id is set). The result is
-    // stored on the row so the creator's review UI can render "geotag
-    // verified ✓" or "geotag mismatch" without recomputing.
-    $geotagOk = ChallengeProofGeotag::verify($challenge['target_city_id'] ?? null, $lat, $lng);
+    // Geotag verification (only when target_city_id is set + the client
+    // actually sent coords). PR59 — without GPS the row is "verified" by
+    // virtue of the camera-only capture; clients that opted out of the
+    // location prompt aren't penalised on the creator's review panel.
+    $geotagOk = $hasCoords
+        ? ChallengeProofGeotag::verify($challenge['target_city_id'] ?? null, $lat, $lng)
+        : true;
 
     enforceRateLimit('challenge_proof_submit', 10, 3600, $authUser['id']);
 

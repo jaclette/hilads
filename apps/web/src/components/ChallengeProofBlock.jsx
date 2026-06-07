@@ -55,39 +55,17 @@ export default function ChallengeProofBlock({
   const isFinal = latest?.status === 'rejected' && attemptsLeft === 0
 
   // ── Acceptor: submit proof ──────────────────────────────────────────────
-  // The flow on web:
-  //   1. <input type="file"> picks an image
-  //   2. navigator.geolocation captures coords (mandatory)
-  //   3. POST /uploads → media url
-  //   4. POST /acceptances/:id/submit-proof
+  // PR59 — geolocation prompt removed. Camera-only capture (mobile) +
+  // file picker (web) are enough; asking the browser for GPS at submit
+  // time was extra friction with no real upside, so the flow is now
+  // just: pick → upload → submit.
   const handleFileChange = useCallback(async (e) => {
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
     setError(null)
-
-    // Geolocation — browser asks once; user must allow.
-    if (!navigator.geolocation) {
-      setError(t('intl.proof.permGpsBody'))
-      return
-    }
     setBusy('submit')
-    let coords
-    try {
-      coords = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve(pos.coords),
-          (err) => reject(err),
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 },
-        ),
-      )
-    } catch {
-      setBusy(null)
-      setError(t('intl.proof.gpsFailBody'))
-      return
-    }
 
-    // Upload — reuses the chat image upload endpoint.
     try {
       const form = new FormData()
       form.append('file', file)
@@ -102,8 +80,6 @@ export default function ChallengeProofBlock({
       await submitProof(acceptanceId, {
         mediaUrl:  url,
         mediaType: 'image',
-        lat:       coords.latitude,
-        lng:       coords.longitude,
       })
       await load()
     } catch (err) {
@@ -170,11 +146,8 @@ export default function ChallengeProofBlock({
     return (
       <div className="proof-block">
         <img src={latest.media_url} alt="" className="proof-media" />
-        <div className={`proof-geotag${latest.geotag_verified ? ' proof-geotag--ok' : ' proof-geotag--warn'}`}>
-          {latest.geotag_verified
-            ? <>✓ {t('intl.proof.geotagOk')}</>
-            : <>⚠ {t('intl.proof.geotagWarn')}</>}
-        </div>
+        {/* PR59 — geotag chip removed; we no longer ask the client for
+            coordinates, so a "geotag verified" badge would be misleading. */}
         {iAmCreator ? (
           <div className="proof-verdict-row">
             <button

@@ -701,12 +701,20 @@ export async function fetchProofs(acceptanceId) {
   return res.json()
 }
 
+// PR59 — lat/lng are optional. The proof flow no longer prompts for
+// geolocation; the server stubs 0/0 + marks the row verified when no
+// coords are sent. Existing callers passing { lat, lng } still work.
 export async function submitProof(acceptanceId, { mediaUrl, mediaType, lat, lng }) {
+  const payload = { mediaUrl, mediaType }
+  if (typeof lat === 'number' && typeof lng === 'number') {
+    payload.lat = lat
+    payload.lng = lng
+  }
   const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/submit-proof`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ mediaUrl, mediaType, lat, lng }),
+    body: JSON.stringify(payload),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
