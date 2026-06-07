@@ -52,8 +52,27 @@ export function ScoringInfoModal({
 
           <View style={styles.headerRow}>
             <Text style={styles.headerStep}>{t('scoringInfo.colStep')}</Text>
-            <Text style={styles.headerCol}>{t('badge.challenger')}</Text>
-            <Text style={styles.headerCol}>{t('badge.taker')}</Text>
+            {/* PR60 — FR "CHALLENGER" overflowed the 64px column and wrapped
+                on top of the "PRENEUR" header. numberOfLines={1} +
+                adjustsFontSizeToFit keeps long locale strings on a single
+                line (DE/NL/PT also benefit) without forcing every locale
+                to compromise its base size. */}
+            <Text
+              style={styles.headerCol}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
+              {t('badge.challenger')}
+            </Text>
+            <Text
+              style={styles.headerCol}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.7}
+            >
+              {t('badge.taker')}
+            </Text>
           </View>
 
           {steps.map((s) => (
@@ -106,8 +125,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: Colors.border,
     marginTop: 4,
   },
-  headerStep: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.4, textTransform: 'uppercase' },
-  headerCol:  { width: 64, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.4, textTransform: 'uppercase', textAlign: 'right' },
+  headerStep: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase' },
+  // PR60 — column widened 64 → 88 so FR "CHALLENGER" (10 chars) fits on a
+  // single line. Data cols match so the +5/+30 numbers stay aligned under
+  // their header.
+  headerCol:  { width: 88, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase', textAlign: 'right' },
 
   row: {
     flexDirection: 'row', alignItems: 'center',
@@ -115,7 +137,7 @@ const styles = StyleSheet.create({
   },
   rowIcon:   { width: 26, fontSize: 16 },
   rowLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
-  rowPoints: { width: 64, fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', textAlign: 'right' },
+  rowPoints: { width: 88, fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', textAlign: 'right' },
   rowPointsMuted: { color: Colors.muted2, fontWeight: '600' },
 
   totalRow: {
@@ -125,7 +147,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: Colors.border,
   },
   totalLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
-  totalValue: { width: 64, fontSize: FontSizes.md, fontWeight: '800', color: '#FFC93C', textAlign: 'right' },
+  totalValue: { width: 88, fontSize: FontSizes.md, fontWeight: '800', color: '#FFC93C', textAlign: 'right' },
 
   footnote: { marginTop: Spacing.sm, fontSize: FontSizes.xs, color: Colors.muted2, fontStyle: 'italic' },
 });
