@@ -131,6 +131,14 @@ export default function ChallengeChatPage({
   // challenge (visitor or creator on their own ad).
   const [myAcceptance, setMyAcceptance] = useState(null)
 
+  // PR18 — terminal acceptances unlock the detail screen. See the long
+  // comment near `inProgress` below for the reasoning. Defined up here so
+  // handleAccept's closure can reference it without a TDZ window.
+  const activeAcceptance = (myAcceptance &&
+    (myAcceptance.phase === 'approved' || myAcceptance.phase === 'rejected'))
+    ? null
+    : myAcceptance
+
   // Participation gate (the channel is now members-only). null = still
   // loading; false = visitor sees public detail page only; true = visitor
   // sees the full chat. We don't try to be clever about the initial value —
@@ -487,7 +495,10 @@ export default function ChallengeChatPage({
   // accepted, the schedule/proof surfaces above mount on the same page.
   const handleAccept = useCallback(async () => {
     if (busy) return
-    if (myAcceptance) return  // already a participant — nothing to do
+    if (activeAcceptance) return  // already an active acceptance — nothing to do
+    // Note: a terminal myAcceptance (approved/rejected) does NOT block — the
+    // user is re-engaging with a completed challenge. The new row coexists
+    // with the old; score_events.UNIQUE keeps points from re-firing.
     if (!account?.id) { onNeedAuth?.('accept_challenge'); return }
 
     setBusy('accept')
@@ -617,8 +628,10 @@ export default function ChallengeChatPage({
   // 1:1 gate — true when the challenge has a non-terminal acceptance owned
   // by someone else. Visitors don't see the Accept button + see the
   // in-progress locked state. The current taker / owner have their own
-  // acceptance so they're unaffected.
-  const inProgress = !!(challenge.is_in_progress && !isOwner && !myAcceptance)
+  // acceptance so they're unaffected. Uses activeAcceptance so a user
+  // whose old acceptance is terminal isn't wrongly treated as "the active
+  // taker" when someone else has taken the challenge over.
+  const inProgress = !!(challenge.is_in_progress && !isOwner && !activeAcceptance)
   // Back-compat alias — some branches still read `isFull`. Same semantics
   // for the JSX paths still in place (renamed in this commit).
   const isFull = inProgress
@@ -779,7 +792,7 @@ export default function ChallengeChatPage({
           acceptance phase. Educational for visitors / creator-without-an-
           acceptance. Tap navigates to the thread where the real actions are. */}
       <ChallengePipeline
-        acceptance={myAcceptance}
+        acceptance={activeAcceptance}
         iAmCreator={isOwner}
         mode={challenge.mode ?? 'local'}
         onClick={(() => {
@@ -886,7 +899,12 @@ export default function ChallengeChatPage({
             </div>
           )
         }
-        if (otherParticipants.length > 0 && !isValidated && !isOwner && !myAcceptance) {
+        // PR18 — gate "Currently being taken by X" on challenge.is_in_progress
+        // (server-derived: a non-terminal acceptance EXISTS) rather than on
+        // otherParticipants.length, so a previously-completed challenge
+        // (terminal acceptance row still in the participants list) no longer
+        // reads as "in progress" — the slot is genuinely free.
+        if (challenge.is_in_progress && !isValidated && !isOwner && !activeAcceptance) {
           return (
             <div className="challenge-participants-row">
               <span className="challenge-cta-passive">
@@ -895,7 +913,12 @@ export default function ChallengeChatPage({
             </div>
           )
         }
-        if (otherParticipants.length === 0 && !isOwner && !isValidated) {
+        // PR18 — show the Take-on CTA whenever the slot is open + viewer is
+        // not the owner + challenge not closed. Replaces the
+        // "otherParticipants.length === 0" guard which kept a terminal user
+        // (whose row is still in participants) locked on "Mission
+        // accomplished" — the bug the user reported.
+        if (!isOwner && !isValidated && !challenge.is_in_progress) {
           return (
             <div className="challenge-participants-row">
               <button
@@ -1083,13 +1106,14 @@ export default function ChallengeChatPage({
             })()}
           </div>
 
-          {/* Schedule band — Local + the viewer is the creator OR active
-              acceptor (myAcceptance non-null). Channel participants who
-              only Joined don't have an acceptance row, so the schedule
-              block would crash on `thread.proposed_starts_at`. */}
-          {(challenge.mode ?? 'local') === 'local' && myAcceptance && account?.id && (
+          {/* Schedule band — Local + the viewer is the creator OR ACTIVE
+              acceptor. Use activeAcceptance so a previously-completed
+              user doesn't see a stale "proposed at HH:MM" band from
+              their old approved row — the slot is open again, the
+              schedule belongs to whoever takes it next. */}
+          {(challenge.mode ?? 'local') === 'local' && activeAcceptance && account?.id && (
             <ThreadScheduleBlock
-              thread={myAcceptance}
+              thread={activeAcceptance}
               myUserId={account.id}
               onChange={loadMyAcceptance}
               hideEmptyCta
