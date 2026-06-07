@@ -11623,13 +11623,17 @@ body.has-app-promo-banner .page-header {
 .challenge-details-toggle-chevron.is-open { transform: rotate(180deg); }
 
 /* Channel-header details — collapsible block. CSS max-height + opacity
-   give the slide animation. 1000px is a generous upper bound so the
-   transition always engages from a known endpoint; the overflow stays
-   hidden so the contents clip cleanly during transition. */
+   give the slide animation. PR24 — bumped from 1000px to 2400px: the
+   International proof block (requirements text + photo preview + submit
+   pill) plus the pipeline + scoring info + visibility row + members
+   strip can push past 1000px on a narrow mobile viewport, which silently
+   clipped the LAST child (the members strip) so the list looked missing
+   on intl challenges. 2400px is still a known endpoint for the transition
+   and well above any realistic content height. */
 .challenge-details {
   overflow: hidden;
   transition: max-height 0.28s ease, opacity 0.18s ease;
-  max-height: 1000px;
+  max-height: 2400px;
   opacity: 1;
 }
 .challenge-details.is-closed {
