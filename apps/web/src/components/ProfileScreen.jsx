@@ -8,6 +8,8 @@ import BackButton from './BackButton'
 import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
 import { badgeLabel } from '../badgeMeta'
+import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
+import { localizeCityName } from '../i18n/cityName'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -77,7 +79,7 @@ const LANGS = [
   { code: 'ar',    flag: '🇸🇦', name: 'العربية' },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onOpenThreads, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange }) {
   const { t, i18n } = useTranslation(['profile', 'common'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
@@ -87,6 +89,14 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const uTimer = useRef(null)
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
+  // PR48 — Legend-only city picker. The "Home city" row now shows the
+  // GEO-resolved current city (read-only for everyone), and Legends
+  // (contextBadge.key === 'host') can tap it to open the picker. Save
+  // dispatches POST /me/city via the host's onCityChange callback.
+  const isLegend = account?.contextBadge?.key === 'host'
+  const [cityPickerOpen, setCityPickerOpen] = useState(false)
+  const currentCityName = city?.name ?? null
+  const currentCityChannelId = cityChannelId ? String(cityChannelId) : null
   const [age,             setAge]             = useState(account.age != null ? String(account.age) : '')
   const [vibe,            setVibe]            = useState(account.vibe ?? 'chill')
   const [mode,            setMode]            = useState(account.mode ?? null)
@@ -439,16 +449,32 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                 />
               </div>
 
+              {/* PR48 — Home city is the GEO-resolved current city
+                  (not a free-text field). Read-only for the regular
+                  tier; Legend (host badge) can tap to open the picker
+                  and switch. */}
               <div className="modal-field">
                 <label className="modal-label">{t('fields.homeCity')}</label>
-                <input
-                  className="modal-input"
-                  type="text"
-                  value={homeCity}
-                  onChange={e => setHomeCity(e.target.value)}
-                  maxLength={60}
-                  placeholder={t('fields.homeCityPlaceholder')}
-                />
+                {isLegend ? (
+                  <button
+                    type="button"
+                    className="modal-input modal-input--tappable"
+                    onClick={() => setCityPickerOpen(true)}
+                    style={{ textAlign: 'left', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}
+                  >
+                    <span>{currentCityName ? localizeCityName(currentCityName) : t('fields.homeCityPlaceholder')}</span>
+                    <span aria-hidden="true" style={{ color: 'var(--muted2)' }}>▾</span>
+                  </button>
+                ) : (
+                  <input
+                    className="modal-input"
+                    type="text"
+                    value={currentCityName ? localizeCityName(currentCityName) : ''}
+                    placeholder={t('fields.homeCityPlaceholder')}
+                    readOnly
+                    aria-readonly="true"
+                  />
+                )}
               </div>
 
               <div className="modal-field">
@@ -800,6 +826,23 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </button>
           </div>
         </div>
+      )}
+
+      {/* PR48 — Legend-only city picker. Selecting a city posts to
+          /me/city via the host's onCityChange callback; the host
+          updates `account.current_city_id` so the field re-renders
+          with the new name on next paint. */}
+      {isLegend && (
+        <LeaderboardCityPickerModal
+          visible={cityPickerOpen}
+          selectedChannelId={currentCityChannelId}
+          onSelect={(channelId) => {
+            setCityPickerOpen(false)
+            const wrappedId = `city_${channelId}`
+            if (typeof onCityChange === 'function') onCityChange(wrappedId)
+          }}
+          onClose={() => setCityPickerOpen(false)}
+        />
       )}
     </div>
   )

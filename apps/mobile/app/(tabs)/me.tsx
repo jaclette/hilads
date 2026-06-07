@@ -32,6 +32,9 @@ import { deleteEvent } from '@/api/events';
 import { fetchUserFriends, fetchUserVibes } from '@/api/users';
 import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
 import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
+import { setCurrentCity } from '@/api/channels';
+import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
+import { localizeCityName } from '@/i18n/cityName';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
 import { socket } from '@/lib/socket';
 import type { UserVibe } from '@/api/users';
@@ -121,7 +124,7 @@ export default function MeScreen() {
   const { t }   = useTranslation('me');
   const insets  = useSafeAreaInsets();
   const { tab: tabParam } = useLocalSearchParams<{ tab?: string }>();
-  const { identity, account, setAccount, setIdentity, logout, city } = useApp();
+  const { identity, account, setAccount, setIdentity, logout, city, setCity } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
   // Hangouts / Events tab labels are now translated (Vibes stays English — brand term).
@@ -139,6 +142,11 @@ export default function MeScreen() {
   const [username,           setUsername]           = useState(account?.username ?? '');
   const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
+  // PR48 — Legend-only city picker on the profile. Home City row now
+  // shows the GEO-resolved current city (read-only for the tier); host
+  // (Legend) users can tap it to switch via the existing picker sheet.
+  const isLegend = (account as { contextBadge?: { key?: string } } | null)?.contextBadge?.key === 'host';
+  const [cityPickerOpen, setCityPickerOpen] = useState(false);
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]        = useState<string>(account?.vibe ?? 'chill');
   const [selectedMode,       setSelectedMode]        = useState<string | null>(account?.mode ?? identity?.mode ?? null);
@@ -645,19 +653,29 @@ export default function MeScreen() {
                 </View>
               ) : null}
 
-              {/* HOME CITY */}
+              {/* HOME CITY — PR48: GEO-resolved current city (read-only).
+                  Legend users (host badge) can tap to switch via the
+                  city picker sheet. */}
               <View style={styles.fieldGroup}>
                 <Text style={styles.fieldLabel}>{t('fieldHomeCity')}</Text>
-                <TextInput
-                  style={styles.fieldInput}
-                  value={homeCity}
-                  onChangeText={setHomeCity}
-                  placeholder={t('homeCityPlaceholder')}
-                  placeholderTextColor={Colors.muted2}
-                  maxLength={60}
-                  autoCorrect={false}
-                  autoCapitalize="none"
-                />
+                {isLegend ? (
+                  <TouchableOpacity
+                    style={[styles.fieldInput, { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }]}
+                    onPress={() => setCityPickerOpen(true)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={{ color: city?.name ? Colors.text : Colors.muted2, fontSize: FontSizes.md }}>
+                      {city?.name ? localizeCityName(city.name) : t('homeCityPlaceholder')}
+                    </Text>
+                    <Ionicons name="chevron-down" size={18} color={Colors.muted2} />
+                  </TouchableOpacity>
+                ) : (
+                  <View style={[styles.fieldInput, { justifyContent: 'center' }]}>
+                    <Text style={{ color: city?.name ? Colors.text : Colors.muted2, fontSize: FontSizes.md }}>
+                      {city?.name ? localizeCityName(city.name) : t('homeCityPlaceholder')}
+                    </Text>
+                  </View>
+                )}
               </View>
 
               {/* AGE */}
@@ -1079,6 +1097,35 @@ export default function MeScreen() {
             </TouchableOpacity>
           </View>
         </View>
+      )}
+
+      {/* PR48 — Legend city picker. Selects a channel, posts /me/city,
+          updates the local account so the field re-renders with the
+          new city name without a screen bounce. */}
+      {isLegend && (
+        <LeaderboardCityPickerSheet
+          visible={cityPickerOpen}
+          selectedChannelId={city?.channelId != null ? String(city.channelId) : null}
+          onSelect={async (channelId, picked) => {
+            setCityPickerOpen(false);
+            try {
+              await setCurrentCity(channelId);
+              // Update the in-memory City so the field re-renders with
+              // the new name immediately. The next geo / heartbeat cycle
+              // will re-resolve and confirm.
+              setCity({
+                channelId: typeof channelId === 'string' ? parseInt(channelId, 10) : (channelId as unknown as number),
+                name:      picked.name,
+                country:   picked.country,
+                timezone:  picked.timezone ?? 'UTC',
+              } as unknown as Parameters<typeof setCity>[0]);
+            } catch (e) {
+              console.warn('[me] setCurrentCity failed:', String(e));
+              Alert.alert(t('saveError', { defaultValue: 'Something went wrong.' }));
+            }
+          }}
+          onClose={() => setCityPickerOpen(false)}
+        />
       )}
 
     </SafeAreaView>

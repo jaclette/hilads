@@ -5810,6 +5810,24 @@ export default function App() {
           friendRequestCount={friendReqCount}
           onOpenFriendRequests={() => { setShowProfileDrawer(false); setShowFriendRequests(true) }}
           cityTimezone={cityTimezone}
+          city={city}
+          cityChannelId={channelId}
+          onCityChange={async (newChannelId) => {
+            // PR48 — Legend tier can switch their current city from the
+            // profile. POST /me/city writes users.current_city_id and the
+            // legacy user_city_memberships row in one shot (PR16).
+            try {
+              await setCurrentCity(newChannelId)
+              // Refresh the account so the badge / city UI catches up
+              // immediately without a route bounce. The next NOW fetch
+              // will re-resolve city against the new current_city_id.
+              if (account) {
+                setAccount({ ...account, current_city_id: newChannelId })
+              }
+            } catch (e) {
+              console.warn('[profile] setCurrentCity failed:', e)
+            }
+          }}
           tabMode
           renderAppHeader={renderAppHeader}
           onSave={setAccount}
