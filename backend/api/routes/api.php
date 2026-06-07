@@ -10827,6 +10827,57 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
         $res = MessageRepository::getByChannel($challengeId, $beforeId ?: null, $limit);
+
+        // PR58 — enrich each text/image message with the sender's
+        // mode + vibe + primaryBadge so the author chip renders the
+        // right pill (Local vs Traveler vs Ghost). Without this,
+        // historical messages came back with no mode, the client
+        // defaulted to 'exploring', and a Local user reading their
+        // own past chat saw themselves labelled "Traveler" — the
+        // user-reported bug. Mirrors the city-bootstrap path (see
+        // routes/api.php around line 3088).
+        $msgUserIds = [];
+        foreach ($res['messages'] as $msg) {
+            $t = $msg['type'] ?? 'text';
+            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
+                $msgUserIds[] = $msg['userId'];
+            }
+        }
+        $msgUserIds = array_values(array_unique($msgUserIds));
+        if (!empty($msgUserIds)) {
+            $in   = implode(',', array_fill(0, count($msgUserIds), '?'));
+            $stmt = Database::pdo()->prepare(
+                "SELECT id, mode, vibe, created_at FROM users WHERE id IN ($in)"
+            );
+            $stmt->execute($msgUserIds);
+            $userInfo = [];
+            foreach ($stmt->fetchAll() as $row) {
+                $userInfo[$row['id']] = [
+                    'mode'         => $row['mode'] ?? null,
+                    'vibe'         => $row['vibe'] ?? null,
+                    'primaryBadge' => UserBadgeService::primaryForUser($row),
+                ];
+            }
+            foreach ($res['messages'] as &$msg) {
+                $t   = $msg['type'] ?? 'text';
+                if ($t !== 'text' && $t !== 'image') continue;
+                $uid = $msg['userId'] ?? null;
+                if ($uid && isset($userInfo[$uid])) {
+                    $msg['mode']         = $userInfo[$uid]['mode'];
+                    $msg['vibe']         = $userInfo[$uid]['vibe'];
+                    $msg['primaryBadge'] = $userInfo[$uid]['primaryBadge'];
+                    $msg['contextBadge'] = null; // no host badge on challenge channels
+                } else {
+                    // No user row resolved → ghost (anonymous or deleted).
+                    $msg['mode']         = null;
+                    $msg['vibe']         = null;
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge'] = null;
+                }
+            }
+            unset($msg);
+        }
+
         Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
     } catch (\Throwable $e) {
         error_log('[challenge-messages] GET failed for challenge ' . $challengeId . ': ' . $e->getMessage());
