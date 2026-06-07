@@ -4086,7 +4086,10 @@ html, body, #root {
   margin: 24px 0;
 }
 .arrivals-sheet-row {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   width: 100%;
   text-align: left;
   background: none;
@@ -4100,8 +4103,20 @@ html, body, #root {
 .arrivals-sheet-row.is-tappable { cursor: pointer; }
 .arrivals-sheet-row.is-tappable:hover { background: rgba(255,255,255,0.04); }
 .arrivals-sheet-row-text {
+  flex: 1;
+  min-width: 0;
   font-size: 0.92rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.arrivals-sheet-row-time {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted2);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Reminder cards (event / hangout / prompt / ambient) fade out before removal —

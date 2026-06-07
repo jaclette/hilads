@@ -107,7 +107,7 @@ export function ArrivalsBar({ arrivals, onOpen, onTapUser }) {
  * wording as the in-feed pill it replaces. Tapping a row opens the user's
  * profile.
  */
-export function ArrivalsSheet({ open, arrivals, onClose, onTapUser }) {
+export function ArrivalsSheet({ open, arrivals, onClose, onTapUser, formatTime }) {
   const { t } = useTranslation('city')
   if (!open) return null
   return (
@@ -136,6 +136,9 @@ export function ArrivalsSheet({ open, arrivals, onClose, onTapUser }) {
                   <span className="arrivals-sheet-row-text">
                     {t(`feedJoin.${a.joinVariant ?? 0}`, { name: a.nickname })}
                   </span>
+                  {a.createdAt && formatTime && (
+                    <span className="arrivals-sheet-row-time">{formatTime(a.createdAt)}</span>
+                  )}
                 </button>
               )
             })

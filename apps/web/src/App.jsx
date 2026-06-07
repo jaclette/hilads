@@ -5787,6 +5787,7 @@ export default function App() {
       <ArrivalsSheet
         open={showArrivalsSheet}
         arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
+        formatTime={formatMsgTime}
         onClose={() => setShowArrivalsSheet(false)}
         onTapUser={(a) => {
           setShowArrivalsSheet(false)
