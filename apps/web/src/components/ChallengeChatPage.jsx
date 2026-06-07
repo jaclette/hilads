@@ -462,18 +462,15 @@ export default function ChallengeChatPage({
     return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
   }, [socket, loadMyAcceptance])
 
-  // PR29 — auto-scroll matches the proven TopicChatPage pattern exactly:
-  // a plain useEffect on messages.length, calling scrollIntoView on the
-  // bottom sentinel. The earlier attempts at useLayoutEffect + rAF chains
-  // + scroll-position-aware gating fought the layout (the collapsible
-  // header above the feed transitions max-height as iAmParticipant
-  // resolves, and the snap fired before that transition completed,
-  // landing the user near the top). Letting React paint first, then
-  // snapping, sidesteps the race entirely.
+  // PR30 — auto-scroll on every messages.length change. behavior:'instant'
+  // sidesteps the CSS scroll-behavior:smooth that some surrounding
+  // contexts may set — a smooth scroll on entry can be interrupted by
+  // the layout still settling, leaving the user mid-feed (which reads
+  // as "stuck at top"). 'instant' is atomic.
   const skipAutoScrollRef = useRef(false)
   useEffect(() => {
     if (skipAutoScrollRef.current) { skipAutoScrollRef.current = false; return }
-    bottomRef.current?.scrollIntoView({ behavior: 'auto' })
+    bottomRef.current?.scrollIntoView({ behavior: 'instant' })
   }, [messages.length])
 
   const handleSendMessage = useCallback(async (e) => {
@@ -1070,7 +1067,15 @@ export default function ChallengeChatPage({
           <div
             className="topic-chat-feed"
             ref={feedRef}
-            onScroll={e => collapseHeader(e.currentTarget.scrollTop > 30)}
+            /* PR30 — removed the scroll-driven `collapseHeader(scrollTop > 30)`
+               call. It mutated the .challenge-collapsible's max-height in
+               the middle of the user's scroll gesture; the collapsible
+               shrank, the feed's clientHeight grew, and iOS Safari's
+               scroll-anchoring kicked in and clamped scrollTop back near 0
+               — yanking the user to the top. The composer's onFocus
+               handler still calls collapseHeader(true), so the collapse-
+               on-keyboard-open UX is preserved; users who just want to
+               scroll the chat no longer fight a moving layout. */
           >
             {messages.length === 0 && (
               <div className="topic-chat-empty">
