@@ -121,6 +121,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/events') {
     require __DIR__ . '/events.php';
 
+} elseif ($uri === '/admin/scores/reset-all' && $method === 'POST') {
+    require __DIR__ . '/scores_reset.php';
+
 } elseif ($uri === '/admin/email') {
     require __DIR__ . '/email.php';
 
