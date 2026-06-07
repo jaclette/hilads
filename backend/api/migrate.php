@@ -1558,6 +1558,8 @@ run($pdo, "
     DECLARE
         challenger_id  TEXT;
         origin_city    TEXT;
+        challenge_mode TEXT;
+        taker_city     TEXT;
         pts_c          INT;
         pts_t          INT;
         current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
@@ -1571,13 +1573,25 @@ run($pdo, "
             RETURN NEW;
         END IF;
 
-        SELECT cc.created_by, cc.city_id
-        INTO challenger_id, origin_city
+        SELECT cc.created_by, cc.city_id, cc.mode
+        INTO challenger_id, origin_city, challenge_mode
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
         IF challenger_id IS NULL OR NEW.acceptor_user_id IS NULL THEN
             RETURN NEW;
+        END IF;
+
+        -- International challenges: taker plays from their own city, so their
+        -- points belong on THEIR city's leaderboard, not the creator's. Local
+        -- challenges (the default) keep both rows in origin_city — the meetup
+        -- happened there, both participants are local to it.
+        IF challenge_mode = 'international' THEN
+            SELECT u.current_city_id INTO taker_city
+            FROM users u WHERE u.id = NEW.acceptor_user_id;
+            taker_city := COALESCE(taker_city, origin_city);
+        ELSE
+            taker_city := origin_city;
         END IF;
 
         SELECT points INTO pts_c FROM score_rules WHERE kind = 'date_locked' AND role = 'challenger';
@@ -1586,7 +1600,7 @@ run($pdo, "
         INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
         VALUES
           (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'date_locked', COALESCE(pts_c, 0), origin_city, current_month),
-          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), origin_city, current_month)
+          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), taker_city,  current_month)
         ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
 
         RETURN NEW;
@@ -1621,6 +1635,8 @@ run($pdo, "
         challenger_id  TEXT;
         taker_id       TEXT;
         origin_city    TEXT;
+        challenge_mode TEXT;
+        taker_city     TEXT;
         pts_debrief_c  INT;
         pts_debrief_t  INT;
         current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
@@ -1631,8 +1647,8 @@ run($pdo, "
 
         IF cnt < 2 THEN RETURN NEW; END IF;
 
-        SELECT cc.created_by, cc.city_id
-        INTO challenger_id, origin_city
+        SELECT cc.created_by, cc.city_id, cc.mode
+        INTO challenger_id, origin_city, challenge_mode
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
@@ -1645,6 +1661,18 @@ run($pdo, "
 
         IF challenger_id IS NULL OR taker_id IS NULL THEN RETURN NEW; END IF;
 
+        -- International challenges: taker plays from their own city, so their
+        -- points belong on THEIR city's leaderboard, not the creator's. Local
+        -- challenges (the default) keep both rows in origin_city — the meetup
+        -- happened there, both participants are local to it.
+        IF challenge_mode = 'international' THEN
+            SELECT u.current_city_id INTO taker_city
+            FROM users u WHERE u.id = taker_id;
+            taker_city := COALESCE(taker_city, origin_city);
+        ELSE
+            taker_city := origin_city;
+        END IF;
+
         -- PR10: meetup events no longer written. The combined points live
         -- on debrief now (30 + 40). cnt<2 short-circuit above, ON CONFLICT
         -- idempotency, and the phase='approved' flip below are unchanged.
@@ -1656,7 +1684,7 @@ run($pdo, "
         INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
         VALUES
           (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month),
-          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), origin_city, current_month)
+          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month)
         ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
 
         UPDATE challenge_acceptances
@@ -1677,6 +1705,30 @@ run($pdo, "
     AFTER INSERT ON challenge_ratings
     FOR EACH ROW EXECUTE FUNCTION on_challenge_rating_insert()
 ", 'trg_chrate_mutual_complete');
+
+// ── Backfill: re-attribute international-challenge taker points to the
+// taker's own city ──────────────────────────────────────────────────────────
+// Before this migration, both triggers above credited the taker to the
+// challenge's origin city. For international challenges that's wrong — the
+// taker plays from their own city and shouldn't appear on the creator's
+// city leaderboard.
+//
+// Idempotent: the IS DISTINCT FROM guard skips rows that already match
+// the taker's current city, so re-running the migration is a no-op once
+// the data is correct. Rows where the taker's current_city_id is NULL are
+// left untouched (they'd otherwise drop off every leaderboard).
+run($pdo, "
+    UPDATE score_events se
+    SET city_id = u.current_city_id
+    FROM users u, channel_challenges cc
+    WHERE se.user_id      = u.id
+      AND se.challenge_id = cc.channel_id
+      AND se.role         = 'taker'
+      AND se.kind         IN ('debrief', 'date_locked')
+      AND cc.mode         = 'international'
+      AND u.current_city_id IS NOT NULL
+      AND se.city_id IS DISTINCT FROM u.current_city_id
+", 'backfill — taker score_events to taker city for international challenges');
 
 // ── Mutual-reveal view ──────────────────────────────────────────────────────
 // A challenge_ratings row is visible only when the ratee has also rated
