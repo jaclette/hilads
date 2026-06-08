@@ -5,19 +5,27 @@
  * Two tiers:
  *   - rank 1..3 → podium medal (gold / silver / bronze gradient + soft
  *     top-left sheen + dark number for legibility on metal)
- *   - rank 4..10 → neutral pill (dark disc + thin accent-orange border)
+ *   - rank ≥ 4 (no cap) → neutral pill (dark disc + thin accent-orange
+ *     border); only the digit changes between #4 and #347.
  *
  * Tilt -10° on both tiers so the badge reads as pinned to the avatar.
- * Anything outside 1..10 (incl. null/undefined) → renders nothing so
- * callers don't have to branch on the no-badge path.
+ * Null / non-positive rank → renders nothing so callers don't have
+ * to branch on the no-badge path.
  *
  * Decorative — no tap target. The parent absolute-positions this on
  * top of the avatar; we just render the disc.
  */
 export default function RankBadge({ rank, size = 24, ariaLabel }) {
-  if (rank == null || rank < 1 || rank > 10) return null
+  if (rank == null || rank < 1) return null
   const isPodium = rank <= 3
-  const fontSize = Math.round(size * (rank === 10 ? 0.42 : 0.50))
+  // Shrink the digit so 1 / 2 / 3+ digit ranks all fit the same disc.
+  const digits = String(rank).length
+  const fontRatio =
+    digits === 1 ? 0.50 :
+    digits === 2 ? 0.42 :
+    digits === 3 ? 0.34 :
+                   0.28
+  const fontSize = Math.round(size * fontRatio)
 
   const style = {
     width:        size,

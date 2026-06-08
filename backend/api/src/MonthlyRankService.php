@@ -26,16 +26,15 @@ declare(strict_types=1);
  */
 class MonthlyRankService
 {
-    private const TOP_N = 10;
-
     /**
      * Bounded-rank cap used by ranksForUser() (read-time computation for
-     * profile screens). Distinct from TOP_N (the denormalised top-10
-     * write window): we still resolve a precise position for users
-     * sitting between 11 and 100 — the cached column would already say
-     * "no badge" for them, but the profile screen wants the actual rank.
-     * Past 100 we just say "outside the top 100" — same threshold as
-     * /me/scores so the two surfaces agree.
+     * profile screens). Returns null beyond this position so the
+     * profile renders "Outside the top 100" rather than "#347" — same
+     * threshold as /me/scores so the two surfaces agree.
+     *
+     * Distinct from the denormalised columns, which now store the
+     * user's exact rank with no cap (used by the versus card so every
+     * ranked user gets a medal, not just the top 10).
      */
     private const TOP_N_BOUNDED = 100;
 
@@ -307,10 +306,15 @@ class MonthlyRankService
 
     /**
      * Returns the elapsed milliseconds so the caller can log it. The
-     * UPDATE uses a CTE: rank-window the users in $cityId (current
-     * month only), then assign rank to top-N and NULL out everyone
-     * else in the same city. Stable tiebreak on id ASC prevents the
-     * badge flickering between two users on identical scores.
+     * UPDATE uses a CTE: rank-window every active monthly scorer in
+     * $cityId, then write the exact rank onto each one (no top-N cap
+     * — the versus card shows a medal for every ranked user, not
+     * just the top 10). Users with score_month=0 OR a stale
+     * score_month_ref drop out of the CTE and get NULL'd by the
+     * inner-subquery branch.
+     *
+     * Stable tiebreak on id ASC prevents the badge flickering between
+     * two users on identical scores.
      */
     private static function recalcCity(string $cityId): int
     {
@@ -331,10 +335,7 @@ class MonthlyRankService
                   AND score_month_ref = :month
             )
             UPDATE users u
-            SET monthly_rank_in_city = CASE
-                WHEN r.r IS NOT NULL AND r.r <= :topN THEN r.r
-                ELSE NULL
-            END
+            SET monthly_rank_in_city = r.r
             FROM (
                 SELECT u2.id, ranked.r
                 FROM users u2
@@ -343,23 +344,21 @@ class MonthlyRankService
                   AND (u2.monthly_rank_in_city IS NOT NULL OR ranked.r IS NOT NULL)
             ) r
             WHERE u.id = r.id
-              AND COALESCE(u.monthly_rank_in_city, 0) IS DISTINCT FROM
-                  CASE WHEN r.r IS NOT NULL AND r.r <= :topN THEN r.r ELSE 0 END
+              AND COALESCE(u.monthly_rank_in_city, 0) IS DISTINCT FROM COALESCE(r.r, 0)
         ");
         $stmt->execute([
             'city'  => $cityId,
             'month' => $currentMonth,
-            'topN'  => self::TOP_N,
         ]);
 
         return (int) round((microtime(true) - $started) * 1000);
     }
 
     /**
-     * Same shape as recalcCity but unpartitioned — world top 10.
-     * Touches every user whose monthly_rank_worldwide is currently
-     * non-null OR who is in the new top-N, so the write set stays
-     * bounded to ≈20 rows max regardless of total user count.
+     * Same shape as recalcCity, unpartitioned — world ranks. Touches
+     * every user whose monthly_rank_worldwide is currently non-null OR
+     * who appears in the CTE this month, so the write set covers
+     * every ranked user (no cap) plus former rankers who dropped out.
      */
     private static function recalcWorld(): int
     {
@@ -379,10 +378,7 @@ class MonthlyRankService
                   AND score_month_ref = :month
             )
             UPDATE users u
-            SET monthly_rank_worldwide = CASE
-                WHEN r.r IS NOT NULL AND r.r <= :topN THEN r.r
-                ELSE NULL
-            END
+            SET monthly_rank_worldwide = r.r
             FROM (
                 SELECT u2.id, ranked.r
                 FROM users u2
@@ -391,12 +387,10 @@ class MonthlyRankService
                    OR ranked.r IS NOT NULL
             ) r
             WHERE u.id = r.id
-              AND COALESCE(u.monthly_rank_worldwide, 0) IS DISTINCT FROM
-                  CASE WHEN r.r IS NOT NULL AND r.r <= :topN THEN r.r ELSE 0 END
+              AND COALESCE(u.monthly_rank_worldwide, 0) IS DISTINCT FROM COALESCE(r.r, 0)
         ");
         $stmt->execute([
             'month' => $currentMonth,
-            'topN'  => self::TOP_N,
         ]);
 
         return (int) round((microtime(true) - $started) * 1000);

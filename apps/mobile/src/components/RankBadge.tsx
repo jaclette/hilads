@@ -9,13 +9,14 @@ import { Colors } from '@/constants';
  *   subtle ring + inner highlight. Reads as "this player won the
  *   month."
  *
- *   Tier 2 — top-10 (#4..#10): sober dark disc with a thin
- *   accent-orange border. Reads as "elite group" without competing
+ *   Tier 2 — rank ≥ 4 (no cap): sober dark disc with a thin
+ *   accent-orange border. Same visual for #4 and #347 — only the
+ *   number changes. Reads as "ranked this month" without competing
  *   visually with the podium.
  *
- * Ranks ≥ 11 (or null) render nothing — the caller passes the rank
- * raw and the component handles the no-show branch. Decorative only;
- * tap pass-through is the parent's responsibility.
+ * Null / non-positive rank → renders nothing. The caller passes the
+ * rank raw and the component handles the no-show branch. Decorative
+ * only; tap pass-through is the parent's responsibility.
  *
  * Visual position: sits astride the top edge of the avatar, tilted
  * ~-10° for a pinned-medal effect. The parent positions it
@@ -23,7 +24,7 @@ import { Colors } from '@/constants';
  */
 
 export interface RankBadgeProps {
-  /** 1..10 → render. Null / out-of-range → render nothing. */
+  /** ≥ 1 → render. Null / non-positive → render nothing. */
   rank: number | null | undefined;
   /** Disc diameter. Spec says 22-26px. Defaults to 24. */
   size?: number;
@@ -48,9 +49,19 @@ const PODIUM_NUMBER_COLOR: Record<1 | 2 | 3, string> = {
 };
 
 export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProps) {
-  if (rank == null || rank < 1 || rank > 10) return null;
+  if (rank == null || rank < 1) return null;
   const isPodium = rank <= 3;
-  const fontSize = Math.round(size * (rank === 10 ? 0.42 : 0.50));
+  // Shrink the digit so 2 / 3 / 4-digit ranks all fit in the same disc.
+  // Calibrated so #1 fills the disc, #99 stays readable, #999 still
+  // fits without overflowing. Beyond 4 digits the badge is cramped but
+  // never clipped.
+  const digits = String(rank).length;
+  const fontRatio =
+    digits === 1 ? 0.50 :
+    digits === 2 ? 0.42 :
+    digits === 3 ? 0.34 :
+                   0.28;
+  const fontSize = Math.round(size * fontRatio);
 
   if (isPodium) {
     const tier = rank as 1 | 2 | 3;
@@ -89,9 +100,10 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
     );
   }
 
-  // Tier 2 — neutral pill. Dark surface + accent-orange thin border,
-  // no glow, no gradient. Visually one level "down" from the podium
-  // so the eye reads the hierarchy at a glance.
+  // Tier 2 — neutral pill for #4 through ∞. Same dark surface +
+  // accent-orange thin border for every non-podium rank — only the
+  // number changes — so the hierarchy reads at a glance (gold/silver/
+  // bronze stand alone; everyone else shares one visual).
   return (
     <View
       style={[
