@@ -118,7 +118,7 @@
   "thread": {
     "notFound": "スレッドが見つかりません",
     "empty": "👋 で挨拶して、会う日を決めましょう。",
-    "emptyIntl": "👋 挨拶して、現地から証拠を送ろう。",
+    "emptyIntl": "ハロー 👋 — クリアしたら 📸 を送って。",
     "cancel": {
       "creatorTitle": "このtake-onをキャンセルしますか?",
       "acceptorTitle": "このチャレンジを辞退しますか?",
