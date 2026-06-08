@@ -11146,6 +11146,45 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     $message = enrichBroadcastMessage($message, $senderUser ?? null);
     broadcastMessageToWs($challengeId, $message);
 
+    // Fan out a push to everyone watching the challenge chat (creator +
+    // active takers + explicit spectators), minus the sender. The
+    // per-channel toggle pill controls who actually receives it — 'off'
+    // suppresses, anything else allows. Non-fatal: a notification failure
+    // must not prevent the message response from reaching the sender.
+    try {
+        $chForNotif = ChallengeRepository::findByIdUnchecked($challengeId);
+        $chTitle    = is_array($chForNotif) ? ($chForNotif['title'] ?? '') : '';
+        $titleLine  = $chTitle !== '' ? ($nickname . ' in ' . $chTitle) : $nickname;
+        $bodyPreview = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
+        NotificationRepository::notifyChallengeChannelMessage(
+            $challengeId,
+            $senderUserId,
+            'challenge_message',
+            $titleLine,
+            $bodyPreview,
+            [
+                'challengeId'    => $challengeId,
+                'challengeTitle' => $chTitle,
+                'senderName'     => $nickname,
+                'senderUserId'   => $senderUserId,
+                'messageId'      => $message['id'] ?? null,
+            ],
+        );
+        // @mention notifications — higher-signal than the participant ping above.
+        if (!empty($mentions ?? [])) {
+            notifyMentions(
+                $mentions,
+                $senderUserId,
+                $nickname . ' mentioned you in ' . $chTitle,
+                $bodyPreview,
+                ['challengeId' => $challengeId, 'challengeTitle' => $chTitle, 'messageId' => $message['id'] ?? null, 'senderName' => $nickname, 'senderUserId' => $senderUserId],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log("[challenge-msg] notification error challengeId={$challengeId}: " . get_class($e) . ': ' . $e->getMessage());
+        // Do not rethrow — the message was saved and broadcast successfully.
+    }
+
     Response::json($message, 201);
 });
 

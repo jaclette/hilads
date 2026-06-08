@@ -253,6 +253,11 @@ class NotificationRepository
             // challenge so the RatePromptLaunchGate can surface the
             // RateSheet for the side that hasn't rated yet.
             'rating_received'                 => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // New message in a challenge channel — fan-out to creator,
+            // active takers, and explicit spectators. Tap lands in the
+            // challenge chat just like an event message lands in the
+            // event chat.
+            'challenge_message'               => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -280,6 +285,10 @@ class NotificationRepository
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
             'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
             'rating_received'         => 'chrating-'     . ($data['challengeId'] ?? 'c'),
+            // Tag per (challenge, conversation) so a burst of messages
+            // collapses into one push group on the device (mirrors how
+            // dm_message / event_message tag by their channel).
+            'challenge_message'       => 'chmsg-'        . ($data['challengeId'] ?? 'c'),
             default                   => 'hilads-' . $type,
         };
     }
@@ -295,7 +304,7 @@ class NotificationRepository
     //
     // Centralised here so listForUser / unreadCount / markAllRead all stay in
     // sync — adding a new "envelope-only" type only requires editing this list.
-    private const BELL_EXCLUDED_TYPES = ['dm_message', 'event_message', 'channel_message'];
+    private const BELL_EXCLUDED_TYPES = ['dm_message', 'event_message', 'channel_message', 'challenge_message'];
 
     private static function bellExclusionSql(): string
     {
@@ -386,6 +395,74 @@ class NotificationRepository
         if (empty($userIds)) return;
 
         // Batch-load preferences + locales — 1 query each regardless of count
+        $enabled = self::batchIsEnabled($userIds, $type);
+        $locales = self::batchLocale($userIds);
+        foreach ($userIds as $uid) {
+            if ($enabled[$uid] ?? true) {
+                self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
+            }
+        }
+    }
+
+    /**
+     * Notify everyone watching a challenge's chat — creator + active takers +
+     * explicit spectators — when a new message lands. Mirrors
+     * notifyEventParticipants for events, gated by the per-(challenge, user)
+     * preference written by the in-channel toggle pill.
+     *
+     * Recipient set is the UNION of:
+     *   - creator                          (channel_challenges.created_by)
+     *   - active takers                    (challenge_acceptances where phase <> 'rejected')
+     *   - explicit joiners / spectators    (challenge_participants where user_id IS NOT NULL)
+     *
+     * Per-channel toggle: challenge_participants.notification_preference. 'off'
+     * suppresses; anything else (default 'milestones', 'all') allows the push.
+     * Users without a participation row default to enabled — important for the
+     * creator (who never gets a row written for them) and for active takers
+     * whose acceptance landed before they had a chance to toggle anything.
+     */
+    public static function notifyChallengeChannelMessage(
+        string  $challengeId,
+        ?string $excludeUserId,
+        string  $type,
+        string  $title,
+        ?string $body,
+        array   $data
+    ): void {
+        // One round-trip: list every distinct user_id in any of the three
+        // roles whose challenge_participants.notification_preference is not
+        // 'off'. LEFT JOIN so a missing row falls back to the default via
+        // COALESCE. $challengeId is bound four times — once for the
+        // participants JOIN and once per UNION leg.
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT u.id
+            FROM users u
+            LEFT JOIN challenge_participants cp
+              ON cp.channel_id = ? AND cp.user_id = u.id
+            WHERE u.deleted_at IS NULL
+              AND u.id IN (
+                  SELECT created_by FROM channel_challenges
+                  WHERE channel_id = ? AND created_by IS NOT NULL
+                  UNION
+                  SELECT acceptor_user_id FROM challenge_acceptances
+                  WHERE challenge_id = ? AND phase <> 'rejected' AND acceptor_user_id IS NOT NULL
+                  UNION
+                  SELECT user_id FROM challenge_participants
+                  WHERE channel_id = ? AND user_id IS NOT NULL
+              )
+              AND COALESCE(cp.notification_preference, 'milestones') <> 'off'
+              AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+        ");
+        $stmt->execute([
+            $challengeId, $challengeId, $challengeId, $challengeId,
+            $excludeUserId, $excludeUserId,
+        ]);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        // batchIsEnabled is a no-op for 'challenge_message' (no typeToColumn
+        // entry → null → enabled for everyone). Per-channel preference above
+        // is the only gate for this type.
         $enabled = self::batchIsEnabled($userIds, $type);
         $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {

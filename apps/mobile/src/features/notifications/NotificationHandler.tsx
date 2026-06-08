@@ -246,6 +246,14 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
+    case 'challenge_message':
+      // New message in a challenge channel — deep link to that channel's
+      // chat. The per-channel ChallengeNotificationPill controls who gets
+      // the push in the first place, so by definition the recipient opted
+      // into being pulled back here.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
     case 'rating_received':
       // FIRST rating from the counterparty just landed. The
       // RatePromptLaunchGate, mounted globally, refetches its prompts on
