@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authLogin } from '@/api/auth';
 import { joinChannel } from '@/api/channels';
@@ -16,9 +16,25 @@ import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
+// Same allowlist as sign-up — returnTo accepted only on the surfaces
+// we launch auth from. Keeps a tampered deeplink from redirecting out
+// of the app or to a screen we didn't intend.
+const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];
+
+function safeReturnTo(raw: string | undefined): string | null {
+  if (!raw) return null;
+  let decoded: string;
+  try { decoded = decodeURIComponent(raw); } catch { return null; }
+  if (!decoded.startsWith('/')) return null;
+  if (decoded.startsWith('//'))  return null;
+  return RETURN_TO_ALLOWLIST.some(p => decoded.startsWith(p)) ? decoded : null;
+}
+
 export default function SignInScreen() {
   const router = useRouter();
   const { t } = useTranslation('auth');
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const safeReturn = safeReturnTo(typeof returnTo === 'string' ? returnTo : undefined);
   const {
     setAccount, setJoined, setCity, setIdentity,
     identity, sessionId,
@@ -70,9 +86,16 @@ export default function SignInScreen() {
           router.replace('/switch-city' as never);
         }
       } else {
-        // Normal path: came from inside the app (joined=true) or no pending city
+        // Normal path: came from inside the app. Honour ?returnTo when
+        // it points to an allowlisted internal path (e.g. signin
+        // launched from a guest tapping "Take on" on a challenge);
+        // otherwise pop the modal in place.
         setJoined(true);
-        router.back();
+        if (safeReturn) {
+          router.replace(safeReturn as never);
+        } else {
+          router.back();
+        }
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('signIn.errFailed');

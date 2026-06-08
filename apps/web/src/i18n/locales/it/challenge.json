@@ -374,6 +374,12 @@
     "errClosed": "Questa sfida non accetta nuovi partecipanti.",
     "errGeneric": "Impossibile entrare - riprova."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Questa sfida è privata",
+      "body": "Solo il creatore e chi la accetta vedono la conversazione."
+    }
+  },
   "members": {
     "title": "Nel canale",
     "countIn": "{{count}} nel canale",

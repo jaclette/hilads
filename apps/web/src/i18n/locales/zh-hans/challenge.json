@@ -374,6 +374,12 @@
     "errClosed": "此挑战已关闭新成员加入。",
     "errGeneric": "进不去，请重试。"
   },
+  "lock": {
+    "private": {
+      "title": "🔒 这个挑战是私密的",
+      "body": "只有创建者和挑战者能看到对话。"
+    }
+  },
   "members": {
     "title": "在频道中",
     "countIn": "频道中 {{count}} 人",

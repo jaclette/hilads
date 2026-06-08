@@ -378,6 +378,12 @@
     "errClosed": "Deze challenge is gesloten voor nieuwe deelnemers.",
     "errGeneric": "Lukte niet - probeer opnieuw."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Deze challenge is privé",
+      "body": "Alleen de maker en de uitvoerder zien het gesprek."
+    }
+  },
   "members": {
     "title": "In het kanaal",
     "countIn": "{{count}} in het kanaal",

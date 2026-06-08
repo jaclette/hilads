@@ -212,6 +212,14 @@ export default function ChallengeChatPage({
     (guest?.guestId && participants.some(p => p.id === guest.guestId))
   )
 
+  // Public channels are open to anyone — guests included. The chat surface
+  // renders inline regardless of iAmParticipant; the participation gate
+  // below only applies to friends / private rows (which surface a small
+  // lock state in place of the conversation). Defaulting to 'public' on
+  // a null challenge avoids a flash of the locked surface during the
+  // initial fetch.
+  const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public'
+
   // ── Loads ──────────────────────────────────────────────────────────────────
 
   const loadChallenge = useCallback(async () => {
@@ -420,7 +428,11 @@ export default function ChallengeChatPage({
   // registered account in the composer + server.
 
   useEffect(() => {
-    if (!id || iAmParticipant !== true) { setMessages([]); knownIds.current = new Set(); return }
+    // Public channels: any viewer (guest included) reads. Friends/private
+    // keep the participation gate so non-members get the lock state
+    // below instead of an empty chat list.
+    const canRead = challengeIsPublic || iAmParticipant === true
+    if (!id || !canRead) { setMessages([]); knownIds.current = new Set(); return }
     let cancelled = false
     fetchChallengeMessages(id, { limit: 50 }).then(data => {
       if (cancelled) return
@@ -429,10 +441,11 @@ export default function ChallengeChatPage({
       setMessages(msgs)
     }).catch(() => {})
     return () => { cancelled = true }
-  }, [id, iAmParticipant])
+  }, [id, iAmParticipant, challengeIsPublic])
 
   useEffect(() => {
-    if (!socket || !sessionId || !id || iAmParticipant !== true) return
+    const canRead = challengeIsPublic || iAmParticipant === true
+    if (!socket || !sessionId || !id || !canRead) return
     socket.joinChallenge(id, sessionId)
     const offMsg = socket.on('newMessage', (data) => {
       if (data.channelId !== id) return
@@ -456,7 +469,7 @@ export default function ChallengeChatPage({
       setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
     })
     return () => { offMsg(); offReact(); socket.leaveChallenge(id, sessionId) }
-  }, [id, iAmParticipant, socket, sessionId])
+  }, [id, iAmParticipant, challengeIsPublic, socket, sessionId])
 
   // Refresh acceptance on any lifecycle push so the pipeline + schedule band update live.
   useEffect(() => {
@@ -488,14 +501,20 @@ export default function ChallengeChatPage({
     e.preventDefault()
     const content = composer.trim()
     if (!content || sending || !id) return
-    if (!account?.id) { onNeedAuth?.('comment_challenge'); return }
+    // Guest-aware sender identity. Public channels accept anyone with a
+    // (guestId, nickname) tuple — same model city channels use. Friends/
+    // private (where canRead is false above) never render the composer
+    // for non-members, so we don't need to extra-guard here.
+    const senderId       = account?.id ?? guest?.guestId ?? null
+    const senderNickname = account?.display_name ?? nickname ?? 'Guest'
+    if (!senderId) { onNeedAuth?.('comment_challenge'); return }
     setSending(true)
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     const reply   = replyingTo // capture before async write
     const optimistic = {
       id: localId, channelId: id,
-      userId: account.id, guestId: account.id,
-      nickname: account.display_name ?? 'You',
+      userId: account?.id ?? null, guestId: senderId,
+      nickname: senderNickname,
       content, createdAt: Date.now() / 1000, status: 'sending',
       replyTo: reply ? { id: reply.id, nickname: reply.nickname, content: reply.content, type: reply.type ?? 'text' } : undefined,
     }
@@ -503,10 +522,7 @@ export default function ChallengeChatPage({
     setComposer('')
     setReplyingTo(null)
     try {
-      // Public challenge channel accepts guestId + nickname for parity with
-      // the city chat send shape - passing the account id as the guestId
-      // proxy keeps the existing message grouping stable for registered users.
-      const sent = await sendChallengeMessage(id, account.id, account.display_name ?? 'You', content, reply?.id ?? null)
+      const sent = await sendChallengeMessage(id, senderId, senderNickname, content, reply?.id ?? null)
       setMessages(prev => prev.map(m => m.id === localId ? sent : m))
       knownIds.current.add(sent.id)
     } catch {
@@ -1079,35 +1095,24 @@ export default function ChallengeChatPage({
         return null
       })()}
 
-      {/* Non-participant gate - until the viewer joins (or is implicitly
-          a participant via creator/active-taker), they see the join CTA
-          where the chat would be. Detail-page meta above stays visible. */}
-      {iAmParticipant === false && (
+      {/* Non-public + non-participant → conversation is locked. No CTA,
+          no join step: friends/private channels are tied to creator +
+          taker only, so anyone else just sees a short explainer in
+          place of the chat. Public channels never render this — the
+          chat below mounts directly for anyone. */}
+      {!challengeIsPublic && iAmParticipant === false && (
         <div className="challenge-join-gate">
-          <span className="challenge-join-gate-icon" aria-hidden="true">🔓</span>
-          <h3 className="challenge-join-gate-title">{t('join.gateTitle')}</h3>
-          <p className="challenge-join-gate-body">
-            {t('join.gateBody', { count: otherParticipants.length })}
-          </p>
-          <button
-            type="button"
-            className="challenge-join-gate-cta"
-            onClick={handleJoinChannel}
-            disabled={joiningChannel}
-          >
-            {joiningChannel ? '…' : t('join.cta')}
-          </button>
-          {joinError && (
-            <p className="challenge-join-gate-error" role="alert">{joinError}</p>
-          )}
+          <span className="challenge-join-gate-icon" aria-hidden="true">🔒</span>
+          <h3 className="challenge-join-gate-title">{t('lock.private.title')}</h3>
+          <p className="challenge-join-gate-body">{t('lock.private.body')}</p>
         </div>
       )}
 
-      {/* Unified challenge channel chat - participation-gated. Mounts only
-          for participants (creator + active acceptor implicitly, joined
-          users explicitly). Reads + sends are both server-side gated; the
-          UI just doesn't render this surface for non-participants. */}
-      {iAmParticipant === true && (
+      {/* Unified challenge channel chat. Public → mounts for any viewer
+          (guest or registered). Friends/private → only participants;
+          everyone else sees the lock state above. Reads + sends are
+          server-side gated either way. */}
+      {(challengeIsPublic || iAmParticipant === true) && (
       <>
           <div
             className="topic-chat-feed"

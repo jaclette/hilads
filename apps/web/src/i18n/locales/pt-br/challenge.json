@@ -374,6 +374,12 @@
     "errClosed": "Este desafio não está aceitando novas participações.",
     "errGeneric": "Não deu pra entrar - tente de novo."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Este desafio é privado",
+      "body": "Só o criador e quem aceita podem ver a conversa."
+    }
+  },
   "members": {
     "title": "No canal",
     "countIn": "{{count}} no canal",

@@ -164,6 +164,12 @@
     "errClosed": "This challenge is closed to new joins.",
     "errGeneric": "Couldn't hop in - try again."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 This challenge is private",
+      "body": "Only the creator and the taker can see the conversation."
+    }
+  },
   "members": {
     "title": "In the channel",
     "countIn": "{{count}} in the channel",

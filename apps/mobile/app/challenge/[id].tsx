@@ -103,9 +103,14 @@ export default function ChallengeChatScreen() {
     ? null
     : myAcceptance;
 
-  // Participation gate (the channel is now members-only). null = still
-  // loading, false = visitor sees public detail page only, true = visitor
-  // sees the full chat. Resolves via a single GET /participants/me probe.
+  // Participation gate. null = still loading, false = visitor with no
+  // explicit join row, true = creator / active taker / explicit joiner.
+  // Resolves via a single GET /participants/me probe.
+  //
+  // Note: this gate now applies ONLY to non-public challenges. Public
+  // channels (visibility='public', the default) are open to anyone — the
+  // conversation surface is part of the public detail page, no join
+  // step. See challengeIsPublic below.
   const [iAmParticipant, setIAmParticipant] = useState<boolean | null>(null);
   const [joiningChannel, setJoiningChannel] = useState(false);
   // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
@@ -133,6 +138,14 @@ export default function ChallengeChatScreen() {
     (account?.id   && participants.some(p => p.id === account.id)) ||
     (identity?.guestId && participants.some(p => p.id === identity.guestId))
   );
+
+  // Public channels are open to anyone — guests included. The conversation
+  // surface renders inline regardless of iAmParticipant. Only friends /
+  // private fall back to the gated view (and there, the lock state
+  // explains the channel is private). Defaulting to 'public' on a null
+  // challenge means we never flash the locked surface during the initial
+  // fetch — much safer than the reverse.
+  const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public';
 
   // Target city - only meaningful for International challenges. For Local
   // challenges this stays null; the invite picker just uses the origin
@@ -424,9 +437,13 @@ export default function ChallengeChatScreen() {
     // the old, and score_events.UNIQUE keeps points from re-firing.
     if (activeAcceptance) return;
 
-    // Guest? Send them to register first.
+    // Guest? Send them to register first. Carry the originating
+    // challenge id as ?returnTo so the user lands back on this exact
+    // screen post-signup, primed to tap Take-on again — instead of
+    // landing on the NOW feed and having to re-find the challenge.
     if (!account?.id) {
-      router.push('/auth-gate?reason=accept_challenge' as never);
+      const returnTo = encodeURIComponent(`/challenge/${id}`);
+      router.push(`/auth-gate?reason=accept_challenge&returnTo=${returnTo}` as never);
       return;
     }
 
@@ -509,26 +526,35 @@ export default function ChallengeChatScreen() {
   const guestIdForChat = identity?.guestId ?? '';
   const nicknameForChat = nickname ?? '';
 
+  // Guest-aware sender identity. Public channels accept anyone with a
+  // (guestId, nickname) tuple — same model city channels use. Registered
+  // users pass their user id + display name; guests fall back to their
+  // auto-generated guestId + nickname from the boot identity. Either way
+  // the backend stuffs it into messages.guest_id and the read DTO
+  // surfaces it as the top-level `nickname` field.
+  const senderId       = account?.id ?? identity?.guestId ?? null;
+  const senderNickname = nicknameForChat || account?.display_name || identity?.nickname || 'Guest';
+
   const loadMessagesFn = useCallback(
     (opts?: { beforeId?: string }) =>
-      id && iAmParticipant === true
+      id && (challengeIsPublic || iAmParticipant === true)
         ? fetchChallengeMessages(id, opts)
         : Promise.resolve({ messages: [], hasMore: false }),
-    [id, iAmParticipant],
+    [id, iAmParticipant, challengeIsPublic],
   );
   const postTextFn = useCallback(
     (content: string): Promise<Message> =>
-      id && account?.id
-        ? sendChallengeMessage(id, account.id, nicknameForChat || 'You', content)
+      id && senderId
+        ? sendChallengeMessage(id, senderId, senderNickname, content)
         : Promise.reject(new Error('No challenge channel')),
-    [id, account?.id, nicknameForChat],
+    [id, senderId, senderNickname],
   );
   const postImageFn = useCallback(
     (imageUrl: string): Promise<Message> =>
-      id && account?.id
-        ? sendChallengeImageMessage(id, account.id, nicknameForChat || 'You', imageUrl)
+      id && senderId
+        ? sendChallengeImageMessage(id, senderId, senderNickname, imageUrl)
         : Promise.reject(new Error('No challenge channel')),
-    [id, account?.id, nicknameForChat],
+    [id, senderId, senderNickname],
   );
 
   const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
@@ -569,13 +595,16 @@ export default function ChallengeChatScreen() {
   }, [iAmParticipant, reload]);
 
   // Join the challenge channel's WS room for live newMessage broadcasts.
-  // Only join once we're a confirmed participant - non-participants don't
-  // need the firehose. Leaves on unmount / challenge change.
+  // Public channels are open — any viewer (guest included) joins the room
+  // so their feed updates live. Private/friends keep the participation
+  // gate so non-members don't get the firehose. Leaves on unmount /
+  // challenge change.
   useEffect(() => {
-    if (!id || !sessionId || iAmParticipant !== true) return;
+    if (!id || !sessionId) return;
+    if (!challengeIsPublic && iAmParticipant !== true) return;
     socket.joinChallenge(id, sessionId);
     return () => socket.leaveChallenge(id, sessionId);
-  }, [id, iAmParticipant, sessionId]);
+  }, [id, iAmParticipant, sessionId, challengeIsPublic]);
 
   // Resolve participation on mount + whenever acceptance flips (a fresh
   // acceptance makes the user an implicit participant via the creator/
@@ -1164,7 +1193,7 @@ export default function ChallengeChatScreen() {
                 that deserves its own surface so the user understands the
                 channel is closed for them.
             Both branches are handled inside the non-chat IIFE below. */}
-        {iAmParticipant === true && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
+        {(challengeIsPublic || iAmParticipant === true) && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
           <>
             <FlatList
               /* Filter out type='event' messages - they were auto-injected by
@@ -1287,32 +1316,24 @@ export default function ChallengeChatScreen() {
           </>
         ) : (
           /* Non-chat surface. Branches (in priority order):
-             - iAmParticipant === false → Join CTA (the channel is gated)
+             - non-public + iAmParticipant=false → private lock state
              - Creator + pending acceptance → review banner with accept/reject
              - Acceptor + pending           → "Waiting for review"
-             - Acceptor + rejected          → "Your take-on was declined" */
+             - Acceptor + rejected          → "Your take-on was declined"
+             Public channels never reach this branch when the viewer isn't
+             a participant — the chat above renders for them directly. */
           (() => {
-            // Non-participant - show the Join CTA in place of the chat.
-            // Hide while iAmParticipant is still null (probe in flight) to
-            // avoid a brief flash of the visitor surface.
-            if (iAmParticipant === false) {
+            // Non-public + non-participant → conversation is locked. No
+            // CTA, no join step (those channels are tied to creator +
+            // taker only); the line just explains why the chat is hidden.
+            // Hide while iAmParticipant is still null (probe in flight)
+            // to avoid a brief flash of the locked surface.
+            if (!challengeIsPublic && iAmParticipant === false) {
               return (
                 <View style={styles.lockedWrap}>
-                  <Text style={styles.lockedEmoji}>🔓</Text>
-                  <Text style={styles.lockedTitle}>{t('join.gateTitle')}</Text>
-                  <Text style={styles.lockedBody}>
-                    {t('join.gateBody', { count: otherParticipants.length })}
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.joinCta}
-                    onPress={handleJoinChannel}
-                    disabled={joiningChannel}
-                    activeOpacity={0.85}
-                  >
-                    {joiningChannel
-                      ? <ActivityIndicator color="#1a0f00" size="small" />
-                      : <Text style={styles.joinCtaText}>{t('join.cta')}</Text>}
-                  </TouchableOpacity>
+                  <Text style={styles.lockedEmoji}>🔒</Text>
+                  <Text style={styles.lockedTitle}>{t('lock.private.title')}</Text>
+                  <Text style={styles.lockedBody}>{t('lock.private.body')}</Text>
                 </View>
               );
             }

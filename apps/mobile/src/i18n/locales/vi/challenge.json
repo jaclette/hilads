@@ -378,6 +378,12 @@
     "errClosed": "Thử thách này đã đóng nhận thành viên mới.",
     "errGeneric": "Không vào được - thử lại nhé."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Thử thách này riêng tư",
+      "body": "Chỉ người tạo và người nhận thấy được cuộc trò chuyện."
+    }
+  },
   "members": {
     "title": "Trong kênh",
     "countIn": "{{count}} người trong kênh",

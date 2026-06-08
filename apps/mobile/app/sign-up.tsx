@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authSignup, checkUsernameAvailability } from '@/api/auth';
 import { joinChannel } from '@/api/channels';
@@ -22,9 +22,27 @@ const MODES = [
   { key: 'exploring', emoji: '🧭' },
 ] as const;
 
+// Allowlist of return-path prefixes accepted on the ?returnTo query
+// param. Keeping this tight prevents an attacker from crafting a
+// signup deeplink that bounces the user to an arbitrary internal
+// (or external) screen — only the surfaces we actually launch signup
+// from are honoured.
+const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];
+
+function safeReturnTo(raw: string | undefined): string | null {
+  if (!raw) return null;
+  let decoded: string;
+  try { decoded = decodeURIComponent(raw); } catch { return null; }
+  if (!decoded.startsWith('/')) return null;          // no external URLs
+  if (decoded.startsWith('//'))  return null;          // no protocol-relative
+  return RETURN_TO_ALLOWLIST.some(p => decoded.startsWith(p)) ? decoded : null;
+}
+
 export default function SignUpScreen() {
   const router = useRouter();
   const { t } = useTranslation('auth');
+  const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
+  const safeReturn = safeReturnTo(typeof returnTo === 'string' ? returnTo : undefined);
   const {
     setAccount, setJoined, setCity, setIdentity, setShowAccountWelcome,
     identity, sessionId,
@@ -116,9 +134,17 @@ export default function SignUpScreen() {
           router.replace('/switch-city' as never);
         }
       } else {
-        // Normal path: came from inside the app (joined=true) or no pending city
+        // Normal path: came from inside the app. If we have an allowlisted
+        // returnTo (e.g. signup launched from a guest tapping "Take on"
+        // on a challenge), replace into that target so the user lands
+        // back on the originating screen primed to retry the action.
+        // Otherwise the existing back() pops the modal in place.
         setJoined(true);
-        router.back();
+        if (safeReturn) {
+          router.replace(safeReturn as never);
+        } else {
+          router.back();
+        }
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : t('signUp.errFailed');

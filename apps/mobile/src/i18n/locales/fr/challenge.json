@@ -378,6 +378,12 @@
     "errClosed": "Ce défi est fermé aux nouvelles arrivées.",
     "errGeneric": "Impossible d’entrer - réessaie."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Ce défi est privé",
+      "body": "Seuls le créateur et le preneur voient la conversation."
+    }
+  },
   "members": {
     "title": "Dans le canal",
     "countIn": "{{count}} dans le canal",

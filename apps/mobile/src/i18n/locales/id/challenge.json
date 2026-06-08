@@ -378,6 +378,12 @@
     "errClosed": "Tantangan ini tidak menerima anggota baru.",
     "errGeneric": "Gagal masuk - coba lagi."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Tantangan ini bersifat pribadi",
+      "body": "Hanya pembuat dan penerima yang melihat percakapan."
+    }
+  },
   "members": {
     "title": "Di kanal",
     "countIn": "{{count}} di kanal",

@@ -38,8 +38,15 @@ const BENEFITS = [
 export default function AuthGateScreen() {
   const router = useRouter();
   const { t } = useTranslation('auth');
-  const { reason } = useLocalSearchParams<{ reason?: string }>();
+  const { reason, returnTo } = useLocalSearchParams<{ reason?: string; returnTo?: string }>();
   const gateReason: GateReason = (reason as GateReason) in GATE_EMOJI ? (reason as GateReason) : 'view_profile';
+
+  // Carry the returnTo through to /sign-up (and /sign-in) so the user
+  // lands back on the originating screen after a successful auth —
+  // not on the default post-signup chat tab. Allowlisted in sign-up.tsx
+  // so an attacker can't fashion a deeplink that redirects out of the app.
+  const authPath = (base: '/sign-up' | '/sign-in') =>
+    returnTo ? `${base}?returnTo=${encodeURIComponent(returnTo)}` : base;
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
@@ -69,7 +76,7 @@ export default function AuthGateScreen() {
         {/* CTAs */}
         <TouchableOpacity
           style={styles.primary}
-          onPress={() => router.push('/sign-up')}
+          onPress={() => router.push(authPath('/sign-up') as never)}
           activeOpacity={0.85}
         >
           <Text style={styles.primaryText}>{t('signUp.submit')}</Text>
@@ -77,7 +84,7 @@ export default function AuthGateScreen() {
 
         <TouchableOpacity
           style={styles.secondary}
-          onPress={() => router.push('/sign-in')}
+          onPress={() => router.push(authPath('/sign-in') as never)}
           activeOpacity={0.8}
         >
           <Text style={styles.secondaryText}>{t('signIn.submit')}</Text>

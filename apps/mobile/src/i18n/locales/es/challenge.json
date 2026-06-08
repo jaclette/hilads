@@ -378,6 +378,12 @@
     "errClosed": "Este reto está cerrado a nuevas incorporaciones.",
     "errGeneric": "No se pudo entrar - inténtalo de nuevo."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Este desafío es privado",
+      "body": "Solo el creador y quien lo acepta pueden ver la conversación."
+    }
+  },
   "members": {
     "title": "En el canal",
     "countIn": "{{count}} en el canal",

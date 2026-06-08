@@ -6329,7 +6329,14 @@ export default function App() {
           }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
-          onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
+          onNeedAuth={(reason) => {
+            // KEEP activeChallenge set so the challenge view stays mounted
+            // underneath the guest-gate overlay (.full-page z-index:200).
+            // After successful auth the gate closes and the user lands
+            // right back on the originating challenge — no extra return-
+            // path plumbing needed; the challenge was always there.
+            setGuestGate({ reason })
+          }}
           onOpenMyProfile={() => {
             // mode_required / mode_mismatch alert offers "Open my profile" -
             // the profile drawer is where you switch local/exploring.

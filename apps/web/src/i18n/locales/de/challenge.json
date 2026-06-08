@@ -374,6 +374,12 @@
     "errClosed": "Diese Challenge nimmt keine neuen Teilnehmer mehr auf.",
     "errGeneric": "Konnte nicht reinspringen - versuch's nochmal."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Diese Challenge ist privat",
+      "body": "Nur Ersteller und Annehmer sehen das Gespräch."
+    }
+  },
   "members": {
     "title": "Im Kanal",
     "countIn": "{{count}} im Kanal",

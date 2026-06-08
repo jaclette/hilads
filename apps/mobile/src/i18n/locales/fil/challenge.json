@@ -378,6 +378,12 @@
     "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",
     "errGeneric": "Hindi pumasok - subukan ulit."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 Pribado ang hamon na ito",
+      "body": "Tanging ang gumawa at tumanggap lang ang makakakita ng usapan."
+    }
+  },
   "members": {
     "title": "Nasa channel",
     "countIn": "{{count}} sa channel",

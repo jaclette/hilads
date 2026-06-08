@@ -11224,14 +11224,20 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
         $viewerId = AuthService::currentUser()['id'] ?? null;
         // Visibility-aware existence check - anon/out-of-scope viewers
         // can't read messages on a friends/private challenge.
-        if (ChallengeRepository::findById($challengeId, $viewerId) === null) {
+        $challenge = ChallengeRepository::findById($challengeId, $viewerId);
+        if ($challenge === null) {
             Response::json(['error' => 'Challenge not found'], 404);
         }
-        // Participation gate. Anon viewers never pass; registered viewers
-        // pass on creator / active-taker / join-row branches.
-        if (!ChallengeParticipantRepository::isParticipant($challengeId, $viewerId)) {
+        // PUBLIC challenges: skip the participation gate entirely. The
+        // conversation is part of the public surface — any viewer
+        // (including anon guests) can read. Same model city channels use.
+        // FRIENDS / PRIVATE: keep the participation gate so only the
+        // creator + active taker (+ explicit joiners) can read.
+        $visibility = $challenge['visibility'] ?? 'public';
+        if ($visibility !== 'public'
+            && !ChallengeParticipantRepository::isParticipant($challengeId, $viewerId)) {
             Response::json([
-                'error' => 'Join this challenge to read the conversation.',
+                'error' => 'This challenge is private.',
                 'code'  => 'not_participant',
             ], 403);
         }
@@ -11312,16 +11318,18 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     }
 
     // Visibility-aware - anon/out-of-scope can't post to a friends/private
-    // challenge.
+    // challenge. PUBLIC channels open the post path to anyone (mirrors
+    // the city channel post route — guestId + nickname is enough).
     $viewerIdForVisibility = AuthService::currentUser()['id'] ?? null;
-    if (ChallengeRepository::findById($challengeId, $viewerIdForVisibility) === null) {
+    $challenge = ChallengeRepository::findById($challengeId, $viewerIdForVisibility);
+    if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
-    // Participation gate - same shape as the GET. Non-participants get a
-    // friendlier 403 so the client can prompt them to Join first.
-    if (!ChallengeParticipantRepository::isParticipant($challengeId, $viewerIdForVisibility)) {
+    $visibility = $challenge['visibility'] ?? 'public';
+    if ($visibility !== 'public'
+        && !ChallengeParticipantRepository::isParticipant($challengeId, $viewerIdForVisibility)) {
         Response::json([
-            'error' => 'Join this challenge to post in the conversation.',
+            'error' => 'This challenge is private.',
             'code'  => 'not_participant',
         ], 403);
     }
@@ -11338,6 +11346,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     $imageUrl = $body['imageUrl'] ?? null;
 
     enforceRateLimit('challenge_message', 45, 300, $challengeId);
+    // Guest-specific global cap. Per-IP, NOT scoped to a single
+    // challenge — stops a single attacker from rotating across many
+    // public challenges to bypass the per-challenge bucket above.
+    // Registered users skip this; their per-challenge cap already
+    // applies and they're identified.
+    if ($viewerIdForVisibility === null) {
+        enforceRateLimit('guest_challenge_message', 90, 300);
+    }
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -11489,8 +11505,15 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages/{messageId}/reac
         Response::json(['error' => 'guestId or auth token required'], 400);
     }
 
-    // Participation gate - only people who can read the chat can react.
-    if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
+    // Participation gate mirrors GET/POST messages: skipped on PUBLIC
+    // challenges so any reader can react. Friends/private remain gated.
+    $challenge = ChallengeRepository::findById($challengeId, $userId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    $visibility = $challenge['visibility'] ?? 'public';
+    if ($visibility !== 'public'
+        && !ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
         Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
     }
 

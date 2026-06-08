@@ -130,6 +130,12 @@
     "errClosed": "This challenge is closed to new joins.",
     "errGeneric": "Couldn't hop in - try again."
   },
+  "lock": {
+    "private": {
+      "title": "🔒 This challenge is private",
+      "body": "Only the creator and the taker can see the conversation."
+    }
+  },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
