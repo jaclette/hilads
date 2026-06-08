@@ -110,12 +110,22 @@ if (!empty($errors)) {
     error_log('[admin-thumbs-backfill] errors: ' . implode(' | ', array_slice($errors, 0, 10)));
 }
 
-flash_set('success', sprintf(
-    'Thumbnails backfilled: %d updated, %d skipped, %d remaining (%dms).%s',
+// Surface the actual error reasons when nothing succeeded — without
+// this the operator stares at "10 skipped" with no signal as to why
+// (download failure, GD missing, unsupported MIME, etc.).
+$detail = '';
+if ($updated === 0 && !empty($errors)) {
+    $detail = ' First errors: ' . implode(' | ', array_slice($errors, 0, 3));
+}
+
+$flashType = ($updated === 0 && $skipped > 0) ? 'error' : 'success';
+flash_set($flashType, sprintf(
+    'Thumbnails backfilled: %d updated, %d skipped, %d remaining (%dms).%s%s',
     $updated,
     $skipped,
     $remaining,
     $totalMs,
-    $remaining > 0 ? ' Click again to continue.' : '',
+    $remaining > 0 && $updated > 0 ? ' Click again to continue.' : '',
+    $detail,
 ));
 admin_redirect('/admin');
