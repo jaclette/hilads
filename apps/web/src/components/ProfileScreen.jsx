@@ -9,6 +9,7 @@ import { EVENT_ICONS } from '../cityMeta'
 import { getTimeLabel, formatTime } from '../eventUtils'
 import { badgeLabel } from '../badgeMeta'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
+import { isLegend as accountIsLegend } from '../lib/canCreateEvent'
 import { localizeCityName } from '../i18n/cityName'
 
 const AVATAR_PALETTES = [
@@ -89,11 +90,12 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const uTimer = useRef(null)
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
-  // PR48 — Legend-only city picker. The "Home city" row now shows the
-  // GEO-resolved current city (read-only for everyone), and Legends
-  // (contextBadge.key === 'host') can tap it to open the picker. Save
-  // dispatches POST /me/city via the host's onCityChange callback.
-  const isLegend = account?.contextBadge?.key === 'host'
+  // Legend-only city picker. The "Home city" row is the ONLY surface
+  // where /me/city gets called now — switch-city is purely a browse view.
+  // Global Legend check via account.badges so a Legend who currently
+  // lives in a city they aren't ambassador in still sees the affordance
+  // (contextBadge is city-context-scoped, not global).
+  const isLegend = accountIsLegend(account)
   const [cityPickerOpen, setCityPickerOpen] = useState(false)
   const currentCityName = city?.name ?? null
   const currentCityChannelId = cityChannelId ? String(cityChannelId) : null

@@ -33,6 +33,7 @@ import { fetchUserFriends, fetchUserVibes } from '@/api/users';
 import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
 import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
 import { setCurrentCity } from '@/api/channels';
+import { isLegend as accountIsLegend } from '@/lib/canCreateEvent';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { localizeCityName } from '@/i18n/cityName';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
@@ -142,10 +143,13 @@ export default function MeScreen() {
   const [username,           setUsername]           = useState(account?.username ?? '');
   const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
-  // PR48 — Legend-only city picker on the profile. Home City row now
-  // shows the GEO-resolved current city (read-only for the tier); host
-  // (Legend) users can tap it to switch via the existing picker sheet.
-  const isLegend = (account as { contextBadge?: { key?: string } } | null)?.contextBadge?.key === 'host';
+  // Legend-only city picker on the profile. The HOME CITY row is the
+  // ONLY surface where /me/city gets called now — switch-city is purely
+  // a browse view. Global Legend check via account.badges so a Legend
+  // who currently lives in a city they aren't ambassador in still sees
+  // the affordance (contextBadge would miss that case — it's
+  // city-context-scoped, not global).
+  const isLegend = accountIsLegend(account);
   const [cityPickerOpen, setCityPickerOpen] = useState(false);
   const [ageStr,             setAgeStr]              = useState(account?.age != null ? String(account.age) : '');
   const [selectedVibe,       setSelectedVibe]        = useState<string>(account?.vibe ?? 'chill');
