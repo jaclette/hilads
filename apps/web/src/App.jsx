@@ -6533,7 +6533,17 @@ export default function App() {
           prompt. Independent of the first-time onboarding (which covers
           general intro). Can be triggered any time. */}
       {showChallengeIntro && (
-        <ChallengeIntroCarousel onClose={() => setShowChallengeIntro(false)} />
+        <ChallengeIntroCarousel
+          onClose={() => setShowChallengeIntro(false)}
+          onCreateChallenge={() => {
+            // Close the carousel + open the create-challenge flow via
+            // the existing entry (guest gate, EventLimit, etc. all live
+            // there). A user who just learned the rules can launch their
+            // first challenge without backtracking through the city chat.
+            setShowChallengeIntro(false)
+            openCreateChallenge()
+          }}
+        />
       )}
 
       {/* First-time guest onboarding carousel (also re-openable via header "?"). */}

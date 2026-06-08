@@ -26,12 +26,13 @@ function buildSlides(t) {
   ]
 }
 
-export default function ChallengeIntroCarousel({ onClose }) {
+export default function ChallengeIntroCarousel({ onClose, onCreateChallenge }) {
   const { t } = useTranslation('common')
   const SLIDES = buildSlides(t)
   const lastIndex = SLIDES.length - 1
   const trackRef = useRef(null)
   const [index, setIndex] = useState(0)
+  const isLast = index >= lastIndex
 
   const onScroll = useCallback(() => {
     const el = trackRef.current
@@ -46,7 +47,13 @@ export default function ChallengeIntroCarousel({ onClose }) {
     el.scrollTo({ left: i * el.clientWidth, behavior: 'smooth' })
   }
 
-  const handlePrimary = () => (index >= lastIndex ? onClose() : goTo(index + 1))
+  // Last-slide CTA opens the create-challenge flow when a host wires it
+  // up; otherwise falls back to plain close (back-compat).
+  const handlePrimary = () => {
+    if (!isLast) return goTo(index + 1)
+    if (onCreateChallenge) onCreateChallenge()
+    else onClose()
+  }
 
   return (
     <div className="onboarding-overlay" role="dialog" aria-modal="true" aria-label={t('challengeIntro.title')}>
@@ -77,7 +84,9 @@ export default function ChallengeIntroCarousel({ onClose }) {
         </div>
 
         <button className="onboarding-next" onClick={handlePrimary}>
-          {index >= lastIndex ? t('challengeIntro.done') : t('challengeIntro.next')}
+          {isLast
+            ? (onCreateChallenge ? t('challengeIntro.createCta') : t('challengeIntro.done'))
+            : t('challengeIntro.next')}
         </button>
       </div>
     </div>

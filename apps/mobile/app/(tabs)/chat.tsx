@@ -1208,10 +1208,17 @@ export default function ChatTab() {
       />
 
       {/* "How challenges work" carousel — opened from the challenge-intro
-          feed prompt. Stand-alone modal; doesn't interact with onboarding. */}
+          feed prompt. Stand-alone modal; doesn't interact with onboarding.
+          Last-slide CTA closes the carousel and routes to /challenge/create
+          so a user who just learned the rules can launch their first
+          challenge without backtracking through the city chat. */}
       <ChallengeIntroCarousel
         visible={showChallengeIntro}
         onClose={() => setShowChallengeIntro(false)}
+        onCreateChallenge={() => {
+          setShowChallengeIntro(false);
+          router.push('/challenge/create' as never);
+        }}
       />
 
       <ArrivalsSheet

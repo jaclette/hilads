@@ -38,9 +38,15 @@ function buildSlides(t: TFunction): Slide[] {
 interface Props {
   visible: boolean;
   onClose: () => void;
+  /** Last-slide CTA hook. When provided, the last slide's button reads
+   *  "🔥 Create a challenge" and fires this callback instead of the
+   *  default close. The host is responsible for closing the modal +
+   *  navigating; we don't auto-close so a router push that fails
+   *  doesn't leave the user looking at an empty city chat. */
+  onCreateChallenge?: () => void;
 }
 
-export function ChallengeIntroCarousel({ visible, onClose }: Props) {
+export function ChallengeIntroCarousel({ visible, onClose, onCreateChallenge }: Props) {
   const insets    = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const { t }     = useTranslation('common');
@@ -49,6 +55,7 @@ export function ChallengeIntroCarousel({ visible, onClose }: Props) {
 
   const slides = buildSlides(t);
   const last   = slides.length - 1;
+  const isLast = index >= last;
 
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / width);
@@ -56,7 +63,14 @@ export function ChallengeIntroCarousel({ visible, onClose }: Props) {
   }, [width]);
 
   const goTo = (i: number) => scrollRef.current?.scrollTo({ x: i * width, animated: true });
-  const handleNext = () => (index >= last ? onClose() : goTo(index + 1));
+  const handleNext = () => {
+    if (!isLast) return goTo(index + 1);
+    // Last slide: open the create-challenge screen when a host is wired
+    // up, else fall through to plain close (back-compat for callers that
+    // don't pass onCreateChallenge yet).
+    if (onCreateChallenge) onCreateChallenge();
+    else onClose();
+  };
 
   return (
     <Modal
@@ -101,7 +115,9 @@ export function ChallengeIntroCarousel({ visible, onClose }: Props) {
 
           <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.85}>
             <Text style={styles.nextBtnText}>
-              {index >= last ? t('challengeIntro.done') : t('challengeIntro.next')}
+              {isLast
+                ? (onCreateChallenge ? t('challengeIntro.createCta') : t('challengeIntro.done'))
+                : t('challengeIntro.next')}
             </Text>
           </TouchableOpacity>
         </View>
