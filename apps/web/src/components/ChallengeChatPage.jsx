@@ -363,38 +363,32 @@ export default function ChallengeChatPage({
     }
   }
 
-  // Unified visibility selector — Public / Friends / Private. The three
-  // options map to two backend flags:
-  //   public   → visibility=public,  closed_to_new_joins=false
-  //   friends  → visibility=friends, closed_to_new_joins=false
-  //   private  → closed_to_new_joins=true (visibility kept as-is)
-  // No mutual-vote round-trip — this is the simple creator-only flow.
+  // Unified visibility selector — Public / Friends / Private. One backend
+  // call per pick: POST /visibility writes the column and (for 'private')
+  // atomically closes the challenge to new joins so a stranger with the
+  // direct link can't sneak in as a spectator. No mutual-vote round-trip
+  // — this is the simple creator-only flow.
   async function handlePickVisibility(choice) {
     if (visBusy || closeBusy || !challenge) return
     setVisMenuOpen(false)
     try {
-      if (choice === 'private') {
-        if (!challenge.closed_to_new_joins) {
-          setCloseBusy(true)
-          await setChallengeCloseToJoins(id, true)
-          setChallenge(prev => prev ? { ...prev, closed_to_new_joins: true } : prev)
-          setCloseBusy(false)
-        }
-        return
-      }
-      // 'public' or 'friends': make sure closed_to_new_joins is off, then
-      // align visibility. Two calls in sequence is fine — the UI shows a
-      // single busy state.
-      if (challenge.closed_to_new_joins) {
-        setCloseBusy(true)
-        await setChallengeCloseToJoins(id, false)
-        setChallenge(prev => prev ? { ...prev, closed_to_new_joins: false } : prev)
-        setCloseBusy(false)
-      }
+      // Picker is the single source of truth for "who can see this and
+      // who can still join". Private = hidden from non-participants AND
+      // closed to new joins (server-side); public/friends = visible per
+      // the visibilityWhereClause rules. /visibility now accepts
+      // 'private' and atomically flips closed_to_new_joins, so the
+      // client just calls setChallengeVisibility(choice) and trusts the
+      // returned state.
       if ((challenge.visibility ?? 'public') !== choice) {
         setVisBusy(true)
         await setChallengeVisibility(id, choice)
-        setChallenge(prev => prev ? { ...prev, visibility: choice } : prev)
+        setChallenge(prev => prev
+          ? {
+              ...prev,
+              visibility: choice,
+              closed_to_new_joins: choice === 'private' ? true : prev.closed_to_new_joins,
+            }
+          : prev)
         loadChallenge()
         setVisBusy(false)
       }

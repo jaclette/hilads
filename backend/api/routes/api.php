@@ -8138,12 +8138,17 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kic
 });
 
 // POST /api/v1/challenges/{challengeId}/visibility
-// Creator-only flip between 'public' and 'friends'. 'private' is NOT
-// reachable here — that's the mutual go-private flow (kept in the
-// privacy_requests endpoints) and refusing here keeps the simple pill
-// inline on the detail page from gaining hidden states. International
-// rows are forced 'public' regardless (the repo's setVisibility refuses
-// to write a non-public value on mode='international').
+// Creator-only flip between 'public', 'friends', and 'private'.
+// International rows are forced 'public' regardless (the repo's
+// setVisibility refuses to write a non-public value on
+// mode='international').
+//
+// Flipping TO 'private' also closes the challenge to new joins in the
+// same transaction — private logically means "no random spectators",
+// and the existing visibilityWhereClause already hides the row from
+// non-creator/non-acceptor viewers. Flipping AWAY from private leaves
+// closed_to_new_joins alone; the creator can re-open joins explicitly
+// from the close-to-new-joins endpoint.
 $router->add('POST', '/api/v1/challenges/{challengeId}/visibility', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -8164,14 +8169,27 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/visibility', function (ar
 
     $body = Request::json();
     $viz  = is_array($body) ? ($body['visibility'] ?? null) : null;
-    if (!in_array($viz, ['public', 'friends'], true)) {
+    if (!in_array($viz, ['public', 'friends', 'private'], true)) {
         Response::json([
-            'error' => "visibility must be 'public' or 'friends'",
+            'error' => "visibility must be 'public', 'friends', or 'private'",
             'code'  => 'invalid_visibility',
         ], 400);
     }
     ChallengeRepository::setVisibility($challengeId, $viz);
-    Response::json(['ok' => true, 'visibility' => $viz]);
+
+    // Going private → also close to new joins. Read gates already hide
+    // the row from non-participants; closing joins blocks anyone who
+    // happens to know the link from registering as a spectator.
+    $closedNow = (bool) ($challenge['closed_to_new_joins'] ?? false);
+    if ($viz === 'private' && !$closedNow) {
+        Database::pdo()->prepare("
+            UPDATE channel_challenges SET closed_to_new_joins = TRUE, updated_at = now()
+            WHERE channel_id = ?
+        ")->execute([$challengeId]);
+        $closedNow = true;
+    }
+
+    Response::json(['ok' => true, 'visibility' => $viz, 'closed_to_new_joins' => $closedNow]);
 });
 
 // POST /api/v1/challenges/{challengeId}/close-to-new-joins

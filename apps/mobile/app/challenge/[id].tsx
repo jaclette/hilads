@@ -342,25 +342,27 @@ export default function ChallengeChatScreen() {
     if (visBusy || closeBusy || !challenge) return;
     setVisMenuOpen(false);
     try {
-      if (choice === 'private') {
-        if (!challenge.closed_to_new_joins) {
-          setCloseBusy(true);
-          await setChallengeCloseToJoins(id, true);
-          setChallenge(prev => prev ? { ...prev, closed_to_new_joins: true } : prev);
-          setCloseBusy(false);
-        }
-        return;
-      }
-      if (challenge.closed_to_new_joins) {
-        setCloseBusy(true);
-        await setChallengeCloseToJoins(id, false);
-        setChallenge(prev => prev ? { ...prev, closed_to_new_joins: false } : prev);
-        setCloseBusy(false);
-      }
+      // Picker is the single source of truth for "who can see this and
+      // who can still join". Private = hidden from non-participants AND
+      // closed to new joins; public/friends = visible per the
+      // visibilityWhereClause rules. The visibility endpoint now accepts
+      // 'private' and also flips closed_to_new_joins server-side, so the
+      // client just calls setChallengeVisibility(choice) and trusts the
+      // returned state.
       if ((challenge.visibility ?? 'public') !== choice) {
         setVisBusy(true);
         await setChallengeVisibility(id, choice);
-        setChallenge(prev => prev ? { ...prev, visibility: choice } : prev);
+        setChallenge(prev => prev
+          ? {
+              ...prev,
+              visibility: choice,
+              // Going private closes joins on the server; reflect that
+              // immediately so the joins toggle below the pill stays
+              // consistent without waiting for a refetch.
+              closed_to_new_joins: choice === 'private' ? true : prev.closed_to_new_joins,
+            }
+          : prev,
+        );
         setVisBusy(false);
       }
     } catch {

@@ -607,9 +607,9 @@ export async function kickChallengeParticipant(challengeId: string, userId: stri
 
 export async function setChallengeVisibility(
   challengeId: string,
-  visibility: 'public' | 'friends',
-): Promise<{ ok: boolean; visibility: 'public' | 'friends' }> {
-  return api.post<{ ok: boolean; visibility: 'public' | 'friends' }>(
+  visibility: 'public' | 'friends' | 'private',
+): Promise<{ ok: boolean; visibility: 'public' | 'friends' | 'private'; closed_to_new_joins?: boolean }> {
+  return api.post<{ ok: boolean; visibility: 'public' | 'friends' | 'private'; closed_to_new_joins?: boolean }>(
     `/challenges/${challengeId}/visibility`,
     { visibility },
   );
