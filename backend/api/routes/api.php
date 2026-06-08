@@ -10408,7 +10408,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
     $authUser = AuthService::requireAuth();
     $callerId = $authUser['id'];
 
-    $scope  = in_array($_GET['scope']  ?? '', ['city', 'world'],   true) ? $_GET['scope']  : 'city';
+    $scope  = in_array($_GET['scope']  ?? '', ['city', 'world', 'cities'], true) ? $_GET['scope']  : 'city';
     $period = in_array($_GET['period'] ?? '', ['month', 'alltime'], true) ? $_GET['period'] : 'month';
 
     $limit  = (int) ($_GET['limit']  ?? 50);
@@ -10522,6 +10522,133 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 $myRank = (int) $me2->fetchColumn();
             }
         }
+    } elseif ($scope === 'cities') {
+        // Cities leaderboard — rank cities by the SUM of their members'
+        // scores. Each city's total is the sum of users.score_alltime (or
+        // score_month) of every user whose current_city_id resolves to
+        // that city, restricted to users with > 0 points so dormant
+        // accounts don't pad the total. Same join shape as the world
+        // query for city name + country flag.
+        if ($period === 'alltime') {
+            $list = $pdo->prepare("
+                SELECT u.current_city_id AS city_id,
+                       SUM(u.score_alltime) AS points,
+                       COUNT(*) AS user_count,
+                       city_ch.name AS city_name,
+                       city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at      IS NULL
+                  AND u.current_city_id IS NOT NULL
+                  AND u.score_alltime   > 0
+                GROUP BY u.current_city_id, city_ch.name, city_meta.country
+                HAVING SUM(u.score_alltime) > 0
+                ORDER BY SUM(u.score_alltime) DESC, u.current_city_id ASC
+                LIMIT :limit OFFSET :offset
+            ");
+            $list->execute([':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            // "Me" on the cities tab = the caller's city's rank. Surface
+            // it the same way (the row already appears in the list, but
+            // the pinned variant carries the user out to it when ranked
+            // outside the page).
+            $me = $pdo->prepare("
+                SELECT u.current_city_id, u.score_alltime
+                FROM users u WHERE u.id = ?
+            ");
+            $me->execute([$callerId]);
+            $r = $me->fetch(\PDO::FETCH_ASSOC);
+            $myCityId = $r['current_city_id'] ?? null;
+            if ($myCityId) {
+                $tot = $pdo->prepare("
+                    SELECT COALESCE(SUM(score_alltime), 0) AS total
+                    FROM users
+                    WHERE current_city_id = :city
+                      AND deleted_at      IS NULL
+                      AND score_alltime   > 0
+                ");
+                $tot->execute([':city' => $myCityId]);
+                $myPoints = (int) $tot->fetchColumn();
+
+                if ($myPoints > 0) {
+                    $rk = $pdo->prepare("
+                        WITH city_totals AS (
+                            SELECT current_city_id, SUM(score_alltime) AS pts
+                            FROM users
+                            WHERE deleted_at      IS NULL
+                              AND current_city_id IS NOT NULL
+                              AND score_alltime   > 0
+                            GROUP BY current_city_id
+                            HAVING SUM(score_alltime) > 0
+                        )
+                        SELECT COUNT(*) + 1 FROM city_totals WHERE pts > :mine
+                    ");
+                    $rk->execute([':mine' => $myPoints]);
+                    $myRank = (int) $rk->fetchColumn();
+                }
+            }
+        } else {
+            $list = $pdo->prepare("
+                SELECT u.current_city_id AS city_id,
+                       SUM(u.score_month) AS points,
+                       COUNT(*) AS user_count,
+                       city_ch.name AS city_name,
+                       city_meta.country AS city_country
+                FROM users u
+                LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
+                LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                WHERE u.deleted_at      IS NULL
+                  AND u.current_city_id IS NOT NULL
+                  AND u.score_month_ref = :month
+                  AND u.score_month     > 0
+                GROUP BY u.current_city_id, city_ch.name, city_meta.country
+                HAVING SUM(u.score_month) > 0
+                ORDER BY SUM(u.score_month) DESC, u.current_city_id ASC
+                LIMIT :limit OFFSET :offset
+            ");
+            $list->execute([':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
+            $listRows = $list->fetchAll(\PDO::FETCH_ASSOC);
+
+            $me = $pdo->prepare("
+                SELECT u.current_city_id
+                FROM users u WHERE u.id = ?
+            ");
+            $me->execute([$callerId]);
+            $r = $me->fetch(\PDO::FETCH_ASSOC);
+            $myCityId = $r['current_city_id'] ?? null;
+            if ($myCityId) {
+                $tot = $pdo->prepare("
+                    SELECT COALESCE(SUM(score_month), 0) AS total
+                    FROM users
+                    WHERE current_city_id = :city
+                      AND deleted_at      IS NULL
+                      AND score_month_ref = :month
+                      AND score_month     > 0
+                ");
+                $tot->execute([':city' => $myCityId, ':month' => $currentMonth]);
+                $myPoints = (int) $tot->fetchColumn();
+
+                if ($myPoints > 0) {
+                    $rk = $pdo->prepare("
+                        WITH city_totals AS (
+                            SELECT current_city_id, SUM(score_month) AS pts
+                            FROM users
+                            WHERE deleted_at      IS NULL
+                              AND current_city_id IS NOT NULL
+                              AND score_month_ref = :month
+                              AND score_month     > 0
+                            GROUP BY current_city_id
+                            HAVING SUM(score_month) > 0
+                        )
+                        SELECT COUNT(*) + 1 FROM city_totals WHERE pts > :mine
+                    ");
+                    $rk->execute([':month' => $currentMonth, ':mine' => $myPoints]);
+                    $myRank = (int) $rk->fetchColumn();
+                }
+            }
+        }
     } else {
         // City leaderboard — scoped by the USER's home city (the geolocated
         // current_city_id), NOT by score_events.city_id. A user appears on a
@@ -10615,18 +10742,34 @@ $router->add('GET', '/api/v1/leaderboard', function () {
 
     $entries = [];
     foreach ($listRows as $i => $r) {
-        $entries[] = [
-            'rank'           => $offset + $i + 1,
-            'user_id'        => $r['id'],
-            'displayName'    => $r['display_name'],
-            'thumbAvatarUrl' => $r['profile_thumb_photo_url'],
-            'points'         => (int) $r['points'],
-            // PR13: city + country for world-scope rendering. Null when the
-            // user has no current_city_id set yet (rare). UI only renders
-            // the pill on scope='world'; city scope hides it as redundant.
-            'cityName'       => $r['city_name']    ?? null,
-            'cityCountry'    => $r['city_country'] ?? null,
-        ];
+        if ($scope === 'cities') {
+            // Cities-scope rows describe a city, not a user. Same `rank`
+            // + `points` + `cityName/cityCountry` keys as the user rows so
+            // the frontend can share the basic row shape; user_id / avatar
+            // are intentionally omitted (the row renders the flag + city
+            // name instead).
+            $entries[] = [
+                'rank'        => $offset + $i + 1,
+                'city_id'     => $r['city_id']      ?? null,
+                'cityName'    => $r['city_name']    ?? null,
+                'cityCountry' => $r['city_country'] ?? null,
+                'userCount'   => (int) ($r['user_count'] ?? 0),
+                'points'      => (int) $r['points'],
+            ];
+        } else {
+            $entries[] = [
+                'rank'           => $offset + $i + 1,
+                'user_id'        => $r['id'],
+                'displayName'    => $r['display_name'],
+                'thumbAvatarUrl' => $r['profile_thumb_photo_url'],
+                'points'         => (int) $r['points'],
+                // PR13: city + country for world-scope rendering. Null when the
+                // user has no current_city_id set yet (rare). UI only renders
+                // the pill on scope='world'; city scope hides it as redundant.
+                'cityName'       => $r['city_name']    ?? null,
+                'cityCountry'    => $r['city_country'] ?? null,
+            ];
+        }
     }
 
     Response::json([

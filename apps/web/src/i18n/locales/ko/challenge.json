@@ -426,7 +426,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "세계"
+      "world": "세계",
+      "cities": "도시"
     },
     "period": {
       "month": "이번 달",

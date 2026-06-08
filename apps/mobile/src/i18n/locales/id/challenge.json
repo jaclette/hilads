@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "Dunia"
+      "world": "Dunia",
+      "cities": "Kota"
     },
     "period": {
       "month": "Bulan ini",

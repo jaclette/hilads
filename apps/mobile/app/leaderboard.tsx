@@ -142,17 +142,23 @@ export default function LeaderboardScreen() {
       ) : (
         <FlatList
           data={entries}
-          keyExtractor={(e) => e.user_id}
+          // Cities-scope rows have no user_id; fall back to city_id + rank.
+          // User rows always have user_id.
+          keyExtractor={(e) => e.user_id ?? e.city_id ?? `r${e.rank}`}
           contentContainerStyle={styles.list}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
           renderItem={({ item }) => {
+            if (scope === 'cities') {
+              const isMyCity = !!city?.channelId && item.city_id === `city_${city.channelId}`;
+              return <CityRow entry={item} isMe={isMyCity} t={t} />;
+            }
             const isMeRow = item.user_id === me?.user_id;
             return (
               <Row
                 entry={item}
                 isMe={isMeRow}
                 showCity={scope === 'world'}
-                onPress={() => handleRowPress(item.user_id, isMeRow)}
+                onPress={() => handleRowPress(item.user_id ?? '', isMeRow)}
                 t={t}
               />
             );
@@ -161,10 +167,25 @@ export default function LeaderboardScreen() {
         />
       )}
 
-      {/* Pinned caller row — only when not already visible in the page. */}
+      {/* Pinned caller row — only when not already visible in the page.
+          On the cities scope, the pinned row is the caller's CITY (not the
+          caller themselves), so spectators see where their home city sits
+          in the cup. */}
       {me && !meInPage && (
         <View style={styles.pinnedWrap}>
-          {me.rank !== null ? (
+          {me.rank !== null && scope === 'cities' ? (
+            <CityRow
+              entry={{
+                rank:        me.rank,
+                city_id:     city?.channelId ? `city_${city.channelId}` : undefined,
+                cityName:    city?.name    ?? null,
+                cityCountry: city?.country ?? null,
+                points:      me.points,
+              }}
+              isMe
+              t={t}
+            />
+          ) : me.rank !== null ? (
             <Row
               entry={{
                 rank:           me.rank,
@@ -256,12 +277,13 @@ function Selectors({
   onCityTap?: () => void;
   t: (k: string) => string;
 }) {
-  // Primary toggle (city ⇄ world) — custom layout instead of the generic
-  // Segmented because the city pill carries a chevron when active to signal
-  // it's tappable (opens the picker).
-  const cityActive  = scope === 'city';
-  const worldActive = scope === 'world';
-  const cityFlag    = cityCountry ? countryToFlag(cityCountry) : '';
+  // Primary toggle (city ⇄ world ⇄ cities) — custom layout instead of the
+  // generic Segmented because the city pill carries a chevron when active
+  // to signal it's tappable (opens the picker).
+  const cityActive   = scope === 'city';
+  const worldActive  = scope === 'world';
+  const citiesActive = scope === 'cities';
+  const cityFlag     = cityCountry ? countryToFlag(cityCountry) : '';
   return (
     <View style={styles.selectorsWrap}>
       <View style={styles.segWrap}>
@@ -291,6 +313,29 @@ function Selectors({
               <Ionicons name="chevron-down" size={14} color={Colors.white} style={{ marginLeft: 4 }} />
             )}
           </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.segItem}
+          onPress={() => onScope('cities')}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityState={{ selected: citiesActive }}
+        >
+          {citiesActive && (
+            <LinearGradient
+              colors={Gradients.primary.colors}
+              start={Gradients.primary.start}
+              end={Gradients.primary.end}
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <Text
+            style={[styles.segText, citiesActive && styles.segTextActiveGradient]}
+            numberOfLines={1}
+          >
+            🏙️ {t('leaderboard.scope.cities')}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -404,7 +449,7 @@ function Row({
       accessibilityLabel={entry.displayName}
     >
       <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
-      <View style={[styles.avatar, { backgroundColor: avatarColor(entry.user_id) }]}>
+      <View style={[styles.avatar, { backgroundColor: avatarColor(entry.user_id ?? entry.displayName ?? '?') }]}>
         {entry.thumbAvatarUrl ? (
           <Image
             source={{ uri: entry.thumbAvatarUrl }}
@@ -431,6 +476,38 @@ function Row({
         {t('leaderboard.points', { points: entry.points })}
       </Text>
     </TouchableOpacity>
+  );
+}
+
+// ── Cities-scope row ─────────────────────────────────────────────────────────
+// A single row of the "Cities" tab: flag + city name + sum of all member
+// scores. No avatar, no tap (cities don't have profiles). The user's home
+// city gets the same orange highlight as the user-row "isMe" treatment so
+// they can scan to where they sit in the cup.
+function CityRow({
+  entry, isMe, t,
+}: {
+  entry: LeaderboardEntry;
+  isMe:  boolean;
+  t: (k: string, opts?: Record<string, unknown>) => string;
+}) {
+  const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
+  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '—';
+  return (
+    <View style={[styles.row, isMe && styles.rowMe]}>
+      <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
+      <View style={styles.cityFlagBox}>
+        <Text style={styles.cityFlagText}>{flag || '🏳️'}</Text>
+      </View>
+      <View style={styles.nameWrap}>
+        <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
+          {cityLabel}
+        </Text>
+      </View>
+      <Text style={[styles.points, isMe && styles.pointsMe]}>
+        {t('leaderboard.points', { points: entry.points })}
+      </Text>
+    </View>
   );
 }
 
@@ -505,6 +582,14 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 16 },
+  // Cities-scope: a flag glyph slots into the avatar position. Same 40×40
+  // footprint so the row geometry doesn't drift between scopes.
+  cityFlagBox: {
+    width: 40, height: 40, borderRadius: 20,
+    alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255,0.04)',
+  },
+  cityFlagText: { fontSize: 22, lineHeight: 26 },
   // PR13 — wrapper allowing the city subtitle to stack under the displayName.
   // Replaces the previous direct `name` flex layout when showCity is on.
   nameWrap: { flex: 1, minWidth: 0, gap: 1 },

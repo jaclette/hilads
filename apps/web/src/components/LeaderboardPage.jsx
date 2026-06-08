@@ -110,6 +110,13 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           </button>
           <button
             type="button"
+            className={`leaderboard-seg-item${scope === 'cities' ? ' is-active' : ''}`}
+            onClick={() => setScope('cities')}
+          >
+            <span aria-hidden="true">🏙️ </span>{t('leaderboard.scope.cities')}
+          </button>
+          <button
+            type="button"
             className={`leaderboard-seg-item${scope === 'world' ? ' is-active' : ''}`}
             onClick={() => setScope('world')}
           >
@@ -150,24 +157,51 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           </div>
         ) : (
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-            {entries.map(e => (
-              <LeaderboardRow
-                key={e.user_id}
-                entry={e}
-                isMe={e.user_id === me?.user_id}
-                showCity={scope === 'world'}
-                onPress={onOpenProfile ? () => onOpenProfile(e.user_id, e.displayName) : undefined}
-                t={t}
-              />
-            ))}
+            {entries.map(e => {
+              if (scope === 'cities') {
+                const myCityId = cityChannelId ? `city_${cityChannelId}` : null
+                return (
+                  <LeaderboardCityRow
+                    key={e.city_id ?? `r${e.rank}`}
+                    entry={e}
+                    isMe={!!myCityId && e.city_id === myCityId}
+                    t={t}
+                  />
+                )
+              }
+              return (
+                <LeaderboardRow
+                  key={e.user_id}
+                  entry={e}
+                  isMe={e.user_id === me?.user_id}
+                  showCity={scope === 'world'}
+                  onPress={onOpenProfile ? () => onOpenProfile(e.user_id, e.displayName) : undefined}
+                  t={t}
+                />
+              )
+            })}
           </ul>
         )}
       </div>
 
-      {/* Pinned caller row — only when not already in the visible page. */}
+      {/* Pinned caller row — only when not already in the visible page.
+          Cities scope shows the caller's CITY pinned (the city ranking
+          the user belongs to), not the caller themselves. */}
       {me && !meInPage && (
         <div className="leaderboard-pinned">
-          {me.rank !== null ? (
+          {me.rank !== null && scope === 'cities' ? (
+            <LeaderboardCityRow
+              entry={{
+                rank:        me.rank,
+                city_id:     cityChannelId ? `city_${cityChannelId}` : undefined,
+                cityName:    city?.name    ?? null,
+                cityCountry: city?.country ?? null,
+                points:      me.points,
+              }}
+              isMe
+              t={t}
+            />
+          ) : me.rank !== null ? (
             <LeaderboardRow
               entry={{
                 rank:           me.rank,
@@ -252,6 +286,26 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
             {cityLabel && <span className="leaderboard-city-name">{cityLabel}</span>}
           </span>
         )}
+      </span>
+      <span className="leaderboard-points">
+        {t('leaderboard.points', { points: entry.points })}
+      </span>
+    </li>
+  )
+}
+
+// Cities-scope row — flag + city name + sum of every member's points.
+// No avatar (cities don't have one); the flag fills the avatar slot at
+// the same 40px footprint so the row geometry matches the user rows.
+function LeaderboardCityRow({ entry, isMe, t }) {
+  const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
+  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '—'
+  return (
+    <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
+      <span className="leaderboard-rank">#{entry.rank}</span>
+      <span className="leaderboard-city-flag" aria-hidden="true">{flag || '🏳️'}</span>
+      <span className="leaderboard-name-block">
+        <span className="leaderboard-name">{cityLabel}</span>
       </span>
       <span className="leaderboard-points">
         {t('leaderboard.points', { points: entry.points })}

@@ -426,7 +426,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "Mondo"
+      "world": "Mondo",
+      "cities": "Città"
     },
     "period": {
       "month": "Questo mese",

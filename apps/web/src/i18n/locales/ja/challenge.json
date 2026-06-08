@@ -426,7 +426,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "世界"
+      "world": "世界",
+      "cities": "都市"
     },
     "period": {
       "month": "今月",

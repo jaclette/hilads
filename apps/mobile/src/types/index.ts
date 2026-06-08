@@ -163,21 +163,29 @@ export interface ChallengeThreadSummary {
 // in case an older API build returns it. `in_progress` is the new code.
 export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress';
 
-/** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard. */
-export type LeaderboardScope  = 'city' | 'world';
+/** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard.
+ *  'cities' ranks cities themselves (sum of their members' points), not users. */
+export type LeaderboardScope  = 'city' | 'world' | 'cities';
 export type LeaderboardPeriod = 'month' | 'alltime';
 
-/** One row of the leaderboard list. */
+/** One row of the leaderboard list. Shape depends on scope:
+ *  - 'city' / 'world' rows have user_id + displayName + thumbAvatarUrl.
+ *  - 'cities' rows omit those and carry city_id + userCount instead.
+ *  cityName / cityCountry / points are common. */
 export interface LeaderboardEntry {
   rank:           number;
-  user_id:        string;
-  displayName:    string;
-  thumbAvatarUrl: string | null;
+  // User row (city / world scope)
+  user_id?:       string;
+  displayName?:   string;
+  thumbAvatarUrl?: string | null;
+  // City row (cities scope)
+  city_id?:       string;
+  userCount?:     number;
+  // Common
   points:         number;
-  /** PR13 — caller's city + ISO country (e.g. "VN"). World-scope rendering
-   *  uses this to show a flag pill next to the displayName; city scope hides
-   *  it (everyone in the list is in the same city). Null if the user has no
-   *  current_city_id set. */
+  /** PR13 — caller's city + ISO country (e.g. "VN"). On world-scope user rows
+   *  it pills next to the displayName; city scope hides it (everyone shares
+   *  the same city). On cities-scope rows it IS the row (flag + city name). */
   cityName?:      string | null;
   cityCountry?:   string | null;
 }

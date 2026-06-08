@@ -834,6 +834,20 @@ html, body, #root {
 .leaderboard-row.is-me {
   background: rgba(255, 122, 60, 0.08);
 }
+/* Cities-scope flag — drops into the avatar slot at the same 40×40 footprint
+   so the row geometry stays identical to the user rows. */
+.leaderboard-city-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 .leaderboard-row--tappable {
   cursor: pointer;
   transition: background 120ms ease;

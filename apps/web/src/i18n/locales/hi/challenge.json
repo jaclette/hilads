@@ -426,7 +426,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "दुनिया"
+      "world": "दुनिया",
+      "cities": "शहर"
     },
     "period": {
       "month": "इस महीने",

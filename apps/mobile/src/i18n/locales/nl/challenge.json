@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "Wereld"
+      "world": "Wereld",
+      "cities": "Steden"
     },
     "period": {
       "month": "Deze maand",

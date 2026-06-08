@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "ทั่วโลก"
+      "world": "ทั่วโลก",
+      "cities": "เมือง"
     },
     "period": {
       "month": "เดือนนี้",

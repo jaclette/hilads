@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "Mundo"
+      "world": "Mundo",
+      "cities": "Ciudades"
     },
     "period": {
       "month": "Este mes",

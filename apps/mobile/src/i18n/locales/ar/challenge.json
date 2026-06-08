@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "العالم"
+      "world": "العالم",
+      "cities": "المدن"
     },
     "period": {
       "month": "هذا الشهر",

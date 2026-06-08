@@ -426,7 +426,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "全球"
+      "world": "全球",
+      "cities": "城市"
     },
     "period": {
       "month": "本月",

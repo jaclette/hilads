@@ -430,7 +430,8 @@
     },
     "scope": {
       "city": "My city",
-      "world": "World"
+      "world": "World",
+      "cities": "Mga lungsod"
     },
     "period": {
       "month": "Ngayong buwan",
