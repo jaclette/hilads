@@ -43,8 +43,12 @@ export default function LeaderboardCityPickerModal({
     setLoading(true)
     ;(async () => {
       try {
+        // Web's fetchChannels returns the raw envelope `{ channels: [...] }`,
+        // NOT a bare array. Unwrap so `.slice()` in the useMemo below sees an
+        // array (same lesson CreateChallengePage learned — "o.slice is not a
+        // function the moment the picker opened").
         const list = await fetchChannels()
-        if (!cancelled) setCities(list || [])
+        if (!cancelled) setCities(Array.isArray(list?.channels) ? list.channels : [])
       } catch {
         if (!cancelled) setCities([])
       } finally {
