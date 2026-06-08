@@ -11835,6 +11835,89 @@ body.has-app-promo-banner .page-header {
   .challenge-versus-taker-enter { animation: none !important; }
 }
 
+/* ── Rank badge (Top 10 + podium Top 3) ─────────────────────────────────
+   Decorative disc that floats astride the top-edge of an avatar. Tier 1
+   uses gold/silver/bronze gradients with a soft sheen; tier 2 is a sober
+   dark pill with an accent-orange border. Both tilt -10° for the pinned-
+   medal effect.
+
+   The badge is rendered absolutely-positioned by the parent versus card
+   (.challenge-versus-rank-anchor) — these rules define the disc itself,
+   independent of where it lives. */
+.rank-badge {
+  display:          inline-flex;
+  align-items:      center;
+  justify-content:  center;
+  position:         relative;
+  overflow:         hidden;
+  transform:        rotate(-10deg);
+  box-shadow:       0 1px 3px rgba(0, 0, 0, 0.35);
+  user-select:      none;
+  pointer-events:   none;
+  font-weight:      900;
+  letter-spacing:   -0.5px;
+  line-height:      1;
+}
+
+/* Tier 1 — podium. Gradient stops aligned with the universally-read
+   gold/silver/bronze palette so users don't need to learn a new
+   vocabulary. End stop slightly darker than start so the disc reads
+   as 3D. Number colour is a dark tint of the same hue so it stays
+   legible against the metal. */
+.rank-badge--podium-1 {
+  background: linear-gradient(155deg, #FFE17A 0%, #C8A02E 100%);
+}
+.rank-badge--podium-1 .rank-badge-number { color: #3B2F00; }
+
+.rank-badge--podium-2 {
+  background: linear-gradient(155deg, #E9E9E9 0%, #9C9C9C 100%);
+}
+.rank-badge--podium-2 .rank-badge-number { color: #2A2A2A; }
+
+.rank-badge--podium-3 {
+  background: linear-gradient(155deg, #E0A36F 0%, #8B5A33 100%);
+}
+.rank-badge--podium-3 .rank-badge-number { color: #3A1F0A; }
+
+/* Top-left highlight on podium discs — a near-white slice that reads
+   as a specular reflection on the metal. Pure decoration. */
+.rank-badge-sheen {
+  position:     absolute;
+  background:   rgba(255, 255, 255, 0.55);
+  pointer-events: none;
+}
+
+/* Tier 2 — neutral pill. Dark surface + accent-orange thin border, no
+   gradient, no glow. Intentionally one tier "down" from the podium so
+   the eye reads the hierarchy at a glance. */
+.rank-badge--neutral {
+  background:   var(--surface, #161210);
+  border:       1.5px solid rgba(255, 122, 60, 0.65);
+}
+.rank-badge--neutral .rank-badge-number { color: #fff; }
+
+.rank-badge-number {
+  position: relative;  /* sits above the sheen */
+  z-index:  1;
+}
+
+/* Anchor that positions the badge over the top-left of an avatar.
+   Bottom-right is reserved for the flag overlay so the two never
+   overlap; the slight negative inset makes it read as pinned to the
+   avatar rather than stuck in the corner. */
+.challenge-versus-rank-anchor {
+  position: absolute;
+  top:      -8px;
+  left:     -6px;
+  z-index:  2;
+}
+/* Avatar slot needs a relative positioning context so the anchor
+   above can absolutely-position against it. */
+.challenge-versus-avatar-stack {
+  position: relative;
+  display:  inline-block;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge detail - large type emoji in the header, creator/participants
    split, with brand-orange Challenger pill. Built on top of the

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import AttendeeAvatars from './AttendeeAvatars'
 import AvatarWithFlag from './AvatarWithFlag'
 import OpenChallengeSlot from './OpenChallengeSlot'
+import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
 
 /**
@@ -48,6 +49,16 @@ export default function ChallengeVersusCard({
   // already carries the international signal).
   const challengerCountry = isInternational ? (c.country          ?? null) : null
   const takerCountry      = isInternational ? (c.acceptor_country ?? null) : null
+
+  // Rank scope follows challenge mode: local → in_city, international
+  // → worldwide. Backend already applies the score_month_ref staleness
+  // guard so we just read whatever's there and pass through.
+  const challengerRank = isInternational
+    ? c.creator_monthly_rank_worldwide
+    : c.creator_monthly_rank_in_city
+  const takerRank = isInternational
+    ? c.acceptor_monthly_rank_worldwide
+    : c.acceptor_monthly_rank_in_city
 
   // Stop the avatar's onClick from also triggering the card's onClick.
   // React event bubbling, not CSS pointer-events — keeps focus/keyboard
@@ -105,30 +116,40 @@ export default function ChallengeVersusCard({
       </div>
 
       {/* Versus row — the hero of the card. Fixed-height; arrow / trophy
-          in the middle is decorative. */}
+          in the middle is decorative. Each avatar slot is its own
+          positioning context (.challenge-versus-avatar-stack) so the
+          rank badge can absolute-anchor on top-left without leaking
+          beyond its own avatar. */}
       <div className="challenge-versus-row">
-        {onAvatarClick && c.created_by ? (
-          <button
-            type="button"
-            className="challenge-versus-avatar-btn"
-            onClick={handleAvatarClick(c.created_by)}
-            aria-label={c.creator_display_name ?? ''}
-          >
+        <span className="challenge-versus-avatar-stack">
+          {onAvatarClick && c.created_by ? (
+            <button
+              type="button"
+              className="challenge-versus-avatar-btn"
+              onClick={handleAvatarClick(c.created_by)}
+              aria-label={c.creator_display_name ?? ''}
+            >
+              <AvatarWithFlag
+                userId={c.created_by}
+                displayName={c.creator_display_name ?? '?'}
+                photoUrl={c.creator_thumb_avatar_url}
+                countryCode={challengerCountry}
+              />
+            </button>
+          ) : (
             <AvatarWithFlag
               userId={c.created_by}
               displayName={c.creator_display_name ?? '?'}
               photoUrl={c.creator_thumb_avatar_url}
               countryCode={challengerCountry}
             />
-          </button>
-        ) : (
-          <AvatarWithFlag
-            userId={c.created_by}
-            displayName={c.creator_display_name ?? '?'}
-            photoUrl={c.creator_thumb_avatar_url}
-            countryCode={challengerCountry}
-          />
-        )}
+          )}
+          {challengerRank != null && (
+            <span className="challenge-versus-rank-anchor">
+              <RankBadge rank={challengerRank} ariaLabel={t('card.rankBadge', { rank: challengerRank, defaultValue: `Rank ${challengerRank}` })} />
+            </span>
+          )}
+        </span>
 
         <span className="challenge-versus-center" aria-hidden="true">
           {isValidated ? '🏆' : '→'}
@@ -138,7 +159,7 @@ export default function ChallengeVersusCard({
           // key on the acceptor_user_id so React unmounts + remounts when
           // a different taker lands (e.g. a fresh acceptance over WS),
           // retriggering the .challenge-versus-taker-enter animation.
-          <span key={c.acceptor_user_id} className="challenge-versus-taker-enter">
+          <span key={c.acceptor_user_id} className="challenge-versus-taker-enter challenge-versus-avatar-stack">
             {onAvatarClick && c.acceptor_user_id ? (
               <button
                 type="button"
@@ -160,6 +181,11 @@ export default function ChallengeVersusCard({
                 photoUrl={c.acceptor_thumb_avatar_url}
                 countryCode={takerCountry}
               />
+            )}
+            {takerRank != null && (
+              <span className="challenge-versus-rank-anchor">
+                <RankBadge rank={takerRank} ariaLabel={t('card.rankBadge', { rank: takerRank, defaultValue: `Rank ${takerRank}` })} />
+              </span>
             )}
           </span>
         ) : (
