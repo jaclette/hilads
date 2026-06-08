@@ -40,7 +40,9 @@
     "open": "เปิดรับ",
     "full": "เต็ม",
     "available": "ว่าง",
-    "inProgress": "กำลังทำ"
+    "inProgress": "กำลังทำ",
+    "takeIt": "รับมือ",
+    "takerLabel": "ผู้รับ"
   },
   "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
   "statusAccomplished": "ชาเลนจ์สำเร็จ",

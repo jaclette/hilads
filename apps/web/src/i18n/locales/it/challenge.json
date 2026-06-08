@@ -40,7 +40,9 @@
     "open": "Aperta",
     "full": "Completa",
     "available": "Disponibile",
-    "inProgress": "In corso"
+    "inProgress": "In corso",
+    "takeIt": "Ci sto",
+    "takerLabel": "Sfidato"
   },
   "statusInProgress": "Sfida in corso",
   "statusAccomplished": "Sfida vinta",

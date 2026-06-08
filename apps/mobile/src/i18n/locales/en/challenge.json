@@ -40,7 +40,9 @@
     "open": "Open",
     "full": "Full",
     "available": "Available",
-    "inProgress": "In progress"
+    "inProgress": "In progress",
+    "takeIt": "Take it on",
+    "takerLabel": "Taker"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",

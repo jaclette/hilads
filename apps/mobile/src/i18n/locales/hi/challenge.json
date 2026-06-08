@@ -40,7 +40,9 @@
     "open": "खुला",
     "full": "भरी",
     "available": "उपलब्ध",
-    "inProgress": "जारी"
+    "inProgress": "जारी",
+    "takeIt": "मैं लूंगा",
+    "takerLabel": "चुनौती लेने वाला"
   },
   "statusInProgress": "चुनौती जारी है",
   "statusAccomplished": "चुनौती पूरी की",

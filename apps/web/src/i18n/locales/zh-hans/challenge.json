@@ -40,7 +40,9 @@
     "open": "开放中",
     "full": "已满",
     "available": "可接受",
-    "inProgress": "进行中"
+    "inProgress": "进行中",
+    "takeIt": "我接受",
+    "takerLabel": "接战者"
   },
   "statusInProgress": "挑战进行中",
   "statusAccomplished": "挑战搞定",

@@ -40,7 +40,9 @@
     "open": "Ouvert",
     "full": "Complet",
     "available": "Disponible",
-    "inProgress": "En cours"
+    "inProgress": "En cours",
+    "takeIt": "Je le relève",
+    "takerLabel": "Preneur"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",

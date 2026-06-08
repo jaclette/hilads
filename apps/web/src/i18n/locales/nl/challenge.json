@@ -40,7 +40,9 @@
     "open": "Open",
     "full": "Vol",
     "available": "Beschikbaar",
-    "inProgress": "Bezig"
+    "inProgress": "Bezig",
+    "takeIt": "Ik doe mee",
+    "takerLabel": "Aannemer"
   },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",

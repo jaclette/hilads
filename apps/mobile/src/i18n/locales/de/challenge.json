@@ -40,7 +40,9 @@
     "open": "Offen",
     "full": "Voll",
     "available": "Frei",
-    "inProgress": "Aktiv"
+    "inProgress": "Aktiv",
+    "takeIt": "Annehmen",
+    "takerLabel": "Annehmer"
   },
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",

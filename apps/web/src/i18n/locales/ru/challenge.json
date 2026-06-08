@@ -40,7 +40,9 @@
     "open": "Открыт",
     "full": "Заполнен",
     "available": "Свободен",
-    "inProgress": "В процессе"
+    "inProgress": "В процессе",
+    "takeIt": "Принять",
+    "takerLabel": "Принимающий"
   },
   "statusInProgress": "Челлендж в процессе",
   "statusAccomplished": "Челлендж сделан",

@@ -40,7 +40,9 @@
     "open": "Abierto",
     "full": "Completo",
     "available": "Disponible",
-    "inProgress": "En curso"
+    "inProgress": "En curso",
+    "takeIt": "Lo acepto",
+    "takerLabel": "Receptor"
   },
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",

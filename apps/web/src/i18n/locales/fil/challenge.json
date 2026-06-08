@@ -40,7 +40,9 @@
     "open": "Bukas",
     "full": "Puno",
     "available": "Available",
-    "inProgress": "Ongoing"
+    "inProgress": "Ongoing",
+    "takeIt": "Tatanggapin ko",
+    "takerLabel": "Tagapagtanggap"
   },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",

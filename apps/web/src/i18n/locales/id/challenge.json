@@ -40,7 +40,9 @@
     "open": "Terbuka",
     "full": "Penuh",
     "available": "Tersedia",
-    "inProgress": "Berlangsung"
+    "inProgress": "Berlangsung",
+    "takeIt": "Saya terima",
+    "takerLabel": "Penerima"
   },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",

@@ -40,7 +40,9 @@
     "open": "Đang mở",
     "full": "Đã đầy",
     "available": "Còn trống",
-    "inProgress": "Đang diễn ra"
+    "inProgress": "Đang diễn ra",
+    "takeIt": "Nhận thử thách",
+    "takerLabel": "Người nhận"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
