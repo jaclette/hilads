@@ -1079,7 +1079,16 @@ export default function ChallengeChatScreen() {
         // "otherParticipants.length === 0" guard which kept a terminal user
         // (whose row is still in participants) locked at "Mission
         // accomplished" - the bug the user reported.
-        if (!isOwner && !isValidated && !challenge?.is_in_progress) {
+        //
+        // !activeAcceptance: server-side `is_in_progress` (IS_IN_PROGRESS_SQL)
+        // intentionally excludes 'pending' so the city feed reads "Available"
+        // while the creator is reviewing. On the DETAIL page that signal is
+        // wrong for the requester themselves — they already have an active
+        // pending acceptance, so re-rendering the Accept CTA is misleading
+        // (and previously surfaced as a half-clipped orange pill stuck under
+        // the members strip while the screen was waiting on the creator's
+        // response). Guard on the local truth instead.
+        if (!isOwner && !isValidated && !challenge?.is_in_progress && !activeAcceptance) {
           return (
             <View style={styles.participantsRow}>
               <TouchableOpacity
