@@ -188,6 +188,7 @@ function RootLayoutInner() {
             <Stack.Screen name="dm/[id]" />
             <Stack.Screen name="messages" />
             <Stack.Screen name="notifications" />
+            <Stack.Screen name="leaderboard" />
             <Stack.Screen
               name="debug"
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
