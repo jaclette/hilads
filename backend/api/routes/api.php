@@ -1790,7 +1790,8 @@ $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
     $total = (int) $countStmt->fetchColumn();
 
     $stmt = $pdo->prepare("
-        SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.created_at
+        SELECT u.id, u.display_name, u.profile_photo_url, u.profile_thumb_photo_url,
+               u.vibe, u.created_at
         FROM user_friends f
         JOIN users u ON u.id = f.friend_id AND u.deleted_at IS NULL
         WHERE f.user_id = :uid
@@ -3863,7 +3864,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     // no timestamp (home_city-backfilled rows when flag is on).
     // NOTE: both timestamp sources are TIMESTAMPTZ; u.created_at is INTEGER
     //       (Unix epoch). COALESCE requires matching types - cast to epoch.
-    $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.mode, u.created_at, u.home_city,
+    $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.profile_thumb_photo_url,
+                   u.vibe, u.mode, u.created_at, u.home_city,
                    $sortExpr AS sort_at
             FROM users u
             $baseJoin
