@@ -78,7 +78,8 @@ foreach ($rows as $row) {
     @unlink($tmpSrc);
     if ($tmpThumb === null) {
         $skipped++;
-        $errors[] = "user={$userId}: thumb generation failed";
+        $reason = ImageProcessor::$lastError ?? 'unknown';
+        $errors[] = "user={$userId}: {$reason}";
         continue;
     }
 

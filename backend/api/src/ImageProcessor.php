@@ -13,10 +13,18 @@ declare(strict_types=1);
 class ImageProcessor
 {
     /**
+     * Last failure reason from generateAvatarThumbnail(). Set on every
+     * null return so the caller can surface "why" without re-running
+     * the pipeline. Wiped to null at the start of each successful call.
+     */
+    public static ?string $lastError = null;
+
+    /**
      * Scale the source image down to ≤$maxDim px on its longest side
      * and re-encode as JPEG (quality $quality). Returns the path to a
      * temporary file on success, or null on any failure (missing GD,
-     * unsupported MIME, decoder error, encoder error).
+     * unsupported MIME, decoder error, encoder error). Inspect
+     * self::$lastError for the specific reason.
      *
      * Callers MUST unlink the returned path when done with it.
      *
@@ -29,12 +37,17 @@ class ImageProcessor
         int $maxDim = 400,
         int $quality = 80,
     ): ?string {
+        self::$lastError = null;
+
         if (!extension_loaded('gd')) {
+            self::$lastError = 'GD extension not loaded';
             return null;
         }
 
         $info = @getimagesize($srcPath);
         if (!$info || empty($info[0]) || empty($info[1])) {
+            $err = error_get_last()['message'] ?? 'unknown';
+            self::$lastError = "getimagesize failed: {$err}";
             return null;
         }
 
@@ -47,6 +60,12 @@ class ImageProcessor
             default      => null,
         };
         if (!$src) {
+            $err  = error_get_last()['message'] ?? 'unknown';
+            $size = filesize($srcPath) ?: 0;
+            self::$lastError = sprintf(
+                'imagecreatefrom* failed (mime=%s, dims=%dx%d, size=%d): %s',
+                $srcMime, $srcW, $srcH, $size, $err,
+            );
             return null;
         }
 
@@ -61,6 +80,7 @@ class ImageProcessor
         $dst = imagecreatetruecolor($newW, $newH);
         if (!$dst) {
             imagedestroy($src);
+            self::$lastError = "imagecreatetruecolor({$newW}x{$newH}) failed";
             return null;
         }
 
@@ -82,6 +102,7 @@ class ImageProcessor
 
         if (!$ok) {
             @unlink($tmpPath);
+            self::$lastError = 'imagejpeg encoder failed';
             return null;
         }
 
