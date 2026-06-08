@@ -11751,6 +11751,90 @@ body.has-app-promo-banner .page-header {
   color: #FF7A3C;
 }
 
+/* ── Versus layout (challenger ← arrow → taker / open slot) ───────────────
+   Fixed-height row so a card doesn't reflow when the right side flips
+   between the open-slot placeholder and a real avatar arriving via WS.
+   AVATAR_SIZE = 72 + 12px breathing room mirrors the native side. */
+.challenge-versus-row {
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  height:          84px;
+  padding:         0 4px;
+  margin:          2px 0;
+}
+.challenge-versus-center {
+  flex:           1;
+  display:        flex;
+  align-items:    center;
+  justify-content: center;
+  font-size:      28px;
+  line-height:    32px;
+  color:          var(--muted2, #8a7d75);
+  user-select:    none;
+  pointer-events: none;  /* arrow / trophy is decorative, not tappable */
+}
+/* Per-avatar tap target. Keeps the card's onClick from being overridden by
+   the avatar's own button — modern browsers stop propagation by default
+   when an inner button is clicked, no extra wiring needed. */
+.challenge-versus-avatar-btn {
+  background: transparent;
+  border:     none;
+  padding:    0;
+  cursor:     pointer;
+}
+
+/* ── Open challenge slot (state 1 + 3) ───────────────────────────────────
+   Dashed orange ring + centered + glyph. Pulses on a 2.4s loop; the
+   IntersectionObserver inside the React component toggles
+   animation-play-state to pause off-screen redraws. */
+.open-challenge-slot {
+  display:          inline-flex;
+  align-items:      center;
+  justify-content:  center;
+  background:       rgba(255, 122, 60, 0.05);
+  border:           2px dashed rgba(255, 122, 60, 0.45);
+  cursor:           pointer;
+  padding:          0;
+  animation:        open-slot-pulse 2.4s ease-in-out infinite;
+  /* The component sets animation-play-state inline based on viewport
+     intersection — declared here as the resting default. */
+  animation-play-state: running;
+}
+.open-challenge-slot:hover {
+  background:   rgba(255, 122, 60, 0.10);
+  border-color: rgba(255, 122, 60, 0.65);
+}
+.open-challenge-slot:active {
+  transform: scale(0.97);
+}
+.open-challenge-slot-plus {
+  color:       rgba(255, 122, 60, 0.70);
+  font-weight: 300;  /* thinner stroke reads as a glyph, not a button */
+}
+@keyframes open-slot-pulse {
+  0%, 100% { transform: scale(1.00); opacity: 0.85; }
+  50%      { transform: scale(1.05); opacity: 1.00; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .open-challenge-slot { animation: none !important; }
+}
+
+/* Fresh taker arrival — soft fade + scale on the right-side avatar when
+   a Challenge prop with acceptor_user_id changes. Component sets a key
+   on the wrapping element so React unmounts + remounts, retriggering
+   this entrance animation. */
+.challenge-versus-taker-enter {
+  animation: versus-taker-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes versus-taker-enter {
+  from { opacity: 0; transform: scale(0.85); }
+  to   { opacity: 1; transform: scale(1.00); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .challenge-versus-taker-enter { animation: none !important; }
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge detail - large type emoji in the header, creator/participants
    split, with brand-orange Challenger pill. Built on top of the

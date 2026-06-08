@@ -1,48 +1,73 @@
 import { useTranslation } from 'react-i18next'
 import AttendeeAvatars from './AttendeeAvatars'
+import AvatarWithFlag from './AvatarWithFlag'
+import OpenChallengeSlot from './OpenChallengeSlot'
 import { countryToFlag } from '../lib/countryFlag'
 
 /**
- * Web mirror of the mobile ChallengeVersusCard. This first commit extracts
- * the previous inline JSX block from App.jsx verbatim (same DOM, same
- * className surface, same i18n keys) so the versus-layout redesign can land
- * cleanly in a follow-up without mixing extraction noise with new logic.
+ * Versus-layout challenge card. Web mirror of the mobile
+ * ChallengeVersusCard.tsx: challenger avatar ← arrow → taker avatar
+ * (or open slot), badges + title + participants row underneath.
  *
- * Props mirror the inline block's closure:
- *   - challenge   — Challenge DTO (acceptor_* fields populated server-side
- *                   for the redesign; ignored in this extraction step)
- *   - onClick     — opens the challenge drawer in App.jsx
+ * Four states map 1-to-1 to the spec, same as native:
+ *   1. Available           — no taker → OpenChallengeSlot, pulses (paused
+ *                            off-screen via IntersectionObserver inside)
+ *   2. In Progress         — taker avatar fades + scales in (keyed on
+ *                            acceptor_user_id so a fresh WS acceptance
+ *                            re-triggers the entrance)
+ *   3. Pseudo-Available    — same visual as state 1
+ *   4. Validated           — both avatars stay, → becomes 🏆 (decorative,
+ *                            non-tappable per the spec)
  *
- * Until the redesign lands, this component renders an identical card to
- * the one users see today — the diff vs the extraction commit must be
- * "pure move", nothing else.
+ * Tap handling:
+ *   - card click            → opens the challenge channel (existing behaviour)
+ *   - open-slot click       → same destination; the accept CTA lives on
+ *                             the channel page along with its guest gate
+ *   - avatar click          → opens that user's profile (when onAvatarClick
+ *                             provided); decorative otherwise
+ *   - arrow / trophy        → pointer-events: none (decorative)
  */
-export default function ChallengeVersusCard({ challenge, onClick }) {
+export default function ChallengeVersusCard({
+  challenge,
+  onClick,
+  onAcceptClick,
+  onAvatarClick,
+}) {
   const { t } = useTranslation('challenge')
   const c = challenge
 
-  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
-  const audienceLabel = c.audience === 'locals' ? t('forLocals') : t('forExplorers')
-  const isValidated     = c.status === 'validated'
-  const isInternational = (c.mode ?? 'local') === 'international'
+  const typeIcon         = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
+  const audienceLabel    = c.audience === 'locals' ? t('forLocals') : t('forExplorers')
+  const isValidated      = c.status === 'validated'
+  const isInternational  = (c.mode ?? 'local') === 'international'
+  const hasTaker         = !!c.acceptor_user_id
+
+  // Country codes only flow into the avatar flag overlays when the
+  // challenge is international (per spec: local cards stay flag-free
+  // on the versus avatars; the inline 🇩🇪 → 🇻🇳 pill in the badge row
+  // already carries the international signal).
+  const challengerCountry = isInternational ? (c.country          ?? null) : null
+  const takerCountry      = isInternational ? (c.acceptor_country ?? null) : null
+
+  // Stop the avatar's onClick from also triggering the card's onClick.
+  // React event bubbling, not CSS pointer-events — keeps focus/keyboard
+  // behaviour intact (the inner button is still a real button).
+  const handleAvatarClick = (userId) => (e) => {
+    e.stopPropagation()
+    if (onAvatarClick && userId) onAvatarClick(userId)
+  }
 
   return (
     <button
+      type="button"
       className="city-row event-row-card challenge-row-card"
       style={{ cursor: 'pointer', textAlign: 'left' }}
       onClick={onClick}
     >
-      <div className="er-header">
-        <span className="er-title">{typeIcon} {c.title}</span>
-        <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`)}</span>
-      </div>
+      {/* Badge row — unchanged from the previous flat card. */}
       <div className="er-badges">
         {isInternational
           ? (() => {
-              // 🇩🇪 → 🇻🇳 when both countries are known. Falls back to "🌍"
-              // for the target when "anywhere" (no target_city_id) or
-              // unknown. Origin always has a country since challenges are
-              // created from a city.
               const fromFlag = countryToFlag(c.country)
               const toFlag   = countryToFlag(c.target_country) || '🌍'
               const label    = fromFlag
@@ -55,8 +80,6 @@ export default function ChallengeVersusCard({ challenge, onClick }) {
           : (
             <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
           )}
-        {/* Visibility badge — only renders for non-public rows so the
-            NOW card stays uncluttered on the common case. */}
         {(() => {
           const v = c.visibility ?? 'public'
           if (v === 'public') return null
@@ -80,6 +103,79 @@ export default function ChallengeVersusCard({ challenge, onClick }) {
           </span>
         )}
       </div>
+
+      {/* Versus row — the hero of the card. Fixed-height; arrow / trophy
+          in the middle is decorative. */}
+      <div className="challenge-versus-row">
+        {onAvatarClick && c.created_by ? (
+          <button
+            type="button"
+            className="challenge-versus-avatar-btn"
+            onClick={handleAvatarClick(c.created_by)}
+            aria-label={c.creator_display_name ?? ''}
+          >
+            <AvatarWithFlag
+              userId={c.created_by}
+              displayName={c.creator_display_name ?? '?'}
+              photoUrl={c.creator_thumb_avatar_url}
+              countryCode={challengerCountry}
+            />
+          </button>
+        ) : (
+          <AvatarWithFlag
+            userId={c.created_by}
+            displayName={c.creator_display_name ?? '?'}
+            photoUrl={c.creator_thumb_avatar_url}
+            countryCode={challengerCountry}
+          />
+        )}
+
+        <span className="challenge-versus-center" aria-hidden="true">
+          {isValidated ? '🏆' : '→'}
+        </span>
+
+        {hasTaker ? (
+          // key on the acceptor_user_id so React unmounts + remounts when
+          // a different taker lands (e.g. a fresh acceptance over WS),
+          // retriggering the .challenge-versus-taker-enter animation.
+          <span key={c.acceptor_user_id} className="challenge-versus-taker-enter">
+            {onAvatarClick && c.acceptor_user_id ? (
+              <button
+                type="button"
+                className="challenge-versus-avatar-btn"
+                onClick={handleAvatarClick(c.acceptor_user_id)}
+                aria-label={c.acceptor_display_name ?? ''}
+              >
+                <AvatarWithFlag
+                  userId={c.acceptor_user_id}
+                  displayName={c.acceptor_display_name ?? '?'}
+                  photoUrl={c.acceptor_thumb_avatar_url}
+                  countryCode={takerCountry}
+                />
+              </button>
+            ) : (
+              <AvatarWithFlag
+                userId={c.acceptor_user_id}
+                displayName={c.acceptor_display_name ?? '?'}
+                photoUrl={c.acceptor_thumb_avatar_url}
+                countryCode={takerCountry}
+              />
+            )}
+          </span>
+        ) : (
+          <OpenChallengeSlot
+            ariaLabel={t('card.takeIt', { defaultValue: 'Take it on' })}
+            onClick={onAcceptClick ? (e) => { e.stopPropagation(); onAcceptClick() } : undefined}
+          />
+        )}
+      </div>
+
+      {/* Title + type chip. */}
+      <div className="er-header">
+        <span className="er-title">{typeIcon} {c.title}</span>
+        <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`)}</span>
+      </div>
+
       {c.creator_display_name && (
         <span className="er-host">{t('byCreator', { name: c.creator_display_name })}</span>
       )}

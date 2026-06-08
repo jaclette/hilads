@@ -5086,6 +5086,11 @@ export default function App() {
                     key={c.id}
                     challenge={c}
                     onClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
+                    onAcceptClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
+                    onAvatarClick={(uid) => {
+                      setShowEventDrawer(false)
+                      openProfile(uid, '')
+                    }}
                   />
                 ))}
                 {/* "See all challenges" CTA on the All filter - switches the
