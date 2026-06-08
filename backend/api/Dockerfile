@@ -33,13 +33,22 @@ opcache.enable_cli=0" \
     docker-php-ext-enable opcache
 
 # ── System deps + PHP extensions ──────────────────────────────────────────────
+# GD with JPEG/PNG/WebP support powers avatar thumbnail generation
+# (ImageProcessor::generateAvatarThumbnail). Without GD every upload
+# falls through to the COALESCE fallback and the client loads the
+# full 1-3 MB original on every card.
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
     zip \
     libcurl4-openssl-dev \
     libpq-dev \
-    && docker-php-ext-install curl pdo_pgsql \
+    libpng-dev \
+    libjpeg-dev \
+    libwebp-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
+    && docker-php-ext-install curl pdo_pgsql gd \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
