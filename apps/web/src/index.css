@@ -13372,6 +13372,17 @@ body.has-app-promo-banner .page-header {
   letter-spacing: 0.2px;
 }
 
+/* Running total below the +X headline. Small + muted so it reads as
+   context, not the celebration itself. */
+.score-celebration-total {
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.2px;
+  text-align: center;
+}
+
 .score-celebration-subtitle {
   font-size: 15px;
   color: var(--muted2);

@@ -483,7 +483,9 @@
       "city": "อันดับ {{rank}} ใน {{city}}",
       "cityBeyond": "นอก Top {{topN}} ในเมืองของคุณ",
       "world": "อันดับ {{rank}} ของโลก",
-      "worldBeyond": "นอก Top {{topN}} ของโลก"
+      "worldBeyond": "นอก Top {{topN}} ของโลก",
+      "cities": "{{city}} อยู่อันดับที่ {{rank}} ในเมืองทั้งหมด",
+      "citiesBeyond": "{{city}} อยู่นอก {{topN}} อันดับเมือง"
     },
     "cta": "ลุย ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "ชาเลนจ์ที่ถูกลบ",
       "andMore": "และอีก {{count}} รายการ"
-    }
+    },
+    "total": "รวม: {{total}} แต้ม"
   }
 }

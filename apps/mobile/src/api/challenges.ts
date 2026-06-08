@@ -319,7 +319,7 @@ export interface ScoreCelebrationEvent {
 }
 
 export interface ScoreCelebration {
-  points:       number;                          // 0 = nothing to show
+  points:       number;                          // 0 = nothing to show — DELTA since last ack
   event_count?: number;
   top_kind?:    ScoreEventKind | null;
   events?:      ScoreCelebrationEvent[];         // newest first, capped server-side
@@ -329,8 +329,16 @@ export interface ScoreCelebration {
   city_name?:   string | null;
   city_country?: string | null;
   top_n?:       number;
+  // Cached personal totals AFTER the delta lands. `points` is the +X gained;
+  // these are "you now have N points" (alltime + this month).
+  total_alltime?: number;
+  total_month?:   number;
   rank_alltime?: { city: number | null; global: number | null };
   rank_month?:   { city: number | null; global: number | null };
+  // Caller's CITY's rank in the Cities cup (sum of all members' points per
+  // city). Distinct from rank_*.city which ranks the USER within that city.
+  city_rank_alltime?: number | null;
+  city_rank_month?:   number | null;
 }
 
 /** Pending celebration delta. Returns { points: 0 } when nothing to show. */

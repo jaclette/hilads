@@ -143,8 +143,16 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
   const topN         = data.top_n ?? 100;
   // Server returns null when the caller is outside the bounded top-N
   // window — we surface that as "100+" rather than a numeric rank.
-  const cityRank     = data.rank_month?.city   ?? data.rank_alltime?.city   ?? null;
-  const worldRank    = data.rank_month?.global ?? data.rank_alltime?.global ?? null;
+  const cityRank        = data.rank_month?.city      ?? data.rank_alltime?.city      ?? null;
+  const worldRank       = data.rank_month?.global    ?? data.rank_alltime?.global    ?? null;
+  const cityInCitiesRank = data.city_rank_month      ?? data.city_rank_alltime       ?? null;
+
+  // Total = the caller's grand total AFTER the delta lands. Prefer monthly
+  // total when in-month (matches the rank lens above); fall back to alltime
+  // when score_month_ref is stale or no monthly progress.
+  const totalPoints  = (data.total_month && data.total_month > 0)
+    ? data.total_month
+    : (data.total_alltime ?? 0);
 
   const cityRankCopy = cityRank !== null
     ? t('scoreCelebration.rank.city',   { rank: cityRank,  city: data.city_name ?? '' })
@@ -154,8 +162,13 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
     ? t('scoreCelebration.rank.world', { rank: worldRank })
     : t('scoreCelebration.rank.worldBeyond', { topN });
 
+  const cityInCitiesCopy = cityInCitiesRank !== null
+    ? t('scoreCelebration.rank.cities',       { rank: cityInCitiesRank, city: data.city_name ?? '' })
+    : t('scoreCelebration.rank.citiesBeyond', { topN,                   city: data.city_name ?? '' });
+
   const cityFlag  = countryToFlag(data.city_country ?? null) || '📍';
-  const worldFlag = '🌍';
+  const worldFlag = '🌐';
+  const citiesFlag = '🏙️';
 
   return (
     <Modal visible={visible} transparent statusBarTranslucent onRequestClose={onClose}>
@@ -195,6 +208,15 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
             +{displayPoints}
             <Text style={styles.pointsUnit}> {t('scoreCelebration.unit')}</Text>
           </Text>
+
+          {/* Running total after the delta lands. Kept small + muted so
+              the "+X" headline still dominates emotionally; this is
+              context, not the celebration itself. */}
+          {totalPoints > 0 && (
+            <Text style={styles.total}>
+              {t('scoreCelebration.total', { total: totalPoints })}
+            </Text>
+          )}
 
           <Text style={styles.subtitle}>
             {t(subtitleKey)}
@@ -278,6 +300,19 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
             </Pressable>
           </Animated.View>
 
+          {/* City-in-cities row — where the user's CITY ranks among all
+              cities. Only rendered when the user has a current city set;
+              hidden otherwise to avoid an empty "—" line. Reuses the
+              row2 driver — same fade-in beat as the world row. */}
+          {data.city_id && (
+            <Animated.View style={[{ opacity: row2, width: '100%' }]}>
+              <View style={styles.row}>
+                <Text style={styles.rowFlag}>{citiesFlag}</Text>
+                <Text style={styles.rowLabel} numberOfLines={1}>{cityInCitiesCopy}</Text>
+              </View>
+            </Animated.View>
+          )}
+
           <Pressable
             style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
             onPress={onClose}
@@ -343,6 +378,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color:      Colors.text,
     letterSpacing: 0.2,
+  },
+  total: {
+    marginTop: 2,
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      Colors.muted,
+    letterSpacing: 0.2,
+    textAlign:  'center',
   },
   subtitle: {
     fontSize: FontSizes.md,

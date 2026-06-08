@@ -483,7 +483,9 @@
       "city": "#{{rank}} à {{city}}",
       "cityBeyond": "En dehors du top {{topN}} de ta ville",
       "world": "#{{rank}} dans le monde",
-      "worldBeyond": "En dehors du top {{topN}} mondial"
+      "worldBeyond": "En dehors du top {{topN}} mondial",
+      "cities": "{{city}} est #{{rank}} parmi les villes",
+      "citiesBeyond": "{{city}} hors du top {{topN}} des villes"
     },
     "cta": "C’est parti ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "Challenge supprimé",
       "andMore": "et {{count}} de plus"
-    }
+    },
+    "total": "Total : {{total}} pts"
   }
 }

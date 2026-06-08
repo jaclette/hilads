@@ -483,7 +483,9 @@
       "city": "#{{rank}} di {{city}}",
       "cityBeyond": "Di luar top {{topN}} di kotamu",
       "world": "#{{rank}} sedunia",
-      "worldBeyond": "Di luar top {{topN}} sedunia"
+      "worldBeyond": "Di luar top {{topN}} sedunia",
+      "cities": "{{city}} peringkat #{{rank}} di antara kota",
+      "citiesBeyond": "{{city}} di luar top {{topN}} kota"
     },
     "cta": "Ayo ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "Challenge dihapus",
       "andMore": "dan {{count}} lainnya"
-    }
+    },
+    "total": "Total: {{total}} poin"
   }
 }

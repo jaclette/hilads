@@ -10173,6 +10173,54 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
     );
 
+    // Cities-among-cities ranks — where the user's CITY sits in the Cities
+    // tab leaderboard (sum of all members' points per city). Distinct from
+    // rank_*.city above which is the user's rank AMONG OTHER USERS in their
+    // city. Uses the same CTE shape as /leaderboard?scope=cities so the two
+    // surfaces always agree. Null when the user has no current_city_id.
+    $cityRankInCitiesAlltime = null;
+    $cityRankInCitiesMonth   = null;
+    if ($cityId !== null) {
+        $rkAlltime = $pdo->prepare("
+            WITH city_totals AS (
+                SELECT current_city_id, SUM(score_alltime) AS pts
+                FROM users
+                WHERE deleted_at      IS NULL
+                  AND current_city_id IS NOT NULL
+                  AND score_alltime   > 0
+                GROUP BY current_city_id
+                HAVING SUM(score_alltime) > 0
+            ),
+            mine AS (SELECT pts FROM city_totals WHERE current_city_id = :c)
+            SELECT CASE WHEN (SELECT pts FROM mine) IS NULL THEN NULL
+                        ELSE (SELECT COUNT(*) + 1 FROM city_totals WHERE pts > (SELECT pts FROM mine))
+                   END
+        ");
+        $rkAlltime->execute(['c' => $cityId]);
+        $val = $rkAlltime->fetchColumn();
+        $cityRankInCitiesAlltime = $val === null || $val === false ? null : (int) $val;
+
+        $rkMonth = $pdo->prepare("
+            WITH city_totals AS (
+                SELECT current_city_id, SUM(score_month) AS pts
+                FROM users
+                WHERE deleted_at      IS NULL
+                  AND current_city_id IS NOT NULL
+                  AND score_month_ref = :m
+                  AND score_month     > 0
+                GROUP BY current_city_id
+                HAVING SUM(score_month) > 0
+            ),
+            mine AS (SELECT pts FROM city_totals WHERE current_city_id = :c)
+            SELECT CASE WHEN (SELECT pts FROM mine) IS NULL THEN NULL
+                        ELSE (SELECT COUNT(*) + 1 FROM city_totals WHERE pts > (SELECT pts FROM mine))
+                   END
+        ");
+        $rkMonth->execute(['c' => $cityId, 'm' => $currentMonth]);
+        $val = $rkMonth->fetchColumn();
+        $cityRankInCitiesMonth = $val === null || $val === false ? null : (int) $val;
+    }
+
     // City name for the popin's "in {{city}}" copy. The city catalog lookup
     // is in-memory (CityRepository::load() caches per request) so this is
     // free.
@@ -10235,6 +10283,11 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         'city_name'    => $cityName,
         'city_country' => $cityCountry,
         'top_n'        => $TOP_N,
+        // Cached personal totals — the user's current grand totals AFTER the
+        // gain has landed (sync_user_scores trigger keeps these up to date).
+        // `points` above is the delta; these are "you now have N points".
+        'total_alltime' => $alltime,
+        'total_month'   => $effectiveMonth,
         'rank_alltime' => [
             'city'   => $alltimeCityRank,
             'global' => $alltimeGlobalRank,
@@ -10243,6 +10296,11 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
             'city'   => $monthCityRank,
             'global' => $monthGlobalRank,
         ],
+        // The user's CITY's rank among all cities (sum of all members'
+        // points per city). Distinct from rank_*.city above which ranks
+        // the USER among other users in the same city.
+        'city_rank_alltime' => $cityRankInCitiesAlltime,
+        'city_rank_month'   => $cityRankInCitiesMonth,
     ]);
 });
 

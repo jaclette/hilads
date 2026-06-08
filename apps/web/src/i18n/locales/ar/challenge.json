@@ -483,7 +483,9 @@
       "city": "#{{rank}} في {{city}}",
       "cityBeyond": "خارج أفضل {{topN}} في مدينتك",
       "world": "#{{rank}} عالميًا",
-      "worldBeyond": "خارج أفضل {{topN}} عالميًا"
+      "worldBeyond": "خارج أفضل {{topN}} عالميًا",
+      "cities": "{{city}} #{{rank}} بين المدن",
+      "citiesBeyond": "{{city}} خارج أفضل {{topN}} مدينة"
     },
     "cta": "يلا ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "تحدي محذوف",
       "andMore": "و {{count}} أخرى"
-    }
+    },
+    "total": "المجموع: {{total}} نقطة"
   }
 }

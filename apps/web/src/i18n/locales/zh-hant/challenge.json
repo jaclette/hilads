@@ -483,7 +483,9 @@
       "city": "{{city}} 第 {{rank}} 名",
       "cityBeyond": "位列你所在城市前 {{topN}} 之外",
       "world": "全球第 {{rank}} 名",
-      "worldBeyond": "位列全球前 {{topN}} 之外"
+      "worldBeyond": "位列全球前 {{topN}} 之外",
+      "cities": "{{city}} 在城市中排名第 {{rank}}",
+      "citiesBeyond": "{{city}} 排在城市 {{topN}} 名之外"
     },
     "cta": "出發 ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "已刪除的挑戰",
       "andMore": "另外 {{count}} 項"
-    }
+    },
+    "total": "總分: {{total}} 分"
   }
 }

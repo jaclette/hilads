@@ -487,7 +487,9 @@
       "city": "#{{rank}} in {{city}}",
       "cityBeyond": "Buiten de top {{topN}} in jouw stad",
       "world": "#{{rank}} wereldwijd",
-      "worldBeyond": "Buiten de top {{topN}} wereldwijd"
+      "worldBeyond": "Buiten de top {{topN}} wereldwijd",
+      "cities": "{{city}} is #{{rank}} onder de steden",
+      "citiesBeyond": "{{city}} buiten de top {{topN}} steden"
     },
     "cta": "Go ⚡",
     "kindShort": {
@@ -501,6 +503,7 @@
     "event": {
       "deletedChallenge": "Verwijderde challenge",
       "andMore": "en nog {{count}}"
-    }
+    },
+    "total": "Totaal: {{total}} pts"
   }
 }

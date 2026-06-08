@@ -526,7 +526,9 @@
       "city": "#{{rank}} in {{city}}",
       "cityBeyond": "Outside the top {{topN}} in your city",
       "world": "#{{rank}} worldwide",
-      "worldBeyond": "Outside the top {{topN}} worldwide"
+      "worldBeyond": "Outside the top {{topN}} worldwide",
+      "cities": "{{city}} is #{{rank}} among cities",
+      "citiesBeyond": "{{city}} outside the top {{topN}} cities"
     },
     "cta": "Let’s go ⚡",
     "kindShort": {
@@ -540,6 +542,7 @@
     "event": {
       "deletedChallenge": "Deleted challenge",
       "andMore": "and {{count}} more"
-    }
+    },
+    "total": "Total: {{total}} pts"
   }
 }

@@ -483,7 +483,9 @@
       "city": "#{{rank}} в {{city}}",
       "cityBeyond": "Вне топ-{{topN}} в твоём городе",
       "world": "#{{rank}} в мире",
-      "worldBeyond": "Вне топ-{{topN}} в мире"
+      "worldBeyond": "Вне топ-{{topN}} в мире",
+      "cities": "{{city}} — #{{rank}} среди городов",
+      "citiesBeyond": "{{city}} вне топ-{{topN}} городов"
     },
     "cta": "Поехали ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "Удалённый челлендж",
       "andMore": "и ещё {{count}}"
-    }
+    },
+    "total": "Всего: {{total}} pts"
   }
 }

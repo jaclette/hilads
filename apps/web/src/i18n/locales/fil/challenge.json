@@ -483,7 +483,9 @@
       "city": "#{{rank}} sa {{city}}",
       "cityBeyond": "Wala sa top {{topN}} ng inyong city",
       "world": "#{{rank}} sa buong mundo",
-      "worldBeyond": "Wala sa top {{topN}} ng buong mundo"
+      "worldBeyond": "Wala sa top {{topN}} ng buong mundo",
+      "cities": "{{city}} ang #{{rank}} sa mga lungsod",
+      "citiesBeyond": "{{city}} labas sa top {{topN}} na lungsod"
     },
     "cta": "Tara ⚡",
     "kindShort": {
@@ -497,6 +499,7 @@
     "event": {
       "deletedChallenge": "Tinanggal na challenge",
       "andMore": "at {{count}} pa"
-    }
+    },
+    "total": "Total: {{total}} pts"
   }
 }

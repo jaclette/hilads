@@ -77,8 +77,15 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
   const topN      = data.top_n ?? 100
   // Prefer monthly rank when present (more current); fall back to alltime
   // so the popin still reads useful copy when a user is unranked monthly.
-  const cityRank  = data.rank_month?.city   ?? data.rank_alltime?.city   ?? null
-  const worldRank = data.rank_month?.global ?? data.rank_alltime?.global ?? null
+  const cityRank         = data.rank_month?.city   ?? data.rank_alltime?.city   ?? null
+  const worldRank        = data.rank_month?.global ?? data.rank_alltime?.global ?? null
+  const cityInCitiesRank = data.city_rank_month    ?? data.city_rank_alltime    ?? null
+
+  // Running total after the delta. Prefer the in-month total when present
+  // (matches the monthly rank lens above) and fall back to alltime.
+  const totalPoints = (data.total_month && data.total_month > 0)
+    ? data.total_month
+    : (data.total_alltime ?? 0)
 
   const cityRankCopy = cityRank !== null
     ? t('scoreCelebration.rank.city',       { rank: cityRank, city: data.city_name ?? '' })
@@ -86,9 +93,13 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
   const worldRankCopy = worldRank !== null
     ? t('scoreCelebration.rank.world',       { rank: worldRank })
     : t('scoreCelebration.rank.worldBeyond', { topN })
+  const cityInCitiesCopy = cityInCitiesRank !== null
+    ? t('scoreCelebration.rank.cities',       { rank: cityInCitiesRank, city: data.city_name ?? '' })
+    : t('scoreCelebration.rank.citiesBeyond', { topN,                   city: data.city_name ?? '' })
 
-  const cityFlag  = countryToFlag(data.city_country) || '📍'
-  const worldFlag = '🌍'
+  const cityFlag   = countryToFlag(data.city_country) || '📍'
+  const worldFlag  = '🌐'
+  const citiesFlag = '🏙️'
 
   return (
     <div className="score-celebration-backdrop" onClick={onClose}>
@@ -105,6 +116,12 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
           +{displayPoints}
           <span className="score-celebration-points-unit"> {t('scoreCelebration.unit')}</span>
         </div>
+
+        {totalPoints > 0 && (
+          <div className="score-celebration-total">
+            {t('scoreCelebration.total', { total: totalPoints })}
+          </div>
+        )}
 
         <div className="score-celebration-subtitle">
           {t(subtitleKey)}
@@ -174,6 +191,15 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
                 <span className="score-celebration-row-label">{worldRankCopy}</span>
                 {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
               </div>
+              {/* City-in-cities — where the user's home city ranks among
+                  all cities. Rendered only when there's a current city
+                  set; uses the same row chrome as the other two. */}
+              {data.city_id && (
+                <div className="score-celebration-row score-celebration-row--2">
+                  <span className="score-celebration-row-flag" aria-hidden="true">{citiesFlag}</span>
+                  <span className="score-celebration-row-label">{cityInCitiesCopy}</span>
+                </div>
+              )}
             </>
           )
         })()}
