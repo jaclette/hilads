@@ -648,6 +648,24 @@ export default function ChallengeChatPage({
   )
   const otherParticipants = participants.filter(p => p !== creator)
 
+  // Active taker — derived from challenge.acceptor_user_id so it stays
+  // accurate after a finished round. The previous taker often lingers
+  // in `participants` (they joined the channel), so otherParticipants[0]
+  // would surface their TAKER pill even after the LATERAL slot was
+  // vacated. Hydrate from participants when available, otherwise from
+  // the acceptor_* snapshot shipped on the challenge.
+  const activeTaker = (() => {
+    if (!challenge?.acceptor_user_id) return null
+    const fromParticipants = participants.find(p => p.id === challenge.acceptor_user_id)
+    if (fromParticipants) return fromParticipants
+    return {
+      id:             challenge.acceptor_user_id,
+      displayName:    challenge.acceptor_display_name ?? '?',
+      thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
+      avatarUrl:      challenge.acceptor_thumb_avatar_url ?? null,
+    }
+  })()
+
   // 1:1 gate - true when the challenge has a non-terminal acceptance owned
   // by someone else. Visitors don't see the Accept button + see the
   // in-progress locked state. The current taker / owner have their own
@@ -865,7 +883,7 @@ export default function ChallengeChatPage({
       {iAmParticipant === true && (
         <ChallengeChannelMembers
           challenge={challenge}
-          activeTaker={otherParticipants[0] ?? null}
+          activeTaker={activeTaker}
           currentUserId={account?.id ?? null}
           onMembersChanged={() => { loadParticipants() }}
           onSelect={onOpenProfile}
@@ -945,7 +963,7 @@ export default function ChallengeChatPage({
           return (
             <div className="challenge-participants-row">
               <span className="challenge-cta-passive">
-                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '-' })}
+                {t('cta.takenBy', { name: activeTaker?.displayName ?? '-' })}
               </span>
             </div>
           )
@@ -1119,7 +1137,7 @@ export default function ChallengeChatPage({
               // in otherParticipants. The badge falls off retroactively if
               // the row transitions to rejected/closed (the API filter
               // already excludes non-active acceptances from the preview).
-              const takerUserId     = otherParticipants[0]?.id ?? null
+              const takerUserId     = activeTaker?.id ?? null
               const creatorUserId   = challenge.created_by ?? null
               const renderRoleBadge = (senderId) => {
                 if (!senderId) return null

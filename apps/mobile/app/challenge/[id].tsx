@@ -647,6 +647,34 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
+  // Active taker — derived from challenge.acceptor_user_id so it stays
+  // accurate when the channel reopens after a finished round. The
+  // previous taker often lingers in `participants` (they joined the
+  // channel), so falling back to otherParticipants[0] would surface
+  // their TAKER pill even after the LATERAL slot was vacated. Hydrate
+  // from `participants` when available (richer DTO — vibe/mode) and
+  // fall back to the acceptor_* snapshot shipped on the challenge.
+  const activeTaker = useMemo<UserDTO | null>(() => {
+    if (!challenge?.acceptor_user_id) return null;
+    const fromParticipants = participants.find(p => p.id === challenge.acceptor_user_id);
+    if (fromParticipants) return fromParticipants;
+    return {
+      id:             challenge.acceptor_user_id,
+      accountType:    'registered',
+      username:       null,
+      displayName:    challenge.acceptor_display_name ?? '?',
+      avatarUrl:      challenge.acceptor_thumb_avatar_url ?? null,
+      thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
+      badges:         [],
+      vibe:           null,
+    };
+  }, [
+    challenge?.acceptor_user_id,
+    challenge?.acceptor_display_name,
+    challenge?.acceptor_thumb_avatar_url,
+    participants,
+  ]);
+
   // 1:1 gate - `inProgress` is true when the challenge has a non-terminal
   // acceptance owned by someone else. Visitors don't see the Accept button
   // (and see the in-progress locked state); the owner / current taker are
@@ -984,7 +1012,7 @@ export default function ChallengeChatScreen() {
         {iAmParticipant === true && (
           <ChallengeChannelMembersStrip
             challenge={challenge}
-            activeTaker={otherParticipants[0] ?? null}
+            activeTaker={activeTaker}
             onOpen={() => setMembersOpen(true)}
           />
         )}
@@ -1069,7 +1097,7 @@ export default function ChallengeChatScreen() {
           return (
             <View style={styles.participantsRow}>
               <Text style={styles.participantsEmpty} numberOfLines={1}>
-                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '-' })}
+                {t('cta.takenBy', { name: activeTaker?.displayName ?? '-' })}
               </Text>
             </View>
           );
@@ -1163,7 +1191,7 @@ export default function ChallengeChatScreen() {
                       ? null
                       : (challenge.created_by && senderId === challenge.created_by)
                           ? 'challenger'
-                          : (otherParticipants[0]?.id && senderId === otherParticipants[0].id)
+                          : (activeTaker?.id && senderId === activeTaker.id)
                               ? 'taker'
                               : 'spectator';
                 return (
@@ -1409,7 +1437,7 @@ export default function ChallengeChatScreen() {
         <ChallengeChannelMembersSheet
           visible={membersOpen}
           challenge={challenge}
-          activeTaker={otherParticipants[0] ?? null}
+          activeTaker={activeTaker}
           currentUserId={account?.id ?? null}
           isCreator={isOwner}
           isActiveTaker={!!myAcceptance && !myAcceptance.i_am_creator}
