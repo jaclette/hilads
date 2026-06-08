@@ -191,6 +191,19 @@ if ($method === 'POST') {
             }
         }
 
+        // Monthly-rank recalc on admin-driven score / city changes. These
+        // paths bypass the score_events DB triggers (direct UPDATE on
+        // users), so the rank columns would otherwise go stale until an
+        // organic score change in the same scope. Two cases:
+        //   - score_month override → recalc the user's home city + world
+        //   - current_city_id move  → recalc old + new city
+        if ($scoreMonth !== null) {
+            MonthlyRankService::recalcAfterScoreChange($userId);
+        }
+        if ($newCityId !== null && $newCityId !== $oldCityId) {
+            MonthlyRankService::recalcAfterCityChange($userId, $oldCityId ?: null, $newCityId);
+        }
+
         flash_set('success', 'User updated successfully.');
         admin_redirect("/admin/users/{$userId}/edit");
     }

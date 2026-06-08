@@ -1947,6 +1947,14 @@ $router->add('POST', '/api/v1/location/resolve', function () {
     $authUserForCity = AuthService::currentUser();
     if ($authUserForCity !== null) {
         $geoChannelId = 'city_' . $city['id'];
+        // Snapshot the old city BEFORE the UPDATE — the CASE expression
+        // may or may not flip current_city_id this call depending on the
+        // two-signal gate. We compare old vs. new after the UPDATE to
+        // decide whether a rank recalc is warranted (geolocation pings
+        // are frequent; recalc only when the city actually moves).
+        $stmtOld = Database::pdo()->prepare("SELECT current_city_id FROM users WHERE id = ?");
+        $stmtOld->execute([$authUserForCity['id']]);
+        $oldCityIdForRank = $stmtOld->fetchColumn() ?: null;
         Database::pdo()->prepare("
             UPDATE users SET
               current_city_id = CASE
@@ -1986,6 +1994,20 @@ $router->add('POST', '/api/v1/location/resolve', function () {
             'geo'     => $geoChannelId,
             'user_id' => $authUserForCity['id'],
         ]);
+
+        // Re-fetch to see whether the CASE actually flipped the city.
+        // The two-signal gate means most pings are no-ops; only recalc
+        // when current_city_id actually changed.
+        $stmtNew = Database::pdo()->prepare("SELECT current_city_id FROM users WHERE id = ?");
+        $stmtNew->execute([$authUserForCity['id']]);
+        $newCityIdForRank = $stmtNew->fetchColumn() ?: null;
+        if ($newCityIdForRank !== $oldCityIdForRank) {
+            MonthlyRankService::recalcAfterCityChange(
+                $authUserForCity['id'],
+                $oldCityIdForRank ?: null,
+                $newCityIdForRank ?: null,
+            );
+        }
     }
 
     Response::json([
@@ -2036,6 +2058,13 @@ $router->add('POST', '/api/v1/me/city', function () {
     $stmt->execute([$channelId]);
     if (!$stmt->fetchColumn()) Response::json(['error' => 'Unknown city'], 404);
 
+    // Snapshot the old city so we can recalc its monthly ranks after the
+    // user moves out (their rank slot frees up; everyone else's positions
+    // shift). Same pattern in /location/resolve and the admin path.
+    $stmt = Database::pdo()->prepare("SELECT current_city_id FROM users WHERE id = ?");
+    $stmt->execute([$user['id']]);
+    $oldCityId = $stmt->fetchColumn() ?: null;
+
     Database::pdo()->prepare("
         UPDATE users SET
           current_city_id                = :city,
@@ -2048,6 +2077,12 @@ $router->add('POST', '/api/v1/me/city', function () {
         'city'    => $channelId,
         'user_id' => $user['id'],
     ]);
+
+    // Only recalc when the city actually changed (Legend tapping the
+    // same city is a no-op; skip the SQL hit).
+    if ($oldCityId !== $channelId) {
+        MonthlyRankService::recalcAfterCityChange($user['id'], $oldCityId ?: null, $channelId);
+    }
 
     // PR16 - also upsert the legacy user_city_memberships row so the manual
     // switch counts as membership under BOTH feature-flag modes:
@@ -8531,6 +8566,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         } catch (\Throwable $e) {
             error_log('[ratings] mutual push failed (non-fatal): ' . $e->getMessage());
         }
+
+        // Second rating just fired the debrief trigger: +30 challenger,
+        // +40 taker. Both users' monthly scores changed; both their
+        // city + world ranks may have flipped. Service dedupes the
+        // city if they share one (local challenge case).
+        MonthlyRankService::recalcAfterScoreChange($callerId, $rateeId);
     } else {
         // FIRST rating just landed - the OTHER party hasn't rated yet.
         // Two side-effects, both non-fatal so the rating insert is never
@@ -8867,6 +8908,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         'auto_approved' => $isInternational,
     ]);
 
+    // International acceptances land in phase='accepted' which fires
+    // the +5 challenger trigger inline. Local rows insert in 'pending'
+    // — no score yet, no recalc needed here (approve-takeon path handles
+    // it). The challenger is the only user whose score moved.
+    if ($isInternational && !empty($challenge['created_by'])) {
+        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
+    }
+
     Response::json($acceptance, 201);
 });
 
@@ -8970,6 +9019,13 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
         }
     } catch (\Throwable $e) {
         error_log('[challenges] approve-takeon push failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Phase flip pending → accepted fires the +5 challenger trigger.
+    // Only the creator's score moved; the acceptor doesn't earn until
+    // a later step. Recalc their rank in-line.
+    if (!empty($challenge['created_by'])) {
+        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
     }
 
     Response::json(['acceptance' => $updated]);
@@ -9305,6 +9361,17 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
         }
     } catch (\Throwable $e) {
         error_log('[challenges] ws approve-date broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // date_approved_at UPDATE fires the +5 / +5 date_locked trigger
+    // for BOTH challenger AND taker. Both their rank scopes may have
+    // shifted; the service dedupes their cities internally.
+    $userIds = array_values(array_filter([
+        $challenge['created_by']        ?? null,
+        $acceptance['acceptor_user_id'] ?? null,
+    ]));
+    if (!empty($userIds)) {
+        MonthlyRankService::recalcAfterScoreChange(...$userIds);
     }
 
     Response::json(['acceptance' => $updated]);
@@ -11077,6 +11144,13 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         }
     } catch (\Throwable $e) {
         error_log('[invite-accept] takeon-request push failed: ' . $e->getMessage());
+    }
+
+    // International invitations auto-accept → +5 challenger fires.
+    // Local invitations land in 'pending' — no score yet (see
+    // approve-takeon for that hook). Mirrors POST /challenges/:id/accept.
+    if ($isInternational && !empty($challenge['created_by'])) {
+        MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
     }
 
     Response::json(['acceptance' => $acceptance, 'challengeId' => $challengeId], 201);

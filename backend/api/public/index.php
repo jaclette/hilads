@@ -80,6 +80,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/PushService.php';
     require_once __DIR__ . '/../src/MobilePushService.php';
     require_once __DIR__ . '/../src/PushBroadcastService.php';
+    require_once __DIR__ . '/../src/MonthlyRankService.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }
@@ -202,6 +203,7 @@ require_once __DIR__ . '/../src/WeatherService.php';
 require_once __DIR__ . '/../src/UserBadgeService.php';
 require_once __DIR__ . '/../src/UserResource.php';
 require_once __DIR__ . '/../src/AnalyticsService.php';
+require_once __DIR__ . '/../src/MonthlyRankService.php';
 
 $router = new Router();
 

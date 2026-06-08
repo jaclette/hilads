@@ -1364,6 +1364,30 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_alltime    INT  NOT 
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month      INT  NOT NULL DEFAULT 0", 'users.score_month');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",                    'users.score_month_ref');
 
+// Monthly rank badges on challenge cards (Top 10 + podium for Top 3).
+// NULL = user is outside the relevant top-10; non-null = the user's
+// position (1..10). Recomputed inline by MonthlyRankService at every
+// score- or city-change route — there is no cron. Two columns because
+// the badge scope follows the duel scope: local challenges read in-city
+// rank, international challenges read worldwide rank. See
+// src/MonthlyRankService.php for the recalc SQL.
+//
+// Stored in users (not score_events) because reads happen on the
+// already-joined creator + acceptor rows in the Challenge DTO — no
+// extra JOIN, zero egress impact on the existing list query.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_rank_in_city   INT", 'users.monthly_rank_in_city');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_rank_worldwide INT", 'users.monthly_rank_worldwide');
+// Partial indexes — only non-null rows matter (top 10 per scope),
+// which is at most a few hundred users globally. Lookup by id is the
+// only access pattern at read time so we don't need a real index;
+// these are mostly here to remind ops the column is sparse.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_monthly_rank_city
+    ON users (current_city_id, monthly_rank_in_city)
+    WHERE monthly_rank_in_city IS NOT NULL", 'idx_users_monthly_rank_city');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_monthly_rank_world
+    ON users (monthly_rank_worldwide)
+    WHERE monthly_rank_worldwide IS NOT NULL", 'idx_users_monthly_rank_world');
+
 // PR17 - celebration popin watermark. Stores the max score_events.created_at
 // the user has already been shown in the "+X points!" popin. The endpoint
 // sums points earned strictly after this watermark; the client acks by

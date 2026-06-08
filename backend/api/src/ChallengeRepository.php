@@ -98,7 +98,20 @@ class ChallengeRepository
             ac.acceptor_user_id,
             au.display_name             AS acceptor_display_name,
             COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
-            au.current_city_id          AS acceptor_current_city_id
+            au.current_city_id          AS acceptor_current_city_id,
+            -- Monthly rank badges (Top 10 + podium for Top 3) for both
+            -- avatars on the versus row. NULL = outside top-10 in that
+            -- scope. Both creator AND acceptor expose both scopes — the
+            -- card chooses which to read based on challenge mode (local
+            -- → in_city, international → worldwide). Plus the formatter
+            -- below applies a score_month_ref staleness guard so month
+            -- rollover never surfaces yesterday's badge.
+            u.monthly_rank_in_city      AS creator_monthly_rank_in_city,
+            u.monthly_rank_worldwide    AS creator_monthly_rank_worldwide,
+            u.score_month_ref           AS creator_score_month_ref,
+            au.monthly_rank_in_city     AS acceptor_monthly_rank_in_city,
+            au.monthly_rank_worldwide   AS acceptor_monthly_rank_worldwide,
+            au.score_month_ref          AS acceptor_score_month_ref
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
         LEFT JOIN users u           ON u.id = cc.created_by
@@ -202,10 +215,35 @@ class ChallengeRepository
             'acceptor_display_name'    => $row['acceptor_display_name']    ?? null,
             'acceptor_thumb_avatar_url'=> $row['acceptor_thumb_avatar_url']?? null,
             'acceptor_country'         => self::countryForCityId($row['acceptor_current_city_id'] ?? null),
+            // Monthly rank badges (Top 10 + podium for Top 3). Staleness
+            // guard: only expose the rank when the user's score_month_ref
+            // matches the current UTC month. After a month rollover the
+            // stored value reflects last month's standings; without this
+            // check a "winner" badge would linger until the next score
+            // event in their city triggered a recalc. NULL on miss =
+            // no badge, fastest path.
+            'creator_monthly_rank_in_city'    => self::staleGuard($row['creator_monthly_rank_in_city']    ?? null, $row['creator_score_month_ref']  ?? null),
+            'creator_monthly_rank_worldwide'  => self::staleGuard($row['creator_monthly_rank_worldwide']  ?? null, $row['creator_score_month_ref']  ?? null),
+            'acceptor_monthly_rank_in_city'   => self::staleGuard($row['acceptor_monthly_rank_in_city']   ?? null, $row['acceptor_score_month_ref'] ?? null),
+            'acceptor_monthly_rank_worldwide' => self::staleGuard($row['acceptor_monthly_rank_worldwide'] ?? null, $row['acceptor_score_month_ref'] ?? null),
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
         ];
+    }
+
+    /**
+     * Pass-through that NULLs the rank when score_month_ref is stale.
+     * Anything older than the current UTC month signals "this rank
+     * reflects a prior month" — drop it so the badge surface doesn't
+     * lie until the next recalc.
+     */
+    private static function staleGuard(mixed $rank, ?string $monthRef): ?int
+    {
+        if ($rank === null) return null;
+        $current = gmdate('Y-m');
+        if ($monthRef !== $current) return null;
+        return (int) $rank;
     }
 
     // ── Reads ─────────────────────────────────────────────────────────────────
@@ -298,9 +336,11 @@ class ChallengeRepository
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
+                     u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
                      ac.acceptor_user_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id
+                     au.current_city_id,
+                     au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
             ORDER BY cc.created_at DESC
             LIMIT $limit
         ");
@@ -344,9 +384,11 @@ class ChallengeRepository
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
+                     u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
                      ac.acceptor_user_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id
+                     au.current_city_id,
+                     au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit
         ");
@@ -383,9 +425,11 @@ class ChallengeRepository
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
+                     u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
                      ac.acceptor_user_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id
+                     au.current_city_id,
+                     au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
         ");
         $stmt->execute($params);
         $row = $stmt->fetch();
@@ -417,9 +461,11 @@ class ChallengeRepository
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
+                     u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
                      ac.acceptor_user_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id
+                     au.current_city_id,
+                     au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
         ");
         $stmt->execute(['id' => $challengeId]);
         $row = $stmt->fetch();
