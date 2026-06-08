@@ -42,7 +42,8 @@
     "available": "Disponible",
     "inProgress": "En curso",
     "takeIt": "Lo acepto",
-    "takerLabel": "Receptor"
+    "takerLabel": "Receptor",
+    "rankBadge": "Puesto {{rank}}"
   },
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",

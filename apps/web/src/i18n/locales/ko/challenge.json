@@ -42,7 +42,8 @@
     "available": "모집중",
     "inProgress": "진행 중",
     "takeIt": "도전 받기",
-    "takerLabel": "도전자"
+    "takerLabel": "도전자",
+    "rankBadge": "{{rank}}위"
   },
   "statusInProgress": "챌린지 진행 중",
   "statusAccomplished": "챌린지 성공",

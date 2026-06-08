@@ -42,7 +42,8 @@
     "available": "उपलब्ध",
     "inProgress": "जारी",
     "takeIt": "मैं लूंगा",
-    "takerLabel": "चुनौती लेने वाला"
+    "takerLabel": "चुनौती लेने वाला",
+    "rankBadge": "रैंक {{rank}}"
   },
   "statusInProgress": "चुनौती जारी है",
   "statusAccomplished": "चुनौती पूरी की",

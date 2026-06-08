@@ -42,7 +42,8 @@
     "available": "Beschikbaar",
     "inProgress": "Bezig",
     "takeIt": "Ik doe mee",
-    "takerLabel": "Aannemer"
+    "takerLabel": "Aannemer",
+    "rankBadge": "Rang {{rank}}"
   },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",

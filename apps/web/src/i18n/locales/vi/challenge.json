@@ -42,7 +42,8 @@
     "available": "Còn trống",
     "inProgress": "Đang diễn ra",
     "takeIt": "Nhận thử thách",
-    "takerLabel": "Người nhận"
+    "takerLabel": "Người nhận",
+    "rankBadge": "Hạng {{rank}}"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",

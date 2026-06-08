@@ -42,7 +42,8 @@
     "available": "可接受",
     "inProgress": "進行中",
     "takeIt": "我接受",
-    "takerLabel": "接戰者"
+    "takerLabel": "接戰者",
+    "rankBadge": "第 {{rank}} 名"
   },
   "statusInProgress": "挑戰進行中",
   "statusAccomplished": "挑戰搞定",

@@ -42,7 +42,8 @@
     "available": "受付中",
     "inProgress": "進行中",
     "takeIt": "受ける",
-    "takerLabel": "挑戦者"
+    "takerLabel": "挑戦者",
+    "rankBadge": "{{rank}} 位"
   },
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",

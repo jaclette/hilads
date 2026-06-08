@@ -42,7 +42,8 @@
     "available": "Disponível",
     "inProgress": "A decorrer",
     "takeIt": "Eu aceito",
-    "takerLabel": "Tomador"
+    "takerLabel": "Tomador",
+    "rankBadge": "Posição {{rank}}"
   },
   "statusInProgress": "Desafio a decorrer",
   "statusAccomplished": "Desafio cumprido",

@@ -42,7 +42,8 @@
     "available": "Frei",
     "inProgress": "Aktiv",
     "takeIt": "Annehmen",
-    "takerLabel": "Annehmer"
+    "takerLabel": "Annehmer",
+    "rankBadge": "Rang {{rank}}"
   },
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",

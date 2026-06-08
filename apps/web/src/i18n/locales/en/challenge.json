@@ -42,7 +42,8 @@
     "available": "Available",
     "inProgress": "In progress",
     "takeIt": "Take it on",
-    "takerLabel": "Taker"
+    "takerLabel": "Taker",
+    "rankBadge": "Rank {{rank}}"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",

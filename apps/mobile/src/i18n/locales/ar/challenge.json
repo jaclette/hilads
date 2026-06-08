@@ -42,7 +42,8 @@
     "available": "متاح",
     "inProgress": "قيد التنفيذ",
     "takeIt": "أتقبله",
-    "takerLabel": "المتلقي"
+    "takerLabel": "المتلقي",
+    "rankBadge": "المرتبة {{rank}}"
   },
   "statusInProgress": "التحدي جارٍ",
   "statusAccomplished": "تم إنجاز التحدي",

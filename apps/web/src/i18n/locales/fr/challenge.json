@@ -42,7 +42,8 @@
     "available": "Disponible",
     "inProgress": "En cours",
     "takeIt": "Je le relève",
-    "takerLabel": "Preneur"
+    "takerLabel": "Preneur",
+    "rankBadge": "Rang {{rank}}"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",

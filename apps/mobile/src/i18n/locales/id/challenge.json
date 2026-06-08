@@ -42,7 +42,8 @@
     "available": "Tersedia",
     "inProgress": "Berlangsung",
     "takeIt": "Saya terima",
-    "takerLabel": "Penerima"
+    "takerLabel": "Penerima",
+    "rankBadge": "Peringkat {{rank}}"
   },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",

@@ -42,7 +42,8 @@
     "available": "ว่าง",
     "inProgress": "กำลังทำ",
     "takeIt": "รับมือ",
-    "takerLabel": "ผู้รับ"
+    "takerLabel": "ผู้รับ",
+    "rankBadge": "อันดับ {{rank}}"
   },
   "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
   "statusAccomplished": "ชาเลนจ์สำเร็จ",

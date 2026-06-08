@@ -42,7 +42,8 @@
     "available": "Available",
     "inProgress": "Ongoing",
     "takeIt": "Tatanggapin ko",
-    "takerLabel": "Tagapagtanggap"
+    "takerLabel": "Tagapagtanggap",
+    "rankBadge": "Ranggo {{rank}}"
   },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",

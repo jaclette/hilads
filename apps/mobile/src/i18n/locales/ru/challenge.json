@@ -42,7 +42,8 @@
     "available": "Свободен",
     "inProgress": "В процессе",
     "takeIt": "Принять",
-    "takerLabel": "Принимающий"
+    "takerLabel": "Принимающий",
+    "rankBadge": "Ранг {{rank}}"
   },
   "statusInProgress": "Челлендж в процессе",
   "statusAccomplished": "Челлендж сделан",
