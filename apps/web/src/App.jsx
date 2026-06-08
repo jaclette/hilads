@@ -7,6 +7,7 @@ import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessag
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
+import ChallengeVersusCard from './components/ChallengeVersusCard'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -5080,81 +5081,13 @@ export default function App() {
                     </div>
                   </>
                 )}
-                {visibleChallenges.map(c => {
-                  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
-                  const audienceLabel = c.audience === 'locals'
-                    ? t('forLocals',    { ns: 'challenge' })
-                    : t('forExplorers', { ns: 'challenge' })
-                  const isValidated     = c.status === 'validated'
-                  const isInternational = (c.mode ?? 'local') === 'international'
-                  return (
-                    <button
-                      key={c.id}
-                      className="city-row event-row-card challenge-row-card"
-                      style={{ cursor: 'pointer', textAlign: 'left' }}
-                      onClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
-                    >
-                      <div className="er-header">
-                        <span className="er-title">{typeIcon} {c.title}</span>
-                        <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`, { ns: 'challenge' })}</span>
-                      </div>
-                      <div className="er-badges">
-                        {isInternational
-                          ? (() => {
-                              // 🇩🇪 → 🇻🇳 when both countries are known. Falls
-                              // back to "🌍" for the target when "anywhere"
-                              // (no target_city_id) or unknown. Origin always
-                              // has a country since challenges are created
-                              // from a city.
-                              const fromFlag = countryToFlag(c.country)
-                              const toFlag   = countryToFlag(c.target_country) || '🌍'
-                              const label    = fromFlag
-                                ? `${fromFlag} → ${toFlag}`
-                                : `🌐 ${t('mode.international', { ns: 'challenge' })}`
-                              return (
-                                <span className="challenge-badge challenge-badge--international">
-                                  {label}
-                                </span>
-                              )
-                            })()
-                          : (
-                            <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-                          )}
-                        {/* Visibility badge - only renders for non-public rows
-                            so the NOW card stays uncluttered on the common case. */}
-                        {(() => {
-                          const v = c.visibility ?? 'public'
-                          if (v === 'public') return null
-                          return (
-                            <span className={`challenge-badge challenge-badge--visibility challenge-badge--visibility-${v}`}>
-                              {t(`visibility.badge.${v}`, { ns: 'challenge' })}
-                            </span>
-                          )
-                        })()}
-                        {isValidated ? (
-                          <span className="challenge-badge challenge-badge--validated">
-                            ✓ {t('validatedBadge', { ns: 'challenge' })}
-                          </span>
-                        ) : c.is_in_progress ? (
-                          <span className="challenge-badge challenge-badge--status">
-                            ⏳ {t('card.inProgress', { ns: 'challenge' })}
-                          </span>
-                        ) : (
-                          <span className="challenge-badge challenge-badge--available">
-                            🟢 {t('card.available', { ns: 'challenge' })}
-                          </span>
-                        )}
-                      </div>
-                      {c.creator_display_name && (
-                        <span className="er-host">{t('byCreator', { ns: 'challenge', name: c.creator_display_name })}</span>
-                      )}
-                      <AttendeeAvatars
-                        preview={c.participants_preview ?? []}
-                        total={c.participant_count ?? 0}
-                      />
-                    </button>
-                  )
-                })}
+                {visibleChallenges.map(c => (
+                  <ChallengeVersusCard
+                    key={c.id}
+                    challenge={c}
+                    onClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
+                  />
+                ))}
                 {/* "See all challenges" CTA on the All filter - switches the
                     parent filter to 'challenges' so the user lands inside
                     the full list (with type chips + pagination). */}
