@@ -50,12 +50,13 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   // caller's current city (default behaviour). Setting this DOES NOT change
   // the user's actual current_city anywhere else in the app — same scope as
   // the mobile picker (PR13).
-  const [pickedCity,      setPickedCity]      = useState(null) // { channelId, name } | null
+  const [pickedCity,      setPickedCity]      = useState(null) // { channelId, name, country? } | null
   const [cityPickerOpen,  setCityPickerOpen]  = useState(false)
 
   const fallbackChannelId = cityChannelId ? String(cityChannelId) : null
-  const effectiveChannelId = pickedCity?.channelId ?? fallbackChannelId
-  const effectiveCityName  = pickedCity?.name      ?? city?.name ?? city ?? null
+  const effectiveChannelId   = pickedCity?.channelId ?? fallbackChannelId
+  const effectiveCityName    = pickedCity?.name      ?? city?.name ?? city ?? null
+  const effectiveCityCountry = pickedCity?.country   ?? city?.country ?? null
   const apiCityId = effectiveChannelId ? `city_${effectiveChannelId}` : undefined
 
   const load = useCallback(async () => {
@@ -78,6 +79,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   const meInPage = !!me && me.rank !== null && entries.some(e => e.user_id === me.user_id)
 
   const cityLabel = localizeCityName(effectiveCityName) || t('leaderboard.scope.city')
+  const cityFlag  = effectiveCityCountry ? countryToFlag(effectiveCityCountry) : ''
 
   return (
     <div className="full-page leaderboard-page">
@@ -101,7 +103,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             }}
             aria-haspopup={scope === 'city' ? 'dialog' : undefined}
           >
-            {cityLabel}
+            {cityFlag && <span aria-hidden="true">{cityFlag} </span>}{cityLabel}
             {scope === 'city' && (
               <span className="leaderboard-seg-chevron" aria-hidden="true">▾</span>
             )}
@@ -111,7 +113,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
             className={`leaderboard-seg-item${scope === 'world' ? ' is-active' : ''}`}
             onClick={() => setScope('world')}
           >
-            {t('leaderboard.scope.world')}
+            <span aria-hidden="true">🌐 </span>{t('leaderboard.scope.world')}
           </button>
         </div>
         <div className="leaderboard-seg">
@@ -207,7 +209,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
         visible={cityPickerOpen}
         selectedChannelId={effectiveChannelId}
         onSelect={(channelId, picked) => {
-          setPickedCity({ channelId: String(channelId), name: picked.name })
+          setPickedCity({ channelId: String(channelId), name: picked.name, country: picked.country })
           setCityPickerOpen(false)
         }}
         onClose={() => setCityPickerOpen(false)}

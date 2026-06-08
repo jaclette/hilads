@@ -50,8 +50,9 @@ export default function LeaderboardScreen() {
 
   // PR13 — picker-overridden city for the leaderboard view. Null = use the
   // caller's current city (default behaviour). Setting this DOES NOT change
-  // the user's actual current_city anywhere else in the app.
-  const [pickedCity, setPickedCity] = useState<{ channelId: string; name: string } | null>(null);
+  // the user's actual current_city anywhere else in the app. `country` is
+  // kept so the city segment can show its flag without a separate lookup.
+  const [pickedCity, setPickedCity] = useState<{ channelId: string; name: string; country?: string } | null>(null);
   const [cityPickerOpen, setCityPickerOpen] = useState(false);
 
   const [data,    setData]    = useState<LeaderboardResponse | null>(null);
@@ -60,9 +61,10 @@ export default function LeaderboardScreen() {
   const [error,   setError]   = useState<string | null>(null);
 
   // The picker overrides the default; fall back to the caller's current city.
-  const effectiveChannelId = pickedCity?.channelId ?? city?.channelId ?? null;
-  const cityId = effectiveChannelId ? `city_${effectiveChannelId}` : undefined;
-  const effectiveCityName  = pickedCity?.name ?? city?.name ?? null;
+  const effectiveChannelId   = pickedCity?.channelId ?? city?.channelId ?? null;
+  const cityId               = effectiveChannelId ? `city_${effectiveChannelId}` : undefined;
+  const effectiveCityName    = pickedCity?.name    ?? city?.name    ?? null;
+  const effectiveCityCountry = pickedCity?.country ?? city?.country ?? null;
 
   const load = useCallback(async () => {
     if (!account?.id) { setData(null); setLoading(false); return; }
@@ -119,6 +121,7 @@ export default function LeaderboardScreen() {
         scope={scope}      onScope={setScope}
         period={period}    onPeriod={setPeriod}
         cityLabel={localizeCityName(effectiveCityName) ?? t('leaderboard.scope.city')}
+        cityCountry={effectiveCityCountry}
         onCityTap={scope === 'city' ? () => setCityPickerOpen(true) : undefined}
         t={t}
       />
@@ -207,7 +210,7 @@ export default function LeaderboardScreen() {
         visible={cityPickerOpen}
         selectedChannelId={effectiveChannelId}
         onSelect={(channelId, picked) => {
-          setPickedCity({ channelId, name: picked.name });
+          setPickedCity({ channelId, name: picked.name, country: picked.country });
           setCityPickerOpen(false);
         }}
         onClose={() => setCityPickerOpen(false)}
@@ -236,13 +239,17 @@ function Header({
 }
 
 function Selectors({
-  scope, onScope, period, onPeriod, cityLabel, onCityTap, t,
+  scope, onScope, period, onPeriod, cityLabel, cityCountry, onCityTap, t,
 }: {
   scope:  LeaderboardScope;
   onScope: (v: LeaderboardScope) => void;
   period: LeaderboardPeriod;
   onPeriod: (v: LeaderboardPeriod) => void;
   cityLabel: string;
+  /** ISO-2 country code for the displayed city — drives the flag emoji
+   *  prefix. Null when neither the picker nor the user's current city
+   *  resolves a country (rare; geolocation usually populates it). */
+  cityCountry: string | null;
   /** Provided when scope='city' — tapping the city segment opens the picker.
    *  When scope='world', undefined and the tap behaves like a normal scope
    *  switch (back to city). */
@@ -254,6 +261,7 @@ function Selectors({
   // it's tappable (opens the picker).
   const cityActive  = scope === 'city';
   const worldActive = scope === 'world';
+  const cityFlag    = cityCountry ? countryToFlag(cityCountry) : '';
   return (
     <View style={styles.selectorsWrap}>
       <View style={styles.segWrap}>
@@ -277,7 +285,7 @@ function Selectors({
               style={[styles.segText, cityActive && styles.segTextActiveGradient]}
               numberOfLines={1}
             >
-              {cityLabel}
+              {cityFlag ? `${cityFlag} ` : ''}{cityLabel}
             </Text>
             {cityActive && (
               <Ionicons name="chevron-down" size={14} color={Colors.white} style={{ marginLeft: 4 }} />
@@ -304,7 +312,7 @@ function Selectors({
             style={[styles.segText, worldActive && styles.segTextActiveGradient]}
             numberOfLines={1}
           >
-            {t('leaderboard.scope.world')}
+            🌐 {t('leaderboard.scope.world')}
           </Text>
         </TouchableOpacity>
       </View>
