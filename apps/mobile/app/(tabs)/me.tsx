@@ -45,6 +45,7 @@ import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { ProfileRankRow } from '@/components/ProfileRankRow';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { formatRecurrence } from '@/lib/recurrence';
 
@@ -504,6 +505,16 @@ export default function MeScreen() {
                 ) : null}
               </View>
             </View>
+
+            {/* Monthly rank — slotted between identity + mode so it sits in
+                the sticky-identity block and stays visible at the top of
+                the screen. Renders nothing when the user has no city
+                scope AND no monthly score yet (fresh signup). */}
+            <ProfileRankRow
+              rank={account?.monthly_rank ?? null}
+              cityName={account?.current_city?.name ?? null}
+              cityCountry={account?.current_city?.country ?? null}
+            />
 
             {/* Mode selector - compact 2-button toggle */}
             <View style={styles.modeSection}>

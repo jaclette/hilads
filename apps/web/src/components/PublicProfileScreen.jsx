@@ -8,6 +8,7 @@ const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: 
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
+import ProfileRankRow from './ProfileRankRow'
 
 // ── Avatar palette ────────────────────────────────────────────────────────────
 
@@ -367,6 +368,15 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                   <span>{cityFlag(cityCountry)} {localizeCityName(cityName)}</span>
                 </div>
               )}
+
+              {/* Monthly rank — this user's rank in THEIR own current
+                  city + worldwide. Distinct from the viewer-city pill
+                  above. */}
+              <ProfileRankRow
+                rank={user.monthlyRank ?? null}
+                cityName={user.currentCity ?? null}
+                cityCountry={user.currentCityCountry ?? null}
+              />
 
               {/* About me */}
               {user.aboutMe && (

@@ -491,6 +491,8 @@
       "cityBeyond": "Вне топ-{{topN}} в твоём городе",
       "world": "#{{rank}} в мире",
       "worldBeyond": "Вне топ-{{topN}} в мире",
+      "cityUnranked": "В этом месяце без места в {{city}}",
+      "worldUnranked": "В этом месяце без мирового места",
       "cities": "{{city}} - #{{rank}} среди городов",
       "citiesBeyond": "{{city}} вне топ-{{topN}} городов"
     },

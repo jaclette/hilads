@@ -11,6 +11,7 @@ import { badgeLabel } from '../badgeMeta'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { isLegend as accountIsLegend } from '../lib/canCreateEvent'
 import { localizeCityName } from '../i18n/cityName'
+import ProfileRankRow from './ProfileRankRow'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -328,6 +329,15 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               )}
             </div>
           </div>
+
+          {/* Monthly rank — between identity header and mode selector so
+              it sits in the visible top area without crowding the
+              identity row itself. Hides when there's nothing to show. */}
+          <ProfileRankRow
+            rank={account.monthly_rank ?? null}
+            cityName={account.current_city?.name ?? null}
+            cityCountry={account.current_city?.country ?? null}
+          />
 
           {/* Mode selector */}
           <div className="profile-mode-section">

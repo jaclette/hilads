@@ -1156,6 +1156,12 @@ $router->add('GET', '/api/v1/auth/me', function () {
         }
     }
 
+    // Monthly ranks for the profile screen ("Me" tab). Bounded read — at
+    // most 4 cheap LIMIT-101 lookups per call. Always returned (even when
+    // null) so the client can render the "not ranked yet" state without
+    // a second round-trip.
+    $fields['monthly_rank'] = MonthlyRankService::ranksForUser($user['id']);
+
     Response::json(['user' => $fields]);
 });
 
@@ -1320,6 +1326,28 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         $ambassadorPicks = $ambassadorPicksRaw;
     }
 
+    // current_city for the rank row ("#N in Ho Chi Minh City" + flag).
+    // Distinct from home_city / homeCity (above) which is the user-edited
+    // home tag — current_city follows last-geolocation, which is the
+    // axis monthly_rank.city is scoped against. One small JOIN; country
+    // comes along so the client renders the flag without a second hop.
+    $currentCityName    = null;
+    $currentCityCountry = null;
+    if (!empty($user['current_city_id'])) {
+        $cstmt = Database::pdo()->prepare("
+            SELECT ch.name, ci.country
+              FROM channels ch
+              JOIN cities  ci ON ci.channel_id = ch.id
+             WHERE ch.id = ?
+        ");
+        $cstmt->execute([$user['current_city_id']]);
+        $crow = $cstmt->fetch(\PDO::FETCH_ASSOC);
+        if ($crow) {
+            if (is_string($crow['name'] ?? null) && $crow['name'] !== '') $currentCityName    = $crow['name'];
+            if (is_string($crow['country'] ?? null) && $crow['country'] !== '') $currentCityCountry = $crow['country'];
+        }
+    }
+
     $dto = array_merge(
         UserResource::fromUser($user, [], ['isFriend' => $isFriend]),
         [
@@ -1327,12 +1355,15 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
                                        ? (int) date('Y') - (int) $user['birth_year']
                                        : null,
             'homeCity'             => $user['home_city'] ?? null,
+            'currentCity'          => $currentCityName,
+            'currentCityCountry'   => $currentCityCountry,
             'aboutMe'              => $user['about_me'] ?? null,
             'interests'            => json_decode($user['interests'] ?? '[]', true),
             'vibeScore'            => $vibeScore['score'],
             'vibeCount'            => $vibeScore['count'],
             'ambassadorPicks'      => $ambassadorPicks,
             'pendingFriendRequest' => $pendingFriendRequest,
+            'monthlyRank'          => MonthlyRankService::ranksForUser($user['id']),
         ],
     );
 

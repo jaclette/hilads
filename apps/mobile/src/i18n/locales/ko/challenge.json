@@ -491,6 +491,8 @@
       "cityBeyond": "도시 상위 {{topN}}위 밖",
       "world": "전 세계 {{rank}}위",
       "worldBeyond": "전 세계 상위 {{topN}}위 밖",
+      "cityUnranked": "이번 달 {{city}}에서 아직 순위 없음",
+      "worldUnranked": "이번 달 전 세계 순위 없음",
       "cities": "{{city}} 도시 중 #{{rank}}위",
       "citiesBeyond": "{{city}} 도시 상위 {{topN}}위 밖"
     },

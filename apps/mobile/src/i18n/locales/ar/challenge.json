@@ -491,6 +491,8 @@
       "cityBeyond": "خارج أفضل {{topN}} في مدينتك",
       "world": "#{{rank}} عالميًا",
       "worldBeyond": "خارج أفضل {{topN}} عالميًا",
+      "cityUnranked": "غير مصنف هذا الشهر في {{city}}",
+      "worldUnranked": "غير مصنف هذا الشهر عالميًا",
       "cities": "{{city}} #{{rank}} بين المدن",
       "citiesBeyond": "{{city}} خارج أفضل {{topN}} مدينة"
     },

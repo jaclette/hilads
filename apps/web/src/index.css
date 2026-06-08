@@ -1960,6 +1960,50 @@ html, body, #root {
   font-weight: 500;
 }
 
+/* Profile monthly rank — two-line block tucked between identity header
+   and mode selector on /me, and between hero pill + about-me on the
+   public profile. Same shape both surfaces so the visual reads
+   identically. */
+.profile-rank-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+  background: var(--surface);
+  border-radius: 12px;
+}
+.profile-rank-row-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.profile-rank-row-emoji {
+  width: 22px;
+  font-size: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.profile-rank-row-badge {
+  /* Reserves stable horizontal space so the text baseline doesn't
+     jump between top-10 and 11..100 ranks. */
+  width: 24px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-rank-row-text {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Filter pills - scrollable for 5 tabs */
 .profile-tabs {
   display: flex;

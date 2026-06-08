@@ -491,6 +491,8 @@
       "cityBeyond": "Di luar top {{topN}} di kotamu",
       "world": "#{{rank}} sedunia",
       "worldBeyond": "Di luar top {{topN}} sedunia",
+      "cityUnranked": "Belum masuk peringkat bulan ini di {{city}}",
+      "worldUnranked": "Belum masuk peringkat dunia bulan ini",
       "cities": "{{city}} peringkat #{{rank}} di antara kota",
       "citiesBeyond": "{{city}} di luar top {{topN}} kota"
     },

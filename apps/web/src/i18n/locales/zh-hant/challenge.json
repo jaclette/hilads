@@ -487,6 +487,8 @@
       "cityBeyond": "位列你所在城市前 {{topN}} 之外",
       "world": "全球第 {{rank}} 名",
       "worldBeyond": "位列全球前 {{topN}} 之外",
+      "cityUnranked": "本月在{{city}}尚未上榜",
+      "worldUnranked": "本月全球尚未上榜",
       "cities": "{{city}} 在城市中排名第 {{rank}}",
       "citiesBeyond": "{{city}} 排在城市 {{topN}} 名之外"
     },

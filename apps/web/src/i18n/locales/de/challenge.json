@@ -487,6 +487,8 @@
       "cityBeyond": "Außerhalb der Top {{topN}} deiner Stadt",
       "world": "#{{rank}} weltweit",
       "worldBeyond": "Außerhalb der Top {{topN}} weltweit",
+      "cityUnranked": "Diesen Monat noch nicht in {{city}} platziert",
+      "worldUnranked": "Diesen Monat weltweit noch nicht platziert",
       "cities": "{{city}} ist #{{rank}} unter den Städten",
       "citiesBeyond": "{{city}} außerhalb der Top {{topN}} der Städte"
     },

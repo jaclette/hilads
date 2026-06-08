@@ -487,6 +487,8 @@
       "cityBeyond": "Ngoài top {{topN}} của thành phố bạn",
       "world": "#{{rank}} toàn cầu",
       "worldBeyond": "Ngoài top {{topN}} toàn cầu",
+      "cityUnranked": "Tháng này chưa có hạng tại {{city}}",
+      "worldUnranked": "Tháng này chưa có hạng toàn cầu",
       "cities": "{{city}} đứng #{{rank}} trong các thành phố",
       "citiesBeyond": "{{city}} ngoài top {{topN}} thành phố"
     },

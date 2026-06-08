@@ -487,6 +487,8 @@
       "cityBeyond": "अपने शहर में टॉप {{topN}} से बाहर",
       "world": "दुनिया में #{{rank}}",
       "worldBeyond": "दुनिया में टॉप {{topN}} से बाहर",
+      "cityUnranked": "इस महीने {{city}} में रैंक नहीं",
+      "worldUnranked": "इस महीने वैश्विक रैंक नहीं",
       "cities": "{{city}} शहरों में #{{rank}}",
       "citiesBeyond": "{{city}} शीर्ष {{topN}} शहरों से बाहर"
     },

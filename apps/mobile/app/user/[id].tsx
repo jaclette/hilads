@@ -34,6 +34,7 @@ import { fetchUserHangouts, type ProfileHangout } from '@/api/topics';
 import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
+import { ProfileRankRow } from '@/components/ProfileRankRow';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
@@ -471,6 +472,16 @@ export default function PublicProfileScreen() {
                   </Text>
                 </View>
               ) : null}
+
+              {/* Monthly rank — this user's rank in THEIR own current city +
+                  worldwide. Distinct from the viewer's city above. Renders
+                  nothing when the user has no current city + no monthly
+                  score. */}
+              <ProfileRankRow
+                rank={user.monthlyRank ?? null}
+                cityName={user.currentCity ?? null}
+                cityCountry={user.currentCityCountry ?? null}
+              />
             </View>
 
             {/* About me */}

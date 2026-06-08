@@ -29,6 +29,93 @@ class MonthlyRankService
     private const TOP_N = 10;
 
     /**
+     * Bounded-rank cap used by ranksForUser() (read-time computation for
+     * profile screens). Distinct from TOP_N (the denormalised top-10
+     * write window): we still resolve a precise position for users
+     * sitting between 11 and 100 — the cached column would already say
+     * "no badge" for them, but the profile screen wants the actual rank.
+     * Past 100 we just say "outside the top 100" — same threshold as
+     * /me/scores so the two surfaces agree.
+     */
+    private const TOP_N_BOUNDED = 100;
+
+    /**
+     * Read-time monthly ranks for an arbitrary user — used by profile
+     * screens. Same bounded LIMIT-(N+1) trick as /me/scores so the cost
+     * stays flat regardless of total user count. Returns null when the
+     * user is outside the top 100 of either scope (the client renders
+     * the "beyond" copy in that case) or has no monthly score at all.
+     *
+     *   [
+     *     'city'        => 47 | null,
+     *     'global'      => 12 | null,
+     *     'score_month' => 250,
+     *     'has_city'    => true,
+     *     'top_n'       => 100,
+     *   ]
+     */
+    public static function ranksForUser(string $userId): array
+    {
+        $defaults = [
+            'city'        => null,
+            'global'      => null,
+            'score_month' => 0,
+            'has_city'    => false,
+            'top_n'       => self::TOP_N_BOUNDED,
+        ];
+
+        $pdo  = Database::pdo();
+        $stmt = $pdo->prepare("
+            SELECT score_month, score_month_ref, current_city_id
+            FROM users
+            WHERE id = ?
+        ");
+        $stmt->execute([$userId]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (!$row) {
+            return $defaults;
+        }
+
+        $cachedMonth    = (int) $row['score_month'];
+        $monthRef       = $row['score_month_ref'];
+        $cityId         = $row['current_city_id'];
+        $currentMonth   = gmdate('Y-m');
+        $effectiveMonth = ($monthRef === $currentMonth) ? $cachedMonth : 0;
+
+        $boundedRank = static function (string $whereExtra, array $bind) use ($pdo): ?int {
+            $cap = self::TOP_N_BOUNDED;
+            $sql = "
+                SELECT COUNT(*) FROM (
+                    SELECT 1 FROM users
+                    WHERE {$whereExtra} AND deleted_at IS NULL
+                    LIMIT " . ($cap + 1) . "
+                ) bounded
+            ";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($bind);
+            $cnt = (int) $stmt->fetchColumn();
+            return $cnt < $cap ? $cnt + 1 : null;
+        };
+
+        $globalRank = $boundedRank(
+            'score_month > :s AND score_month_ref = :m',
+            ['s' => $effectiveMonth, 'm' => $currentMonth],
+        );
+        $cityRank = $cityId === null ? null : $boundedRank(
+            'score_month > :s AND score_month_ref = :m AND current_city_id = :c',
+            ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
+        );
+
+        return [
+            'city'        => $cityRank,
+            'global'      => $globalRank,
+            'score_month' => $effectiveMonth,
+            'has_city'    => $cityId !== null,
+            'top_n'       => self::TOP_N_BOUNDED,
+        ];
+    }
+
+    /**
      * Recompute monthly_rank_in_city for the home cities of each user
      * passed in AND monthly_rank_worldwide globally. Callers list the
      * user(s) whose score just changed — the service looks up each

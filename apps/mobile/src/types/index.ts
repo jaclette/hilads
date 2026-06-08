@@ -403,10 +403,28 @@ export interface UserDTO {
   isOnline?:      boolean | null;
 }
 
+/**
+ * Bounded read-time monthly ranks. Mirrors the PHP MonthlyRankService::ranksForUser
+ * shape — used on profile screens (own + other) for the "#N in {city}" + "#N
+ * worldwide" rows. null = outside the top 100 (top_n). score_month=0 + null
+ * rank = no monthly score yet → "Not ranked this month" copy.
+ */
+export interface MonthlyRank {
+  city:        number | null;
+  global:      number | null;
+  score_month: number;
+  has_city:    boolean;
+  top_n:       number;
+}
+
 /** Public profile - UserDTO + profile-specific extensions. */
 export interface PublicProfile extends UserDTO {
   age?:       number | null;
   homeCity?:  string | null;
+  /** Live last-geolocated city name. Distinct from homeCity (user-edited). Drives the rank-row "in X" label. */
+  currentCity?: string | null;
+  /** ISO country code for the currentCity — used to render the flag emoji on the rank row. */
+  currentCityCountry?: string | null;
   aboutMe?:   string | null;
   interests?: string[];
   mode?:      ModeKey | null;
@@ -425,6 +443,8 @@ export interface PublicProfile extends UserDTO {
     id:        string;
     direction: 'outgoing' | 'incoming';
   } | null;
+  /** Monthly ranks (city + worldwide) — null beyond the top 100. */
+  monthlyRank?: MonthlyRank | null;
 }
 
 // ── Event participants ────────────────────────────────────────────────────────
@@ -580,6 +600,8 @@ export interface User {
     timezone:  string;
   } | null;
   current_city_set_at?: string | null;
+  /** Bounded monthly ranks for the own-profile rank row. See MonthlyRank shape. */
+  monthly_rank?: MonthlyRank | null;
   /**
    * Badge keys mirroring UserResource::fromUser: primary first (ghost/fresh/
    * regular), then 'host' appended when the user is an ambassador in any city.
