@@ -178,9 +178,24 @@ export default function LeaderboardScreen() {
               t={t}
             />
           ) : (
-            <View style={styles.unrankedRow}>
-              <Text style={styles.unrankedText}>{t('leaderboard.me.unranked')}</Text>
-            </View>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => router.push('/challenge/create')}
+              accessibilityRole="button"
+              accessibilityLabel={t('leaderboard.me.unranked')}
+            >
+              <LinearGradient
+                colors={Gradients.primary.colors}
+                start={Gradients.primary.start}
+                end={Gradients.primary.end}
+                style={styles.unrankedCta}
+              >
+                <Text style={styles.unrankedCtaText}>
+                  🔥 {t('leaderboard.me.unranked')}
+                </Text>
+                <Ionicons name="arrow-forward" size={18} color={Colors.white} />
+              </LinearGradient>
+            </TouchableOpacity>
           )}
         </View>
       )}
@@ -497,13 +512,32 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: Colors.border,
     backgroundColor: Colors.bg,
   },
-  unrankedRow: {
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
-    alignItems: 'center',
+  // Unranked CTA — replaces the previous muted-grey one-liner. Orange
+  // gradient pill that nudges the unranked viewer straight into the
+  // create-challenge flow. Branded primary gradient (#C24A38 → #B87228),
+  // arrow on the right so the affordance reads as "go do this".
+  unrankedCta: {
+    marginHorizontal:  Spacing.md,
+    marginVertical:    Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   14,
+    borderRadius:      Radius.full,
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               10,
+    shadowColor:       '#C24A38',
+    shadowOpacity:     0.35,
+    shadowRadius:      12,
+    shadowOffset:      { width: 0, height: 4 },
+    elevation:         4,
   },
-  unrankedText: {
-    fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted,
-    textAlign: 'center',
+  unrankedCtaText: {
+    color:      Colors.white,
+    fontSize:   FontSizes.md,
+    fontWeight: '800',
+    letterSpacing: -0.2,
+    textAlign:  'center',
   },
 
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },

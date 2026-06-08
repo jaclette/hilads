@@ -33,7 +33,7 @@ function avatarColors(name = '') {
 
 const PAGE_SIZE = 50
 
-export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, initialScope = 'city' }) {
+export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, onCreateChallenge, initialScope = 'city' }) {
   const { t } = useTranslation('challenge')
 
   // PR38 — initialScope lets callers (e.g. the score celebration popin's
@@ -186,9 +186,16 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
               t={t}
             />
           ) : (
-            <div className="leaderboard-unranked">
-              {t('leaderboard.me.unranked')}
-            </div>
+            <button
+              type="button"
+              className="leaderboard-unranked-cta"
+              onClick={onCreateChallenge}
+            >
+              <span className="leaderboard-unranked-cta-label">
+                🔥 {t('leaderboard.me.unranked')}
+              </span>
+              <span className="leaderboard-unranked-cta-arrow" aria-hidden="true">→</span>
+            </button>
           )}
         </div>
       )}

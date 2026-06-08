@@ -918,12 +918,39 @@ html, body, #root {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: var(--bg, #0d0b09);
 }
-.leaderboard-unranked {
-  padding: 14px 16px;
-  text-align: center;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted, #b3b3b3);
+/* Unranked CTA — replaces a previous muted-grey one-liner. Orange
+   gradient pill nudges the viewer straight into the create-challenge
+   flow. Branded primary gradient (#C24A38 → #B87228). */
+.leaderboard-unranked-cta {
+  display:           flex;
+  align-items:       center;
+  justify-content:   center;
+  gap:               10px;
+  margin:            10px 14px;
+  padding:           14px 18px;
+  width:             calc(100% - 28px);
+  border:            none;
+  border-radius:     999px;
+  background:        linear-gradient(135deg, #C24A38, #B87228);
+  color:             #fff;
+  font-size:         15px;
+  font-weight:       800;
+  letter-spacing:    -0.2px;
+  cursor:            pointer;
+  box-shadow:        0 4px 14px rgba(194, 74, 56, 0.35);
+  transition:        transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+.leaderboard-unranked-cta:hover {
+  transform:  translateY(-1px);
+  box-shadow: 0 6px 18px rgba(194, 74, 56, 0.45);
+}
+.leaderboard-unranked-cta:active {
+  transform:  translateY(0);
+  opacity:    0.92;
+}
+.leaderboard-unranked-cta-arrow {
+  font-size: 18px;
+  line-height: 1;
 }
 
 /* ── PR12 — Scoring info (i) button + popin ──────────────── */

@@ -6459,6 +6459,13 @@ export default function App() {
             setShowLeaderboard(false)
             openProfile(userId, displayName ?? '')
           }}
+          onCreateChallenge={() => {
+            // Close the leaderboard so the create modal renders on the
+            // clean app shell, then open it through the existing entry
+            // (guest gate + permission flow already live there).
+            setShowLeaderboard(false)
+            openCreateChallenge()
+          }}
         />
       )}
 
