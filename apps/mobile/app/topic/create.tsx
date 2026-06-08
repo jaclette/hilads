@@ -69,7 +69,7 @@ export default function CreateTopicScreen() {
         const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
         if (last) coords = { lat: last.coords.latitude, lng: last.coords.longitude };
       }
-    } catch { /* no coords — non-fatal */ }
+    } catch { /* no coords - non-fatal */ }
     try {
       await createTopic(city.channelId, identity.guestId, trimmedTitle, description.trim() || null, category, coords);
       router.back();
@@ -85,13 +85,13 @@ export default function CreateTopicScreen() {
     }
   }
 
-  // ── Guest gate — hosting a hangout requires a registered account ─────────────
+  // ── Guest gate - hosting a hangout requires a registered account ─────────────
   if (!account) {
     router.replace('/auth-gate?reason=create_hangout');
     return null;
   }
 
-  // ── One-hangout-per-user — you already have an active hangout. ───────────────
+  // ── One-hangout-per-user - you already have an active hangout. ───────────────
   if (limitTopic) {
     return (
       <SafeAreaView style={styles.container}>

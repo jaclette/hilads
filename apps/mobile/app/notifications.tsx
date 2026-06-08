@@ -1,5 +1,5 @@
 /**
- * Notifications preview screen — latest 5 notifications + preferences.
+ * Notifications preview screen - latest 5 notifications + preferences.
  *
  * Fetches only 5 notifications server-side (limit=5).
  * "See all notifications" navigates to /notifications-history for the full list.
@@ -138,7 +138,7 @@ export default function NotificationsScreen() {
     markNotificationsRead();
   }, [setUnreadNotifications]);
 
-  // ── Tap a notification — mark read + navigate ─────────────────────────────
+  // ── Tap a notification - mark read + navigate ─────────────────────────────
 
   const handleTap = useCallback((notif: Notification) => {
     if (!notif.is_read) {
@@ -244,7 +244,7 @@ export default function NotificationsScreen() {
 
           <View style={styles.prefCard}>
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
-                now — they govern the envelope icon's behaviour, not the bell. */}
+                now - they govern the envelope icon's behaviour, not the bell. */}
             <PrefRow label={t('pref.mentionLabel')} subtitle={t('pref.mentionSub')} value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.eventJoinLabel')} subtitle={t('pref.eventJoinSub')} value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />

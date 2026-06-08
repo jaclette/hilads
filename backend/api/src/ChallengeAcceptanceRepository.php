@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Challenge acceptances — one row per (challenge, acceptor) relationship.
+ * Challenge acceptances - one row per (challenge, acceptor) relationship.
  *
  * A challenge ad lives in channel_challenges; each take-on creates:
  *   - a row here (the acceptance)
@@ -13,13 +13,13 @@ declare(strict_types=1);
  * Phases (PR2 only writes 'accepted'; PR3 introduces 'scheduled', PR4 the rest):
  *   accepted   → just opened
  *   scheduled  → creator approved a date, debrief_event_id set
- *   debrief    → derived (event.ends_at past in city tz) — not stored
+ *   debrief    → derived (event.ends_at past in city tz) - not stored
  *   approved   → creator marked the challenge accomplished post-debrief
  *   rejected   → creator marked it not done
  *
  * Cap enforcement: the caller checks countByChallenge() < max_participants
  * BEFORE create(). Race against the cap is bounded by Postgres' UNIQUE on
- * (challenge_id, acceptor_user_id) — a duplicate accept always fails — but
+ * (challenge_id, acceptor_user_id) - a duplicate accept always fails - but
  * two distinct users hitting the +1th slot simultaneously could over-fill
  * by one. Acceptable for the current scale; revisit with FOR UPDATE if it
  * becomes a real issue.
@@ -28,15 +28,15 @@ class ChallengeAcceptanceRepository
 {
     public const ALLOWED_PHASES = ['accepted', 'scheduled', 'debrief', 'approved', 'rejected'];
 
-    // PR4 — derived `effective_phase` reflects when the debrief panel unlocks.
+    // PR4 - derived `effective_phase` reflects when the debrief panel unlocks.
     // `scheduled` flips to `debrief` once the meetup's end time is past. Both
     // proposed_*_at and now() are TIMESTAMPTZ (stored UTC), so the comparison
-    // is timezone-agnostic at the moment level — the city tz only matters for
+    // is timezone-agnostic at the moment level - the city tz only matters for
     // *display* of when something happens. If the proposal had no ends_at, we
     // fall back to starts_at + 2h (the same default the UI uses).
     //
     // Previously derived from a JOINed channel_events row, but date approval
-    // no longer creates an event — the proposed_starts_at/ends_at columns on
+    // no longer creates an event - the proposed_starts_at/ends_at columns on
     // the acceptance row are the source of truth.
     private const EFFECTIVE_PHASE = "
         CASE
@@ -79,12 +79,12 @@ class ChallengeAcceptanceRepository
             'thread_channel_id'   => $row['thread_channel_id'],
             'debrief_event_id'    => $row['debrief_event_id'] ?? null,
             'phase'               => $row['phase'],
-            // PR4 — derived. Same as `phase` except 'scheduled' flips to
+            // PR4 - derived. Same as `phase` except 'scheduled' flips to
             // 'debrief' once the meetup's end time is past. Clients render
             // off effective_phase; the raw `phase` is kept for debugging
             // + future "did this ever flip" audits.
             'effective_phase'     => $row['effective_phase'] ?? $row['phase'],
-            // PR3 — date concertation
+            // PR3 - date concertation
             'proposed_starts_at'  => isset($row['proposed_starts_at']) ? (int) $row['proposed_starts_at'] : null,
             'proposed_ends_at'    => isset($row['proposed_ends_at'])   ? (int) $row['proposed_ends_at']   : null,
             'proposed_venue'      => $row['proposed_venue'] ?? null,
@@ -116,7 +116,7 @@ class ChallengeAcceptanceRepository
         return $row ? self::format($row) : null;
     }
 
-    /** All acceptances for a challenge — creator's "who took it on" view. */
+    /** All acceptances for a challenge - creator's "who took it on" view. */
     public static function getByChallenge(string $challengeId): array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
@@ -143,14 +143,14 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * Ghost-grace window — number of days a `scheduled` acceptance keeps
+     * Ghost-grace window - number of days a `scheduled` acceptance keeps
      * holding the challenge after its meet-up end has passed with no
      * verdict. Past this, the challenge frees back to available so a new
      * traveler can take it on.
      *
      * Configurable here, intentionally a single source of truth (the EXISTS
      * sub-select in ChallengeRepository::SELECT mirrors this value via
-     * IS_ACTIVE_SQL below — keep them in sync). Lower this to 3–4 in low-
+     * IS_ACTIVE_SQL below - keep them in sync). Lower this to 3–4 in low-
      * volume cities if challenges feel stuck too long; raise it for richer
      * cities where verdicts arrive lazily.
      */
@@ -161,16 +161,16 @@ class ChallengeAcceptanceRepository
      *
      * Active means: NOT in a terminal phase, AND not a ghosted scheduled row.
      * A scheduled row is ghosted when its meet-up end (or start, if no end)
-     * is older than GHOST_GRACE_DAYS — i.e., the creator never marked a
+     * is older than GHOST_GRACE_DAYS - i.e., the creator never marked a
      * verdict and we don't want to lock the challenge forever. Pending /
      * accepted rows never auto-ghost (no date yet to measure against).
      *
-     * Used by hasActiveAcceptance() — the /accept endpoint's gate. We
+     * Used by hasActiveAcceptance() - the /accept endpoint's gate. We
      * INTENTIONALLY include 'pending' here so two users can't both create
      * a request on the same slot; the creator picks one and the other is
      * rejected. The UI-display flag (IS_IN_PROGRESS_SQL below) excludes
      * 'pending' so the city feed still reads "Available" while the
-     * creator decides — see PR36.
+     * creator decides - see PR36.
      *
      * Caller must alias the table as `ca` in the surrounding query.
      */
@@ -187,11 +187,11 @@ class ChallengeAcceptanceRepository
      * SQL fragment that selects acceptances treated as "in progress" by the
      * UI (the green/orange status pill on the card, the locked CTA, etc.).
      *
-     * Same shape as IS_ACTIVE_SQL but ALSO excludes 'pending' — a request
+     * Same shape as IS_ACTIVE_SQL but ALSO excludes 'pending' - a request
      * the creator hasn't reviewed yet doesn't read as "in progress" to a
      * city-feed viewer, it's still effectively available. Per user-reported
      * UX (PR36): "I requested to take a challenge and the status became
-     * 'in progress' — it should still show available until the challenger
+     * 'in progress' - it should still show available until the challenger
      * accepts one taker."
      *
      * Caller must alias the table as `ca` in the surrounding query.
@@ -206,11 +206,11 @@ class ChallengeAcceptanceRepository
     ";
 
     /**
-     * 1:1 gate — true iff this challenge currently has an "active" acceptance
+     * 1:1 gate - true iff this challenge currently has an "active" acceptance
      * (see IS_ACTIVE_SQL above). Used by the /accept route to refuse a new
      * take-on while one is in progress.
      *
-     * `approved` and `rejected` are terminal — they free the challenge back
+     * `approved` and `rejected` are terminal - they free the challenge back
      * to available. `scheduled` rows whose meet-up time is more than
      * GHOST_GRACE_DAYS in the past are also treated as freed (ghosted taker).
      */
@@ -232,7 +232,7 @@ class ChallengeAcceptanceRepository
      * current run's acceptance_id and to filter the challenge chat read
      * to that run only, so each new acceptor sees a clean slate.
      *
-     * Same "active" definition as hasActiveAcceptance() — IS_ACTIVE_SQL
+     * Same "active" definition as hasActiveAcceptance() - IS_ACTIVE_SQL
      * keeps pending in the active set so the moment a request lands the
      * channel is already scoped to that prospective run.
      */
@@ -268,7 +268,7 @@ class ChallengeAcceptanceRepository
         return (bool) $stmt->fetchColumn();
     }
 
-    /** Idempotency probe — has this user already accepted this challenge? */
+    /** Idempotency probe - has this user already accepted this challenge? */
     public static function findExisting(string $challengeId, string $acceptorUserId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
@@ -280,12 +280,12 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * "My threads" — every acceptance where the user is acceptor OR creator,
+     * "My threads" - every acceptance where the user is acceptor OR creator,
      * enriched with the challenge title, counter-party display info, and last
-     * message preview. Single query — important for low Supabase egress.
+     * message preview. Single query - important for low Supabase egress.
      *
      * Ordered by last message timestamp (or acceptance creation if no messages
-     * yet), most-recent first. Capped at 100 — bounded read.
+     * yet), most-recent first. Capped at 100 - bounded read.
      */
     public static function getMineWithMeta(string $userId): array
     {
@@ -373,7 +373,7 @@ class ChallengeAcceptanceRepository
                 'last_message_content' => $r['last_message_content'],
                 'i_am_creator'         => $isCreator,
                 'counterparty'         => $counterparty,
-                // Stamped below — filled per (challenge_id, viewer) group.
+                // Stamped below - filled per (challenge_id, viewer) group.
                 'is_primary_for_challenge' => false,
             ];
         }
@@ -386,7 +386,7 @@ class ChallengeAcceptanceRepository
         // Priority slots: pending (review) → debrief (verdict) → accepted
         // (date concertation) → scheduled (awaiting meet-up) → terminal.
         // Tiebreak: most-recent activity first, then id (lex) so the choice
-        // is fully deterministic across surfaces — mobile, web, future
+        // is fully deterministic across surfaces - mobile, web, future
         // clients all converge on the same row.
         //
         // This is the source of truth: front-ends just .find(thr =>
@@ -396,7 +396,7 @@ class ChallengeAcceptanceRepository
             $p = $t['effective_phase'] ?? $t['phase'];
             return match ($p) {
                 // International review queue lives at the same priority as
-                // Local pending — both surface "you have something to look
+                // Local pending - both surface "you have something to look
                 // at" CTAs (review the proof / review the take-on request).
                 'pending'         => 0,
                 'proof_submitted' => 0,
@@ -445,7 +445,7 @@ class ChallengeAcceptanceRepository
     {
         // Local challenges: 'pending' (the IRL meetup requires the creator to
         // filter who joins). International challenges: 'accepted' (the friction
-        // lives on the proof verdict — there's nothing to filter at take-on,
+        // lives on the proof verdict - there's nothing to filter at take-on,
         // and an in-flight review step would just delay the proof submission).
         // Caller passes the resolved value; we whitelist here so a stray value
         // can't smuggle through.
@@ -453,7 +453,7 @@ class ChallengeAcceptanceRepository
             $initialPhase = 'pending';
         }
 
-        // No more auto-thread channel — the 1:1 conversation moved to the
+        // No more auto-thread channel - the 1:1 conversation moved to the
         // unified public challenge channel. acceptances write NULL into
         // thread_channel_id; the column stays for back-compat with rows
         // created before this change but isn't read by the client anymore.
@@ -517,7 +517,7 @@ class ChallengeAcceptanceRepository
      * Either party proposes a date (counter-proposals overwrite). Caller has
      * already validated phase='accepted' and `proposerUserId` is a thread member.
      *
-     * `endsAt` is nullable — if not given, the client default (start + 2h) is
+     * `endsAt` is nullable - if not given, the client default (start + 2h) is
      * applied client-side before this call. Server doesn't impose one so the
      * column stays NULL if neither side ever set it.
      */
@@ -536,7 +536,7 @@ class ChallengeAcceptanceRepository
         //   - 'scheduled' → reschedule: flip phase back to 'accepted' and clear
         //                   date_approved_at so the other party re-approves.
         // After 'scheduled' (debrief / approved / rejected) the route guards
-        // against entry — see /propose-date handler.
+        // against entry - see /propose-date handler.
         Database::pdo()->prepare("
             UPDATE challenge_acceptances
             SET proposed_starts_at  = to_timestamp(:starts),
@@ -559,7 +559,7 @@ class ChallengeAcceptanceRepository
         return self::findById($acceptanceId);
     }
 
-    /** Clear the current proposal (proposer only — caller enforces). */
+    /** Clear the current proposal (proposer only - caller enforces). */
     public static function withdrawProposal(string $acceptanceId): ?array
     {
         Database::pdo()->prepare("
@@ -577,7 +577,7 @@ class ChallengeAcceptanceRepository
 
     /**
      * Creator approves the current proposal. Flips phase to 'scheduled' and
-     * stamps date_approved_at. The thread chat IS the meet-up surface — no
+     * stamps date_approved_at. The thread chat IS the meet-up surface - no
      * standalone event row is created (the previous design did, but the auto-
      * "🎉 New event" system message was misleading in the thread + showed up
      * elsewhere; the lifecycle now derives effective_phase=debrief directly
@@ -627,7 +627,7 @@ class ChallengeAcceptanceRepository
     /**
      * Creator rejects the take-on (no-show, didn't actually meet, etc.). Sets
      * phase='rejected' + rejected_at. Same gate as approve(). Note this is
-     * the FINAL verdict on this acceptance — there's no path back.
+     * the FINAL verdict on this acceptance - there's no path back.
      */
     public static function reject(string $acceptanceId): ?array
     {
@@ -642,7 +642,7 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * Cancel — hard-deletes the thread channel; the acceptance row goes via
+     * Cancel - hard-deletes the thread channel; the acceptance row goes via
      * FK CASCADE on thread_channel_id. Chat history is gone forever (clean
      * rollback; if you want to re-accept later, you get a fresh thread).
      *

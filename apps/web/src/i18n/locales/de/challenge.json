@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "Das ist dein eigener Challenge",
-        "body": "Du hast diesen Challenge erstellt — warte, bis ihn jemand anderes annimmt."
+        "body": "Du hast diesen Challenge erstellt - warte, bis ihn jemand anderes annimmt."
       },
       "mode_required": {
         "title": "Wähle zuerst Local oder Traveler",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "Da ist jemand dran",
-        "body": "Ein anderer Reisender nimmt sie gerade an. Schau wieder vorbei, wenn er fertig ist — dann ist die Challenge wieder frei."
+        "body": "Ein anderer Reisender nimmt sie gerade an. Schau wieder vorbei, wenn er fertig ist - dann ist die Challenge wieder frei."
       }
     }
   },
   "thread": {
     "notFound": "Thread nicht gefunden",
     "empty": "Sag hi 👋 und plant, wann ihr euch trefft.",
-    "emptyIntl": "Sag hi 👋 — schick ein 📸, wenn du's geschafft hast.",
+    "emptyIntl": "Sag hi 👋 - schick ein 📸, wenn du's geschafft hast.",
     "cancel": {
       "creatorTitle": "Diesen Take-on abbrechen?",
       "acceptorTitle": "Diesen Challenge fallen lassen?",
@@ -191,7 +191,7 @@
     "confirm": {
       "approve": {
         "title": "Als gemeistert markieren?",
-        "body": "Das ist endgültig — du kannst es danach nicht mehr ändern.",
+        "body": "Das ist endgültig - du kannst es danach nicht mehr ändern.",
         "confirm": "Als gemeistert markieren"
       },
       "reject": {
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "Da ist gerade jemand dran",
-      "body": "Ein Reisender nimmt diese Challenge gerade an. Wenn er fertig ist, ist sie wieder frei — schau bald wieder vorbei."
+      "body": "Ein Reisender nimmt diese Challenge gerade an. Wenn er fertig ist, ist sie wieder frei - schau bald wieder vorbei."
     }
   },
   "postCreate": {
     "title": "Deine Challenge ist live",
-    "subtitle": "Jetzt anstoßen — sorge dafür, dass jemand sie in der nächsten Stunde annimmt.",
+    "subtitle": "Jetzt anstoßen - sorge dafür, dass jemand sie in der nächsten Stunde annimmt.",
     "thisCity": "diese Stadt",
     "ctaInvite": "Schick sie an jemanden in {{city}}",
-    "ctaInviteSub": "Wähle ein paar {{audience}} — wir pingen sie an.",
+    "ctaInviteSub": "Wähle ein paar {{audience}} - wir pingen sie an.",
     "ctaShare": "Außerhalb von Hilads teilen",
     "skip": "Vielleicht später",
     "pickerTitle": "{{audience}} in {{city}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "Erst jemanden auswählen",
     "sentTitle": "An {{count}} gesendet",
     "sentSubtitle": "Sie bekommen jetzt eine Push-Benachrichtigung.",
-    "pickerSubtitleAll": "Niemand passt exakt — wir zeigen alle in {{city}}."
+    "pickerSubtitleAll": "Niemand passt exakt - wir zeigen alle in {{city}}."
   },
   "invitation": {
     "accept": "Annehmen",
@@ -311,7 +311,7 @@
     "targetCityHint": "Lass \"Überall\" stehen, um Reisende überall zu erreichen, oder wähl eine Stadt.",
     "proofRequirementsLabel": "Was soll das Foto zeigen?",
     "proofRequirementsPlaceholder": "z.B. Das Gericht im Tageslicht, du im Bild",
-    "proofRequirementsHint": "Der Beweis ist ein Foto 📸. Der Teilnehmer sieht das vor dem Absenden — sei konkret.",
+    "proofRequirementsHint": "Der Beweis ist ein Foto 📸. Der Teilnehmer sieht das vor dem Absenden - sei konkret.",
     "cityPicker": {
       "title": "Zielstadt wählen",
       "searchPlaceholder": "Stadt suchen…",
@@ -369,16 +369,16 @@
     "leaveCta": "Kanal verlassen",
     "errKicked": "Du wurdest aus dieser Challenge entfernt. Du kannst nicht erneut beitreten.",
     "errClosed": "Diese Challenge nimmt keine neuen Teilnehmer mehr auf.",
-    "errGeneric": "Konnte nicht reinspringen — versuch's nochmal."
+    "errGeneric": "Konnte nicht reinspringen - versuch's nochmal."
   },
   "members": {
     "title": "Im Kanal",
     "countIn": "{{count}} im Kanal",
     "seeAll": "Alle anzeigen →",
-    "empty": "Noch niemand dabei — sei der Erste.",
+    "empty": "Noch niemand dabei - sei der Erste.",
     "kickCta": "Entfernen",
     "kickAria": "{{name}} aus dem Kanal entfernen",
-    "errKick": "Entfernen fehlgeschlagen — versuch's noch mal."
+    "errKick": "Entfernen fehlgeschlagen - versuch's noch mal."
   },
   "notif": {
     "on": "Benachrichtigungen an",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Bewerte dein Treffen mit {{name}}",
-      "titleUrgent": "{{name}} hat bewertet — du bist dran"
+      "titleUrgent": "{{name}} hat bewertet - du bist dran"
     },
     "sheet": {
       "title": "Wie war’s mit {{name}}?",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "Wie Punkte vergeben werden",
     "title": "🏆 So funktionieren Challenges",
-    "intro": "Jede Challenge bringt beiden Seiten Punkte — sie fließen in deine Stadt- und Weltbestenliste ein.",
+    "intro": "Jede Challenge bringt beiden Seiten Punkte - sie fließen in deine Stadt- und Weltbestenliste ein.",
     "colStep": "Schritt",
     "steps": {
       "accepted": "Challenge angenommen",
@@ -455,17 +455,17 @@
       "meet": "Treffen",
       "rate": "Beide bewerten"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Gesamt pro Challenge",
     "footnote": "Punkte gibt es nur, wenn beide das Treffen bewerten.",
     "types": {
       "heading": "🎯 Zwei Arten zu spielen",
-      "local": "🏙️ Lokal — in deiner Stadt. IRL treffen, damit es zählt.",
-      "international": "🌍 International — zwischen Städten. Ein Sofortfoto als Beweis."
+      "local": "🏙️ Lokal - in deiner Stadt. IRL treffen, damit es zählt.",
+      "international": "🌍 International - zwischen Städten. Ein Sofortfoto als Beweis."
     },
     "lifecycle": {
       "heading": "🔁 Eine Challenge nach der anderen",
-      "body": "Wenn der Annehmer fertig ist, wird der Chat geleert — die Challenge bleibt, bereit für den Nächsten."
+      "body": "Wenn der Annehmer fertig ist, wird der Chat geleert - die Challenge bleibt, bereit für den Nächsten."
     },
     "pointsHeading": "💯 So sammelst du Punkte"
   },
@@ -473,7 +473,7 @@
     "unit": "Punkte",
     "subtitle": {
       "accepted": "Dein Challenge wurde angenommen 🤝",
-      "date_locked": "Termin bestätigt — los geht’s 🗓️",
+      "date_locked": "Termin bestätigt - los geht’s 🗓️",
       "meetup": "Mission erfüllt 🎉",
       "debrief": "Mission erfüllt 🎉",
       "ghost": "Beim nächsten Mal klappt’s 👻",

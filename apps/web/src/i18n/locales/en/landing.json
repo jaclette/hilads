@@ -33,7 +33,7 @@
     "title": "Be the local that runs the city",
     "tagline": "You know the spots. Challenge the locals or the travelers to find them.",
     "bullets": [
-      "Challenge locals or travelers — food, place, culture or help",
+      "Challenge locals or travelers - food, place, culture or help",
       "Pull people to the spots you love",
       "Become the local people remember"
     ],
@@ -60,7 +60,7 @@
       },
       {
         "title": "Launch or take on a challenge",
-        "desc": "Anyone can launch a food, place, culture or help challenge — for locals or for travelers. The other side takes it on."
+        "desc": "Anyone can launch a food, place, culture or help challenge - for locals or for travelers. The other side takes it on."
       },
       {
         "title": "Meet in person",
@@ -82,7 +82,7 @@
       "Real people. Real places. Right now."
     ]
   },
-  "seo": "Hilads is a real-time social app where locals and travelers challenge each other to discover the city the real way. Take on a food, place or culture challenge in Paris, accept one in Barcelona, or launch your own in Lisbon — Hilads turns every trip into an in-person meet-up. No account needed. Just show up.",
+  "seo": "Hilads is a real-time social app where locals and travelers challenge each other to discover the city the real way. Take on a food, place or culture challenge in Paris, accept one in Barcelona, or launch your own in Lisbon - Hilads turns every trip into an in-person meet-up. No account needed. Just show up.",
   "download": {
     "eyebrow": "Mobile apps",
     "title": "Your city in your pocket.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Cross-city",
     "tagline": "Send a challenge across cities. Get a video back.",
-    "sub": "When your city is quiet, the world isn't. Challenge someone anywhere — they send proof, you validate from afar.",
+    "sub": "When your city is quiet, the world isn't. Challenge someone anywhere - they send proof, you validate from afar.",
     "bullets": [
       "Target a specific city, or leave it open to anyone, anywhere.",
-      "They submit a geotagged photo — proof it happened.",
+      "They submit a geotagged photo - proof it happened.",
       "You validate from your couch. Reject with a reason if it's off."
     ],
     "cta": "Try a global challenge"

@@ -1,5 +1,5 @@
 /**
- * Vercel serverless function — /cities index page.
+ * Vercel serverless function - /cities index page.
  *
  * Standalone server-rendered HTML at https://hilads.live/cities. Lists every
  * active Hilads city with its country flag + activity stats. Each entry links
@@ -68,9 +68,9 @@ function jsonLdSafe(obj) {
 
 function renderPage(channels) {
   // Sort:
-  //   1. Active users (descending) — live cities first
-  //   2. Event count (descending)  — cities with upcoming things ahead of dead ones
-  //   3. Alphabetical city name    — long tail
+  //   1. Active users (descending) - live cities first
+  //   2. Event count (descending)  - cities with upcoming things ahead of dead ones
+  //   3. Alphabetical city name    - long tail
   // Without the eventCount tiebreaker, the long tail of cities with 0
   // online users falls back to alphabetical and drowns the active cities
   // when there's no live presence (e.g. weekday afternoons).
@@ -141,7 +141,7 @@ function renderPage(channels) {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>All Hilads cities — feel local, anywhere</title>
+  <title>All Hilads cities - feel local, anywhere</title>
   <meta name="description" content="See live activity in ${totalCities || '345+'} Hilads cities worldwide. Real-time city activity, no sign-up." />
   <meta name="theme-color" content="#161210" />
   <link rel="canonical" href="${SITE_BASE}/cities" />
@@ -151,7 +151,7 @@ function renderPage(channels) {
   <meta property="og:type"        content="website" />
   <meta property="og:site_name"   content="Hilads" />
   <meta property="og:url"         content="${SITE_BASE}/cities" />
-  <meta property="og:title"       content="All Hilads cities — feel local, anywhere" />
+  <meta property="og:title"       content="All Hilads cities - feel local, anywhere" />
   <meta property="og:description" content="See live activity in ${totalCities || '345+'} cities worldwide. Real-time, no sign-up." />
   <meta property="og:image"       content="${SITE_BASE}/og/og-default.png" />
   <meta property="og:image:width"  content="1200" />
@@ -159,7 +159,7 @@ function renderPage(channels) {
 
   <!-- Twitter -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="All Hilads cities — feel local, anywhere" />
+  <meta name="twitter:title"       content="All Hilads cities - feel local, anywhere" />
   <meta name="twitter:description" content="See live activity in ${totalCities || '345+'} cities worldwide." />
   <meta name="twitter:image"       content="${SITE_BASE}/og/og-default.png" />
 
@@ -329,7 +329,7 @@ function renderPage(channels) {
         <a href="/privacy">Privacy</a>
         <a href="/child-safety">Safety</a>
       </p>
-      <p class="footer__tagline">Hilads — feel local, anywhere.</p>
+      <p class="footer__tagline">Hilads - feel local, anywhere.</p>
     </footer>
   </div>
 

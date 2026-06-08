@@ -5,7 +5,7 @@
  *   php scripts/generate-vapid-keys.php
  *
  * Copy the output into your environment variables (Render, .env, etc.).
- * Keep VAPID_PRIVATE_KEY secret — never commit it.
+ * Keep VAPID_PRIVATE_KEY secret - never commit it.
  */
 
 declare(strict_types=1);
@@ -22,5 +22,5 @@ echo "VAPID_PUBLIC_KEY={$keys['publicKey']}\n";
 echo "VAPID_PRIVATE_KEY={$keys['privateKey']}\n";
 echo "VAPID_SUBJECT=mailto:hello@hilads.com\n";
 echo "\n";
-echo "⚠️  VAPID_PRIVATE_KEY is secret — never commit it to version control.\n";
+echo "⚠️  VAPID_PRIVATE_KEY is secret - never commit it to version control.\n";
 echo "ℹ️  Run this script only once. Changing keys invalidates all existing push subscriptions.\n\n";

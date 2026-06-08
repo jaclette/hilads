@@ -2,12 +2,12 @@
  * Me / My Profile screen
  *
  * Layout (registered users):
- *   STICKY  — page header
- *   STICKY  — identity row (avatar · name · badge · description)
- *   STICKY  — compact mode selector (Local / Exploring)
- *   STICKY  — filter pills (Personal Info · Friends · Vibes)
- *   SCROLL  — tab content
- *   STICKY  — save CTA + sign-out / delete account
+ *   STICKY  - page header
+ *   STICKY  - identity row (avatar · name · badge · description)
+ *   STICKY  - compact mode selector (Local / Exploring)
+ *   STICKY  - filter pills (Personal Info · Friends · Vibes)
+ *   SCROLL  - tab content
+ *   STICKY  - save CTA + sign-out / delete account
  *
  * Guest users see a compact guest card + mode selector + upgrade CTA
  * inside the scroll (no sticky filter bar needed).
@@ -48,7 +48,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { formatRecurrence } from '@/lib/recurrence';
 
-// ── Constants — must match backend allowed lists ──────────────────────────────
+// ── Constants - must match backend allowed lists ──────────────────────────────
 
 const MODES = [
   { key: 'local',     emoji: '🌍' },
@@ -80,7 +80,7 @@ const EVENT_ICONS: Record<string, string> = {
 type ProfileTab = 'interests' | 'challenges' | 'hangouts' | 'events' | 'friends' | 'vibes';
 
 // Challenges placed before Hangouts/Events to mirror the NOW-screen filter
-// ordering (Phase 4) — challenges are the primary activity type now.
+// ordering (Phase 4) - challenges are the primary activity type now.
 const PROFILE_TABS: ProfileTab[] = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes'];
 
 const HANGOUT_ICONS: Record<string, string> = {
@@ -110,7 +110,7 @@ const ME_BADGE_BG: Record<string, object> = {
   host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const ME_BADGE_COLOR: Record<string, object> = {
-  // ghost previously hardcoded '#666' (~3.4:1) — failed WCAG AA on the dark
+  // ghost previously hardcoded '#666' (~3.4:1) - failed WCAG AA on the dark
   // bg. Routed through the theme token so future contrast fixes propagate.
   ghost: { color: Colors.muted2 }, fresh: { color: '#4ade80' },
   regular: { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
@@ -128,7 +128,7 @@ export default function MeScreen() {
   const { identity, account, setAccount, setIdentity, logout, city, setCity } = useApp();
   const { events: rawEvents, loading: eventsLoading } = useMyEvents();
 
-  // Hangouts / Events tab labels are now translated (Vibes stays English — brand term).
+  // Hangouts / Events tab labels are now translated (Vibes stays English - brand term).
   const tabLabel = (key: ProfileTab): string =>
     key === 'interests'  ? t('tabInterests')
     : key === 'friends'  ? t('tabFriends')
@@ -144,10 +144,10 @@ export default function MeScreen() {
   const [aboutMe,            setAboutMe]            = useState(account?.about_me ?? '');
   const [homeCity,           setHomeCity]            = useState(account?.home_city ?? '');
   // Legend-only city picker on the profile. The HOME CITY row is the
-  // ONLY surface where /me/city gets called now — switch-city is purely
+  // ONLY surface where /me/city gets called now - switch-city is purely
   // a browse view. Global Legend check via account.badges so a Legend
   // who currently lives in a city they aren't ambassador in still sees
-  // the affordance (contextBadge would miss that case — it's
+  // the affordance (contextBadge would miss that case - it's
   // city-context-scoped, not global).
   const isLegend = accountIsLegend(account);
   const [cityPickerOpen, setCityPickerOpen] = useState(false);
@@ -164,7 +164,7 @@ export default function MeScreen() {
   const [myFriends,          setMyFriends]          = useState<UserDTO[]>([]);
   const [myHangouts,         setMyHangouts]         = useState<ProfileHangout[]>([]);
   const [myChallenges,       setMyChallenges]       = useState<ProfileChallenge[]>([]);
-  /** Sub-filter inside the Challenges tab — All / Local / International.
+  /** Sub-filter inside the Challenges tab - All / Local / International.
    *  Asymmetric per spec (Local is the hero) but symmetric here because
    *  the user might have lots of both kinds and needs a quick switcher. */
   const [challengeSubTab,    setChallengeSubTab]    = useState<'all' | 'local' | 'international'>('all');
@@ -320,7 +320,7 @@ export default function MeScreen() {
     ]);
   }
 
-  // Username availability — debounced check (backend excludes the caller's own row).
+  // Username availability - debounced check (backend excludes the caller's own row).
   type UStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
   const [uStatus, setUStatus] = useState<UStatus>('idle');
   const [uReason, setUReason] = useState<string | null>(null);
@@ -345,7 +345,7 @@ export default function MeScreen() {
   }
 
   async function handleSave() {
-    // Username is the single identity field — it doubles as the display name.
+    // Username is the single identity field - it doubles as the display name.
     const handle        = username.trim().toLowerCase();
     const handleChanged = handle !== (account?.username ?? '');
     if (handle.length < 3)     { setSaveError(t('errUsernameShort')); return; }
@@ -454,7 +454,7 @@ export default function MeScreen() {
         {!isGuest && (
           <View style={styles.stickyIdentity}>
 
-            {/* Identity row — avatar + name + badge + description */}
+            {/* Identity row - avatar + name + badge + description */}
             <View style={styles.identityRow}>
               <TouchableOpacity
                 style={styles.avatarWrap}
@@ -482,7 +482,7 @@ export default function MeScreen() {
 
               <View style={styles.identityInfo}>
                 <Text style={styles.identityName} numberOfLines={1}>
-                  {account?.username ? `@${account.username}` : (account?.display_name ?? '—')}
+                  {account?.username ? `@${account.username}` : (account?.display_name ?? '-')}
                 </Text>
                 <View style={styles.identityMetaRow}>
                   {account?.primaryBadge && (
@@ -505,7 +505,7 @@ export default function MeScreen() {
               </View>
             </View>
 
-            {/* Mode selector — compact 2-button toggle */}
+            {/* Mode selector - compact 2-button toggle */}
             <View style={styles.modeSection}>
               <Text style={styles.modeSectionLabel}>{t('modeHeading', { ns: 'common' })}</Text>
               <View style={styles.modeSelectorRow}>
@@ -527,7 +527,7 @@ export default function MeScreen() {
               </View>
             </View>
 
-            {/* Filter pills — scrollable for 5 tabs */}
+            {/* Filter pills - scrollable for 5 tabs */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -556,7 +556,7 @@ export default function MeScreen() {
               <View style={[styles.avatarFallback, { backgroundColor: avatarBgColor }]}>
                 <Text style={styles.avatarInitials}>{initials}</Text>
               </View>
-              <Text style={styles.avatarName}>{identity?.nickname ?? '—'}</Text>
+              <Text style={styles.avatarName}>{identity?.nickname ?? '-'}</Text>
               <View style={styles.badgeBlock}>
                 <View style={[styles.memberBadge, meBadgeBg('ghost')]}>
                   <Text style={[styles.memberBadgeText, meBadgeColor('ghost')]}>{t('badge.ghost', { ns: 'common' })}</Text>
@@ -644,7 +644,7 @@ export default function MeScreen() {
                 />
               </View>
 
-              {/* EMAIL — read only */}
+              {/* EMAIL - read only */}
               {account?.email ? (
                 <View style={styles.fieldGroup}>
                   <Text style={styles.fieldLabel}>{t('fieldEmail')}</Text>
@@ -657,7 +657,7 @@ export default function MeScreen() {
                 </View>
               ) : null}
 
-              {/* HOME CITY — PR48: GEO-resolved current city (read-only).
+              {/* HOME CITY - PR48: GEO-resolved current city (read-only).
                   Legend users (host badge) can tap to switch via the
                   city picker sheet. */}
               <View style={styles.fieldGroup}>
@@ -775,7 +775,7 @@ export default function MeScreen() {
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
 
-            {/* Mode sub-tabs — All / Local / International. */}
+            {/* Mode sub-tabs - All / Local / International. */}
             <View style={styles.subTabsRow}>
               {(['all', 'local', 'international'] as const).map(key => {
                 const active = challengeSubTab === key;
@@ -954,7 +954,7 @@ export default function MeScreen() {
         {/* ── Tab: Friends ── */}
         {!isGuest && activeTab === 'friends' && (
           <>
-            {/* Friend requests inbox row — always visible on the Friends tab.
+            {/* Friend requests inbox row - always visible on the Friends tab.
                 Badge shows pending incoming count; tapping opens the inbox. */}
             <TouchableOpacity
               style={styles.friendReqRow}
@@ -1064,7 +1064,7 @@ export default function MeScreen() {
           </View>
         )}
 
-        {/* ── Settings (registered only) — Apple G1.2 requires reachable Block management ── */}
+        {/* ── Settings (registered only) - Apple G1.2 requires reachable Block management ── */}
         {!isGuest && (
           <View style={styles.settingsCard}>
             <Text style={styles.settingsLabel}>{t('settings')}</Text>
@@ -1103,7 +1103,7 @@ export default function MeScreen() {
         </View>
       )}
 
-      {/* PR48 — Legend city picker. Selects a channel, posts /me/city,
+      {/* PR48 - Legend city picker. Selects a channel, posts /me/city,
           updates the local account so the field re-renders with the
           new city name without a screen bounce. */}
       {isLegend && (
@@ -1153,7 +1153,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
     backgroundColor:   Colors.bg,
   },
-  // No borderBottom — header flows directly into the tab sub-header,
+  // No borderBottom - header flows directly into the tab sub-header,
   // matching MY CITY's look.
   appHeaderWrap: {
     paddingHorizontal: Spacing.md,
@@ -1314,7 +1314,7 @@ const styles = StyleSheet.create({
     lineHeight: 15,
   },
 
-  // Filter pills — used as contentContainerStyle of horizontal ScrollView
+  // Filter pills - used as contentContainerStyle of horizontal ScrollView
   filterBar: {
     flexDirection:  'row',
     paddingLeft:    Spacing.md,

@@ -2,10 +2,10 @@
  * Shared time / date formatting for all chat surfaces (city, event, DM).
  *
  * createdAt can be:
- *   - unix seconds (number < 1e10)  — city / event message API
- *   - unix milliseconds (number ≥ 1e10) — rare but handled
- *   - ISO string                    — DM message API (optimistic messages)
- *   - PostgreSQL TIMESTAMPTZ string — DM messages from the backend API,
+ *   - unix seconds (number < 1e10)  - city / event message API
+ *   - unix milliseconds (number ≥ 1e10) - rare but handled
+ *   - ISO string                    - DM message API (optimistic messages)
+ *   - PostgreSQL TIMESTAMPTZ string - DM messages from the backend API,
  *     e.g. "2024-03-15 18:30:00.123456+00"
  *     (space instead of T, microseconds, +HH timezone suffix without minutes)
  *     Hermes (Android JS engine) returns Invalid Date for this format.
@@ -35,7 +35,7 @@ export function toMs(ts: number | string | undefined): number {
   return isNaN(ms) ? 0 : ms;
 }
 
-/** "18:42" — short local time. Kept for backward compatibility; prefer formatSmartTime. */
+/** "18:42" - short local time. Kept for backward compatibility; prefer formatSmartTime. */
 export function formatTime(ts: number | string | undefined): string {
   const ms = toMs(ts);
   if (!ms) return '';

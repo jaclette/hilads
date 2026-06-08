@@ -1,6 +1,6 @@
 services:
   # PHP REST API
-  # autoDeploy:false — deploys are manual. Push to main freely; hit "Manual Deploy"
+  # autoDeploy:false - deploys are manual. Push to main freely; hit "Manual Deploy"
   # in the Render dashboard (or the render CLI) when you want the change live.
   - type: web
     name: hilads-api
@@ -11,7 +11,7 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      # Phase C feature flag — when "on", GET /channels/{id}/members returns
+      # Phase C feature flag - when "on", GET /channels/{id}/members returns
       # users whose current_city_id matches (single source of truth, set by
       # /location/resolve and /me/city). When "off", uses the legacy sticky
       # union. Default "off" for safe rollout. Flip in the Render dashboard
@@ -23,7 +23,7 @@ services:
       # NotificationRepository::notifyCityOnlineUsers), so the env var is unused.
 
   # Node.js WebSocket presence server
-  # Plan is intentionally not set here — control it from the Render dashboard.
+  # Plan is intentionally not set here - control it from the Render dashboard.
   # Starter plan (recommended for production): no sleep, instant connections.
   # Free plan: sleeps after 15min inactivity → ~35s cold start → Cloudflare 521
   # during the wake-up window. Use an external uptime monitor on /health every

@@ -34,7 +34,7 @@ class NotificationRepository
         ?string $locale = null
     ): array {
         // Crawler / bot accounts: drop EVERYTHING they would trigger as an actor
-        // — no bell row written, no web push, no native push. Recipients of
+        // - no bell row written, no web push, no native push. Recipients of
         // their actions (mentions, DMs from them, profile-view of them, …) see
         // nothing. Reads / crawl are unaffected (gate is here on the write/push
         // side, not on the request). Common actor keys are inspected via
@@ -44,7 +44,7 @@ class NotificationRepository
             return [];
         }
 
-        // Localize per recipient — covers the stored bell row AND both push
+        // Localize per recipient - covers the stored bell row AND both push
         // channels below, since they all read $title/$body from here. English /
         // unknown locales and untranslated fields fall back to the caller's text.
         if (NotificationI18n::isTranslatable($type)) {
@@ -65,10 +65,10 @@ class NotificationRepository
         $stmt->execute([$userId, $type, $title, $body, json_encode($data)]);
         $notif = self::normalise($stmt->fetch(\PDO::FETCH_ASSOC));
 
-        // Web push (browser VAPID) — fire-and-forget
+        // Web push (browser VAPID) - fire-and-forget
         PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data), $data);
 
-        // Native push (iOS/Android via Expo) — fire-and-forget
+        // Native push (iOS/Android via Expo) - fire-and-forget
         MobilePushService::send($userId, $type, $title, $body, $data);
 
         return $notif;
@@ -144,14 +144,14 @@ class NotificationRepository
     }
 
     /**
-     * Batch-load notification preferences for multiple users — 1 query instead of N.
+     * Batch-load notification preferences for multiple users - 1 query instead of N.
      * Returns [ userId => bool ] indicating whether the given type is enabled for each user.
      */
     private static function batchIsEnabled(array $userIds, string $type): array
     {
         $col = self::typeToColumn($type);
         if ($col === null) {
-            // Unknown type — always enabled for everyone
+            // Unknown type - always enabled for everyone
             return array_fill_keys($userIds, true);
         }
 
@@ -197,7 +197,7 @@ class NotificationRepository
         return self::$localeCache[$userId] = ($loc ?: 'en');
     }
 
-    /** Batch-load locales for a fan-out — 1 query instead of N. Returns [uid => locale]. */
+    /** Batch-load locales for a fan-out - 1 query instead of N. Returns [uid => locale]. */
     private static function batchLocale(array $userIds): array
     {
         if (empty($userIds)) return [];
@@ -242,10 +242,10 @@ class NotificationRepository
             // close the loop on the invitation directly without the user
             // having to land in the app.
             'challenge_invitation'            => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // Cross-city heads-up — tap lands the user on the challenge so
+            // Cross-city heads-up - tap lands the user on the challenge so
             // they can decide whether to take it on.
             'challenge_international_target'  => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/(tabs)/now',
-            // PR47 — mutual rating complete. Tap → channel; the
+            // PR47 - mutual rating complete. Tap → channel; the
             // ScoreCelebrationLaunchGate on app-open also surfaces the
             // popin with the newly-earned debrief points.
             'challenge_rated_complete'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
@@ -253,7 +253,7 @@ class NotificationRepository
             // challenge so the RatePromptLaunchGate can surface the
             // RateSheet for the side that hasn't rated yet.
             'rating_received'                 => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
-            // New message in a challenge channel — fan-out to creator,
+            // New message in a challenge channel - fan-out to creator,
             // active takers, and explicit spectators. Tap lands in the
             // challenge chat just like an event message lands in the
             // event chat.
@@ -303,12 +303,12 @@ class NotificationRepository
     // those rows in the bell would double-count them and inflate the badge.
     //
     // Centralised here so listForUser / unreadCount / markAllRead all stay in
-    // sync — adding a new "envelope-only" type only requires editing this list.
+    // sync - adding a new "envelope-only" type only requires editing this list.
     private const BELL_EXCLUDED_TYPES = ['dm_message', 'event_message', 'channel_message', 'challenge_message'];
 
     private static function bellExclusionSql(): string
     {
-        // Inlined — types are hardcoded constants, no injection surface.
+        // Inlined - types are hardcoded constants, no injection surface.
         $quoted = array_map(fn($t) => "'" . $t . "'", self::BELL_EXCLUDED_TYPES);
         return 'type NOT IN (' . implode(',', $quoted) . ')';
     }
@@ -360,7 +360,7 @@ class NotificationRepository
         // Only marks bell-visible rows. DM/event/channel chat notifications are
         // tracked separately by the envelope icon and their read state is
         // governed by per-conversation / per-event last_read_at, not by this
-        // table — touching them here would silently break the envelope's badge.
+        // table - touching them here would silently break the envelope's badge.
         $exclude = self::bellExclusionSql();
         Database::pdo()->prepare("
             UPDATE notifications SET is_read = TRUE
@@ -394,7 +394,7 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences + locales — 1 query each regardless of count
+        // Batch-load preferences + locales - 1 query each regardless of count
         $enabled = self::batchIsEnabled($userIds, $type);
         $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {
@@ -405,8 +405,8 @@ class NotificationRepository
     }
 
     /**
-     * Notify everyone watching a challenge's chat — creator + active takers +
-     * explicit spectators — when a new message lands. Mirrors
+     * Notify everyone watching a challenge's chat - creator + active takers +
+     * explicit spectators - when a new message lands. Mirrors
      * notifyEventParticipants for events, gated by the per-(challenge, user)
      * preference written by the in-channel toggle pill.
      *
@@ -417,7 +417,7 @@ class NotificationRepository
      *
      * Per-channel toggle: challenge_participants.notification_preference. 'off'
      * suppresses; anything else (default 'milestones', 'all') allows the push.
-     * Users without a participation row default to enabled — important for the
+     * Users without a participation row default to enabled - important for the
      * creator (who never gets a row written for them) and for active takers
      * whose acceptance landed before they had a chance to toggle anything.
      */
@@ -432,7 +432,7 @@ class NotificationRepository
         // One round-trip: list every distinct user_id in any of the three
         // roles whose challenge_participants.notification_preference is not
         // 'off'. LEFT JOIN so a missing row falls back to the default via
-        // COALESCE. $challengeId is bound four times — once for the
+        // COALESCE. $challengeId is bound four times - once for the
         // participants JOIN and once per UNION leg.
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT u.id
@@ -476,7 +476,7 @@ class NotificationRepository
      * Notify all registered acceptors of a challenge, excluding one user.
      * Used when the creator validates the challenge (fan-out to acceptors).
      *
-     * Reads from challenge_acceptances (the new model — one row per take-on).
+     * Reads from challenge_acceptances (the new model - one row per take-on).
      * The legacy challenge_participants table is no longer the source of truth
      * for take-on relationships; reading it here meant nobody got a push when
      * the creator marked the challenge accomplished.
@@ -518,7 +518,7 @@ class NotificationRepository
      *   - 'new_event' / 'city_join': users whose current_city_id matches, active
      *     in the last 30 days. current_city_id is the canonical membership signal
      *     (the user's current/last city), so this reaches city members even when
-     *     their app is closed — the whole point of a push. Mirrors how an event
+     *     their app is closed - the whole point of a push. Mirrors how an event
      *     owner is notified of a join regardless of being online. Rate-limited to
      *     1 per (user, city) per 10 min.
      *
@@ -528,26 +528,26 @@ class NotificationRepository
      */
     // "Someone arrived" re-notification cooldown for the SAME arriver (keyed
     // u:<userId> / g:<guestId> per city). Within this window a returning person
-    // re-announces NOTHING — no feed "just landed" line, no in-app notification,
+    // re-announces NOTHING - no feed "just landed" line, no in-app notification,
     // no push. A foreground/reconnect/quick-return all land inside it. Different
     // arrivers are NOT affected by this (each has its own key); they're throttled
     // only by the lighter per-recipient window in notifyCityOnlineUsers. Tune here.
     private const ARRIVAL_COOLDOWN_SECONDS = 3600; // 1 hour (same arriver, per city)
 
     // Cap the city-wide push fan-out (city_join / new_event) to the N most
-    // recently-active city members. Bounds the per-arrival work — which runs
-    // IN-REQUEST on non-FPM (see deploy notes) — so a large/active city can't
+    // recently-active city members. Bounds the per-arrival work - which runs
+    // IN-REQUEST on non-FPM (see deploy notes) - so a large/active city can't
     // pin a worker with an unbounded synchronous push loop. Members past the cap
     // (the most dormant tail) don't get this push. Tune here.
     private const CITY_PUSH_FANOUT_CAP = 200;
 
     /**
-     * Emit a genuine city arrival across BOTH surfaces — the feed "X just landed"
-     * system message AND the "Someone arrived" push — behind a SINGLE atomic
+     * Emit a genuine city arrival across BOTH surfaces - the feed "X just landed"
+     * system message AND the "Someone arrived" push - behind a SINGLE atomic
      * cooldown claim, so the two can never duplicate or diverge. This is the ONLY
      * entry point the join/bootstrap paths should use for arrivals.
      *
-     * $arriverUserId — the arriver's registered id, or null. Lean bootstrap (web)
+     * $arriverUserId - the arriver's registered id, or null. Lean bootstrap (web)
      *   skips auth so it arrives null here; we resolve it from guest_id so the
      *   arriver is reliably excluded from their own push.
      *
@@ -573,7 +573,7 @@ class NotificationRepository
 
         // Crawler / bot accounts: their reads still work (POST /bootstrap
         // upstream already wrote presence), we just don't want them to
-        // generate the visible noise of an arrival — no feed "X just landed"
+        // generate the visible noise of an arrival - no feed "X just landed"
         // line, no WS broadcast, no city-wide push fan-out. Check both the
         // resolved user_id and the nickname so a guest-mode bot is caught too.
         if (BotAccountService::isBotUserId($arriverUserId) || BotAccountService::isBotNickname($arriverNickname)) {
@@ -592,7 +592,7 @@ class NotificationRepository
         // emitCityArrival then falls back to a `SELECT users WHERE guest_id = ?`,
         // which only matches if the request's guest_id equals the one stamped on
         // users at signup. A registered user on a different device (different
-        // guest_id) falls through to arriverKey = 'g:<newGuestId>' — a brand-new
+        // guest_id) falls through to arriverKey = 'g:<newGuestId>' - a brand-new
         // primary key that the 1h gate has never seen, so it fires even though
         // the same person arrived an hour earlier on another device under
         // 'u:<userId>'. The nickname gate (now run unconditionally) catches that
@@ -600,7 +600,7 @@ class NotificationRepository
         // calls, locking them into the same secondary row.
         //
         // Edge cost: two distinct accounts choosing the SAME display nickname
-        // arriving within the same hour — one of their arrival pings is muted.
+        // arriving within the same hour - one of their arrival pings is muted.
         // Auto-generated handles (kitty_3-style) are unique per account so this
         // never happens for them; for hand-picked display names it's rare and the
         // worst-case symptom is a missed feed line, not over-spam.
@@ -620,7 +620,7 @@ class NotificationRepository
             $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId);
             // Broadcast over WS so clients already in the city see the line live.
             // Without this the join row is only written to the DB and appears for
-            // others on their NEXT fetch (app restart) — chat messages broadcast,
+            // others on their NEXT fetch (app restart) - chat messages broadcast,
             // arrivals didn't.
             self::broadcastMessageToWs($channelId, $joinMsg);
         } catch (\Throwable $e) {
@@ -640,7 +640,7 @@ class NotificationRepository
 
     /**
      * Atomic "claim the arrival slot" for (arriver, city). Returns true exactly once
-     * per cooldown window — concurrent join requests race here, only one wins.
+     * per cooldown window - concurrent join requests race here, only one wins.
      * Backed by the DB (not APCu) so the cooldown survives across PHP-FPM workers
      * and APCu being disabled; this is the server-side source of truth.
      */
@@ -661,7 +661,7 @@ class NotificationRepository
      * Atomic per-(viewer, target) cooldown for "viewed your profile" notifications.
      * Returns true at most once per $cooldownSeconds (default 10 min). Reuses the
      * race-free arrival_cooldown gate, so rapid/duplicate profile fetches can't
-     * fan out a burst of bell rows + pushes — the prior SELECT-then-insert dedup
+     * fan out a burst of bell rows + pushes - the prior SELECT-then-insert dedup
      * could be raced by deferred concurrent requests. Keys are namespaced
      * (pv:/u:) so they never collide with city-arrival keys.
      */
@@ -673,7 +673,7 @@ class NotificationRepository
     /**
      * Fire-and-forget: push a message into a city room via the WS server so
      * clients already in the room render it live. Mirrors the API's
-     * broadcastMessageToWs (routes/api.php), including the internal token —
+     * broadcastMessageToWs (routes/api.php), including the internal token -
      * $channelId MUST be the integer city id so the WS server keys the city room.
      */
     private static function broadcastMessageToWs(int|string $channelId, array $message): void
@@ -710,7 +710,7 @@ class NotificationRepository
         array   $data
     ): void {
         // city_join targets city *members* (current_city_id), not just whoever is
-        // online this minute — a user wants "someone arrived in my city" for the
+        // online this minute - a user wants "someone arrived in my city" for the
         // city they belong to whether or not the app is open right now.
         //
         // challenge_international_target follows the same model: it's the
@@ -738,10 +738,10 @@ class NotificationRepository
         } else {
             // Resolve the registered user behind each live presence row. Two links,
             // because neither alone is reliable:
-            //   • p.user_id   — stamped on the row at join/bootstrap (see
+            //   • p.user_id   - stamped on the row at join/bootstrap (see
             //                   PresenceRepository::stampUser). The dependable link
             //                   for multi-device accounts.
-            //   • p.guest_id  — fallback for rows not yet stamped. NOT reliable on
+            //   • p.guest_id  - fallback for rows not yet stamped. NOT reliable on
             //                   its own: users.guest_id holds a single (often stale)
             //                   value while a user's presence guest_id drifts across
             //                   devices, so a guest_id-only match misses them.
@@ -762,17 +762,17 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences + locales — 1 query each regardless of recipient count
+        // Batch-load preferences + locales - 1 query each regardless of recipient count
         $enabled = self::batchIsEnabled($userIds, $type);
         $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {
             if (!($enabled[$uid] ?? true)) continue;
 
-            // Rate limit per (recipient, city, type) — this is the DIFFERENT-arriver
+            // Rate limit per (recipient, city, type) - this is the DIFFERENT-arriver
             // floor. city_join arrivals fire near-real-time (1 per 5s) so distinct
             // people arriving seconds apart each surface a notification + push; the
             // heavier new_event stays at 10 min so event creators can't spam.
-            // challenge_international_target rides the same 10-min window — a
+            // challenge_international_target rides the same 10-min window - a
             // creator with a fresh challenge shouldn't be able to ping the same
             // user twice in quick succession even by editing + re-creating.
             // MobilePushService applies the same per-type window to native push.
@@ -807,7 +807,7 @@ class NotificationRepository
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         if (empty($userIds)) return;
 
-        // Batch-load preferences + locales — 1 query each regardless of subscriber count
+        // Batch-load preferences + locales - 1 query each regardless of subscriber count
         $enabled = self::batchIsEnabled($userIds, $type);
         $locales = self::batchLocale($userIds);
         foreach ($userIds as $uid) {

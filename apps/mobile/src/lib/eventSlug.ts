@@ -1,5 +1,5 @@
 /**
- * Slug helpers — keep in sync with apps/web/src/eventUtils.js.
+ * Slug helpers - keep in sync with apps/web/src/eventUtils.js.
  *
  * Native consumers receive `id` from Expo Router's [id].tsx dynamic route.
  * When deep-linked from a slug URL (e.g. /event/cong-ca-phe-2e617620a3f3b6f7)

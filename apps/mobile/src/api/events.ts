@@ -3,10 +3,10 @@ import type { HiladsEvent, Message, EventParticipant, Reaction } from '@/types';
 
 // ── Events ────────────────────────────────────────────────────────────────────
 
-// Hilads events for a city — today's events (hilads-created, recurring included).
+// Hilads events for a city - today's events (hilads-created, recurring included).
 // Uses /channels/{id}/events which applies server-side "today" filtering in city timezone.
 // Passing guestId embeds participant_count + is_participating per event, eliminating N+1 fetches.
-// NOTE: API returns `type` and `source` — normalised here to match HiladsEvent shape.
+// NOTE: API returns `type` and `source` - normalised here to match HiladsEvent shape.
 export async function fetchCityEvents(channelId: string, guestId?: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: Record<string, unknown>[] }>(
     `/channels/${channelId}/events`,
@@ -19,7 +19,7 @@ export async function fetchCityEvents(channelId: string, guestId?: string): Prom
   })) as HiladsEvent[];
 }
 
-// Public (ticketmaster) events for a city — mirrors web fetchCityEvents().
+// Public (ticketmaster) events for a city - mirrors web fetchCityEvents().
 // Endpoint: GET /channels/{id}/city-events
 export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEvent[]> {
   try {
@@ -36,11 +36,11 @@ export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEv
   }
 }
 
-// All Hilads + public events for the next N days — powers the Upcoming screen.
+// All Hilads + public events for the next N days - powers the Upcoming screen.
 // Generates missing series occurrences server-side so days 2-7 are always populated.
 //
 // Pass { from, to } (YYYY-MM-DD, both inclusive) to fetch a specific range
-// instead of N days from now — used by the calendar-strip filter on the
+// instead of N days from now - used by the calendar-strip filter on the
 // upcoming screen. When { from, to } is supplied, days is ignored.
 export async function fetchUpcomingEvents(
   channelId: string,
@@ -129,7 +129,7 @@ export async function createEvent(
     ends_at: endsAt,
     type,
     location_hint: locationHint,
-    // Precise coords from the map picker (optional) — power exact Maps links.
+    // Precise coords from the map picker (optional) - power exact Maps links.
     ...(typeof lat === 'number' && typeof lng === 'number' ? { lat, lng } : {}),
   });
 }
@@ -145,7 +145,7 @@ export async function createEventSeries(
     recurrence_type: 'daily' | 'weekly' | 'every_n_days';
     weekdays?: number[];      // 0-6, required for weekly
     interval_days?: number;   // 2-365, required for every_n_days
-    /** YYYY-MM-DD — anchors the series to a future start date. Defaults to today server-side. */
+    /** YYYY-MM-DD - anchors the series to a future start date. Defaults to today server-side. */
     starts_on?: string;
     location_hint?: string;
   },
@@ -153,7 +153,7 @@ export async function createEventSeries(
   return api.post(`/channels/${channelId}/event-series`, { guestId, ...payload });
 }
 
-// Full event edit. Backend requires all of (title, starts_at, ends_at, type) —
+// Full event edit. Backend requires all of (title, starts_at, ends_at, type) -
 // `location_hint` is the only truly optional field.
 export async function updateEvent(
   eventId: string,
@@ -176,7 +176,7 @@ export async function deleteEvent(eventId: string, guestId: string): Promise<voi
 // ── Create-event preflight ────────────────────────────────────────────────────
 // Mirrors the backend's 1-event-per-day rule so the client can skip the form
 // and go straight to the friendly limit screen when the quota is used. The
-// server still enforces the rule on POST — this is UX, not security.
+// server still enforces the rule on POST - this is UX, not security.
 
 export interface CanCreateEventResponse {
   canCreate:  boolean;
@@ -202,7 +202,7 @@ export async function fetchCanCreateEvent(
 
 // ── Event participants ────────────────────────────────────────────────────────
 // GET /events/{id}/participants?sessionId={sid}
-// Returns { participants, count, isIn } — mirrors web fetchEventParticipants(eventId, sessionId)
+// Returns { participants, count, isIn } - mirrors web fetchEventParticipants(eventId, sessionId)
 // isIn: whether the current session has joined (only present when sessionId is passed)
 
 export async function fetchEventParticipants(

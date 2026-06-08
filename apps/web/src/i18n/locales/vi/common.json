@@ -3,7 +3,7 @@
     "cityTitle": "Ai đang ở {{city}} ngay bây giờ | Hilads",
     "cityDesc": "Xem ai đang online và điều gì đang diễn ra ở {{city}} ngay bây giờ.",
     "eventTitle": "{{title}} đang diễn ra ngay bây giờ | Hilads",
-    "eventDesc": "Tham gia {{title}} trên Hilads — xem ai đang ở đó và điều gì đang diễn ra."
+    "eventDesc": "Tham gia {{title}} trên Hilads - xem ai đang ở đó và điều gì đang diễn ra."
   },
   "nowTitle": "Bây giờ",
   "filterEvents": "🎉 Sự kiện",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
     "title": "Chúc mừng, {{username}}! 🎉",
-    "subtitle": "Tài khoản của bạn đã sẵn sàng — đây là những gì bạn có thể làm ngay 👇",
+    "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay 👇",
     "f1": "🎉 Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
     "f2": "📅 Tổ chức một sự kiện trong thành phố của bạn",
     "f3": "💬 Gửi tin nhắn riêng cho bất kỳ ai",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Bạn đang ở {{city}}",
-    "slide1Body": "Người địa phương và du khách gặp nhau ở đây — qua những thử thách thực sự.",
+    "slide1Body": "Người địa phương và du khách gặp nhau ở đây - qua những thử thách thực sự.",
     "slide2Title": "Người địa phương thách du khách. Và ngược lại.",
     "slide2Body": "🍜 Bánh mì ngon nhất · 📍 Điểm ngắm cảnh giấu · 🎭 Nói vài câu tiếng Việt · 🙏 Giúp với SIM. Những thử thách thật dẫn đến cuộc gặp thật.",
     "slide3Title": "Cách thức hoạt động",
@@ -38,7 +38,7 @@
     "title": "Thử thách hoạt động thế nào",
     "slide1": {
       "title": "Thử thách biến chuyến đi thành câu chuyện",
-      "body": "Người địa phương và du khách thách nhau chia sẻ những gì làm nên một thành phố thật — đồ ăn, địa điểm, văn hoá, sự giúp đỡ. Phần thưởng? Gặp nhau trực tiếp."
+      "body": "Người địa phương và du khách thách nhau chia sẻ những gì làm nên một thành phố thật - đồ ăn, địa điểm, văn hoá, sự giúp đỡ. Phần thưởng? Gặp nhau trực tiếp."
     },
     "slide2": {
       "title": "Tung thử thách của bạn",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Ai đó chấp nhận",
-      "body": "Họ gửi yêu cầu. Bạn xem rồi đồng ý — luồng riêng mở ra để hai bạn nhắn tin và lên kế hoạch."
+      "body": "Họ gửi yêu cầu. Bạn xem rồi đồng ý - luồng riêng mở ra để hai bạn nhắn tin và lên kế hoạch."
     },
     "slide4": {
       "title": "Gặp trực tiếp",
-      "body": "Chọn ngày hợp cả hai. Dòng thời gian theo dõi từng bước. Rồi cứ thế làm — thật sự."
+      "body": "Chọn ngày hợp cả hai. Dòng thời gian theo dõi từng bước. Rồi cứ thế làm - thật sự."
     },
     "slide5": {
       "title": "Hoàn tất thử thách",
-      "body": "Sau buổi gặp, đánh dấu hoàn thành. Thành phố của bạn, sống thật — từng thử thách một."
+      "body": "Sau buổi gặp, đánh dấu hoàn thành. Thành phố của bạn, sống thật - từng thử thách một."
     },
     "next": "Tiếp",
     "done": "Hiểu rồi!",
     "skip": "Bỏ qua ✕",
     "slide6": {
       "title": "Vượt khỏi thành phố",
-      "body": "Thách thức bất kỳ ai ở bất cứ đâu. Họ gửi bằng chứng — ảnh có vị trí — và bạn duyệt từ xa. Tại chỗ hay toàn cầu, mỗi thử thách đều có giá."
+      "body": "Thách thức bất kỳ ai ở bất cứ đâu. Họ gửi bằng chứng - ảnh có vị trí - và bạn duyệt từ xa. Tại chỗ hay toàn cầu, mỗi thử thách đều có giá."
     },
     "createCta": "🔥 Tạo thử thách"
   },

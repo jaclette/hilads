@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Edit", "delete": "🗑 Delete" },
   "gated": {
     "title": "Members-only hangout",
-    "pending": "Request pending — you'll be able to join the conversation once a member accepts.",
+    "pending": "Request pending - you'll be able to join the conversation once a member accepts.",
     "prompt": "Request to join to see the conversation and chat.",
     "requestBtn": "Request to join"
   },

@@ -9,23 +9,23 @@ import AttendeeAvatars from './AttendeeAvatars'
  * strip pattern. Renders inline above the chat surface; tap opens a modal
  * with role labels (Challenger / Taker / Participant) and kick buttons.
  *
- * Public per spec — the list itself is visible to anyone with channel
+ * Public per spec - the list itself is visible to anyone with channel
  * access. Kick buttons surface only for the creator and the active taker.
  *
  * Props:
- *   challenge      — full challenge row (for created_by + creator display)
- *   activeTaker    — the single active-taker user row, or null. Drives the
+ *   challenge      - full challenge row (for created_by + creator display)
+ *   activeTaker    - the single active-taker user row, or null. Drives the
  *                    Taker badge in the modal + tells us whose kick auth
  *                    matches the caller.
- *   currentUserId  — caller's user id (null = anon, which means no kicks)
- *   onMembersChanged — () after a kick so the parent refreshes counts
+ *   currentUserId  - caller's user id (null = anon, which means no kicks)
+ *   onMembersChanged - () after a kick so the parent refreshes counts
  */
 export default function ChallengeChannelMembers({
   challenge,
   activeTaker,
   currentUserId,
   onMembersChanged,
-  // PR27 — host-provided "open this user's profile" callback. Receives
+  // PR27 - host-provided "open this user's profile" callback. Receives
   // (userId, displayName). Falls through cleanly if not provided (older
   // call sites: row stays inert).
   onSelect,
@@ -70,7 +70,7 @@ export default function ChallengeChannelMembers({
   }
 
   // Compose the modal's full list with role-aware labels. Challenger and
-  // Taker rows are derived from the challenge + acceptance — they're NOT
+  // Taker rows are derived from the challenge + acceptance - they're NOT
   // in the channel-participants list (they have their own surfaces above),
   // so we synthesize them at the head.
   const rows = []
@@ -78,7 +78,7 @@ export default function ChallengeChannelMembers({
     const fromMembers = members.find(m => m.id === creatorUserId)
     rows.push({
       id:             creatorUserId,
-      displayName:    fromMembers?.displayName ?? challenge?.creator_display_name ?? '—',
+      displayName:    fromMembers?.displayName ?? challenge?.creator_display_name ?? '-',
       thumbAvatarUrl: fromMembers?.thumbAvatarUrl ?? challenge?.creator_thumb_avatar_url ?? null,
       role:           'challenger',
     })
@@ -87,7 +87,7 @@ export default function ChallengeChannelMembers({
     const fromMembers = members.find(m => m.id === takerUserId)
     rows.push({
       id:             takerUserId,
-      displayName:    fromMembers?.displayName ?? activeTaker?.displayName ?? '—',
+      displayName:    fromMembers?.displayName ?? activeTaker?.displayName ?? '-',
       thumbAvatarUrl: fromMembers?.thumbAvatarUrl ?? activeTaker?.thumbAvatarUrl ?? activeTaker?.avatarUrl ?? null,
       role:           'taker',
     })
@@ -97,7 +97,7 @@ export default function ChallengeChannelMembers({
     rows.push({ ...m, role: 'participant' })
   }
 
-  // Bar preview avatars — first 5 in role order (challenger, taker, then
+  // Bar preview avatars - first 5 in role order (challenger, taker, then
   // joined order). Matches the topic-members-strip shape.
   const previewAvatars = rows.slice(0, 5).map(r => ({
     id:             r.id,
@@ -130,7 +130,7 @@ export default function ChallengeChannelMembers({
               {rows.map(r => {
                 const showKick = canKick && r.role !== 'challenger' && r.id !== currentUserId
                 const [c1, c2] = avatarColors(r.displayName ?? r.id ?? '?')
-                // PR27 — make the row tappable. Closes the modal first
+                // PR27 - make the row tappable. Closes the modal first
                 // (so the profile drawer lands without animation overlap),
                 // then hands off to the host's onSelect. Kick button
                 // sits to the right with stopPropagation so its tap
@@ -161,7 +161,7 @@ export default function ChallengeChannelMembers({
                     <div className="people-drawer-content">
                       <div className="people-drawer-name-row">
                         <span className="people-drawer-name">{r.displayName}</span>
-                        {/* PR23 — render a badge for every row: Challenger /
+                        {/* PR23 - render a badge for every row: Challenger /
                             Taker stay as before, "participant" rows (channel
                             joiners who never accepted) now read Spectator. */}
                         <span className={`challenge-role-badge challenge-role-badge--${r.role === 'participant' ? 'spectator' : r.role}`}>

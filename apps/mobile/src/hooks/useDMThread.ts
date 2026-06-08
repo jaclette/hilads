@@ -14,7 +14,7 @@ interface Result {
   loading:             boolean;
   loadingOlder:        boolean;      // true while fetching an older page
   hasMore:             boolean;      // true when older messages exist to load
-  sending:             boolean;      // kept for interface compat — always false (optimistic)
+  sending:             boolean;      // kept for interface compat - always false (optimistic)
   error:               string | null;
   clearError:          () => void;
   sendText:            (content: string, replyTo?: ReplyRef | null) => Promise<void>;
@@ -49,7 +49,7 @@ export function useDMThread(conversationId: string): Result {
     ).reverse();
     setMessages(prev => {
       // Own-message echo detection: if WS delivers our own message while an optimistic
-      // placeholder is still pending, skip the append — sendText reconcile() handles it.
+      // placeholder is still pending, skip the append - sendText reconcile() handles it.
       const toInsert = sorted.filter(serverMsg => {
         const hasPendingFromSender = prev.some(pending =>
           pending.localId != null && pending.sender_id === serverMsg.sender_id,
@@ -85,7 +85,7 @@ export function useDMThread(conversationId: string): Result {
     return () => { cancelled = true; };
   }, [conversationId]);
 
-  // WS — track active thread + live append
+  // WS - track active thread + live append
   useEffect(() => {
     setActiveDmId(conversationId);
     if (account) socket.joinDm(conversationId, account.id);
@@ -96,7 +96,7 @@ export function useDMThread(conversationId: string): Result {
       }
     });
 
-    // Incoming reaction animation — server relays { event: 'reaction', type, messageId }
+    // Incoming reaction animation - server relays { event: 'reaction', type, messageId }
     // for both channel and DM reactions so burst particles play for the other person's tap.
     const offReaction = socket.on('reaction', (data) => {
       const type = data.type as string;
@@ -105,7 +105,7 @@ export function useDMThread(conversationId: string): Result {
       reactionEmitter.emit(msgId, type as ReactionType);
     });
 
-    // Edit / delete broadcasts for this DM thread — patch in place.
+    // Edit / delete broadcasts for this DM thread - patch in place.
     const offEdited = socket.on('dmMessageEdited', (data) => {
       if (data.conversationId !== conversationId || !data.messageId) return;
       setMessages(prev => prev.map(m =>
@@ -132,7 +132,7 @@ export function useDMThread(conversationId: string): Result {
     };
   }, [conversationId, account, addNew, setActiveDmId]);
 
-  // Live DM messages arrive via WS newConversationMessage — no polling needed.
+  // Live DM messages arrive via WS newConversationMessage - no polling needed.
 
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 
@@ -175,7 +175,7 @@ export function useDMThread(conversationId: string): Result {
     }
   }, [conversationId, account]);
 
-  // ── Send image (optimistic — local URI shown while uploading) ──────────────
+  // ── Send image (optimistic - local URI shown while uploading) ──────────────
 
   const sendImage = useCallback(async (localUri: string) => {
     const localId = makeLocalId();
@@ -198,7 +198,7 @@ export function useDMThread(conversationId: string): Result {
 
     try {
       const { url: remoteUrl } = await uploadFile(localUri);
-      console.log('[dm-image] upload ok — remoteUrl=', remoteUrl);
+      console.log('[dm-image] upload ok - remoteUrl=', remoteUrl);
       const msg = await sendDmImageMessage(conversationId, remoteUrl);
       console.log('[dm-image] server msg id=', msg.id, 'image_url=', msg.image_url);
       seenIds.current.add(msg.id);
@@ -210,7 +210,7 @@ export function useDMThread(conversationId: string): Result {
       });
       track('dm_image_sent', { conversationId });
     } catch (err) {
-      console.warn('[dm-image] send failed —', err instanceof Error ? err.message : String(err));
+      console.warn('[dm-image] send failed -', err instanceof Error ? err.message : String(err));
       setMessages(prev =>
         prev.map(m => m.id === localId ? { ...m, status: 'failed' as const } : m),
       );
@@ -241,7 +241,7 @@ export function useDMThread(conversationId: string): Result {
       }
       setHasMore(moreLeft);
     } catch {
-      // silent — user can scroll up again to retry
+      // silent - user can scroll up again to retry
     } finally {
       loadingOlderRef.current = false;
       setLoadingOlder(false);
@@ -288,7 +288,7 @@ export function useDMThread(conversationId: string): Result {
   }, []);
 
   // Block filter (Apple G1.2). DM messages only have a sender_id (registered
-  // users — no guests in DMs), so we map it onto the userId slot.
+  // users - no guests in DMs), so we map it onto the userId slot.
   const visibleMessages = useMemo(
     () => filterBlocked(
       messages,

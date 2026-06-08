@@ -62,7 +62,7 @@
   "seeAll": "查看全部 →",
   "oneGoing": "{{name}} 要去",
   "manyGoing": "{{name}} + 另外 {{count}} 人要去",
-  "goingEmpty": "還沒有人 — 當第一個加入的人吧！ 🙌",
+  "goingEmpty": "還沒有人 - 當第一個加入的人吧！ 🙌",
   "noMessages": "還沒有訊息。說點什麼吧！ 👋",
   "composerSay": "在 {{title}} 說點什麼 ✨",
   "composerFirst": "當 {{title}} 的第一個 ✨",
@@ -86,11 +86,11 @@
   "errDelete": "刪除活動失敗",
   "limit": {
     "title": "你今天已經建立過活動了！",
-    "body": "在 Hilads，我們保持新鮮 — 每天一個活動，讓每個計畫都得到應有的關注。明天再回來建立另一個吧。",
+    "body": "在 Hilads，我們保持新鮮 - 每天一個活動，讓每個計畫都得到應有的關注。明天再回來建立另一個吧。",
     "legendLink": "👑 成為 Legend 即可建立無限活動",
     "legendA11y": "了解如何成為 Legend",
     "legendAlertTitle": "👑 成為 Legend",
-    "legendAlertBody": "Legend 是被選中讓城市保持活力的在地人 — 他們想舉辦多少活動都可以。想成為其中一員嗎？來信 contact@hilads.live。",
+    "legendAlertBody": "Legend 是被選中讓城市保持活力的在地人 - 他們想舉辦多少活動都可以。想成為其中一員嗎？來信 contact@hilads.live。",
     "gotIt": "知道了",
     "backToNow": "返回 Now"
   },

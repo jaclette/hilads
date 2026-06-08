@@ -12,7 +12,7 @@
  *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
- *                    joinUser(userId)                       — per-user channel for friend reqs etc.
+ *                    joinUser(userId)                       - per-user channel for friend reqs etc.
  *                    reaction(type, messageId, cityId, userId?, timestamp)
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
@@ -25,7 +25,7 @@
  *                    friendRequestReceived | friendRequestAccepted |
  *                      friendRequestDeclined | friendRequestCancelled  (per-user)
  *
- * PHP API → WS (same port as WS, plain HTTP POST — Render proxies both)
+ * PHP API → WS (same port as WS, plain HTTP POST - Render proxies both)
  *                    POST /broadcast/event-participants   { eventId, count }
  *                    POST /broadcast/message              { channelId, message }
  *                    POST /broadcast/conversation-message { conversationId, message }
@@ -47,7 +47,7 @@ import { WebSocketServer } from 'ws'
 import { createServer, get as httpGet } from 'http'
 
 // Prevent any uncaught exception or unhandled rejection from killing the process.
-// The server must stay alive for WebSocket clients — a single bad message or
+// The server must stay alive for WebSocket clients - a single bad message or
 // timer callback should never take down all connected sessions.
 process.on('uncaughtException',  (err) => console.error('[server] uncaughtException:',  err))
 process.on('unhandledRejection', (reason) => console.error('[server] unhandledRejection:', reason))
@@ -79,14 +79,14 @@ const eventRooms = new Map()
 const topicRooms = new Map()
 
 // challengeRooms: Map<challengeId, Map<sessionId, { sessionId, ws }>>. Separate
-// from event/topic rooms — a user can sit in an event AND a challenge AND a
+// from event/topic rooms - a user can sit in an event AND a challenge AND a
 // hangout simultaneously; the per-room auto-leave should only fire within the
 // same entity type. (If we piggybacked on eventRooms, opening a challenge
 // would silently evict you from any open event.)
 const challengeRooms = new Map()
 
 // challengeThreadRooms: Map<threadChannelId, Map<sessionId, { sessionId, ws }>>.
-// PR2 — per-acceptance 1:1 thread channels (channels.type='challenge_thread').
+// PR2 - per-acceptance 1:1 thread channels (channels.type='challenge_thread').
 // Distinct from challengeRooms (the public chat on the challenge ad) so opening
 // a thread doesn't evict the user from the parent challenge's chat.
 const challengeThreadRooms = new Map()
@@ -169,7 +169,7 @@ setInterval(() => {
     for (const [sessionId, session] of room) {
       if (now - session.lastSeen > HEARTBEAT_TTL_MS) {
         console.log(`[WS] cleanup: evicting ${session.nickname} (${sessionId.slice(0, 8)}) from city ${cityId}`)
-        // Notify the evicted session itself before removing — its WS connection is still alive
+        // Notify the evicted session itself before removing - its WS connection is still alive
         if (session.ws.readyState === 1 /* OPEN */) {
           session.ws.send(JSON.stringify({
             event: 'userLeft', cityId, user: { sessionId, nickname: session.nickname },
@@ -213,7 +213,7 @@ function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId, mode
   // app reboots and generates a fresh sessionId.
   if (userId || guestId) {
     for (const [existingSessionId, session] of room) {
-      if (existingSessionId === sessionId) continue  // same session — handled below
+      if (existingSessionId === sessionId) continue  // same session - handled below
       const sameUser = (userId && session.userId === userId) || (guestId && session.guestId === guestId)
       if (sameUser) {
         console.log(`[WS] joinRoom: evicting stale session ${existingSessionId.slice(0, 8)} (${session.nickname}) for same user`)
@@ -244,7 +244,7 @@ function handleJoinRoom(ws, { cityId, sessionId, nickname, userId, guestId, mode
   } else if (identityChanged) {
     // Same session re-joined with changed identity (e.g. guest just logged in or logged out).
     // Signal the change to all other clients so their Here screen updates immediately.
-    // Online count stays the same — no onlineCountUpdated needed.
+    // Online count stays the same - no onlineCountUpdated needed.
     broadcast(cityId, { event: 'userLeft', cityId, user: { sessionId, nickname: existing.nickname } }, ws)
     broadcast(cityId, { event: 'userJoined', cityId, user: { sessionId, nickname, userId: userId ?? null, guestId: guestId ?? null, mode: mode ?? null } }, ws)
   }
@@ -269,7 +269,7 @@ function handleHeartbeat(ws, { cityId, sessionId }) {
     session.lastSeen = Date.now()
     console.log(`[WS] heartbeat: ${session.nickname} in city ${cityId}`)
   } else {
-    console.log(`[WS] heartbeat: unknown session ${sessionId.slice(0, 8)} in city ${cityId} — ignored`)
+    console.log(`[WS] heartbeat: unknown session ${sessionId.slice(0, 8)} in city ${cityId} - ignored`)
   }
 }
 
@@ -281,7 +281,7 @@ function handleTypingStart(ws, { cityId, sessionId, nickname }) {
   const existing = tRoom.get(sessionId)
   if (existing) clearTimeout(existing.timer)
 
-  // Auto-clear after TYPING_TTL_MS — safety net for crashed clients
+  // Auto-clear after TYPING_TTL_MS - safety net for crashed clients
   const timer = setTimeout(() => {
     tRoom.delete(sessionId)
     broadcastTyping(cityId)
@@ -374,7 +374,7 @@ function handleLeaveTopic(ws, { topicId, sessionId }) {
 }
 
 // ── Challenge room helpers ─────────────────────────────────────────────────────
-// Same shape as topic rooms — open membership, no presence broadcast (we don't
+// Same shape as topic rooms - open membership, no presence broadcast (we don't
 // surface "live in this challenge" the way events do).
 
 function handleJoinChallenge(ws, { challengeId, sessionId }) {
@@ -393,7 +393,7 @@ function handleLeaveChallenge(ws, { challengeId, sessionId }) {
 }
 
 // ── Challenge thread room helpers (PR2) ────────────────────────────────────────
-// Same shape as challenge rooms — open membership for the 2 thread participants.
+// Same shape as challenge rooms - open membership for the 2 thread participants.
 // `threadChannelId` is the channels.id of type='challenge_thread'.
 
 function handleJoinChallengeThread(ws, { threadChannelId, sessionId }) {
@@ -516,7 +516,7 @@ function removeWs(ws) {
       }
     }
   }
-  // Clean up per-user channels — tracked on the ws itself for O(1) cleanup
+  // Clean up per-user channels - tracked on the ws itself for O(1) cleanup
   // instead of scanning the whole userRooms map.
   if (ws._joinedUserIds) {
     for (const uid of ws._joinedUserIds) {
@@ -533,10 +533,10 @@ function removeWs(ws) {
 //
 // Both WebSocket client connections and PHP broadcast POSTs go through the same
 // port. Render's proxy sends WS upgrades to the WS handler and plain HTTP POSTs
-// to the HTTP handler — no separate internal port needed.
+// to the HTTP handler - no separate internal port needed.
 
 function handleBroadcastRequest(req, res) {
-  // Health check is unauthenticated — Render, Cloudflare, and uptime monitors
+  // Health check is unauthenticated - Render, Cloudflare, and uptime monitors
   // must be able to reach it without the internal token.
   if (req.method === 'GET' && req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' })
@@ -678,7 +678,7 @@ wss.on('connection', (ws, req) => {
   //   - explicitly allowed web origins (browsers)
   const wsHost = req.headers.host  // e.g. "ws.hilads.live"
   const selfOrigin = wsHost ? `https://${wsHost}` : null
-  console.log(`[WS] new connection — origin: "${origin ?? 'none'}" host: "${wsHost}"`)
+  console.log(`[WS] new connection - origin: "${origin ?? 'none'}" host: "${wsHost}"`)
   if (origin && origin !== 'null' && origin !== selfOrigin && !ALLOWED_ORIGINS.has(origin)) {
     console.log(`[WS] rejected origin: "${origin}" (allowed: ${[...ALLOWED_ORIGINS].join(', ')})`)
     ws.close(1008, 'Origin not allowed')
@@ -714,13 +714,13 @@ wss.on('connection', (ws, req) => {
   })
 
   ws.on('close', () => {
-    // Presence grace period: defer cleanup so a brief disconnect — backgrounding
-    // the app, a network blip — doesn't flicker the user offline instantly.
+    // Presence grace period: defer cleanup so a brief disconnect - backgrounding
+    // the app, a network blip - doesn't flicker the user offline instantly.
     // removeWs only drops entries still pointing at THIS socket, so a reconnect
     // within the window is a natural no-op: a same-session rejoin replaces the
     // socket, and a new-session rejoin by the same user evicts the stale entry in
     // handleJoinRoom. Explicit leaveRoom (city switch / web tab close) is NOT
-    // affected — it removes via handleLeaveRoom and stays instant.
+    // affected - it removes via handleLeaveRoom and stays instant.
     setTimeout(() => removeWs(ws), PRESENCE_GRACE_MS)
   })
   ws.on('error', () => ws.close())
@@ -769,7 +769,7 @@ function broadcastNewTopic(channelId, topic) {
 
 // ── Challenge broadcasts ────────────────────────────────────────────────────────
 
-// New challenge created — appears in the NOW feed instantly without a poll.
+// New challenge created - appears in the NOW feed instantly without a poll.
 // channelId is an integer (city room key).
 function broadcastNewChallenge(channelId, challenge) {
   const room = rooms.get(channelId)
@@ -795,7 +795,7 @@ function broadcastChallengeValidated(channelId, challenge) {
   console.log(`[WS][emit] event=challenge_validated target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
-// Reverse — validated → open. Owner tapped the status pill to undo a mistake.
+// Reverse - validated → open. Owner tapped the status pill to undo a mistake.
 function broadcastChallengeUnvalidated(channelId, challenge) {
   const room = rooms.get(channelId)
   if (!room) return
@@ -816,7 +816,7 @@ function broadcastNewMessage(channelId, message) {
   if (typeof channelId === 'number') {
     room = rooms.get(channelId); kind = 'city'
   } else {
-    // String channelId — could be event/topic/challenge/challenge-thread room;
+    // String channelId - could be event/topic/challenge/challenge-thread room;
     // check all four. Independent rooms because users can sit in one of each
     // simultaneously (auto-leave is per-room-type).
     if (eventRooms.has(channelId))                 { room = eventRooms.get(channelId);           kind = 'event' }

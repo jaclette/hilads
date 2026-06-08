@@ -40,7 +40,7 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
     }
     return canonicalizeChallenge(path);
   } catch {
-    // Never block a deep link on a parsing error — fall back to the raw path.
+    // Never block a deep link on a parsing error - fall back to the raw path.
     return path;
   }
 }

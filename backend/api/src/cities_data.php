@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hilads city dataset — ~350 cities worldwide.
+ * Hilads city dataset - ~350 cities worldwide.
  * IDs 1–20 match the original CityRepository entries (do not change).
  * Fields: id, name, country (ISO 3166-1 alpha-2), lat, lng, timezone
  */

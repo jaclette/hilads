@@ -1,6 +1,6 @@
 import React from 'react'
 
-// Auto-linkify URLs in message text. http/https only — we don't try to detect
+// Auto-linkify URLs in message text. http/https only - we don't try to detect
 // bare "www.x.com" or schemes like mailto/tel (too easy to mis-match casual
 // typing). Trailing sentence punctuation is trimmed off the URL so "see
 // https://foo.com." doesn't link the period.
@@ -9,7 +9,7 @@ const TRAIL_RE = /[.,!?;:)\]}>"'»]+$/
 
 // Returns the first http/https URL in `text` (with trailing punctuation
 // trimmed), or null if none. Used to drive the link-preview card under chat
-// bubbles — we only preview the first URL per message to keep the UI tight.
+// bubbles - we only preview the first URL per message to keep the UI tight.
 export function extractFirstUrl(text) {
   if (!text) return null
   URL_RE.lastIndex = 0

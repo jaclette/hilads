@@ -33,7 +33,7 @@ function pastWhen(ts, tz) {
   return new Date(ts * 1000).toLocaleDateString(i18n.language, { weekday: 'short', month: 'short', day: 'numeric', timeZone: tz })
 }
 
-// ── Custom range picker — tap start then end, clamped to 14 days ─────────────
+// ── Custom range picker - tap start then end, clamped to 14 days ─────────────
 function RangeModal({ tz, initial, onApply, onClose }) {
   const { t } = useTranslation('archive')
   const today = parseYmd(cityTodayYmd(tz))

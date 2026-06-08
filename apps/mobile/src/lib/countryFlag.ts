@@ -1,5 +1,5 @@
 // ISO-2 country code → flag emoji. Returns '' for null / invalid / too long.
-// Mirrors apps/web/src/lib/countryFlag.js — same logic, typed.
+// Mirrors apps/web/src/lib/countryFlag.js - same logic, typed.
 export function countryToFlag(code: string | null | undefined): string {
   if (typeof code !== 'string') return '';
   const c = code.trim().toUpperCase();

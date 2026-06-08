@@ -25,7 +25,7 @@ type Props = {
 /**
  * Two-step floating flow shown immediately after publishing a challenge.
  *
- * Step 1 ("seed"): a sheet with two CTAs — "Send it to someone in {city}"
+ * Step 1 ("seed"): a sheet with two CTAs - "Send it to someone in {city}"
  * (opens the picker) and "Share outside Hilads" (native share).
  *
  * Step 2 ("picker"): multi-select list of city members filtered by the

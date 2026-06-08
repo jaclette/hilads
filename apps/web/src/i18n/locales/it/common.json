@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Eventi pubblici",
   "accountWelcome": {
     "title": "Complimenti, {{username}}! 🎉",
-    "subtitle": "Il tuo account è pronto — ecco cosa puoi fare adesso 👇",
+    "subtitle": "Il tuo account è pronto - ecco cosa puoi fare adesso 👇",
     "f1": "🎉 Lancia un ritrovo e raduna gente subito",
     "f2": "📅 Organizza un evento nella tua città",
     "f3": "💬 Invia un messaggio privato a chiunque",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Sei a {{city}}",
-    "slide1Body": "Local e viaggiatori si incontrano qui — attraverso sfide vere.",
+    "slide1Body": "Local e viaggiatori si incontrano qui - attraverso sfide vere.",
     "slide2Title": "I local sfidano i viaggiatori. E viceversa.",
     "slide2Body": "🍜 La migliore carbonara · 📍 Un punto panoramico nascosto · 🎭 Dì qualcosa in italiano · 🙏 Aiuto con una SIM. Sfide vere che portano a un incontro vero.",
     "slide3Title": "Come funziona",
@@ -38,7 +38,7 @@
     "title": "Come funzionano le sfide",
     "slide1": {
       "title": "Le sfide trasformano i viaggi in storie",
-      "body": "Locali e viaggiatori si sfidano a condividere ciò che rende viva una città — cibo, posti, cultura, aiuto. La ricompensa? Vi incontrate di persona."
+      "body": "Locali e viaggiatori si sfidano a condividere ciò che rende viva una città - cibo, posti, cultura, aiuto. La ricompensa? Vi incontrate di persona."
     },
     "slide2": {
       "title": "Lancia la tua sfida",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Qualcuno la accetta",
-      "body": "Ti mandano una richiesta. Tu controlli e accetti — il vostro thread privato si apre per chattare e organizzare."
+      "body": "Ti mandano una richiesta. Tu controlli e accetti - il vostro thread privato si apre per chattare e organizzare."
     },
     "slide4": {
       "title": "Incontratevi di persona",
-      "body": "Scegliete una data che va bene a entrambi. La timeline segue ogni passo. Poi lo fai — sul serio."
+      "body": "Scegliete una data che va bene a entrambi. La timeline segue ogni passo. Poi lo fai - sul serio."
     },
     "slide5": {
       "title": "Chiudi la sfida",
-      "body": "Dopo l'incontro, segnala come compiuta. La tua città, vissuta davvero — una sfida alla volta."
+      "body": "Dopo l'incontro, segnala come compiuta. La tua città, vissuta davvero - una sfida alla volta."
     },
     "next": "Avanti",
     "done": "Capito!",
     "skip": "Salta ✕",
     "slide6": {
       "title": "Oltre la tua città",
-      "body": "Sfida chiunque ovunque. Ti mandano una prova — foto con geotag — e validi a distanza. Locale o globale, ogni sfida conta."
+      "body": "Sfida chiunque ovunque. Ti mandano una prova - foto con geotag - e validi a distanza. Locale o globale, ogni sfida conta."
     },
     "createCta": "🔥 Crea una sfida"
   },

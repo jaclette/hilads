@@ -3,7 +3,7 @@
  *
  * Renders ephemeral reaction particle animations anchored inside a message row.
  * Positioned absolutely so the message list never re-renders on animation trigger.
- * Uses React Native's built-in Animated API — no extra dependencies.
+ * Uses React Native's built-in Animated API - no extra dependencies.
  *
  * Architecture:
  *   reactionEmitter.emit(messageId, type)

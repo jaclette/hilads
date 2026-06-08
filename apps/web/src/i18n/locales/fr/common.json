@@ -3,7 +3,7 @@
     "cityTitle": "Qui est à {{city}} en ce moment | Hilads",
     "cityDesc": "Découvre qui est en ligne et ce qu'il se passe à {{city}} en ce moment.",
     "eventTitle": "{{title}}, c'est maintenant | Hilads",
-    "eventDesc": "Rejoins {{title}} sur Hilads — vois qui est là et ce qu'il se passe."
+    "eventDesc": "Rejoins {{title}} sur Hilads - vois qui est là et ce qu'il se passe."
   },
   "nowTitle": "Maintenant",
   "filterEvents": "🎉 Événements",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Événements publics",
   "accountWelcome": {
     "title": "Bravo, {{username}} ! 🎉",
-    "subtitle": "Ton compte est prêt — voici ce que tu peux faire maintenant 👇",
+    "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant 👇",
     "f1": "🎉 Lance une sortie et rassemble du monde tout de suite",
     "f2": "📅 Organise un événement dans ta ville",
     "f3": "💬 Envoie un message privé à qui tu veux",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Tu es à {{city}}",
-    "slide1Body": "Locaux et voyageurs se rencontrent ici — autour de vrais défis.",
+    "slide1Body": "Locaux et voyageurs se rencontrent ici - autour de vrais défis.",
     "slide2Title": "Les locaux défient les voyageurs. Et vice-versa.",
     "slide2Body": "🍜 Le meilleur pho · 📍 Un spot caché · 🎭 Quelques mots de vietnamien · 🙏 De l'aide pour une carte SIM. De vrais défis qui mènent à une vraie rencontre.",
     "slide3Title": "Comment ça marche",
@@ -38,7 +38,7 @@
     "title": "Comment marchent les défis",
     "slide1": {
       "title": "Les défis font de tes voyages des histoires",
-      "body": "Locaux et voyageurs se lancent des défis pour partager ce qui fait vibrer une ville — bouffe, lieux, culture, coup de main. La récompense ? Une vraie rencontre."
+      "body": "Locaux et voyageurs se lancent des défis pour partager ce qui fait vibrer une ville - bouffe, lieux, culture, coup de main. La récompense ? Une vraie rencontre."
     },
     "slide2": {
       "title": "Lance ton défi",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Quelqu'un le relève",
-      "body": "Ils envoient une demande. Tu valides et tu acceptes — ton fil privé s'ouvre pour discuter et planifier."
+      "body": "Ils envoient une demande. Tu valides et tu acceptes - ton fil privé s'ouvre pour discuter et planifier."
     },
     "slide4": {
       "title": "Rencontre en vrai",
-      "body": "Choisissez une date qui vous va. La timeline suit chaque étape. Puis tu le fais — pour de vrai."
+      "body": "Choisissez une date qui vous va. La timeline suit chaque étape. Puis tu le fais - pour de vrai."
     },
     "slide5": {
       "title": "Conclus le défi",
-      "body": "Après la rencontre, marque-le comme accompli. Ta ville, vécue pour de vrai — un défi à la fois."
+      "body": "Après la rencontre, marque-le comme accompli. Ta ville, vécue pour de vrai - un défi à la fois."
     },
     "next": "Suivant",
     "done": "C'est compris !",
     "skip": "Passer ✕",
     "slide6": {
       "title": "Au-delà de ta ville",
-      "body": "Défie n'importe qui, n'importe où. On t'envoie la preuve — photo géolocalisée — et tu valides à distance. Local ou global, chaque défi compte."
+      "body": "Défie n'importe qui, n'importe où. On t'envoie la preuve - photo géolocalisée - et tu valides à distance. Local ou global, chaque défi compte."
     },
     "createCta": "🔥 Créer un défi"
   },

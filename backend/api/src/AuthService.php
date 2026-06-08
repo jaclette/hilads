@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class AuthService
 {
-    /** Request-level cache — avoids a duplicate DB query when currentUser() is called
+    /** Request-level cache - avoids a duplicate DB query when currentUser() is called
      *  more than once within the same request (e.g. join handler + analytics block). */
     private static bool  $resolved = false;
     private static ?array $cached  = null;
@@ -48,7 +48,7 @@ class AuthService
         }
 
         // Username: clients that include the field (current builds) must send a
-        // valid, available handle. Clients that DON'T (older/in-flight builds —
+        // valid, available handle. Clients that DON'T (older/in-flight builds -
         // incl. the live App Store build) send none; auto-generate from the
         // display name so signup is never blocked by client/build skew. Matches
         // the auto-generate migration strategy used for existing users.
@@ -93,7 +93,7 @@ class AuthService
             throw $e;
         }
 
-        // Stamp EULA acceptance time. Required at signup per Apple G1.2 — the
+        // Stamp EULA acceptance time. Required at signup per Apple G1.2 - the
         // /auth/signup route validates the boolean before reaching here.
         if ($eulaAccepted) {
             $user = UserRepository::acceptEula($user['id']);
@@ -168,9 +168,9 @@ class AuthService
     /**
      * Extract a Bearer token from the request, checking every place Apache /
      * PHP-FPM might expose the Authorization header:
-     *   1. HTTP_AUTHORIZATION         — populated by the .htaccess rewrite
-     *   2. REDIRECT_HTTP_AUTHORIZATION — same, after an internal rewrite to index.php
-     *   3. getallheaders()            — Apache's raw header table (last resort)
+     *   1. HTTP_AUTHORIZATION         - populated by the .htaccess rewrite
+     *   2. REDIRECT_HTTP_AUTHORIZATION - same, after an internal rewrite to index.php
+     *   3. getallheaders()            - Apache's raw header table (last resort)
      * Returns the 64-hex token or null.
      */
     private static function bearerToken(): ?string
@@ -203,7 +203,7 @@ class AuthService
         }
         self::$resolved = true;
 
-        // Collect EVERY token the client might have sent — cookie AND bearer —
+        // Collect EVERY token the client might have sent - cookie AND bearer -
         // and try each against the session table, returning the first that
         // resolves to a live session.
         //
@@ -230,7 +230,7 @@ class AuthService
             return null;
         }
 
-        // Single JOIN — resolves session + user + ambassador flag in one round-trip.
+        // Single JOIN - resolves session + user + ambassador flag in one round-trip.
         // The EXISTS subquery adds ~0ms cost but eliminates the separate ambassador
         // check query in ownFields(), saving one full DB round-trip per /me call.
         $stmt = Database::pdo()->prepare("
@@ -272,7 +272,7 @@ class AuthService
 
     /**
      * Initiate a password reset for the given email.
-     * Always returns a generic message — never reveals whether the email exists.
+     * Always returns a generic message - never reveals whether the email exists.
      */
     public static function forgotPassword(string $email): void
     {
@@ -285,7 +285,7 @@ class AuthService
 
         $user = UserRepository::findByEmail($email);
         if ($user === null || empty($user['password_hash'])) {
-            // User not found or OAuth-only account — silent success
+            // User not found or OAuth-only account - silent success
             return;
         }
 
@@ -396,7 +396,7 @@ class AuthService
     {
         $apiKey = getenv('RESEND_API_KEY');
         if (!$apiKey) {
-            error_log('[AuthService] RESEND_API_KEY not set — skipping reset email');
+            error_log('[AuthService] RESEND_API_KEY not set - skipping reset email');
             return;
         }
 
@@ -548,7 +548,7 @@ class AuthService
             $fields['about_me'] = $bio;
         }
 
-        // ── Ambassador picks — editable only by ambassadors, but sanitised for all ──
+        // ── Ambassador picks - editable only by ambassadors, but sanitised for all ──
         // The UI only shows these fields to ambassadors, so non-ambassador writes are harmless.
         $pickFields = [
             'ambassador_restaurant' => 200,
@@ -572,7 +572,7 @@ class AuthService
 
     // ── Response shape helpers ────────────────────────────────────────────────
 
-    /** Public profile — safe to return to anyone. */
+    /** Public profile - safe to return to anyone. */
     public static function publicFields(array $user): array
     {
         return [
@@ -590,7 +590,7 @@ class AuthService
         ];
     }
 
-    /** Own profile — includes email, guest_id, and ambassador state. Never includes password_hash or google_id. */
+    /** Own profile - includes email, guest_id, and ambassador state. Never includes password_hash or google_id. */
     public static function ownFields(array $user): array
     {
         // Use the ambassador flag pre-fetched by currentUser() to avoid a second query.
@@ -622,7 +622,7 @@ class AuthService
             'is_verified'       => (bool) ($user['is_verified'] ?? false),
             // ISO-8601 string when the user accepted the EULA, NULL otherwise.
             // The mobile client uses this to decide whether to show the
-            // re-prompt modal on launch (Apple G1.2 — existing users must
+            // re-prompt modal on launch (Apple G1.2 - existing users must
             // accept once after the moderation update ships).
             'eula_accepted_at'  => $user['eula_accepted_at'] ?? null,
             // Challenge privacy round-2: TRUE once the user has dismissed

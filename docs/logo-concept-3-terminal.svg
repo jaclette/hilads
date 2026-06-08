@@ -18,7 +18,7 @@
     fill="#f8f8fc"
     letter-spacing="0">hilads</text>
 
-  <!-- Cursor block — blinks in use, static in logo -->
+  <!-- Cursor block - blinks in use, static in logo -->
   <rect x="178" y="16" width="16" height="26" rx="1.5" fill="#06b6d4" opacity="0.85"/>
 
 </svg>

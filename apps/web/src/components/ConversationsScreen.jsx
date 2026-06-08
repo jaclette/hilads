@@ -20,9 +20,9 @@ function Toggle({ checked, onChange, disabled }) {
 
 // Formats a timestamp string as a short relative label for DM rows.
 // Handles both ISO-8601 ("2024-01-15T14:30:00Z") and MySQL datetime
-// ("2024-01-15 14:30:00") formats — the latter is invalid in Safari's
+// ("2024-01-15 14:30:00") formats - the latter is invalid in Safari's
 // Date constructor so we normalise the space to "T" before parsing.
-// Returns null for missing/invalid values — caller must guard against null.
+// Returns null for missing/invalid values - caller must guard against null.
 function formatConvTime(isoStr) {
   if (!isoStr) return null
   const normalised = typeof isoStr === 'string' ? isoStr.replace(' ', 'T') : isoStr

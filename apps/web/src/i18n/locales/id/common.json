@@ -3,7 +3,7 @@
     "cityTitle": "Siapa yang ada di {{city}} sekarang | Hilads",
     "cityDesc": "Lihat siapa yang online dan apa yang sedang terjadi di {{city}} sekarang.",
     "eventTitle": "{{title}} sedang berlangsung sekarang | Hilads",
-    "eventDesc": "Gabung {{title}} di Hilads — lihat siapa yang ada di sana dan apa yang terjadi."
+    "eventDesc": "Gabung {{title}} di Hilads - lihat siapa yang ada di sana dan apa yang terjadi."
   },
   "nowTitle": "Sekarang",
   "filterEvents": "🎉 Acara",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Acara publik",
   "accountWelcome": {
     "title": "Selamat, {{username}}! 🎉",
-    "subtitle": "Akunmu sudah siap — ini yang bisa kamu lakukan sekarang 👇",
+    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang 👇",
     "f1": "🎉 Mulai nongkrong dan kumpulkan orang sekarang juga",
     "f2": "📅 Adakan acara di kotamu",
     "f3": "💬 Kirim pesan pribadi ke siapa saja",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Kamu di {{city}}",
-    "slide1Body": "Warga lokal dan pelancong bertemu di sini — lewat tantangan nyata.",
+    "slide1Body": "Warga lokal dan pelancong bertemu di sini - lewat tantangan nyata.",
     "slide2Title": "Lokal menantang pelancong. Begitu juga sebaliknya.",
     "slide2Body": "🍜 Nasi goreng terbaik · 📍 Spot tersembunyi · 🎭 Coba bahasa Indonesia · 🙏 Bantu soal SIM. Tantangan nyata yang berujung pada pertemuan nyata.",
     "slide3Title": "Cara kerjanya",
@@ -38,7 +38,7 @@
     "title": "Cara kerja tantangan",
     "slide1": {
       "title": "Tantangan mengubah perjalanan jadi cerita",
-      "body": "Warga lokal dan traveler saling menantang untuk berbagi yang bikin kota terasa nyata — makanan, tempat, budaya, bantuan. Hadiahnya? Kalian ketemu langsung."
+      "body": "Warga lokal dan traveler saling menantang untuk berbagi yang bikin kota terasa nyata - makanan, tempat, budaya, bantuan. Hadiahnya? Kalian ketemu langsung."
     },
     "slide2": {
       "title": "Luncurkan tantanganmu",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Ada yang menerima",
-      "body": "Mereka kirim permintaan. Kamu cek dan terima — thread privat kalian terbuka untuk ngobrol dan atur rencana."
+      "body": "Mereka kirim permintaan. Kamu cek dan terima - thread privat kalian terbuka untuk ngobrol dan atur rencana."
     },
     "slide4": {
       "title": "Ketemu langsung",
-      "body": "Pilih tanggal yang cocok buat berdua. Timeline mengikuti tiap langkah. Lalu lakukan — beneran."
+      "body": "Pilih tanggal yang cocok buat berdua. Timeline mengikuti tiap langkah. Lalu lakukan - beneran."
     },
     "slide5": {
       "title": "Tutup tantangannya",
-      "body": "Setelah ketemu, tandai selesai. Kotamu, dijalani beneran — satu tantangan setiap kali."
+      "body": "Setelah ketemu, tandai selesai. Kotamu, dijalani beneran - satu tantangan setiap kali."
     },
     "next": "Lanjut",
     "done": "Mengerti!",
     "skip": "Lewati ✕",
     "slide6": {
       "title": "Di luar kotamu",
-      "body": "Tantang siapa pun di mana pun. Mereka kirim bukti — foto dengan geotag — dan kamu validasi dari jauh. Lokal atau global, setiap tantangan berarti."
+      "body": "Tantang siapa pun di mana pun. Mereka kirim bukti - foto dengan geotag - dan kamu validasi dari jauh. Lokal atau global, setiap tantangan berarti."
     },
     "createCta": "🔥 Buat challenge"
   },

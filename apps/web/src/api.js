@@ -60,9 +60,9 @@ export async function resolveLocation(lat, lng, country) {
 }
 
 // Lightweight country-only reverse-geocode via Nominatim (zoom=3 = country
-// level — fast, no city lookup). Returns ISO-2 uppercase or null on any
+// level - fast, no city lookup). Returns ISO-2 uppercase or null on any
 // failure. Caller passes the result straight into resolveLocation; failure
-// is non-fatal — backend uses global nearest when country is absent.
+// is non-fatal - backend uses global nearest when country is absent.
 export async function reverseGeocodeCountry(lat, lng) {
   try {
     const res = await fetch(
@@ -90,7 +90,7 @@ export async function fetchMessages(channelId, { beforeId, limit } = {}) {
   return res.json() // { messages, hasMore, onlineUsers, onlineCount }
 }
 
-// Lean messages fetch — skips presence + badge enrichment on the server.
+// Lean messages fetch - skips presence + badge enrichment on the server.
 // Used as one half of the parallel join+messages critical path.
 // Badges are enriched deferred via fetchMessageBadges after first render.
 export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}) {
@@ -103,7 +103,7 @@ export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}
   return res.json() // { messages, hasMore }
 }
 
-// POST /me/city — commit a manual city switch as users.current_city_id.
+// POST /me/city - commit a manual city switch as users.current_city_id.
 // Backend bypasses the two-signal rule and sets the city immediately. Errors
 // are swallowed: the local UI switch is the source of truth for this frame;
 // the next /location/resolve will reconcile if the backend write failed.
@@ -158,7 +158,7 @@ export async function bootstrapChannel(channelId, sessionId, guestId, nickname, 
   }
 }
 
-// Fetches badge data for registered message authors — called after first render
+// Fetches badge data for registered message authors - called after first render
 // to enrich the chat feed without blocking the initial bootstrap.
 export async function fetchMessageBadges(channelId, userIds) {
   if (!userIds || userIds.length === 0) return {}
@@ -227,7 +227,7 @@ export async function sendMessage(channelId, sessionId, guestId, nickname, conte
 export async function uploadImage(file) {
   const form = new FormData()
   form.append('file', file)
-  // No Content-Type header — browser sets it automatically with the multipart boundary
+  // No Content-Type header - browser sets it automatically with the multipart boundary
   const res = await fetch(`${BASE}/uploads`, {
     method: 'POST',
     credentials: 'include',
@@ -330,7 +330,7 @@ export async function fetchTopicMessages(topicId, { beforeId, limit } = {}) {
   const params = new URLSearchParams({ limit: String(limit ?? 50) })
   if (beforeId) params.set('before_id', beforeId)
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages?${params}`, { credentials: 'include' })
-  // Members-only: a non-member (incl. pending requester) gets 403 — surface it
+  // Members-only: a non-member (incl. pending requester) gets 403 - surface it
   // so the page shows the gated "request pending" state instead of erroring.
   // has_pending_request lets the gate render "Requested" on a return visit.
   if (res.status === 403) {
@@ -401,7 +401,7 @@ export async function markTopicRead(topicId, guestId) {
 
 export async function createTopic(channelId, guestId, title, description, category, coords = null) {
   const body = { guestId, title, description: description || null, category }
-  // Hangouts have no address — send the creator's coords so NOW can show distance.
+  // Hangouts have no address - send the creator's coords so NOW can show distance.
   if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
     body.lat = coords.lat
     body.lng = coords.lng
@@ -552,7 +552,7 @@ export async function toggleChallengeParticipation(challengeId, guestId, nicknam
 }
 
 // Optional `intl` carries International-mode fields: targetCityChannelId,
-// proofRequirements. Mode itself is not editable — delete + recreate. The
+// proofRequirements. Mode itself is not editable - delete + recreate. The
 // server ignores both fields on Local rows.
 export async function updateChallenge(challengeId, guestId, title, challengeType, audience, returnClause, intl = {}) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
@@ -564,7 +564,7 @@ export async function updateChallenge(challengeId, guestId, title, challengeType
       targetCityChannelId: intl.targetCityChannelId ?? null,
       proofRequirements:   intl.proofRequirements ?? null,
       // 'public' | 'friends' only; null/omitted = don't change. The server
-      // enforces "private not at input" — it's only reachable via the mutual
+      // enforces "private not at input" - it's only reachable via the mutual
       // privacy flow.
       visibility:          intl.visibility ?? null,
     }),
@@ -665,7 +665,7 @@ export async function unvalidateChallenge(challengeId, guestId) {
 
 // ── PR2 take-on flow ──────────────────────────────────────────────────────────
 
-/** Typed error from POST /accept — carries the backend `code` + (sometimes)
+/** Typed error from POST /accept - carries the backend `code` + (sometimes)
  *  `requiredMode` so UI can show a tailored alert + offer a mode-switch. */
 export class AcceptChallengeError extends Error {
   constructor(code, message, requiredMode) {
@@ -691,7 +691,7 @@ export async function acceptChallenge(challengeId) {
   return res.json()  // ChallengeAcceptance row
 }
 
-// ── International — proof submission ────────────────────────────────────────
+// ── International - proof submission ────────────────────────────────────────
 
 export async function fetchProofs(acceptanceId) {
   const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/proofs`, {
@@ -701,7 +701,7 @@ export async function fetchProofs(acceptanceId) {
   return res.json()
 }
 
-// PR59 — lat/lng are optional. The proof flow no longer prompts for
+// PR59 - lat/lng are optional. The proof flow no longer prompts for
 // geolocation; the server stubs 0/0 + marks the row verified when no
 // coords are sent. Existing callers passing { lat, lng } still work.
 export async function submitProof(acceptanceId, { mediaUrl, mediaType, lat, lng }) {
@@ -774,7 +774,7 @@ export async function acceptInvitation(invitationId) {
     credentials: 'include',
     body: JSON.stringify({}),
   })
-  // Don't throw on 403 — the gate codes (in_progress / mode_mismatch) are
+  // Don't throw on 403 - the gate codes (in_progress / mode_mismatch) are
   // meaningful state the caller wants to surface.
   return res.json().catch(() => ({}))
 }
@@ -823,7 +823,7 @@ export async function fetchRatePrompts() {
 
 /**
  * Submit a rating for a challenge. Throws an Error tagged with .status so the
- * UI can branch on 409 (already_rated) / 403 (not_rate_eligible) — both
+ * UI can branch on 409 (already_rated) / 403 (not_rate_eligible) - both
  * recoverable races: dismiss + refetch the prompts list.
  */
 export async function submitRating(challengeId, stars, comment) {
@@ -856,11 +856,11 @@ export async function submitRating(challengeId, stars, comment) {
  *     points:        number,
  *     event_count:   number,
  *     top_kind:      'accepted'|'date_locked'|'meetup'|'debrief'|'ghost'|null,
- *     seen_until:    string,        // ISO — pass back to ackScoreCelebration
+ *     seen_until:    string,        // ISO - pass back to ackScoreCelebration
  *     city_id:       string|null,
  *     city_name:     string|null,
  *     city_country:  string|null,   // ISO-2 country, fed into countryToFlag
- *     top_n:         number,        // 100 — beyond this rank is null
+ *     top_n:         number,        // 100 - beyond this rank is null
  *     rank_alltime:  { city: number|null, global: number|null },
  *     rank_month:    { city: number|null, global: number|null },
  *   }
@@ -877,7 +877,7 @@ export async function fetchScoreCelebration() {
 
 /**
  * Ack the celebration so the same delta is never shown twice. seen_until is
- * the ISO timestamp returned by the GET above. Fire-and-forget — failure is
+ * the ISO timestamp returned by the GET above. Fire-and-forget - failure is
  * harmless (worst case the popin re-shows next launch).
  */
 export async function ackScoreCelebration(seenUntil) {
@@ -923,7 +923,7 @@ export async function fetchLeaderboard(opts) {
   }
 }
 
-// Deprecated — kept for the historic mobile build still on the prior
+// Deprecated - kept for the historic mobile build still on the prior
 // release. New code uses fetchChallengeMessages on the public challenge
 // channel; thread channels are no longer auto-created on accept.
 export async function fetchThreadMessages(threadChannelId, { beforeId, limit = 50 } = {}) {
@@ -1072,7 +1072,7 @@ export async function fetchUpcomingEvents(channelId, opts = {}) {
 }
 
 /**
- * Past archive — finished one-off hangouts + expired pulses for a city.
+ * Past archive - finished one-off hangouts + expired pulses for a city.
  * GET /channels/{id}/past → { items: FeedItem[], nextCursor: number|null }
  * Items share the same normalized FeedItem shape as the now feed.
  * `before` is a unix recency cursor (pass the prior page's nextCursor);
@@ -1097,7 +1097,7 @@ export async function fetchPastArchive(channelId, opts = {}) {
 
 /**
  * Per-day event counts for the calendar-strip dots on the upcoming screen.
- * Returns { "YYYY-MM-DD": count } — days with zero events are omitted.
+ * Returns { "YYYY-MM-DD": count } - days with zero events are omitted.
  */
 export async function fetchCalendarSummary(channelId, from, to) {
   const params = new URLSearchParams({ from, to })
@@ -1120,7 +1120,7 @@ export class EventLimitReachedError extends Error {
 export async function createEvent(channelId, guestId, nickname, title, locationHint, startsAt, endsAt, type, lat, lng) {
   const body = { guestId, nickname, title, starts_at: startsAt, ends_at: endsAt, type }
   if (locationHint) body.location_hint = locationHint
-  // Precise coords from the map picker (optional) — power exact Maps links.
+  // Precise coords from the map picker (optional) - power exact Maps links.
   if (typeof lat === 'number' && typeof lng === 'number') { body.lat = lat; body.lng = lng }
   const res = await fetch(`${BASE}/channels/${channelId}/events`, {
     method: 'POST',
@@ -1411,14 +1411,14 @@ export async function fetchIncomingFriendRequestCount() {
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
 
-// Active hangouts a user created or joined — for the profile "Hangouts" tab.
+// Active hangouts a user created or joined - for the profile "Hangouts" tab.
 export async function fetchUserHangouts(userId) {
   const res = await fetch(`${BASE}/users/${encodeURIComponent(userId)}/hangouts`, { credentials: 'include' })
   if (!res.ok) return { hangouts: [] }
   return res.json() // { hangouts }
 }
 
-// Challenges the user created or accepted — for the profile "Challenges"
+// Challenges the user created or accepted - for the profile "Challenges"
 // tab. Mirrors fetchUserHangouts/fetchUserEvents. Backend already exists
 // at GET /users/{userId}/challenges; the mobile app calls it via its own
 // helper, this is the web parity.
@@ -1435,7 +1435,7 @@ export async function fetchMyEvents(guestId) {
 }
 
 // Preflight for the 1-event-per-day rule. Cheap COUNT; safe on every CTA tap.
-// Pass an optional `date` (YYYY-MM-DD) to check a specific host day —
+// Pass an optional `date` (YYYY-MM-DD) to check a specific host day -
 // used by the create form when the user picks a non-today date.
 // Returns { canCreate, isLegend, todayCount, date, limit }.
 export async function fetchCanCreateEvent(channelId, guestId, date) {
@@ -1445,7 +1445,7 @@ export async function fetchCanCreateEvent(channelId, guestId, date) {
   if (date)      qs.set('date',      date)
   const res = await fetch(`${BASE}/users/me/can-create-event?${qs.toString()}`, { credentials: 'include' })
   if (!res.ok) {
-    // On any non-2xx, assume the user CAN create — the POST will enforce the
+    // On any non-2xx, assume the user CAN create - the POST will enforce the
     // rule server-side and route to the limit screen via the error code.
     return { canCreate: true, isLegend: false, todayCount: 0, limit: 1 }
   }
@@ -1486,7 +1486,7 @@ export async function fetchConversations() {
 
 export async function fetchConversationsUnread() {
   const res = await fetch(`${BASE}/conversations/unread`, { credentials: 'include' })
-  if (res.status === 401) return null   // session gone — caller should clear auth state
+  if (res.status === 401) return null   // session gone - caller should clear auth state
   if (!res.ok) throw new Error('Failed to fetch conversations unread')
   return res.json() // { has_unread: bool }
 }
@@ -1514,7 +1514,7 @@ export async function fetchConversationMessages(conversationId, { beforeId, limi
 }
 
 export async function markConversationRead(conversationId) {
-  // Fire-and-forget — UI is already updated optimistically; ignore failures silently.
+  // Fire-and-forget - UI is already updated optimistically; ignore failures silently.
   await fetch(`${BASE}/conversations/${conversationId}/mark-read`, {
     method: 'POST',
     credentials: 'include',
@@ -1522,7 +1522,7 @@ export async function markConversationRead(conversationId) {
 }
 
 export async function markEventRead(eventId) {
-  // Fire-and-forget — ignore failures silently.
+  // Fire-and-forget - ignore failures silently.
   await fetch(`${BASE}/events/${eventId}/mark-read`, {
     method: 'POST',
     credentials: 'include',
@@ -1581,7 +1581,7 @@ export async function fetchNotifications({ limit = 50, offset = 0 } = {}) {
 
 export async function fetchUnreadCount() {
   const res = await fetch(`${BASE}/notifications/unread-count`, { credentials: 'include' })
-  if (res.status === 401) return null   // session gone — caller should clear auth state
+  if (res.status === 401) return null   // session gone - caller should clear auth state
   if (!res.ok) throw new Error('Failed to fetch unread count')
   return res.json() // { count }
 }
@@ -1658,7 +1658,7 @@ export async function toggleChannelReaction(channelId, messageId, emoji, guestId
   return res.json() // { reactions: [{emoji, count, self}] }
 }
 
-// PR33 — toggle a reaction on a challenge-channel message. Same shape /
+// PR33 - toggle a reaction on a challenge-channel message. Same shape /
 // allowed emojis as channels + events; broadcasts via WS.
 export async function toggleChallengeReaction(challengeId, messageId, emoji, guestId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/messages/${encodeURIComponent(messageId)}/reactions`, {
@@ -1721,7 +1721,7 @@ export async function deleteChannelMessage(messageId, guestId = null) {
   return res.json()
 }
 
-// ── DM edit / delete (auth required — sender_id ownership) ─────────────────
+// ── DM edit / delete (auth required - sender_id ownership) ─────────────────
 export async function editDmMessage(messageId, content) {
   const res = await fetch(`${BASE}/dm-messages/${encodeURIComponent(messageId)}`, {
     method: 'PATCH',

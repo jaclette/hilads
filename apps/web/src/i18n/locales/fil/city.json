@@ -64,7 +64,7 @@
     "eventTag": "Event",
     "public": "Public",
     "activeNow": "● Aktibo ngayon",
-    "repliesNew": "Wala pang tugon — maging una",
+    "repliesNew": "Wala pang tugon - maging una",
     "replies_one": "💬 {{count}} tugon",
     "replies_other": "💬 {{count}} tugon",
     "going_one": "🙌 {{count}} sasama",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Ano ang plano?",
     "hangoutTitle": "Magsimula ng tambayan",
-    "hangoutSub": "Instant — hayaang sumali ang mga tao ngayon",
+    "hangoutSub": "Instant - hayaang sumali ang mga tao ngayon",
     "eventTitle": "Gumawa ng event",
     "eventSub": "Magplano ng pwedeng salihan ng iba",
     "challengeTitle": "Maglunsad ng challenge",
-    "challengeSub": "Mga local & biyahero — magkonekta sa pamamagitan ng challenge",
+    "challengeSub": "Mga local & biyahero - magkonekta sa pamamagitan ng challenge",
     "challengePageTitle": "Gumawa ng challenge",
     "challengeAudience": "Para kanino?",
     "challengeAudLocals": "Mga local",
@@ -161,7 +161,7 @@
     "going": "sasama",
     "inThisHangout": "sa tambayan na ito",
     "loading": "Naglo-load…",
-    "empty": "Wala pa — maging una sa pagsali! 🙌"
+    "empty": "Wala pa - maging una sa pagsali! 🙌"
   },
   "nickname": {
     "label": "Nickname",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Sinimulan mo ang event na ito!",
-    "sub": "Gawing mas maganda pa — magdagdag ng description, i-update ang oras, o ibahagi ito.",
+    "sub": "Gawing mas maganda pa - magdagdag ng description, i-update ang oras, o ibahagi ito.",
     "edit": "✏️ I-edit ang event"
   },
   "feedNew": {

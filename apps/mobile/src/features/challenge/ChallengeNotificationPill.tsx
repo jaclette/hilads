@@ -9,7 +9,7 @@ import {
 import { Colors, FontSizes, Radius } from '@/constants';
 
 /**
- * Compact on/off notifications pill for the challenge channel — mirrors
+ * Compact on/off notifications pill for the challenge channel - mirrors
  * the web .challenge-notif-toggle. Maps the binary toggle to the
  * three-state backend preference (on → 'milestones', off → 'off');
  * 'all' (every message) is reachable from future advanced settings.

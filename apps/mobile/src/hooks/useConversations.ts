@@ -68,7 +68,7 @@ export function useConversations(): Result {
     setUnreadDMs(0);
   }, [setUnreadDMs]);
 
-  // Block filter (Apple G1.2) — server already filters initial fetch; this
+  // Block filter (Apple G1.2) - server already filters initial fetch; this
   // covers the optimistic gap after the user taps Block before reload runs.
   const visibleConversations = useMemo(
     () => filterBlocked(

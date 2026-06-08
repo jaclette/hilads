@@ -24,7 +24,7 @@
   "agePlaceholder": "ex. 25",
   "fieldMyVibe": "MINHA VIBE",
   "fieldInterests": "INTERESSES",
-  "interestsHint": "— escolha até 5",
+  "interestsHint": "- escolha até 5",
   "interest": {
     "drinks": "drinks",
     "party": "festa",
@@ -47,12 +47,12 @@
     "tech": "tecnologia",
     "dating": "namoro"
   },
-  "noHangouts": "Ainda não há rolês — comece um 🗣️",
+  "noHangouts": "Ainda não há rolês - comece um 🗣️",
   "host": "Anfitrião",
   "going": "VOU",
-  "noPlans": "Ainda não há planos — encontre algo 🔥",
+  "noPlans": "Ainda não há planos - encontre algo 🔥",
   "hosting": "ORGANIZANDO",
-  "nothingHosted": "Nada organizado ainda — comece algo ✨",
+  "nothingHosted": "Nada organizado ainda - comece algo ✨",
   "live": "LIVE",
   "recurring": "RECORRENTE",
   "friendRequests": "Pedidos de amizade",
@@ -80,7 +80,7 @@
   "errUsernameShort": "O apelido deve ter ao menos 3 caracteres",
   "errUsernameTaken": "Esse apelido já está em uso",
   "errUsernameInvalid": "Apelido inválido",
-  "errSave": "Erro ao salvar — tente de novo",
+  "errSave": "Erro ao salvar - tente de novo",
   "signOutTitle": "Sair",
   "signOutBody": "Tem certeza?",
   "deleteAccountTitle": "Excluir a conta?",
@@ -89,5 +89,5 @@
   "errorTitle": "Erro",
   "deleteAccountFail": "Não foi possível excluir a conta. Tente de novo.",
   "tabChallenges": "Desafios",
-  "noChallenges": "Nenhum desafio ainda — lance um 🔥"
+  "noChallenges": "Nenhum desafio ainda - lance um 🔥"
 }

@@ -1,10 +1,10 @@
 /**
- * Vercel serverless function — dynamic /sitemap.xml.
+ * Vercel serverless function - dynamic /sitemap.xml.
  *
  * Replaces the old build-time scripts/gen-sitemap.mjs (which wrote a static
  * public/sitemap.xml that only refreshed on deploy and never listed events).
  * This generates the sitemap ON REQUEST from current backend data, so a newly
- * created event appears automatically — within the CDN cache TTL, no redeploy.
+ * created event appears automatically - within the CDN cache TTL, no redeploy.
  *
  * Routing: vercel.json rewrites /sitemap.xml → /api/sitemap. The static file
  * was deleted because Vercel serves filesystem matches BEFORE rewrites, so a
@@ -16,11 +16,11 @@
  *
  * Contents (mirrors gen-sitemap.mjs, plus events):
  *   - home + /cities core pages
- *   - indexable city pages (chat OR active events OR venues — matches the
+ *   - indexable city pages (chat OR active events OR venues - matches the
  *     prerender's noindex criterion; empty cities excluded)
  *   - category × city pages (server-side ≥3 threshold)
  *   - venue pages (/venue/<slug>-<id>)
- *   - EVENT pages (/event/<slug>-<id>) — non-expired, non-deleted, non-venue
+ *   - EVENT pages (/event/<slug>-<id>) - non-expired, non-deleted, non-venue
  * Hangouts/topics (private, 24 h TTL) are never included.
  *
  * Each entry uses the un-prefixed English URL as the canonical <loc> and lists
@@ -37,7 +37,7 @@ const VENUE_URL_LAUNCH = process.env.SITEMAP_VENUE_LAUNCH || '2026-05-20'
 
 const SITEMAP_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
 
-// ── Slug helpers — keep in sync with App.jsx cityToSlug / eventUtils eventSlug
+// ── Slug helpers - keep in sync with App.jsx cityToSlug / eventUtils eventSlug
 //    / prerender.mjs venueSlug (the repo intentionally mirrors these). ──────────
 
 function cityToSlug(name) {
@@ -71,7 +71,7 @@ function eventSlug(title, id) {
   return t ? `${t}-${id}` : id
 }
 
-// Challenge URLs use the same slug shape as events — kept separate for
+// Challenge URLs use the same slug shape as events - kept separate for
 // future divergence, but the implementation matches today.
 function challengeSlug(title, id) {
   const t = stripDiacritics(title)
@@ -118,7 +118,7 @@ function urlEntry({ loc, lastmod, changefreq, priority }) {
 
 const dayFromEpoch = (sec) => new Date(sec * 1000).toISOString().slice(0, 10)
 
-// ── Backend fetches (resilient — a failure degrades that section, never 500) ──
+// ── Backend fetches (resilient - a failure degrades that section, never 500) ──
 
 async function fetchJson(path, pick) {
   try {
@@ -146,7 +146,7 @@ function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
     urlEntry({ loc: `${SITE_BASE}/cities`, lastmod: today, changefreq: 'daily', priority: '0.9' }),
   ]
 
-  // Indexable cities: chat messages OR active events OR seeded venues — the
+  // Indexable cities: chat messages OR active events OR seeded venues - the
   // SAME criterion the prerender uses for the city robots tag. Listing a
   // noindex city here would contradict its meta.
   const venueCitySlugs = new Set(
@@ -176,7 +176,7 @@ function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
     entries.push(urlEntry({ loc: `${SITE_BASE}/city/${p.city_slug}/${p.category}`, lastmod: today, changefreq: 'daily', priority: '0.7' }))
   }
 
-  // Venue pages — one canonical URL per seeded venue.
+  // Venue pages - one canonical URL per seeded venue.
   for (const v of venues) {
     if (!v?.id || !v?.name) continue
     const created = v.updated_at ? dayFromEpoch(v.updated_at) : today
@@ -184,14 +184,14 @@ function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
     entries.push(urlEntry({ loc: `${SITE_BASE}/venue/${venueSlug(v.name, v.id)}`, lastmod, changefreq: 'weekly', priority: '0.6' }))
   }
 
-  // Event pages — non-expired, non-deleted, non-venue (filtered server-side).
+  // Event pages - non-expired, non-deleted, non-venue (filtered server-side).
   for (const e of events) {
     if (!e?.id || !e?.title) continue
     const lastmod = e.updated_at ? dayFromEpoch(e.updated_at) : today
     entries.push(urlEntry({ loc: `${SITE_BASE}/event/${eventSlug(e.title, e.id)}`, lastmod, changefreq: 'daily', priority: '0.7' }))
   }
 
-  // Challenge pages — both open and validated are indexable (validated stay
+  // Challenge pages - both open and validated are indexable (validated stay
   // up; only hard-deleted via channels.status='deleted' get filtered server-
   // side). LIMIT 40000 on the backend keeps us inside one sitemap file.
   for (const c of (challenges || [])) {

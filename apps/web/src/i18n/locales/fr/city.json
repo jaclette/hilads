@@ -64,7 +64,7 @@
     "eventTag": "Événement",
     "public": "Public",
     "activeNow": "● Actif maintenant",
-    "repliesNew": "Pas encore de réponses — sois le premier",
+    "repliesNew": "Pas encore de réponses - sois le premier",
     "replies_one": "💬 {{count}} réponse",
     "replies_other": "💬 {{count}} réponses",
     "going_one": "🙌 {{count}} participant",
@@ -138,11 +138,11 @@
   "create": {
     "title": "On fait quoi ?",
     "hangoutTitle": "Lancer une sortie",
-    "hangoutSub": "Instantané — laisse les gens te rejoindre maintenant",
+    "hangoutSub": "Instantané - laisse les gens te rejoindre maintenant",
     "eventTitle": "Créer un événement",
     "eventSub": "Organise quelque chose à rejoindre",
     "challengeTitle": "Lancer un défi",
-    "challengeSub": "Locaux & voyageurs — connectez-vous par un défi",
+    "challengeSub": "Locaux & voyageurs - connectez-vous par un défi",
     "challengePageTitle": "Lance un défi",
     "challengeAudience": "Pour qui ?",
     "challengeAudLocals": "Locaux",
@@ -161,7 +161,7 @@
     "going": "y vont",
     "inThisHangout": "dans cette sortie",
     "loading": "Chargement…",
-    "empty": "Personne pour l'instant — sois le premier ! 🙌"
+    "empty": "Personne pour l'instant - sois le premier ! 🙌"
   },
   "nickname": {
     "label": "Pseudo",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Tu as lancé cet événement !",
-    "sub": "Rends-le encore meilleur — ajoute une description, change l'heure ou partage-le.",
+    "sub": "Rends-le encore meilleur - ajoute une description, change l'heure ou partage-le.",
     "edit": "✏️ Modifier l'événement"
   },
   "feedNew": {

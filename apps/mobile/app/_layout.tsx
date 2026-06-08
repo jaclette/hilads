@@ -1,4 +1,4 @@
-import '@/polyfills'; // must be first — polyfills WeakRef for Hermes + old arch
+import '@/polyfills'; // must be first - polyfills WeakRef for Hermes + old arch
 import '@/i18n';       // init i18next (sync, device-locale default) before any render
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
@@ -28,7 +28,7 @@ import { NotificationHandler } from '@/features/notifications/NotificationHandle
 import { track } from '@/services/analytics';
 import { Colors } from '@/constants';
 
-// ── Sentry — init before any render ──────────────────────────────────────────
+// ── Sentry - init before any render ──────────────────────────────────────────
 if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
   Sentry.init({
     dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -39,7 +39,7 @@ if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
 // Keep native splash visible while booting
 SplashScreen.preventAutoHideAsync();
 
-// ── Module-level proof — runs once on JS bundle evaluation ───────────────────
+// ── Module-level proof - runs once on JS bundle evaluation ───────────────────
 console.log('[layout] ── MODULE LOADED ───────────────────────────────────────');
 
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
@@ -49,7 +49,7 @@ function RootLayoutInner() {
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = app;
   // DIAG (shaking repro): the auth gate is confirmed stable (guest landing), so
   // the loop driver is some OTHER context value. Log the full relevant state
-  // every render — whichever field flips between consecutive lines is the
+  // every render - whichever field flips between consecutive lines is the
   // culprit. Remove once identified.
   console.log('[layout] render |',
     'booting=' + booting,
@@ -66,7 +66,7 @@ function RootLayoutInner() {
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 
-  // Apple G1.2 — registered users created before the moderation update have
+  // Apple G1.2 - registered users created before the moderation update have
   // a NULL eula_accepted_at on their record. Show a blocking modal until they
   // accept. New signups stamp the column at signup time (auth/signup gate),
   // so they never see this modal.
@@ -78,7 +78,7 @@ function RootLayoutInner() {
     setEulaSubmitting(true);
     try {
       const { user } = await acceptEula();
-      console.log('[eula] api ok — user.eula_accepted_at =', user?.eula_accepted_at ?? 'null');
+      console.log('[eula] api ok - user.eula_accepted_at =', user?.eula_accepted_at ?? 'null');
       // Guard: if the API somehow returns a user without the timestamp, the
       // modal would silently stay up forever. Treat that as an error too.
       if (!user?.eula_accepted_at) {
@@ -90,7 +90,7 @@ function RootLayoutInner() {
       // button. The most common cause is a network/timeout on the POST; the
       // user can tap "I agree" again to retry.
       const msg = err instanceof Error ? err.message : String(err);
-      console.warn('[eula] api FAILED —', msg);
+      console.warn('[eula] api FAILED -', msg);
       setEulaError(
         msg.includes('Network') || msg.includes('timeout') || msg.includes('aborted')
           ? "Couldn't reach Hilads. Check your connection and tap I agree again."
@@ -193,14 +193,14 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
           </Stack>
-          {/* LandingScreen overlays until user joins a city — guests only.
+          {/* LandingScreen overlays until user joins a city - guests only.
               Logged-in users skip it (routed to /switch-city by the effect
               above) so they never see the "anonymous · instant access" UI. */}
           {!joined && !account && <LandingScreen onRetryGeo={retryGeo} />}
         </>
       )}
 
-      {/* EULA re-prompt — blocks the app until existing users accept (Apple G1.2). */}
+      {/* EULA re-prompt - blocks the app until existing users accept (Apple G1.2). */}
       <EulaPromptModal
         visible={showEulaModal}
         loading={eulaSubmitting}
@@ -215,13 +215,13 @@ function RootLayoutInner() {
         onClose={() => setShowAccountWelcome(false)}
       />
 
-      {/* PR17 — "+X points!" popin once per cold start when the user has
+      {/* PR17 - "+X points!" popin once per cold start when the user has
           unacknowledged score_events. Sits above RatePromptLaunchGate so
           the celebration lands first (it's the upbeat moment; the rate
           sheet comes after). Both gates are independent. */}
       <ScoreCelebrationLaunchGate />
 
-      {/* PR11 — auto-open the RateSheet once per cold start if the caller
+      {/* PR11 - auto-open the RateSheet once per cold start if the caller
           has any rate-eligible meet-up (proposed_ends_at < now() and not
           yet rated). Replaces the abandoned rate-ready push. */}
       <RatePromptLaunchGate />

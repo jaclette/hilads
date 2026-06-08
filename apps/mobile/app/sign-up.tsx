@@ -41,14 +41,14 @@ export default function SignUpScreen() {
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
-  // Username availability — debounced check against the backend.
+  // Username availability - debounced check against the backend.
   type UStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
   const [uStatus, setUStatus] = useState<UStatus>('idle');
   const [uReason, setUReason] = useState<string | null>(null);
   const uTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleUsernameChange(val: string) {
-    // Handles are lowercase a-z0-9_ — strip disallowed chars as the user types.
+    // Handles are lowercase a-z0-9_ - strip disallowed chars as the user types.
     const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
     setUsername(cleaned);
     setUReason(null);
@@ -69,7 +69,7 @@ export default function SignUpScreen() {
     const e = email.trim().toLowerCase();
     const p = password;
 
-    // Username is the single identity field — it doubles as the display name.
+    // Username is the single identity field - it doubles as the display name.
     if (username.length < 3)   { setError(t('signUp.errUsername')); return; }
     if (uStatus === 'taken')   { setError(t('signUp.errTaken')); return; }
     if (uStatus === 'invalid') { setError(uReason ?? t('signUp.errInvalidUsername')); return; }
@@ -102,7 +102,7 @@ export default function SignUpScreen() {
           await joinChannel(detectedCity.channelId, sessionId, identity.guestId, nickname);
           setCity(detectedCity);
           const userId = user.id;
-          // joinCity queues replay if WS isn't connected yet — no on('connected') subscription.
+          // joinCity queues replay if WS isn't connected yet - no on('connected') subscription.
           socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId);
           // Persist channelId so next boot treats user as returning
           const updated = { ...identity, nickname, channelId: detectedCity.channelId };
@@ -111,7 +111,7 @@ export default function SignUpScreen() {
           setJoined(true);
           router.replace('/(tabs)/chat');
         } catch {
-          // Join failed — authenticate but let user pick a city
+          // Join failed - authenticate but let user pick a city
           setJoined(true);
           router.replace('/switch-city' as never);
         }
@@ -214,7 +214,7 @@ export default function SignUpScreen() {
 
             <View style={styles.field}>
               <Text style={styles.label}>{t('signUp.password')}</Text>
-              {/* PR32 — show/hide eye toggle (parity with sign-in). */}
+              {/* PR32 - show/hide eye toggle (parity with sign-in). */}
               <View style={styles.passwordWrap}>
                 <TextInput
                   style={[styles.input, styles.passwordInput]}
@@ -244,7 +244,7 @@ export default function SignUpScreen() {
               </View>
             </View>
 
-            {/* EULA — Apple G1.2 requires explicit acceptance before account creation. */}
+            {/* EULA - Apple G1.2 requires explicit acceptance before account creation. */}
             <View style={styles.eulaSection}>
               <EulaCopyBlock />
               <EulaCheckbox checked={eula} onToggle={() => setEula(v => !v)} disabled={loading} />

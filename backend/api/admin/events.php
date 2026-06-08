@@ -169,8 +169,8 @@ admin_nav('/admin/events');
                             <td class="td-clip" title="<?= htmlspecialchars($ev['title'], ENT_QUOTES) ?>">
                                 <strong><?= htmlspecialchars($ev['title'], ENT_QUOTES) ?></strong>
                             </td>
-                            <td style="color:#888"><?= htmlspecialchars($ev['city_name'] ?? '—', ENT_QUOTES) ?></td>
-                            <td style="color:#666"><?= htmlspecialchars($ev['event_type'] ?? '—', ENT_QUOTES) ?></td>
+                            <td style="color:#888"><?= htmlspecialchars($ev['city_name'] ?? '-', ENT_QUOTES) ?></td>
+                            <td style="color:#666"><?= htmlspecialchars($ev['event_type'] ?? '-', ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($isRecurring): ?>
                                     <span class="badge badge-recurring">↻ Recurring</span>
@@ -188,18 +188,18 @@ admin_nav('/admin/events');
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($ev['guest_id'], ENT_QUOTES) ?>">Guest</span>
                                     <span style="color:#888"><?= htmlspecialchars($creatorName, ENT_QUOTES) ?></span>
                                 <?php else: ?>
-                                    <span style="color:#444">—</span>
+                                    <span style="color:#444">-</span>
                                 <?php endif; ?>
                             </td>
                             <td style="color:#888; white-space:nowrap">
-                                <?= $startsTs > 0 ? date('M d, H:i', $startsTs) : '—' ?>
+                                <?= $startsTs > 0 ? date('M d, H:i', $startsTs) : '-' ?>
                             </td>
                             <td style="color:#888; white-space:nowrap">
-                                <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '—' ?>
+                                <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '-' ?>
                             </td>
                             <td><?= $statusBadge ?></td>
                             <td style="color:#666; white-space:nowrap">
-                                <?= $ev['created_at'] ? date('M d, H:i', strtotime($ev['created_at'])) : '—' ?>
+                                <?= $ev['created_at'] ? date('M d, H:i', strtotime($ev['created_at'])) : '-' ?>
                             </td>
                             <td>
                                 <div class="td-actions">

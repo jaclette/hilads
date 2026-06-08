@@ -3,7 +3,7 @@
     "cityTitle": "Wie is er nu in {{city}} | Hilads",
     "cityDesc": "Zie wie online is en wat er nu gebeurt in {{city}}.",
     "eventTitle": "{{title}} is nu bezig | Hilads",
-    "eventDesc": "Doe mee met {{title}} op Hilads — zie wie er is en wat er gebeurt."
+    "eventDesc": "Doe mee met {{title}} op Hilads - zie wie er is en wat er gebeurt."
   },
   "nowTitle": "Nu",
   "filterEvents": "🎉 Evenementen",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
     "title": "Gefeliciteerd, {{username}}! 🎉",
-    "subtitle": "Je account is klaar — dit kun je nu doen 👇",
+    "subtitle": "Je account is klaar - dit kun je nu doen 👇",
     "f1": "🎉 Start een meetup en breng meteen mensen samen",
     "f2": "📅 Organiseer een evenement in je stad",
     "f3": "💬 Stuur iedereen een privébericht",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Je bent in {{city}}",
-    "slide1Body": "Locals en reizigers ontmoeten elkaar hier — via echte challenges.",
+    "slide1Body": "Locals en reizigers ontmoeten elkaar hier - via echte challenges.",
     "slide2Title": "Locals dagen reizigers uit. En andersom.",
     "slide2Body": "🍜 De beste bitterballen · 📍 Een verborgen uitzichtpunt · 🎭 Spreek een beetje Nederlands · 🙏 Help met een SIM. Echte challenges die leiden tot een echte ontmoeting.",
     "slide3Title": "Zo werkt het",
@@ -38,7 +38,7 @@
     "title": "Zo werken challenges",
     "slide1": {
       "title": "Challenges maken van reizen verhalen",
-      "body": "Locals en reizigers dagen elkaar uit om te delen wat een stad echt maakt — eten, plekken, cultuur, hulp. De beloning? Jullie spreken persoonlijk af."
+      "body": "Locals en reizigers dagen elkaar uit om te delen wat een stad echt maakt - eten, plekken, cultuur, hulp. De beloning? Jullie spreken persoonlijk af."
     },
     "slide2": {
       "title": "Start je challenge",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Iemand neemt 'm aan",
-      "body": "Ze sturen een verzoek. Jij bekijkt het en accepteert — jullie privéthread opent om te chatten en plannen."
+      "body": "Ze sturen een verzoek. Jij bekijkt het en accepteert - jullie privéthread opent om te chatten en plannen."
     },
     "slide4": {
       "title": "Spreek persoonlijk af",
-      "body": "Kies samen een datum die werkt. De timeline volgt elke stap. Dan maak je 't waar — echt."
+      "body": "Kies samen een datum die werkt. De timeline volgt elke stap. Dan maak je 't waar - echt."
     },
     "slide5": {
       "title": "Sluit 'm af",
-      "body": "Na de afspraak markeer je 'm als volbracht. Jouw stad, écht beleefd — één challenge tegelijk."
+      "body": "Na de afspraak markeer je 'm als volbracht. Jouw stad, écht beleefd - één challenge tegelijk."
     },
     "next": "Volgende",
     "done": "Begrepen!",
     "skip": "Overslaan ✕",
     "slide6": {
       "title": "Buiten je stad",
-      "body": "Daag iedereen overal uit. Ze sturen bewijs — foto met geotag — en jij bevestigt van afstand. Lokaal of globaal, elke challenge telt."
+      "body": "Daag iedereen overal uit. Ze sturen bewijs - foto met geotag - en jij bevestigt van afstand. Lokaal of globaal, elke challenge telt."
     },
     "createCta": "🔥 Maak een challenge"
   },

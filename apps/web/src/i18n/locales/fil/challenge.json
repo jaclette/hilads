@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "Sariling challenge mo ito",
-        "body": "Ikaw ang gumawa ng challenge na ito — hintayin mo ibang tao na tanggapin."
+        "body": "Ikaw ang gumawa ng challenge na ito - hintayin mo ibang tao na tanggapin."
       },
       "mode_required": {
         "title": "Pumili muna ng local o traveler",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "May tumanggap na nito",
-        "body": "May ibang biyaherong kumukuha ngayon. Balikan mo pag tapos na sila — magiging available ulit ang challenge."
+        "body": "May ibang biyaherong kumukuha ngayon. Balikan mo pag tapos na sila - magiging available ulit ang challenge."
       }
     }
   },
   "thread": {
     "notFound": "Hindi mahanap ang thread",
     "empty": "Mag-hi 👋 at mag-plan kung kailan kayo magkita.",
-    "emptyIntl": "Mag-hi 👋 — kapag nakuha mo, padala ka ng 📸.",
+    "emptyIntl": "Mag-hi 👋 - kapag nakuha mo, padala ka ng 📸.",
     "cancel": {
       "creatorTitle": "I-cancel ang take-on na ito?",
       "acceptorTitle": "I-drop ang challenge na ito?",
@@ -191,7 +191,7 @@
     "confirm": {
       "approve": {
         "title": "I-mark bilang tapos?",
-        "body": "Final na 'to — hindi mo na mababago.",
+        "body": "Final na 'to - hindi mo na mababago.",
         "confirm": "I-mark bilang tapos"
       },
       "reject": {
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "May kumukuha na ngayon",
-      "body": "May biyaherong kumukuha ng challenge na ito. Pag tapos na sila, magiging available ulit — balikan mo soon."
+      "body": "May biyaherong kumukuha ng challenge na ito. Pag tapos na sila, magiging available ulit - balikan mo soon."
     }
   },
   "postCreate": {
     "title": "Live na ang challenge mo",
-    "subtitle": "Iseed mo na — paganahin sa loob ng isang oras.",
+    "subtitle": "Iseed mo na - paganahin sa loob ng isang oras.",
     "thisCity": "lungsod na ito",
     "ctaInvite": "Ipadala kay kahit sino sa {{city}}",
-    "ctaInviteSub": "Pumili ng ilang {{audience}} — pi-ping namin.",
+    "ctaInviteSub": "Pumili ng ilang {{audience}} - pi-ping namin.",
     "ctaShare": "Ibahagi sa labas ng Hilads",
     "skip": "Mamaya na lang",
     "pickerTitle": "{{audience}} sa {{city}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "Pumili muna ng tao",
     "sentTitle": "Naipadala sa {{count}}",
     "sentSubtitle": "Tatanggap sila ng push ngayon.",
-    "pickerSubtitleAll": "Walang eksaktong tugma — pinapakita lahat sa {{city}}."
+    "pickerSubtitleAll": "Walang eksaktong tugma - pinapakita lahat sa {{city}}."
   },
   "invitation": {
     "accept": "Tanggapin",
@@ -311,7 +311,7 @@
     "targetCityHint": "Iwanan sa \"Kahit saan\" para umabot kahit saan, o pumili ng isang lungsod.",
     "proofRequirementsLabel": "Ano ang dapat ipakita sa larawan?",
     "proofRequirementsPlaceholder": "hal. Ang pagkain sa liwanag ng araw, ikaw nasa frame",
-    "proofRequirementsHint": "Ang patunay ay isang larawan 📸. Nakikita ito ng kalahok bago magpasa — maging tiyak.",
+    "proofRequirementsHint": "Ang patunay ay isang larawan 📸. Nakikita ito ng kalahok bago magpasa - maging tiyak.",
     "cityPicker": {
       "title": "Pumili ng target na lungsod",
       "searchPlaceholder": "Maghanap ng lungsod…",
@@ -369,16 +369,16 @@
     "leaveCta": "Lumabas sa channel",
     "errKicked": "Inalis ka sa challenge na ito. Hindi ka na puwedeng sumali ulit.",
     "errClosed": "Hindi na tumatanggap ng bagong miyembro ang challenge.",
-    "errGeneric": "Hindi pumasok — subukan ulit."
+    "errGeneric": "Hindi pumasok - subukan ulit."
   },
   "members": {
     "title": "Nasa channel",
     "countIn": "{{count}} sa channel",
     "seeAll": "Tingnan lahat →",
-    "empty": "Wala pang sumali — ikaw ang mauna.",
+    "empty": "Wala pang sumali - ikaw ang mauna.",
     "kickCta": "Tanggalin",
     "kickAria": "Tanggalin si {{name}} sa channel",
-    "errKick": "Hindi naalis — subukan ulit."
+    "errKick": "Hindi naalis - subukan ulit."
   },
   "notif": {
     "on": "Naka-on ang notifications",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "I-rate ang meet-up mo kay {{name}}",
-      "titleUrgent": "Nag-rate na si {{name}} — ikaw na"
+      "titleUrgent": "Nag-rate na si {{name}} - ikaw na"
     },
     "sheet": {
       "title": "Kumusta kay {{name}}?",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "Paano gumagana ang points",
     "title": "🏆 Paano gumagana ang challenges",
-    "intro": "Bawat challenge ay nagbibigay ng points sa parehong panig — pumupunta sa city + world leaderboards mo.",
+    "intro": "Bawat challenge ay nagbibigay ng points sa parehong panig - pumupunta sa city + world leaderboards mo.",
     "colStep": "Hakbang",
     "steps": {
       "accepted": "Take-on accepted",
@@ -455,17 +455,17 @@
       "meet": "Meet-up",
       "rate": "Both nag-rate"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Total kada challenge",
     "footnote": "Binibigay lang ang points kapag pareho nang nag-rate ng meet-up.",
     "types": {
       "heading": "🎯 Dalawang paraan ng paglalaro",
-      "local": "🏙️ Local — sa iyong city. Magkita IRL para mabilang.",
-      "international": "🌍 International — sa pagitan ng mga city. Instant photo ang patunay."
+      "local": "🏙️ Local - sa iyong city. Magkita IRL para mabilang.",
+      "international": "🌍 International - sa pagitan ng mga city. Instant photo ang patunay."
     },
     "lifecycle": {
       "heading": "🔁 Isa lang sa isang pagkakataon",
-      "body": "Kapag tapos na ang taker, magre-reset ang chat — nandyan pa rin ang challenge, handa para sa susunod."
+      "body": "Kapag tapos na ang taker, magre-reset ang chat - nandyan pa rin ang challenge, handa para sa susunod."
     },
     "pointsHeading": "💯 Paano kumita ng points"
   },
@@ -473,7 +473,7 @@
     "unit": "puntos",
     "subtitle": {
       "accepted": "Tinanggap ang challenge mo 🤝",
-      "date_locked": "Set na ang date — tara 🗓️",
+      "date_locked": "Set na ang date - tara 🗓️",
       "meetup": "Mission accomplished 🎉",
       "debrief": "Mission accomplished 🎉",
       "ghost": "Sa susunod ulit 👻",

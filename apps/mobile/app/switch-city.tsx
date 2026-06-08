@@ -1,9 +1,9 @@
 /**
- * Switch-city screen — full-page list of cities with search + ranking filters.
+ * Switch-city screen - full-page list of cities with search + ranking filters.
  *
  * Non-tab route: opened from the City Channel header (tap the city name) and
  * from "Browse cities" fallbacks on other screens. Previously lived at
- * (tabs)/cities.tsx as a visible bottom tab — moved here when that slot was
+ * (tabs)/cities.tsx as a visible bottom tab - moved here when that slot was
  * repurposed for the "My city" tab pointing at the City Channel.
  *
  * Web source: App.jsx showCityPicker block + renderCityRow()
@@ -37,7 +37,7 @@ import { track } from '@/services/analytics';
 import type { City } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-// ── Flag emoji — mirrors web cityFlag() ──────────────────────────────────────
+// ── Flag emoji - mirrors web cityFlag() ──────────────────────────────────────
 
 function cityFlag(countryCode?: string): string {
   if (!countryCode || countryCode.length !== 2) return '';
@@ -46,7 +46,7 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Live activity dot — mirrors web .activity-dot.live pulse animation ───────
+// ── Live activity dot - mirrors web .activity-dot.live pulse animation ───────
 
 function ActivityDot({ live }: { live: boolean }) {
   const scale = useState(() => new Animated.Value(1))[0];
@@ -72,17 +72,17 @@ function ActivityDot({ live }: { live: boolean }) {
   );
 }
 
-// ── City card — mirrors web renderCityRow() ───────────────────────────────────
+// ── City card - mirrors web renderCityRow() ───────────────────────────────────
 
 function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
   const { t } = useTranslation('cities');
   const flag = cityFlag(city.country);
-  // Active city always counts as live — user is there, at least 1 person online
+  // Active city always counts as live - user is there, at least 1 person online
   const live = isActive || (city.onlineCount ?? 0) > 0;
 
   return (
     <View style={styles.cardWrapper}>
-      {/* web: inset 2px 0 0 var(--accent) — rendered as sibling OUTSIDE the card
+      {/* web: inset 2px 0 0 var(--accent) - rendered as sibling OUTSIDE the card
           so it is never clipped by the card's border-radius */}
       {isActive && <View style={styles.activeAccentBar} />}
 
@@ -162,7 +162,7 @@ export default function SwitchCityScreen() {
     }
   }
 
-  // Lazy-load full channel list — only fetched when user actually types a search query.
+  // Lazy-load full channel list - only fetched when user actually types a search query.
   // Avoids a second parallel request on screen mount; the full list is only needed for search.
   useEffect(() => {
     if (!query.trim() || allCities.length > 0) return;
@@ -188,21 +188,21 @@ export default function SwitchCityScreen() {
     if (identity && sessionId) {
       joinChannel(item.channelId, sessionId, identity.guestId, nickname).catch(() => {});
       // joinCity now self-leaves the previous city + queues replay if WS is
-      // not yet connected. No more on('connected', joinCity) subscription —
+      // not yet connected. No more on('connected', joinCity) subscription -
       // those leaked because they were never unsubscribed.
       socket.joinCity(item.channelId, sessionId, nickname, account?.id, identity?.guestId);
     }
-    // Switch-city is a browse surface — NEVER overwrites the home city,
+    // Switch-city is a browse surface - NEVER overwrites the home city,
     // not even for Legends. The home city is strictly geolocation-driven
     // (set by /location/resolve). Legends still have an explicit override
     // path on their profile (HOME CITY input → city picker with search +
     // autocomplete), which is the only place /me/city is called from now.
     track('city_selected', { cityId: item.channelId, cityName: item.name });
-    // replace (not push) — back from the City Channel shouldn't return here.
+    // replace (not push) - back from the City Channel shouldn't return here.
     router.replace('/(tabs)/chat');
   }
 
-  // Section label — "Top cities right now" when any city has activity, else "Cities"
+  // Section label - "Top cities right now" when any city has activity, else "Cities"
   const hasActivity  = cities.some(c => (c.onlineCount ?? 0) > 0);
   const sectionLabel = query.trim() ? null : (hasActivity ? t('topCities') : t('cities'));
 
@@ -230,7 +230,7 @@ export default function SwitchCityScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
 
-      {/* ── Header — web: .page-header (back button + centered title) ── */}
+      {/* ── Header - web: .page-header (back button + centered title) ── */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -257,7 +257,7 @@ export default function SwitchCityScreen() {
         <Text style={styles.headerTitle}>{t('title')}</Text>
       </View>
 
-      {/* ── Search — web: .city-search-wrap + .city-search-input ── */}
+      {/* ── Search - web: .city-search-wrap + .city-search-input ── */}
       {/* Focus: border turns accent + soft orange outer glow (web: border-color var(--accent)) */}
       <View style={styles.searchWrap}>
         <View style={[styles.searchInner, searchFocused && styles.searchInnerFocused]}>
@@ -282,7 +282,7 @@ export default function SwitchCityScreen() {
         </View>
       </View>
 
-      {/* ── Ranking filters — hidden during search ── */}
+      {/* ── Ranking filters - hidden during search ── */}
       {!query.trim() && (
         <View style={styles.filterRow}>
           {([
@@ -304,7 +304,7 @@ export default function SwitchCityScreen() {
         </View>
       )}
 
-      {/* ── Back to my location CTA — visible only when detected city ≠ active city ── */}
+      {/* ── Back to my location CTA - visible only when detected city ≠ active city ── */}
       {detectedCity && detectedCity.channelId !== activeCity?.channelId && (
         <TouchableOpacity
           style={styles.backToLocationBtn}
@@ -387,7 +387,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255,255,255,0.05)',
   },
-  // Web: .back-button — 46×46px pill, border rgba(255,255,255,0.1), bg rgba(255,255,255,0.05)
+  // Web: .back-button - 46×46px pill, border rgba(255,255,255,0.1), bg rgba(255,255,255,0.05)
   backBtn: {
     position:        'absolute',
     left:            Spacing.md,
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
   },
-  // Web: .page-title — centered, 1.35rem (~21.6px), weight 700, letter-spacing -0.01em
+  // Web: .page-title - centered, 1.35rem (~21.6px), weight 700, letter-spacing -0.01em
   headerTitle: {
     fontSize:      22,
     fontWeight:    '700',
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   // Web: .city-search-input:focus { border-color: var(--accent) }
-  // Android: do NOT change elevation on focus — changing elevation forces a new
+  // Android: do NOT change elevation on focus - changing elevation forces a new
   // rendering layer which immediately steals focus from the TextInput child.
   searchInnerFocused: {
     borderColor:     'rgba(194,74,56,0.55)',
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
     fontSize:        FontSizes.md,
   },
 
-  // ── Ranking filter pills — match Now's chip rhythm (now.tsx filterPill) ──
+  // ── Ranking filter pills - match Now's chip rhythm (now.tsx filterPill) ──
   // Tighter horizontal padding so the 3 emoji-prefixed labels fit without
   // "Most online" being clipped on iPhone SE / 6.1" widths.
   filterRow: {
@@ -529,7 +529,7 @@ const styles = StyleSheet.create({
   },
   retryText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.white },
 
-  // ── Card wrapper — positions accent bar as a sibling to the card ─────────
+  // ── Card wrapper - positions accent bar as a sibling to the card ─────────
   // overflow: visible so the bar can bleed past the card's rounded corners
   cardWrapper: {
     marginHorizontal: Spacing.md,
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     position:         'relative',
   },
 
-  // City card — compacted to Now's EventCard rhythm (padding 10, gap 4,
+  // City card - compacted to Now's EventCard rhythm (padding 10, gap 4,
   // borderRadius lg). Heavy shadow dropped (Now uses none); active treatment
   // below still provides visual hierarchy via the accent bar + warm bg.
   card: {
@@ -553,14 +553,14 @@ const styles = StyleSheet.create({
   //   background: linear-gradient(180deg, rgba(194,74,56,0.12), rgba(194,74,56,0.07))
   //   border-color: rgba(194,74,56,0.22)
   //   box-shadow: 0 16px 30px rgba(0,0,0,0.18), inset 2px 0 0 var(--accent)
-  //                         ↑ dark shadow — NOT orange. Orange only on the inset left bar.
+  //                         ↑ dark shadow - NOT orange. Orange only on the inset left bar.
   // Gradient approximated as flat midpoint rgba(194,74,56,0.09)
   cardActive: {
     // rgba(194,74,56,0.12) blended over Colors.bg2 (#161210) → warm dark red surface
     backgroundColor: '#211410',
     borderColor:     'rgba(194,74,56,0.22)',
   },
-  // Web: inset 2px 0 0 var(--accent) via box-shadow — rendered as a sibling element
+  // Web: inset 2px 0 0 var(--accent) via box-shadow - rendered as a sibling element
   // outside the card so it is never clipped by overflow: hidden on the card.
   // Positioned at left: -1 so it bleeds 1px past the card's left rounded edge.
   // top/bottom: 8 keeps it inset from the wrapper extremes so it doesn't clip
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
     gap:           8,
   },
 
-  // Activity dot — small circle next to the flag. 7px so it stays
+  // Activity dot - small circle next to the flag. 7px so it stays
   // proportional to the smaller compact-card type rhythm.
   activityDot: {
     width:           7,
@@ -613,14 +613,14 @@ const styles = StyleSheet.create({
     elevation:       2,
   },
 
-  // Flag — matches Now's `cardIcon` (16px / lh 18) so cards look uniform.
+  // Flag - matches Now's `cardIcon` (16px / lh 18) so cards look uniform.
   flag: {
     fontSize:   16,
     lineHeight: 18,
     flexShrink: 0,
   },
 
-  // City name — matches Now's `cardTitle` (md / 700 / lh 19).
+  // City name - matches Now's `cardTitle` (md / 700 / lh 19).
   cityName: {
     flex:       1,
     fontSize:   FontSizes.md,
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   },
   cityNameActive: {},
 
-  // "you're here" badge — kept compact to fit on the title row without
+  // "you're here" badge - kept compact to fit on the title row without
   // forcing the city name to wrap.
   hereBadge: {
     backgroundColor:   'rgba(194,74,56,0.14)',
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.1,
   },
 
-  // Stats row — runs full-width compact, matching Now's metaLine font sizing
+  // Stats row - runs full-width compact, matching Now's metaLine font sizing
   // (xs / 600). Smaller gap than before since we no longer indent under the
   // flag (paddingLeft removed).
   statsRow: {

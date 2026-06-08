@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Hilads — Logo Export</title>
+  <title>Hilads - Logo Export</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -46,7 +46,7 @@
 
 <h1>Hilads / Logo Export</h1>
 
-<!-- Hidden master SVG (no animation — clean for canvas export) -->
+<!-- Hidden master SVG (no animation - clean for canvas export) -->
 <svg id="src" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" style="position:absolute;visibility:hidden">
   <defs>
     <linearGradient id="g" x1="5%" y1="0%" x2="95%" y2="100%">
@@ -66,31 +66,31 @@
 <div class="grid">
 
   <div class="card">
-    <div class="card-label">favicon — 16px</div>
+    <div class="card-label">favicon - 16px</div>
     <div class="preview"><canvas id="c16" width="16" height="16"></canvas></div>
     <button onclick="dl(16)">Download PNG</button>
   </div>
 
   <div class="card">
-    <div class="card-label">icon — 32px</div>
+    <div class="card-label">icon - 32px</div>
     <div class="preview"><canvas id="c32" width="32" height="32" style="width:64px;height:64px;image-rendering:pixelated"></canvas></div>
     <button onclick="dl(32)">Download PNG</button>
   </div>
 
   <div class="card">
-    <div class="card-label">icon — 64px</div>
+    <div class="card-label">icon - 64px</div>
     <div class="preview"><canvas id="c64" width="64" height="64"></canvas></div>
     <button onclick="dl(64)">Download PNG</button>
   </div>
 
   <div class="card">
-    <div class="card-label">icon — 128px</div>
+    <div class="card-label">icon - 128px</div>
     <div class="preview"><canvas id="c128" width="128" height="128" style="width:96px;height:96px"></canvas></div>
     <button onclick="dl(128)">Download PNG</button>
   </div>
 
   <div class="card">
-    <div class="card-label">icon — 256px</div>
+    <div class="card-label">icon - 256px</div>
     <div class="preview"><canvas id="c256" width="256" height="256" style="width:80px;height:80px"></canvas></div>
     <button onclick="dl(256)">Download PNG</button>
   </div>
@@ -98,10 +98,10 @@
 </div>
 
 <div class="note">
-  <strong>SVG export:</strong> Copy <code>icon.svg</code> directly — it is already production-ready.<br>
+  <strong>SVG export:</strong> Copy <code>icon.svg</code> directly - it is already production-ready.<br>
   <strong>Favicon:</strong> Use <code>&lt;link rel="icon" type="image/svg+xml" href="icon.svg"&gt;</code> for modern browsers.
   Add the 16px PNG as fallback for Safari / older browsers.<br>
-  <strong>Animation:</strong> The SVG includes a CSS pulse on the dot. Static PNG exports have no animation — expected.
+  <strong>Animation:</strong> The SVG includes a CSS pulse on the dot. Static PNG exports have no animation - expected.
 </div>
 
 <script>

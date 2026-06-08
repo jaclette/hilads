@@ -8,7 +8,7 @@ declare(strict_types=1);
  * delegates to EventSeriesRepository::importBatch() for dedup + storage.
  *
  * Dedup key format: places:v1:city_{id}:{place_id}:{category}
- * This is stable — re-running for the same cities always produces the same keys.
+ * This is stable - re-running for the same cities always produces the same keys.
  */
 class VenueSeeder
 {
@@ -45,7 +45,7 @@ class VenueSeeder
             if ($city === null) {
                 $errors[]  = "city_id={$cityId}: not found";
                 $cityLog[] = ['city_id' => $cityId, 'error' => 'not found'];
-                error_log("[VenueSeeder] city_id={$cityId}: not found — skipping");
+                error_log("[VenueSeeder] city_id={$cityId}: not found - skipping");
                 continue;
             }
 
@@ -125,7 +125,7 @@ class VenueSeeder
     // ── Private helpers ───────────────────────────────────────────────────────
 
     /**
-     * One batch query for all source_keys — avoids N+1 in dry-run mode.
+     * One batch query for all source_keys - avoids N+1 in dry-run mode.
      *
      * @param  string[] $keys
      * @return string[]  Keys that already exist in event_series
@@ -158,7 +158,7 @@ class VenueSeeder
             'end_time'       => $isBar ? self::BAR_END      : self::COFFEE_END,
             'recurrence_type'=> 'daily',
             // Captured from Places API for venue JSON-LD GeoCoordinates.
-            // Nullable — older API responses (or future Places changes) may
+            // Nullable - older API responses (or future Places changes) may
             // omit these; importBatch stores NULL gracefully.
             'lat'            => $place['lat'] ?? null,
             'lng'            => $place['lng'] ?? null,

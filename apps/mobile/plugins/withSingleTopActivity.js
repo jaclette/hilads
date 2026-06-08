@@ -5,7 +5,7 @@
  *   Expo prebuild hardcodes android:launchMode="singleTask" on MainActivity.
  *   On Android 14, when the camera activity (running in a separate task) sends
  *   RESULT_OK back to a singleTask host activity, Android can drop the result
- *   across task boundaries — the ActivityResultLauncher inside expo-image-picker
+ *   across task boundaries - the ActivityResultLauncher inside expo-image-picker
  *   never resumes, and launchCameraAsync hangs indefinitely.
  *
  *   singleTop provides the same single-instance guarantee and correctly handles

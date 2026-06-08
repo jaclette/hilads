@@ -1,5 +1,5 @@
 /**
- * Public profile screen — /user/[id]
+ * Public profile screen - /user/[id]
  *
  * Layout:
  *   1. Sticky identity header (always visible): avatar, name, badge, city,
@@ -95,7 +95,7 @@ const VIBE_META: Record<string, { emoji: string; label: string; caption: string 
 };
 
 // EventPill + EVENT_ICONS + formatEventTime live in
-// src/features/events/EventPill.tsx — reused by the event-limit screen too.
+// src/features/events/EventPill.tsx - reused by the event-limit screen too.
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
@@ -146,7 +146,7 @@ export default function PublicProfileScreen() {
   const [showActionSheet,    setShowActionSheet]    = useState(false);
   const [blockBusy,          setBlockBusy]          = useState(false);
   const [existingReport,     setExistingReport]     = useState<ExistingReport | null>(null);
-  // Challenges first — primary activity surface (mirrors NOW + me.tsx ordering).
+  // Challenges first - primary activity surface (mirrors NOW + me.tsx ordering).
   const [activeTab,    setActiveTab]    = useState<TabKey>('challenges');
 
   useEffect(() => {
@@ -185,7 +185,7 @@ export default function PublicProfileScreen() {
 
     fetchUserFriends(id).then(fr => setFriends(fr.friends)).catch(() => {});
 
-    // Preflight: already-reported state (logged-in users only — guests can't
+    // Preflight: already-reported state (logged-in users only - guests can't
     // report from this screen, gated by `account` at the button site).
     if (account && account.id !== id) {
       fetchReportStatus({ targetUserId: id })
@@ -252,7 +252,7 @@ export default function PublicProfileScreen() {
     }
 
     if (friendState === 'pending_in') {
-      // The other user already sent us a request — accept it directly.
+      // The other user already sent us a request - accept it directly.
       (async () => {
         if (!pendingReqId) return;
         setFriendBusy(true);
@@ -266,7 +266,7 @@ export default function PublicProfileScreen() {
       return;
     }
 
-    // friendState === 'none' — send a fresh request. Server may auto-accept
+    // friendState === 'none' - send a fresh request. Server may auto-accept
     // if the receiver had already sent us a pending request (mutual add); in
     // that case we flip straight to "Friend" without the in-between state.
     (async () => {
@@ -478,7 +478,7 @@ export default function PublicProfileScreen() {
               <Text style={styles.aboutMe}>{user.aboutMe}</Text>
             ) : null}
 
-            {/* Identity cards: vibe + mode — side by side */}
+            {/* Identity cards: vibe + mode - side by side */}
             {(user.vibe && VIBE_META[user.vibe] || user.mode && MODE_META[user.mode]) ? (
               <View style={styles.identityCards}>
                 {user.vibe && VIBE_META[user.vibe] ? (
@@ -521,7 +521,7 @@ export default function PublicProfileScreen() {
             ) : null}
           </View>
 
-          {/* Tab bar — scrolls with content */}
+          {/* Tab bar - scrolls with content */}
           <View style={styles.tabBarWrap}>
             <ScrollView
               horizontal
@@ -550,7 +550,7 @@ export default function PublicProfileScreen() {
                 : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab);
               return (
                 <>
-                  {/* Mode sub-tabs — All / Local / International. */}
+                  {/* Mode sub-tabs - All / Local / International. */}
                   <View style={styles.profileSubTabsRow}>
                     {(['all', 'local', 'international'] as const).map(key => {
                       const active = challengeSubTab === key;
@@ -767,7 +767,7 @@ export default function PublicProfileScreen() {
               </>
             )}
 
-            {/* City Picks tab — legend only */}
+            {/* City Picks tab - legend only */}
             {activeTab === 'picks' && hasPicks && (
               <View style={styles.picksGrid}>
                 {[
@@ -1051,7 +1051,7 @@ const styles = StyleSheet.create({
     marginTop:  8,
   },
 
-  // ── Identity cards: vibe + mode — side by side ────────────────────────────
+  // ── Identity cards: vibe + mode - side by side ────────────────────────────
   identityCards: {
     flexDirection: 'row',
     gap:           Spacing.sm,
@@ -1080,7 +1080,7 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
 
-  // ── Details card — From + Age ─────────────────────────────────────────────
+  // ── Details card - From + Age ─────────────────────────────────────────────
   detailsCard: {
     backgroundColor: Colors.bg2,
     borderRadius:    Radius.lg,
@@ -1185,7 +1185,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
   },
   hostTagText: { fontSize: 10, fontWeight: '700', color: '#60a5fa' },
-  // Orphaned — left in place briefly to keep the diff small; safe to drop
+  // Orphaned - left in place briefly to keep the diff small; safe to drop
   // in a follow-up. Live inside src/features/events/EventPill.tsx now.
   eventPill: {
     flexDirection:     'row',

@@ -146,13 +146,13 @@ admin_nav('/admin/topics');
                         ?>
                         <tr>
                             <td class="td-mono"><?= htmlspecialchars(substr($t['channel_id'], 0, 10), ENT_QUOTES) ?>…</td>
-                            <td class="td-clip" title="<?= htmlspecialchars($t['title'] . ($t['description'] ? ' — ' . $t['description'] : ''), ENT_QUOTES) ?>">
+                            <td class="td-clip" title="<?= htmlspecialchars($t['title'] . ($t['description'] ? ' - ' . $t['description'] : ''), ENT_QUOTES) ?>">
                                 <strong><?= htmlspecialchars($t['title'], ENT_QUOTES) ?></strong>
                                 <?php if ($t['description']): ?>
                                     <br><span style="color:#555;font-size:11px"><?= htmlspecialchars(mb_substr($t['description'], 0, 60), ENT_QUOTES) ?><?= mb_strlen($t['description']) > 60 ? '…' : '' ?></span>
                                 <?php endif; ?>
                             </td>
-                            <td style="color:#888"><?= htmlspecialchars($t['city_name'] ?? '—', ENT_QUOTES) ?></td>
+                            <td style="color:#888"><?= htmlspecialchars($t['city_name'] ?? '-', ENT_QUOTES) ?></td>
                             <td><?= $catIcon ?> <?= htmlspecialchars($t['category'], ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($t['created_by'] !== null): ?>
@@ -160,16 +160,16 @@ admin_nav('/admin/topics');
                                 <?php elseif ($t['guest_id'] !== null): ?>
                                     <span class="badge badge-guest" title="<?= htmlspecialchars($t['guest_id'], ENT_QUOTES) ?>">Guest</span>
                                 <?php else: ?>
-                                    <span style="color:#444">—</span>
+                                    <span style="color:#444">-</span>
                                 <?php endif; ?>
                             </td>
                             <td style="color:#888"><?= (int)$t['message_count'] ?></td>
                             <td style="color:<?= $isExpired ? '#555' : '#888' ?>; white-space:nowrap">
-                                <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '—' ?>
+                                <?= $expiresTs > 0 ? date('M d, H:i', $expiresTs) : '-' ?>
                             </td>
                             <td><?= $statusBadge ?></td>
                             <td style="color:#666; white-space:nowrap">
-                                <?= $t['created_at'] ? date('M d, H:i', strtotime($t['created_at'])) : '—' ?>
+                                <?= $t['created_at'] ? date('M d, H:i', strtotime($t['created_at'])) : '-' ?>
                             </td>
                             <td>
                                 <div class="td-actions">

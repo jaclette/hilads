@@ -5,7 +5,7 @@ import {
 } from '../api'
 
 /**
- * Web mirror of mobile's ChallengeProofBlock — proof submission +
+ * Web mirror of mobile's ChallengeProofBlock - proof submission +
  * verdict surface for International challenges.
  *
  * Three faces (same as mobile):
@@ -44,7 +44,7 @@ export default function ChallengeProofBlock({
     }
   }, [acceptanceId])
 
-  // PR57 — re-fetch when the parent's acceptancePhase changes. The
+  // PR57 - re-fetch when the parent's acceptancePhase changes. The
   // parent's WS-driven loadMyAcceptance flips the phase string
   // (proof_submitted → approved, etc.), and that's the signal that
   // the proof list / verdict-row state probably needs to refresh too.
@@ -55,7 +55,7 @@ export default function ChallengeProofBlock({
   const isFinal = latest?.status === 'rejected' && attemptsLeft === 0
 
   // ── Acceptor: submit proof ──────────────────────────────────────────────
-  // PR59 — geolocation prompt removed. Camera-only capture (mobile) +
+  // PR59 - geolocation prompt removed. Camera-only capture (mobile) +
   // file picker (web) are enough; asking the browser for GPS at submit
   // time was extra friction with no real upside, so the flow is now
   // just: pick → upload → submit.
@@ -143,7 +143,7 @@ export default function ChallengeProofBlock({
   }
 
   if (latest?.status === 'pending') {
-    // PR62 — creator's verdict UI moved into ProofReviewModal (opens
+    // PR62 - creator's verdict UI moved into ProofReviewModal (opens
     // from the pipeline's "Review the proof" sub-CTA). The photo lives
     // in the chat thread above already, so leaving a duplicate photo +
     // button pair here was noise. Skip the card entirely for creators;
@@ -152,7 +152,7 @@ export default function ChallengeProofBlock({
     return (
       <div className="proof-block">
         <img src={latest.media_url} alt="" className="proof-media" />
-        {/* PR59 — geotag chip removed; we no longer ask the client for
+        {/* PR59 - geotag chip removed; we no longer ask the client for
             coordinates, so a "geotag verified" badge would be misleading. */}
         {iAmCreator ? (
           <div className="proof-verdict-row">
@@ -208,8 +208,8 @@ export default function ChallengeProofBlock({
     )
   }
 
-  // No pending — submission CTA (acceptor) or nothing (creator). The
-  // creator's "Waiting for the proof" line is gone — the pipeline pill
+  // No pending - submission CTA (acceptor) or nothing (creator). The
+  // creator's "Waiting for the proof" line is gone - the pipeline pill
   // already says it. Block returns null for creators with no action,
   // so we don't surface an empty card.
   const lastRejected = latest?.status === 'rejected' ? latest : null

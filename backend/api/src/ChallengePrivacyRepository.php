@@ -3,18 +3,18 @@
 declare(strict_types=1);
 
 /**
- * Privacy votes — mutual go-private for challenges already in progress.
+ * Privacy votes - mutual go-private for challenges already in progress.
  *
  * Local challenges flip from public → private only when BOTH the creator AND
  * the (single) acceptor have voted 'agreed'. International rows are always
  * public (enforced at create/update time in ChallengeRepository).
  *
  * Statuses we actually write here:
- *   'agreed' — this user wants the flip to private
- *   'denied' — this user has explicitly declined (locks the request; the
+ *   'agreed' - this user wants the flip to private
+ *   'denied' - this user has explicitly declined (locks the request; the
  *              other side has to clear & re-open)
  *
- * The migration also documents 'pending'; we never write that — absence of a
+ * The migration also documents 'pending'; we never write that - absence of a
  * row is the implicit pending state. Keeping the column definition open
  * lets future flows (e.g. timed expiry) re-introduce it without a migration.
  *
@@ -23,7 +23,7 @@ declare(strict_types=1);
  *   2. Second user votes 'agreed' → bothAgreed() returns true; route layer
  *      flips channel_challenges.visibility to 'private' and reset()s the votes.
  *   3. Either side can vote 'denied' → request is dead until someone clears
- *      and re-votes (UI shows "Declined — try again").
+ *      and re-votes (UI shows "Declined - try again").
  *   4. clearVote() lets a user withdraw their own vote (e.g. abandon the
  *      flow before the other side has responded).
  */
@@ -76,7 +76,7 @@ class ChallengePrivacyRepository
     }
 
     /**
-     * Convenience — true iff exactly two rows exist and both are 'agreed'.
+     * Convenience - true iff exactly two rows exist and both are 'agreed'.
      * Caller drives the visibility flip + reset on this returning true.
      */
     public static function bothAgreed(string $challengeId, string $creatorUserId, string $acceptorUserId): bool

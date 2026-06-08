@@ -5,7 +5,7 @@ import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
 import { formatTime } from '../eventUtils'
 
-// ── Avatar palette — same set as App.jsx ─────────────────────────────────────
+// ── Avatar palette - same set as App.jsx ─────────────────────────────────────
 
 const AVATAR_PALETTES = [
   ['#E14D2A', '#F7941D'],
@@ -29,7 +29,7 @@ function nl2br(text) {
   ))
 }
 
-// Icon + number for the "How it works" steps — text (title/desc) comes from i18n.
+// Icon + number for the "How it works" steps - text (title/desc) comes from i18n.
 const HOW_META = [
   { icon: '🌍', num: '01' },
   { icon: '🔥', num: '02' },
@@ -219,7 +219,7 @@ function PhoneFrame({ children }) {
 }
 
 // ── Local mockup: "Host your spot" event creation ─────────────────────────────
-// NOTE: mockup content is decorative app-preview imagery — left in English on
+// NOTE: mockup content is decorative app-preview imagery - left in English on
 // purpose (it mimics user-generated data, which is never translated).
 
 function LocalMockup() {
@@ -264,7 +264,7 @@ function LocalMockup() {
         <div className="lp-mock-field-label">AND THEN?</div>
         <div className="lp-mock-field">...and come share it with me 🍜</div>
 
-        {/* Privacy pill — same Public / Friends shape as the real form, so
+        {/* Privacy pill - same Public / Friends shape as the real form, so
             prospective users see the new control on the landing tile and
             don't get surprised post-signup. Decorative; mirrors the live UI. */}
         <div className="lp-mock-section-label">WHO CAN SEE THIS?</div>
@@ -285,7 +285,7 @@ function LocalMockup() {
 }
 
 // ── Exploring mockup: Hot / Events feed ───────────────────────────────────────
-// Decorative app-preview — left in English (mimics user data). See note above.
+// Decorative app-preview - left in English (mimics user data). See note above.
 
 function ExploringMockup() {
   return (
@@ -341,7 +341,7 @@ function ExploringMockup() {
 // ── Store badge button ─────────────────────────────────────────────────────────
 
 // Apple logo as inline SVG. The U+F8FF Apple glyph only renders on Apple
-// devices (tofu elsewhere), so we draw it — crisp on every platform, sized to
+// devices (tofu elsewhere), so we draw it - crisp on every platform, sized to
 // match the Google Play ▶ glyph and tinted via currentColor.
 function AppleIcon() {
   return (
@@ -431,7 +431,7 @@ export default function LandingPage({
           <Logo variant="wordmark" size="lg" />
         </div>
 
-        {/* Brand tagline — fixed English, never translated. */}
+        {/* Brand tagline - fixed English, never translated. */}
         <h1 className="lp-hero-h1">
           Challenge the city.
         </h1>
@@ -472,10 +472,10 @@ export default function LandingPage({
         <div className="lp-scroll-hint" aria-hidden="true">↓</div>
       </section>
 
-      {/* ── 2. SPLIT — Local vs Exploring ───────────────────────────────────── */}
+      {/* ── 2. SPLIT - Local vs Exploring ───────────────────────────────────── */}
       <section className="lp-split-section">
 
-        {/* Local — text left, phone right */}
+        {/* Local - text left, phone right */}
         <div className="lp-split-row lp-split-row--local">
           <div className="lp-split-text">
             <div className="lp-split-badge">{t('local.badge')}</div>
@@ -493,7 +493,7 @@ export default function LandingPage({
           </div>
         </div>
 
-        {/* Exploring — phone left, text right */}
+        {/* Exploring - phone left, text right */}
         <div className="lp-split-row lp-split-row--exploring">
           <div className="lp-split-visual">
             <ExploringMockup />
@@ -513,11 +513,11 @@ export default function LandingPage({
 
       </section>
 
-      {/* ── 2b. INTERNATIONAL — cross-city growth lane ──────────────────────
+      {/* ── 2b. INTERNATIONAL - cross-city growth lane ──────────────────────
           Hero is local-flavored (the soul of the app). This section frames
           International as the always-available alternative that keeps every
           city alive when local activity is quiet. Tagline + 3 bullets +
-          single CTA back to join. No phone mockup here — text-heavy by
+          single CTA back to join. No phone mockup here - text-heavy by
           design so the page rhythm alternates with the visual-heavy split
           rows above. */}
       <section className="lp-section lp-international">
@@ -535,7 +535,7 @@ export default function LandingPage({
               {t('international.cta')}
             </button>
           </div>
-          {/* PR50 — real-product screenshot of an international challenge
+          {/* PR50 - real-product screenshot of an international challenge
               channel (Berlin food challenge, "find me the best kebab")
               so the section ships with the same visual rhythm as the
               local + exploring rows above, instead of being text-only. */}
@@ -654,7 +654,7 @@ export default function LandingPage({
       {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
       <footer className="lp-footer">
         <Logo variant="icon" size="sm" />
-        {/* Brand tagline — fixed English. */}
+        {/* Brand tagline - fixed English. */}
         <span className="lp-footer-tagline">Challenge the city.</span>
       </footer>
 

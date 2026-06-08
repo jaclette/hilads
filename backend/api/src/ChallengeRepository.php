@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Challenge (Défi) — third primary entity alongside events + hangouts.
+ * Challenge (Défi) - third primary entity alongside events + hangouts.
  *
  * Mirrors TopicRepository / EventRepository structure but with a status
  * lifecycle:
@@ -15,7 +15,7 @@ declare(strict_types=1);
  * shared `expires_at > now()` guards keep working without conditional logic.
  *
  * Participation: mirrors event_participants (guest_id + optional user_id).
- * Guests CAN accept challenges — same anonymous-allowed UX as events.
+ * Guests CAN accept challenges - same anonymous-allowed UX as events.
  */
 class ChallengeRepository
 {
@@ -30,11 +30,11 @@ class ChallengeRepository
     // ── Shared SELECT (challenge + message stats) ─────────────────────────────
 
     // is_in_progress: true iff the challenge has a POST-APPROVAL active
-    // acceptance — i.e., someone the creator has accepted and is actually
+    // acceptance - i.e., someone the creator has accepted and is actually
     // working on the challenge. Uses IS_IN_PROGRESS_SQL (not IS_ACTIVE_SQL)
     // so a pending request the creator hasn't reviewed yet still reads
     // as "Available" on the city feed. The /accept gate keeps using
-    // IS_ACTIVE_SQL (wider — pending DOES block new requests) so two
+    // IS_ACTIVE_SQL (wider - pending DOES block new requests) so two
     // people can't race the same slot. See ChallengeAcceptanceRepository
     // for the SQL fragments' contracts and PR36 for the UX rationale.
     // EXISTS sub-select runs once per row; bounded by the LIMIT on the
@@ -63,7 +63,7 @@ class ChallengeRepository
             -- surfaces at the route layer.
             cc.visibility,
             cc.closed_to_new_joins,
-            -- Creator's display info — surfaced on cards + detail header so
+            -- Creator's display info - surfaced on cards + detail header so
             -- the user sees who owns a challenge. LEFT JOIN: pure-guest
             -- challenges (created_by IS NULL) fall back to cc.guest_id /
             -- nickname captured at create-time; we keep the JOIN on user_id
@@ -79,7 +79,7 @@ class ChallengeRepository
             EXISTS (
                 SELECT 1 FROM challenge_acceptances ca
                 -- Correlate on c.id (in every GROUP BY clause below) rather
-                -- than cc.channel_id — Postgres rejects ungrouped, non-
+                -- than cc.channel_id - Postgres rejects ungrouped, non-
                 -- aggregated outer references with GROUP BY queries. The two
                 -- columns are equal via the JOIN; ca.challenge_id's FK
                 -- references channels(id) so either works semantically.
@@ -95,7 +95,7 @@ class ChallengeRepository
     /**
      * Resolve an ISO-2 country code for a 'city_<int>' channel id via the
      * APCU-cached city list. Returns null for null / malformed input or
-     * cities we don't know about. Cheap — no DB round-trip after warmup.
+     * cities we don't know about. Cheap - no DB round-trip after warmup.
      */
     private static function countryForCityId(?string $cityId): ?string
     {
@@ -106,7 +106,7 @@ class ChallengeRepository
 
     /**
      * Resolve the display city name for a 'city_<int>' channel id via the
-     * APCU-cached city list. Mirror of countryForCityId — used so the
+     * APCU-cached city list. Mirror of countryForCityId - used so the
      * International pill can fall back to a readable city name when the
      * flag emoji doesn't render on a given device's font.
      */
@@ -128,7 +128,7 @@ class ChallengeRepository
             'challenge_type'       => $row['challenge_type'],
             'audience'             => $row['audience'],
             'status'               => $row['status'],
-            // Legacy field — kept in the response shape for one release so old
+            // Legacy field - kept in the response shape for one release so old
             // mobile/web builds don't blow up reading it. Always returns the
             // stored DB value (or 3 as the historical default).
             'max_participants'     => (int) ($row['max_participants'] ?? 3),
@@ -137,11 +137,11 @@ class ChallengeRepository
             'last_activity_at'     => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
             'validated_at'         => isset($row['validated_at'])     ? (int) $row['validated_at']     : null,
             'created_at'           => (int) $row['created_at'],
-            // 1:1 model state — true iff this challenge currently has a
+            // 1:1 model state - true iff this challenge currently has a
             // non-terminal acceptance. UI uses this to render Available /
             // In progress / Validated and to gate the Accept button.
             // Defaults to false on rows that pre-date the column (eg. cached
-            // formats) — safe because the route still rechecks at /accept.
+            // formats) - safe because the route still rechecks at /accept.
             'is_in_progress'       => isset($row['is_in_progress']) ? (bool) $row['is_in_progress'] : false,
             // International mode shape. 'local' is the default for every row
             // that pre-dates the migration. target_city_id is null for local
@@ -156,15 +156,15 @@ class ChallengeRepository
             // pill ("🇩🇪 → 🇻🇳" etc.). Null for guest-only or unknown rows.
             'country'              => self::countryForCityId($row['city_id']        ?? null),
             'target_country'       => self::countryForCityId($row['target_city_id'] ?? null),
-            // PR15 — target city DISPLAY NAME for the International pill on
+            // PR15 - target city DISPLAY NAME for the International pill on
             // surfaces where the flag emoji might not render (Android font
             // gaps on country flags). Resolved from the same APCU-cached
             // city list as country. Null for "anywhere" / local rows.
             'target_city_name'     => self::cityNameForCityId($row['target_city_id'] ?? null),
-            // Visibility — 'public' default for pre-migration rows.
+            // Visibility - 'public' default for pre-migration rows.
             'visibility'           => $row['visibility']         ?? 'public',
             'closed_to_new_joins'  => (bool) ($row['closed_to_new_joins'] ?? false),
-            // Creator display — null for pure-guest challenges (created_by IS NULL).
+            // Creator display - null for pure-guest challenges (created_by IS NULL).
             // Cards + the detail header render "by {creator_display_name}".
             'creator_display_name'     => $row['creator_display_name']     ?? null,
             'creator_username'         => $row['creator_username']         ?? null,
@@ -178,7 +178,7 @@ class ChallengeRepository
     // ── Reads ─────────────────────────────────────────────────────────────────
 
     /**
-     * Active (open) challenge count per city — for the city list summary.
+     * Active (open) challenge count per city - for the city list summary.
      * Returns an array keyed by integer city channel ID (e.g. 3), value = count.
      *
      * Counts both:
@@ -189,7 +189,7 @@ class ChallengeRepository
      */
     public static function getCountsPerCity(): array
     {
-        // Public-only — the city-list summary feeds the always-visible
+        // Public-only - the city-list summary feeds the always-visible
         // city picker (anon viewers, crawlers). Friends/private rows must
         // not bump the count or they'd leak existence to non-viewers.
         $stmt = Database::pdo()->prepare("
@@ -212,7 +212,7 @@ class ChallengeRepository
         $stmt->execute();
         $result = [];
         foreach ($stmt->fetchAll() as $row) {
-            // city_id is stored as 'city_3' — extract the numeric ID to match EventRepository.
+            // city_id is stored as 'city_3' - extract the numeric ID to match EventRepository.
             $numericId           = (int) str_replace('city_', '', $row['city_id']);
             $result[$numericId]  = (int) $row['challenge_count'];
         }
@@ -222,7 +222,7 @@ class ChallengeRepository
     /**
      * Active (open) challenges for a city, sorted by created_at DESC.
      * $cityId is the channel ID string, e.g. 'city_3'.
-     * $limit is capped at 200 — feed is meant for "top 5" display anyway, but
+     * $limit is capped at 200 - feed is meant for "top 5" display anyway, but
      * the See-All screen can request more.
      */
     public static function getByCity(string $cityId, int $limit = 50, ?string $viewerUserId = null): array
@@ -234,7 +234,7 @@ class ChallengeRepository
         // after validated_at, so the city sees "Défi relevé" status before it
         // drops into the past archive. After 24h, getValidatedByCity() picks it up.
         //
-        // (cc.city_id = :cid OR cc.target_city_id = :cid) — International
+        // (cc.city_id = :cid OR cc.target_city_id = :cid) - International
         // challenges targeting this city mirror into its feed (per spec). The
         // partial index `idx_channel_challenges_target_city` covers the
         // target-side scan; "anywhere" intl rows (target_city_id IS NULL)
@@ -277,16 +277,16 @@ class ChallengeRepository
     }
 
     /**
-     * Validated (archived) challenges for a city — feeds the "See past
+     * Validated (archived) challenges for a city - feeds the "See past
      * challenges" CTA. Most-recently-validated first.
      */
     public static function getValidatedByCity(string $cityId, int $limit = 30, ?int $beforeTs = null, ?string $viewerUserId = null): array
     {
         $limit  = max(1, min(100, $limit));
         $params = ['city_id' => $cityId];
-        // Past archive — only challenges that are past the 24h grace window
+        // Past archive - only challenges that are past the 24h grace window
         // (otherwise they're still showing in the active feed via getByCity()).
-        // Same mirroring rule as getByCity — past archive of a city includes
+        // Same mirroring rule as getByCity - past archive of a city includes
         // international challenges that targeted it.
         $visClause = self::visibilityWhereClause($viewerUserId);
         if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
@@ -320,7 +320,7 @@ class ChallengeRepository
 
     /**
      * Single-challenge detail. When $viewerUserId is provided, the visibility
-     * clause hides friends/private rows the viewer can't see — caller treats
+     * clause hides friends/private rows the viewer can't see - caller treats
      * a null return as 404 (same as deleted/never-existed). Default null
      * viewer = anonymous, so callers that DON'T pass a viewer effectively
      * see public-only. Crawlers + the prerender pipeline hit this path.
@@ -387,13 +387,13 @@ class ChallengeRepository
     }
 
     /**
-     * Challenges a user created OR accepted — for the profile "Challenges" tab.
+     * Challenges a user created OR accepted - for the profile "Challenges" tab.
      * Includes is_owner flag. Most-recent first.
      *
      * Acceptance is sourced from BOTH:
-     *   - challenge_participants (legacy pooled-acceptance model) — kept for
+     *   - challenge_participants (legacy pooled-acceptance model) - kept for
      *     back-compat with any pre-1:1 rows still in the table.
-     *   - challenge_acceptances (the 1:1 take-on model used since PR2) —
+     *   - challenge_acceptances (the 1:1 take-on model used since PR2) -
      *     covers everyone who took on a challenge via the new flow.
      * Without the second EXISTS, the profile would silently omit every
      * challenge taken on after the model switch.
@@ -403,7 +403,7 @@ class ChallengeRepository
         $pdo  = Database::pdo();
         // Visibility gating happens against the VIEWER (the person browsing
         // the profile), not the profile-owner. Helper expects `cc`/`c`
-        // aliases in scope — they are.
+        // aliases in scope - they are.
         $visClause = self::visibilityWhereClause($viewerUserId);
         $params    = ['owner_id' => $userId, 'part_id' => $userId, 'acc_id' => $userId];
         if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
@@ -483,7 +483,7 @@ class ChallengeRepository
      */
     public const ALLOWED_MODES         = ['local', 'international'];
     /** Values acceptable at CREATE / EDIT time. 'private' is intentionally
-     *  excluded — it's reachable only via the mutual privacy_requests flow
+     *  excluded - it's reachable only via the mutual privacy_requests flow
      *  (PR #4). Smuggling it via the body would bypass the mutual gate. */
     public const ALLOWED_VISIBILITIES_AT_INPUT = ['public', 'friends'];
 
@@ -515,13 +515,13 @@ class ChallengeRepository
         // International-mode hygiene:
         //   - target_city_id only meaningful when mode='international'; force
         //     null for local so a misbehaving client can't smuggle a target.
-        //   - proof_requirements same logic — local stores nothing.
+        //   - proof_requirements same logic - local stores nothing.
         //   - audience is irrelevant for international (no in-person meetup);
         //     keep the column populated (NOT NULL) but force a stable value
         //     so int'l rows don't accidentally surface in audience-filtered
         //     queries written for local.
         //   - visibility forced 'public' on international (defeats cross-city
-        //     model otherwise — covered in the spec, enforced server-side).
+        //     model otherwise - covered in the spec, enforced server-side).
         if ($mode !== 'international') {
             $targetCityId      = null;
             $proofRequirements = null;
@@ -543,9 +543,9 @@ class ChallengeRepository
             'name'      => $title,
         ]);
 
-        // expires_at uses the table default (2999 sentinel) — challenges are persistent.
+        // expires_at uses the table default (2999 sentinel) - challenges are persistent.
         // max_participants column kept for back-compat (one-release reversible
-        // path) but no longer written — the DB default fills it. The new model
+        // path) but no longer written - the DB default fills it. The new model
         // is 1:1: one challenge has at most one active acceptance at a time;
         // commit 2 wires that gate. The column will be dropped in a separate
         // migration once the new model has run stable.
@@ -600,7 +600,7 @@ class ChallengeRepository
     /**
      * Owner-gated edit of title / challenge_type / audience / return_clause.
      * Returns the updated challenge, or null if not found / not the owner.
-     * Status cannot be flipped here — use validate() instead.
+     * Status cannot be flipped here - use validate() instead.
      *
      * max_participants is no longer editable from the form (new 1:1 model);
      * the column stays in the DB for back-compat but isn't touched here.
@@ -625,7 +625,7 @@ class ChallengeRepository
         $returnClause = $returnClause !== null ? trim($returnClause) : null;
         if ($returnClause === '') $returnClause = null;
 
-        // Mode is intentionally NOT editable here — flipping mode mid-flight
+        // Mode is intentionally NOT editable here - flipping mode mid-flight
         // would invalidate any in-flight acceptances (local-style phases vs
         // international's proof flow). If a creator wants the other mode, the
         // expected path is delete + recreate. We do let International creators
@@ -647,11 +647,11 @@ class ChallengeRepository
         }
 
         // Visibility-on-edit rules:
-        //   - International stays 'public' forever — block any attempt to
+        //   - International stays 'public' forever - block any attempt to
         //     flip it from the edit form (defence in depth; the route layer
         //     also rejects).
         //   - Local can toggle between 'public' and 'friends' here.
-        //   - 'private' is NOT settable at edit time — only via the mutual
+        //   - 'private' is NOT settable at edit time - only via the mutual
         //     privacy_requests flow in PR #4. If the row is already 'private'
         //     (from the mutual flow), the creator can still revert it back
         //     to 'public' or 'friends' via this edit path; the mutual flow
@@ -724,7 +724,7 @@ class ChallengeRepository
     }
 
     /**
-     * Internal-only — flip visibility directly, bypassing the owner gate
+     * Internal-only - flip visibility directly, bypassing the owner gate
      * and the "private not allowed at input" rule that update() enforces.
      *
      * The ONLY legitimate caller is the mutual go-private flow (route
@@ -734,7 +734,7 @@ class ChallengeRepository
      * here, which update() filters out.
      *
      * Allowed values: 'public', 'friends', 'private'. Anything else is a
-     * no-op (defensive — callers should validate at the route layer).
+     * no-op (defensive - callers should validate at the route layer).
      */
     public static function setVisibility(string $challengeId, string $visibility): bool
     {
@@ -742,7 +742,7 @@ class ChallengeRepository
             return false;
         }
         $pdo = Database::pdo();
-        // International stays public — keep that invariant even on the
+        // International stays public - keep that invariant even on the
         // mutual-flow path. Returns 0 rows updated if the row is
         // international, which the caller can ignore (the flow shouldn't
         // have reached this method for an international row anyway, but
@@ -794,7 +794,7 @@ class ChallengeRepository
     }
 
     /**
-     * Owner check — accepts the request if EITHER the guest_id OR the
+     * Owner check - accepts the request if EITHER the guest_id OR the
      * registered user_id matches the creator. Identical pattern to Topics.
      */
     private static function ownerCheck(string $challengeId, string $guestId, ?string $userId): bool
@@ -859,11 +859,11 @@ class ChallengeRepository
     // These methods source from challenge_acceptances, NOT the legacy
     // challenge_participants pool. The field names stay "participant" for
     // backward compatibility with the API response shape used by mobile +
-    // web cards, but semantically these are now "acceptors" — people who
+    // web cards, but semantically these are now "acceptors" - people who
     // took on the challenge via the new POST /accept flow.
     //
     // The creator is NOT in this list (they own the challenge, they don't
-    // accept it). 'rejected' acceptances are excluded — the relationship
+    // accept it). 'rejected' acceptances are excluded - the relationship
     // is closed, no longer an active "is taking on this challenge".
 
     public static function participantCount(string $challengeId): int
@@ -954,7 +954,7 @@ class ChallengeRepository
     }
 
     /**
-     * Full acceptor list for the members modal — canonical UserDTOs in
+     * Full acceptor list for the members modal - canonical UserDTOs in
      * accept-order. PR2+ acceptors are always registered users (the new
      * /accept flow requires a session), so no guest branch here.
      * 'rejected' acceptances are excluded.
@@ -987,7 +987,7 @@ class ChallengeRepository
                     'home_city'         => null,
                 ]), ['joinedAt' => $joinedAt]);
             }
-            // Account was deleted after accepting — discreet placeholder so
+            // Account was deleted after accepting - discreet placeholder so
             // the slot is preserved (cap math etc.) without surfacing PII.
             return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
         }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
@@ -1028,11 +1028,11 @@ class ChallengeRepository
      *   - registered viewer                          → public, or visibility=
      *     'friends' where the viewer is a friend of the creator OR a friend
      *     of an acceptor, or the viewer is the creator / acceptor themselves
-     *     (this catches the visibility='private' case too — only participants
+     *     (this catches the visibility='private' case too - only participants
      *     ever see private rows).
      *
      * `user_friends` is symmetric (both directions inserted at friendship
-     * acceptance — see FriendRequestRepository::insertFriendship), so the
+     * acceptance - see FriendRequestRepository::insertFriendship), so the
      * EXISTS clauses only need a single direction.
      */
     public static function visibilityWhereClause(?string $viewerUserId): string

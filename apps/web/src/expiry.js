@@ -1,7 +1,7 @@
 import i18n from './i18n'
 
 // Relative "expires in …" label for hangouts (24h lifespan). `expiresAt` is a
-// unix timestamp in seconds. Computed on render — approximate is fine.
+// unix timestamp in seconds. Computed on render - approximate is fine.
 export function formatExpiresIn(expiresAt) {
   if (!expiresAt) return null
   const T = (k, opts) => i18n.t(k, { ns: 'common', ...opts })

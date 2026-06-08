@@ -12,14 +12,14 @@ export interface MentionSuggestion {
 
 export type MentionContext = 'city' | 'event' | 'topic' | 'challenge';
 
-/** What the composer sends to the backend — username is resolved server-side on read.
+/** What the composer sends to the backend - username is resolved server-side on read.
  *  Member mentions carry userId; online-guest mentions carry guestId. */
 export type MentionInput = { userId?: string; guestId?: string; offset: number; length: number };
 
 /**
  * @mention autocomplete suggestions for a context. `channelId` is the city
  * numeric id (city) or the 16-hex id (event/topic). Registered, in-context users
- * only — the backend excludes guests and the caller.
+ * only - the backend excludes guests and the caller.
  */
 export async function fetchMentionSuggestions(
   context: MentionContext,

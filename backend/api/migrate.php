@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Hilads — Database migration script
+ * Hilads - Database migration script
  *
  * Run manually before or after deploys when the schema has changed.
  * Safe to re-run: every statement uses CREATE IF NOT EXISTS / ADD COLUMN IF NOT EXISTS.
@@ -76,7 +76,7 @@ function run(PDO $pdo, string $sql, string $label = ''): void
 echo "Running Hilads migrations...\n\n";
 
 // ══════════════════════════════════════════════════════════════════════════════
-// TABLES — all idempotent (CREATE TABLE IF NOT EXISTS)
+// TABLES - all idempotent (CREATE TABLE IF NOT EXISTS)
 // ══════════════════════════════════════════════════════════════════════════════
 
 echo "[ Tables ]\n";
@@ -108,7 +108,7 @@ run($pdo, "
 
 // Per-user UI language, set from the client's device locale on push-token /
 // web-push registration. Drives localized notification text (push + bell).
-// Idempotent — CREATE TABLE IF NOT EXISTS above won't touch an existing table.
+// Idempotent - CREATE TABLE IF NOT EXISTS above won't touch an existing table.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS locale TEXT NOT NULL DEFAULT 'en'", 'users.locale');
 
 run($pdo, "
@@ -156,7 +156,7 @@ run($pdo, "
     )
 ", 'event_series');
 
-// Full unique index required for ON CONFLICT (source_key) — must not be partial.
+// Full unique index required for ON CONFLICT (source_key) - must not be partial.
 run($pdo, "
     CREATE UNIQUE INDEX IF NOT EXISTS event_series_source_key_unique ON event_series (source_key)
 ", 'event_series_source_key_unique');
@@ -210,7 +210,7 @@ run($pdo, "
 
 // Cached Open Graph previews for URLs posted in chat. PK is the SHA-1 of the
 // URL so the index stays bounded regardless of URL length. ttl_until controls
-// re-fetch cadence (24 h on success, 1 h on failure — fields stay nullable so
+// re-fetch cadence (24 h on success, 1 h on failure - fields stay nullable so
 // the negative result is also cached).
 run($pdo, "
     CREATE TABLE IF NOT EXISTS link_previews (
@@ -382,10 +382,10 @@ run($pdo, "
 // new_event_push was originally DEFAULT FALSE while the "new event in your city"
 // trigger was broken. Now that it's fixed, city members should get it by default.
 // CREATE TABLE IF NOT EXISTS won't touch the existing column, so set the default
-// explicitly on the live column (idempotent — safe to re-run every deploy).
+// explicitly on the live column (idempotent - safe to re-run every deploy).
 run($pdo, "ALTER TABLE notification_preferences ALTER COLUMN new_event_push SET DEFAULT TRUE", 'notification_preferences.new_event_push default→true');
 
-// mention_push — @mention notifications. High-signal/personal → default TRUE
+// mention_push - @mention notifications. High-signal/personal → default TRUE
 // at the column level, and backfill existing rows so nobody is stuck at a
 // technical FALSE (mirrors the new_event_push fix).
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS mention_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.mention_push');
@@ -405,7 +405,7 @@ run($pdo, "
     )
 ", 'arrival_cooldown');
 
-// Admin push broadcasts — one row per send action triggered from /admin/push.
+// Admin push broadcasts - one row per send action triggered from /admin/push.
 // Doubles as the audit log (admin_username + admin_ip + created_at) since
 // the back office uses single-user env-based auth, not a user table.
 run($pdo, "
@@ -517,7 +517,7 @@ run($pdo, "
     )
 ", 'topic_subscriptions');
 
-// Hangout (internally "topic") participants — registered members in a hangout.
+// Hangout (internally "topic") participants - registered members in a hangout.
 // Hangouts are members-only, so keyed by user_id (no guests). Creator is added
 // on create; accepted join-requesters are added on accept.
 run($pdo, "
@@ -561,7 +561,7 @@ $tpBackfill = $pdo->exec("
 ");
 echo "  OK  backfilled topic_participants for " . (int) $tpBackfill . " hangout creator(s)\n";
 
-// join_request_push — notify a hangout's participants when someone asks to join.
+// join_request_push - notify a hangout's participants when someone asks to join.
 // High-signal/social → default TRUE; backfill existing rows to TRUE (mirrors the
 // new_event_push / mention_push default fix).
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS join_request_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.join_request_push');
@@ -569,7 +569,7 @@ $jrBackfill = $pdo->exec("UPDATE notification_preferences SET join_request_push 
 echo "  OK  backfilled join_request_push=TRUE for " . (int) $jrBackfill . " row(s)\n";
 
 // ══════════════════════════════════════════════════════════════════════════════
-// ADDITIVE COLUMNS — safe no-ops when columns already exist
+// ADDITIVE COLUMNS - safe no-ops when columns already exist
 // ══════════════════════════════════════════════════════════════════════════════
 
 echo "\n[ Additive columns ]\n";
@@ -586,19 +586,19 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_story TEXT", 'u
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS about_me TEXT", 'users.about_me');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_thumb_photo_url TEXT", 'users.profile_thumb_photo_url');
 
-// username — the unique @-mention handle. Case-insensitive uniqueness enforced
+// username - the unique @-mention handle. Case-insensitive uniqueness enforced
 // at the DB level via a partial unique index on lower(username) (partial so the
 // many legacy NULLs stay valid until the backfill at the end of this script
 // fills them). New signups always provide one, so NULLs are legacy-only.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS username TEXT", 'users.username');
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_lower ON users (lower(username)) WHERE username IS NOT NULL", 'idx_users_username_lower');
 
-// messages.mentions — @mention metadata: [{userId, offset, length}] into content.
+// messages.mentions - @mention metadata: [{userId, offset, length}] into content.
 // Usernames are NOT stored (resolved to the current value on read) so renames
 // reflect everywhere. Empty array for non-mention messages.
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS mentions JSONB NOT NULL DEFAULT '[]'", 'messages.mentions');
 
-// users — current city: single source of truth for membership + notifications.
+// users - current city: single source of truth for membership + notifications.
 // `current_city_id` is committed via the two-signal transition rule (see
 // /location/resolve handler). `pending_*` holds the first-signal candidate
 // until a second signal ≥10 min later commits it. `home_city` is kept as a
@@ -613,7 +613,7 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS pending_city_first_seen_at
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'user'", 'event_series.source');
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source_key TEXT", 'event_series.source_key');
 run($pdo, "ALTER TABLE event_series ALTER COLUMN created_by DROP NOT NULL", 'event_series.created_by nullable');
-// Venue geocoordinates — captured from Google Places API on seeding so we
+// Venue geocoordinates - captured from Google Places API on seeding so we
 // can emit schema.org GeoCoordinates in venue JSON-LD (unlocks the map rich
 // result). Nullable so legacy rows stay valid; backfill via
 // scripts/backfill_venue_geo.php when ready.
@@ -637,10 +637,10 @@ run($pdo, "ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS created_at TIMEST
 // Edit-signal for /sitemap/events <lastmod>. Bumped on every user edit in
 // EventRepository::update(); DEFAULT now() on ALTER means pre-migration rows
 // take the migration timestamp (one re-crawl wave, then quiet). TM-imported
-// events keep INSERT-time updated_at — re-sync UPSERTs deliberately don't
+// events keep INSERT-time updated_at - re-sync UPSERTs deliberately don't
 // bump it because most syncs are no-ops (same data, false re-crawl signal).
 run($pdo, "ALTER TABLE channel_events ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_events.updated_at');
-// Backfill from channels.created_at — idempotent (re-run just sets the same value)
+// Backfill from channels.created_at - idempotent (re-run just sets the same value)
 run($pdo,
     "UPDATE channel_events ce SET created_at = c.created_at FROM channels c WHERE c.id = ce.channel_id",
     'channel_events.created_at backfill'
@@ -658,22 +658,22 @@ run($pdo, "ALTER TABLE conversation_participants ADD COLUMN IF NOT EXISTS last_r
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS type TEXT NOT NULL DEFAULT 'text'", 'conversation_messages.type');
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS image_url TEXT", 'conversation_messages.image_url');
 
-// messages — reply support
+// messages - reply support
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_id       TEXT REFERENCES messages(id) ON DELETE SET NULL", 'messages.reply_to_id');
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_nickname TEXT", 'messages.reply_to_nickname');
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_content  TEXT", 'messages.reply_to_content');
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_type     TEXT NOT NULL DEFAULT 'text'", 'messages.reply_to_type');
 
-// messages — per-acceptance scoping for challenge channels.
+// messages - per-acceptance scoping for challenge channels.
 //
 // A challenge channel persists across multiple sequential acceptances on the
 // same channel_challenges row. Without this column, every new acceptor saw
-// the previous run's conversation when they landed on the channel — confusing
+// the previous run's conversation when they landed on the channel - confusing
 // + leaks chat between runs. The column binds each message to the acceptance
 // that was active when it was written; the GET messages route filters to
 // "messages whose acceptance is the current active one" so each run reads
 // like a fresh chat. Messages outside any acceptance window (creator chatter
-// between runs, pre-acceptance system events) get NULL — they're visible
+// between runs, pre-acceptance system events) get NULL - they're visible
 // during the same "no active acceptance" state but hidden once a new run
 // starts.
 //
@@ -681,7 +681,7 @@ run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_type     TEXT 
 // its messages in place (don't cascade-delete the chat). They'll fall back
 // to NULL and behave like cross-acceptance writes.
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS challenge_acceptance_id TEXT REFERENCES challenge_acceptances(id) ON DELETE SET NULL", 'messages.challenge_acceptance_id');
-// Partial index — the column is only meaningful for challenge channels
+// Partial index - the column is only meaningful for challenge channels
 // (city / event / DM channels never set it), so skip the NULL rows that
 // dominate the table.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_acceptance_channel
@@ -689,7 +689,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_acceptance_channel
     WHERE challenge_acceptance_id IS NOT NULL", 'idx_messages_acceptance_channel');
 
 // One-shot backfill: stamp every existing challenge-channel message with the
-// most recent prior acceptance (any phase — including rejected). Heuristic:
+// most recent prior acceptance (any phase - including rejected). Heuristic:
 // "the acceptance that was already created by the time this message landed".
 // Messages older than the first acceptance keep NULL (pre-acceptance system
 // events like challenge creation banners), which is what we want.
@@ -708,9 +708,9 @@ run($pdo, "
     )
     WHERE m.challenge_acceptance_id IS NULL
       AND m.channel_id IN (SELECT channel_id FROM channel_challenges)
-", 'backfill — stamp challenge messages with prior acceptance');
+", 'backfill - stamp challenge messages with prior acceptance');
 
-// conversation_messages — reply support
+// conversation_messages - reply support
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_id       TEXT REFERENCES conversation_messages(id) ON DELETE SET NULL", 'conversation_messages.reply_to_id');
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_nickname TEXT", 'conversation_messages.reply_to_nickname');
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_content  TEXT", 'conversation_messages.reply_to_content');
@@ -747,7 +747,7 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS admin_a
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'mobile_push_tokens.last_used_at');
 
 // ══════════════════════════════════════════════════════════════════════════════
-// DATA FIXES — idempotent, run once
+// DATA FIXES - idempotent, run once
 // ══════════════════════════════════════════════════════════════════════════════
 
 echo "\n[ Data fixes ]\n";
@@ -766,7 +766,7 @@ run($pdo, "
 ", 'user_friends bilateral backfill');
 
 // ══════════════════════════════════════════════════════════════════════════════
-// INDEXES — all idempotent (CREATE INDEX IF NOT EXISTS)
+// INDEXES - all idempotent (CREATE INDEX IF NOT EXISTS)
 // ══════════════════════════════════════════════════════════════════════════════
 
 echo "\n[ Indexes ]\n";
@@ -790,7 +790,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_cities_geo ON cities (lat, lng)", 'idx
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_event_series_city   ON event_series (city_id)", 'idx_event_series_city');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_event_series_source ON event_series (source)", 'idx_event_series_source');
 
-// channel_events — channel_id was missing; causes seq scan on every event query
+// channel_events - channel_id was missing; causes seq scan on every event query
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_channel  ON channel_events (channel_id)", 'idx_channel_events_channel');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_source   ON channel_events (source_type)", 'idx_channel_events_source');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_starts   ON channel_events (starts_at)", 'idx_channel_events_starts');
@@ -801,7 +801,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_series      ON channel_
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_created_by  ON channel_events (created_by) WHERE created_by IS NOT NULL", 'idx_channel_events_created_by');
 // Speeds up ensureTodayOccurrences NOT EXISTS check (series_id + occurrence_date lookup)
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_series_date ON channel_events (series_id, occurrence_date) WHERE series_id IS NOT NULL AND occurrence_date IS NOT NULL", 'idx_channel_events_series_date');
-// Compound index for city-scoped event queries — replaces the slow channels JOIN
+// Compound index for city-scoped event queries - replaces the slow channels JOIN
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_events_city_active ON channel_events (city_id, source_type, expires_at, starts_at) WHERE city_id IS NOT NULL", 'idx_channel_events_city_active');
 
 // messages
@@ -872,7 +872,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_user_vibes_author ON user_vibes (autho
 // channel_topics
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_city   ON channel_topics (city_id, expires_at DESC)", 'idx_channel_topics_city');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_topics_expiry ON channel_topics (expires_at)", 'idx_channel_topics_expiry');
-// Hangouts have no address — their coordinates are the creator's location at
+// Hangouts have no address - their coordinates are the creator's location at
 // creation time, so the NOW feed can show distance like events.
 run($pdo, "ALTER TABLE channel_topics ADD COLUMN IF NOT EXISTS venue_lat DOUBLE PRECISION", 'channel_topics.venue_lat');
 run($pdo, "ALTER TABLE channel_topics ADD COLUMN IF NOT EXISTS venue_lng DOUBLE PRECISION", 'channel_topics.venue_lng');
@@ -982,7 +982,7 @@ run($pdo, "
        AND status <> 'dismissed'
 ", 'user_reports dedup backfill');
 
-// Partial unique index — race defense. Active pairs (non-dismissed) must be unique.
+// Partial unique index - race defense. Active pairs (non-dismissed) must be unique.
 // The '@g:' prefix guarantees user IDs and guest IDs cannot collide in the key.
 run($pdo, "
     CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reports_unique_active_pair
@@ -1023,7 +1023,7 @@ run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS deleted_at
 
 // ── Challenges (Défis) ────────────────────────────────────────────────────────
 // Third primary entity alongside events + hangouts. Challenges are persistent
-// (no TTL — expires_at uses a 2999 sentinel to keep the existing > now() guards
+// (no TTL - expires_at uses a 2999 sentinel to keep the existing > now() guards
 // happy) and have an explicit lifecycle: status 'open' (active feed) → 'validated'
 // (archive, surfaced via "See past challenges"). Hard-delete still goes through
 // channels.status = 'deleted'.
@@ -1043,7 +1043,7 @@ run($pdo, "
     )
 ", 'channel_challenges');
 
-// Participants — mirrors event_participants exactly (channel_id + guest_id PK,
+// Participants - mirrors event_participants exactly (channel_id + guest_id PK,
 // optional user_id, joined_at, last_read_at for chat read state). Kept as a
 // separate table from event_participants so queries / schemas don't entangle.
 run($pdo, "
@@ -1059,7 +1059,7 @@ run($pdo, "
 ", 'challenge_participants');
 
 // Track edits + validations so /sitemap/challenges can emit a real <lastmod>
-// signal — without this, Google never knows a challenge changed after its
+// signal - without this, Google never knows a challenge changed after its
 // first crawl, so edits never bubble out. DEFAULT now() on ALTER means
 // existing rows get the migration timestamp (one re-crawl wave, then quiet).
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'channel_challenges.updated_at');
@@ -1071,7 +1071,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_status      ON chan
 // Profile filter: user's created challenges.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_created_by  ON channel_challenges (created_by) WHERE created_by IS NOT NULL", 'idx_channel_challenges_created_by');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_guest       ON channel_challenges (guest_id)    WHERE guest_id IS NOT NULL",   'idx_channel_challenges_guest');
-// Type filter (food/place/culture/help) — bounded cardinality, btree is fine.
+// Type filter (food/place/culture/help) - bounded cardinality, btree is fine.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_type        ON channel_challenges (challenge_type)", 'idx_channel_challenges_type');
 
 // Participant lookups.
@@ -1079,7 +1079,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_channel ON chal
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_user    ON challenge_participants (user_id) WHERE user_id IS NOT NULL", 'idx_challenge_participants_user');
 
 // ── Challenge redesign (PR1: model + creation) ────────────────────────────────
-// The challenge is now an "ad" — a creator publishes it, multiple travelers
+// The challenge is now an "ad" - a creator publishes it, multiple travelers
 // (or locals, depending on audience) can take it on. Each take-on opens its
 // own 1:1 thread channel (challenge_acceptances row). The persistent
 // challenge_challenges row carries the ad-level config (cap + return clause).
@@ -1090,7 +1090,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_challenge_participants_user    ON chal
 // challenge_participants rows.
 
 // max_participants: cap on concurrent take-ons. Default 3, editable by creator
-// in the form. NOT NULL with a default is safe — every existing row gets 3.
+// in the form. NOT NULL with a default is safe - every existing row gets 3.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS max_participants INT NOT NULL DEFAULT 3", 'channel_challenges.max_participants');
 
 // return_clause: the "...and come convince me" half of the prompt. Pre-filled
@@ -1099,7 +1099,7 @@ run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS max_participa
 // challenges; the read path falls back to a generic clause for nulls.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS return_clause TEXT", 'channel_challenges.return_clause');
 
-// ── Acceptances — one row per (challenge, acceptor) relationship ─────────────
+// ── Acceptances - one row per (challenge, acceptor) relationship ─────────────
 // Each row owns:
 //   - thread_channel_id: a new channels.type='challenge_thread' channel, the
 //     1:1 chat between creator + acceptor (parent_id=challenge.id)
@@ -1128,19 +1128,19 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_acceptor  ON challenge_acceptanc
 // Per-challenge acceptances (creator's view of who took it on + cap check).
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptances (challenge_id,    created_at DESC)", 'idx_chacc_challenge');
 
-// Step D rollback — challenge_thread channels are no longer auto-created on
+// Step D rollback - challenge_thread channels are no longer auto-created on
 // accept. The 1:1 private chat moved to the unified public challenge channel
 // (badges distinguish roles). Existing acceptances keep their thread_channel_id
 // pointing at the historical thread row; new acceptances write NULL.
-// Drop NOT NULL so new INSERTs can land. The UNIQUE constraint still holds —
+// Drop NOT NULL so new INSERTs can land. The UNIQUE constraint still holds -
 // Postgres treats multiple NULLs as distinct under UNIQUE.
 run($pdo, "ALTER TABLE challenge_acceptances ALTER COLUMN thread_channel_id DROP NOT NULL", 'thread_channel_id nullable');
 
-// ── Challenge redesign — PR3: date concertation ──────────────────────────────
+// ── Challenge redesign - PR3: date concertation ──────────────────────────────
 // Either party proposes a date in the thread; the creator approves; on approve
 // the server creates a debrief event (channel_events with source_type=
 // 'challenge_debrief' so it stays out of public city event feeds) and sets
-// phase='scheduled'. Counter-proposals overwrite the previous proposal —
+// phase='scheduled'. Counter-proposals overwrite the previous proposal -
 // one active proposal per acceptance at a time.
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_starts_at  TIMESTAMPTZ", 'challenge_acceptances.proposed_starts_at');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_ends_at    TIMESTAMPTZ", 'challenge_acceptances.proposed_ends_at');
@@ -1152,7 +1152,7 @@ run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS date_appro
 // ── Challenge invitations ─────────────────────────────────────────────────────
 // After publishing, the creator can hand-pick city members and ping them.
 // Each row = one (challenge, invitee) ping. status pending → accepted | ignored.
-// Accept is just "the invitee tapped Accept on the push or in-app" — it does
+// Accept is just "the invitee tapped Accept on the push or in-app" - it does
 // NOT bypass the regular take-on flow; it deep-links them to the challenge
 // where the existing accept path runs (with same gating + pending review).
 // We keep this as a separate table so we can: (a) show the creator who they
@@ -1173,15 +1173,15 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_invitee   ON challenge_invitations (invitee_user_id, created_at DESC)", 'idx_chinv_invitee');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chinv_challenge ON challenge_invitations (challenge_id,    created_at DESC)", 'idx_chinv_challenge');
 
-// ── Défi — International mode (PR1: schema only) ──────────────────────────────
+// ── Défi - International mode (PR1: schema only) ──────────────────────────────
 // The existing challenge model is "Local mode" implicitly: creator + acceptor
 // in the same city, ends with an IRL meetup. International mode is the growth
-// engine — creator in city A challenges someone from anywhere (or a specific
+// engine - creator in city A challenges someone from anywhere (or a specific
 // city B). No meetup; the acceptor sends visual proof (photo/video w/ geotag)
-// and the creator validates from afar. Single source of truth — discriminator
+// and the creator validates from afar. Single source of truth - discriminator
 // column on the existing channel_challenges table, NOT a parallel table.
 //
-//   mode               : 'local' (default — all existing rows) | 'international'
+//   mode               : 'local' (default - all existing rows) | 'international'
 //   target_city_id     : nullable. For local rows: unused. For international:
 //                        NULL = "anywhere" (no fan-out, origin city only);
 //                        non-null = mirror into target city's feed + push.
@@ -1191,19 +1191,19 @@ run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS mode         
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS target_city_id     TEXT REFERENCES channels(id)", 'channel_challenges.target_city_id');
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS proof_requirements TEXT",                          'channel_challenges.proof_requirements');
 
-// Filter queries: NOW feed sub-chip "Local | International | All" — common
+// Filter queries: NOW feed sub-chip "Local | International | All" - common
 // path lands on (mode, status, created_at DESC); reuse the existing city
 // index for the city filter and let this one short-list mode within it.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_mode ON channel_challenges (mode)", 'idx_channel_challenges_mode');
 // Target-city lookups (mirrored feed + reverse fan-out from city B back to
-// the creator's challenge). Partial — most rows have target_city_id IS NULL.
+// the creator's challenge). Partial - most rows have target_city_id IS NULL.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_target_city ON channel_challenges (target_city_id) WHERE target_city_id IS NOT NULL", 'idx_channel_challenges_target_city');
 
-// ── challenge_proofs — one row per submission attempt ─────────────────────────
+// ── challenge_proofs - one row per submission attempt ─────────────────────────
 // Acceptor submits a proof (image or short video) with mandatory geotag. The
 // creator reviews + approves or rejects with a mandatory reason (1–200 chars).
 // Max 3 attempts per acceptance (enforced in the route, not as a DB constraint
-// — keeps the migration simple and lets us tune later).
+// - keeps the migration simple and lets us tune later).
 //
 //   status: 'pending' (just submitted) | 'approved' | 'rejected'
 //   geotag_verified: server-side bbox check result at submit time (cached so
@@ -1225,18 +1225,18 @@ run($pdo, "
     )
 ", 'challenge_proofs');
 
-// Creator's review queue + acceptor's history per acceptance — both walk by
+// Creator's review queue + acceptor's history per acceptance - both walk by
 // acceptance_id, newest first.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chproofs_acceptance ON challenge_proofs (acceptance_id, submitted_at DESC)", 'idx_chproofs_acceptance');
 
 // ── Per-city geotag tolerance (server-side config, env fallback) ──────────────
 // 30 km default (set via env CHALLENGE_PROOF_TOLERANCE_KM at the read site).
-// Per-city override for sprawling metros (Saigon, LA-style basins) — leave
+// Per-city override for sprawling metros (Saigon, LA-style basins) - leave
 // NULL for now; an admin tool / SQL update can tune individual cities later
 // without a code change.
 run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km INT", 'cities.proof_geotag_tolerance_km');
 
-// ── challenge_acceptances — phase=‘proof_submitted’ for international flow ────
+// ── challenge_acceptances - phase=‘proof_submitted’ for international flow ────
 // No schema change needed; phase is TEXT and the column already exists. This
 // comment documents that the route layer will emit 'proof_submitted' as a
 // new value (between 'pending' and 'approved'|'rejected') ONLY for
@@ -1256,11 +1256,11 @@ run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km
 //                      spectator comments hidden but preserved.
 //
 // International is enforced 'public' at the route layer regardless of input
-// (cross-city content can't be private — defeats the model). No CHECK
+// (cross-city content can't be private - defeats the model). No CHECK
 // constraint on the column itself so we can flex later without a migration.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public'", 'channel_challenges.visibility');
 
-// Sitemap + feed + profile queries all gate on visibility — index it.
+// Sitemap + feed + profile queries all gate on visibility - index it.
 // Composite with status covers the common path (visibility='public' AND
 // status='open'); single-column is fine for the smaller branches.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_visibility ON channel_challenges (visibility)", 'idx_channel_challenges_visibility');
@@ -1280,7 +1280,7 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS has_seen_public_optin BOOL
 //         | 'agreed'  (this user has confirmed)
 //         | 'denied'  (this user explicitly declined; visibility stays public)
 //
-// UNIQUE (challenge_id, user_id) — one row per user; resubmitting the
+// UNIQUE (challenge_id, user_id) - one row per user; resubmitting the
 // request updates the row rather than spawning duplicates.
 run($pdo, "
     CREATE TABLE IF NOT EXISTS challenge_privacy_requests (
@@ -1299,7 +1299,7 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_challenge ON challenge_privacy_requests (challenge_id)", 'idx_chprivreq_challenge');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_user      ON challenge_privacy_requests (user_id, status)", 'idx_chprivreq_user');
 
-// challenge_anonymized_users dropped — pseudonymous-by-default identities
+// challenge_anonymized_users dropped - pseudonymous-by-default identities
 // (chosen username + avatar) already serve this need. Existing levers (change
 // username, leave the challenge, delete account) cover the "I want to
 // disappear" use case without a separate display-mask layer. DROP is
@@ -1307,7 +1307,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chprivreq_user      ON challenge_priva
 // cleaned up on the next migrate.
 run($pdo, "DROP TABLE IF EXISTS challenge_anonymized_users CASCADE", 'drop challenge_anonymized_users');
 
-// challenge_comments dropped — Hilads channels are conversational by design,
+// challenge_comments dropped - Hilads channels are conversational by design,
 // so splitting "spectator chatter" from "participant chat" added a layer that
 // contradicts the rest of the app. Single unified message thread per
 // challenge channel (existing `messages` table on the challenge's channel_id)
@@ -1322,7 +1322,7 @@ run($pdo, "DROP TABLE IF EXISTS challenge_comments CASCADE", 'drop challenge_com
 //
 //   - challenge_participants.notification_preference: 'milestones' (default;
 //     taker accept + proof submit + final validation), 'all' (every message),
-//     'off' (silent — the user still gets read access, just no pings)
+//     'off' (silent - the user still gets read access, just no pings)
 //   - channel_challenges.closed_to_new_joins: creator can freeze the
 //     participant list at any point (existing participants stay; new join
 //     requests refused). Per-challenge toggle, default FALSE.
@@ -1345,11 +1345,11 @@ run($pdo, "
 
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chkick_user ON challenge_kicks (user_id)", 'idx_chkick_user');
 
-// ── Scores + ratings — Path A (PHP/PDO, no RLS) ─────────────────────────────
+// ── Scores + ratings - Path A (PHP/PDO, no RLS) ─────────────────────────────
 // Cached score columns on users + a score_events ledger + a score_rules
 // config table + a challenge_ratings table + triggers that derive points
 // from the rules. Mutual ratings are the source of truth for "meetup
-// happened + we debriefed it" — the trigger on challenge_ratings flips
+// happened + we debriefed it" - the trigger on challenge_ratings flips
 // the active acceptance to phase='approved' on the second rating,
 // replacing the legacy manual creator-approve step.
 //
@@ -1359,12 +1359,12 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chkick_user ON challenge_kicks (user_i
 
 run($pdo, "CREATE EXTENSION IF NOT EXISTS pgcrypto", 'pgcrypto');
 
-// Cached scores on users — driven by triggers; never written by hand.
+// Cached scores on users - driven by triggers; never written by hand.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_alltime    INT  NOT NULL DEFAULT 0", 'users.score_alltime');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month      INT  NOT NULL DEFAULT 0", 'users.score_month');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",                    'users.score_month_ref');
 
-// PR17 — celebration popin watermark. Stores the max score_events.created_at
+// PR17 - celebration popin watermark. Stores the max score_events.created_at
 // the user has already been shown in the "+X points!" popin. The endpoint
 // sums points earned strictly after this watermark; the client acks by
 // posting the new watermark back. Initialized to NOW() on first migration
@@ -1373,11 +1373,11 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",   
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_celebrated_at TIMESTAMPTZ", 'users.score_celebrated_at');
 run($pdo, "UPDATE users SET score_celebrated_at = now() WHERE score_celebrated_at IS NULL", 'users.score_celebrated_at backfill (now)');
 
-// Intentionally NO users.city_id — current_city_id already covers it
+// Intentionally NO users.city_id - current_city_id already covers it
 // and a second FK would just create ambiguity. score_events.city_id is
 // always cc.city_id (the challenge's anchor), not the user's location.
 
-// Points config — single source of truth, tunable in prod via SQL UPDATE.
+// Points config - single source of truth, tunable in prod via SQL UPDATE.
 run($pdo, "
     CREATE TABLE IF NOT EXISTS score_rules (
         kind    TEXT NOT NULL,
@@ -1393,7 +1393,7 @@ run($pdo, "
 //   taker      0 + 40 = 40  (was 0 + 15 + 25)
 // Existing 'meetup' rule rows are deleted; existing 'debrief' rules get
 // the new combined points via ON CONFLICT DO UPDATE. Historical
-// score_events of kind='meetup' from prior runs are LEFT INTACT — they
+// score_events of kind='meetup' from prior runs are LEFT INTACT - they
 // already contribute the old 10/15 points to alltime totals, and the
 // per-challenge sum is preserved.
 run($pdo, "DELETE FROM score_rules WHERE kind = 'meetup'", 'score_rules drop meetup');
@@ -1461,7 +1461,7 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_challenge ON challenge_ratings (challenge_id)", 'idx_chrate_challenge');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chrate_ratee     ON challenge_ratings (ratee_id)",     'idx_chrate_ratee');
 
-// Leaderboard indexes — power the bounded rank queries on GET /me/scores.
+// Leaderboard indexes - power the bounded rank queries on GET /me/scores.
 // Without these, the global rank query scans the users table for callers
 // whose rank is outside the top 100 (no full-table read past the inner
 // LIMIT 101, but the cliff exists). With them, the index covers the sort.
@@ -1501,11 +1501,11 @@ run($pdo, "
 ", 'trg_score_events_sync');
 
 // ── Trigger: accepted-points when the CREATOR approves a take-on ──────────
-// PR42 — the old logic awarded the challenger +5 on EVERY acceptance
+// PR42 - the old logic awarded the challenger +5 on EVERY acceptance
 // insert, including phase='pending' (a request the creator hasn't seen
 // yet). Net result: a stranger requesting your challenge bumped your
 // score by 5 even though you might still REJECT them. Now the trigger
-// gates on `phase NOT IN ('pending', 'rejected')` — international
+// gates on `phase NOT IN ('pending', 'rejected')` - international
 // acceptances are created in phase='accepted' (auto-approved) so they
 // fire on INSERT; local acceptances start 'pending' and fire on the
 // UPDATE that approves them. UNIQUE (user_id, challenge_id, role, kind)
@@ -1559,7 +1559,7 @@ run($pdo, "
 ", 'trg_chacc_accepted_score');
 
 // PR42 cleanup: remove premature 'accepted' score_events whose
-// challenges still have NO approved acceptance. Idempotent — the
+// challenges still have NO approved acceptance. Idempotent - the
 // subquery returns nothing on re-run. Sync trigger only fires on
 // INSERT, so we recompute the affected users' cached aggregates by
 // hand after the delete.
@@ -1585,11 +1585,11 @@ run($pdo, "
         ), 0),
         score_month_ref = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM')
     WHERE u.id IN (SELECT DISTINCT user_id FROM bad)
-", 'PR42 — clean up premature accepted score_events + resync user aggregates');
+", 'PR42 - clean up premature accepted score_events + resync user aggregates');
 
 // ── PR12: date-locked points trigger ──────────────────────────────────────
 // Fires when challenge_acceptances.date_approved_at flips from NULL to a
-// real timestamp — i.e. the moment the creator approves the taker's date
+// real timestamp - i.e. the moment the creator approves the taker's date
 // proposal. Writes two score_events (challenger +5, taker +5). The trigger
 // re-evaluates only on UPDATE OF date_approved_at, so the rest of the
 // acceptance lifecycle (proposals, withdrawals, rate-push stamps) doesn't
@@ -1630,7 +1630,7 @@ run($pdo, "
 
         -- International challenges: taker plays from their own city, so their
         -- points belong on THEIR city's leaderboard, not the creator's. Local
-        -- challenges (the default) keep both rows in origin_city — the meetup
+        -- challenges (the default) keep both rows in origin_city - the meetup
         -- happened there, both participants are local to it.
         IF challenge_mode = 'international' THEN
             SELECT u.current_city_id INTO taker_city
@@ -1664,7 +1664,7 @@ run($pdo, "
 // ── Trigger: mutual-rating → meetup + debrief + phase flip ────────────────
 //
 // STRICT mutual-rating model: debrief fires ONLY when BOTH parties have
-// rated. If one person never rates, NEITHER earns debrief points — not
+// rated. If one person never rates, NEITHER earns debrief points - not
 // even the one who did rate. This is intentional. The double-rating is
 // a stronger meetup proof than a one-sided claim. PR10 folded the old
 // 'meetup' event into 'debrief'; same totals at the user level.
@@ -1672,7 +1672,7 @@ run($pdo, "
 // TODO: time-based fallback. If only one party has rated after N days,
 // consider awarding partial points (reveal + award the lone rater) and
 // separately flagging the no-show via the 'ghost' kind. Requires a
-// scheduled job — out of scope for this migration. score_rules.ghost.taker
+// scheduled job - out of scope for this migration. score_rules.ghost.taker
 // is already seeded at 0 so the column exists when we wire that up.
 run($pdo, "
     CREATE OR REPLACE FUNCTION on_challenge_rating_insert() RETURNS TRIGGER AS \$\$
@@ -1709,7 +1709,7 @@ run($pdo, "
 
         -- International challenges: taker plays from their own city, so their
         -- points belong on THEIR city's leaderboard, not the creator's. Local
-        -- challenges (the default) keep both rows in origin_city — the meetup
+        -- challenges (the default) keep both rows in origin_city - the meetup
         -- happened there, both participants are local to it.
         IF challenge_mode = 'international' THEN
             SELECT u.current_city_id INTO taker_city
@@ -1755,7 +1755,7 @@ run($pdo, "
 // ── Backfill: re-attribute international-challenge taker points to the
 // taker's own city ──────────────────────────────────────────────────────────
 // Before this migration, both triggers above credited the taker to the
-// challenge's origin city. For international challenges that's wrong — the
+// challenge's origin city. For international challenges that's wrong - the
 // taker plays from their own city and shouldn't appear on the creator's
 // city leaderboard.
 //
@@ -1774,11 +1774,11 @@ run($pdo, "
       AND cc.mode         = 'international'
       AND u.current_city_id IS NOT NULL
       AND se.city_id IS DISTINCT FROM u.current_city_id
-", 'backfill — taker score_events to taker city for international challenges');
+", 'backfill - taker score_events to taker city for international challenges');
 
 // ── Mutual-reveal view ──────────────────────────────────────────────────────
 // A challenge_ratings row is visible only when the ratee has also rated
-// the same challenge. Pure projection — no auth context (this app has
+// the same challenge. Pure projection - no auth context (this app has
 // no Supabase RLS; the PHP route layer filters by viewer on top of this
 // view). Kept as documentation of the rule + a guarantee that "mutual"
 // is what we mean by visible. If we ever wire Supabase Auth, the same

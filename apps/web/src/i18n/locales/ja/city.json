@@ -64,7 +64,7 @@
     "eventTag": "イベント",
     "public": "公開",
     "activeNow": "● アクティブ",
-    "repliesNew": "まだ返信はありません — 最初の一人に",
+    "repliesNew": "まだ返信はありません - 最初の一人に",
     "replies_one": "💬 {{count}}件の返信",
     "replies_other": "💬 {{count}}件の返信",
     "going_one": "🙌 {{count}}人が参加",
@@ -138,11 +138,11 @@
   "create": {
     "title": "何する？",
     "hangoutTitle": "集まりを始める",
-    "hangoutSub": "すぐに — 今みんなに参加してもらおう",
+    "hangoutSub": "すぐに - 今みんなに参加してもらおう",
     "eventTitle": "イベントを作成",
     "eventSub": "みんなが参加できる何かを計画しよう",
     "challengeTitle": "チャレンジを始める",
-    "challengeSub": "ローカルと旅行者 — チャレンジでつながる",
+    "challengeSub": "ローカルと旅行者 - チャレンジでつながる",
     "challengePageTitle": "チャレンジを作成",
     "challengeAudience": "誰に向けて?",
     "challengeAudLocals": "ローカル",
@@ -161,7 +161,7 @@
     "going": "参加",
     "inThisHangout": "この集まりに",
     "loading": "読み込み中…",
-    "empty": "まだ誰もいません — 最初の一人になろう！ 🙌"
+    "empty": "まだ誰もいません - 最初の一人になろう！ 🙌"
   },
   "nickname": {
     "label": "ニックネーム",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 このイベントを始めました！",
-    "sub": "もっと良くしましょう — 説明を追加したり、時間を更新したり、シェアしたり。",
+    "sub": "もっと良くしましょう - 説明を追加したり、時間を更新したり、シェアしたり。",
     "edit": "✏️ イベントを編集"
   },
   "feedNew": {

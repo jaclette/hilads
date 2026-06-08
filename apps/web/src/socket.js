@@ -14,7 +14,7 @@
  *                    leaveTopic(topicId, sessionId)
  *                    joinConversation(conversationId, userId)
  *                    leaveConversation(conversationId, userId)
- *                    joinUser(userId)                       — per-user channel
+ *                    joinUser(userId)                       - per-user channel
  *
  * Server → Client  : presenceSnapshot(cityId, users[{sessionId,nickname,userId?}], count)
  *                    userJoined(cityId, user)
@@ -30,9 +30,9 @@
  *                    friendRequestReceived | friendRequestAccepted |
  *                      friendRequestDeclined | friendRequestCancelled  (per-user)
  *
- * Lifecycle events (synthetic — not from server):
- *                    connected   — fired after onopen + room replays
- *                    disconnected — fired on onclose
+ * Lifecycle events (synthetic - not from server):
+ *                    connected   - fired after onopen + room replays
+ *                    disconnected - fired on onclose
  *
  * on(event, handler) returns an unsubscribe function. Multiple handlers
  * can subscribe to the same event name simultaneously (Set-based dispatch),
@@ -62,7 +62,7 @@ export function createSocket() {
   // Each on() call adds to the Set; the returned fn removes from it.
   const handlers = new Map()
 
-  // Last join payloads — replayed on reconnect to restore room membership
+  // Last join payloads - replayed on reconnect to restore room membership
   let pendingJoin             = null
   let pendingEventJoin        = null
   let pendingConversationJoin = null
@@ -77,7 +77,7 @@ export function createSocket() {
     handlers.get(event)?.forEach(h => {
       try { h(data) } catch (err) { console.error('[socket] handler error:', event, err) }
     })
-    // Wildcard — useful for debugging; mirrors native HiladsSocket
+    // Wildcard - useful for debugging; mirrors native HiladsSocket
     if (event !== '*') handlers.get('*')?.forEach(h => {
       try { h(data) } catch {}
     })
@@ -104,7 +104,7 @@ export function createSocket() {
       if (pendingChallengeThreadJoin) send({ event: 'joinChallengeThread', ...pendingChallengeThreadJoin })
       if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
 
-      // Notify subscribers — useful for catch-up fetches after a disconnect gap
+      // Notify subscribers - useful for catch-up fetches after a disconnect gap
       dispatch('connected', {})
     }
 
@@ -125,7 +125,7 @@ export function createSocket() {
           rapidRetries++
           delay = RAPID_RETRY_MS
         } else {
-          // Server appears persistently unavailable — back off normally.
+          // Server appears persistently unavailable - back off normally.
           delay = reconnectMs
           reconnectMs = Math.min(reconnectMs * 1.5, 30_000)
         }
@@ -137,7 +137,7 @@ export function createSocket() {
     }
 
     ws.onerror = (e) => {
-      console.error('[socket] ✗ error — is the WS server running at', WS_URL, '?', e)
+      console.error('[socket] ✗ error - is the WS server running at', WS_URL, '?', e)
       ws.close()
     }
   }
@@ -251,7 +251,7 @@ export function createSocket() {
     },
 
     /**
-     * Subscribe to the per-user WS channel — friend-request events, future
+     * Subscribe to the per-user WS channel - friend-request events, future
      * profile-view bursts, etc. Replayed on reconnect. Safe to call before
      * the socket is open: send() drops while closed and the pendingUserJoin
      * payload fires on the 'connected' replay.
@@ -283,7 +283,7 @@ export function createSocket() {
     /**
      * Broadcast a reaction animation to everyone in the same city channel.
      * type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
-     * Purely visual — does not affect stored reaction counts.
+     * Purely visual - does not affect stored reaction counts.
      */
     sendReaction(type, messageId, cityId, userId) {
       send({

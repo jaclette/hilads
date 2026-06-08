@@ -3,7 +3,7 @@
     "cityTitle": "Sino ang nasa {{city}} ngayon | Hilads",
     "cityDesc": "Tingnan kung sino ang online at kung ano ang nangyayari sa {{city}} ngayon.",
     "eventTitle": "Nangyayari na ang {{title}} ngayon | Hilads",
-    "eventDesc": "Sumali sa {{title}} sa Hilads — tingnan kung sino ang nandoon at ang nangyayari."
+    "eventDesc": "Sumali sa {{title}} sa Hilads - tingnan kung sino ang nandoon at ang nangyayari."
   },
   "nowTitle": "Ngayon",
   "filterEvents": "🎉 Events",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Public Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}! 🎉",
-    "subtitle": "Ready na ang account mo — eto ang pwede mong gawin ngayon 👇",
+    "subtitle": "Ready na ang account mo - eto ang pwede mong gawin ngayon 👇",
     "f1": "🎉 Mag-start ng tambayan at tipunin ang mga tao ngayon din",
     "f2": "📅 Mag-organize ng event sa city mo",
     "f3": "💬 Magpadala ng private message kahit kanino",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "Nasa {{city}} ka",
-    "slide1Body": "Dito nagkikita ang mga local at traveler — sa pamamagitan ng totoong challenges.",
+    "slide1Body": "Dito nagkikita ang mga local at traveler - sa pamamagitan ng totoong challenges.",
     "slide2Title": "Hinahamon ng mga local ang traveler. At pabalik.",
     "slide2Body": "🍜 Pinakamasarap na adobo · 📍 Tagong viewpoint · 🎭 Magsalita ng kaunting Filipino · 🙏 Tulong sa SIM. Totoong challenges na nagdadala sa totoong meet-up.",
     "slide3Title": "Paano ito gumagana",
@@ -38,7 +38,7 @@
     "title": "Paano gumagana ang challenges",
     "slide1": {
       "title": "Ang challenges, nagiging stories ang biyahe",
-      "body": "Nag-cha-challenge ang mga locals at travelers para i-share kung ano talaga ang ginagawang totoo sa city — pagkain, lugar, kultura, tulong. Ang reward? Magkita kayo in person."
+      "body": "Nag-cha-challenge ang mga locals at travelers para i-share kung ano talaga ang ginagawang totoo sa city - pagkain, lugar, kultura, tulong. Ang reward? Magkita kayo in person."
     },
     "slide2": {
       "title": "I-launch ang challenge mo",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "May tumanggap",
-      "body": "Magpapadala sila ng request. Tingnan mo at tanggapin — magbubukas ang private thread niyo para mag-chat at mag-plan."
+      "body": "Magpapadala sila ng request. Tingnan mo at tanggapin - magbubukas ang private thread niyo para mag-chat at mag-plan."
     },
     "slide4": {
       "title": "Magkita in person",
-      "body": "Pumili kayo ng date na okay sa inyong dalawa. Sinusundan ng timeline bawat step. Tapos gawin niyo na — for real."
+      "body": "Pumili kayo ng date na okay sa inyong dalawa. Sinusundan ng timeline bawat step. Tapos gawin niyo na - for real."
     },
     "slide5": {
       "title": "Tapusin ang challenge",
-      "body": "Pagkatapos ng meet-up, i-mark na accomplished. Ang city mo, talagang ginawa — isang challenge isang beses."
+      "body": "Pagkatapos ng meet-up, i-mark na accomplished. Ang city mo, talagang ginawa - isang challenge isang beses."
     },
     "next": "Sunod",
     "done": "Gets!",
     "skip": "Skip ✕",
     "slide6": {
       "title": "Lampas sa lungsod mo",
-      "body": "Hamunin kahit sino kahit saan. Magpapadala sila ng proof — litrato na may geotag — at i-validate mo mula sa malayo. Lokal o global, mahalaga bawat challenge."
+      "body": "Hamunin kahit sino kahit saan. Magpapadala sila ng proof - litrato na may geotag - at i-validate mo mula sa malayo. Lokal o global, mahalaga bawat challenge."
     },
     "createCta": "🔥 Gumawa ng challenge"
   },

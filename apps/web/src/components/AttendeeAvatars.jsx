@@ -5,7 +5,7 @@ const MAX_SHOWN = 5
 // Horizontal row of overlapping circular attendee avatars for event cards.
 // Lazy-loaded photo when available, else a deterministic initial on a gradient.
 // Renders nothing when nobody has joined. Sits inside the clickable card, so it
-// has no own click handler — tapping the card opens the going list.
+// has no own click handler - tapping the card opens the going list.
 export default function AttendeeAvatars({ preview = [], total = 0, onClick }) {
   const shown = preview.slice(0, MAX_SHOWN)
   if (total <= 0 || shown.length === 0) return null

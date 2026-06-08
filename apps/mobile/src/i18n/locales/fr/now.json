@@ -32,9 +32,9 @@
   "create": {
     "title": "On fait quoi ?",
     "challengeLabel": "Lancer un défi",
-    "challengeSub": "Locaux & voyageurs — connectez-vous par un défi",
+    "challengeSub": "Locaux & voyageurs - connectez-vous par un défi",
     "hangoutLabel": "Lancer une sortie",
-    "hangoutSub": "Instantané — laisse les gens te rejoindre maintenant",
+    "hangoutSub": "Instantané - laisse les gens te rejoindre maintenant",
     "eventLabel": "Créer un événement",
     "eventSub": "Organise quelque chose à rejoindre",
     "cancel": "Annuler"

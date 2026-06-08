@@ -1,5 +1,5 @@
 /**
- * Analytics service — PostHog backed.
+ * Analytics service - PostHog backed.
  *
  * Keeps the same track() / identifyUser() API so all existing callers
  * continue to work without changes.

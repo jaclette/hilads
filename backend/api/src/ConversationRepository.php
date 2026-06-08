@@ -64,9 +64,9 @@ class ConversationRepository
     }
 
     /**
-     * DM list for a user — with other participant info, last message preview, and unread flag.
+     * DM list for a user - with other participant info, last message preview, and unread flag.
      * Two-query approach: main query fetches conversations + last_read_at, then a single batch
-     * query checks unread status — avoids one correlated EXISTS subquery per row.
+     * query checks unread status - avoids one correlated EXISTS subquery per row.
      */
     public static function listDmsForUser(string $userId): array
     {
@@ -106,7 +106,7 @@ class ConversationRepository
             return [];
         }
 
-        // Batch unread check — one query for all conversation IDs
+        // Batch unread check - one query for all conversation IDs
         $ids          = array_column($rows, 'id');
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
         $unreadStmt   = Database::pdo()->prepare("
@@ -134,7 +134,7 @@ class ConversationRepository
 
     /**
      * Mark a conversation as read for a participant (sets last_read_at = now()).
-     * Safe to call multiple times — idempotent.
+     * Safe to call multiple times - idempotent.
      */
     public static function markRead(string $conversationId, string $userId): void
     {
@@ -149,7 +149,7 @@ class ConversationRepository
      * Event channels this user created or joined (by user_id).
      * Used for the "event chats" section in the conversations list.
      * Two-query approach: main query fetches channels + ep.last_read_at, then a single batch
-     * query checks for newer messages — avoids one correlated EXISTS per row.
+     * query checks for newer messages - avoids one correlated EXISTS per row.
      */
     public static function listEventChannelsForUser(string $userId): array
     {
@@ -183,7 +183,7 @@ class ConversationRepository
             return [];
         }
 
-        // Batch unread check — one query for all channel IDs
+        // Batch unread check - one query for all channel IDs
         $channelIds   = array_column($rows, 'channel_id');
         $placeholders = implode(',', array_fill(0, count($channelIds), '?'));
         $unreadStmt   = Database::pdo()->prepare("
@@ -213,11 +213,11 @@ class ConversationRepository
     }
 
     /**
-     * Lightweight unread check — returns true if the user has any unread DM or event-channel message.
+     * Lightweight unread check - returns true if the user has any unread DM or event-channel message.
      * Single query, no lateral joins, no per-row subqueries. Used for the Messages icon dot.
      */
     /**
-     * Lightweight unread check — returns true if the user has any unread DM or event-channel message.
+     * Lightweight unread check - returns true if the user has any unread DM or event-channel message.
      *
      * Event-channel scope intentionally matches listEventChannelsForUser:
      *   - channel must be active (ch.status = 'active')
@@ -265,7 +265,7 @@ class ConversationRepository
     /**
      * Mark an event chat as read for a user.
      * Updates last_read_at on the event_participants row where user_id matches.
-     * No-op for creator-only users (no participant row) — acceptable for v1.
+     * No-op for creator-only users (no participant row) - acceptable for v1.
      */
     public static function markEventRead(string $channelId, string $userId): void
     {

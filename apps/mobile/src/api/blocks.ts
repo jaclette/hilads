@@ -32,7 +32,7 @@ interface UnblockByTargetParams {
 
 // ── Endpoints ─────────────────────────────────────────────────────────────────
 
-/** Block a user or guest. Idempotent — re-blocking returns the existing row. */
+/** Block a user or guest. Idempotent - re-blocking returns the existing row. */
 export async function submitBlock(params: SubmitBlockParams): Promise<BlockRow> {
   const res = await api.post<{ block: BlockRow }>('/blocks', {
     target_user_id:  params.targetUserId   ?? null,
@@ -62,7 +62,7 @@ export async function unblockByTarget(params: UnblockByTargetParams): Promise<vo
   });
 }
 
-/** List blocks I've made — auth required. Powers Settings → Blocked Users. */
+/** List blocks I've made - auth required. Powers Settings → Blocked Users. */
 export async function fetchMyBlocks(): Promise<BlockRow[]> {
   const data = await api.get<{ blocks: BlockRow[] }>('/users/me/blocks');
   return data.blocks ?? [];

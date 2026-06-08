@@ -7,7 +7,7 @@ declare(strict_types=1);
  * event channel_id. Populated by the recurring-event collapse migration; read
  * by the prerender's 404-fallback to 301 old /event/<occurrence-hex> URLs to
  * the canonical event. The per-date occurrence id is a one-way SHA-256, so it
- * can't be reversed — hence this table.
+ * can't be reversed - hence this table.
  */
 class EventRedirectRepository
 {

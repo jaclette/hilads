@@ -64,7 +64,7 @@
     "eventTag": "Evento",
     "public": "Pubblico",
     "activeNow": "● Attivo ora",
-    "repliesNew": "Ancora nessuna risposta — sii il primo",
+    "repliesNew": "Ancora nessuna risposta - sii il primo",
     "replies_one": "💬 {{count}} risposta",
     "replies_other": "💬 {{count}} risposte",
     "going_one": "🙌 {{count}} partecipante",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Che si fa?",
     "hangoutTitle": "Lancia un ritrovo",
-    "hangoutSub": "Subito — lascia che la gente si unisca a te proprio ora",
+    "hangoutSub": "Subito - lascia che la gente si unisca a te proprio ora",
     "eventTitle": "Crea un evento",
     "eventSub": "Organizza qualcosa a cui gli altri possono partecipare",
     "challengeTitle": "Lancia una sfida",
-    "challengeSub": "Local & viaggiatori — connettetevi attraverso una sfida",
+    "challengeSub": "Local & viaggiatori - connettetevi attraverso una sfida",
     "challengePageTitle": "Crea una sfida",
     "challengeAudience": "Per chi?",
     "challengeAudLocals": "Local",
@@ -161,7 +161,7 @@
     "going": "partecipano",
     "inThisHangout": "in questo ritrovo",
     "loading": "Caricamento…",
-    "empty": "Ancora nessuno — sii il primo a partecipare! 🙌"
+    "empty": "Ancora nessuno - sii il primo a partecipare! 🙌"
   },
   "nickname": {
     "label": "Soprannome",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Hai lanciato questo evento!",
-    "sub": "Rendilo ancora migliore — aggiungi una descrizione, cambia l'orario o condividilo.",
+    "sub": "Rendilo ancora migliore - aggiungi una descrizione, cambia l'orario o condividilo.",
     "edit": "✏️ Modifica l'evento"
   },
   "feedNew": {

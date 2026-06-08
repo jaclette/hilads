@@ -121,7 +121,7 @@ class MessageRepository
         // reply_to_id may be absent from the row if the migration has not run yet,
         // or if the parent was deleted (ON DELETE SET NULL → null).
         // Use ?? null throughout so a missing key never causes an undefined-index notice
-        // or a 500 — replies degrade silently rather than breaking message delivery.
+        // or a 500 - replies degrade silently rather than breaking message delivery.
         $replyId = $row['reply_to_id'] ?? null;
         if (!empty($replyId)) {
             $msg['replyTo'] = [
@@ -151,7 +151,7 @@ class MessageRepository
         $limit  = max(1, min(self::MAX_LIMIT, $limit));
         $fetch  = $limit + 1; // fetch one extra to detect hasMore
 
-        // Fetch messages with a pure index scan — no JOIN inside the LIMIT subquery.
+        // Fetch messages with a pure index scan - no JOIN inside the LIMIT subquery.
         // The LEFT JOIN to users for retroactive userId resolution is done as a separate
         // batch query below, applied only to the small set of rows that actually need it.
         // This guarantees the planner uses idx_messages_channel (channel_id, created_at DESC)
@@ -159,7 +159,7 @@ class MessageRepository
         // scan the entire channel before applying the limit.
         //
         // IMPORTANT: retroactive resolution is intentionally skipped for system messages
-        // (type = 'system'). A ghost join must remain a ghost join — see original comment.
+        // (type = 'system'). A ghost join must remain a ghost join - see original comment.
 
         if ($beforeId !== null) {
             // Cursor-based: fetch messages strictly older than the given message's created_at.
@@ -215,7 +215,7 @@ class MessageRepository
             array_shift($rows); // remove the oldest probe row (index 0 after ASC sort)
         }
 
-        // Retroactive userId resolution — only for text/image messages where user_id was
+        // Retroactive userId resolution - only for text/image messages where user_id was
         // never written (messages sent before account linking or before the api.php fix).
         // In practice this is rare on modern data; the batch query typically touches 0 rows.
         $needsResolution = array_filter(
@@ -282,7 +282,7 @@ class MessageRepository
     public static function getStatsBatch(): array
     {
         // Cached: this aggregates the WHOLE messages table (full GROUP BY scan)
-        // on every /channels call — heavy DB load that grows with message volume.
+        // on every /channels call - heavy DB load that grows with message volume.
         // It only feeds the cities-list counts + "active" ranking, where a few
         // minutes of staleness is fine. Live online-counts come from a separate
         // presence query (getCountBatch), which stays uncached.
@@ -318,7 +318,7 @@ class MessageRepository
     /**
      * Inserts a weather system message into a city channel feed.
      * type='system', event='weather', content = display text.
-     * No guest_id / nickname — weather has no author.
+     * No guest_id / nickname - weather has no author.
      */
     public static function addWeatherSystem(int $channelId, string $content): array
     {
@@ -339,7 +339,7 @@ class MessageRepository
     }
 
     /**
-     * Generic system message — used for in-thread audit lines like
+     * Generic system message - used for in-thread audit lines like
      * "✅ X accepted your take-on" / "✕ X declined your take-on" on the
      * challenge take-on flow. `event` is a label that lets clients style or
      * filter the bubble; content is the user-visible text. channel_id can be
@@ -369,7 +369,7 @@ class MessageRepository
      *   result includes only messages stamped with that id. Previous runs'
      *   messages stay in the DB but are invisible to the current acceptor,
      *   giving them a clean conversation lane.
-     * - When $acceptanceId is null (no active acceptance — between runs or
+     * - When $acceptanceId is null (no active acceptance - between runs or
      *   pre-first-acceptance), only NULL-stamped messages surface. These
      *   are pre-acceptance system events + cross-run chatter; once a new
      *   run starts they vanish from the view of the new acceptor.
@@ -457,7 +457,7 @@ class MessageRepository
         $hasMore = count($rows) > $limit;
         if ($hasMore) array_shift($rows);
 
-        // Same retroactive userId resolution as getByChannel — copy/pasted
+        // Same retroactive userId resolution as getByChannel - copy/pasted
         // rather than abstracted out so this method stays a drop-in
         // replacement for the route layer.
         $needsResolution = array_filter(
@@ -499,7 +499,7 @@ class MessageRepository
             VALUES (?, ?, 'system', 'join', ?, ?, ?)
         ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname]);
 
-        // Return the id so the live WS broadcast carries it too — matches the
+        // Return the id so the live WS broadcast carries it too - matches the
         // fetched (format()) shape so reverse-scroll pagination + dedup line up.
         return [
             'id'        => $id,
@@ -515,7 +515,7 @@ class MessageRepository
     /**
      * Stores an event-announcement feed item in the city channel.
      * type='event', event column = event channel ID, content = title.
-     * No DB migration needed — reuses existing event column (TEXT, nullable).
+     * No DB migration needed - reuses existing event column (TEXT, nullable).
      */
     public static function addEventAnnouncement(int|string $channelId, string $eventId, string $title, string $guestId, string $nickname): array
     {
@@ -601,7 +601,7 @@ class MessageRepository
      * Each message gains: "reactions": [{"emoji":"❤️","count":2,"self":false}, …]
      * Sorted by first-reaction time so the order is stable.
      *
-     * @param array   $messages         Reference — modified in place.
+     * @param array   $messages         Reference - modified in place.
      * @param ?string $viewerGuestId    Current viewer's guestId (may be null).
      * @param ?string $viewerUserId     Current viewer's userId  (may be null).
      * @param string  $table            'message_reactions' or 'conversation_message_reactions'.
@@ -620,7 +620,7 @@ class MessageRepository
         // Aggregate counts per (message_id, emoji) and detect self-reaction in one pass.
         // BOOL_OR handles the three possible viewer states:
         //   registered viewer  → match on user_id
-        //   guest viewer       → match on guest_id (only when user_id IS NULL — prevents
+        //   guest viewer       → match on guest_id (only when user_id IS NULL - prevents
         //                        a registered user from double-counting via their old guestId)
         //   no viewer info     → always false
         $selfUserExpr  = ($viewerUserId  !== null) ? 'user_id = ?' : 'FALSE';

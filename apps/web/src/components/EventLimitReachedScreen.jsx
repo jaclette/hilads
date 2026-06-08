@@ -1,5 +1,5 @@
 /**
- * EventLimitReachedScreen — friendly full-page surface shown when a
+ * EventLimitReachedScreen - friendly full-page surface shown when a
  * non-Legend user hits the 1-event-per-day cap. Replaces the red error
  * that used to sit inside CreateEventModal.
  *
@@ -19,7 +19,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
   const [showLegendInfo, setShowLegendInfo] = useState(false)
   const [blockingEvent,  setBlockingEvent]  = useState(null)
 
-  // Fetch the user's "today" event — same semantics as the backend rule
+  // Fetch the user's "today" event - same semantics as the backend rule
   // (EventRepository::guestCreatedEventTodayCount).
   useEffect(() => {
     const guestId = guest?.guestId
@@ -31,7 +31,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
         const todays = pickTodaysEvent(events ?? [], cityTimezone ?? 'UTC')
         setBlockingEvent(todays)
       })
-      .catch(() => { /* non-fatal — keep the screen useful without the card */ })
+      .catch(() => { /* non-fatal - keep the screen useful without the card */ })
     return () => { cancelled = true }
   }, [guest?.guestId, cityTimezone])
 
@@ -61,12 +61,12 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
           <div className="limit-emoji" aria-hidden="true">🎉</div>
           <h1 className="limit-title">You've already created your event today!</h1>
           <p className="limit-body">
-            At Hilads, we keep things fresh — one event per day so every plan
+            At Hilads, we keep things fresh - one event per day so every plan
             gets the attention it deserves. Come back tomorrow to create
             another one.
           </p>
 
-          {/* Blocking event — tap to open, edit, or delete. Reuses the same
+          {/* Blocking event - tap to open, edit, or delete. Reuses the same
               .city-row.event-row-card classes the NOW feed uses. */}
           {blockingEvent && (
             <button
@@ -117,7 +117,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
             <div className="limit-legend-modal-emoji" aria-hidden="true">👑</div>
             <h2 className="limit-legend-modal-title">Become a Legend</h2>
             <p className="limit-legend-modal-body">
-              Legends are locals chosen to keep their city alive — they can
+              Legends are locals chosen to keep their city alive - they can
               host as many events as they want. Want to become one? Reach out
               at <a href="mailto:contact@hilads.live">contact@hilads.live</a>.
             </p>
@@ -135,7 +135,7 @@ export default function EventLimitReachedScreen({ onClose, guest, cityTimezone, 
   )
 }
 
-// Mirrors apps/mobile/app/event/limit-reached.tsx pickTodaysEvent — same
+// Mirrors apps/mobile/app/event/limit-reached.tsx pickTodaysEvent - same
 // semantics as the backend rule: count the event as "today" if its creation
 // lands on the current calendar day in the city's timezone.
 function pickTodaysEvent(events, tz) {

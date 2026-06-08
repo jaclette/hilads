@@ -5,7 +5,7 @@ import i18n from './i18n'
  * Mirrors BADGE_META in apps/mobile/src/types/index.ts.
  *
  * Keys match the UserDTO.badges[] values returned by the backend UserResource.
- * The display labels live in brand.json (reserved vocabulary — English in every
+ * The display labels live in brand.json (reserved vocabulary - English in every
  * locale); the values below are a fallback only.
  */
 export const BADGE_META = {
@@ -15,7 +15,7 @@ export const BADGE_META = {
   host:    { label: '👑 Legend',  color: '#fbbf24', bg: 'rgba(251,191,36,0.15)',  border: 'rgba(251,191,36,0.28)'  },
 }
 
-/** Returns the display label for a badge key (brand.json — never translated). */
+/** Returns the display label for a badge key (brand.json - never translated). */
 export function badgeLabel(key) {
   return i18n.t(`badge.${key}`, { ns: 'brand', defaultValue: BADGE_META[key]?.label ?? key })
 }

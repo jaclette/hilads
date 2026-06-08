@@ -75,7 +75,7 @@ class Database
             $sslmode,
         );
 
-        // parse_url() returns URL-encoded credentials — PDO needs decoded values.
+        // parse_url() returns URL-encoded credentials - PDO needs decoded values.
         $user = isset($parts['user']) ? urldecode($parts['user']) : null;
         $pass = isset($parts['pass']) ? urldecode($parts['pass']) : null;
 
@@ -115,7 +115,7 @@ class Database
         try {
             self::$pdo->exec("SET application_name = 'hilads-api'");
         } catch (\Throwable $e) {
-            // Non-fatal — connection tagging is observability, not correctness.
+            // Non-fatal - connection tagging is observability, not correctness.
             error_log('[db] failed to set application_name: ' . $e->getMessage());
         }
 

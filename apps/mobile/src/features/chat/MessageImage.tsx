@@ -1,5 +1,5 @@
 /**
- * MessageImage — shared photo-bubble body for DMs, city, event, and topic chats.
+ * MessageImage - shared photo-bubble body for DMs, city, event, and topic chats.
  *
  * Before this component existed each surface (DmRow, ChatMessage) inlined its
  * own <Image> plus overlays; the DM path silently rendered an empty colored
@@ -29,7 +29,7 @@ interface Props {
   isFailed?:      boolean;
   onPress?:       () => void;
   onLongPress?:   () => void;
-  /** Size + corner radii for the Image — caller provides, e.g. DM bubble vs chat image. */
+  /** Size + corner radii for the Image - caller provides, e.g. DM bubble vs chat image. */
   imageStyle:     StyleProp<ImageStyle>;
   /** Debug tag surfaced in console warnings (e.g. 'dm', 'city'). */
   surface?:       string;
@@ -39,7 +39,7 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
   const [loadFailed, setLoadFailed] = useState(false);
 
   if (!uri) {
-    console.warn(`[${surface}-image] missing uri — image message cannot render`);
+    console.warn(`[${surface}-image] missing uri - image message cannot render`);
     return null;
   }
 
@@ -60,7 +60,7 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
         resizeMode="cover"
         onError={(e) => {
           const reason = e?.nativeEvent?.error ?? 'unknown';
-          console.warn(`[${surface}-image] load error — uri=${uri} reason=${reason}`);
+          console.warn(`[${surface}-image] load error - uri=${uri} reason=${reason}`);
           setLoadFailed(true);
         }}
       />

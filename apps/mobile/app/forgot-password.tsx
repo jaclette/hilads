@@ -25,7 +25,7 @@ export default function ForgotPasswordScreen() {
     try {
       await authForgotPassword(e);
     } catch {
-      // Always show success — never reveal if email exists
+      // Always show success - never reveal if email exists
     } finally {
       setLoading(false);
       setSent(true);

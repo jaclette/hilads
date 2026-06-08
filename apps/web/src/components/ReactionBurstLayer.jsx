@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
  *   - type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
  *   - x/y:  page-relative origin (centre of the message element)
  *
- * All animation nodes are raw DOM — the message list never re-renders.
+ * All animation nodes are raw DOM - the message list never re-renders.
  */
 
 // ── Per-type config ───────────────────────────────────────────────────────────

@@ -193,7 +193,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
         {/* ── Preferences ──
             DM, event-chat, and city-chat toggles live on the Conversations
-            screen now — they govern the envelope icon's behaviour, not the bell. */}
+            screen now - they govern the envelope icon's behaviour, not the bell. */}
         <div className="notif-prefs">
           <div className="notif-prefs-title">{t('prefs.title')}</div>
 

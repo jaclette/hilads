@@ -104,9 +104,9 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   const loadingOlderRef   = useRef(false)
   const skipAutoScrollRef = useRef(false)
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
-  // Action menu — opened by clicking own bubble. { msg, x, y } | null
+  // Action menu - opened by clicking own bubble. { msg, x, y } | null
   const [actionMsg, setActionMsg] = useState(null)
-  // Edit mode — pre-fills input, toggles handleSend to save instead of send.
+  // Edit mode - pre-fills input, toggles handleSend to save instead of send.
   const [editingMsg, setEditingMsg] = useState(null)
 
   const otherName = otherUser?.display_name ?? '?'
@@ -166,7 +166,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
     }
   }, [conversation.id, account?.id, socket])
 
-  // Scroll to bottom on new messages — but not when older messages were just prepended
+  // Scroll to bottom on new messages - but not when older messages were just prepended
   useEffect(() => {
     if (skipAutoScrollRef.current) { skipAutoScrollRef.current = false; return }
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -194,7 +194,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         if (container) container.scrollTop = topBefore + (container.scrollHeight - heightBefore)
       })
     } catch {
-      // silent — user can scroll up again to retry
+      // silent - user can scroll up again to retry
     } finally {
       loadingOlderRef.current = false
       setLoadingOlder(false)
@@ -258,7 +258,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   async function doSendText(content) {
     if (!content || sending) return
 
-    // Optimistic insert — message appears instantly without waiting for HTTP.
+    // Optimistic insert - message appears instantly without waiting for HTTP.
     const localId = `local-dm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
     const optimistic = {
       id:          localId,
@@ -279,11 +279,11 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       const { message } = await sendConversationMessage(conversation.id, content)
       knownIds.current.add(message.id)
       setMessages(prev => {
-        // Case B — WS already replaced the optimistic: just clean up (no localId left)
+        // Case B - WS already replaced the optimistic: just clean up (no localId left)
         if (prev.some(m => m.id === message.id && m.id !== localId)) {
           return prev.filter(m => m.id !== localId)
         }
-        // Case A — replace optimistic with confirmed server message
+        // Case A - replace optimistic with confirmed server message
         return prev.map(m => m.id === localId ? message : m)
       })
     } catch (err) {
@@ -512,7 +512,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
         />
       )}
 
-      {/* Action menu — opens on own-bubble click. Same shape as App.jsx's
+      {/* Action menu - opens on own-bubble click. Same shape as App.jsx's
           action-bubble but minimal: just Copy / Edit / Delete (no reactions
           on DMs yet, no Reply UI in this screen). */}
       {actionMsg && (

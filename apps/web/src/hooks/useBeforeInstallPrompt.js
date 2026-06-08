@@ -5,7 +5,7 @@ const INSTALL_DISMISS_KEY = 'hilads_install_prompt_dismissed_until'
 const INSTALL_FEED_KEY = 'hilads_install_feed_prompt_seen'
 const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000
 
-// Capture beforeinstallprompt at module load — before React mounts.
+// Capture beforeinstallprompt at module load - before React mounts.
 // This ensures we never miss the event due to useEffect running after mount.
 let _earlyPrompt = null
 if (typeof window !== 'undefined') {
@@ -116,12 +116,12 @@ export default function useBeforeInstallPrompt() {
         setIsInstalled(true)
         return true
       }
-      // User dismissed the native dialog — don't set a 7-day cooldown.
+      // User dismissed the native dialog - don't set a 7-day cooldown.
       // The banner stays visible in fallback mode so they can still add manually.
       return false
     }
 
-    // No native prompt available (iOS Safari, Firefox, etc.) — show manual instructions
+    // No native prompt available (iOS Safari, Firefox, etc.) - show manual instructions
     setManualHelpVisible(true)
     return false
   }
@@ -135,7 +135,7 @@ export default function useBeforeInstallPrompt() {
   const isDismissed = dismissedUntil > Date.now()
   const canShowFallback = !canUseNativePrompt && !isInstalled && platform.isMobile
   // On Android, the Play Store promo banner takes precedence over the PWA
-  // "Add to Home Screen" prompt — the native app is a strictly better
+  // "Add to Home Screen" prompt - the native app is a strictly better
   // experience. Suppress the PWA banner whenever the Play Store promo would
   // show, regardless of dismissal state on either side.
   const androidPromoActive = appPromotion.banner

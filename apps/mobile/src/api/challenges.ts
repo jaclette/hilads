@@ -30,7 +30,7 @@ export async function fetchCityChallenges(
   }
 }
 
-/** Validated (archived) challenges — feeds the "See past challenges" CTA. */
+/** Validated (archived) challenges - feeds the "See past challenges" CTA. */
 export async function fetchValidatedChallenges(
   channelId: string,
   opts: { limit?: number; before?: number } = {},
@@ -66,11 +66,11 @@ export async function fetchChallengeById(challengeId: string): Promise<{
   }>(`/challenges/${challengeId}`);
 }
 
-// A challenge as listed on a profile — Challenge DTO plus whether the profile
+// A challenge as listed on a profile - Challenge DTO plus whether the profile
 // user owns it (created it) vs merely accepted it.
 export type ProfileChallenge = Challenge & { is_owner?: boolean };
 
-/** Challenges a user created or accepted — for the profile "Challenges" tab. */
+/** Challenges a user created or accepted - for the profile "Challenges" tab. */
 export async function fetchUserChallenges(userId: string): Promise<ProfileChallenge[]> {
   try {
     const data = await api.get<{ challenges?: ProfileChallenge[] }>(`/users/${userId}/challenges`);
@@ -85,7 +85,7 @@ export async function fetchUserChallenges(userId: string): Promise<ProfileChalle
 /** Optional fields for International mode + visibility (privacy layer).
  *  Mode/target/proof fields are ignored by the server when `mode='local'`.
  *  `targetCityChannelId` null = "anywhere". `visibility` is 'public' or
- *  'friends' at input — 'private' is reachable only via the mutual privacy
+ *  'friends' at input - 'private' is reachable only via the mutual privacy
  *  flow once the challenge has an acceptor. Server forces 'public' on
  *  International rows regardless of what we send. */
 export interface InternationalChallengeFields {
@@ -120,8 +120,8 @@ export async function createChallenge(
 }
 
 /** Owner-only edit of a challenge's title / type / audience / return clause.
- *  Status is not editable here — use validateChallenge(). max_participants
- *  is no longer accepted (1:1 model). Mode is also not editable — delete +
+ *  Status is not editable here - use validateChallenge(). max_participants
+ *  is no longer accepted (1:1 model). Mode is also not editable - delete +
  *  recreate is the expected path. International edit can re-target the city
  *  and revise the proof requirements. */
 export async function updateChallenge(
@@ -198,7 +198,7 @@ export class AcceptChallengeError extends Error {
 }
 
 /**
- * Take on a challenge — creates a thread channel + acceptance row.
+ * Take on a challenge - creates a thread channel + acceptance row.
  * Idempotent: re-accepting returns the existing acceptance.
  *
  * Throws AcceptChallengeError on 403 with a typed `code` (not_creator /
@@ -217,7 +217,7 @@ export async function acceptChallenge(challengeId: string): Promise<ChallengeAcc
 }
 
 /** Cancel an acceptance (acceptor OR creator). Hard-deletes the thread.
- *  Only allowed in phase='accepted' — PR3+ phases lock cancel (server 409). */
+ *  Only allowed in phase='accepted' - PR3+ phases lock cancel (server 409). */
 export async function cancelAcceptance(acceptanceId: string): Promise<void> {
   await api.post(`/acceptances/${acceptanceId}/cancel`, {});
 }
@@ -239,12 +239,12 @@ export async function proposeDate(
   });
 }
 
-/** Proposer-only — clears the current proposal. Phase stays 'accepted'. */
+/** Proposer-only - clears the current proposal. Phase stays 'accepted'. */
 export async function withdrawProposal(acceptanceId: string): Promise<ChallengeAcceptance> {
   return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/withdraw-proposal`, {});
 }
 
-/** Creator-only — approves the current proposal. Flips phase to 'scheduled';
+/** Creator-only - approves the current proposal. Flips phase to 'scheduled';
  *  the thread chat IS the meet-up surface, no separate event row is created. */
 export async function approveDate(acceptanceId: string): Promise<{ acceptance: ChallengeAcceptance }> {
   return api.post<{ acceptance: ChallengeAcceptance }>(
@@ -285,7 +285,7 @@ export async function rejectChallenge(acceptanceId: string): Promise<ChallengeAc
   return api.post<ChallengeAcceptance>(`/acceptances/${acceptanceId}/reject-challenge`, {});
 }
 
-/** "My threads" — every relationship I'm in (as creator or acceptor). */
+/** "My threads" - every relationship I'm in (as creator or acceptor). */
 export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
   const data = await api.get<{ threads: ChallengeThreadSummary[] }>('/me/acceptances');
   return data.threads ?? [];
@@ -294,7 +294,7 @@ export async function fetchMyAcceptances(): Promise<ChallengeThreadSummary[]> {
 // ── PR6: rate-prompts + ratings ─────────────────────────────────────────────
 
 /** Caller's currently rate-eligible meet-ups. Sorted oldest-first. Returns
- *  [] on network error (banner just doesn't render — non-blocking surface). */
+ *  [] on network error (banner just doesn't render - non-blocking surface). */
 export async function fetchRatePrompts(): Promise<RatePrompt[]> {
   try {
     const data = await api.get<{ prompts: RatePrompt[] }>('/me/rate-prompts');
@@ -305,7 +305,7 @@ export async function fetchRatePrompts(): Promise<RatePrompt[]> {
   }
 }
 
-// PR17 — Score celebration popin (the "+X points!" launch surface).
+// PR17 - Score celebration popin (the "+X points!" launch surface).
 export type ScoreEventKind = 'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost';
 
 export interface ScoreCelebrationEvent {
@@ -319,7 +319,7 @@ export interface ScoreCelebrationEvent {
 }
 
 export interface ScoreCelebration {
-  points:       number;                          // 0 = nothing to show — DELTA since last ack
+  points:       number;                          // 0 = nothing to show - DELTA since last ack
   event_count?: number;
   top_kind?:    ScoreEventKind | null;
   events?:      ScoreCelebrationEvent[];         // newest first, capped server-side
@@ -352,7 +352,7 @@ export async function fetchScoreCelebration(): Promise<ScoreCelebration> {
 }
 
 /** Ack the celebration so the next GET returns 0. seen_until comes from the
- *  GET payload — it's the max event timestamp the server included in the sum. */
+ *  GET payload - it's the max event timestamp the server included in the sum. */
 export async function ackScoreCelebration(seenUntil: string): Promise<void> {
   try {
     await api.post('/me/score-celebration/seen', { seen_until: seenUntil });
@@ -361,7 +361,7 @@ export async function ackScoreCelebration(seenUntil: string): Promise<void> {
   }
 }
 
-// PR33 — toggle a reaction on a challenge-channel message. Same allowed
+// PR33 - toggle a reaction on a challenge-channel message. Same allowed
 // emojis as the event/city reactions. Returns the updated reaction list
 // so callers can hydrate state without a separate fetch.
 export async function toggleChallengeReaction(
@@ -378,7 +378,7 @@ export async function toggleChallengeReaction(
 }
 
 /** Submit a rating for a challenge. Throws ApiError on 4xx so the sheet can
- *  branch — in particular code='already_rated' (409) and code='not_rate_eligible'
+ *  branch - in particular code='already_rated' (409) and code='not_rate_eligible'
  *  (403) are recoverable by dismissing + refetching the prompts list. */
 export async function submitRating(
   challengeId: string,
@@ -423,7 +423,7 @@ export async function sendThreadImageMessage(threadChannelId: string, imageUrl: 
   return api.post<Message>(`/threads/${threadChannelId}/messages`, { type: 'image', imageUrl });
 }
 
-// ── International — proof submission ────────────────────────────────────────
+// ── International - proof submission ────────────────────────────────────────
 
 export interface ChallengeProof {
   id:               string;
@@ -450,7 +450,7 @@ export async function fetchProofs(acceptanceId: string): Promise<ProofListResult
 }
 
 /** Acceptor submits a proof. Caller has the media uploaded to R2 via
- *  uploadFile(). lat/lng are optional — PR59 dropped the GPS prompt;
+ *  uploadFile(). lat/lng are optional - PR59 dropped the GPS prompt;
  *  the server stubs 0/0 + marks the proof verified when coords are
  *  absent. */
 export async function submitProof(
@@ -463,7 +463,7 @@ export async function submitProof(
   );
 }
 
-/** Creator approves the proof — terminal success. */
+/** Creator approves the proof - terminal success. */
 export async function approveProof(proofId: string): Promise<{ proof: ChallengeProof }> {
   return api.post<{ proof: ChallengeProof }>(`/proofs/${proofId}/approve`, {});
 }
@@ -495,7 +495,7 @@ export async function inviteToChallenge(
 }
 
 /** Accept an invitation. May fall through to the regular take-on flow's gates
- *  (in_progress, mode_mismatch, …) — surfaces the same code shape. */
+ *  (in_progress, mode_mismatch, …) - surfaces the same code shape. */
 export async function acceptInvitation(invitationId: string): Promise<{
   acceptance?: ChallengeAcceptance;
   challengeId: string;
@@ -506,7 +506,7 @@ export async function acceptInvitation(invitationId: string): Promise<{
   );
 }
 
-/** Dismiss an invitation. Silent — does not notify the inviter. */
+/** Dismiss an invitation. Silent - does not notify the inviter. */
 export async function ignoreInvitation(invitationId: string): Promise<void> {
   await api.post(`/invitations/${invitationId}/ignore`, {});
 }
@@ -573,7 +573,7 @@ export interface ChannelMember {
 }
 
 /** Publicly visible joined-member list (creator + active taker NOT included
- *  here — they're surfaced separately on the detail page). */
+ *  here - they're surfaced separately on the detail page). */
 export async function fetchChannelParticipants(challengeId: string): Promise<{ members: ChannelMember[]; count: number }> {
   try {
     return await api.get<{ members: ChannelMember[]; count: number }>(`/challenges/${challengeId}/channel-participants`);

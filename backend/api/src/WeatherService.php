@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * WeatherService — injects a live weather system message into city channels.
+ * WeatherService - injects a live weather system message into city channels.
  *
  * Data source : Open-Meteo (free, no API key, GDPR-compliant)
  * Cache       : APCu (preferred) or /tmp file, 45-minute TTL per city
@@ -32,21 +32,21 @@ final class WeatherService
 
     /**
      * Checks whether a weather message is due for $channelId and inserts one
-     * if the 4-hour cooldown has elapsed. Non-fatal — caller must catch.
+     * if the 4-hour cooldown has elapsed. Non-fatal - caller must catch.
      *
      * @param int   $channelId  Integer city channel ID
      * @param array $city       Row from CityRepository: {id, name, lat, lng, ...}
      */
     public static function maybeInject(int $channelId, array $city): void
     {
-        // Cooldown check — one DB query
+        // Cooldown check - one DB query
         if (!self::isDue($channelId)) {
             return;
         }
 
         $weather = self::fetch((float) $city['lat'], (float) $city['lng']);
         if ($weather === null) {
-            return; // API unreachable — skip silently, try again next request
+            return; // API unreachable - skip silently, try again next request
         }
 
         $content = self::buildText($city['name'], $weather);
@@ -92,7 +92,7 @@ final class WeatherService
         ]);
 
         $ctx = stream_context_create(['http' => [
-            'timeout'       => 4,   // 4 s hard timeout — never block a chat request long
+            'timeout'       => 4,   // 4 s hard timeout - never block a chat request long
             'ignore_errors' => true,
             'user_agent'    => 'Hilads/1.0 (https://hilads.app)',
         ]]);
@@ -132,7 +132,7 @@ final class WeatherService
 
         // Clear sky
         if ($code === 0 && $isDay && $temp >= 30) {
-            return "☀️ {$temp}°C in {$cityName} — it's gorgeous out there";
+            return "☀️ {$temp}°C in {$cityName} - it's gorgeous out there";
         }
         if ($code === 0 && $isDay) {
             return "☀️ {$temp}°C and clear skies in {$cityName} right now";
@@ -151,72 +151,72 @@ final class WeatherService
 
         // Partly cloudy
         if ($code === 2) {
-            return "⛅ {$temp}°C in {$cityName} — a few clouds around";
+            return "⛅ {$temp}°C in {$cityName} - a few clouds around";
         }
 
         // Overcast
         if ($code === 3) {
-            return "☁️ {$temp}°C in {$cityName} — grey skies today";
+            return "☁️ {$temp}°C in {$cityName} - grey skies today";
         }
 
         // Fog
         if ($code === 45 || $code === 48) {
-            return "🌫️ Foggy in {$cityName} right now — {$temp}°C";
+            return "🌫️ Foggy in {$cityName} right now - {$temp}°C";
         }
 
         // Drizzle
         if ($code >= 51 && $code <= 55) {
-            return "🌦️ Light drizzle in {$cityName} — {$temp}°C, grab a jacket";
+            return "🌦️ Light drizzle in {$cityName} - {$temp}°C, grab a jacket";
         }
         if ($code === 56 || $code === 57) {
-            return "🌦️ Freezing drizzle in {$cityName} — {$temp}°C, stay warm";
+            return "🌦️ Freezing drizzle in {$cityName} - {$temp}°C, stay warm";
         }
 
         // Rain
         if ($code === 61) {
-            return "🌧️ Light rain in {$cityName} — maybe choose an indoor spot";
+            return "🌧️ Light rain in {$cityName} - maybe choose an indoor spot";
         }
         if ($code === 63) {
             return "🌧️ {$temp}°C and raining in {$cityName} right now";
         }
         if ($code === 65) {
-            return "🌧️ Heavy rain in {$cityName} — {$temp}°C, best to stay covered";
+            return "🌧️ Heavy rain in {$cityName} - {$temp}°C, best to stay covered";
         }
         if ($code === 66 || $code === 67) {
-            return "🌧️ Freezing rain in {$cityName} — be careful out there";
+            return "🌧️ Freezing rain in {$cityName} - be careful out there";
         }
 
         // Snow
         if ($code === 71) {
-            return "❄️ Light snow in {$cityName} — {$temp}°C";
+            return "❄️ Light snow in {$cityName} - {$temp}°C";
         }
         if ($code === 73 || $code === 75) {
             return "❄️ It's snowing in {$cityName}! {$temp}°C out there";
         }
         if ($code === 77) {
-            return "❄️ Snow grains in {$cityName} — {$temp}°C";
+            return "❄️ Snow grains in {$cityName} - {$temp}°C";
         }
 
         // Showers
         if ($code === 80) {
-            return "🌦️ Light showers in {$cityName} — {$temp}°C";
+            return "🌦️ Light showers in {$cityName} - {$temp}°C";
         }
         if ($code === 81) {
-            return "🌧️ Rain showers in {$cityName} — {$temp}°C right now";
+            return "🌧️ Rain showers in {$cityName} - {$temp}°C right now";
         }
         if ($code === 82) {
-            return "⛈️ Heavy showers in {$cityName} — {$temp}°C, take cover";
+            return "⛈️ Heavy showers in {$cityName} - {$temp}°C, take cover";
         }
         if ($code === 85 || $code === 86) {
-            return "🌨️ Snow showers in {$cityName} — {$temp}°C";
+            return "🌨️ Snow showers in {$cityName} - {$temp}°C";
         }
 
         // Thunderstorm
         if ($code === 95) {
-            return "⛈️ Thunderstorm in {$cityName} — {$temp}°C, stay safe out there";
+            return "⛈️ Thunderstorm in {$cityName} - {$temp}°C, stay safe out there";
         }
         if ($code === 96 || $code === 99) {
-            return "⛈️ Thunderstorm with hail in {$cityName} — stay indoors";
+            return "⛈️ Thunderstorm with hail in {$cityName} - stay indoors";
         }
 
         // Fallback (unknown code)
@@ -262,7 +262,7 @@ final class WeatherService
 
         $dir = sys_get_temp_dir() . '/hilads-weather';
         if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
-            return; // can't create cache dir — skip silently
+            return; // can't create cache dir - skip silently
         }
 
         @file_put_contents(

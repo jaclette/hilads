@@ -7,7 +7,7 @@ React Native + Expo app for Hilads. Android first, iOS with same codebase.
 - Expo SDK 52 + React Native
 - Expo Router (file-based navigation)
 - TypeScript (strict)
-- No Redux — React Context only
+- No Redux - React Context only
 
 ## Setup
 
@@ -70,7 +70,7 @@ src/
 | `EXPO_PUBLIC_WS_URL` | WebSocket server URL |
 | `EXPO_PUBLIC_SENTRY_DSN` | Sentry DSN for `hilads-mobile` (leave empty locally) |
 
-> Use your machine's LAN IP, not `localhost` — the device/emulator can't reach it.
+> Use your machine's LAN IP, not `localhost` - the device/emulator can't reach it.
 
 ## Production build (EAS)
 

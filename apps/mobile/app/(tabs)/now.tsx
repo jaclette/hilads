@@ -92,7 +92,7 @@ function FilterEmptyState({
           : t('hangoutTalk')}
       </Text>
 
-      {/* Pulse-filter-only CTA — mirrors web's centered blue "Start a pulse 🗣️"
+      {/* Pulse-filter-only CTA - mirrors web's centered blue "Start a pulse 🗣️"
           button in the empty state (apps/web App.jsx ~3884). */}
       {filter === 'topics' && onStartPulse && (
         <TouchableOpacity
@@ -139,7 +139,7 @@ export default function NowScreen() {
   const [error,         setError]         = useState<string | null>(null);
   const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>('all');
   // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
-  // pull-to-refresh (getLastKnownPositionAsync — no watcher, no permission prompt;
+  // pull-to-refresh (getLastKnownPositionAsync - no watcher, no permission prompt;
   // permission was already requested at boot). null → no usable location → cards
   // fall back to showing the address and the default ordering.
   const [userLocation,  setUserLocation]  = useState<{ lat: number; lng: number } | null>(null);
@@ -184,7 +184,7 @@ export default function NowScreen() {
     }
   }, []);
 
-  // ── NOW action-block handlers — web parity (apps/web/App.jsx:3950+). ────
+  // ── NOW action-block handlers - web parity (apps/web/App.jsx:3950+). ────
   // Topics (pulses) have no 1/day rule, so Start-a-pulse pushes directly.
   // Events go through the fetchCanCreateEvent preflight landed in commit
   // e0274e4; server still enforces the limit on POST.
@@ -211,7 +211,7 @@ export default function NowScreen() {
     try {
       const r = await fetchCanCreateEvent(city.channelId, identity?.guestId);
       if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
-    } catch { /* optimistic open — server safety net catches the race */ }
+    } catch { /* optimistic open - server safety net catches the race */ }
     router.push('/event/create');
   }
   function handleSeeUpcoming() {
@@ -239,15 +239,15 @@ export default function NowScreen() {
   const loadRef = useRef(load);
   loadRef.current = load;
 
-  // Track the city we last loaded for — reset the 30s guard on city change.
+  // Track the city we last loaded for - reset the 30s guard on city change.
   const loadedCityRef = useRef<string | undefined>(undefined);
 
   async function load(isRefresh = false) {
     if (!city) {
-      // Don't set loading=false here — keep showing the spinner while app boots.
+      // Don't set loading=false here - keep showing the spinner while app boots.
       // The city will arrive shortly for returning users; for fresh users the
       // booting/joined state drives the "no city" render below.
-      console.log('[NowScreen] load() skipped — city not yet available');
+      console.log('[NowScreen] load() skipped - city not yet available');
       return;
     }
 
@@ -257,27 +257,27 @@ export default function NowScreen() {
       loadedCityRef.current = city.channelId;
     }
 
-    // Skip if already in-flight or data is fresh — unless it's a manual pull-to-refresh.
+    // Skip if already in-flight or data is fresh - unless it's a manual pull-to-refresh.
     if (!isRefresh && (loadingRef.current || Date.now() - lastLoadAtRef.current < 30_000)) {
-      console.log('[NowScreen] load() skipped — in-flight or data fresh', { inFlight: loadingRef.current, age: Date.now() - lastLoadAtRef.current });
+      console.log('[NowScreen] load() skipped - in-flight or data fresh', { inFlight: loadingRef.current, age: Date.now() - lastLoadAtRef.current });
       return;
     }
 
-    console.log('[NowScreen] fetch start —', city.name, city.channelId);
+    console.log('[NowScreen] fetch start -', city.name, city.channelId);
     loadingRef.current = true;
     lastLoadAtRef.current = Date.now();
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
     setError(null);
     try {
-      // Parallel — challenges are a sibling fetch (no backend change needed to
+      // Parallel - challenges are a sibling fetch (no backend change needed to
       // unify /now). Failure of either is non-fatal; the other section still
       // renders. fetchCityChallenges already catches + returns [] on failure.
       const [{ items: nowData, publicEvents: pubData }, chData] = await Promise.all([
         fetchNowFeed(city.channelId, identity?.guestId),
         fetchCityChallenges(city.channelId, 50),
       ]);
-      console.log('[NowScreen] fetch done —', nowData.length, 'items,', pubData.length, 'public events,', chData.length, 'challenges');
+      console.log('[NowScreen] fetch done -', nowData.length, 'items,', pubData.length, 'public events,', chData.length, 'challenges');
       setItems(applyCountCache(nowData));
       setPublicEvents(pubData);
       setChallenges(chData);
@@ -293,7 +293,7 @@ export default function NowScreen() {
 
   // Primary trigger: runs when screen gains focus or city changes.
   useFocusEffect(useCallback(() => {
-    console.log('[NowScreen] focus —', city?.name ?? 'no city');
+    console.log('[NowScreen] focus -', city?.name ?? 'no city');
     readUserLocation();
     load();
   }, [city?.channelId, readUserLocation]));
@@ -326,7 +326,7 @@ export default function NowScreen() {
     return off;
   }, []);
 
-  // New event created in this city — server pushes new_event via WS.
+  // New event created in this city - server pushes new_event via WS.
   // Append the card directly from the WS payload (no HTTP fetch needed).
   // Fallback to a full reload if the payload is incomplete.
   useEffect(() => {
@@ -367,7 +367,7 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // New topic created in this city — append card directly from WS payload.
+  // New topic created in this city - append card directly from WS payload.
   useEffect(() => {
     const off = socket.on('newTopic', (data: Record<string, unknown>) => {
       const t = data.topic as Record<string, unknown> | undefined;
@@ -394,7 +394,7 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // New challenge created in this city — server pushes new_challenge via WS.
+  // New challenge created in this city - server pushes new_challenge via WS.
   // Append at the head of the local list (backend sorts by created_at DESC so
   // a fresh one is always first). Same defensive city-room match as events.
   useEffect(() => {
@@ -406,14 +406,14 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // Challenge validated by its creator — flip the badge live + remove from the
+  // Challenge validated by its creator - flip the badge live + remove from the
   // active strip (the See-all-past screen picks it up via its own fetch).
   useEffect(() => {
     const off = socket.on('challenge_validated', (data: Record<string, unknown>) => {
       const ch = data.challenge as Challenge | undefined;
       if (!ch?.id || !city || String(data.channelId) !== String(city.channelId)) return;
       // Validated challenges leave the active feed but the channel still
-      // exists — when we ship the detail screen in Phase 5 the user can still
+      // exists - when we ship the detail screen in Phase 5 the user can still
       // open the chat. Here we just drop them from the strip.
       setChallenges(prev => prev.filter(c => c.id !== ch.id));
     });
@@ -421,11 +421,11 @@ export default function NowScreen() {
   }, [city]);
 
   // Filter + flat-list memos. These MUST run on every render, so they live
-  // ABOVE the early returns below — otherwise when `city` flips null→set the
+  // ABOVE the early returns below - otherwise when `city` flips null→set the
   // hook count changes and React throws "Rendered more hooks than during the
   // previous render." (They depend only on items/filter/blockedSet/publicEvents,
   // all defined regardless of city, so they're safe to compute even with no city.)
-  // Distance (meters) per item from the viewer — computed ONCE per [items,
+  // Distance (meters) per item from the viewer - computed ONCE per [items,
   // userLocation] change, not per render. Only items with coords + a known
   // viewer location get an entry; everything else is "no distance".
   const distanceById = useMemo(() => {
@@ -442,13 +442,13 @@ export default function NowScreen() {
   }, [items, publicEvents, userLocation]);
 
   const filteredItems = useMemo(() => {
-    // 'challenges' filter hides events + hangouts entirely — the strip below
+    // 'challenges' filter hides events + hangouts entirely - the strip below
     // is the only section in that mode.
     if (filter === 'challenges') return [];
     const base = filter === 'events' ? items.filter(i => i.kind === 'event')
                : filter === 'topics' ? items.filter(i => i.kind === 'topic')
                : items;
-    // Block filter (Apple G1.2) — drop events / topics whose host or creator
+    // Block filter (Apple G1.2) - drop events / topics whose host or creator
     // the viewer has blocked. Public Ticketmaster events have no human host
     // so they're filtered separately below.
     const userBlocked  = blockedSet.userIds;
@@ -465,7 +465,7 @@ export default function NowScreen() {
     // Hangouts (topics) take priority over events. Within each group, when the
     // viewer's location is known, sort nearest → farthest; items without coords
     // sort after the located ones. With no location (or as a tiebreaker),
-    // recurring events float to the top — they're city anchors. Stable sort
+    // recurring events float to the top - they're city anchors. Stable sort
     // preserves the feed's underlying activity order otherwise.
     return [...visible].sort((a, b) => {
       const aTopic = a.kind === 'topic' ? 1 : 0;
@@ -483,7 +483,7 @@ export default function NowScreen() {
     });
   }, [items, filter, blockedSet, distanceById]);
 
-  // Top 5 challenges for the inline strip (open status, most-recent first —
+  // Top 5 challenges for the inline strip (open status, most-recent first -
   // backend already sorts). Both 'all' and 'challenges' filters surface them.
   const topChallenges = useMemo(
     () => (filter === 'events' || filter === 'topics' ? [] : challenges.slice(0, NOW_CHALLENGES_CAP)),
@@ -538,7 +538,7 @@ export default function NowScreen() {
     [filteredItems, topChallenges, challenges.length, publicEvents, filter, distanceById, t],
   );
 
-  // Still booting or waiting for city — keep showing spinner.
+  // Still booting or waiting for city - keep showing spinner.
   if (!city && (booting || loading)) {
     return (
       <SafeAreaView style={styles.container}>
@@ -575,7 +575,7 @@ export default function NowScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Persistent app header — bell / logo / DM across all tabs */}
+      {/* Persistent app header - bell / logo / DM across all tabs */}
       <View style={styles.appHeaderWrap}>
         <AppHeader />
       </View>
@@ -588,7 +588,7 @@ export default function NowScreen() {
         </View>
       </View>
 
-      {/* Filter pills — order: All → Challenges (new primary) → Hangouts → Events.
+      {/* Filter pills - order: All → Challenges (new primary) → Hangouts → Events.
           Spec: "Défi filter chip placed before Sortie and Événements".
           Horizontally scrollable so longer locale labels (e.g. "Mga Challenge")
           or future filters never clip on narrow screens. */}
@@ -647,7 +647,7 @@ export default function NowScreen() {
           renderItem={({ item }) => {
             if (item.kind === 'section') {
               // The Challenges section header carries the scoring-info (i)
-              // button on the right — same affordance as on the channel
+              // button on the right - same affordance as on the channel
               // pipeline, so the user can learn the points rules from
               // either entry point without hunting through settings.
               const isChallenges = item.label === t('challengesSection');
@@ -691,7 +691,7 @@ export default function NowScreen() {
                   distanceLabel={topicMeters !== undefined ? formatDistance(topicMeters) : undefined}
                   onAvatarsPress={() => openMembers('topic', item.id, (item as FeedItem).participant_count ?? 0)}
                   onPress={() => {
-                    // Hangouts are members-only — send guests to signup with
+                    // Hangouts are members-only - send guests to signup with
                     // the join value-prop instead of opening the channel.
                     if (!account) {
                       router.push('/auth-gate?reason=join_hangout' as never);
@@ -703,7 +703,7 @@ export default function NowScreen() {
                 />
               );
             }
-            // event or public_event — map FeedItem to HiladsEvent shape for EventCard
+            // event or public_event - map FeedItem to HiladsEvent shape for EventCard
             const event = item as HiladsEvent;
             const meters = distanceById.get(event.id);
             return (
@@ -727,7 +727,7 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Sticky bottom action — single horizontal row pinned above the tab bar.
+      {/* Sticky bottom action - single horizontal row pinned above the tab bar.
           [ See what's coming 🔮 ─────────────────────────── ] [+]
           The + opens CreateSheet which picks between Create an event / Share a moment
           (preserves both routes + analytics). Safe-area-aware via insets.bottom. */}
@@ -759,7 +759,7 @@ export default function NowScreen() {
               <Ionicons name="add" size={28} color={Colors.white} />
             </TouchableOpacity>
           </View>
-          {/* Discreet archive entry — muted text link under the upcoming pill. */}
+          {/* Discreet archive entry - muted text link under the upcoming pill. */}
           <TouchableOpacity
             style={styles.pastLink}
             activeOpacity={0.6}
@@ -797,7 +797,7 @@ export default function NowScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
 
-  // Header — web: BackButton left + "Now" centered (page-header layout)
+  // Header - web: BackButton left + "Now" centered (page-header layout)
   // Title is absolutely centered so it stays centered regardless of side elements.
   header: {
     flexDirection:     'row',
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
     minHeight:         56,
   },
   // Wrapper that frames the shared AppHeader with consistent padding.
-  // No borderBottom — header flows directly into the tab sub-header, matching
+  // No borderBottom - header flows directly into the tab sub-header, matching
   // MY CITY's look. Background kept so the header area still reads as a
   // surface strip (bg2), not against the raw screen bg.
   appHeaderWrap: {
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
 
   // ── Filter bar ─────────────────────────────────────────────────────────────
-  // ScrollView style. flexGrow:0 is critical — without it the ScrollView
+  // ScrollView style. flexGrow:0 is critical - without it the ScrollView
   // expands to fill the column and pushes the FlatList off-screen.
   filterBar: {
     flexGrow:          0,
@@ -831,7 +831,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  // Inner row — what was previously the filterBar's layout.
+  // Inner row - what was previously the filterBar's layout.
   filterBarContent: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
     gap:               Spacing.sm,
   },
   // When .sectionLabel sits inside .sectionRow, its outer paddings already
-  // come from the row — zero them on the Text so the label hugs the row.
+  // come from the row - zero them on the Text so the label hugs the row.
   sectionLabelFlex: {
     flex:              1,
     paddingHorizontal: 0,
@@ -927,7 +927,7 @@ const styles = StyleSheet.create({
   },
   emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
 
-  // ── Sticky bottom action block — single-row layout ─────────────────────────
+  // ── Sticky bottom action block - single-row layout ─────────────────────────
   // Absolute-positioned container pinned above the bottom tab bar. One row:
   // [ See what's coming 🔮 ] flex-1, and [+] 48×48 circle on the right that
   // opens the CreateSheet picker.
@@ -948,7 +948,7 @@ const styles = StyleSheet.create({
     gap:           10,
   },
 
-  // Wide pill on the left — orange-tinted, mirrors web .upcoming-cta.
+  // Wide pill on the left - orange-tinted, mirrors web .upcoming-cta.
   upcomingCta: {
     flex:              1,
     backgroundColor:   'rgba(255,122,60,0.07)',
@@ -965,11 +965,11 @@ const styles = StyleSheet.create({
   upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
   upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
 
-  // Discreet archive entry — muted, left-aligned under the upcoming pill.
+  // Discreet archive entry - muted, left-aligned under the upcoming pill.
   pastLink:     { alignSelf: 'flex-start', paddingTop: 6, paddingBottom: 2 },
   pastLinkText: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
 
-  // Circular + button on the right — opens CreateSheet picker. Background is a
+  // Circular + button on the right - opens CreateSheet picker. Background is a
   // 135° orange gradient (LinearGradient absolute child); shadow uses the
   // shared FAB token for the colored glow.
   createFab: {

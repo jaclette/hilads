@@ -5,8 +5,8 @@ declare(strict_types=1);
 /**
  * Cheap, configurable text gate. Used on user-generated copy that ends up
  * persisted in the DB: challenge titles, return clauses, proof requirements,
- * messages, comments. The goal is to prevent the obvious — slurs, sexual
- * solicitation, blatant scam phrases — without becoming a brittle filter
+ * messages, comments. The goal is to prevent the obvious - slurs, sexual
+ * solicitation, blatant scam phrases - without becoming a brittle filter
  * that blocks legitimate use cases.
  *
  * Two layers, applied in order:
@@ -17,17 +17,17 @@ declare(strict_types=1);
  *      (comma- or newline-separated) or, when absent, the small built-in
  *      default below.
  *
- *   2. Regex patterns (advanced — phone numbers, links to known scam
+ *   2. Regex patterns (advanced - phone numbers, links to known scam
  *      domains, etc.). Loaded from CHALLENGE_MODERATION_REGEX (one PCRE
  *      per line; '#' delimiters recommended to avoid escaping forward
  *      slashes). Patterns must compile or they're skipped with an error
- *      log — never block the whole pipeline because one regex was malformed.
+ *      log - never block the whole pipeline because one regex was malformed.
  *
  * Return shape from check():
  *   null                              → clean
  *   ['reason' => string, 'hit' => string] → matched; route should 422
  *
- * The 'hit' field is the offending token (or pattern label) — useful for
+ * The 'hit' field is the offending token (or pattern label) - useful for
  * server logs + ops dashboards. NEVER surface it in the user-facing error
  * (we'd hand the spammer a hint about what to dodge); the route returns a
  * generic "your text was rejected by moderation" message instead.
@@ -35,7 +35,7 @@ declare(strict_types=1);
 class ModerationService
 {
     /**
-     * Small built-in default. Intentionally narrow — the real list lives
+     * Small built-in default. Intentionally narrow - the real list lives
      * in env. Kept here so a fresh dev environment with no env config still
      * blocks the worst cases.
      */
@@ -44,7 +44,7 @@ class ModerationService
         'onlyfans', 'cashapp $', 'sugar daddy', 'sugar baby',
         // Crypto / pig-butchering bait.
         'usdt giveaway', 'free bitcoin', 'whatsapp +',
-        // Hate speech — narrow shortlist; the env-overridable list is where
+        // Hate speech - narrow shortlist; the env-overridable list is where
         // the production blocklist actually lives.
         'kys',
     ];
@@ -53,7 +53,7 @@ class ModerationService
     private static ?array $cachedPatterns = null;
 
     /**
-     * Main entry — returns null if the text is clean, an associative
+     * Main entry - returns null if the text is clean, an associative
      * array {'reason', 'hit'} if it's blocked. Whitespace-only or null
      * input is always clean (callers handle "required" elsewhere).
      */
@@ -69,7 +69,7 @@ class ModerationService
             $needle = self::normalize($w);
             if ($needle === '') continue;
 
-            // Phrase needles (with whitespace) fall back to plain contains —
+            // Phrase needles (with whitespace) fall back to plain contains -
             // \b doesn't behave well around multi-word matches and Unicode.
             if (str_contains($needle, ' ')) {
                 if (str_contains($normalized, $needle)) {
@@ -87,7 +87,7 @@ class ModerationService
         }
 
         foreach (self::patterns() as $label => $pattern) {
-            // suppressErrors=true via @ — patterns came from env and may be
+            // suppressErrors=true via @ - patterns came from env and may be
             // malformed; we logged them once at load-time, no need to spam.
             $matched = @preg_match($pattern, $normalized);
             if ($matched === 1) {
@@ -100,14 +100,14 @@ class ModerationService
 
     /**
      * Lowercase, NFC-folded, common diacritic stripping. We keep this cheap
-     * — full Unicode normalization is overkill for spam-tier text and
+     * - full Unicode normalization is overkill for spam-tier text and
      * Postgres column collation already does most of what we need at
      * comparison time. iconv handles the bulk; the strtolower step catches
      * the trailing ASCII case.
      */
     private static function normalize(string $s): string
     {
-        // iconv //TRANSLIT can fail on stray bytes — fall back to the raw
+        // iconv //TRANSLIT can fail on stray bytes - fall back to the raw
         // string then so we still get a SOME comparison.
         $folded = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
         if ($folded === false) $folded = $s;
@@ -136,11 +136,11 @@ class ModerationService
 
     /**
      * Patterns come from CHALLENGE_MODERATION_REGEX, one PCRE per line.
-     * Optional "label: pattern" syntax — the label shows up in logs as
+     * Optional "label: pattern" syntax - the label shows up in logs as
      * the 'hit' field so ops can recognise which rule fired. If no label
      * is provided, the pattern itself is the label.
      *
-     * Malformed patterns are logged once and skipped — never let bad ops
+     * Malformed patterns are logged once and skipped - never let bad ops
      * config 500 the API.
      */
     private static function patterns(): array
@@ -157,7 +157,7 @@ class ModerationService
             $line = trim($line);
             if ($line === '') continue;
 
-            // "label: pattern" — split on the FIRST colon only (patterns
+            // "label: pattern" - split on the FIRST colon only (patterns
             // routinely contain colons).
             $label   = $line;
             $pattern = $line;

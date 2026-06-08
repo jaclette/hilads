@@ -4,7 +4,7 @@ export interface GuestIdentity {
   guestId:   string;    // 32-char hex UUID
   nickname:  string;
   channelId?: string;   // persisted after first city join; used for auto-rejoin
-  mode?:     ModeKey;   // Local / Exploring — chosen by guest, persisted locally
+  mode?:     ModeKey;   // Local / Exploring - chosen by guest, persisted locally
 }
 
 // ── City / Channel ────────────────────────────────────────────────────────────
@@ -49,7 +49,7 @@ export interface HiladsEvent {
   starts_at: number;    // unix timestamp
   ends_at?: number;
   expires_at: number;
-  created_at?: number;  // unix timestamp — when the event row was inserted
+  created_at?: number;  // unix timestamp - when the event row was inserted
   series_id?: string;
   recurrence_label?: string;
   recurrence_type?: 'daily' | 'weekly' | 'every_n_days' | null;
@@ -93,7 +93,7 @@ export type ChallengeAudience = 'locals' | 'explorers';
 export type ChallengeStatus   = 'open' | 'validated';
 export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected' | 'proof_submitted';
 
-/** One challenge_acceptances row — the per-relationship thread (PR2). */
+/** One challenge_acceptances row - the per-relationship thread (PR2). */
 export interface ChallengeAcceptance {
   id:                  string;
   challenge_id:        string;
@@ -101,10 +101,10 @@ export interface ChallengeAcceptance {
   thread_channel_id:   string;
   debrief_event_id:    string | null;
   phase:               ChallengeAcceptancePhase;
-  /** PR4 — derived. Same as `phase` except 'scheduled' flips to 'debrief'
+  /** PR4 - derived. Same as `phase` except 'scheduled' flips to 'debrief'
    *  once the meetup's end time has passed. Clients render off this. */
   effective_phase:     ChallengeAcceptancePhase;
-  // PR3 — date concertation. Null until first proposal; rehydrated on every
+  // PR3 - date concertation. Null until first proposal; rehydrated on every
   // propose/withdraw. date_approved_at is set when phase flips to 'scheduled'.
   proposed_starts_at:  number | null;
   proposed_ends_at:    number | null;
@@ -118,7 +118,7 @@ export interface ChallengeAcceptance {
   updated_at:          number;
 }
 
-/** Enriched thread row from GET /me/acceptances — for the "My threads" screen. */
+/** Enriched thread row from GET /me/acceptances - for the "My threads" screen. */
 export interface ChallengeThreadSummary {
   id:                   string;   // acceptance id
   challenge_id:         string;
@@ -131,23 +131,23 @@ export interface ChallengeThreadSummary {
   thread_channel_id:    string;
   debrief_event_id:     string | null;
   phase:                ChallengeAcceptancePhase;
-  /** PR4 — see ChallengeAcceptance.effective_phase. */
+  /** PR4 - see ChallengeAcceptance.effective_phase. */
   effective_phase:      ChallengeAcceptancePhase;
-  // PR3 proposal state — null when no proposal pending.
+  // PR3 proposal state - null when no proposal pending.
   proposed_starts_at:   number | null;
   proposed_ends_at:     number | null;
   proposed_venue:       string | null;
   proposed_by_user_id:  string | null;
   proposed_at:          number | null;
   date_approved_at:     number | null;
-  // PR4 — verdict timestamps.
+  // PR4 - verdict timestamps.
   approved_at:          number | null;
   rejected_at:          number | null;
   created_at:           number;
   last_message_at:      number | null;
   last_message_content: string | null;
   i_am_creator:         boolean;
-  /** Server-stamped primary acceptance for this (viewer, challenge) — the
+  /** Server-stamped primary acceptance for this (viewer, challenge) - the
    *  single "most actionable" row per challenge. Clients render the challenge
    *  pipeline off this without re-implementing the priority logic. */
   is_primary_for_challenge?: boolean;
@@ -159,7 +159,7 @@ export interface ChallengeThreadSummary {
 }
 
 /** Backend error code shape on accept-failure 403s. */
-// `cap_reached` retired with the 1:1 model — still listed for back-compat
+// `cap_reached` retired with the 1:1 model - still listed for back-compat
 // in case an older API build returns it. `in_progress` is the new code.
 export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress';
 
@@ -183,7 +183,7 @@ export interface LeaderboardEntry {
   userCount?:     number;
   // Common
   points:         number;
-  /** PR13 — caller's city + ISO country (e.g. "VN"). On world-scope user rows
+  /** PR13 - caller's city + ISO country (e.g. "VN"). On world-scope user rows
    *  it pills next to the displayName; city scope hides it (everyone shares
    *  the same city). On cities-scope rows it IS the row (flag + city name). */
   cityName?:      string | null;
@@ -191,7 +191,7 @@ export interface LeaderboardEntry {
 }
 
 /** Full response shape for GET /api/v1/leaderboard. `me.rank` is null when
- *  the caller has no points in the requested scope/period — UI shows the
+ *  the caller has no points in the requested scope/period - UI shows the
  *  "play to get on the board" prompt instead of a pinned row. */
 export interface LeaderboardResponse {
   scope:     LeaderboardScope;
@@ -208,14 +208,14 @@ export interface LeaderboardResponse {
   };
 }
 
-/** A single rate-eligible meet-up the caller has not rated yet — surfaced by
+/** A single rate-eligible meet-up the caller has not rated yet - surfaced by
  *  GET /me/rate-prompts. The in-app banner on the threads screen reads off
  *  these; the rating sheet posts back to POST /challenges/:id/ratings. */
 export interface RatePrompt {
   acceptance_id:   string;
   challenge_id:    string;
   challenge_title: string;
-  /** Caller's role for this prompt — matches the trigger's role mapping. */
+  /** Caller's role for this prompt - matches the trigger's role mapping. */
   role:            'challenger' | 'taker';
   counterparty: {
     id:             string;
@@ -239,13 +239,13 @@ export interface Challenge {
   challenge_type:        ChallengeType;
   audience:              ChallengeAudience;
   status:                ChallengeStatus;
-  /** (Legacy) Cap on concurrent take-ons. Kept on the type for one release —
+  /** (Legacy) Cap on concurrent take-ons. Kept on the type for one release -
    *  the 1:1 model uses `is_in_progress` instead. The column still exists in
    *  the DB and is returned as-is for back-compat, but nothing reads it now. */
   max_participants:      number;
   /** "...and come share it with me" half of the prompt; pre-filled per type. Null = generic fallback. */
   return_clause:         string | null;
-  /** Mode discriminator — 'local' (default, IRL meetup) or 'international'
+  /** Mode discriminator - 'local' (default, IRL meetup) or 'international'
    *  (cross-city, proof-based). Local challenges keep the existing audience
    *  + return_clause flow; international rows use target_city_id + proof_requirements. */
   mode?:                 'local' | 'international';
@@ -257,14 +257,14 @@ export interface Challenge {
    *  International pill. target_country is null for "anywhere" / unknown. */
   country?:              string | null;
   target_country?:       string | null;
-  /** PR15 — display name of the target city (e.g. "Berlin"). Surfaced in
+  /** PR15 - display name of the target city (e.g. "Berlin"). Surfaced in
    *  the International pill so it stays readable even when the flag emoji
    *  doesn't render on a given device. Null for "anywhere" / local rows. */
   target_city_name?:     string | null;
   /** Creator-authored proof spec shown to acceptors before they upload.
-   *  International only — null on local rows. */
+   *  International only - null on local rows. */
   proof_requirements?:   string | null;
-  /** 1:1 model — true iff the challenge has a non-terminal acceptance right
+  /** 1:1 model - true iff the challenge has a non-terminal acceptance right
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
   is_in_progress?:       boolean;
@@ -274,7 +274,7 @@ export interface Challenge {
   /** Creator-only freeze for the participation gate. When true, /join refuses
    *  new joiners; existing participants stay. */
   closed_to_new_joins?:  boolean;
-  /** Creator display info — null for pure-guest challenges. UI renders
+  /** Creator display info - null for pure-guest challenges. UI renders
    *  "by {creator_display_name}" on cards + detail header. */
   creator_display_name?:     string | null;
   creator_username?:         string | null;
@@ -287,7 +287,7 @@ export interface Challenge {
   participant_count:     number;
 }
 
-/** Item in the /now mixed feed — either an event or a topic. */
+/** Item in the /now mixed feed - either an event or a topic. */
 export type NowItem =
   | (HiladsEvent & { kind: 'event' })
   | (Topic       & { kind: 'topic' });
@@ -307,7 +307,7 @@ export interface FeedItem {
   active_now:       boolean;         // live event OR topic active in last 30 min
 
   // ── Event-only fields (present when kind === 'event') ──────────────────────
-  event_type?:        string;          // canonical — same value as legacy 'type'
+  event_type?:        string;          // canonical - same value as legacy 'type'
   source_type?:       'hilads' | 'ticketmaster';
   starts_at?:         number;
   ends_at?:           number | null;
@@ -334,7 +334,7 @@ export interface FeedItem {
   city_id?:       string;
 
   // ── Challenge-only fields (present when kind === 'challenge') ─────────────
-  // Subset of Challenge — enough for ChallengeCard to render in past archive.
+  // Subset of Challenge - enough for ChallengeCard to render in past archive.
   challenge_type?: ChallengeType;
   audience?:       ChallengeAudience;
   status?:         'open' | 'validated';
@@ -356,7 +356,7 @@ export interface EventChatPreview {
 
 export type BadgeKey = 'ghost' | 'fresh' | 'regular' | 'host';
 
-/** Badge metadata for rendering — badge labels/colors are a UI concern. */
+/** Badge metadata for rendering - badge labels/colors are a UI concern. */
 export const BADGE_META: Record<BadgeKey, { label: string; color: string; bg: string; border: string }> = {
   ghost:   { label: '👻 Ghost', color: '#888',    bg: 'rgba(255,255,255,0.06)', border: 'rgba(255,255,255,0.10)' },
   fresh:   { label: '✨ Fresh', color: '#4ade80', bg: 'rgba(74,222,128,0.12)',  border: 'rgba(74,222,128,0.22)'  },
@@ -371,7 +371,7 @@ export interface UserDTO {
   username:       string | null;
   displayName:    string;
   avatarUrl:      string | null;
-  /** Thumbnail URL (≤400 px). Falls back to avatarUrl server-side — never null when avatarUrl is set. */
+  /** Thumbnail URL (≤400 px). Falls back to avatarUrl server-side - never null when avatarUrl is set. */
   thumbAvatarUrl: string | null;
   /** Badge keys in priority order: primary badge first, context badge second if present. */
   badges:         BadgeKey[];
@@ -381,7 +381,7 @@ export interface UserDTO {
   isOnline?:      boolean | null;
 }
 
-/** Public profile — UserDTO + profile-specific extensions. */
+/** Public profile - UserDTO + profile-specific extensions. */
 export interface PublicProfile extends UserDTO {
   age?:       number | null;
   homeCity?:  string | null;
@@ -407,7 +407,7 @@ export interface PublicProfile extends UserDTO {
 
 // ── Event participants ────────────────────────────────────────────────────────
 
-/** Enriched event participant — UserDTO + when they joined. */
+/** Enriched event participant - UserDTO + when they joined. */
 export interface EventParticipant extends UserDTO {
   joinedAt?: number;
 }
@@ -442,7 +442,7 @@ export type { ReactionType } from '@/lib/reactionEmitter';
 /** A resolved @mention on a message: span into content + the current username. */
 export interface MentionRef {
   userId?:   string;   // member mention
-  guestId?:  string;   // online-guest mention — anchored on the stable guest id
+  guestId?:  string;   // online-guest mention - anchored on the stable guest id
   username?: string;   // resolved current @name (members); guests render from content
   offset:    number;
   length:    number;
@@ -486,9 +486,9 @@ export interface Message {
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
-  editedAt?: number | null;       // unix seconds — present (truthy) if the message has been edited
-  deletedAt?: number | null;      // unix seconds — present (truthy) for tombstoned messages (content blanked server-side)
-  // Optimistic send state — absent on confirmed server messages
+  editedAt?: number | null;       // unix seconds - present (truthy) if the message has been edited
+  deletedAt?: number | null;      // unix seconds - present (truthy) for tombstoned messages (content blanked server-side)
+  // Optimistic send state - absent on confirmed server messages
   localId?: string;               // temp id assigned client-side before server confirms
   status?: 'sending' | 'failed'; // undefined = confirmed
 }
@@ -533,7 +533,7 @@ export interface User {
   isFriend?: boolean;
   /**
    * ISO-8601 timestamp of EULA acceptance, NULL until the user has accepted.
-   * Apple G1.2 — existing users (created before the moderation update) get
+   * Apple G1.2 - existing users (created before the moderation update) get
    * the re-prompt modal once; new signups stamp this immediately via the
    * required checkbox.
    */
@@ -567,7 +567,7 @@ export interface User {
   badges?: BadgeKey[];
 }
 
-/** Friends list items — canonical UserDTO shape. */
+/** Friends list items - canonical UserDTO shape. */
 export type FriendUser = UserDTO;
 
 // ── Conversations (DMs) ───────────────────────────────────────────────────────
@@ -596,9 +596,9 @@ export interface DmMessage {
   sender_photo?: string;
   replyTo?: ReplyRef;
   reactions?: Reaction[];
-  edited_at?: string | null;   // ISO timestamp — present (truthy) when edited
-  deleted_at?: string | null;  // ISO timestamp — present (truthy) for tombstoned messages
-  // Optimistic send state — absent on confirmed server messages
+  edited_at?: string | null;   // ISO timestamp - present (truthy) when edited
+  deleted_at?: string | null;  // ISO timestamp - present (truthy) for tombstoned messages
+  // Optimistic send state - absent on confirmed server messages
   localId?: string;
   status?: 'sending' | 'failed';
 }

@@ -53,17 +53,17 @@
     "checking": "检查中…",
     "available": "@{{username}} 可以使用",
     "aboutMe": "关于我",
-    "charsLeft": "— 还剩 {{count}}",
+    "charsLeft": "- 还剩 {{count}}",
     "aboutPlaceholder": "热爱街头小吃和随性的聊天",
     "email": "邮箱",
-    "readOnly": "— 只读",
+    "readOnly": "- 只读",
     "homeCity": "常住城市",
     "homeCityPlaceholder": "你住在哪里",
     "age": "年龄",
     "agePlaceholder": "你的年龄",
     "myVibe": "我的 vibe",
     "interests": "兴趣",
-    "interestsHint": "— 最多选 5 个"
+    "interestsHint": "- 最多选 5 个"
   },
   "ambassador": {
     "title": "城市推荐 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "你喜爱这座城市的某一点"
   },
   "hangouts": {
-    "empty": "还没有聚会 — 发起一个吧 🗣️",
+    "empty": "还没有聚会 - 发起一个吧 🗣️",
     "host": "主办人"
   },
   "events": {
     "going": "参加",
-    "goingEmpty": "还没有计划 — 找点事做吧 🔥",
+    "goingEmpty": "还没有计划 - 找点事做吧 🔥",
     "hosting": "主办",
-    "hostingEmpty": "还没有主办任何活动 — 发起一个吧 ✨",
+    "hostingEmpty": "还没有主办任何活动 - 发起一个吧 ✨",
     "live": "进行中",
     "recurring": "↻ 重复",
     "upcoming": "即将开始",
@@ -129,7 +129,7 @@
     "generic": "出错了。请重试。"
   },
   "challenges": {
-    "empty": "还没有挑战 — 发起一个 🔥",
+    "empty": "还没有挑战 - 发起一个 🔥",
     "challenger": "挑战者"
   }
 }

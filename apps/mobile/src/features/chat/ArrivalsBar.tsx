@@ -1,17 +1,17 @@
 /**
- * ArrivalsBar — fixed-height strip below the city pill row.
+ * ArrivalsBar - fixed-height strip below the city pill row.
  *
  * Two visual states inside the same fixed-height container:
  *   - default: a neutral "Recent arrivals" label + chevron, tap → opens sheet
  *   - live:    "{name} just landed" (existing feedJoin variant), tap → opens profile
  *
- * The container height never changes — only the inner content crossfades.
+ * The container height never changes - only the inner content crossfades.
  * This is intentional: prior animation work on the chat feed (height-collapse /
  * LayoutAnimation) caused gaps + crashes, so we keep layout stable and only
  * touch opacity.
  *
  * Queue: an arrival is shown for 3s. New arrivals queue (cap 3). If a 4th
- * arrives the OLDEST queued item is dropped — never the one on screen.
+ * arrives the OLDEST queued item is dropped - never the one on screen.
  */
 
 import { useEffect, useRef, useState } from 'react';
@@ -67,7 +67,7 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
       seededRef.current = true;
       return;
     }
-    // arrivals are newest-first — walk from oldest-new to newest-new to preserve order
+    // arrivals are newest-first - walk from oldest-new to newest-new to preserve order
     const fresh: Message[] = [];
     for (let i = arrivals.length - 1; i >= 0; i--) {
       const m = arrivals[i];
@@ -85,10 +85,10 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
       queueRef.current = capQueue([...queueRef.current, ...rest]);
       setCurrent(head);
     } else {
-      // Already showing one — append to queue, capped.
+      // Already showing one - append to queue, capped.
       queueRef.current = capQueue([...queueRef.current, ...fresh]);
     }
-  }, [arrivals]); // current intentionally omitted — guarded above
+  }, [arrivals]); // current intentionally omitted - guarded above
 
   // Tick: when current is set, schedule the swap.
   useEffect(() => {

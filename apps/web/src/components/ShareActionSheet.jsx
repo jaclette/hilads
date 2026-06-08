@@ -1,9 +1,9 @@
 /**
- * ShareActionSheet — bottom sheet for share actions in chat composers.
+ * ShareActionSheet - bottom sheet for share actions in chat composers.
  *
  * Actions:
- *   📸 Snap the vibe     → onSnap() — triggers file input in parent
- *   📍 Drop where you at → onSpot() — geolocation + send location message
+ *   📸 Snap the vibe     → onSnap() - triggers file input in parent
+ *   📍 Drop where you at → onSpot() - geolocation + send location message
  */
 
 import { useTranslation } from 'react-i18next'

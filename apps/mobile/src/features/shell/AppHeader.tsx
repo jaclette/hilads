@@ -1,5 +1,5 @@
 /**
- * Shared app header — persistent across the 4 bottom tabs (MY CITY / NOW /
+ * Shared app header - persistent across the 4 bottom tabs (MY CITY / NOW /
  * HERE / ME).
  *
  * Contains:
@@ -83,7 +83,7 @@ export function AppHeader({ rightExtra }: Props) {
     <HeaderRadialGlow />
     <View style={styles.topBar}>
 
-      {/* Left: notification bell (members) — or a subtle "?" for guests that
+      {/* Left: notification bell (members) - or a subtle "?" for guests that
           re-opens the intro carousel on demand. */}
       <View style={styles.topLeft}>
         {account ? (
@@ -162,7 +162,7 @@ export function AppHeader({ rightExtra }: Props) {
 const styles = StyleSheet.create({
   // Header surface strip. The radial orange ellipse rendered by
   // <HeaderRadialGlow /> sits behind topBar via absoluteFillObject. No
-  // overflow:hidden here — the SVG is bounded to its own Rect (100% × 100%)
+  // overflow:hidden here - the SVG is bounded to its own Rect (100% × 100%)
   // so it can't bleed, and clipping the wrapper would clip the bell's
   // notification badge (positioned top:-5/right:-5 to overflow the icon).
   glowWrap: {

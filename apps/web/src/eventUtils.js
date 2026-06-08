@@ -106,7 +106,7 @@ function eventDayPrefix(unixTs, timezone, full = false) {
 
 // `withDay` (now feed): compact day prefix on scheduled events.
 // `withDate` (event detail, one-shot only): full date prefix so the day is clear.
-// Other surfaces pass neither — they're single-event or already day-scoped.
+// Other surfaces pass neither - they're single-event or already day-scoped.
 export function getTimeLabel(unixTs, timezone, { withDay = false, withDate = false } = {}) {
   const status = getEventStatus(unixTs)
   if (status === 'now') return i18n.t('time.happeningNow', { ns: 'common' })

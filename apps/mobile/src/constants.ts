@@ -18,7 +18,7 @@ import { challengeSlug } from '@/lib/challengeSlug';
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '@/i18n';
 
 // Active-locale prefix for shared links: '' for English (default), '/fr' | '/vi'
-// otherwise — so a recipient lands on the localized (translated) page. The SSR
+// otherwise - so a recipient lands on the localized (translated) page. The SSR
 // layer renders /fr and /vi event pages in-language.
 function sharePrefix(): string {
   const lang = i18n.language;
@@ -27,7 +27,7 @@ function sharePrefix(): string {
 
 /**
  * Build a shareable event URL. When `event` is the full object (with `title`),
- * emit the slug form `/event/<slug>-<hex>` — readable in chat threads, ranks
+ * emit the slug form `/event/<slug>-<hex>` - readable in chat threads, ranks
  * better. When only an ID is available, fall back to the short link `/e/<hex>`
  * which the prerender layer canonicalises via <link rel="canonical">.
  * Carries the active locale prefix so the recipient lands on the localized page.
@@ -56,28 +56,28 @@ export function buildChallengeUrl(challenge: { id: string; title?: string } | st
   return `${BASE_URL}${lp}/challenge/${challengeSlug(challenge)}`;
 }
 
-// ── Env diagnostics — unconditional, fires in both dev and production APK ─────
-console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined — will use localhost fallback!)');
+// ── Env diagnostics - unconditional, fires in both dev and production APK ─────
+console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined - will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);
 console.log('[env] WS_URL              =', WS_URL);
 if (!process.env.EXPO_PUBLIC_API_URL) {
-  console.error('[env] CRITICAL: EXPO_PUBLIC_API_URL is not set — all API calls will fail on device!');
+  console.error('[env] CRITICAL: EXPO_PUBLIC_API_URL is not set - all API calls will fail on device!');
 }
 
 export const APP_VERSION = '1.0.0';
 export const IS_DEV = __DEV__;
 
-// ── Design tokens — aligned with web app ──────────────────────────────────────
+// ── Design tokens - aligned with web app ──────────────────────────────────────
 // Web source: apps/web/src/index.css CSS variables
 
 export const Colors = {
-  // Backgrounds — warm dark, not cold neutral
+  // Backgrounds - warm dark, not cold neutral
   bg:       '#0d0b09',   // web --bg
   bg2:      '#161210',   // web --surface
   bg3:      '#1e1812',   // web --surface2
   border:   '#272018',   // web --border (warm brown)
 
-  // Text — contrast targets on bg #0d0b09 (≈ pure black at L≈0):
+  // Text - contrast targets on bg #0d0b09 (≈ pure black at L≈0):
   //   text     ~16.6:1   primary
   //   muted     ~5.5:1   secondary (still WCAG AA at all sizes)
   //   muted2    ~4.7:1   tertiary  (WCAG AA at normal sizes)
@@ -88,14 +88,14 @@ export const Colors = {
   //                      when used for body / timestamps / sub-labels.
   text:     '#ede9e5',   // web --text   (warm off-white)
   muted:    '#968880',   // web --muted2 (visible secondary)
-  muted2:   '#8a7d75',   // tertiary — bumped from #635650 for WCAG AA on dark bg
-  mutedDim: '#635650',   // disabled-only — opt-in, not a default. See note above.
+  muted2:   '#8a7d75',   // tertiary - bumped from #635650 for WCAG AA on dark bg
+  mutedDim: '#635650',   // disabled-only - opt-in, not a default. See note above.
 
   // Brand
-  accent:   '#FF7A3C',   // web --hot-dot (energy orange — active states, FAB)
+  accent:   '#FF7A3C',   // web --hot-dot (energy orange - active states, FAB)
   accentDim:'rgba(255,122,60,0.15)',
-  accent2:  '#C24A38',   // web --accent  (deep red-orange — CTA buttons)
-  accent3:  '#B87228',   // web --accent2 (gradient end — CTA buttons)
+  accent2:  '#C24A38',   // web --accent  (deep red-orange - CTA buttons)
+  accent3:  '#B87228',   // web --accent2 (gradient end - CTA buttons)
 
   // Semantic
   green:    '#3ddc84',   // web --green  (online / live)
@@ -136,7 +136,7 @@ export const Spacing = {
   xxl:  54,
 } as const;
 
-// ── Gradients — direct port of web index.css linear-gradients ────────────────
+// ── Gradients - direct port of web index.css linear-gradients ────────────────
 // 135° on web ≈ start (0,0) → end (1,1) on RN's LinearGradient.
 // Web sources (single source of truth):
 //   .ob-btn / .cef-submit / .modal-submit / .send-btn:
@@ -154,7 +154,7 @@ export const Gradients = {
     start:  { x: 0, y: 0 },
     end:    { x: 1, y: 1 },
   },
-  // Disabled state — muted gray pair at 0.55 opacity matches web
+  // Disabled state - muted gray pair at 0.55 opacity matches web
   // .cef-submit:disabled (opacity 0.5, no shadow).
   primaryDisabled: {
     colors: ['#5b524c', '#4a423d'] as [string, string],
@@ -173,7 +173,7 @@ export const Gradients = {
   },
 } as const;
 
-// ── Shadows — colored CTA glow (iOS native, faux on Android) ─────────────────
+// ── Shadows - colored CTA glow (iOS native, faux on Android) ─────────────────
 // Web sources:
 //   .cef-submit / .ob-btn / .modal-submit:  0 4–6px 18–20px rgba(194,74,56,0.25–0.32)
 //   .vibe-btn / .dm-vibe-btn:               0 0 16px rgba(194,74,56,0.42) + 0 4px 14px rgba(0,0,0,0.35)

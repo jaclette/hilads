@@ -64,7 +64,7 @@
     "eventTag": "이벤트",
     "public": "공개",
     "activeNow": "● 지금 활동 중",
-    "repliesNew": "아직 답글이 없어요 — 첫 번째가 되어보세요",
+    "repliesNew": "아직 답글이 없어요 - 첫 번째가 되어보세요",
     "replies_one": "💬 답글 {{count}}개",
     "replies_other": "💬 답글 {{count}}개",
     "going_one": "🙌 {{count}}명 참여",
@@ -138,11 +138,11 @@
   "create": {
     "title": "뭐 할까요?",
     "hangoutTitle": "모임 시작하기",
-    "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
+    "hangoutSub": "바로 - 지금 사람들이 참여하게 하세요",
     "eventTitle": "이벤트 만들기",
     "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요",
     "challengeTitle": "챌린지 시작",
-    "challengeSub": "로컬과 여행자 — 챌린지로 연결",
+    "challengeSub": "로컬과 여행자 - 챌린지로 연결",
     "challengePageTitle": "챌린지 만들기",
     "challengeAudience": "누구를 위해?",
     "challengeAudLocals": "로컬",
@@ -161,7 +161,7 @@
     "going": "참여",
     "inThisHangout": "이 모임에",
     "loading": "불러오는 중…",
-    "empty": "아직 아무도 없어요 — 가장 먼저 참여하세요! 🙌"
+    "empty": "아직 아무도 없어요 - 가장 먼저 참여하세요! 🙌"
   },
   "nickname": {
     "label": "닉네임",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 이 이벤트를 시작했네요!",
-    "sub": "더 멋지게 — 설명을 추가하거나, 시간을 수정하거나, 공유하세요.",
+    "sub": "더 멋지게 - 설명을 추가하거나, 시간을 수정하거나, 공유하세요.",
     "edit": "✏️ 이벤트 수정"
   },
   "feedNew": {

@@ -8,13 +8,13 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { Challenge, UserDTO } from '@/types';
 
 /**
- * Inline "X in the channel" strip — mounted on the challenge detail page
+ * Inline "X in the channel" strip - mounted on the challenge detail page
  * directly under the pipeline/proof block. Tap opens the full members
  * sheet (the parent already mounts ChallengeChannelMembersSheet). The
  * strip itself just renders avatars + count + a See all chevron.
  *
  * Synthesizes Challenger + Taker rows from the challenge + acceptance
- * context so the avatar preview is role-aware — matches the modal's
+ * context so the avatar preview is role-aware - matches the modal's
  * head rows.
  */
 export function ChallengeChannelMembersStrip({
@@ -49,7 +49,7 @@ export function ChallengeChannelMembersStrip({
     const m = members.find(mm => mm.id === creatorUserId);
     preview.push({
       id:             creatorUserId,
-      displayName:    m?.displayName ?? challenge?.creator_display_name ?? '—',
+      displayName:    m?.displayName ?? challenge?.creator_display_name ?? '-',
       thumbAvatarUrl: m?.thumbAvatarUrl ?? challenge?.creator_thumb_avatar_url ?? null,
     });
   }
@@ -57,17 +57,17 @@ export function ChallengeChannelMembersStrip({
     const m = members.find(mm => mm.id === takerUserId);
     preview.push({
       id:             takerUserId,
-      displayName:    m?.displayName ?? activeTaker?.displayName ?? '—',
+      displayName:    m?.displayName ?? activeTaker?.displayName ?? '-',
       thumbAvatarUrl: m?.thumbAvatarUrl ?? activeTaker?.thumbAvatarUrl ?? activeTaker?.avatarUrl ?? null,
     });
   }
   for (const m of members) {
     if (m.id === creatorUserId || m.id === takerUserId) continue;
-    preview.push({ id: m.id, displayName: m.displayName ?? '—', thumbAvatarUrl: m.thumbAvatarUrl });
+    preview.push({ id: m.id, displayName: m.displayName ?? '-', thumbAvatarUrl: m.thumbAvatarUrl });
     if (preview.length >= 5) break;
   }
   // Total = unique participants. The creator and the taker auto-join the
-  // channel on create / accept, so they're typically IN the join table —
+  // channel on create / accept, so they're typically IN the join table -
   // simply summing `count + synthesized` double-counts them. Match the web
   // modal's behaviour (ChallengeChannelMembers.jsx): only add a synthesized
   // row when that user_id is NOT already in the members list.

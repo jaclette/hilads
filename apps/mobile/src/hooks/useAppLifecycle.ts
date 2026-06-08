@@ -27,7 +27,7 @@ export function useAppLifecycle(onForeground?: () => void): void {
     }
 
     // Re-join the city channel (presence may have expired while backgrounded).
-    // Use the registered display name when available — falling back to the guest
+    // Use the registered display name when available - falling back to the guest
     // nickname prevents spurious "GuestName just landed" feed events for users
     // whose real identity is already known.
     if (city && identity && sessionId) {

@@ -21,7 +21,7 @@ function safeTrack(event, props) {
 /**
  * Drives the Android Play Store promo banner + (gated-off) interstitial.
  *
- * Always safe to call from the App root — when the visitor isn't on Android,
+ * Always safe to call from the App root - when the visitor isn't on Android,
  * is already in the native app, or has dismissed within the cooldown,
  * `shouldShowBanner` stays false and nothing renders.
  */

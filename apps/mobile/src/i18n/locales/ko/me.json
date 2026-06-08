@@ -24,7 +24,7 @@
   "agePlaceholder": "예: 25",
   "fieldMyVibe": "내 VIBE",
   "fieldInterests": "관심사",
-  "interestsHint": "— 최대 5개 선택",
+  "interestsHint": "- 최대 5개 선택",
   "interest": {
     "drinks": "술",
     "party": "파티",
@@ -47,12 +47,12 @@
     "tech": "테크",
     "dating": "데이트"
   },
-  "noHangouts": "아직 모임이 없어요 — 하나 시작해 봐요 🗣️",
+  "noHangouts": "아직 모임이 없어요 - 하나 시작해 봐요 🗣️",
   "host": "호스트",
   "going": "참여",
-  "noPlans": "아직 계획이 없어요 — 뭔가 찾아 봐요 🔥",
+  "noPlans": "아직 계획이 없어요 - 뭔가 찾아 봐요 🔥",
   "hosting": "호스팅",
-  "nothingHosted": "아직 호스팅한 게 없어요 — 뭔가 시작해 봐요 ✨",
+  "nothingHosted": "아직 호스팅한 게 없어요 - 뭔가 시작해 봐요 ✨",
   "live": "LIVE",
   "recurring": "반복",
   "friendRequests": "친구 요청",
@@ -80,7 +80,7 @@
   "errUsernameShort": "사용자 이름은 최소 3자 이상이어야 해요",
   "errUsernameTaken": "이미 사용 중인 사용자 이름이에요",
   "errUsernameInvalid": "유효하지 않은 사용자 이름이에요",
-  "errSave": "저장 실패 — 다시 시도해 주세요",
+  "errSave": "저장 실패 - 다시 시도해 주세요",
   "signOutTitle": "로그아웃",
   "signOutBody": "정말 하시겠어요?",
   "deleteAccountTitle": "계정을 삭제할까요?",
@@ -89,5 +89,5 @@
   "errorTitle": "오류",
   "deleteAccountFail": "계정을 삭제할 수 없었어요. 다시 시도해 주세요.",
   "tabChallenges": "챌린지",
-  "noChallenges": "아직 챌린지가 없습니다 — 시작하세요 🔥"
+  "noChallenges": "아직 챌린지가 없습니다 - 시작하세요 🔥"
 }

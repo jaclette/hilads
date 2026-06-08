@@ -1,5 +1,5 @@
 /**
- * @mention helpers (web) — mirror of apps/mobile/src/lib/mentions.ts.
+ * @mention helpers (web) - mirror of apps/mobile/src/lib/mentions.ts.
  *
  * Offsets are JS string indices into `content`, computed at SEND time by scanning
  * the final text for each selected @username (deleted/altered tokens are dropped).

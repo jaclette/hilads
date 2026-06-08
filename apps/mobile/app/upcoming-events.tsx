@@ -41,7 +41,7 @@ function isSameDay(a: Date, b: Date): boolean {
       && a.getDate() === b.getDate();
 }
 
-// Build an ISO YYYY-MM-DD from a (possibly local) Date — used to key rows
+// Build an ISO YYYY-MM-DD from a (possibly local) Date - used to key rows
 // without timezone drift.
 function localYmd(d: Date): string {
   const y = d.getFullYear();
@@ -72,7 +72,7 @@ function DayCell({
       activeOpacity={0.75}
       onPress={onPress}
     >
-      {/* Long labels (e.g. "Aujourd'hui") scroll instead of wrapping — same
+      {/* Long labels (e.g. "Aujourd'hui") scroll instead of wrapping - same
           marquee primitive as the weather pill; static + centered when they fit. */}
       <MarqueeText
         text={label}
@@ -95,7 +95,7 @@ function DayCell({
   );
 }
 
-// ── Month modal — full-month grid w/ event dots ───────────────────────────────
+// ── Month modal - full-month grid w/ event dots ───────────────────────────────
 
 function MonthModal({
   visibleMonth, summary, selected, onPick, onClose,
@@ -205,7 +205,7 @@ export default function UpcomingEventsScreen() {
   const { channelId, timezone } = useLocalSearchParams<{ channelId: string; timezone: string }>();
   const tz = decodeURIComponent(timezone ?? 'UTC');
 
-  // Build the strip dates once — today through STRIP_DAYS ahead. We anchor
+  // Build the strip dates once - today through STRIP_DAYS ahead. We anchor
   // off local-Date midnight; the dot indicator + grouping use city-tz YMD.
   const stripDates = useMemo<Date[]>(() => {
     const out: Date[] = [];
@@ -253,7 +253,7 @@ export default function UpcomingEventsScreen() {
       const s = await fetchCalendarSummary(channelId, from, to);
       setSummary(s);
     } catch {
-      // Soft-fail — strip still works without dots.
+      // Soft-fail - strip still works without dots.
     }
   }, [channelId, stripDates]);
 
@@ -266,7 +266,7 @@ export default function UpcomingEventsScreen() {
     track('calendar_day_tapped', { date: localYmd(day) });
   }
 
-  // Day-strip cell width is fixed below — we let RN measure layout once,
+  // Day-strip cell width is fixed below - we let RN measure layout once,
   // then auto-scroll the selected cell into view.
   const onStripLayout = useCallback(() => {
     const idx = stripDates.findIndex(d => isSameDay(d, selected));

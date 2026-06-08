@@ -11,7 +11,7 @@ const STEPS_LOCAL         = ['accept', 'date',  'meet',    'wrap']
 const STEPS_INTERNATIONAL = ['accept', 'proof', 'verdict']
 const ICONS  = { accept: '🤝', date: '📅', meet: '👋', wrap: '✨', proof: '📸', verdict: '⚖️' }
 
-// Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
+// Compact "sam. 6 juin · 21:30" - locale-aware via Intl using the active
 // i18n language (NOT undefined, which falls back to the device locale and
 // reads English even for French-speaking users).
 function formatMeetupDate(unixSeconds, locale) {
@@ -23,7 +23,7 @@ function formatMeetupDate(unixSeconds, locale) {
 
 function derive(acceptance, iAmCreator, locale, isInternational) {
   if (!acceptance) {
-    // Visitors don't get a sub-CTA here — the participants row below has the
+    // Visitors don't get a sub-CTA here - the participants row below has the
     // labeled "Take on the challenge" button. Two prompts read as a repeat.
     return {
       active: null,
@@ -58,7 +58,7 @@ function derive(acceptance, iAmCreator, locale, isInternational) {
     return { active: null, done: new Set(['accept', 'proof']), rejected: true, subCtaKey: 'pipeline.subcta.closed' }
   }
 
-  // PR5 — pending = creator hasn't reviewed the take-on request yet.
+  // PR5 - pending = creator hasn't reviewed the take-on request yet.
   if (phase === 'pending') {
     return {
       active: 'accept',
@@ -92,7 +92,7 @@ function derive(acceptance, iAmCreator, locale, isInternational) {
     }
   }
   if (phase === 'debrief') {
-    // PR6 — mutual rating. Both sides see the same prompt; the rate-prompt
+    // PR6 - mutual rating. Both sides see the same prompt; the rate-prompt
     // banner on /threads (B.3) owns the urgency copy via `other_rated`.
     return {
       active: 'wrap',
@@ -134,7 +134,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, mode = 'loca
           const connectorLit = state.done.has(STEPS[i - 1]) || state.active === step
           return (
             <div key={step} style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {/* Connector from prev dot — inset by DOT_RADIUS so the line
+              {/* Connector from prev dot - inset by DOT_RADIUS so the line
                   stops at each dot's edge instead of crossing through. The
                   dot is 30px wide, so half-width = 15. */}
               {i > 0 && (
@@ -173,7 +173,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, mode = 'loca
         })}
       </div>
 
-      {/* Sub-CTA — empty key suppresses the row (visitor with no acceptance:
+      {/* Sub-CTA - empty key suppresses the row (visitor with no acceptance:
           the labeled accept button below handles the call to action). */}
       {!!state.subCtaKey && (
         <div style={{

@@ -33,7 +33,7 @@
     "title": "Sei der Local, der die Stadt am Laufen hält",
     "tagline": "Du kennst die Spots. Fordere Locals oder Reisende heraus, sie zu finden.",
     "bullets": [
-      "Fordere Locals oder Reisende heraus — Food, Ort, Kultur oder Hilfe",
+      "Fordere Locals oder Reisende heraus - Food, Ort, Kultur oder Hilfe",
       "Bring Leute an die Orte, die du liebst",
       "Werde der Local, an den sich Leute erinnern"
     ],
@@ -42,7 +42,7 @@
   "exploring": {
     "badge": "🧭 Exploring",
     "title": "Nimm lokale Challenges überall an",
-    "tagline": "Wo immer du landest — nimm an, was die Locals gestartet haben.",
+    "tagline": "Wo immer du landest - nimm an, was die Locals gestartet haben.",
     "bullets": [
       "Nimm Challenges an, die Locals gestartet haben",
       "Finde die echten Spots, empfohlen von denen, die dort leben",
@@ -60,7 +60,7 @@
       },
       {
         "title": "Starte oder nimm eine Challenge an",
-        "desc": "Jeder kann eine Food-, Orts-, Kultur- oder Hilfe-Challenge starten — für Locals oder für Reisende. Die andere Seite nimmt sie an."
+        "desc": "Jeder kann eine Food-, Orts-, Kultur- oder Hilfe-Challenge starten - für Locals oder für Reisende. Die andere Seite nimmt sie an."
       },
       {
         "title": "Trefft euch persönlich",
@@ -82,7 +82,7 @@
       "Echte Menschen. Echte Orte. Jetzt."
     ]
   },
-  "seo": "Hilads ist eine Echtzeit-Social-App, in der Locals und Reisende sich gegenseitig herausfordern, die Stadt echt zu entdecken. Nimm eine Food-, Orts- oder Kultur-Challenge in Paris an, akzeptiere eine in Barcelona, oder starte deine in Lissabon — Hilads macht aus jedem Trip ein persönliches Treffen. Kein Account nötig. Einfach da sein.",
+  "seo": "Hilads ist eine Echtzeit-Social-App, in der Locals und Reisende sich gegenseitig herausfordern, die Stadt echt zu entdecken. Nimm eine Food-, Orts- oder Kultur-Challenge in Paris an, akzeptiere eine in Barcelona, oder starte deine in Lissabon - Hilads macht aus jedem Trip ein persönliches Treffen. Kein Account nötig. Einfach da sein.",
   "download": {
     "eyebrow": "Mobile Apps",
     "title": "Deine Stadt in deiner Tasche.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Cross-City",
     "tagline": "Schick eine Challenge in eine andere Stadt. Bekomm ein Video zurück.",
-    "sub": "Wenn deine Stadt ruhig ist, ist die Welt es nicht. Fordere jemanden überall heraus — er schickt einen Beweis, du bestätigst aus der Ferne.",
+    "sub": "Wenn deine Stadt ruhig ist, ist die Welt es nicht. Fordere jemanden überall heraus - er schickt einen Beweis, du bestätigst aus der Ferne.",
     "bullets": [
       "Ziele auf eine konkrete Stadt oder lass es offen für alle, überall.",
-      "Foto mit Geotag — Beweis, dass es passiert ist.",
+      "Foto mit Geotag - Beweis, dass es passiert ist.",
       "Du bestätigst vom Sofa. Lehne mit Begründung ab, wenn was nicht stimmt."
     ],
     "cta": "Globale Challenge ausprobieren"

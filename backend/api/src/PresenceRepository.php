@@ -15,11 +15,11 @@ class PresenceRepository
      * Upserts presence for the session and optionally returns the current online count.
      *
      * Returns: [ 'isNew' => bool, 'onlineCount' => int ]
-     *   isNew        — true if session was absent or expired (emit "just landed" event)
-     *   onlineCount  — distinct guest count currently online (0 when $withCount = false)
+     *   isNew        - true if session was absent or expired (emit "just landed" event)
+     *   onlineCount  - distinct guest count currently online (0 when $withCount = false)
      *
      * Pass $withCount = true only when the caller actually uses onlineCount (bootstrap).
-     * The join endpoint only reads isNew — skipping COUNT(DISTINCT) saves ~100-200ms.
+     * The join endpoint only reads isNew - skipping COUNT(DISTINCT) saves ~100-200ms.
      */
     public static function join(int $channelId, string $sessionId, string $guestId, string $nickname, bool $withCount = false): array
     {
@@ -60,7 +60,7 @@ class PresenceRepository
             ];
         }
 
-        // Fast path: upsert + new-session check only — no COUNT(DISTINCT guest_id).
+        // Fast path: upsert + new-session check only - no COUNT(DISTINCT guest_id).
         $stmt = Database::pdo()->prepare("
             WITH
             existing AS (
@@ -97,13 +97,13 @@ class PresenceRepository
      * Used exclusively by the POST /join endpoint to eliminate the second sequential
      * DB query that was previously needed to resolve the authenticated user.
      *
-     * $authToken — raw session token from Cookie or Bearer header.
+     * $authToken - raw session token from Cookie or Bearer header.
      *   If null or invalid format: auth subquery is skipped (guest path).
      *   If valid: a correlated subquery resolves the user ID in the same round trip.
      *
      * Returns: [ 'isNew' => bool, 'authUserId' => ?string ]
-     *   isNew      — true if this is a genuinely new session (emit join feed event)
-     *   authUserId — resolved user ID, or null for guests / invalid tokens
+     *   isNew      - true if this is a genuinely new session (emit join feed event)
+     *   authUserId - resolved user ID, or null for guests / invalid tokens
      */
     public static function joinWithAuth(int $channelId, string $sessionId, string $guestId, string $nickname, ?string $authToken): array
     {
@@ -114,7 +114,7 @@ class PresenceRepository
 
         if ($hasToken) {
             // Single round-trip: upsert presence AND resolve the authenticated user.
-            // The auth subquery adds ~0ms overhead — it's a simple PK lookup on user_sessions.
+            // The auth subquery adds ~0ms overhead - it's a simple PK lookup on user_sessions.
             $stmt = Database::pdo()->prepare("
                 WITH
                 existing AS (
@@ -145,7 +145,7 @@ class PresenceRepository
             ");
             $stmt->execute([$sessionId, $key, $sessionId, $key, $guestId, $nickname, $authToken]);
         } else {
-            // Guest path: no token — skip the auth subquery entirely.
+            // Guest path: no token - skip the auth subquery entirely.
             $stmt = Database::pdo()->prepare("
                 WITH
                 existing AS (
@@ -183,7 +183,7 @@ class PresenceRepository
      * Stamp the authenticated user onto their live presence row.
      *
      * The presence write paths (join / bootstrap / heartbeat) key rows by
-     * session+channel and only ever set guest_id — never user_id. But
+     * session+channel and only ever set guest_id - never user_id. But
      * users.guest_id holds a single value that drifts from a user's actual
      * per-device presence guest_id, so the presence row can't be reliably
      * linked back to the account by guest_id alone. Callers that have resolved
@@ -222,7 +222,7 @@ class PresenceRepository
         ")->execute([$sessionId, self::dbKey($channelId), $guestId, $nickname]);
     }
 
-    // Remove a session from all channels — used on browser tab close
+    // Remove a session from all channels - used on browser tab close
     public static function disconnect(string $sessionId): void
     {
         Database::pdo()->prepare("

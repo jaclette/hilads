@@ -1,12 +1,12 @@
 /**
- * Messages screen — Direct Messages + Event Chats with filter pills.
+ * Messages screen - Direct Messages + Event Chats with filter pills.
  *
  * Three filter pills at the top:
  *   All            → both sections visible (default)
  *   Direct Messages → DM section only
  *   Event Chats     → Event Chats section only
  *
- * Filtering is purely visual — no re-fetch on switch.
+ * Filtering is purely visual - no re-fetch on switch.
  * Each pill shows an orange dot when its section has unread items.
  */
 
@@ -209,7 +209,7 @@ export default function MessagesScreen() {
     clearEventChatCounts();
   }, [markDMsRead, clearEventChatCounts]);
 
-  // Skip refetch on initial mount — useConversations already loads on mount.
+  // Skip refetch on initial mount - useConversations already loads on mount.
   // On subsequent focuses (returning from a DM) refetch so has_unread flags reflect
   // what the user has actually read.
   const hasMountedRef = useRef(false);
@@ -238,7 +238,7 @@ export default function MessagesScreen() {
   useEffect(() => { loadEvents(); }, [loadEvents]);
 
   // ── Envelope-scoped notification preferences ─────────────────────────────
-  // Three toggles: DMs, event-chat, city-chat — mirroring the three notification
+  // Three toggles: DMs, event-chat, city-chat - mirroring the three notification
   // types that route to the envelope icon. Other prefs live on the bell screen.
   const [prefs, setPrefs] = useState<NotificationPreferences | null>(null);
   useEffect(() => {
@@ -419,7 +419,7 @@ export default function MessagesScreen() {
   );
 }
 
-// ── Preference toggle row (local — same shape as the bell screen's PrefRow) ──
+// ── Preference toggle row (local - same shape as the bell screen's PrefRow) ──
 
 function PrefRow({
   label, subtitle, value, onChange,
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center' },
   emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
 
-  // ── Preferences (envelope-scoped — DM, event-chat, city-chat) ────────────
+  // ── Preferences (envelope-scoped - DM, event-chat, city-chat) ────────────
   prefSection:      { marginTop: Spacing.xl, paddingHorizontal: Spacing.md },
   prefSectionTitle: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.8, marginBottom: Spacing.sm },
   prefCard:         { backgroundColor: Colors.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },

@@ -21,7 +21,7 @@ export function getLinkPreview(url: string | null | undefined): Promise<LinkPrev
 
   const p: Promise<LinkPreview | null> = (async () => {
     try {
-      // API_URL already ends with /api/v1 (see src/constants.ts) — no double prefix.
+      // API_URL already ends with /api/v1 (see src/constants.ts) - no double prefix.
       const res = await fetch(`${API_URL}/link-preview?url=${encodeURIComponent(url)}`, {
         headers: { Accept: 'application/json' },
       });

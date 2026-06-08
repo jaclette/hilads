@@ -4,7 +4,7 @@ import type { City, Message, Reaction, UserDTO } from '@/types';
 // ── City / channel resolution ─────────────────────────────────────────────────
 
 // Backend returns { city: string, channelId: string|number, timezone: string, country: string }.
-// The 'city' field is the name — different from the City type's 'name' field.
+// The 'city' field is the name - different from the City type's 'name' field.
 // We normalise here so the rest of the app always gets a proper City object.
 //
 // Optional `country` (ISO-2) lets the backend constrain nearest-city to the
@@ -27,15 +27,15 @@ export async function resolveLocation(lat: number, lng: number, country?: string
   };
 }
 
-// Raw shape returned by GET /channels — fields differ from the City type.
+// Raw shape returned by GET /channels - fields differ from the City type.
 interface RawChannel {
   channelId:           string | number;
-  city:                string;          // web: ch.city — city display name
+  city:                string;          // web: ch.city - city display name
   country:             string | null;
   timezone:            string | null;
-  activeUsers?:        number;          // web: ch.activeUsers — online count
+  activeUsers?:        number;          // web: ch.activeUsers - online count
   messageCount?:       number;
-  recentMessageCount?: number;          // messages in last 24 h — used for "most active" ranking
+  recentMessageCount?: number;          // messages in last 24 h - used for "most active" ranking
   eventCount?:         number;
   topicCount?:         number;
   liveScore?:          number;
@@ -154,7 +154,7 @@ export async function leaveChannel(channelId: string, sessionId: string): Promis
   await api.post(`/channels/${channelId}/leave`, { sessionId }).catch(() => {});
 }
 
-// POST /me/city — commit a manual city switch as users.current_city_id.
+// POST /me/city - commit a manual city switch as users.current_city_id.
 // Backend bypasses the two-signal rule and sets the city immediately. Errors
 // are swallowed: the local UI switch is the source of truth for this frame;
 // the next /location/resolve will reconcile if the backend write failed.
@@ -177,7 +177,7 @@ export async function heartbeat(
 
 // ── Messages ──────────────────────────────────────────────────────────────────
 
-/** City crew member — canonical UserDTO from /channels/{id}/members. */
+/** City crew member - canonical UserDTO from /channels/{id}/members. */
 export type CityMember = UserDTO;
 
 export interface CityMembersResult {

@@ -1,8 +1,8 @@
 /**
- * HiladsIcon — faithful View recreation of Logo.jsx SVG.
+ * HiladsIcon - faithful View recreation of Logo.jsx SVG.
  *
  * SVG viewBox 64×64, scaled to target size (scale = size/64).
- * Background: rounded-rect orange gradient — direct port of the web
+ * Background: rounded-rect orange gradient - direct port of the web
  *   .logoMark linear-gradient(135deg, #FF7A3C, #C24A38) (DeleteAccountPage).
  * H letterform: two vertical bars + horizontal crossbar.
  * ¡ letterform: vertical bar + circle dot with pulse animation.
@@ -41,27 +41,27 @@ export function HiladsIcon({ size = 46 }: { size?: number }) {
         end={Gradients.logo.end}
         style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
       />
-      {/* H — left vertical bar (x=9, y=13, w=8, h=38, rx=2.5) */}
+      {/* H - left vertical bar (x=9, y=13, w=8, h=38, rx=2.5) */}
       <View style={{
         position: 'absolute', left: s(9), top: s(13),
         width: s(8), height: s(38), borderRadius: s(2.5), backgroundColor: 'white',
       }} />
-      {/* H — right vertical bar (x=26, y=13, w=8, h=38, rx=2.5) */}
+      {/* H - right vertical bar (x=26, y=13, w=8, h=38, rx=2.5) */}
       <View style={{
         position: 'absolute', left: s(26), top: s(13),
         width: s(8), height: s(38), borderRadius: s(2.5), backgroundColor: 'white',
       }} />
-      {/* H — crossbar (x=17, y=28, w=9, h=6, rx=2) */}
+      {/* H - crossbar (x=17, y=28, w=9, h=6, rx=2) */}
       <View style={{
         position: 'absolute', left: s(17), top: s(28),
         width: s(9), height: s(6), borderRadius: s(2), backgroundColor: 'white',
       }} />
-      {/* ¡ — vertical bar (x=43, y=25, w=8, h=26, rx=2.5) */}
+      {/* ¡ - vertical bar (x=43, y=25, w=8, h=26, rx=2.5) */}
       <View style={{
         position: 'absolute', left: s(43), top: s(25),
         width: s(8), height: s(26), borderRadius: s(2.5), backgroundColor: 'white',
       }} />
-      {/* ¡ — dot circle (cx=47, cy=15, r=5.5) with pulse */}
+      {/* ¡ - dot circle (cx=47, cy=15, r=5.5) with pulse */}
       <Animated.View style={{
         position:        'absolute',
         left:            s(47 - 5.5),

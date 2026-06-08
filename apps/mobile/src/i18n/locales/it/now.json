@@ -26,12 +26,12 @@
   "create": {
     "title": "Che si fa?",
     "hangoutLabel": "Lancia un ritrovo",
-    "hangoutSub": "All'istante — lascia che la gente si unisca subito",
+    "hangoutSub": "All'istante - lascia che la gente si unisca subito",
     "eventLabel": "Crea un evento",
     "eventSub": "Organizza qualcosa a cui unirsi",
     "cancel": "Annulla",
     "challengeLabel": "Lancia una sfida",
-    "challengeSub": "Local & viaggiatori — connettetevi attraverso una sfida"
+    "challengeSub": "Local & viaggiatori - connettetevi attraverso una sfida"
   },
   "filterChallenges": "🔥 Sfide",
   "challengesSection": "Sfide",

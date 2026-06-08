@@ -1,5 +1,5 @@
 /**
- * ReportModal — lightweight report sheet for registered and ghost user profiles.
+ * ReportModal - lightweight report sheet for registered and ghost user profiles.
  *
  * Shown by a discreet "Report" link on user/guest profile screens.
  * Validates reason length (min 10 chars) before submitting.

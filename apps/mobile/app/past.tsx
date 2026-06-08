@@ -29,7 +29,7 @@ function addDays(d: Date, n: number): Date { const c = new Date(d); c.setDate(c.
 function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
-// "Today" as the city sees it — avoids off-by-one when the device tz differs.
+// "Today" as the city sees it - avoids off-by-one when the device tz differs.
 function cityTodayYmd(tz: string): string { return new Date().toLocaleDateString('en-CA', { timeZone: tz }); }
 
 function prettyRange(from: string, to: string): string {
@@ -44,7 +44,7 @@ type FilterType = 'both' | 'hangouts' | 'pulses' | 'challenges';
 
 const PAGE = 12;
 
-// ── Custom range picker — tap start then end, clamped to 14 days ─────────────
+// ── Custom range picker - tap start then end, clamped to 14 days ─────────────
 
 function RangeMonthModal({
   tz, initial, onApply, onClose,
@@ -348,7 +348,7 @@ export default function PastArchiveScreen() {
               );
             }
             if (item.kind === 'challenge') {
-              // ChallengeCard expects a Challenge object — the past endpoint
+              // ChallengeCard expects a Challenge object - the past endpoint
               // returns one with the same shape (id, title, challenge_type,
               // audience, status, participant_count, participants_preview).
               return (

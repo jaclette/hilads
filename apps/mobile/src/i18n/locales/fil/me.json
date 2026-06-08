@@ -24,7 +24,7 @@
   "agePlaceholder": "hal. 25",
   "fieldMyVibe": "ANG AKING VIBE",
   "fieldInterests": "MGA INTERES",
-  "interestsHint": "— pumili ng hanggang 5",
+  "interestsHint": "- pumili ng hanggang 5",
   "interest": {
     "drinks": "inom",
     "party": "party",
@@ -47,12 +47,12 @@
     "tech": "tech",
     "dating": "dating"
   },
-  "noHangouts": "Wala pang tambayan — magsimula ng isa 🗣️",
+  "noHangouts": "Wala pang tambayan - magsimula ng isa 🗣️",
   "host": "Host",
   "going": "PUPUNTA",
-  "noPlans": "Wala pang plano — maghanap ng aktibidad 🔥",
+  "noPlans": "Wala pang plano - maghanap ng aktibidad 🔥",
   "hosting": "NAG-HO-HOST",
-  "nothingHosted": "Wala pang naho-host — magsimula ng isang bagay ✨",
+  "nothingHosted": "Wala pang naho-host - magsimula ng isang bagay ✨",
   "live": "LIVE",
   "recurring": "PAULIT-ULIT",
   "friendRequests": "Mga friend request",
@@ -80,7 +80,7 @@
   "errUsernameShort": "Dapat ay hindi bababa sa 3 character ang username",
   "errUsernameTaken": "Ginagamit na ang username na iyan",
   "errUsernameInvalid": "Hindi wastong username",
-  "errSave": "Nabigong i-save — subukan ulit",
+  "errSave": "Nabigong i-save - subukan ulit",
   "signOutTitle": "Mag-sign out",
   "signOutBody": "Sigurado ka ba?",
   "deleteAccountTitle": "Burahin ang account?",
@@ -89,5 +89,5 @@
   "errorTitle": "Error",
   "deleteAccountFail": "Hindi mabura ang account. Subukan ulit.",
   "tabChallenges": "Mga Challenge",
-  "noChallenges": "Walang challenge pa — maglunsad ng isa 🔥"
+  "noChallenges": "Walang challenge pa - maglunsad ng isa 🔥"
 }

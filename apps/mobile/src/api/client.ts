@@ -56,7 +56,7 @@ async function request<T = unknown>(
   // POSTs that reuse connections after the login response set a cookie).
   // /auth/me happened to work because NSURLSession's cookie jar caught
   // the Set-Cookie from the login response, but that jar empties under
-  // conditions we can't reliably control — leading to "Authentication
+  // conditions we can't reliably control - leading to "Authentication
   // required" failures on later POSTs even though the JS-side token is
   // perfectly fine.
   //
@@ -73,7 +73,7 @@ async function request<T = unknown>(
     console.log('[api]', (rest.method ?? 'GET').padEnd(6), url);
   }
 
-  // 15s timeout — prevents indefinite hangs when the server is unreachable.
+  // 15s timeout - prevents indefinite hangs when the server is unreachable.
   // The OS TCP timeout can be 75s+; this gives the caller a predictable failure.
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 15_000);

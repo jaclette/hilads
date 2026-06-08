@@ -7,13 +7,13 @@ export function setAnalyticsContext(ctx) {
   _ctx = { ..._ctx, ...ctx }
 }
 
-// Immediate capture — use only for interaction events (button taps, sends, etc.)
+// Immediate capture - use only for interaction events (button taps, sends, etc.)
 // where the timing precision matters.
 export function track(event, props = {}) {
   posthog.capture(event, { platform: PLATFORM, ..._ctx, ...props })
 }
 
-// Deferred capture — fires on the next idle callback (requestIdleCallback with
+// Deferred capture - fires on the next idle callback (requestIdleCallback with
 // 2 s timeout fallback, or setTimeout(0) on Safari). Use for non-critical events
 // that happen during screen transitions so they don't compete with API calls.
 const _ric = typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function'

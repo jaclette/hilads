@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "Ini challenge kamu sendiri",
-        "body": "Kamu yang buat challenge ini — tunggu orang lain menerimanya."
+        "body": "Kamu yang buat challenge ini - tunggu orang lain menerimanya."
       },
       "mode_required": {
         "title": "Pilih local atau traveler dulu",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "Ada yang lagi ngambil",
-        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai — challenge-nya bakal kosong lagi."
+        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai - challenge-nya bakal kosong lagi."
       }
     }
   },
   "thread": {
     "notFound": "Thread tidak ditemukan",
     "empty": "Sapa dulu 👋 dan rencanain kapan ketemu.",
-    "emptyIntl": "Sapa dulu 👋 — kalau berhasil kirim 📸 ya.",
+    "emptyIntl": "Sapa dulu 👋 - kalau berhasil kirim 📸 ya.",
     "cancel": {
       "creatorTitle": "Batalkan take-on ini?",
       "acceptorTitle": "Mundur dari challenge ini?",
@@ -191,7 +191,7 @@
     "confirm": {
       "approve": {
         "title": "Tandai sebagai berhasil?",
-        "body": "Ini final — kamu nggak bisa ubah lagi setelah ini.",
+        "body": "Ini final - kamu nggak bisa ubah lagi setelah ini.",
         "confirm": "Tandai sebagai berhasil"
       },
       "reject": {
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "Ada yang lagi ngambil sekarang",
-      "body": "Seorang pelancong lagi ngambil tantangan ini. Pas mereka selesai, bakal kosong lagi — cek lagi nanti."
+      "body": "Seorang pelancong lagi ngambil tantangan ini. Pas mereka selesai, bakal kosong lagi - cek lagi nanti."
     }
   },
   "postCreate": {
     "title": "Tantanganmu sudah tayang",
-    "subtitle": "Sebarkan sekarang — biar ada yang ambil dalam jam ini.",
+    "subtitle": "Sebarkan sekarang - biar ada yang ambil dalam jam ini.",
     "thisCity": "kota ini",
     "ctaInvite": "Kirim ke seseorang di {{city}}",
-    "ctaInviteSub": "Pilih beberapa {{audience}} — kami yang ping.",
+    "ctaInviteSub": "Pilih beberapa {{audience}} - kami yang ping.",
     "ctaShare": "Bagikan di luar Hilads",
     "skip": "Nanti aja",
     "pickerTitle": "{{audience}} di {{city}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "Pilih dulu",
     "sentTitle": "Terkirim ke {{count}}",
     "sentSubtitle": "Mereka akan dapat push sekarang.",
-    "pickerSubtitleAll": "Tidak ada yang persis cocok — menampilkan semua di {{city}}."
+    "pickerSubtitleAll": "Tidak ada yang persis cocok - menampilkan semua di {{city}}."
   },
   "invitation": {
     "accept": "Terima",
@@ -311,7 +311,7 @@
     "targetCityHint": "Biarkan \"Di mana saja\" untuk menjangkau pelancong di mana pun, atau pilih satu kota.",
     "proofRequirementsLabel": "Foto harus menunjukkan apa?",
     "proofRequirementsPlaceholder": "misal: Hidangan di bawah cahaya siang, kamu di dalam frame",
-    "proofRequirementsHint": "Buktinya adalah foto 📸. Peserta melihat ini sebelum mengirim — tulis sespesifik mungkin.",
+    "proofRequirementsHint": "Buktinya adalah foto 📸. Peserta melihat ini sebelum mengirim - tulis sespesifik mungkin.",
     "cityPicker": {
       "title": "Pilih kota target",
       "searchPlaceholder": "Cari kota…",
@@ -369,16 +369,16 @@
     "leaveCta": "Keluar dari kanal",
     "errKicked": "Kamu telah dikeluarkan dari tantangan ini. Tidak bisa bergabung lagi.",
     "errClosed": "Tantangan ini tidak menerima anggota baru.",
-    "errGeneric": "Gagal masuk — coba lagi."
+    "errGeneric": "Gagal masuk - coba lagi."
   },
   "members": {
     "title": "Di kanal",
     "countIn": "{{count}} di kanal",
     "seeAll": "Lihat semua →",
-    "empty": "Belum ada yang bergabung — jadilah yang pertama.",
+    "empty": "Belum ada yang bergabung - jadilah yang pertama.",
     "kickCta": "Hapus",
     "kickAria": "Hapus {{name}} dari kanal",
-    "errKick": "Gagal menghapus — coba lagi."
+    "errKick": "Gagal menghapus - coba lagi."
   },
   "notif": {
     "on": "Notifikasi aktif",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Beri rating pertemuanmu sama {{name}}",
-      "titleUrgent": "{{name}} sudah ngerating — giliranmu"
+      "titleUrgent": "{{name}} sudah ngerating - giliranmu"
     },
     "sheet": {
       "title": "Gimana sama {{name}}?",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "Cara kerja poin",
     "title": "🏆 Cara kerja challenge",
-    "intro": "Tiap challenge memberi poin ke kedua belah pihak — masuk ke papan peringkat kota dan dunia.",
+    "intro": "Tiap challenge memberi poin ke kedua belah pihak - masuk ke papan peringkat kota dan dunia.",
     "colStep": "Langkah",
     "steps": {
       "accepted": "Challenge diterima",
@@ -455,17 +455,17 @@
       "meet": "Bertemu",
       "rate": "Keduanya menilai"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Total per challenge",
     "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya.",
     "types": {
       "heading": "🎯 Dua cara main",
-      "local": "🏙️ Lokal — di kotamu. Ketemu langsung biar sah.",
-      "international": "🌍 Internasional — antar kota. Foto instan jadi bukti."
+      "local": "🏙️ Lokal - di kotamu. Ketemu langsung biar sah.",
+      "international": "🌍 Internasional - antar kota. Foto instan jadi bukti."
     },
     "lifecycle": {
       "heading": "🔁 Satu per satu",
-      "body": "Ketika yang mengambil selesai, chat di-reset — challenge tetap ada, siap untuk petualang berikutnya."
+      "body": "Ketika yang mengambil selesai, chat di-reset - challenge tetap ada, siap untuk petualang berikutnya."
     },
     "pointsHeading": "💯 Cara dapat poin"
   },
@@ -473,7 +473,7 @@
     "unit": "poin",
     "subtitle": {
       "accepted": "Challenge-mu diterima 🤝",
-      "date_locked": "Janji terkunci — ayo 🗓️",
+      "date_locked": "Janji terkunci - ayo 🗓️",
       "meetup": "Misi selesai 🎉",
       "debrief": "Misi selesai 🎉",
       "ghost": "Semoga lebih beruntung lain kali 👻",

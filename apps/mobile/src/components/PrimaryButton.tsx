@@ -3,7 +3,7 @@ import type { StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, FontSizes, Gradients, Radius, Shadows } from '@/constants';
 
-// Shared primary CTA — gradient orange. Single source of truth for every
+// Shared primary CTA - gradient orange. Single source of truth for every
 // primary button on the app: Save profile, Create event, Join, etc. Disabled
 // state mirrors web's .cef-submit:disabled (muted gradient + 0.55 opacity, no
 // shadow). FAB variant is round + uses the louder fab glow shadow.

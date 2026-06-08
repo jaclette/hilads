@@ -53,17 +53,17 @@
     "checking": "Sinusuri…",
     "available": "Available ang @{{username}}",
     "aboutMe": "Tungkol sa akin",
-    "charsLeft": "— {{count}} pa",
+    "charsLeft": "- {{count}} pa",
     "aboutPlaceholder": "Mahilig sa street food at random na kuwentuhan",
     "email": "Email",
-    "readOnly": "— read only",
+    "readOnly": "- read only",
     "homeCity": "Home city",
     "homeCityPlaceholder": "Kung saan ka nakatira",
     "age": "Edad",
     "agePlaceholder": "Edad mo",
     "myVibe": "Aking vibe",
     "interests": "Mga interes",
-    "interestsHint": "— pumili ng hanggang 5"
+    "interestsHint": "- pumili ng hanggang 5"
   },
   "ambassador": {
     "title": "Mga pick sa lungsod 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Isang bagay na gustung-gusto mo sa lungsod na ito"
   },
   "hangouts": {
-    "empty": "Wala pang tambayan — magsimula ng isa 🗣️",
+    "empty": "Wala pang tambayan - magsimula ng isa 🗣️",
     "host": "Host"
   },
   "events": {
     "going": "Pupunta",
-    "goingEmpty": "Wala pang plano — maghanap ng kahit ano 🔥",
+    "goingEmpty": "Wala pang plano - maghanap ng kahit ano 🔥",
     "hosting": "Nagho-host",
-    "hostingEmpty": "Wala pang hino-host — magsimula ng kahit ano ✨",
+    "hostingEmpty": "Wala pang hino-host - magsimula ng kahit ano ✨",
     "live": "Live",
     "recurring": "↻ Paulit-ulit",
     "upcoming": "Paparating",
@@ -129,7 +129,7 @@
     "generic": "May nangyaring mali. Subukan ulit."
   },
   "challenges": {
-    "empty": "Wala pang challenge — mag-launch ka 🔥",
+    "empty": "Wala pang challenge - mag-launch ka 🔥",
     "challenger": "Challenger"
   }
 }

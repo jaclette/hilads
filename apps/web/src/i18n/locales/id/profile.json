@@ -53,17 +53,17 @@
     "checking": "Memeriksa…",
     "available": "@{{username}} tersedia",
     "aboutMe": "Tentang aku",
-    "charsLeft": "— sisa {{count}}",
+    "charsLeft": "- sisa {{count}}",
     "aboutPlaceholder": "Suka jajanan kaki lima dan ngobrol spontan",
     "email": "Email",
-    "readOnly": "— hanya baca",
+    "readOnly": "- hanya baca",
     "homeCity": "Kota asal",
     "homeCityPlaceholder": "Tempat tinggalmu",
     "age": "Usia",
     "agePlaceholder": "Usiamu",
     "myVibe": "Vibe-ku",
     "interests": "Minat",
-    "interestsHint": "— pilih maksimal 5"
+    "interestsHint": "- pilih maksimal 5"
   },
   "ambassador": {
     "title": "Pilihan kota 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Sesuatu yang kamu sukai dari kota ini"
   },
   "hangouts": {
-    "empty": "Belum ada nongkrong — mulai satu 🗣️",
+    "empty": "Belum ada nongkrong - mulai satu 🗣️",
     "host": "Tuan rumah"
   },
   "events": {
     "going": "Ikut",
-    "goingEmpty": "Belum ada rencana — cari sesuatu 🔥",
+    "goingEmpty": "Belum ada rencana - cari sesuatu 🔥",
     "hosting": "Jadi tuan rumah",
-    "hostingEmpty": "Belum ada yang dibuat — mulai sesuatu ✨",
+    "hostingEmpty": "Belum ada yang dibuat - mulai sesuatu ✨",
     "live": "Live",
     "recurring": "↻ Berulang",
     "upcoming": "Akan datang",
@@ -129,7 +129,7 @@
     "generic": "Terjadi kesalahan. Coba lagi."
   },
   "challenges": {
-    "empty": "Belum ada tantangan — luncurkan satu 🔥",
+    "empty": "Belum ada tantangan - luncurkan satu 🔥",
     "challenger": "Penantang"
   }
 }

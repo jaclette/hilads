@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "這是你自己的挑戰",
-        "body": "這個挑戰是你建立的 — 等別人來接受吧。"
+        "body": "這個挑戰是你建立的 - 等別人來接受吧。"
       },
       "mode_required": {
         "title": "先選擇在地人或旅行者",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "已經有人在接了",
-        "body": "另一位旅人正在接這個挑戰。等他完成後再回來 — 挑戰會重新開放。"
+        "body": "另一位旅人正在接這個挑戰。等他完成後再回來 - 挑戰會重新開放。"
       }
     }
   },
   "thread": {
     "notFound": "找不到對話",
     "empty": "打聲招呼 👋,約一下見面時間。",
-    "emptyIntl": "打個招呼 👋 — 搞定後丟張 📸 上來。",
+    "emptyIntl": "打個招呼 👋 - 搞定後丟張 📸 上來。",
     "cancel": {
       "creatorTitle": "取消這次take-on?",
       "acceptorTitle": "放棄這個挑戰?",
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "現在有人在接",
-      "body": "一位旅人正在接這個挑戰。等他完成後又會空出來 — 過一下再回來看看。"
+      "body": "一位旅人正在接這個挑戰。等他完成後又會空出來 - 過一下再回來看看。"
     }
   },
   "postCreate": {
     "title": "你的挑戰已上線",
-    "subtitle": "現在播下種子 — 讓有人在一小時內接下它。",
+    "subtitle": "現在播下種子 - 讓有人在一小時內接下它。",
     "thisCity": "這座城市",
     "ctaInvite": "發給{{city}}的某個人",
-    "ctaInviteSub": "挑幾個{{audience}} — 我們去 ping 他們。",
+    "ctaInviteSub": "挑幾個{{audience}} - 我們去 ping 他們。",
     "ctaShare": "在 Hilads 之外分享",
     "skip": "稍後",
     "pickerTitle": "{{city}}的{{audience}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "先選一個人",
     "sentTitle": "已發送給 {{count}}",
     "sentSubtitle": "他們現在會收到推送。",
-    "pickerSubtitleAll": "沒有完全匹配 — 顯示 {{city}} 的所有人。"
+    "pickerSubtitleAll": "沒有完全匹配 - 顯示 {{city}} 的所有人。"
   },
   "invitation": {
     "accept": "接受",
@@ -311,7 +311,7 @@
     "targetCityHint": "保留「任何地方」可觸達全球旅行者，或選擇一個城市定向。",
     "proofRequirementsLabel": "照片要拍到什麼？",
     "proofRequirementsPlaceholder": "例如：日光下的菜餚，本人入鏡",
-    "proofRequirementsHint": "證據是一張照片 📸。參與者提交前會看到這裡 — 寫得具體些。",
+    "proofRequirementsHint": "證據是一張照片 📸。參與者提交前會看到這裡 - 寫得具體些。",
     "cityPicker": {
       "title": "選擇目標城市",
       "searchPlaceholder": "搜尋城市…",
@@ -375,10 +375,10 @@
     "title": "在頻道中",
     "countIn": "頻道中 {{count}} 人",
     "seeAll": "查看全部 →",
-    "empty": "還沒有人加入 — 來當第一個吧。",
+    "empty": "還沒有人加入 - 來當第一個吧。",
     "kickCta": "移除",
     "kickAria": "將 {{name}} 從頻道移除",
-    "errKick": "移除失敗 — 請重試。"
+    "errKick": "移除失敗 - 請重試。"
   },
   "notif": {
     "on": "通知已開啟",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "為與{{name}}的見面評分",
-      "titleUrgent": "{{name}}已評分 — 輪到你了"
+      "titleUrgent": "{{name}}已評分 - 輪到你了"
     },
     "sheet": {
       "title": "和{{name}}的見面怎麼樣？",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "積分如何獲得",
     "title": "🏆 挑戰如何運作",
-    "intro": "每個挑戰都會給雙方加分 —— 計入你的城市和全球排行榜。",
+    "intro": "每個挑戰都會給雙方加分 -- 計入你的城市和全球排行榜。",
     "colStep": "步驟",
     "steps": {
       "accepted": "接受挑戰",
@@ -455,17 +455,17 @@
       "meet": "見面",
       "rate": "雙方評分"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "每個挑戰合計",
     "footnote": "只有雙方都完成評分後才會發放積分。",
     "types": {
       "heading": "🎯 兩種玩法",
-      "local": "🏙️ 本地 — 在同城。線下見面才算數。",
-      "international": "🌍 國際 — 跨城市。一張即時照片作證明。"
+      "local": "🏙️ 本地 - 在同城。線下見面才算數。",
+      "international": "🌍 國際 - 跨城市。一張即時照片作證明。"
     },
     "lifecycle": {
       "heading": "🔁 一次只來一位",
-      "body": "挑戰者完成後,聊天會重置——挑戰仍在,等待下一位冒險者。"
+      "body": "挑戰者完成後,聊天會重置--挑戰仍在,等待下一位冒險者。"
     },
     "pointsHeading": "💯 如何賺取積分"
   },
@@ -473,7 +473,7 @@
     "unit": "積分",
     "subtitle": {
       "accepted": "你的挑戰被接受了 🤝",
-      "date_locked": "時間敲定 — 出發 🗓️",
+      "date_locked": "時間敲定 - 出發 🗓️",
       "meetup": "任務完成 🎉",
       "debrief": "任務完成 🎉",
       "ghost": "下次再來 👻",

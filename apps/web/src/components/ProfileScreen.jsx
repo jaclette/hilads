@@ -22,7 +22,7 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-// Labels resolved via i18n at render — these arrays hold only stable keys + emoji.
+// Labels resolved via i18n at render - these arrays hold only stable keys + emoji.
 const MODES = [
   { key: 'local',     emoji: '🌍' },
   { key: 'exploring', emoji: '🧭' },
@@ -45,7 +45,7 @@ const INTERESTS = [
 ]
 
 // Challenges placed before Hangouts/Events to mirror the NOW filter ordering
-// — challenges are the primary entity now.
+// - challenges are the primary entity now.
 const PROFILE_TABS = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes']
 
 const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
@@ -57,7 +57,7 @@ const AMBASSADOR_PICKS = [
   { key: 'story',      emoji: '🎭', maxLen: 400 },
 ]
 
-// Endonyms — language names are shown in their OWN language, never translated.
+// Endonyms - language names are shown in their OWN language, never translated.
 const LANGS = [
   { code: 'en', flag: '🇬🇧', name: 'English'    },
   { code: 'fr', flag: '🇫🇷', name: 'Français'   },
@@ -91,7 +91,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   // Legend-only city picker. The "Home city" row is the ONLY surface
-  // where /me/city gets called now — switch-city is purely a browse view.
+  // where /me/city gets called now - switch-city is purely a browse view.
   // Global Legend check via account.badges so a Legend who currently
   // lives in a city they aren't ambassador in still sees the affordance
   // (contextBadge is city-context-scoped, not global).
@@ -207,7 +207,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   }
 
   async function handleSave() {
-    // Username is the single identity field — it doubles as the display name.
+    // Username is the single identity field - it doubles as the display name.
     const handle        = username.trim().toLowerCase()
     const handleChanged = handle !== (account.username ?? '')
     if (handle.length < 3)     { setError(t('errors.usernameTooShort')); return }
@@ -287,7 +287,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         {/* Identity + Mode + Filter pills */}
         <div className="profile-sticky-identity">
 
-          {/* Identity row — avatar + name + badge + description */}
+          {/* Identity row - avatar + name + badge + description */}
           <div className="profile-identity-row">
             <button
               className="profile-photo-btn"
@@ -348,7 +348,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
 
-          {/* Language switcher — collapsed to the current language; tap to pick
+          {/* Language switcher - collapsed to the current language; tap to pick
               from the full list (kept compact now that there are 19 locales). */}
           <div className="profile-mode-section">
             <span className="profile-mode-label">{t('common:language')}</span>
@@ -451,7 +451,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                 />
               </div>
 
-              {/* PR48 — Home city is the GEO-resolved current city
+              {/* PR48 - Home city is the GEO-resolved current city
                   (not a free-text field). Read-only for the regular
                   tier; Legend (host badge) can tap to open the picker
                   and switch. */}
@@ -564,8 +564,8 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             : myChallenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
           return (
             <div className="profile-card">
-              {/* PR2 — entry-point to per-acceptance threads */}
-              {/* PR52 — explicit text color (var(--text)); the inherited
+              {/* PR2 - entry-point to per-acceptance threads */}
+              {/* PR52 - explicit text color (var(--text)); the inherited
                   user-agent <button> color rendered as solid black on
                   the dark surface, making the title invisible. */}
               {onOpenThreads && (
@@ -581,7 +581,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                 </button>
               )}
 
-              {/* Mode sub-tabs — All / Local / International. */}
+              {/* Mode sub-tabs - All / Local / International. */}
               <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '4px 0 8px' }}>
                 {[
                   { key: 'all',           emoji: '✨' },
@@ -833,7 +833,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
         </div>
       )}
 
-      {/* PR48 — Legend-only city picker. Selecting a city posts to
+      {/* PR48 - Legend-only city picker. Selecting a city posts to
           /me/city via the host's onCityChange callback; the host
           updates `account.current_city_id` so the field re-renders
           with the new name on next paint. */}

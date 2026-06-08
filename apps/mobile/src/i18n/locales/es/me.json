@@ -24,7 +24,7 @@
   "agePlaceholder": "p. ej. 25",
   "fieldMyVibe": "MI VIBE",
   "fieldInterests": "INTERESES",
-  "interestsHint": "— elige hasta 5",
+  "interestsHint": "- elige hasta 5",
   "interest": {
     "drinks": "copas",
     "party": "fiesta",
@@ -47,12 +47,12 @@
     "tech": "tecnología",
     "dating": "citas"
   },
-  "noHangouts": "Aún no hay quedadas — lanza una 🗣️",
+  "noHangouts": "Aún no hay quedadas - lanza una 🗣️",
   "host": "Anfitrión",
   "going": "VOY",
-  "noPlans": "Aún no hay planes — encuentra algo 🔥",
+  "noPlans": "Aún no hay planes - encuentra algo 🔥",
   "hosting": "ORGANIZO",
-  "nothingHosted": "Nada organizado aún — lanza algo ✨",
+  "nothingHosted": "Nada organizado aún - lanza algo ✨",
   "live": "EN DIRECTO",
   "recurring": "RECURRENTE",
   "friendRequests": "Solicitudes de amistad",
@@ -80,7 +80,7 @@
   "errUsernameShort": "El apodo debe tener al menos 3 caracteres",
   "errUsernameTaken": "Ese apodo ya está en uso",
   "errUsernameInvalid": "Apodo no válido",
-  "errSave": "Error al guardar — inténtalo de nuevo",
+  "errSave": "Error al guardar - inténtalo de nuevo",
   "signOutTitle": "Cerrar sesión",
   "signOutBody": "¿Seguro?",
   "deleteAccountTitle": "¿Eliminar la cuenta?",
@@ -89,5 +89,5 @@
   "errorTitle": "Error",
   "deleteAccountFail": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
   "tabChallenges": "Retos",
-  "noChallenges": "Aún no hay retos — lanza uno 🔥"
+  "noChallenges": "Aún no hay retos - lanza uno 🔥"
 }

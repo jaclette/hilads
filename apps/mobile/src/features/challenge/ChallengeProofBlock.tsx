@@ -1,5 +1,5 @@
 /**
- * ChallengeProofBlock — proof flow surface for International challenges.
+ * ChallengeProofBlock - proof flow surface for International challenges.
  *
  * Renders three faces depending on who's viewing + the latest proof state:
  *
@@ -41,10 +41,10 @@ type Props = {
   iAmCreator:   boolean;
   iAmAcceptor:  boolean;
   proofRequirements: string | null;
-  /** PR57 — when the parent's acceptance.phase changes (e.g. via a WS
+  /** PR57 - when the parent's acceptance.phase changes (e.g. via a WS
    *  refresh triggered by the OTHER party's submit/approve/reject),
    *  the proof block re-fetches so the verdict buttons / banner switch
-   *  to the new state without an app relaunch. Optional — older
+   *  to the new state without an app relaunch. Optional - older
    *  callers continue to work, but the WS-triggered refresh won't
    *  fire unless they pass this. */
   acceptancePhase?: string;
@@ -75,14 +75,14 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
       setAttempts(data.attempts);
       setMaxAttempts(data.maxAttempts);
     } catch {
-      // soft-fail — the block renders the "no proofs yet" branch
+      // soft-fail - the block renders the "no proofs yet" branch
       setProofs([]);
     } finally {
       setLoading(false);
     }
   }, [acceptanceId]);
 
-  // PR57 — also re-fetches whenever the parent reports a new
+  // PR57 - also re-fetches whenever the parent reports a new
   // acceptancePhase. The phase string changes when the parent's
   // WS-driven loadMyAcceptance returns (proof_submitted → approved,
   // accepted → proof_submitted, etc.), so the proof card refreshes
@@ -97,11 +97,11 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   const handleSubmit = useCallback(async () => {
     if (busy) return;
 
-    // 1. CAMERA permission + live capture. PR55 — proof MUST be an
+    // 1. CAMERA permission + live capture. PR55 - proof MUST be an
     //    instant photo (no gallery picker). Gallery uploads broke the
     //    "I was here right now" contract behind the proof flow:
     //    anyone could submit a stock food photo without ever being in
-    //    the target city. Camera-only kills that loophole — combined
+    //    the target city. Camera-only kills that loophole - combined
     //    with the mandatory GPS capture below, the proof now reflects
     //    the acceptor's actual present moment.
     const cam = await ImagePicker.requestCameraPermissionsAsync();
@@ -112,7 +112,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     const pick = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       quality:    0.85,
-      // Default to the rear camera — proofs are about the place / dish,
+      // Default to the rear camera - proofs are about the place / dish,
       // not the acceptor's face.
       cameraType: ImagePicker.CameraType.back,
       // Skip the system "use this photo?" preview to keep the flow
@@ -122,7 +122,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     if (pick.canceled || !pick.assets?.[0]) return;
     const asset = pick.assets[0];
 
-    // PR59 — GPS capture removed. The instant rear-camera photo is the
+    // PR59 - GPS capture removed. The instant rear-camera photo is the
     // entire "I was there now" signal; tacking on a location permission
     // prompt was extra friction with no real upside. Submission now goes
     // straight from capture → upload → submit.
@@ -145,7 +145,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
 
   // Expose submit() to the parent so the pipeline's "Submit your proof →"
   // sub-CTA can trigger the same flow. The block no longer renders a
-  // standalone big button — the pipeline is the single CTA.
+  // standalone big button - the pipeline is the single CTA.
   useImperativeHandle(ref, () => ({ submit: handleSubmit }), [handleSubmit]);
 
   // ── Creator: approve / reject ─────────────────────────────────────────────
@@ -191,7 +191,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     );
   }
 
-  // Terminal — short status line; the pipeline above carries the icon.
+  // Terminal - short status line; the pipeline above carries the icon.
   if (latest?.status === 'approved') {
     return (
       <View style={styles.card}>
@@ -212,9 +212,9 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     );
   }
 
-  // Pending — creator reviews; acceptor waits.
+  // Pending - creator reviews; acceptor waits.
   if (latest?.status === 'pending') {
-    // PR62 — creator's verdict UI moved into ProofReviewModal (opened
+    // PR62 - creator's verdict UI moved into ProofReviewModal (opened
     // from the pipeline's "Review the proof" sub-CTA). The photo lives
     // in the chat thread above already, so leaving an inline button
     // pair here with no photo was confusing. Skip the card entirely
@@ -248,7 +248,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
           <Text style={styles.terminalLine}>{t('intl.proof.waitingVerdict')}</Text>
         )}
 
-        {/* Reject reason modal — mandatory, 1–200 chars. */}
+        {/* Reject reason modal - mandatory, 1–200 chars. */}
         <Modal visible={rejectOpen} animationType="slide" transparent onRequestClose={() => setRejectOpen(false)}>
           <Pressable style={styles.modalBackdrop} onPress={() => setRejectOpen(false)} />
           <View style={styles.modalSheet}>
@@ -282,7 +282,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
     );
   }
 
-  // No pending proof yet — either fresh acceptance or after a non-terminal
+  // No pending proof yet - either fresh acceptance or after a non-terminal
   // rejection. The acceptor's "Submit your proof" CTA lives on the pipeline
   // now (parent calls submit() via the forwardRef handle). This block keeps
   // the rejection reason inline + a small "View requirements" link so the
@@ -290,7 +290,7 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
   // pipeline. Returns null when there's nothing for this viewer to see.
   const lastRejected = latest?.status === 'rejected' ? latest : null;
   if (!iAmAcceptor && !lastRejected) return null;
-  // PR25 — proofRequirements no longer shown inline (the pipeline + popin
+  // PR25 - proofRequirements no longer shown inline (the pipeline + popin
   // already cover it). The card only renders when there's a rejection
   // notice to surface OR an upload in flight; otherwise nothing useful
   // would appear and we'd just leave an empty rectangle.
@@ -303,11 +303,11 @@ export const ChallengeProofBlock = forwardRef<ChallengeProofBlockHandle, Props>(
         </Text>
       ) : null}
 
-      {/* PR25 — inline "📋 {requirements}" line removed. The pipeline's
+      {/* PR25 - inline "📋 {requirements}" line removed. The pipeline's
           camera step already conveys that a photo is expected, and tapping
           the "Waiting for the proof" pill opens the full requirements
           popin (proofSpecOpen) for the detail. Showing the same string
-          here twice felt redundant — the user explicitly asked for it
+          here twice felt redundant - the user explicitly asked for it
           gone. */}
 
       {/* Loading indicator while the picker / upload / submit is in flight,
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginTop:  Spacing.xs,
   },
-  // Inline submitting indicator — replaces the old big-button spinner.
+  // Inline submitting indicator - replaces the old big-button spinner.
   busyRow: {
     flexDirection: 'row', alignItems: 'center', gap: 8,
     marginTop: Spacing.sm,

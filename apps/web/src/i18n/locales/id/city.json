@@ -64,7 +64,7 @@
     "eventTag": "Acara",
     "public": "Publik",
     "activeNow": "● Aktif sekarang",
-    "repliesNew": "Belum ada balasan — jadilah yang pertama",
+    "repliesNew": "Belum ada balasan - jadilah yang pertama",
     "replies_one": "💬 {{count}} balasan",
     "replies_other": "💬 {{count}} balasan",
     "going_one": "🙌 {{count}} ikut",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Mau ngapain?",
     "hangoutTitle": "Mulai nongkrong",
-    "hangoutSub": "Instan — biarkan orang gabung denganmu sekarang",
+    "hangoutSub": "Instan - biarkan orang gabung denganmu sekarang",
     "eventTitle": "Buat acara",
     "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain",
     "challengeTitle": "Luncurkan tantangan",
-    "challengeSub": "Local & pelancong — terhubung lewat tantangan",
+    "challengeSub": "Local & pelancong - terhubung lewat tantangan",
     "challengePageTitle": "Buat tantangan",
     "challengeAudience": "Untuk siapa?",
     "challengeAudLocals": "Local",
@@ -161,7 +161,7 @@
     "going": "ikut",
     "inThisHangout": "di nongkrong ini",
     "loading": "Memuat…",
-    "empty": "Belum ada siapa-siapa — jadilah yang pertama gabung! 🙌"
+    "empty": "Belum ada siapa-siapa - jadilah yang pertama gabung! 🙌"
   },
   "nickname": {
     "label": "Nama panggilan",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Kamu memulai acara ini!",
-    "sub": "Bikin lebih baik lagi — tambahkan deskripsi, perbarui waktu, atau bagikan.",
+    "sub": "Bikin lebih baik lagi - tambahkan deskripsi, perbarui waktu, atau bagikan.",
     "edit": "✏️ Edit acara"
   },
   "feedNew": {

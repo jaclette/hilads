@@ -1,5 +1,5 @@
 /**
- * ProfileActionSheet — bottom sheet with moderation actions on a user profile
+ * ProfileActionSheet - bottom sheet with moderation actions on a user profile
  * (and a future "View profile" entry from the DM header).
  *
  * Apple Guideline 1.2 requires Block + Report to be obvious from any surface

@@ -23,7 +23,7 @@ import type {
 const PAGE_SIZE = 50;
 
 /**
- * Leaderboard screen — reached from the 🏆 chip on the MY CITY tab.
+ * Leaderboard screen - reached from the 🏆 chip on the MY CITY tab.
  *
  * Two selectors:
  *   - scope:  My city (default) | World
@@ -38,7 +38,7 @@ export default function LeaderboardScreen() {
   const { t } = useTranslation('challenge');
   const { account, city } = useApp();
 
-  // PR38 — allow callers (score celebration popin) to request an initial
+  // PR38 - allow callers (score celebration popin) to request an initial
   // scope via /leaderboard?scope=world. Only 'world' is honoured here;
   // anything else (including the absence of the param) falls back to
   // 'city', preserving the trophy-chip default.
@@ -48,7 +48,7 @@ export default function LeaderboardScreen() {
   const [scope,  setScope]  = useState<LeaderboardScope>(initialScope);
   const [period, setPeriod] = useState<LeaderboardPeriod>('month');
 
-  // PR13 — picker-overridden city for the leaderboard view. Null = use the
+  // PR13 - picker-overridden city for the leaderboard view. Null = use the
   // caller's current city (default behaviour). Setting this DOES NOT change
   // the user's actual current_city anywhere else in the app. `country` is
   // kept so the city segment can show its flag without a separate lookup.
@@ -91,7 +91,7 @@ export default function LeaderboardScreen() {
 
   const entries: LeaderboardEntry[] = data?.entries ?? [];
   const me = data?.me;
-  // True iff the caller appears in the visible page — avoids a duplicate row.
+  // True iff the caller appears in the visible page - avoids a duplicate row.
   const meInPage = !!me && me.rank !== null && entries.some(e => e.user_id === me.user_id);
 
   // Open the row's user profile. Self → the Me tab (already known + editable);
@@ -167,7 +167,7 @@ export default function LeaderboardScreen() {
         />
       )}
 
-      {/* Pinned caller row — only when not already visible in the page.
+      {/* Pinned caller row - only when not already visible in the page.
           On the cities scope, the pinned row is the caller's CITY (not the
           caller themselves), so spectators see where their home city sits
           in the cup. */}
@@ -224,7 +224,7 @@ export default function LeaderboardScreen() {
         </View>
       )}
 
-      {/* PR13 — city picker sheet. Selecting a city overrides the
+      {/* PR13 - city picker sheet. Selecting a city overrides the
           leaderboard's view scope to that city, without touching the user's
           actual current_city anywhere else in the app. */}
       <LeaderboardCityPickerSheet
@@ -267,17 +267,17 @@ function Selectors({
   period: LeaderboardPeriod;
   onPeriod: (v: LeaderboardPeriod) => void;
   cityLabel: string;
-  /** ISO-2 country code for the displayed city — drives the flag emoji
+  /** ISO-2 country code for the displayed city - drives the flag emoji
    *  prefix. Null when neither the picker nor the user's current city
    *  resolves a country (rare; geolocation usually populates it). */
   cityCountry: string | null;
-  /** Provided when scope='city' — tapping the city segment opens the picker.
+  /** Provided when scope='city' - tapping the city segment opens the picker.
    *  When scope='world', undefined and the tap behaves like a normal scope
    *  switch (back to city). */
   onCityTap?: () => void;
   t: (k: string) => string;
 }) {
-  // Primary toggle (city ⇄ world ⇄ cities) — custom layout instead of the
+  // Primary toggle (city ⇄ world ⇄ cities) - custom layout instead of the
   // generic Segmented because the city pill carries a chevron when active
   // to signal it's tappable (opens the picker).
   const cityActive   = scope === 'city';
@@ -428,7 +428,7 @@ function Row({
 }: {
   entry: LeaderboardEntry;
   isMe:  boolean;
-  /** PR13 — show the user's city + flag next to displayName. Only true on
+  /** PR13 - show the user's city + flag next to displayName. Only true on
    *  world scope; city scope hides it as redundant (everyone in the list
    *  shares the same city). */
   showCity?: boolean;
@@ -492,7 +492,7 @@ function CityRow({
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
   const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
-  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '—';
+  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-';
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>
       <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.04)',
   },
   cityFlagText: { fontSize: 22, lineHeight: 26 },
-  // PR13 — wrapper allowing the city subtitle to stack under the displayName.
+  // PR13 - wrapper allowing the city subtitle to stack under the displayName.
   // Replaces the previous direct `name` flex layout when showCity is on.
   nameWrap: { flex: 1, minWidth: 0, gap: 1 },
   name:     { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
@@ -605,7 +605,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: Colors.border,
     backgroundColor: Colors.bg,
   },
-  // Unranked CTA — replaces the previous muted-grey one-liner. Orange
+  // Unranked CTA - replaces the previous muted-grey one-liner. Orange
   // gradient pill that nudges the unranked viewer straight into the
   // create-challenge flow. Branded primary gradient (#C24A38 → #B87228),
   // arrow on the right so the affordance reads as "go do this".

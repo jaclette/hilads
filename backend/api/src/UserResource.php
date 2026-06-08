@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * UserResource — single canonical serializer for user data across all API endpoints.
+ * UserResource - single canonical serializer for user data across all API endpoints.
  *
  * Produces the UserDTO shape consumed by web and native clients:
  *
@@ -61,7 +61,7 @@ final class UserResource
      * Build a DTO for a registered user in a city context.
      * Resolves the context badge (host) from the pre-fetched ambassadors map.
      *
-     * @param array  $user        Full user DB row — must include home_city.
+     * @param array  $user        Full user DB row - must include home_city.
      * @param array  $ambassadors Map of userId => true for city ambassadors (from UserBadgeService::ambassadorsForCity).
      * @param string $cityName    City display name (kept for signature compat).
      * @param array  $opts        Optional flags: isFriend, isOnline.

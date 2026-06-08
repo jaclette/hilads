@@ -2,23 +2,23 @@ import { useTranslation } from 'react-i18next'
 
 /**
  * Themed in-app alert / confirm dialog. Replaces native window.alert() and
- * window.confirm() — the native ones break the dark theme and read like a
+ * window.confirm() - the native ones break the dark theme and read like a
  * browser error rather than an app modal. Matches the UX of mobile's
  * Alert.alert() (system-themed native modal).
  *
  * Pass `null` / `undefined` for `dialog` to keep the modal hidden.
  *
  * dialog shape:
- *   emoji?:     string         — large centered icon
- *   title:      string         — required
- *   body?:      string         — optional secondary line
+ *   emoji?:     string         - large centered icon
+ *   title:      string         - required
+ *   body?:      string         - optional secondary line
  *   primary?:   {
- *     label?:        string    — defaults to "OK"
+ *     label?:        string    - defaults to "OK"
  *     onPress?:      () => void
- *     destructive?:  boolean   — red button instead of brand orange
+ *     destructive?:  boolean   - red button instead of brand orange
  *   }
- *   secondary?: {              — presence flips the modal to confirm-mode
- *     label?: string           — defaults to common:cancel ("Cancel")
+ *   secondary?: {              - presence flips the modal to confirm-mode
+ *     label?: string           - defaults to common:cancel ("Cancel")
  *     onPress?: () => void
  *   }
  *

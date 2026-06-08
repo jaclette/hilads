@@ -1,5 +1,5 @@
 /**
- * Avatar colors — single source of truth for generated (initial) avatars.
+ * Avatar colors - single source of truth for generated (initial) avatars.
  *
  * One warm, on-brand palette shared across every screen so avatars stay
  * consistent app-wide. Replaces the ~11 duplicated AVATAR_PALETTE / AVATAR_BG
@@ -14,7 +14,7 @@
  * the same family.
  */
 
-// Warm tones only — terracotta / amber / clay / gold / warm rose. No cold hues.
+// Warm tones only - terracotta / amber / clay / gold / warm rose. No cold hues.
 const AVATAR_GRADIENTS: readonly (readonly [string, string])[] = [
   ['#E0683C', '#C24A38'], // orange → terracotta (brand)
   ['#D98324', '#B87228'], // amber → bronze (brand)

@@ -71,7 +71,7 @@ class NotificationPreferencesRepository
         $b = static fn(bool $v): int => $v ? 1 : 0;
 
         // PARTIAL update: only the keys the client actually sent are changed.
-        // Absent keys keep their existing DB value — toggling one preference must
+        // Absent keys keep their existing DB value - toggling one preference must
         // NOT reset the others (the old full-row upsert reset every absent key to
         // its default, so the two false-default toggles could never both stay on).
         // Column names come from defaults() (hardcoded), so interpolation is safe.

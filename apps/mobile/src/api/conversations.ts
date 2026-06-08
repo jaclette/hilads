@@ -65,7 +65,7 @@ export async function toggleDmReaction(
   return data.reactions;
 }
 
-// Edit / delete a DM message — owner is always the registered sender, checked
+// Edit / delete a DM message - owner is always the registered sender, checked
 // server-side by sender_id === auth user.
 export async function editDmMessage(
   messageId: string,

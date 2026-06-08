@@ -11,7 +11,7 @@ admin_require_login();
  * POST /admin/push          → action=count|test|send (form-encoded, CSRF protected)
  * POST /admin/push (search) → action=search_user, AJAX-style JSON response
  *
- * Auth: admin_require_login() above. Single-user env-based auth — there's no
+ * Auth: admin_require_login() above. Single-user env-based auth - there's no
  * admin_users table, so audit captures the env's ADMIN_USERNAME + remote IP.
  */
 
@@ -47,13 +47,13 @@ function admin_push_test_user_id(): ?string
 function admin_push_remote_ip(): ?string
 {
     $ip = $_SERVER['REMOTE_ADDR'] ?? null;
-    // INET column type — accept ipv4/ipv6, drop weird proxy chains.
+    // INET column type - accept ipv4/ipv6, drop weird proxy chains.
     return is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
 
 /**
  * Cities the broadcast form's dropdown shows. Reuses the same source the
- * mobile / web clients use — no second source of truth.
+ * mobile / web clients use - no second source of truth.
  */
 function admin_push_cities(): array
 {
@@ -107,7 +107,7 @@ if ($method === 'POST') {
     if ($action === 'send' || $action === 'test') {
         $bucketKey = 'admin_push_broadcast|' . admin_push_username();
         if (!RateLimiter::allow($bucketKey, 10, 3600)) {
-            $flashError = 'Rate limit exceeded — max 10 broadcasts per hour. Wait a bit and try again.';
+            $flashError = 'Rate limit exceeded - max 10 broadcasts per hour. Wait a bit and try again.';
             $action = 'noop';
         }
     }
@@ -170,18 +170,18 @@ if ($method === 'POST') {
                                 count($userIds),
                             );
                             $result = PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink);
-                            $flash = "Test push sent ({$result['delivered']} delivered, {$result['failed']} failed). Form kept — edit if needed, then send to your audience.";
+                            $flash = "Test push sent ({$result['delivered']} delivered, {$result['failed']} failed). Form kept - edit if needed, then send to your audience.";
                             // Intentionally KEEP the form populated after a test: the
                             // whole point of a test is to verify the content, then send
                             // the SAME content to the real audience without re-typing.
-                            // (Only a real "send" clears the form — see below.)
+                            // (Only a real "send" clears the form - see below.)
                         }
                     }
                 } else {
                     [$audienceType, $audienceFilter] = admin_push_parse_audience();
                     $userIds = PushBroadcastService::resolveAudience($audienceType, $audienceFilter);
                     if (empty($userIds)) {
-                        $flashError = 'Audience resolved to 0 users — nothing to send.';
+                        $flashError = 'Audience resolved to 0 users - nothing to send.';
                     } else {
                         $broadcastId = PushBroadcastService::recordBroadcast(
                             admin_push_username(), admin_push_remote_ip(),
@@ -205,7 +205,7 @@ if ($method === 'POST') {
                             }
                         });
 
-                        $flash = "Broadcast started — sending to " . count($userIds) . " user" . (count($userIds) === 1 ? '' : 's') . ". Refresh the history table to watch progress.";
+                        $flash = "Broadcast started - sending to " . count($userIds) . " user" . (count($userIds) === 1 ? '' : 's') . ". Refresh the history table to watch progress.";
                         $savedTitle = $savedBody = '';
                     }
                 }
@@ -272,7 +272,7 @@ admin_nav('/admin/push');
                         <input type="radio" name="audience_type" value="city" <?= $savedAudience === 'city' ? 'checked' : '' ?>>
                         Users active in city
                         <select name="city_channel_id" style="max-width:240px">
-                            <option value="">— pick a city —</option>
+                            <option value="">- pick a city -</option>
                             <?php foreach ($cities as $c): ?>
                                 <option value="<?= (int)$c['id'] ?>" <?= $savedCity === (string)$c['id'] ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($c['name'], ENT_QUOTES) ?> (<?= htmlspecialchars($c['country'], ENT_QUOTES) ?>)
@@ -414,11 +414,11 @@ userSearch.addEventListener('input', () => {
         const top = data.users[0];
         userIdHidden.value = top.id;
         userResult.innerHTML = '✓ <strong style="color:#4ade80">' + escapeHtml(top.display_name) + '</strong>'
-                             + (data.users.length > 1 ? ' <span style="color:#666">(' + (data.users.length - 1) + ' more matches — refine to pick a different one)</span>' : '');
+                             + (data.users.length > 1 ? ' <span style="color:#666">(' + (data.users.length - 1) + ' more matches - refine to pick a different one)</span>' : '');
     }, 250);
 });
 
-// ── Send / test handlers — confirm modal computes recipient count first ──
+// ── Send / test handlers - confirm modal computes recipient count first ──
 document.getElementById('btn-send').addEventListener('click', confirmAndSend);
 const btnTest = document.getElementById('btn-test');
 if (btnTest) btnTest.addEventListener('click', () => submitWithAction('test'));
@@ -445,7 +445,7 @@ async function confirmAndSend() {
     const data = await res.json();
     const count = data.count || 0;
     if (count === 0) {
-        alert('Audience resolves to 0 users — nothing would be sent.');
+        alert('Audience resolves to 0 users - nothing would be sent.');
         return;
     }
 

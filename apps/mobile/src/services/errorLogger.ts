@@ -7,7 +7,7 @@
  * Uses direct fetch to avoid circular dependency with api/client.ts.
  *
  * Backend assumption: POST /api/v1/errors/report { message, context, platform, ts }
- * This endpoint is optional — errors degrade gracefully if missing.
+ * This endpoint is optional - errors degrade gracefully if missing.
  */
 import { Platform } from 'react-native';
 import { API_URL } from '@/constants';
@@ -68,6 +68,6 @@ async function sendToBackend(payload: object): Promise<void> {
       body: JSON.stringify({ ...payload, platform: Platform.OS }),
     });
   } catch {
-    // Silently discard — logging must never crash the app
+    // Silently discard - logging must never crash the app
   }
 }

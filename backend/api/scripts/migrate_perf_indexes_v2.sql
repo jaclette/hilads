@@ -1,14 +1,14 @@
--- Performance indexes v2 — /now endpoint critical path
--- Run once in production (fully idempotent — safe to re-run).
+-- Performance indexes v2 - /now endpoint critical path
+-- Run once in production (fully idempotent - safe to re-run).
 --
 -- IMPORTANT: CONCURRENTLY cannot run inside a transaction block.
 -- Run with: psql $DATABASE_URL -f scripts/migrate_perf_indexes_v2.sql
 -- Or on a managed DB (Supabase/Neon/RDS): run each statement individually.
 --
 -- These indexes address the three remaining slow endpoints:
---   POST /join           (~1.77s) — fixed in PHP (COUNT removed); presence index below
---   GET  /messages?lean  (~1.8s)  — idx_messages_channel in v1 (apply that first)
---   GET  /now            (~1.4s)  — all indexes below target /now
+--   POST /join           (~1.77s) - fixed in PHP (COUNT removed); presence index below
+--   GET  /messages?lean  (~1.8s)  - idx_messages_channel in v1 (apply that first)
+--   GET  /now            (~1.4s)  - all indexes below target /now
 
 
 -- ── 1. channel_events: city-scoped active event filter ────────────────────────

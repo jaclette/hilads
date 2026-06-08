@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * MobilePushService — delivers push notifications to native (iOS/Android) devices
+ * MobilePushService - delivers push notifications to native (iOS/Android) devices
  * via the Expo Push Notifications API.
  *
  * Architecture:
@@ -12,10 +12,10 @@ declare(strict_types=1);
  *     → PushService::send()             ← existing web-push (VAPID)
  *
  * Anti-noise rules:
- *   event_join  — max 1 push per (user, event) per 5 minutes
- *   new_event   — max 1 push per (user, city channel) per 1 hour
- *   dm_message  — no cooldown (each message is relevant)
- *   event_message — no cooldown
+ *   event_join  - max 1 push per (user, event) per 5 minutes
+ *   new_event   - max 1 push per (user, city channel) per 1 hour
+ *   dm_message  - no cooldown (each message is relevant)
+ *   event_message - no cooldown
  *
  * Token lifecycle:
  *   - Tokens stored in mobile_push_tokens table (one row per device)
@@ -28,7 +28,7 @@ class MobilePushService
     // Expo accepts up to 100 messages per HTTP request. We queue every message
     // built during a request and flush them in 100-message batches at shutdown,
     // so a fan-out to N recipients costs ~ceil(messages/100) HTTP calls instead
-    // of N — critical on non-FPM where this runs in-request (see deploy notes).
+    // of N - critical on non-FPM where this runs in-request (see deploy notes).
     private const EXPO_BATCH_SIZE = 100;
     /** @var array<int, array{message: array, token: string}> */
     private static array $queue = [];
@@ -57,13 +57,13 @@ class MobilePushService
     private static function cooldownSeconds(string $type): int
     {
         return match ($type) {
-            'dm_message'      => 5,     // 5s — one push per conversation (same sender) per recipient
-            'event_message'   => 5,     // 5s — one push per event (any sender) per recipient
-            'channel_message' => 5,     // 5s — one push per city channel (any sender) per recipient
-            'event_join'      => 300,   // 5 min — avoid bursts when many people join
-            'new_event'       => 3600,  // 1 hour — city events should not spam
-            'city_join'       => 5,     // 5s — different-arriver floor; same-arriver 1h gate is upstream (NotificationRepository)
-            'topic_message'   => 120,   // 2 min — prevents burst spam on active topics
+            'dm_message'      => 5,     // 5s - one push per conversation (same sender) per recipient
+            'event_message'   => 5,     // 5s - one push per event (any sender) per recipient
+            'channel_message' => 5,     // 5s - one push per city channel (any sender) per recipient
+            'event_join'      => 300,   // 5 min - avoid bursts when many people join
+            'new_event'       => 3600,  // 1 hour - city events should not spam
+            'city_join'       => 5,     // 5s - different-arriver floor; same-arriver 1h gate is upstream (NotificationRepository)
+            'topic_message'   => 120,   // 2 min - prevents burst spam on active topics
             default           => 0,
         };
     }
@@ -94,7 +94,7 @@ class MobilePushService
      * Send a native push to all registered devices for $userId.
      *
      * Respects notification preferences and anti-noise cooldowns.
-     * All errors are swallowed — in-app notification is already persisted.
+     * All errors are swallowed - in-app notification is already persisted.
      */
     public static function send(
         string  $userId,
@@ -113,7 +113,7 @@ class MobilePushService
                 $prefValue = $prefs[$prefCol] ?? null;
                 error_log("[push-send] pref[$prefCol]=" . json_encode($prefValue) . " for user=$userId");
                 if (!$prefValue) {
-                    error_log("[push-send] skipping $type for user=$userId — preference disabled");
+                    error_log("[push-send] skipping $type for user=$userId - preference disabled");
                     return;
                 }
             }
@@ -123,7 +123,7 @@ class MobilePushService
             if ($cooldown > 0) {
                 $refId = self::refId($type, $data);
                 if (self::isOnCooldown($userId, $type, $refId, $cooldown)) {
-                    error_log("[push-send] skipping $type for user=$userId refId=$refId — on cooldown");
+                    error_log("[push-send] skipping $type for user=$userId refId=$refId - on cooldown");
                     return;
                 }
                 self::recordDelivery($userId, $type, $refId);
@@ -159,7 +159,7 @@ class MobilePushService
                 . (count($tokens) > 0 ? ": " . implode(", ", $tokens) : ""));
 
             if (empty($tokens)) {
-                error_log("[push-send] no mobile tokens for user=$userId — skipping $type");
+                error_log("[push-send] no mobile tokens for user=$userId - skipping $type");
                 return;
             }
 
@@ -174,10 +174,10 @@ class MobilePushService
                 default                   => null,
             };
 
-            // PR35 — actionable pushes go out as heads-up (Android "high"
+            // PR35 - actionable pushes go out as heads-up (Android "high"
             // priority, iOS time-sensitive). Without this the notification
             // arrives collapsed in the system tray and the Accept / Ignore
-            // buttons are hidden until the user manually expands the card —
+            // buttons are hidden until the user manually expands the card -
             // the user complaint that triggered this change ("I don't see
             // the Accept CTA on the push"). High priority surfaces the
             // banner over the current screen with the action buttons
@@ -194,12 +194,12 @@ class MobilePushService
                 'channelId'  => 'default', // Android channel defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
                 'priority'   => $isActionable ? 'high' : null,
-                // iOS-only — make actionable pushes time-sensitive so the
+                // iOS-only - make actionable pushes time-sensitive so the
                 // system bypasses focus modes + shows the full banner.
                 '_displayInForeground' => $isActionable ? true : null,
             ], fn($v) => $v !== null), $tokens);
 
-            // 5. Queue the messages — they're POSTed to Expo in batches at
+            // 5. Queue the messages - they're POSTed to Expo in batches at
             //    shutdown (see flush()). $payload is index-aligned with $tokens.
             foreach ($tokens as $i => $token) {
                 self::$queue[] = ['message' => $payload[$i], 'token' => $token];
@@ -217,7 +217,7 @@ class MobilePushService
     /**
      * Flush all queued Expo messages in batches of EXPO_BATCH_SIZE. Registered
      * once per request (incl. when send() is itself called from a shutdown
-     * function — newly-registered shutdown fns still run). Expo returns receipts
+     * function - newly-registered shutdown fns still run). Expo returns receipts
      * in request order, so each batch maps response[i] → the i-th token for
      * DeviceNotRegistered cleanup.
      */
@@ -264,7 +264,7 @@ class MobilePushService
         string $userId,
         string $type,
         string $refId,
-        int    $cooldownSeconds // always a hardcoded constant — safe to interpolate
+        int    $cooldownSeconds // always a hardcoded constant - safe to interpolate
     ): bool {
         $stmt = Database::pdo()->prepare("
             SELECT 1 FROM push_delivery_log

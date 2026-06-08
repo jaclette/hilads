@@ -1,7 +1,7 @@
 import BackButton from './BackButton'
 import { localizeCityName } from '../i18n/cityName'
 
-// ── Avatar palette — mirrors App.jsx / PublicProfileScreen ────────────────────
+// ── Avatar palette - mirrors App.jsx / PublicProfileScreen ────────────────────
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],

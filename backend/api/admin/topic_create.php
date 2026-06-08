@@ -107,7 +107,7 @@ admin_nav('/admin/topics');
         <div class="form-group">
             <label for="city_id">City <span style="color:#ef4444">*</span></label>
             <select id="city_id" name="city_id" onchange="loadMembers(this.value)" required>
-                <option value="">— Select city —</option>
+                <option value="">- Select city -</option>
                 <?php foreach ($cities as $c): ?>
                     <option value="<?= $c['id'] ?>"
                         <?= (int) ($post['city_id'] ?? 0) === $c['id'] ? 'selected' : '' ?>>
@@ -168,7 +168,7 @@ admin_nav('/admin/topics');
         <div class="form-group">
             <label for="creator_id">Creator <span style="color:#555">(optional)</span></label>
             <select id="creator_id" name="creator_id">
-                <option value="">— Admin / no specific creator —</option>
+                <option value="">- Admin / no specific creator -</option>
                 <?php
                 // Re-populate members after validation failure
                 $preloadCityId = (int) ($post['city_id'] ?? 0);
@@ -210,13 +210,13 @@ admin_nav('/admin/topics');
 function loadMembers(cityId) {
     var sel = document.getElementById('creator_id');
     if (!cityId) {
-        sel.innerHTML = '<option value="">— Admin / no specific creator —</option>';
+        sel.innerHTML = '<option value="">- Admin / no specific creator -</option>';
         return;
     }
     fetch('/admin/api/cities/' + cityId + '/members')
         .then(function(r) { return r.json(); })
         .then(function(members) {
-            sel.innerHTML = '<option value="">— Admin / no specific creator —</option>';
+            sel.innerHTML = '<option value="">- Admin / no specific creator -</option>';
             members.forEach(function(m) {
                 var opt = document.createElement('option');
                 opt.value       = m.id;

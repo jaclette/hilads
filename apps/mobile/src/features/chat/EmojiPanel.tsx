@@ -1,18 +1,18 @@
 /**
- * EmojiPanel — shared emoji picker for all chat composers.
+ * EmojiPanel - shared emoji picker for all chat composers.
  *
  * Used by:
  *   ChatInput.tsx         (city channel + event chat)
  *   app/dm/[id].tsx       (direct messages)
  *
  * Design: appears above the composer, same dark background, scrollable grid.
- * No library required — plain Unicode emojis.
+ * No library required - plain Unicode emojis.
  */
 
 import { ScrollView, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Colors } from '@/constants';
 
-// ~120 frequently-used emojis — mirrors web EmojiPicker.jsx
+// ~120 frequently-used emojis - mirrors web EmojiPicker.jsx
 export const EMOJIS = [
   // Smileys
   '😀','😂','🥹','😊','😍','🤩','😎','🥳','🤔','😅','😭','🥺','😤','🤣','😏','🙄',

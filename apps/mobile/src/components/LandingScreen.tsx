@@ -1,5 +1,5 @@
 /**
- * LandingScreen — pixel-perfect port of the web onboarding card.
+ * LandingScreen - pixel-perfect port of the web onboarding card.
  *
  * Web source: apps/web/src/components/LandingPage.jsx (JoinCard)
  * Styles:     apps/web/src/index.css (.ob-*, .jc-auth-*)
@@ -37,7 +37,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
 
-// ── Country code → flag emoji — mirrors web cityFlag() ───────────────────────
+// ── Country code → flag emoji - mirrors web cityFlag() ───────────────────────
 
 function cityFlag(countryCode?: string): string {
   if (!countryCode || countryCode.length !== 2) return '🌍';
@@ -46,13 +46,13 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Random live count — mirrors web previewLiveCount ─────────────────────────
+// ── Random live count - mirrors web previewLiveCount ─────────────────────────
 
 function randomLiveCount() {
   return 15 + Math.floor(Math.random() * 35);
 }
 
-// ── Event icons — mirrors web EVENT_ICONS ────────────────────────────────────
+// ── Event icons - mirrors web EVENT_ICONS ────────────────────────────────────
 
 const EVENT_ICONS: Record<string, string> = {
   drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
@@ -60,7 +60,7 @@ const EVENT_ICONS: Record<string, string> = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 };
 
-// ── Event filtering — mirrors web preview filter ──────────────────────────────
+// ── Event filtering - mirrors web preview filter ──────────────────────────────
 
 function filterTodayEvents(events: HiladsEvent[], timezone: string): HiladsEvent[] {
   const today = new Date().toLocaleDateString('en-CA', { timeZone: timezone });
@@ -86,7 +86,7 @@ function formatEventTime(ts: number, timezone: string): string {
   });
 }
 
-// ── Pulsing text — mirrors CSS @keyframes pulse ──────────────────────────────
+// ── Pulsing text - mirrors CSS @keyframes pulse ──────────────────────────────
 
 function PulsingText({ text, style }: { text: string; style?: object }) {
   const opacity = useRef(new Animated.Value(1)).current;
@@ -126,7 +126,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
   const previewLiveCount = useMemo(() => randomLiveCount(), []);
 
-  // ── Entrance animation — fade + slide up (mirrors .ob-identity-fadein) ──────
+  // ── Entrance animation - fade + slide up (mirrors .ob-identity-fadein) ──────
   const entranceAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.timing(entranceAnim, {
@@ -144,7 +144,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
   useEffect(() => { track('landing_viewed'); }, []);
 
-  // Geo escape hatch — reveal after 5s in pending/resolving
+  // Geo escape hatch - reveal after 5s in pending/resolving
   useEffect(() => {
     const inFlight = geoState === 'pending' || geoState === 'resolving';
     if (!inFlight) {
@@ -177,7 +177,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
           setPreviewEventCount(todayEvents.length);
           setPreviewEvents(preview);
         } else {
-          // No Hilads events yet — fall back to public (Ticketmaster) events
+          // No Hilads events yet - fall back to public (Ticketmaster) events
           return fetchPublicCityEvents(detectedCity.channelId).then(pubEvents => {
             setPreviewEventCount(pubEvents.length);
             setPreviewEvents(pubEvents.slice(0, 3));
@@ -217,7 +217,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
         // event chat would falsely light the DM badge. useGlobalDmNotifications
         // .joinAll() sets the accurate DM-only count.
         setCity(city);
-        // joinCity is safe to call before connect — it queues the replay
+        // joinCity is safe to call before connect - it queues the replay
         // and the socket fires it on 'connected'.
         socket.joinCity(city.channelId, sessionId, trimmed, account?.id, identity.guestId);
       }
@@ -253,7 +253,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
   return (
     <SafeAreaView style={styles.screen}>
 
-      {/* Background warm glow — radial(ellipse at 50% -10%) approximated as a vertical fade */}
+      {/* Background warm glow - radial(ellipse at 50% -10%) approximated as a vertical fade */}
       <LinearGradient
         colors={['rgba(194,74,56,0.12)', 'transparent']}
         start={{ x: 0.5, y: 0 }}
@@ -294,7 +294,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
             <View style={styles.cityBlock}>
               {city ? (
                 <>
-                  {/* ob-city-name — gradient text approximated with accent2 */}
+                  {/* ob-city-name - gradient text approximated with accent2 */}
                   <Text style={styles.cityName} adjustsFontSizeToFit numberOfLines={1}>
                     {city.name}{' '}
                     <Text style={styles.cityFlagInline}>{cityFlag(city.country)}</Text>
@@ -315,7 +315,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     )}
                   </View>
 
-                  {/* ob-events-preview — up to 3 items */}
+                  {/* ob-events-preview - up to 3 items */}
                   {previewEvents.length > 0 && (
                     <View style={styles.eventsPreview}>
                       {previewEvents.map(e => (
@@ -508,13 +508,13 @@ const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
 const styles = StyleSheet.create({
 
-  // ── Screen — matches .ob-screen (centered, bg, radial glow approximated) ───
+  // ── Screen - matches .ob-screen (centered, bg, radial glow approximated) ───
   screen: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.bg,
     zIndex: 100,
   },
-  // Top warm glow — approximate of radial-gradient ellipse at 50% -10%
+  // Top warm glow - approximate of radial-gradient ellipse at 50% -10%
   bgGlow: {
     position: 'absolute',
     top:      0,
@@ -532,7 +532,7 @@ const styles = StyleSheet.create({
   },
 
   // ── Content column ───────────────────────────────────────────────────────────
-  // Native: full-bleed, no card frame — the page background is the only layer.
+  // Native: full-bleed, no card frame - the page background is the only layer.
   // (Web keeps its centered max-width card; that lives in apps/web, untouched.)
   card: {
     width:             '100%',
@@ -571,7 +571,7 @@ const styles = StyleSheet.create({
     fontSize:      35,
     fontWeight:    '800',
     letterSpacing: -0.7,
-    color:         '#C24A38',  // gradient start — web: linear-gradient(90deg, --accent, --accent2)
+    color:         '#C24A38',  // gradient start - web: linear-gradient(90deg, --accent, --accent2)
     textAlign:     'center',
     lineHeight:    38,
   },
@@ -579,7 +579,7 @@ const styles = StyleSheet.create({
     fontSize: 28,
     color:    Colors.text,
   },
-  // ob-tagline — bumped from 15/muted2 (~2.4:1) to 16/muted (~5.5:1) for
+  // ob-tagline - bumped from 15/muted2 (~2.4:1) to 16/muted (~5.5:1) for
   // WCAG AA pass on the warm-near-black background. Apple G4 cited the
   // prior contrast as too low.
   tagline: {
@@ -736,7 +736,7 @@ const styles = StyleSheet.create({
     borderRadius:    14,
     alignItems:      'center',
     marginTop:       4,
-    // Shadow — web: box-shadow 0 4px 20px rgba(194,74,56,0.25)
+    // Shadow - web: box-shadow 0 4px 20px rgba(194,74,56,0.25)
     shadowColor:     '#C24A38',
     shadowOffset:    { width: 0, height: 4 },
     shadowOpacity:   0.25,
@@ -780,7 +780,7 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
 
-  // Divider with lines on each side — web: .jc-auth-divider with ::before/::after pseudo-elements
+  // Divider with lines on each side - web: .jc-auth-divider with ::before/::after pseudo-elements
   jcDivider: {
     flexDirection: 'row',
     alignItems:    'center',
@@ -799,14 +799,14 @@ const styles = StyleSheet.create({
   },
 
   // Two equal buttons side by side. Same shape (solid border, same width/radius);
-  // "Create account" is the emphasized path — differentiated by warm fill + accent
+  // "Create account" is the emphasized path - differentiated by warm fill + accent
   // text, NOT by a different border style.
   jcActions: {
     flexDirection: 'row',
     gap:           10,
   },
 
-  // Create account — emphasized (filled, accent text)
+  // Create account - emphasized (filled, accent text)
   jcSignup: {
     flex:              1,
     minHeight:         46,
@@ -824,7 +824,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // Log in — secondary (transparent, neutral text). Identical shape to Create account.
+  // Log in - secondary (transparent, neutral text). Identical shape to Create account.
   jcSignin: {
     flex:              1,
     minHeight:         46,

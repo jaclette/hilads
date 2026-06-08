@@ -62,7 +62,7 @@
   "seeAll": "Xem tất cả →",
   "oneGoing": "{{name}} sẽ tham gia",
   "manyGoing": "{{name}} + {{count}} tham gia",
-  "goingEmpty": "Chưa có ai — hãy là người đầu tiên! 🙌",
+  "goingEmpty": "Chưa có ai - hãy là người đầu tiên! 🙌",
   "noMessages": "Chưa có tin nhắn. Nói gì đó đi! 👋",
   "composerSay": "Nói gì đó tại {{title}} ✨",
   "composerFirst": "Hãy là người đầu tiên tại {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Xóa sự kiện thất bại",
   "limit": {
     "title": "Bạn đã tạo sự kiện hôm nay rồi!",
-    "body": "Tại Hilads, chúng tôi giữ mọi thứ tươi mới — mỗi ngày một sự kiện để mỗi kế hoạch nhận được sự chú ý xứng đáng. Quay lại ngày mai để tạo cái khác.",
+    "body": "Tại Hilads, chúng tôi giữ mọi thứ tươi mới - mỗi ngày một sự kiện để mỗi kế hoạch nhận được sự chú ý xứng đáng. Quay lại ngày mai để tạo cái khác.",
     "legendLink": "👑 Trở thành Huyền thoại để tạo sự kiện không giới hạn",
     "legendA11y": "Tìm hiểu cách trở thành Huyền thoại",
     "legendAlertTitle": "👑 Trở thành Huyền thoại",
-    "legendAlertBody": "Huyền thoại là những người địa phương được chọn để giữ thành phố sôi động — họ có thể tổ chức bao nhiêu sự kiện tùy thích. Muốn trở thành một người? Liên hệ contact@hilads.live.",
+    "legendAlertBody": "Huyền thoại là những người địa phương được chọn để giữ thành phố sôi động - họ có thể tổ chức bao nhiêu sự kiện tùy thích. Muốn trở thành một người? Liên hệ contact@hilads.live.",
     "gotIt": "Đã hiểu",
     "backToNow": "Quay lại Now"
   },

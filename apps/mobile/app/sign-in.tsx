@@ -56,7 +56,7 @@ export default function SignInScreen() {
           await joinChannel(detectedCity.channelId, sessionId, identity.guestId, nickname);
           setCity(detectedCity);
           const userId = user.id;
-          // joinCity queues replay if WS isn't connected yet — no on('connected') subscription.
+          // joinCity queues replay if WS isn't connected yet - no on('connected') subscription.
           socket.joinCity(detectedCity.channelId, sessionId, nickname, userId, identity.guestId);
           // Persist channelId so next boot treats user as returning
           const updated = { ...identity, nickname, channelId: detectedCity.channelId };
@@ -65,7 +65,7 @@ export default function SignInScreen() {
           setJoined(true);
           router.replace('/(tabs)/chat');
         } catch {
-          // Join failed — authenticate but let user pick a city
+          // Join failed - authenticate but let user pick a city
           setJoined(true);
           router.replace('/switch-city' as never);
         }
@@ -120,7 +120,7 @@ export default function SignInScreen() {
 
             <View style={styles.field}>
               <Text style={styles.label}>{t('signIn.password')}</Text>
-              {/* PR32 — show/hide eye toggle. secureTextEntry disables the
+              {/* PR32 - show/hide eye toggle. secureTextEntry disables the
                   password mask when false; the input keeps the same
                   autoComplete contract so iOS / Android password managers
                   still recognise it. */}
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     fontSize:          FontSizes.md,
     height:            48,
   },
-  // PR32 — password input wrapper. The TextInput keeps its full styling;
+  // PR32 - password input wrapper. The TextInput keeps its full styling;
   // we just add right padding so the value doesn't slide under the toggle.
   passwordWrap:    { position: 'relative' },
   passwordInput:   { paddingRight: 44 },

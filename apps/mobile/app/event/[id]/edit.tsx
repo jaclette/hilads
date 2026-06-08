@@ -1,5 +1,5 @@
 /**
- * Edit Event screen — host-only, parity with web CreateEventModal in edit mode.
+ * Edit Event screen - host-only, parity with web CreateEventModal in edit mode.
  *
  * Web source: apps/web/src/components/CreateEventModal.jsx (with isEdit=true)
  *
@@ -31,7 +31,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 
 type EventType = 'drinks' | 'party' | 'music' | 'food' | 'coffee' | 'sport' | 'meetup' | 'other';
 
-// ── Category config — mirrors create.tsx ──────────────────────────────────────
+// ── Category config - mirrors create.tsx ──────────────────────────────────────
 
 const CATEGORIES: {
   type:  EventType;
@@ -68,7 +68,7 @@ function withDate(time: Date, date: Date): Date {
   return out;
 }
 
-// ── Inline time picker — lifted verbatim from create.tsx to keep UX identical ─
+// ── Inline time picker - lifted verbatim from create.tsx to keep UX identical ─
 
 const MINUTE_STEPS = [0, 15, 30, 45];
 
@@ -155,7 +155,7 @@ function TimePicker({
   );
 }
 
-// ── Inline date picker modal — lifted from create.tsx so create/edit match ───
+// ── Inline date picker modal - lifted from create.tsx so create/edit match ───
 // Month-grid view with prev/next nav. Past days and dates beyond `maxDays`
 // ahead are disabled. Lets the host move the event to a different day.
 
@@ -263,7 +263,7 @@ export default function EditEventScreen() {
 
   const { event, loading, isOwner } = useEventDetail(id);
 
-  // ── Form state — seeded from the event once it loads.
+  // ── Form state - seeded from the event once it loads.
   const [type,        setType]        = useState<EventType>('other');
   const [title,       setTitle]       = useState('');
   const [selectedDate,   setSelectedDate]   = useState<Date>(() => startOfDay(new Date()));
@@ -340,7 +340,7 @@ export default function EditEventScreen() {
             setDeleting(true);
             try {
               await deleteEvent(event.id, guestId);
-              // Event and its detail screen are gone — replace to the city channel
+              // Event and its detail screen are gone - replace to the city channel
               // so back-gesture doesn't return to a 404.
               router.replace('/(tabs)/chat' as never);
             } catch (e: unknown) {
@@ -758,7 +758,7 @@ const styles = StyleSheet.create({
   // reuses `submitDisabled` for its disabled state.
   submitDisabled: { opacity: 0.55 },
 
-  // ── Delete button — red outline, matches web danger style ────────────────
+  // ── Delete button - red outline, matches web danger style ────────────────
   deleteBtn: {
     marginTop:       Spacing.sm,
     borderWidth:     1,

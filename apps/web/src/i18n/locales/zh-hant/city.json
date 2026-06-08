@@ -64,7 +64,7 @@
     "eventTag": "活動",
     "public": "公開",
     "activeNow": "● 現在活躍",
-    "repliesNew": "還沒有回覆 — 搶頭香",
+    "repliesNew": "還沒有回覆 - 搶頭香",
     "replies_one": "💬 {{count}} 則回覆",
     "replies_other": "💬 {{count}} 則回覆",
     "going_one": "🙌 {{count}} 人參加",
@@ -138,11 +138,11 @@
   "create": {
     "title": "想做點什麼？",
     "hangoutTitle": "發起聚會",
-    "hangoutSub": "即時 — 讓大家現在就加入你",
+    "hangoutSub": "即時 - 讓大家現在就加入你",
     "eventTitle": "建立活動",
     "eventSub": "規劃讓其他人可以加入的活動",
     "challengeTitle": "發起挑戰",
-    "challengeSub": "在地人和旅人 — 透過一個挑戰連結",
+    "challengeSub": "在地人和旅人 - 透過一個挑戰連結",
     "challengePageTitle": "發起挑戰",
     "challengeAudience": "給誰?",
     "challengeAudLocals": "在地人",
@@ -161,7 +161,7 @@
     "going": "人參加",
     "inThisHangout": "在這個聚會裡",
     "loading": "載入中…",
-    "empty": "目前還沒有人 — 搶頭香吧！🙌"
+    "empty": "目前還沒有人 - 搶頭香吧！🙌"
   },
   "nickname": {
     "label": "暱稱",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 你發起了這個活動！",
-    "sub": "讓它更棒 — 加上說明、更新時間，或分享出去。",
+    "sub": "讓它更棒 - 加上說明、更新時間，或分享出去。",
     "edit": "✏️ 編輯活動"
   },
   "feedNew": {

@@ -1,5 +1,5 @@
 /**
- * DM conversation screen — redesigned for Hilads visual identity.
+ * DM conversation screen - redesigned for Hilads visual identity.
  *
  * Two open modes (set by route params):
  *   Notification:  conv param present → open existing conversation by conversationId directly
@@ -45,7 +45,7 @@ import { ReactionBurstOverlay } from '@/features/chat/ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import type { DmMessage, ReplyRef } from '@/types';
 
-// ── Date separator — reused from ChatMessage visual style ─────────────────────
+// ── Date separator - reused from ChatMessage visual style ─────────────────────
 
 function DateSeparator({ label }: { label: string }) {
   return (
@@ -71,7 +71,7 @@ const sepStyles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   text: {
-    fontSize:          FontSizes.xs,  // 13 — was 11 (Apple G4 floor)
+    fontSize:          FontSizes.xs,  // 13 - was 11 (Apple G4 floor)
     fontWeight:        '600',
     color:             Colors.muted2,
     letterSpacing:     0.5,
@@ -85,7 +85,7 @@ const sepStyles = StyleSheet.create({
 });
 
 // ── Message row ───────────────────────────────────────────────────────────────
-// In a 1:1 DM sender names are omitted — position (left/right) makes it obvious.
+// In a 1:1 DM sender names are omitted - position (left/right) makes it obvious.
 // Grouping: consecutive messages from the same sender are visually clustered.
 //   isFirst = oldest in the group (top of cluster)
 //   isLast  = newest in the group (bottom of cluster, shows timestamp)
@@ -108,7 +108,7 @@ interface RowProps {
 function parseDmLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; addr: string } {
   const parts = content.split('\n');
   const line1 = parts[0] ?? '';
-  // Extract the place name from "📍 nick is at Place" — the part after " is at "
+  // Extract the place name from "📍 nick is at Place" - the part after " is at "
   const isAtIdx = line1.indexOf(' is at ');
   const place = isAtIdx !== -1 ? line1.slice(isAtIdx + 7).trim() : '';
   if (parts.length >= 2) {
@@ -136,7 +136,7 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
   const { t } = useTranslation('chat');
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
-  // Outgoing bubble matches web .loc-bubble--me — 135° accent → accent2 gradient.
+  // Outgoing bubble matches web .loc-bubble--me - 135° accent → accent2 gradient.
   const innerContent = (
     <>
       <Text style={dmLocStyles.icon}>📍</Text>
@@ -164,7 +164,7 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
     </View>
   );
   if (hasCoords) {
-    // Use place name or address as the map label — never the social display wording ("nick is at ...")
+    // Use place name or address as the map label - never the social display wording ("nick is at ...")
     const mapLabel = place || addr;
     return (
       <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)}>
@@ -271,7 +271,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 
       <View style={[styles.bubbleCol, isMine && styles.bubbleColMine]}>
         {msg.deleted_at ? (
-          /* Tombstone — server clears content + image_url, we render a flat italic bubble. */
+          /* Tombstone - server clears content + image_url, we render a flat italic bubble. */
           <View style={[
             styles.bubble,
             isMine  ? styles.bubbleMine  : styles.bubbleOther,
@@ -358,7 +358,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
         )}
         {msg.id && <ReactionBurstOverlay messageId={msg.id} isMine={isMine} />}
 
-        {/* Status / timestamp row — only on last message of group */}
+        {/* Status / timestamp row - only on last message of group */}
         {isLast && (
           <View style={[styles.metaRow, isMine && styles.metaRowMine]}>
             {isSending && (
@@ -378,7 +378,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
   );
 }
 
-// ── Thread — rendered once conversationId is known ────────────────────────────
+// ── Thread - rendered once conversationId is known ────────────────────────────
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
   const { t } = useTranslation('dm');
@@ -488,7 +488,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         new Promise<never>((_, reject) =>
           setTimeout(
             () => reject(new Error(
-              'launchCameraAsync timed out after ' + CAMERA_TIMEOUT_MS + 'ms — ' +
+              'launchCameraAsync timed out after ' + CAMERA_TIMEOUT_MS + 'ms - ' +
               'activity result was never received (possible FileProvider misconfiguration)',
             )),
             CAMERA_TIMEOUT_MS,
@@ -508,7 +508,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         console.log('[camera/dm] entering upload flow with uri:', uri);
         await sendImageUri(uri);
       } else {
-        console.log('[camera/dm] canceled or no uri — no upload');
+        console.log('[camera/dm] canceled or no uri - no upload');
       }
     } catch (err) {
       console.error('[camera/dm] launch failed:', String(err));
@@ -717,7 +717,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
         </View>
       )}
 
-      {/* ── Edit banner — visible while editing one of your own DM messages ── */}
+      {/* ── Edit banner - visible while editing one of your own DM messages ── */}
       {editingMsg && (
         <View style={dmComposerEditStyles.strip}>
           <View style={dmComposerEditStyles.body}>
@@ -875,7 +875,7 @@ export default function DMThreadScreen() {
     console.log('[dm-screen] route params = id:', id, '| name:', name, '| conv:', conv);
 
     if (conv) {
-      // Notification flow: conversationId already known — open directly, no API call needed.
+      // Notification flow: conversationId already known - open directly, no API call needed.
       console.log('[dm-screen] opened from notification');
       console.log('[dm-screen] using existing conversationId, skipping findOrCreateDM');
       console.log('[dm-screen] loading conversation', conv);
@@ -892,11 +892,11 @@ export default function DMThreadScreen() {
           const match = rows.find(r => r.id === conv);
           if (match?.other_user_id) setOtherUserId(match.other_user_id);
         })
-        .catch(() => { /* non-fatal — Block stays disabled */ });
+        .catch(() => { /* non-fatal - Block stays disabled */ });
       return () => { cancelledLookup = true; };
     }
 
-    // DMs require a registered account — guests don't have a user_id on either side.
+    // DMs require a registered account - guests don't have a user_id on either side.
     if (!canAccessProfile(account)) {
       router.replace('/auth-gate?reason=send_dm');
       return;
@@ -904,7 +904,7 @@ export default function DMThreadScreen() {
 
     if (!id) return;
     let cancelled = false;
-    // User-profile flow: id is a userId — find or create the DM thread.
+    // User-profile flow: id is a userId - find or create the DM thread.
     setOtherUserId(id);  // route param IS the userId in this flow
     console.log('[DM] opening DM → targetUserId:', id, '| name:', displayName);
     findOrCreateDM(id)
@@ -940,7 +940,7 @@ export default function DMThreadScreen() {
                 targetNickname: displayName,
                 guestId:        account ? undefined : identity?.guestId,
               });
-              // Thread is now closed for both sides — return to inbox.
+              // Thread is now closed for both sides - return to inbox.
               router.replace('/messages');
             } catch {
               removeBlocked({ userId: otherUserId });
@@ -977,7 +977,7 @@ export default function DMThreadScreen() {
           <Text style={styles.headerSub}>{t('directMessage')}</Text>
         </View>
 
-        {/* … menu — Apple G1.2 requires Block + Report visible from chat thread */}
+        {/* … menu - Apple G1.2 requires Block + Report visible from chat thread */}
         <TouchableOpacity
           style={styles.headerMore}
           onPress={() => setShowActionSheet(true)}
@@ -988,7 +988,7 @@ export default function DMThreadScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Action sheet — View profile / Report / Block. otherUserId may briefly
+      {/* Action sheet - View profile / Report / Block. otherUserId may briefly
           be null in the notification flow while the conversations lookup is in
           flight; in that case all per-user actions are disabled. */}
       <ProfileActionSheet
@@ -1256,7 +1256,7 @@ const styles = StyleSheet.create({
   bubbleOtherFirst: {
     borderBottomLeftRadius: 5,
   },
-  // Sent: brand orange — bright, unmistakably mine
+  // Sent: brand orange - bright, unmistakably mine
   bubbleMine: {
     backgroundColor: Colors.accent,
     shadowColor:     Colors.accent,
@@ -1285,7 +1285,7 @@ const styles = StyleSheet.create({
   // ── Meta row (timestamp / status) ────────────────────────────────────────────
   metaRow:     { marginTop: 4, paddingHorizontal: 4 },
   metaRowMine: { alignItems: 'flex-end' },
-  // DM message timestamps — was 11pt + #635650 (~2.4:1). Apple G4 floor.
+  // DM message timestamps - was 11pt + #635650 (~2.4:1). Apple G4 floor.
   metaText: {
     fontSize: FontSizes.xs,
     color:    Colors.muted2,

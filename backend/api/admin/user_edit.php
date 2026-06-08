@@ -33,11 +33,11 @@ $post = $method === 'POST' ? $_POST : [
     'birth_year'    => $user['birth_year']   ?? '',
     'is_fake'       => $user['is_fake'] ? '1' : '',
     'interests'     => $currentInterests,
-    // PR14 — pre-fill the score inputs with the current cached values
+    // PR14 - pre-fill the score inputs with the current cached values
     // so the admin sees what they're starting from.
     'score_alltime' => (string) ($user['score_alltime'] ?? 0),
     'score_month'   => (string) ($user['score_month']   ?? 0),
-    // PR16 — pre-fill the current city so the picker shows the active
+    // PR16 - pre-fill the current city so the picker shows the active
     // selection. Empty string = unset (no city).
     'current_city_id' => (string) ($user['current_city_id'] ?? ''),
 ];
@@ -77,7 +77,7 @@ if ($method === 'POST') {
         $errors[] = 'Invalid birth year.';
     }
 
-    // Email uniqueness — skip check if unchanged
+    // Email uniqueness - skip check if unchanged
     if (empty($errors) && $email !== ($user['email'] ?? '')) {
         if (UserRepository::findByEmail($email) !== null) {
             $errors[] = 'This email is already used by another account.';
@@ -101,7 +101,7 @@ if ($method === 'POST') {
         }
     }
 
-    // PR14 — leaderboard score override. Blank input = leave unchanged.
+    // PR14 - leaderboard score override. Blank input = leave unchanged.
     // Non-negative ints only; we force score_month_ref to the current UTC
     // month when a month score is provided, so the value is attributed to
     // the right monthly bucket (otherwise it'd be stranded under an old
@@ -111,7 +111,7 @@ if ($method === 'POST') {
     $scoreAlltime = $scoreAlltimeRaw !== '' ? max(0, (int) $scoreAlltimeRaw) : null;
     $scoreMonth   = $scoreMonthRaw   !== '' ? max(0, (int) $scoreMonthRaw)   : null;
 
-    // PR16 — city-membership override. The admin picks a city from the
+    // PR16 - city-membership override. The admin picks a city from the
     // searchable list; the form posts the channel id ("city_<int>") or an
     // empty string to leave it untouched. We validate that the id parses
     // and that the city exists in our static catalog before accepting it,
@@ -146,7 +146,7 @@ if ($method === 'POST') {
             $fields['password_hash'] = password_hash($newPassword, PASSWORD_BCRYPT);
         }
         // Audit-log the score changes before the UPDATE so the old values
-        // are captured. Direct error_log call — the admin journal lives in
+        // are captured. Direct error_log call - the admin journal lives in
         // ops logs alongside push-broadcast / event-edit entries.
         if ($scoreAlltime !== null && $scoreAlltime !== (int) ($user['score_alltime'] ?? 0)) {
             $fields['score_alltime'] = $scoreAlltime;
@@ -158,14 +158,14 @@ if ($method === 'POST') {
             error_log("[admin-score] user={$userId} score_month " . ((int) ($user['score_month'] ?? 0)) . " → {$scoreMonth} (ref=" . gmdate('Y-m') . ")");
         }
 
-        // PR16 — apply the city change. Only writes when the picker has a
+        // PR16 - apply the city change. Only writes when the picker has a
         // value AND it differs from what's on file (avoid bumping the
         // set/confirmed timestamps when the admin saves the form without
         // actually touching the city). Mirrors the timestamp behavior of
         // POST /api/v1/me/city so the change reads as a deliberate switch.
         $oldCityId = (string) ($user['current_city_id'] ?? '');
         if ($newCityId !== null && $newCityId !== $oldCityId) {
-            // ISO 8601 with explicit UTC offset — TIMESTAMPTZ columns parse
+            // ISO 8601 with explicit UTC offset - TIMESTAMPTZ columns parse
             // this unambiguously regardless of the Postgres session timezone.
             $nowIso = gmdate('c');
             $fields['current_city_id']                = $newCityId;
@@ -176,7 +176,7 @@ if ($method === 'POST') {
 
         $user = UserRepository::adminUpdate($userId, $fields);
 
-        // PR16 — alongside the current_city_id update, upsert the legacy
+        // PR16 - alongside the current_city_id update, upsert the legacy
         // user_city_memberships row so the user shows up in that city's
         // members list under both feature-flag modes (same as POST /me/city).
         if ($newCityId !== null && $newCityId !== $oldCityId) {
@@ -352,7 +352,7 @@ admin_nav('/admin/users');
             </datalist>
         </div>
 
-        <!-- PR16 — Live city (current_city_id) override. Searchable list of
+        <!-- PR16 - Live city (current_city_id) override. Searchable list of
              every city in the catalog. The admin picks one and Save commits:
              writes users.current_city_id + bumps set/confirmed timestamps and
              upserts user_city_memberships so the user appears in that city's
@@ -363,7 +363,7 @@ admin_nav('/admin/users');
             $currentCityRow = $currentCityNum !== null ? CityRepository::findById($currentCityNum) : null;
             $currentCityLbl = $currentCityRow
                 ? ($currentCityRow['name'] . ' (' . $currentCityRow['country'] . ')')
-                : '— none —';
+                : '- none -';
         ?>
         <div class="form-group">
             <label>Live city (current_city_id)</label>
@@ -379,7 +379,7 @@ admin_nav('/admin/users');
                 style="margin-bottom:6px"
             >
             <select id="current_city_id" name="current_city_id" size="8" style="width:100%;font-family:inherit;font-size:13px">
-                <option value="" <?= $currentCityRaw === '' ? 'selected' : '' ?>>— No city —</option>
+                <option value="" <?= $currentCityRaw === '' ? 'selected' : '' ?>>- No city -</option>
                 <?php foreach ($cities as $c):
                     $optVal   = 'city_' . $c['id'];
                     $optLabel = $c['name'] . ' (' . $c['country'] . ')';
@@ -444,7 +444,7 @@ admin_nav('/admin/users');
 
         <hr class="section-divider">
 
-        <!-- PR14 — leaderboard score override. Direct mutation of the cached
+        <!-- PR14 - leaderboard score override. Direct mutation of the cached
              users.score_* columns; bypasses the score_events ledger. Used for
              moderation / seed-data corrections / leaderboard tuning. The
              score_month_ref is force-set to the current UTC month when the
@@ -541,10 +541,10 @@ function handleAvatarChange(input) {
     reader.readAsDataURL(file);
 }
 
-// PR16 — client-side filter for the live-city picker. The full city list
+// PR16 - client-side filter for the live-city picker. The full city list
 // ships in the <select>; the search input hides options whose data-search
 // haystack ("name (country)" lowercased) doesn't include the query. Pure
-// JS, no deps, no network — works against ~hundreds of cities instantly.
+// JS, no deps, no network - works against ~hundreds of cities instantly.
 (function () {
     const search = document.getElementById('city-search');
     const select = document.getElementById('current_city_id');
@@ -552,7 +552,7 @@ function handleAvatarChange(input) {
     search.addEventListener('input', function (e) {
         const q = (e.target.value || '').trim().toLowerCase();
         for (const opt of select.options) {
-            if (!opt.value) continue; // keep "— No city —" visible
+            if (!opt.value) continue; // keep "- No city -" visible
             const hay = opt.dataset.search || opt.text.toLowerCase();
             opt.hidden = q !== '' && !hay.includes(q);
         }

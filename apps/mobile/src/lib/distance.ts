@@ -1,4 +1,4 @@
-// Lightweight geo distance — no external library. Used by the NOW feed to show
+// Lightweight geo distance - no external library. Used by the NOW feed to show
 // "how far away" each located item is from the viewer (computed once per load).
 
 const EARTH_RADIUS_M = 6371000;

@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Bewerken", "delete": "🗑 Verwijderen" },
   "gated": {
     "title": "Meetup alleen voor leden",
-    "pending": "Verzoek in behandeling — je kunt aan het gesprek meedoen zodra een lid akkoord gaat.",
+    "pending": "Verzoek in behandeling - je kunt aan het gesprek meedoen zodra een lid akkoord gaat.",
     "prompt": "Vraag om mee te doen om het gesprek te zien en te chatten.",
     "requestBtn": "Vraag om mee te doen"
   },

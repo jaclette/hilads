@@ -26,12 +26,12 @@
   "create": {
     "title": "何する？",
     "hangoutLabel": "集まりを始める",
-    "hangoutSub": "すぐに — 今みんなを呼び込もう",
+    "hangoutSub": "すぐに - 今みんなを呼び込もう",
     "eventLabel": "イベントを作成",
     "eventSub": "みんなが参加できる何かを企画しよう",
     "cancel": "キャンセル",
     "challengeLabel": "チャレンジを開始",
-    "challengeSub": "ローカルと旅行者 — チャレンジでつながる"
+    "challengeSub": "ローカルと旅行者 - チャレンジでつながる"
   },
   "filterChallenges": "🔥 チャレンジ",
   "challengesSection": "チャレンジ",

@@ -34,7 +34,7 @@ switch ($filter) {
     case 'deleted':
         $where[] = 'u.deleted_at IS NOT NULL';
         break;
-    // 'all' — no extra filter
+    // 'all' - no extra filter
 }
 
 $whereClause = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
@@ -139,12 +139,12 @@ admin_nav('/admin/users');
                         <tr <?= $isDeleted ? 'style="opacity:0.5"' : '' ?>>
                             <td class="td-mono"><?= htmlspecialchars(substr($u['id'], 0, 12), ENT_QUOTES) ?>…</td>
                             <td>
-                                <strong><?= htmlspecialchars($u['display_name'] ?? '—', ENT_QUOTES) ?></strong>
+                                <strong><?= htmlspecialchars($u['display_name'] ?? '-', ENT_QUOTES) ?></strong>
                                 <?php if ($u['is_fake']): ?>
                                     <span class="badge badge-fake" title="Fake / seeded user">Fake</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="td-clip"><?= htmlspecialchars($u['email'] ?? '—', ENT_QUOTES) ?></td>
+                            <td class="td-clip"><?= htmlspecialchars($u['email'] ?? '-', ENT_QUOTES) ?></td>
                             <td>
                                 <?php if ($u['google_id'] !== null): ?>
                                     <span class="badge badge-registered">Google</span>
@@ -154,11 +154,11 @@ admin_nav('/admin/users');
                                     <span class="badge badge-guest">Guest</span>
                                 <?php endif; ?>
                             </td>
-                            <td><?= htmlspecialchars($u['home_city'] ?? '—', ENT_QUOTES) ?></td>
+                            <td><?= htmlspecialchars($u['home_city'] ?? '-', ENT_QUOTES) ?></td>
                             <td>
                                 <?php $userRoles = $rolesByUser[$u['id']] ?? []; ?>
                                 <?php if (empty($userRoles)): ?>
-                                    <span style="color:#444">—</span>
+                                    <span style="color:#444">-</span>
                                 <?php else: ?>
                                     <?php foreach ($userRoles as $r): ?>
                                         <span class="badge badge-ambassador" title="<?= htmlspecialchars($r['role'], ENT_QUOTES) ?>">
@@ -170,7 +170,7 @@ admin_nav('/admin/users');
                             <td style="white-space:nowrap; color:#666">
                                 <?php
                                 $ts = is_numeric($u['created_at']) ? (int)$u['created_at'] : strtotime((string)$u['created_at']);
-                                echo $ts > 0 ? date('Y-m-d H:i', $ts) : '—';
+                                echo $ts > 0 ? date('Y-m-d H:i', $ts) : '-';
                                 ?>
                             </td>
                             <td>

@@ -1,5 +1,5 @@
 /**
- * Guest profile screen — /user/guest
+ * Guest profile screen - /user/guest
  *
  * Shown when a feed join-bubble is tapped for a guest who has no registered
  * account. Receives nickname + guestId as route params; shows a minimal
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     alignItems:  'center',
     marginTop:   Spacing.xl,
   },
-  // "More options" link — was rgba(255,255,255,0.2) (~1.7:1, near-invisible).
+  // "More options" link - was rgba(255,255,255,0.2) (~1.7:1, near-invisible).
   // Routed through the theme so it inherits future contrast fixes.
   reportLinkText: {
     fontSize: FontSizes.xs,

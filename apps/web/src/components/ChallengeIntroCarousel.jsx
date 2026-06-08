@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 /**
  * Stand-alone "How challenges work" carousel. Triggered from a city-chat
  * feed prompt and re-openable from anywhere that wants to onboard users on
- * the challenge feature. Smaller and more focused than OnboardingCarousel —
+ * the challenge feature. Smaller and more focused than OnboardingCarousel -
  * just the 5-step challenge loop, no signup flow, no city onboarding.
  *
  * Reuses the existing .onboarding-* CSS skeleton (overlay / track / slide /

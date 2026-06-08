@@ -55,7 +55,7 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-// Type emoji for challenge cards — mirrors the rest of the app.
+// Type emoji for challenge cards - mirrors the rest of the app.
 const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
 
 export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge }) {
@@ -129,7 +129,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
     fetchPublicProfile(userId)
       .then(data => {
         setUser(data.user)
-        // Derive friend state from the payload — see /apps/mobile/app/user/[id].tsx
+        // Derive friend state from the payload - see /apps/mobile/app/user/[id].tsx
         // for the same logic on native.
         if (data.user?.isFriend) {
           setFriendState('friend')
@@ -235,7 +235,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
       return
     }
 
-    // friendState === 'none' — send a fresh request. Server may auto-accept
+    // friendState === 'none' - send a fresh request. Server may auto-accept
     // on mutual add (returns friend: true), in which case we skip the
     // "Request sent" intermediate state.
     setFriendBusy(true)
@@ -305,7 +305,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
   const hasPicks = !!(user?.ambassadorPicks && Object.keys(user.ambassadorPicks).length > 0)
 
   // Challenges placed before Hangouts/Events to mirror the NOW filter rhythm
-  // — the primary entity sits first.
+  // - the primary entity sits first.
   const tabs = [
     { key: 'challenges' },
     { key: 'hangouts' },
@@ -430,7 +430,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
             </div>
           </div>
 
-          {/* Tab content — continues inside pub-profile-body below */}
+          {/* Tab content - continues inside pub-profile-body below */}
 
             {/* Challenges tab */}
             {activeTab === 'challenges' && (() => {
@@ -439,7 +439,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
               return (
                 <div className="pub-profile-events">
-                  {/* Mode sub-tabs — All / Local / International. */}
+                  {/* Mode sub-tabs - All / Local / International. */}
                   <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 8px' }}>
                     {[
                       { key: 'all',           emoji: '✨' },
@@ -650,7 +650,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
               </>
             )}
 
-            {/* City Picks tab — legend only */}
+            {/* City Picks tab - legend only */}
             {activeTab === 'picks' && hasPicks && (
               <div className="pub-profile-picks">
                 {user.ambassadorPicks.restaurant && (

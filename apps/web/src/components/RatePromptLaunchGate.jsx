@@ -8,11 +8,11 @@ import RateSheet from './RateSheet'
  * Auto-opens the RateSheet when the caller has at least one rate-eligible
  * meet-up (proposed_ends_at < now() AND not yet rated). Three triggers:
  *
- *   1. Cold start — the effect runs once `account.id` is known.
+ *   1. Cold start - the effect runs once `account.id` is known.
  *   2. `refetchKey` bumped by App.jsx on the `rating_received` WS event:
  *      the counterparty just submitted the first rating, surface our side
  *      without a reload.
- *   3. document `visibilitychange` → visible — covers the case where the
+ *   3. document `visibilitychange` → visible - covers the case where the
  *      tab was hidden when the WS event fired (the socket may have been
  *      torn down by the browser and not replayed any missed events).
  *
@@ -26,14 +26,14 @@ import RateSheet from './RateSheet'
  *
  * Props:
  *   - account:    { id, ... } | null
- *   - refetchKey: number — bumps from App.jsx when WS says to re-look
+ *   - refetchKey: number - bumps from App.jsx when WS says to re-look
  */
 export default function RatePromptLaunchGate({ account, refetchKey = 0 }) {
   const [prompt, setPrompt] = useState(null)
   const [closed, setClosed] = useState(false)
   const [nonce,  setNonce]  = useState(0)
 
-  // Reopen logic — when refetchKey changes (WS), clear `closed` and bump
+  // Reopen logic - when refetchKey changes (WS), clear `closed` and bump
   // the local nonce so the fetch effect re-runs even if `closed` was
   // already false.
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function RatePromptLaunchGate({ account, refetchKey = 0 }) {
   }
 
   // RateSheet's onSubmitted fires after a successful POST and on
-  // recoverable races (409 / 403) — treat both as "this prompt is done".
+  // recoverable races (409 / 403) - treat both as "this prompt is done".
   function handleSubmitted() {
     setPrompt(null)
     setClosed(true)

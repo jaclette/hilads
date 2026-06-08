@@ -33,7 +33,7 @@
     "title": "Sê o local que faz a cidade acontecer",
     "tagline": "Conheces os spots. Desafia os locais ou os viajantes a encontrá-los.",
     "bullets": [
-      "Desafia locais ou viajantes — comida, lugar, cultura ou ajuda",
+      "Desafia locais ou viajantes - comida, lugar, cultura ou ajuda",
       "Leva as pessoas aos sítios que adoras",
       "Torna-te no local de quem as pessoas se lembram"
     ],
@@ -60,7 +60,7 @@
       },
       {
         "title": "Lança ou aceita um desafio",
-        "desc": "Qualquer um pode lançar um desafio de comida, sítio, cultura ou ajuda — para locais ou para viajantes. O outro lado aceita."
+        "desc": "Qualquer um pode lançar um desafio de comida, sítio, cultura ou ajuda - para locais ou para viajantes. O outro lado aceita."
       },
       {
         "title": "Encontrem-se pessoalmente",
@@ -82,7 +82,7 @@
       "Pessoas reais. Lugares reais. Agora mesmo."
     ]
   },
-  "seo": "Hilads é uma app social em tempo real onde locais e viajantes se desafiam para descobrir a cidade a sério. Aceita um desafio de comida, sítio ou cultura em Paris, aceita um em Barcelona, ou lança o teu em Lisboa — Hilads transforma cada viagem num encontro pessoalmente. Sem conta. Só aparecer.",
+  "seo": "Hilads é uma app social em tempo real onde locais e viajantes se desafiam para descobrir a cidade a sério. Aceita um desafio de comida, sítio ou cultura em Paris, aceita um em Barcelona, ou lança o teu em Lisboa - Hilads transforma cada viagem num encontro pessoalmente. Sem conta. Só aparecer.",
   "download": {
     "eyebrow": "Apps móveis",
     "title": "A tua cidade no bolso.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Entre cidades",
     "tagline": "Lança um desafio entre cidades. Recebe a prova em vídeo.",
-    "sub": "Quando a tua cidade está calma, o mundo não está. Desafia alguém em qualquer lugar — envia-te uma prova, tu validas à distância.",
+    "sub": "Quando a tua cidade está calma, o mundo não está. Desafia alguém em qualquer lugar - envia-te uma prova, tu validas à distância.",
     "bullets": [
       "Aponta a uma cidade específica, ou deixa aberto a qualquer pessoa em qualquer lugar.",
-      "Foto com geotag — prova de que aconteceu.",
+      "Foto com geotag - prova de que aconteceu.",
       "Validas do sofá. Recusas com um motivo se não bater certo."
     ],
     "cta": "Testar um desafio global"

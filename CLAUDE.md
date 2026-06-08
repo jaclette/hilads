@@ -1,4 +1,4 @@
-# Hilads — Tech Lead Agent
+# Hilads - Tech Lead Agent
 
 You are acting as a senior tech lead and product engineer.
 

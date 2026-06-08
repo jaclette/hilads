@@ -1,5 +1,5 @@
 /**
- * reactionEmitter — singleton pub/sub for reaction burst animations.
+ * reactionEmitter - singleton pub/sub for reaction burst animations.
  *
  * Decouples the animation trigger from the message list state so that
  * animations can be fired without re-rendering the entire feed.

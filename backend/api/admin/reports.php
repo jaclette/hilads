@@ -20,7 +20,7 @@ if ($status !== 'all') {
     $params[':status'] = $status;
 }
 
-// JOINs must come before WHERE — keep them in the base FROM clause
+// JOINs must come before WHERE - keep them in the base FROM clause
 $baseFrom    = "FROM user_reports r
     LEFT JOIN users ru ON ru.id = r.reporter_user_id
     LEFT JOIN users tu ON tu.id = r.target_user_id";
@@ -109,9 +109,9 @@ admin_nav('/admin/reports');
                     <?php foreach ($reports as $r): ?>
                         <?php
                         $reporterName = $r['reporter_name']
-                            ?? ($r['reporter_guest_id'] ? 'Guest ' . substr($r['reporter_guest_id'], 0, 8) : '—');
+                            ?? ($r['reporter_guest_id'] ? 'Guest ' . substr($r['reporter_guest_id'], 0, 8) : '-');
                         $targetName = $r['target_name']
-                            ?? ($r['target_nickname'] ?: ($r['target_guest_id'] ? 'Guest ' . substr($r['target_guest_id'], 0, 8) : '—'));
+                            ?? ($r['target_nickname'] ?: ($r['target_guest_id'] ? 'Guest ' . substr($r['target_guest_id'], 0, 8) : '-'));
                         $statusClass = match($r['status']) {
                             'open'      => 'badge-live',
                             'reviewed'  => 'badge-registered',

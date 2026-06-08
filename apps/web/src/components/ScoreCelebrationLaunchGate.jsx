@@ -29,7 +29,7 @@ export default function ScoreCelebrationLaunchGate({ account, refetchKey = 0, on
     return () => { cancelled = true }
   }, [account?.id, closed])
 
-  // PR47 — host bumps refetchKey on the WS 'mutual_rating_complete'
+  // PR47 - host bumps refetchKey on the WS 'mutual_rating_complete'
   // event. Reset closed + data so the fetch effect above re-runs and
   // surfaces the new debrief points popin without a page reload.
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function ScoreCelebrationLaunchGate({ account, refetchKey = 0, on
     }
   }, [refetchKey])
 
-  // Shared cleanup — acks the watermark and closes the modal. Used by
+  // Shared cleanup - acks the watermark and closes the modal. Used by
   // both the "Let's go" CTA path and the row-tap → leaderboard path so
   // navigating away always advances the watermark.
   function ackAndClose() {

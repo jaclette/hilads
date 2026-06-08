@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { getLinkPreview } from '../linkPreviewCache.js'
 
 // Open Graph preview card for a URL posted in chat. Renders nothing while the
-// fetch is in flight (no skeleton — link-preview is a polish layer, not core
+// fetch is in flight (no skeleton - link-preview is a polish layer, not core
 // content; bubbles must stay readable on slow networks) and nothing if the URL
 // has no usable OG metadata.
 export default function LinkPreviewCard({ url }) {

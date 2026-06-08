@@ -527,7 +527,7 @@ html, body, #root {
 /* Shared treatment for every screen that hosts the bell + Hi logo + chat-icon
    trio: city chat, event detail, and the tab-level Now / Here / Me drawers
    (which wrap the same `renderAppHeader()` in `.tab-app-header`).
-   Internal back-button pages keep `.page-header`'s flat surface — they don't
+   Internal back-button pages keep `.page-header`'s flat surface - they don't
    render the trio, so a logo halo there would be meaningless. */
 .chat-header,
 .tab-app-header {
@@ -567,13 +567,13 @@ html, body, #root {
   display: none;
 }
 
-/* Logo layout — halo is now applied via the shared rule above. */
+/* Logo layout - halo is now applied via the shared rule above. */
 .chat-header .logo {
   display: flex;
   justify-content: center;
 }
 
-/* Brand block: logo icon + tagline — stacked on mobile, row on desktop */
+/* Brand block: logo icon + tagline - stacked on mobile, row on desktop */
 .header-hero-brand {
   display: flex;
   flex-direction: column;
@@ -637,7 +637,7 @@ html, body, #root {
   flex-shrink: 0;
 }
 
-/* Inline presence text — no pill, no badge */
+/* Inline presence text - no pill, no badge */
 .header-city-online {
   display: inline-flex;
   align-items: center;
@@ -679,7 +679,7 @@ html, body, #root {
   50%       { transform: scale(1.25); opacity: 1;   box-shadow: 0 0 0 5px rgba(194, 74, 56, 0); }
 }
 
-/* PR7 — Leaderboard chip in renderCityHero. Sibling of .header-city-online,
+/* PR7 - Leaderboard chip in renderCityHero. Sibling of .header-city-online,
    amber accent so it reads as the scoring/rank surface (vs. the warm-orange
    presence pulse). */
 .header-city-leaderboard {
@@ -700,7 +700,7 @@ html, body, #root {
 .header-city-leaderboard:hover  { opacity: 1; }
 .header-city-leaderboard:active { opacity: 0.7; }
 
-/* ── PR7 — Leaderboard screen ──────────────────────────────── */
+/* ── PR7 - Leaderboard screen ──────────────────────────────── */
 
 .leaderboard-page {
   display: flex;
@@ -746,7 +746,7 @@ html, body, #root {
   font-weight: 800;
 }
 
-/* PR41 — chevron next to the active city label hints "tap me again to
+/* PR41 - chevron next to the active city label hints "tap me again to
    open the city picker". Subtle so it doesn't dominate the pill. */
 .leaderboard-seg-chevron {
   display: inline-block;
@@ -756,7 +756,7 @@ html, body, #root {
   opacity: 0.9;
 }
 
-/* PR41 — city picker modal rows. Sits inside .modal-panel which already
+/* PR41 - city picker modal rows. Sits inside .modal-panel which already
    handles the bottom-sheet docking + nav clearance (PR37). */
 .leaderboard-city-picker {
   display: flex;
@@ -834,7 +834,7 @@ html, body, #root {
 .leaderboard-row.is-me {
   background: rgba(255, 122, 60, 0.08);
 }
-/* Cities-scope flag — drops into the avatar slot at the same 40×40 footprint
+/* Cities-scope flag - drops into the avatar slot at the same 40×40 footprint
    so the row geometry stays identical to the user rows. */
 .leaderboard-city-flag {
   display: inline-flex;
@@ -883,7 +883,7 @@ html, body, #root {
   overflow: hidden;
   flex-shrink: 0;
 }
-/* PR40 — name-block wraps the name + the (world-scope) city chip so the
+/* PR40 - name-block wraps the name + the (world-scope) city chip so the
    row layout stays {rank | avatar | NAME+CITY | points} without breaking
    when there's no city. Vertical stack keeps each piece elidable. */
 .leaderboard-name-block {
@@ -932,7 +932,7 @@ html, body, #root {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   background: var(--bg, #0d0b09);
 }
-/* Unranked CTA — replaces a previous muted-grey one-liner. Orange
+/* Unranked CTA - replaces a previous muted-grey one-liner. Orange
    gradient pill nudges the viewer straight into the create-challenge
    flow. Branded primary gradient (#C24A38 → #B87228). */
 .leaderboard-unranked-cta {
@@ -967,7 +967,7 @@ html, body, #root {
   line-height: 1;
 }
 
-/* ── PR12 — Scoring info (i) button + popin ──────────────── */
+/* ── PR12 - Scoring info (i) button + popin ──────────────── */
 
 .scoring-info-btn {
   display:         inline-flex;
@@ -998,7 +998,7 @@ html, body, #root {
   margin: 0 0 12px;
 }
 
-/* New top sections — challenge types + lifecycle. Light card so the
+/* New top sections - challenge types + lifecycle. Light card so the
    two intro blocks read as distinct chapters above the dense points
    table without competing for attention. */
 .scoring-info-section {
@@ -1096,7 +1096,7 @@ html, body, #root {
   color: var(--muted-2, #888);
 }
 
-/* ── New mobile header — 3-section redesign ──────────────── */
+/* ── New mobile header - 3-section redesign ──────────────── */
 
 /* Shown only on mobile; desktop uses header-desktop-layout */
 .header-new {
@@ -1109,9 +1109,9 @@ html, body, #root {
 /* Wrapper that frames the shared AppHeader inside tab drawers (NOW/HERE/ME).
    Mirrors .header-new's horizontal rhythm so the bell/logo/DM row lands in
    the same place visually as on MY CITY. */
-/* Header wrapper for NOW/HERE/ME tab drawers. No background — reads on the
+/* Header wrapper for NOW/HERE/ME tab drawers. No background - reads on the
    drawer's raw bg, matching .header-new on MY CITY so the logo feels
-   visually identical across all 4 tabs. No border-bottom — header flows
+   visually identical across all 4 tabs. No border-bottom - header flows
    directly into the tab sub-header. */
 .tab-app-header {
   padding: 16px 18px 12px;
@@ -1122,7 +1122,7 @@ html, body, #root {
   .tab-app-header { display: none; }
 }
 
-/* Section 1: top bar — three equal columns keep the center truly centered
+/* Section 1: top bar - three equal columns keep the center truly centered
    regardless of how many action buttons sit in left/right zones. */
 .header-top-bar {
   display: grid;
@@ -1176,7 +1176,7 @@ html, body, #root {
 }
 
 /* Smaller icon buttons in the top bar: 36×36, border-radius 10 */
-/* Mobile variant of the header icon button — flat (no bg, no border) so the
+/* Mobile variant of the header icon button - flat (no bg, no border) so the
    bell / share / DM read as simple icons across all 4 tabs. Touch area is
    preserved at 36×36; the red notification badge (.header-icon-badge) sits
    absolutely relative to this box, so its math is unchanged. */
@@ -1190,7 +1190,7 @@ html, body, #root {
 }
 
 /* Override the base .header-icon-btn--unread (desktop variant uses an orange
-   chip). On mobile we drop the chip entirely — the red badge is the unread
+   chip). On mobile we drop the chip entirely - the red badge is the unread
    cue, and the icon itself brightens via color inheritance from the base. */
 .header-icon-btn--sm.header-icon-btn--unread {
   background: none;
@@ -1212,7 +1212,7 @@ html, body, #root {
   text-align: center;
 }
 
-/* Tappable variant — applied when the city row is a <button> that opens
+/* Tappable variant - applied when the city row is a <button> that opens
    the Switch City picker. Resets button chrome, keeps the text styling,
    and inlines a chevron-down glyph to signal it's tappable. */
 .header-city-row-button {
@@ -1286,16 +1286,16 @@ html, body, #root {
 }
 
 /* WCAG AA check: #fca5a5 on rgba(239,68,68,0.12) over ~#111 = ~#1d0c0c bg
-   Effective bg ≈ rgb(35,16,16). #fca5a5 contrast ratio ≈ 6.2:1 — passes AA. */
+   Effective bg ≈ rgb(35,16,16). #fca5a5 contrast ratio ≈ 6.2:1 - passes AA. */
 .header-chip--online {
   background: rgba(239, 68, 68, 0.12);
   border-color: rgba(239, 68, 68, 0.28);
   color: #fca5a5;
-  /* Activity chip never shrinks — its content is short and always-visible. */
+  /* Activity chip never shrinks - its content is short and always-visible. */
   flex-shrink: 0;
 }
 
-/* PR7 — Leaderboard chip in the header-chips row. Amber to distinguish from
+/* PR7 - Leaderboard chip in the header-chips row. Amber to distinguish from
    the red online chip + grey weather chip; matches mobile's chipLeaderboard. */
 .header-chip--leaderboard {
   background: rgba(255, 201, 60, 0.12);
@@ -1408,7 +1408,7 @@ html, body, #root {
   text-overflow: ellipsis;
 }
 
-/* "X going" — inline button inside event-meta-label, inherits text style */
+/* "X going" - inline button inside event-meta-label, inherits text style */
 .going-count-btn {
   all: unset;
   cursor: pointer;
@@ -1429,7 +1429,7 @@ html, body, #root {
   flex-direction: column;
 }
 @media (max-width: 767px) {
-  /* PR22 — lift the bottom-sheet above the fixed .bottom-nav. The members
+  /* PR22 - lift the bottom-sheet above the fixed .bottom-nav. The members
      list ("3 in the channel") was clipping its last row behind the nav on
      mobile because .modal-overlay align-items:flex-end docks the panel at
      viewport bottom, and the nav has its own opaque + blurred backdrop
@@ -1472,7 +1472,7 @@ html, body, #root {
   color: var(--text);
 }
 
-/* Location line — event header, Hot drawer rows, sidebar rows */
+/* Location line - event header, Hot drawer rows, sidebar rows */
 .event-location {
   font-size: 0.75rem;
   line-height: 1.4;
@@ -1696,7 +1696,7 @@ html, body, #root {
   }
 
   /* DM (and any other screen wrapped in .full-page) already gets its own
-     padding-bottom to clear the bottom-nav — opt out so the composer doesn't
+     padding-bottom to clear the bottom-nav - opt out so the composer doesn't
      double-pad and float halfway up the screen. */
   .full-page .dm-composer {
     margin-bottom: 0;
@@ -1770,7 +1770,7 @@ html, body, #root {
   filter: drop-shadow(0 0 9px rgba(255, 122, 60, 0.42));
 }
 
-/* NOW tab attention pulse — fires once (2 beats) when a chat reminder dismisses,
+/* NOW tab attention pulse - fires once (2 beats) when a chat reminder dismisses,
    then stops (class removed on animationend). Disabled under reduced motion. */
 .bottom-nav-icon--now-pulse {
   animation: now-tab-pulse 0.6s ease-in-out 2;
@@ -1897,7 +1897,7 @@ html, body, #root {
 
 /* ── Profile screen ────────────────────────────────────── */
 
-/* Sticky identity block — sits between page-header and page-body.
+/* Sticky identity block - sits between page-header and page-body.
    flex-shrink: 0 keeps it out of the scroll flow naturally. */
 .profile-sticky-identity {
   flex-shrink: 0;
@@ -1960,7 +1960,7 @@ html, body, #root {
   font-weight: 500;
 }
 
-/* Filter pills — scrollable for 5 tabs */
+/* Filter pills - scrollable for 5 tabs */
 .profile-tabs {
   display: flex;
   align-items: center;
@@ -2081,7 +2081,7 @@ html, body, #root {
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 700;
-  /* default — neutral */
+  /* default - neutral */
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.12);
   color: var(--muted);
@@ -2169,7 +2169,7 @@ html, body, #root {
   line-height: 1.3;
 }
 
-/* ── Language picker — collapsed trigger + expandable list (19 locales) ─────── */
+/* ── Language picker - collapsed trigger + expandable list (19 locales) ─────── */
 .profile-lang-trigger {
   display: flex;
   align-items: center;
@@ -2537,7 +2537,7 @@ html, body, #root {
   margin: 4px 0;
 }
 
-/* EULA agreement (signup) — zero-tolerance warning + ToS/Privacy checkbox */
+/* EULA agreement (signup) - zero-tolerance warning + ToS/Privacy checkbox */
 .auth-eula { margin: 4px 0 2px; display: flex; flex-direction: column; gap: 10px; }
 .auth-eula-warning {
   font-size: 0.78rem;
@@ -2717,7 +2717,7 @@ html, body, #root {
   width: fit-content;
   margin-left: auto;
   /* fit-content is the original right-alignment mechanism. The earlier
-     "haha" collapse wasn't fit-content's fault — it was word-break: break-word
+     "haha" collapse wasn't fit-content's fault - it was word-break: break-word
      dropping min-content to 1 char, which fit-content's clamp(min, available,
      max) would then resolve to. Now that .msg-content uses overflow-wrap
      (not word-break), min-content = longest word, and fit-content resolves
@@ -2788,7 +2788,7 @@ html, body, #root {
 }
 
 .msg-bubble-wrap.grouped {
-  /* no indent — grouped bubbles align flush with the first bubble */
+  /* no indent - grouped bubbles align flush with the first bubble */
 }
 
 .msg-content {
@@ -2798,7 +2798,7 @@ html, body, #root {
   padding: 7px 11px;
   font-size: 0.9rem;
   line-height: 1.45;
-  /* overflow-wrap: break-word, NOT word-break: break-word — the latter
+  /* overflow-wrap: break-word, NOT word-break: break-word - the latter
      reduces min-content to ~1 character, and on flex layouts that causes the
      bubble to collapse to a single column with each character wrapping onto
      its own line ("haha" → "h"/"a"/"h"/"a"). overflow-wrap still breaks long
@@ -2807,11 +2807,11 @@ html, body, #root {
   overflow-wrap: break-word;
   color: var(--text);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  /* Desktop max-width only — absolute pixels, no percentage. The grandparent
+  /* Desktop max-width only - absolute pixels, no percentage. The grandparent
      .msg-bubble-wrap has display:flex with no defined width (it auto-sizes
      to its content), so a percentage max-width would resolve against an
      indefinite container and collapse the bubble down to min-content
-     (longest word) — that was the cause of "good night guys !" wrapping
+     (longest word) - that was the cause of "good night guys !" wrapping
      even though it easily fits the chat area. The viewport-relative cap
      lives on .message (max-width: 80%) which resolves against .messages
      (a definite-width flex column), so it works correctly. The reply-quote
@@ -3058,7 +3058,7 @@ html, body, #root {
   background: rgba(255, 255, 255, 0.22);
 }
 
-/* ── Lightbox action bar — Download + Share buttons under the image ─── */
+/* ── Lightbox action bar - Download + Share buttons under the image ─── */
 .lightbox-actions {
   position: fixed;
   left: 0;
@@ -3188,7 +3188,7 @@ html, body, #root {
 }
 .reply-preview-close:hover { opacity: 1; }
 
-/* ── Edit-mode banner — visually echoes reply-preview but tinted orange so
+/* ── Edit-mode banner - visually echoes reply-preview but tinted orange so
    the user can tell at a glance which mode the composer is in. */
 .edit-preview {
   display: flex;
@@ -3230,7 +3230,7 @@ html, body, #root {
 }
 .edit-preview-close:hover { opacity: 1; }
 
-/* ── (edited) suffix appended after a message body. Muted, fully optional —
+/* ── (edited) suffix appended after a message body. Muted, fully optional -
    doesn't draw the eye, just records the state for honesty. */
 .msg-edited-tag {
   font-size: 0.72rem;
@@ -3241,7 +3241,7 @@ html, body, #root {
   color: rgba(255, 255, 255, 0.65);
 }
 
-/* ── Tombstone — same bubble silhouette, flattened and italicised so it
+/* ── Tombstone - same bubble silhouette, flattened and italicised so it
    reads as "no longer here" without disturbing the surrounding rhythm. */
 .msg-content--deleted .msg-text {
   font-style: italic;
@@ -3259,7 +3259,7 @@ html, body, #root {
   flex-direction: column;
 }
 
-/* ── Reply quote — bleeds to bubble edges, visually fused with bubble ── */
+/* ── Reply quote - bleeds to bubble edges, visually fused with bubble ── */
 /* Negative margins cancel the parent's padding so the quote spans full width. */
 /* border-radius top corners mirror the parent bubble so they look continuous. */
 
@@ -3282,7 +3282,7 @@ html, body, #root {
      min-width: auto resolves to min-content, which for the nowrap name/text
      spans is their max-content (the full unbreakable string). That used to
      push the entire bubble past the viewport. With min-width: 0 here, the
-     quote's intrinsic min stops cascading up to .msg-content — and the
+     quote's intrinsic min stops cascading up to .msg-content - and the
      spans' own overflow:hidden + ellipsis truncate as designed. */
   min-width: 0;
 }
@@ -3322,7 +3322,7 @@ html, body, #root {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* tappable reply quote — visual affordance + cursor */
+/* tappable reply quote - visual affordance + cursor */
 .msg-reply-quote--tappable {
   cursor: pointer;
 }
@@ -3346,7 +3346,7 @@ html, body, #root {
 
 /* actual message text node below the quote */
 .msg-text {
-  /* overflow-wrap (not word-break) — see .msg-content for why. Same rule:
+  /* overflow-wrap (not word-break) - see .msg-content for why. Same rule:
      break long unbroken runs that would overflow, but don't pull min-content
      down to 1 character. */
   overflow-wrap: break-word;
@@ -3522,7 +3522,7 @@ html, body, #root {
 
 /* `.input-bar` was the oversized City/Event composer wrapper. All composer
    surfaces now share <MessageComposer> with the .dm-composer dimensions, so
-   these rules are intentionally removed. Same for .vibe-btn below — the only
+   these rules are intentionally removed. Same for .vibe-btn below - the only
    remaining vibe-style class is .share-vibe-btn (event-share button). */
 
 .upload-btn {
@@ -3575,7 +3575,7 @@ html, body, #root {
 /* `.vibe-btn` (the 58 px composer attach button) was removed when every
    composer surface adopted the compact .dm-vibe-btn (44 px) via the shared
    <MessageComposer>. The pulse keyframes used by .vibe-btn--pulse are also
-   gone — no current consumer. */
+   gone - no current consumer. */
 
 /* ── ShareActionSheet ────────────────────────────────────────────────────────
    Mobile-native style bottom sheet that slides up from the bottom.            */
@@ -3764,7 +3764,7 @@ html, body, #root {
 
 .loc-picker-close:hover { background: rgba(255, 255, 255, 0.12); color: var(--text); }
 
-/* ── Map wrap — takes remaining vertical space ── */
+/* ── Map wrap - takes remaining vertical space ── */
 .loc-picker-map-wrap {
   flex: 1;
   min-height: 0;
@@ -3778,7 +3778,7 @@ html, body, #root {
   background: #1a1512;
 }
 
-/* Fixed pin — centered over the map, pointer-events: none so map stays draggable */
+/* Fixed pin - centered over the map, pointer-events: none so map stays draggable */
 .loc-picker-pin {
   position: absolute;
   top: 50%;
@@ -4201,7 +4201,7 @@ html, body, #root {
   font-variant-numeric: tabular-nums;
 }
 
-/* Reminder cards (event / hangout / prompt / ambient) fade out before removal —
+/* Reminder cards (event / hangout / prompt / ambient) fade out before removal -
    reuses the join exit motion. Under reduce-motion the JS removes them instantly
    without adding this class; the media query is a belt-and-suspenders guard. */
 .feed-prompt--exit,
@@ -4235,7 +4235,7 @@ html, body, #root {
   white-space: pre-line;
 }
 
-/* Status badge appended to the challenge feed prompt — open / N/max / full.
+/* Status badge appended to the challenge feed prompt - open / N/max / full.
    Inline so it wraps naturally under the announcement text on narrow widths. */
 .feed-prompt-status {
   display: inline-block;
@@ -4282,14 +4282,14 @@ html, body, #root {
   opacity: 0.85;
 }
 
-/* Challenge variant — same orange family as events but more saturated so
+/* Challenge variant - same orange family as events but more saturated so
    the brand-new primary entity reads distinct in the chat feed. */
 .feed-prompt--challenge {
   background: rgba(255, 122, 60, 0.14);
   border-color: rgba(255, 122, 60, 0.30);
 }
 
-/* Validated-challenge variant — green tint (same hue as the validated
+/* Validated-challenge variant - green tint (same hue as the validated
    status badge on the détail screen) so the celebration pill is visually
    distinct from the orange creation pill of the same challenge. */
 .feed-prompt--challenge-validated {
@@ -4297,7 +4297,7 @@ html, body, #root {
   border-color: rgba(74, 222, 128, 0.30);
 }
 
-/* Owner action block on the challenge détail screen — Validate is a
+/* Owner action block on the challenge détail screen - Validate is a
    full-width orange CTA, Edit + Delete are small ghost icons below. */
 .challenge-owner-actions {
   padding: 8px 16px 12px;
@@ -4306,7 +4306,7 @@ html, body, #root {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-/* Inline status pill — third badge on the kind+audience row. Filled (not
+/* Inline status pill - third badge on the kind+audience row. Filled (not
    tinted like the other two) so it carries more visual weight; reads as
    both a status indicator and a tappable owner control. */
 .challenge-badge--status {
@@ -4333,7 +4333,7 @@ html, body, #root {
 }
 .challenge-badge--status-done:hover { background: #2dd16a; }
 
-/* Read-only for non-owners — full opacity (it's a status, not a disabled
+/* Read-only for non-owners - full opacity (it's a status, not a disabled
    button) but no hover lift / pointer cursor. */
 .challenge-badge--status.challenge-badge--readonly,
 .challenge-badge--status.challenge-badge--readonly:hover,
@@ -4370,7 +4370,7 @@ html, body, #root {
 .challenge-owner-iconbtn:hover { color: var(--text); }
 .challenge-owner-iconbtn--danger:hover { color: #f87171; }
 
-/* ── Owner prompt card — shown in event feed for creators ── */
+/* ── Owner prompt card - shown in event feed for creators ── */
 
 .feed-owner-prompt {
   align-self: stretch;
@@ -4696,7 +4696,7 @@ html, body, #root {
   font-size: 0.6rem;
 }
 
-/* ── Online users — shared avatar ────────────────────── */
+/* ── Online users - shared avatar ────────────────────── */
 
 .online-avatar {
   width: 30px;
@@ -4990,7 +4990,7 @@ html, body, #root {
 
 /* ── Public profile screen ────────────────────────────── */
 
-/* Sticky identity block — always visible above tab content */
+/* Sticky identity block - always visible above tab content */
 .pub-profile-sticky-identity {
   flex-shrink: 0;
   display: flex;
@@ -5237,7 +5237,7 @@ img.pub-profile-avatar {
   flex-shrink: 0;
 }
 
-/* ── Identity cards — Vibe & Mode ─────────────────────── */
+/* ── Identity cards - Vibe & Mode ─────────────────────── */
 
 .pub-profile-identity-cards {
   width: 100%;
@@ -5276,7 +5276,7 @@ img.pub-profile-avatar {
   line-height: 1.35;
 }
 
-/* ── Info rows — From & Age ────────────────────────────── */
+/* ── Info rows - From & Age ────────────────────────────── */
 
 .pub-profile-info-rows {
   width: 100%;
@@ -5637,7 +5637,7 @@ img.pub-profile-avatar {
     display: flex;
   }
 
-  /* on desktop, don't auto-center the chat — let flexbox handle it */
+  /* on desktop, don't auto-center the chat - let flexbox handle it */
   .screen.chat {
     margin: 0;
     max-width: none;
@@ -5710,7 +5710,7 @@ img.pub-profile-avatar {
 }
 
 .full-page {
-  /* Fixed to viewport — fully decoupled from any scroll context.
+  /* Fixed to viewport - fully decoupled from any scroll context.
      This prevents iOS Safari rubber-band propagation from the
      underlying .messages scroll container. */
   position: fixed;
@@ -5721,12 +5721,12 @@ img.pub-profile-avatar {
   flex-direction: column;
   overflow: hidden;
   overscroll-behavior: none;
-  /* GPU-composited animation — no layout reflow during transition */
+  /* GPU-composited animation - no layout reflow during transition */
   animation: slideInRight 0.28s cubic-bezier(0.4, 0, 0.2, 1) both;
   will-change: transform;
 }
 
-/* Event limit reached screen — friendly, centered, matches the full-page pattern. */
+/* Event limit reached screen - friendly, centered, matches the full-page pattern. */
 .limit-hero {
   flex: 1;
   display: flex;
@@ -5738,7 +5738,7 @@ img.pub-profile-avatar {
   gap: 16px;
 }
 
-/* Blocking-event card on the limit screen — stretches within the centered
+/* Blocking-event card on the limit screen - stretches within the centered
    hero so it reads as a tappable card, not a narrow chip. Text is
    left-aligned (the hero is text-center, but the card reuses .city-row
    which is left-aligned internally). */
@@ -5796,7 +5796,7 @@ img.pub-profile-avatar {
 }
 .limit-primary-btn:active { opacity: 0.85; }
 
-/* Legend info modal — minimal, dismissable */
+/* Legend info modal - minimal, dismissable */
 .limit-legend-modal {
   position: fixed;
   inset: 0;
@@ -5845,7 +5845,7 @@ img.pub-profile-avatar {
 }
 
 /* Tab drawers (NOW / HERE / ME) are parallel destinations, not sub-screens,
-   so they mustn't slide in — users expect instant switching like Instagram,
+   so they mustn't slide in - users expect instant switching like Instagram,
    Twitter, Airbnb. Sub-screens (Switch City, Conversations, Notifications,
    Profile detail, etc.) keep .full-page's slide animation. */
 .full-page--tab {
@@ -6182,9 +6182,9 @@ img.pub-profile-avatar {
   font-size: 0.95rem;
 }
 
-/* Switch-city row — compacted to match Now's `.event-row-card` density.
+/* Switch-city row - compacted to match Now's `.event-row-card` density.
    Note: `.city-row` is also reused on the Now/Hot drawer where it pairs with
-   `.event-row-card`, which still overrides padding/gap explicitly — those
+   `.event-row-card`, which still overrides padding/gap explicitly - those
    feed rows are unaffected. */
 .city-row {
   display: flex;
@@ -6243,7 +6243,7 @@ img.pub-profile-avatar {
      line 1: title + participant count
      line 2: time badge + recurrence badge
      line 3: location
-   City rows (city list) are unaffected — they still use the base .city-row.
+   City rows (city list) are unaffected - they still use the base .city-row.
 */
 .event-row-card {
   flex-direction: column;
@@ -6404,18 +6404,18 @@ img.pub-profile-avatar {
   flex: 1;
   /* min-height: 0 lets this flex child shrink below its content size, which
      is what actually triggers overflow-y: auto. Without it, flex items
-     default to min-height: auto and grow to content height — the feed
+     default to min-height: auto and grow to content height - the feed
      swallows all sibling space, the composer slides offscreen, and the
      user is stuck at the top with no way to reach the latest message.
      Bites the challenge channel harder than the topic channel because
      .challenge-collapsible eats more vertical room above the feed. */
   min-height: 0;
   overflow-y: auto;
-  /* PR26 — disable scroll anchoring. The collapsible header above the
+  /* PR26 - disable scroll anchoring. The collapsible header above the
      feed shrinks/expands as the user scrolls (collapseHeader on every
      onScroll). When content above a scroll container changes height,
      Chrome's scroll anchoring tries to keep "visible" content in place
-     — which fights with our explicit scrollTop math (auto-snap-to-bottom
+     - which fights with our explicit scrollTop math (auto-snap-to-bottom
      on new message, smart "preserve user position" check). Net result
      was a tug-of-war that occasionally yanked the user to the top.
      Disabling anchoring lets the JS layer own the scroll position. */
@@ -6452,7 +6452,7 @@ img.pub-profile-avatar {
 /* `.topic-chat-input-row` + `.topic-chat-input` removed: TopicChatPage now
    uses <MessageComposer> with the unified .dm-composer rhythm. */
 
-/* Line 2: badges — single line, ellipsised, smaller font in compact mode */
+/* Line 2: badges - single line, ellipsised, smaller font in compact mode */
 .er-badges {
   display: flex;
   align-items: center;
@@ -6465,7 +6465,7 @@ img.pub-profile-avatar {
   font-size: inherit;
 }
 
-/* Line 3: location — muted, ellipsis */
+/* Line 3: location - muted, ellipsis */
 .er-location {
   font-size: 0.7rem;
   color: var(--muted2);
@@ -6475,7 +6475,7 @@ img.pub-profile-avatar {
   line-height: 1.3;
 }
 
-/* "Hosted by X" — secondary info on event list rows + event detail header. */
+/* "Hosted by X" - secondary info on event list rows + event detail header. */
 .er-host,
 .event-host {
   display: block;
@@ -6545,7 +6545,7 @@ img.pub-profile-avatar {
 }
 .now-reply-marquee { flex: 1 1 auto; min-width: 0; }
 
-/* Stats run flush with the rest of the card — no 33 px indent under the flag.
+/* Stats run flush with the rest of the card - no 33 px indent under the flag.
    Single muted line, gap 10. */
 .city-row-stats {
   display: flex;
@@ -6773,7 +6773,7 @@ img.pub-profile-avatar {
   transition: gap 0.18s ease, padding 0.18s ease;
 }
 
-/* Collapsed state — toggled by App.jsx scroll listener once messages scroll
+/* Collapsed state - toggled by App.jsx scroll listener once messages scroll
    past ~30px. Hides the meta + address + host lines so only the title row
    (title + Join button) remains, freeing screen real estate for the chat. */
 .event-header--collapsed {
@@ -6808,7 +6808,7 @@ img.pub-profile-avatar {
   max-width: min(220px, 46vw);
 }
 
-/* Join / Going CTA — compact pill aligned to the title row */
+/* Join / Going CTA - compact pill aligned to the title row */
 .event-join-btn {
   flex-shrink: 0;
   padding: 6px 14px;
@@ -6821,7 +6821,7 @@ img.pub-profile-avatar {
   letter-spacing: 0.01em;
   cursor: pointer;
   min-height: 32px;
-  min-width: 74px;            /* enough for "Joined ✓" — prevents reflow on toggle */
+  min-width: 74px;            /* enough for "Joined ✓" - prevents reflow on toggle */
   -webkit-tap-highlight-color: transparent;
   transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
 }
@@ -6845,7 +6845,7 @@ img.pub-profile-avatar {
   background: rgba(255, 122, 60, 0.88);
 }
 
-/* Edit event CTA — replaces Join for event creators, same pill weight */
+/* Edit event CTA - replaces Join for event creators, same pill weight */
 .event-join-btn--edit {
   border-color: rgba(167, 139, 250, 0.55);
   color: #a78bfa;
@@ -6865,7 +6865,7 @@ img.pub-profile-avatar {
   animation: edit-pulse 0.7s ease-out 0.35s 2 both;
 }
 
-/* Creator badge — shown above event title when you own the event */
+/* Creator badge - shown above event title when you own the event */
 .event-creator-badge {
   display: inline-flex;
   align-items: center;
@@ -6944,7 +6944,7 @@ img.pub-profile-avatar {
   background: rgba(167, 139, 250, 0.15);
   color: #a78bfa;
 }
-/* PR53 — challenge "OPEN" pill in green, matching the Available
+/* PR53 - challenge "OPEN" pill in green, matching the Available
    chip on the city feed cards (ChallengeCard's --availablePill). The
    neutral grey base reads as "muted / archived"; green communicates
    "go ahead, this slot is open". */
@@ -6990,7 +6990,7 @@ img.pub-profile-avatar {
 .event-header-title {
   flex: 1;
   min-width: 0;
-  font-size: 1.25rem;          /* was 1.6rem — ~22% smaller, fits glanceable summary */
+  font-size: 1.25rem;          /* was 1.6rem - ~22% smaller, fits glanceable summary */
   font-weight: 700;
   color: var(--text);
   line-height: 1.25;
@@ -7078,7 +7078,7 @@ img.pub-profile-avatar {
 
 /* ── Events page: FAB + empty state ──────────────────── */
 
-/* ── Now screen bottom action bar — single row layout ────────────────────── */
+/* ── Now screen bottom action bar - single row layout ────────────────────── */
 /* [ See what's coming 🔮 (flex:1) ] [+ (48×48 circle)]
    Replaces the previous two-row layout (pulse+host then upcoming below). */
 
@@ -7222,7 +7222,7 @@ img.pub-profile-avatar {
   flex-shrink: 0;
   background: var(--surface);
   /* Horizontal scroll when the row of pills overflows. Scrollbar is hidden
-     so the row looks clean — the user discovers the scroll on drag/swipe. */
+     so the row looks clean - the user discovers the scroll on drag/swipe. */
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: none;              /* Firefox */
@@ -7339,7 +7339,7 @@ img.pub-profile-avatar {
   opacity:   0.85;
 }
 
-/* Inline variant — when the upcoming CTA shares a row with the + create
+/* Inline variant - when the upcoming CTA shares a row with the + create
    button. Removes the standalone margin/width so it flexes inside .now-actions-bar. */
 .upcoming-cta--inline {
   width:      auto;
@@ -7509,7 +7509,7 @@ img.pub-profile-avatar {
   color-scheme: dark;
 }
 
-/* Marquee placeholder — used by MarqueePlaceholderInput in CreateChallengePage.
+/* Marquee placeholder - used by MarqueePlaceholderInput in CreateChallengePage.
    The native placeholder is suppressed; this overlay sits over the input and
    slides left-and-back when the localised text overflows the input width.
    Animation only kicks in if --cef-marquee-shift is negative (computed in JS
@@ -7558,7 +7558,7 @@ img.pub-profile-avatar {
   }
 }
 
-/* Tappable location field — opens the map picker (mirrors .cef-input) */
+/* Tappable location field - opens the map picker (mirrors .cef-input) */
 .cef-loc-field {
   display: flex;
   align-items: center;
@@ -7597,7 +7597,7 @@ img.pub-profile-avatar {
   margin-top: -12px;
 }
 
-/* Stepper — used by CreateChallengePage for the max_participants field.
+/* Stepper - used by CreateChallengePage for the max_participants field.
    Round −/+ buttons flanking a centred number; thumb-friendly tap targets. */
 .cef-stepper {
   display: flex;
@@ -7973,14 +7973,14 @@ img.pub-profile-avatar {
 }
 
 @media (max-width: 767px) {
-  /* PR37 — generalize the PR22 lift to every .modal-panel on mobile. The
+  /* PR37 - generalize the PR22 lift to every .modal-panel on mobile. The
      fixed .bottom-nav has an opaque + blurred backdrop that visually
      covers the bottom of any panel docked at viewport edge (z-index 400
-     > 300 isn't enough — the nav's backdrop-filter creates its own
+     > 300 isn't enough - the nav's backdrop-filter creates its own
      compositing surface). Every bottom-sheet variant (.going-modal,
      .modal-panel--visibility-menu, .modal-panel--challenge-manage,
      .modal-panel--challenge-optin, .modal-panel--proof-spec) hit the
-     same issue — the visibility picker's "Private" option was clipped
+     same issue - the visibility picker's "Private" option was clipped
      in this round. Lifting at the .modal-panel level covers all of them. */
   .modal-panel {
     margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
@@ -8059,7 +8059,7 @@ img.pub-profile-avatar {
   border-color: var(--accent);
 }
 
-/* PR32 — Password field with reveal toggle. The input keeps its normal
+/* PR32 - Password field with reveal toggle. The input keeps its normal
    .modal-input styling; the wrapper positions a small button at the right
    edge that swaps type=password ↔ type=text. */
 .password-field {
@@ -8098,7 +8098,7 @@ img.pub-profile-avatar {
 .password-field-toggle:active { transform: translateY(-50%) scale(0.94); }
 
 /* Themed in-app alert used by ChallengeChatPage (replaces window.alert).
-   Sits inside the shared .modal-overlay / .modal-panel skeleton — only the
+   Sits inside the shared .modal-overlay / .modal-panel skeleton - only the
    inner layout and the dual-button row are custom here. Mobile-first: stacked
    buttons; on wider viewports the dual-button row sits side by side. */
 .challenge-alert-panel {
@@ -8193,7 +8193,7 @@ img.pub-profile-avatar {
   filter: brightness(1.07);
 }
 
-/* Username (@-handle) picker — @ prefix + inline availability status */
+/* Username (@-handle) picker - @ prefix + inline availability status */
 .username-input-row {
   display: flex;
   align-items: center;
@@ -8257,7 +8257,7 @@ img.pub-profile-avatar {
 .mention-option-handle { font-weight: 700; font-size: 0.9rem; }
 .mention-option-name   { color: var(--muted); font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* @mention pill — dark fill + light border + white text. Readable on the dark
+/* @mention pill - dark fill + light border + white text. Readable on the dark
    received bubble AND the orange/red sent bubble (--mine-bg #8C3427); white-on-
    fill contrast is ≥6.5:1 everywhere (vs the old red-on-red ~1.7:1). nowrap +
    word-break:normal keep "@handle" together as one unit (overriding the
@@ -8278,7 +8278,7 @@ img.pub-profile-avatar {
 }
 .msg-mention:hover { background: rgba(0, 0, 0, 0.42); }
 
-/* Discreet "you got mentioned" signup nudge for online guests — fixed toast,
+/* Discreet "you got mentioned" signup nudge for online guests - fixed toast,
    non-blocking, above the composer. */
 .mention-nudge {
   position: fixed;
@@ -8320,14 +8320,14 @@ img.pub-profile-avatar {
 }
 @media (min-width: 768px) { .mention-nudge { bottom: 24px; } }
 
-/* Online-guest mention — same pill, faint 👻 tint, not clickable (inert). */
+/* Online-guest mention - same pill, faint 👻 tint, not clickable (inert). */
 .msg-mention--guest {
   cursor: default;
   background: rgba(139, 92, 246, 0.18);
   border-color: rgba(139, 92, 246, 0.45);
 }
 .msg-mention--guest:hover { background: rgba(139, 92, 246, 0.18); }
-/* Guest has left — render as muted styled text, still inert. */
+/* Guest has left - render as muted styled text, still inert. */
 .msg-mention--offline { opacity: 0.6; }
 
 /* ── Hangout request-to-join ── */
@@ -8362,7 +8362,7 @@ img.pub-profile-avatar {
 }
 .topic-join-btn.done { background: rgba(255, 255, 255, 0.08); color: var(--muted); }
 
-/* Members-only gate panel — shown to non-members (pending requesters). */
+/* Members-only gate panel - shown to non-members (pending requesters). */
 .topic-gated {
   flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 8px; padding: 32px 24px; text-align: center;
@@ -8397,7 +8397,7 @@ img.pub-profile-avatar {
 .topic-members-see   { font-size: 0.85rem; color: var(--accent); font-weight: 700; }
 
 /* "Host" / "Challenger" tag on hangouts + challenges the profile user
-   owns. PR52 — the wrapping .my-event-row-body is a flex column whose
+   owns. PR52 - the wrapping .my-event-row-body is a flex column whose
    children stretch to full width by default; align-self:flex-start
    keeps the pill at its natural width. width:fit-content is a belt-
    and-braces fallback for browsers that resolve align-self differently
@@ -8883,7 +8883,7 @@ img.pub-profile-avatar {
   cursor: default;
 }
 
-/* ── People Here — DM button ──────────────────────────────────────────────── */
+/* ── People Here - DM button ──────────────────────────────────────────────── */
 
 .people-dm-btn {
   margin-left: auto;
@@ -9185,7 +9185,7 @@ img.dm-header-avatar {
   color: #fff;
 }
 
-/* Tombstoned DM bubble — keeps the same silhouette, but flattens the fill
+/* Tombstoned DM bubble - keeps the same silhouette, but flattens the fill
    and italicises the placeholder so it reads as inactive. */
 .dm-bubble--deleted {
   opacity: 0.6;
@@ -9599,7 +9599,7 @@ img.dm-header-avatar {
   line-height: 1.6;
 }
 
-/* ── Guest gate — member-only action blocker ────────────────────────────────── */
+/* ── Guest gate - member-only action blocker ────────────────────────────────── */
 
 .guest-gate {
   display:         flex;
@@ -9638,7 +9638,7 @@ img.dm-header-avatar {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   LANDING PAGE — lp-*
+   LANDING PAGE - lp-*
    Full scrollable marketing/entry page that replaces the old onboarding card.
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -9701,7 +9701,7 @@ img.dm-header-avatar {
   margin-top: 4px;
 }
 
-/* Override ob-card inside landing — no extra shadow noise */
+/* Override ob-card inside landing - no extra shadow noise */
 .lp-join-card {
   width: 100%;
   max-width: 100%;
@@ -9811,7 +9811,7 @@ img.dm-header-avatar {
   margin: 0;
 }
 
-/* ── 2. SPLIT — Local vs Exploring ───────────────────────────────────────── */
+/* ── 2. SPLIT - Local vs Exploring ───────────────────────────────────────── */
 
 .lp-split-section {
   display: flex;
@@ -10549,7 +10549,7 @@ img.dm-header-avatar {
   gap: 8px;
 }
 
-/* Sign up — outlined accent */
+/* Sign up - outlined accent */
 .jc-auth-signup {
   flex: 1;
   padding: 10px 14px;
@@ -10569,7 +10569,7 @@ img.dm-header-avatar {
   border-color: rgba(194, 74, 56, 0.8);
 }
 
-/* Log in — ghost / text style */
+/* Log in - ghost / text style */
 .jc-auth-signin {
   flex: 1;
   padding: 10px 14px;
@@ -10834,7 +10834,7 @@ img.dm-header-avatar {
   font-family: inherit;
 }
 
-/* ── Upcoming events screen — day strip + month modal ─────────────────────── */
+/* ── Upcoming events screen - day strip + month modal ─────────────────────── */
 
 .upc-cal-btn {
   margin-left: auto;
@@ -11151,7 +11151,7 @@ body.has-app-promo-banner .page-header {
   height: 28px;
   border-radius: 7px;
   flex-shrink: 0;
-  background: #fff;             /* SVG has dark glyphs — give it a tile */
+  background: #fff;             /* SVG has dark glyphs - give it a tile */
 }
 
 .app-promo-text {
@@ -11507,12 +11507,12 @@ body.has-app-promo-banner .page-header {
 .account-welcome-cta:active { transform: scale(0.98); }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Challenge chat page — Phase 10. Mirrors topic-chat-page layout (header,
+   Challenge chat page - Phase 10. Mirrors topic-chat-page layout (header,
    feed, composer come from the same skeleton classes) and adds the
    challenge-specific hero badges + actions row with the orange brand.
    ───────────────────────────────────────────────────────────────────────── */
 
-/* Challenge meta row — sits as a sibling to .topic-chat-desc and mirrors its
+/* Challenge meta row - sits as a sibling to .topic-chat-desc and mirrors its
    visual rhythm (small, muted, border-bottom). Holds the audience pill +
    optional validated badge in place of the hangout's free-text description. */
 .challenge-meta-row {
@@ -11522,7 +11522,7 @@ body.has-app-promo-banner .page-header {
   font-style: normal;
 }
 
-/* Inline validate button — sized like .topic-owner-btn but tinted orange to
+/* Inline validate button - sized like .topic-owner-btn but tinted orange to
    signal the primary creator action. Used inside .topic-owner-row. */
 .challenge-validate-btn-inline {
   color: #FF7A3C !important;
@@ -11553,7 +11553,7 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(139, 92, 246, 0.32);
   color: #A78BFA;
 }
-/* International mode — distinct from audience violet so Local/Intl read
+/* International mode - distinct from audience violet so Local/Intl read
    apart at a glance. Cyan: feels "global" without competing with brand
    orange or the green/red status pills. */
 .challenge-badge--international {
@@ -11566,14 +11566,14 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(34, 197, 94, 0.20);
   color: #4ade80;
 }
-/* Status pill — neutral. Currently used for the "In progress" state; the
+/* Status pill - neutral. Currently used for the "In progress" state; the
    emoji (⏳) carries the semantic. */
 .challenge-badge--status {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.12);
   color: var(--muted2, #b3b3b3);
 }
-/* Available pill — green tint to invite action. Same skeleton as --validated
+/* Available pill - green tint to invite action. Same skeleton as --validated
    so the green family stays consistent (validated = "done", available = "go"). */
 .challenge-badge--available {
   background: rgba(34, 197, 94, 0.10);
@@ -11619,7 +11619,7 @@ body.has-app-promo-banner .page-header {
 .challenge-validate-btn:disabled { opacity: 0.5; cursor: default; }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Challenge creation — Web counterpart to mobile app/challenge/create.tsx.
+   Challenge creation - Web counterpart to mobile app/challenge/create.tsx.
    Reuses .cef-* form skeleton (label, input, error, submit) and adds:
      - .cef-audience-row    2-pill row, full-width
      - .cef-type-btn / grid same shape as .cef-cat-btn but 4 columns
@@ -11627,7 +11627,7 @@ body.has-app-promo-banner .page-header {
      - .create-chooser-option--challenge  orange-tinted entry in the bottom sheet
    ───────────────────────────────────────────────────────────────────────── */
 
-/* Challenge tile no longer tints its icon background — the 🔥 emoji reads
+/* Challenge tile no longer tints its icon background - the 🔥 emoji reads
    on its own, and the box looked out of place next to the bare 🗣️ and 🎉
    icons on the other two tiles. */
 
@@ -11699,7 +11699,7 @@ body.has-app-promo-banner .page-header {
   background: #ff8753;
 }
 
-/* Example chips below the CTA — tappable starters that fill the title.
+/* Example chips below the CTA - tappable starters that fill the title.
    Subtle muted look (text-secondary) so they don't compete with the
    orange submit button right above. Stack vertically for readability;
    chip width fits the longest example without truncation. */
@@ -11742,7 +11742,7 @@ body.has-app-promo-banner .page-header {
   transform: scale(0.99);
 }
 
-/* Challenge cards in the NOW feed — orange-tinted tag + audience pill, same
+/* Challenge cards in the NOW feed - orange-tinted tag + audience pill, same
    visual rhythm as the topic/event cards above them. */
 .challenge-row-card {
   border-color: rgba(255, 122, 60, 0.15);
@@ -11752,12 +11752,12 @@ body.has-app-promo-banner .page-header {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   Challenge detail — large type emoji in the header, creator/participants
+   Challenge detail - large type emoji in the header, creator/participants
    split, with brand-orange Challenger pill. Built on top of the
    topic-chat-page skeleton (header / desc / strip / owner-row).
    ───────────────────────────────────────────────────────────────────────── */
 
-/* Header emoji — sits in the right column where TopicChatPage puts share.
+/* Header emoji - sits in the right column where TopicChatPage puts share.
    min-width matches the back-button so the title column is true-centered. */
 .challenge-header-emoji {
   font-size: 2rem;
@@ -11769,7 +11769,7 @@ body.has-app-promo-banner .page-header {
   text-align: center;
 }
 
-/* Challenge header variant — center the title. The base
+/* Challenge header variant - center the title. The base
    .topic-chat-header-center is left-aligned (matches TopicChatPage); for
    challenges we want it visually centered between back and emoji. */
 .challenge-chat-header .topic-chat-header-center {
@@ -11785,7 +11785,7 @@ body.has-app-promo-banner .page-header {
   align-items: center;
 }
 
-/* Share row — full-width tinted pill, brand orange. Mirrors the mobile
+/* Share row - full-width tinted pill, brand orange. Mirrors the mobile
    shareRow style. Toast appears inline on the clipboard-fallback path. */
 .challenge-share-row {
   display: flex;
@@ -11824,7 +11824,7 @@ body.has-app-promo-banner .page-header {
   border: 1px solid rgba(74, 222, 128, 0.22);
 }
 
-/* Creator row — the originating user, called out separately. */
+/* Creator row - the originating user, called out separately. */
 .challenge-creator-row {
   display: flex;
   align-items: center;
@@ -11891,7 +11891,7 @@ body.has-app-promo-banner .page-header {
   transition: background 0.12s ease, transform 0.1s ease, color 0.12s ease;
 }
 
-/* Participants row — always present for visitors so the + Accept button
+/* Participants row - always present for visitors so the + Accept button
    has a home. Avatars + count on the left when there are acceptors,
    "Be the first to accept" copy when empty. */
 .challenge-participants-row {
@@ -11914,7 +11914,7 @@ body.has-app-promo-banner .page-header {
   font-weight: 500;
 }
 
-/* Challenge collapsible header — badges + pipeline + creator row + participants
+/* Challenge collapsible header - badges + pipeline + creator row + participants
    row. Smoothly shrinks to 0 height + fades when the user scrolls the chat or
    focuses the composer (mirrors the event-channel collapse). Expand returns
    when the user scrolls back to the top of the feed. */
@@ -11929,7 +11929,7 @@ body.has-app-promo-banner .page-header {
   opacity: 0;
 }
 
-/* Labeled Accept button — replaces the old + icon to make the call to action
+/* Labeled Accept button - replaces the old + icon to make the call to action
    self-explanatory. Two variants:
      --full    : sole CTA in the row when there are no acceptors yet
      --compact : sits to the right of avatars + count when somebody's in */
@@ -11992,7 +11992,7 @@ body.has-app-promo-banner .page-header {
 .challenge-share-pill:active { transform: scale(0.98); }
 .challenge-share-pill-text { font-size: 12px; font-weight: 800; }
 
-/* Inline variant — sits in the badge row next to kind + audience pills, so
+/* Inline variant - sits in the badge row next to kind + audience pills, so
    the height and padding match a `.challenge-badge`, not the taller stand-
    alone share pill from the (now retired) creator-row. */
 .challenge-share-pill--inline {
@@ -12004,7 +12004,7 @@ body.has-app-promo-banner .page-header {
   align-self: center;
 }
 .challenge-share-pill--inline .challenge-share-pill-text { font-size: 11px; }
-/* Share-specific tint — the only pill that surfaces a social/growth verb,
+/* Share-specific tint - the only pill that surfaces a social/growth verb,
    so it gets a distinct violet so it doesn't read as just another orange
    action. The rest of the inline meta-row pills (Manage, Visibility,
    Leave, Notif) keep the orange brand tint. */
@@ -12016,7 +12016,7 @@ body.has-app-promo-banner .page-header {
 .challenge-share-pill--share:hover { background: rgba(167, 139, 250, 0.18); }
 .challenge-share-pill--share .challenge-share-pill-text { color: #c4b5fd; }
 
-/* Collapse chevron next to the share pill — toggles the channel-header
+/* Collapse chevron next to the share pill - toggles the channel-header
    details block (second pill row + pipeline + proof + members strip). */
 .challenge-details-toggle {
   display: inline-flex;
@@ -12044,8 +12044,8 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-details-toggle-chevron.is-open { transform: rotate(180deg); }
 
-/* Channel-header details — collapsible block. CSS max-height + opacity
-   give the slide animation. PR24 — bumped from 1000px to 2400px: the
+/* Channel-header details - collapsible block. CSS max-height + opacity
+   give the slide animation. PR24 - bumped from 1000px to 2400px: the
    International proof block (requirements text + photo preview + submit
    pill) plus the pipeline + scoring info + visibility row + members
    strip can push past 1000px on a narrow mobile viewport, which silently
@@ -12067,7 +12067,7 @@ body.has-app-promo-banner .page-header {
 .challenge-quick-btn:hover  { background: rgba(255, 122, 60, 0.18); }
 .challenge-quick-btn:active { transform: scale(0.96); }
 .challenge-quick-btn:disabled { opacity: 0.6; cursor: default; }
-/* Accept button when already in — invert to filled brand so the
+/* Accept button when already in - invert to filled brand so the
    "you're in" state reads as confirmed. */
 .challenge-quick-btn--accept-in {
   background: #FF7A3C;
@@ -12083,11 +12083,11 @@ body.has-app-promo-banner .page-header {
   margin: 4px 16px 0;
 }
 
-/* Other participants — same as topic-members-strip but a different label
+/* Other participants - same as topic-members-strip but a different label
    semantic (acceptors, not the creator). No visual override needed but the
    class hook stays available for future tweaks. */
 .challenge-participants-strip {
-  /* inherits .topic-members-strip rules — no overrides for now */
+  /* inherits .topic-members-strip rules - no overrides for now */
 }
 
 /* ── Post-create "seed it" modal ───────────────────────────────────────────
@@ -12104,7 +12104,7 @@ body.has-app-promo-banner .page-header {
   max-height: 85vh;
 }
 
-/* Lift the modal above the mobile tab bar — the panel anchors to bottom: 0
+/* Lift the modal above the mobile tab bar - the panel anchors to bottom: 0
    of the viewport but the fixed .bottom-nav (~64-80px tall, inc. safe area)
    sits in the same band. Without an explicit reserve the bottom CTAs hide
    behind the nav. We push the panel up + give the inner content extra
@@ -12136,7 +12136,7 @@ body.has-app-promo-banner .page-header {
   margin-bottom: 6px;
 }
 
-/* Primary CTA — the orange "invite city members" tile. */
+/* Primary CTA - the orange "invite city members" tile. */
 .cpcm-cta-primary {
   appearance: none;
   border: 0;
@@ -12159,7 +12159,7 @@ body.has-app-promo-banner .page-header {
 .cpcm-cta-sub   { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); margin-top: 2px; }
 .cpcm-cta-arrow { font-size: 22px; color: rgba(255,255,255,0.75); font-weight: 600; }
 
-/* Secondary CTA — outlined orange "share externally". */
+/* Secondary CTA - outlined orange "share externally". */
 .cpcm-cta-secondary {
   appearance: none;
   cursor: pointer;
@@ -12300,7 +12300,7 @@ body.has-app-promo-banner .page-header {
 }
 .cpcm-success-emoji { font-size: 40px; }
 
-/* Challenge detail header — small "by {creator}" line under the title, with
+/* Challenge detail header - small "by {creator}" line under the title, with
    an optional thumbnail avatar. Reuses the .er-host / .event-host palette
    so it sits visually beside the title without competing with it. */
 .challenge-header-creator {
@@ -12321,9 +12321,9 @@ body.has-app-promo-banner .page-header {
   flex-shrink: 0;
 }
 
-/* Owner-side "Challenge someone in {city}" CTA — visible on the challenge
+/* Owner-side "Challenge someone in {city}" CTA - visible on the challenge
    detail page while the challenge is still free. Cyan rather than orange
-   so it visually separates from the share pill above (which IS orange —
+   so it visually separates from the share pill above (which IS orange -
    stacking two oranges reads as the same call repeated). Cyan also echoes
    the 🌐 International badge in the row above on intl rows. */
 .challenge-owner-invite-cta {
@@ -12344,7 +12344,7 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-owner-invite-cta:hover { background: rgba(56, 189, 248, 0.16); }
 
-/* ── Challenges filter — type sub-chips + see-all + load-more ─────────────
+/* ── Challenges filter - type sub-chips + see-all + load-more ─────────────
    Sit at the top of the Challenges filter strip. Compact pills so they
    don't compete with the challenge cards. Active state is brand orange to
    match the parent filter's selection cue. */
@@ -12420,7 +12420,7 @@ body.has-app-promo-banner .page-header {
   letter-spacing: 4px;
 }
 
-/* ── Challenge create — International mode UI ──────────────────────────────
+/* ── Challenge create - International mode UI ──────────────────────────────
    Reuses the existing .cef-* skeleton; only adds the hint line, city-picker
    button, and the picker modal. */
 
@@ -12467,7 +12467,7 @@ body.has-app-promo-banner .page-header {
   margin-left: 12px;
 }
 
-/* Picker modal — sits inside .modal-overlay/.modal-panel slide-up. */
+/* Picker modal - sits inside .modal-overlay/.modal-panel slide-up. */
 .cef-city-modal {
   padding: 14px 0 16px;
   display: flex;
@@ -12527,7 +12527,7 @@ body.has-app-promo-banner .page-header {
 .cef-city-modal-row:hover { background: rgba(255, 255, 255, 0.04); }
 .cef-city-modal-row.selected { background: rgba(255, 122, 60, 0.10); color: #FF7A3C; }
 
-/* ── Challenge — International proof block ────────────────────────────────
+/* ── Challenge - International proof block ────────────────────────────────
    Sits below the pipeline on the detail page for International challenges.
    Renders three faces: submission CTA, pending media + verdict buttons,
    terminal status line. */
@@ -12675,9 +12675,9 @@ body.has-app-promo-banner .page-header {
 .proof-reject-submit:hover:not(:disabled) { background: #dc2626; }
 .proof-reject-submit:disabled { opacity: 0.45; cursor: not-allowed; }
 
-/* ── Landing — International / cross-city section ────────────────────────────
+/* ── Landing - International / cross-city section ────────────────────────────
    Sits between the Local/Exploring split block and "How it works". Text-
-   heavy, single-column, no phone mockup — alternates the visual rhythm of
+   heavy, single-column, no phone mockup - alternates the visual rhythm of
    the page (split rows above are dense; this one is breathing room). The
    cyan ribbon up top echoes the 🌐 International badge on challenge cards
    so the connection between the tagline here and the in-app feature is
@@ -12695,7 +12695,7 @@ body.has-app-promo-banner .page-header {
   align-items: center;
   gap: 24px;
 }
-/* PR50 — text + screenshot share the inner; mobile stacks (text first,
+/* PR50 - text + screenshot share the inner; mobile stacks (text first,
    image below), wide viewports place the image to the right of the
    text column. */
 .lp-international-text {
@@ -12874,7 +12874,7 @@ body.has-app-promo-banner .page-header {
 .modal-btn--danger:hover { border-color: rgba(252, 165, 165, 0.50); }
 
 /* Manage / proof-spec modals reuse the .modal-panel skeleton. Both want
-   a real headline title (not the small uppercase eyebrow) — override. */
+   a real headline title (not the small uppercase eyebrow) - override. */
 .modal-panel--challenge-manage .modal-title,
 .modal-panel--proof-spec       .modal-title {
   display: block;
@@ -12887,7 +12887,7 @@ body.has-app-promo-banner .page-header {
 }
 
 /* The opt-in modal title needs the full-line treatment (the generic
-   .modal-title is the small uppercase header used by other modals — the
+   .modal-title is the small uppercase header used by other modals - the
    opt-in one is a real headline so override). */
 .modal-panel--challenge-optin .modal-title {
   display: block;
@@ -12917,7 +12917,7 @@ body.has-app-promo-banner .page-header {
   opacity: 0.7;
 }
 
-/* Visibility picker menu rows — show the selected option + a hint line. */
+/* Visibility picker menu rows - show the selected option + a hint line. */
 .challenge-visibility-opt {
   display: flex;
   flex-direction: column;
@@ -13065,7 +13065,7 @@ body.has-app-promo-banner .page-header {
   color:      #4ADE80;
   border-color: rgba(74, 222, 128, 0.28);
 }
-/* PR23 — Spectator: neutral, low-key palette so the badge reads "just
+/* PR23 - Spectator: neutral, low-key palette so the badge reads "just
    watching" without competing with the brand-orange Challenger or the
    green Taker. */
 .challenge-role-badge--spectator {
@@ -13074,7 +13074,7 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(148, 163, 184, 0.24);
 }
 
-/* Members modal — keep the badge inline next to the name (the parent
+/* Members modal - keep the badge inline next to the name (the parent
    .people-drawer-content is a flex column whose children would otherwise
    stretch the badge to full width). */
 .people-drawer-name-row {
@@ -13130,7 +13130,7 @@ body.has-app-promo-banner .page-header {
   .challenge-takeon-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 
-/* ── Channel actions row — sits right under the Take-on CTA ──────────── */
+/* ── Channel actions row - sits right under the Take-on CTA ──────────── */
 .challenge-channel-actions {
   display: flex;
   justify-content: center;
@@ -13152,7 +13152,7 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-members-strip { flex: 1 1 auto; min-width: 0; }
 
-/* Notifications on/off pill — sits in the toolbar next to the members strip. */
+/* Notifications on/off pill - sits in the toolbar next to the members strip. */
 .challenge-notif-toggle {
   flex: 0 0 auto;
   display: inline-flex;
@@ -13181,7 +13181,7 @@ body.has-app-promo-banner .page-header {
 .challenge-notif-toggle-icon  { font-size: 14px; }
 .challenge-notif-toggle-label { line-height: 1; }
 
-/* Members modal rows (the body inside .going-modal-body) — keep aligned
+/* Members modal rows (the body inside .going-modal-body) - keep aligned
    with the people-drawer pattern + add a kick button on the right. */
 .challenge-member-kick {
   margin-left: auto;
@@ -13214,7 +13214,7 @@ body.has-app-promo-banner .page-header {
   gap: 8px;
 }
 
-/* ── Participation gate — non-participant view ──────────────────────────── */
+/* ── Participation gate - non-participant view ──────────────────────────── */
 .challenge-join-gate {
   margin: 24px auto 40px;
   max-width: 480px;
@@ -13463,7 +13463,7 @@ body.has-app-promo-banner .page-header {
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  /* stagger-fade in — delays match the native modal cadence (320 / 420ms) */
+  /* stagger-fade in - delays match the native modal cadence (320 / 420ms) */
   opacity: 0;
   animation: sc-row-fade 0.28s ease-out forwards;
 }
@@ -13476,7 +13476,7 @@ body.has-app-promo-banner .page-header {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* PR38 — tappable rank rows. Adds a subtle hover background + a chevron
+/* PR38 - tappable rank rows. Adds a subtle hover background + a chevron
    on the right edge so the affordance reads as "tap me, go to the
    leaderboard". The :focus-visible ring is for keyboard users. */
 .score-celebration-row--tappable {
@@ -13537,7 +13537,7 @@ body.has-app-promo-banner .page-header {
 .score-celebration-cta:hover  { opacity: 0.92; }
 .score-celebration-cta:active { transform: scale(0.98); opacity: 0.85; }
 
-/* PR62 — Proof review modal (creator's "Review the proof" sub-CTA).
+/* PR62 - Proof review modal (creator's "Review the proof" sub-CTA).
    Big photo + Approve / Reject; reject swaps the body into a reason
    prompt. Reuses .modal-overlay / .modal-panel from the base modal
    skeleton; only the inner body + actions need their own rules. */

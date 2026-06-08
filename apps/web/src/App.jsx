@@ -74,7 +74,7 @@ function cityToSlug(name) {
 
 // Leading locale segment to strip from deep-link paths (Option A): ANY supported
 // locale prefix, e.g. /fr, /es, /it, /pt-br, /zh-hans. Built from the canonical
-// SUPPORTED list so adding a locale never desyncs the router — the old hardcoded
+// SUPPORTED list so adding a locale never desyncs the router - the old hardcoded
 // (fr|vi|es) silently dropped /it, /de, … to the landing page. Longest-first +
 // a segment-boundary lookahead so /zh-hant can't be shadowed by a shorter prefix.
 const LOCALE_PREFIX_RE = new RegExp(
@@ -82,7 +82,7 @@ const LOCALE_PREFIX_RE = new RegExp(
 )
 
 function parseDeepLink() {
-  // Strip an optional leading locale segment — Option A localized routes resolve
+  // Strip an optional leading locale segment - Option A localized routes resolve
   // to the same views as their un-prefixed English canonical. The locale itself
   // is read separately by src/i18n (resolveInitialLocale).
   const path = window.location.pathname.replace(LOCALE_PREFIX_RE, '') || '/'
@@ -91,7 +91,7 @@ function parseDeepLink() {
   const cityPastMatch     = path.match(/^\/city\/([^/]+)\/past$/)
   const cityCategoryMatch = path.match(/^\/city\/([^/]+)\/([a-z]+)$/)
   // /event/:slug accepts both legacy bare 16-hex IDs AND slug-with-trailing-hex
-  // formats — e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
+  // formats - e.g. /event/cong-ca-phe-2e617620a3f3b6f7. The trailing 16 hex
   // chars are always extracted as the canonical ID via extractEventHex().
   const eventMatch     = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   // /challenge/:slug accepts both bare hex AND slug+hex (same shape as events).
@@ -101,7 +101,7 @@ function parseDeepLink() {
   const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
-  // /city/:slug/:category — SPA treats as a regular city deep-link; the
+  // /city/:slug/:category - SPA treats as a regular city deep-link; the
   // prerender handles the SEO-specific /category route. SPA hydration just
   // shows the city page. (Future: pre-apply category filter from link[2].)
   if (cityPastMatch)       return { type: 'past',          slug: cityPastMatch[1] }
@@ -124,9 +124,9 @@ function parseDeepLink() {
 // Did the visitor land directly on a content deep-link (/city, /event, /venue,
 // /topic, …) instead of entering through the landing page? Captured ONCE at page
 // load, before any client-side navigation, so it reflects the true ENTRY URL.
-// Used to suppress the first-time onboarding carousel for deep-linked visitors —
+// Used to suppress the first-time onboarding carousel for deep-linked visitors -
 // only landing-funnel visitors (entered on the root) should see it.
-// NB: we key on the entry URL, NOT document.referrer — in this SPA the
+// NB: we key on the entry URL, NOT document.referrer - in this SPA the
 // landing→city hop is a client-side transition (referrer never updates), and a
 // same-origin referrer (clicking a shared link while another hilads tab is open)
 // would wrongly re-show onboarding. Entry URL is the only reliable signal.
@@ -235,7 +235,7 @@ function setPageMeta(title, description) {
  * (header chip, switch-city row, "Invite friends" feed prompt) renders the
  * same chat-thread-friendly copy.
  *
- * `text` is no longer threaded through to navigator.share — see share()
+ * `text` is no longer threaded through to navigator.share - see share()
  * below for why. We keep it on the return shape only as a hint to any future
  * caller that wants to add an inline UI (e.g. a custom share modal). It does
  * NOT reach navigator.share.
@@ -252,13 +252,13 @@ function composeCityShare(cityName) {
  * Why we drop `text` here even though the Web Share API spec accepts it:
  *   When `navigator.share({ title, text, url })` is invoked on Chrome
  *   desktop / some Chromium variants, the native share dialog's "Copy"
- *   option flattens the three fields into one string — typically
+ *   option flattens the three fields into one string - typically
  *   `${url}\n${text}` or `${url} ${text}`. That landed in users' clipboards
  *   as a broken URL with the description text appended (the bug report).
  *   Per the Web Share API spec the fields are distinct, but in the wild
  *   different OS/browser share sheets concatenate on Copy. The only way to
  *   GUARANTEE a clean URL on clipboard is to give the share dialog only a
- *   URL — no `text` to concatenate. The OG preview (M1+M2+M3) supplies
+ *   URL - no `text` to concatenate. The OG preview (M1+M2+M3) supplies
  *   title/description/image to the recipient's chat client automatically.
  *
  * Defensive belt: we ALSO pre-write the URL to clipboard before invoking
@@ -277,11 +277,11 @@ async function share({ title, url }) {
       await navigator.share({ title, url })
       return
     } catch (_) {
-      // user cancelled or share threw — pre-copy already covers the user
+      // user cancelled or share threw - pre-copy already covers the user
     }
   }
 
-  // No native share or it failed — clipboard.writeText is our primary path.
+  // No native share or it failed - clipboard.writeText is our primary path.
   if (navigator.clipboard?.writeText) {
     try {
       await navigator.clipboard.writeText(url)
@@ -309,13 +309,13 @@ function ShareVibeBtn({ eventId, title, city }) {
   const { t } = useTranslation('event')
   const [copied, setCopied] = useState(false)
   async function handleShare() {
-    // Slug URL — readable in chat threads, ranks better in SERPs, 301-resolves
+    // Slug URL - readable in chat threads, ranks better in SERPs, 301-resolves
     // for any legacy hex-only consumer. Locale-aware: from /fr|/vi the shared
     // link carries the prefix so the recipient lands on the localized page.
     const slug = eventSlug({ id: eventId, title })
     const url = `${window.location.origin}${localizePath(`/event/${slug}`)}`
     // Title gives the share dialog a label; URL stays clean. We deliberately
-    // do not pass descriptive text — the OG preview supplies it.
+    // do not pass descriptive text - the OG preview supplies it.
     const result = await share({ title: city ? `${title} · ${city}` : title, url })
     if (result === 'copied') {
       setCopied(true)
@@ -364,7 +364,7 @@ function NavIconCity() {
       <line x1="4" y1="21" x2="20" y2="21" />
       {/* Door */}
       <path d="M10.5 21v-3a1.5 1.5 0 0 1 3 0v3" />
-      {/* Windows — two rows of two */}
+      {/* Windows - two rows of two */}
       <line x1="9"    y1="8"  x2="10.5" y2="8" />
       <line x1="13.5" y1="8"  x2="15"   y2="8" />
       <line x1="9"    y1="12" x2="10.5" y2="12" />
@@ -382,7 +382,7 @@ function NavIconPeople() {
       {/* Front person */}
       <circle cx="15.5" cy="8" r="3.5" />
       <path d="M8 21a9 9 0 0 1 14 0" />
-      {/* Green presence dot — always green, not accent */}
+      {/* Green presence dot - always green, not accent */}
       <circle cx="20.5" cy="3.5" r="2.5" fill="var(--green)" stroke="var(--bg)" strokeWidth="1" />
     </svg>
   )
@@ -587,7 +587,7 @@ const JOIN_TEMPLATES = [
 ]
 
 // Strip duplicate weather items from a feed array built from history, keeping only the most recent.
-// Also drops nulls — toFeedItem returns null for suppressed items (own-arrival join, throttled joins),
+// Also drops nulls - toFeedItem returns null for suppressed items (own-arrival join, throttled joins),
 // and a null in the feed would crash the render (item.type) and this dedupe pass.
 function dedupeWeather(items) {
   items = items.filter(Boolean)
@@ -604,7 +604,7 @@ function dedupeWeather(items) {
 const SELF_IDENTITY = { guestId: null, userId: null }
 
 // lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
-// Returns null for suppressed joins — callers must filter nulls.
+// Returns null for suppressed joins - callers must filter nulls.
 function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && m.event === 'join') {
     // Never show a user their OWN arrival line (the join is a channel message
@@ -619,20 +619,20 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
     const joinVariant = Math.floor(Math.random() * JOIN_TEMPLATES.length)
     return { type: 'activity', subtype: 'join', id: messageKey(m), joinVariant, text: JOIN_TEMPLATES[joinVariant](m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null }
   }
-  // Weather system messages have no nickname/id — render as a subtle activity line.
+  // Weather system messages have no nickname/id - render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {
     return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content, createdAt: m.createdAt }
   }
-  // Guard: any other system message that slips through has no nickname — skip it rather than crash.
+  // Guard: any other system message that slips through has no nickname - skip it rather than crash.
   if (m.type === 'system') {
-    console.warn('[feed] unhandled system message — skipping:', m)
+    console.warn('[feed] unhandled system message - skipping:', m)
     return null
   }
   return { type: 'message', staggerDelay, ...m }
 }
 
 // Lowercase snake-case Hilads-flavored handles. ~30 × 30 × 10000 = 9M combos
-// vs the old 144 — collisions become statistically negligible at any scale
+// vs the old 144 - collisions become statistically negligible at any scale
 // the app is likely to hit, and the words read as "drift / city / time-of-day"
 // rather than generic animals. Produces e.g. `wandering_owl_4231`,
 // `dusk_traveler_8273`, `electric_neighbor_0192`.
@@ -659,7 +659,7 @@ function generateNickname() {
 }
 
 
-// Unique per page load — generated fresh so duplicated tabs never share a sessionId.
+// Unique per page load - generated fresh so duplicated tabs never share a sessionId.
 // Stored as a module-level constant so the same ID is used across re-renders and
 // Vite HMR fast-refresh (where the module is preserved, not reloaded).
 const PAGE_SESSION_ID = crypto.randomUUID()
@@ -770,8 +770,8 @@ function markWelcomed(channelId) {
   } catch {}
 }
 
-// First-time onboarding carousel — "seen once" flag (guests only).
-// localStorage (not a cookie — not sent on every request). On a read error we
+// First-time onboarding carousel - "seen once" flag (guests only).
+// localStorage (not a cookie - not sent on every request). On a read error we
 // deliberately default to SHOWING it (better one extra view than a crash); an
 // in-memory fallback prevents a re-show in the same session if writes also fail.
 const ONBOARDING_KEY = 'hilads_onboarding_seen'
@@ -820,7 +820,7 @@ export default function App() {
   const [showEmoji, setShowEmoji] = useState(false)
   const [sending, setSending] = useState(false)
   const [replyingTo, setReplyingTo] = useState(null)   // { id, nickname, content, type }
-  // Edit mode — { id, content, surface: 'channel'|'dm' } | null. Pre-fills the
+  // Edit mode - { id, content, surface: 'channel'|'dm' } | null. Pre-fills the
   // input; handleSend dispatches to the right edit endpoint instead of sending
   // a new message. Reply and edit are mutually exclusive.
   const [editingMsg, setEditingMsg] = useState(null)
@@ -875,22 +875,22 @@ export default function App() {
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
   const [previewTopics,     setPreviewTopics]     = useState([])
-  // Landing preview defis — parallel fetch alongside /now (which is event +
+  // Landing preview defis - parallel fetch alongside /now (which is event +
   // topic only). Surfaces the new primary entity in the city card so the
   // first-impression activity advertises défis, not just events/hangouts.
   const [previewChallengeCount, setPreviewChallengeCount] = useState(0)
   const [previewChallenges,     setPreviewChallenges]     = useState([])
   const [previewChannelId, setPreviewChannelId]   = useState(() => loadIdentity()?.channelId ?? null)
-  // Geo-resolved city — persisted to localStorage so "Back to my location" survives
+  // Geo-resolved city - persisted to localStorage so "Back to my location" survives
   // page refreshes. These are set once when geo resolves and never overwritten on city switch.
   const [geoChannelId,    setGeoChannelId]        = useState(() => loadGeoCity()?.channelId ?? null)
   const [geoCity,         setGeoCity]             = useState(() => loadGeoCity()?.city      ?? null)
   const [geoCountry,      setGeoCountry]          = useState(() => loadGeoCity()?.country   ?? null)
   const [geoTimezone,     setGeoTimezone]         = useState(() => loadGeoCity()?.timezone  ?? null)
-  // Viewer coords for NOW distance display — set only by the boot geolocation
+  // Viewer coords for NOW distance display - set only by the boot geolocation
   // (which runs on every load). NOT restored from storage: if the user has
   // disabled geolocation, this stays null so cards show the address (or nothing
-  // when there's no address) and use the default ordering — never a stale fix.
+  // when there's no address) and use the default ordering - never a stale fix.
   const [userLocation,    setUserLocation]         = useState(null)
   const [activeEventId, setActiveEventId] = useState(null)
   const [activeEvent, setActiveEvent] = useState(null)
@@ -947,7 +947,7 @@ export default function App() {
   }
   const [showConversations, setShowConversations] = useState(false)
   const [activeDm, setActiveDm] = useState(null) // { conversation, otherUser }
-  const [conversations, setConversations] = useState(null) // { dms, events } — loaded by ConversationsScreen on open
+  const [conversations, setConversations] = useState(null) // { dms, events } - loaded by ConversationsScreen on open
   const [conversationsHasUnread, setConversationsHasUnread] = useState(false) // lightweight dot, set at boot
   const [showProfileDrawer, setShowProfileDrawer] = useState(false)
   const [showAuthScreen, setShowAuthScreen] = useState(false)
@@ -963,12 +963,12 @@ export default function App() {
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
   const [friendReqCount, setFriendReqCount] = useState(0)
 
-  // Event limit reached — shown when a non-Legend user has already created
+  // Event limit reached - shown when a non-Legend user has already created
   // their event today (preflight check), or when the POST returns the
   // `event_limit_reached` error code (race safety).
   const [showEventLimitReached, setShowEventLimitReached] = useState(false)
 
-  // First-time onboarding carousel — guests only, once. Fires AFTER the city
+  // First-time onboarding carousel - guests only, once. Fires AFTER the city
   // channel is ready (so it overlays a loaded screen instead of blocking/
   // flashing first paint). Registered users never trigger it (account guard);
   // hasSeenOnboarding() keeps it from re-appearing on later visits.
@@ -985,7 +985,7 @@ export default function App() {
   // Each of the 3 inline tab drawers (NOW / HERE / ME-guest) has its own scroll
   // container. Drawers unmount when their flag flips false, so we stash the
   // last scrollTop in a ref and restore it the next time the tab opens.
-  // ProfileScreen (signed-in ME) has its own internal scroll — not preserved
+  // ProfileScreen (signed-in ME) has its own internal scroll - not preserved
   // here; see TODO in ProfileScreen.jsx if that becomes important.
   const tabScrollTops = useRef({ now: 0, here: 0, meGuest: 0 })
   const nowBodyRef     = useRef(null)
@@ -1032,10 +1032,10 @@ export default function App() {
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
   const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'challenges' | 'events' | 'topics'
-  // Sub-filter chips inside the Challenges filter — food / place / culture /
+  // Sub-filter chips inside the Challenges filter - food / place / culture /
   // help. Reset to 'all' whenever the parent filter leaves 'challenges'.
   const [challengeTypeFilter, setChallengeTypeFilter] = useState('all')
-  // Mode sub-filter inside the Challenges filter — Local/International/All.
+  // Mode sub-filter inside the Challenges filter - Local/International/All.
   // Asymmetric per spec: Local is the hero (default exists, but the badge is
   // suppressed on cards), International is the "always alive" growth lane.
   const [challengeModeFilter, setChallengeModeFilter] = useState('all')
@@ -1045,27 +1045,27 @@ export default function App() {
   const [challengesShownCount, setChallengesShownCount] = useState(NOW_CHALLENGES_CAP)
   const [cityChallenges,     setCityChallenges]     = useState([])
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
-  const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object — opens ChallengeChatPage
+  const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object - opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
   const [editChallengeObj,    setEditChallengeObj]    = useState(null)  // challenge being edited (owner)
   // Floating "seed it" modal shown immediately after a challenge is created.
   // Carries the new challenge so the modal can fetch city members + invite.
   const [postCreateChallenge, setPostCreateChallenge] = useState(null)
-  // PR2 — per-acceptance threads
-  // Thread chat retired in step D — the 1:1 surface moved into the
+  // PR2 - per-acceptance threads
+  // Thread chat retired in step D - the 1:1 surface moved into the
   // unified public challenge channel. State + setter kept off the tree
   // to avoid a dead handle lingering elsewhere.
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
-  const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 — initial scope when opened
-  const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 — bumps on WS mutual_rating_complete
+  const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
+  const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 - bumps on WS mutual_rating_complete
   const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
-  const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank — drives the 🏆 chip in renderCityHero
+  const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank - drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // ── Challenges feed pagination + type sub-filter ─────────────────────────
   // Lives next to the state it depends on (cityChallenges + the filter
-  // state above) so the reads happen AFTER their declarations — placing
+  // state above) so the reads happen AFTER their declarations - placing
   // these effects earlier in the function triggers a TDZ ReferenceError
   // at module bundle minification because `const` reads above the
   // declaration line are not hoisted.
@@ -1081,7 +1081,7 @@ export default function App() {
     }
   }, [nowFilter])
 
-  // Reset the visible-count when either sub-filter changes — switching from
+  // Reset the visible-count when either sub-filter changes - switching from
   // "food" to "place" (or Local→Intl) should land the user at the top of
   // that bucket.
   useEffect(() => {
@@ -1103,11 +1103,11 @@ export default function App() {
     return pool
   }, [cityChallenges, nowFilter, challengeTypeFilter, challengeModeFilter])
 
-  // Scroll-to-load-more — three gates so we never spam the rendering loop
+  // Scroll-to-load-more - three gates so we never spam the rendering loop
   // (and, when backend pagination lands, the API):
-  //   1. Throttle (BUMP_THROTTLE_MS) — at most one bump per ~3 frames.
-  //   2. Cap guard — bail when shownCount already covers the filter.
-  //   3. Distance threshold — only fire within ~240px of the bottom.
+  //   1. Throttle (BUMP_THROTTLE_MS) - at most one bump per ~3 frames.
+  //   2. Cap guard - bail when shownCount already covers the filter.
+  //   3. Distance threshold - only fire within ~240px of the bottom.
   const BUMP_THROTTLE_MS = 400
   const lastBumpAtRef = useRef(0)
   const filteredChallengesLengthRef = useRef(0)
@@ -1131,19 +1131,19 @@ export default function App() {
     return () => el.removeEventListener('scroll', onScroll)
   }, [nowFilter, challengesShownCount])
 
-  // Hangouts are members-only — gate guests to signup, otherwise open the channel.
+  // Hangouts are members-only - gate guests to signup, otherwise open the channel.
   const openHangout = (topic) => {
     if (!account) { setGuestGate({ reason: 'join_hangout' }); return }
     setActiveTopic(topic)
   }
-  // Hosting a hangout is members-only too — gate guests to signup.
+  // Hosting a hangout is members-only too - gate guests to signup.
   const openCreateHangout = () => {
     if (!account) { setGuestGate({ reason: 'create_hangout' }); return }
     setShowCreateTopic(true)
   }
   // Challenges allow guests (mirrors events, not hangouts). No auth gate.
   const openCreateChallenge = () => {
-    // Registered-only — same gate as openCreateEvent / openCreateTopic.
+    // Registered-only - same gate as openCreateEvent / openCreateTopic.
     // Guests can still browse, accept and chat in challenge channels;
     // creation requires an account so we have a verified owner for
     // validate/edit/delete and a target for participant notifications.
@@ -1168,7 +1168,7 @@ export default function App() {
   const [eventParticipants, setEventParticipants] = useState({}) // { [eventId]: number }
   const [participatedEvents, setParticipatedEvents] = useState(new Set()) // eventIds user toggled
   const [topics,          setTopics]          = useState([])
-  // Distance (meters) from the viewer per located item — computed once per
+  // Distance (meters) from the viewer per located item - computed once per
   // [events, cityEvents, topics, userLocation] change (not per render). Topics
   // (hangouts) use the creator's coords captured at creation.
   const distanceByEventId = useMemo(() => {
@@ -1193,7 +1193,7 @@ export default function App() {
   const [citySearchQuery, setCitySearchQuery] = useState('')
   const [cityFilter, setCityFilter] = useState('active') // 'active' | 'events' | 'online'
 
-  // ── Lazy-load full channel list — only fetched when user actually searches ───
+  // ── Lazy-load full channel list - only fetched when user actually searches ───
   // The ranked top-10 (loadChannels) is fetched on open; the full unsorted list
   // is only needed for search filtering, so we defer it until the first keystroke.
   useEffect(() => {
@@ -1205,7 +1205,7 @@ export default function App() {
     return () => { cancelled = true }
   }, [showCityPicker, citySearchQuery, allChannels.length]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── Local legends fetch — ambassadors for this city (no filter dependency) ──
+  // ── Local legends fetch - ambassadors for this city (no filter dependency) ──
   useEffect(() => {
     if (!showPeopleDrawer || viewingProfile || !channelId) return
     fetchCityAmbassadors(channelId)
@@ -1213,8 +1213,8 @@ export default function App() {
       .catch(() => {})
   }, [showPeopleDrawer, channelId]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // ── City crew fetch — triggered when people drawer opens or filters change ──
-  // Guard: skip when a profile overlay is open — the crew list isn't visible.
+  // ── City crew fetch - triggered when people drawer opens or filters change ──
+  // Guard: skip when a profile overlay is open - the crew list isn't visible.
   const crewChannelRef = useRef(null)
   useEffect(() => {
     if (!showPeopleDrawer || viewingProfile || !channelId) return
@@ -1254,7 +1254,7 @@ export default function App() {
   const isNearBottomRef = useRef(true) // true = auto-pin viewport to bottom on new content
   const FEED_MAX = 250 // trim oldest messages to keep React render time bounded
   const hasMoreMessagesRef = useRef(false) // mirrors hasMoreMessages state, readable inside scroll handlers
-  const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed — pagination cursor
+  const oldestMessageIdRef = useRef(null)  // ID of the oldest message in the feed - pagination cursor
   const loadingOlderRef    = useRef(false) // true while an older-page fetch is in flight
   const appendFeed = (items) => setFeed(prev => {
     const next = Array.isArray(items) ? [...prev, ...items] : [...prev, items]
@@ -1270,7 +1270,7 @@ export default function App() {
   const prevChallengeCountRef = useRef(0)  // detects new challenges added to cityChallenges
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
-  // Guard for the auto-bootstrap effect — prevents the deep-link auto-join
+  // Guard for the auto-bootstrap effect - prevents the deep-link auto-join
   // from firing twice under React StrictMode in dev.
   const guestAutoJoinedRef = useRef(false)
   const activeChannelRef = useRef(null) // guards against rapid-switch race conditions
@@ -1288,8 +1288,8 @@ export default function App() {
   })
   const sessionIdRef = useRef(PAGE_SESSION_ID)
   const guestIdRef   = useRef(null)   // always-current guestId for own-message WS echo detection
-  const pollFnRef = useRef(null)      // current room's poll function — called immediately on tab focus
-  const tabHiddenAtRef = useRef(null) // timestamp when tab was last hidden — guards doRefresh against rapid cycles
+  const pollFnRef = useRef(null)      // current room's poll function - called immediately on tab focus
+  const tabHiddenAtRef = useRef(null) // timestamp when tab was last hidden - guards doRefresh against rapid cycles
   const socketRef = useRef(null)      // WebSocket presence client
   const nicknameRef = useRef(nickname) // tracks current nickname for use in closures
   const accountRef  = useRef(account)  // tracks current account for use in closures
@@ -1306,13 +1306,13 @@ export default function App() {
   // Events refs
   const activeEventIdRef = useRef(null)
 
-  // City feed cache — saved when entering event chat, restored on return to city.
+  // City feed cache - saved when entering event chat, restored on return to city.
   // Avoids an extra GET /messages round-trip every time the user leaves an event.
   const cityFeedCacheRef    = useRef([])           // feed snapshot before event entry
   const cityKnownIdsCacheRef = useRef(new Set())   // knownIds snapshot before event entry
   const cityCursorCacheRef  = useRef({ oldestId: null, hasMore: false }) // reverse-scroll cursor snapshot before event entry
   // City messages received via WS while the user is in event mode (normally filtered out).
-  // Buffered here so they can be replayed on return — eliminates the delta fetchMessages call.
+  // Buffered here so they can be replayed on return - eliminates the delta fetchMessages call.
   const cityMsgBufferRef    = useRef([])           // { message } objects buffered during event mode
 
   const hasInstallFeedPrompt = feed.some(item => item.type === 'prompt' && item.subtype === 'install')
@@ -1355,7 +1355,7 @@ export default function App() {
     })
   }
 
-  // Lightweight unread check at boot — only fetches a boolean, not the full conversations list.
+  // Lightweight unread check at boot - only fetches a boolean, not the full conversations list.
   // Full conversations are loaded by ConversationsScreen when it mounts.
   // Deferred 2 s so it doesn't compete with join + messages on the critical path.
   useEffect(() => {
@@ -1364,7 +1364,7 @@ export default function App() {
       fetchConversationsUnread()
         .then(d => {
           if (d === null) {
-            // 401 — session expired mid-session; sign out cleanly
+            // 401 - session expired mid-session; sign out cleanly
             localStorage.removeItem(AUTH_FLAG_KEY)
             accountRef.current = null
             setAccount(null)
@@ -1377,7 +1377,7 @@ export default function App() {
     return () => clearTimeout(t)
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Load "My events" whenever the profile drawer opens — registered users only.
+  // Load "My events" whenever the profile drawer opens - registered users only.
   // Ghost users cannot create events (event creation requires auth), so there is
   // nothing to show and no point calling the now-auth-gated endpoint.
   useEffect(() => {
@@ -1411,9 +1411,9 @@ export default function App() {
     return () => { offRecv(); offCxled(); offAccept() }
   }, [account?.id])
 
-  // PR7 — Leaderboard 🏆 chip in the city header. One bounded fetch per
+  // PR7 - Leaderboard 🏆 chip in the city header. One bounded fetch per
   // (account, channelId) change. limit=1 so we only round-trip the caller's
-  // me.rank/me.points — the list is fetched in full only when the user
+  // me.rank/me.points - the list is fetched in full only when the user
   // opens the dedicated screen.
   useEffect(() => {
     let cancelled = false
@@ -1441,7 +1441,7 @@ export default function App() {
         .then(d => {
           if (cancelled) return
           if (d === null) {
-            // 401 — session expired mid-session; sign out cleanly
+            // 401 - session expired mid-session; sign out cleanly
             localStorage.removeItem(AUTH_FLAG_KEY)
             accountRef.current = null
             setAccount(null)
@@ -1456,7 +1456,7 @@ export default function App() {
 
   // Register push when account becomes available (login/register or page reload with session).
   // Also handles silent re-registration when permission was already granted.
-  // Deferred 3 s — completely non-critical, must not compete with join/messages.
+  // Deferred 3 s - completely non-critical, must not compete with join/messages.
   useEffect(() => {
     if (!account) return
     const t = setTimeout(() => { registerPush().catch(() => {}) }, 3000)
@@ -1559,7 +1559,7 @@ export default function App() {
         setCity(cityName)
         setCityCountry(country)
         setCityTimezone(timezone)
-        // After join the city, open the event — defer until handleJoin completes
+        // After join the city, open the event - defer until handleJoin completes
         setTimeout(() => handleSelectEvent(event), 800)
         return { channelId: event.channel_id, city: cityName, timezone, country }
       })
@@ -1581,7 +1581,7 @@ export default function App() {
       // Same flow as topic: fetch metadata for the host city, join it, then
       // open the challenge chat once the city's loaded so the user lands on
       // a fully-hydrated page. Skip the city-join setTimeout if the fetch
-      // returned null (404) — we'll just stay on home.
+      // returned null (404) - we'll just stay on home.
       locPromiseRef.current = fetchChallengeById(link.id).then(data => {
         if (!data) return null
         const { challenge, channelId, cityName, country, timezone } = data
@@ -1621,13 +1621,13 @@ export default function App() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // start geolocation immediately — runs concurrently with auth check
+    // start geolocation immediately - runs concurrently with auth check
     locPromiseRef.current = locPromiseRef.current ?? startGeolocation()
 
     // Resolve auth state BEFORE auto-rejoining so handleJoin always has the
     // correct identity. Without this, accountRef.current is null when
     // handleJoin runs and falls back to the guest nickname from localStorage.
-    // Only call if the device has ever had a registered session — skip for pure
+    // Only call if the device has ever had a registered session - skip for pure
     // guests to avoid a guaranteed 401 on every mount.
     if (localStorage.getItem(AUTH_FLAG_KEY)) {
       authMe()
@@ -1635,21 +1635,21 @@ export default function App() {
           if (data) {
             accountRef.current = data.user // sync ref so handleJoin reads it immediately
             setAccount(data.user)
-            // Auto-rejoin if the user has a saved city — skip the landing page entirely
+            // Auto-rejoin if the user has a saved city - skip the landing page entirely
             const saved = loadIdentity()
             if (saved?.channelId) {
               handleJoin(null)
               return
             }
           } else {
-            // 401 — session expired; clear the flag so future mounts skip this call
+            // 401 - session expired; clear the flag so future mounts skip this call
             localStorage.removeItem(AUTH_FLAG_KEY)
           }
           setRehydrating(false)
         })
         .catch(() => {
           setRehydrating(false)
-          /* network error — keep flag, session may still be valid */
+          /* network error - keep flag, session may still be valid */
         })
     } else {
       // ── Guest auto-bootstrap on deep-link entry ────────────────────────────
@@ -1669,18 +1669,18 @@ export default function App() {
       }
     }
 
-    // Tab close is treated as a SILENT disconnect, not an explicit leave —
+    // Tab close is treated as a SILENT disconnect, not an explicit leave -
     // intentionally NO leaveRoom / disconnectBeacon here. The WS server's 20s
     // grace + 5-min heartbeat TTL (HEARTBEAT_TTL_MS) lets the user linger on
     // the Here screen the same way mobile users do when the app is killed.
-    // City switch still calls leaveRoom (see channel-change handler below) —
+    // City switch still calls leaveRoom (see channel-change handler below) -
     // that's a different intent and stays instant. If you reopen the tab
     // inside the window, joinRoom on mount re-registers the same session
     // and the presence row just gets its last_seen_at bumped.
 
     // When returning to a hidden tab: re-assert presence and refresh messages.
     // Send joinRoom (not just heartbeat) so the session is re-registered if it somehow expired.
-    // Guard: only call doRefresh when the tab was hidden for ≥10 s — prevents permission dialogs
+    // Guard: only call doRefresh when the tab was hidden for ≥10 s - prevents permission dialogs
     // and rapid tab-switches from firing fetchMessages multiple times per session.
     const handleVisibilityChange = () => {
       if (document.hidden) {
@@ -1721,7 +1721,7 @@ export default function App() {
   // "Near bottom" is tracked by the scroll listener below (isNearBottomRef). It starts
   // true so the initial load always lands at the bottom. When the user scrolls up it
   // becomes false; when they scroll back within 150 px of the bottom it becomes true
-  // again. Any new feed item — messages, event pills, topic pills, system items — will
+  // again. Any new feed item - messages, event pills, topic pills, system items - will
   // keep them pinned as long as they haven't scrolled away.
   //
   // Channel/event switch: feed clears to [] → reset isNearBottomRef = true so the next
@@ -1743,10 +1743,10 @@ export default function App() {
 
   // ── Load older messages (pagination) ─────────────────────────────────────
   // Triggered by the scroll listener below when the user scrolls near the top.
-  // Uses refs throughout to avoid stale closures — the scroll handler is attached once.
+  // Uses refs throughout to avoid stale closures - the scroll handler is attached once.
 
   async function loadOlderMessages() {
-    // Same machinery for city and event chat — they share the feed + scroll
+    // Same machinery for city and event chat - they share the feed + scroll
     // container. When an event is open we page its messages; otherwise the city.
     const eventId   = activeEventIdRef.current
     const channelId = activeChannelRef.current
@@ -1791,7 +1791,7 @@ export default function App() {
         }
       })
     } catch {
-      // silent — user can scroll up again to retry
+      // silent - user can scroll up again to retry
     } finally {
       loadingOlderRef.current = false
       setLoadingOlder(false)
@@ -1810,7 +1810,7 @@ export default function App() {
 
   function triggerReactionBurst(emojiOrType, messageId) {
     const el = msgRefsMap.current.get(messageId)
-    if (!el) return // message not visible — skip
+    if (!el) return // message not visible - skip
     const rect = el.getBoundingClientRect()
     const x    = rect.left + rect.width  / 2
     const y    = rect.top  + rect.height * 0.3
@@ -1888,7 +1888,7 @@ export default function App() {
       // Capture the viewer's coords for NOW distance display (single read; no watcher).
       setUserLocation({ lat: userLat, lng: userLng })
       // Reverse-geocode to country (Nominatim) so backend can constrain
-      // nearest-city to the same country. Non-fatal if it fails — backend
+      // nearest-city to the same country. Non-fatal if it fails - backend
       // falls back to global nearest when no country is sent.
       const country = await reverseGeocodeCountry(userLat, userLng)
       const location = await resolveLocation(userLat, userLng, country)
@@ -1909,7 +1909,7 @@ export default function App() {
       // showing addresses instead of a stale distance.
       setUserLocation(null)
       // GeolocationPositionError.PERMISSION_DENIED = code 1
-      // POSITION_UNAVAILABLE = 2, TIMEOUT = 3 — permission was granted but no fix
+      // POSITION_UNAVAILABLE = 2, TIMEOUT = 3 - permission was granted but no fix
       if (err && err.code === 1) {
         setGeoState('denied')
       } else {
@@ -1939,14 +1939,14 @@ export default function App() {
   // The upcoming fallback ensures recurring city events (daily/weekly series) always show.
   //
   // Critical path guard:
-  //   - Skip entirely when status is already 'joining' or 'ready' — the post-join
+  //   - Skip entirely when status is already 'joining' or 'ready' - the post-join
   //     fetchNowFeed (inside handleJoin) will load events after bootstrap.
   //   - Store the AbortController in previewNowAbortRef so handleJoin can cancel this
   //     request the moment bootstrap starts, preventing /now from competing with
   //     POST /join + GET /messages?lean=1 for server resources.
   useEffect(() => {
     if (!previewChannelId) return
-    // Don't fire if we're already joining or in the channel — post-join fetchNowFeed handles it.
+    // Don't fire if we're already joining or in the channel - post-join fetchNowFeed handles it.
     if (statusRef.current !== 'onboarding') return
 
     // Cancel any previous in-flight preview /now before starting a new one.
@@ -1977,7 +1977,7 @@ export default function App() {
               .slice(0, 3)
               .map(e => ({ ...e, kind: 'event', event_type: e.type ?? 'other' }))
           } catch {
-            // ignore — leave eventsToShow empty
+            // ignore - leave eventsToShow empty
           }
         }
 
@@ -1986,7 +1986,7 @@ export default function App() {
       })
       .catch(() => {})
 
-    // Parallel — challenges aren't part of /now (separate axis); fetch them
+    // Parallel - challenges aren't part of /now (separate axis); fetch them
     // alongside so the landing card surfaces the new primary entity. Best-
     // effort; any failure just leaves previewChallenges empty.
     fetchCityChallenges(previewChannelId, 3).then(chs => {
@@ -2013,7 +2013,7 @@ export default function App() {
       if (!activeRef.current) return
       const activity = randomActivity()
       setFeed((prev) => {
-        // Suppress if there are 3+ real messages — city is active enough
+        // Suppress if there are 3+ real messages - city is active enough
         const realMsgs = prev.filter(m => m.type === 'message').length
         if (realMsgs >= 3) return prev
         return [...prev, { type: 'activity', id: `act-${Date.now()}`, subtype: activity.subtype, variant: activity.variant, text: activity.text }]
@@ -2024,7 +2024,7 @@ export default function App() {
 
   function schedulePrompts() {
     // Only inject in city chat (not event chat), only once per subtype per session.
-    // Each prompt checks activity level before injecting — suppressed when city is busy.
+    // Each prompt checks activity level before injecting - suppressed when city is busy.
 
     // explore: 15s, only if feed is still empty
     setTimeout(() => {
@@ -2107,7 +2107,7 @@ export default function App() {
   }
 
   // Reminder cards (new event / new hangout / explore-photo-create prompts /
-  // ambient crowd) — transient nudges, not conversation. Fade them out after a
+  // ambient crowd) - transient nudges, not conversation. Fade them out after a
   // delay and pulse the NOW tab to point at where that content lives. Real
   // messages, "X joined", weather, install prompt and the welcome card stay.
   function isReminderCard(item) {
@@ -2115,7 +2115,7 @@ export default function App() {
       || item.type === 'topic'
       || item.type === 'challenge'
       || item.type === 'challenge_validated'
-      // 'install' and 'challenge-intro' are sticky prompts — install because
+      // 'install' and 'challenge-intro' are sticky prompts - install because
       // the user might miss it on first reflow, challenge-intro because it's
       // an explainer that should sit there until tapped.
       || (item.type === 'prompt' && item.subtype !== 'install' && item.subtype !== 'challenge-intro')
@@ -2199,7 +2199,7 @@ export default function App() {
         ? Promise.resolve({ guestId: savedGuestId, nickname: name })
         : createGuestSession(name)
       // The session POST runs eagerly (parallel with geo) but is only awaited
-      // far below — after `await locPromiseRef.current`, which takes 700ms-3.4s.
+      // far below - after `await locPromiseRef.current`, which takes 700ms-3.4s.
       // If the POST rejects during that window (e.g. a network blip →
       // "TypeError: Failed to fetch"), no handler is attached yet, so the browser
       // fires `unhandledrejection` and Sentry reports phantom noise. Attaching a
@@ -2209,7 +2209,7 @@ export default function App() {
 
       // ── Location: fast path for returning users ───────────────────────────────
       // Problem: `await locPromiseRef.current` (GPS fix + resolve API) blocks for
-      // 700ms–3400ms before bootstrap even starts — but returning users have
+      // 700ms–3400ms before bootstrap even starts - but returning users have
       // channelId already in localStorage and don't need geo at all.
       //
       // Fast path: if savedIdentity.channelId exists, use it immediately.
@@ -2218,7 +2218,7 @@ export default function App() {
       // Slow path: first-time users with no saved channelId must wait for geo
       //   to discover which city they're in.
       //
-      // Geo continues running in background regardless — it updates geoCity /
+      // Geo continues running in background regardless - it updates geoCity /
       // geoChannelId / cityCountry for UI display, but is no longer on the
       // bootstrap critical path.
       let location
@@ -2226,7 +2226,7 @@ export default function App() {
       // pointed locPromiseRef at the linked city, so it must win over the saved
       // "last city". Without this, a returning user opening /city/abidjan gets
       // dropped back into their saved channel (header says Abidjan but feed/events
-      // stay HCMC) — and SSR (URL-based) disagrees with the hydrated app.
+      // stay HCMC) - and SSR (URL-based) disagrees with the hydrated app.
       const urlLink = parseDeepLink()
       const deepLinkCity = !rejoinData && urlLink &&
         (urlLink.type === 'city' || urlLink.type === 'event' || urlLink.type === 'topic' || urlLink.type === 'challenge' || urlLink.type === 'past')
@@ -2247,7 +2247,7 @@ export default function App() {
           }
         }
       } else if (savedIdentity?.channelId) {
-        // Instant — no network call, no GPS wait
+        // Instant - no network call, no GPS wait
         location = {
           channelId: savedIdentity.channelId,
           city:      savedIdentity.city     ?? null,
@@ -2263,7 +2263,7 @@ export default function App() {
       }
 
       if (!location && !rejoinData) {
-        // Geo was denied before a city was selected — return to onboarding
+        // Geo was denied before a city was selected - return to onboarding
         setStatus('onboarding')
         return
       }
@@ -2280,7 +2280,7 @@ export default function App() {
       })
       if (!savedGuestId) {
         saveGuestId(session.guestId)
-        // identifyUser / guest_created deferred to after bootstrap — see below
+        // identifyUser / guest_created deferred to after bootstrap - see below
       }
       guestIdRef.current = session.guestId
       SELF_IDENTITY.guestId = session.guestId
@@ -2302,7 +2302,7 @@ export default function App() {
       previewNowAbortRef.current = null
 
       // Parallel fetch: join (presence CTE + join event) and messages (read-only, lean)
-      // run concurrently — critical path = max(join, messages) instead of their sum.
+      // run concurrently - critical path = max(join, messages) instead of their sum.
       const [joinData, messagesData] = await Promise.all([
         joinChannel(location.channelId, sessionIdRef.current, session.guestId, name),
         fetchLeanMessages(location.channelId, { limit: 50 }),
@@ -2314,7 +2314,7 @@ export default function App() {
         onlineCount: null, // WS presenceSnapshot will set this immediately after socket join
       }
 
-      // boot.joinMessage is null for re-joins within presence TTL — handle gracefully
+      // boot.joinMessage is null for re-joins within presence TTL - handle gracefully
       const joinKey = boot.joinMessage ? messageKey(boot.joinMessage) : null
       knownIdsRef.current = new Set(boot.messages.map(messageKey).filter(Boolean))
 
@@ -2328,7 +2328,7 @@ export default function App() {
       setFeed(initialItems)
 
       // Set pagination cursor: oldest message that HAS an id (system messages
-      // — arrivals/weather — come back id-less, so boot.messages[0] is often id-less).
+      // - arrivals/weather - come back id-less, so boot.messages[0] is often id-less).
       const more = boot.hasMore ?? false
       hasMoreMessagesRef.current = more
       setHasMoreMessages(more)
@@ -2338,7 +2338,7 @@ export default function App() {
       setStatus('ready')
 
       // If the user entered via the bare root (hilads.live, /fr, /vi) and then
-      // joined a city — onboarding pick or returning-user auto-rejoin — reflect
+      // joined a city - onboarding pick or returning-user auto-rejoin - reflect
       // the city in the URL (localized via pushUrl). Without this the URL stays
       // on the root shell, so a fresh load / view-source returns the static
       // English index.html instead of the city's localized SSR meta. Deep-link
@@ -2349,7 +2349,7 @@ export default function App() {
       }
 
       // ── Deferred badge enrichment ────────────────────────────────────────────
-      // Bootstrap (lean=1) skips the badge DB query — messages arrive with ghost
+      // Bootstrap (lean=1) skips the badge DB query - messages arrive with ghost
       // badges by default. Enrich registered-user messages immediately after the
       // screen is usable so badges appear within ~200 ms of first render.
       const joinBadgeIds = [...new Set(
@@ -2450,8 +2450,8 @@ export default function App() {
       // Socket: push new messages instantly instead of waiting for the 3s poll.
       // The poll remains as a fallback for when WS is disconnected.
       socket.on('newMessage', ({ channelId, message }) => {
-        // City channelId is a number from WS but string from API — use String() coercion.
-        // Event channelId is a UUID string on both sides — strict equality works fine.
+        // City channelId is a number from WS but string from API - use String() coercion.
+        // Event channelId is a UUID string on both sides - strict equality works fine.
         const isCityMsg  = String(channelId) === String(activeChannelRef.current)
         const isEventMsg = channelId === activeEventIdRef.current
 
@@ -2495,7 +2495,7 @@ export default function App() {
           if (item.subtype === 'join') scheduleEphemeral(item.id)
           // Guest got @mentioned by someone else while online → real-time in-app
           // signal only (highlight + discreet signup nudge). Guests have no push
-          // channel, so nothing is sent server-side — this is purely local.
+          // channel, so nothing is sent server-side - this is purely local.
           if (item.type === 'message' && !isOwnMsg && !accountRef.current && myGuestId
               && Array.isArray(message.mentions)
               && message.mentions.some(m => m && m.guestId === myGuestId)) {
@@ -2521,7 +2521,7 @@ export default function App() {
         }
       })
 
-      // Socket: handle new_event — append card directly from WS payload (no HTTP fetch).
+      // Socket: handle new_event - append card directly from WS payload (no HTTP fetch).
       socket.on('new_event', ({ channelId, hiladsEvent }) => {
         if (String(channelId) !== String(activeChannelRef.current)) return
         if (!hiladsEvent?.id) return
@@ -2549,7 +2549,7 @@ export default function App() {
         setEventParticipants(prev => ({ ...prev, [ev.id]: ev.participant_count }))
       })
 
-      // Socket: handle new_challenge — append to cityChallenges so (a) the
+      // Socket: handle new_challenge - append to cityChallenges so (a) the
       // NOW screen strip updates live without a refetch, and (b) the
       // useEffect watching cityChallenges below injects a feed pill into
       // the city chat (mirrors how new_event populates the feed).
@@ -2559,9 +2559,9 @@ export default function App() {
         setCityChallenges(prev => prev.some(c => c.id === challenge.id) ? prev : [...prev, challenge])
       })
 
-      // Socket: handle challenge_validated — inject a separate celebration
+      // Socket: handle challenge_validated - inject a separate celebration
       // pill ("🏆 Challenge done!") into the city feed. Independent from the
-      // original creation pill — both are timeline-worthy events. Dedup by
+      // original creation pill - both are timeline-worthy events. Dedup by
       // id since the same validation arrives once per session.
       socket.on('challenge_validated', ({ channelId, challenge }) => {
         if (String(channelId) !== String(activeChannelRef.current)) return
@@ -2582,7 +2582,7 @@ export default function App() {
         setCityChallenges(prev => prev.map(c => c.id === challenge.id ? challenge : c))
       })
 
-      // Socket: handle newTopic — append pill directly from WS payload.
+      // Socket: handle newTopic - append pill directly from WS payload.
       socket.on('newTopic', ({ channelId, topic }) => {
         if (String(channelId) !== String(activeChannelRef.current)) return
         if (!topic?.id) return
@@ -2600,7 +2600,7 @@ export default function App() {
         setTopics(prev => prev.some(p => String(p.id) === String(t.id)) ? prev : [...prev, t])
       })
 
-      // Reaction updates — PHP sends "city_N" for city channels, plain eventId for events.
+      // Reaction updates - PHP sends "city_N" for city channels, plain eventId for events.
       socket.on('reactionUpdate', ({ channelId: ch, messageId, reactions }) => {
         const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
         const isEventMatch = ch === activeEventIdRef.current
@@ -2608,12 +2608,12 @@ export default function App() {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
       })
 
-      // DM reaction updates — update by messageId match (IDs are globally unique).
+      // DM reaction updates - update by messageId match (IDs are globally unique).
       socket.on('dmReactionUpdate', ({ messageId, reactions }) => {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
       })
 
-      // Edit / delete broadcasts — channel feed (city + event).
+      // Edit / delete broadcasts - channel feed (city + event).
       socket.on('messageEdited', ({ channelId: ch, messageId, content, editedAt }) => {
         const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
         const isEventMatch = ch === activeEventIdRef.current
@@ -2626,7 +2626,7 @@ export default function App() {
         if (!isCityMatch && !isEventMatch) return
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content: '', imageUrl: undefined, deletedAt: deletedAt ?? Math.floor(Date.now() / 1000) } : m))
       })
-      // DM edit / delete — feed holds both surfaces while a DM is open; match by id.
+      // DM edit / delete - feed holds both surfaces while a DM is open; match by id.
       socket.on('dmMessageEdited', ({ messageId, content, editedAt }) => {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content, edited_at: editedAt ?? new Date().toISOString() } : m))
       })
@@ -2634,12 +2634,12 @@ export default function App() {
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content: '', image_url: undefined, deleted_at: deletedAt ?? new Date().toISOString() } : m))
       })
 
-      // Real-time reaction animations — purely visual, no stored state changed.
+      // Real-time reaction animations - purely visual, no stored state changed.
       socket.on('reaction', ({ type, messageId }) => {
         triggerReactionBurstRef.current?.(type, messageId)
       })
 
-      // PR47 — mutual rating just completed (for THIS user — server
+      // PR47 - mutual rating just completed (for THIS user - server
       // dispatched the event to both the rater + ratee). Bump the
       // celebration refetch key so the launch gate refetches
       // /me/score-celebration and surfaces the "+30/+40" debrief popin
@@ -2648,7 +2648,7 @@ export default function App() {
         setCelebrationRefetchKey(k => k + 1)
       })
 
-      // First rating just landed — the counterparty rated US. Bump the
+      // First rating just landed - the counterparty rated US. Bump the
       // rate-prompt refetch key so RatePromptLaunchGate re-runs its
       // /me/rate-prompts fetch and surfaces the RateSheet for OUR side
       // of the verdict without waiting for a reload or another nav.
@@ -2683,7 +2683,7 @@ export default function App() {
       pollFnRef.current = doRefresh
 
       // ── Events + Topics: fetch in background after messages are shown ────────
-      // Bootstrap no longer includes events — /now fires separately so it never
+      // Bootstrap no longer includes events - /now fires separately so it never
       // blocks the initial chat render. hotEventsStatus was set to 'loading' above.
       const joinChannelId = location.channelId
       fetchCityChallenges(joinChannelId).then(chs => { if (activeChannelRef.current === joinChannelId) setCityChallenges(chs) }).catch(() => {})
@@ -2707,7 +2707,7 @@ export default function App() {
       }).catch(() => setHotEventsStatus('ready'))
     } catch (err) {
       if (rejoinData) {
-        // stored channel may no longer exist — fall back to home
+        // stored channel may no longer exist - fall back to home
         clearIdentity()
         setStatus('onboarding')
       } else {
@@ -2742,7 +2742,7 @@ export default function App() {
     e.target.value = ''
     if (!file) return
 
-    // Client-side pre-flight — real validation happens on the server too
+    // Client-side pre-flight - real validation happens on the server too
     const allowed = ['image/jpeg', 'image/png', 'image/webp']
     if (!allowed.includes(file.type)) {
       alert(t('imageType'))
@@ -2762,9 +2762,9 @@ export default function App() {
         ? await sendEventImageMessage(activeEventIdRef.current, guest.guestId, activeNickname, url)
         : await sendImageMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, url)
       // Reconcile: WS may have already inserted the server message while we were uploading.
-      // If so, just add the server ID to knownIds (dedup future echoes) — no feed append needed.
+      // If so, just add the server ID to knownIds (dedup future echoes) - no feed append needed.
       // If not, append now. localId placeholder was never inserted for images (upload takes time),
-      // so there is nothing to replace — just guard against the WS-wins race.
+      // so there is nothing to replace - just guard against the WS-wins race.
       knownIdsRef.current.add(msg.id)
       setFeed((prev) => {
         if (prev.some(f => f.id === msg.id)) return prev   // WS already inserted it
@@ -2802,7 +2802,7 @@ export default function App() {
     // Build @mention offsets from the final text, then reset the picker state.
     const builtMentions = mentions.buildAndReset(content.trim())
 
-    // Optimistic insert — message appears instantly without waiting for HTTP.
+    // Optimistic insert - message appears instantly without waiting for HTTP.
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
     const optimistic = {
       type:      'message',
@@ -2857,7 +2857,7 @@ export default function App() {
       setEditingMsg(null)
       setInput('')
       if (content === current.content) return  // no-op when unchanged
-      // Optimistic patch — server WS broadcast will reconcile.
+      // Optimistic patch - server WS broadcast will reconcile.
       const stamp = current.surface === 'dm' ? new Date().toISOString() : Math.floor(Date.now() / 1000)
       const key = current.surface === 'dm' ? 'edited_at' : 'editedAt'
       setFeed(prev => prev.map(m => m.id === current.id ? { ...m, content, [key]: stamp } : m))
@@ -2950,7 +2950,7 @@ export default function App() {
     loadChannels(cityFilter)
   }
 
-  // "My city" bottom-tab handler — closes every drawer so the City Channel
+  // "My city" bottom-tab handler - closes every drawer so the City Channel
   // (the implicit default render) becomes visible.
   // Dismiss anything rendered as a .full-page overlay (z-index: 200) so the
   // bottom-nav tabs actually swap screens instead of staying buried under
@@ -2976,7 +2976,7 @@ export default function App() {
     dismissFullPageOverlays()
   }
 
-  // Bottom-tab handlers for NOW / HERE / ME — each clears every other
+  // Bottom-tab handlers for NOW / HERE / ME - each clears every other
   // top-level flag before setting its own. Without this, tapping e.g. NOW
   // then HERE leaves both drawer flags true and closing the top one reveals
   // the one underneath instead of returning to the City Channel.
@@ -3127,7 +3127,7 @@ export default function App() {
     setShowCityPicker(false)
     setCityCountry(newCityCountry ?? null)
 
-    // Switch-city is a browse surface — NEVER overwrites the home city,
+    // Switch-city is a browse surface - NEVER overwrites the home city,
     // not even for Legends. The home city is strictly geolocation-driven
     // (set by /location/resolve). Legends still have an explicit override
     // path on their profile (HOME CITY input), which is the only place
@@ -3144,7 +3144,7 @@ export default function App() {
     clearInterval(heartbeatRef.current)
     socketRef.current?.leaveRoom(channelId, sessionIdRef.current)
 
-    // mark which channel we're switching to — used to discard stale async results
+    // mark which channel we're switching to - used to discard stale async results
     activeChannelRef.current = newChannelId
 
     // reset all room-specific state immediately so UI never shows stale data
@@ -3189,10 +3189,10 @@ export default function App() {
         onlineCount: null, // WS presenceSnapshot restores this after socket room join
       }
 
-      // another switch happened while we were loading — discard
+      // another switch happened while we were loading - discard
       if (activeChannelRef.current !== newChannelId) return
 
-      // boot.joinMessage is null for re-joins within presence TTL — handle gracefully
+      // boot.joinMessage is null for re-joins within presence TTL - handle gracefully
       const joinKey = boot.joinMessage ? messageKey(boot.joinMessage) : null
 
       knownIdsRef.current = new Set(boot.messages.map(messageKey).filter(Boolean))
@@ -3214,7 +3214,7 @@ export default function App() {
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(newChannelId, newCityName)
 
-      // Deferred badge enrichment — same pattern as handleJoin
+      // Deferred badge enrichment - same pattern as handleJoin
       const switchBadgeIds = [...new Set(
         boot.messages
           .filter(m => (m.type === 'text' || m.type === 'image') && m.userId)
@@ -3237,17 +3237,17 @@ export default function App() {
       promptsShownRef.current = new Set()
       schedulePrompts()
 
-      // Socket: join new room — existing handlers (set up in handleJoin) remain active
+      // Socket: join new room - existing handlers (set up in handleJoin) remain active
       socketRef.current?.joinRoom(newChannelId, sessionIdRef.current, activeNickname, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', guestIdRef.current)
 
-      // Restart heartbeat for the new room (same policy — no !document.hidden)
+      // Restart heartbeat for the new room (same policy - no !document.hidden)
       heartbeatRef.current = setInterval(() => {
         if (activeRef.current && activeChannelRef.current) {
           socketRef.current?.heartbeat(activeChannelRef.current, sessionIdRef.current)
         }
       }, 30_000)
 
-      // Tab-focus refresh only — new messages arrive via WebSocket
+      // Tab-focus refresh only - new messages arrive via WebSocket
       const doRefresh = async () => {
         if (!activeRef.current) return
         const latest = await fetchMessages(newChannelId, { limit: 50 })
@@ -3283,7 +3283,7 @@ export default function App() {
         setHotEventsStatus('ready')
       }).catch(() => setHotEventsStatus('ready'))
     } catch {
-      // silently fail — user stays with empty feed for new city
+      // silently fail - user stays with empty feed for new city
     }
   }
 
@@ -3309,7 +3309,7 @@ export default function App() {
       // Only cache when coming from city (not switching between events)
       cityFeedCacheRef.current     = feed
       cityKnownIdsCacheRef.current = new Set(knownIdsRef.current)
-      // Snapshot the city reverse-scroll cursor too — the event reuses these
+      // Snapshot the city reverse-scroll cursor too - the event reuses these
       // shared refs, so we restore them in handleBackToCity to keep city
       // pagination intact after returning.
       cityCursorCacheRef.current   = { oldestId: oldestMessageIdRef.current, hasMore: hasMoreMessagesRef.current }
@@ -3346,7 +3346,7 @@ export default function App() {
     )
 
     // Initial fetch for event messages; subsequent messages arrive via WebSocket.
-    // doRefresh doubles as the poll fn — only the FIRST load (cursor still null)
+    // doRefresh doubles as the poll fn - only the FIRST load (cursor still null)
     // seeds the pagination cursor + hasMore; later polls just append new ones.
     const doRefresh = async () => {
       if (!activeRef.current) return
@@ -3394,7 +3394,7 @@ export default function App() {
         return next
       })
     } catch {
-      // silent — state stays as-is
+      // silent - state stays as-is
     }
   }
 
@@ -3484,7 +3484,7 @@ export default function App() {
       hasMoreMessagesRef.current = cityCursorCacheRef.current.hasMore
       setHasMoreMessages(cityCursorCacheRef.current.hasMore)
     } else {
-      // No cache (e.g. user entered event before city feed loaded) — fetch fresh.
+      // No cache (e.g. user entered event before city feed loaded) - fetch fresh.
       knownIdsRef.current = new Set()
       setFeed([])
       oldestMessageIdRef.current = null
@@ -3510,7 +3510,7 @@ export default function App() {
     cityKnownIdsCacheRef.current = new Set()
     cityMsgBufferRef.current     = []
 
-    // Tab-focus refresh only — new messages arrive via WebSocket
+    // Tab-focus refresh only - new messages arrive via WebSocket
     const doRefresh = async () => {
       if (!activeRef.current) return
       const latest = await fetchMessages(cid, { limit: 50 })
@@ -3547,7 +3547,7 @@ export default function App() {
   }
 
   // Guard: only registered users can create events
-  // Legacy name kept so existing callers don't need to change — now just
+  // Legacy name kept so existing callers don't need to change - now just
   // delegates to tryOpenCreateEvent so every entry point gets the preflight.
   function openCreateEvent() {
     tryOpenCreateEvent()
@@ -3573,7 +3573,7 @@ export default function App() {
         return
       }
     } catch {
-      // Fall through — optimistic open.
+      // Fall through - optimistic open.
     }
     if (fromDrawer) {
       setShowEventDrawer(false)
@@ -3602,7 +3602,7 @@ export default function App() {
     if (newEvent?.id) {
       setEvents(prev => [...prev, newEvent])
       setHotEventsStatus('ready')
-      // Creator is auto-joined server-side — reflect that immediately in UI
+      // Creator is auto-joined server-side - reflect that immediately in UI
       setParticipatedEvents(prev => new Set([...prev, newEvent.id]))
       setEventParticipants(prev => ({ ...prev, [newEvent.id]: 1 }))
     }
@@ -3627,7 +3627,7 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current, t)
 
-  // City composer placeholder — translated list, picked deterministically by channel.
+  // City composer placeholder - translated list, picked deterministically by channel.
   const cityPlaceholderList = t('placeholders', { returnObjects: true })
   const cityComposerPlaceholder = Array.isArray(cityPlaceholderList) && cityPlaceholderList.length > 0
     ? cityPlaceholderList[channelId % cityPlaceholderList.length]
@@ -3654,7 +3654,7 @@ export default function App() {
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject a new-challenge pill when cityChallenges grows (real-time defi
-  // added). Mirrors the events injection above — only in city chat (not
+  // added). Mirrors the events injection above - only in city chat (not
   // when an event is open), dedup via prev.some, stays in feed permanently
   // like a normal message. Audience picks the locale-aware verb template.
   useEffect(() => {
@@ -3663,7 +3663,7 @@ export default function App() {
       return
     }
     if (cityChallenges.length > prevChallengeCountRef.current) {
-      // Cap the chat-feed challenge prompts at the 5 newest — older
+      // Cap the chat-feed challenge prompts at the 5 newest - older
       // challenges still live in the NOW feed and the Challenges filter
       // (paginated). Without this cap a freshly-rebuilt feed would inject
       // every challenge ever created in the city.
@@ -3680,7 +3680,7 @@ export default function App() {
             nickname:    ch.nickname,
             audience:    ch.audience,
             mode:        ch.mode ?? 'local',
-            // PR19 — origin + target country codes so the international
+            // PR19 - origin + target country codes so the international
             // banner can render "🇫🇷 → 🇻🇳 International challenge: …" via
             // countryToFlag at render time. Local rows ignore these.
             country:        ch.country        ?? null,
@@ -3693,7 +3693,7 @@ export default function App() {
   }, [cityChallenges]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject active topics into city feed when topics load or a new topic appears.
-  // Uses same dedup guard as events (prev.some). Topics sorted by activity DESC —
+  // Uses same dedup guard as events (prev.some). Topics sorted by activity DESC -
   // reverse so most-active topic ends up at the bottom (newest position).
   useEffect(() => {
     if (!activeRef.current || activeEventIdRef.current) return
@@ -4021,11 +4021,11 @@ export default function App() {
   return (
     <div className="chat-layout">
 
-      {/* Android Play Store promo — renders only on Android non-installed visitors */}
+      {/* Android Play Store promo - renders only on Android non-installed visitors */}
       <AppPromoBanner />
       <AppPromoInterstitial />
 
-      {/* Events sidebar — desktop only */}
+      {/* Events sidebar - desktop only */}
       <EventsSidebar
         events={events}
         cityEvents={cityEvents}
@@ -4136,7 +4136,7 @@ export default function App() {
           ) : (
             /* City mode */
             <>
-              {/* ── Desktop layout — unchanged, hidden on mobile ── */}
+              {/* ── Desktop layout - unchanged, hidden on mobile ── */}
               <div className="header-desktop-layout">
                 <div className="header-desktop-zone header-desktop-zone--left">
                   <div className="header-desktop-left">
@@ -4201,13 +4201,13 @@ export default function App() {
                 </div>
               </div>
 
-              {/* ── Mobile layout — new 3-section design, hidden on desktop ── */}
+              {/* ── Mobile layout - new 3-section design, hidden on desktop ── */}
               <div className="header-new">
 
                 {/* Section 1: shared app header (Share is MY-CITY-only) */}
                 {renderAppHeader({ withShare: true })}
 
-                {/* Section 2: city hero name — tappable → switch city */}
+                {/* Section 2: city hero name - tappable → switch city */}
                 {city && (
                   <button
                     type="button"
@@ -4274,7 +4274,7 @@ export default function App() {
           )}
         </header>
 
-        {/* Arrivals strip — extracted from the main feed so real messages
+        {/* Arrivals strip - extracted from the main feed so real messages
             aren't drowned by ambient join lines. Default shows a neutral
             label; on a new arrival it morphs in-place for 3s. Same items as
             before (post-throttle, post own-arrival filter from toFeedItem). */}
@@ -4402,7 +4402,7 @@ export default function App() {
               )
             }
 
-            // Challenge feed item — parallel shape to events. The text key
+            // Challenge feed item - parallel shape to events. The text key
             // varies by mode (international stands apart) then by audience
             // (locals vs travelers) for Local rows. Tapping "Voir →" opens
             // the ChallengeChatPage via setActiveChallenge.
@@ -4412,9 +4412,9 @@ export default function App() {
               const textKey   = isIntl
                 ? 'feedNew.challengeInternational'
                 : item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
-              // PR19 — origin → target flag pair for the international
+              // PR19 - origin → target flag pair for the international
               // banner. Falls back to 🌍 when target country is null
-              // ("anywhere"). Local rows ignore these — i18next no-ops
+              // ("anywhere"). Local rows ignore these - i18next no-ops
               // missing tokens.
               const fromFlag = isIntl ? (countryToFlag(item.country) || '🌐') : ''
               const toFlag   = isIntl ? (countryToFlag(item.targetCountry) || '🌍') : ''
@@ -4440,7 +4440,7 @@ export default function App() {
               )
             }
 
-            // Validated-challenge celebration — fires when the owner flips
+            // Validated-challenge celebration - fires when the owner flips
             // the challenge to validated. Independent pill from the original
             // creation one (both stay visible in the timeline). Same Voir →
             // CTA so users can land on the archived chat.
@@ -4715,7 +4715,7 @@ export default function App() {
                 </button>
               )}
               {/* Edit + Delete are visible only when the viewer owns the bubble.
-                  Edit is text-only — image and location messages don't expose it. */}
+                  Edit is text-only - image and location messages don't expose it. */}
               {actionBubble.isMine && actionBubble.msg.content && !actionBubble.msg.content.startsWith('📍') && (actionBubble.msg.type ?? 'text') === 'text' && (
                 <button
                   className="action-bubble-btn"
@@ -4839,7 +4839,7 @@ export default function App() {
           onMentionSelect={mentions.selectMention}
         />
 
-        {/* Bottom navigation — mobile only */}
+        {/* Bottom navigation - mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
           <button
             type="button"
@@ -4952,7 +4952,7 @@ export default function App() {
               const q = citySearchQuery.trim().toLowerCase()
 
               if (q) {
-                // Search mode — query against all channels (full unranked list)
+                // Search mode - query against all channels (full unranked list)
                 const results = [...allChannels]
                   .filter(ch => ch.city.toLowerCase().includes(q))
                   .sort((a, b) => cityScore(b) - cityScore(a) || a.city.localeCompare(b.city))
@@ -4964,7 +4964,7 @@ export default function App() {
                 ))
               }
 
-              // Default mode — backend already sorted & sliced to top 10, pin current city first
+              // Default mode - backend already sorted & sliced to top 10, pin current city first
               const activeCh = channels.find(ch => ch.channelId === channelId)
               const others   = channels.filter(ch => ch.channelId !== channelId)
               const top10    = activeCh ? [activeCh, ...others] : others
@@ -5007,7 +5007,7 @@ export default function App() {
             ))}
           </div>
           <div className="page-body" ref={nowBodyRef}>
-            {/* Challenges strip — shown on All + Challenges filters per spec.
+            {/* Challenges strip - shown on All + Challenges filters per spec.
                 On 'all'      → top 5 newest + "See all" CTA when there are more.
                 On 'challenges' → type sub-filter chips, paginated cap with
                                   scroll-to-load (5 at a time). */}
@@ -5032,7 +5032,7 @@ export default function App() {
                 )}
                 {nowFilter === 'challenges' && (
                   <>
-                    {/* Mode sub-filter — All / Local / International */}
+                    {/* Mode sub-filter - All / Local / International */}
                     <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
                       {[
                         { key: 'all',           emoji: '✨' },
@@ -5054,7 +5054,7 @@ export default function App() {
                         </button>
                       ))}
                     </div>
-                    {/* Type sub-filter — Food / Place / Culture / Help */}
+                    {/* Type sub-filter - Food / Place / Culture / Help */}
                     <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
                       {[
                         { key: 'all',     emoji: '✨' },
@@ -5120,7 +5120,7 @@ export default function App() {
                           : (
                             <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
                           )}
-                        {/* Visibility badge — only renders for non-public rows
+                        {/* Visibility badge - only renders for non-public rows
                             so the NOW card stays uncluttered on the common case. */}
                         {(() => {
                           const v = c.visibility ?? 'public'
@@ -5155,7 +5155,7 @@ export default function App() {
                     </button>
                   )
                 })}
-                {/* "See all challenges" CTA on the All filter — switches the
+                {/* "See all challenges" CTA on the All filter - switches the
                     parent filter to 'challenges' so the user lands inside
                     the full list (with type chips + pagination). */}
                 {nowFilter === 'all' && hasMoreTotal && (
@@ -5167,7 +5167,7 @@ export default function App() {
                     {t('seeAllChallenges', { ns: 'challenge', defaultValue: 'See all challenges →' })}
                   </button>
                 )}
-                {/* Type-bucket empty state — the user picked a type that has
+                {/* Type-bucket empty state - the user picked a type that has
                     no challenges right now. Sit silent on the parent feed; a
                     tiny inline hint is enough. */}
                 {nowFilter === 'challenges' && filteredChallenges.length === 0 && (
@@ -5185,7 +5185,7 @@ export default function App() {
               )
             })()}
 
-            {/* Empty state for the 'challenges' filter — only fires when the
+            {/* Empty state for the 'challenges' filter - only fires when the
                 whole challenges array is empty (no validated either). */}
             {nowFilter === 'challenges' && cityChallenges.length === 0 && (
               <div className="events-empty-state">
@@ -5376,7 +5376,7 @@ export default function App() {
                 const bHas = bDist !== undefined
                 if (aHas !== bHas) return aHas ? -1 : 1
                 if (aHas && bHas && aDist !== bDist) return aDist - bDist
-                // Recurring events are city anchors — always float to top
+                // Recurring events are city anchors - always float to top
                 const aRecur = a._kind === 'event' && !!(a.series_id ?? a.recurrence_label) ? 1 : 0
                 const bRecur = b._kind === 'event' && !!(b.series_id ?? b.recurrence_label) ? 1 : 0
                 if (aRecur !== bRecur) return bRecur - aRecur
@@ -5428,7 +5428,7 @@ export default function App() {
               )
             })()}
           </div>
-          {/* Bottom action bar — single horizontal row:
+          {/* Bottom action bar - single horizontal row:
               [ See what's coming 🔮 (flex:1) ] [+ (48×48 circle)]
               The + always opens the create chooser regardless of user mode,
               so both flows ("Start a pulse" / "Host your spot") sit behind
@@ -5451,7 +5451,7 @@ export default function App() {
               </svg>
             </button>
           </div>
-          {/* Discreet archive entry — muted text link under the upcoming pill. */}
+          {/* Discreet archive entry - muted text link under the upcoming pill. */}
           <button
             className="past-archive-link"
             onClick={() => {
@@ -5755,7 +5755,7 @@ export default function App() {
             }
           }}
           onOpenCity={(cityInfo) => {
-            // Navigate to the venue's city page — full page nav, lets the
+            // Navigate to the venue's city page - full page nav, lets the
             // normal city deep-link flow handle join + render.
             window.location.assign(`/city/${cityInfo.slug}`)
           }}
@@ -5832,7 +5832,7 @@ export default function App() {
               events: prev.events.map(e => e.channel_id === ev.channel_id ? { ...e, has_unread: false } : e),
             } : prev)
             markEventRead(ev.channel_id) // fire-and-forget
-            // ev.channel_id is the event channel id — same as event.id in handleSelectEvent
+            // ev.channel_id is the event channel id - same as event.id in handleSelectEvent
             handleSelectEvent({ id: ev.channel_id, title: ev.title, starts_at: ev.starts_at, location: ev.location })
           }}
         />
@@ -5859,7 +5859,7 @@ export default function App() {
           city={city}
           cityChannelId={channelId}
           onCityChange={async (newChannelId) => {
-            // PR48 — Legend tier can switch their current city from the
+            // PR48 - Legend tier can switch their current city from the
             // profile. POST /me/city writes users.current_city_id and the
             // legacy user_city_memberships row in one shot (PR16).
             try {
@@ -5907,7 +5907,7 @@ export default function App() {
             socketRef.current = null
             await unregisterPush()
             await authLogout()
-            localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest — skip authMe()
+            localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest - skip authMe()
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
             // Reset geolocation so the next join triggers a fresh city resolution
@@ -5929,7 +5929,7 @@ export default function App() {
             resetAnalytics()
             // Account API has already invalidated the cookie, but the WS
             // reconnect timer would still replay joinRoom/joinUser against
-            // a now-invalid session — tear it down before clearing state.
+            // a now-invalid session - tear it down before clearing state.
             socketRef.current?.disconnect()
             socketRef.current = null
             await unregisterPush()
@@ -6064,7 +6064,7 @@ export default function App() {
         />
       )}
 
-      {/* Friend requests inbox — full-screen page */}
+      {/* Friend requests inbox - full-screen page */}
       {showFriendRequests && (
         <FriendRequestsScreen
           wsClient={socketRef.current}
@@ -6073,7 +6073,7 @@ export default function App() {
         />
       )}
 
-      {/* Notifications — full-screen page */}
+      {/* Notifications - full-screen page */}
       {showNotifications && (
         <NotificationsScreen
           account={account}
@@ -6118,7 +6118,7 @@ export default function App() {
         />
       )}
 
-      {/* Edit event — full-screen page (reuses CreateEventPage in edit mode) */}
+      {/* Edit event - full-screen page (reuses CreateEventPage in edit mode) */}
       {showEditEvent && activeEvent && (
         <CreateEventPage
           editEvent={activeEvent}
@@ -6133,7 +6133,7 @@ export default function App() {
         />
       )}
 
-      {/* Going list modal — public, no auth gate */}
+      {/* Going list modal - public, no auth gate */}
       {showGoingModal && (
         <div className="modal-overlay" onClick={() => setShowGoingModal(false)}>
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
@@ -6186,7 +6186,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Guest gate — shown when a ghost user tries a member-only action */}
+      {/* Guest gate - shown when a ghost user tries a member-only action */}
       {guestGate && (() => {
         const reason   = GUEST_GATE_COPY[guestGate.reason] ? guestGate.reason : 'view_profile'
         const emoji    = GUEST_GATE_COPY[reason].emoji
@@ -6208,7 +6208,7 @@ export default function App() {
         )
       })()}
 
-      {/* Create event — full-screen page */}
+      {/* Create event - full-screen page */}
       {showCreateEvent && (
         <CreateEventPage
           channelId={channelId}
@@ -6230,7 +6230,7 @@ export default function App() {
         />
       )}
 
-      {/* Create topic — full-screen page */}
+      {/* Create topic - full-screen page */}
       {(showCreateTopic || editTopic) && (
         <CreateTopicPage
           channelId={channelId}
@@ -6244,7 +6244,7 @@ export default function App() {
         />
       )}
 
-      {/* Challenge create / edit — orange-brand full-page modal. Same
+      {/* Challenge create / edit - orange-brand full-page modal. Same
           component handles both modes via the editChallenge prop. On create
           success, lands on the new challenge's detail page. On edit success,
           reopens the same detail page with the updated data. */}
@@ -6296,7 +6296,7 @@ export default function App() {
         />
       )}
 
-      {/* Event limit reached — friendly full-page over the feed/drawer. */}
+      {/* Event limit reached - friendly full-page over the feed/drawer. */}
       {showEventLimitReached && (
         <EventLimitReachedScreen
           onClose={() => setShowEventLimitReached(false)}
@@ -6306,7 +6306,7 @@ export default function App() {
         />
       )}
 
-      {/* Creation chooser bottom sheet — challenge (the new primary CTA) on
+      {/* Creation chooser bottom sheet - challenge (the new primary CTA) on
           top per the product spec, hangout (instant) in the middle, event
           (planned) at the bottom. Mirrors the mobile CreateSheet ordering. */}
       {showCreateChooser && (
@@ -6357,7 +6357,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Topic chat — full-screen page */}
+      {/* Topic chat - full-screen page */}
       {activeTopic && (
         <TopicChatPage
           topic={activeTopic}
@@ -6373,7 +6373,7 @@ export default function App() {
         />
       )}
 
-      {/* Challenge chat — Phase 10 web-side detail screen. Reuses the
+      {/* Challenge chat - Phase 10 web-side detail screen. Reuses the
           topic-chat-page CSS skeleton for consistent layout; brand-orange
           accents come from the inline challenge-* classes (see App.css). */}
       {activeChallenge && (
@@ -6384,7 +6384,7 @@ export default function App() {
           account={account}
           onBack={() => {
             // Back lands on the Now feed (where the user usually arrives
-            // from anyway), not the city chat — matches the mental model
+            // from anyway), not the city chat - matches the mental model
             // "I was browsing challenges, take me back to browsing".
             setActiveChallenge(null)
             setShowEventDrawer(true)
@@ -6393,7 +6393,7 @@ export default function App() {
           onDeleted={() => setActiveChallenge(null)}
           onNeedAuth={(reason) => { setActiveChallenge(null); setGuestGate({ reason }) }}
           onOpenMyProfile={() => {
-            // mode_required / mode_mismatch alert offers "Open my profile" —
+            // mode_required / mode_mismatch alert offers "Open my profile" -
             // the profile drawer is where you switch local/exploring.
             if (account?.id) {
               setActiveChallenge(null);
@@ -6401,7 +6401,7 @@ export default function App() {
             }
           }}
           onOpenProfile={(userId, nickname) => {
-            // PR27 — tapping a row in the channel-members modal opens that
+            // PR27 - tapping a row in the channel-members modal opens that
             // user's public profile. Routes through the same openProfile
             // helper used by @mentions etc., so the ghost-viewer auth gate
             // applies uniformly. Close the challenge page so the profile
@@ -6414,7 +6414,7 @@ export default function App() {
             // "Message creator" → standard DM. Reuses the same path the
             // profile card uses (createOrGetDirectConversation), so the DM
             // surfaces in the conversation drawer with the rest of the
-            // user's chats — no special challenge-DM concept.
+            // user's chats - no special challenge-DM concept.
             try {
               const { conversation, otherUser } = await createOrGetDirectConversation(targetUserId)
               setActiveChallenge(null)
@@ -6427,8 +6427,8 @@ export default function App() {
         />
       )}
 
-      {/* PR2 — "My challenge threads" index. Taps now route to the challenge
-          channel (where the inline thread chat lives) — single surface, no
+      {/* PR2 - "My challenge threads" index. Taps now route to the challenge
+          channel (where the inline thread chat lives) - single surface, no
           intermediate /thread step. */}
       {showThreadsList && (
         <ThreadsListPage
@@ -6439,7 +6439,7 @@ export default function App() {
         />
       )}
 
-      {/* PR7 — Leaderboard screen. Opened from the 🏆 chip in renderCityHero. */}
+      {/* PR7 - Leaderboard screen. Opened from the 🏆 chip in renderCityHero. */}
       {showLeaderboard && (
         <LeaderboardPage
           account={account}
@@ -6469,7 +6469,7 @@ export default function App() {
         />
       )}
 
-      {/* PR17 — "+X points!" popin once per page load when the user has
+      {/* PR17 - "+X points!" popin once per page load when the user has
           unacknowledged score_events. Lands first so the celebratory moment
           isn't blocked by the rate-sheet; the rate gate's effect is keyed
           independently so it follows on the same screen. */}
@@ -6477,19 +6477,19 @@ export default function App() {
         account={account}
         refetchKey={celebrationRefetchKey}
         onOpenLeaderboard={(scope) => {
-          // PR38 — rank-row tap on the celebration modal jumps straight
+          // PR38 - rank-row tap on the celebration modal jumps straight
           // to the leaderboard pre-scoped to that row's lens.
           setLeaderboardScope(scope === 'world' ? 'world' : 'city')
           setShowLeaderboard(true)
         }}
       />
 
-      {/* PR11 — auto-open the RateSheet once per page load when the caller
+      {/* PR11 - auto-open the RateSheet once per page load when the caller
           has a rate-eligible meet-up (web parity with mobile's
           RatePromptLaunchGate). The /threads banner stays as fallback. */}
       <RatePromptLaunchGate account={account} refetchKey={ratePromptRefetchKey} />
 
-      {/* Desktop-only sidebar — always rendered to preserve 3-column layout */}
+      {/* Desktop-only sidebar - always rendered to preserve 3-column layout */}
       <aside className="online-sidebar">
         <p className="online-sidebar-title">Online · {onlineUsers.length}</p>
         {onlineUsers.map((user) => {
@@ -6513,7 +6513,7 @@ export default function App() {
       </aside>
 
       {/* Lightbox */}
-      {/* Guest got @mentioned while online — discreet, non-blocking signup nudge. */}
+      {/* Guest got @mentioned while online - discreet, non-blocking signup nudge. */}
       {mentionNudge && !account && (
         <div className="mention-nudge" role="status">
           <span className="mention-nudge-text">👀 You're getting mentioned! Create an account so you never miss it.</span>
@@ -6529,7 +6529,7 @@ export default function App() {
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
 
-      {/* "How challenges work" carousel — opened from the city-chat feed
+      {/* "How challenges work" carousel - opened from the city-chat feed
           prompt. Independent of the first-time onboarding (which covers
           general intro). Can be triggered any time. */}
       {showChallengeIntro && (

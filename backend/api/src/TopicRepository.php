@@ -54,7 +54,7 @@ class TopicRepository
     // ── Reads ─────────────────────────────────────────────────────────────────
 
     /**
-     * Active topic count per city — used for the city list summary.
+     * Active topic count per city - used for the city list summary.
      * Returns an array keyed by integer city channel ID (e.g. 3), value = count.
      */
     public static function getCountsPerCity(): array
@@ -70,7 +70,7 @@ class TopicRepository
         $stmt->execute();
         $result = [];
         foreach ($stmt->fetchAll() as $row) {
-            // city_id is stored as 'city_3' — extract the numeric ID to match EventRepository
+            // city_id is stored as 'city_3' - extract the numeric ID to match EventRepository
             $numericId           = (int) str_replace('city_', '', $row['city_id']);
             $result[$numericId]  = (int) $row['topic_count'];
         }
@@ -90,7 +90,7 @@ class TopicRepository
     {
         $pdo = Database::pdo();
 
-        // Query 1: active topic metadata — no message aggregation.
+        // Query 1: active topic metadata - no message aggregation.
         // Uses idx_channel_topics_city (city_id, expires_at DESC).
         $stmt = $pdo->prepare("
             SELECT
@@ -181,7 +181,7 @@ class TopicRepository
     }
 
     /**
-     * Past (expired) pulses for a city — the archive query. A pulse is "past"
+     * Past (expired) pulses for a city - the archive query. A pulse is "past"
      * once its 24h lifespan elapses (expires_at <= now()). Most-recent-first.
      * `beforeTs` is a recency cursor; `fromTs`/`toTs` bound a date window (the
      * caller has already clamped it to ≤14 days).
@@ -196,7 +196,7 @@ class TopicRepository
             $params[] = $fromTs;
             $params[] = $toTs;
         }
-        // Recency cursor — combines with the window so windowed views paginate too.
+        // Recency cursor - combines with the window so windowed views paginate too.
         if ($beforeTs !== null) {
             $where   .= " AND ct.expires_at < to_timestamp(?)";
             $params[] = $beforeTs;
@@ -391,7 +391,7 @@ class TopicRepository
     }
 
     /**
-     * Batched participant previews for the NOW feed — one windowed query.
+     * Batched participant previews for the NOW feed - one windowed query.
      * Returns [topicId => [ {id, displayName, thumbAvatarUrl}, … ] ] (≤$limit each,
      * most-recent-joined first).
      */
@@ -423,7 +423,7 @@ class TopicRepository
     }
 
     /**
-     * Full participant list for the members modal — canonical UserDTOs
+     * Full participant list for the members modal - canonical UserDTOs
      * (id, displayName, username, avatarUrl, accountType, badges, vibe…),
      * joined-order. Participants are always registered users (user_id).
      */
@@ -454,7 +454,7 @@ class TopicRepository
                     'home_city'         => null,
                 ]), ['joinedAt' => $joinedAt]);
             }
-            // Deleted account — show discreetly, not tappable to a dead profile.
+            // Deleted account - show discreetly, not tappable to a dead profile.
             return array_merge(UserResource::fromGuest($r['user_id'], 'Former member'), ['joinedAt' => $joinedAt]);
         }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
@@ -631,7 +631,7 @@ class TopicRepository
     }
 
     /**
-     * Active hangouts a user created OR joined — for the profile "Hangouts" tab.
+     * Active hangouts a user created OR joined - for the profile "Hangouts" tab.
      * Each item carries `is_owner` (true when the user created it). Most-recent
      * first. Includes message stats so the row can show reply counts.
      */
@@ -692,7 +692,7 @@ class TopicRepository
     }
 
     /**
-     * The user's current ACTIVE (non-expired) hangout, if any — used to enforce
+     * The user's current ACTIVE (non-expired) hangout, if any - used to enforce
      * one-hangout-per-user at creation. Returns ['id','title'] or null.
      */
     public static function findActiveByUser(string $userId): ?array
@@ -714,7 +714,7 @@ class TopicRepository
 
     /**
      * Subscribe a registered user to a topic's notifications.
-     * Idempotent — safe to call on every message send.
+     * Idempotent - safe to call on every message send.
      */
     public static function subscribe(string $topicId, string $userId): void
     {
@@ -726,7 +726,7 @@ class TopicRepository
     }
 
     /**
-     * Admin create: no guestId required — sets created_by to the given userId (or null).
+     * Admin create: no guestId required - sets created_by to the given userId (or null).
      */
     public static function adminCreate(
         string $cityId,
@@ -774,7 +774,7 @@ class TopicRepository
         }
 
         // Auto-subscribe the chosen creator so they get notified on replies.
-        // Run outside the transaction — a subscription failure should not undo topic creation.
+        // Run outside the transaction - a subscription failure should not undo topic creation.
         if ($creatorId !== null) {
             try {
                 self::subscribe($id, $creatorId);

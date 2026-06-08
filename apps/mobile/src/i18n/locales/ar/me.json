@@ -24,7 +24,7 @@
   "agePlaceholder": "مثال: 25",
   "fieldMyVibe": "MY VIBE",
   "fieldInterests": "الاهتمامات",
-  "interestsHint": "— اختر حتى 5",
+  "interestsHint": "- اختر حتى 5",
   "interest": {
     "drinks": "مشروبات",
     "party": "حفلة",
@@ -47,12 +47,12 @@
     "tech": "تقنية",
     "dating": "مواعدة"
   },
-  "noHangouts": "لا توجد لقاءات بعد — ابدأ واحدًا 🗣️",
+  "noHangouts": "لا توجد لقاءات بعد - ابدأ واحدًا 🗣️",
   "host": "المضيف",
   "going": "ذاهب",
-  "noPlans": "لا توجد خطط بعد — جد شيئًا 🔥",
+  "noPlans": "لا توجد خطط بعد - جد شيئًا 🔥",
   "hosting": "أستضيف",
-  "nothingHosted": "لا شيء مستضاف بعد — ابدأ شيئًا ✨",
+  "nothingHosted": "لا شيء مستضاف بعد - ابدأ شيئًا ✨",
   "live": "LIVE",
   "recurring": "متكرر",
   "friendRequests": "طلبات الصداقة",
@@ -84,7 +84,7 @@
   "errUsernameShort": "يجب ألا يقل اسم المستخدم عن 3 أحرف",
   "errUsernameTaken": "اسم المستخدم هذا مستخدم بالفعل",
   "errUsernameInvalid": "اسم مستخدم غير صالح",
-  "errSave": "فشل الحفظ — حاول مرة أخرى",
+  "errSave": "فشل الحفظ - حاول مرة أخرى",
   "signOutTitle": "تسجيل الخروج",
   "signOutBody": "هل أنت متأكد؟",
   "deleteAccountTitle": "حذف الحساب؟",
@@ -93,5 +93,5 @@
   "errorTitle": "خطأ",
   "deleteAccountFail": "تعذّر حذف الحساب. حاول مرة أخرى.",
   "tabChallenges": "التحديات",
-  "noChallenges": "لا توجد تحديات بعد — أطلق واحدًا 🔥"
+  "noChallenges": "لا توجد تحديات بعد - أطلق واحدًا 🔥"
 }

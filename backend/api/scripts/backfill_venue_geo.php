@@ -18,7 +18,7 @@
  * that's ~$0.005 per venue. ~70 venues today → under $0.50 total.
  *
  * Limitations:
- *   - Cannot backfill source_key starting with 'static:v1:' — those are
+ *   - Cannot backfill source_key starting with 'static:v1:' - those are
  *     fixture-seeded venues with no place_id. They need manual lat/lng
  *     in src/venues_seed.php if you want geo coverage.
  *   - GOOGLE_PLACES_API_KEY must be set in the environment (same key the
@@ -63,7 +63,7 @@ try {
 }
 
 // PlacesService needs the project autoloader + the class file. Keep this
-// minimal — we only need PlacesService::detailsById.
+// minimal - we only need PlacesService::detailsById.
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/PlacesService.php';
 
@@ -94,8 +94,8 @@ $skipped = $pdo->query("
 
 echo "\nBackfilling venue lat/lng…\n";
 echo "  Targets (places:v1 with NULL geo): $total\n";
-echo "  Static venues without geo (skipped — no place_id): $skipped\n";
-if ($dryRun) echo "  DRY RUN — no writes\n";
+echo "  Static venues without geo (skipped - no place_id): $skipped\n";
+if ($dryRun) echo "  DRY RUN - no writes\n";
 echo "\n";
 
 if ($total === 0) { echo "Nothing to do.\n"; exit(0); }
@@ -108,10 +108,10 @@ $failed  = 0;
 
 foreach ($rows as $row) {
     // source_key format: places:v1:city_<n>:<place_id>:<category>
-    // place_id can contain anything URL-safe — split on ':' deterministically.
+    // place_id can contain anything URL-safe - split on ':' deterministically.
     $parts = explode(':', (string) $row['source_key']);
     if (count($parts) < 5) {
-        echo "  SKIP {$row['id']} ({$row['title']}) — malformed source_key\n";
+        echo "  SKIP {$row['id']} ({$row['title']}) - malformed source_key\n";
         $failed++;
         continue;
     }
@@ -121,14 +121,14 @@ foreach ($rows as $row) {
     try {
         $details = PlacesService::detailsById($placeId);
     } catch (\Throwable $e) {
-        echo "  ERR  {$row['id']} ({$row['title']}) — " . $e->getMessage() . "\n";
+        echo "  ERR  {$row['id']} ({$row['title']}) - " . $e->getMessage() . "\n";
         $failed++;
         usleep(200_000);
         continue;
     }
 
     if ($details === null || !isset($details['lat'], $details['lng'])) {
-        echo "  MISS {$row['id']} ({$row['title']}) — no geo in Places response\n";
+        echo "  MISS {$row['id']} ({$row['title']}) - no geo in Places response\n";
         $failed++;
         usleep(200_000);
         continue;
@@ -149,5 +149,5 @@ echo "\n";
 echo "  Updated:  $updated\n";
 echo "  Failed:   $failed\n";
 echo "  Total:    $total\n";
-if ($dryRun) echo "  (DRY RUN — nothing written)\n";
+if ($dryRun) echo "  (DRY RUN - nothing written)\n";
 echo "\nDone.\n";

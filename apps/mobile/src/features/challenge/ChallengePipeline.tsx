@@ -13,7 +13,7 @@ import type { ChallengeThreadSummary } from '@/types';
  * State source: the viewer's OWN acceptance (the per-relationship phase).
  * Visitors / creator-without-acceptance see all 4 dots muted as an educator.
  * Acceptors see the current step highlighted + a sub-CTA pointing to the
- * next action (which lives in the thread — tapping the pipeline navigates
+ * next action (which lives in the thread - tapping the pipeline navigates
  * there so the user can act).
  *
  * Why per-acceptance and not per-challenge: the challenge can have N
@@ -24,7 +24,7 @@ type Step = 'accept' | 'date' | 'meet' | 'wrap' | 'proof' | 'verdict';
 const STEPS_LOCAL:         Step[] = ['accept', 'date', 'meet', 'wrap'];
 const STEPS_INTERNATIONAL: Step[] = ['accept', 'proof', 'verdict'];
 
-// Compact "sam. 6 juin · 21:30" — locale-aware via Intl using the active
+// Compact "sam. 6 juin · 21:30" - locale-aware via Intl using the active
 // i18n language (NOT undefined which falls back to the device locale, which
 // is often English even for French-speaking users). Kept short enough to fit
 // on a single sub-CTA line. The schedule band uses a more verbose formatter
@@ -59,7 +59,7 @@ function derive(
   isInternational: boolean,
 ): PipelineState {
   if (!acceptance) {
-    // Visitor or creator without an own acceptance — educational view only.
+    // Visitor or creator without an own acceptance - educational view only.
     // Visitors don't get a sub-CTA here: the participants row below already
     // surfaces a labeled "Take on the challenge" button. Two CTAs side-by-
     // side read as the same call repeated twice (was: pipeline "Take on" +
@@ -118,10 +118,10 @@ function derive(
   }
 
   // ── Local (existing flow) ───────────────────────────────────────────────
-  // PR5 — pending = creator hasn't reviewed the take-on request yet. The
+  // PR5 - pending = creator hasn't reviewed the take-on request yet. The
   // Accept dot is the active step; the sub-CTA differs by side (acceptor
   // waits, creator reviews). Acceptor pipeline is otherwise indistinguishable
-  // from a "no-acceptance" visitor (intentional — they can't proceed).
+  // from a "no-acceptance" visitor (intentional - they can't proceed).
   if (phase === 'pending') {
     return {
       active: 'accept',
@@ -157,7 +157,7 @@ function derive(
     };
   }
   if (phase === 'debrief') {
-    // PR6 — mutual rating. Both sides see the same prompt; the rate-prompt
+    // PR6 - mutual rating. Both sides see the same prompt; the rate-prompt
     // banner on /threads (B.2) owns the urgency copy via `other_rated`.
     return {
       active: 'wrap',
@@ -209,7 +209,7 @@ export function ChallengePipeline({
   const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL;
   const state = derive(acceptance, iAmCreator, i18n.language, isInternational);
   // Step that should render in red on a final 'rejected' state (last step
-  // before terminal — wrap for Local, verdict for International).
+  // before terminal - wrap for Local, verdict for International).
   const REJECT_STEP: Step = isInternational ? 'verdict' : 'wrap';
   const interactive = !!onPress && !!acceptance;
 
@@ -258,8 +258,8 @@ export function ChallengePipeline({
         })}
       </View>
 
-      {/* Sub-CTA — current/next action hint. Empty key (visitor without
-          acceptance) suppresses the row entirely — the participants row
+      {/* Sub-CTA - current/next action hint. Empty key (visitor without
+          acceptance) suppresses the row entirely - the participants row
           below carries the prominent labeled accept button instead. */}
       {!!state.subCtaKey && (
         <View style={styles.subCtaRow}>
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     position:      'relative',
   },
 
-  // Connector line — drawn between dots, NOT through them. left/right span
+  // Connector line - drawn between dots, NOT through them. left/right span
   // from the centre of the prev dot to the centre of this dot; the
   // margins inset by DOT_SIZE/2 so the line stops at each dot's edge.
   connector: {

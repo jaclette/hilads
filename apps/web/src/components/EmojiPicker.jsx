@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-// ~120 frequently-used emojis — no library required, plain Unicode
+// ~120 frequently-used emojis - no library required, plain Unicode
 const EMOJIS = [
   // Smileys
   '😀','😂','🥹','😊','😍','🤩','😎','🥳','🤔','😅','😭','🥺','😤','🤣','😏','🙄',

@@ -1,8 +1,8 @@
-# Hilads — robots.txt
+# Hilads - robots.txt
 #
 # Allow all crawlers (Hilads has no private content on the public webapp; the
 # entire surface is shareable). The PWA service worker, manifest and well-known
-# files don't need explicit listing — they're allowed by default.
+# files don't need explicit listing - they're allowed by default.
 #
 # Block API endpoints, auth callbacks, and URLs containing tokens to avoid
 # wasting crawl budget on non-indexable routes.

@@ -1,5 +1,5 @@
 /**
- * useGlobalNotifications — always-on WS listeners for unread counts.
+ * useGlobalNotifications - always-on WS listeners for unread counts.
  *
  * Mounted in RootLayoutInner so it stays active regardless of which tab/screen
  * is visible.
@@ -20,7 +20,7 @@ import { useApp } from '@/context/AppContext';
 export function useGlobalNotifications() {
   const { setUnreadDMs, setUnreadNotifications } = useApp();
 
-  // notification / newNotification — global server broadcast
+  // notification / newNotification - global server broadcast
   // Route dm_message type → message badge; everything else → bell badge
   useEffect(() => {
     const handler = (data: Record<string, unknown>) => {

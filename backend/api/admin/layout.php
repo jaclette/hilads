@@ -11,7 +11,7 @@ function admin_head(string $title): void
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>' . htmlspecialchars($title, ENT_QUOTES) . ' — Hilads Admin</title>
+<title>' . htmlspecialchars($title, ENT_QUOTES) . ' - Hilads Admin</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: system-ui, -apple-system, sans-serif; background: #0f0f0f; color: #e0e0e0; font-size: 14px; line-height: 1.5; }

@@ -5,7 +5,7 @@
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
     "title": "Parabéns, {{username}}! 🎉",
-    "subtitle": "A tua conta está pronta — vê o que podes fazer agora 👇",
+    "subtitle": "A tua conta está pronta - vê o que podes fazer agora 👇",
     "f1": "🎉 Começa um convívio e junta as pessoas agora mesmo",
     "f2": "📅 Organiza um evento na tua cidade",
     "f3": "💬 Envia uma mensagem privada a qualquer pessoa",
@@ -15,7 +15,7 @@
   },
   "onboarding": {
     "slide1Title": "Estás em {{city}}",
-    "slide1Body": "Locais e viajantes encontram-se aqui — através de desafios reais.",
+    "slide1Body": "Locais e viajantes encontram-se aqui - através de desafios reais.",
     "slide2Title": "Os locais desafiam os viajantes. E vice-versa.",
     "slide2Body": "🍜 O melhor bacalhau · 📍 Um miradouro escondido · 🎭 Diz algo em português · 🙏 Ajuda com um cartão SIM. Desafios reais que levam a um encontro real.",
     "slide3Title": "Como funciona",
@@ -32,7 +32,7 @@
     "title": "Como funcionam os desafios",
     "slide1": {
       "title": "Os desafios transformam viagens em histórias",
-      "body": "Locais e viajantes desafiam-se para partilhar o que torna uma cidade real — comida, sítios, cultura, ajuda. A recompensa? Encontram-se pessoalmente."
+      "body": "Locais e viajantes desafiam-se para partilhar o que torna uma cidade real - comida, sítios, cultura, ajuda. A recompensa? Encontram-se pessoalmente."
     },
     "slide2": {
       "title": "Lança o teu desafio",
@@ -40,22 +40,22 @@
     },
     "slide3": {
       "title": "Alguém aceita-o",
-      "body": "Enviam-te um pedido. Tu vês e aceitas — o vosso fio privado abre para conversar e combinar."
+      "body": "Enviam-te um pedido. Tu vês e aceitas - o vosso fio privado abre para conversar e combinar."
     },
     "slide4": {
       "title": "Encontram-se pessoalmente",
-      "body": "Escolham uma data que vos sirva. A linha de tempo acompanha cada passo. Depois fazem-no — a sério."
+      "body": "Escolham uma data que vos sirva. A linha de tempo acompanha cada passo. Depois fazem-no - a sério."
     },
     "slide5": {
       "title": "Fecha o desafio",
-      "body": "Depois do encontro, marca-o como cumprido. A tua cidade, vivida a sério — um desafio de cada vez."
+      "body": "Depois do encontro, marca-o como cumprido. A tua cidade, vivida a sério - um desafio de cada vez."
     },
     "next": "Seguinte",
     "done": "Percebi!",
     "skip": "Saltar ✕",
     "slide6": {
       "title": "Para além da tua cidade",
-      "body": "Desafia qualquer pessoa em qualquer lugar. Enviam-te uma prova — foto com geotag — e validas à distância. Local ou global, cada desafio conta."
+      "body": "Desafia qualquer pessoa em qualquer lugar. Enviam-te uma prova - foto com geotag - e validas à distância. Local ou global, cada desafio conta."
     },
     "createCta": "🔥 Criar um desafio"
   },
@@ -149,7 +149,7 @@
   "replies_one": "💬 {{count}} resposta",
   "replies_other": "💬 {{count}} respostas",
   "noReplies": "Sem respostas",
-  "noRepliesFirst": "Ainda sem respostas — sê o primeiro",
+  "noRepliesFirst": "Ainda sem respostas - sê o primeiro",
   "weather": {
     "clear": "céu limpo",
     "sunnyHot": "sol radiante",

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * A block is a one-way row in `blocks` from blocker to blocked. Both sides of
  * the pair can be either a registered user or a guest, mirroring the identity
  * model in `user_reports`. We treat blocks as bidirectional at *query* time
- * (see getBidirectional) so the blocked party also can't see the blocker —
+ * (see getBidirectional) so the blocked party also can't see the blocker -
  * Apple's Guideline 1.2 requires mutual invisibility.
  *
  * Listing endpoints LEFT JOIN `users` here so the Settings → Blocked Users
@@ -42,7 +42,7 @@ class BlockRepository
             $stmt->execute([$blockerUserId, $blockerGuestId, $blockedUserId, $blockedGuestId, $targetNickname, $reason]);
             return $stmt->fetch(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            // 23505 = unique_violation — another request for the same pair won the race.
+            // 23505 = unique_violation - another request for the same pair won the race.
             // Surface the existing row so the caller's POST stays idempotent (200/201 either way).
             if ((string) $e->getCode() === '23505') {
                 $existing = self::find($blockerUserId, $blockerGuestId, $blockedUserId, $blockedGuestId);
@@ -88,7 +88,7 @@ class BlockRepository
     // ── Read ──────────────────────────────────────────────────────────────────
 
     /**
-     * Find the existing block row for (blocker, blocked) — null if none.
+     * Find the existing block row for (blocker, blocked) - null if none.
      */
     public static function find(
         ?string $blockerUserId,

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * UsernameService — validation, normalization, and generation for unique handles.
+ * UsernameService - validation, normalization, and generation for unique handles.
  *
  * Usernames are the @-mention handle. Stored and compared in a normalized
  * lowercase form; uniqueness is enforced case-insensitively (DB unique index on
@@ -15,7 +15,7 @@ final class UsernameService
     public const MIN_LEN = 3;
     public const MAX_LEN = 20;
 
-    // Blocked handles: brand, roles, app routes, support — matched case-insensitively
+    // Blocked handles: brand, roles, app routes, support - matched case-insensitively
     // against the normalized form. Keeps impersonation + routing collisions out.
     private const RESERVED = [
         'admin', 'administrator', 'support', 'help', 'helpdesk', 'hilads', 'team',
@@ -44,7 +44,7 @@ final class UsernameService
         if ($len < self::MIN_LEN) return 'Username must be at least ' . self::MIN_LEN . ' characters';
         if ($len > self::MAX_LEN) return 'Username must be at most ' . self::MAX_LEN . ' characters';
         if (!preg_match('/^[a-z0-9]+(?:_[a-z0-9]+)*$/', $u)) {
-            return 'Use only letters, numbers and single underscores — no spaces, leading/trailing or double underscores';
+            return 'Use only letters, numbers and single underscores - no spaces, leading/trailing or double underscores';
         }
         if (in_array($u, self::RESERVED, true)) {
             return 'That username is reserved';

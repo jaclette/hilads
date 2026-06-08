@@ -26,12 +26,12 @@
   "create": {
     "title": "O que é que fazemos?",
     "hangoutLabel": "Começar um convívio",
-    "hangoutSub": "Instantâneo — deixa as pessoas juntarem-se a ti agora",
+    "hangoutSub": "Instantâneo - deixa as pessoas juntarem-se a ti agora",
     "eventLabel": "Criar um evento",
     "eventSub": "Planeia algo a que outros se possam juntar",
     "cancel": "Cancelar",
     "challengeLabel": "Lançar um desafio",
-    "challengeSub": "Locais & viajantes — liguem-se através de um desafio"
+    "challengeSub": "Locais & viajantes - liguem-se através de um desafio"
   },
   "filterChallenges": "🔥 Desafios",
   "challengesSection": "Desafios",

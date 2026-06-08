@@ -64,7 +64,7 @@
     "eventTag": "Evento",
     "public": "Público",
     "activeNow": "● Ativo agora",
-    "repliesNew": "Ainda não há respostas — sê o primeiro",
+    "repliesNew": "Ainda não há respostas - sê o primeiro",
     "replies_one": "💬 {{count}} resposta",
     "replies_other": "💬 {{count}} respostas",
     "going_one": "🙌 {{count}} participante",
@@ -138,11 +138,11 @@
   "create": {
     "title": "O que fazemos?",
     "hangoutTitle": "Iniciar um convívio",
-    "hangoutSub": "Ao instante — deixa a gente juntar-se a ti agora",
+    "hangoutSub": "Ao instante - deixa a gente juntar-se a ti agora",
     "eventTitle": "Criar um evento",
     "eventSub": "Organiza algo a que se possam juntar",
     "challengeTitle": "Lançar um desafio",
-    "challengeSub": "Locais & viajantes — liguem-se através de um desafio",
+    "challengeSub": "Locais & viajantes - liguem-se através de um desafio",
     "challengePageTitle": "Criar um desafio",
     "challengeAudience": "Para quem?",
     "challengeAudLocals": "Locais",
@@ -161,7 +161,7 @@
     "going": "vão",
     "inThisHangout": "neste convívio",
     "loading": "A carregar…",
-    "empty": "Ninguém ainda — sê o primeiro a juntar-te! 🙌"
+    "empty": "Ninguém ainda - sê o primeiro a juntar-te! 🙌"
   },
   "nickname": {
     "label": "Alcunha",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Lançaste este evento!",
-    "sub": "Torna-o ainda melhor — adiciona uma descrição, atualiza a hora ou partilha-o.",
+    "sub": "Torna-o ainda melhor - adiciona uma descrição, atualiza a hora ou partilha-o.",
     "edit": "✏️ Editar o evento"
   },
   "feedNew": {

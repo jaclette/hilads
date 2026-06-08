@@ -1,5 +1,5 @@
 // Relative "expires in …" label for hangouts (24h lifespan). `expiresAt` is a
-// unix timestamp in seconds. Computed on render — approximate is fine.
+// unix timestamp in seconds. Computed on render - approximate is fine.
 
 import i18n from '@/i18n';
 

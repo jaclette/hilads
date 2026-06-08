@@ -76,7 +76,7 @@ export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent
         {/* Title */}
         <Text style={styles.title}>{t('create.title')}</Text>
 
-        {/* Options — order: Challenge (new core feature, top) → Hangout (instant)
+        {/* Options - order: Challenge (new core feature, top) → Hangout (instant)
             → Event (planned). Challenge is placed first per the product spec
             (it's now the primary creation flow connecting locals & explorers).
             Internal handlers: onSelectChallenge → challenge create,
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
     gap:               Spacing.sm,
   },
 
-  // Bare icon slot — emoji renders on its own. We used to tint the box with
+  // Bare icon slot - emoji renders on its own. We used to tint the box with
   // category colors (orange / blue / orange-stronger), but only the strongest
   // tint was visible against the warm-dark surface, which made challenge look
   // like the odd one out with a brown box. Cleaner to drop the tint for all

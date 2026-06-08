@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 /**
- * Info-only sheet explaining the challenge scoring schedule. No CTAs —
+ * Info-only sheet explaining the challenge scoring schedule. No CTAs -
  * tap the backdrop or pull down to dismiss.
  *
  * Numbers come from score_rules in migrate.php (5 / 30 / 40). If those
@@ -14,8 +14,8 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
  *
  * Mounted by ScoringInfoButton (NOW + challenge detail share the same
  * surface). All 4 pipeline steps are rendered so the user can map the
- * info row 1:1 against the pipeline they see on the channel screen —
- * the two middle steps just show "—" instead of points.
+ * info row 1:1 against the pipeline they see on the channel screen -
+ * the two middle steps just show "-" instead of points.
  */
 export function ScoringInfoModal({
   visible, onClose,
@@ -27,7 +27,7 @@ export function ScoringInfoModal({
 
   // Step rows in pipeline order. Numbers mirror score_rules in migrate.php
   // (PR12). null = no scoring at that step. The "Meet up" pipeline step is
-  // omitted from this table because it never awards points — keep the
+  // omitted from this table because it never awards points - keep the
   // pipeline visual but skip the noise here.
   const steps: Array<{
     icon:        string;
@@ -49,7 +49,7 @@ export function ScoringInfoModal({
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>{t('scoringInfo.title')}</Text>
 
-          {/* 1 — Two flavours of challenge. Short, emoji-led: the user
+          {/* 1 - Two flavours of challenge. Short, emoji-led: the user
               should land on this and instantly know what kind of game
               they're stepping into. */}
           <View style={styles.section}>
@@ -58,7 +58,7 @@ export function ScoringInfoModal({
             <Text style={styles.sectionBody}>{t('scoringInfo.types.international')}</Text>
           </View>
 
-          {/* 2 — Lifecycle reassurance. Explains the per-acceptance chat
+          {/* 2 - Lifecycle reassurance. Explains the per-acceptance chat
               reset we shipped in dd3ff3a3: the challenge persists, the
               conversation doesn't. */}
           <View style={styles.section}>
@@ -66,7 +66,7 @@ export function ScoringInfoModal({
             <Text style={styles.sectionBody}>{t('scoringInfo.lifecycle.body')}</Text>
           </View>
 
-          {/* 3 — Points breakdown, kept verbatim from the prior modal so
+          {/* 3 - Points breakdown, kept verbatim from the prior modal so
               the numbers in score_rules + the muscle memory of returning
               users both stay intact. */}
           <Text style={styles.sectionHeading}>{t('scoringInfo.pointsHeading')}</Text>
@@ -74,7 +74,7 @@ export function ScoringInfoModal({
 
           <View style={styles.headerRow}>
             <Text style={styles.headerStep}>{t('scoringInfo.colStep')}</Text>
-            {/* PR60 — FR "CHALLENGER" overflowed the 64px column and wrapped
+            {/* PR60 - FR "CHALLENGER" overflowed the 64px column and wrapped
                 on top of the "PRENEUR" header. numberOfLines={1} +
                 adjustsFontSizeToFit keeps long locale strings on a single
                 line (DE/NL/PT also benefit) without forcing every locale
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   headerStep: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase' },
-  // PR60 — column widened 64 → 88 so FR "CHALLENGER" (10 chars) fits on a
+  // PR60 - column widened 64 → 88 so FR "CHALLENGER" (10 chars) fits on a
   // single line. Data cols match so the +5/+30 numbers stay aligned under
   // their header.
   headerCol:  { width: 88, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase', textAlign: 'right' },

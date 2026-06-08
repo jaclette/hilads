@@ -1,5 +1,5 @@
 /**
- * Push notification service — native (iOS / Android) via Expo.
+ * Push notification service - native (iOS / Android) via Expo.
  *
  * Flow:
  *   1. Request permission (once, after account is created / logged in)
@@ -32,7 +32,7 @@ if (Platform.OS === 'ios') {
   console.log('[push-mobile] iOS OS version =', Device.osVersion ?? 'unknown');
 }
 
-// EAS project ID — required to get a valid Expo push token in production builds
+// EAS project ID - required to get a valid Expo push token in production builds
 const PROJECT_ID =
   (Constants.expoConfig?.extra?.eas?.projectId as string | undefined) ??
   '0555a464-8dda-484b-b0a2-d61b2ad2786c';
@@ -42,7 +42,7 @@ console.log('[push-mobile] PROJECT_ID =', PROJECT_ID);
 // ── Android notification channel ──────────────────────────────────────────────
 // NOTE: setNotificationHandler is set in NotificationHandler.tsx (mounted in
 // _layout.tsx) so it can apply per-screen suppression logic. Do not set it
-// here — only one handler is active at a time and the last call wins.
+// here - only one handler is active at a time and the last call wins.
 
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
@@ -110,7 +110,7 @@ export async function hasBeenAsked(): Promise<boolean> {
 
 /**
  * Request push permission and register this device.
- * Safe to call multiple times — no-ops if already registered.
+ * Safe to call multiple times - no-ops if already registered.
  * Call after the user has a registered account (not for guests).
  */
 export async function requestAndRegisterPush(): Promise<string | null> {
@@ -118,10 +118,10 @@ export async function requestAndRegisterPush(): Promise<string | null> {
   console.log('[push-mobile] isDevice =', Device.isDevice, '| platform =', Platform.OS);
   console.log('[push-mobile] API_URL =', API_URL);
   console.log('[push-mobile] authToken present =',
-    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — POST will get 401');
+    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO - POST will get 401');
 
   if (!Device.isDevice) {
-    console.log('[push-mobile] SKIP — not a physical device (simulator/emulator)');
+    console.log('[push-mobile] SKIP - not a physical device (simulator/emulator)');
     return null;
   }
 
@@ -157,7 +157,7 @@ export async function requestAndRegisterPush(): Promise<string | null> {
   }
 
   if (finalStatus !== 'granted') {
-    console.warn('[push-mobile] STOP — permission not granted. Final status:', finalStatus);
+    console.warn('[push-mobile] STOP - permission not granted. Final status:', finalStatus);
     if (Platform.OS === 'ios') {
       console.warn('[push-mobile] iOS: user may have denied in Settings. Cannot re-prompt programmatically.');
     }
@@ -168,11 +168,11 @@ export async function requestAndRegisterPush(): Promise<string | null> {
   // On iOS, getExpoPushTokenAsync calls APNs under the hood.
   // The aps-environment entitlement in the signed binary must match the APNs
   // environment Expo routes to (development for internal builds, production for
-  // store builds). EAS manages this automatically — do NOT hardcode aps-environment
+  // store builds). EAS manages this automatically - do NOT hardcode aps-environment
   // in app.json or the entitlement will mismatch for internal/preview builds.
-  console.log('[push-mobile] calling getExpoPushTokenAsync — projectId:', PROJECT_ID);
+  console.log('[push-mobile] calling getExpoPushTokenAsync - projectId:', PROJECT_ID);
   if (Platform.OS === 'ios') {
-    // Log the raw APNs device token for debugging — useful to verify APNs registration
+    // Log the raw APNs device token for debugging - useful to verify APNs registration
     // is working before Expo wraps it.
     try {
       const deviceToken = await Notifications.getDevicePushTokenAsync();
@@ -195,7 +195,7 @@ export async function requestAndRegisterPush(): Promise<string | null> {
     console.error('[push-mobile] getExpoPushTokenAsync FAILED:', String(err));
     if (Platform.OS === 'ios') {
       console.error('[push-mobile] iOS: ensure aps-environment entitlement matches build type.');
-      console.error('[push-mobile] iOS: do NOT hardcode aps-environment in app.json — let EAS manage it.');
+      console.error('[push-mobile] iOS: do NOT hardcode aps-environment in app.json - let EAS manage it.');
     }
     return null;
   }
@@ -209,7 +209,7 @@ export async function requestAndRegisterPush(): Promise<string | null> {
     await registerTokenWithBackend(token);
   } catch (err) {
     console.error('[push-mobile] registerTokenWithBackend FAILED:', String(err));
-    // Token obtained but not registered — caller can retry later.
+    // Token obtained but not registered - caller can retry later.
   }
 
   return token;
@@ -247,7 +247,7 @@ async function registerTokenWithBackend(token: string): Promise<void> {
   };
   // Send auth via BOTH Cookie and Authorization: Bearer. iOS NSURLSession owns
   // its own cookie jar and silently strips manually-set Cookie headers, so a
-  // Cookie-only request authenticates on Android but 401s on iOS — which is why
+  // Cookie-only request authenticates on Android but 401s on iOS - which is why
   // iOS devices never registered a token. Mirrors the api client (client.ts).
   if (authToken) {
     headers['Cookie']        = `hilads_token=${authToken}`;
@@ -258,7 +258,7 @@ async function registerTokenWithBackend(token: string): Promise<void> {
   console.log('[push-mobile] POST', fullUrl);
   console.log('[push-mobile] payload =', payload);
   console.log('[push-mobile] authToken present =',
-    authToken !== null ? `yes (${authToken.length} chars)` : 'NO — will get 401');
+    authToken !== null ? `yes (${authToken.length} chars)` : 'NO - will get 401');
   console.log('[push-mobile] headers =', JSON.stringify(headers));
   console.log('[push-mobile] fetch START...');
 
@@ -267,7 +267,7 @@ async function registerTokenWithBackend(token: string): Promise<void> {
     res = await fetch(fullUrl, { method: 'POST', headers, body: payload });
   } catch (netErr) {
     // Network-level failure (no internet, DNS failure, connection refused, etc.)
-    console.error('[push-mobile] NETWORK ERROR — fetch threw:', String(netErr));
+    console.error('[push-mobile] NETWORK ERROR - fetch threw:', String(netErr));
     throw netErr;
   }
 
@@ -282,9 +282,9 @@ async function registerTokenWithBackend(token: string): Promise<void> {
   console.log('[push-mobile] response body =', JSON.stringify(body));
 
   if (!res.ok) {
-    console.error('[push-mobile] POST FAILED — HTTP', res.status, JSON.stringify(body));
+    console.error('[push-mobile] POST FAILED - HTTP', res.status, JSON.stringify(body));
     throw new Error(`HTTP ${res.status}`);
   }
 
-  console.log('[push-mobile] POST SUCCESS ✓ — token registered');
+  console.log('[push-mobile] POST SUCCESS ✓ - token registered');
 }

@@ -188,7 +188,7 @@ admin_nav('/admin/events');
         <div class="form-group">
             <label for="city_id">City</label>
             <select id="city_id" name="city_id" onchange="loadMembers(this.value)" required>
-                <option value="">— Select city —</option>
+                <option value="">- Select city -</option>
                 <?php foreach ($cities as $c): ?>
                     <option value="<?= $c['id'] ?>" <?= (int)($post['city_id'] ?? 0) === $c['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($c['name'], ENT_QUOTES) ?>
@@ -387,7 +387,7 @@ function loadMembers(cityId) {
                 sel.appendChild(opt);
             });
         })
-        .catch(function() { /* ignore — creator stays as system */ });
+        .catch(function() { /* ignore - creator stays as system */ });
 }
 
 // ── Init on page load ─────────────────────────────────────────────────────────

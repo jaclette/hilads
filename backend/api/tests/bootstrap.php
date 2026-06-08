@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 // Load only the source classes needed for unit tests.
-// We do NOT boot the full routes/app — just the classes under test.
+// We do NOT boot the full routes/app - just the classes under test.
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Minimal stubs for classes that do I/O so unit tests never touch the network or DB.
@@ -40,7 +40,7 @@ if (!class_exists('Database')) {
         public static function pdo(): \PDO
         {
             if (self::$pdo === null) {
-                throw new \RuntimeException('Database::pdo() called without a PDO instance — inject one via Database::setInstance() first');
+                throw new \RuntimeException('Database::pdo() called without a PDO instance - inject one via Database::setInstance() first');
             }
             return self::$pdo;
         }

@@ -95,7 +95,7 @@ export default function AllChallengesScreen() {
         </View>
       </View>
 
-      {/* Tab pills — Open (default, active strip) vs Validated (archive) */}
+      {/* Tab pills - Open (default, active strip) vs Validated (archive) */}
       <View style={styles.tabBar}>
         {(['open', 'validated'] as const).map(v => (
           <TouchableOpacity
@@ -111,7 +111,7 @@ export default function AllChallengesScreen() {
         ))}
       </View>
 
-      {/* Mode sub-filter — All / Local / International. Sits above the
+      {/* Mode sub-filter - All / Local / International. Sits above the
           type chips. Asymmetric per spec: International gets a distinct
           chip + label, Local is treated as the default. */}
       <ScrollView
@@ -136,7 +136,7 @@ export default function AllChallengesScreen() {
         })}
       </ScrollView>
 
-      {/* Type sub-filter chips — all / food / place / culture / help.
+      {/* Type sub-filter chips - all / food / place / culture / help.
           Compact pills sitting just below the tab row so the user can
           narrow the list to a single challenge type without leaving the
           screen. Horizontally scrollable for future types. */}

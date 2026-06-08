@@ -62,7 +62,7 @@
     "eventTag": "Sự kiện",
     "public": "Công khai",
     "activeNow": "● Đang hoạt động",
-    "repliesNew": "Chưa có trả lời — hãy là người đầu tiên",
+    "repliesNew": "Chưa có trả lời - hãy là người đầu tiên",
     "replies_other": "💬 {{count}} trả lời",
     "going_other": "🙌 {{count}} tham gia",
     "hostedBy": "Tổ chức bởi {{name}}",
@@ -133,11 +133,11 @@
   "create": {
     "title": "Làm gì đây?",
     "hangoutTitle": "Tạo tụ tập",
-    "hangoutSub": "Tức thì — để mọi người tham gia ngay bây giờ",
+    "hangoutSub": "Tức thì - để mọi người tham gia ngay bây giờ",
     "eventTitle": "Tạo sự kiện",
     "eventSub": "Lên kế hoạch cho điều người khác có thể tham gia",
     "challengeTitle": "Tạo một thử thách",
-    "challengeSub": "Người địa phương & du khách — kết nối qua một thử thách",
+    "challengeSub": "Người địa phương & du khách - kết nối qua một thử thách",
     "challengePageTitle": "Tạo một thử thách",
     "challengeAudience": "Dành cho ai?",
     "challengeAudLocals": "Người địa phương",
@@ -156,7 +156,7 @@
     "going": "tham gia",
     "inThisHangout": "trong tụ tập này",
     "loading": "Đang tải…",
-    "empty": "Chưa có ai — hãy là người đầu tiên! 🙌"
+    "empty": "Chưa có ai - hãy là người đầu tiên! 🙌"
   },
   "nickname": {
     "label": "Biệt danh",
@@ -210,7 +210,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Bạn đã tạo sự kiện này!",
-    "sub": "Làm cho nó tốt hơn — thêm mô tả, cập nhật thời gian hoặc chia sẻ.",
+    "sub": "Làm cho nó tốt hơn - thêm mô tả, cập nhật thời gian hoặc chia sẻ.",
     "edit": "✏️ Sửa sự kiện"
   },
   "feedNew": {

@@ -87,7 +87,7 @@ class UserRepository
     }
 
     /**
-     * Stamp the user's EULA acceptance time (Apple G1.2). Idempotent — only
+     * Stamp the user's EULA acceptance time (Apple G1.2). Idempotent - only
      * sets the timestamp if it's currently NULL, so re-acceptance preserves
      * the original acceptance moment.
      */
@@ -100,7 +100,7 @@ class UserRepository
     }
 
     /**
-     * Partial update — only the keys present in $fields are touched.
+     * Partial update - only the keys present in $fields are touched.
      * Allowed fields: display_name, birth_year, profile_photo_url, home_city, interests.
      */
     public static function update(string $id, array $fields): array
@@ -143,7 +143,7 @@ class UserRepository
     }
 
     /**
-     * Admin-only user creation — skips cooldowns, allows is_fake flag.
+     * Admin-only user creation - skips cooldowns, allows is_fake flag.
      */
     public static function adminCreate(array $data): array
     {
@@ -185,7 +185,7 @@ class UserRepository
     }
 
     /**
-     * Admin-only full update — can touch email, password_hash, is_fake, etc.
+     * Admin-only full update - can touch email, password_hash, is_fake, etc.
      */
     public static function adminUpdate(string $id, array $fields): array
     {
@@ -193,7 +193,7 @@ class UserRepository
             'display_name', 'email', 'password_hash', 'birth_year',
             'profile_photo_url', 'home_city', 'interests', 'vibe', 'is_fake',
             // PR14: admin override of the cached leaderboard scores. Direct
-            // mutation of users.score_* — bypasses score_events but useful
+            // mutation of users.score_* - bypasses score_events but useful
             // for moderation / corrections / seed-data tweaks from the BO.
             'score_alltime', 'score_month', 'score_month_ref',
             // PR16: admin override of the user's current city membership. The

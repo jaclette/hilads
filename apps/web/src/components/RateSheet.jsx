@@ -18,7 +18,7 @@ function avatarColors(name = '') {
  * Bottom-sheet rating modal for a single rate-prompt. Stars (1–5, required) +
  * optional comment (≤500 chars). Mirrors the mobile RateSheet contract:
  *   - onSubmitted(challengeId) fires after a successful POST OR after a
- *     recoverable race (409 already_rated / 403 not_rate_eligible) — the
+ *     recoverable race (409 already_rated / 403 not_rate_eligible) - the
  *     parent treats both as "this prompt is done, remove it".
  *   - onClose dismisses without affecting the prompt list.
  */

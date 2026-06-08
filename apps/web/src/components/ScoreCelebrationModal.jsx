@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 
-// Per-kind subtitle key — same mapping as the native modal. Falls through
+// Per-kind subtitle key - same mapping as the native modal. Falls through
 // to `default` when top_kind is null or unknown (older / ghost events).
 const KIND_KEYS = {
   accepted:    'scoreCelebration.subtitle.accepted',
@@ -30,7 +30,7 @@ const KIND_EMOJI = {
 }
 
 /**
- * Web "+X points!" celebration modal — parity with the native version.
+ * Web "+X points!" celebration modal - parity with the native version.
  *
  * Animation:
  *   - Fade-in backdrop + scale-in card via CSS keyframes (in index.css).
@@ -46,7 +46,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
   const [displayPoints, setDisplayPoints] = useState(0)
   const rafRef = useRef(null)
 
-  // Count-up effect — restarts whenever a new payload becomes visible.
+  // Count-up effect - restarts whenever a new payload becomes visible.
   // Easing matches the native modal's out-cubic curve so the two feel the
   // same across platforms; duration scales with point count but is clamped
   // so a +500 doesn't roll forever.
@@ -127,7 +127,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
           {t(subtitleKey)}
         </div>
 
-        {/* Per-event breakdown — same shape as the native modal. Each row
+        {/* Per-event breakdown - same shape as the native modal. Each row
             shows the challenge title + which step earned the points so the
             popin reads as a recap, not just a number. */}
         {data.events && data.events.length > 0 && (
@@ -160,7 +160,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
 
         <div className="score-celebration-divider" />
 
-        {/* PR38 — rank rows are clickable when a handler is provided. Tap
+        {/* PR38 - rank rows are clickable when a handler is provided. Tap
             opens the leaderboard pre-scoped to that row's lens (city or
             world). The handler is responsible for acking the watermark
             before navigating so the popin doesn't re-appear. */}
@@ -191,7 +191,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
                 <span className="score-celebration-row-label">{worldRankCopy}</span>
                 {worldTappable && <span className="score-celebration-row-chevron" aria-hidden="true">›</span>}
               </div>
-              {/* City-in-cities — where the user's home city ranks among
+              {/* City-in-cities - where the user's home city ranks among
                   all cities. Rendered only when there's a current city
                   set; uses the same row chrome as the other two. */}
               {data.city_id && (

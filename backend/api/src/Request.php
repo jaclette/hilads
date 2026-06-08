@@ -29,14 +29,14 @@ class Request
     /**
      * Crawler / link-previewer User-Agent match. The web SPA also skips React
      * hydration for these UAs (apps/web/src/main.jsx), so this is defense in
-     * depth — short-circuits any backend write that might slip through.
+     * depth - short-circuits any backend write that might slip through.
      */
     public static function isBot(): bool
     {
         $ua = $_SERVER['HTTP_USER_AGENT'] ?? '';
         if ($ua === '') return false;
         return (bool) preg_match(
-            // "WhatsApp" intentionally excluded — Android in-app browsers append
+            // "WhatsApp" intentionally excluded - Android in-app browsers append
             // "WhatsApp/<ver>" to a regular Chromium UA; matching it would
             // mis-classify real human users. The link previewer doesn't hit
             // /guest/session anyway.

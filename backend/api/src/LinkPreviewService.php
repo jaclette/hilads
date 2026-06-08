@@ -136,7 +136,7 @@ final class LinkPreviewService
 
     private static function parseHtml(string $html, string $baseUrl): array
     {
-        // Only parse the <head> slice — sites put OG/title there, and bounding
+        // Only parse the <head> slice - sites put OG/title there, and bounding
         // the regex domain keeps catastrophic backtracking out of reach.
         $headPos = stripos($html, '</head>');
         $head = $headPos !== false ? substr($html, 0, $headPos + 7) : substr($html, 0, self::HEAD_PARSE_MAX);
@@ -165,7 +165,7 @@ final class LinkPreviewService
              ?? $g('/<meta[^>]+content=["\']([^"\']*)["\'][^>]+property=["\']og:site_name["\']/i');
 
         // Resolve relative og:image against the (post-redirect) base URL; then
-        // require http(s) — drop any data: / javascript: / etc.
+        // require http(s) - drop any data: / javascript: / etc.
         if ($image !== null && !preg_match('#^https?://#i', $image)) {
             $image = self::resolveUrl($baseUrl, $image);
         }

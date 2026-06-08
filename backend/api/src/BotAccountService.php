@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * BotAccountService — central blacklist for accounts we've identified as
+ * BotAccountService - central blacklist for accounts we've identified as
  * crawler / automated (e.g. Googlebot-driven). Their reads (POST /bootstrap,
  * any GET endpoint) keep working untouched; we only want to suppress the
  * NOISE they generate as actors:
@@ -68,11 +68,11 @@ class BotAccountService
      * True if any of the conventional actor fields in a notification's data
      * payload resolves to a bot account. Covers the keys our notification
      * call sites actually use:
-     *   senderUserId — dm/channel/event/topic_message, mention, profile_view
-     *   actorId      — vibe_received
-     *   viewerId     — profile_view (paired with senderUserId)
-     *   accepterUserId — friend_request_accepted
-     *   arriverUserId — (not present today; future-proof for city_join)
+     *   senderUserId - dm/channel/event/topic_message, mention, profile_view
+     *   actorId      - vibe_received
+     *   viewerId     - profile_view (paired with senderUserId)
+     *   accepterUserId - friend_request_accepted
+     *   arriverUserId - (not present today; future-proof for city_join)
      */
     public static function isBotActor(array $data): bool
     {

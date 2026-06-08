@@ -60,7 +60,7 @@ if ($method === 'POST') {
     $newVenue    = trim($_POST['venue'] ?? '');
     $newStatus   = $_POST['status'] ?? $event['channel_status'];
 
-    // Time fields — only for one-shot events
+    // Time fields - only for one-shot events
     $newStartsAt  = null;
     $newEndsAt    = null;
     $newExpiresAt = null;
@@ -77,7 +77,7 @@ if ($method === 'POST') {
         $errors[] = 'Invalid status value.';
     }
 
-    // Time fields — editable for both one-shot AND recurring events. For
+    // Time fields - editable for both one-shot AND recurring events. For
     // recurring, we additionally shift the series schedule (starts_on /
     // start_time / end_time) below so future occurrences pick up the change.
     $rawStartsAt  = trim($_POST['starts_at'] ?? '');
@@ -130,7 +130,7 @@ if ($method === 'POST') {
             $updateParams[':ends_at'] = $newEndsAt;
         }
         // For recurring rows we preserve the 2999 sentinel on expires_at by
-        // default — only let it be overridden if the admin explicitly typed a
+        // default - only let it be overridden if the admin explicitly typed a
         // value. Sentinel keeps the canonical row from ageing out of feeds.
         if ($newExpiresAt !== null) {
             $updateFields[]              = 'expires_at = :expires_at';
@@ -143,7 +143,7 @@ if ($method === 'POST') {
 
         // For recurring events, also shift the series schedule so future
         // occurrences pick up the new times. Date and time-of-day are
-        // extracted in the series timezone (NOT UTC — recurrence days are
+        // extracted in the series timezone (NOT UTC - recurrence days are
         // tz-aware). Mirrors EventRepository::update's recurring branch.
         if ($isRecurring && ($newStartsAt !== null || $newEndsAt !== null)) {
             $tz = $event['series_timezone'] ?: 'UTC';
@@ -252,7 +252,7 @@ admin_nav('/admin/events');
     <?php if ($isRecurring): ?>
         <div class="warning-box">
             ⚠ This is a <strong>recurring event</strong> (series ID: <?= htmlspecialchars(substr($event['series_id'], 0, 16), ENT_QUOTES) ?>…).
-            Editing the start/end times here will <strong>shift the entire series schedule</strong> — future occurrences pick up the new date and time-of-day. <code>expires_at</code> should normally be left blank to preserve the far-future sentinel that keeps the canonical row alive.
+            Editing the start/end times here will <strong>shift the entire series schedule</strong> - future occurrences pick up the new date and time-of-day. <code>expires_at</code> should normally be left blank to preserve the far-future sentinel that keeps the canonical row alive.
         </div>
     <?php endif; ?>
 
@@ -265,13 +265,13 @@ admin_nav('/admin/events');
                 <div class="info-value"><?= htmlspecialchars($event['channel_id'], ENT_QUOTES) ?></div>
 
                 <div class="info-label">City</div>
-                <div class="info-value"><?= htmlspecialchars($event['city_name'] ?? '—', ENT_QUOTES) ?></div>
+                <div class="info-value"><?= htmlspecialchars($event['city_name'] ?? '-', ENT_QUOTES) ?></div>
 
                 <div class="info-label">Source</div>
                 <div class="info-value"><?= htmlspecialchars($event['source_type'], ENT_QUOTES) ?></div>
 
                 <div class="info-label">Type</div>
-                <div class="info-value"><?= htmlspecialchars($event['event_type'] ?? '—', ENT_QUOTES) ?></div>
+                <div class="info-value"><?= htmlspecialchars($event['event_type'] ?? '-', ENT_QUOTES) ?></div>
 
                 <?php if ($event['created_by']): ?>
                     <div class="info-label">Created by</div>
@@ -355,7 +355,7 @@ admin_nav('/admin/events');
                 value="<?= htmlspecialchars($_POST['expires_at'] ?? ($isRecurring ? '' : fmt_dt($event['expires_at'])), ENT_QUOTES) ?>"
             >
             <div class="hint"><?php if ($isRecurring): ?>
-                <strong>Leave blank.</strong> Recurring events use a far-future sentinel for <code>expires_at</code> so the canonical row never ages out — typing anything here turns the series into a one-shot. Currently: <code><?= htmlspecialchars(fmt_dt($event['expires_at']), ENT_QUOTES) ?></code>.
+                <strong>Leave blank.</strong> Recurring events use a far-future sentinel for <code>expires_at</code> so the canonical row never ages out - typing anything here turns the series into a one-shot. Currently: <code><?= htmlspecialchars(fmt_dt($event['expires_at']), ENT_QUOTES) ?></code>.
             <?php else: ?>
                 Leave blank to keep current value
             <?php endif; ?></div>
@@ -389,7 +389,7 @@ admin_nav('/admin/events');
                             </label>
                         <?php endforeach; ?>
                     </div>
-                    <div class="hint">Currently: <strong><?= empty($currentWeekdays) ? '— (none)' : implode(' · ', array_map(fn($d) => $dayNames[$d] ?? '?', $currentWeekdays)) ?></strong>. Tick the days the series should repeat on.</div>
+                    <div class="hint">Currently: <strong><?= empty($currentWeekdays) ? '- (none)' : implode(' · ', array_map(fn($d) => $dayNames[$d] ?? '?', $currentWeekdays)) ?></strong>. Tick the days the series should repeat on.</div>
                 <?php elseif ($event['series_recurrence_type'] === 'every_n_days'): ?>
                     <input
                         type="number"
@@ -399,9 +399,9 @@ admin_nav('/admin/events');
                         value="<?= htmlspecialchars((string) ($_POST['interval_days'] ?? $event['series_interval_days'] ?? ''), ENT_QUOTES) ?>"
                         style="max-width:120px"
                     >
-                    <div class="hint">Days between occurrences (2–365). Current: <strong><?= htmlspecialchars((string) ($event['series_interval_days'] ?? '—'), ENT_QUOTES) ?></strong></div>
+                    <div class="hint">Days between occurrences (2–365). Current: <strong><?= htmlspecialchars((string) ($event['series_interval_days'] ?? '-'), ENT_QUOTES) ?></strong></div>
                 <?php else: ?>
-                    <div class="hint">Daily — runs every day. Nothing to configure.</div>
+                    <div class="hint">Daily - runs every day. Nothing to configure.</div>
                 <?php endif; ?>
             </div>
         <?php endif; ?>

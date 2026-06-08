@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class CityRepository
 {
-    /** In-memory cache — loaded once per request from Postgres. */
+    /** In-memory cache - loaded once per request from Postgres. */
     private static ?array $cities = null;
 
     private static function load(): array
@@ -13,7 +13,7 @@ class CityRepository
             return self::$cities;
         }
 
-        // Cross-request cache — cities change at most a few times per year, so we
+        // Cross-request cache - cities change at most a few times per year, so we
         // avoid re-reading the full ~350-row set on every city lookup/validation.
         // APCu when available (fastest, shared across workers); otherwise a
         // file-based fallback. APCu is NOT enabled on Render's mod_php, and
@@ -95,12 +95,12 @@ class CityRepository
      * When the client passes the GPS point's country (resolved via native
      * reverse-geocode on mobile / Nominatim on web), we restrict the candidate
      * set to cities in that country before computing distances. This prevents
-     * the nearest-city search from snapping across an international border —
+     * the nearest-city search from snapping across an international border -
      * the bug that placed users on Phu Quoc (VN, no city in our DB) into
      * Phnom Penh (KH, ~150 km) instead of Ho Chi Minh City (VN, ~300 km).
      *
      * If the country is missing, malformed, or has no cities in our DB, we
-     * fall back to the global nearest — so older clients (no country param)
+     * fall back to the global nearest - so older clients (no country param)
      * keep working unchanged.
      */
     public static function nearest(float $lat, float $lng, ?string $country = null): array

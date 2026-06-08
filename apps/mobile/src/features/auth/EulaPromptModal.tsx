@@ -1,5 +1,5 @@
 /**
- * EulaPromptModal — Apple Guideline 1.2 EULA gate.
+ * EulaPromptModal - Apple Guideline 1.2 EULA gate.
  *
  * Shown to users who haven't accepted the Terms / EULA yet:
  *   - At signup: rendered inline as a checkbox + zero-tolerance copy.
@@ -99,10 +99,10 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
   // rendered last in _layout.tsx so it has the highest paint order) and
   // captures touches uniformly across iPad / iPhone.
   if (!visible) return null;
-  console.log('[eula] modal visible — rendering overlay (loading=' + String(loading ?? false) + ')');
+  console.log('[eula] modal visible - rendering overlay (loading=' + String(loading ?? false) + ')');
   return (
     // Pressable absorbs taps on the backdrop so they don't fall through.
-    // No onPress — the modal is non-dismissable. We just want guaranteed
+    // No onPress - the modal is non-dismissable. We just want guaranteed
     // touch capture across iOS 26 / iPad-compat behaviours that <View> alone
     // doesn't handle reliably.
     <Pressable
@@ -116,11 +116,11 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
 
         <EulaCopyBlock />
 
-        {/* Failure feedback — without this, a failed/hung accept call leaves
+        {/* Failure feedback - without this, a failed/hung accept call leaves
             the user staring at a button that "does nothing". */}
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        {/* Pressable instead of TouchableOpacity — RN's newer primitive has
+        {/* Pressable instead of TouchableOpacity - RN's newer primitive has
             more reliable hit-testing inside overlays on iOS 26 / iPad. */}
         <Pressable
           style={({ pressed }) => [
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Re-prompt overlay — full-screen absolute layer rendered in-tree (no
+  // Re-prompt overlay - full-screen absolute layer rendered in-tree (no
   // native <Modal>). Lives at the top of the React tree (last sibling in
   // _layout.tsx), so its high zIndex puts it above the bottom tab bar.
   modalOverlay: {

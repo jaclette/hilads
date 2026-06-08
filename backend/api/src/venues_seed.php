@@ -1,14 +1,14 @@
 <?php
 
 /**
- * Curated recurring venue seed — 10 cities, 4 bars + 3 coffee shops each.
+ * Curated recurring venue seed - 10 cities, 4 bars + 3 coffee shops each.
  *
  * Rules applied at import time:
  *   bars    → event_type=drinks,  start=18:00, end=01:00, daily
  *   coffee  → event_type=coffee,  start=10:00, end=18:00, daily
  *
  * source_key is derived from city_id + slugified title + category.
- * Renaming a title produces a new source_key — the old series is left untouched
+ * Renaming a title produces a new source_key - the old series is left untouched
  * and expires naturally. Do not change titles unless you intend a new series.
  */
 
@@ -841,19 +841,19 @@ return [
     ['city_id' => 238, 'category' => 'coffee', 'title' => 'Blaque Boutique Cafe',   'location' => 'Abu Rummaneh, Damascus'],
     ['city_id' => 238, 'category' => 'coffee', 'title' => 'Pilots Café',            'location' => 'Abu Roumaneh, Damascus'],
 
-    // ── Tehran (coffee only — no cocktail bars) ──────────────────────────────────
+    // ── Tehran (coffee only - no cocktail bars) ──────────────────────────────────
     ['city_id' => 225, 'category' => 'coffee', 'title' => 'Raees Coffee',           'location' => 'Fatemi Square, Tehran'],
     ['city_id' => 225, 'category' => 'coffee', 'title' => 'Cafe Tehroon',           'location' => 'Negarestan, Tehran'],
     ['city_id' => 225, 'category' => 'coffee', 'title' => 'Café Ansoo',             'location' => 'Tehran'],
     ['city_id' => 225, 'category' => 'coffee', 'title' => 'Godo Gole Yaas Café',    'location' => 'Enghelab St, Tehran'],
 
-    // ── Mashhad (coffee only — no cocktail bars) ─────────────────────────────────
+    // ── Mashhad (coffee only - no cocktail bars) ─────────────────────────────────
     ['city_id' => 226, 'category' => 'coffee', 'title' => 'Porsesh Book Cafe',      'location' => 'Zanbagh, Mashhad'],
     ['city_id' => 226, 'category' => 'coffee', 'title' => 'Cafe Parvaaz',           'location' => 'Yas, Mashhad'],
     ['city_id' => 226, 'category' => 'coffee', 'title' => 'Cafe View',              'location' => 'Mashhad'],
     ['city_id' => 226, 'category' => 'coffee', 'title' => 'Cafe 1860',              'location' => 'Mashhad'],
 
-    // ── Kabul (coffee only — no cocktail bars) ───────────────────────────────────
+    // ── Kabul (coffee only - no cocktail bars) ───────────────────────────────────
     ['city_id' => 217, 'category' => 'coffee', 'title' => 'Cupcake Coffee Shop',    'location' => 'Kabul'],
     ['city_id' => 217, 'category' => 'coffee', 'title' => 'Slice',                  'location' => 'Shahr-e Naw, Kabul'],
     ['city_id' => 217, 'category' => 'coffee', 'title' => "Tim's Bakery",           'location' => 'Kabul'],
@@ -901,7 +901,7 @@ return [
     ['city_id' => 268, 'category' => 'coffee', 'title' => 'Koffi Gombo',            'location' => 'Zogona, Ouagadougou'],
     ['city_id' => 268, 'category' => 'coffee', 'title' => 'Café Onu',               'location' => 'Ouaga 2000, Ouagadougou'],
 
-    // ── Brazzaville (bars only — no reliable specialty coffee found) ─────────────
+    // ── Brazzaville (bars only - no reliable specialty coffee found) ─────────────
     ['city_id' => 346, 'category' => 'bar',    'title' => 'Pichichi Lounge Bar',    'location' => 'Av. Nelson Mandela, Brazzaville'],
     ['city_id' => 346, 'category' => 'bar',    'title' => 'Le Faignond',            'location' => 'Brazzaville'],
     ['city_id' => 346, 'category' => 'bar',    'title' => 'Seven Bar',              'location' => 'Brazzaville'],
@@ -923,7 +923,7 @@ return [
     ['city_id' => 350, 'category' => 'coffee', 'title' => 'Ama Khofi',              'location' => 'City Centre, Lilongwe'],
     ['city_id' => 350, 'category' => 'coffee', 'title' => 'Warm Heart Cafe',        'location' => 'Area 10, Lilongwe'],
 
-    // ── Medina (coffee only — no cocktail bars) ──────────────────────────────────
+    // ── Medina (coffee only - no cocktail bars) ──────────────────────────────────
     ['city_id' => 338, 'category' => 'coffee', 'title' => 'Wacafe Specialty Coffee','location' => 'Al Aqool, Medina'],
     ['city_id' => 338, 'category' => 'coffee', 'title' => '44X Specialty Coffee',   'location' => 'Al Aridh, Medina'],
     ['city_id' => 338, 'category' => 'coffee', 'title' => 'Row Specialty Coffee',   'location' => 'Al Jamawat, Medina'],

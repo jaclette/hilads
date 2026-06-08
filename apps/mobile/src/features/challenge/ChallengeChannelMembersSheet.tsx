@@ -13,7 +13,7 @@ import type { Challenge, UserDTO } from '@/types';
 /**
  * Members sheet for the challenge channel. Synthesizes Challenger + Taker
  * rows at the head from the challenge/acceptance context (they're not in
- * the channel-participants list — they're implicit), then lists joined
+ * the channel-participants list - they're implicit), then lists joined
  * participants in join order. Kick button surfaces for creator + active
  * taker, never on the caller's own row, never on the creator.
  */
@@ -87,7 +87,7 @@ export function ChallengeChannelMembersSheet({
     const fromMembers = members.find(m => m.id === creatorUserId);
     rows.push({
       id:             creatorUserId,
-      displayName:    fromMembers?.displayName ?? challenge?.creator_display_name ?? '—',
+      displayName:    fromMembers?.displayName ?? challenge?.creator_display_name ?? '-',
       thumbAvatarUrl: fromMembers?.thumbAvatarUrl ?? challenge?.creator_thumb_avatar_url ?? null,
       role:           'challenger',
     });
@@ -96,7 +96,7 @@ export function ChallengeChannelMembersSheet({
     const fromMembers = members.find(m => m.id === takerUserId);
     rows.push({
       id:             takerUserId,
-      displayName:    fromMembers?.displayName ?? activeTaker?.displayName ?? '—',
+      displayName:    fromMembers?.displayName ?? activeTaker?.displayName ?? '-',
       thumbAvatarUrl: fromMembers?.thumbAvatarUrl ?? activeTaker?.thumbAvatarUrl ?? activeTaker?.avatarUrl ?? null,
       role:           'taker',
     });
@@ -105,7 +105,7 @@ export function ChallengeChannelMembersSheet({
     if (m.id === creatorUserId || m.id === takerUserId) continue;
     rows.push({
       id:             m.id,
-      displayName:    m.displayName ?? '—',
+      displayName:    m.displayName ?? '-',
       thumbAvatarUrl: m.thumbAvatarUrl,
       role:           'participant',
     });
@@ -155,7 +155,7 @@ export function ChallengeChannelMembersSheet({
                     <View style={styles.rowInfo}>
                       <View style={styles.nameRow}>
                         <Text style={styles.name} numberOfLines={1}>{r.displayName}</Text>
-                        {/* PR23 — every row carries a role chip:
+                        {/* PR23 - every row carries a role chip:
                             Challenger / Taker stay as before, "participant"
                             (channel joiners with no acceptance) reads
                             Spectator. */}

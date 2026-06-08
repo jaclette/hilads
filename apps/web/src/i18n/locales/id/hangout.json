@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Edit", "delete": "🗑 Hapus" },
   "gated": {
     "title": "Nongkrong khusus anggota",
-    "pending": "Permintaan menunggu — kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
+    "pending": "Permintaan menunggu - kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
     "prompt": "Minta gabung untuk melihat percakapan dan mengobrol.",
     "requestBtn": "Minta gabung"
   },

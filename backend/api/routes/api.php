@@ -82,7 +82,7 @@ function enrichBroadcastMessage(array $message, ?array $senderUser): array
 
 // ── Reply snapshot helper ─────────────────────────────────────────────────────
 // Looks up a message by ID and returns the snapshot fields needed to store with
-// a reply. Returns null when the ID is missing or invalid (no 400 error — we
+// a reply. Returns null when the ID is missing or invalid (no 400 error - we
 // just store a reply without a snapshot rather than blocking the send).
 function resolveReplySnapshot(?string $replyToId, string $table = 'messages'): ?array
 {
@@ -217,7 +217,7 @@ function toggleMessageReaction(string $messageId, string $emoji, ?string $guestI
     $pdo = Database::pdo();
 
     if ($userId !== null) {
-        // Registered user — keyed on user_id
+        // Registered user - keyed on user_id
         $stmt = $pdo->prepare("SELECT id FROM message_reactions WHERE message_id = ? AND user_id = ? AND emoji = ?");
         $stmt->execute([$messageId, $userId, $emoji]);
         $existing = $stmt->fetch();
@@ -229,7 +229,7 @@ function toggleMessageReaction(string $messageId, string $emoji, ?string $guestI
             $added = true;
         }
     } elseif ($guestId !== null) {
-        // Guest user — keyed on guest_id, no user_id row
+        // Guest user - keyed on guest_id, no user_id row
         $stmt = $pdo->prepare("SELECT id FROM message_reactions WHERE message_id = ? AND guest_id = ? AND user_id IS NULL AND emoji = ?");
         $stmt->execute([$messageId, $guestId, $emoji]);
         $existing = $stmt->fetch();
@@ -245,7 +245,7 @@ function toggleMessageReaction(string $messageId, string $emoji, ?string $guestI
     }
 
     // Return updated reactions for this message with self flag for current actor.
-    // Dynamic self-expression avoids ? IS NULL / ? IS NOT NULL — PostgreSQL native
+    // Dynamic self-expression avoids ? IS NULL / ? IS NOT NULL - PostgreSQL native
     // prepared statements cannot infer the type of a NULL parameter with no context.
     $selfExpr   = 'FALSE';
     $selfParams = [];
@@ -308,7 +308,7 @@ function broadcastChallengeUnvalidatedToWs(int $channelId, array $challenge): vo
 }
 
 /**
- * PR2 — challenge take-on lifecycle. Both events use the generic /broadcast/user-event
+ * PR2 - challenge take-on lifecycle. Both events use the generic /broadcast/user-event
  * route on the WS server, which fans out to a single user's connected sessions.
  * No new WS routes needed for accept/cancel notifications.
  *
@@ -337,10 +337,10 @@ function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $
 }
 
 /**
- * PR3 — date concertation events. All three reuse /broadcast/user-event and
+ * PR3 - date concertation events. All three reuse /broadcast/user-event and
  * fire to a single target user (the OTHER party of the thread). For sync
  * across the proposer's own devices, the proposer fans-out client-side after
- * the HTTP response — keeps server WS push to one packet per state change.
+ * the HTTP response - keeps server WS push to one packet per state change.
  */
 function broadcastChallengeDateProposedToWs(string $targetUserId, array $payload): void
 {
@@ -372,7 +372,7 @@ function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payloa
     ]);
 }
 
-/** PR5 — creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
+/** PR5 - creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
 function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $payload): void
 {
     error_log("[ws-broadcast] → challenge-takeon-reviewed target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null') . ' decision=' . ($payload['decision'] ?? 'null'));
@@ -383,7 +383,7 @@ function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $paylo
     ]);
 }
 
-/** PR47 — mutual rating completed (the SECOND rater just submitted, so
+/** PR47 - mutual rating completed (the SECOND rater just submitted, so
  *  both parties' debrief points landed). Fires to BOTH users so their
  *  open ScoreCelebrationLaunchGate refetches /me/score-celebration and
  *  surfaces the "+30/+40 points" popin without a manual refresh. */
@@ -411,7 +411,7 @@ function broadcastRatingReceivedToWs(string $targetUserId, array $payload): void
     ]);
 }
 
-/** PR4 — debrief verdicts. Same shape as proposed/approved/withdrawn. */
+/** PR4 - debrief verdicts. Same shape as proposed/approved/withdrawn. */
 function broadcastChallengeVerdictToWs(string $targetUserId, string $verdict, array $payload): void
 {
     $event = $verdict === 'approved' ? 'challenge_verdict_approved' : 'challenge_verdict_rejected';
@@ -453,7 +453,7 @@ function normalizeFeedEvent(array $e, int $now): array
     $isLive = ($e['starts_at'] ?? 0) <= $now && ($e['expires_at'] ?? 0) > $now;
     return array_merge($e, [
         'kind'             => 'event',
-        // Canonical aliases — these are the field names native uses
+        // Canonical aliases - these are the field names native uses
         'event_type'       => $e['type']   ?? $e['event_type']   ?? 'other',
         'source_type'      => $e['source'] ?? $e['source_type']  ?? 'hilads',
         // Shared normalised fields
@@ -476,7 +476,7 @@ function normalizeFeedTopic(array $t, int $now): array
     ]);
 }
 
-// Past archive entry for a validated challenge — mirrors normalizeFeedEvent /
+// Past archive entry for a validated challenge - mirrors normalizeFeedEvent /
 // normalizeFeedTopic so the /past endpoint can return a homogeneous FeedItem
 // array regardless of source. Validated challenges are evergreen (no expiry),
 // so active_now is always false in this archive context.
@@ -528,7 +528,7 @@ function broadcastConversationMessageToWs(string $conversationId, array $message
 // Pushes an event to every WS socket the given userId has open. Used by
 // friend-request flows so the sender's profile flips state instantly when the
 // receiver accepts/declines, and the receiver's inbox updates when the sender
-// cancels. Fire-and-forget — failure to reach the WS server is logged but
+// cancels. Fire-and-forget - failure to reach the WS server is logged but
 // never fails the HTTP request.
 function broadcastUserEventToWs(string $userId, string $event, array $payload = []): void
 {
@@ -577,7 +577,7 @@ function sanitizeMentions(mixed $raw, string $context, string $dbChannelId, stri
     if (empty($raw) || !is_array($raw)) return [];
     $allowed = MentionService::mentionableUserIds($context, $dbChannelId);
 
-    // Online guests are mentionable too — but only in a CITY channel and only
+    // Online guests are mentionable too - but only in a CITY channel and only
     // while currently present (live-only). Resolve the online-guest set lazily:
     // only when the client actually included a guest mention, so the common
     // members-only message path pays no extra presence query.
@@ -603,7 +603,7 @@ function sanitizeMentions(mixed $raw, string $context, string $dbChannelId, stri
 }
 
 /**
- * Fire a 'mention' notification to each mentioned user — deduped by userId, author
+ * Fire a 'mention' notification to each mentioned user - deduped by userId, author
  * excluded. NotificationRepository::create gates on the recipient's mention_push
  * pref. $data carries the deep-link context (eventId|topicId|channelId) + messageId.
  * Non-fatal: a notification failure never blocks the message response.
@@ -628,7 +628,7 @@ function notifyMentions(array $mentions, ?string $senderUserId, string $title, ?
  * formatted for fast lookup. Wraps BlockRepository::getBidirectional so route
  * handlers don't need to know about the repo.
  *
- * Returns ['user_ids' => [...], 'guest_ids' => [...]] — the IDs of every user
+ * Returns ['user_ids' => [...], 'guest_ids' => [...]] - the IDs of every user
  * or guest the viewer has blocked OR been blocked by. Apple Guideline 1.2
  * requires mutual invisibility, so both directions are baked in.
  */
@@ -686,7 +686,7 @@ function normalizeUnixTimestamp(mixed $value): ?int
 }
 
 // ── Internal migration endpoint ───────────────────────────────────────────────
-// TEMPORARY — disable by removing MIGRATION_KEY from Render env vars.
+// TEMPORARY - disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
 // Call: GET /internal/run-migrations?key=YOUR_KEY
 
@@ -881,7 +881,7 @@ $router->add('GET', '/internal/run-migrations', function () {
         $chk = $pdo->prepare("SELECT 1 FROM channels WHERE id = ?");
         $chk->execute([$channelId]);
         if (!$chk->fetchColumn()) {
-            $errors[] = "channel $channelId not found for $file — skipped";
+            $errors[] = "channel $channelId not found for $file - skipped";
             continue;
         }
 
@@ -922,9 +922,9 @@ $router->add('GET', '/internal/run-migrations', function () {
 
     // ── 5. Add notification_preferences columns added after initial schema ───────
     // All three were added post-launch and may be absent in production.
-    // IF NOT EXISTS is PostgreSQL 9.6+ — safe to run repeatedly.
+    // IF NOT EXISTS is PostgreSQL 9.6+ - safe to run repeatedly.
     // friend_added_push was renamed to friend_request_push when the friend
-    // request flow shipped — see migrate.php for the rename.
+    // request flow shipped - see migrate.php for the rename.
     foreach ([
         ['friend_request_push',     'BOOLEAN NOT NULL DEFAULT TRUE'],
         ['vibe_received_push',      'BOOLEAN NOT NULL DEFAULT TRUE'],
@@ -967,7 +967,7 @@ $router->add('GET', '/internal/run-migrations', function () {
         $errors[] = "user_reports: " . $e->getMessage();
     }
 
-    // ── 7. blocks table (UGC moderation — Apple Guideline 1.2) ────────────────
+    // ── 7. blocks table (UGC moderation - Apple Guideline 1.2) ────────────────
     //
     // Mirrors the user_reports identity model: blocker and blocked can each be
     // either a registered user or a guest. Mutual invisibility is enforced
@@ -991,7 +991,7 @@ $router->add('GET', '/internal/run-migrations', function () {
             )
         ");
 
-        // Unique partial indexes — one block row per (blocker, blocked) pair, per identity-type combination.
+        // Unique partial indexes - one block row per (blocker, blocked) pair, per identity-type combination.
         // Postgres treats NULLs as distinct in unique indexes, so we need 4 partial indexes (user/user,
         // user/guest, guest/user, guest/guest) to enforce idempotence across all identity combos.
         $pdo->exec("CREATE UNIQUE INDEX IF NOT EXISTS idx_blocks_uu_unique ON blocks (blocker_user_id,  blocked_user_id)  WHERE blocker_user_id  IS NOT NULL AND blocked_user_id  IS NOT NULL");
@@ -1013,7 +1013,7 @@ $router->add('GET', '/internal/run-migrations', function () {
     // ── 8. users.eula_accepted_at (Apple G1.2 EULA acceptance tracking) ───────
     //
     // Tracks when the user accepted Hilads' Terms / EULA. NULL means not yet
-    // accepted — used by the mobile client to decide whether to show the
+    // accepted - used by the mobile client to decide whether to show the
     // mandatory EULA prompt (new signups always set this; existing users get
     // the modal once on next launch and POST /users/me/eula to clear it).
 
@@ -1053,7 +1053,7 @@ $router->add('POST', '/api/v1/auth/signup', function () {
     $body = Request::json();
     if ($body === null) Response::json(['error' => 'Invalid JSON body'], 400);
 
-    // Apple G1.2 — EULA must be explicitly accepted at signup.
+    // Apple G1.2 - EULA must be explicitly accepted at signup.
     // The mobile client gates its submit button on the in-app checkbox; the
     // server enforces the same rule so direct API callers (or older clients)
     // can't bypass it.
@@ -1102,7 +1102,7 @@ $router->add('POST', '/api/v1/auth/login', function () {
     Response::json(['user' => AuthService::ownFields($user), 'token' => $user['_token']]);
 });
 
-// ── DELETE /api/v1/auth/me — soft-delete the current user's account ──────────
+// ── DELETE /api/v1/auth/me - soft-delete the current user's account ──────────
 // Marks deleted_at, kills all sessions + push tokens.
 // Historical data (messages, events, DMs) is preserved for data integrity.
 $router->add('DELETE', '/api/v1/auth/me', function () {
@@ -1163,7 +1163,7 @@ $router->add('POST', '/api/v1/auth/forgot-password', function () {
     enforceRateLimit('auth_forgot_password', 5, 600);
     $body  = Request::json();
     $email = trim((string) ($body['email'] ?? ''));
-    // Always call forgotPassword — it handles missing users silently
+    // Always call forgotPassword - it handles missing users silently
     AuthService::forgotPassword($email);
     Response::json([
         'success' => true,
@@ -1206,7 +1206,7 @@ $router->add('PUT', '/api/v1/profile', function () {
 
     $fields = AuthService::sanitiseProfileFields($body);
 
-    // Username change — validate format + case-insensitive uniqueness (excluding
+    // Username change - validate format + case-insensitive uniqueness (excluding
     // the caller's own row so re-saving an unchanged username is a no-op). The DB
     // unique index is the race-safe backstop.
     if (array_key_exists('username', $body)) {
@@ -1336,7 +1336,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
         ],
     );
 
-    // Profile view notification — deferred so PushService HTTP calls don't block the response.
+    // Profile view notification - deferred so PushService HTTP calls don't block the response.
     if ($viewer['id'] !== $user['id']) {
         $targetId   = $user['id'];
         $viewerId   = $viewer['id'];
@@ -1346,7 +1346,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
                 fastcgi_finish_request();
             }
             // A notification side effect must never surface as a 500 on the
-            // profile fetch — especially without FPM, where this shutdown runs
+            // profile fetch - especially without FPM, where this shutdown runs
             // before the response is flushed (an uncaught error here becomes the
             // HTTP status). Catch everything and log.
             try {
@@ -1377,7 +1377,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
 // are captured with userId="me", which fails the hex-id validation and returns
 // "Invalid userId". The specific /me route must come first.
 $router->add('GET', '/api/v1/users/me/events', function () {
-    $authUser = AuthService::requireAuth(); // 401 for guests — event ownership is registered-only
+    $authUser = AuthService::requireAuth(); // 401 for guests - event ownership is registered-only
     $guestId  = $_GET['guestId'] ?? null;
 
     if (!isValidGuestId($guestId)) {
@@ -1395,7 +1395,7 @@ $router->add('GET', '/api/v1/users/me/events', function () {
 //   GET /api/v1/users/me/can-create-event?channelId=N&guestId=...
 //   →   { canCreate, isLegend, todayCount, limit }
 $router->add('GET', '/api/v1/users/me/can-create-event', function () {
-    $authUser = AuthService::currentUser();         // nullable — guests too
+    $authUser = AuthService::currentUser();         // nullable - guests too
     $guestId  = $_GET['guestId']   ?? null;
     $channel  = (int) ($_GET['channelId'] ?? 0);
     // Optional ?date=YYYY-MM-DD lets the create form re-check after the user
@@ -1449,7 +1449,7 @@ $router->add('GET', '/api/v1/users/{userId}/events', function (array $params) {
     Response::json(['events' => $events]);
 });
 
-// GET /api/v1/users/{userId}/hangouts — active hangouts the user created or
+// GET /api/v1/users/{userId}/hangouts - active hangouts the user created or
 // joined, for the profile "Hangouts" tab. Each item has `is_owner`.
 $router->add('GET', '/api/v1/users/{userId}/hangouts', function (array $params) {
     $userId = $params['userId'] ?? '';
@@ -1466,7 +1466,7 @@ $router->add('GET', '/api/v1/users/{userId}/hangouts', function (array $params) 
 
 // ── Friends ───────────────────────────────────────────────────────────────────
 
-// POST /api/v1/users/{userId}/friends — send a friend request to {userId}.
+// POST /api/v1/users/{userId}/friends - send a friend request to {userId}.
 //
 // Behaviour change (vs. the legacy auto-add): the receiver must explicitly
 // accept before user_friends gets populated. Mutual-add short-circuits: if the
@@ -1570,7 +1570,7 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
     Response::json(['ok' => true, 'request' => $request], 201);
 });
 
-// GET /api/v1/friend-requests/incoming — pending requests where I am the receiver.
+// GET /api/v1/friend-requests/incoming - pending requests where I am the receiver.
 $router->add('GET', '/api/v1/friend-requests/incoming', function () {
     $viewer = AuthService::requireAuth();
 
@@ -1589,7 +1589,7 @@ $router->add('GET', '/api/v1/friend-requests/incoming', function () {
     ]);
 });
 
-// GET /api/v1/friend-requests/outgoing — pending requests where I am the sender.
+// GET /api/v1/friend-requests/outgoing - pending requests where I am the sender.
 $router->add('GET', '/api/v1/friend-requests/outgoing', function () {
     $viewer = AuthService::requireAuth();
 
@@ -1606,14 +1606,14 @@ $router->add('GET', '/api/v1/friend-requests/outgoing', function () {
     ]);
 });
 
-// GET /api/v1/friend-requests/incoming-count — drives the Me-tab badge.
+// GET /api/v1/friend-requests/incoming-count - drives the Me-tab badge.
 // Cheap COUNT(*) so the client can refresh on focus without paging the list.
 $router->add('GET', '/api/v1/friend-requests/incoming-count', function () {
     $viewer = AuthService::requireAuth();
     Response::json(['count' => FriendRequestRepository::incomingPendingCount($viewer['id'])]);
 });
 
-// POST /api/v1/friend-requests/{id}/accept — receiver accepts a pending request.
+// POST /api/v1/friend-requests/{id}/accept - receiver accepts a pending request.
 $router->add('POST', '/api/v1/friend-requests/{id}/accept', function (array $params) {
     $viewer = AuthService::requireAuth();
     $id     = $params['id'] ?? '';
@@ -1659,7 +1659,7 @@ $router->add('POST', '/api/v1/friend-requests/{id}/accept', function (array $par
     Response::json(['ok' => true]);
 });
 
-// POST /api/v1/friend-requests/{id}/decline — receiver declines a pending request.
+// POST /api/v1/friend-requests/{id}/decline - receiver declines a pending request.
 // Per spec: NO notification to sender (avoids awkwardness). WS event still
 // fires so an open profile screen on the sender's side returns to "Add friend".
 $router->add('POST', '/api/v1/friend-requests/{id}/decline', function (array $params) {
@@ -1691,7 +1691,7 @@ $router->add('POST', '/api/v1/friend-requests/{id}/decline', function (array $pa
     Response::json(['ok' => true]);
 });
 
-// DELETE /api/v1/friend-requests/{id} — sender cancels their own pending request.
+// DELETE /api/v1/friend-requests/{id} - sender cancels their own pending request.
 $router->add('DELETE', '/api/v1/friend-requests/{id}', function (array $params) {
     $viewer = AuthService::requireAuth();
     $id     = $params['id'] ?? '';
@@ -1721,7 +1721,7 @@ $router->add('DELETE', '/api/v1/friend-requests/{id}', function (array $params) 
     Response::json(['ok' => true]);
 });
 
-// DELETE /api/v1/users/{userId}/friends — remove {userId} from my friends (auth required).
+// DELETE /api/v1/users/{userId}/friends - remove {userId} from my friends (auth required).
 $router->add('DELETE', '/api/v1/users/{userId}/friends', function (array $params) {
     $viewer   = AuthService::requireAuth();
     $targetId = $params['userId'] ?? '';
@@ -1741,7 +1741,7 @@ $router->add('DELETE', '/api/v1/users/{userId}/friends', function (array $params
     Response::json(['ok' => true]);
 });
 
-// GET /api/v1/users/{userId}/friends — list a user's friends (public, paginated).
+// GET /api/v1/users/{userId}/friends - list a user's friends (public, paginated).
 $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
     $userId = $params['userId'] ?? '';
     if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
@@ -1785,8 +1785,8 @@ $router->add('GET', '/api/v1/users/{userId}/friends', function (array $params) {
 });
 
 // ── Vibes ─────────────────────────────────────────────────────────────────────
-// POST /api/v1/users/{userId}/vibes  — create or update a vibe (auth required)
-// GET  /api/v1/users/{userId}/vibes  — list vibes for a user + score
+// POST /api/v1/users/{userId}/vibes  - create or update a vibe (auth required)
+// GET  /api/v1/users/{userId}/vibes  - list vibes for a user + score
 
 $router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
     $viewer = AuthService::requireAuth();
@@ -1853,7 +1853,7 @@ $router->add('GET', '/api/v1/users/{userId}/vibes', function (array $params) {
     $vibes = VibeRepository::listForUser($targetId, $limit, $offset);
     $score = VibeRepository::scoreForUser($targetId);
 
-    // My vibe — only if authenticated
+    // My vibe - only if authenticated
     $myVibe = null;
     $viewer = AuthService::currentUser();
     if ($viewer && $viewer['id'] !== $targetId) {
@@ -1999,7 +1999,7 @@ $router->add('POST', '/api/v1/location/resolve', function () {
 // POST /api/v1/me/city
 // Explicit manual city switch from the city picker. Immediately commits the
 // chosen city as current_city_id, bypassing the two-signal rule.
-// Body: { channelId: int | string }  — accepts either 42 or "city_42".
+// Body: { channelId: int | string }  - accepts either 42 or "city_42".
 $router->add('POST', '/api/v1/me/city', function () {
     $user = AuthService::requireAuth();
 
@@ -2008,7 +2008,7 @@ $router->add('POST', '/api/v1/me/city', function () {
     // strictly geolocation-driven (set only by /location/resolve),
     // so a normal user toggling cities in the UI changes what they
     // see but never overwrites their actual home city. Legends are
-    // the explicit exception — they can claim a city from their
+    // the explicit exception - they can claim a city from their
     // profile even when they aren't physically geolocated to it.
     if (!($user['_is_ambassador'] ?? false)) {
         Response::json([
@@ -2049,7 +2049,7 @@ $router->add('POST', '/api/v1/me/city', function () {
         'user_id' => $user['id'],
     ]);
 
-    // PR16 — also upsert the legacy user_city_memberships row so the manual
+    // PR16 - also upsert the legacy user_city_memberships row so the manual
     // switch counts as membership under BOTH feature-flag modes:
     //   - MEMBERS_USE_CURRENT_CITY=on  → the UPDATE above already covers it
     //     (members list filters on current_city_id).
@@ -2065,7 +2065,7 @@ $router->add('POST', '/api/v1/me/city', function () {
             ON CONFLICT (user_id, channel_id) DO UPDATE SET last_seen_at = now()
         ")->execute([$user['id'], $channelId]);
     } catch (\Throwable $e) {
-        // Non-fatal — the current_city_id update is the primary signal; the
+        // Non-fatal - the current_city_id update is the primary signal; the
         // membership row is a belt-and-braces backup for the legacy union.
         error_log('[me/city] membership upsert failed: ' . $e->getMessage());
     }
@@ -2076,7 +2076,7 @@ $router->add('POST', '/api/v1/me/city', function () {
 // POST /api/v1/me/dismiss-public-optin
 // Called once when the user dismisses the first-time public-default opt-in
 // modal on the challenge create form. Flips users.has_seen_public_optin to
-// TRUE so we never show the modal again to this user. Idempotent — calling
+// TRUE so we never show the modal again to this user. Idempotent - calling
 // again is a no-op.
 //
 // Body: none (or empty {}). Auth required (the modal only shows to logged-
@@ -2106,7 +2106,7 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
             if ($citySlug !== $slug) continue;
             // Chat volume drives SEO indexability (consumed by the prerender's
             // robots logic). City chat messages are keyed by the 'city_<id>'
-            // channel; count every row (text/image + system) — a city with any
+            // channel; count every row (text/image + system) - a city with any
             // activity at all is worth indexing.
             $stmt = Database::pdo()->prepare("SELECT COUNT(*) FROM messages WHERE channel_id = ?");
             $stmt->execute(['city_' . $city['id']]);
@@ -2138,7 +2138,7 @@ $router->add('GET', '/api/v1/cities/by-slug/{slug}', function (array $params) {
 // Resolve a (possibly expired) event-occurrence channel_id to its venue,
 // regardless of expires_at. Used by the prerender to keep 301s working
 // during the SEO transition window after we stop materializing venue
-// occurrences — Google has /event/<hash> URLs cached that we need to
+// occurrences - Google has /event/<hash> URLs cached that we need to
 // keep redirecting to /venue/<series_id> for weeks.
 $router->add('GET', '/api/v1/events/{eventId}/venue-redirect', function (array $params) {
     $eventId = $params['eventId'] ?? '';
@@ -2188,20 +2188,20 @@ $router->add('GET', '/api/v1/events/{eventId}/redirect', function (array $params
 // Open Graph preview for a URL posted in chat. SSRF-guarded + 24h cached so
 // the same URL across many messages costs one upstream fetch. Returns
 // { preview: { url, title, description, image, site_name } } where any field
-// may be null (missing OG / fetch failure — still cached so we don't retry hot).
+// may be null (missing OG / fetch failure - still cached so we don't retry hot).
 $router->add('GET', '/api/v1/link-preview', function () {
     $url = trim((string) ($_GET['url'] ?? ''));
     if ($url === '') {
         Response::json(['error' => 'Missing url'], 400);
     }
-    enforceRateLimit('link_preview', 120, 60); // 120/min/IP — plenty for chat browsing
+    enforceRateLimit('link_preview', 120, 60); // 120/min/IP - plenty for chat browsing
 
     $preview = LinkPreviewService::get($url);
     if ($preview === null) {
         Response::json(['error' => 'Unsafe or invalid url'], 400);
     }
 
-    // Browser caches 1h, Vercel CDN 24h with SWR — the URL is highly cacheable.
+    // Browser caches 1h, Vercel CDN 24h with SWR - the URL is highly cacheable.
     header('Cache-Control: public, max-age=3600, s-maxage=86400, stale-while-revalidate=86400');
     Response::json(['preview' => $preview]);
 });
@@ -2456,13 +2456,13 @@ $router->add('GET', '/api/v1/sitemap/venues', function () {
 // Global list of indexable event pages (/event/<slug>-<id>) across every city.
 // Single-call endpoint used by the dynamic sitemap (apps/web/api/sitemap.mjs).
 //
-// Inclusion rules — must match what /event/<id> actually serves as indexable:
+// Inclusion rules - must match what /event/<id> actually serves as indexable:
 //   - expires_at > now() ⇒ excludes both expired AND soft-deleted events
 //     (soft-deleted events get expires_at pushed into the past), so we never
 //     list a 410/removed page.
-//   - NOT a venue occurrence — venues have their own /venue/<slug>-<id> page;
+//   - NOT a venue occurrence - venues have their own /venue/<slug>-<id> page;
 //     this is the same non-venue filter used by /api/v1/sitemap/categories.
-//   - ONE occurrence per recurring series — a recurring series (e.g. a daily
+//   - ONE occurrence per recurring series - a recurring series (e.g. a daily
 //     "happy hours") generates many near-identical dated occurrence pages.
 //     Advertising them all made Google cluster them as duplicates ("Google
 //     chose a different canonical"). We emit only the soonest non-expired
@@ -2557,7 +2557,7 @@ $router->add('GET', '/api/v1/cities/{slug}/venues', function (array $params) {
 
 // GET /api/v1/events/{eventId}
 // Returns a single event by hex channel ID. Used for deep-linked event URLs.
-// Optional query params: guestId (32-char hex) — when provided, adds participant_count
+// Optional query params: guestId (32-char hex) - when provided, adds participant_count
 // and is_participating to the event object so the CTA renders correctly on first load.
 $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     $eventId = $params['eventId'] ?? '';
@@ -2569,7 +2569,7 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     // Use findByIdAnyState so PAST events keep returning 200 (the "Past event"
     // view) instead of 404ing out of Google's index. The state branches:
     //   null              → 404 (never existed)
-    //   status 'deleted'  → 410 Gone (moderated/removed — deindex permanently)
+    //   status 'deleted'  → 410 Gone (moderated/removed - deindex permanently)
     //   else              → 200 (past, current, or future; carries is_past)
     $event = EventRepository::findByIdAnyState($eventId);
     if ($event === null) {
@@ -2593,7 +2593,7 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
     // Embed participation state when caller passes their persistent guestId.
     // This eliminates a round-trip and avoids the race condition where the CTA
     // briefly shows "Join" before the secondary /participants fetch completes.
-    // $viewerForBlocks is the logged-in user (or null) — already resolved above.
+    // $viewerForBlocks is the logged-in user (or null) - already resolved above.
     // Pass their user_id so a registered user reads as participating even when
     // their current guestId/sessionId differs from the one stored at join time.
     $viewerUserId = $viewerForBlocks['id'] ?? null;
@@ -2622,7 +2622,7 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Five batch queries — no per-city loops
+    // Five batch queries - no per-city loops
     $eventCounts    = EventRepository::getCountsPerCity();
     $topicCounts    = TopicRepository::getCountsPerCity();
     $messageStats   = MessageRepository::getStatsBatch();
@@ -2648,7 +2648,7 @@ $router->add('GET', '/api/v1/channels', function () {
         ];
     }
 
-    // Optional ranking filter — sort + return top 10 when ?sort= is provided
+    // Optional ranking filter - sort + return top 10 when ?sort= is provided
     $sort = $_GET['sort'] ?? null;
     if ($sort !== null) {
         usort($channels, function ($a, $b) use ($sort) {
@@ -2659,7 +2659,7 @@ $router->add('GET', '/api/v1/channels', function () {
                 case 'online':
                     $d = ($b['activeUsers'] ?? 0) <=> ($a['activeUsers'] ?? 0);
                     return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
-                default: // 'active' — most messages in last 24 h, tiebreak total messages
+                default: // 'active' - most messages in last 24 h, tiebreak total messages
                     $d = ($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0);
                     return $d !== 0 ? $d : (($b['messageCount'] ?? 0) <=> ($a['messageCount'] ?? 0));
             }
@@ -2700,7 +2700,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         //
         // SINGLE CONNECTION GUARANTEE: Database::pdo() is a per-request singleton.
         // All subsequent calls (joinWithAuth, membership upsert, MessageRepository)
-        // return the same PDO instance — no multiple connections per request.
+        // return the same PDO instance - no multiple connections per request.
         //
         // With PDO::ATTR_PERSISTENT, PHP-FPM reuses the underlying TCP socket
         // across requests in the same worker process:
@@ -2719,7 +2719,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         // City validation intentionally removed from the synchronous path.
         // Previously: CityRepository::findById triggered a DB round-trip on cold
         // workers (the first call establishes the DB connection AND runs a
-        // SELECT FROM channels JOIN cities — adding up to 400ms before joinWithAuth).
+        // SELECT FROM channels JOIN cities - adding up to 400ms before joinWithAuth).
         // The client always provides a valid channelId (from the /channels list),
         // so a 404 guard here has no practical value. An invalid channelId would
         // fail at the presence upsert with a FK violation (→ 500), which is fine.
@@ -2748,7 +2748,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         // ── Single DB round-trip: presence upsert + auth user resolution ──────
         //
         // One CTE handles presence upsert, new-session check, and auth lookup.
-        // The auth subquery is a simple PK lookup — ~0ms overhead over the upsert.
+        // The auth subquery is a simple PK lookup - ~0ms overhead over the upsert.
         // Guests (no cookie/token) skip the auth subquery entirely.
         $authToken = $_COOKIE['hilads_token'] ?? null;
         if ($authToken === null) {
@@ -2764,8 +2764,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
         $tPresenceAuth = microtime(true);
 
-        // ── Build response message (no DB — pure PHP) ─────────────────────────
-        // IDENTITY RULE: userId comes strictly from the authenticated session token —
+        // ── Build response message (no DB - pure PHP) ─────────────────────────
+        // IDENTITY RULE: userId comes strictly from the authenticated session token -
         // never from a guest_id → users table lookup.
         $message = null;
         if ($isNewSession) {
@@ -2786,14 +2786,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
             'isAuth'      => $joinUserId !== null,
             'elapsedMs'   => apiElapsedMs($startedAt),
             // ── Per-phase breakdown ───────────────────────────────────────────
-            // conn_acquire: time to call Database::pdo() — <5ms = TCP reused,
+            // conn_acquire: time to call Database::pdo() - <5ms = TCP reused,
             //               >100ms = new TCP+TLS handshake to Supabase pooler.
             // conn_new_tcp: true when new PDO() took >50ms (new TCP connection).
-            // rate_limit:   APCu lookup — should always be ~0ms.
-            // validation:   input parsing — should always be ~0ms.
+            // rate_limit:   APCu lookup - should always be ~0ms.
+            // validation:   input parsing - should always be ~0ms.
             // presence_auth: the CTE query RTT (upsert + optional auth lookup).
             //                This is PURE query time, no connection setup included.
-            // build:        JSON assembly — should always be ~0ms.
+            // build:        JSON assembly - should always be ~0ms.
             // ─────────────────────────────────────────────────────────────────
             'phases_ms'   => [
                 // pre_phase: time from handler entry to start of phase tracking.
@@ -2805,7 +2805,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
                 'conn_new_tcp'  => Database::lastConnMs() > 50,
                 'rate_limit'    => round(($tRateLimit    - $tConn)         * 1000, 1),
                 'validation'    => round(($tValidation   - $tRateLimit)    * 1000, 1),
-                // presence_auth: pure query RTT (no connection setup — that's conn_acquire).
+                // presence_auth: pure query RTT (no connection setup - that's conn_acquire).
                 // Expected: ~2× one-way network RTT to Supabase + query execution time.
                 'presence_auth' => round(($tPresenceAuth - $tValidation)   * 1000, 1),
                 'build'         => round(($tDone         - $tPresenceAuth) * 1000, 1),
@@ -2828,7 +2828,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     // Why: index.php calls ob_start(), and PHP-FPM may also enable output_buffering
     // in php.ini (typically 4096 bytes). That creates two ob levels. If the inner
     // level is not flushed first, fastcgi_finish_request() may not deliver the
-    // response to the client before post-response work begins — causing all deferred
+    // response to the client before post-response work begins - causing all deferred
     // DB queries + analytics curl to block the client.
     //
     // The explicit while-loop guarantees every ob level is flushed regardless of
@@ -2841,7 +2841,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     }
     flush();
     if (function_exists('fastcgi_finish_request')) {
-        fastcgi_finish_request(); // close FPM ↔ nginx FastCGI pipe — client has response NOW
+        fastcgi_finish_request(); // close FPM ↔ nginx FastCGI pipe - client has response NOW
     }
 
     // ── Post-response: previous channel leave ─────────────────────────────────
@@ -2858,7 +2858,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
     }
 
     // ── Post-response: city membership upsert (auth users only) ──────────────
-    // Only tracked for authenticated users — $joinUserId comes from the CTE
+    // Only tracked for authenticated users - $joinUserId comes from the CTE
     // resolved in joinWithAuth(), no extra query needed.
     //
     // Guests without an auth token are intentionally excluded: looking up a
@@ -2883,7 +2883,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
     // ── Post-response: analytics ──────────────────────────────────────────────
     if ($isNewSession) {
-        $cityInfo = CityRepository::findById($channelId); // in-process cache — 0ms
+        $cityInfo = CityRepository::findById($channelId); // in-process cache - 0ms
         AnalyticsService::capture('joined_city', $joinUserId ?? $guestId, [
             'channel_id' => $channelId,
             'city'       => $cityInfo['name']    ?? null,
@@ -2915,7 +2915,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 
 // ── Channel bootstrap ─────────────────────────────────────────────────────────
 // Fast join endpoint: presence + messages + auth badges only.
-// Events and topics are NOT included — clients fetch /now in background after render.
+// Events and topics are NOT included - clients fetch /now in background after render.
 //
 // DB queries: 4-6 synchronous.
 // Deferred after response: presence-leave, membership upsert, weather inject, TM sync, analytics.
@@ -2924,14 +2924,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
 // Query params: before_id?, limit? (for messages pagination)
 //
 // Response:
-//   joinMessage        — join feed entry, or null for re-joins
-//   messages           — last N chat messages (badge-enriched)
-//   hasMore            — pagination cursor flag
-//   onlineUsers        — always [] (clients use WebSocket presenceSnapshot)
-//   onlineCount        — integer (from presence UPSERT, no extra query)
-//   hasUnreadDMs       — bool (auth users) or null (guests)
-//   unreadNotifications — int (auth users) or null (guests)
-//   currentUser        — public user fields (auth users) or null (guests)
+//   joinMessage        - join feed entry, or null for re-joins
+//   messages           - last N chat messages (badge-enriched)
+//   hasMore            - pagination cursor flag
+//   onlineUsers        - always [] (clients use WebSocket presenceSnapshot)
+//   onlineCount        - integer (from presence UPSERT, no extra query)
+//   hasUnreadDMs       - bool (auth users) or null (guests)
+//   unreadNotifications - int (auth users) or null (guests)
+//   currentUser        - public user fields (auth users) or null (guests)
 $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -2981,7 +2981,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             Response::json(['error' => 'nickname must not be empty'], 400);
         }
 
-        // ?lean=1 — skip auth queries (q3/q7/q8) and badge enrichment (q6).
+        // ?lean=1 - skip auth queries (q3/q7/q8) and badge enrichment (q6).
         // Web passes this flag; mobile omits it and gets the full response.
         // Saves 3–5 sequential DB queries on the critical path for web clients.
         $lean = isset($_GET['lean']) && $_GET['lean'] === '1';
@@ -2993,7 +2993,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             ? filter_var($body['previousChannelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
             : false;
 
-        // Defer presence-leave — pure side-effect, never blocks response.
+        // Defer presence-leave - pure side-effect, never blocks response.
         if ($previousChannelId !== false && $previousChannelId !== $channelId) {
             $deferPrev = $previousChannelId;
             $deferSid  = $sessionId;
@@ -3012,7 +3012,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $tq2b         = microtime(true);
 
         // ── q3: auth lookup (request-level cached) ────────────────────────────
-        // Skipped in lean mode — web never reads currentUser/unread from bootstrap.
+        // Skipped in lean mode - web never reads currentUser/unread from bootstrap.
         $authUser        = $lean ? null : AuthService::currentUser();
         $tq3b            = microtime(true);
         $deferAuthUserId = $authUser ? $authUser['id'] : null;
@@ -3046,7 +3046,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             }
         });
 
-        // ── q4 (conditional): join feed event — deferred ─────────────────────
+        // ── q4 (conditional): join feed event - deferred ─────────────────────
         // The joining user never consumes joinMessage from the bootstrap response
         // (it is parsed but unused on mobile). Deferring saves ~100ms on new sessions
         // while ensuring the event still appears for other users on their next poll.
@@ -3063,7 +3063,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     // landed" system message AND the city push. emitCityArrival resolves
                     // the arriver's user id (lean bootstrap skips auth, so $deferJoinUserId
                     // is null here) to self-exclude them, and enforces the per-(arriver,
-                    // city) cooldown atomically — so a foreground/reconnect/quick-return
+                    // city) cooldown atomically - so a foreground/reconnect/quick-return
                     // emits neither a feed message nor a push.
                     try {
                         $cityInfo = CityRepository::findById($deferJoinChannelId);
@@ -3090,7 +3090,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         // removes 1 sequential DB query (DISTINCT ON + LEFT JOIN) from the critical path.
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id'])
             ? trim($_GET['before_id']) : null;
-        // 25 messages for initial bootstrap — faster query + smaller payload.
+        // 25 messages for initial bootstrap - faster query + smaller payload.
         // Client can fetch older pages via before_id pagination.
         $limit = min(100, max(10, (int) ($_GET['limit'] ?? 25)));
 
@@ -3109,7 +3109,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $messages        = filterByBlocks($messages, $bootstrapBlocks);
 
         // ── q6: badge enrichment for message authors ──────────────────────────
-        // Skipped in lean mode — web fetches badges via /message-badges after first render.
+        // Skipped in lean mode - web fetches badges via /message-badges after first render.
         // In all-guest rooms msgUserIds is empty → batchFull skips the query anyway.
         $msgUserIds = [];
         foreach ($messages as $msg) {
@@ -3159,7 +3159,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         MessageRepository::attachReactions($messages, $guestId ?: null, $bootstrapViewerUserId);
 
         // ── Phase 3: auth-conditional unread data ────────────────────────────
-        // Skipped entirely in lean mode — web fetches these independently with a 2 s delay.
+        // Skipped entirely in lean mode - web fetches these independently with a 2 s delay.
         // For full (mobile) mode: only run for authenticated users.
         $hasUnreadDMs        = null;
         $unreadNotifications = null;
@@ -3175,7 +3175,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
             $unreadNotifications = NotificationRepository::unreadCount($authUser['id']);
             $tq8b = microtime(true);
 
-            // currentUser — no extra query (data already in $authUser row)
+            // currentUser - no extra query (data already in $authUser row)
             $currentUser = AuthService::publicFields($authUser);
         } else {
             $tq7b = $tq7a;
@@ -3273,11 +3273,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
     }
 });
 
-// ── Message badge enrichment (deferred — called by web after first render) ──────
+// ── Message badge enrichment (deferred - called by web after first render) ──────
 // GET /api/v1/channels/{channelId}/message-badges?ids[]=uid1&ids[]=uid2
 // Returns badge data for the given registered user IDs.
 // Web uses lean bootstrap (no badges), then enriches the feed with this endpoint
-// after the city channel is already usable — keeping bootstrap under 500 ms.
+// after the city channel is already usable - keeping bootstrap under 500 ms.
 $router->add('GET', '/api/v1/channels/{channelId}/message-badges', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) {
@@ -3300,7 +3300,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/message-badges', function (arr
         Response::json(['badges' => (object) []]);
     }
 
-    // Limit to 50 IDs — a page of 25 messages has at most ~25 unique authors
+    // Limit to 50 IDs - a page of 25 messages has at most ~25 unique authors
     $ids     = array_slice($ids, 0, 50);
     $badges  = UserBadgeService::batchFull($ids, $channelId, $city['name']);
 
@@ -3407,7 +3407,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             }
         });
 
-        // lean=1: skip presence + badge enrichment — web uses this for the parallel
+        // lean=1: skip presence + badge enrichment - web uses this for the parallel
         // fast-path fetch (fired concurrently with POST /join). Badges are enriched
         // deferred via GET /message-badges after first render.
         $lean = isset($_GET['lean']) && $_GET['lean'] === '1';
@@ -3432,7 +3432,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         );
 
         if ($lean) {
-            // Ghost badges for all messages — client enriches deferred
+            // Ghost badges for all messages - client enriches deferred
             foreach ($messages as &$msg) {
                 $t = $msg['type'] ?? 'text';
                 if ($t === 'text' || $t === 'image') {
@@ -3444,7 +3444,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             }
             unset($msg);
 
-            // Reactions are not skipped in lean mode — they're small and must be
+            // Reactions are not skipped in lean mode - they're small and must be
             // present on initial load so users see stored reactions immediately.
             $leanViewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
             $leanViewerUserId  = AuthService::currentUser()['id'] ?? null;
@@ -3465,7 +3465,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $onlineCount = count($onlineUsers);
         $tMsg2       = microtime(true); // after presence fetch
 
-        // ── Badge enrichment — 1 query covers both messages and presence ─────────
+        // ── Badge enrichment - 1 query covers both messages and presence ─────────
         // Collect unique registered user IDs from messages AND presence together,
         // then call batchFull() once (1 query) instead of the previous 3-query pattern
         // (batchForCity: 2 queries + ambassadorsForCity: 1 query).
@@ -3525,7 +3525,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         unset($u);
         // ─────────────────────────────────────────────────────────────────────
 
-        // Attach emoji reactions — reads viewer identity from request context
+        // Attach emoji reactions - reads viewer identity from request context
         $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
         $viewerUserId  = AuthService::currentUser()['id'] ?? null;
         MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
@@ -3653,7 +3653,7 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => 'Invalid upload'], 400);
     }
 
-    // Validate MIME type by inspecting the file content — never trust the client header
+    // Validate MIME type by inspecting the file content - never trust the client header
     $finfo    = new finfo(FILEINFO_MIME_TYPE);
     $mimeType = $finfo->file($file['tmp_name']);
 
@@ -3675,7 +3675,7 @@ $router->add('POST', '/api/v1/uploads', function () {
         Response::json(['error' => 'Image dimensions are too large'], 400);
     }
 
-    // Cryptographically random filename — client-supplied name is never used
+    // Cryptographically random filename - client-supplied name is never used
     $ext      = $allowed[$mimeType];
     $filename = bin2hex(random_bytes(16)) . '.' . $ext;
 
@@ -3687,7 +3687,7 @@ $router->add('POST', '/api/v1/uploads', function () {
 
     // ── Generate avatar thumbnail ──────────────────────────────────────────────
     // Max 400px longest side, JPEG 80%. If anything fails we return thumbUrl: null
-    // and the client falls back to the full-size URL — no broken images.
+    // and the client falls back to the full-size URL - no broken images.
     $thumbUrl = null;
     $thumbTmp = generateAvatarThumbnail($file['tmp_name'], $mimeType);
     if ($thumbTmp !== null) {
@@ -3695,7 +3695,7 @@ $router->add('POST', '/api/v1/uploads', function () {
             $thumbFilename = 'thumb_' . bin2hex(random_bytes(8)) . '.jpg';
             $thumbUrl      = R2Uploader::put($thumbTmp, $thumbFilename, 'image/jpeg');
         } catch (RuntimeException) {
-            // Thumbnail upload failed — not fatal; caller uses full URL as fallback
+            // Thumbnail upload failed - not fatal; caller uses full URL as fallback
         } finally {
             @unlink($thumbTmp);
         }
@@ -3704,7 +3704,7 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
 });
 
-// ── Local legends — city ambassadors with their picks ────────────────────────
+// ── Local legends - city ambassadors with their picks ────────────────────────
 // GET /api/v1/channels/{channelId}/ambassadors
 // Public endpoint. Returns up to 10 ambassadors for this city, most recently
 // active first. Each DTO includes ambassadorPicks when the ambassador has set them.
@@ -3753,14 +3753,14 @@ $router->add('GET', '/api/v1/channels/{channelId}/ambassadors', function (array 
     Response::json(['ambassadors' => $ambassadors]);
 });
 
-// ── City crew — registered users associated with this city ────────────────────
+// ── City crew - registered users associated with this city ────────────────────
 // GET /api/v1/channels/{channelId}/members
 // Returns paginated registered users whose home_city matches this channel's city.
 // Query params:
 //   page  (int, default 1)
 //   limit (int, default 10, max 50)
-//   badge (fresh|regular|host — optional)
-//   vibe  (party|coffee|etc — optional)
+//   badge (fresh|regular|host - optional)
+//   vibe  (party|coffee|etc - optional)
 $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) {
@@ -3786,12 +3786,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $cityName   = $city['name'];
 
     // Phase C rollout: when MEMBERS_USE_CURRENT_CITY=on, membership is defined
-    // as `users.current_city_id = X` — the single source of truth populated by
+    // as `users.current_city_id = X` - the single source of truth populated by
     // the two-signal transition rule in /location/resolve and by manual switch
     // via /me/city. This fixes the sticky-roster bug: users only appear in
-    // exactly one city's "Here" list — the one they're currently in.
+    // exactly one city's "Here" list - the one they're currently in.
     //
-    // Default (flag off): legacy union — explicit memberships row OR home_city
+    // Default (flag off): legacy union - explicit memberships row OR home_city
     // text match OR ever-sent-a-message. Sticky but backward-compatible.
     if (featureEnabled('MEMBERS_USE_CURRENT_CITY')) {
         $baseJoin   = '';
@@ -3805,11 +3805,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
         // A user is a city crew member if any of these is true:
         //   1. explicit row in user_city_memberships (populated on channel join for registered users)
         //   2. home_city text matches this city's name (optional profile field)
-        //   3. has sent at least one text message in this channel (historical participation —
+        //   3. has sent at least one text message in this channel (historical participation -
         //      covers all users who were active before the memberships table existed)
         //
         // The msg_senders derived table is computed once against the indexed channel_id column,
-        // then joined on guest_id — far cheaper than a correlated subquery per user.
+        // then joined on guest_id - far cheaper than a correlated subquery per user.
         $baseJoin = "
             LEFT JOIN user_city_memberships m
                    ON m.user_id = u.id AND m.channel_id = :channel_key
@@ -3840,7 +3840,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     }
 
     if ($badgeFilter === 'fresh') {
-        // created_at is stored as INTEGER (Unix epoch) — compare against epoch arithmetic
+        // created_at is stored as INTEGER (Unix epoch) - compare against epoch arithmetic
         $conditions[] = "u.created_at > EXTRACT(EPOCH FROM NOW() - INTERVAL '60 days')::INTEGER";
     } elseif ($badgeFilter === 'regular') {
         $conditions[] = "u.created_at <= EXTRACT(EPOCH FROM NOW() - INTERVAL '60 days')::INTEGER";
@@ -3858,12 +3858,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/members', function (array $par
     $countStmt->execute($binds);
     $total = (int) $countStmt->fetchColumn();
 
-    // Paginated fetch — order by the most recent positive signal for this city
+    // Paginated fetch - order by the most recent positive signal for this city
     // (membership last_seen_at in legacy mode, current_city_set_at in new mode)
     // so recent visitors appear first. Fall back to created_at for users with
     // no timestamp (home_city-backfilled rows when flag is on).
     // NOTE: both timestamp sources are TIMESTAMPTZ; u.created_at is INTEGER
-    //       (Unix epoch). COALESCE requires matching types — cast to epoch.
+    //       (Unix epoch). COALESCE requires matching types - cast to epoch.
     $sql = "SELECT u.id, u.display_name, u.profile_photo_url, u.vibe, u.mode, u.created_at, u.home_city,
                    $sortExpr AS sort_at
             FROM users u
@@ -3921,7 +3921,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     try {
         $city = CityRepository::findById($channelId);
     } catch (\Throwable $e) {
-        error_log("[city-events] DB error on city lookup ch={$channelId} — " . $e->getMessage());
+        error_log("[city-events] DB error on city lookup ch={$channelId} - " . $e->getMessage());
         Response::json(['events' => []], 200);
     }
 
@@ -3945,7 +3945,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
 
     // Defer Ticketmaster sync until AFTER the response is sent.
     // Previously this blocked the entire response by up to 5 s (TIMEOUT) whenever
-    // the 7-day cooldown expired — a synchronous external API call on the hot path.
+    // the 7-day cooldown expired - a synchronous external API call on the hot path.
     // register_shutdown_function runs after fastcgi_finish_request flushes the response.
     $syncChannelId = $channelId;
     $syncLat       = $lat;
@@ -3965,7 +3965,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     try {
         $events = EventRepository::getPublicByChannel($channelId);
     } catch (\Throwable $e) {
-        error_log("[city-events] DB error on events read ch={$channelId} — " . $e->getMessage());
+        error_log("[city-events] DB error on events read ch={$channelId} - " . $e->getMessage());
         $events = [];
     }
 
@@ -3977,7 +3977,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     Response::json(['events' => $events]);
 });
 
-// Past archive — finished one-off hangouts + expired pulses for a city.
+// Past archive - finished one-off hangouts + expired pulses for a city.
 // ?type=both|hangouts|pulses, ?limit (≤20), ?before=<unix> cursor, and an
 // optional ?from=YYYY-MM-DD&to=YYYY-MM-DD window clamped to ≤14 days. Default
 // (no range, no cursor) = the 10 most recent past items. Public, no auth.
@@ -3989,7 +3989,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
     $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 10)));
     $before = isset($_GET['before']) && ctype_digit((string) $_GET['before']) ? (int) $_GET['before'] : null;
 
-    // Date window (city-local YYYY-MM-DD). Clamp to ≤14 days — backend backstop
+    // Date window (city-local YYYY-MM-DD). Clamp to ≤14 days - backend backstop
     // for the UI limit; can't be bypassed.
     $city   = CityRepository::findById($channelId);
     $tz     = new DateTimeZone(is_array($city) ? ($city['timezone'] ?? 'UTC') : 'UTC');
@@ -4061,7 +4061,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/events/upcoming', function (ar
     // app computes fresh so attendee counts stay current. SSR-only, 10 min.
     $ssr = isset($_SERVER['HTTP_X_HILADS_SSR']);
 
-    // Range mode: ?from=YYYY-MM-DD&to=YYYY-MM-DD — used by the calendar
+    // Range mode: ?from=YYYY-MM-DD&to=YYYY-MM-DD - used by the calendar
     // strip on the upcoming-events screen. Both must be present and within
     // ~6 months of today. Falls back to ?days= when range is missing.
     $from = $_GET['from'] ?? null;
@@ -4271,7 +4271,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         Response::json(['error' => 'type is required and must be one of: ' . implode(', ', $allowedTypes)], 400);
     }
 
-    // Event creation requires a registered account — guests may browse and chat
+    // Event creation requires a registered account - guests may browse and chat
     // but cannot host events.
     $authUser     = AuthService::requireAuth();
     $userId       = $authUser['id'];
@@ -4283,7 +4283,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         $event = EventRepository::add($channelId, $guestId, $nickname, $title, $locationHint, $startsAt, $endsAt, $type, $userId, $isAmbassador, $venueLat, $venueLng);
     } catch (\Throwable $e) {
         error_log("[event-create] FAILED: " . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
-        throw $e; // re-throw so global handler returns 500 — but now it's in the logs
+        throw $e; // re-throw so global handler returns 500 - but now it's in the logs
     }
 
     // Broadcast new_event to WS room so in-app banners appear for all connected users.
@@ -4551,7 +4551,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $startsOn)) {
             Response::json(['error' => 'starts_on must be YYYY-MM-DD'], 400);
         }
-        // Same bounds as the one-off create — series can't start in the past
+        // Same bounds as the one-off create - series can't start in the past
         // or more than 6 months in the future.
         $startsOnDt = DateTime::createFromFormat('!Y-m-d', $startsOn, new DateTimeZone($city['timezone']));
         if ($startsOnDt === false) {
@@ -4650,10 +4650,10 @@ $router->add('POST', '/internal/city-events/resync', function () {
     ]);
 });
 
-// ── Internal: geocode-backfill — fill missing coords so NOW shows distance ───
+// ── Internal: geocode-backfill - fill missing coords so NOW shows distance ───
 // Protected by MIGRATION_KEY. Idempotent + resumable: only touches rows that
 // still lack coordinates, so it's safe to re-run. Throttled to ~1 req/s for
-// Nominatim, with a per-call `limit` budget to stay under the HTTP timeout —
+// Nominatim, with a per-call `limit` budget to stay under the HTTP timeout -
 // call repeatedly until `remaining` is 0.
 // Call: POST /internal/geocode-backfill?key=YOUR_KEY
 // Body (all optional): { "channelId": 20, "limit": 20, "dryRun": true }
@@ -4702,7 +4702,7 @@ $router->add('POST', '/internal/geocode-backfill', function () {
         } else {
             $seriesMiss++;
         }
-        // Geocoder self-throttles to ~1 req/s — no extra sleep needed here.
+        // Geocoder self-throttles to ~1 req/s - no extra sleep needed here.
     }
 
     // Propagate freshly-stored series coords onto their materialized occurrences.
@@ -4718,7 +4718,7 @@ $router->add('POST', '/internal/geocode-backfill', function () {
         ");
     }
 
-    // One-off events (no series) — only active ones, to avoid spending the
+    // One-off events (no series) - only active ones, to avoid spending the
     // budget on past events that will never show in the feed again.
     $ceCityWhere = $cityKey ? " AND ce.city_id = " . $pdo->quote($cityKey) : "";
     $oneoffHit = 0; $oneoffMiss = 0;
@@ -4851,7 +4851,7 @@ $router->add('POST', '/internal/seed-recurring-venues', function () {
 
 // ── Internal: seed static curated venues ──────────────────────────────────────
 // Reads venues_seed.php (static array) and upserts them as recurring event series.
-// Idempotent — safe to run repeatedly. Protected by X-Api-Key or ?key= query param.
+// Idempotent - safe to run repeatedly. Protected by X-Api-Key or ?key= query param.
 $router->add('POST', '/internal/seed-static-venues', function () {
     $expectedKey = getenv('MIGRATION_KEY') ?: null;
     if ($expectedKey === null) {
@@ -4959,8 +4959,8 @@ $router->add('POST', '/internal/cleanup', function () {
 
     $pdo = Database::pdo();
 
-    // 1. City channel messages — keep only today
-    // Messages are stored with 'city_N' keys; channels.id is numeric — prefix to match.
+    // 1. City channel messages - keep only today
+    // Messages are stored with 'city_N' keys; channels.id is numeric - prefix to match.
     $stmt = $pdo->query("
         DELETE FROM messages
         WHERE channel_id IN (SELECT 'city_' || id FROM channels WHERE type = 'city')
@@ -4968,7 +4968,7 @@ $router->add('POST', '/internal/cleanup', function () {
     ");
     $cityDeleted = $stmt->rowCount();
 
-    // 2. Expired event channels — delete the channel (CASCADE removes messages +
+    // 2. Expired event channels - delete the channel (CASCADE removes messages +
     //    event_participants). The 1-hour buffer prevents cutting off active viewers.
     //    Recurring occurrences from past days are included automatically.
     $stmt = $pdo->query("
@@ -4981,7 +4981,7 @@ $router->add('POST', '/internal/cleanup', function () {
     ");
     $eventChannelsDeleted = $stmt->rowCount();
 
-    // 3. Direct message history — keep 7 days
+    // 3. Direct message history - keep 7 days
     $stmt = $pdo->query("
         DELETE FROM conversation_messages
         WHERE created_at < now() - INTERVAL '7 days'
@@ -4999,7 +4999,7 @@ $router->add('POST', '/internal/cleanup', function () {
 });
 
 
-// Internal: ONE-TIME migration — collapse each recurring (hilads) series to a
+// Internal: ONE-TIME migration - collapse each recurring (hilads) series to a
 // single canonical channel_events row. Idempotent + resumable (per-series
 // transactions). For each series: create the canonical row, merge per-date
 // participants into it, repoint chat messages, record redirects for the old
@@ -5017,7 +5017,7 @@ $router->add('POST', '/internal/event-series/collapse', function () {
     $pdo = Database::pdo();
 
     // Hilads recurring series only (user/admin-created). Venues are source
-    // 'import' and were never materialized — left untouched.
+    // 'import' and were never materialized - left untouched.
     $series = $pdo->query("
         SELECT es.* FROM event_series es WHERE es.source IN ('user', 'admin')
     ")->fetchAll(\PDO::FETCH_ASSOC);
@@ -5108,7 +5108,7 @@ $router->add('POST', '/internal/event-series/collapse', function () {
     ]);
 });
 
-// Internal: ONE-TIME cleanup — dedupe duplicate registered-user participant
+// Internal: ONE-TIME cleanup - dedupe duplicate registered-user participant
 // rows to one per (channel_id, user_id). The recurring-event collapse merged
 // per-occurrence joins (web uses an ephemeral sessionId as guest_id, so one
 // user accrued many guest_id rows), surfacing as duplicate attendees. Keeps the
@@ -5141,7 +5141,7 @@ $router->add('POST', '/internal/participants/dedupe', function () {
         )
     ")->rowCount();
 
-    // (2) Delete nameless guests (user_id NULL + empty nickname) — they have no
+    // (2) Delete nameless guests (user_id NULL + empty nickname) - they have no
     // visible identity in the UI (auto-join cruft / joins without a nickname).
     $namelessGuests = $pdo->query("
         DELETE FROM event_participants
@@ -5377,7 +5377,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     $message = enrichBroadcastMessage($message, $senderUser ?? null);
     broadcastMessageToWs($eventId, $message);
 
-    // Notify registered event participants — non-fatal: a notification failure must never
+    // Notify registered event participants - non-fatal: a notification failure must never
     // prevent the message response from reaching the sender.
     try {
         $eventForNotif = EventRepository::findById($eventId);
@@ -5391,7 +5391,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             $bodyPreview,
             ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname, 'senderUserId' => $senderUserId]
         );
-        // @mention notifications — higher-signal than the participant ping above.
+        // @mention notifications - higher-signal than the participant ping above.
         if (!empty($mentions ?? [])) {
             notifyMentions(
                 $mentions,
@@ -5403,7 +5403,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
         }
     } catch (\Throwable $e) {
         error_log("[event-msg] notification error eventId={$eventId}: " . get_class($e) . ': ' . $e->getMessage());
-        // Do not rethrow — the message was already saved and broadcast successfully.
+        // Do not rethrow - the message was already saved and broadcast successfully.
     }
 
     Response::json($message, 201);
@@ -5460,7 +5460,7 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
     }
 
     // Prefer guestId (persistent across sessions) over sessionId (ephemeral).
-    // Native app sends guestId; web sends sessionId — both are valid participant keys.
+    // Native app sends guestId; web sends sessionId - both are valid participant keys.
     $guestId   = trim($_GET['guestId']   ?? '');
     $sessionId = trim($_GET['sessionId'] ?? '');
 
@@ -5473,12 +5473,12 @@ $router->add('GET', '/api/v1/events/{eventId}/participants', function (array $pa
 
     $participantKey = $guestId !== '' ? $guestId : ($sessionId !== '' ? $sessionId : '');
 
-    // Logged-in user's id — lets isIn match their row by user_id even when the
+    // Logged-in user's id - lets isIn match their row by user_id even when the
     // session/guest key differs (web's sessionId is per-page; native guestId is
     // per-device), keeping the Join/Going button in sync with count + list.
     $viewerUserId = AuthService::currentUser()['id'] ?? null;
 
-    // ?lite=1 — skip the full participant list (user JOIN + mapping).
+    // ?lite=1 - skip the full participant list (user JOIN + mapping).
     // Use this when only count + isIn are needed (event card / status check).
     $lite = ($_GET['lite'] ?? '') === '1';
 
@@ -5509,7 +5509,7 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
     }
 
     // Prefer guestId (persistent across sessions) over sessionId (ephemeral).
-    // Native app sends guestId; web sends sessionId — both are valid participant keys.
+    // Native app sends guestId; web sends sessionId - both are valid participant keys.
     $guestId   = $body['guestId']   ?? null;
     $sessionId = $body['sessionId'] ?? null;
 
@@ -5632,13 +5632,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             Response::json(['error' => 'imageUrl is required for image messages'], 400);
         }
 
-        // Verify the URL belongs to our R2 bucket — prevents injecting arbitrary image URLs.
+        // Verify the URL belongs to our R2 bucket - prevents injecting arbitrary image URLs.
         $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
         if (!str_starts_with($imageUrl, $r2Base)) {
             Response::json(['error' => 'Invalid image URL'], 400);
         }
 
-        // Filename must match the pattern we generate — no traversal, no surprises.
+        // Filename must match the pattern we generate - no traversal, no surprises.
         $filename = basename(parse_url($imageUrl, PHP_URL_PATH) ?? '');
         if (!preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $filename)) {
             Response::json(['error' => 'Invalid image reference'], 400);
@@ -5673,7 +5673,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     $message = enrichBroadcastMessage($message, $msgSender ?? null);
     broadcastMessageToWs($channelId, $message);
 
-    // Notify registered users currently online in this city — non-fatal side effect.
+    // Notify registered users currently online in this city - non-fatal side effect.
     // Sender is excluded if they have a registered account; guests are excluded via null.
     // MobilePushService applies a 5-minute cooldown per recipient per channel.
     try {
@@ -5774,7 +5774,7 @@ $router->add('GET', '/api/v1/conversations', function () {
 });
 
 // GET /api/v1/conversations/unread
-// Lightweight poll endpoint — returns only whether the user has any unread DM or event-channel message.
+// Lightweight poll endpoint - returns only whether the user has any unread DM or event-channel message.
 // Used for the Messages icon dot on city channel; avoids running the full conversations query on boot.
 $router->add('GET', '/api/v1/conversations/unread', function () {
     $user = AuthService::requireAuth();
@@ -5819,7 +5819,7 @@ $router->add('POST', '/api/v1/conversations/direct', function () {
     ]);
 });
 
-// ── Edit + delete (channel messages — city/event/topic share `messages`) ─────
+// ── Edit + delete (channel messages - city/event/topic share `messages`) ─────
 
 // PATCH /api/v1/messages/{messageId}  body: { content, guestId? }
 // Owner-only. Caller is identified by Authorization cookie/header (user_id) and
@@ -5849,7 +5849,7 @@ $router->add('PATCH', '/api/v1/messages/{messageId}', function (array $params) {
 
     // Channels share the messages table; channel_id is "city_<n>" for cities and
     // raw 16-hex for event/topic. WS broadcastNewMessage handler expects int for
-    // cities, string otherwise — match that contract.
+    // cities, string otherwise - match that contract.
     $rawChan  = (string) $row['channel_id'];
     $wsChanId = str_starts_with($rawChan, 'city_') ? (int) substr($rawChan, 5) : $rawChan;
     broadcastMessageEditedToWs($wsChanId, $messageId, $content, $editedAt);
@@ -5862,7 +5862,7 @@ $router->add('PATCH', '/api/v1/messages/{messageId}', function (array $params) {
     ]);
 });
 
-// DELETE /api/v1/messages/{messageId}  body: { guestId? } — soft-delete (tombstone).
+// DELETE /api/v1/messages/{messageId}  body: { guestId? } - soft-delete (tombstone).
 $router->add('DELETE', '/api/v1/messages/{messageId}', function (array $params) {
     $messageId = strtolower(trim((string) ($params['messageId'] ?? '')));
     if (!preg_match('/^[a-f0-9]{16}$/', $messageId)) {
@@ -5876,7 +5876,7 @@ $router->add('DELETE', '/api/v1/messages/{messageId}', function (array $params) 
     $row = MessageRepository::findOwned($messageId, $userId, $guestId);
     if (!$row)                       Response::json(['error' => 'Not found or not owned'], 404);
     if (!empty($row['deleted_at'])) {
-        // Idempotent — second delete is a no-op.
+        // Idempotent - second delete is a no-op.
         Response::json(['ok' => true, 'messageId' => $messageId, 'alreadyDeleted' => true]);
     }
 
@@ -5892,7 +5892,7 @@ $router->add('DELETE', '/api/v1/messages/{messageId}', function (array $params) 
     ]);
 });
 
-// ── Edit + delete (DM messages — registered users only) ─────────────────────
+// ── Edit + delete (DM messages - registered users only) ─────────────────────
 
 $router->add('PATCH', '/api/v1/dm-messages/{messageId}', function (array $params) {
     $user      = AuthService::requireAuth();
@@ -6040,7 +6040,7 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     // Sending a message also implicitly reads the conversation for the sender
     ConversationRepository::markRead($conversationId, $user['id']);
 
-    // Notify the other participant — explicitly exclude the sender by user_id.
+    // Notify the other participant - explicitly exclude the sender by user_id.
     $otherStmt = Database::pdo()->prepare("
         SELECT user_id FROM conversation_participants
         WHERE conversation_id = ? AND user_id != ?
@@ -6183,7 +6183,7 @@ $router->add('GET', '/api/v1/notifications', function () {
 });
 
 // GET /api/v1/notifications/unread-count
-// Lightweight poll endpoint — returns only the unread count.
+// Lightweight poll endpoint - returns only the unread count.
 $router->add('GET', '/api/v1/notifications/unread-count', function () {
     $startedAt = microtime(true);
     $user = AuthService::requireAuth();
@@ -6252,7 +6252,7 @@ $router->add('PUT', '/api/v1/notification-preferences', function () {
 
 // GET /api/v1/push/vapid-public-key
 // Returns the VAPID public key so the frontend can subscribe.
-// The public key is safe to expose — it is not secret.
+// The public key is safe to expose - it is not secret.
 $router->add('GET', '/api/v1/push/vapid-public-key', function () {
     $key = getenv('VAPID_PUBLIC_KEY') ?: null;
     if (!$key) {
@@ -6263,7 +6263,7 @@ $router->add('GET', '/api/v1/push/vapid-public-key', function () {
 
 // POST /api/v1/push/subscribe
 // Registers (or refreshes) a browser push subscription for the current user.
-// Upserts on endpoint — safe to call on every login.
+// Upserts on endpoint - safe to call on every login.
 $router->add('POST', '/api/v1/push/subscribe', function () {
     $user = AuthService::requireAuth();
     $body = Request::json();
@@ -6322,13 +6322,13 @@ $router->add('DELETE', '/api/v1/push/unsubscribe', function () {
 
 // POST /api/v1/push/mobile-token
 // Registers or refreshes an Expo push token for the current user's device.
-// Safe to call on every login — upserts on token value.
+// Safe to call on every login - upserts on token value.
 // Body: { token: string, platform: 'android' | 'ios' }
 $router->add('POST', '/api/v1/push/mobile-token', function () {
     // Log BEFORE requireAuth so we can detect 401 cases in logs.
     // If this line appears but "[push-subscribe] user=..." does not → auth failed.
     $rawCookie = $_COOKIE['hilads_token'] ?? '(none)';
-    error_log("[push-subscribe] request received — cookie present: " . ($rawCookie !== '(none)' ? 'yes (' . strlen($rawCookie) . ' chars)' : 'NO'));
+    error_log("[push-subscribe] request received - cookie present: " . ($rawCookie !== '(none)' ? 'yes (' . strlen($rawCookie) . ' chars)' : 'NO'));
 
     $user  = AuthService::requireAuth();
     $body  = Request::json();
@@ -6350,7 +6350,7 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     }
 
     if (!$token || !str_starts_with($token, 'ExponentPushToken[')) {
-        error_log("[push-subscribe] REJECTED — invalid token format: '$token'");
+        error_log("[push-subscribe] REJECTED - invalid token format: '$token'");
         Response::json(['error' => 'Invalid Expo push token'], 400);
     }
 
@@ -6398,7 +6398,7 @@ $router->add('DELETE', '/api/v1/push/mobile-token', function () {
 });
 
 // ══════════════════════════════════════════════════════════════════════════════
-// TOPICS — city conversation subchannels
+// TOPICS - city conversation subchannels
 // ══════════════════════════════════════════════════════════════════════════════
 
 // GET /api/v1/channels/{channelId}/topics
@@ -6424,7 +6424,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/topics', function (array $para
 });
 
 // POST /api/v1/channels/{channelId}/topics
-// Create a new topic. Auth optional — guests can create too.
+// Create a new topic. Auth optional - guests can create too.
 $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
@@ -6476,7 +6476,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
     // a new one (they auto-expire in 24h). Returns the existing one so the client
     // can route there. Guests can't create hangouts (gated client-side) so this
     // only applies to registered users. Legends (city ambassadors, "👑 Legend")
-    // are exempt — they can run multiple hangouts at once.
+    // are exempt - they can run multiple hangouts at once.
     $isLegend = (bool) ($currentUser['_is_ambassador'] ?? false);
     if ($userId !== null && !$isLegend) {
         $existing = TopicRepository::findActiveByUser($userId);
@@ -6490,7 +6490,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
         }
     }
 
-    // Hangouts have no address — capture the creator's coordinates (sent by the
+    // Hangouts have no address - capture the creator's coordinates (sent by the
     // client from the same location source that powers NOW distance) so the
     // hangout can show a distance. Optional: invalid/absent → no coords, no crash.
     $lat = null;
@@ -6546,7 +6546,7 @@ $router->add('GET', '/api/v1/topics/{topicId}', function (array $params) {
     }
 
     // Resolve city info so the frontend can hydrate city context on deep link.
-    // city_id is stored as 'city_N' — extract the integer part for CityRepository.
+    // city_id is stored as 'city_N' - extract the integer part for CityRepository.
     $cityIntId = (int) substr($topic['city_id'], 5);
     $city = CityRepository::findById($cityIntId);
     Response::json([
@@ -6559,7 +6559,7 @@ $router->add('GET', '/api/v1/topics/{topicId}', function (array $params) {
 });
 
 // GET /api/v1/topics/{topicId}/messages
-// Chat messages for a topic — same shape as event messages.
+// Chat messages for a topic - same shape as event messages.
 $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params) {
     $topicId = $params['topicId'] ?? '';
 
@@ -6612,7 +6612,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
     }
 
     // Members-only write gate: only accepted participants (and the auto-joined
-    // creator) may post. A pending requester or non-member gets 403 — requesting
+    // creator) may post. A pending requester or non-member gets 403 - requesting
     // access does NOT grant it. Guests are never members.
     $senderUser   = AuthService::currentUser();
     $senderUserId = $senderUser['id'] ?? null;
@@ -6765,7 +6765,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/join-requests', function (array $
     }
     $requestId = $res['id'];
 
-    // Feed item — a persisted join_request message; content carries the payload
+    // Feed item - a persisted join_request message; content carries the payload
     // the clients render with Accept/Reject. Its id == the request id so the
     // resolve handler can update it in place.
     $payload = json_encode([
@@ -6821,7 +6821,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/join-requests/{requestId}/resolve
 
     $resolved = TopicRepository::resolveJoinRequest($requestId, $topicId, $action, $uid, $name);
     if ($resolved === null) {
-        // Someone already resolved it — first-write-wins. 409 the client swallows.
+        // Someone already resolved it - first-write-wins. 409 the client swallows.
         Response::json(['status' => 'already_resolved'], 409);
     }
 
@@ -6892,7 +6892,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/mention-suggestions', func
 
 // POST /api/v1/topics/{topicId}/mark-read
 // Upserts an event_participants row (reuses same unread-tracking table) and sets last_read_at.
-// Idempotent — safe to call on every topic open.
+// Idempotent - safe to call on every topic open.
 $router->add('POST', '/api/v1/topics/{topicId}/mark-read', function (array $params) {
     $user    = AuthService::requireAuth();
     $topicId = $params['topicId'] ?? '';
@@ -6901,7 +6901,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/mark-read', function (array $para
         Response::json(['error' => 'Invalid topicId'], 400);
     }
 
-    // Upsert participation row (created lazily — topic viewers don't explicitly join).
+    // Upsert participation row (created lazily - topic viewers don't explicitly join).
     Database::pdo()->prepare("
         INSERT INTO event_participants (channel_id, guest_id, user_id, last_read_at)
         VALUES (?, ?, ?, now())
@@ -6913,7 +6913,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/mark-read', function (array $para
 
 // DELETE /api/v1/topics/{topicId}
 // Soft-deletes a topic. Only the creator can delete their own topic.
-// GET /api/v1/topics/{topicId}/participants — members list for the avatar-row
+// GET /api/v1/topics/{topicId}/participants - members list for the avatar-row
 // modal. Public (same names/avatars already shown in the card preview).
 $router->add('GET', '/api/v1/topics/{topicId}/participants', function (array $params) {
     $topicId = $params['topicId'] ?? '';
@@ -6926,7 +6926,7 @@ $router->add('GET', '/api/v1/topics/{topicId}/participants', function (array $pa
     ]);
 });
 
-// PUT /api/v1/topics/{topicId} — owner edits the hangout title/details.
+// PUT /api/v1/topics/{topicId} - owner edits the hangout title/details.
 $router->add('PUT', '/api/v1/topics/{topicId}', function (array $params) {
     $topicId = $params['topicId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
@@ -7081,7 +7081,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/now', function (array $params)
     }
 });
 
-// ── POST /api/v1/reports — submit a user report ──────────────────────────────
+// ── POST /api/v1/reports - submit a user report ──────────────────────────────
 $router->add('POST', '/api/v1/reports', function () {
     $pdo     = Database::pdo();
     $body    = json_decode(file_get_contents('php://input'), true) ?? [];
@@ -7168,7 +7168,7 @@ $router->add('POST', '/api/v1/reports', function () {
     Response::json(['ok' => true], 201);
 });
 
-// ── GET /api/v1/reports/status — has the viewer already reported this target? ─
+// ── GET /api/v1/reports/status - has the viewer already reported this target? ─
 $router->add('GET', '/api/v1/reports/status', function () {
     $pdo = Database::pdo();
 
@@ -7205,7 +7205,7 @@ $router->add('GET', '/api/v1/reports/status', function () {
 
 /**
  * Look up an existing user_report for the given (reporter, target) pair.
- * Returns [id, created_at, status] or null. Queries all statuses — one per pair forever.
+ * Returns [id, created_at, status] or null. Queries all statuses - one per pair forever.
  */
 function findExistingUserReport(
     PDO $pdo,
@@ -7243,7 +7243,7 @@ function findExistingUserReport(
     ];
 }
 
-// ── POST /api/v1/blocks — block a user or guest ──────────────────────────────
+// ── POST /api/v1/blocks - block a user or guest ──────────────────────────────
 //
 // Body: { target_user_id?, target_guest_id?, target_nickname?, reason?, guestId? }
 // Either target_user_id or target_guest_id required. Viewer is the registered
@@ -7316,7 +7316,7 @@ $router->add('POST', '/api/v1/blocks', function () {
             ->execute([$targetUserId, $blockerUserId]);
 
         // Tell the blocked user's other devices that the friendship is gone.
-        // We do NOT signal the block itself — Apple's mutual-invisibility model
+        // We do NOT signal the block itself - Apple's mutual-invisibility model
         // means the blocked party should just see the friendship vanish.
         broadcastUserEventToWs($targetUserId, 'friendRemoved', ['userId' => $blockerUserId]);
     }
@@ -7332,7 +7332,7 @@ $router->add('POST', '/api/v1/blocks', function () {
     Response::json(['block' => $row], $alreadyBlocked ? 200 : 201);
 });
 
-// ── DELETE /api/v1/blocks/{id} — unblock by row id ───────────────────────────
+// ── DELETE /api/v1/blocks/{id} - unblock by row id ───────────────────────────
 $router->add('DELETE', '/api/v1/blocks/{id}', function (array $params) {
     $body  = json_decode(file_get_contents('php://input'), true) ?? [];
 
@@ -7365,7 +7365,7 @@ $router->add('DELETE', '/api/v1/blocks/{id}', function (array $params) {
     Response::json(['ok' => true]);
 });
 
-// ── DELETE /api/v1/blocks — unblock by target identity ───────────────────────
+// ── DELETE /api/v1/blocks - unblock by target identity ───────────────────────
 //
 // Body OR query: { target_user_id?, target_guest_id?, guestId? }
 // Used when the client has the target's identity but not the row id (e.g. the
@@ -7412,7 +7412,7 @@ $router->add('DELETE', '/api/v1/blocks', function () {
     Response::json(['ok' => true]);
 });
 
-// ── GET /api/v1/users/me/blocks — list of blocks I've made ───────────────────
+// ── GET /api/v1/users/me/blocks - list of blocks I've made ───────────────────
 //
 // Auth required (registered users only). Powers the Settings → Blocked Users
 // management screen. Returns each row joined with the blocked user's display
@@ -7423,11 +7423,11 @@ $router->add('GET', '/api/v1/users/me/blocks', function () {
     Response::json(['blocks' => $rows]);
 });
 
-// ── POST /api/v1/users/me/eula — accept the EULA (Apple G1.2) ────────────────
+// ── POST /api/v1/users/me/eula - accept the EULA (Apple G1.2) ────────────────
 //
 // Used by the mobile re-prompt modal: existing registered users (created
 // before the moderation update shipped) get a blocking modal on next launch
-// when their /auth/me response shows eula_accepted_at == null. Idempotent —
+// when their /auth/me response shows eula_accepted_at == null. Idempotent -
 // re-calling preserves the original acceptance moment.
 $router->add('POST', '/api/v1/users/me/eula', function () {
     $viewer = AuthService::requireAuth();
@@ -7468,7 +7468,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges', function (array $
 });
 
 // GET /api/v1/channels/{channelId}/challenges/validated
-// Past (status='validated') challenges for a city — feeds the "See past
+// Past (status='validated') challenges for a city - feeds the "See past
 // challenges" CTA. Most-recently-validated first.
 $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -7492,7 +7492,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', functio
 });
 
 // POST /api/v1/channels/{channelId}/challenges
-// Create a new challenge. Requires a registered account — guests may browse,
+// Create a new challenge. Requires a registered account - guests may browse,
 // accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so
 // stricter than topics' 3/5min but more lenient than events' 1/day).
@@ -7515,15 +7515,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     $challengeType   = $body['challengeType']   ?? $body['type']     ?? null;
     $audience        = $body['audience']        ?? null;
     $nickname        = $body['nickname']        ?? null;
-    // `maxParticipants` may still arrive from older clients — accept it
+    // `maxParticipants` may still arrive from older clients - accept it
     // silently but ignore (the model is 1:1 now; column stays at DB default).
     $returnClause    = $body['returnClause']    ?? null;
-    // International mode (PR2 schema reads). Optional everywhere — older
+    // International mode (PR2 schema reads). Optional everywhere - older
     // clients omit them and we default mode to 'local'.
     $mode               = $body['mode']               ?? 'local';
     $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
     $proofRequirements  = $body['proofRequirements']   ?? null;
-    // Visibility — older clients omit it; default 'public'. Only 'public' /
+    // Visibility - older clients omit it; default 'public'. Only 'public' /
     // 'friends' accepted at create-time; 'private' is reachable only via
     // the mutual privacy_requests flow (PR #4) post-acceptance.
     $visibility         = $body['visibility']          ?? 'public';
@@ -7550,7 +7550,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         Response::json(['error' => 'mode must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_MODES)], 400);
     }
     if (!in_array($visibility, ChallengeRepository::allowedVisibilitiesAtInput(), true)) {
-        // 'private' explicitly excluded — the route surfaces a tailored message
+        // 'private' explicitly excluded - the route surfaces a tailored message
         // so a future client doesn't waste cycles wondering why the flip fails.
         Response::json([
             'error' => "visibility must be 'public' or 'friends' at create-time; 'private' is reachable only via the mutual privacy flow",
@@ -7567,7 +7567,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
     }
 
-    // Moderation gate — title + return clause + proof requirements all run
+    // Moderation gate - title + return clause + proof requirements all run
     // through the blocklist/regex check. First hit wins and the create is
     // refused with 422; we never leak the offending word so spammers don't
     // get a sneaky test loop. Server-side log captures the hit + field for
@@ -7580,7 +7580,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     if ($modHit !== null) {
         error_log("[moderation] challenge create blocked field={$modHit['field']} reason={$modHit['reason']} hit={$modHit['hit']}");
         Response::json([
-            'error' => 'Your text was flagged by moderation — please rephrase.',
+            'error' => 'Your text was flagged by moderation - please rephrase.',
             'code'  => 'moderation_blocked',
             'field' => $modHit['field'],
         ], 422);
@@ -7602,7 +7602,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         $targetCityId = 'city_' . $tc;
     }
 
-    // Registered account required — mirrors event creation. Guests get a
+    // Registered account required - mirrors event creation. Guests get a
     // 401 here (the web SPA + mobile both gate this at the UI layer too,
     // so this is defense in depth).
     $authUser = AuthService::requireAuth();
@@ -7625,7 +7625,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         );
 
         try {
-            // Enrich the WS payload with the creator's nickname — the
+            // Enrich the WS payload with the creator's nickname - the
             // challenge row itself doesn't carry it (created_by / guest_id
             // only), but the city-feed pill on web + mobile needs it for
             // "{name} défie les locaux : {title}". Falls back to a generic
@@ -7635,7 +7635,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
 
             // International mirroring: when a target city is set, the SAME
             // challenge surfaces in the target city's chat feed + NOW feed.
-            // Reuses the existing broadcast — clients in the target room
+            // Reuses the existing broadcast - clients in the target room
             // listen on the same event name and inject the feed pill.
             // "Anywhere" challenges (target_city_id IS NULL) intentionally
             // do NOT fan out: per spec, origin-only with a future Discover
@@ -7655,7 +7655,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         // NotificationRepository::notifyCityOnlineUsers which:
         //   - drops dormant accounts (no positive city signal in 30 days)
         //   - caps fan-out at CITY_PUSH_FANOUT_CAP per call
-        //   - rate-limits per (recipient, city, type) — 10 min window so a
+        //   - rate-limits per (recipient, city, type) - 10 min window so a
         //     re-create within minutes won't double-ping
         //   - localizes the title+body per recipient (NotificationI18n
         //     templates shipped in step 5)
@@ -7697,7 +7697,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             'challenge_type' => $challengeType,
             'audience'       => $audience,
             'mode'           => $mode,
-            // Resolved visibility — `create()` may have overridden the input
+            // Resolved visibility - `create()` may have overridden the input
             // ('public' forced on international), so analytics reflects the
             // post-write state, not the body.
             'visibility'     => $challenge['visibility'] ?? 'public',
@@ -7724,7 +7724,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params)
     // Visibility-aware: returns null when the viewer isn't entitled to see
     // this challenge (anon viewing a friends/private row, non-friend
     // viewing a friends row, third party viewing a private row). 404 is
-    // the right surface — "doesn't exist" from the caller's POV.
+    // the right surface - "doesn't exist" from the caller's POV.
     $viewerId  = AuthService::currentUser()['id'] ?? null;
     $challenge = ChallengeRepository::findById($challengeId, $viewerId);
     if ($challenge === null) {
@@ -7735,7 +7735,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params)
     $city      = CityRepository::findById($cityIntId);
 
     // For International challenges with a target_city_id, also return the
-    // target city's display info — used by the SSR prerender for the
+    // target city's display info - used by the SSR prerender for the
     // dual-city meta title ("Paris → Tokyo · …") and the JSON-LD
     // recipientLocation node.
     $targetCity = null;
@@ -7756,7 +7756,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}', function (array $params)
 });
 
 // PUT /api/v1/challenges/{challengeId}
-// Owner-gated edit of title / type / audience. Status is NOT editable here —
+// Owner-gated edit of title / type / audience. Status is NOT editable here -
 // use POST /validate to flip open → validated.
 $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
@@ -7780,7 +7780,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     // proof requirements can be revised. Mode itself is NOT editable here.
     $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
     $proofRequirements  = $body['proofRequirements']   ?? null;
-    // Visibility — optional on edit. null = "don't change". Only 'public'
+    // Visibility - optional on edit. null = "don't change". Only 'public'
     // and 'friends' accepted; 'private' is reachable only via the mutual
     // privacy_requests flow. The repo also forces 'public' on International.
     $visibilityRaw      = $body['visibility']          ?? null;
@@ -7816,7 +7816,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
         ], 400);
     }
 
-    // Moderation gate — same shape as the create path.
+    // Moderation gate - same shape as the create path.
     $modHitEdit = ModerationService::checkBundle([
         'title'              => $title,
         'returnClause'       => $returnClause,
@@ -7825,7 +7825,7 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     if ($modHitEdit !== null) {
         error_log("[moderation] challenge edit blocked challengeId={$challengeId} field={$modHitEdit['field']} reason={$modHitEdit['reason']} hit={$modHitEdit['hit']}");
         Response::json([
-            'error' => 'Your text was flagged by moderation — please rephrase.',
+            'error' => 'Your text was flagged by moderation - please rephrase.',
             'code'  => 'moderation_blocked',
             'field' => $modHitEdit['field'],
         ], 422);
@@ -8014,7 +8014,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', fun
         $isIn = false;
     } else {
         if (ChallengeParticipantRepository::isKicked($challengeId, $userId)) {
-            Response::json(['error' => "You can't join — you've been removed from this challenge.", 'code' => 'kicked'], 403);
+            Response::json(['error' => "You can't join - you've been removed from this challenge.", 'code' => 'kicked'], 403);
         }
         if (!empty($challenge['closed_to_new_joins'])) {
             Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
@@ -8032,7 +8032,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/toggle', fun
 });
 
 // POST /api/v1/challenges/{challengeId}/join
-// Explicit join — instant, registered-only, idempotent. Refused on kick,
+// Explicit join - instant, registered-only, idempotent. Refused on kick,
 // closed_to_new_joins, or visibility scope (the read gate catches the latter
 // via findById). Returns the updated count + isIn=true so the client can
 // flip to the participant view in one round-trip.
@@ -8049,7 +8049,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/join', function (array $p
         Response::json(['error' => 'Challenge not found'], 404);
     }
     if (ChallengeParticipantRepository::isKicked($challengeId, $userId)) {
-        Response::json(['error' => "You can't join — you've been removed from this challenge.", 'code' => 'kicked'], 403);
+        Response::json(['error' => "You can't join - you've been removed from this challenge.", 'code' => 'kicked'], 403);
     }
     if (!empty($challenge['closed_to_new_joins'])) {
         Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
@@ -8065,7 +8065,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/join', function (array $p
 
 // DELETE /api/v1/challenges/{challengeId}/participants/me
 // Caller leaves the channel. No notifications, no penalty. The creator
-// can't "leave" their own challenge — they delete it instead, which is a
+// can't "leave" their own challenge - they delete it instead, which is a
 // different endpoint.
 $router->add('DELETE', '/api/v1/challenges/{challengeId}/participants/me', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
@@ -8081,7 +8081,7 @@ $router->add('DELETE', '/api/v1/challenges/{challengeId}/participants/me', funct
     }
     if (($challenge['created_by'] ?? null) === $userId) {
         Response::json([
-            'error' => "You're the creator — delete the challenge instead of leaving.",
+            'error' => "You're the creator - delete the challenge instead of leaving.",
             'code'  => 'cant_leave_own_challenge',
         ], 422);
     }
@@ -8094,7 +8094,7 @@ $router->add('DELETE', '/api/v1/challenges/{challengeId}/participants/me', funct
 // POST /api/v1/challenges/{challengeId}/participants/{userId}/kick
 // Remove a participant + ban re-join. Creator OR active acceptor only.
 // Creator can never be kicked (the repo refuses). Optional { reason } in
-// body — server-side log only, not surfaced to the kicked user beyond a
+// body - server-side log only, not surfaced to the kicked user beyond a
 // generic "removed" notification.
 $router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kick', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
@@ -8121,7 +8121,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kic
         Response::json(['error' => 'Creator or current taker only.', 'code' => 'not_authorized'], 403);
     }
     if ($targetId === $callerId) {
-        Response::json(['error' => "You can't kick yourself — leave instead.", 'code' => 'cant_kick_self'], 422);
+        Response::json(['error' => "You can't kick yourself - leave instead.", 'code' => 'cant_kick_self'], 422);
     }
 
     $body   = Request::json();
@@ -8144,7 +8144,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/participants/{userId}/kic
 // mode='international').
 //
 // Flipping TO 'private' also closes the challenge to new joins in the
-// same transaction — private logically means "no random spectators",
+// same transaction - private logically means "no random spectators",
 // and the existing visibilityWhereClause already hides the row from
 // non-creator/non-acceptor viewers. Flipping AWAY from private leaves
 // closed_to_new_joins alone; the creator can re-open joins explicitly
@@ -8193,7 +8193,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/visibility', function (ar
 });
 
 // POST /api/v1/challenges/{challengeId}/close-to-new-joins
-// Creator-only toggle. Body { closed: bool } — when true, /join refuses
+// Creator-only toggle. Body { closed: bool } - when true, /join refuses
 // new participants. Existing participants stay.
 $router->add('POST', '/api/v1/challenges/{challengeId}/close-to-new-joins', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
@@ -8242,7 +8242,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/notification-preference',
     }
     $ok = ChallengeParticipantRepository::setNotificationPreference($challengeId, $userId, $pref);
     if (!$ok) {
-        Response::json(['error' => 'Not a participant — join the challenge first.', 'code' => 'not_participant'], 403);
+        Response::json(['error' => 'Not a participant - join the challenge first.', 'code' => 'not_participant'], 403);
     }
     Response::json(['ok' => true, 'preference' => $pref]);
 });
@@ -8270,7 +8270,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
     ]);
 });
 
-// ── Challenge ratings (PR6 — mutual rating + scoring) ─────────────────────────
+// ── Challenge ratings (PR6 - mutual rating + scoring) ─────────────────────────
 // Scope: Local challenges only. International challenges keep their existing
 // proof → creator-verdict flow (ChallengeProofBlock + /submit-proof, /approve,
 // /reject) untouched. The rating endpoints below 422-out on mode='international'.
@@ -8280,7 +8280,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
 //
 // Mutual-reveal: a rating about the caller is exposed via the visible_ratings
 // view only once BOTH parties have rated. /of-me returns { revealed: false }
-// until that happens — the UI can show "waiting for X to rate".
+// until that happens - the UI can show "waiting for X to rate".
 
 // POST /api/v1/challenges/{challengeId}/ratings
 // Body: { stars: 1..5, comment?: string<=500 }
@@ -8291,10 +8291,10 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
 //
 // Rate-eligibility (Local only): there must be a non-rejected acceptance for
 // this challenge whose effective_phase is 'debrief' (meetup ended) or
-// 'approved' (legacy verdict already fired, or the trigger has — but a second
+// 'approved' (legacy verdict already fired, or the trigger has - but a second
 // distinct rater still slots in). Otherwise 403 with code='not_rate_eligible'.
 //
-// Returns { rating, revealed } — revealed=true when this insert was the
+// Returns { rating, revealed } - revealed=true when this insert was the
 // second rating (so the trigger just fired). Lets the client refetch /of-me
 // in the same tick without polling.
 $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array $params) {
@@ -8311,12 +8311,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
-    // PR44 — open mutual rating to international challenges too. The
+    // PR44 - open mutual rating to international challenges too. The
     // previous design treated the creator's proof verdict as the final
     // outcome, but per UX feedback the verdict step should END with
     // both parties rating each other (same as local). Phase='approved'
-    // — which on international is reached when the creator approves the
-    // proof, on local when both met up — gates eligibility uniformly
+    // - which on international is reached when the creator approves the
+    // proof, on local when both met up - gates eligibility uniformly
     // (see /me/rate-prompts below + the effective_phase fall-through).
     // The mutual-rating trigger in migrate.php already fires regardless
     // of mode, so debrief points (+30 challenger / +40 taker) flow on
@@ -8341,21 +8341,21 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         if ($comment === '') $comment = null;
     }
 
-    // Moderation gate — same shape as challenge create/edit. Hits log the
+    // Moderation gate - same shape as challenge create/edit. Hits log the
     // field for ops review; client gets a tailored 422 + code.
     if ($comment !== null) {
         $modHit = ModerationService::checkBundle(['comment' => $comment]);
         if ($modHit !== null) {
             error_log("[moderation] rating blocked challengeId={$challengeId} reason={$modHit['reason']} hit={$modHit['hit']}");
             Response::json([
-                'error' => 'Your comment was flagged by moderation — please rephrase.',
+                'error' => 'Your comment was flagged by moderation - please rephrase.',
                 'code'  => 'moderation_blocked',
                 'field' => 'comment',
             ], 422);
         }
     }
 
-    // Modest rate limit — the UNIQUE constraint is the real dedup; this just
+    // Modest rate limit - the UNIQUE constraint is the real dedup; this just
     // bounds malformed-body spam attempts.
     enforceRateLimit('rating_create', 10, 600, $callerId);
 
@@ -8363,9 +8363,9 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
     //
     // Bug fix (Jun 2026): the previous SELECT used `ORDER BY created_at DESC
     // LIMIT 1` over all non-rejected rows. When a challenge has had multiple
-    // acceptances over time — e.g. an OLD phase='approved' (mutually
+    // acceptances over time - e.g. an OLD phase='approved' (mutually
     // completed, caller still hasn't written their rating) AND a NEWER
-    // phase='accepted' (a different taker just took it on) — that picker
+    // phase='accepted' (a different taker just took it on) - that picker
     // grabbed the new one and the effective_phase gate refused. The result
     // was a 403 not_rate_eligible for a rating the caller legitimately
     // wanted to leave on the older meet-up.
@@ -8415,7 +8415,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
     // findById gives us the derived effective_phase alongside the row.
     $acceptance = ChallengeAcceptanceRepository::findById((string) $accId);
 
-    // Rate-eligibility — meetup must be over. 'debrief' = scheduled + meetup
+    // Rate-eligibility - meetup must be over. 'debrief' = scheduled + meetup
     // end is past. 'approved' = trigger already fired OR legacy verdict path.
     // A second distinct rater still slots in cleanly on 'approved'. For the
     // CREATOR branch above, the SQL already filtered to rate-eligible rows,
@@ -8477,26 +8477,26 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
     }
 
     // Did this insert trigger the mutual-reveal? Cheap: count ratings for
-    // this challenge — 2 means the trigger has fired (or is firing).
+    // this challenge - 2 means the trigger has fired (or is firing).
     $stmt = Database::pdo()->prepare("
         SELECT COUNT(*) FROM challenge_ratings WHERE challenge_id = ?
     ");
     $stmt->execute([$challengeId]);
     $revealed = ((int) $stmt->fetchColumn()) >= 2;
 
-    // PR47 — second rating landed → the mutual-rating trigger has just
+    // PR47 - second rating landed → the mutual-rating trigger has just
     // awarded debrief points to BOTH users. Two side-effects fire here:
-    //   1. WS broadcast to both — open clients refresh /me/score-celebration
+    //   1. WS broadcast to both - open clients refresh /me/score-celebration
     //      so the "+30/+40 points" popin appears immediately. The
     //      LaunchGate listens to 'mutual_rating_complete'.
-    //   2. Push to the FIRST rater (the OTHER party) — they're not the
+    //   2. Push to the FIRST rater (the OTHER party) - they're not the
     //      one calling this endpoint, so they need to be pulled back
     //      into the app. The just-submitting rater (caller) sees the
     //      popin via the WS broadcast on their own open client; they
     //      don't need a push (would be redundant).
     if ($revealed) {
         try {
-            // Both users get the WS event — the just-submitting rater's
+            // Both users get the WS event - the just-submitting rater's
             // own client refetches the celebration too, so the popin
             // surfaces without leaving the channel.
             broadcastMutualRatingCompleteToWs($callerId, [
@@ -8512,7 +8512,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         }
 
         // Push the FIRST rater. rateeId on this just-inserted row is who
-        // the CALLER rated — i.e. the other party — who is exactly the
+        // the CALLER rated - i.e. the other party - who is exactly the
         // first rater (they had to have rated before this row was the
         // SECOND one). Keep the type name self-describing for ops.
         try {
@@ -8521,7 +8521,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
                 $rateeId,
                 'challenge_rated_complete',
                 "⭐ {$callerName} rated you",
-                "Mutual rating done — your points just landed for \"{$challenge['title']}\"",
+                "Mutual rating done - your points just landed for \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challengeId,
                     'raterName'      => $callerName,
@@ -8532,7 +8532,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
             error_log('[ratings] mutual push failed (non-fatal): ' . $e->getMessage());
         }
     } else {
-        // FIRST rating just landed — the OTHER party hasn't rated yet.
+        // FIRST rating just landed - the OTHER party hasn't rated yet.
         // Two side-effects, both non-fatal so the rating insert is never
         // rolled back because of a flaky push or WS:
         //   1. WS poke so their open RatePromptLaunchGate refetches and
@@ -8588,7 +8588,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
 });
 
 // GET /api/v1/challenges/{challengeId}/ratings/mine
-// The caller's own rating — always visible to its writer (no mutual-reveal
+// The caller's own rating - always visible to its writer (no mutual-reveal
 // gate on the rater's own row). Returns { rating: null } when the caller
 // hasn't rated yet so the client can branch cleanly without catching a 404.
 $router->add('GET', '/api/v1/challenges/{challengeId}/ratings/mine', function (array $params) {
@@ -8629,7 +8629,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/ratings/mine', function (a
 });
 
 // GET /api/v1/challenges/{challengeId}/ratings/of-me
-// The rating ABOUT the caller — mutual-reveal gated. Reads from
+// The rating ABOUT the caller - mutual-reveal gated. Reads from
 // visible_ratings, which only exposes a row once both parties have rated
 // (see migrate.php:1538). Filtering by ratee_id = caller.id therefore yields:
 //   - waiting on caller to rate          → empty (revealed=false)
@@ -8676,7 +8676,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/ratings/of-me', function (
     ]);
 });
 
-// ── Challenge acceptances (PR2 — new take-on flow) ────────────────────────────
+// ── Challenge acceptances (PR2 - new take-on flow) ────────────────────────────
 // The old /participants/toggle above is the legacy pooled-acceptance path
 // (kept for backward-compat with the live mobile build until the next app
 // release). The endpoints below are the new model: each accept creates a
@@ -8684,11 +8684,11 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/ratings/of-me', function (
 
 // POST /api/v1/challenges/{challengeId}/accept
 // New take-on. Creates a challenge_acceptances row + a channels.type='challenge_thread'
-// row (the 1:1 chat). Idempotent — re-accepting returns the existing row.
+// row (the 1:1 chat). Idempotent - re-accepting returns the existing row.
 //
 // Gates (all 403 with `code` field for client to disambiguate):
 //   - not_creator       : you can't accept your own challenge
-//   - mode_required     : your users.mode is null — set it before accepting
+//   - mode_required     : your users.mode is null - set it before accepting
 //   - mode_mismatch     : you're a local but the challenge is for travelers (or vice-versa)
 //   - cap_reached       : challenge already at max_participants
 $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array $params) {
@@ -8710,7 +8710,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
 
     // Gate: not the creator.
     if ($challenge['created_by'] === $userId) {
-        Response::json(['error' => "You created this challenge — you can't accept it", 'code' => 'not_creator'], 403);
+        Response::json(['error' => "You created this challenge - you can't accept it", 'code' => 'not_creator'], 403);
     }
 
     // Idempotency: already accepted? Return the existing acceptance (201 would
@@ -8720,7 +8720,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json($existing);
     }
 
-    // Mode/audience gate — Local-only. International challenges target
+    // Mode/audience gate - Local-only. International challenges target
     // anyone (or anyone in city B) and have no in-person meetup, so neither
     // the user's local/traveler mode nor the challenge.audience field gates
     // take-on. The proof verdict is the gate that matters.
@@ -8744,18 +8744,18 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
             ], 403);
         }
     } else {
-        // PR49 — International challenge with a TARGET city: only users
+        // PR49 - International challenge with a TARGET city: only users
         // whose current_city_id matches that target can take it on.
         // target_city_id IS NULL = "anywhere" → no gate (kept open).
         // Example: someone from HCMC posts "find me the best kebab in
-        // Berlin" — only Berlin members should be allowed to take it.
+        // Berlin" - only Berlin members should be allowed to take it.
         $targetCityId = $challenge['target_city_id'] ?? null;
         if (is_string($targetCityId) && $targetCityId !== '') {
             $userCityId = $authUser['current_city_id'] ?? null;
             if ($userCityId !== $targetCityId) {
                 // Try to resolve the target city name for a friendlier
                 // error message ("Only Berlin members…"). Falls back to
-                // generic copy if the lookup fails — never 500 on this.
+                // generic copy if the lookup fails - never 500 on this.
                 $targetCityName = null;
                 if (preg_match('/^city_(\d+)$/', $targetCityId, $m)) {
                     $row = CityRepository::findById((int) $m[1]);
@@ -8773,19 +8773,19 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         }
     }
 
-    // 1:1 gate — refuse a new take-on while the challenge has any
+    // 1:1 gate - refuse a new take-on while the challenge has any
     // non-terminal acceptance. The first taker holds the challenge until
-    // their meet-up wraps up (approved / rejected) or they cancel — at which
+    // their meet-up wraps up (approved / rejected) or they cancel - at which
     // point the row frees and the next traveler can take it on. Commit 3
     // adds a lazy "ghosted taker" rule so a long-stale debrief also frees
     // the challenge without manual intervention.
     //
     // International challenges share the same 1:1 lock at the data layer
-    // (one open acceptance at a time) — but the lock releases on proof
+    // (one open acceptance at a time) - but the lock releases on proof
     // verdict instead of meetup completion. Same semantics, different flow.
     if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
         Response::json([
-            'error' => "Someone's already on this one — check back when it's done",
+            'error' => "Someone's already on this one - check back when it's done",
             'code'  => 'in_progress',
         ], 403);
     }
@@ -8825,14 +8825,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
-    // Push notification to the creator — copy differs by mode:
+    // Push notification to the creator - copy differs by mode:
     //   Local         → "take-on REQUEST" (creator must review)
     //   International → "challenge accepted" (auto-approved; creator just
     //                   knows someone's on it, waiting for proof)
-    // Same type for now (challenge_takeon_request) — keeps NotificationI18n
+    // Same type for now (challenge_takeon_request) - keeps NotificationI18n
     // and the bell row simple. Future step can split if the difference
     // becomes UX-meaningful, but for now the body distinction below is
-    // enough — clients render off `data.mode` to differentiate CTAs.
+    // enough - clients render off `data.mode` to differentiate CTAs.
     try {
         if (!empty($challenge['created_by'])) {
             $acceptorName = $authUser['display_name'] ?? 'Someone';
@@ -8922,21 +8922,21 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
         Response::json(['error' => 'Failed to approve take-on'], 500);
     }
 
-    // System message in the thread — "✅ X accepted your take-on. Let's plan!"
+    // System message in the thread - "✅ X accepted your take-on. Let's plan!"
     // Sent as a regular message of type='system' so it persists in history
     // and shows up the moment the chat unlocks.
     try {
         $creatorName = $authUser['display_name'] ?? 'The creator';
         $sysMsg = MessageRepository::addSystemMessage(
             $acceptance['thread_channel_id'],
-            "✅ {$creatorName} accepted your take-on — let's plan the meet-up!",
+            "✅ {$creatorName} accepted your take-on - let's plan the meet-up!",
         );
         broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
     } catch (\Throwable $e) {
         error_log('[challenges] approve-takeon system msg failed (non-fatal): ' . $e->getMessage());
     }
 
-    // WS broadcast to the acceptor — their UI flips from "Waiting..." to chat.
+    // WS broadcast to the acceptor - their UI flips from "Waiting..." to chat.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
@@ -8951,7 +8951,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
         error_log('[challenges] approve-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
-    // Push to the acceptor — their take-on is now active.
+    // Push to the acceptor - their take-on is now active.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             $creatorName = $authUser['display_name'] ?? 'The creator';
@@ -8994,7 +8994,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
         Response::json(['error' => 'Failed to reject take-on'], 500);
     }
 
-    // System message in the thread — audit trail even though the chat
+    // System message in the thread - audit trail even though the chat
     // doesn't unlock. The acceptor's "Waiting..." state morphs into a
     // rejection notice that references this message.
     try {
@@ -9008,7 +9008,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
         error_log('[challenges] reject-takeon system msg failed (non-fatal): ' . $e->getMessage());
     }
 
-    // WS broadcast + push to acceptor — same payload as approve, different decision.
+    // WS broadcast + push to acceptor - same payload as approve, different decision.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             broadcastChallengeTakeOnReviewedToWs($acceptance['acceptor_user_id'], [
@@ -9047,7 +9047,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/cancel
-// Either party can cancel — but only in phase 'accepted'. Hard-delete: the
+// Either party can cancel - but only in phase 'accepted'. Hard-delete: the
 // thread channel goes (cascade kills messages + the acceptance row via FK).
 // PR3+ phases (scheduled, debrief, approved, rejected) return 409.
 $router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (array $params) {
@@ -9083,7 +9083,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/cancel', function (arra
         ], 409);
     }
 
-    // Snapshot the IDs BEFORE delete — the cascade wipes them.
+    // Snapshot the IDs BEFORE delete - the cascade wipes them.
     $otherUserId    = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
     $threadId       = $acceptance['thread_channel_id'];
     $challengeIdSnap = $acceptance['challenge_id'];
@@ -9137,7 +9137,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
         Response::json(['error' => 'Not a thread member'], 403);
     }
     // 'accepted' = initial proposal/counter-proposal. 'scheduled' = either
-    // party reschedules an already-approved date — the repo flips it back to
+    // party reschedules an already-approved date - the repo flips it back to
     // 'accepted' so the other party re-approves. After 'scheduled' (debrief /
     // approved / rejected) the date is final.
     if ($acceptance['phase'] !== 'accepted' && $acceptance['phase'] !== 'scheduled') {
@@ -9152,7 +9152,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
     if ($startsAt === false || $startsAt <= 0) {
         Response::json(['error' => 'startsAt is required (unix timestamp)'], 400);
     }
-    // 5 years out is the realistic ceiling — beyond that is almost certainly a
+    // 5 years out is the realistic ceiling - beyond that is almost certainly a
     // client bug (ms vs s confusion, etc.). Also reject anything in the past
     // by more than a day (clock skew + UX honesty).
     $nowTs = time();
@@ -9205,7 +9205,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/withdraw-proposal
-// Proposer-only — clears the current proposal. Phase stays 'accepted'.
+// Proposer-only - clears the current proposal. Phase stays 'accepted'.
 $router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', function (array $params) {
     $acceptanceId = $params['acceptanceId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
@@ -9253,7 +9253,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/withdraw-proposal', fun
 
 // POST /api/v1/acceptances/{acceptanceId}/approve-date
 // CREATOR ONLY. Approves the current proposal and flips phase to 'scheduled'.
-// The thread chat IS the meet-up surface — no event row, no system message
+// The thread chat IS the meet-up surface - no event row, no system message
 // (previously inserted a "🎉 New event" card which was misleading inside the
 // thread; the pipeline's Meet step is the visible cue now).
 $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function (array $params) {
@@ -9293,7 +9293,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
     $updated = $result['acceptance'];
 
-    // Push to the acceptor — their phase pill flips to "scheduled".
+    // Push to the acceptor - their phase pill flips to "scheduled".
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             broadcastChallengeDateApprovedToWs($acceptance['acceptor_user_id'], [
@@ -9360,7 +9360,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', fun
         Response::json(['error' => 'Failed to approve'], 500);
     }
 
-    // Push notif to the acceptor — they've earned a 🎉.
+    // Push notif to the acceptor - they've earned a 🎉.
     try {
         $creatorName = $authUser['display_name'] ?? 'Someone';
         $title       = $challenge['title'] ?? 'a challenge';
@@ -9402,7 +9402,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', fun
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/reject-challenge
-// "Reject" is the negative verdict — no-show, didn't really meet, etc.
+// "Reject" is the negative verdict - no-show, didn't really meet, etc.
 // Tone is gentler in copy (the acceptor sees "closed", not "rejected").
 $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', function (array $params) {
     $acceptanceId = $params['acceptanceId'] ?? '';
@@ -9462,9 +9462,9 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-challenge', func
 // Geotag is verified server-side against the target city (if set) using
 // per-city tolerance with an env fallback.
 //
-//   POST /api/v1/acceptances/:id/submit-proof — acceptor only
-//   POST /api/v1/proofs/:id/approve           — creator only
-//   POST /api/v1/proofs/:id/reject            — creator only, body.reason
+//   POST /api/v1/acceptances/:id/submit-proof - acceptor only
+//   POST /api/v1/proofs/:id/approve           - creator only
+//   POST /api/v1/proofs/:id/reject            - creator only, body.reason
 
 /**
  * Shared gate for proof submission. Returns [$acceptance, $challenge, $authUser]
@@ -9546,7 +9546,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     if (!in_array($mediaType, ['image', 'video'], true)) {
         Response::json(['error' => "mediaType must be 'image' or 'video'"], 400);
     }
-    // PR59 — geolocation is no longer required for proof submission.
+    // PR59 - geolocation is no longer required for proof submission.
     // The camera-only capture flow (PR55) is enough: an instant rear-cam
     // photo without GPS-prompt friction. Clients that still send lat/lng
     // (older builds, mid-deploy) keep working; new clients omit them and
@@ -9564,7 +9564,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     }
 
     // 3-attempt cap. We enforce in the route (not the DB) so we can flex
-    // later without a migration. Bounded at the create-row level — no
+    // later without a migration. Bounded at the create-row level - no
     // way for a client to bypass via concurrency unless they pre-stuff
     // the table directly.
     $attempts = ChallengeProofRepository::attemptCountByAcceptance($acceptanceId);
@@ -9578,7 +9578,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     }
 
     // Geotag verification (only when target_city_id is set + the client
-    // actually sent coords). PR59 — without GPS the row is "verified" by
+    // actually sent coords). PR59 - without GPS the row is "verified" by
     // virtue of the camera-only capture; clients that opted out of the
     // location prompt aren't penalised on the creator's review panel.
     $geotagOk = $hasCoords
@@ -9605,7 +9605,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         WHERE id = ?
     ")->execute([$acceptanceId]);
 
-    // PR43 — drop the proof photo into the challenge chat too, so it
+    // PR43 - drop the proof photo into the challenge chat too, so it
     // shows up inline for everyone in the channel (creator, taker,
     // spectators). The proof submission used to be invisible to the
     // chat surface; users reported "I sent a proof and nothing
@@ -9627,7 +9627,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         }
     }
 
-    // PR43 — broadcast the phase change so the detail page can refresh
+    // PR43 - broadcast the phase change so the detail page can refresh
     // myAcceptance + the pipeline without a manual reload. Reuses the
     // existing challenge_takeon_reviewed event shape (the client only
     // cares that the acceptance state changed); no new client wiring
@@ -9651,7 +9651,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
         error_log('[proof] ws broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
-    // Push to the creator — they have a proof to review. English placeholder
+    // Push to the creator - they have a proof to review. English placeholder
     // body; step 5 wires NotificationI18n for the 18 non-EN locales.
     try {
         if (!empty($challenge['created_by'])) {
@@ -9695,7 +9695,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
     $acceptanceId = $acceptance['id'];
 
     if ($proof['status'] !== 'pending') {
-        // Idempotent — already-terminal is a no-op success.
+        // Idempotent - already-terminal is a no-op success.
         Response::json(['proof' => $proof]);
     }
 
@@ -9709,7 +9709,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         Response::json(['error' => 'Failed to approve'], 500);
     }
 
-    // Promote the parent acceptance to 'approved' — final state, mirror the
+    // Promote the parent acceptance to 'approved' - final state, mirror the
     // Local verdict flow so client phase logic stays uniform.
     Database::pdo()->prepare("
         UPDATE challenge_acceptances
@@ -9717,7 +9717,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         WHERE id = ?
     ")->execute([$acceptanceId]);
 
-    // Push to the acceptor — they nailed it.
+    // Push to the acceptor - they nailed it.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             $creatorName = $authUser['display_name'] ?? 'The creator';
@@ -9739,7 +9739,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         error_log('[proof] approve push failed (non-fatal): ' . $e->getMessage());
     }
 
-    // PR62 — broadcast the verdict on the WS so the acceptor's screen
+    // PR62 - broadcast the verdict on the WS so the acceptor's screen
     // (and the creator's other devices) flip to "approved" without a
     // manual reload. Reuses the same channel as the proof_submitted
     // event (PR43); existing client listeners just call loadMyAcceptance
@@ -9819,13 +9819,13 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
         ")->execute([$acceptanceId]);
     }
 
-    // Push to the acceptor — reason carries verbatim in the body so they
+    // Push to the acceptor - reason carries verbatim in the body so they
     // know what to fix on re-submit.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
             $creatorName = $authUser['display_name'] ?? 'The creator';
             $body        = $isFinal
-                ? "{$creatorName} rejected your proof for \"{$challenge['title']}\" — no more attempts"
+                ? "{$creatorName} rejected your proof for \"{$challenge['title']}\" - no more attempts"
                 : "{$creatorName} rejected your proof for \"{$challenge['title']}\". Reason: {$reason}";
             NotificationRepository::create(
                 $acceptance['acceptor_user_id'],
@@ -9848,7 +9848,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
         error_log('[proof] reject push failed (non-fatal): ' . $e->getMessage());
     }
 
-    // PR62 — broadcast the verdict on the WS so both sides refresh
+    // PR62 - broadcast the verdict on the WS so both sides refresh
     // without a manual reload. Same pattern as the approve path above.
     try {
         if (!empty($challenge['created_by'])) {
@@ -9887,7 +9887,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
 });
 
 // GET /api/v1/acceptances/{acceptanceId}/proofs
-// Both acceptor and creator can list — acceptor sees their attempts history;
+// Both acceptor and creator can list - acceptor sees their attempts history;
 // creator sees the queue. Returns at most MAX_ATTEMPTS rows (bounded by FK).
 $router->add('GET', '/api/v1/acceptances/{acceptanceId}/proofs', function (array $params) {
     $acceptanceId = $params['acceptanceId'] ?? '';
@@ -9916,7 +9916,7 @@ $router->add('GET', '/api/v1/acceptances/{acceptanceId}/proofs', function (array
 });
 
 // GET /api/v1/me/acceptances
-// "My threads" — every acceptance where I'm either the acceptor OR the creator.
+// "My threads" - every acceptance where I'm either the acceptor OR the creator.
 // One enriched row per thread: challenge metadata + counter-party + last-message
 // preview. Sorted by last activity. Capped at 100 (bounded read for low egress).
 $router->add('GET', '/api/v1/me/acceptances', function () {
@@ -9928,7 +9928,7 @@ $router->add('GET', '/api/v1/me/acceptances', function () {
 
 // GET /api/v1/me/scores
 // Caller's cached scores (alltime + this month) and bounded ranks in their
-// current city + globally — both alltime and this-month.
+// current city + globally - both alltime and this-month.
 //
 // "Bounded" means each rank query is capped at scanning at most TOP_N+1 = 101
 // candidate rows. We use the strictly-greater COUNT trick wrapped in a LIMIT:
@@ -9939,16 +9939,16 @@ $router->add('GET', '/api/v1/me/acceptances', function () {
 //     LIMIT 101
 //   ) bounded
 //
-// The inner LIMIT caps work at 101 ROWS RETURNED — for callers in the top 100
+// The inner LIMIT caps work at 101 ROWS RETURNED - for callers in the top 100
 // the scan stops near-immediately. For callers below the top 100 the scan may
-// continue further (up to a full table scan without an index — see indexing
+// continue further (up to a full table scan without an index - see indexing
 // note below) but the result is still capped at "out of top 100" and the
 // inner LIMIT ensures we never emit more than 101 rows over the network.
 //
 // Rank semantics: standard competition ranking. N users with strictly higher
 // scores → caller rank = N+1, so a tie at the top is rank 1 for everyone tied.
 // Beyond TOP_N → rank=null, the response carries top_n so the client can
-// render "100+" or "—".
+// render "100+" or "-".
 //
 // Indexes: idx_users_current_city already exists for the city slice;
 // users_score_alltime_desc + users_score_month_desc are added in migrate.php
@@ -9959,7 +9959,7 @@ $router->add('GET', '/api/v1/me/acceptances', function () {
 // next earning event, so a user who earned in May and not since carries May's
 // score on the row through June. We compare users.score_month_ref to the
 // current calendar month (UTC, same expression the trigger uses) and treat
-// any mismatch as 0 — both for the caller and for the global comparand.
+// any mismatch as 0 - both for the caller and for the global comparand.
 $router->add('GET', '/api/v1/me/scores', function () {
     $authUser = AuthService::requireAuth();
     $callerId = $authUser['id'];
@@ -10002,13 +10002,13 @@ $router->add('GET', '/api/v1/me/scores', function () {
         return [$inTopN ? $cnt + 1 : null, $inTopN];
     };
 
-    // Alltime — global.
+    // Alltime - global.
     [$alltimeGlobalRank] = $boundedRank(
         'score_alltime > :s',
         ['s' => $alltime],
     );
 
-    // Alltime — city (skipped when caller has no current_city_id).
+    // Alltime - city (skipped when caller has no current_city_id).
     $alltimeCityRank = null;
     if ($cityId !== null) {
         [$alltimeCityRank] = $boundedRank(
@@ -10017,7 +10017,7 @@ $router->add('GET', '/api/v1/me/scores', function () {
         );
     }
 
-    // Monthly — global. Comparand restricted to users whose cached month_ref
+    // Monthly - global. Comparand restricted to users whose cached month_ref
     // matches the current month, so a stale row from a prior month never
     // outranks an active player whose effective month score is 0.
     [$monthGlobalRank] = $boundedRank(
@@ -10025,7 +10025,7 @@ $router->add('GET', '/api/v1/me/scores', function () {
         ['s' => $effectiveMonth, 'm' => $currentMonth],
     );
 
-    // Monthly — city.
+    // Monthly - city.
     $monthCityRank = null;
     if ($cityId !== null) {
         [$monthCityRank] = $boundedRank(
@@ -10057,12 +10057,12 @@ $router->add('GET', '/api/v1/me/scores', function () {
 //   the caller has earned strictly AFTER users.score_celebrated_at, plus the
 //   current city + global ranks (alltime + this month, same shape as
 //   /me/scores). The client opens a popin when `points > 0`, displays the
-//   delta + ranks, then acks via POST below. Idempotent — calling twice
+//   delta + ranks, then acks via POST below. Idempotent - calling twice
 //   without acking returns the same payload.
 //
 // POST /api/v1/me/score-celebration/seen { seen_until }
 //   Marks the caller's watermark up to `seen_until` (ISO timestamp returned
-//   by the GET). Server clamps so the watermark never decreases — multiple
+//   by the GET). Server clamps so the watermark never decreases - multiple
 //   acks with stale timestamps are no-ops.
 //
 // Frequency: one popin per app open at most, gated client-side. The
@@ -10074,7 +10074,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
     $pdo      = Database::pdo();
 
     // Pull the watermark + cached scores in one shot (reused for the rank
-    // queries below — no need to re-read).
+    // queries below - no need to re-read).
     $stmt = $pdo->prepare("
         SELECT score_alltime, score_month, score_month_ref,
                current_city_id, score_celebrated_at
@@ -10088,7 +10088,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
     }
 
     // Aggregate the unacknowledged events. `'-infinity'::timestamptz` is the
-    // canonical Postgres sentinel for "any timestamp is greater" — handles
+    // canonical Postgres sentinel for "any timestamp is greater" - handles
     // the very-first-launch case where the column might still be NULL
     // despite the backfill (defensive; shouldn't happen post-migration).
     // We also pull the top kind (largest single contribution) so the client
@@ -10109,13 +10109,13 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
     $eventCount   = (int) ($agg['event_count']  ?? 0);
     $maxCreatedAt = $agg['max_created_at'] ?? null;
 
-    // Short-circuit when there's nothing to celebrate — keeps the wire
+    // Short-circuit when there's nothing to celebrate - keeps the wire
     // payload tiny and the client's "has popin to show" check trivial.
     if ($totalPoints <= 0) {
         Response::json(['points' => 0]);
     }
 
-    // Top-kind lookup — the kind that contributed the most. Ties broken by
+    // Top-kind lookup - the kind that contributed the most. Ties broken by
     // most recent first (so a +30 debrief outranks a stale +5 acceptance).
     $topStmt = $pdo->prepare("
         SELECT kind, SUM(points) AS pts
@@ -10130,7 +10130,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
     $topRow  = $topStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
     $topKind = $topRow['kind'] ?? null;
 
-    // Ranks — same bounded-LIMIT-101 trick as /me/scores. The caller's
+    // Ranks - same bounded-LIMIT-101 trick as /me/scores. The caller's
     // cached score columns are already up to date (sync_user_scores trigger
     // fired on each score_events INSERT), so we can rank against them
     // directly without re-aggregating the ledger.
@@ -10173,7 +10173,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
     );
 
-    // Cities-among-cities ranks — where the user's CITY sits in the Cities
+    // Cities-among-cities ranks - where the user's CITY sits in the Cities
     // tab leaderboard (sum of all members' points per city). Distinct from
     // rank_*.city above which is the user's rank AMONG OTHER USERS in their
     // city. Uses the same CTE shape as /leaderboard?scope=cities so the two
@@ -10234,11 +10234,11 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         }
     }
 
-    // Per-event breakdown — the popin's "what did I just earn?" surface.
+    // Per-event breakdown - the popin's "what did I just earn?" surface.
     // Title comes from channel_challenges; LEFT JOIN handles the rare case
     // of a deleted challenge (we keep the event row but render a fallback
     // label client-side). Capped at EVENT_LIMIT to keep the wire small and
-    // the modal scannable — the headline +X covers totals beyond the cap.
+    // the modal scannable - the headline +X covers totals beyond the cap.
     $EVENT_LIMIT  = 6;
     $eventStmt    = $pdo->prepare("
         SELECT
@@ -10283,7 +10283,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         'city_name'    => $cityName,
         'city_country' => $cityCountry,
         'top_n'        => $TOP_N,
-        // Cached personal totals — the user's current grand totals AFTER the
+        // Cached personal totals - the user's current grand totals AFTER the
         // gain has landed (sync_user_scores trigger keeps these up to date).
         // `points` above is the delta; these are "you now have N points".
         'total_alltime' => $alltime,
@@ -10316,7 +10316,7 @@ $router->add('POST', '/api/v1/me/score-celebration/seen', function () {
 
     // GREATEST clamps so a stale ack from a slow client can't roll the
     // watermark back. Postgres' GREATEST(null, x) yields null, hence the
-    // explicit COALESCE — without it, a row whose score_celebrated_at is
+    // explicit COALESCE - without it, a row whose score_celebrated_at is
     // still NULL would stay NULL after this ack.
     $stmt = Database::pdo()->prepare("
         UPDATE users
@@ -10337,18 +10337,18 @@ $router->add('POST', '/api/v1/me/score-celebration/seen', function () {
 // surfaces an in-app prompt; there is intentionally NO server-driven push,
 // per the on-app-open decision in the (B) audit.
 //
-// Eligibility — same gate as POST /ratings, expressed as a list filter:
+// Eligibility - same gate as POST /ratings, expressed as a list filter:
 //   - caller is creator OR active acceptor
 //   - acceptance phase = 'scheduled' AND meetup ended  (effective 'debrief'),
 //       OR phase = 'approved'                          (legacy / post-trigger
-//                                                       — on international,
+//                                                       - on international,
 //                                                       this is the creator's
 //                                                       proof approval; PR44)
 //   - caller has NOT already rated this challenge
 //
 // `other_rated` lets the UI warm the prompt copy ("they're waiting on you")
 // vs. neutral. Sorted oldest-meetup-first so the most-overdue prompt is at
-// the top of the banner stack. LIMIT 50 — above any realistic backlog; we
+// the top of the banner stack. LIMIT 50 - above any realistic backlog; we
 // log if we hit it.
 $router->add('GET', '/api/v1/me/rate-prompts', function () {
     $authUser = AuthService::requireAuth();
@@ -10409,7 +10409,7 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
     $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     if (count($rows) >= $LIMIT) {
-        error_log("[rate-prompts] caller {$callerId} hit LIMIT {$LIMIT} — backlog unusually large");
+        error_log("[rate-prompts] caller {$callerId} hit LIMIT {$LIMIT} - backlog unusually large");
     }
 
     $prompts = [];
@@ -10457,9 +10457,9 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
 // Caller's own row (me.rank/points) computed with a strictly-greater COUNT
 // against the same indexed scan, so a caller outside the page still gets
 // their real rank. me.rank=null when the caller has no points in this
-// scope/period — UI shows the "play to get on the board" prompt instead.
+// scope/period - UI shows the "play to get on the board" prompt instead.
 //
-// List ranks are offset+i+1 (no tie-dedup — paginated leaderboard standard).
+// List ranks are offset+i+1 (no tie-dedup - paginated leaderboard standard).
 // me.rank uses true competition ranking, so ties at the top all show
 // me.rank=1 if the caller is one of them.
 $router->add('GET', '/api/v1/leaderboard', function () {
@@ -10501,7 +10501,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $cityId = $stmt->fetchColumn() ?: null;
             if ($cityId === null) {
                 Response::json([
-                    'error' => 'No city set — pick a city before viewing the leaderboard.',
+                    'error' => 'No city set - pick a city before viewing the leaderboard.',
                     'code'  => 'no_city',
                 ], 400);
             }
@@ -10517,7 +10517,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
         if ($period === 'alltime') {
             $list = $pdo->prepare("
                 SELECT u.id, u.display_name,
-                       -- PR39 — fall back to the full photo URL when the
+                       -- PR39 - fall back to the full photo URL when the
                        -- thumbnail column hasn't been backfilled (legacy
                        -- uploads pre-date the thumb pipeline). Matches the
                        -- UserResource serializer used everywhere else.
@@ -10581,7 +10581,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             }
         }
     } elseif ($scope === 'cities') {
-        // Cities leaderboard — rank cities by the SUM of their members'
+        // Cities leaderboard - rank cities by the SUM of their members'
         // scores. Each city's total is the sum of users.score_alltime (or
         // score_month) of every user whose current_city_id resolves to
         // that city, restricted to users with > 0 points so dormant
@@ -10708,7 +10708,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             }
         }
     } else {
-        // City leaderboard — scoped by the USER's home city (the geolocated
+        // City leaderboard - scoped by the USER's home city (the geolocated
         // current_city_id), NOT by score_events.city_id. A user appears on a
         // city's leaderboard iff they live there now; their total score (the
         // cached users.score_alltime / score_month) carries with them when
@@ -10847,7 +10847,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
 });
 
 // GET /api/v1/challenges/{challengeId}/acceptances
-// Creator-only — list of who took on this challenge. For the challenge
+// Creator-only - list of who took on this challenge. For the challenge
 // detail "Threads" tab in the new UI.
 $router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
@@ -10855,7 +10855,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (ar
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
     $authUser  = AuthService::requireAuth();
-    // Creator-only — own gate via created_by check below, so visibility
+    // Creator-only - own gate via created_by check below, so visibility
     // is irrelevant here (creator always passes the visibility filter
     // anyway, but unchecked makes the intent explicit).
     $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
@@ -10871,9 +10871,9 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/acceptances', function (ar
 // After publishing, the creator can hand-pick city members and ping them with
 // an in-app notification + push (with Accept / Ignore action buttons in the
 // notification tray on native). Accepting just runs the same gated take-on
-// path everyone else uses — invitations don't bypass mode/in-progress checks.
+// path everyone else uses - invitations don't bypass mode/in-progress checks.
 
-// POST /api/v1/challenges/{challengeId}/invite — body { userIds: [...] }
+// POST /api/v1/challenges/{challengeId}/invite - body { userIds: [...] }
 $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -10882,14 +10882,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     $authUser = AuthService::requireAuth();
     $inviter  = $authUser['id'];
 
-    // Unchecked — creator gate below is the real authorization; creator
+    // Unchecked - creator gate below is the real authorization; creator
     // always passes visibility anyway.
     $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
     // Creator-only (the "invite people to take this on" button only shows for
-    // the creator anyway — defence in depth).
+    // the creator anyway - defence in depth).
     if (($challenge['created_by'] ?? null) !== $inviter) {
         Response::json(['error' => 'Only the creator can invite'], 403);
     }
@@ -10899,7 +10899,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     if (empty($userIds)) {
         Response::json(['error' => 'No invitees'], 400);
     }
-    // Cap fan-out per call — keeps the in-request loop bounded on non-FPM
+    // Cap fan-out per call - keeps the in-request loop bounded on non-FPM
     // (every send is in-request). 50 is plenty for a hand-picked list.
     if (count($userIds) > 50) {
         Response::json(['error' => 'Too many invitees (max 50)'], 400);
@@ -10914,10 +10914,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
 
     // Every selected invitee gets a fresh push. We used to skip people whose
     // invitation row was already 'accepted' on the assumption "they're in the
-    // flow, no need to re-ping" — but that broke the creator's mental model:
+    // flow, no need to re-ping" - but that broke the creator's mental model:
     // they pick a name, hit send, see "Sent to 0", and assume the feature is
     // broken. A prior acceptance can also be stale (the take-on may have
-    // since been cancelled / completed). The recipient is the better judge —
+    // since been cancelled / completed). The recipient is the better judge -
     // we send, the rate limit (60/h per inviter) prevents abuse, the accept
     // endpoint re-checks the take-on gates on tap.
     $sent   = [];
@@ -10954,7 +10954,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
     Response::json([
         'invited' => $sent,
         'count'   => count($sent),
-        // `duplicates` kept for back-compat with older clients — now strictly
+        // `duplicates` kept for back-compat with older clients - now strictly
         // equals failed (the only non-sent bucket).
         'duplicates' => count($failed),
     ], 201);
@@ -10988,7 +10988,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
     // invitation is marked accepted but we surface the gate error so the
     // client can deep-link them to the challenge page with the right toast.
     $challengeId = $invitation['challenge_id'];
-    // Unchecked — the invitation row itself is the authorization. Invitees
+    // Unchecked - the invitation row itself is the authorization. Invitees
     // need to reach private/friends challenges even when they aren't yet
     // in the visibility scope.
     $challenge   = ChallengeRepository::findByIdUnchecked($challengeId);
@@ -11004,7 +11004,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         Response::json(['acceptance' => $existing, 'challengeId' => $challengeId]);
     }
 
-    // Local-only audience gate (international skips — same logic as
+    // Local-only audience gate (international skips - same logic as
     // POST /challenges/:id/accept).
     $isInternational = ($challenge['mode'] ?? 'local') === 'international';
     if (!$isInternational) {
@@ -11103,12 +11103,12 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/ignore', function (arra
     Response::json($updated);
 });
 
-// Thread message routes removed — the 1:1 chat between creator + acceptor
+// Thread message routes removed - the 1:1 chat between creator + acceptor
 // moved into the unified challenge channel (see /challenges/:id/messages).
 // Acceptances no longer get an auto-created thread channel; the column
 // stays on challenge_acceptances for historical rows but isn't surfaced.
 
-// GET /api/v1/users/{userId}/challenges — challenges the user created or
+// GET /api/v1/users/{userId}/challenges - challenges the user created or
 // accepted, for the profile "Challenges" tab. Each item carries `is_owner`.
 $router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params) {
     $userId = $params['userId'] ?? '';
@@ -11129,7 +11129,7 @@ $router->add('GET', '/api/v1/users/{userId}/challenges', function (array $params
 });
 
 // GET /api/v1/challenges/{challengeId}/participants
-// LEGACY acceptor list — used by older read paths that want the active taker
+// LEGACY acceptor list - used by older read paths that want the active taker
 // row + display name. Kept for back-compat with the existing mobile build.
 // New code uses /channel-participants below.
 $router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (array $params) {
@@ -11145,7 +11145,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants', function (a
 
 // GET /api/v1/challenges/{challengeId}/channel-participants
 // Publicly visible list of channel members (people who clicked Join). Per
-// spec the list is open — anyone can see who's in. Creator + active taker
+// spec the list is open - anyone can see who's in. Creator + active taker
 // are NOT injected here (they have their own surfaces); a UI overlay
 // composes "Challenger / Taker / Members" client-side.
 //
@@ -11169,7 +11169,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/channel-participants', fun
 });
 
 // GET /api/v1/challenges/{challengeId}/messages
-// Channel chat — participation-gated. Creator + active acceptor are implicit
+// Channel chat - participation-gated. Creator + active acceptor are implicit
 // participants; everyone else needs a challenge_participants row (created by
 // clicking "Join this challenge"). Non-participants get 403 with
 // code:'not_participant' so the client can render the public detail page
@@ -11182,7 +11182,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 
     try {
         $viewerId = AuthService::currentUser()['id'] ?? null;
-        // Visibility-aware existence check — anon/out-of-scope viewers
+        // Visibility-aware existence check - anon/out-of-scope viewers
         // can't read messages on a friends/private challenge.
         if (ChallengeRepository::findById($challengeId, $viewerId) === null) {
             Response::json(['error' => 'Challenge not found'], 404);
@@ -11198,18 +11198,18 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
-        // Each acceptance run gets its own chat lane — read only messages
+        // Each acceptance run gets its own chat lane - read only messages
         // stamped with the currently-active acceptance, or only NULL-stamped
         // messages when no run is in progress (pre/between-acceptance state).
         $activeAcceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
         $res = MessageRepository::getByChallengeChannel($challengeId, $activeAcceptanceId, $beforeId ?: null, $limit);
 
-        // PR58 — enrich each text/image message with the sender's
+        // PR58 - enrich each text/image message with the sender's
         // mode + vibe + primaryBadge so the author chip renders the
         // right pill (Local vs Traveler vs Ghost). Without this,
         // historical messages came back with no mode, the client
         // defaulted to 'exploring', and a Local user reading their
-        // own past chat saw themselves labelled "Traveler" — the
+        // own past chat saw themselves labelled "Traveler" - the
         // user-reported bug. Mirrors the city-bootstrap path (see
         // routes/api.php around line 3088).
         $msgUserIds = [];
@@ -11264,20 +11264,20 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 // POST /api/v1/challenges/{challengeId}/messages
 // Send a message in the participation-gated channel. Only participants
 // (creator / active taker implicitly, anyone else who joined) can post.
-// Guest senders no longer have a path in — the new model is registered-only.
+// Guest senders no longer have a path in - the new model is registered-only.
 $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
         Response::json(['error' => 'Invalid challengeId'], 400);
     }
 
-    // Visibility-aware — anon/out-of-scope can't post to a friends/private
+    // Visibility-aware - anon/out-of-scope can't post to a friends/private
     // challenge.
     $viewerIdForVisibility = AuthService::currentUser()['id'] ?? null;
     if (ChallengeRepository::findById($challengeId, $viewerIdForVisibility) === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
-    // Participation gate — same shape as the GET. Non-participants get a
+    // Participation gate - same shape as the GET. Non-participants get a
     // friendlier 403 so the client can prompt them to Join first.
     if (!ChallengeParticipantRepository::isParticipant($challengeId, $viewerIdForVisibility)) {
         Response::json([
@@ -11318,7 +11318,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 
     // Stamp every write with the currently-active acceptance so the chat
     // is scoped per run. NULL is correct when there is no active run (the
-    // creator chatting between acceptances, etc.) — those messages will
+    // creator chatting between acceptances, etc.) - those messages will
     // be hidden the moment a new acceptor lands and the read filter
     // tightens to the new acceptance id.
     $activeAcceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
@@ -11352,7 +11352,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
         if ($modMsgHit !== null) {
             error_log("[moderation] challenge message blocked challengeId={$challengeId} reason={$modMsgHit['reason']} hit={$modMsgHit['hit']}");
             Response::json([
-                'error' => 'Your message was flagged by moderation — please rephrase.',
+                'error' => 'Your message was flagged by moderation - please rephrase.',
                 'code'  => 'moderation_blocked',
             ], 422);
         }
@@ -11379,7 +11379,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 
     // Fan out a push to everyone watching the challenge chat (creator +
     // active takers + explicit spectators), minus the sender. The
-    // per-channel toggle pill controls who actually receives it — 'off'
+    // per-channel toggle pill controls who actually receives it - 'off'
     // suppresses, anything else allows. Non-fatal: a notification failure
     // must not prevent the message response from reaching the sender.
     try {
@@ -11401,7 +11401,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
                 'messageId'      => $message['id'] ?? null,
             ],
         );
-        // @mention notifications — higher-signal than the participant ping above.
+        // @mention notifications - higher-signal than the participant ping above.
         if (!empty($mentions ?? [])) {
             notifyMentions(
                 $mentions,
@@ -11413,7 +11413,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
         }
     } catch (\Throwable $e) {
         error_log("[challenge-msg] notification error challengeId={$challengeId}: " . get_class($e) . ': ' . $e->getMessage());
-        // Do not rethrow — the message was saved and broadcast successfully.
+        // Do not rethrow - the message was saved and broadcast successfully.
     }
 
     Response::json($message, 201);
@@ -11421,7 +11421,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 
 // POST /api/v1/challenges/{challengeId}/messages/{messageId}/reactions
 // Toggle a reaction on a challenge-channel message. Mirrors the city +
-// event endpoints — same 5 allowed emojis, same toggleMessageReaction
+// event endpoints - same 5 allowed emojis, same toggleMessageReaction
 // semantics, broadcasts via WS to the challenge channel so other readers
 // see the pill update live without polling.
 $router->add('POST', '/api/v1/challenges/{challengeId}/messages/{messageId}/reactions', function (array $params) {
@@ -11449,13 +11449,13 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages/{messageId}/reac
         Response::json(['error' => 'guestId or auth token required'], 400);
     }
 
-    // Participation gate — only people who can read the chat can react.
+    // Participation gate - only people who can read the chat can react.
     if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
         Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
     }
 
     $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
-    // Use the challenge id directly — broadcastReactionToWs accepts string
+    // Use the challenge id directly - broadcastReactionToWs accepts string
     // channel ids (mirrors how broadcastMessageToWs is called above).
     broadcastReactionToWs($challengeId, $messageId, $result['reactions']);
 
@@ -11481,7 +11481,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     }
     $authUser  = AuthService::requireAuth();
     $userId    = $authUser['id'];
-    // Unchecked — privacy view is gated by participation (creator OR
+    // Unchecked - privacy view is gated by participation (creator OR
     // acceptor); we don't want to leak the row's existence to friends
     // who happen to see it on the public surface.
     $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
@@ -11491,7 +11491,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
 
     // Participation is signalled as a flag, not a status code, so the
     // browser console stays clean. Non-participants get a minimal payload
-    // (mode + isParticipant=false) — enough for the client to silently
+    // (mode + isParticipant=false) - enough for the client to silently
     // hide the panel. International rows are kept on the 200 path too (the
     // panel still has work to do for them: the intl-locked explainer +
     // the current-visibility line).
@@ -11539,7 +11539,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/privacy', function (array 
     ]);
 });
 
-// POST /api/v1/challenges/{challengeId}/privacy/vote — body { vote: 'agreed' | 'denied' }
+// POST /api/v1/challenges/{challengeId}/privacy/vote - body { vote: 'agreed' | 'denied' }
 // Records the caller's vote. On the second 'agreed' we flip visibility to
 // 'private' and clear the vote rows (so a future round starts clean).
 $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (array $params) {
@@ -11577,7 +11577,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
         Response::json(['error' => 'Not a participant', 'code' => 'not_participant'], 403);
     }
 
-    // Need a counterparty for the mutual flow — refuse the vote if the
+    // Need a counterparty for the mutual flow - refuse the vote if the
     // challenge is still available (no acceptor yet) or the acceptor's
     // row is rejected. Frontend should hide the action in those states
     // anyway; this is defence-in-depth.
@@ -11591,7 +11591,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
     }
     if ($acceptorId === null) {
         Response::json([
-            'error' => 'No counterparty — challenge has not been taken on yet',
+            'error' => 'No counterparty - challenge has not been taken on yet',
             'code'  => 'no_counterparty',
         ], 409);
     }
@@ -11604,7 +11604,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
     $flipped   = false;
     if ($vote === 'agreed' && $creatorId !== null
         && ChallengePrivacyRepository::bothAgreed($challengeId, $creatorId, $acceptorId)) {
-        // Use the internal setVisibility — update()'s owner gate would
+        // Use the internal setVisibility - update()'s owner gate would
         // reject the acceptor as caller, and update()'s input rule strips
         // 'private'. Both are correct for the regular edit form; the
         // mutual flow is the one exception.
@@ -11614,8 +11614,8 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
     }
 
     // Notify the other party of the vote (only on first signal, not on the
-    // silent flip — spec). We don't push when the action was 'agreed' AND
-    // it caused the flip — the other side already voted 'agreed', they
+    // silent flip - spec). We don't push when the action was 'agreed' AND
+    // it caused the flip - the other side already voted 'agreed', they
     // know what's happening; the visibility change itself is intentionally
     // quiet (no surprise UI for them).
     if (!$flipped) {
@@ -11626,7 +11626,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
                 $voterName  = $voterUser['display_name'] ?? 'Someone';
                 $title      = $challenge['title']        ?? 'this challenge';
                 $body       = $vote === 'agreed'
-                    ? "{$voterName} wants to make \"{$title}\" private — your turn to vote"
+                    ? "{$voterName} wants to make \"{$title}\" private - your turn to vote"
                     : "{$voterName} declined to make \"{$title}\" private";
                 NotificationRepository::create(
                     $otherId,
@@ -11674,25 +11674,25 @@ $router->add('DELETE', '/api/v1/challenges/{challengeId}/privacy/vote', function
     Response::json(['ok' => true, 'cleared' => $cleared]);
 });
 
-// Challenge anonymization endpoints removed — pseudonymous-by-default
+// Challenge anonymization endpoints removed - pseudonymous-by-default
 // identities already serve this purpose. The SSR layer strips participant
 // usernames from indexable HTML/JSON-LD (see composeChallengeJsonLd) so
 // crawlers never index member display names anyway; in-app the UI keeps
 // showing the real username (chosen by the user, expected by them).
 
-// Challenge comments lane endpoints removed — Hilads channels are
+// Challenge comments lane endpoints removed - Hilads channels are
 // conversational by default, so we use the unified challenge channel
 // (existing /challenges/:id/messages) for ALL chatter. Participant roles
 // surface as render-time badges on the message rows (Challenger / Taker).
 
 // GET /api/v1/sitemap/challenges
 // All indexable challenges (open + validated) across every city. Validated
-// ones stay indexed — they're permanent content, not removed pages. Used by
+// ones stay indexed - they're permanent content, not removed pages. Used by
 // apps/web/api/sitemap.mjs to advertise /challenge/<slug>-<id> to crawlers.
 // LIMIT 40000 = one sitemap file; realistic counts are far below it.
 $router->add('GET', '/api/v1/sitemap/challenges', function () {
     // updated_at is bumped on every edit + validate, so this is a real
-    // change-signal — Google re-crawls when the <lastmod> moves. Pre-migration
+    // change-signal - Google re-crawls when the <lastmod> moves. Pre-migration
     // rows defaulted to migration time, so they had a single "everything
     // changed" wave once and then went quiet.
     // Only public challenges are indexable. Friends/private rows are kept
@@ -11735,7 +11735,7 @@ $router->add('GET', '/internal/sentry-test', function () {
         Response::json(['error' => 'Forbidden'], 403);
     }
 
-    \Sentry\captureMessage('Hilads backend Sentry test — OK');
+    \Sentry\captureMessage('Hilads backend Sentry test - OK');
 
     Response::json(['ok' => true, 'message' => 'Sentry test event sent']);
 });

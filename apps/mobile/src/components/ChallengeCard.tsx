@@ -15,7 +15,7 @@ import { avatarColor } from '@/lib/avatarColors';
 // Card surface = bg2 (same as Topic/Event), orange border tint for instant
 // recognition. The audience pill (For locals / For explorers) lives next to
 // the type badge so the user knows immediately whether the challenge is meant
-// for them — the core differentiator of the entity.
+// for them - the core differentiator of the entity.
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
@@ -52,16 +52,16 @@ export function ChallengeCard({
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
-      {/* Top row — type-specific badge (DÉFI BOUFFE / FOOD CHALLENGE / etc.)
+      {/* Top row - type-specific badge (DÉFI BOUFFE / FOOD CHALLENGE / etc.)
           + audience/mode pill + (when validated) badge. International rows
           swap the audience pill for a 🌐 International chip (the audience
-          concept doesn't apply — no locals/travelers split). */}
+          concept doesn't apply - no locals/travelers split). */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
           <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
         </View>
         {isInternational ? (() => {
-          // 🇻🇳 → 🇩🇪 · Berlin — flags + target city NAME. The city name is
+          // 🇻🇳 → 🇩🇪 · Berlin - flags + target city NAME. The city name is
           // appended unconditionally (when present) so the pill stays
           // readable even if the device's emoji font doesn't render the
           // target country flag (Android One UI gaps for some flags). Web
@@ -94,7 +94,7 @@ export function ChallengeCard({
             <Text style={styles.statusPillText}>⏳ {t('card.inProgress')}</Text>
           </View>
         ) : (
-          // "Available" — green dot + green text to clearly signal "go for it"
+          // "Available" - green dot + green text to clearly signal "go for it"
           // rather than the older padlock which read as locked/closed at a glance.
           <View style={styles.availablePill}>
             <Text style={styles.availablePillText}>🟢 {t('card.available')}</Text>
@@ -102,13 +102,13 @@ export function ChallengeCard({
         )}
       </View>
 
-      {/* Title row — type emoji + title */}
+      {/* Title row - type emoji + title */}
       <View style={styles.titleRow}>
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
         <Text style={styles.title} numberOfLines={2}>{challenge.title}</Text>
       </View>
 
-      {/* Creator — tiny avatar + "by {name}". Mirrors the "Hosted by X" line
+      {/* Creator - tiny avatar + "by {name}". Mirrors the "Hosted by X" line
           on event cards so the scanner instantly knows who owns this. Hidden
           for pure-guest challenges (no display name on file). */}
       {challenge.creator_display_name ? (
@@ -133,7 +133,7 @@ export function ChallengeCard({
         </View>
       ) : null}
 
-      {/* Participants — same component as Hangouts/Events */}
+      {/* Participants - same component as Hangouts/Events */}
       <AttendeeAvatars
         preview={challenge.participants_preview ?? []}
         total={challenge.participant_count ?? 0}
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
   audiencePillText: { fontSize: 10, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
 
-  // International badge — cyan tint, distinct from audience violet so Local
+  // International badge - cyan tint, distinct from audience violet so Local
   // vs Intl reads at a glance.
   intlPill: {
     backgroundColor:   'rgba(56,189,248,0.12)',
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   validatedBadgeText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  // In-progress pill — neutral, same skeleton as the kind/audience pills.
+  // In-progress pill - neutral, same skeleton as the kind/audience pills.
   // Emoji carries the semantic ("⏳").
   statusPill: {
     backgroundColor:   'rgba(255,255,255,0.06)',
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   statusPillText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
 
-  // Available pill — green tint so it visibly invites action (mirrors the
+  // Available pill - green tint so it visibly invites action (mirrors the
   // validated badge's green-on-translucent palette but with a different hue
   // so the two states stay distinguishable at a glance).
   availablePill: {

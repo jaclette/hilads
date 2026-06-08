@@ -53,17 +53,17 @@
     "checking": "Đang kiểm tra…",
     "available": "@{{username}} còn trống",
     "aboutMe": "Giới thiệu",
-    "charsLeft": "— còn {{count}}",
+    "charsLeft": "- còn {{count}}",
     "aboutPlaceholder": "Thích ẩm thực đường phố và những cuộc trò chuyện ngẫu hứng",
     "email": "Email",
-    "readOnly": "— chỉ đọc",
+    "readOnly": "- chỉ đọc",
     "homeCity": "Thành phố quê hương",
     "homeCityPlaceholder": "Nơi bạn sống",
     "age": "Tuổi",
     "agePlaceholder": "Tuổi của bạn",
     "myVibe": "Vibe của tôi",
     "interests": "Sở thích",
-    "interestsHint": "— chọn tối đa 5"
+    "interestsHint": "- chọn tối đa 5"
   },
   "ambassador": {
     "title": "Gợi ý của thành phố 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Điều bạn yêu thích ở thành phố này"
   },
   "hangouts": {
-    "empty": "Chưa có tụ tập nào — tạo một cái 🗣️",
+    "empty": "Chưa có tụ tập nào - tạo một cái 🗣️",
     "host": "Chủ"
   },
   "events": {
     "going": "Tham gia",
-    "goingEmpty": "Chưa có kế hoạch nào — tìm gì đó đi 🔥",
+    "goingEmpty": "Chưa có kế hoạch nào - tìm gì đó đi 🔥",
     "hosting": "Tổ chức",
-    "hostingEmpty": "Chưa tổ chức gì — bắt đầu đi ✨",
+    "hostingEmpty": "Chưa tổ chức gì - bắt đầu đi ✨",
     "live": "Trực tiếp",
     "recurring": "↻ Lặp lại",
     "upcoming": "Sắp tới",
@@ -128,7 +128,7 @@
     "generic": "Đã xảy ra lỗi. Thử lại."
   },
   "challenges": {
-    "empty": "Chưa có thử thách — hãy tung một cái 🔥",
+    "empty": "Chưa có thử thách - hãy tung một cái 🔥",
     "challenger": "Người tung thử thách"
   }
 }

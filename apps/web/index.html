@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <title>Hilads — Connect with locals &amp; travelers through challenges</title>
+    <title>Hilads - Connect with locals &amp; travelers through challenges</title>
     <meta name="google-site-verification" content="2V6_2ikx5B9ubDRUj6-JME54cc0D2aUyF4g65XcQTYY" />
-    <meta name="description" content="You&#39;re a local or an traveler. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up." />
+    <meta name="description" content="You&#39;re a local or an traveler. Launch a challenge - food, place, culture, help - and meet people who accept. Real-time, no sign-up." />
     <meta name="theme-color" content="#161210" />
 
     <!-- iOS PWA -->
@@ -15,29 +15,29 @@
     <meta name="apple-mobile-web-app-title" content="Hilads" />
     <link rel="apple-touch-icon" href="/logo/icon.svg" />
 
-    <!-- Open Graph — absolute URLs required by FB, LinkedIn, WhatsApp; image must be PNG/JPG (SVG silently dropped by half the crawlers). The 1200×630 PNG is the universal social-card spec. -->
+    <!-- Open Graph - absolute URLs required by FB, LinkedIn, WhatsApp; image must be PNG/JPG (SVG silently dropped by half the crawlers). The 1200×630 PNG is the universal social-card spec. -->
     <meta property="og:type"          content="website" />
     <meta property="og:site_name"     content="Hilads" />
     <meta property="og:url"           content="https://hilads.live/" />
-    <meta property="og:title"         content="Hilads — Connect with locals &amp; travelers through challenges" />
-    <meta property="og:description"   content="You&#39;re a local or an traveler. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up." />
+    <meta property="og:title"         content="Hilads - Connect with locals &amp; travelers through challenges" />
+    <meta property="og:description"   content="You&#39;re a local or an traveler. Launch a challenge - food, place, culture, help - and meet people who accept. Real-time, no sign-up." />
     <meta property="og:image"         content="https://hilads.live/og/og-default.png" />
     <meta property="og:image:secure_url" content="https://hilads.live/og/og-default.png" />
     <meta property="og:image:type"    content="image/png" />
     <meta property="og:image:width"   content="1200" />
     <meta property="og:image:height"  content="630" />
-    <meta property="og:image:alt"     content="Hilads — feel local, anywhere. Real-time city activity, no sign-up." />
+    <meta property="og:image:alt"     content="Hilads - feel local, anywhere. Real-time city activity, no sign-up." />
     <meta property="og:locale"        content="en_US" />
 
     <!-- Twitter / X card. summary_large_image renders the full 1200×630 banner instead of a tiny avatar. -->
     <meta name="twitter:card"        content="summary_large_image" />
-    <meta name="twitter:title"       content="Hilads — Connect with locals &amp; travelers through challenges" />
-    <meta name="twitter:description" content="You&#39;re a local or an traveler. Launch a challenge — food, place, culture, help — and meet people who accept. Real-time, no sign-up." />
+    <meta name="twitter:title"       content="Hilads - Connect with locals &amp; travelers through challenges" />
+    <meta name="twitter:description" content="You&#39;re a local or an traveler. Launch a challenge - food, place, culture, help - and meet people who accept. Real-time, no sign-up." />
     <meta name="twitter:image"       content="https://hilads.live/og/og-default.png" />
-    <meta name="twitter:image:alt"   content="Hilads — feel local, anywhere." />
+    <meta name="twitter:image:alt"   content="Hilads - feel local, anywhere." />
 
     <link rel="canonical" href="https://hilads.live/" />
-    <!-- hreflang cluster — bare / is the English canonical / x-default; localized
+    <!-- hreflang cluster - bare / is the English canonical / x-default; localized
          variants are at /<locale>/. Vercel serves dist/index.html directly for
          "/" (filesystem precedence), so this block is what Googlebot sees on the
          home; the prerender strips and re-injects per-page hreflang for /city,
@@ -72,7 +72,7 @@
     <link rel="manifest" href="/manifest.webmanifest">
   </head>
   <body>
-    <!-- Stub for Zalo in-app browser SDK — prevents ReferenceError when zaloJSV2
+    <!-- Stub for Zalo in-app browser SDK - prevents ReferenceError when zaloJSV2
          is accessed by Zalo's injected script before the SDK fully initialises. -->
     <script>window.zaloJSV2 = window.zaloJSV2 || {};</script>
     <div id="root">
@@ -81,17 +81,17 @@
            The prerender replaces this whole <main> for non-home pages. -->
       <!-- Mirrors composeHomeBody() for locale=en in apps/web/api/prerender.mjs.
            Vercel serves filesystem files BEFORE rewrites, so this static
-           snapshot is what bots see on the bare EN home — keep it in sync
+           snapshot is what bots see on the bare EN home - keep it in sync
            with the EN home.* keys in src/i18n/locales/en/ssr.json. -->
       <main class="ssr-main">
         <h1>Challenge the city.</h1>
         <p class="ssr-subhead" style="font-size:1.05rem;font-weight:700;color:#FF7A3C;margin:0 0 0.75rem;letter-spacing:0.2px;">🔥 Where locals and travelers connect through challenges.</p>
-        <p class="ssr-intro">Hilads connects locals and travelers in every city through challenges. Drop one for the other side — pick a type, give it a title, watch people accept. Once it&#39;s done, the creator validates. Real-time, no sign-up.</p>
-        <section><h2>How Hilads works</h2><p>Pick your city. Launch a challenge for the other side, or accept one that speaks to you. Meet locals and travelers through what you actually want to do — food, place, culture, help. Hilads makes every city feel alive, right now.</p></section>
+        <p class="ssr-intro">Hilads connects locals and travelers in every city through challenges. Drop one for the other side - pick a type, give it a title, watch people accept. Once it&#39;s done, the creator validates. Real-time, no sign-up.</p>
+        <section><h2>How Hilads works</h2><p>Pick your city. Launch a challenge for the other side, or accept one that speaks to you. Meet locals and travelers through what you actually want to do - food, place, culture, help. Hilads makes every city feel alive, right now.</p></section>
         <p><a href="/cities">Browse all Hilads cities</a></p>
       </main>
       <noscript>
-        <p>Hilads — see live activity in cities worldwide.</p>
+        <p>Hilads - see live activity in cities worldwide.</p>
         <p><a href="/cities">Browse all Hilads cities</a></p>
       </noscript>
     </div>

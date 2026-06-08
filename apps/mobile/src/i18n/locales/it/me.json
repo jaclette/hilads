@@ -24,7 +24,7 @@
   "agePlaceholder": "es. 25",
   "fieldMyVibe": "LA MIA VIBE",
   "fieldInterests": "INTERESSI",
-  "interestsHint": "— scegline fino a 5",
+  "interestsHint": "- scegline fino a 5",
   "interest": {
     "drinks": "drink",
     "party": "festa",
@@ -47,12 +47,12 @@
     "tech": "tecnologia",
     "dating": "appuntamenti"
   },
-  "noHangouts": "Ancora nessun ritrovo — lanciane uno 🗣️",
+  "noHangouts": "Ancora nessun ritrovo - lanciane uno 🗣️",
   "host": "Host",
   "going": "PARTECIPO",
-  "noPlans": "Ancora nessun piano — trova qualcosa 🔥",
+  "noPlans": "Ancora nessun piano - trova qualcosa 🔥",
   "hosting": "ORGANIZZO",
-  "nothingHosted": "Ancora niente organizzato — lancia qualcosa ✨",
+  "nothingHosted": "Ancora niente organizzato - lancia qualcosa ✨",
   "live": "LIVE",
   "recurring": "RICORRENTE",
   "friendRequests": "Richieste di amicizia",
@@ -80,7 +80,7 @@
   "errUsernameShort": "Il nickname deve avere almeno 3 caratteri",
   "errUsernameTaken": "Questo nickname è già in uso",
   "errUsernameInvalid": "Nickname non valido",
-  "errSave": "Errore nel salvataggio — riprova",
+  "errSave": "Errore nel salvataggio - riprova",
   "signOutTitle": "Esci",
   "signOutBody": "Sei sicuro?",
   "deleteAccountTitle": "Eliminare l'account?",
@@ -89,5 +89,5 @@
   "errorTitle": "Errore",
   "deleteAccountFail": "Impossibile eliminare l'account. Riprova.",
   "tabChallenges": "Sfide",
-  "noChallenges": "Nessuna sfida ancora — lanciane una 🔥"
+  "noChallenges": "Nessuna sfida ancora - lanciane una 🔥"
 }

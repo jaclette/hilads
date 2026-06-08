@@ -12,7 +12,7 @@ const EVENT_ICONS = {
   coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
 }
 
-// Strip reaches 90 days; modal calendar 180 — same asymmetry as native.
+// Strip reaches 90 days; modal calendar 180 - same asymmetry as native.
 const STRIP_DAYS = 90
 const MAX_MODAL  = 180
 
@@ -33,7 +33,7 @@ function localYmd(d) {
   return `${y}-${m}-${day}`
 }
 
-// ── Month modal — full-month grid w/ event dots ───────────────────────────────
+// ── Month modal - full-month grid w/ event dots ───────────────────────────────
 
 function MonthModal({ visibleMonth, summary, selected, onPick, onClose }) {
   const { t } = useTranslation('upcoming')
@@ -122,7 +122,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
     return out
   }, [])
 
-  // Fetch events for the selected day (single-day range — backend materializes
+  // Fetch events for the selected day (single-day range - backend materializes
   // any series occurrences on that date).
   const loadDay = useCallback(async (date) => {
     if (!channelId) return
@@ -146,7 +146,7 @@ export default function UpcomingEventsScreen({ channelId, timezone, onBack, onSe
       const s = await fetchCalendarSummary(channelId, from, to)
       setSummary(s)
     } catch {
-      // soft-fail — strip works without dots
+      // soft-fail - strip works without dots
     }
   }, [channelId, stripDates])
 

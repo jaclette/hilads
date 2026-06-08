@@ -26,12 +26,12 @@
   "create": {
     "title": "Ano ang move?",
     "hangoutLabel": "Magsimula ng tambayan",
-    "hangoutSub": "Instant — payagan ang mga tao na sumali sa iyo ngayon",
+    "hangoutSub": "Instant - payagan ang mga tao na sumali sa iyo ngayon",
     "eventLabel": "Gumawa ng event",
     "eventSub": "Magplano ng kayang salihan ng iba",
     "cancel": "Kanselahin",
     "challengeLabel": "Maglunsad ng challenge",
-    "challengeSub": "Mga local & biyahero — magkonekta sa pamamagitan ng challenge"
+    "challengeSub": "Mga local & biyahero - magkonekta sa pamamagitan ng challenge"
   },
   "filterChallenges": "🔥 Mga Challenge",
   "challengesSection": "Mga Challenge",

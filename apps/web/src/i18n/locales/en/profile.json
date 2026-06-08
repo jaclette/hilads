@@ -53,17 +53,17 @@
     "checking": "Checking…",
     "available": "@{{username}} is available",
     "aboutMe": "About me",
-    "charsLeft": "— {{count}} left",
+    "charsLeft": "- {{count}} left",
     "aboutPlaceholder": "Love street food and random convos",
     "email": "Email",
-    "readOnly": "— read only",
+    "readOnly": "- read only",
     "homeCity": "Home city",
     "homeCityPlaceholder": "Where you live",
     "age": "Age",
     "agePlaceholder": "Your age",
     "myVibe": "My vibe",
     "interests": "Interests",
-    "interestsHint": "— pick up to 5"
+    "interestsHint": "- pick up to 5"
   },
   "ambassador": {
     "title": "City picks 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Something you love about this city"
   },
   "hangouts": {
-    "empty": "No hangouts yet — start one 🗣️",
+    "empty": "No hangouts yet - start one 🗣️",
     "host": "Host"
   },
   "events": {
     "going": "Going",
-    "goingEmpty": "No plans yet — find something 🔥",
+    "goingEmpty": "No plans yet - find something 🔥",
     "hosting": "Hosting",
-    "hostingEmpty": "Nothing hosted yet — start something ✨",
+    "hostingEmpty": "Nothing hosted yet - start something ✨",
     "live": "Live",
     "recurring": "↻ Recurring",
     "upcoming": "Upcoming",
@@ -129,7 +129,7 @@
     "generic": "Something went wrong. Try again."
   },
   "challenges": {
-    "empty": "No challenges yet — launch one 🔥",
+    "empty": "No challenges yet - launch one 🔥",
     "challenger": "Challenger"
   }
 }

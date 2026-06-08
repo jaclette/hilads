@@ -1,5 +1,5 @@
 /**
- * LocationPicker — full-screen location confirmation modal.
+ * LocationPicker - full-screen location confirmation modal.
  *
  * Map: Leaflet + OpenStreetMap tiles rendered in a WebView (react-native-webview).
  * Zero Google dependencies. Works identically on iOS and Android.
@@ -24,8 +24,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
-// ── Leaflet HTML — loaded in WebView ─────────────────────────────────────────
-// • OSM tiles — no API key
+// ── Leaflet HTML - loaded in WebView ─────────────────────────────────────────
+// • OSM tiles - no API key
 // • Zoom/attribution controls hidden for clean look
 // • map.moveend → debounce 600ms → postMessage {type:'move', lat, lng}
 // • ready event fires immediately with initial coords
@@ -35,7 +35,7 @@ import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 // (window.__lat/__lng). Because the `source={{ html: MAP_HTML }}` string is
 // byte-identical for every render and every picker instance, react-native-webview
 // can never see a "changed source" and therefore never reloads the page after
-// mount — the #1 cause of the map "reloading / shaking" on Android.
+// mount - the #1 cause of the map "reloading / shaking" on Android.
 //
 // The moveend handler also guards against no-op moves: a WebView viewport resize
 // (Android fires these on layout / inset / keyboard changes) makes Leaflet emit a
@@ -160,7 +160,7 @@ interface Props {
   initialLat: number;
   initialLng: number;
   /**
-   * Deprecated / no-op. The picker no longer refines to live GPS on open — it
+   * Deprecated / no-op. The picker no longer refines to live GPS on open - it
    * always opens at initialLat/Lng (the caller's last-known position) and stays
    * put while the user drags to fine-tune. Kept in the prop list so existing
    * call sites compile unchanged; the value is ignored.
@@ -186,7 +186,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
   // Captured ONCE at mount: the initial center is injected into the constant
   // MAP_HTML before its scripts run. MapWebView never re-renders (see its
-  // always-equal memo), so this value is locked for the picker's lifetime — the
+  // always-equal memo), so this value is locked for the picker's lifetime - the
   // WebView mounts at this center and never reloads.
   const injectBefore = useMemo(
     () => `window.__lat=${Number(initialLat)};window.__lng=${Number(initialLng)};true;`,
@@ -196,7 +196,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
 
   // NOTE: we intentionally do NOT call getCurrentPositionAsync here. The caller
   // already passes the last-known position as initialLat/Lng, so the map opens
-  // immediately and STAYS put — the user drags to fine-tune ("Move the map to
+  // immediately and STAYS put - the user drags to fine-tune ("Move the map to
   // adjust"). The old "refine to precise GPS" step activated the iOS location
   // indicator and re-panned the map, which read as the map constantly
   // "getting location" / shaking. A static map at last-known + drag is the
@@ -311,7 +311,7 @@ export function LocationPicker({ visible, initialLat, initialLng, onConfirm, onC
         <View style={styles.mapWrap}>
           <MapWebView injectBefore={injectBefore} onMessage={handleWebViewMessage} innerRef={webViewRef} />
 
-          {/* Fixed pin — sits in center, pointer events disabled so map stays draggable */}
+          {/* Fixed pin - sits in center, pointer events disabled so map stays draggable */}
           <View style={styles.pinWrap} pointerEvents="none">
             <Text style={styles.pin}>📍</Text>
           </View>

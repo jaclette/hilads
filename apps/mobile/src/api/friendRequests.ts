@@ -2,7 +2,7 @@ import { api } from './client';
 import type { FriendRequest } from '@/types';
 
 /**
- * Friend-request API wrappers — one per endpoint. The server handles the
+ * Friend-request API wrappers - one per endpoint. The server handles the
  * mutual-add short-circuit, so `sendFriendRequest` may return either a fresh
  * `request` (status: pending) OR `friend: true` (auto-accepted because the
  * other user had already sent us a pending request). Callers should branch on

@@ -1,4 +1,4 @@
-# Hilads — Local development & release workflow
+# Hilads - Local development & release workflow
 
 Auto-deploy is **off** on both Render and Vercel. You push to `main` as often
 as you like; deploys are a manual step. The loop is:
@@ -15,7 +15,7 @@ Prereqs: Docker Desktop (macOS/Windows) or Docker Engine + Compose v2 (Linux),
 Node ≥ 20, and (for mobile) the Expo CLI.
 
 ```bash
-# Clone is already done — if not: git clone … hilads
+# Clone is already done - if not: git clone … hilads
 cd hilads
 
 # Compose builds the PHP image on first run; takes ~2min.
@@ -50,17 +50,17 @@ docker compose up                 # foreground, tail logs
 docker compose up -d              # background
 docker compose logs -f api        # only the PHP service
 docker compose logs -f ws         # only the WS service
-docker compose restart api        # rarely needed — opcache is dev-tuned
+docker compose restart api        # rarely needed - opcache is dev-tuned
 docker compose down               # stop, preserve DB
 docker compose down -v            # stop, wipe DB (fresh slate)
 ```
 
-Code edits in `backend/api/**` and `backend/ws/**` are picked up immediately —
+Code edits in `backend/api/**` and `backend/ws/**` are picked up immediately -
 PHP via OPcache `validate_timestamps=1`, Node via `node --watch`.
 
 ### Web (React + Vite)
 
-Runs on the host, not in compose — hot-reload works best that way and the
+Runs on the host, not in compose - hot-reload works best that way and the
 mobile device can reach it over LAN.
 
 ```bash
@@ -96,10 +96,10 @@ rollback.
 
 ### Infrastructure sanity
 
-- [ ] `docker compose ps` — all three services `Up` / `healthy`.
-- [ ] `docker compose exec api php migrate.php` — reports `OK` for every step,
+- [ ] `docker compose ps` - all three services `Up` / `healthy`.
+- [ ] `docker compose exec api php migrate.php` - reports `OK` for every step,
       no `ERR`. Safe to re-run any time.
-- [ ] `docker compose exec db psql -U hilads -d hilads -c '\dt'` — tables
+- [ ] `docker compose exec db psql -U hilads -d hilads -c '\dt'` - tables
       present.
 
 ### API surface
@@ -114,9 +114,9 @@ rollback.
 
 - [ ] Web at `localhost:5173` connects to `ws://localhost:8081`, devtools
       Network → WS tab shows status `101` and messages flowing.
-- [ ] Open two browser tabs in different cities — presence counter updates
+- [ ] Open two browser tabs in different cities - presence counter updates
       without a refresh.
-- [ ] Kill `docker compose restart ws` — web should auto-reconnect within
+- [ ] Kill `docker compose restart ws` - web should auto-reconnect within
       ~5 s (`socket.js` backoff), no manual refresh.
 
 ### Feature-specific (run what the PR touched)
@@ -198,7 +198,7 @@ vercel --prod
 
 ### Mobile (React Native)
 
-Unchanged — release via EAS + store flows. Nothing in this workflow affects
+Unchanged - release via EAS + store flows. Nothing in this workflow affects
 the mobile release cadence.
 
 ---
@@ -211,7 +211,7 @@ Dashboard → service → "Events" tab → pick the last known-good deploy →
 
 ### Vercel
 Dashboard → Deployments → find the last good one → "… → Promote to
-Production". Instant — just flips the alias.
+Production". Instant - just flips the alias.
 
 ---
 
@@ -223,7 +223,7 @@ Two belt-and-braces layers:
    - `render.yaml` → `autoDeploy: false` on both services
    - `apps/web/vercel.json` → `git.deploymentEnabled.main: false`
 
-2. **Dashboard toggles** — verify once after merge:
+2. **Dashboard toggles** - verify once after merge:
    - Render: each service → Settings → Build & Deploy → **Auto-Deploy = No**
    - Vercel: project → Settings → Git → Production Branch → **Ignored Build
      Step** left default; confirm the `deploymentEnabled` override is picked up
@@ -241,9 +241,9 @@ over the file. Flip it there once and both places stay off.
 | `api` container restarts with `Class 'PDO' not found` | `vendor/` was shadowed by the bind mount | `docker compose down && docker compose up --build` |
 | PHP edits don't show up | OPcache override not mounted | `docker compose exec api php -i \| grep validate_timestamps` → should be `On`. If `Off`, recheck `docker-compose.yml` volumes. |
 | WS server can't reach `api` (broadcast failing) | You renamed the compose service | Match `WS_INTERNAL_URL` in `api` env to the WS service hostname on the compose network. |
-| "connection to server … timeout expired" when running locally | You're still pointed at Supabase — check `DATABASE_URL` | Compose sets it; if you exported it in your shell it'll override. `unset DATABASE_URL` then `docker compose up`. |
+| "connection to server … timeout expired" when running locally | You're still pointed at Supabase - check `DATABASE_URL` | Compose sets it; if you exported it in your shell it'll override. `unset DATABASE_URL` then `docker compose up`. |
 | Mobile device can't reach API | Used `localhost` instead of LAN IP | macOS: `ipconfig getifaddr en0` → put in `apps/mobile/.env` |
-| Web CORS error on `/api/v1/*` | `CORS_ORIGINS` doesn't include your dev URL | In compose, `api.environment.CORS_ORIGINS` already includes `http://localhost:5173` — add more with comma separation. |
+| Web CORS error on `/api/v1/*` | `CORS_ORIGINS` doesn't include your dev URL | In compose, `api.environment.CORS_ORIGINS` already includes `http://localhost:5173` - add more with comma separation. |
 
 ---
 

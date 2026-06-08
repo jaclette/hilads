@@ -1,6 +1,6 @@
 /**
  * Keeps presence alive by sending a heartbeat every 30 seconds.
- * The server's presence TTL is 120s — 30s interval gives 4x safety margin.
+ * The server's presence TTL is 120s - 30s interval gives 4x safety margin.
  * Stops when the city or sessionId is unavailable.
  */
 import { useEffect } from 'react';

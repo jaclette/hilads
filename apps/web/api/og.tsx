@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
- * Vercel serverless function — dynamic OG image generation.
+ * Vercel serverless function - dynamic OG image generation.
  *
  *   GET /api/og?type=event&id=<16-hex>
  *   GET /api/og?type=city&slug=<kebab>
@@ -12,12 +12,12 @@
  * Runs on Node runtime (not Edge): Vercel's Edge bundler currently rejects
  * @vercel/og imports outside Next.js projects ("unsupported modules" build
  * error). Node serverless is well-supported and the @vercel/og Node entry
- * just works. Cold start is ~500 ms vs Edge's ~50 ms — mitigated by the
+ * just works. Cold start is ~500 ms vs Edge's ~50 ms - mitigated by the
  * aggressive CDN cache TTL set below.
  *
  * Cache strategy
- *   - Events: s-maxage 5 min — attendee counts churn.
- *   - Cities: s-maxage 24 h — city metadata is stable.
+ *   - Events: s-maxage 5 min - attendee counts churn.
+ *   - Cities: s-maxage 24 h - city metadata is stable.
  *   - 24 h stale-while-revalidate so the CDN never blocks on regen.
  *
  * Failure mode: any error renders a homepage fallback card (Hilads brand
@@ -29,7 +29,7 @@ import { ImageResponse } from '@vercel/og';
 const API_BASE  = 'https://api.hilads.live';
 const SITE_BASE = 'https://hilads.live';
 
-// Brand tokens — kept in sync with apps/web/src/index.css :root vars.
+// Brand tokens - kept in sync with apps/web/src/index.css :root vars.
 const BG     = '#0d0b09';
 const TEXT   = '#ede9e5';
 const MUTED  = '#968880';
@@ -94,7 +94,7 @@ const EVENT_ICONS: Record<string, string> = {
 
 function HiladsMark({ size = 88 }: { size?: number }) {
   // Visual port of /public/logo/icon.svg via flat divs (Satori has no SVG path
-  // support — we rebuild the H + ¡ glyph with absolutely-positioned rects).
+  // support - we rebuild the H + ¡ glyph with absolutely-positioned rects).
   const s  = (n: number) => (n * size) / 64;
   return (
     <div
@@ -108,11 +108,11 @@ function HiladsMark({ size = 88 }: { size?: number }) {
         flexShrink:   0,
       }}
     >
-      {/* H — left bar, right bar, crossbar */}
+      {/* H - left bar, right bar, crossbar */}
       <div style={{ position: 'absolute', left: s(9),  top: s(13), width: s(8),   height: s(38), borderRadius: s(2.5), background: '#fff' }} />
       <div style={{ position: 'absolute', left: s(26), top: s(13), width: s(8),   height: s(38), borderRadius: s(2.5), background: '#fff' }} />
       <div style={{ position: 'absolute', left: s(17), top: s(28), width: s(9),   height: s(6),  borderRadius: s(2),   background: '#fff' }} />
-      {/* ¡ — vertical bar + dot */}
+      {/* ¡ - vertical bar + dot */}
       <div style={{ position: 'absolute', left: s(43), top: s(25), width: s(8),   height: s(26), borderRadius: s(2.5), background: '#fff' }} />
       <div style={{ position: 'absolute', left: s(47 - 5.5), top: s(15 - 5.5), width: s(11), height: s(11), borderRadius: s(5.5), background: '#fff' }} />
     </div>
@@ -255,8 +255,8 @@ function CityCard({ city, country, slug, eventCount, onlineCount }: any) {
         </div>
 
         <div style={{ display: 'flex', gap: 20, marginTop: 10 }}>
-          <Stat icon="🎉" label="events live"   value={eventCount  > 0 ? String(eventCount)  : '—'} />
-          <Stat icon="👥" label="here right now" value={onlineCount > 0 ? String(onlineCount) : '—'} />
+          <Stat icon="🎉" label="events live"   value={eventCount  > 0 ? String(eventCount)  : '-'} />
+          <Stat icon="👥" label="here right now" value={onlineCount > 0 ? String(onlineCount) : '-'} />
           <Stat icon="✨" label="real-time"     value="LIVE" />
         </div>
       </div>
@@ -355,7 +355,7 @@ export default async function handler(req: any, res: any) {
               eventPath={`/event/${hex}`}
             />
           );
-          cacheMaxAge = 300;       // 5 min — attendee counts churn
+          cacheMaxAge = 300;       // 5 min - attendee counts churn
         }
       }
     } else if (type === 'city' && slug && /^[a-z0-9-]{1,80}$/.test(slug)) {
@@ -380,7 +380,7 @@ export default async function handler(req: any, res: any) {
             onlineCount={onlineCount}
           />
         );
-        cacheMaxAge = 86400;     // 1 day — cities stable
+        cacheMaxAge = 86400;     // 1 day - cities stable
       }
     }
   } catch {

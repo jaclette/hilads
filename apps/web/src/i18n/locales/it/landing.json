@@ -33,7 +33,7 @@
     "title": "Sii il locale che fa vivere la città",
     "tagline": "Conosci i posti. Sfida i locali o i viaggiatori a trovarli.",
     "bullets": [
-      "Sfida locali o viaggiatori — cibo, luogo, cultura o aiuto",
+      "Sfida locali o viaggiatori - cibo, luogo, cultura o aiuto",
       "Porta le persone nei posti che ami",
       "Diventa il locale che le persone ricordano"
     ],
@@ -60,7 +60,7 @@
       },
       {
         "title": "Lancia o accetta una sfida",
-        "desc": "Chiunque può lanciare una sfida di cibo, posto, cultura o aiuto — per i local o per i viaggiatori. L'altra parte la accetta."
+        "desc": "Chiunque può lanciare una sfida di cibo, posto, cultura o aiuto - per i local o per i viaggiatori. L'altra parte la accetta."
       },
       {
         "title": "Incontratevi di persona",
@@ -82,7 +82,7 @@
       "Persone vere. Posti veri. Proprio ora."
     ]
   },
-  "seo": "Hilads è un'app sociale in tempo reale dove local e viaggiatori si sfidano a vicenda per scoprire la città davvero. Accetta una sfida di cibo, posto o cultura a Parigi, accettane una a Barcellona, o lancia la tua a Lisbona — Hilads trasforma ogni viaggio in un incontro di persona. Senza account. Basta esserci.",
+  "seo": "Hilads è un'app sociale in tempo reale dove local e viaggiatori si sfidano a vicenda per scoprire la città davvero. Accetta una sfida di cibo, posto o cultura a Parigi, accettane una a Barcellona, o lancia la tua a Lisbona - Hilads trasforma ogni viaggio in un incontro di persona. Senza account. Basta esserci.",
   "download": {
     "eyebrow": "App mobile",
     "title": "La tua città in tasca.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Tra città",
     "tagline": "Manda una sfida tra città. Ricevi un video come prova.",
-    "sub": "Quando la tua città è tranquilla, il mondo non lo è. Sfida chiunque ovunque — ti manda una prova, tu validi a distanza.",
+    "sub": "Quando la tua città è tranquilla, il mondo non lo è. Sfida chiunque ovunque - ti manda una prova, tu validi a distanza.",
     "bullets": [
       "Mira a una città specifica, o lascia aperto a chiunque ovunque.",
-      "Foto con geotag — la prova che è successo.",
+      "Foto con geotag - la prova che è successo.",
       "Validi dal divano. Rifiuti con una motivazione se non torna."
     ],
     "cta": "Prova una sfida globale"

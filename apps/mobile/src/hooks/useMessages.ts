@@ -12,7 +12,7 @@ interface Params {
   loadFn:       (opts?: { beforeId?: string }) => Promise<{ messages: Message[]; hasMore: boolean }>;
   postTextFn:   (content: string, replyToId?: string | null, mentions?: MentionRef[]) => Promise<Message>;
   postImageFn:  (imageUrl: string) => Promise<Message>;
-  /** Pre-loaded messages from the bootstrap endpoint — skips the initial loadFn call. */
+  /** Pre-loaded messages from the bootstrap endpoint - skips the initial loadFn call. */
   initialData?: { messages: Message[]; hasMore: boolean };
 }
 
@@ -72,7 +72,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     return new Date(ts).getTime();
   }
 
-  // Stable dedup key — system messages may lack id, fall back to guestId+createdAt
+  // Stable dedup key - system messages may lack id, fall back to guestId+createdAt
   function msgKey(m: Message): string {
     return m.id ?? `${m.guestId ?? ''}:${m.createdAt}`;
   }
@@ -104,7 +104,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     ).reverse();
     setMessages(prev => {
       // Own-message echo detection: if WS delivers our own message while an optimistic
-      // placeholder (localId) is still in the list, skip the append — reconcile() will
+      // placeholder (localId) is still in the list, skip the append - reconcile() will
       // atomically replace the placeholder when the API response returns.
       // This prevents the brief double-bubble when WS beats the POST response.
       const toInsert = sorted.filter(serverMsg => {
@@ -144,7 +144,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
 
   useEffect(() => {
     // If bootstrap data was provided for this mount, skip the initial fetch.
-    // Consume the ref once — subsequent channelId changes (city switches) fetch normally.
+    // Consume the ref once - subsequent channelId changes (city switches) fetch normally.
     if (initialDataRef.current) {
       initialDataRef.current = undefined;
       return;
@@ -152,12 +152,12 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     load();
   }, [channelId]);
 
-  // WebSocket — live new messages + reaction updates + reconnect catch-up
+  // WebSocket - live new messages + reaction updates + reconnect catch-up
   useEffect(() => {
     function handler(data: Record<string, unknown>) {
       // City channelId arrives as an integer from the WS server (rooms Map uses
       // integer keys) but channelId here is always a string from React state.
-      // Use String() coercion to match — same fix as App.jsx:1452 on the webapp.
+      // Use String() coercion to match - same fix as App.jsx:1452 on the webapp.
       const match = String(data.channelId) === channelId || data.eventId === channelId;
       if (match && data.message) {
         addNew([data.message as Message]);
@@ -166,7 +166,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off1 = socket.on('newMessage', handler);
     const off2 = socket.on('message', handler);
 
-    // Reaction updates — PHP broadcasts via /broadcast/reaction (city/event) and
+    // Reaction updates - PHP broadcasts via /broadcast/reaction (city/event) and
     // /broadcast/dm-reaction (DMs). City channels use "city_N" as channelId.
     function reactionHandler(data: Record<string, unknown>) {
       const incoming = String(data.channelId ?? data.conversationId ?? '');
@@ -180,9 +180,9 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off3 = socket.on('reactionUpdate', reactionHandler);
     const off4 = socket.on('dmReactionUpdate', reactionHandler);
 
-    // Edit / delete updates — the server broadcasts after a successful PATCH /
+    // Edit / delete updates - the server broadcasts after a successful PATCH /
     // DELETE. We patch the message in place. City rooms use "city_N", events /
-    // topics use the raw hex channel id — same matcher as reactions above.
+    // topics use the raw hex channel id - same matcher as reactions above.
     function editHandler(data: Record<string, unknown>) {
       const incoming = String(data.channelId ?? '');
       const match = incoming === channelId || incoming === `city_${channelId}`;
@@ -206,7 +206,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     const off6 = socket.on('messageEdited', editHandler);
     const off7 = socket.on('messageDeleted', deleteHandler);
 
-    // Real-time reaction animations — purely visual, no stored state changed.
+    // Real-time reaction animations - purely visual, no stored state changed.
     // Server relays: { event: 'reaction', type, messageId, userId, timestamp }
     const off5 = socket.on('reaction', (data) => {
       const type = data.type as string;
@@ -257,7 +257,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       // would otherwise refetch the SAME before_id forever (the request flood).
       setHasMore(moreLeft && !!nextCursor);
     } catch {
-      // silent — user can scroll up again to retry
+      // silent - user can scroll up again to retry
     } finally {
       loadingOlderRef.current = false;
       setLoadingOlder(false);
@@ -274,7 +274,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   function reconcile(localId: string, serverMsg: Message) {
     seenIds.current.add(msgKey(serverMsg));
     setMessages(prev => {
-      // Case B: WS already inserted the server message — just remove placeholder
+      // Case B: WS already inserted the server message - just remove placeholder
       if (serverMsg.id && prev.some(m => m.id === serverMsg.id && m.id !== localId)) {
         return prev.filter(m => m.id !== localId);
       }
@@ -317,7 +317,7 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     try {
       const msg = await postTextFn(trimmed, replyTo?.id ?? null, mentions);
       reconcile(localId, msg);
-      // sent_message is tracked server-side — no frontend duplicate
+      // sent_message is tracked server-side - no frontend duplicate
     } catch {
       markFailed(localId);
       setError('Failed to send message');
@@ -401,11 +401,11 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     }
   }, [identity]);
 
-  // Block filter (Apple G1.2) — server already filters initial fetches; this
+  // Block filter (Apple G1.2) - server already filters initial fetches; this
   // covers WS pushes from blocked authors and the gap between the user
   // tapping Block and the next refetch. Memoised on blockedSet so the
   // FlatList only re-renders when the set actually changes.
-  // Also drop the user's OWN arrival line — the join is a channel message
+  // Also drop the user's OWN arrival line - the join is a channel message
   // everyone polls, but a user must never see their own "X just landed".
   const selfGuestId = identity?.guestId ?? null;
   const selfUserId  = account?.id ?? null;

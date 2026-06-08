@@ -23,8 +23,8 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
 };
 
 /**
- * My challenge threads (PR2). Every relationship I'm in — as creator OR
- * acceptor — appears as a row. Sorted by last message activity. Tap a row
+ * My challenge threads (PR2). Every relationship I'm in - as creator OR
+ * acceptor - appears as a row. Sorted by last message activity. Tap a row
  * to open the 1:1 thread chat.
  *
  * Reached from /me (settings) → "My challenge threads", or via deep link
@@ -39,7 +39,7 @@ export default function ThreadsListScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  // Rate-prompts banner — driven by GET /me/rate-prompts. Sorted oldest-first
+  // Rate-prompts banner - driven by GET /me/rate-prompts. Sorted oldest-first
   // by the server; the banner shows index 0 (the oldest unrated meet-up) and
   // an "+N more" pill when there are extras. RateSheet pops the active prompt
   // on submit and the next one auto-surfaces.
@@ -49,7 +49,7 @@ export default function ThreadsListScreen() {
   const load = useCallback(async () => {
     if (!account?.id) { setThreads([]); setRatePrompts([]); setLoading(false); return; }
     try {
-      // Fetch in parallel — both are cheap bounded reads.
+      // Fetch in parallel - both are cheap bounded reads.
       const [data, prompts] = await Promise.all([
         fetchMyAcceptances(),
         fetchRatePrompts(),

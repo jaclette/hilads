@@ -97,7 +97,7 @@
       },
       "not_creator": {
         "title": "It's your own challenge",
-        "body": "You created this challenge — wait for someone else to accept it."
+        "body": "You created this challenge - wait for someone else to accept it."
       },
       "mode_required": {
         "title": "Pick local or traveler first",
@@ -112,7 +112,7 @@
       },
       "in_progress": {
         "title": "Someone's on this one",
-        "body": "Another traveler is taking it on right now. Check back when they wrap up — the challenge frees up."
+        "body": "Another traveler is taking it on right now. Check back when they wrap up - the challenge frees up."
       }
     }
   },
@@ -125,12 +125,12 @@
     "leaveCta": "Leave the channel",
     "errKicked": "You've been removed from this challenge. You can't re-join.",
     "errClosed": "This challenge is closed to new joins.",
-    "errGeneric": "Couldn't hop in — try again."
+    "errGeneric": "Couldn't hop in - try again."
   },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
-    "emptyIntl": "Say hi 👋 — drop a 📸 when you nail it.",
+    "emptyIntl": "Say hi 👋 - drop a 📸 when you nail it.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",
@@ -158,7 +158,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Rate your meet-up with {{name}}",
-      "titleUrgent": "{{name}} rated — your turn"
+      "titleUrgent": "{{name}} rated - your turn"
     },
     "sheet": {
       "title": "How was it with {{name}}?",
@@ -172,7 +172,7 @@
   "scoringInfo": {
     "aria": "How points work",
     "title": "🏆 How challenges work",
-    "intro": "Each challenge earns points for both sides — they roll up into your city + world leaderboards.",
+    "intro": "Each challenge earns points for both sides - they roll up into your city + world leaderboards.",
     "colStep": "Step",
     "steps": {
       "accepted": "Take-on accepted",
@@ -180,17 +180,17 @@
       "meet": "Meet up",
       "rate": "Both rate"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Total per challenge",
     "footnote": "Points are awarded only when both parties rate the meet-up.",
     "types": {
       "heading": "🎯 Two ways to play",
-      "local": "🏙️ Local — in your city. Meet up IRL to make it count.",
-      "international": "🌍 International — across cities. Snap an instant photo as proof."
+      "local": "🏙️ Local - in your city. Meet up IRL to make it count.",
+      "international": "🌍 International - across cities. Snap an instant photo as proof."
     },
     "lifecycle": {
       "heading": "🔁 One run at a time",
-      "body": "When the taker wraps up, the chat resets — challenge stays, ready for the next adventurer."
+      "body": "When the taker wraps up, the chat resets - challenge stays, ready for the next adventurer."
     },
     "pointsHeading": "💯 How you earn points"
   },
@@ -269,7 +269,7 @@
     "confirm": {
       "approve": {
         "title": "Mark as accomplished?",
-        "body": "This is final — you can't change it after.",
+        "body": "This is final - you can't change it after.",
         "confirm": "Mark as accomplished"
       },
       "reject": {
@@ -332,10 +332,10 @@
   },
   "postCreate": {
     "title": "Your challenge is live",
-    "subtitle": "Now seed it — get someone to take it on in the next hour.",
+    "subtitle": "Now seed it - get someone to take it on in the next hour.",
     "thisCity": "this city",
     "ctaInvite": "Send it to someone in {{city}}",
-    "ctaInviteSub": "Pick a few {{audience}} — we'll ping them.",
+    "ctaInviteSub": "Pick a few {{audience}} - we'll ping them.",
     "ctaShare": "Share it outside Hilads",
     "skip": "Maybe later",
     "pickerTitle": "{{audience}} in {{city}}",
@@ -345,7 +345,7 @@
     "sendCtaEmpty": "Pick someone first",
     "sentTitle": "Sent to {{count}}",
     "sentSubtitle": "They'll get a push notification now.",
-    "pickerSubtitleAll": "No exact match — showing everyone in {{city}}."
+    "pickerSubtitleAll": "No exact match - showing everyone in {{city}}."
   },
   "invitation": {
     "accept": "Accept",
@@ -366,7 +366,7 @@
     },
     "inProgress": {
       "title": "Someone's on this one right now",
-      "body": "A traveler is taking on this challenge. When they wrap up, it'll be free again — check back soon."
+      "body": "A traveler is taking on this challenge. When they wrap up, it'll be free again - check back soon."
     }
   },
   "typeFilter": {
@@ -389,15 +389,15 @@
     "publicHint": "Anyone in the city can see and accept this.",
     "friendsHint": "Only your friends and people you invite can see this.",
     "intlLocked": "International challenges are always public.",
-    "moderationBlocked": "Your text was flagged — please rephrase.",
+    "moderationBlocked": "Your text was flagged - please rephrase.",
     "badge": {
       "public": "🌍 Public",
       "friends": "👯 Friends",
       "private": "🔒 Private"
     },
     "optin": {
-      "title": "Heads up — this is public",
-      "body": "Public challenges show up in the city feed and on the public web. Your name and your challenge text will be visible to anyone — including non-members and search engines. You can flip to Friends below if you'd rather keep it tighter.",
+      "title": "Heads up - this is public",
+      "body": "Public challenges show up in the city feed and on the public web. Your name and your challenge text will be visible to anyone - including non-members and search engines. You can flip to Friends below if you'd rather keep it tighter.",
       "cta": "Got it, post it public",
       "switchToFriends": "Make it Friends instead",
       "dontShowAgain": "Don't show this again"
@@ -405,21 +405,21 @@
   },
   "privacy": {
     "panelTitle": "Privacy",
-    "currentPublic": "This challenge is public — anyone can see it.",
+    "currentPublic": "This challenge is public - anyone can see it.",
     "currentFriends": "This challenge is shared with friends only.",
-    "currentPrivate": "This challenge is private — only you two can see it.",
+    "currentPrivate": "This challenge is private - only you two can see it.",
     "intlNote": "International challenges are always public.",
     "goPrivateCta": "Go private (both must agree)",
-    "myVoteAgreed": "You voted yes — waiting for the other person.",
+    "myVoteAgreed": "You voted yes - waiting for the other person.",
     "myVoteDenied": "You declined. Tap below to change your mind.",
-    "otherVoteAgreed": "They voted yes — your turn to decide.",
+    "otherVoteAgreed": "They voted yes - your turn to decide.",
     "otherVoteDenied": "They declined.",
-    "voteAgreedCta": "Agree — go private",
+    "voteAgreedCta": "Agree - go private",
     "voteDeniedCta": "Decline",
     "withdrawCta": "Withdraw my vote",
     "needCounterparty": "Available once someone takes on this challenge.",
-    "errVote": "Couldn't save your vote — try again.",
-    "errSave": "Couldn't save — try again.",
+    "errVote": "Couldn't save your vote - try again.",
+    "errSave": "Couldn't save - try again.",
     "notifTitle": "Notifications for this challenge",
     "notif": {
       "milestones": "Milestones",
@@ -429,7 +429,7 @@
     "notifHint": {
       "milestones": "Taker acceptance, proof submission, final validation.",
       "all": "Ping me for every new message in the channel.",
-      "off": "Stay quiet — I'll check the channel myself."
+      "off": "Stay quiet - I'll check the channel myself."
     },
     "closedTitle": "Close to new joins",
     "closedBody": "Existing participants stay. The Join button stops accepting new people until you re-open it.",
@@ -440,10 +440,10 @@
     "title": "In the channel",
     "countIn": "{{count}} in the channel",
     "seeAll": "See all →",
-    "empty": "Nobody's joined yet — be the first.",
+    "empty": "Nobody's joined yet - be the first.",
     "kickCta": "Remove",
     "kickAria": "Remove {{name}} from the channel",
-    "errKick": "Couldn't remove — try again."
+    "errKick": "Couldn't remove - try again."
   },
   "notif": {
     "on": "Notifications on",
@@ -472,7 +472,7 @@
     "targetCityHint": "Leave as Anywhere to reach travelers everywhere, or pick a city for a focused fan-out.",
     "proofRequirementsLabel": "What should the photo show?",
     "proofRequirementsPlaceholder": "e.g. The dish in daylight, with you in frame",
-    "proofRequirementsHint": "The proof is a photo 📸. The acceptor sees this before submitting — be specific.",
+    "proofRequirementsHint": "The proof is a photo 📸. The acceptor sees this before submitting - be specific.",
     "cityPicker": {
       "title": "Pick a target city",
       "searchPlaceholder": "Search a city…",
@@ -516,7 +516,7 @@
     "unit": "points",
     "subtitle": {
       "accepted": "Your challenge was accepted 🤝",
-      "date_locked": "Date locked — let’s go 🗓️",
+      "date_locked": "Date locked - let’s go 🗓️",
       "meetup": "Mission accomplished 🎉",
       "debrief": "Mission accomplished 🎉",
       "ghost": "Better luck next time 👻",

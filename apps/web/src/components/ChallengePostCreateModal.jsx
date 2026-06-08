@@ -6,7 +6,7 @@ import { avatarColors } from '../lib/avatarColors'
 /**
  * Two-step floating modal shown right after publishing a challenge.
  *
- * Step 1 ("seed"): two CTAs — "Send it to someone in {city}" (opens picker)
+ * Step 1 ("seed"): two CTAs - "Send it to someone in {city}" (opens picker)
  * and "Share outside Hilads" (delegates to host's share handler).
  *
  * Step 2 ("picker"): multi-select list of city members filtered by audience.
@@ -93,7 +93,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
   const [sending,   setSending]   = useState(false)
   const [sentCount, setSentCount] = useState(null)
   // When the strict mode='local'/'exploring' filter returns no rows (most
-  // accounts have mode IS NULL — they joined before mode was a thing) we
+  // accounts have mode IS NULL - they joined before mode was a thing) we
   // fall back to the full city roster so the picker isn't a dead-end. We
   // expose `fellBack` to the UI so we can show a small "showing everyone"
   // hint instead of pretending nothing is wrong.
@@ -117,12 +117,12 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
 
     ;(async () => {
       try {
-        // 1. Try strict mode filter first — respects the audience.
+        // 1. Try strict mode filter first - respects the audience.
         const strict = await fetchCityMembers(cityChannelId, { limit: 50, mode })
         if (!active) return
         let list = filterUsable(strict.members)
         // 2. Strict filter is empty? Most users in low-traffic cities have
-        //    mode IS NULL — show the whole city so the creator can still pick
+        //    mode IS NULL - show the whole city so the creator can still pick
         //    someone. The accept path re-checks mode and surfaces a clear
         //    error if the invitee can't take it on.
         if (list.length === 0) {

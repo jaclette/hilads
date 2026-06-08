@@ -1,5 +1,5 @@
 /**
- * City channel screen — faithful port of the web "ready" state.
+ * City channel screen - faithful port of the web "ready" state.
  *
  * Web source: App.jsx (status === 'ready'), index.css (.chat-header, .messages, .input-bar)
  *
@@ -52,7 +52,7 @@ import { localizeWeather } from '@/lib/weather';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
-// ── EventBannerStrip — ephemeral overlay above the input ─────────────────────
+// ── EventBannerStrip - ephemeral overlay above the input ─────────────────────
 // Appears when a new event is broadcast via WS. Auto-dismissed after 10 s.
 // Throttled: max once every 2 minutes per session.
 
@@ -91,7 +91,7 @@ function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
   );
 }
 
-// ── Flag emoji — mirrors web cityFlag() ──────────────────────────────────────
+// ── Flag emoji - mirrors web cityFlag() ──────────────────────────────────────
 
 function cityFlag(countryCode?: string): string {
   if (!countryCode || countryCode.length !== 2) return '';
@@ -100,7 +100,7 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Chip live dot — red pulsing dot for the "hanging out" chip ───────────────
+// ── Chip live dot - red pulsing dot for the "hanging out" chip ───────────────
 // Gentle scale 1→1.15→1 over 2s, matching web .chip-live-dot @keyframes.
 
 function ChipLiveDot() {
@@ -141,7 +141,7 @@ export default function ChatTab() {
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
-  // First-time onboarding carousel — guests only, once, after the city channel
+  // First-time onboarding carousel - guests only, once, after the city channel
   // is ready (joined). Runs after paint so it overlays a loaded screen instead
   // of blocking/flashing first render. Registered users never trigger it; the
   // AsyncStorage flag keeps it from re-appearing. The carousel is mounted in
@@ -159,7 +159,7 @@ export default function ChatTab() {
     return () => { cancelled = true; };
   }, [joined, account, setShowOnboarding]);
 
-  // Online count — fallback "live now" until presence data arrives.
+  // Online count - fallback "live now" until presence data arrives.
   //   presenceSnapshot   → sent only to US when we (re)join the room (initial value)
   //   onlineCountUpdated → sent to EXISTING members when someone else joins/leaves
   // We must listen to BOTH: snapshot alone never updates once we're in the room,
@@ -191,7 +191,7 @@ export default function ChatTab() {
 
   const channelId = city?.channelId ?? '';
 
-  // ── Leaderboard chip — caller's monthly city rank ─────────────────────────
+  // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
   // One bounded fetch per city change. limit=1 to skip the list payload;
   // we only need me.rank/me.points. Silent failure → neutral chip copy.
   // Re-fires on city switch so the chip reflects the new city's standings.
@@ -222,7 +222,7 @@ export default function ChatTab() {
       // Server echoes cityId as integer (e.g. 1); native channelId is a string ("1").
       // Without this guard, typing in any city the socket is still in (e.g. via a
       // stale membership before server-side cleanup) would leak into the active
-      // chat — that was the data-leak between HCMC and Berlin reported in #ws-leak.
+      // chat - that was the data-leak between HCMC and Berlin reported in #ws-leak.
       if (String(data.cityId) !== channelId) return;
       const users = (data.users as TypingUser[] | undefined) ?? [];
       setTypingUsers(users);
@@ -252,9 +252,9 @@ export default function ChatTab() {
   // ── Ephemeral event banners ────────────────────────────────────────────────
   // New events arrive via WS and show as temporary strips above the input.
   // Up to 3 banners shown simultaneously; each auto-expires independently.
-  // No global throttle — every new event in this channel gets a banner.
+  // No global throttle - every new event in this channel gets a banner.
 
-  // ── Event feed synthesis state — declared before WS effect that uses it ─────
+  // ── Event feed synthesis state - declared before WS effect that uses it ─────
   const seenEventIds   = useRef(new Set<string>());
   const [eventFeedItems, setEventFeedItems] = useState<Message[]>([]);
 
@@ -271,7 +271,7 @@ export default function ChatTab() {
   }, []);
 
   useEffect(() => {
-    // data.event is the WS event name string ('new_event') — event payload is in data.hiladsEvent
+    // data.event is the WS event name string ('new_event') - event payload is in data.hiladsEvent
     const off = socket.on('new_event', (data: { hiladsEvent?: HiladsEvent; channelId?: string | number }) => {
       console.log('[event-banners] incoming event', data.hiladsEvent?.id,
         '| ws channelId:', data.channelId, '| local channelId:', channelId);
@@ -284,7 +284,7 @@ export default function ChatTab() {
 
       setEventBanners(prev => {
         if (prev.some(b => b.id === id)) {
-          console.log('[event-banners] dedup — banner already shown for', id);
+          console.log('[event-banners] dedup - banner already shown for', id);
           return prev;
         }
         const next = [{ id, title }, ...prev].slice(0, 3); // cap at 3
@@ -348,7 +348,7 @@ export default function ChatTab() {
       if (fresh.length > 0) setEventFeedItems(prev => [...prev, ...fresh]);
     }).catch(() => {});
 
-    // WS: new event created in this city — append pill immediately (no poll needed).
+    // WS: new event created in this city - append pill immediately (no poll needed).
     const offEvent = socket.on('new_event', (data: Record<string, unknown>) => {
       if (String(data.channelId) !== String(channelId)) return;
       const ev = data.hiladsEvent as Record<string, unknown> | undefined;
@@ -394,7 +394,7 @@ export default function ChatTab() {
 
     loadTopics();
 
-    // Fallback poll for topic expiry cleanup — runs only when WS is disconnected.
+    // Fallback poll for topic expiry cleanup - runs only when WS is disconnected.
     // New topics arrive instantly via newTopic WS event; this only removes expired ones.
     let pollId: ReturnType<typeof setInterval> | null = null;
 
@@ -410,7 +410,7 @@ export default function ChatTab() {
     const offDisconnected = socket.on('disconnected', () => startTopicPoll());
     const offConnected    = socket.on('connected', () => { stopTopicPoll(); loadTopics(); });
 
-    // WS: new topic created — append pill immediately.
+    // WS: new topic created - append pill immediately.
     const offTopic = socket.on('newTopic', (data: Record<string, unknown>) => {
       if (String(data.channelId) !== String(channelId)) return;
       const t = data.topic as Record<string, unknown> | undefined;
@@ -449,7 +449,7 @@ export default function ChatTab() {
     fetchCityChallenges(channelId).then(chs => {
       // Cap the chat-feed prompts at the 5 newest. Older challenges still
       // surface in the NOW feed (paginated) and the Challenges filter; the
-      // chat surface is meant to feel "live" — too many prompts at once
+      // chat surface is meant to feel "live" - too many prompts at once
       // pushes real conversation off the screen.
       const newest = chs.slice(0, 5);
       const now = Date.now() / 1000;
@@ -482,7 +482,7 @@ export default function ChatTab() {
       if (fresh.length > 0) setChallengeFeedItems(prev => [...prev, ...fresh]);
     }).catch(() => {});
 
-    // WS: new challenge created — append pill immediately (no poll).
+    // WS: new challenge created - append pill immediately (no poll).
     const offChallenge = socket.on('new_challenge', (data: Record<string, unknown>) => {
       if (String(data.channelId) !== String(channelId)) return;
       const ch = data.challenge as Record<string, unknown> | undefined;
@@ -498,7 +498,7 @@ export default function ChatTab() {
         audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
         challengeMode: ((ch?.mode as 'local' | 'international') ?? 'local'),
         challengeStatus: (ch?.status as 'open' | 'validated') ?? 'open',
-        // PR19 — origin + target flags for the international banner (see
+        // PR19 - origin + target flags for the international banner (see
         // chat-list synthesis above).
         challengeCountry:       (ch?.country        as string | null) ?? null,
         challengeTargetCountry: (ch?.target_country as string | null) ?? null,
@@ -506,7 +506,7 @@ export default function ChatTab() {
       }]);
     });
 
-    // WS: challenge validated — celebration pill, separate from the creation
+    // WS: challenge validated - celebration pill, separate from the creation
     // pill so both events stay in the timeline. Dedup id is per-challenge
     // (not per-validation) since validate is idempotent.
     const seenValidatedKey = (id: string) => `challenge-validated-${id}`;
@@ -569,12 +569,12 @@ export default function ChatTab() {
   // Injected locally after join; never sent to the server.
 
   const [promptItems,    setPromptItems]    = useState<Message[]>([]);
-  // "How challenges work" carousel — opened from the challenge-intro prompt.
+  // "How challenges work" carousel - opened from the challenge-intro prompt.
   const [showChallengeIntro, setShowChallengeIntro] = useState(false);
   const promptsShownRef  = useRef(new Set<string>());
   const isActiveRef      = useRef(false);
   const messagesRef      = useRef(messages);
-  messagesRef.current    = messages;          // updated every render — safe to read in timers
+  messagesRef.current    = messages;          // updated every render - safe to read in timers
   const activityTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const promptTimersRef  = useRef<ReturnType<typeof setTimeout>[]>([]);
   const pickImageRef     = useRef<(() => void) | null>(null);
@@ -584,7 +584,7 @@ export default function ChatTab() {
   replyingToRef.current  = replyingTo;
   const [highlightedMsgId, setHighlightedMsgId] = useState<string | null>(null);
   const [actionSheetMsg,   setActionSheetMsg]   = useState<Message | null>(null);
-  // Edit mode — null when not editing. ChatInput consumes this via `editing`.
+  // Edit mode - null when not editing. ChatInput consumes this via `editing`.
   const [editingMsg,       setEditingMsg]       = useState<{ id: string; content: string } | null>(null);
   // Guest self-mention: when an online guest is @mentioned by someone else, give
   // a real-time in-app signal (highlight + discreet signup nudge). No push.
@@ -597,7 +597,7 @@ export default function ChatTab() {
 
   // Watch for a fresh incoming message that @mentions me (a live guest). On the
   // first pass we just seed the seen-set so message history doesn't nudge. Guests
-  // only — members are handled by the existing push path.
+  // only - members are handled by the existing push path.
   useEffect(() => {
     if (!mentionInitedRef.current) {
       for (const m of messages) if (m.id) seenMsgIdsRef.current.add(m.id);
@@ -680,7 +680,7 @@ export default function ChatTab() {
     }, 60_000);
 
     // challenge-intro: 8s, drops a "Learn how challenges work" pill once per
-    // channel session. Independent of message count — the goal is to surface
+    // channel session. Independent of message count - the goal is to surface
     // the explainer for newcomers, even in a chatty city. Tapping it opens
     // the ChallengeIntroCarousel.
     const t4 = setTimeout(() => {
@@ -699,7 +699,7 @@ export default function ChatTab() {
   }
 
   // A reminder card finished fading (mount-guarded on the card) → drop it from
-  // the feed and pulse the NOW tab once. Removal alone reflows the list — no
+  // the feed and pulse the NOW tab once. Removal alone reflows the list - no
   // LayoutAnimation (unreliable on an inverted, virtualized list) and no animated
   // height collapse (it crashed when the cell was removed mid-animation); a tiny
   // non-animated reflow is the safe trade. The id lives in exactly one of the
@@ -752,7 +752,7 @@ export default function ChatTab() {
     };
   }, [channelId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Weather — extracted from messages for header display, not rendered in the feed.
+  // Weather - extracted from messages for header display, not rendered in the feed.
   const weatherLabel = useMemo<string | null>(() => {
     const w = messages.find(m => m.type === 'system' && m.event === 'weather');
     return localizeWeather(w?.content, city?.name);
@@ -769,7 +769,7 @@ export default function ChatTab() {
   }, []);
   const weatherActive = isFocused && appActive;
 
-  // Arrivals — extracted from the same `messages` stream and shown in the
+  // Arrivals - extracted from the same `messages` stream and shown in the
   // dedicated ArrivalsBar / ArrivalsSheet, NOT in the main feed. Newest-first
   // to match the sheet's display order.
   const arrivals = useMemo<Message[]>(
@@ -778,7 +778,7 @@ export default function ChatTab() {
   );
   const [arrivalsSheetOpen, setArrivalsSheetOpen] = useState(false);
 
-  // Unified feed — weather AND join system messages excluded.
+  // Unified feed - weather AND join system messages excluded.
   // Weather renders as a pill in the header; joins render in the ArrivalsBar.
   //
   // Sorted newest-first for the inverted FlatList:
@@ -807,7 +807,7 @@ export default function ChatTab() {
 
   const handleMessageLongPress = useCallback((msg: Message) => {
     // City channel messages arrive from the PHP API without a `type` field
-    // (undefined at runtime). We only block local/optimistic placeholders —
+    // (undefined at runtime). We only block local/optimistic placeholders -
     // the type guard is unnecessary here because ChatMessage's own early-return
     // branches ensure only text/image bubbles get a Pressable with this handler.
     if (!msg.id || msg.id.startsWith('local-')) return;
@@ -840,7 +840,7 @@ export default function ChatTab() {
   const submitEdit = useCallback(async (text: string) => {
     if (!editingMsg) return;
     const id = editingMsg.id;
-    setEditingMsg(null);  // close banner immediately — optimistic patch already in flight
+    setEditingMsg(null);  // close banner immediately - optimistic patch already in flight
     try {
       await editMessage(id, text);
     } catch (e) {
@@ -891,7 +891,7 @@ export default function ChatTab() {
     }
   }, [channelId, identity, account, setMessageReactions]);
 
-  // No city yet — prompt to pick one
+  // No city yet - prompt to pick one
   if (!city) {
     return (
       <SafeAreaView style={[styles.container, { paddingBottom: 0 }]}>
@@ -915,10 +915,10 @@ export default function ChatTab() {
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
-      {/* ── Header — 3-section redesign ── */}
+      {/* ── Header - 3-section redesign ── */}
       <View style={styles.header}>
 
-        {/* ── Section 1: App header — persistent across all 4 tabs ── */}
+        {/* ── Section 1: App header - persistent across all 4 tabs ── */}
         {/* Share lives here (MY-CITY-only) as a tab-specific extra. */}
         <AppHeader
           rightExtra={city && (
@@ -927,7 +927,7 @@ export default function ChatTab() {
               activeOpacity={0.65}
               hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
               onPress={async () => {
-                // Locale-prefixed URL (Option A) so the link preview (OG tags —
+                // Locale-prefixed URL (Option A) so the link preview (OG tags -
                 // all Android shares show) renders in the sharer's language.
                 const url     = buildCityUrl(city.slug);
                 const title   = t('shareTitle', { city: localizeCityName(city.name) });
@@ -941,7 +941,7 @@ export default function ChatTab() {
           )}
         />
 
-        {/* ── Section 2: City hero name — tappable → switch city ── */}
+        {/* ── Section 2: City hero name - tappable → switch city ── */}
         <TouchableOpacity
           style={styles.cityHeroRow}
           onPress={() => router.push('/switch-city' as never)}
@@ -1024,7 +1024,7 @@ export default function ChatTab() {
 
       </View>
 
-      {/* Arrivals strip — extracted from the main feed so real messages
+      {/* Arrivals strip - extracted from the main feed so real messages
           aren't drowned out by ambient "X just landed" rows. Default shows a
           neutral label; on a new arrival it morphs in-place for 3s. */}
       <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} />
@@ -1036,7 +1036,7 @@ export default function ChatTab() {
         </TouchableOpacity>
       )}
 
-      {/* ── Messages — web: .messages ── */}
+      {/* ── Messages - web: .messages ── */}
       <KeyboardAvoidingView
         style={styles.flex}
         behavior="padding"
@@ -1071,7 +1071,7 @@ export default function ChatTab() {
                 item.type !== 'topic' &&
                 item.type !== 'activity' &&
                 item.type !== 'prompt';
-              // showTime: last (newest) message in a sender run — newerMsg differs or absent
+              // showTime: last (newest) message in a sender run - newerMsg differs or absent
               const showTime =
                 item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' &&
                 item.type !== 'activity' && item.type !== 'prompt' && (
@@ -1138,7 +1138,7 @@ export default function ChatTab() {
           />
         )}
 
-        {/* ── Ephemeral event banners — slide in above input, auto-dismissed ── */}
+        {/* ── Ephemeral event banners - slide in above input, auto-dismissed ── */}
         {eventBanners.map(banner => (
           <EventBannerStrip
             key={banner.id}
@@ -1148,7 +1148,7 @@ export default function ChatTab() {
           />
         ))}
 
-        {/* ── Guest @mention nudge — discreet, non-blocking signup prompt ── */}
+        {/* ── Guest @mention nudge - discreet, non-blocking signup prompt ── */}
         {mentionNudge && !account && (
           <View style={styles.mentionNudge}>
             <Text style={styles.mentionNudgeText} numberOfLines={2}>
@@ -1174,7 +1174,7 @@ export default function ChatTab() {
           </View>
         )}
 
-        {/* ── Input — web: .input-bar ── */}
+        {/* ── Input - web: .input-bar ── */}
         <ChatInput
           sending={sending}
           mentionContext="city"
@@ -1207,7 +1207,7 @@ export default function ChatTab() {
         onClose={() => setActionSheetMsg(null)}
       />
 
-      {/* "How challenges work" carousel — opened from the challenge-intro
+      {/* "How challenges work" carousel - opened from the challenge-intro
           feed prompt. Stand-alone modal; doesn't interact with onboarding.
           Last-slide CTA closes the carousel and routes to /challenge/create
           so a user who just learned the rules can launch their first
@@ -1278,7 +1278,7 @@ const styles = StyleSheet.create({
     gap:           8,
   },
 
-  // Icon buttons — must match AppHeader's iconBtn: flat, 40×40, radius 12.
+  // Icon buttons - must match AppHeader's iconBtn: flat, 40×40, radius 12.
   // Only used here for the Share button passed in via AppHeader's rightExtra
   // slot. No background / border so Share is visually consistent with the
   // flat bell + DM icons rendered by AppHeader itself.
@@ -1326,7 +1326,7 @@ const styles = StyleSheet.create({
     maxWidth:      72,
   },
 
-  // ── Logo glow — web: .chat-header .logo svg { drop-shadow orange } ─────────
+  // ── Logo glow - web: .chat-header .logo svg { drop-shadow orange } ─────────
   iconGlow: {
     shadowColor:   '#C24A38',
     shadowOffset:  { width: 0, height: 0 },
@@ -1343,7 +1343,7 @@ const styles = StyleSheet.create({
   },
   // The name takes a DEFINITE width (flex:1) rather than letting RN infer it
   // from the text's intrinsic size inside a centered row. That inference was
-  // unreliable per-platform — a too-narrow width forced the name to wrap and
+  // unreliable per-platform - a too-narrow width forced the name to wrap and
   // the clipped 2nd line read as a dropped last word ("New York"→"New",
   // "Ho Chi Minh City"→"Ho Chi Minh", "Bangkok"→empty). With flex:1 the Text
   // gets the real available width on both iOS and Android, so it renders on one
@@ -1392,14 +1392,14 @@ const styles = StyleSheet.create({
     flexShrink:      1,    // weather copy can be long; let it truncate
   },
   chipWeatherText: {
-    // Was 12pt at rgba(255,255,255,0.45) (~4.0:1) — failed WCAG AA at body
+    // Was 12pt at rgba(255,255,255,0.45) (~4.0:1) - failed WCAG AA at body
     // size. Bumped to xs (13pt) and routed through the theme token.
     fontSize:   FontSizes.xs,
     fontWeight: '500',
     color:      Colors.muted,
     flexShrink: 1,
   },
-  // Marquee clip window — shrinks to share the row, clips/scrolls long copy.
+  // Marquee clip window - shrinks to share the row, clips/scrolls long copy.
   chipWeatherMarquee: {
     flexShrink: 1,
   },
@@ -1421,7 +1421,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ef4444',
     flexShrink:      0,
   },
-  // Leaderboard chip — amber/orange tint, distinct from online (red) and
+  // Leaderboard chip - amber/orange tint, distinct from online (red) and
   // weather (grey) so it reads at a glance as the "scoring/rank" affordance.
   chipLeaderboard: {
     backgroundColor: 'rgba(255,201,60,0.12)',
@@ -1439,7 +1439,7 @@ const styles = StyleSheet.create({
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
   // ── Typing indicator bar ──────────────────────────────────────────────────
-  // Sits between messages and input. Subtle — just a dim text label.
+  // Sits between messages and input. Subtle - just a dim text label.
   typingBar: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   6,
@@ -1474,7 +1474,7 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
   },
 
-  // ── Empty state — web: .empty ─────────────────────────────────────────────
+  // ── Empty state - web: .empty ─────────────────────────────────────────────
   emptyWrap: {
     flex:           1,
     justifyContent: 'center',

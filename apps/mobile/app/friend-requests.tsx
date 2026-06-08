@@ -1,5 +1,5 @@
 /**
- * Friend Requests inbox — Incoming + Sent tabs.
+ * Friend Requests inbox - Incoming + Sent tabs.
  *
  * Wired to useFriendRequests, which loads both lists on mount and keeps them
  * in sync with the server via per-user WS events. Mutations are optimistic;

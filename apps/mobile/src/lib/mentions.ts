@@ -1,5 +1,5 @@
 /**
- * @mention helpers — shared between the composer (build offsets at send) and the
+ * @mention helpers - shared between the composer (build offsets at send) and the
  * renderer (split content into text + mention segments).
  *
  * Offsets are JS string indices into `content` and are computed at SEND time by
@@ -23,7 +23,7 @@ const HANDLE_CHAR = /[a-z0-9_]/i;
  * Build the stored mention list from the final text + the set of mentions the
  * user explicitly selected. Each selected @username is matched to its first
  * non-overlapping, word-boundary occurrence in the text. Tokens that no longer
- * appear (user deleted/altered them) are dropped — so "@ + space, no selection"
+ * appear (user deleted/altered them) are dropped - so "@ + space, no selection"
  * and broken half-mentions never become mentions.
  */
 export function buildMentionsFromText(text: string, selected: SelectedMention[]): MentionRef[] {

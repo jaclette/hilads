@@ -14,7 +14,7 @@ type Handler = (data: Record<string, unknown>) => void;
 const RAPID_RETRY_MAX = 15;   // 15 × 3s = 45s fast window
 const RAPID_RETRY_MS  = 3000;
 
-// Pending room state replayed automatically on every (re)connect — mirrors
+// Pending room state replayed automatically on every (re)connect - mirrors
 // `pendingJoin` etc. in apps/web/src/socket.js. The socket owns its own
 // replay so consumers don't have to wire up an `on('connected', joinX)`
 // callback (which leaks if not unsubscribed and accumulates joins on
@@ -57,7 +57,7 @@ class HiladsSocket {
     this.ws = null;
   }
 
-  /** Force an immediate reconnect attempt — use when app returns to foreground. */
+  /** Force an immediate reconnect attempt - use when app returns to foreground. */
   reconnectNow(): void {
     if (!this.shouldConnect) return;
     this._clearReconnect();
@@ -144,7 +144,7 @@ class HiladsSocket {
     this.send({ event: 'typingStop', cityId: this._numericCityId(cityId), sessionId });
   }
 
-  // Mirrors web socket.js joinConversation() — event name must match server exactly.
+  // Mirrors web socket.js joinConversation() - event name must match server exactly.
   joinTopic(topicId: string, sessionId: string): void {
     if (this.pendingTopic && this.pendingTopic.topicId !== topicId) {
       this.send({ event: 'leaveTopic', topicId: this.pendingTopic.topicId, sessionId: this.pendingTopic.sessionId });
@@ -158,7 +158,7 @@ class HiladsSocket {
     this.send({ event: 'leaveTopic', topicId, sessionId });
   }
 
-  // Same pattern as joinTopic — pendingChallenge replays the room after a
+  // Same pattern as joinTopic - pendingChallenge replays the room after a
   // WS reconnect (single active subscription at a time per socket).
   joinChallenge(challengeId: string, sessionId: string): void {
     if (this.pendingChallenge && this.pendingChallenge.challengeId !== challengeId) {
@@ -174,7 +174,7 @@ class HiladsSocket {
   }
 
   // Per-acceptance 1:1 thread (channels.type='challenge_thread'). Same replay
-  // pattern as joinChallenge — single active subscription per socket.
+  // pattern as joinChallenge - single active subscription per socket.
   joinChallengeThread(threadChannelId: string, sessionId: string): void {
     if (this.pendingChallengeThread && this.pendingChallengeThread.threadChannelId !== threadChannelId) {
       this.send({ event: 'leaveChallengeThread', threadChannelId: this.pendingChallengeThread.threadChannelId, sessionId: this.pendingChallengeThread.sessionId });
@@ -191,7 +191,7 @@ class HiladsSocket {
   /**
    * Broadcast a reaction animation to everyone in the same city channel.
    * type: 'heart' | 'like' | 'laugh' | 'wow' | 'fire'
-   * Purely visual — does not affect stored reaction counts.
+   * Purely visual - does not affect stored reaction counts.
    */
   sendReaction(type: string, messageId: string, cityId: string, userId?: string | null): void {
     this.send({
@@ -221,7 +221,7 @@ class HiladsSocket {
    * Subscribe this socket to the registered user's personal channel. The
    * server pushes per-user events here (friendRequestReceived/Accepted/
    * Declined/Cancelled, future profile-view bursts, etc). Safe to call on
-   * every reconnect — the server tracks one entry per (userId, ws).
+   * every reconnect - the server tracks one entry per (userId, ws).
    */
   joinUser(userId: string): void {
     if (!userId) return;
@@ -230,7 +230,7 @@ class HiladsSocket {
   }
 
   /**
-   * Drop all replay state — call from logout so a future reconnect doesn't
+   * Drop all replay state - call from logout so a future reconnect doesn't
    * silently re-join rooms tied to the previous identity.
    */
   resetPending(): void {
@@ -258,7 +258,7 @@ class HiladsSocket {
         // Replay room memberships so the server restores them after reconnect.
         // Mirrors web socket.js onopen replay block. Consumers no longer need
         // to wire `socket.on('connected', () => socket.joinX(...))` themselves
-        // — that pattern leaked because handlers were never unsubscribed and
+        // - that pattern leaked because handlers were never unsubscribed and
         // accumulated joinX calls on every reconnect.
         if (this.pendingCity) {
           const c = this.pendingCity;
@@ -294,7 +294,7 @@ class HiladsSocket {
 
       this.ws.onclose = (e) => {
         // Log close code so origin-rejection (1008) is visible in native logs
-        console.log(`[WS] disconnected — code: ${e.code}, reason: "${e.reason ?? ''}"`);
+        console.log(`[WS] disconnected - code: ${e.code}, reason: "${e.reason ?? ''}"`);
         this._dispatch('disconnected', {});
         if (this.shouldConnect) this._scheduleReconnect();
       };
@@ -312,7 +312,7 @@ class HiladsSocket {
       this.rapidRetries++;
       delay = RAPID_RETRY_MS;
     } else {
-      // Server appears persistently unavailable — back off normally.
+      // Server appears persistently unavailable - back off normally.
       delay = this.reconnectMs;
       this.reconnectMs = Math.min(this.reconnectMs * 1.5, 30_000);
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
  *   3. A native push (MobilePushService::send) if they have device tokens
  *
  * Audience SQL filters by notification_preferences.admin_announcement_push so
- * users who opted out are excluded at the SQL layer — no per-user pref re-check
+ * users who opted out are excluded at the SQL layer - no per-user pref re-check
  * inside the dispatch loop. Users with no preferences row default to TRUE
  * (matches NotificationPreferencesRepository::defaults()).
  *
@@ -29,10 +29,10 @@ final class PushBroadcastService
 
     /**
      * Audience filter shape:
-     *   ['all']                   — every registered user
-     *   ['city', channelId: int]  — users with presence in that city channel
-     *   ['user', userId: string]  — single registered user (admin search)
-     *   ['test', userId: string]  — single user (admin's own ADMIN_TEST_USER_ID)
+     *   ['all']                   - every registered user
+     *   ['city', channelId: int]  - users with presence in that city channel
+     *   ['user', userId: string]  - single registered user (admin search)
+     *   ['test', userId: string]  - single user (admin's own ADMIN_TEST_USER_ID)
      *
      * Returns matching userIds (registered, not deleted, opted in).
      */
@@ -73,7 +73,7 @@ final class PushBroadcastService
             case 'test':
                 $userId = $filter['userId'] ?? '';
                 if (!is_string($userId) || $userId === '') return [];
-                // Test sends bypass the pref check — the admin explicitly
+                // Test sends bypass the pref check - the admin explicitly
                 // wants the push to land on their own device.
                 $prefClause = $type === 'test'
                     ? ''
@@ -96,7 +96,7 @@ final class PushBroadcastService
     /** Cheap pre-send count for the confirmation modal. Same filter logic. */
     public static function countAudience(string $type, array $filter): int
     {
-        // Reuse resolveAudience and count — keeps the filter logic in one place.
+        // Reuse resolveAudience and count - keeps the filter logic in one place.
         // O(N) on user count which is fine: this runs once per "Confirm send"
         // tap and the result is shown to the admin before the actual send.
         return count(self::resolveAudience($type, $filter));
@@ -144,7 +144,7 @@ final class PushBroadcastService
             'deepLink'    => $deepLink ?? '',
         ];
 
-        // Batch the loop — gives us periodic checkpoints to update counters
+        // Batch the loop - gives us periodic checkpoints to update counters
         // and lets a long-running dispatch report progress to the history page
         // mid-flight. NotificationRepository::createUnchecked wraps a single
         // INSERT + 2 fire-and-forget HTTP calls (web + native push).
@@ -158,7 +158,7 @@ final class PushBroadcastService
                     $failed++;
                 }
             }
-            // Progress checkpoint — admin's history page can poll this row.
+            // Progress checkpoint - admin's history page can poll this row.
             Database::pdo()
                 ->prepare("UPDATE push_broadcasts SET delivered_count = ?, failed_count = ? WHERE id = ?")
                 ->execute([$delivered, $failed, $broadcastId]);
@@ -215,7 +215,7 @@ final class PushBroadcastService
             ->execute([$broadcastId]);
     }
 
-    /** History page — most recent broadcasts first. */
+    /** History page - most recent broadcasts first. */
     public static function listRecent(int $limit = 50): array
     {
         $stmt = Database::pdo()->prepare("

@@ -38,7 +38,7 @@ class AnalyticsService
                 CURLOPT_POST           => true,
                 CURLOPT_POSTFIELDS     => $payload,
                 CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-                CURLOPT_RETURNTRANSFER => false, // don't buffer response — fire and forget
+                CURLOPT_RETURNTRANSFER => false, // don't buffer response - fire and forget
                 // Keep timeouts short: this call runs post-fastcgi_finish_request so it is
                 // normally invisible to the client. If the flush ever fails and this runs
                 // synchronously, 500 ms caps the worst-case damage instead of 2 s.
@@ -57,7 +57,7 @@ class AnalyticsService
      * Schedule a capture to run AFTER the HTTP response is sent to the client.
      *
      * Uses PHP's shutdown hook + fastcgi_finish_request() so the analytics
-     * HTTP call is completely off the critical path — the client receives the
+     * HTTP call is completely off the critical path - the client receives the
      * response immediately, then the PHP-FPM worker fires the PostHog call
      * in the background.
      *
@@ -77,7 +77,7 @@ class AnalyticsService
 
         register_shutdown_function(static function () use ($e, $d, $p): void {
             // Flush the response buffer and close the FPM connection to the
-            // web server — the client receives its response here, before the
+            // web server - the client receives its response here, before the
             // analytics HTTP call begins.
             if (function_exists('fastcgi_finish_request')) {
                 fastcgi_finish_request();

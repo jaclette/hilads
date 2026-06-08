@@ -30,7 +30,7 @@ set_exception_handler(function (Throwable $e) {
     exit();
 });
 
-// Auth uses DB-backed tokens in 'hilads_token' cookie — no PHP sessions needed.
+// Auth uses DB-backed tokens in 'hilads_token' cookie - no PHP sessions needed.
 
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -68,7 +68,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/ChallengeParticipantRepository.php';
     require_once __DIR__ . '/../src/ModerationService.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
-    // Push broadcast page needs these — both for the page itself and for the
+    // Push broadcast page needs these - both for the page itself and for the
     // deferred dispatch loop that runs after the response flushes.
     // PushBroadcastService::dispatch → NotificationRepository::createUnchecked
     //   → PushService::send (web push) + MobilePushService::send (native).
@@ -86,7 +86,7 @@ if (str_starts_with($uri, '/admin')) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 if ($method === 'GET' && $uri === '/health') {
-    // Fast path — no DB, no bootstrap. Render just needs 200 to pass the deploy check.
+    // Fast path - no DB, no bootstrap. Render just needs 200 to pass the deploy check.
     // (The .htaccess rewrite sends /health → health.php before this ever runs,
     //  but this fallback keeps the endpoint working even if .htaccess is bypassed.)
     http_response_code(200);
@@ -136,7 +136,7 @@ ob_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // Guard: initialize Sentry only once per FPM worker process.
-// Without this, \Sentry\init() runs on every request — it re-registers error
+// Without this, \Sentry\init() runs on every request - it re-registers error
 // handlers, creates a new Hub/Client, and registers shutdown functions each time.
 // define() persists for the lifetime of the worker process.
 if (getenv('SENTRY_DSN') && !defined('SENTRY_INITIALIZED')) {

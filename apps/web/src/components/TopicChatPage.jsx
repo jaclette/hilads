@@ -64,7 +64,7 @@ async function shareTopic(title, topicId) {
   const shareTitle = `💬 ${title}`
 
   // Defensive pre-copy: clean URL in clipboard before any system dialog can
-  // mangle it on Copy. See App.jsx share() for the full reasoning — passing
+  // mangle it on Copy. See App.jsx share() for the full reasoning - passing
   // `text` to navigator.share() can result in browsers concatenating fields
   // when the user picks Copy from the share dialog. Pass only { title, url }.
   if (navigator.clipboard?.writeText) {
@@ -119,7 +119,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   // Members-only gate: true once the server returns 403 on the message load
   // (non-member / pending requester). Drops to false the moment a member accepts.
   const [gated,      setGated]      = useState(false)
-  // WS connectivity — when live, the socket delivers messages, so the fallback
+  // WS connectivity - when live, the socket delivers messages, so the fallback
   // poll stays off (it used to re-download the whole list every 30s regardless).
   const [wsConnected, setWsConnected] = useState(() => !!socket?.isConnected)
   // Participant list (shown like an event's "going" strip).
@@ -214,7 +214,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     if (!gated) loadParticipants()
   }, [gated, loadParticipants])
 
-  // WS — join topic room for live message delivery, leave on unmount.
+  // WS - join topic room for live message delivery, leave on unmount.
   // Gated (pending) users do NOT join: the WS server can't verify membership,
   // so joining would leak live message broadcasts despite the HTTP 403.
   useEffect(() => {
@@ -226,7 +226,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       if (!msg) return
       const key = msg.id ?? `${msg.guestId}:${msg.createdAt}`
       // join_request items are mutable (pending → resolved): the resolve
-      // re-broadcasts the same id — upsert it in place so the CTAs resolve live.
+      // re-broadcasts the same id - upsert it in place so the CTAs resolve live.
       if (msg.type === 'join_request' && knownIdsRef.current.has(key)) {
         setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, content: msg.content } : m))
         return
@@ -251,10 +251,10 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     return () => { offC(); offD() }
   }, [socket, loadMessages])
 
-  // Fallback poll — catches messages if WS is down; also re-checks membership
+  // Fallback poll - catches messages if WS is down; also re-checks membership
   // while gated (faster, since gated users have no WS room) so the conversation
   // unlocks right after acceptance. When WS is live and the user is a member,
-  // messages arrive over the socket — no poll. Always pause while the tab hidden.
+  // messages arrive over the socket - no poll. Always pause while the tab hidden.
   useEffect(() => {
     if (!gated && wsConnected) return
     let id
@@ -294,7 +294,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         if (container) container.scrollTop = topBefore + (container.scrollHeight - heightBefore)
       })
     } catch {
-      // silent — user can scroll up again to retry
+      // silent - user can scroll up again to retry
     } finally {
       loadingOlderRef.current = false
       setLoadingOlder(false)
@@ -445,7 +445,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
 
   return (
     <div className="full-page topic-chat-page">
-      {/* Header — topic-specific: back | title (wraps) | share */}
+      {/* Header - topic-specific: back | title (wraps) | share */}
       <div className="page-header topic-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
@@ -475,12 +475,12 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <div className="topic-chat-desc">{topic.description}</div>
       )}
 
-      {/* Expiry — hangouts auto-expire 24h after creation. */}
+      {/* Expiry - hangouts auto-expire 24h after creation. */}
       {formatExpiresIn(topic.expires_at) && (
         <div className="topic-chat-expiry">⏱ {formatExpiresIn(topic.expires_at)}</div>
       )}
 
-      {/* Members strip — same idea as an event's "going" strip. Members only. */}
+      {/* Members strip - same idea as an event's "going" strip. Members only. */}
       {!gated && participants.length > 0 && (
         <button className="topic-members-strip" onClick={() => setShowMembers(true)}>
           <AttendeeAvatars
@@ -496,7 +496,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         </button>
       )}
 
-      {/* Owner controls — edit / delete this hangout. */}
+      {/* Owner controls - edit / delete this hangout. */}
       {isOwner && (
         <div className="topic-owner-row">
           <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>{t('owner.edit')}</button>
@@ -505,7 +505,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       )}
 
       {gated ? (
-        /* Members-only gate — pending requesters cannot read or post. */
+        /* Members-only gate - pending requesters cannot read or post. */
         <div className="topic-gated">
           <span className="topic-gated-emoji">🔒</span>
           <strong className="topic-gated-title">{t('gated.title')}</strong>
@@ -555,7 +555,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
             )
           }
 
-          // Hangout join-request feed item — Accept/Reject (pending) or resolved.
+          // Hangout join-request feed item - Accept/Reject (pending) or resolved.
           if (item.type === 'join_request') {
             let jr = {}
             try { jr = JSON.parse(item.content ?? '{}') } catch { /* malformed */ }

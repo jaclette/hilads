@@ -1,4 +1,4 @@
-# Hilads — MVP
+# Hilads - MVP
 
 ## Vision
 
@@ -19,7 +19,7 @@ Open app
   → city auto-detected by geolocation (or picked manually)
   → choose mode: 🌍 Local (you know this city) or 🧭 Exploring (you want to feel it)
   → Now screen: recurring spots, live events, active topic conversations
-  → jump in — no sign-up required (Ghost mode)
+  → jump in - no sign-up required (Ghost mode)
   → Locals: host your spot, open a recurring hangout, bring people to places you love
   → Explorers: discover what's happening, meet locals, skip the tourist traps
   → register to unlock profile, DMs, friends, vibes, and notifications
@@ -34,7 +34,7 @@ Mode is the primary identity signal. It shapes every screen, every CTA, every ex
 ### 🌍 Local
 
 - You know the city
-- You are an anchor — you make things happen
+- You are an anchor - you make things happen
 - You host recurring events at your favorite spots
 - Your recurrence creates supply → the city always feels alive
 - CTA language: **"Host your spot"**, **"Open your place"**, **"Start a hangout"**
@@ -55,13 +55,13 @@ Mode is set on first join, stored on the profile, visible as an emoji badge in H
 | Screen | What it does |
 |---|---|
 | **Now** | Mixed live feed: recurring spots + events + topics. Recurring events float to top. Mode-aware empty states and FAB. |
-| **Chat** | City chat — real-time public channel. Mode emoji shown per message. |
+| **Chat** | City chat - real-time public channel. Mode emoji shown per message. |
 | **Cities** | Switch city, ranked by live activity score |
 | **Here** | Who's online right now. Mode filter chips (🌍 Local / 🧭 Exploring). Mode emoji per user. |
 | **Messages** | DMs + event chats (registered users) |
 | **Me** | Profile, mode identity, My Events, friends list |
 
-> **Now** is the primary discovery screen. Recurring events are the anchors that keep it alive — sorted first, visually distinct (gold border). Locals are the primary creators of these anchors.
+> **Now** is the primary discovery screen. Recurring events are the anchors that keep it alive - sorted first, visually distinct (gold border). Locals are the primary creators of these anchors.
 
 ---
 
@@ -69,20 +69,20 @@ Mode is set on first join, stored on the profile, visible as an emoji badge in H
 
 ### Ghost (default)
 
-- Instant entry — no sign-up
+- Instant entry - no sign-up
 - Persistent identity: 32-char hex `guestId` stored in `localStorage` / `SecureStore`
 - Nickname + mode chosen on first join
 - Full access to city chat, events, topics, including creating them
 - Cannot access DMs, friends, vibes, or notifications
 
-Ghost identity persists across sessions — the same `guestId` reattaches historical feed messages correctly.
+Ghost identity persists across sessions - the same `guestId` reattaches historical feed messages correctly.
 
 ### Registered
 
 - Email + password or Google OAuth
 - Persistent profile: display name, photo, home city, age, bio, **mode**
 - Unlocks: DMs, friends, vibe system, push notifications, full profile
-- Seamless upgrade from ghost — history preserved
+- Seamless upgrade from ghost - history preserved
 - Badge evolves automatically over time
 
 ---
@@ -107,28 +107,28 @@ The central discovery screen. Shows what's happening in the city right now.
 
 ### Filters
 
-All / 🔥 Events / 💬 Topics — filter pills at the top of the screen.
+All / 🔥 Events / 💬 Topics - filter pills at the top of the screen.
 
 ### Empty states (mode-aware)
 
-- **Local + Events filter**: "Host your spot" CTA — create a recurring event
+- **Local + Events filter**: "Host your spot" CTA - create a recurring event
 - **Local + no events**: "Open your place" prompt
-- **Exploring**: "Nothing here yet — check back soon"
+- **Exploring**: "Nothing here yet - check back soon"
 
 ### Feed item DTO
 
 Both the web and native apps consume a single normalized `FeedItem` shape returned by `GET /channels/{id}/now`. Backend normalizes both events and topics to a consistent contract before sending:
 
-- `kind` — `"event"` | `"topic"`
+- `kind` - `"event"` | `"topic"`
 - `id`, `title`, `description`
 - `event_type`, `source_type` (events only)
 - `starts_at`, `ends_at`, `expires_at` (events only)
 - `location`, `venue` (events only)
 - `participant_count`, `is_participating` (hilads events only)
 - `recurrence_label` (recurring events only)
-- `series_id` (recurring events — presence signals anchor status)
-- `active_now` — true if live event or recently active topic
-- `last_activity_at` — last reply timestamp (topics only)
+- `series_id` (recurring events - presence signals anchor status)
+- `active_now` - true if live event or recently active topic
+- `last_activity_at` - last reply timestamp (topics only)
 - `message_count` (topics only)
 - `category` (topics only)
 
@@ -142,17 +142,17 @@ Public events are returned in a separate `publicEvents` array within the same re
 
 The primary supply mechanism. Locals create these to anchor their city.
 
-- Created by any user — but designed for Locals
+- Created by any user - but designed for Locals
 - Recurrence: daily / every N days / weekly (specific weekdays)
 - Badge: "↻ Every day" / "Mon · Wed · Fri" / "Weekends"
 - Only today's occurrence shown in the Now feed; all occurrences in Upcoming
-- Displayed first in the feed — gold card border on web and mobile
+- Displayed first in the feed - gold card border on web and mobile
 - System-seeded recurring events per city as baseline supply
 
 **Quick presets for Locals:**
-- 🏠 Daily spot — daily 18:00–21:00
-- 🌙 Every evening — daily 20:00–23:00
-- 🎉 Weekends — Sat + Sun
+- 🏠 Daily spot - daily 18:00–21:00
+- 🌙 Every evening - daily 20:00–23:00
+- 🎉 Weekends - Sat + Sun
 
 ### One-shot events
 
@@ -165,13 +165,13 @@ The primary supply mechanism. Locals create these to anchor their city.
 
 - Ingested via Ticketmaster API
 - Shown in Now feed (separate "🎫 Public Events" section) and Upcoming feed
-- "Public" badge — no participant tracking, no event chat
+- "Public" badge - no participant tracking, no event chat
 
 ### Event participants
 
 - Any user (ghost or registered) can join
 - Participant count shown on event card and event screen
-- Participant list visible inside the event — tappable avatars + names
+- Participant list visible inside the event - tappable avatars + names
 - Tapping a registered user opens their profile
 
 ### Event ownership
@@ -199,7 +199,7 @@ User-generated conversation threads attached to a city.
 - Any user (ghost or registered) can create a topic
 - Topics have a title, optional description, and category (`general`, `tips`, `food`, `drinks`, `help`, `meetup`)
 - Topics appear in the Now feed alongside events
-- Topics have their own chat screen — replies show in the topic thread
+- Topics have their own chat screen - replies show in the topic thread
 - Topics are visible even with 0 replies
 - Topics expire after 24 hours of inactivity
 - Join CTA links directly to the topic chat
@@ -229,7 +229,7 @@ Who's online right now in the city.
 
 - Mode filter chips: 🌍 Local / 🧭 Exploring / (all)
 - Mode emoji badge per user in the list
-- Live WS presence — enriched from crew API (registered users' stored mode)
+- Live WS presence - enriched from crew API (registered users' stored mode)
 - Crew member profiles show mode badge
 
 ---
@@ -239,8 +239,8 @@ Who's online right now in the city.
 ### Registered Profile
 
 - Display name + avatar (photo or generated initial)
-- **Mode** (🌍 Local / 🧭 Exploring) — primary identity signal
-- Badge (Fresh / Regular — auto-evolving by account age)
+- **Mode** (🌍 Local / 🧭 Exploring) - primary identity signal
+- Badge (Fresh / Regular - auto-evolving by account age)
 - Vibe score (average rating) + vibe count + vibes received
 - Friends list
 - Add Friend / Message CTA
@@ -251,7 +251,7 @@ Who's online right now in the city.
 - Mode chosen on entry (🌍 / 🧭)
 - 👻 Ghost badge
 - City context
-- Client-side only — no API call
+- Client-side only - no API call
 
 ---
 
@@ -269,7 +269,7 @@ Computed from `users.created_at` at display time. No user action required.
 ## Vibe System
 
 - Any registered user can leave a vibe (1–5 stars + optional message) on another user's profile
-- One vibe per user pair — updatable; edits are silent (no repeated notification)
+- One vibe per user pair - updatable; edits are silent (no repeated notification)
 - Profile shows: vibe score, count, and vibe list
 - Receiving a new vibe triggers in-app + push notification → deep-links to own profile
 
@@ -312,9 +312,9 @@ Registered users only.
 
 ### Delivery
 
-- **In-app bell** — polled every 30s; real-time via WebSocket when open
-- **Web push** — browser VAPID push
-- **Native push** — Expo Push API (Android working; iOS in progress)
+- **In-app bell** - polled every 30s; real-time via WebSocket when open
+- **Web push** - browser VAPID push
+- **Native push** - Expo Push API (Android working; iOS in progress)
   - Deep linking working: DM tap → DM, event tap → event
   - Foreground suppression: no alert when user is already on the relevant screen
   - Anti-noise cooldowns on high-frequency types
@@ -352,8 +352,8 @@ Per-user toggles per type, accessible from the Notifications tab.
 | Platform | Source |
 |---|---|
 | Native (iOS + Android) | Camera + photo library (via `expo-image-picker`) |
-| Web (mobile browser) | Camera capture + library (via `accept="image/*"` — browser native sheet) |
-| Web (desktop browser) | File picker (library only — no camera hardware) |
+| Web (mobile browser) | Camera capture + library (via `accept="image/*"` - browser native sheet) |
+| Web (desktop browser) | File picker (library only - no camera hardware) |
 
 ---
 
@@ -373,7 +373,7 @@ Per-user toggles per type, accessible from the Notifications tab.
 The landing page (`/`) is shown to unauthenticated users before they join a city.
 
 - Hero: "Feel local. Anywhere."
-- Split section: 🌍 Local vs 🧭 Exploring — two distinct CTAs and value propositions
+- Split section: 🌍 Local vs 🧭 Exploring - two distinct CTAs and value propositions
 - Live preview of the detected city: online count, upcoming events, active topics
 - "Join [City]" CTA drops the user directly into the city chat as a Ghost
 - Sign up / Log in available as secondary actions for returning registered users
@@ -399,15 +399,15 @@ Hex-id channels of `type='topic'`, parented to a city channel. Each has a `chann
 
 ### event_series
 
-Stores the recurrence rule for recurring events. Daily cron generates occurrence rows from each series. `ensureTodayOccurrences` runs as a post-response deferred call — never blocks the HTTP response.
+Stores the recurrence rule for recurring events. Daily cron generates occurrence rows from each series. `ensureTodayOccurrences` runs as a post-response deferred call - never blocks the HTTP response.
 
-Recurring events with a `series_id` are the primary anchors of the Now feed — they are sorted first client-side and rendered with a distinct gold border.
+Recurring events with a `series_id` are the primary anchors of the Now feed - they are sorted first client-side and rendered with a distinct gold border.
 
 ### Mode
 
 `mode: 'local' | 'exploring'` stored on:
-- `users.mode` (registered users — DB)
-- `GuestIdentity.mode` (ghost users — localStorage / AsyncStorage)
+- `users.mode` (registered users - DB)
+- `GuestIdentity.mode` (ghost users - localStorage / AsyncStorage)
 - WS presence snapshot (live, per-session)
 
 Enriched in Here screen: crew API provides stored DB mode; WS presence provides live mode.
@@ -415,7 +415,7 @@ Broadcast in WS joinRoom: 5th argument `mode` passed from client on every join.
 
 ### Feed DTO
 
-`GET /channels/{id}/now` returns a single normalized response: `{ items: FeedItem[], publicEvents: FeedItem[] }`. Events and topics share a consistent top-level shape; kind-specific fields are present only where relevant. Web and mobile share the same contract — no client-side remapping.
+`GET /channels/{id}/now` returns a single normalized response: `{ items: FeedItem[], publicEvents: FeedItem[] }`. Events and topics share a consistent top-level shape; kind-specific fields are present only where relevant. Web and mobile share the same contract - no client-side remapping.
 
 ### Real-time
 
@@ -426,7 +426,7 @@ WebSocket server handles presence snapshots and message push. PHP API broadcasts
 ## Performance Strategy
 
 - **Initial message load**: 50 messages (not full history)
-- **Lazy loading**: `before_id` cursor pagination — load older messages on scroll
+- **Lazy loading**: `before_id` cursor pagination - load older messages on scroll
 - **Parallel requests on city join**: messages + events + topics fetched concurrently
 - **Now screen**: single `/now` call returns events + topics + public events (no second request)
 - **Double-load prevention**: 30s stale threshold in native Now screen prevents concurrent refetches on focus
@@ -450,7 +450,7 @@ Internal tool at `/admin` on the API service.
 
 ## Analytics
 
-PostHog — cross-platform, `platform` property on every event.
+PostHog - cross-platform, `platform` property on every event.
 
 **Frontend intent events:** `landing_viewed`, `clicked_join_city`, `clicked_sign_up`, `clicked_sign_in`, `topic_opened`, `event_opened`
 
@@ -462,11 +462,11 @@ PostHog — cross-platform, `platform` property on every event.
 
 | Project | Platform |
 |---|---|
-| `hilads-web` | React (Vite) — `VITE_SENTRY_DSN` |
-| `hilads-backend` | PHP — `SENTRY_DSN` |
-| `hilads-mobile` | Expo / React Native — `EXPO_PUBLIC_SENTRY_DSN` |
+| `hilads-web` | React (Vite) - `VITE_SENTRY_DSN` |
+| `hilads-backend` | PHP - `SENTRY_DSN` |
+| `hilads-mobile` | Expo / React Native - `EXPO_PUBLIC_SENTRY_DSN` |
 
-Sentry is skipped if the DSN env var is not set — safe for local dev.
+Sentry is skipped if the DSN env var is not set - safe for local dev.
 
 ---
 
@@ -490,11 +490,11 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 - City-level public chat (with mode emoji per message)
 - Events (one-shot, recurring, Ticketmaster public)
-- Recurring events as anchors — sorted first, gold border, Local-first creation
-- Mode system (Local / Exploring) — identity, CTA, filter, badge
+- Recurring events as anchors - sorted first, gold border, Local-first creation
+- Mode system (Local / Exploring) - identity, CTA, filter, badge
 - Topics (user-generated city conversations)
-- Ghost mode (instant, no signup — includes mode selection)
-- Registered accounts (optional upgrade — mode persisted on profile)
+- Ghost mode (instant, no signup - includes mode selection)
+- Registered accounts (optional upgrade - mode persisted on profile)
 - Presence and online user tracking (with mode in Here screen)
 - Profile, vibes, badges, friends
 - Direct messages (registered only)
@@ -520,7 +520,7 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 |---|---|
 | Mobile iOS | Push notifications not fully validated end-to-end on TestFlight |
 | My Events | Recurring events may appear as duplicates in the My Events list |
-| Topics | No WebSocket room join yet — uses 5s polling instead of real-time push |
+| Topics | No WebSocket room join yet - uses 5s polling instead of real-time push |
 | City chat | Scroll-to-bottom on open is inconsistent across platforms |
 | Performance | Now feed endpoint p95 latency not yet benchmarked; DB indexes on participant counts and topic queries not fully optimised |
 
@@ -528,13 +528,13 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 ## Next Steps
 
-### Mode — Depth
+### Mode - Depth
 
 - Mode picker on profile edit screen (registered users can change mode)
 - Mode shown on landing page city preview (X Locals, Y Explorers online)
 - Mode-aware onboarding nudge: Locals prompted to create a recurring event on first join
 
-### Growth — Local Host Flywheel
+### Growth - Local Host Flywheel
 
 - Focus on one city: recruit 5–10 local hosts who open recurring spots
 - Track: host creates recurring event → others discover + join → city feels alive → more explorers
@@ -547,7 +547,7 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 - Validate end-to-end on TestFlight (EAS production build)
 - Verify APNs environment entitlement matches build type
 
-### Topics — Real-time
+### Topics - Real-time
 
 - Add WS room join for topic channels to eliminate 5s polling
 
@@ -563,13 +563,13 @@ Sentry is skipped if the DSN env var is not set — safe for local dev.
 
 Hilads is built around **local hosts**.
 
-The supply that makes a city feel alive — recurring events, anchored spots, known hangouts — comes from people who know and love their city. These are **Locals**. Without them the city is empty. With them, Explorers have somewhere to go.
+The supply that makes a city feel alive - recurring events, anchored spots, known hangouts - comes from people who know and love their city. These are **Locals**. Without them the city is empty. With them, Explorers have somewhere to go.
 
 The product flywheel:
 1. A Local opens a recurring spot (bar, café, park, rooftop)
 2. The spot appears in the Now feed, every day, anchored at the top
 3. Explorers find it, join it, meet the Local and each other
-4. The city feels alive — which attracts more Explorers, which motivates more Locals
+4. The city feels alive - which attracts more Explorers, which motivates more Locals
 5. The city becomes a destination
 
 Every design decision should support this flywheel.

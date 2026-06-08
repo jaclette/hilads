@@ -53,17 +53,17 @@
     "checking": "Controleren…",
     "available": "@{{username}} is beschikbaar",
     "aboutMe": "Over mij",
-    "charsLeft": "— nog {{count}}",
+    "charsLeft": "- nog {{count}}",
     "aboutPlaceholder": "Dol op streetfood en spontane gesprekken",
     "email": "E-mail",
-    "readOnly": "— alleen-lezen",
+    "readOnly": "- alleen-lezen",
     "homeCity": "Thuisstad",
     "homeCityPlaceholder": "Waar je woont",
     "age": "Leeftijd",
     "agePlaceholder": "Jouw leeftijd",
     "myVibe": "Mijn vibe",
     "interests": "Interesses",
-    "interestsHint": "— kies er maximaal 5"
+    "interestsHint": "- kies er maximaal 5"
   },
   "ambassador": {
     "title": "Tips van de stad 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Iets wat je geweldig vindt aan deze stad"
   },
   "hangouts": {
-    "empty": "Nog geen meetups — start er een 🗣️",
+    "empty": "Nog geen meetups - start er een 🗣️",
     "host": "Host"
   },
   "events": {
     "going": "Ga ik",
-    "goingEmpty": "Nog geen plannen — vind iets 🔥",
+    "goingEmpty": "Nog geen plannen - vind iets 🔥",
     "hosting": "Organiseer ik",
-    "hostingEmpty": "Nog niets georganiseerd — start iets ✨",
+    "hostingEmpty": "Nog niets georganiseerd - start iets ✨",
     "live": "Live",
     "recurring": "↻ Terugkerend",
     "upcoming": "Binnenkort",
@@ -129,7 +129,7 @@
     "generic": "Er ging iets mis. Probeer opnieuw."
   },
   "challenges": {
-    "empty": "Nog geen challenges — lanceer er een 🔥",
+    "empty": "Nog geen challenges - lanceer er een 🔥",
     "challenger": "Challenger"
   }
 }

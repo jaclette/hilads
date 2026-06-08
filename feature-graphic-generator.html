@@ -72,7 +72,7 @@
     ctx.fillRect(0, 0, W, H);
 
     // ── 4. Subtle noise texture ───────────────────────────────────────────────
-    // (lightweight grain — draws semi-transparent pixels in batches)
+    // (lightweight grain - draws semi-transparent pixels in batches)
     ctx.save();
     for (let i = 0; i < 18000; i++) {
       const x = Math.random() * W;
@@ -134,7 +134,7 @@
     }
     ctx.restore();
 
-    // ── 6. Presence dots (right side — people nearby) ─────────────────────────
+    // ── 6. Presence dots (right side - people nearby) ─────────────────────────
     const presenceDots = [
       [760,120,5], [810,175,4], [840,108,3], [880,160,5],
       [912,95, 3], [790,230,3], [856,252,4], [930,188,3],

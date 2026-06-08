@@ -62,7 +62,7 @@
   "seeAll": "모두 보기 →",
   "oneGoing": "{{name}}님이 참여해요",
   "manyGoing": "{{name}}님 외 {{count}}명 참여",
-  "goingEmpty": "아직 아무도 없어요 — 첫 번째로 참여하세요! 🙌",
+  "goingEmpty": "아직 아무도 없어요 - 첫 번째로 참여하세요! 🙌",
   "noMessages": "아직 메시지가 없어요. 뭔가 말해보세요! 👋",
   "composerSay": "{{title}}에서 뭔가 말해보세요 ✨",
   "composerFirst": "{{title}}에서 첫 번째가 되어보세요 ✨",
@@ -86,11 +86,11 @@
   "errDelete": "이벤트를 삭제하지 못했어요",
   "limit": {
     "title": "오늘 이벤트를 이미 만드셨어요!",
-    "body": "Hilads는 신선함을 유지해요 — 하루에 이벤트 하나로 모든 계획이 마땅한 관심을 받도록 해요. 내일 다시 와서 또 만들어보세요.",
+    "body": "Hilads는 신선함을 유지해요 - 하루에 이벤트 하나로 모든 계획이 마땅한 관심을 받도록 해요. 내일 다시 와서 또 만들어보세요.",
     "legendLink": "👑 Legend가 되어 이벤트를 무제한으로 만들기",
     "legendA11y": "Legend가 되는 방법 알아보기",
     "legendAlertTitle": "👑 Legend 되기",
-    "legendAlertBody": "Legend는 자기 도시를 살아 움직이게 하도록 선정된 로컬이에요 — 원하는 만큼 이벤트를 호스트할 수 있어요. 되고 싶으신가요? contact@hilads.live로 연락 주세요.",
+    "legendAlertBody": "Legend는 자기 도시를 살아 움직이게 하도록 선정된 로컬이에요 - 원하는 만큼 이벤트를 호스트할 수 있어요. 되고 싶으신가요? contact@hilads.live로 연락 주세요.",
     "gotIt": "알겠어요",
     "backToNow": "Now로 돌아가기"
   },

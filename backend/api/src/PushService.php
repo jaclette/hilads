@@ -28,7 +28,7 @@ class PushService
      * - Silently exits if VAPID keys are not configured.
      * - Checks the user's push preference for this notification type.
      * - Deletes subscriptions that return 404/410 (expired or unsubscribed).
-     * - All errors are swallowed — the in-app notification is already persisted.
+     * - All errors are swallowed - the in-app notification is already persisted.
      */
     public static function send(
         string  $userId,
@@ -43,15 +43,15 @@ class PushService
         $vapidPrivate = getenv('VAPID_PRIVATE_KEY') ?: null;
 
         if (!$vapidPublic || !$vapidPrivate) {
-            return; // Web push not configured — skip silently
+            return; // Web push not configured - skip silently
         }
 
         $prefColumn = self::prefColumn($type);
         if ($prefColumn === null) {
-            return; // Unknown type — no push
+            return; // Unknown type - no push
         }
 
-        // Check user preference (row may not exist for new users — fall back to coded defaults)
+        // Check user preference (row may not exist for new users - fall back to coded defaults)
         try {
             $prefStmt = Database::pdo()->prepare(
                 "SELECT $prefColumn FROM notification_preferences WHERE user_id = ?"
@@ -103,7 +103,7 @@ class PushService
                     'privateKey' => $vapidPrivate,
                 ]],
                 ['TTL' => 86400],
-                2 // 2s timeout per push request — on non-FPM this fan-out runs in-request
+                2 // 2s timeout per push request - on non-FPM this fan-out runs in-request
             );
 
             // Interactive Accept/Decline buttons for actionable requests. The SW
@@ -155,7 +155,7 @@ class PushService
                     ->execute($expiredIds);
             }
         } catch (\Throwable) {
-            // Non-fatal — in-app notification is already created
+            // Non-fatal - in-app notification is already created
         }
     }
 }

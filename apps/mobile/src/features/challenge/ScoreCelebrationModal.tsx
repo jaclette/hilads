@@ -11,8 +11,8 @@ type Props = {
   data:     ScoreCelebration | null; // null = closed
   visible:  boolean;
   onClose:  () => void;
-  // PR38 — tap a rank row to open the leaderboard pre-scoped to that
-  // lens. Receives 'city' or 'world'. Optional — when undefined, rows
+  // PR38 - tap a rank row to open the leaderboard pre-scoped to that
+  // lens. Receives 'city' or 'world'. Optional - when undefined, rows
   // stay inert (older callers).
   onOpenLeaderboard?: (scope: 'city' | 'world') => void;
 };
@@ -112,7 +112,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
           toValue: data.points,
           duration: Math.min(900, 200 + data.points * 24),
           easing: Easing.out(Easing.cubic),
-          // count-up reads <Text> from displayPoints — JS driver required
+          // count-up reads <Text> from displayPoints - JS driver required
           useNativeDriver: false,
         }),
       ]),
@@ -142,7 +142,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
 
   const topN         = data.top_n ?? 100;
   // Server returns null when the caller is outside the bounded top-N
-  // window — we surface that as "100+" rather than a numeric rank.
+  // window - we surface that as "100+" rather than a numeric rank.
   const cityRank        = data.rank_month?.city      ?? data.rank_alltime?.city      ?? null;
   const worldRank       = data.rank_month?.global    ?? data.rank_alltime?.global    ?? null;
   const cityInCitiesRank = data.city_rank_month      ?? data.city_rank_alltime       ?? null;
@@ -173,7 +173,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
   return (
     <Modal visible={visible} transparent statusBarTranslucent onRequestClose={onClose}>
       <Animated.View style={[styles.backdrop, { opacity: backdrop }]}>
-        {/* Tap outside to close — same gesture as the CTA. */}
+        {/* Tap outside to close - same gesture as the CTA. */}
         <Pressable style={styles.backdropPressable} onPress={onClose} />
 
         <Animated.View
@@ -187,7 +187,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
             },
           ]}
         >
-          {/* Confetti gutter — purely decorative. Lives above the trophy so
+          {/* Confetti gutter - purely decorative. Lives above the trophy so
               the eye lands on it first. */}
           <Text style={styles.confetti}>✨   🎉   ✨</Text>
 
@@ -222,7 +222,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
             {t(subtitleKey)}
           </Text>
 
-          {/* Per-event breakdown — newest first, capped at 6 server-side.
+          {/* Per-event breakdown - newest first, capped at 6 server-side.
               When the user has more, the trailing "and N more" line keeps
               the modal scannable without truncating the score itself
               (the headline already shows the full delta). */}
@@ -259,7 +259,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
 
           <View style={styles.divider} />
 
-          {/* PR38 — rank rows are tappable when onOpenLeaderboard is
+          {/* PR38 - rank rows are tappable when onOpenLeaderboard is
               provided. Each row routes to the leaderboard pre-scoped
               to its lens; the host is responsible for acking the
               watermark before navigating. */}
@@ -300,10 +300,10 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
             </Pressable>
           </Animated.View>
 
-          {/* City-in-cities row — where the user's CITY ranks among all
+          {/* City-in-cities row - where the user's CITY ranks among all
               cities. Only rendered when the user has a current city set;
-              hidden otherwise to avoid an empty "—" line. Reuses the
-              row2 driver — same fade-in beat as the world row. */}
+              hidden otherwise to avoid an empty "-" line. Reuses the
+              row2 driver - same fade-in beat as the world row. */}
           {data.city_id && (
             <Animated.View style={[{ opacity: row2, width: '100%' }]}>
               <View style={styles.row}>
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     paddingBottom: 22,
     paddingHorizontal: 22,
     alignItems: 'center',
-    // Warm-orange glow ring — the popin is the brand's "yay" moment, so we
+    // Warm-orange glow ring - the popin is the brand's "yay" moment, so we
     // lean into the accent here rather than the neutral surface chrome.
     shadowColor:   '#FF7A3C',
     shadowOpacity: 0.35,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 14,
   },
-  // Per-event breakdown block — sits between the subtitle and the rank
+  // Per-event breakdown block - sits between the subtitle and the rank
   // divider. Each row is a compact "+pts | title / kind" card so the user
   // sees exactly which challenge + step earned them what.
   events: {
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: Radius.md,
   },
-  // PR38 — visual affordance for tappable rank rows.
+  // PR38 - visual affordance for tappable rank rows.
   rowTappable: {
     backgroundColor: 'rgba(255,255,255,0.02)',
   },

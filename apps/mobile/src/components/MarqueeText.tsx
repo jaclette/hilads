@@ -1,5 +1,5 @@
 /**
- * MarqueeText — single-line text that auto-scrolls ONLY when it overflows.
+ * MarqueeText - single-line text that auto-scrolls ONLY when it overflows.
  *
  * Generic, opt-in primitive: any pill/chip can drop it in place of a
  * truncating <Text>. If the text fits its container it renders static with no
@@ -12,11 +12,11 @@
  *     natural width; the container's onLayout reports the available width.
  *     Re-measures on layout / font-scale / text changes.
  *   - Loop: two copies separated by `gap`; translateX 0 → -(textWidth + gap)
- *     at ~`speed` px/s, then Animated.loop resets (invisible — copy 2 sits
+ *     at ~`speed` px/s, then Animated.loop resets (invisible - copy 2 sits
  *     exactly where copy 1 began).
  *   - Native driver only (UI thread). No Reanimated dependency.
  *   - Pauses when `active` is false (tab blurred / app backgrounded).
- *   - `reduceMotion`: never animates — renders static + ellipsis (the caller
+ *   - `reduceMotion`: never animates - renders static + ellipsis (the caller
  *     is responsible for any tap-to-reveal affordance).
  */
 
@@ -30,9 +30,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 interface MarqueeTextProps {
   text:           string;
   textStyle?:     StyleProp<TextStyle>;
-  /** Container (clip window) style — usually `{ flexShrink: 1 }` so it shares row space. */
+  /** Container (clip window) style - usually `{ flexShrink: 1 }` so it shares row space. */
   style?:         StyleProp<ViewStyle>;
-  /** Pill background as 6-digit hex (e.g. '#1a1a1a') — used to build the edge fade. */
+  /** Pill background as 6-digit hex (e.g. '#1a1a1a') - used to build the edge fade. */
   fadeColor:      string;
   /** Px between the two looping copies. */
   gap?:           number;
@@ -115,7 +115,7 @@ export function MarqueeText({
 
   return (
     <View style={[styles.container, style]} onLayout={onContainerLayout}>
-      {/* Hidden measuring copy — absolute + unconstrained → reports natural width. */}
+      {/* Hidden measuring copy - absolute + unconstrained → reports natural width. */}
       <Text
         style={[textStyle, styles.measure]}
         numberOfLines={1}

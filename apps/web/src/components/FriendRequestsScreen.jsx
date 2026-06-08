@@ -12,7 +12,7 @@ function avatarBg(name) {
 }
 
 /**
- * Friend requests inbox — Incoming + Sent tabs.
+ * Friend requests inbox - Incoming + Sent tabs.
  * Subscribes to per-user WS events via the wsClient prop so the lists update
  * live when the other party acts (mirrors the mobile useFriendRequests hook).
  */

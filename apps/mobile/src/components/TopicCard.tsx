@@ -30,9 +30,9 @@ export function TopicCard({
   topic: FeedItem & { kind: 'topic' };
   onPress: () => void;
   pastMode?: boolean;
-  // NOW feed only — formatted distance from the viewer (creator's coords).
+  // NOW feed only - formatted distance from the viewer (creator's coords).
   distanceLabel?: string | null;
-  // NOW feed only — tapping the member row opens the members list.
+  // NOW feed only - tapping the member row opens the members list.
   onAvatarsPress?: () => void;
 }) {
   const { t } = useTranslation('common');

@@ -33,7 +33,7 @@
     "title": "Maging ang lokal na nagpapakilos sa siyudad",
     "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o biyahero na hanapin ang mga ito.",
     "bullets": [
-      "Hamunin ang mga lokal o biyahero — pagkain, lugar, kultura o tulong",
+      "Hamunin ang mga lokal o biyahero - pagkain, lugar, kultura o tulong",
       "Dalhin ang mga tao sa mga spot na mahal mo",
       "Maging ang lokal na natatandaan ng mga tao"
     ],
@@ -60,7 +60,7 @@
       },
       {
         "title": "Mag-launch o tanggapin ang challenge",
-        "desc": "Pwedeng mag-launch ang sinuman ng food, place, culture o help challenge — para sa mga local o sa mga biyahero. Tinatanggap ito ng kabilang side."
+        "desc": "Pwedeng mag-launch ang sinuman ng food, place, culture o help challenge - para sa mga local o sa mga biyahero. Tinatanggap ito ng kabilang side."
       },
       {
         "title": "Magkita in person",
@@ -82,7 +82,7 @@
       "Totoong tao. Totoong lugar. Ngayon na."
     ]
   },
-  "seo": "Ang Hilads ay isang real-time social app kung saan naghahamunan ang mga local at biyahero para tuklasin ang siyudad sa totoong paraan. Tanggapin ang food, place o culture challenge sa Paris, tanggapin ang isa sa Barcelona, o mag-launch ng iyo sa Lisbon — ginagawa ng Hilads na in-person meet-up ang bawat byahe. Walang kailangang account. Sumipot lang.",
+  "seo": "Ang Hilads ay isang real-time social app kung saan naghahamunan ang mga local at biyahero para tuklasin ang siyudad sa totoong paraan. Tanggapin ang food, place o culture challenge sa Paris, tanggapin ang isa sa Barcelona, o mag-launch ng iyo sa Lisbon - ginagawa ng Hilads na in-person meet-up ang bawat byahe. Walang kailangang account. Sumipot lang.",
   "download": {
     "eyebrow": "Mga mobile app",
     "title": "Ang lungsod mo sa bulsa mo.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Cross-city",
     "tagline": "Magpadala ng challenge sa ibang lungsod. Tumanggap ng video bilang proof.",
-    "sub": "Kapag tahimik ang lungsod mo, hindi tahimik ang mundo. Hamunin kahit sino kahit saan — magpapadala sila ng proof, ikaw ang magvavalidate mula sa malayo.",
+    "sub": "Kapag tahimik ang lungsod mo, hindi tahimik ang mundo. Hamunin kahit sino kahit saan - magpapadala sila ng proof, ikaw ang magvavalidate mula sa malayo.",
     "bullets": [
       "Targetin ang isang partikular na lungsod, o buksan para sa kahit sino kahit saan.",
-      "Litrato na may geotag — proof na nangyari.",
+      "Litrato na may geotag - proof na nangyari.",
       "I-validate mula sa sofa. Tanggihan na may dahilan kung hindi tumutugma."
     ],
     "cta": "Subukan ang global challenge"

@@ -15,7 +15,7 @@ export function getLinkPreview(url) {
     try {
       const preview = await fetchLinkPreview(url)
       if (!preview) return null
-      // Hide cards that carry no usable content (no title AND no image) —
+      // Hide cards that carry no usable content (no title AND no image) -
       // showing an empty card is worse than no card.
       if (!preview.title && !preview.image) return null
       return preview

@@ -23,7 +23,7 @@ export function useNotifications(): Result {
       // Sync DM unread count from notification response
       const dmUnread = data.filter(n => n.type === 'dm_message' && !n.is_read).length;
       setUnreadDMs(dmUnread);
-    } catch { /* silent — notifications are non-critical */ }
+    } catch { /* silent - notifications are non-critical */ }
     finally { setLoading(false); }
   }, [setUnreadDMs]);
 

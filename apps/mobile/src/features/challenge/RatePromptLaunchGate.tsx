@@ -10,10 +10,10 @@ import type { RatePrompt } from '@/types';
  * Auto-open the RateSheet when the caller has at least one rate-eligible
  * meet-up (proposed_ends_at < now() AND not yet rated). Three triggers:
  *
- *   1. Cold start — the effect runs once `account.id` is known.
- *   2. WS event `rating_received` — the counterparty just rated; surface
+ *   1. Cold start - the effect runs once `account.id` is known.
+ *   2. WS event `rating_received` - the counterparty just rated; surface
  *      the sheet without waiting for the user to reopen the app.
- *   3. AppState 'active' transition — covers the case where the user was
+ *   3. AppState 'active' transition - covers the case where the user was
  *      backgrounded when the WS event fired (socket disconnected, server
  *      doesn't replay): every foreground refetches, so a push-tap landing
  *      back in the app finds the prompt within ms.
@@ -61,7 +61,7 @@ export function RatePromptLaunchGate() {
     return () => { off(); };
   }, [account?.id]);
 
-  // AppState — every background→active transition refetches. Covers the
+  // AppState - every background→active transition refetches. Covers the
   // backgrounded-WS-missed case (push tap brings user back; WS reconnects
   // but the server doesn't replay, so we resync here).
   useEffect(() => {
@@ -83,7 +83,7 @@ export function RatePromptLaunchGate() {
   }
 
   // RateSheet's onSubmitted fires after a successful POST. It also fires on
-  // recoverable races (409 / 403) where the prompt was stale — either way
+  // recoverable races (409 / 403) where the prompt was stale - either way
   // we treat it as "this prompt is done" and don't re-show.
   function handleSubmitted() {
     setPrompt(null);

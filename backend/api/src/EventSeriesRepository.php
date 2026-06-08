@@ -55,7 +55,7 @@ class EventSeriesRepository
     private static function createOccurrence(array $series, string $date): string
     {
         // Deterministic channel ID: same series + same date always produce the same 16-char hex ID.
-        // This makes concurrent on-demand generation safe — both callers derive the same ID and
+        // This makes concurrent on-demand generation safe - both callers derive the same ID and
         // the second INSERT just hits ON CONFLICT DO NOTHING, leaving zero orphan rows.
         $channelId = substr(hash('sha256', 'series:' . $series['id'] . ':' . $date), 0, 16);
 
@@ -245,7 +245,7 @@ class EventSeriesRepository
     // by VenueSeeder.php from Google Places, or by venues_seed.php fixtures.
     // They have source='import' with source_key prefix 'places:v1:' or
     // 'static:v1:'. For SEO they MUST NOT be materialized as daily channel_events
-    // rows (each one would get its own indexable URL — see /venue/ refactor).
+    // rows (each one would get its own indexable URL - see /venue/ refactor).
     //
     // Anywhere we read from event_series for occurrence generation, we exclude
     // these rows via the NOT_VENUE_SQL fragment. Anywhere we read a single
@@ -295,7 +295,7 @@ class EventSeriesRepository
 
     /**
      * Active venues in a given city channel. Used by /api/v1/cities/{slug}/venues
-     * and by the sitemap generator. Minimal columns — full DTO via findVenue.
+     * and by the sitemap generator. Minimal columns - full DTO via findVenue.
      */
     public static function listVenuesByCity(int $channelIdInt): array
     {
@@ -337,7 +337,7 @@ class EventSeriesRepository
             ],
             'timezone'   => $row['timezone'],
             // Lat/lng populated from Google Places at seed time. Null for
-            // venues seeded before this field was captured — backfilled by
+            // venues seeded before this field was captured - backfilled by
             // scripts/backfill_venue_geo.php. Surfaced so the prerender can
             // emit schema.org GeoCoordinates when present.
             'lat'        => isset($row['lat']) ? (float) $row['lat'] : null,
@@ -628,7 +628,7 @@ class EventSeriesRepository
                 $item['lng'] ?? null,
             ]);
 
-            // ON CONFLICT triggered means a concurrent insert beat us — treat as skipped
+            // ON CONFLICT triggered means a concurrent insert beat us - treat as skipped
             if ($stmt->rowCount() === 0) {
                 $skipped++;
                 continue;
@@ -668,7 +668,7 @@ class EventSeriesRepository
 
     public static function generateOccurrences(array $series, int $lookaheadDays = 7): int
     {
-        // Venue-derived "series" (coffee shops, bars) are not events — they
+        // Venue-derived "series" (coffee shops, bars) are not events - they
         // never get individual indexable URLs. See NOT_VENUE_SQL above.
         if (self::isVenueSeries($series)) return 0;
 
@@ -741,7 +741,7 @@ class EventSeriesRepository
 
         $pdo->beginTransaction();
         try {
-            // ends_on in the past marks the series finished — read-side synthesis
+            // ends_on in the past marks the series finished - read-side synthesis
             // (nextOccurrenceDate/occurrenceDatesInRange) then yields no future
             // dates. The canonical row itself is soft-deleted just below.
             $pdo->prepare("

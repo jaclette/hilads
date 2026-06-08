@@ -15,23 +15,23 @@ import { markOnboardingSeen } from '@/lib/onboarding';
 
 // ── Web parity constants ──────────────────────────────────────────────────────
 // Sourced from apps/web/src/index.css .bottom-nav / .bottom-nav-tab.
-// Keep these in sync with the web CSS — they're the canonical source.
+// Keep these in sync with the web CSS - they're the canonical source.
 
 const ACTIVE_COLOR   = '#FF7A3C';                 // .bottom-nav-tab.active color
 const INACTIVE_COLOR = 'rgba(255,255,255,0.52)';  // .bottom-nav-tab color
 const BAR_BG         = '#141210';                 // opaque variant of rgba(20,18,16,0.96)
 const BAR_BG_SOLID   = '#0d0b09';                 // --bg, matches the dot ring on web
 
-// Dot colors — --hot-dot / --green / --profile-dot
+// Dot colors - --hot-dot / --green / --profile-dot
 const DOT_HOT     = '#FF7A3C';
 const DOT_GREEN   = '#3DDC84';
 const DOT_PROFILE = '#8B5CF6';
 
-// Neon flash for the NOW tab when a feed bump lands — a bright, hot amber flame
+// Neon flash for the NOW tab when a feed bump lands - a bright, hot amber flame
 // that fades in over the dim base icon so the dismissal is hard to miss.
 const NOW_NEON = '#FFC400';
 
-// ── Tab definitions — 4 primary tabs matching web .bottom-nav ─────────────────
+// ── Tab definitions - 4 primary tabs matching web .bottom-nav ─────────────────
 
 type DotKind = 'hot' | 'green' | 'profile' | null;
 
@@ -50,7 +50,7 @@ const TABS: TabDef[] = [
   { name: 'me',   label: 'Me',      icon: 'person', outline: 'person-outline', dot: 'profile' },
 ];
 
-// ── Notification dot — absolute-positioned, top-right of icon box ─────────────
+// ── Notification dot - absolute-positioned, top-right of icon box ─────────────
 
 function TabDot({ kind }: { kind: DotKind }) {
   if (!kind) return null;
@@ -72,10 +72,10 @@ function TabDot({ kind }: { kind: DotKind }) {
 // Web uses a pseudo-element with linear-gradient(180deg, rgba(255,122,60,0.16),
 // rgba(255,122,60,0.06)) + box-shadow: 0 0 20px rgba(255,122,60,0.18). We
 // split that into:
-//   1. glow  — iOS colored shadow on the container (Android doesn't render
+//   1. glow  - iOS colored shadow on the container (Android doesn't render
 //              colored shadows, so we use a subtle oversized tinted View
 //              behind the pill as a faux glow).
-//   2. pill  — LinearGradient with the exact web stops + a 1-px top hairline
+//   2. pill  - LinearGradient with the exact web stops + a 1-px top hairline
 //              faking the web's `inset 0 1px 0 rgba(255,255,255,0.08)`.
 
 function ActivePill() {
@@ -86,7 +86,7 @@ function ActivePill() {
   // + bold orange label.
   //
   // The web's `inset 0 1px 0 rgba(255,255,255,0.08)` top highlight does NOT
-  // translate to RN — a 1px white View renders as a crisp visible line on
+  // translate to RN - a 1px white View renders as a crisp visible line on
   // Android (no anti-aliasing), reading as an unwanted divider above the
   // active tab. Skipped here.
   return (
@@ -100,7 +100,7 @@ function ActivePill() {
   );
 }
 
-// ── Custom tab bar — faithful port of web .bottom-nav ─────────────────────────
+// ── Custom tab bar - faithful port of web .bottom-nav ─────────────────────────
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -167,7 +167,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {focused && <ActivePill />}
 
-            {/* Icon — web: .bottom-nav-icon (26×26 with optional glow). The NOW
+            {/* Icon - web: .bottom-nav-icon (26×26 with optional glow). The NOW
                 tab's wrapper carries the dismissal pulse scale. */}
             <Animated.View
               style={[
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 22,
     paddingTop:           8,
     paddingHorizontal:    10,
-    // Web: box-shadow: 0 -18px 40px rgba(0,0,0,0.55) — dark bleed upward.
+    // Web: box-shadow: 0 -18px 40px rgba(0,0,0,0.55) - dark bleed upward.
     shadowColor:   '#000',
     shadowOffset:  { width: 0, height: -18 },
     shadowOpacity: 0.55,
@@ -236,10 +236,10 @@ const styles = StyleSheet.create({
     position:         'relative',
   },
 
-  // Active-pill colored shadow — iOS only. Android can't render colored
+  // Active-pill colored shadow - iOS only. Android can't render colored
   // shadows in RN, so the active state relies on the pill gradient + icon
   // glow without a faux outline.
-  // Web: 0 0 20px rgba(255,122,60,0.18) — isotropic orange glow.
+  // Web: 0 0 20px rgba(255,122,60,0.18) - isotropic orange glow.
   tabActiveShadow: Platform.select({
     ios: {
       shadowColor:   '#FF7A3C',
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center',
   },
-  // Neon flame overlay — centered over the base icon, opacity-flashed on a bump.
+  // Neon flame overlay - centered over the base icon, opacity-flashed on a bump.
   nowGlow: {
     alignItems:     'center',
     justifyContent: 'center',
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
 export default function TabsLayout() {
   const { joined, city, showOnboarding, setShowOnboarding } = useApp();
 
-  // ── Android hardware back — double-press to exit ───────────────────────────
+  // ── Android hardware back - double-press to exit ───────────────────────────
   // useFocusEffect scopes this handler to when the tab group is focused.
   // It auto-cleans up when a root-stack screen (event, DM, etc.) gains focus,
   // so back navigation on those screens is unaffected.
@@ -336,7 +336,7 @@ export default function TabsLayout() {
 
   // initialRouteName is only read at first mount. Since useAppBoot delays
   // setBooting(false) until after setJoined(true) for returning users, joined
-  // is already true when this navigator first mounts — so it opens on 'chat'
+  // is already true when this navigator first mounts - so it opens on 'chat'
   // directly without ever rendering the 'hot' tab first.
   return (
     <>

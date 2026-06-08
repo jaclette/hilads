@@ -6,7 +6,7 @@ import type { User } from '@/types';
  * Rule: ghost (guest) users cannot view registered profiles.
  * Registered users can always view any profile.
  *
- * This is the single source of truth — enforced on frontend AND backend.
+ * This is the single source of truth - enforced on frontend AND backend.
  */
 export function canAccessProfile(account: User | null): boolean {
   return account !== null;

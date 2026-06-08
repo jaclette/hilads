@@ -5,7 +5,7 @@ import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 
 /**
- * PR3 — schedule band that sits between the thread chat feed and composer.
+ * PR3 - schedule band that sits between the thread chat feed and composer.
  * Web parity for mobile's ThreadScheduleBlock. Same state machine:
  *
  *   phase='accepted', no proposal              → "📅 Propose a date" button
@@ -26,7 +26,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   const hasProposal = thread.proposed_starts_at != null
   const iProposed   = hasProposal && thread.proposed_by_user_id === myUserId
   const iAmCreator  = thread.i_am_creator
-  // PR4 — render off effective_phase ('scheduled' → 'debrief' once meetup ends).
+  // PR4 - render off effective_phase ('scheduled' → 'debrief' once meetup ends).
   const phase       = thread.effective_phase ?? thread.phase
 
   // ── Handlers ──────────────────────────────────────────────────────────────
@@ -65,7 +65,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   }
 
   // ── Render: phase='scheduled' ─────────────────────────────────────────────
-  // Either party can tap ✏️ to reschedule — the backend flips phase back to
+  // Either party can tap ✏️ to reschedule - the backend flips phase back to
   // 'accepted', clears date_approved_at, and the other party re-approves the
   // new proposal.
   if (phase === 'scheduled' && thread.proposed_starts_at) {
@@ -103,7 +103,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
     )
   }
 
-  // PR6 — the manual creator-verdict block that used to live here was retired
+  // PR6 - the manual creator-verdict block that used to live here was retired
   // when the mutual-rating flow shipped. The DB trigger on challenge_ratings
   // now flips phase to 'approved' on the second rating, so 'debrief' is a
   // transient phase the user resolves by tapping the rate-prompt banner on
@@ -141,11 +141,11 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
     )
   }
 
-  // Defensive — unknown future phase. Hide rather than crash.
+  // Defensive - unknown future phase. Hide rather than crash.
   if (phase !== 'accepted' && phase !== 'scheduled') return null
 
   // ── Render: phase='accepted', no proposal ─────────────────────────────────
-  // When hideEmptyCta is set, render nothing — the parent owns the propose
+  // When hideEmptyCta is set, render nothing - the parent owns the propose
   // action (via the pipeline sub-CTA) so we don't duplicate the button.
   if (!hasProposal) {
     if (hideEmptyCta) return null

@@ -64,7 +64,7 @@
     "eventTag": "Event",
     "public": "Public",
     "activeNow": "● Active now",
-    "repliesNew": "No replies yet — be first",
+    "repliesNew": "No replies yet - be first",
     "replies_one": "💬 {{count}} reply",
     "replies_other": "💬 {{count}} replies",
     "going_one": "🙌 {{count}} going",
@@ -138,11 +138,11 @@
   "create": {
     "title": "What's the move?",
     "hangoutTitle": "Start a hangout",
-    "hangoutSub": "Instant — let people join you right now",
+    "hangoutSub": "Instant - let people join you right now",
     "eventTitle": "Create an event",
     "eventSub": "Plan something others can join",
     "challengeTitle": "Launch a challenge",
-    "challengeSub": "Locals & travelers — connect through a challenge",
+    "challengeSub": "Locals & travelers - connect through a challenge",
     "challengePageTitle": "Create a challenge",
     "challengeAudience": "Who's it for?",
     "challengeAudLocals": "Locals",
@@ -161,7 +161,7 @@
     "going": "going",
     "inThisHangout": "in this hangout",
     "loading": "Loading…",
-    "empty": "No one yet — be the first to join! 🙌"
+    "empty": "No one yet - be the first to join! 🙌"
   },
   "nickname": {
     "label": "Nickname",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 You started this event!",
-    "sub": "Make it even better — add a description, update the time, or share it.",
+    "sub": "Make it even better - add a description, update the time, or share it.",
     "edit": "✏️ Edit event"
   },
   "feedNew": {

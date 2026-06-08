@@ -29,7 +29,7 @@
     "title": "Hãy là người địa phương dẫn dắt thành phố",
     "tagline": "Bạn biết những spot. Thách dân địa phương hoặc du khách tìm ra chúng.",
     "bullets": [
-      "Thách dân địa phương hoặc du khách — đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
+      "Thách dân địa phương hoặc du khách - đồ ăn, nơi chốn, văn hóa hoặc giúp đỡ",
       "Đưa người ta đến những spot bạn yêu",
       "Trở thành người địa phương mà mọi người nhớ đến"
     ],
@@ -56,7 +56,7 @@
       },
       {
         "title": "Tung hoặc nhận một thử thách",
-        "desc": "Ai cũng có thể tung thử thách ăn uống, địa điểm, văn hoá hoặc giúp đỡ — cho người địa phương hoặc cho du khách. Bên kia nhận lấy."
+        "desc": "Ai cũng có thể tung thử thách ăn uống, địa điểm, văn hoá hoặc giúp đỡ - cho người địa phương hoặc cho du khách. Bên kia nhận lấy."
       },
       {
         "title": "Gặp nhau trực tiếp",
@@ -78,7 +78,7 @@
       "Người thật. Nơi thật. Ngay bây giờ."
     ]
   },
-  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi người địa phương và du khách thách nhau khám phá thành phố theo cách thật. Nhận thử thách ăn uống, địa điểm hoặc văn hoá ở Paris, nhận một thử thách ở Barcelona, hoặc tung của bạn ở Lisbon — Hilads biến mỗi chuyến đi thành một cuộc gặp trực tiếp. Không cần tài khoản. Cứ đến.",
+  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi người địa phương và du khách thách nhau khám phá thành phố theo cách thật. Nhận thử thách ăn uống, địa điểm hoặc văn hoá ở Paris, nhận một thử thách ở Barcelona, hoặc tung của bạn ở Lisbon - Hilads biến mỗi chuyến đi thành một cuộc gặp trực tiếp. Không cần tài khoản. Cứ đến.",
   "download": {
     "eyebrow": "Ứng dụng di động",
     "title": "Thành phố của bạn trong túi.",
@@ -92,10 +92,10 @@
   "international": {
     "badge": "Giữa các thành phố",
     "tagline": "Gửi thử thách giữa các thành phố. Nhận lại video.",
-    "sub": "Khi thành phố của bạn yên ắng, thế giới thì không. Thách thức bất kỳ ai ở bất cứ đâu — họ gửi bằng chứng, bạn duyệt từ xa.",
+    "sub": "Khi thành phố của bạn yên ắng, thế giới thì không. Thách thức bất kỳ ai ở bất cứ đâu - họ gửi bằng chứng, bạn duyệt từ xa.",
     "bullets": [
       "Nhắm vào một thành phố cụ thể, hoặc mở cho bất kỳ ai bất cứ đâu.",
-      "Ảnh có vị trí — bằng chứng đã diễn ra.",
+      "Ảnh có vị trí - bằng chứng đã diễn ra.",
       "Duyệt từ ghế sofa. Từ chối kèm lý do nếu không khớp."
     ],
     "cta": "Thử thử thách toàn cầu"

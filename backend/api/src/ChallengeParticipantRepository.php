@@ -7,21 +7,21 @@ declare(strict_types=1);
  *
  * A challenge channel is no longer freely readable. The detail page (title,
  * type, creator, count, current taker) stays public + indexable, but every
- * message-lane read/write goes through isParticipant() — which is true iff:
+ * message-lane read/write goes through isParticipant() - which is true iff:
  *
  *   - the viewer is the creator of the challenge, OR
  *   - the viewer has a non-rejected acceptance (the active taker), OR
  *   - the viewer has a challenge_participants row pointing at this channel
  *     AND is not in challenge_kicks
  *
- * Creator + active taker are IMPLICIT participants — no row needed for them
+ * Creator + active taker are IMPLICIT participants - no row needed for them
  * to read. Everyone else clicks "Join this challenge" to drop a row.
  *
  * The legacy challenge_participants table is reused as-is:
  *   PK is (channel_id, guest_id); registered joins set user_id and stuff the
  *   user's id into guest_id too so the UNIQUE composite stays one-row-per
  *   -user. Legacy guest-only rows that pre-date this change are visible to
- *   the new flow only when their user_id is non-null — guest-only rows are
+ *   the new flow only when their user_id is non-null - guest-only rows are
  *   ignored by isParticipant() (the new model is registered-only).
  *
  * Kicks: a challenge_kicks row (challenge_id, user_id) bans the user from
@@ -35,7 +35,7 @@ class ChallengeParticipantRepository
 
     /**
      * True if the viewer has channel-read access. Order:
-     *   1. Creator gate (cheap — uses the challenge row we already have)
+     *   1. Creator gate (cheap - uses the challenge row we already have)
      *   2. Active-acceptor gate
      *   3. Explicit challenge_participants row (registered users only)
      *
@@ -69,7 +69,7 @@ class ChallengeParticipantRepository
         $accStmt->execute([$challengeId, $userId]);
         if ($accStmt->fetchColumn()) return true;
 
-        // (3) Explicit join row (must be registered — guest-only rows ignored)
+        // (3) Explicit join row (must be registered - guest-only rows ignored)
         //     AND not kicked.
         $joinStmt = $pdo->prepare("
             SELECT 1
@@ -90,7 +90,7 @@ class ChallengeParticipantRepository
      *   - visibility check is the caller's job (friends-only / private)
      *
      * Returns true on a fresh insert OR if the row already existed (idempotent
-     * — clicking Join twice is harmless). Returns false ONLY when the join
+     * - clicking Join twice is harmless). Returns false ONLY when the join
      * was actively refused by a kick or by closed_to_new_joins (these are
      * checked separately so the caller can choose the error surface).
      */
@@ -173,7 +173,7 @@ class ChallengeParticipantRepository
     /**
      * Set the caller's notification preference on this challenge. Whitelist
      * is enforced; an unrecognised value is treated as 'milestones'.
-     * Idempotent — no-op if the user isn't a participant (returns false).
+     * Idempotent - no-op if the user isn't a participant (returns false).
      */
     public static function setNotificationPreference(
         string $challengeId,
@@ -205,7 +205,7 @@ class ChallengeParticipantRepository
 
     /**
      * Registered participants for the channel. Used by the publicly visible
-     * participant list on the detail page (per spec — usernames + avatars
+     * participant list on the detail page (per spec - usernames + avatars
      * are public). Capped at $limit; the caller paginates if needed.
      */
     public static function listForChannel(string $challengeId, int $limit = 100): array
@@ -226,7 +226,7 @@ class ChallengeParticipantRepository
             'id'             => $r['id'],
             'displayName'    => $r['display_name'] ?? null,
             'username'       => $r['username']     ?? null,
-            // Falls back to the full-size photo when no thumbnail exists —
+            // Falls back to the full-size photo when no thumbnail exists -
             // matches participantPreview / city-roster behaviour so legacy
             // users without a thumb still get an avatar.
             'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,

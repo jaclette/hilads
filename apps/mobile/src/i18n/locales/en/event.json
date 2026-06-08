@@ -62,7 +62,7 @@
   "seeAll": "See all →",
   "oneGoing": "{{name}} is going",
   "manyGoing": "{{name}} + {{count}} going",
-  "goingEmpty": "No one yet — be the first to join! 🙌",
+  "goingEmpty": "No one yet - be the first to join! 🙌",
   "noMessages": "No messages yet. Say something! 👋",
   "composerSay": "Say something at {{title}} ✨",
   "composerFirst": "Be the first at {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Failed to delete event",
   "limit": {
     "title": "You've already created your event today!",
-    "body": "At Hilads, we keep things fresh — one event per day so every plan gets the attention it deserves. Come back tomorrow to create another one.",
+    "body": "At Hilads, we keep things fresh - one event per day so every plan gets the attention it deserves. Come back tomorrow to create another one.",
     "legendLink": "👑 Become a Legend to create unlimited events",
     "legendA11y": "Learn about becoming a Legend",
     "legendAlertTitle": "👑 Become a Legend",
-    "legendAlertBody": "Legends are locals chosen to keep their city alive — they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
+    "legendAlertBody": "Legends are locals chosen to keep their city alive - they can host as many events as they want. Want to become one? Reach out at contact@hilads.live.",
     "gotIt": "Got it",
     "backToNow": "Back to Now"
   },

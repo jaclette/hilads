@@ -89,14 +89,14 @@ $cities = $pdo->query("SELECT id, name FROM channels WHERE type = 'city' ORDER B
 
 $displayName = $user['display_name'] ?? $user['email'] ?? $user['id'];
 
-admin_head('Roles — ' . $displayName);
+admin_head('Roles - ' . $displayName);
 admin_nav('/admin/users');
 ?>
 <div class="admin-main">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px">
         <a href="/admin/users" class="btn btn-secondary btn-sm">← Users</a>
         <h1 class="page-title" style="margin-bottom:0">
-            Roles — <?= htmlspecialchars($displayName, ENT_QUOTES) ?>
+            Roles - <?= htmlspecialchars($displayName, ENT_QUOTES) ?>
         </h1>
     </div>
 
@@ -158,7 +158,7 @@ admin_nav('/admin/users');
             <div class="form-group">
                 <label>City</label>
                 <select name="city_id" required>
-                    <option value="">— select a city —</option>
+                    <option value="">- select a city -</option>
                     <?php foreach ($cities as $city): ?>
                         <option value="<?= htmlspecialchars($city['id'], ENT_QUOTES) ?>">
                             <?= htmlspecialchars($city['name'], ENT_QUOTES) ?>

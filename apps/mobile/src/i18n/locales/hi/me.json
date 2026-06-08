@@ -24,7 +24,7 @@
   "agePlaceholder": "जैसे 25",
   "fieldMyVibe": "मेरा vibe",
   "fieldInterests": "रुचियां",
-  "interestsHint": "— 5 तक चुनें",
+  "interestsHint": "- 5 तक चुनें",
   "interest": {
     "drinks": "ड्रिंक्स",
     "party": "पार्टी",
@@ -47,12 +47,12 @@
     "tech": "टेक",
     "dating": "डेटिंग"
   },
-  "noHangouts": "अभी तक कोई मुलाक़ात नहीं — एक शुरू करें 🗣️",
+  "noHangouts": "अभी तक कोई मुलाक़ात नहीं - एक शुरू करें 🗣️",
   "host": "Host",
   "going": "जा रहे हैं",
-  "noPlans": "अभी तक कोई प्लान नहीं — कुछ ढूंढें 🔥",
+  "noPlans": "अभी तक कोई प्लान नहीं - कुछ ढूंढें 🔥",
   "hosting": "होस्ट कर रहे हैं",
-  "nothingHosted": "अभी तक कुछ होस्ट नहीं किया — कुछ शुरू करें ✨",
+  "nothingHosted": "अभी तक कुछ होस्ट नहीं किया - कुछ शुरू करें ✨",
   "live": "LIVE",
   "recurring": "रिकरिंग",
   "friendRequests": "फ्रेंड रिक्वेस्ट",
@@ -80,7 +80,7 @@
   "errUsernameShort": "यूज़रनेम कम से कम 3 अक्षरों का होना चाहिए",
   "errUsernameTaken": "वह यूज़रनेम पहले से लिया जा चुका है",
   "errUsernameInvalid": "अमान्य यूज़रनेम",
-  "errSave": "सेव नहीं हो सका — दोबारा कोशिश करें",
+  "errSave": "सेव नहीं हो सका - दोबारा कोशिश करें",
   "signOutTitle": "साइन आउट करें",
   "signOutBody": "क्या आप पक्का चाहते हैं?",
   "deleteAccountTitle": "अकाउंट डिलीट करें?",
@@ -89,5 +89,5 @@
   "errorTitle": "एरर",
   "deleteAccountFail": "अकाउंट डिलीट नहीं हो सका। दोबारा कोशिश करें।",
   "tabChallenges": "चैलेंजेस",
-  "noChallenges": "अभी कोई चैलेंज नहीं — एक लॉन्च करो 🔥"
+  "noChallenges": "अभी कोई चैलेंज नहीं - एक लॉन्च करो 🔥"
 }

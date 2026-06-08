@@ -8,7 +8,7 @@ class Response
      * @param array       $data        Data to encode (used when $preEncoded is null).
      * @param int         $status      HTTP status code.
      * @param string|null $preEncoded  Optional pre-encoded JSON string. When supplied,
-     *                                 $data is ignored and json_encode is skipped — useful
+     *                                 $data is ignored and json_encode is skipped - useful
      *                                 when the caller needs to measure serialisation time
      *                                 separately and avoid encoding the payload twice.
      */

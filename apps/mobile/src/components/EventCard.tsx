@@ -6,7 +6,7 @@ import { Colors, FontSizes, Radius } from '@/constants';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { formatRecurrence } from '@/lib/recurrence';
 
-// Shared compact event card — used by the Now feed (tabs/now.tsx) and the
+// Shared compact event card - used by the Now feed (tabs/now.tsx) and the
 // See-what's-coming screen (upcoming-events.tsx). Keep the two screens visually
 // identical by editing this one place.
 
@@ -28,7 +28,7 @@ function formatTime(ts: number, tz?: string): string {
   );
 }
 
-// Day prefix for events outside today — '' for today, 'Tomorrow · ' for
+// Day prefix for events outside today - '' for today, 'Tomorrow · ' for
 // tomorrow, '{weekday} · ' further out. The Now feed now spans today + 2 days,
 // so a bare time would be ambiguous. Computed in `tz` so the day boundary
 // matches the city's calendar (and the backend window).
@@ -51,14 +51,14 @@ type Props = {
   event:    HiladsEvent | FeedItem;
   tz?:      string;
   onPress:  () => void;
-  // NOW feed only — when set, replaces the address line with the formatted
+  // NOW feed only - when set, replaces the address line with the formatted
   // distance from the viewer (e.g. "300 m", "1.2 km"). Other surfaces (detail,
   // upcoming, past) omit it and keep showing the full address.
   distanceLabel?: string | null;
-  // NOW feed only — tapping the attendee row opens the members list instead of
+  // NOW feed only - tapping the attendee row opens the members list instead of
   // the card. Omitted elsewhere (avatars are not tappable).
   onAvatarsPress?: () => void;
-  // NOW feed only — the feed spans today + 2 days, so prefix the time with the
+  // NOW feed only - the feed spans today + 2 days, so prefix the time with the
   // day (Today→none / Tomorrow / weekday). Other surfaces group by day already.
   showDay?: boolean;
 };
@@ -73,7 +73,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
   const endsAt      = (event as HiladsEvent).ends_at;
   const isLive      = startsAt <= now && expiresAt > now;
 
-  // FeedItem uses event_type; HiladsEvent also has event_type — canonical field
+  // FeedItem uses event_type; HiladsEvent also has event_type - canonical field
   const eventType  = (event as FeedItem).event_type ?? (event as HiladsEvent).event_type ?? 'other';
   const icon       = EVENT_ICONS[eventType] ?? '📌';
   const sourceType = (event as FeedItem).source_type ?? (event as HiladsEvent).source_type ?? 'hilads';

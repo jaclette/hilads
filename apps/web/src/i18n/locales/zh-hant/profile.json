@@ -53,17 +53,17 @@
     "checking": "檢查中…",
     "available": "@{{username}} 可以使用",
     "aboutMe": "關於我",
-    "charsLeft": "— 還剩 {{count}}",
+    "charsLeft": "- 還剩 {{count}}",
     "aboutPlaceholder": "熱愛街頭小吃和隨興的聊天",
     "email": "電子郵件",
-    "readOnly": "— 唯讀",
+    "readOnly": "- 唯讀",
     "homeCity": "居住城市",
     "homeCityPlaceholder": "你住在哪裡",
     "age": "年齡",
     "agePlaceholder": "你的年齡",
     "myVibe": "我的 vibe",
     "interests": "興趣",
-    "interestsHint": "— 最多選 5 個"
+    "interestsHint": "- 最多選 5 個"
   },
   "ambassador": {
     "title": "城市推薦 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "你喜愛這座城市的一件事"
   },
   "hangouts": {
-    "empty": "還沒有聚會 — 開一個吧 🗣️",
+    "empty": "還沒有聚會 - 開一個吧 🗣️",
     "host": "主辦人"
   },
   "events": {
     "going": "要參加",
-    "goingEmpty": "還沒有計畫 — 找點事做 🔥",
+    "goingEmpty": "還沒有計畫 - 找點事做 🔥",
     "hosting": "主辦中",
-    "hostingEmpty": "還沒主辦任何活動 — 來辦一個 ✨",
+    "hostingEmpty": "還沒主辦任何活動 - 來辦一個 ✨",
     "live": "進行中",
     "recurring": "↻ 定期",
     "upcoming": "即將舉行",
@@ -129,7 +129,7 @@
     "generic": "發生錯誤。請重試。"
   },
   "challenges": {
-    "empty": "還沒有挑戰 — 發起一個 🔥",
+    "empty": "還沒有挑戰 - 發起一個 🔥",
     "challenger": "挑戰者"
   }
 }

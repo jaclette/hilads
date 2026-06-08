@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Modifier", "delete": "🗑 Supprimer" },
   "gated": {
     "title": "Sortie réservée aux membres",
-    "pending": "Demande en attente — tu pourras rejoindre la conversation dès qu'un membre accepte.",
+    "pending": "Demande en attente - tu pourras rejoindre la conversation dès qu'un membre accepte.",
     "prompt": "Demande à rejoindre pour voir la conversation et discuter.",
     "requestBtn": "Demander à rejoindre"
   },

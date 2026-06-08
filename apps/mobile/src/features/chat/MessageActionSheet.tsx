@@ -1,5 +1,5 @@
 /**
- * MessageActionSheet — bottom sheet that appears on message long-press.
+ * MessageActionSheet - bottom sheet that appears on message long-press.
  *
  * Shows an emoji strip (❤️ 👍 😂 😮 🔥) + a "Reply" action.
  * Highlighted emojis = already reacted by viewer.
@@ -69,7 +69,7 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
           </TouchableOpacity>
         )}
 
-        {/* Copy action — text messages only; callers pass undefined for images/locations. */}
+        {/* Copy action - text messages only; callers pass undefined for images/locations. */}
         {onCopy && (
           <TouchableOpacity
             style={styles.action}
@@ -81,7 +81,7 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
           </TouchableOpacity>
         )}
 
-        {/* Edit / Delete — only present when the viewer owns the message. Callers
+        {/* Edit / Delete - only present when the viewer owns the message. Callers
             pass undefined for messages they don't own, or for non-editable kinds
             (image/location). */}
         {onEdit && (

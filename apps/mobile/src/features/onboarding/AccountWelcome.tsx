@@ -1,5 +1,5 @@
 /**
- * AccountWelcome — one-time congrats screen shown right after a user creates an
+ * AccountWelcome - one-time congrats screen shown right after a user creates an
  * account (not on login). Friendly, emoji-forward, easy to dismiss (✕ or CTA).
  * Driven by the global `showAccountWelcome` flag (set in sign-up.tsx).
  */

@@ -1,5 +1,5 @@
 /**
- * usePresence — global hook that keeps AppContext.onlineUsers in sync.
+ * usePresence - global hook that keeps AppContext.onlineUsers in sync.
  *
  * Must be mounted once at the root layout level so the list is always up to date
  * regardless of which tab is currently visible.
@@ -49,7 +49,7 @@ export function usePresence(): void {
     );
     if (filtered.length !== usersRef.current.length) {
       setOnlineUsers(filtered);
-      // intentionally do NOT update usersRef — it's the source of truth for
+      // intentionally do NOT update usersRef - it's the source of truth for
       // the live list; if the user later unblocks, a presenceSnapshot will
       // restore them.
     }
@@ -65,7 +65,7 @@ export function usePresence(): void {
     const matchesCity = (data: Record<string, unknown>) =>
       String(data.cityId) === channelId || String(data.channelId) === channelId;
 
-    // presenceSnapshot — full list sent on joinRoom or re-join
+    // presenceSnapshot - full list sent on joinRoom or re-join
     const offSnapshot = socket.on('presenceSnapshot', (data) => {
       if (!matchesCity(data)) return;
       const raw = Array.isArray(data.users) ? (data.users as RawUser[]) : [];
@@ -76,7 +76,7 @@ export function usePresence(): void {
 
       const mapped = raw.map(toOnlineUser);
 
-      // Deduplicate by sessionId — guards against double-delivery or server races.
+      // Deduplicate by sessionId - guards against double-delivery or server races.
       // Also filters out entries with no sessionId (would cause duplicate FlatList keys).
       const seen = new Set<string>();
       const deduped = mapped.filter(u => {
@@ -98,7 +98,7 @@ export function usePresence(): void {
       setOnlineUsers(visible);
     });
 
-    // userJoined — single user entered the city
+    // userJoined - single user entered the city
     const offJoined = socket.on('userJoined', (data) => {
       if (!matchesCity(data)) return;
       const u = data.user as RawUser | undefined;
@@ -116,7 +116,7 @@ export function usePresence(): void {
       setOnlineUsers(next.filter(p => !isBlocked(p.userId ?? null, p.guestId ?? null, blockedRef.current)));
     });
 
-    // userLeft — single user left
+    // userLeft - single user left
     const offLeft = socket.on('userLeft', (data) => {
       if (!matchesCity(data)) return;
       // Some servers nest sessionId inside user object, others at top level

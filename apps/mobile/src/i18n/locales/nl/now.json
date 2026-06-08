@@ -26,12 +26,12 @@
   "create": {
     "title": "Wat gaan we doen?",
     "hangoutLabel": "Start een meetup",
-    "hangoutSub": "Direct — laat mensen nu bij je meedoen",
+    "hangoutSub": "Direct - laat mensen nu bij je meedoen",
     "eventLabel": "Maak een evenement",
     "eventSub": "Plan iets waar anderen aan mee kunnen doen",
     "cancel": "Annuleren",
     "challengeLabel": "Start een challenge",
-    "challengeSub": "Locals & reizigers — verbind via een challenge"
+    "challengeSub": "Locals & reizigers - verbind via een challenge"
   },
   "filterChallenges": "🔥 Challenges",
   "challengesSection": "Challenges",

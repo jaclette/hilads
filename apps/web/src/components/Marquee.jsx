@@ -1,5 +1,5 @@
 /**
- * Marquee — single-line text that auto-scrolls ONLY when it overflows.
+ * Marquee - single-line text that auto-scrolls ONLY when it overflows.
  *
  * Web port of the native MarqueeText (apps/mobile/src/components/MarqueeText.tsx).
  * Same behaviour so the two platforms feel identical:
@@ -10,7 +10,7 @@
  *     translateX 0 -> -(textWidth + gap) at a constant speed, then wraps
  *     invisibly (copy 2 lands exactly where copy 1 began). NOT a ping-pong.
  *   - Re-measures on resize (ResizeObserver) and whenever `text` changes.
- *   - prefers-reduced-motion: never animates — static + ellipsis + title tooltip.
+ *   - prefers-reduced-motion: never animates - static + ellipsis + title tooltip.
  *
  * Timing constants below mirror the native defaults so the platforms stay in sync.
  */
@@ -19,7 +19,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const GAP = 40             // px between the two looping copies (native: gap)
-const SPEED = 40           // px/sec — duration is derived so speed stays constant
+const SPEED = 40           // px/sec - duration is derived so speed stays constant
 const INITIAL_DELAY = 1500 // ms before the first scroll (native: initialDelay)
 const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
 const EPSILON = 1

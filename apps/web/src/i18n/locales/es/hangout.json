@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Editar", "delete": "🗑 Eliminar" },
   "gated": {
     "title": "Quedada solo para miembros",
-    "pending": "Solicitud pendiente — podrás unirte a la conversación en cuanto un miembro acepte.",
+    "pending": "Solicitud pendiente - podrás unirte a la conversación en cuanto un miembro acepte.",
     "prompt": "Pide unirte para ver la conversación y participar.",
     "requestBtn": "Pedir unirse"
   },

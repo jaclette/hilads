@@ -3,7 +3,7 @@ import i18n from './i18n'
 const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
 
 // Mirrors the AUTH_FLAG_KEY constant in App.jsx. Used as a cheap "still
-// authenticated?" check between the long async steps of registerPush —
+// authenticated?" check between the long async steps of registerPush -
 // the user can sign out mid-flight and we'd otherwise hit /push/subscribe
 // after the cookie has already been cleared, producing a 401.
 const AUTH_FLAG_KEY = 'hilads_has_auth'
@@ -25,7 +25,7 @@ function arrayBufferToBase64(buffer) {
 
 /**
  * Register the service worker and subscribe to web push.
- * Safe to call after every login — upserts on the backend.
+ * Safe to call after every login - upserts on the backend.
  *
  * @returns {Promise<boolean>} true if subscribed successfully
  */
@@ -34,7 +34,7 @@ export async function registerPush() {
   if (Notification.permission === 'denied') return false
 
   try {
-    // 1. Register SW (idempotent — returns existing registration if already active)
+    // 1. Register SW (idempotent - returns existing registration if already active)
     const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' })
 
     // 2. Wait for SW to become active
@@ -60,7 +60,7 @@ export async function registerPush() {
     })
 
     // Bail out if the user signed out while we were awaiting permission /
-    // VAPID / pushManager.subscribe — POSTing to /push/subscribe with no
+    // VAPID / pushManager.subscribe - POSTing to /push/subscribe with no
     // cookie returns 401 and surfaces in the console.
     if (!localStorage.getItem(AUTH_FLAG_KEY)) return false
 

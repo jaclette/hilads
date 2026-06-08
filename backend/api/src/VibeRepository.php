@@ -19,7 +19,7 @@ class VibeRepository
                    updated_at = now()
         ")->execute([$authorId, $targetId, $rating, $message]);
 
-        // Return the upserted row — LEFT JOIN so deleted authors don't crash the response
+        // Return the upserted row - LEFT JOIN so deleted authors don't crash the response
         $stmt = $pdo->prepare("
             SELECT v.id, v.rating, v.message, v.created_at, v.updated_at,
                    v.author_id,

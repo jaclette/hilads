@@ -24,7 +24,7 @@
   "agePlaceholder": "z. B. 25",
   "fieldMyVibe": "MEIN VIBE",
   "fieldInterests": "INTERESSEN",
-  "interestsHint": "— wähle bis zu 5",
+  "interestsHint": "- wähle bis zu 5",
   "interest": {
     "drinks": "Drinks",
     "party": "Party",
@@ -47,12 +47,12 @@
     "tech": "Technik",
     "dating": "Dating"
   },
-  "noHangouts": "Noch keine Treffen — starte eins 🗣️",
+  "noHangouts": "Noch keine Treffen - starte eins 🗣️",
   "host": "Host",
   "going": "DABEI",
-  "noPlans": "Noch keine Pläne — finde etwas 🔥",
+  "noPlans": "Noch keine Pläne - finde etwas 🔥",
   "hosting": "ICH ORGANISIERE",
-  "nothingHosted": "Noch nichts organisiert — starte etwas ✨",
+  "nothingHosted": "Noch nichts organisiert - starte etwas ✨",
   "live": "LIVE",
   "recurring": "WIEDERKEHREND",
   "friendRequests": "Freundschaftsanfragen",
@@ -80,7 +80,7 @@
   "errUsernameShort": "Der Benutzername muss mindestens 3 Zeichen lang sein",
   "errUsernameTaken": "Dieser Benutzername ist bereits vergeben",
   "errUsernameInvalid": "Ungültiger Benutzername",
-  "errSave": "Speichern fehlgeschlagen — versuche es erneut",
+  "errSave": "Speichern fehlgeschlagen - versuche es erneut",
   "signOutTitle": "Abmelden",
   "signOutBody": "Bist du sicher?",
   "deleteAccountTitle": "Konto löschen?",
@@ -89,5 +89,5 @@
   "errorTitle": "Fehler",
   "deleteAccountFail": "Konto konnte nicht gelöscht werden. Versuche es erneut.",
   "tabChallenges": "Challenges",
-  "noChallenges": "Noch keine Challenges — starte eine 🔥"
+  "noChallenges": "Noch keine Challenges - starte eine 🔥"
 }

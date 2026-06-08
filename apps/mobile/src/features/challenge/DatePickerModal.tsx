@@ -17,7 +17,7 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
  * from the pipeline sub-CTA) can use the same UI without state-sharing
  * gymnastics. Each instance owns its own state.
  *
- * Pill-based, zero deps — fits Hilads' "dead simple" rule.
+ * Pill-based, zero deps - fits Hilads' "dead simple" rule.
  */
 
 export const TIME_PRESETS = [
@@ -54,7 +54,7 @@ export function DatePickerModal({
   // When the picker is shown over a tab-bar-bearing screen (e.g. /challenge/
   // [id] which Expo Router pushes on top of (tabs)), this returns the tab
   // bar height so we can keep the Submit button above it. Returns 0 when no
-  // Tabs ancestor is mounted — no phantom dead space elsewhere.
+  // Tabs ancestor is mounted - no phantom dead space elsewhere.
   const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const bottomInset = tabBarHeight || insets.bottom;
   const [dayOffset, setDayOffset] = useState<number | null>(0);
@@ -102,7 +102,7 @@ export function DatePickerModal({
 
   // Pre-fill the END-time state from the existing proposal too. Same
   // chip-or-custom branch as start time. Without this, counter-proposing
-  // would silently reset the end to "not set" — a worse round-trip than
+  // would silently reset the end to "not set" - a worse round-trip than
   // before, when the auto-end always populated it.
   useEffect(() => {
     if (!initialEndsAt) return;
@@ -125,7 +125,7 @@ export function DatePickerModal({
     return { offset: i, label: d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' }) };
   });
 
-  // Min selectable date for the native picker — today, so users can't
+  // Min selectable date for the native picker - today, so users can't
   // propose meet-ups in the past. Max = +90 days, plenty of headroom.
   const minPickerDate = new Date(today);
   const maxPickerDate = new Date(today); maxPickerDate.setDate(today.getDate() + 90);
@@ -142,7 +142,7 @@ export function DatePickerModal({
 
   // Resolved start/end times in minutes-since-midnight, used to validate
   // that end is strictly after start. Returns null when a field hasn't been
-  // picked yet — the canSubmit gate below treats null as "incomplete".
+  // picked yet - the canSubmit gate below treats null as "incomplete".
   const startMinutes: number | null = (() => {
     if (customTime) return customTime.h * 60 + customTime.m;
     if (timeKey) {
@@ -170,7 +170,7 @@ export function DatePickerModal({
     // iOS keeps the spinner open until manually dismissed; Android auto-
     // closes after one tap. Either way, a non-null `picked` is the chosen
     // value (or the wheel's current value on iOS). `dismissed` action sends
-    // no date — bail without mutating state.
+    // no date - bail without mutating state.
     if (Platform.OS !== 'ios') setShowDate(false);
     if (!picked) return;
     const d = new Date(picked); d.setHours(0, 0, 0, 0);
@@ -207,7 +207,7 @@ export function DatePickerModal({
     const start = new Date(d);
     start.setHours(startH, startM, 0, 0);
     const startsAt = Math.floor(start.getTime() / 1000);
-    // Resolve end time — same calendar day as start (canSubmit asserted end > start).
+    // Resolve end time - same calendar day as start (canSubmit asserted end > start).
     // No more +1h / +2h auto-default: the proposer ALWAYS sets end explicitly.
     // The rating window opens at proposed_ends_at, so the proposer effectively
     // controls when rating becomes available.
@@ -223,7 +223,7 @@ export function DatePickerModal({
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={styles.backdrop}>
-        {/* Sheet — header pinned top, content scrolls in the middle, Submit
+        {/* Sheet - header pinned top, content scrolls in the middle, Submit
             pinned bottom. paddingBottom clears any bottom tab bar that's
             mounted under us. */}
         <View style={[styles.sheet, { paddingBottom: bottomInset + 8 }]}>
@@ -253,7 +253,7 @@ export function DatePickerModal({
                   </TouchableOpacity>
                 );
               })}
-              {/* Free-form date — opens the native calendar picker. When a
+              {/* Free-form date - opens the native calendar picker. When a
                   custom date is set, the pill shows the chosen date and is
                   treated as selected; tapping it again re-opens the picker. */}
               <TouchableOpacity
@@ -308,7 +308,7 @@ export function DatePickerModal({
               </TouchableOpacity>
             </View>
 
-            {/* Native pickers — iOS renders inline (default 'spinner'), so we
+            {/* Native pickers - iOS renders inline (default 'spinner'), so we
                 wrap in a small frame for visual consistency. Android renders
                 as a transient dialog and auto-dismisses on selection. */}
             {showDate && (
@@ -359,7 +359,7 @@ export function DatePickerModal({
               </View>
             )}
 
-            {/* END TIME — required, no default. The rating window opens at
+            {/* END TIME - required, no default. The rating window opens at
                 this moment (proposed_ends_at), so the proposer effectively
                 controls when rating becomes available. */}
             <Text style={styles.sectionLabel}>{t('schedule.picker.endTimeLabel')}</Text>
@@ -436,7 +436,7 @@ export function DatePickerModal({
             />
           </ScrollView>
 
-          {/* Submit — pinned to the sheet bottom, OUTSIDE the ScrollView so
+          {/* Submit - pinned to the sheet bottom, OUTSIDE the ScrollView so
               it stays visible regardless of how tall the inner content is. */}
           <TouchableOpacity
             style={[styles.submit, !canSubmit && styles.submitDisabled]}
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
     fontSize: FontSizes.md, color: Colors.text,
   },
-  // Inline native picker frame (iOS) — Android renders as a separate dialog
+  // Inline native picker frame (iOS) - Android renders as a separate dialog
   // and doesn't need a wrapper. Border + bg matches the venue input + pills
   // so it reads as another chip-grid section rather than a system overlay.
   nativePickerWrap: {

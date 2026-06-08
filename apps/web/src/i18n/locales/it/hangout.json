@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Modifica", "delete": "🗑 Elimina" },
   "gated": {
     "title": "Ritrovo solo per membri",
-    "pending": "Richiesta in sospeso — potrai partecipare alla conversazione non appena un membro accetta.",
+    "pending": "Richiesta in sospeso - potrai partecipare alla conversazione non appena un membro accetta.",
     "prompt": "Chiedi di partecipare per vedere la conversazione e chattare.",
     "requestBtn": "Chiedi di partecipare"
   },

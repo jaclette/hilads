@@ -1,11 +1,11 @@
 /**
- * Vercel serverless function — per-page prerender for shareable URLs.
+ * Vercel serverless function - per-page prerender for shareable URLs.
  *
  * Why this exists
  * ───────────────
  * Hilads is a Vite SPA. Without server rendering, every shared URL
  * (`/event/:id`, `/e/:id`, `/city/:slug`) returns the same generic
- * `index.html` to social crawlers — WhatsApp, iMessage, Twitter, FB,
+ * `index.html` to social crawlers - WhatsApp, iMessage, Twitter, FB,
  * Slack, LinkedIn. None of them execute JavaScript before reading meta
  * tags, so they never see the per-event / per-city OG metadata that the
  * client-side `setPageMeta()` injects after React mounts.
@@ -13,23 +13,23 @@
  * This function intercepts those routes on Vercel's edge (via `vercel.json`
  * rewrites), fetches the page-specific data from `api.hilads.live`, replaces
  * the OG / Twitter / canonical / `<title>` tags in the SPA shell, and serves
- * the modified HTML. Humans get the same content — only the meta tags
+ * the modified HTML. Humans get the same content - only the meta tags
  * differ. The SPA still hydrates normally.
  *
  * On any failure (API down, slow, malformed payload) the function falls back
- * to the unmodified shell — the page never breaks visibly.
+ * to the unmodified shell - the page never breaks visibly.
  *
  * Caching
  * ───────
- * Events: s-maxage 5min, SWR 24h — attendee counts change minute-to-minute.
- * Cities: s-maxage 1h,  SWR 24h — city metadata is more stable.
+ * Events: s-maxage 5min, SWR 24h - attendee counts change minute-to-minute.
+ * Cities: s-maxage 1h,  SWR 24h - city metadata is more stable.
  */
 
 import { readFile }      from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 
-// SSR translation source — the SAME locale tree the client uses (single source
+// SSR translation source - the SAME locale tree the client uses (single source
 // of truth; these keys are SSR-only so the client never imports them). esbuild
 // (Vercel's function bundler) inlines these JSON imports at build time.
 import en_ssr from '../src/i18n/locales/en/ssr.json' with { type: 'json' }
@@ -55,7 +55,7 @@ import ar_ssr from '../src/i18n/locales/ar/ssr.json' with { type: 'json' }
 const SSR_I18N    = { en: en_ssr, fr: fr_ssr, vi: vi_ssr, es: es_ssr, it: it_ssr, 'pt-br': ptbr_ssr, 'pt-pt': ptpt_ssr, de: de_ssr, nl: nl_ssr, 'zh-hans': zhhans_ssr, 'zh-hant': zhhant_ssr, ja: ja_ssr, ko: ko_ssr, fil: fil_ssr, th: th_ssr, id: id_ssr, hi: hi_ssr, ru: ru_ssr, ar: ar_ssr }
 const DATE_LOCALE = { en: 'en-US', fr: 'fr-FR', vi: 'vi-VN', es: 'es-ES', it: 'it-IT', 'pt-br': 'pt-BR', 'pt-pt': 'pt-PT', de: 'de-DE', nl: 'nl-NL', 'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', ja: 'ja-JP', ko: 'ko-KR', fil: 'fil-PH', th: 'th-TH', id: 'id-ID', hi: 'hi-IN', ru: 'ru-RU', ar: 'ar-SA' }
 const OG_LOCALE   = { en: 'en_US', fr: 'fr_FR', vi: 'vi_VN', es: 'es_ES', it: 'it_IT', 'pt-br': 'pt_BR', 'pt-pt': 'pt_PT', de: 'de_DE', nl: 'nl_NL', 'zh-hans': 'zh_CN', 'zh-hant': 'zh_TW', ja: 'ja_JP', ko: 'ko_KR', fil: 'fil_PH', th: 'th_TH', id: 'id_ID', hi: 'hi_IN', ru: 'ru_RU', ar: 'ar_SA' }
-// Right-to-left locales — emit dir="rtl" on the SSR <html>.
+// Right-to-left locales - emit dir="rtl" on the SSR <html>.
 const RTL_LOCALES = ['ar']
 
 // '' for the default (English) locale; '/fr' | '/vi' otherwise. Used to keep SSR
@@ -165,12 +165,12 @@ async function getShell(req) {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// Mirrors apps/web/src/App.jsx cityToSlug() — keep in sync.
+// Mirrors apps/web/src/App.jsx cityToSlug() - keep in sync.
 function cityToSlug(name) {
   return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-// Mirrors apps/web/src/eventUtils.js eventSlug() — keep in sync.
+// Mirrors apps/web/src/eventUtils.js eventSlug() - keep in sync.
 function eventSlug(event) {
   if (!event?.id) return ''
   const titleSlug = String(event.title || '')
@@ -184,7 +184,7 @@ function eventSlug(event) {
   return titleSlug ? `${titleSlug}-${event.id}` : event.id
 }
 
-// Mirrors apps/web/src/eventUtils.js extractEventHex() — keep in sync.
+// Mirrors apps/web/src/eventUtils.js extractEventHex() - keep in sync.
 function extractEventHex(input) {
   const m = String(input || '').match(/([a-f0-9]{16})$/i)
   return m ? m[1].toLowerCase() : null
@@ -207,7 +207,7 @@ function venueSlugFromName(name, id) {
 
 // Challenge URLs use the exact same `<slug>-<16hex>` shape as events. Kept
 // separate from eventSlug for clarity even though the implementation is
-// identical — if either entity's slug rules diverge later, they don't bleed.
+// identical - if either entity's slug rules diverge later, they don't bleed.
 function challengeSlug(challenge) {
   if (!challenge?.id) return ''
   const titleSlug = String(challenge.title || '')
@@ -254,7 +254,7 @@ async function fetchWithTimeout(url, ms) {
   }
 }
 
-// Status-aware variant — returns { status, data }. Used by the event branch
+// Status-aware variant - returns { status, data }. Used by the event branch
 // so it can pass through a 410 (moderated/removed event) to the crawler
 // instead of silently serving the generic shell as a soft-404.
 async function fetchWithStatus(url, ms) {
@@ -291,7 +291,7 @@ function composeEventMeta(payload, canonicalPath, eventId, locale = 'en') {
 
   let title, description
   if (ev.is_past) {
-    // Past-event framing: honest, no "join now" CTA. Still indexable — past
+    // Past-event framing: honest, no "join now" CTA. Still indexable - past
     // events carry SEO content mass and answer "did X happen" queries.
     const whenDate = ev.starts_at ? formatPastDate(ev.starts_at, payload.timezone, locale) : ''
     const when     = whenDate ? T(locale, 'event.happenedOnFrag', { date: whenDate }) : ''
@@ -320,7 +320,7 @@ function composeEventMeta(payload, canonicalPath, eventId, locale = 'en') {
   }
 }
 
-// Category × city meta — adapts to actual bucket size (events + venues).
+// Category × city meta - adapts to actual bucket size (events + venues).
 function composeCategoryMeta(payload, canonicalPath, locale = 'en') {
   if (!payload?.city?.name || !payload?.category?.label) return null
   const city  = payload.city.name
@@ -424,7 +424,7 @@ function composeCategoryBody(payload, locale = 'en') {
         const slug = eventSlug(e)
         const t = e.starts_at ? formatTime(e.starts_at, payload.city.timezone, locale) : ''
         const w = e.location ? ` · ${htmlEscape(e.location)}` : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}${w}</li>`
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` - ${htmlEscape(t)}` : ''}${w}</li>`
       }).join('')}</ul></section>`
     : ''
 
@@ -437,7 +437,7 @@ function composeCategoryBody(payload, locale = 'en') {
     ? `<section><h2>${venuesHeading}</h2><ul>${venues.slice(0, 20).map(v => {
         const slug = venueSlugFromName(v.name, v.id)
         const icon = v.category === 'bar' ? '🍻' : '☕'
-        const a    = v.address ? ` — ${htmlEscape(v.address)}` : ''
+        const a    = v.address ? ` - ${htmlEscape(v.address)}` : ''
         return `<li>${icon} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${a}</li>`
       }).join('')}</ul></section>`
     : ''
@@ -459,7 +459,7 @@ function composeCategoryBody(payload, locale = 'en') {
 
 // ── Past archive (per-city) ───────────────────────────────────────────────────
 // Server-rendered index of finished one-off hangouts + expired pulses for a
-// city. Indexable ONLY when there's real content — empty archives are noindex
+// city. Indexable ONLY when there's real content - empty archives are noindex
 // so we never publish thin pages. Past hangouts link to their existing
 // /event/<slug> pages (which stay indexable); pulses have no detail page so
 // they're listed as plain text for content mass.
@@ -529,19 +529,19 @@ function composePastBody(payload, items, citySlug, locale = 'en', validatedChall
         const when = e.starts_at ? formatPastDate(e.starts_at, tz, locale) : ''
         const loc  = e.location || e.venue
         const w    = loc ? ` · ${htmlEscape(loc)}` : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${w}</li>`
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${when ? ` - ${htmlEscape(when)}` : ''}${w}</li>`
       }).join('')}</ul></section>`
     : ''
 
   const pulsesSection = pulses.length > 0
     ? `<section><h2>${T(locale, 'past.pastPulsesHeading', { city: htmlEscape(city) })}</h2><ul>${pulses.slice(0, 20).map(p => {
         const replies = p.message_count ?? 0
-        const repliesTxt = replies > 0 ? ` — ${T(locale, replies === 1 ? 'past.replyOne' : 'past.replyMany', { count: replies })}` : ''
+        const repliesTxt = replies > 0 ? ` - ${T(locale, replies === 1 ? 'past.replyOne' : 'past.replyMany', { count: replies })}` : ''
         return `<li>${htmlEscape(p.title)}${repliesTxt}</li>`
       }).join('')}</ul></section>`
     : ''
 
-  // Validated challenges — evergreen content (no expiry), so this section
+  // Validated challenges - evergreen content (no expiry), so this section
   // is the long-tail SEO asset of the past page. Type emoji + title link
   // to the canonical /challenge/{slug}-{id}. Cap at 20 to match the other
   // sections.
@@ -583,7 +583,7 @@ function composeVenueMeta(payload, canonicalPath, venueId, locale = 'en') {
     title:       cityName ? T(locale, 'venue.titleCity', { name: v.name, city: cityName }) : T(locale, 'venue.title', { name: v.name }),
     description,
     url:         `${SITE_BASE}${canonicalPath}`,
-    // No dedicated venue OG image yet — reuse the city card so embeds aren't
+    // No dedicated venue OG image yet - reuse the city card so embeds aren't
     // generic. Cheap to swap to /api/og?type=venue&id=... when we ship it.
     image:       v.city?.slug
                   ? `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(v.city.slug)}`
@@ -619,7 +619,7 @@ function composeCityMeta(payload, canonicalPath, citySlug, upcomingCount = 0, ve
 
   // noindex only when there's truly nothing of substance: zero upcoming
   // events AND zero seeded venues AND zero chat messages AND zero open
-  // challenges. Any one of these makes the page worth indexing — a city
+  // challenges. Any one of these makes the page worth indexing - a city
   // with just a defi or two is still a live page worth surfacing.
   const noindex = upcomingCount === 0 && venueCount === 0 && messageCount === 0 && challengeCount === 0
 
@@ -645,7 +645,7 @@ const ORG_NODE = {
 
 // Site-level entities emitted on every prerendered page. Organization gives
 // Google's brand panel; WebSite establishes site identity. SearchAction is
-// omitted because there's no functional /?q= search endpoint yet — adding it
+// omitted because there's no functional /?q= search endpoint yet - adding it
 // without a backing route would trigger a structured-data warning in GSC.
 const ORG_GRAPH_NODE = {
   '@type': 'Organization',
@@ -676,7 +676,7 @@ function composeEventJsonLd(payload, canonicalUrl) {
   const ev = payload?.event
   if (!ev || !ev.title || !ev.starts_at) return null
 
-  // Place node — venue + address + optional geo. Required by Google for Event
+  // Place node - venue + address + optional geo. Required by Google for Event
   // rich results to qualify.
   const place = {
     '@type': 'Place',
@@ -709,7 +709,7 @@ function composeEventJsonLd(payload, canonicalUrl) {
     description:          payload._descriptionForSchema,
     // organizer.url is required by Google's Event structured data. Hosts have no
     // public profile page, so point a Person organizer at the platform (matches
-    // ORG_NODE) — this clears the GSC "missing field url (in organizer)" warning.
+    // ORG_NODE) - this clears the GSC "missing field url (in organizer)" warning.
     organizer:            ev.host_nickname
                             ? { '@type': 'Person', name: ev.host_nickname, url: SITE_BASE }
                             : ORG_NODE,
@@ -772,9 +772,9 @@ function composeVenueJsonLd(payload, canonicalUrl) {
     url: canonicalUrl,
   }
 
-  // GeoCoordinates — emitted only when both coordinates exist. Unlocks the
+  // GeoCoordinates - emitted only when both coordinates exist. Unlocks the
   // map preview in Google's rich result for LocalBusiness types. Falls back
-  // gracefully (no map preview) when nulls — never errors.
+  // gracefully (no map preview) when nulls - never errors.
   if (typeof v.lat === 'number' && typeof v.lng === 'number') {
     node.geo = {
       '@type':   'GeoCoordinates',
@@ -834,7 +834,7 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents, challenges) {
   ])]
 
   // ItemList signals to Google that the city page is an authoritative index of
-  // events in that city — improves ranking on geographic queries. Cap at 10
+  // events in that city - improves ranking on geographic queries. Cap at 10
   // entries to keep the payload light.
   if (Array.isArray(upcomingEvents) && upcomingEvents.length > 0) {
     graph.push({
@@ -850,7 +850,7 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents, challenges) {
     })
   }
 
-  // Second ItemList — open challenges in this city. Same authority pitch as
+  // Second ItemList - open challenges in this city. Same authority pitch as
   // events, scoped to the new primary entity so /challenge/{slug}-{id} URLs
   // get linked from the city's most-authoritative page.
   if (Array.isArray(challenges) && challenges.length > 0) {
@@ -888,7 +888,7 @@ function flagEmoji(cc) {
 
 // H1 mirrors the title's leading phrase so the searcher's "events in X"
 // query keeps reading consistently from SERP → page. Timeframe-led, same
-// timezone-aware logic as composeCityMeta. Branded suffix dropped — the
+// timezone-aware logic as composeCityMeta. Branded suffix dropped - the
 // title's "| Hilads" is enough; H1 should stay topical.
 function cityH1(city, timeframe, locale = 'en') {
   return T(locale, 'city.h1', { timeframe, city })
@@ -897,7 +897,7 @@ function cityH1(city, timeframe, locale = 'en') {
 // Country-name resolver (ISO-2 → full English name) via Intl, with a small
 // regional flavour map layered on top so popular markets get more specific
 // copy than just "in France". Unmapped countries fall back to the country
-// name alone. Keep this list short and edit by hand — it's the per-city
+// name alone. Keep this list short and edit by hand - it's the per-city
 // differentiation hook for ~80% of traffic.
 const COUNTRY_FLAVOUR = {
   FR: 'café culture, late dinners, after-work apéros',
@@ -973,7 +973,7 @@ const CITY_CATEGORIES = [
 
 // Render a "Browse by category in <city>" block on the city page. Each link
 // goes to /city/<slug>/<category> which the prerender serves with its own
-// content. Only categories with ≥3 events+venues are shown — same threshold
+// content. Only categories with ≥3 events+venues are shown - same threshold
 // the backend uses to gate the sitemap so we never link to a 404.
 function categoryLinksHtml(city, citySlug, events, venues, locale = 'en') {
   const lp = localePrefixFor(locale)
@@ -1060,7 +1060,7 @@ function freshnessLine(events) {
   if (d === 0) return 'Latest activity: today.'
   if (d === 1) return 'Latest activity: yesterday.'
   if (d <= 7)  return `Latest activity: ${d} days ago.`
-  return ''  // older than a week — don't advertise stale freshness
+  return ''  // older than a week - don't advertise stale freshness
 }
 
 // Minimal inline CSS so the SSR body doesn't look broken during the brief
@@ -1099,31 +1099,31 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
     : T(locale, 'city.introEmpty')
   const intro = `${flag} ${htmlEscape(city)}${country ? `, ${htmlEscape(country)}` : ''}${htmlEscape(introSuffix)}`
 
-  // Events list — up to 20, each linking to /event/<slug>-<id> (slug form for
+  // Events list - up to 20, each linking to /event/<slug>-<id> (slug form for
   // SEO authority; prerender 301s bare hex anyway).
   const eventItems = events.slice(0, 20).map(ev => {
     const slug  = eventSlug(ev)
     const when  = ev.starts_at ? formatTime(ev.starts_at, payload.timezone, locale) : ''
     const where = ev.location ? ` · ${htmlEscape(ev.location)}` : ''
-    return `<li><a href="${lp}/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` — ${htmlEscape(when)}` : ''}${where}</li>`
+    return `<li><a href="${lp}/event/${slug}">${htmlEscape(ev.title)}</a>${when ? ` - ${htmlEscape(when)}` : ''}${where}</li>`
   }).join('\n        ')
   const eventsHeading = T(locale, 'city.upcomingEventsHeading', { city: htmlEscape(city) })
   const eventsSection = eventCount > 0
     ? `<section><h2>${eventsHeading}</h2><ul>\n        ${eventItems}\n      </ul></section>`
     : `<section><h2>${eventsHeading}</h2><p>${T(locale, 'city.noEvents')}</p></section>`
 
-  // Venues showcase — up to 6
+  // Venues showcase - up to 6
   let venuesSection = ''
   if (venueCount > 0) {
     const venueItems = venueList.slice(0, 6).map(v => {
       const slug = venueSlugFromName(v.name, v.id)
       const cat  = v.category === 'bar' ? '🍻' : '☕'
-      return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` — ${htmlEscape(v.address)}` : ''}</li>`
+      return `<li>${cat} <a href="${lp}/venue/${slug}">${htmlEscape(v.name)}</a>${v.address ? ` - ${htmlEscape(v.address)}` : ''}</li>`
     }).join('\n        ')
     venuesSection = `<section><h2>${T(locale, 'city.popularVenuesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${venueItems}\n      </ul></section>`
   }
 
-  // Open challenges — up to 10. Type emoji + title link to the canonical
+  // Open challenges - up to 10. Type emoji + title link to the canonical
   // /challenge/{slug}-{id}. Audience badge ("for locals" / "for explorers")
   // disambiguates target. Skipped entirely when the city has no open défi.
   let challengesSection = ''
@@ -1135,13 +1135,13 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
       const audience = ch.audience === 'explorers'
         ? T(locale, 'city.challengeForExplorers')
         : T(locale, 'city.challengeForLocals')
-      return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a> — <em>${htmlEscape(audience)}</em></li>`
+      return `<li>${icon} <a href="${lp}/challenge/${slug}">${htmlEscape(ch.title)}</a> - <em>${htmlEscape(audience)}</em></li>`
     }).join('\n        ')
     challengesSection = `<section><h2>${T(locale, 'city.openChallengesHeading', { city: htmlEscape(city) })}</h2><ul>\n        ${challengeItems}\n      </ul></section>`
   }
 
   // City-specific signals (event mix / venue split / freshness / country
-  // flavour). These are EN-only curated micro-copy — on non-default locales we
+  // flavour). These are EN-only curated micro-copy - on non-default locales we
   // omit the block entirely rather than leak English, keeping the page fully
   // in-language. The localized core content above carries the page.
   let signalsBlock = ''
@@ -1157,7 +1157,7 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
       : ''
   }
 
-  // Evergreen copy — two paragraphs, city-specific.
+  // Evergreen copy - two paragraphs, city-specific.
   const evergreen = `<section><h2>${T(locale, 'common.aboutHiladsInHeading', { city: htmlEscape(city) })}</h2><p>${T(locale, 'city.aboutBody1', { city: htmlEscape(city) })}</p><p>${T(locale, 'city.aboutBody2', { city: htmlEscape(city) })}</p></section>`
 
   const citySlug = cityToSlug(city)
@@ -1180,7 +1180,7 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
 }
 
 // ── Home (localized landing) ──────────────────────────────────────────────────
-// Static — no backend fetch, so the homepage always renders even if the API is
+// Static - no backend fetch, so the homepage always renders even if the API is
 // slow/down. Mirrors the city page shape (meta + body + site graph), localized
 // via the `home.*` ssr.json keys. The final-serve block rewrites meta.url to the
 // per-locale form (/fr/ etc.); hreflang for basePath '/' already emits all locales.
@@ -1211,7 +1211,7 @@ function composeHomeBody(locale = 'en') {
   ].join('\n')
 }
 
-// Body for /event/<id> — H1 + when/where/host + breadcrumb + related events
+// Body for /event/<id> - H1 + when/where/host + breadcrumb + related events
 // in the same city + evergreen. Filters venue-tagged events out of the
 // "Other events" list so we don't link into the redirect chain to /venue/.
 function composeEventBody(payload, otherEvents, locale = 'en') {
@@ -1246,7 +1246,7 @@ function composeEventBody(payload, otherEvents, locale = 'en') {
     ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(city)}</a> › <span>${htmlEscape(ev.title)}</span></nav>`
     : ''
 
-  // Related — other events in the same city, exclude self + venue rows.
+  // Related - other events in the same city, exclude self + venue rows.
   // For a past event this becomes a "Similar upcoming events" funnel back to
   // live content; for a live event it's just "Other events".
   const related = (Array.isArray(otherEvents) ? otherEvents : [])
@@ -1259,14 +1259,14 @@ function composeEventBody(payload, otherEvents, locale = 'en') {
     ? `<section><h2>${relatedHeading}</h2><ul>${related.map(e => {
         const slug = eventSlug(e)
         const t = e.starts_at ? formatTime(e.starts_at, payload.timezone, locale) : ''
-        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` — ${htmlEscape(t)}` : ''}</li>`
+        return `<li><a href="${lp}/event/${slug}">${htmlEscape(e.title)}</a>${t ? ` - ${htmlEscape(t)}` : ''}</li>`
       }).join('')}</ul></section>`
     : ''
 
   const cityLink = city && citySlug
     ? `<p>${T(locale, 'common.seeOnHilads', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'event.otherThingsLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
-  // Internal-link nudge toward challenges in the same city — gives the
+  // Internal-link nudge toward challenges in the same city - gives the
   // /challenge/{slug}-{id} URLs an inbound link from the high-volume event
   // page. Same pattern as the cityLink right above; the link target is the
   // city page (which now has an "Open challenges" section).
@@ -1293,7 +1293,7 @@ function composeEventBody(payload, otherEvents, locale = 'en') {
   ].filter(Boolean).join('\n')
 }
 
-// Body for /venue/<id> — H1 + address/hours + breadcrumb + related venues
+// Body for /venue/<id> - H1 + address/hours + breadcrumb + related venues
 // in the same city + evergreen with venue-type context.
 function composeVenueBody(payload, otherVenues, locale = 'en') {
   const v = payload?.venue
@@ -1327,7 +1327,7 @@ function composeVenueBody(payload, otherVenues, locale = 'en') {
   const cityLink = city && citySlug
     ? `<p>${T(locale, 'venue.whatsHappeningSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'venue.whatsHappeningLink', { city: htmlEscape(city) })}</a>` })}</p>`
     : ''
-  // Mirror of the composeEventBody nudge — same paragraph pattern so venue
+  // Mirror of the composeEventBody nudge - same paragraph pattern so venue
   // pages push internal authority toward /challenge/{slug}-{id} too.
   const challengesLink = city && citySlug
     ? `<p>${T(locale, 'common.seeChallengesSentence', { link: `<a href="${lp}/city/${citySlug}">${T(locale, 'common.seeChallengesLink', { city: htmlEscape(city) })}</a>` })}</p>`
@@ -1353,7 +1353,7 @@ function composeVenueBody(payload, otherVenues, locale = 'en') {
 
 // ── Challenge (Défi) composers ────────────────────────────────────────────────
 // Challenges are the third entity type Hilads indexes for SEO. Schema.org
-// type is `CreativeWork` (not Event) per the implementation plan — an Event
+// type is `CreativeWork` (not Event) per the implementation plan - an Event
 // requires `startDate`, which is meaningless for a persistent challenge and
 // would trigger GSC validation warnings if we faked a sentinel value.
 // CreativeWork validates cleanly + still gives us a rich breadcrumb + the
@@ -1368,10 +1368,10 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
   const isInternational = (ch.mode ?? 'local') === 'international'
 
   // Title strategy:
-  //   - International with target  → "Paris → Tokyo · {title} — Hilads"
+  //   - International with target  → "Paris → Tokyo · {title} - Hilads"
   //     (dual-city in the SERP title is the gold for cross-city SEO; both
   //     city queries can match this row.)
-  //   - International "anywhere"   → "{title} · International challenge — Hilads"
+  //   - International "anywhere"   → "{title} · International challenge - Hilads"
   //   - Local with city            → existing "challenge.title" template
   //   - No city                    → "challenge.titleNoCity"
   let title
@@ -1385,7 +1385,7 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
     title = T(locale, 'challenge.titleNoCity',       { title: ch.title })
   }
 
-  // Description strategy mirrors title — International gets its own variants;
+  // Description strategy mirrors title - International gets its own variants;
   // Local keeps the existing audience-targeted ones.
   let description
   if (isInternational && targetCityName) {
@@ -1444,12 +1444,12 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
   const targetCountry   = payload?.targetCountry  || ''
   const isInternational = (ch.mode ?? 'local') === 'international'
 
-  // CreativeWork — sidesteps the Event-requires-startDate problem while still
+  // CreativeWork - sidesteps the Event-requires-startDate problem while still
   // exposing structured author / about / breadcrumb signals.
   //
   // International rows additionally emit:
-  //   locationCreated      — where the challenge originated (city A)
-  //   audience.geographicArea — recipient location (city B) when targeted,
+  //   locationCreated      - where the challenge originated (city A)
+  //   audience.geographicArea - recipient location (city B) when targeted,
   //                             "Worldwide" semantic when target is null.
   // Both are CreativeWork-native properties (audience.geographicArea is the
   // canonical schema.org pattern for "this content targets people in X").
@@ -1460,7 +1460,7 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
     url:           canonicalUrl,
     inLanguage:    payload?.locale || 'en',
     dateCreated:   ch.created_at ? new Date(ch.created_at * 1000).toISOString() : undefined,
-    // Generic author — pseudonymous-by-default identities mean we never
+    // Generic author - pseudonymous-by-default identities mean we never
     // surface a member's chosen username in indexable structured data.
     // The in-app UI still renders the real name; this is purely the
     // crawler-facing path. Replaces the previous {name: ch.creator_nickname}
@@ -1476,7 +1476,7 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
   }
 
   if (isInternational) {
-    // Place node for the origin city — same shape as the existing about field
+    // Place node for the origin city - same shape as the existing about field
     // but with @type:Place + addressLocality so Google can index it as a
     // location rather than a free-text topic.
     if (cityName) {
@@ -1487,7 +1487,7 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
                          : { '@type': 'PostalAddress', addressLocality: cityName },
       }
     }
-    // Recipient location — the target city if set, otherwise a Worldwide
+    // Recipient location - the target city if set, otherwise a Worldwide
     // semantic. Both render as a CreativeWork.audience with geographicArea.
     work.audience = {
       '@type': 'Audience',
@@ -1504,7 +1504,7 @@ function composeChallengeJsonLd(payload, canonicalUrl) {
           }
         : { audienceType: 'travelers and locals worldwide' }),
     }
-    // Cross-city keyword cluster — search queries like "Paris Tokyo
+    // Cross-city keyword cluster - search queries like "Paris Tokyo
     // challenge" should match this row. Filter blanks before joining.
     work.keywords = [
       'challenge',
@@ -1574,7 +1574,7 @@ function composeChallengeBody(payload, locale = 'en') {
     ? `<nav class="ssr-breadcrumb"><a href="${lp}/">${T(locale, 'brand')}</a> › <a href="${lp}/city/${citySlug}">${htmlEscape(cityName)}</a> › <span>${T(locale, 'challenge.h1Tag')}</span></nav>`
     : ''
 
-  // Badge row — Challenge tag + audience pill + (when validated) ✓ badge.
+  // Badge row - Challenge tag + audience pill + (when validated) ✓ badge.
   // Inlined as text so the SSR body remains paint-fast (no external CSS).
   const statusBadge = isValidated
     ? `<span class="ssr-badge ssr-badge-validated">${T(locale, 'challenge.validatedBadge')}</span>`
@@ -1619,14 +1619,14 @@ function composeBreadcrumb(items) {
   }
 }
 
-// JSON-LD content can include `</script>` in user data — escape that and the
+// JSON-LD content can include `</script>` in user data - escape that and the
 // `<` to keep parsers happy. Standard recipe.
 function jsonLdSafe(obj) {
   return JSON.stringify(obj).replace(/</g, '\\u003C')
 }
 
 // ── HTML transformation ──────────────────────────────────────────────────────
-// Targeted regex per tag — never DOM-parses. If a tag doesn't match (e.g. the
+// Targeted regex per tag - never DOM-parses. If a tag doesn't match (e.g. the
 // shell template changed), that tag is left untouched. Self-healing if the
 // shell drifts.
 
@@ -1646,7 +1646,7 @@ function injectJsonLd(shell, jsonLd) {
 }
 
 // Inject a robots noindex directive into <head>. Used for cities with zero
-// upcoming events AND zero venues AND zero chat messages — genuinely empty
+// upcoming events AND zero venues AND zero chat messages - genuinely empty
 // pages that shouldn't dilute the site's quality signal in Google's index.
 // The shell has no pre-existing robots tag so we always insert (rather than
 // replace).
@@ -1726,7 +1726,7 @@ function injectMeta(shell, meta, locale = 'en') {
       )
   }
 
-  // og:locale must match the page language (shell ships en_US — overriding to
+  // og:locale must match the page language (shell ships en_US - overriding to
   // it is a no-op on default, fr_FR/vi_VN on localized URLs).
   out = out.replace(
     /<meta\s+property="og:locale"\s+content="[^"]*"\s*\/?>/i,
@@ -1887,7 +1887,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
 
         // 301 from /event/<bare-hex> to /event/<slug>-<hex> when we can resolve
         // the event. Consolidates SEO authority on the slug version. Skipped
-        // for /e/<hex> short links (shortlink=1 flag) — those stay short by
+        // for /e/<hex> short links (shortlink=1 flag) - those stay short by
         // design; SEO consolidation still happens via <link rel="canonical">.
         if (data?.event && inputIsHexOnly && !isShortLink) {
           const slugId = eventSlug(data.event)
@@ -1902,7 +1902,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         canonicalPath = data?.event ? `/event/${eventSlug(data.event)}` : `/event/${hex}`
         meta = composeEventMeta(data, canonicalPath, hex, locale)
         if (meta) {
-          cacheMaxAge = 1800                 // 30 min — SSR meta/JSON-LD; crawler freshness doesn't need 5 min, and per-locale URLs multiply backend egress
+          cacheMaxAge = 1800                 // 30 min - SSR meta/JSON-LD; crawler freshness doesn't need 5 min, and per-locale URLs multiply backend egress
           const augmented = {
             ...data,
             _descriptionForSchema: meta.description,
@@ -1959,7 +1959,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           meta = composeChallengeMeta(augmented, canonicalPath, locale)
         }
         if (meta) {
-          cacheMaxAge = 1800   // 30 min — challenges churn slowly, validated state changes rarely
+          cacheMaxAge = 1800   // 30 min - challenges churn slowly, validated state changes rarely
           jsonLd = composeChallengeJsonLd(augmented, meta.url)
           bodyHtml = composeChallengeBody(augmented, locale)
         }
@@ -1973,7 +1973,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           API_TIMEOUT_MS,
         )
 
-        // 301 from /venue/<bare-hex> to /venue/<slug>-<hex> — same SEO
+        // 301 from /venue/<bare-hex> to /venue/<slug>-<hex> - same SEO
         // consolidation move as events.
         if (data?.venue && inputIsHexOnly) {
           const slugId = venueSlugFromName(data.venue.name, data.venue.id)
@@ -1989,7 +1989,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           : `/venue/${hex}`
         meta = composeVenueMeta(data, canonicalPath, hex, locale)
         if (meta) {
-          cacheMaxAge = 3600                 // 1 h — venue info changes rarely
+          cacheMaxAge = 3600                 // 1 h - venue info changes rarely
           jsonLd = composeVenueJsonLd(data, meta.url)
 
           // Body: address/hours + related venues in the same city
@@ -2013,7 +2013,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
           API_TIMEOUT_MS,
         )
         if (data?.city?.name) {
-          cacheMaxAge = 1800            // 30 min — events churn but slower than per-event
+          cacheMaxAge = 1800            // 30 min - events churn but slower than per-event
           meta     = composeCategoryMeta(data, canonicalPath, locale)
           jsonLd   = composeCategoryJsonLd(data, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
           bodyHtml = composeCategoryBody(data, locale)
@@ -2026,9 +2026,9 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         API_TIMEOUT_MS,
       )
       if (cityData?.city) {
-        cacheMaxAge = 3600                 // 1 h — cities stable
+        cacheMaxAge = 3600                 // 1 h - cities stable
         // Parallel: upcoming events (ItemList + body) + venues (body showcase)
-        // + challenges (body section + ItemList). Best-effort — any failure
+        // + challenges (body section + ItemList). Best-effort - any failure
         // is non-fatal; we just emit less content. Same timeout budget as
         // cityData itself.
         const [upcomingData, venuesData, challengesData] = cityData?.channelId
@@ -2048,7 +2048,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
             ])
           : [null, null, null]
         const rawUpcoming   = Array.isArray(upcomingData?.events) ? upcomingData.events : []
-        // Filter out venue-derived "events" — those have a dedicated /venue/
+        // Filter out venue-derived "events" - those have a dedicated /venue/
         // page; including them here would create a 301 chain (city → event →
         // venue) and dilute link equity. They surface separately under
         // "Popular venues". is_venue is set by EventRepository::format.
@@ -2058,7 +2058,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         const upcomingCount  = upcoming.length
         const challengeCount = challenges.length
         // messageCount comes from the by-slug payload (same server-side fetch),
-        // so it's present at SSR time — no separate request that could time out
+        // so it's present at SSR time - no separate request that could time out
         // and falsely flip a chatty city to noindex.
         const messageCount  = Number.isFinite(cityData.messageCount) ? cityData.messageCount : 0
 
@@ -2089,11 +2089,11 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         const items                = Array.isArray(archive?.items)           ? archive.items           : []
         const validatedChallenges  = Array.isArray(validatedData?.challenges) ? validatedData.challenges : []
         // Past page is indexable as soon as ANY of the three archive types
-        // has content — composePastMeta only had `items.length` to decide;
+        // has content - composePastMeta only had `items.length` to decide;
         // also feed it the validated-challenge count so a city with only
         // archived défis is still indexable.
         const totalArchive = items.length + validatedChallenges.length
-        cacheMaxAge = 1800            // 30 min — past content is stable but newly-expired items trickle in
+        cacheMaxAge = 1800            // 30 min - past content is stable but newly-expired items trickle in
         meta     = composePastMeta(cityData, canonicalPath, slug, totalArchive, locale)
         jsonLd   = composePastJsonLd(cityData, items, slug, meta?.url ?? `${SITE_BASE}${canonicalPath}`)
         bodyHtml = composePastBody(cityData, items, slug, locale, validatedChallenges)
@@ -2120,7 +2120,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   let html = setHtmlLang(shell, locale)
 
   // Soft-404 guard: a content-entity route (event/venue/category/city/past) that
-  // produced no meta means the backend has no such record — the redirect checks
+  // produced no meta means the backend has no such record - the redirect checks
   // above already ran, so this is a genuine miss, not a slug/venue redirect.
   // Serve a real 404 + noindex shell (the SPA still boots and can show its own
   // not-found UI) instead of falling through to a 200 generic shell, which Google
@@ -2131,7 +2131,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
     res.setHeader('Content-Type', 'text/html; charset=utf-8')
     // Short cache only: a meta-less miss can also be a transient backend
     // failure (the venue/city/category/past fetches can't distinguish 404 from
-    // 5xx/timeout). 60s bounds the blast radius — a blip that recovers won't
+    // 5xx/timeout). 60s bounds the blast radius - a blip that recovers won't
     // pin a 404 on a valid page, while a genuinely-dead page stays 404 on every
     // recrawl and gets deindexed.
     res.setHeader('Cache-Control', 'public, max-age=60')

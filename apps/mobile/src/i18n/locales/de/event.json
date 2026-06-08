@@ -62,7 +62,7 @@
   "seeAll": "Alle anzeigen →",
   "oneGoing": "{{name}} ist dabei",
   "manyGoing": "{{name}} + {{count}} dabei",
-  "goingEmpty": "Noch niemand — sei der Erste, der teilnimmt! 🙌",
+  "goingEmpty": "Noch niemand - sei der Erste, der teilnimmt! 🙌",
   "noMessages": "Noch keine Nachrichten. Sag was! 👋",
   "composerSay": "Sag was bei {{title}} ✨",
   "composerFirst": "Sei der Erste bei {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Event konnte nicht gelöscht werden",
   "limit": {
     "title": "Du hast heute schon dein Event erstellt!",
-    "body": "Bei Hilads halten wir alles frisch — ein Event pro Tag, damit jeder Plan die Aufmerksamkeit bekommt, die er verdient. Komm morgen wieder, um ein weiteres zu erstellen.",
+    "body": "Bei Hilads halten wir alles frisch - ein Event pro Tag, damit jeder Plan die Aufmerksamkeit bekommt, die er verdient. Komm morgen wieder, um ein weiteres zu erstellen.",
     "legendLink": "👑 Werde eine Legend, um unbegrenzt Events zu erstellen",
     "legendA11y": "Erfahre mehr darüber, eine Legend zu werden",
     "legendAlertTitle": "👑 Werde eine Legend",
-    "legendAlertBody": "Legends sind Locals, die ausgewählt wurden, um ihre Stadt am Leben zu halten — sie können so viele Events hosten, wie sie wollen. Möchtest du eine werden? Melde dich unter contact@hilads.live.",
+    "legendAlertBody": "Legends sind Locals, die ausgewählt wurden, um ihre Stadt am Leben zu halten - sie können so viele Events hosten, wie sie wollen. Möchtest du eine werden? Melde dich unter contact@hilads.live.",
     "gotIt": "Verstanden",
     "backToNow": "Zurück zu Now"
   },

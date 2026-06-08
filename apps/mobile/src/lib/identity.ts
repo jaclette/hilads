@@ -60,7 +60,7 @@ export async function loadOrCreateIdentity(): Promise<GuestIdentity> {
       }
     }
   } catch {
-    // Corrupted storage — create fresh identity
+    // Corrupted storage - create fresh identity
   }
 
   const identity: GuestIdentity = {
@@ -95,7 +95,7 @@ export async function saveDetectedCity(city: City | null): Promise<void> {
       await AsyncStorage.setItem(DETECTED_CITY_KEY, JSON.stringify(city));
     }
   } catch {
-    // Non-critical — worst case the button appears a few seconds late
+    // Non-critical - worst case the button appears a few seconds late
   }
 }
 

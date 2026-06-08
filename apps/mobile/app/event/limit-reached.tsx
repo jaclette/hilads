@@ -1,5 +1,5 @@
 /**
- * Event limit reached — shown when a non-Legend user taps any "Create event"
+ * Event limit reached - shown when a non-Legend user taps any "Create event"
  * CTA after they've already created their event today. Also reached from
  * app/event/create.tsx when the POST returns `event_limit_reached` (server
  * safety net against race conditions).
@@ -40,7 +40,7 @@ export default function EventLimitReachedScreen() {
         const todays = pickTodaysEvent(events, tz);
         setBlockingEvent(todays);
       })
-      .catch(() => { /* non-fatal — keep the screen useful without the pill */ });
+      .catch(() => { /* non-fatal - keep the screen useful without the pill */ });
     return () => { cancelled = true; };
   }, [identity?.guestId, city?.timezone]);
 
@@ -60,7 +60,7 @@ export default function EventLimitReachedScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
 
-      {/* Header: back pill only — no title, clean hero layout */}
+      {/* Header: back pill only - no title, clean hero layout */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -77,7 +77,7 @@ export default function EventLimitReachedScreen() {
         <Text style={styles.title}>{t('limit.title')}</Text>
         <Text style={styles.body}>{t('limit.body')}</Text>
 
-        {/* Blocking event — tap to open, edit, or delete. */}
+        {/* Blocking event - tap to open, edit, or delete. */}
         {blockingEvent && (
           <View style={styles.eventWrap}>
             <EventPill event={blockingEvent} onPress={handleOpenEvent} />
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     paddingHorizontal: 8,
   },
-  // EventPill container — stretches across the hero's available width so the
+  // EventPill container - stretches across the hero's available width so the
   // pill reads like a tappable card, not a narrow chip in the middle.
   eventWrap: {
     alignSelf: 'stretch',

@@ -2,34 +2,34 @@
 
 > Locals open their city. Explorers experience it.
 
-Hilads makes cities feel alive through people. Open the app, choose your mode — 🌍 Local or 🧭 Exploring — and jump into what's happening right now. No sign-up required.
+Hilads makes cities feel alive through people. Open the app, choose your mode - 🌍 Local or 🧭 Exploring - and jump into what's happening right now. No sign-up required.
 
 ---
 
 ## What it does
 
-- **Mode system** — 🌍 Local (you host, you make things happen) vs 🧭 Exploring (you discover, you meet locals); mode shapes every CTA, filter, and experience
-- **Now screen** — mixed live feed: recurring spots + events + topics; recurring events float to top (gold border); mode-aware empty states and FAB
-- **City chat** — public real-time chat, one channel per city, mode emoji per message
-- **Events** — create, join, and edit events; one-shot + recurring venue events (Local hosts) + public Ticketmaster events; every event has its own real-time chat
-- **Recurring events as anchors** — Locals create daily/weekly recurring spots; system-seeded baseline per city; quick presets: Daily spot / Every evening / Weekends
-- **Topics** — user-generated conversation threads attached to a city; appear in the Now feed alongside events
-- **Event participants** — see who's going; tappable participant list inside each event
-- **Upcoming events** — browse the full event calendar for a city
-- **Presence** — live online users, join/leave feed
-- **Here screen** — browse online users with mode filter chips (🌍 / 🧭), view profiles, add friends
-- **Ghost mode** — instant access with a persistent identity + mode, no sign-up required
-- **Profiles** — mode identity, badge, vibe score, friends list, vibes received
-- **Vibe system** — leave a 1–5 star vibe + message on any user's profile
-- **Badge system** — 🌱 Fresh / ⭐ Regular — evolves automatically over time
-- **Friends** — add from profiles, view friend lists
-- **Direct messages** — 1:1 private chat for registered users, with photo sharing
-- **Notifications** — in-app bell + web push + native push (Android working; iOS in progress)
-- **Notification preferences** — per-type toggles
-- **Photo sharing** — city chat, event chats, DMs; native: camera + library; web mobile: camera capture + library; web desktop: file picker
-- **Landing page** — "Feel local. Anywhere." hero + Local vs Exploring split section + live city preview (count, events, topics)
-- **Analytics** — PostHog cross-platform (web + mobile + backend)
-- **Error monitoring** — Sentry across web, backend, and native
+- **Mode system** - 🌍 Local (you host, you make things happen) vs 🧭 Exploring (you discover, you meet locals); mode shapes every CTA, filter, and experience
+- **Now screen** - mixed live feed: recurring spots + events + topics; recurring events float to top (gold border); mode-aware empty states and FAB
+- **City chat** - public real-time chat, one channel per city, mode emoji per message
+- **Events** - create, join, and edit events; one-shot + recurring venue events (Local hosts) + public Ticketmaster events; every event has its own real-time chat
+- **Recurring events as anchors** - Locals create daily/weekly recurring spots; system-seeded baseline per city; quick presets: Daily spot / Every evening / Weekends
+- **Topics** - user-generated conversation threads attached to a city; appear in the Now feed alongside events
+- **Event participants** - see who's going; tappable participant list inside each event
+- **Upcoming events** - browse the full event calendar for a city
+- **Presence** - live online users, join/leave feed
+- **Here screen** - browse online users with mode filter chips (🌍 / 🧭), view profiles, add friends
+- **Ghost mode** - instant access with a persistent identity + mode, no sign-up required
+- **Profiles** - mode identity, badge, vibe score, friends list, vibes received
+- **Vibe system** - leave a 1–5 star vibe + message on any user's profile
+- **Badge system** - 🌱 Fresh / ⭐ Regular - evolves automatically over time
+- **Friends** - add from profiles, view friend lists
+- **Direct messages** - 1:1 private chat for registered users, with photo sharing
+- **Notifications** - in-app bell + web push + native push (Android working; iOS in progress)
+- **Notification preferences** - per-type toggles
+- **Photo sharing** - city chat, event chats, DMs; native: camera + library; web mobile: camera capture + library; web desktop: file picker
+- **Landing page** - "Feel local. Anywhere." hero + Local vs Exploring split section + live city preview (count, events, topics)
+- **Analytics** - PostHog cross-platform (web + mobile + backend)
+- **Error monitoring** - Sentry across web, backend, and native
 
 ---
 
@@ -55,11 +55,11 @@ Open app
 
 ```
 apps/
-  web/          React 18 + Vite — mobile-first PWA
+  web/          React 18 + Vite - mobile-first PWA
   mobile/       Expo SDK 52 + React Native (iOS + Android)
 backend/
   api/          PHP 8.2 REST API (Docker + Apache)
-    admin/      Internal backoffice (/admin — ops only)
+    admin/      Internal backoffice (/admin - ops only)
     src/        Repositories, services, push
     scripts/    VAPID key generation, seed scripts
   ws/           Node.js WebSocket server
@@ -70,19 +70,19 @@ infra/          Infrastructure notes
 render.yaml     Render service definitions
 ```
 
-**Backend** — thin by design: router → repositories → PDO → PostgreSQL. No framework, no ORM.
+**Backend** - thin by design: router → repositories → PDO → PostgreSQL. No framework, no ORM.
 
-**WebSocket server** — handles presence snapshots and real-time message push. PHP broadcasts via internal HTTP (fire-and-forget).
+**WebSocket server** - handles presence snapshots and real-time message push. PHP broadcasts via internal HTTP (fire-and-forget).
 
-**Feed DTO** — `GET /channels/{id}/now` returns a single normalized `{ items, publicEvents }` response. Events and topics share a consistent shape; web and mobile consume the same contract.
+**Feed DTO** - `GET /channels/{id}/now` returns a single normalized `{ items, publicEvents }` response. Events and topics share a consistent shape; web and mobile consume the same contract.
 
-**Push notifications** — web push (VAPID) + native push via Expo Push API. Token registered at `POST /api/v1/push/mobile-token`.
+**Push notifications** - web push (VAPID) + native push via Expo Push API. Token registered at `POST /api/v1/push/mobile-token`.
 
-**Message pagination** — initial load: 50 messages. Older messages fetched via `before_id` cursor (`GET /channels/{id}/messages?before_id=<id>&limit=50`).
+**Message pagination** - initial load: 50 messages. Older messages fetched via `before_id` cursor (`GET /channels/{id}/messages?before_id=<id>&limit=50`).
 
-**Schema migrations** — applied idempotently inside `Database::pdo()` on first connection. No migration runner.
+**Schema migrations** - applied idempotently inside `Database::pdo()` on first connection. No migration runner.
 
-**Message retention** — daily cron purges city chat (> today), topic chat (inactive > 24h), event chat (expired + 1h), DMs (> 7 days).
+**Message retention** - daily cron purges city chat (> today), topic chat (inactive > 24h), event chat (expired + 1h), DMs (> 7 days).
 
 ---
 
@@ -138,7 +138,7 @@ cp .env.example .env.local
 # set EXPO_PUBLIC_API_URL=http://192.168.x.x:8080  ← use LAN IP, not localhost
 # set EXPO_PUBLIC_WS_URL=ws://192.168.x.x:8081
 
-npm run dev        # Expo Go — fastest for iteration
+npm run dev        # Expo Go - fastest for iteration
 npm run android    # Android emulator or device
 npm run ios        # iOS simulator (Mac only)
 ```
@@ -149,7 +149,7 @@ Push notifications require a physical device and an EAS build.
 
 ---
 
-## Mobile — Production Build (EAS)
+## Mobile - Production Build (EAS)
 
 ```bash
 npm install -g eas-cli
@@ -307,12 +307,12 @@ Returns `404` if `MIGRATION_KEY` is not configured, `403` on wrong key.
 
 Two daily jobs, both protected by `MIGRATION_KEY`:
 
-**Generate recurring event occurrences** — 2:00 AM UTC
+**Generate recurring event occurrences** - 2:00 AM UTC
 ```
 POST /internal/event-series/generate?key=YOUR_KEY
 ```
 
-**Cleanup stale messages + expired channels** — 3:00 AM UTC
+**Cleanup stale messages + expired channels** - 3:00 AM UTC
 ```
 POST /internal/cleanup?key=YOUR_KEY
 ```
@@ -348,9 +348,9 @@ Venue list: `backend/api/src/venues_seed.php`.
 
 | Service | Platform | Config |
 |---|---|---|
-| PHP API | Render (Docker) | `render.yaml` — auto-deploy on push to `main` |
-| WebSocket | Render (Node) | `render.yaml` — persistent process |
-| Web frontend | Vercel | `apps/web` — auto-deploy on push to `main` |
+| PHP API | Render (Docker) | `render.yaml` - auto-deploy on push to `main` |
+| WebSocket | Render (Node) | `render.yaml` - persistent process |
+| Web frontend | Vercel | `apps/web` - auto-deploy on push to `main` |
 | Native builds | EAS (Expo) | `eas build --platform android/ios` |
 
 Production URLs:
@@ -371,9 +371,9 @@ Internal ops tool at `/admin` on the API service.
 
 | Route | Description |
 |---|---|
-| `GET /admin` | Dashboard — stats overview |
-| `GET /admin/users` | User list — searchable, read-only |
-| `GET /admin/events` | Event list — filterable by status |
+| `GET /admin` | Dashboard - stats overview |
+| `GET /admin/users` | User list - searchable, read-only |
+| `GET /admin/events` | Event list - filterable by status |
 | `GET /admin/events/{id}/edit` | Edit event fields |
 | `POST /admin/events/{id}/delete` | Soft-delete an event |
 
@@ -388,7 +388,7 @@ apps/mobile/
   app/
     _layout.tsx              Root layout, boot sequence, push token registration
     (tabs)/
-      now.tsx                Now feed — events + topics + filters
+      now.tsx                Now feed - events + topics + filters
       chat.tsx               City chat (tab entry point)
       cities.tsx             City list + switcher
       here.tsx               Online users in current city
@@ -446,7 +446,7 @@ PostHog tracks cross-platform behaviour. Every event includes a `platform` prope
 | `hilads-backend` | `SENTRY_DSN` |
 | `hilads-mobile` | `EXPO_PUBLIC_SENTRY_DSN` |
 
-Sentry is skipped if the DSN is not set — safe for local dev.
+Sentry is skipped if the DSN is not set - safe for local dev.
 
 ---
 
@@ -456,7 +456,7 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 |---|---|
 | Mobile iOS | Push notifications not fully validated end-to-end on TestFlight |
 | My Events | Recurring events may appear as duplicates in the list |
-| Topics | No WebSocket room join yet — uses 5s polling |
+| Topics | No WebSocket room join yet - uses 5s polling |
 | City chat | Scroll-to-bottom on open inconsistent across platforms |
 | Performance | Now feed endpoint not benchmarked; DB indexes on participant counts + topic queries not fully optimised |
 
@@ -464,12 +464,12 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 ## Next Steps
 
-**Mode — Depth**
+**Mode - Depth**
 - Mode picker on profile edit screen (registered users can change mode)
 - Mode shown on landing page city preview (X Locals, Y Explorers online)
 - Mode-aware onboarding nudge: Locals prompted to create a recurring event on first join
 
-**Growth — Local Host Flywheel**
+**Growth - Local Host Flywheel**
 - Recruit 5–10 local hosts per city who open recurring spots
 - Track: host creates recurring event → others discover + join → city feels alive → more explorers
 - Shareable event deeplinks: `hilads.live/event/[id]`
@@ -480,7 +480,7 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 - Validate end-to-end on TestFlight (EAS production build)
 - Verify APNs environment entitlement matches build type
 
-**Topics — Real-time**
+**Topics - Real-time**
 - Add WS room join for topic channels (eliminate 5s polling)
 
 **Performance**
@@ -492,17 +492,17 @@ Sentry is skipped if the DSN is not set — safe for local dev.
 
 ## Docs
 
-- [`docs/mvp.md`](docs/mvp.md) — full product definition and architecture concepts
-- [`docs/design.md`](docs/design.md) — UX and visual direction
-- [`CLAUDE.md`](CLAUDE.md) — tech lead guidelines for AI agents
+- [`docs/mvp.md`](docs/mvp.md) - full product definition and architecture concepts
+- [`docs/design.md`](docs/design.md) - UX and visual direction
+- [`CLAUDE.md`](CLAUDE.md) - tech lead guidelines for AI agents
 
 ---
 
 ## Principles
 
-- Mobile-first, always — no web UI patterns
-- No sign-up friction — Ghost mode is a first-class identity (includes mode selection)
-- Locals are the supply — their recurring spots are what make the city feel alive
-- Mode shapes everything — Local vs Exploring is not a label, it's a role
-- Simplicity over engineering — no framework, no ORM, no premature abstractions
+- Mobile-first, always - no web UI patterns
+- No sign-up friction - Ghost mode is a first-class identity (includes mode selection)
+- Locals are the supply - their recurring spots are what make the city feel alive
+- Mode shapes everything - Local vs Exploring is not a label, it's a role
+- Simplicity over engineering - no framework, no ORM, no premature abstractions
 - One product rule: *does this make the city feel more alive right now?*

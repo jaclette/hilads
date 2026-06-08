@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 /**
- * ArrivalsBar — slim strip between the chat header and the messages list.
+ * ArrivalsBar - slim strip between the chat header and the messages list.
  *
  * Two visual states (crossfaded in place, fixed height):
  *   - default: "Recent arrivals" + chevron, tap → opens sheet
@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next'
  *
  * A new arrival displays for 3s. Up to 3 queued arrivals wait their turn.
  * If a 4th comes in, the oldest queued (NOT the currently displayed one)
- * is dropped — perceived timing stays stable.
+ * is dropped - perceived timing stays stable.
  */
 
 const LIVE_DURATION_MS = 3000
@@ -103,7 +103,7 @@ export function ArrivalsBar({ arrivals, onOpen, onTapUser }) {
 }
 
 /**
- * ArrivalsSheet — bottom-sheet list of recent arrivals. Same chronology and
+ * ArrivalsSheet - bottom-sheet list of recent arrivals. Same chronology and
  * wording as the in-feed pill it replaces. Tapping a row opens the user's
  * profile.
  */

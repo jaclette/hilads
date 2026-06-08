@@ -34,7 +34,7 @@ final class RateLimiter
             return apcu_store($bucketKey, $entry, max(1, (int) $entry['expires_at'] - $now));
         }
 
-        // APCu is unavailable — fail open rather than use flock() on a tmp file.
+        // APCu is unavailable - fail open rather than use flock() on a tmp file.
         // File-based exclusive locking can add 50–300 ms of blocking latency per
         // request (filesystem I/O + lock contention under concurrent load).
         // The join rate limit (90/300s) is loose enough that failing open is safe:

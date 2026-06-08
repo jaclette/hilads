@@ -1,5 +1,5 @@
 <?php
-// Ultra-fast health check — no bootstrap, no DB, no vendor autoload.
+// Ultra-fast health check - no bootstrap, no DB, no vendor autoload.
 // Apache serves this file directly; the rewrite rule in .htaccess maps
 // GET /health → this file before the general catch-all fires.
 http_response_code(200);

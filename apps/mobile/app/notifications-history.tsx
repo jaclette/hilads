@@ -1,8 +1,8 @@
 /**
- * Notifications history screen — full paginated list of notifications.
+ * Notifications history screen - full paginated list of notifications.
  *
  * Fetches 50 notifications per page (limit/offset).
- * No preferences section — that lives on the preview screen.
+ * No preferences section - that lives on the preview screen.
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -68,7 +68,7 @@ export default function NotificationsHistoryScreen() {
     markNotificationsRead();
   }, [setUnreadNotifications]);
 
-  // ── Tap a notification — mark read + navigate ─────────────────────────────
+  // ── Tap a notification - mark read + navigate ─────────────────────────────
 
   const handleTap = useCallback((notif: Notification) => {
     if (!notif.is_read) {

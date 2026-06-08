@@ -26,12 +26,12 @@
   "create": {
     "title": "想做点什么？",
     "hangoutLabel": "发起一个聚会",
-    "hangoutSub": "即时 — 让大家现在就加入你",
+    "hangoutSub": "即时 - 让大家现在就加入你",
     "eventLabel": "创建一个活动",
     "eventSub": "规划一些别人可以加入的事",
     "cancel": "取消",
     "challengeLabel": "发起挑战",
-    "challengeSub": "本地人和旅行者 — 通过一个挑战连接"
+    "challengeSub": "本地人和旅行者 - 通过一个挑战连接"
   },
   "filterChallenges": "🔥 挑战",
   "challengesSection": "挑战",

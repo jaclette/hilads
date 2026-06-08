@@ -1,8 +1,8 @@
 /**
- * NotificationHandler — mounts in root layout, no UI rendered.
+ * NotificationHandler - mounts in root layout, no UI rendered.
  *
  * Responsibilities:
- * 1. Configure foreground notification display — suppress alert when user is
+ * 1. Configure foreground notification display - suppress alert when user is
  *    already viewing the relevant screen (avoids redundant banners)
  * 2. Listen for notification taps (background + killed → foreground)
  * 3. Handle cold-start notification routing (app opened from a push tap)
@@ -20,7 +20,7 @@ import { resolveHangoutJoinRequest } from '@/api/topics';
 import { acceptInvitation, ignoreInvitation } from '@/api/challenges';
 import { track } from '@/services/analytics';
 
-// ── Cold-start notification — resolved at module load ─────────────────────────
+// ── Cold-start notification - resolved at module load ─────────────────────────
 // Start this promise immediately when the module is first imported, BEFORE any
 // component mounts. This gives it the maximum time to resolve and lets
 // useAppBoot await it before deciding where to redirect on boot.
@@ -68,7 +68,7 @@ export async function getColdStartNotificationRoute(): Promise<string | null> {
 const activeScreen = {
   dmId:      null as string | null,
   eventId:   null as string | null,
-  accountId: null as string | null, // current logged-in user — used to reject own-sender pushes
+  accountId: null as string | null, // current logged-in user - used to reject own-sender pushes
 };
 
 // ── Foreground display strategy ───────────────────────────────────────────────
@@ -82,16 +82,16 @@ type NotifData = {
   topicId?:         string;
   channelId?:       string;
   senderName?:      string;
-  senderUserId?:    string; // set by backend for dm_message — used to reject own-sender pushes
-  accepterUserId?:  string; // friend_request_accepted — the user who tapped Accept
+  senderUserId?:    string; // set by backend for dm_message - used to reject own-sender pushes
+  accepterUserId?:  string; // friend_request_accepted - the user who tapped Accept
   accepterName?:    string;
-  requestId?:       string; // friend_request_received — id of the FriendRequest row
+  requestId?:       string; // friend_request_received - id of the FriendRequest row
   viewerId?:        string;
   actorId?:         string;
   actorName?:       string;
   vibeId?:          number;
   challengeId?:     string; // challenge_invitation / takeon_request
-  invitationId?:    string; // challenge_invitation — id of the invitation row
+  invitationId?:    string; // challenge_invitation - id of the invitation row
   inviterName?:     string;
 };
 
@@ -128,7 +128,7 @@ Notifications.setNotificationHandler({
 
 // Handle an action button tapped on a push notification. Performs the side-effect
 // (API call) and returns the route to navigate to afterwards, or null to stay put.
-// Best-effort — API failures are logged, never thrown.
+// Best-effort - API failures are logged, never thrown.
 function handleNotificationAction(data: NotifData, action: string): string | null {
   console.log('[push-action]', action, '| type:', data.type ?? '(none)');
   track('notification_action', { type: data.type ?? 'unknown', action });
@@ -176,7 +176,7 @@ function resolveRoute(data: NotifData): string | null {
     case 'dm_message':
       if (data.conversationId) {
         // conv param tells DM screen to open by conversationId directly (skip findOrCreateDM).
-        // id segment is also the conversationId — only used as a URL segment / display key.
+        // id segment is also the conversationId - only used as a URL segment / display key.
         const namePart = data.senderName ? `&name=${encodeURIComponent(data.senderName)}` : '';
         console.log('[push-nav] tapped DM notification with conversationId=', data.conversationId);
         return `/dm/${data.conversationId}?conv=${encodeURIComponent(data.conversationId)}${namePart}`;
@@ -212,11 +212,11 @@ function resolveRoute(data: NotifData): string | null {
 
     case 'channel_message':
     case 'city_join':
-      // Deep link to the city chat tab — the user's current city channel.
+      // Deep link to the city chat tab - the user's current city channel.
       return '/(tabs)/chat';
 
     case 'vibe_received':
-      // Open own profile on the Vibes tab — that's where the new vibe is visible.
+      // Open own profile on the Vibes tab - that's where the new vibe is visible.
       return '/(tabs)/me?tab=vibes';
 
     case 'profile_view':
@@ -229,7 +229,7 @@ function resolveRoute(data: NotifData): string | null {
       return '/friend-requests';
 
     case 'friend_request_accepted':
-      // Open the accepter's profile — the recipient just gained a friend.
+      // Open the accepter's profile - the recipient just gained a friend.
       if (data.accepterUserId) return `/user/${data.accepterUserId}`;
       return '/(tabs)/me?tab=friends';
 
@@ -247,7 +247,7 @@ function resolveRoute(data: NotifData): string | null {
       return null;
 
     case 'challenge_message':
-      // New message in a challenge channel — deep link to that channel's
+      // New message in a challenge channel - deep link to that channel's
       // chat. The per-channel ChallengeNotificationPill controls who gets
       // the push in the first place, so by definition the recipient opted
       // into being pulled back here.
@@ -259,7 +259,7 @@ function resolveRoute(data: NotifData): string | null {
       // RatePromptLaunchGate, mounted globally, refetches its prompts on
       // app foreground (AppState 'active'), and surfaces the RateSheet
       // automatically. Tap deep-links to the challenge as the visible
-      // context — the sheet appears over whatever screen renders.
+      // context - the sheet appears over whatever screen renders.
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
@@ -283,7 +283,7 @@ export function NotificationHandler() {
   const pendingRoute = useRef<string | null>(null);
 
   // Keep module-level state in sync with React context
-  // (runs on every render, which is intentional — no useEffect needed)
+  // (runs on every render, which is intentional - no useEffect needed)
   activeScreen.dmId      = activeDmId;
   activeScreen.eventId   = activeEventId;
   activeScreen.accountId = account?.id ?? null;
@@ -308,7 +308,7 @@ export function NotificationHandler() {
       }
     });
 
-    // Foreground received listener — logs incoming notifications while app is open
+    // Foreground received listener - logs incoming notifications while app is open
     const receivedSub = Notifications.addNotificationReceivedListener(notification => {
       const data = notification.request.content.data as NotifData;
       const sentByMe = !!data.senderUserId && data.senderUserId === activeScreen.accountId;
@@ -345,11 +345,11 @@ export function NotificationHandler() {
         '| conversationId:', data.conversationId ?? '-',
         '| eventId:', data.eventId ?? '-');
       const route = resolveRoute(data);
-      console.log('[push-nav] resolved route:', route ?? 'none — ignoring');
+      console.log('[push-nav] resolved route:', route ?? 'none - ignoring');
       if (!route) return;
       track('notification_opened', { type: data.type ?? 'unknown' });
       if (bootingRef.current) {
-        console.log('[push-nav] app still booting — storing route for deferred navigation:', route);
+        console.log('[push-nav] app still booting - storing route for deferred navigation:', route);
         pendingRoute.current = route;
       } else {
         console.log('[push-nav] navigating to:', route);

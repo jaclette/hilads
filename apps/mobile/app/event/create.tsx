@@ -1,15 +1,15 @@
 /**
- * Create Event screen — faithful port of the web CreateEventModal.jsx
+ * Create Event screen - faithful port of the web CreateEventModal.jsx
  *
  * Web source: apps/web/src/components/CreateEventModal.jsx
  *
  * Visual parity checklist:
- *   ✓ Thin line Ionicons (no emoji) — matches web SVG icon set
+ *   ✓ Thin line Ionicons (no emoji) - matches web SVG icon set
  *   ✓ Square-ish category chips (18px radius), orange border+bg on selected
  *   ✓ Square-ish repeat chips (12px radius), orange border+text on active
  *   ✓ STARTS/ENDS time fields side by side with ⏱ icon
  *   ✓ "Every N days" option + interval input when selected
- *   ✓ Orange (#FF7A3C) Create event button — not red
+ *   ✓ Orange (#FF7A3C) Create event button - not red
  */
 
 import { useState } from 'react';
@@ -34,7 +34,7 @@ import { LocationPicker } from '@/features/chat/LocationPicker';
 type EventType  = 'drinks' | 'party' | 'music' | 'food' | 'coffee' | 'sport' | 'meetup' | 'other';
 type RepeatMode = 'once' | 'daily' | 'weekly' | 'every_n_days';
 
-// ── Category config — Ionicons matching web SVG icons ─────────────────────────
+// ── Category config - Ionicons matching web SVG icons ─────────────────────────
 // Web icons (custom SVGs): goblet, sun/star, note, fork+knife, cup, bolt, bubble, dots-grid
 
 const CATEGORIES: {
@@ -51,11 +51,11 @@ const CATEGORIES: {
   { type: 'other',   icon: 'grid-outline'          },
 ];
 
-// ── Repeat options — matches web (Once/Daily/Weekly/Every N days) ─────────────
+// ── Repeat options - matches web (Once/Daily/Weekly/Every N days) ─────────────
 
 const REPEAT_OPTIONS: RepeatMode[] = ['once', 'daily', 'weekly', 'every_n_days'];
 
-// ── Quick presets — one-tap recurring event shortcuts ─────────────────────────
+// ── Quick presets - one-tap recurring event shortcuts ─────────────────────────
 
 type PresetKey = 'daily_spot' | 'every_evening' | 'weekends';
 
@@ -196,7 +196,7 @@ function TimePicker({
 }
 
 // ── Inline date picker modal ──────────────────────────────────────────────────
-// Standalone component (not pulled in via a community lib) — month-grid view
+// Standalone component (not pulled in via a community lib) - month-grid view
 // with prev/next month navigation. Past days and dates beyond `maxDays` ahead
 // are visually disabled and unselectable. Matches the existing TimePicker
 // modal's visual language so the form feels cohesive.
@@ -238,7 +238,7 @@ function DatePicker({
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
       <TouchableOpacity style={styles.overlay} activeOpacity={1} onPress={onClose}>
         <View style={styles.datePickerBox} onStartShouldSetResponder={() => true}>
-          {/* Header — month nav */}
+          {/* Header - month nav */}
           <View style={styles.dpHeader}>
             <TouchableOpacity
               onPress={prevMonth} disabled={prevDisabled}
@@ -316,7 +316,7 @@ export default function CreateEventScreen() {
   const [title,           setTitle]           = useState('');
   // selectedDate carries the day-of-month for the event. Time-of-day lives on
   // startsAt / endsAt (still full Date objects so the existing TimePicker
-  // doesn't need a refactor — it just sets H/M and preserves the date). We
+  // doesn't need a refactor - it just sets H/M and preserves the date). We
   // re-sync the day on startsAt / endsAt every time selectedDate flips below.
   const [selectedDate,    setSelectedDate]    = useState<Date>(() => startOfDay(new Date()));
   const [showDatePicker,  setShowDatePicker]  = useState(false);
@@ -336,7 +336,7 @@ export default function CreateEventScreen() {
 
   /**
    * Setting the date re-anchors startsAt / endsAt to the new day while
-   * keeping their hours/minutes intact — so a user who picks "Tomorrow"
+   * keeping their hours/minutes intact - so a user who picks "Tomorrow"
    * after configuring the time pickers doesn't have to redo them.
    */
   function pickDate(d: Date) {
@@ -417,7 +417,7 @@ export default function CreateEventScreen() {
     setShowLocPicker(false);
     // Prefer the human address; fall back to the place name. Both feed the
     // location_hint text; coords are stored separately for precise maps links.
-    const label = address ? (place && !address.startsWith(place) ? `${place} — ${address}` : address) : place;
+    const label = address ? (place && !address.startsWith(place) ? `${place} - ${address}` : address) : place;
     setLocation(label);
     setLocationCoords({ lat, lng });
   }
@@ -470,14 +470,14 @@ export default function CreateEventScreen() {
                 ? 'every_n_days'
                 : 'daily',
             // Weekly weekdays: presets like "weekends" set multi-day arrays
-            // explicitly — keep those. Otherwise (single-day default state),
+            // explicitly - keep those. Otherwise (single-day default state),
             // always re-derive from the picked start date so a user creating
             // a "weekly" event on Wed but starting it next Thu gets a Thursday
             // recurrence, not a Wednesday one. Mobile has no day-picker UI;
             // the start date IS the weekday choice.
             ...(repeat === 'weekly'       ? { weekdays: weekdays.length > 1 ? weekdays : [selectedDate.getDay()] } : {}),
             ...(repeat === 'every_n_days' ? { interval_days: iDays >= 2 ? iDays : 7 } : {}),
-            // Anchors the recurrence series to the picked start date — so a
+            // Anchors the recurrence series to the picked start date - so a
             // weekly series starting "next Saturday" actually starts then,
             // and an every-7-days series counts intervals from there.
             starts_on:    ymd(selectedDate),
@@ -501,7 +501,7 @@ export default function CreateEventScreen() {
     }
   }
 
-  // ── Guest gate — event creation requires a registered account ───────────────
+  // ── Guest gate - event creation requires a registered account ───────────────
   if (!account) {
     router.replace('/auth-gate?reason=create_event');
     return null;
@@ -593,7 +593,7 @@ export default function CreateEventScreen() {
         {/* ── DATE ──────────────────────────────────────────────────────────── */}
         {/* Default: Today (highlighted). One tap to flip to Tomorrow, or open
             a calendar to pick any day in the next 6 months. The "today is most
-            visible" nudge below is intentionally subtle — keeps "today" the
+            visible" nudge below is intentionally subtle - keeps "today" the
             obvious path without blocking other days. */}
         <View style={styles.section}>
           <Text style={styles.fieldLabel}>{t('date')}</Text>
@@ -777,7 +777,7 @@ const styles = StyleSheet.create({
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
 
-  // ── Field label — same uppercase tracking as web ──────────────────────────
+  // ── Field label - same uppercase tracking as web ──────────────────────────
   fieldLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
@@ -789,7 +789,7 @@ const styles = StyleSheet.create({
   // ── Section ───────────────────────────────────────────────────────────────
   section: { gap: 10 },
 
-  // ── Category grid — 4 per row, square chips matching web ─────────────────
+  // ── Category grid - 4 per row, square chips matching web ─────────────────
   catGrid: {
     flexDirection: 'row',
     flexWrap:      'wrap',
@@ -798,7 +798,7 @@ const styles = StyleSheet.create({
   catChip: {
     // 4 per row with 10px gaps: (100% - 3*10) / 4 ≈ 22.5%
     // Use fixed calculation: content width = screen - 36px padding = ~360 on 396px screen
-    // (360 - 30) / 4 = 82.5px — just use aspect ratio with flex
+    // (360 - 30) / 4 = 82.5px - just use aspect ratio with flex
     flex:            0,
     width:           '22.5%',
     aspectRatio:     1,
@@ -829,7 +829,7 @@ const styles = StyleSheet.create({
   },
   catLabelSel: { color: Colors.accent },
 
-  // ── Text input — matching web dark input style ─────────────────────────────
+  // ── Text input - matching web dark input style ─────────────────────────────
   input: {
     backgroundColor:   Colors.bg2,
     borderRadius:      12,
@@ -841,7 +841,7 @@ const styles = StyleSheet.create({
     fontSize:          FontSizes.md,
   },
 
-  // Tappable location field — opens the map picker (mirrors `input` styling).
+  // Tappable location field - opens the map picker (mirrors `input` styling).
   locField: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -1001,7 +1001,7 @@ const styles = StyleSheet.create({
   presetLabelActive: { color: Colors.accent },
   presetDesc:  { fontSize: 10, color: Colors.muted2, textAlign: 'center' },
 
-  // ── Repeat chips — square-ish matching web (not pill) ─────────────────────
+  // ── Repeat chips - square-ish matching web (not pill) ─────────────────────
   repeatRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   repeatChip: {
     paddingHorizontal: 16,

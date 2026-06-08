@@ -1,10 +1,10 @@
 /**
- * useEventChatNotifications — always-on WS subscriptions for event chats.
+ * useEventChatNotifications - always-on WS subscriptions for event chats.
  *
  * Mounted in RootLayoutInner so it stays active across all screens.
  *
  * On boot: fetches the user's events (created + participated) and joins their
- * WS rooms so newMessage events are received globally — not just when the
+ * WS rooms so newMessage events are received globally - not just when the
  * event/[id] screen is open.
  *
  * On newMessage for a subscribed event:
@@ -32,7 +32,7 @@ export function useEventChatNotifications() {
   const guestId  = identity?.guestId;
   const nickname = identity?.nickname ?? '';
 
-  // Stable refs — avoid stale closures in WS handlers
+  // Stable refs - avoid stale closures in WS handlers
   const myEventIdsRef        = useRef<Set<string>>(new Set());
   const guestIdRef           = useRef<string | undefined>(guestId);
   const sessionIdRef         = useRef<string | null>(sessionId);
@@ -46,16 +46,16 @@ export function useEventChatNotifications() {
   activeEventIdRef.current     = activeEventId;
   eventChatPreviewsRef.current = eventChatPreviews;
 
-  // Fetch user's events from API and join their WS rooms — call once on boot or
+  // Fetch user's events from API and join their WS rooms - call once on boot or
   // after participation changes (user left an event screen where they may have toggled).
   const joinAll = useCallback(async () => {
     const sid = sessionIdRef.current;
     const gid = guestIdRef.current;
     if (!gid || !sid) {
-      if (__DEV__) console.log('[eventChat] joinAll skipped — no guestId or sessionId');
+      if (__DEV__) console.log('[eventChat] joinAll skipped - no guestId or sessionId');
       return;
     }
-    if (__DEV__) console.log('[eventChat] joinAll — fetching events for guestId:', gid.slice(0, 8));
+    if (__DEV__) console.log('[eventChat] joinAll - fetching events for guestId:', gid.slice(0, 8));
     try {
       const events = await fetchMyEvents(gid);
       myEventIdsRef.current = new Set(events.map(e => e.id));
@@ -67,37 +67,37 @@ export function useEventChatNotifications() {
     } catch (err) {
       if (__DEV__) console.warn('[eventChat] joinAll failed:', err);
     }
-  }, []); // stable — uses refs only
+  }, []); // stable - uses refs only
 
-  // Re-join WS rooms using cached IDs only — no HTTP fetch.
+  // Re-join WS rooms using cached IDs only - no HTTP fetch.
   // Used on WS reconnect where the event list hasn't changed.
   const rejoinCached = useCallback(() => {
     const sid = sessionIdRef.current;
     if (!sid || myEventIdsRef.current.size === 0) return;
-    if (__DEV__) console.log('[eventChat] rejoinCached —', myEventIdsRef.current.size, 'event rooms');
+    if (__DEV__) console.log('[eventChat] rejoinCached -', myEventIdsRef.current.size, 'event rooms');
     myEventIdsRef.current.forEach(id => socket.joinEvent(id, sid, nicknameRef.current));
-  }, []); // stable — uses refs only
+  }, []); // stable - uses refs only
 
-  // Join on boot (once identity + sessionId are ready) — registered users only.
+  // Join on boot (once identity + sessionId are ready) - registered users only.
   // Guests cannot create events (auth-gated) so there are no event rooms to join.
   useEffect(() => {
     if (account && guestId && sessionId) {
-      if (__DEV__) console.log('[eventChat] joinAll triggered — identity ready (guestId:', guestId.slice(0, 8) + ')');
+      if (__DEV__) console.log('[eventChat] joinAll triggered - identity ready (guestId:', guestId.slice(0, 8) + ')');
       joinAll();
     }
   }, [account, guestId, sessionId, joinAll]);
 
-  // WS reconnect: re-join rooms from cache — no HTTP fetch needed.
+  // WS reconnect: re-join rooms from cache - no HTTP fetch needed.
   // The event list hasn't changed; the server just needs the joinEvent signals again.
   useEffect(() => {
     const off = socket.on('connected', () => {
-      if (__DEV__) console.log('[eventChat] WS reconnected — rejoining cached event rooms');
+      if (__DEV__) console.log('[eventChat] WS reconnected - rejoining cached event rooms');
       rejoinCached();
     });
     return off;
   }, [rejoinCached]);
 
-  // User left an event screen — participation may have changed (toggle join/leave).
+  // User left an event screen - participation may have changed (toggle join/leave).
   // Re-fetch to pick up any new or removed event subscriptions.
   useEffect(() => {
     if (activeEventId === null && account && guestId && sessionId) joinAll();
@@ -109,7 +109,7 @@ export function useEventChatNotifications() {
       // Backend sends { channelId: eventId, message } via broadcastMessageToWs.
       // The WS server re-emits it as { event: 'newMessage', channelId, message }.
       // City channels have integer channelIds; event channels are hex strings.
-      // data.eventId is not set — we must read data.channelId.
+      // data.eventId is not set - we must read data.channelId.
       const rawId   = data.channelId ?? data.eventId;
       const channelId = typeof rawId === 'string' ? rawId : undefined;
 
@@ -134,7 +134,7 @@ export function useEventChatNotifications() {
 
       // Ignore if user is actively viewing this event right now
       if (activeEventIdRef.current === channelId) {
-        if (__DEV__) console.log('[eventChat] skipping — event screen is active for', channelId.slice(0, 8));
+        if (__DEV__) console.log('[eventChat] skipping - event screen is active for', channelId.slice(0, 8));
         return;
       }
 

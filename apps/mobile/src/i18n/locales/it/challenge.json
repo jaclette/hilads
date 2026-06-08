@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "È la tua sfida",
-        "body": "Hai creato tu questa sfida — aspetta che qualcun altro l'accetti."
+        "body": "Hai creato tu questa sfida - aspetta che qualcun altro l'accetti."
       },
       "mode_required": {
         "title": "Scegli local o viaggiatore prima",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "C'è già qualcuno",
-        "body": "Un altro viaggiatore la sta accettando proprio ora. Ripassa quando avranno finito — la sfida si libera."
+        "body": "Un altro viaggiatore la sta accettando proprio ora. Ripassa quando avranno finito - la sfida si libera."
       }
     }
   },
   "thread": {
     "notFound": "Thread non trovato",
     "empty": "Saluta 👋 e organizzate quando vedervi.",
-    "emptyIntl": "Saluta 👋 — manda una 📸 quando ce la fai.",
+    "emptyIntl": "Saluta 👋 - manda una 📸 quando ce la fai.",
     "cancel": {
       "creatorTitle": "Annullare questo take-on?",
       "acceptorTitle": "Mollare questa sfida?",
@@ -195,7 +195,7 @@
     "confirm": {
       "approve": {
         "title": "Segnare come riuscita?",
-        "body": "È definitivo — non potrai più cambiarlo.",
+        "body": "È definitivo - non potrai più cambiarlo.",
         "confirm": "Segna come riuscita"
       },
       "reject": {
@@ -271,15 +271,15 @@
     },
     "inProgress": {
       "title": "Qualcuno la sta facendo ora",
-      "body": "Un viaggiatore sta accettando questa sfida. Quando avrà finito, sarà di nuovo libera — ripassa presto."
+      "body": "Un viaggiatore sta accettando questa sfida. Quando avrà finito, sarà di nuovo libera - ripassa presto."
     }
   },
   "postCreate": {
     "title": "La tua sfida è online",
-    "subtitle": "Ora seminala — fai in modo che qualcuno la accetti entro un'ora.",
+    "subtitle": "Ora seminala - fai in modo che qualcuno la accetti entro un'ora.",
     "thisCity": "questa città",
     "ctaInvite": "Manda a qualcuno a {{city}}",
-    "ctaInviteSub": "Scegli qualche {{audience}} — gli mandiamo un ping.",
+    "ctaInviteSub": "Scegli qualche {{audience}} - gli mandiamo un ping.",
     "ctaShare": "Condividi fuori da Hilads",
     "skip": "Forse dopo",
     "pickerTitle": "{{audience}} a {{city}}",
@@ -289,7 +289,7 @@
     "sendCtaEmpty": "Scegli qualcuno prima",
     "sentTitle": "Mandato a {{count}}",
     "sentSubtitle": "Riceveranno una notifica push.",
-    "pickerSubtitleAll": "Nessuna corrispondenza esatta — mostriamo tutti a {{city}}."
+    "pickerSubtitleAll": "Nessuna corrispondenza esatta - mostriamo tutti a {{city}}."
   },
   "invitation": {
     "accept": "Accetta",
@@ -315,7 +315,7 @@
     "targetCityHint": "Lascia \"Ovunque\" per raggiungere viaggiatori dappertutto, o scegli una città.",
     "proofRequirementsLabel": "Cosa deve mostrare la foto?",
     "proofRequirementsPlaceholder": "es. Il piatto alla luce del giorno, con te nell’inquadratura",
-    "proofRequirementsHint": "La prova è una foto 📸. Il partecipante la vede prima di inviare — sii specifico.",
+    "proofRequirementsHint": "La prova è una foto 📸. Il partecipante la vede prima di inviare - sii specifico.",
     "cityPicker": {
       "title": "Scegli una città bersaglio",
       "searchPlaceholder": "Cerca una città…",
@@ -341,7 +341,7 @@
       "reasonRequiredTitle": "Motivo richiesto",
       "reasonRequiredBody": "Un motivo breve (1–200 caratteri) aiuta.",
       "permPhotoTitle": "Accesso fotocamera richiesto",
-      "permPhotoBody": "Attiva l’accesso alla fotocamera nelle Impostazioni — la prova deve essere una foto scattata sul momento.",
+      "permPhotoBody": "Attiva l’accesso alla fotocamera nelle Impostazioni - la prova deve essere una foto scattata sul momento.",
       "permGpsTitle": "Serve la posizione",
       "permGpsBody": "Il geotag è obbligatorio. Attiva la posizione.",
       "gpsFailTitle": "GPS non disponibile",
@@ -373,16 +373,16 @@
     "leaveCta": "Esci dal canale",
     "errKicked": "Sei stato rimosso da questa sfida. Non puoi ri-unirti.",
     "errClosed": "Questa sfida non accetta nuovi partecipanti.",
-    "errGeneric": "Impossibile entrare — riprova."
+    "errGeneric": "Impossibile entrare - riprova."
   },
   "members": {
     "title": "Nel canale",
     "countIn": "{{count}} nel canale",
     "seeAll": "Vedi tutti →",
-    "empty": "Nessuno è ancora dentro — sii il primo.",
+    "empty": "Nessuno è ancora dentro - sii il primo.",
     "kickCta": "Rimuovi",
     "kickAria": "Rimuovi {{name}} dal canale",
-    "errKick": "Impossibile rimuovere — riprova."
+    "errKick": "Impossibile rimuovere - riprova."
   },
   "notif": {
     "on": "Notifiche attive",
@@ -410,7 +410,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Valuta il tuo incontro con {{name}}",
-      "titleUrgent": "{{name}} ha valutato — tocca a te"
+      "titleUrgent": "{{name}} ha valutato - tocca a te"
     },
     "sheet": {
       "title": "Com’è andata con {{name}}?",
@@ -451,7 +451,7 @@
   "scoringInfo": {
     "aria": "Come funzionano i punti",
     "title": "🏆 Come funzionano le sfide",
-    "intro": "Ogni sfida dà punti a entrambe le parti — confluiscono nelle classifiche di città e mondiale.",
+    "intro": "Ogni sfida dà punti a entrambe le parti - confluiscono nelle classifiche di città e mondiale.",
     "colStep": "Passo",
     "steps": {
       "accepted": "Sfida accettata",
@@ -459,17 +459,17 @@
       "meet": "Incontro",
       "rate": "Entrambi votano"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Totale per sfida",
     "footnote": "I punti vengono assegnati solo quando entrambi valutano l’incontro.",
     "types": {
       "heading": "🎯 Due modi di giocare",
-      "local": "🏙️ Local — nella tua città. Vi incontrate IRL per validare.",
-      "international": "🌍 International — tra città. Una foto istantanea come prova."
+      "local": "🏙️ Local - nella tua città. Vi incontrate IRL per validare.",
+      "international": "🌍 International - tra città. Una foto istantanea come prova."
     },
     "lifecycle": {
       "heading": "🔁 Una sfida alla volta",
-      "body": "Quando chi accetta finisce, la chat si svuota — la sfida resta, pronta per il prossimo avventuriero."
+      "body": "Quando chi accetta finisce, la chat si svuota - la sfida resta, pronta per il prossimo avventuriero."
     },
     "pointsHeading": "💯 Come guadagni punti"
   },
@@ -477,7 +477,7 @@
     "unit": "punti",
     "subtitle": {
       "accepted": "Il tuo challenge è stato accettato 🤝",
-      "date_locked": "Appuntamento confermato — si va 🗓️",
+      "date_locked": "Appuntamento confermato - si va 🗓️",
       "meetup": "Missione compiuta 🎉",
       "debrief": "Missione compiuta 🎉",
       "ghost": "Sarà per la prossima volta 👻",

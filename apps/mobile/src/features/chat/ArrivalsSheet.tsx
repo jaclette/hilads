@@ -1,9 +1,9 @@
 /**
- * ArrivalsSheet — bottom-sheet list of recent arrivals.
+ * ArrivalsSheet - bottom-sheet list of recent arrivals.
  *
  * Mirrors MembersSheet shape (Modal animationType="slide", 70% max-height,
  * draggable handle). Rows reuse the chat.feedJoin.* strings already used in
- * the main feed today, so wording stays identical — only the surface moves.
+ * the main feed today, so wording stays identical - only the surface moves.
  *
  * Tapping a row opens the user's profile via the same access guard the inline
  * join pill uses.

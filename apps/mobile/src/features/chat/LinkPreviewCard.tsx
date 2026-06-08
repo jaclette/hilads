@@ -8,7 +8,7 @@ interface Props {
 }
 
 // Open Graph card under a chat bubble. Renders nothing while the fetch is in
-// flight (no skeleton — polish layer, not core content) and nothing if the URL
+// flight (no skeleton - polish layer, not core content) and nothing if the URL
 // returns no usable OG metadata. Tapping the card opens the original URL.
 export function LinkPreviewCard({ url, isMine = false }: Props) {
   const [preview, setPreview] = useState<LinkPreview | null>(null);
@@ -31,7 +31,7 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
           source={{ uri: preview.image }}
           style={styles.image}
           onError={() => setImgError(true)}
-          // Avoid Expo's default re-decoding — keeps memory bounded for chats
+          // Avoid Expo's default re-decoding - keeps memory bounded for chats
           // with many cards.
           resizeMode="cover"
         />

@@ -53,17 +53,17 @@
     "checking": "확인하는 중…",
     "available": "@{{username}} 사용 가능해요",
     "aboutMe": "내 소개",
-    "charsLeft": "— {{count}}자 남음",
+    "charsLeft": "- {{count}}자 남음",
     "aboutPlaceholder": "길거리 음식과 즉흥적인 대화를 좋아해요",
     "email": "이메일",
-    "readOnly": "— 읽기 전용",
+    "readOnly": "- 읽기 전용",
     "homeCity": "내 도시",
     "homeCityPlaceholder": "어디에 사세요",
     "age": "나이",
     "agePlaceholder": "나이",
     "myVibe": "내 vibe",
     "interests": "관심사",
-    "interestsHint": "— 최대 5개 선택"
+    "interestsHint": "- 최대 5개 선택"
   },
   "ambassador": {
     "title": "도시 추천 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "이 도시에서 사랑하는 무언가"
   },
   "hangouts": {
-    "empty": "아직 모임이 없어요 — 하나 시작해요 🗣️",
+    "empty": "아직 모임이 없어요 - 하나 시작해요 🗣️",
     "host": "호스트"
   },
   "events": {
     "going": "참여 중",
-    "goingEmpty": "아직 계획이 없어요 — 뭔가 찾아봐요 🔥",
+    "goingEmpty": "아직 계획이 없어요 - 뭔가 찾아봐요 🔥",
     "hosting": "주최 중",
-    "hostingEmpty": "아직 주최한 게 없어요 — 뭔가 시작해요 ✨",
+    "hostingEmpty": "아직 주최한 게 없어요 - 뭔가 시작해요 ✨",
     "live": "실시간",
     "recurring": "↻ 반복",
     "upcoming": "예정",
@@ -129,7 +129,7 @@
     "generic": "문제가 발생했어요. 다시 시도해 주세요."
   },
   "challenges": {
-    "empty": "아직 도전이 없어요 — 하나 던지세요 🔥",
+    "empty": "아직 도전이 없어요 - 하나 던지세요 🔥",
     "challenger": "도전자"
   }
 }

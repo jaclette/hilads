@@ -10,7 +10,7 @@
  *
  * ── Usage ─────────────────────────────────────────────────────────────────────
  *
- *   # Collect data only — outputs JSON to stdout
+ *   # Collect data only - outputs JSON to stdout
  *   php seed_recurring_venues.php --google-key=XXX
  *
  *   # Collect + dry-run import (shows what would be created, no DB writes)
@@ -157,7 +157,7 @@ function fetchNearbyPlaces(string $apiKey, float $lat, float $lng, string $type,
     }
 
     if ($httpCode !== 200) {
-        // New API returns a JSON error body with error.message — surface it.
+        // New API returns a JSON error body with error.message - surface it.
         throw new RuntimeException("Places API returned HTTP {$httpCode}: {$response}");
     }
 
@@ -225,7 +225,7 @@ foreach ($selectedIds as $cityId) {
     $city = $cityMap[$cityId] ?? null;
 
     if ($city === null) {
-        $errors[] = "city_id={$cityId}: not found in cities_data.php — skipping";
+        $errors[] = "city_id={$cityId}: not found in cities_data.php - skipping";
         fwrite(STDERR, "WARN  city_id={$cityId}: not found\n");
         continue;
     }
@@ -336,7 +336,7 @@ if ($doImport && count($payload) > 0) {
         'city_log'   => $log,
     ], JSON_PRETTY_PRINT) . "\n";
 } elseif ($doImport && count($payload) === 0) {
-    fwrite(STDERR, "WARN  no series collected — nothing to import\n");
+    fwrite(STDERR, "WARN  no series collected - nothing to import\n");
     echo json_encode(['ok' => true, 'collected' => 0, 'created' => 0, 'skipped' => 0, 'errors' => $errors]) . "\n";
 }
 

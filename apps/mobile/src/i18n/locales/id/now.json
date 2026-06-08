@@ -26,12 +26,12 @@
   "create": {
     "title": "Mau ngapain?",
     "hangoutLabel": "Mulai nongkrong",
-    "hangoutSub": "Instan — biarkan orang gabung sekarang",
+    "hangoutSub": "Instan - biarkan orang gabung sekarang",
     "eventLabel": "Buat acara",
     "eventSub": "Rencanakan sesuatu yang bisa diikuti orang lain",
     "cancel": "Batal",
     "challengeLabel": "Luncurkan tantangan",
-    "challengeSub": "Local & pelancong — terhubung lewat tantangan"
+    "challengeSub": "Local & pelancong - terhubung lewat tantangan"
   },
   "filterChallenges": "🔥 Tantangan",
   "challengesSection": "Tantangan",

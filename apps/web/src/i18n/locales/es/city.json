@@ -64,7 +64,7 @@
     "eventTag": "Evento",
     "public": "Público",
     "activeNow": "● Activo ahora",
-    "repliesNew": "Aún no hay respuestas — sé el primero",
+    "repliesNew": "Aún no hay respuestas - sé el primero",
     "replies_one": "💬 {{count}} respuesta",
     "replies_other": "💬 {{count}} respuestas",
     "going_one": "🙌 {{count}} participante",
@@ -138,11 +138,11 @@
   "create": {
     "title": "¿Qué hacemos?",
     "hangoutTitle": "Lanzar una quedada",
-    "hangoutSub": "Al instante — deja que la gente se una ahora",
+    "hangoutSub": "Al instante - deja que la gente se una ahora",
     "eventTitle": "Crear un evento",
     "eventSub": "Organiza algo a lo que unirse",
     "challengeTitle": "Lanzar un reto",
-    "challengeSub": "Locales y viajeros — conecten a través de un reto",
+    "challengeSub": "Locales y viajeros - conecten a través de un reto",
     "challengePageTitle": "Crear un reto",
     "challengeAudience": "¿Para quién?",
     "challengeAudLocals": "Locales",
@@ -161,7 +161,7 @@
     "going": "van",
     "inThisHangout": "en esta quedada",
     "loading": "Cargando…",
-    "empty": "Nadie por ahora — ¡sé el primero! 🙌"
+    "empty": "Nadie por ahora - ¡sé el primero! 🙌"
   },
   "nickname": {
     "label": "Apodo",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 ¡Has lanzado este evento!",
-    "sub": "Hazlo aún mejor — añade una descripción, cambia la hora o compártelo.",
+    "sub": "Hazlo aún mejor - añade una descripción, cambia la hora o compártelo.",
     "edit": "✏️ Editar el evento"
   },
   "feedNew": {

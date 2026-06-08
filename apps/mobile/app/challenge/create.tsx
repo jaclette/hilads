@@ -22,11 +22,11 @@ const TYPES: { value: ChallengeType; icon: string }[] = [
 ];
 
 const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];
-// Emoji per audience — 🏠 reads as "where they live" for locals,
+// Emoji per audience - 🏠 reads as "where they live" for locals,
 // 🧳 as "they're passing through" for travelers.
 const AUDIENCE_ICONS: Record<ChallengeAudience, string> = { locals: '🏠', explorers: '🧳' };
 
-// Mode toggle — Local is the hero (in-person meetup in this city); International
+// Mode toggle - Local is the hero (in-person meetup in this city); International
 // is the always-available alternative (cross-city, proof-based, no meetup).
 type ChallengeMode = 'local' | 'international';
 const MODES: ChallengeMode[] = ['local', 'international'];
@@ -77,7 +77,7 @@ export default function CreateChallengeScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
-  // Visibility — 'public' default; 'friends' opt-in. Private isn't settable
+  // Visibility - 'public' default; 'friends' opt-in. Private isn't settable
   // here (server enforces); the mutual privacy flow is the only path.
   type Visibility = 'public' | 'friends';
   const initialVisibility: Visibility =
@@ -91,7 +91,7 @@ export default function CreateChallengeScreen() {
   const pendingSubmitRef                          = useRef<null | (() => Promise<void>)>(null);
   const hasSeenPublicOptin                        = !!account?.has_seen_public_optin;
 
-  // International is always public — keep state in sync so the payload
+  // International is always public - keep state in sync so the payload
   // matches what the server will enforce.
   useEffect(() => {
     if (mode === 'international' && visibility !== 'public') setVisibility('public');
@@ -114,7 +114,7 @@ export default function CreateChallengeScreen() {
     const trimmedReturnClause      = mode === 'local'        ? (returnClause.trim()      || null) : null;
     const trimmedProofRequirements = mode === 'international' ? (proofRequirements.trim() || null) : null;
     const targetChannelIdForSubmit = mode === 'international' ? (targetCity?.channelId ?? null)   : null;
-    // International is forced to 'public' server-side — match it here.
+    // International is forced to 'public' server-side - match it here.
     const visibilityForSubmit: Visibility = mode === 'international' ? 'public' : visibility;
 
     // Edit path: PUT the existing challenge, then back.
@@ -127,7 +127,7 @@ export default function CreateChallengeScreen() {
         });
         router.back();
       } catch (err) {
-        // Moderation surface — translate to the user-facing string so it
+        // Moderation surface - translate to the user-facing string so it
         // matches what the server is signalling.
         const e = err as { code?: string; message?: string };
         if (e?.code === 'moderation_blocked') setError(t('visibility.moderationBlocked'));
@@ -138,7 +138,7 @@ export default function CreateChallengeScreen() {
       return;
     }
 
-    // Create path. Challenges allow guests (mirrors events) — nickname comes
+    // Create path. Challenges allow guests (mirrors events) - nickname comes
     // from the account if present, else from the guest identity. Server falls
     // back gracefully when nickname is null.
     const nickname = account?.display_name ?? identity.nickname ?? null;
@@ -199,7 +199,7 @@ export default function CreateChallengeScreen() {
     pendingSubmitRef.current = null;
   }
 
-  // Guest gate — challenge creation requires a registered account (mirrors
+  // Guest gate - challenge creation requires a registered account (mirrors
   // event + hangout creation). Guests can still browse / accept / chat in
   // challenge channels; only authoring is locked.
   if (!account) {
@@ -221,7 +221,7 @@ export default function CreateChallengeScreen() {
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
 
-        {/* Mode toggle — Local (hero) vs International. Local default. Edit
+        {/* Mode toggle - Local (hero) vs International. Local default. Edit
             mode disables the toggle (mode is not editable; delete+recreate). */}
         <Text style={styles.sectionLabel}>{t('mode.label')}</Text>
         <View style={styles.audienceRow}>
@@ -252,7 +252,7 @@ export default function CreateChallengeScreen() {
           {mode === 'local' ? t('mode.localHint') : t('mode.internationalHint')}
         </Text>
 
-        {/* Audience toggle (Local only) — 2-pill row, full width, thumb-friendly */}
+        {/* Audience toggle (Local only) - 2-pill row, full width, thumb-friendly */}
         {mode === 'local' && (
           <>
             <Text style={styles.sectionLabel}>{t('audience')}</Text>
@@ -277,7 +277,7 @@ export default function CreateChallengeScreen() {
           </>
         )}
 
-        {/* Target city (International only) — opens a full-screen picker.
+        {/* Target city (International only) - opens a full-screen picker.
             Null = "anywhere" (per spec decision: no fan-out, surfaces in
             origin city + a future Discover tab). */}
         {mode === 'international' && (
@@ -299,7 +299,7 @@ export default function CreateChallengeScreen() {
           </>
         )}
 
-        {/* Visibility — Public default; Friends opt-in. Locked to Public
+        {/* Visibility - Public default; Friends opt-in. Locked to Public
             on International rows (server enforces; we keep state in sync). */}
         <Text style={styles.sectionLabel}>{t('visibility.label')}</Text>
         <View style={styles.audienceRow}>
@@ -331,7 +331,7 @@ export default function CreateChallengeScreen() {
             : t(visibility === 'public' ? 'visibility.publicHint' : 'visibility.friendsHint')}
         </Text>
 
-        {/* Type — 4 emoji squares (food / place / culture / help) */}
+        {/* Type - 4 emoji squares (food / place / culture / help) */}
         <Text style={styles.sectionLabel}>{t('type')}</Text>
         <View style={styles.typeGrid}>
           {TYPES.map(tp => {
@@ -352,7 +352,7 @@ export default function CreateChallengeScreen() {
           })}
         </View>
 
-        {/* Title — short, single field, primary input */}
+        {/* Title - short, single field, primary input */}
         <Text style={styles.sectionLabel}>{t('titleLabel')}</Text>
         <TextInput
           style={styles.input}
@@ -366,7 +366,7 @@ export default function CreateChallengeScreen() {
           blurOnSubmit={false}
         />
 
-        {/* Return clause (Local only) — the "...and come tell me about it
+        {/* Return clause (Local only) - the "...and come tell me about it
             in person" half. Pre-filled by per-type template; first manual
             edit pins the value. Forces every Local challenge to lead to a
             real meetup. */}
@@ -386,7 +386,7 @@ export default function CreateChallengeScreen() {
           </>
         )}
 
-        {/* Proof requirements (International only) — creator-authored
+        {/* Proof requirements (International only) - creator-authored
             spec shown to the acceptor before they submit their proof.
             "Photo of the dish, daylight, with you in frame" etc. */}
         {mode === 'international' && (
@@ -413,7 +413,7 @@ export default function CreateChallengeScreen() {
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-        {/* Submit — full-width, orange brand, thumb-friendly */}
+        {/* Submit - full-width, orange brand, thumb-friendly */}
         <TouchableOpacity
           style={[styles.submitBtn, (!title.trim() || submitting) && styles.submitBtnDisabled]}
           activeOpacity={0.85}
@@ -426,7 +426,7 @@ export default function CreateChallengeScreen() {
           }
         </TouchableOpacity>
 
-        {/* Examples — 3 starters that swap with the selected type. Tap
+        {/* Examples - 3 starters that swap with the selected type. Tap
             fills the title input directly (real challenge text, not just
             inspiration). Sits below the CTA so it doesn't pull focus
             from the primary action. */}
@@ -454,7 +454,7 @@ export default function CreateChallengeScreen() {
 
       </ScrollView>
 
-      {/* City picker — full-page modal. "Anywhere" option pinned at top so
+      {/* City picker - full-page modal. "Anywhere" option pinned at top so
           the creator can clear a previous selection in one tap. */}
       <TargetCityPickerSheet
         visible={cityPickerOpen}
@@ -464,7 +464,7 @@ export default function CreateChallengeScreen() {
         onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false); }}
       />
 
-      {/* First-time public opt-in modal — shown once per user (server
+      {/* First-time public opt-in modal - shown once per user (server
           flips has_seen_public_optin on confirm). Switching to Friends
           from here is intentional and does NOT mark optin as seen. */}
       <PublicOptinModal
@@ -552,7 +552,7 @@ function TargetCityPickerSheet({
   }, [visible]);
 
   const filtered = useMemo(() => {
-    // Drop the creator's own city — challenges that target the same city
+    // Drop the creator's own city - challenges that target the same city
     // they're created from should just be Local, not International.
     const pool = cities.filter(c => c.channelId !== currentCityChannelId);
     const q = query.trim().toLowerCase();
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     marginBottom:  Spacing.xs,
   },
 
-  // Audience toggle — 2 equal pills filling the row.
+  // Audience toggle - 2 equal pills filling the row.
   audienceRow: {
     flexDirection: 'row',
     gap:           Spacing.sm,
@@ -693,7 +693,7 @@ const styles = StyleSheet.create({
   },
   audienceLabelSelected: { color: '#FF7A3C' },
 
-  // Type grid — 4 squares in a 2×2 or single row depending on width. Stays
+  // Type grid - 4 squares in a 2×2 or single row depending on width. Stays
   // visually balanced via flex-basis ~22% each (lets 4 fit one row on phones).
   typeGrid: {
     flexDirection: 'row',
@@ -792,7 +792,7 @@ const styles = StyleSheet.create({
   cityModalRowSelected: { backgroundColor: 'rgba(255,122,60,0.08)' },
   cityModalRowText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
 
-  // Stepper row for max_participants — −/+ buttons flanking the centred number.
+  // Stepper row for max_participants - −/+ buttons flanking the centred number.
   stepperRow: {
     flexDirection:  'row',
     alignItems:     'center',
@@ -838,7 +838,7 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.md,
   },
 
-  // Examples — mirrors the web .cef-examples* block. Muted chips so they
+  // Examples - mirrors the web .cef-examples* block. Muted chips so they
   // sit underneath the orange CTA without competing for the eye.
   examplesBlock:  { marginTop: Spacing.lg, gap: Spacing.sm - 1 },
   examplesLabel:  {

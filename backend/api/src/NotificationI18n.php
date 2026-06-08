@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Localized notification text (push + in-app bell).
  *
  * render($type, $locale, $data) returns [title, body] for the recipient's
- * locale, or [null, null] to mean "keep the caller's English text" — which is
+ * locale, or [null, null] to mean "keep the caller's English text" - which is
  * the case for English/unknown locales and for any field we don't translate
  * (message previews and proper nouns like event/venue/city names stay as-is).
  *
@@ -284,7 +284,7 @@ final class NotificationI18n
             'ru'      => ["{name} хочет присоединиться", "{name} запросил присоединение к {title}"],
             'ar'      => ["{name} يريد الانضمام", "{name} طلب الانضمام إلى {title}"],
         ],
-        // Take-on request — fires to the CREATOR when a registered user
+        // Take-on request - fires to the CREATOR when a registered user
         // hits "Accept" on their open challenge. Body references the
         // challenge title (proper user content, kept verbatim).
         'challenge_takeon_request' => [
@@ -307,7 +307,7 @@ final class NotificationI18n
             'ru'      => ["🤝 Новая заявка",                                "{name} хочет принять «{title}»"],
             'ar'      => ["🤝 طلب جديد",                                   "{name} يريد قبول \"{title}\""],
         ],
-        // Take-on approved — fires to the ACCEPTOR when the creator
+        // Take-on approved - fires to the ACCEPTOR when the creator
         // accepts their request. Time to plan the meet-up.
         'challenge_takeon_approved' => [
             'fr'      => ["✅ Défi accepté",       "{name} a accepté ta demande pour « {title} ». Place au plan !"],
@@ -329,7 +329,7 @@ final class NotificationI18n
             'ru'      => ["✅ Заявка принята",      "{name} принял твою заявку на «{title}». Время планировать!"],
             'ar'      => ["✅ تم قبول التحدي",      "{name} قبل طلبك لـ \"{title}\". وقت التخطيط!"],
         ],
-        // Take-on rejected — same surface, less happy outcome.
+        // Take-on rejected - same surface, less happy outcome.
         'challenge_takeon_rejected' => [
             'fr'      => ["✕ Demande refusée",        "{name} a refusé ta demande pour « {title} »."],
             'vi'      => ["✕ Đã từ chối",              "{name} đã từ chối yêu cầu của bạn cho \"{title}\"."],
@@ -350,7 +350,7 @@ final class NotificationI18n
             'ru'      => ["✕ Заявка отклонена",        "{name} отклонил твою заявку на «{title}»."],
             'ar'      => ["✕ تم رفض الطلب",            "{name} رفض طلبك لـ \"{title}\"."],
         ],
-        // Verdict approved — fires to the ACCEPTOR after the meet-up,
+        // Verdict approved - fires to the ACCEPTOR after the meet-up,
         // the creator marked it as done.
         'challenge_verdict_approved' => [
             'fr'      => ["🎉 Défi accompli",           "{name} a validé « {title} » comme accompli"],
@@ -372,7 +372,7 @@ final class NotificationI18n
             'ru'      => ["🎉 Челлендж выполнен",          "{name} отметил «{title}» как выполненный"],
             'ar'      => ["🎉 تم إنجاز التحدي",            "{name} وضع علامة على \"{title}\" بأنه منتهي"],
         ],
-        // Verdict rejected — same surface, no-show / didn't really meet.
+        // Verdict rejected - same surface, no-show / didn't really meet.
         'challenge_verdict_rejected' => [
             'fr'      => ["Défi clôturé",            "{name} a clôturé « {title} »"],
             'vi'      => ["Thử thách đã đóng",       "{name} đã đóng \"{title}\""],
@@ -394,7 +394,7 @@ final class NotificationI18n
             'ar'      => ["تم إغلاق التحدي",          "{name} أغلق \"{title}\""],
         ],
         // ── International mode notifications ────────────────────────────────
-        // Proof submitted — fires to the CREATOR when the acceptor uploads
+        // Proof submitted - fires to the CREATOR when the acceptor uploads
         // a proof. Body carries the challenge title verbatim.
         'challenge_proof_submitted' => [
             'fr'      => ["📸 Nouvelle preuve à valider",        "{name} a envoyé une preuve pour « {title} »"],
@@ -416,7 +416,7 @@ final class NotificationI18n
             'ru'      => ["📸 Новое доказательство",              "{name} прислал доказательство для «{title}»"],
             'ar'      => ["📸 دليل جديد للمراجعة",                "{name} أرسل دليلاً لـ \"{title}\""],
         ],
-        // Proof approved — fires to the ACCEPTOR after the creator's verdict.
+        // Proof approved - fires to the ACCEPTOR after the creator's verdict.
         // Final terminal state for the acceptance.
         'challenge_proof_approved' => [
             'fr'      => ["🎉 Preuve validée",         "{name} a validé ta preuve pour « {title} »"],
@@ -438,7 +438,7 @@ final class NotificationI18n
             'ru'      => ["🎉 Доказательство принято", "{name} принял твоё доказательство для «{title}»"],
             'ar'      => ["🎉 تم قبول الدليل",         "{name} قبل دليلك لـ \"{title}\""],
         ],
-        // Proof rejected — fires to the ACCEPTOR. The reason is intentionally
+        // Proof rejected - fires to the ACCEPTOR. The reason is intentionally
         // NOT in the localized body: it's user-typed content that the creator
         // wrote in their own language, and the recipient sees it in full on
         // the in-app screen. Keeping the push short + the screen detailed
@@ -463,12 +463,12 @@ final class NotificationI18n
             'ru'      => ["✕ Доказательство отклонено", "{name} отклонил твоё доказательство для «{title}»"],
             'ar'      => ["✕ تم رفض الدليل",          "{name} رفض دليلك لـ \"{title}\""],
         ],
-        // Cross-city heads-up — fires to users in CITY B when someone in
+        // Cross-city heads-up - fires to users in CITY B when someone in
         // CITY A creates an international challenge targeting them. Two
         // city placeholders: {originCity} = where the challenge came from,
-        // {city} = recipient's own city (target). No actor name — the
+        // {city} = recipient's own city (target). No actor name - the
         // creator's identity is intentionally generic on this fan-out
-        // (it's a city-wide ping, not a personal invite — those use
+        // (it's a city-wide ping, not a personal invite - those use
         // challenge_invitation for individual targeting).
         'challenge_international_target' => [
             'fr'      => ["🌐 Nouveau défi international",       "Quelqu'un de {originCity} cherche un challenger à {city}"],
@@ -492,7 +492,7 @@ final class NotificationI18n
         ],
         // Personal challenge invitation: "🔥 {name} challenges you" with the
         // challenge title kept verbatim in the body (the title is a proper
-        // piece of user content — translating it would change the meaning).
+        // piece of user content - translating it would change the meaning).
         'challenge_invitation' => [
             'fr'      => ["🔥 {name} te défie",                 null],
             'vi'      => ["🔥 {name} thách bạn",                null],
@@ -634,7 +634,7 @@ final class NotificationI18n
         ],
     ];
 
-    /** True if we have translations for this type — lets callers skip the locale lookup. */
+    /** True if we have translations for this type - lets callers skip the locale lookup. */
     public static function isTranslatable(string $type): bool
     {
         return $type === 'mention' || $type === 'friend_added' || isset(self::T[$type]);
@@ -691,7 +691,7 @@ final class NotificationI18n
             'challenge_proof_approved',
             'challenge_proof_rejected' => 'creatorName',
             // verdict_* both already pass senderName=creatorName, so the
-            // default key picks it up — no explicit mapping needed.
+            // default key picks it up - no explicit mapping needed.
             // challenge_international_target uses {originCity} not {name}.
             default                    => 'senderName',
         };

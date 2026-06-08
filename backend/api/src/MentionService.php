@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * MentionService — @mention validation, suggestion sourcing, username resolution.
+ * MentionService - @mention validation, suggestion sourcing, username resolution.
  *
- * Mentions are stored on messages.mentions as [{userId, offset, length}] — NO
+ * Mentions are stored on messages.mentions as [{userId, offset, length}] - NO
  * username (resolved to the CURRENT username on read, so renames reflect
  * everywhere). Only registered users are mentionable; guests (no users row) are
  * never suggested or accepted. The mentionable set is context-scoped:
@@ -31,7 +31,7 @@ final class MentionService
      *
      * @param array $raw            Client mentions: [{userId, offset, length}, ...]
      * @param array $allowedUserIds Mentionable userIds (string[]).
-     * @param int   $contentLen     strlen($content) — loose upper bound (bytes ≥ JS index).
+     * @param int   $contentLen     strlen($content) - loose upper bound (bytes ≥ JS index).
      * @return array Clean [{userId, offset, length}] safe to store.
      */
     public static function sanitize(array $raw, array $allowedUserIds, int $contentLen, array $allowedGuestIds = []): array
@@ -54,7 +54,7 @@ final class MentionService
                 $seen[$key] = true;
                 $out[] = ['userId' => $uid, 'offset' => $off, 'length' => $len];
             } elseif (is_string($gid) && isset($allowedGuest[$gid])) {
-                // Online-guest mention — anchored on the stable guestId (never the
+                // Online-guest mention - anchored on the stable guestId (never the
                 // display name). Live-only: $allowedGuestIds holds guests currently
                 // present in the channel. No username stored (guests have no users
                 // row); the client renders from message content + live presence.
@@ -85,7 +85,7 @@ final class MentionService
      * Batched: one query for all userIds across the set. Mentions whose user was
      * deleted / lost their username are dropped (render as plain text).
      *
-     * @param array $messages Reference — text messages may carry
+     * @param array $messages Reference - text messages may carry
      *                        ['mentions' => [{userId,offset,length}]].
      */
     public static function resolveForMessages(array &$messages): void
@@ -120,7 +120,7 @@ final class MentionService
                         'length'   => (int) ($m['length'] ?? 0),
                     ];
                 } elseif (is_string($gid) && $gid !== '') {
-                    // Guest mention — no users row to resolve. Pass through; the
+                    // Guest mention - no users row to resolve. Pass through; the
                     // client renders the @name from message content and decides
                     // online/inert from live presence (guestId is the anchor).
                     $resolved[] = [
@@ -151,23 +151,23 @@ final class MentionService
             $stmt = $pdo->prepare("SELECT DISTINCT user_id FROM event_participants WHERE channel_id = ? AND user_id IS NOT NULL");
             $stmt->execute([$channelId]);
         } elseif ($context === 'topic') {
-            // Members of the hangout (topic_participants), not just posters — so a
+            // Members of the hangout (topic_participants), not just posters - so a
             // member who joined but hasn't messaged yet is still mentionable.
             $stmt = $pdo->prepare("SELECT user_id FROM topic_participants WHERE topic_id = ?");
             $stmt->execute([$channelId]);
         } elseif ($context === 'challenge') {
             // Participants of the challenge (challenge_participants). Guests can
             // accept too, but only registered users are mentionable (matches the
-            // existing event/topic policy — guest IDs have no @ handle).
+            // existing event/topic policy - guest IDs have no @ handle).
             $stmt = $pdo->prepare("SELECT user_id FROM challenge_participants WHERE channel_id = ? AND user_id IS NOT NULL");
             $stmt->execute([$channelId]);
         } else { // city
-            // PR29 — Mentionable in a city = ACTUAL members of that city only:
+            // PR29 - Mentionable in a city = ACTUAL members of that city only:
             // current_city_id (the source of truth per the membership rule)
             // OR an explicit row in user_city_memberships (legacy + the
             // belt-and-braces upsert /me/city writes alongside current_city_id).
             // The previous "OR posted recently in this channel" branch surfaced
-            // travellers who'd dropped a message but never became members —
+            // travellers who'd dropped a message but never became members -
             // hence the bug where users like BigFatBison showed up as mention
             // suggestions in Ho Chi Minh City despite not being a member.
             // Travellers ARE city members of wherever they're currently in
@@ -201,7 +201,7 @@ final class MentionService
     {
         $pdo  = Database::pdo();
         $like = strtolower(trim($q)) . '%';   // prefix match ('' → everyone)
-        $cap  = self::MAX_SUGGESTIONS;          // int constant — safe to interpolate
+        $cap  = self::MAX_SUGGESTIONS;          // int constant - safe to interpolate
 
         if ($context === 'event') {
             $sql = "
@@ -216,8 +216,8 @@ final class MentionService
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
         } elseif ($context === 'topic') {
-            // Suggest the hangout's members (topic_participants) — same as an event
-            // suggests its participants — so you can tag anyone who's in it.
+            // Suggest the hangout's members (topic_participants) - same as an event
+            // suggests its participants - so you can tag anyone who's in it.
             $sql = "
                 SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
                 FROM topic_participants tp
@@ -244,8 +244,8 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
-        } else { // city — actual members of the city only
-            // PR29 — Mirror mentionableUserIds(): match on current_city_id
+        } else { // city - actual members of the city only
+            // PR29 - Mirror mentionableUserIds(): match on current_city_id
             // OR an explicit user_city_memberships row. Previously the gate
             // also fell through for "anyone who posted here in the last
             // 30 days", which surfaced travellers / one-off posters as

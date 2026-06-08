@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
  *   - The challenge channel header, near the pipeline.
  *
  * Reads i18n from the 'challenge' namespace under scoringInfo.*. The
- * mobile pass shipped these keys for all 18 non-en locales — they live
+ * mobile pass shipped these keys for all 18 non-en locales - they live
  * in the same JSON file on web.
  */
 export default function ScoringInfoButton({ size = 22, className = '' }) {
@@ -60,7 +60,7 @@ function ScoringInfoModal({ onClose, t }) {
           <button className="going-modal-close" onClick={onClose} aria-label="Close">✕</button>
         </div>
         <div className="scoring-info-body">
-          {/* 1 — Two flavours of challenge. Friendly + emoji-led so the
+          {/* 1 - Two flavours of challenge. Friendly + emoji-led so the
               user instantly knows what game they're stepping into. */}
           <section className="scoring-info-section">
             <h3 className="scoring-info-section-heading">{t('scoringInfo.types.heading')}</h3>
@@ -68,7 +68,7 @@ function ScoringInfoModal({ onClose, t }) {
             <p className="scoring-info-section-body">{t('scoringInfo.types.international')}</p>
           </section>
 
-          {/* 2 — Lifecycle reassurance. Mirrors the per-acceptance chat
+          {/* 2 - Lifecycle reassurance. Mirrors the per-acceptance chat
               reset we shipped server-side: the challenge persists, the
               conversation doesn't. */}
           <section className="scoring-info-section">
@@ -76,7 +76,7 @@ function ScoringInfoModal({ onClose, t }) {
             <p className="scoring-info-section-body">{t('scoringInfo.lifecycle.body')}</p>
           </section>
 
-          {/* 3 — Points breakdown, kept verbatim from the prior modal so
+          {/* 3 - Points breakdown, kept verbatim from the prior modal so
               the numbers + the muscle memory of returning users stay
               intact. */}
           <h3 className="scoring-info-section-heading">{t('scoringInfo.pointsHeading')}</h3>

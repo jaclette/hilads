@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "C'est ton défi",
-        "body": "Tu as créé ce défi — attends que quelqu'un d'autre le relève."
+        "body": "Tu as créé ce défi - attends que quelqu'un d'autre le relève."
       },
       "mode_required": {
         "title": "Choisis local ou voyageur d'abord",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "Quelqu'un est déjà dessus",
-        "body": "Un autre voyageur est en train de le relever. Reviens quand ils auront fini — le défi se libère."
+        "body": "Un autre voyageur est en train de le relever. Reviens quand ils auront fini - le défi se libère."
       }
     }
   },
   "thread": {
     "notFound": "Fil introuvable",
     "empty": "Dis bonjour 👋 et fixez une date pour vous retrouver.",
-    "emptyIntl": "Dis salut 👋 — lâche une 📸 quand t'y arrives.",
+    "emptyIntl": "Dis salut 👋 - lâche une 📸 quand t'y arrives.",
     "cancel": {
       "creatorTitle": "Annuler ce take-on ?",
       "acceptorTitle": "Laisser tomber ce défi ?",
@@ -195,7 +195,7 @@
     "confirm": {
       "approve": {
         "title": "Valider comme accompli ?",
-        "body": "C'est définitif — tu ne pourras pas revenir en arrière.",
+        "body": "C'est définitif - tu ne pourras pas revenir en arrière.",
         "confirm": "Valider"
       },
       "reject": {
@@ -271,15 +271,15 @@
     },
     "inProgress": {
       "title": "Quelqu'un est dessus en ce moment",
-      "body": "Un voyageur est en train de relever ce défi. Quand il aura fini, il sera de nouveau libre — repasse bientôt."
+      "body": "Un voyageur est en train de relever ce défi. Quand il aura fini, il sera de nouveau libre - repasse bientôt."
     }
   },
   "postCreate": {
     "title": "Ton défi est lancé",
-    "subtitle": "Maintenant, plante la graine — fais en sorte que quelqu'un le relève dans l'heure.",
+    "subtitle": "Maintenant, plante la graine - fais en sorte que quelqu'un le relève dans l'heure.",
     "thisCity": "cette ville",
     "ctaInvite": "Envoie-le à quelqu'un à {{city}}",
-    "ctaInviteSub": "Choisis quelques {{audience}} — on les ping.",
+    "ctaInviteSub": "Choisis quelques {{audience}} - on les ping.",
     "ctaShare": "Partage-le en dehors de Hilads",
     "skip": "Peut-être plus tard",
     "pickerTitle": "{{audience}} à {{city}}",
@@ -289,7 +289,7 @@
     "sendCtaEmpty": "Sélectionne quelqu'un d'abord",
     "sentTitle": "Envoyé à {{count}}",
     "sentSubtitle": "Ils vont recevoir une notification push.",
-    "pickerSubtitleAll": "Personne ne colle exactement — on montre tout {{city}}."
+    "pickerSubtitleAll": "Personne ne colle exactement - on montre tout {{city}}."
   },
   "invitation": {
     "accept": "Accepter",
@@ -315,7 +315,7 @@
     "targetCityHint": "Laisse « N'importe où » pour toucher tout le monde, ou choisis une ville pour cibler.",
     "proofRequirementsLabel": "Que doit montrer la photo ?",
     "proofRequirementsPlaceholder": "ex. Le plat à la lumière du jour, avec toi dans le cadre",
-    "proofRequirementsHint": "La preuve est une photo 📸. Le participant voit ça avant d’envoyer — sois précis.",
+    "proofRequirementsHint": "La preuve est une photo 📸. Le participant voit ça avant d’envoyer - sois précis.",
     "cityPicker": {
       "title": "Choisis une ville cible",
       "searchPlaceholder": "Cherche une ville…",
@@ -341,7 +341,7 @@
       "reasonRequiredTitle": "Raison obligatoire",
       "reasonRequiredBody": "Une courte raison (1–200 caractères) aide la personne qui a relevé.",
       "permPhotoTitle": "Accès appareil photo requis",
-      "permPhotoBody": "Active l'accès à l'appareil photo dans Réglages — la preuve doit être une photo prise en direct.",
+      "permPhotoBody": "Active l'accès à l'appareil photo dans Réglages - la preuve doit être une photo prise en direct.",
       "permGpsTitle": "Localisation requise",
       "permGpsBody": "La géoloc est obligatoire. Active la localisation dans les Réglages.",
       "gpsFailTitle": "GPS indisponible",
@@ -373,16 +373,16 @@
     "leaveCta": "Quitter le canal",
     "errKicked": "Tu as été retiré de ce défi. Tu ne peux pas le rejoindre.",
     "errClosed": "Ce défi est fermé aux nouvelles arrivées.",
-    "errGeneric": "Impossible d’entrer — réessaie."
+    "errGeneric": "Impossible d’entrer - réessaie."
   },
   "members": {
     "title": "Dans le canal",
     "countIn": "{{count}} dans le canal",
     "seeAll": "Voir tout →",
-    "empty": "Personne n'a encore rejoint — sois le premier.",
+    "empty": "Personne n'a encore rejoint - sois le premier.",
     "kickCta": "Retirer",
     "kickAria": "Retirer {{name}} du canal",
-    "errKick": "Impossible de retirer — réessaie."
+    "errKick": "Impossible de retirer - réessaie."
   },
   "notif": {
     "on": "Notifications activées",
@@ -410,7 +410,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Note ta rencontre avec {{name}}",
-      "titleUrgent": "{{name}} a noté — à toi"
+      "titleUrgent": "{{name}} a noté - à toi"
     },
     "sheet": {
       "title": "Ça s’est passé comment avec {{name}} ?",
@@ -451,7 +451,7 @@
   "scoringInfo": {
     "aria": "Comment marchent les points",
     "title": "🏆 Comment marchent les défis",
-    "intro": "Chaque défi rapporte des points aux deux côtés — ils alimentent ton classement de ville et mondial.",
+    "intro": "Chaque défi rapporte des points aux deux côtés - ils alimentent ton classement de ville et mondial.",
     "colStep": "Étape",
     "steps": {
       "accepted": "Take-on accepté",
@@ -459,17 +459,17 @@
       "meet": "Rencontre",
       "rate": "Double note"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Total par défi",
     "footnote": "Les points ne sont attribués qu’après la double notation.",
     "types": {
       "heading": "🎯 Deux façons de jouer",
-      "local": "🏙️ Local — dans ta ville. Tu te retrouves IRL pour valider.",
-      "international": "🌍 International — entre villes. Une photo instantanée comme preuve."
+      "local": "🏙️ Local - dans ta ville. Tu te retrouves IRL pour valider.",
+      "international": "🌍 International - entre villes. Une photo instantanée comme preuve."
     },
     "lifecycle": {
       "heading": "🔁 Un défi à la fois",
-      "body": "Quand le preneur a fini, le chat se vide — le défi reste, prêt pour le prochain aventurier."
+      "body": "Quand le preneur a fini, le chat se vide - le défi reste, prêt pour le prochain aventurier."
     },
     "pointsHeading": "💯 Comment gagner des points"
   },
@@ -477,7 +477,7 @@
     "unit": "points",
     "subtitle": {
       "accepted": "Ton challenge a été accepté 🤝",
-      "date_locked": "Rendez-vous confirmé — on y va 🗓️",
+      "date_locked": "Rendez-vous confirmé - on y va 🗓️",
       "meetup": "Mission accomplie 🎉",
       "debrief": "Mission accomplie 🎉",
       "ghost": "Tu feras mieux la prochaine fois 👻",

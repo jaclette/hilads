@@ -16,7 +16,7 @@ export default function ForgotPasswordScreen({ onBack }) {
       await authForgotPassword(email.trim().toLowerCase())
       setSent(true)
     } catch {
-      // Still show success — never reveal if email exists
+      // Still show success - never reveal if email exists
       setSent(true)
     } finally {
       setLoading(false)

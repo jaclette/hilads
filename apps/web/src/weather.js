@@ -16,14 +16,14 @@ const EMOJI_CONDITION = {
   '❄':  'snow',        // snow
   '🌨': 'snowShowers', // snow showers
   '⛈':  'thunder',     // thunderstorm / heavy showers
-  '🌡': '',            // unknown weather code — temperature only
+  '🌡': '',            // unknown weather code - temperature only
 }
 
 // Localized weather pill label, derived from the backend's English weather
-// string (e.g. "☁️ 31°C in Paris — grey skies today"). The weather message is
+// string (e.g. "☁️ 31°C in Paris - grey skies today"). The weather message is
 // stored once per city and broadcast to all locales, so it can't be localized
-// server-side; instead we read only the leading emoji + temperature — both
-// backend-controlled — and rebuild "{emoji} {temp}°C · {condition}" in the
+// server-side; instead we read only the leading emoji + temperature - both
+// backend-controlled - and rebuild "{emoji} {temp}°C · {condition}" in the
 // active language. Falls back to the original text (em-dash → middot,
 // " in {city}" stripped) when the emoji isn't recognized.
 export function localizeWeather(content, cityName) {
@@ -32,7 +32,7 @@ export function localizeWeather(content, cityName) {
   const fallback = () => {
     let text = content
     if (cityName) text = text.replace(` in ${cityName}`, '')
-    return text.replace(/\s*—\s*/, ' · ').replace(/\s{2,}/g, ' ').trim()
+    return text.replace(/\s*-\s*/, ' · ').replace(/\s{2,}/g, ' ').trim()
   }
 
   const sp = content.indexOf(' ')

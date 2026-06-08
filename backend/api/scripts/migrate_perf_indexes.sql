@@ -1,19 +1,19 @@
 -- Performance indexes for bootstrap critical path
--- Run once in production (fully idempotent — safe to re-run).
+-- Run once in production (fully idempotent - safe to re-run).
 --
 -- IMPORTANT: CONCURRENTLY cannot run inside a transaction block.
 -- Run with: psql $DATABASE_URL -f scripts/migrate_perf_indexes.sql
 -- Or on a managed DB (Supabase/Neon/RDS): run each statement individually.
 --
 -- Each index targets a specific query in the bootstrap critical path.
--- Timings in the bootstrap log show which phases are slow — these indexes
+-- Timings in the bootstrap log show which phases are slow - these indexes
 -- address the most common bottlenecks found in queries_ms.
 
 
 -- ── 1. presence: online-count query ──────────────────────────────────────────
 -- Query: COUNT(DISTINCT guest_id) WHERE channel_id = ? AND last_seen_at > now() - interval '120s'
 -- Without this: sequential scan of the whole presence table per bootstrap call.
--- INCLUDE (guest_id) makes it a covering index — count served without heap fetch.
+-- INCLUDE (guest_id) makes it a covering index - count served without heap fetch.
 -- Targets: queries_ms.presence (PresenceRepository::join CTE)
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_presence_channel_active
     ON presence (channel_id, last_seen_at DESC)
@@ -41,7 +41,7 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_user_city_roles_city_role_user
 
 -- ── 4. notifications: unread count ───────────────────────────────────────────
 -- Query: SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = FALSE
--- Partial index on unread rows only — keeps the index small as rows get marked read.
+-- Partial index on unread rows only - keeps the index small as rows get marked read.
 -- Targets: queries_ms.notif_cnt (NotificationRepository::unreadCount)
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_notifications_user_unread
     ON notifications (user_id)

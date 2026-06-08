@@ -11,7 +11,7 @@ class TicketmasterImporter
     /**
      * Syncs Ticketmaster events for a city channel if the cooldown has passed.
      * Falls back to city name when lat/lng are not provided.
-     * Silent no-op if TM is unavailable — stored events are used as fallback.
+     * Silent no-op if TM is unavailable - stored events are used as fallback.
      */
     public static function syncIfNeeded(int $channelId, ?float $lat, ?float $lng, string $cityName): void
     {
@@ -27,13 +27,13 @@ class TicketmasterImporter
     {
         try {
             if (!$force && !self::needsRefresh($channelId)) {
-                error_log("[TM] ch={$channelId}: skipping — cooldown active");
+                error_log("[TM] ch={$channelId}: skipping - cooldown active");
                 return;
             }
 
             $apiKey = getenv('TICKETMASTER_API_KEY');
             if (empty($apiKey)) {
-                error_log("[TM] ch={$channelId}: TICKETMASTER_API_KEY is not set — sync skipped");
+                error_log("[TM] ch={$channelId}: TICKETMASTER_API_KEY is not set - sync skipped");
                 return;
             }
 
@@ -49,11 +49,11 @@ class TicketmasterImporter
         } catch (\Throwable $e) {
             $class = get_class($e);
             if (str_contains($class, 'PDO') || str_contains($e->getMessage(), 'database')) {
-                error_log("[TM] ch={$channelId}: DB error during sync — " . $e->getMessage());
+                error_log("[TM] ch={$channelId}: DB error during sync - " . $e->getMessage());
             } elseif (str_contains($e->getMessage(), 'Ticketmaster')) {
-                error_log("[TM] ch={$channelId}: external API error — " . $e->getMessage());
+                error_log("[TM] ch={$channelId}: external API error - " . $e->getMessage());
             } else {
-                error_log("[TM] ch={$channelId}: unexpected error — {$class}: " . $e->getMessage());
+                error_log("[TM] ch={$channelId}: unexpected error - {$class}: " . $e->getMessage());
             }
         }
     }

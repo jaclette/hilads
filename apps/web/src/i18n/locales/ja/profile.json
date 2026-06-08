@@ -53,17 +53,17 @@
     "checking": "確認中…",
     "available": "@{{username}} は利用できます",
     "aboutMe": "自己紹介",
-    "charsLeft": "— 残り{{count}}文字",
+    "charsLeft": "- 残り{{count}}文字",
     "aboutPlaceholder": "屋台グルメと気まぐれなおしゃべりが大好き",
     "email": "メール",
-    "readOnly": "— 読み取り専用",
+    "readOnly": "- 読み取り専用",
     "homeCity": "出身の街",
     "homeCityPlaceholder": "住んでいる場所",
     "age": "年齢",
     "agePlaceholder": "年齢",
     "myVibe": "私の vibe",
     "interests": "興味",
-    "interestsHint": "— 最大5つまで選択"
+    "interestsHint": "- 最大5つまで選択"
   },
   "ambassador": {
     "title": "街のおすすめ 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "この街で気に入っていること"
   },
   "hangouts": {
-    "empty": "まだ集まりはありません — 始めてみよう 🗣️",
+    "empty": "まだ集まりはありません - 始めてみよう 🗣️",
     "host": "ホスト"
   },
   "events": {
     "going": "参加予定",
-    "goingEmpty": "まだ予定はありません — 何か見つけよう 🔥",
+    "goingEmpty": "まだ予定はありません - 何か見つけよう 🔥",
     "hosting": "主催中",
-    "hostingEmpty": "まだ主催していません — 何か始めよう ✨",
+    "hostingEmpty": "まだ主催していません - 何か始めよう ✨",
     "live": "ライブ",
     "recurring": "↻ 繰り返し",
     "upcoming": "近日開催",
@@ -129,7 +129,7 @@
     "generic": "問題が発生しました。再試行してください。"
   },
   "challenges": {
-    "empty": "まだ挑戦がありません — 立ち上げよう 🔥",
+    "empty": "まだ挑戦がありません - 立ち上げよう 🔥",
     "challenger": "挑戦者"
   }
 }

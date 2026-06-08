@@ -1,7 +1,7 @@
 -- ── Topic notification system ────────────────────────────────────────────────
 -- Run once in production (idempotent).
 
--- 1. Subscription table — tracks which users want notifications for a topic.
+-- 1. Subscription table - tracks which users want notifications for a topic.
 CREATE TABLE IF NOT EXISTS topic_subscriptions (
     topic_id      TEXT         NOT NULL,
     user_id       TEXT         NOT NULL REFERENCES users(id) ON DELETE CASCADE,

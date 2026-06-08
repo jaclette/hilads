@@ -7,7 +7,7 @@ import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
 
 /**
- * PR7 — Leaderboard screen. Reached from the 🏆 chip on the city header.
+ * PR7 - Leaderboard screen. Reached from the 🏆 chip on the city header.
  *
  * Selectors:
  *   - scope:  My city (default) | World
@@ -36,7 +36,7 @@ const PAGE_SIZE = 50
 export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, onCreateChallenge, initialScope = 'city' }) {
   const { t } = useTranslation('challenge')
 
-  // PR38 — initialScope lets callers (e.g. the score celebration popin's
+  // PR38 - initialScope lets callers (e.g. the score celebration popin's
   // rank rows) request a starting scope. Default 'city' preserves the
   // existing entry from the trophy chip.
   const [scope,  setScope]  = useState(initialScope === 'world' ? 'world' : 'city')
@@ -46,9 +46,9 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState(null)
 
-  // PR41 — picker-overridden city for the leaderboard view. Null = use the
+  // PR41 - picker-overridden city for the leaderboard view. Null = use the
   // caller's current city (default behaviour). Setting this DOES NOT change
-  // the user's actual current_city anywhere else in the app — same scope as
+  // the user's actual current_city anywhere else in the app - same scope as
   // the mobile picker (PR13).
   const [pickedCity,      setPickedCity]      = useState(null) // { channelId, name, country? } | null
   const [cityPickerOpen,  setCityPickerOpen]  = useState(false)
@@ -93,7 +93,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           <button
             type="button"
             className={`leaderboard-seg-item${scope === 'city' ? ' is-active' : ''}`}
-            // PR41 — first click selects the City scope; while the City
+            // PR41 - first click selects the City scope; while the City
             // tab is ALREADY active, the click instead opens the city
             // picker. Mirrors the mobile gesture (tap the city pill →
             // sheet appears) without taking a second slot of chrome.
@@ -184,7 +184,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
         )}
       </div>
 
-      {/* Pinned caller row — only when not already in the visible page.
+      {/* Pinned caller row - only when not already in the visible page.
           Cities scope shows the caller's CITY pinned (the city ranking
           the user belongs to), not the caller themselves. */}
       {me && !meInPage && (
@@ -211,7 +211,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
                               ?? account?.profile_photo_url
                               ?? null,
                 points:         me.points,
-                // PR40 — surface the caller's own city + flag on the pinned
+                // PR40 - surface the caller's own city + flag on the pinned
                 // row when in world scope, same as the mobile row.
                 cityName:       city?.name    ?? null,
                 cityCountry:    city?.country ?? null,
@@ -236,7 +236,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
         </div>
       )}
 
-      {/* PR41 — city picker modal. Selecting a row overrides the
+      {/* PR41 - city picker modal. Selecting a row overrides the
           leaderboard's view scope; the user's actual current_city is
           unchanged everywhere else. */}
       <LeaderboardCityPickerModal
@@ -254,9 +254,9 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
 
 function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
   const [c1, c2] = avatarColors(entry.displayName)
-  // PR40 — world-scope rows show a "🇫🇷 Paris" chip under the name so the
+  // PR40 - world-scope rows show a "🇫🇷 Paris" chip under the name so the
   // user can see where each scorer is from. Matches the native row layout
-  // (apps/mobile/app/leaderboard.tsx) — uses countryToFlag + the same
+  // (apps/mobile/app/leaderboard.tsx) - uses countryToFlag + the same
   // city-name localization helper.
   const flag      = showCity && entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
   const cityLabel = showCity && entry.cityName    ? localizeCityName(entry.cityName) : null
@@ -294,12 +294,12 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
   )
 }
 
-// Cities-scope row — flag + city name + sum of every member's points.
+// Cities-scope row - flag + city name + sum of every member's points.
 // No avatar (cities don't have one); the flag fills the avatar slot at
 // the same 40px footprint so the row geometry matches the user rows.
 function LeaderboardCityRow({ entry, isMe, t }) {
   const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : ''
-  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '—'
+  const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-'
   return (
     <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
       <span className="leaderboard-rank">#{entry.rank}</span>

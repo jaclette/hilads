@@ -1,5 +1,5 @@
-// Hilads service worker — web push + notification click/action handling
-// Scope: root (/) — handles all push notifications for the app
+// Hilads service worker - web push + notification click/action handling
+// Scope: root (/) - handles all push notifications for the app
 
 // Production API base. Web push only runs over HTTPS in production, where the
 // app lives at hilads.live and the API at api.hilads.live.
@@ -29,7 +29,7 @@ self.addEventListener('notificationclick', (e) => {
   const data   = e.notification.data || {}
   const action = e.action
 
-  // Accept / Decline directly from the notification — no need to open the app.
+  // Accept / Decline directly from the notification - no need to open the app.
   if (action === 'accept' || action === 'decline') {
     e.waitUntil(handleAction(data, action))
     return

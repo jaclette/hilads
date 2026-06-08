@@ -1,5 +1,5 @@
 /**
- * Client-side block filter — applies on top of the server-side filter so the
+ * Client-side block filter - applies on top of the server-side filter so the
  * UI updates instantly when the user taps Block (no refetch round-trip).
  *
  * Identity model mirrors the server: a content author has either a userId
@@ -29,7 +29,7 @@ export function isBlocked(
 
 /**
  * Filter an array by a block set. The picker callback returns the user / guest
- * identity for each item — it's a callback (not fixed field names) because
+ * identity for each item - it's a callback (not fixed field names) because
  * lists across the app shape author identity differently:
  *   - Message:           { userId, guestId }
  *   - DM list row:       { other_user_id, other_guest_id }

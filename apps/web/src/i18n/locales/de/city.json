@@ -64,7 +64,7 @@
     "eventTag": "Event",
     "public": "Öffentlich",
     "activeNow": "● Jetzt aktiv",
-    "repliesNew": "Noch keine Antworten — sei der Erste",
+    "repliesNew": "Noch keine Antworten - sei der Erste",
     "replies_one": "💬 {{count}} Antwort",
     "replies_other": "💬 {{count}} Antworten",
     "going_one": "🙌 {{count}} dabei",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Was geht?",
     "hangoutTitle": "Treffen starten",
-    "hangoutSub": "Sofort — lass Leute jetzt gleich dazukommen",
+    "hangoutSub": "Sofort - lass Leute jetzt gleich dazukommen",
     "eventTitle": "Event erstellen",
     "eventSub": "Plane etwas, bei dem andere mitmachen können",
     "challengeTitle": "Challenge starten",
-    "challengeSub": "Locals & Reisende — verbindet euch durch eine Challenge",
+    "challengeSub": "Locals & Reisende - verbindet euch durch eine Challenge",
     "challengePageTitle": "Challenge starten",
     "challengeAudience": "Für wen?",
     "challengeAudLocals": "Locals",
@@ -161,7 +161,7 @@
     "going": "dabei",
     "inThisHangout": "in diesem Treffen",
     "loading": "Wird geladen…",
-    "empty": "Noch niemand — sei der Erste, der mitmacht! 🙌"
+    "empty": "Noch niemand - sei der Erste, der mitmacht! 🙌"
   },
   "nickname": {
     "label": "Spitzname",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Du hast dieses Event gestartet!",
-    "sub": "Mach es noch besser — füge eine Beschreibung hinzu, aktualisiere die Zeit oder teile es.",
+    "sub": "Mach es noch besser - füge eine Beschreibung hinzu, aktualisiere die Zeit oder teile es.",
     "edit": "✏️ Event bearbeiten"
   },
   "feedNew": {

@@ -9,14 +9,14 @@ import { getAuthToken } from './client';
  *   - `thumbUrl` is the thumbnail URL (≤400 px JPEG) if the server generated one,
  *                or null if thumbnail generation was skipped (GD unavailable, etc.)
  *
- * Note: Do NOT set Content-Type manually — fetch sets it with the
+ * Note: Do NOT set Content-Type manually - fetch sets it with the
  * multipart boundary when body is FormData.
  */
 export async function uploadFile(
   localUri: string,
   mimeType?: string | null,
 ): Promise<{ url: string; thumbUrl: string | null }> {
-  console.log('[image-upload] upload start — uri:', localUri, 'mimeType:', mimeType ?? 'auto');
+  console.log('[image-upload] upload start - uri:', localUri, 'mimeType:', mimeType ?? 'auto');
 
   // Derive type + extension from the provided mimeType, or fall back to JPEG.
   // Expo ImagePicker (expo-image-picker ≥ 14) exposes asset.mimeType on iOS/Android.

@@ -7,11 +7,11 @@ use PHPUnit\Framework\TestCase;
 /**
  * Unit tests for the event-creation limits.
  *
- * Runs entirely in memory with mock PDO objects — no database / network.
+ * Runs entirely in memory with mock PDO objects - no database / network.
  *
  * Covered rules:
- *   A. guestHasActiveEvent() helper — still used elsewhere; behavior unchanged.
- *   B. guestCreatedEventTodayCount() helper — new "1 per calendar day" rule.
+ *   A. guestHasActiveEvent() helper - still used elsewhere; behavior unchanged.
+ *   B. guestCreatedEventTodayCount() helper - new "1 per calendar day" rule.
  *
  * The `add()` method integration is not unit-tested here because it now calls
  * `CityRepository::findById()`, which reaches into the cities table via a
@@ -29,7 +29,7 @@ class EventRepositoryCapTest extends TestCase
 
     // ── guestHasActiveEvent() unit tests ─────────────────────────────────────
     //
-    // Helper is no longer called from add() but still exposed — kept for
+    // Helper is no longer called from add() but still exposed - kept for
     // admin/introspection callers. Behavior must not regress.
 
     public function test_guestHasActiveEvent_returns_true_when_row_found(): void
@@ -50,7 +50,7 @@ class EventRepositoryCapTest extends TestCase
         $this->assertFalse($result);
     }
 
-    // ── guestCreatedEventTodayCount() — new "1/day" rule ────────────────────
+    // ── guestCreatedEventTodayCount() - new "1/day" rule ────────────────────
 
     public function test_todayCount_returns_zero_when_no_events(): void
     {

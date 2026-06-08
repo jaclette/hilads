@@ -29,7 +29,7 @@ export async function authLogin(
   }
   await persistToken();
   console.log('[auth] login: token persisted to SecureStore =',
-    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — no token received from server');
+    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO - no token received from server');
   return res;
 }
 
@@ -64,14 +64,14 @@ export async function authSignup(
   }
   await persistToken();
   console.log('[auth] signup: token persisted to SecureStore =',
-    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — no token received from server');
+    getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO - no token received from server');
   return res;
 }
 
 /**
  * Accept the EULA for the currently authenticated user. Used by the boot-time
  * re-prompt modal for users who registered before the moderation update.
- * Idempotent server-side — safe to call again.
+ * Idempotent server-side - safe to call again.
  */
 export async function acceptEula(): Promise<{ user: User }> {
   return api.post<{ user: User }>('/users/me/eula');

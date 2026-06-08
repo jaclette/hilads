@@ -24,7 +24,7 @@
   "agePlaceholder": "例如：25",
   "fieldMyVibe": "我的 VIBE",
   "fieldInterests": "興趣",
-  "interestsHint": "— 最多選 5 個",
+  "interestsHint": "- 最多選 5 個",
   "interest": {
     "drinks": "小酌",
     "party": "派對",
@@ -47,12 +47,12 @@
     "tech": "科技",
     "dating": "約會"
   },
-  "noHangouts": "還沒有聚會 — 發起一個吧 🗣️",
+  "noHangouts": "還沒有聚會 - 發起一個吧 🗣️",
   "host": "主辦人",
   "going": "參加",
-  "noPlans": "還沒有計畫 — 找點什麼吧 🔥",
+  "noPlans": "還沒有計畫 - 找點什麼吧 🔥",
   "hosting": "主辦中",
-  "nothingHosted": "還沒主辦任何活動 — 發起點什麼吧 ✨",
+  "nothingHosted": "還沒主辦任何活動 - 發起點什麼吧 ✨",
   "live": "LIVE",
   "recurring": "週期性",
   "friendRequests": "好友邀請",
@@ -80,7 +80,7 @@
   "errUsernameShort": "使用者名稱至少需要 3 個字元",
   "errUsernameTaken": "這個使用者名稱已被使用",
   "errUsernameInvalid": "無效的使用者名稱",
-  "errSave": "儲存失敗 — 請再試一次",
+  "errSave": "儲存失敗 - 請再試一次",
   "signOutTitle": "登出",
   "signOutBody": "確定嗎？",
   "deleteAccountTitle": "刪除帳號？",
@@ -89,5 +89,5 @@
   "errorTitle": "錯誤",
   "deleteAccountFail": "無法刪除帳號。請再試一次。",
   "tabChallenges": "挑戰",
-  "noChallenges": "尚無挑戰 — 發起一個 🔥"
+  "noChallenges": "尚無挑戰 - 發起一個 🔥"
 }

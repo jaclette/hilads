@@ -1,9 +1,9 @@
 /**
- * ShareSheet — native bottom sheet for share actions in chat composers.
+ * ShareSheet - native bottom sheet for share actions in chat composers.
  *
  * Actions:
- *   📸 Snap the vibe     → onSnap() — parent triggers image/camera picker
- *   📍 Drop where you at → onSpot() — parent handles geolocation + send
+ *   📸 Snap the vibe     → onSnap() - parent triggers image/camera picker
+ *   📍 Drop where you at → onSpot() - parent handles geolocation + send
  */
 
 import React from 'react';

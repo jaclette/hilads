@@ -1,7 +1,7 @@
 /**
- * Here screen — two sections:
- *   1. Here now    — people live in this city right now (from AppContext, realtime)
- *   2. City crew   — registered members whose home city is this city (paginated API)
+ * Here screen - two sections:
+ *   1. Here now    - people live in this city right now (from AppContext, realtime)
+ *   2. City crew   - registered members whose home city is this city (paginated API)
  *
  * Filters: badge and/or vibe, combinable.
  * Pagination: city crew loads 10 at a time via "Load more".
@@ -178,7 +178,7 @@ export default function HereScreen() {
 
   const mySessionId = sessionId ?? '';
 
-  // Block filter (Apple G1.2) — server already filters this list, but the
+  // Block filter (Apple G1.2) - server already filters this list, but the
   // client-side pass keeps the UI instant when the user blocks someone
   // currently visible (no refetch round-trip).
   const visibleCrew = useMemo(
@@ -197,7 +197,7 @@ export default function HereScreen() {
     return map;
   }, [visibleCrew]);
 
-  // Fetch city crew — reset and reload when filters or city changes
+  // Fetch city crew - reset and reload when filters or city changes
   const loadCrew = useCallback(async (page: number, reset: boolean) => {
     if (!city?.channelId) return;
     setCrewLoading(true);
@@ -245,7 +245,7 @@ export default function HereScreen() {
     };
   }), [onlineUsers, crewLookup, mySessionId, account]);
 
-  // Apply badge + vibe filters to live users (client-side — small list)
+  // Apply badge + vibe filters to live users (client-side - small list)
   const filteredOnline = enrichedOnline.filter(u => {
     if (filterBadge) {
       const isMe = u.sessionId === mySessionId;
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
     borderBottomWidth: 1, borderBottomColor: Colors.border, minHeight: 56,
   },
-  // No borderBottom — header flows directly into the tab sub-header,
+  // No borderBottom - header flows directly into the tab sub-header,
   // matching MY CITY's look.
   appHeaderWrap: {
     paddingHorizontal: Spacing.md,

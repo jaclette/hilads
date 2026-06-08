@@ -8,7 +8,7 @@ import ChallengePipeline from './ChallengePipeline'
 // scroll-snap track + dots, no animation libraries.
 //
 // Slide 3 swaps the emoji for an embedded <ChallengePipeline> in muted /
-// educational mode — same visual newcomers see on the challenge detail page,
+// educational mode - same visual newcomers see on the challenge detail page,
 // so the onboarding doesn't sell something different from what ships.
 
 function slides(t, city) {
@@ -81,7 +81,7 @@ export default function OnboardingCarousel({ city, onSignup, onClose }) {
           {index >= lastIndex ? t('onboarding.explore') : t('onboarding.next')}
         </button>
 
-        {/* Discreet, low-emphasis signup — present on every screen. */}
+        {/* Discreet, low-emphasis signup - present on every screen. */}
         <button className="onboarding-signup-link" onClick={onSignup}>
           {t('onboarding.createAccount')}
         </button>

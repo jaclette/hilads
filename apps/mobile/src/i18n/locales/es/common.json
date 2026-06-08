@@ -5,7 +5,7 @@
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
     "title": "¡Felicidades, {{username}}! 🎉",
-    "subtitle": "Tu cuenta está lista — esto es lo que puedes hacer ahora 👇",
+    "subtitle": "Tu cuenta está lista - esto es lo que puedes hacer ahora 👇",
     "f1": "🎉 Crea una quedada y reúne a gente ahora mismo",
     "f2": "📅 Organiza un evento en tu ciudad",
     "f3": "💬 Envía un mensaje privado a quien quieras",
@@ -15,7 +15,7 @@
   },
   "onboarding": {
     "slide1Title": "Estás en {{city}}",
-    "slide1Body": "Locales y viajeros se encuentran aquí — a través de retos reales.",
+    "slide1Body": "Locales y viajeros se encuentran aquí - a través de retos reales.",
     "slide2Title": "Los locales retan a los viajeros. Y al revés.",
     "slide2Body": "🍜 La mejor paella · 📍 Un mirador escondido · 🎭 Suelta unas palabras en español · 🙏 Ayuda con una SIM. Retos reales que llevan a un encuentro real.",
     "slide3Title": "Cómo funciona",
@@ -32,7 +32,7 @@
     "title": "Cómo funcionan los retos",
     "slide1": {
       "title": "Los retos convierten viajes en historias",
-      "body": "Locales y viajeros se retan para compartir lo que hace real una ciudad — comida, lugares, cultura, ayuda. ¿La recompensa? Quedáis en persona."
+      "body": "Locales y viajeros se retan para compartir lo que hace real una ciudad - comida, lugares, cultura, ayuda. ¿La recompensa? Quedáis en persona."
     },
     "slide2": {
       "title": "Lanza tu reto",
@@ -40,22 +40,22 @@
     },
     "slide3": {
       "title": "Alguien lo acepta",
-      "body": "Te mandan una solicitud. La revisas y aceptas — tu hilo privado se abre para chatear y organizar."
+      "body": "Te mandan una solicitud. La revisas y aceptas - tu hilo privado se abre para chatear y organizar."
     },
     "slide4": {
       "title": "Quedad en persona",
-      "body": "Elegid una fecha que os vaya bien. La línea de tiempo sigue cada paso. Luego lo hacéis — de verdad."
+      "body": "Elegid una fecha que os vaya bien. La línea de tiempo sigue cada paso. Luego lo hacéis - de verdad."
     },
     "slide5": {
       "title": "Cierra el reto",
-      "body": "Tras el encuentro, márcalo como cumplido. Tu ciudad, vivida de verdad — un reto a la vez."
+      "body": "Tras el encuentro, márcalo como cumplido. Tu ciudad, vivida de verdad - un reto a la vez."
     },
     "next": "Siguiente",
     "done": "¡Entendido!",
     "skip": "Saltar ✕",
     "slide6": {
       "title": "Más allá de tu ciudad",
-      "body": "Reta a cualquiera en cualquier parte. Te envían una prueba — foto con geoetiqueta — y validas a distancia. Local o global, cada reto cuenta."
+      "body": "Reta a cualquiera en cualquier parte. Te envían una prueba - foto con geoetiqueta - y validas a distancia. Local o global, cada reto cuenta."
     },
     "createCta": "🔥 Crear un reto"
   },
@@ -149,7 +149,7 @@
   "replies_one": "💬 {{count}} respuesta",
   "replies_other": "💬 {{count}} respuestas",
   "noReplies": "Sin respuestas",
-  "noRepliesFirst": "Aún no hay respuestas — sé el primero",
+  "noRepliesFirst": "Aún no hay respuestas - sé el primero",
   "weather": {
     "clear": "cielo despejado",
     "sunnyHot": "sol radiante",

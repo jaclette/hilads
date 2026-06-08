@@ -9,7 +9,7 @@ import { ScoringInfoModal } from '@/features/challenge/ScoringInfoModal';
  * own modal state so callers can drop it anywhere as <ScoringInfoButton />
  * without managing visibility upstream.
  *
- * Amber tint matches the leaderboard chip — visually links "info" with
+ * Amber tint matches the leaderboard chip - visually links "info" with
  * "points / scoring" across the app.
  */
 export function ScoringInfoButton({ size = 22 }: { size?: number }) {

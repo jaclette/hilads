@@ -1,5 +1,5 @@
 /**
- * ProofReviewModal — full-screen verdict surface for the international
+ * ProofReviewModal - full-screen verdict surface for the international
  * challenge creator. Opens from the lifecycle pipeline's "Review the
  * proof" sub-CTA. Shows the acceptor's photo large + Approve / Reject
  * buttons; reject swaps the same sheet into a reason-prompt face
@@ -11,7 +11,7 @@
  * back to the buttons, and tap. Surfacing the photo + buttons together
  * in a modal makes the action obvious.
  *
- * WS — approve/reject endpoints now broadcast challenge_accepted on
+ * WS - approve/reject endpoints now broadcast challenge_accepted on
  * both sides (creator + acceptor); existing socket listeners refresh
  * the acceptance, the modal closes itself on success, and the pipeline
  * + chat update on both clients without a manual reload.

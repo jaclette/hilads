@@ -16,7 +16,7 @@ $activeEvents  = (int)$pdo->query("
 ")->fetchColumn();
 $totalMessages = (int)$pdo->query("SELECT COUNT(*) FROM messages")->fetchColumn();
 
-// PR51 — quick leaderboard stat for the dashboard.
+// PR51 - quick leaderboard stat for the dashboard.
 $totalScoreEvents = (int)$pdo->query("SELECT COUNT(*) FROM score_events")->fetchColumn();
 $topScorer = $pdo->query("
     SELECT id, display_name, score_alltime
@@ -58,7 +58,7 @@ admin_nav('/admin');
         <a href="/admin/events" class="btn btn-secondary">→ Manage Events</a>
     </div>
 
-    <!-- PR51 — Danger zone. Reset every user's leaderboard score back to
+    <!-- PR51 - Danger zone. Reset every user's leaderboard score back to
          zero. Confirms via a native JS prompt (no extra page); the form
          POSTs to /admin/scores/reset-all where the server runs the
          actual wipe inside a transaction (see scores_reset.php). -->

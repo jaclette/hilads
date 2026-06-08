@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * gen-sitemap.mjs — deploy-time IndexNow ping.
+ * gen-sitemap.mjs - deploy-time IndexNow ping.
  *
  * The sitemap itself is no longer generated here. It is served DYNAMICALLY by
  * the serverless function apps/web/api/sitemap.mjs (rewritten from /sitemap.xml
  * in vercel.json), so newly created events/cities appear automatically within
- * the CDN cache TTL — no rebuild required.
+ * the CDN cache TTL - no rebuild required.
  *
  * This script remains in the build step purely to ping IndexNow (Bing / Yandex
  * / Naver) on each deploy with the indexable URL set, nudging a re-crawl. It is
@@ -14,11 +14,11 @@
  *     npm run gen:sitemap
  *
  * Env vars:
- *   SITEMAP_BASE_URL   — site origin (default: https://hilads.live)
- *   SITEMAP_API_URL    — channels API endpoint
- *   SITEMAP_VENUES_URL — sitemap venues endpoint
- *   SITEMAP_CATS_URL   — sitemap categories endpoint
- *   INDEXNOW_SUBMIT=1  — force the ping outside Vercel (defaults on when VERCEL=1)
+ *   SITEMAP_BASE_URL   - site origin (default: https://hilads.live)
+ *   SITEMAP_API_URL    - channels API endpoint
+ *   SITEMAP_VENUES_URL - sitemap venues endpoint
+ *   SITEMAP_CATS_URL   - sitemap categories endpoint
+ *   INDEXNOW_SUBMIT=1  - force the ping outside Vercel (defaults on when VERCEL=1)
  */
 
 const BASE_URL    = (process.env.SITEMAP_BASE_URL || 'https://hilads.live').replace(/\/+$/, '')
@@ -37,7 +37,7 @@ function cityToSlug(name) {
   return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
-// Mirrors api/sitemap.mjs venueSlug — venue URLs are /venue/<slug>-<id>.
+// Mirrors api/sitemap.mjs venueSlug - venue URLs are /venue/<slug>-<id>.
 function venueSlug(name, id) {
   const t = String(name || '')
     .normalize('NFD')

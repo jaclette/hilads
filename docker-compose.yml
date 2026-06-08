@@ -6,7 +6,7 @@
 #   - Node WS   on ws://localhost:8081    (node:20-slim + bind mount + --watch)
 #
 # The React web app (Vite) and React Native mobile app (Expo) run natively on
-# the host — see DEV.md for the full workflow.
+# the host - see DEV.md for the full workflow.
 #
 # Usage:
 #   docker compose up         # first run builds the PHP image
@@ -51,11 +51,11 @@ services:
       # Phase D: fan out "new event in your city" pushes by current_city_id
       # instead of presence. Off by default; only flip on after Phase C is on.
       NOTIFICATIONS_USE_CURRENT_CITY: "off"
-      # Leave R2 / Sentry / PostHog blank — those paths degrade gracefully in dev.
+      # Leave R2 / Sentry / PostHog blank - those paths degrade gracefully in dev.
     volumes:
       # Bind-mount source for live edits.
       - ./backend/api:/var/www/html
-      # Preserve the image's composer vendor/ — the bind mount would otherwise
+      # Preserve the image's composer vendor/ - the bind mount would otherwise
       # shadow it and break autoload.
       - /var/www/html/vendor
       # Dev OPcache override: validate_timestamps=1 so PHP picks up file edits

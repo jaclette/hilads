@@ -1,5 +1,5 @@
 /**
- * EventPill — compact event row, reusable anywhere a single event needs to
+ * EventPill - compact event row, reusable anywhere a single event needs to
  * be surfaced in a horizontal list-like form (profile screen, limit-reached
  * screen, etc.).
  *
@@ -20,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import type { HiladsEvent } from '@/types';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
 
-// Icon map — mirrors the web's EVENT_ICONS in apps/web/src/cityMeta.js
+// Icon map - mirrors the web's EVENT_ICONS in apps/web/src/cityMeta.js
 const EVENT_ICONS: Record<string, string> = {
   drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
   'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',

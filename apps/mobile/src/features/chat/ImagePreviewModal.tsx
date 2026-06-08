@@ -17,7 +17,7 @@ interface Props {
 }
 
 // ── Local cache helpers ──────────────────────────────────────────────────────
-// Both Download and Share need the image as a local FILE — Sharing.shareAsync
+// Both Download and Share need the image as a local FILE - Sharing.shareAsync
 // won't take a remote URL on iOS, and MediaLibrary.saveToLibraryAsync wants a
 // file:// path. We download once into the cache directory and reuse for both
 // actions, keyed by the last segment of the URL so repeated taps don't refetch.
@@ -68,7 +68,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
       },
       onPanResponderRelease: (_, g) => {
         if (g.dy > 90 || g.vy > 1.0) {
-          // Swipe past threshold — animate out then close
+          // Swipe past threshold - animate out then close
           Animated.parallel([
             Animated.timing(translateY, { toValue: SH, duration: 180, useNativeDriver: true }),
             Animated.timing(bgOpacity,  { toValue: 0,  duration: 180, useNativeDriver: true }),
@@ -78,7 +78,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
             onClose();
           });
         } else {
-          // Below threshold — snap back
+          // Below threshold - snap back
           Animated.parallel([
             Animated.spring(translateY, { toValue: 0, useNativeDriver: true, bounciness: 4 }),
             Animated.spring(bgOpacity,  { toValue: 1, useNativeDriver: true }),
@@ -88,7 +88,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
     }),
   ).current;
 
-  // ── Download — save to camera roll / Photos library ──────────────────────
+  // ── Download - save to camera roll / Photos library ──────────────────────
   async function handleDownload() {
     if (!uri || busy) return;
     setBusy('download');
@@ -123,7 +123,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
     }
   }
 
-  // ── Share — open the native share sheet with the image attached ──────────
+  // ── Share - open the native share sheet with the image attached ──────────
   async function handleShare() {
     if (!uri || busy) return;
     setBusy('share');
@@ -159,21 +159,21 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
       <StatusBar hidden />
       <View style={styles.backdrop}>
 
-        {/* Dark backdrop — fades during swipe-to-dismiss. Kept separate from
+        {/* Dark backdrop - fades during swipe-to-dismiss. Kept separate from
             the action bar so the buttons stay fully opaque even mid-gesture. */}
         <Animated.View
           style={[StyleSheet.absoluteFill, styles.backdropFill, { opacity: bgOpacity }]}
           pointerEvents="none"
         />
 
-        {/* Full-screen tap area — tap anywhere to close */}
+        {/* Full-screen tap area - tap anywhere to close */}
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
           onPress={onClose}
           activeOpacity={1}
         />
 
-        {/* Image — drag down to dismiss. Also fades with bgOpacity so the
+        {/* Image - drag down to dismiss. Also fades with bgOpacity so the
             image follows the dismiss gesture visually. */}
         <Animated.View
           style={[styles.imageWrap, { transform: [{ translateY }], opacity: bgOpacity }]}
@@ -188,7 +188,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           )}
         </Animated.View>
 
-        {/* Close button (top-right) — safe-area aware so it never lands under
+        {/* Close button (top-right) - safe-area aware so it never lands under
             the notch / status bar area. */}
         <TouchableOpacity
           style={[styles.closeBtn, { top: Math.max(insets.top + 8, 28) }]}
@@ -198,7 +198,7 @@ export function ImagePreviewModal({ uri, onClose }: Props) {
           <Text style={styles.closeIcon}>✕</Text>
         </TouchableOpacity>
 
-        {/* Action bar — bottom of the lightbox. Two thumb-friendly pill
+        {/* Action bar - bottom of the lightbox. Two thumb-friendly pill
             buttons. Bottom inset keeps them above the Android nav bar /
             iOS home indicator on every device. */}
         <View

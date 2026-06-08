@@ -1,7 +1,7 @@
 import useAppPromotion from '../hooks/useAppPromotion'
 
 /**
- * Full-screen promo modal — gated OFF by default via appPromotion.interstitial.
+ * Full-screen promo modal - gated OFF by default via appPromotion.interstitial.
  * The banner remains the primary surface; this is a louder variant we'll A/B
  * later. Mounted at App root behind the same hook.
  */

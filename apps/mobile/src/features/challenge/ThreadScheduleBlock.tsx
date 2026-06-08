@@ -10,7 +10,7 @@ import type { ChallengeThreadSummary } from '@/types';
 import { DatePickerModal } from './DatePickerModal';
 
 /**
- * PR3 — the "Schedule" band that sits above the chat input in /thread/[id].
+ * PR3 - the "Schedule" band that sits above the chat input in /thread/[id].
  *
  * State machine driven entirely off the ChallengeThreadSummary:
  *
@@ -27,7 +27,7 @@ import { DatePickerModal } from './DatePickerModal';
 export function ThreadScheduleBlock({
   thread,
   myUserId,
-  onChange,            // called after any successful mutation — host refreshes the summary
+  onChange,            // called after any successful mutation - host refreshes the summary
   hideEmptyCta = false, // when true + no proposal yet, render nothing (parent
                        // owns that CTA via the pipeline's sub-CTA instead)
 }: {
@@ -44,7 +44,7 @@ export function ThreadScheduleBlock({
   const hasProposal  = thread.proposed_starts_at !== null;
   const iProposed    = hasProposal && thread.proposed_by_user_id === myUserId;
   const iAmCreator   = thread.i_am_creator;
-  // PR4 — render off effective_phase. The server flips 'scheduled' to 'debrief'
+  // PR4 - render off effective_phase. The server flips 'scheduled' to 'debrief'
   // once the meetup's end time has passed (cross-checked again on the server
   // when the creator hits approve-challenge / reject-challenge).
   const phase        = thread.effective_phase ?? thread.phase;
@@ -97,7 +97,7 @@ export function ThreadScheduleBlock({
   }
 
   // ── Render: phase='scheduled' (meetup in the future) ──────────────────────
-  // Either party can tap ✏️ to reschedule — the backend flips phase back to
+  // Either party can tap ✏️ to reschedule - the backend flips phase back to
   // 'accepted', clears date_approved_at, and the other party re-approves
   // the new proposal.
   if (phase === 'scheduled' && thread.proposed_starts_at) {
@@ -142,7 +142,7 @@ export function ThreadScheduleBlock({
     );
   }
 
-  // PR6 — the manual creator-verdict block that used to live here was retired
+  // PR6 - the manual creator-verdict block that used to live here was retired
   // when the mutual-rating flow shipped. The DB trigger on challenge_ratings
   // now flips phase to 'approved' on the second rating, so 'debrief' is a
   // transient phase the user resolves by tapping the rate-prompt banner on
@@ -163,7 +163,7 @@ export function ThreadScheduleBlock({
     );
   }
 
-  // ── PR4: rejected (final, muted — softer tone than 'rejected' implies) ─────
+  // ── PR4: rejected (final, muted - softer tone than 'rejected' implies) ─────
   if (phase === 'rejected') {
     return (
       <View style={[styles.band, styles.bandRejected]}>
@@ -180,7 +180,7 @@ export function ThreadScheduleBlock({
 
   // ── Render: phase='accepted', no proposal ──────────────────────────────────
   // When hideEmptyCta is set, the parent (e.g. /challenge/[id]) owns the
-  // initial-propose action — it's reached via the pipeline's "Propose a date →"
+  // initial-propose action - it's reached via the pipeline's "Propose a date →"
   // sub-CTA so we don't duplicate it here.
   if (!hasProposal) {
     if (hideEmptyCta) return null;
@@ -226,7 +226,7 @@ export function ThreadScheduleBlock({
         <View style={styles.bandActions}>
           {/* Creator-only Approve, shown for ANY proposal (theirs or other's).
               Creator-proposed flow: they propose, then immediately tap Approve
-              to lock — explicit by design (matches "creator approves" spec). */}
+              to lock - explicit by design (matches "creator approves" spec). */}
           {iAmCreator && (
             <TouchableOpacity style={styles.actionPrimary} onPress={handleApprove} activeOpacity={0.85} disabled={busy !== null}>
               {busy === 'approve'

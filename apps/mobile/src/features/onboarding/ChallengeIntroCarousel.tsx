@@ -1,5 +1,5 @@
 /**
- * ChallengeIntroCarousel — focused 5-slide explainer of the challenge flow.
+ * ChallengeIntroCarousel - focused 5-slide explainer of the challenge flow.
  * Triggered from a city-chat feed prompt; re-openable from anywhere. Smaller
  * scope than OnboardingCarousel (no first-time gating, no signup flow), so
  * users can revisit "how does this work" without losing context.

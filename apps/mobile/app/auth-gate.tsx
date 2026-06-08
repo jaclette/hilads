@@ -1,5 +1,5 @@
 /**
- * AuthGate — shown when a ghost user tries a member-only action.
+ * AuthGate - shown when a ghost user tries a member-only action.
  *
  * Accepts an optional `reason` query param to show context-specific copy:
  *   - view_profile  (default): "Ghosts can vibe, but profiles are for members."

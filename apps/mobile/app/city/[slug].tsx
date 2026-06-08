@@ -7,7 +7,7 @@ import { socket } from '@/lib/socket';
 import { Colors } from '@/constants';
 
 /**
- * City deep link handler — https://hilads.live/city/{slug}
+ * City deep link handler - https://hilads.live/city/{slug}
  *
  * Resolves the city from the URL slug, switches the app to that city,
  * then navigates to the chat tab.
@@ -45,7 +45,7 @@ export default function CityDeepLink() {
         router.replace('/(tabs)/chat');
       })
       .catch(() => {
-        // Unknown slug — fall back to the chat tab (user's current city).
+        // Unknown slug - fall back to the chat tab (user's current city).
         router.replace('/(tabs)/chat');
       });
   }, [joined, slug]); // eslint-disable-line react-hooks/exhaustive-deps

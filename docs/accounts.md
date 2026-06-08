@@ -1,4 +1,4 @@
-# Hilads — Accounts & Profiles Design
+# Hilads - Accounts & Profiles Design
 
 ## Context
 
@@ -42,12 +42,12 @@ Storing `birth_year` (e.g. 1995) instead of exact date.
 ### 5. Guest upgrade strategy
 On signup, the guest's `guestId` is stored in the user record.
 The nickname becomes the initial `display_name`.
-The guest session continues to work — the app just enriches it with the user account.
+The guest session continues to work - the app just enriches it with the user account.
 No hard data migration required.
 
 ### 6. Database: SQLite
 The system has no database today. Adding one should not require infrastructure changes.
-SQLite lives as a single file in the existing storage directory — consistent with the current approach, zero new dependencies, native PHP PDO support.
+SQLite lives as a single file in the existing storage directory - consistent with the current approach, zero new dependencies, native PHP PDO support.
 Path: `storage/users.db`
 Upgrade to MySQL/Postgres later if scale requires it.
 
@@ -86,7 +86,7 @@ CREATE TABLE users (
 );
 ```
 
-No separate profile table — keeps it simple. One row per user, everything inline.
+No separate profile table - keeps it simple. One row per user, everything inline.
 
 ---
 
@@ -126,7 +126,7 @@ PUT /api/v1/profile
 Auth: required
 Body: { display_name?, birth_year?, home_city?, interests?, profile_photo_url? }
 Response: { user }
-Updates own profile. Partial update — only send what changed.
+Updates own profile. Partial update - only send what changed.
 
 GET /api/v1/users/{userId}
 Auth: none
@@ -135,7 +135,7 @@ Public profile view.
 ```
 
 ### Photo upload
-Reuse existing `POST /api/v1/uploads` endpoint — already validates R2 origin.
+Reuse existing `POST /api/v1/uploads` endpoint - already validates R2 origin.
 The returned URL is then saved via `PUT /api/v1/profile`.
 
 ### Request/response examples
@@ -208,7 +208,7 @@ GET  /api/v1/users/{userId}
 **Session model after login:**
 ```php
 $_SESSION['user_id'] = $user['id'];
-// guest session remains — $_SESSION['guests'][$guestId] still works
+// guest session remains - $_SESSION['guests'][$guestId] still works
 ```
 
 Display name resolution (everywhere in the app a nickname is shown):
@@ -288,10 +288,10 @@ Backend:
 Frontend:
   1. sets account state
   2. uses display_name from account for all future messages
-  3. guestId is still in localStorage — still valid for existing messages
+  3. guestId is still in localStorage - still valid for existing messages
 ```
 
-Past messages keep the guest nickname — no backfill needed. Only future messages use the account display_name.
+Past messages keep the guest nickname - no backfill needed. Only future messages use the account display_name.
 
 ---
 
@@ -299,7 +299,7 @@ Past messages keep the guest nickname — no backfill needed. Only future messag
 
 **Password rules:**
 - minimum 8 characters
-- no maximum (bcrypt truncates at 72 bytes — enforce 72 char max to avoid confusion)
+- no maximum (bcrypt truncates at 72 bytes - enforce 72 char max to avoid confusion)
 - no complexity requirements (friction without real security benefit)
 - hashed with `password_hash($pw, PASSWORD_BCRYPT)`
 
@@ -310,7 +310,7 @@ Past messages keep the guest nickname — no backfill needed. Only future messag
 **Google ID token:**
 - verified by calling `https://oauth2.googleapis.com/tokeninfo?id_token=<token>`
 - validate `aud` matches our Google client ID
-- no SDK needed — one HTTP call
+- no SDK needed - one HTTP call
 
 **Profile fields:**
 - `display_name`: 1–30 chars, strip HTML tags
@@ -328,37 +328,37 @@ Past messages keep the guest nickname — no backfill needed. Only future messag
 
 ## Implementation Plan
 
-### Phase 1 — Backend foundation (build first)
-1. `Database.php` — SQLite singleton, auto-migrate `users` table on first boot
-2. `UserRepository.php` — create, find by email, find by google_id, update, find by id
-3. `AuthService.php` — signup, login, session helpers
+### Phase 1 - Backend foundation (build first)
+1. `Database.php` - SQLite singleton, auto-migrate `users` table on first boot
+2. `UserRepository.php` - create, find by email, find by google_id, update, find by id
+3. `AuthService.php` - signup, login, session helpers
 4. Routes: `POST /auth/signup`, `POST /auth/login`, `POST /auth/logout`, `GET /auth/me`
 5. Route: `PUT /profile`
 6. Route: `GET /users/{userId}`
 
-### Phase 2 — Frontend auth screens
-1. `AuthScreen.jsx` — email/password login + signup tabs
-2. `MeScreen.jsx` — guest state (upgrade CTA) + logged-in state (profile view)
+### Phase 2 - Frontend auth screens
+1. `AuthScreen.jsx` - email/password login + signup tabs
+2. `MeScreen.jsx` - guest state (upgrade CTA) + logged-in state (profile view)
 3. Wire Me tab to show AuthScreen vs MeScreen based on account state
 
-### Phase 3 — Profile editing
-1. `EditProfileScreen.jsx` — photo, display_name, birth_year, home_city, interests picker
+### Phase 3 - Profile editing
+1. `EditProfileScreen.jsx` - photo, display_name, birth_year, home_city, interests picker
 2. Photo upload reuses existing upload flow, saves URL via `PUT /profile`
 3. Interests multi-select UI (chips/pills, max 10)
 
-### Phase 4 — Public profiles
-1. `PublicProfileScreen.jsx` — shown when tapping a username in chat
+### Phase 4 - Public profiles
+1. `PublicProfileScreen.jsx` - shown when tapping a username in chat
 2. Tap target on usernames/avatars in chat feed → opens public profile overlay
 
-### Phase 5 — Google Sign-In (later)
+### Phase 5 - Google Sign-In (later)
 1. Add Google Sign-In button to AuthScreen
-2. `GoogleAuth.php` — verify ID token
+2. `GoogleAuth.php` - verify ID token
 3. Route: `POST /auth/google`
 4. Frontend Google SDK integration
 
-### Phase 6 — Display name propagation (later, non-breaking)
+### Phase 6 - Display name propagation (later, non-breaking)
 When a logged-in user sends a message, the frontend sends `display_name` instead of `nickname`.
-No backend change needed — messages already store the name sent.
+No backend change needed - messages already store the name sent.
 Optional: add a `user_id` field to messages for linking to public profile.
 
 ---

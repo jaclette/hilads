@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "내가 만든 챌린지예요",
-        "body": "내가 만든 챌린지예요 — 다른 사람이 수락하길 기다려 주세요."
+        "body": "내가 만든 챌린지예요 - 다른 사람이 수락하길 기다려 주세요."
       },
       "mode_required": {
         "title": "먼저 로컬 또는 트래블러를 선택해요",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "지금 누가 하고 있어요",
-        "body": "다른 여행자가 지금 이 챌린지를 받고 있어요. 끝나면 다시 와요 — 챌린지가 다시 열려요."
+        "body": "다른 여행자가 지금 이 챌린지를 받고 있어요. 끝나면 다시 와요 - 챌린지가 다시 열려요."
       }
     }
   },
   "thread": {
     "notFound": "스레드를 찾을 수 없어요",
     "empty": "인사 👋 하고 만날 시간을 정해요.",
-    "emptyIntl": "인사하고 👋 — 해냈으면 📸 보내요.",
+    "emptyIntl": "인사하고 👋 - 해냈으면 📸 보내요.",
     "cancel": {
       "creatorTitle": "이 take-on을 취소할까요?",
       "acceptorTitle": "이 챌린지를 포기할까요?",
@@ -271,15 +271,15 @@
     },
     "inProgress": {
       "title": "지금 누가 하고 있어요",
-      "body": "여행자가 이 챌린지를 받고 있어요. 끝나면 다시 열려요 — 곧 다시 와봐요."
+      "body": "여행자가 이 챌린지를 받고 있어요. 끝나면 다시 열려요 - 곧 다시 와봐요."
     }
   },
   "postCreate": {
     "title": "챌린지가 공개됐어",
-    "subtitle": "이제 씨앗을 뿌리자 — 한 시간 안에 누군가 받게 해.",
+    "subtitle": "이제 씨앗을 뿌리자 - 한 시간 안에 누군가 받게 해.",
     "thisCity": "이 도시",
     "ctaInvite": "{{city}}의 누군가에게 보내기",
-    "ctaInviteSub": "{{audience}} 몇 명 선택 — 푸시 보낼게.",
+    "ctaInviteSub": "{{audience}} 몇 명 선택 - 푸시 보낼게.",
     "ctaShare": "Hilads 밖에서 공유",
     "skip": "나중에",
     "pickerTitle": "{{city}}의 {{audience}}",
@@ -289,7 +289,7 @@
     "sendCtaEmpty": "먼저 선택해",
     "sentTitle": "{{count}}명에게 전송",
     "sentSubtitle": "지금 푸시 알림이 가.",
-    "pickerSubtitleAll": "딱 맞는 사람은 없어 — {{city}} 전체를 보여줄게."
+    "pickerSubtitleAll": "딱 맞는 사람은 없어 - {{city}} 전체를 보여줄게."
   },
   "invitation": {
     "accept": "수락",
@@ -315,7 +315,7 @@
     "targetCityHint": "\"어디든\"으로 두면 어디든 여행자에게 닿아. 도시를 골라서 좁힐 수도 있어.",
     "proofRequirementsLabel": "사진에 무엇을 담아야 하나요?",
     "proofRequirementsPlaceholder": "예: 자연광 아래 음식, 본인도 함께 프레임 안에",
-    "proofRequirementsHint": "증거는 사진 📸 입니다. 참가자가 제출 전에 확인해요 — 구체적으로 적어 주세요.",
+    "proofRequirementsHint": "증거는 사진 📸 입니다. 참가자가 제출 전에 확인해요 - 구체적으로 적어 주세요.",
     "cityPicker": {
       "title": "타겟 도시 고르기",
       "searchPlaceholder": "도시 검색…",
@@ -341,7 +341,7 @@
       "reasonRequiredTitle": "이유 필요",
       "reasonRequiredBody": "짧은 이유(1–200자)가 도움돼.",
       "permPhotoTitle": "카메라 접근 권한 필요",
-      "permPhotoBody": "설정에서 카메라 접근을 허용해 주세요 — 증거는 즉석에서 찍은 사진이어야 합니다.",
+      "permPhotoBody": "설정에서 카메라 접근을 허용해 주세요 - 증거는 즉석에서 찍은 사진이어야 합니다.",
       "permGpsTitle": "위치 필요",
       "permGpsBody": "지오태그 필수. 위치를 켜.",
       "gpsFailTitle": "GPS 읽기 실패",
@@ -379,10 +379,10 @@
     "title": "채널 안",
     "countIn": "{{count}}명이 채널에 있어요",
     "seeAll": "모두 보기 →",
-    "empty": "아직 아무도 참여하지 않았어요 — 가장 먼저 참여해 보세요.",
+    "empty": "아직 아무도 참여하지 않았어요 - 가장 먼저 참여해 보세요.",
     "kickCta": "내보내기",
     "kickAria": "{{name}}님을 채널에서 내보내기",
-    "errKick": "내보내지 못했어요 — 다시 시도해 주세요."
+    "errKick": "내보내지 못했어요 - 다시 시도해 주세요."
   },
   "notif": {
     "on": "알림 켜짐",
@@ -410,7 +410,7 @@
   "ratePrompts": {
     "banner": {
       "title": "{{name}}님과의 만남을 평가해 주세요",
-      "titleUrgent": "{{name}}님이 평가했어요 — 이제 차례예요"
+      "titleUrgent": "{{name}}님이 평가했어요 - 이제 차례예요"
     },
     "sheet": {
       "title": "{{name}}님과 어땠어요?",
@@ -451,7 +451,7 @@
   "scoringInfo": {
     "aria": "포인트가 어떻게 쌓이는지",
     "title": "🏆 챌린지 작동 방식",
-    "intro": "챌린지마다 양쪽 모두 포인트를 얻어요 — 도시·세계 리더보드에 합산돼요.",
+    "intro": "챌린지마다 양쪽 모두 포인트를 얻어요 - 도시·세계 리더보드에 합산돼요.",
     "colStep": "단계",
     "steps": {
       "accepted": "챌린지 수락",
@@ -459,17 +459,17 @@
       "meet": "만남",
       "rate": "양쪽 평가"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "챌린지당 합계",
     "footnote": "양쪽이 모두 만남을 평가했을 때 포인트가 부여돼요.",
     "types": {
       "heading": "🎯 두 가지 플레이 방식",
-      "local": "🏙️ 로컬 — 같은 도시. 직접 만나야 인정.",
-      "international": "🌍 인터내셔널 — 도시 간. 즉석 사진 한 장이 증거."
+      "local": "🏙️ 로컬 - 같은 도시. 직접 만나야 인정.",
+      "international": "🌍 인터내셔널 - 도시 간. 즉석 사진 한 장이 증거."
     },
     "lifecycle": {
       "heading": "🔁 한 번에 한 명",
-      "body": "도전자가 마무리하면 채팅은 초기화 — 챌린지는 그대로, 다음 모험가를 기다려요."
+      "body": "도전자가 마무리하면 채팅은 초기화 - 챌린지는 그대로, 다음 모험가를 기다려요."
     },
     "pointsHeading": "💯 포인트 얻는 법"
   },
@@ -477,7 +477,7 @@
     "unit": "포인트",
     "subtitle": {
       "accepted": "내 챌린지가 수락되었어요 🤝",
-      "date_locked": "약속 확정 — 가자 🗓️",
+      "date_locked": "약속 확정 - 가자 🗓️",
       "meetup": "미션 성공 🎉",
       "debrief": "미션 성공 🎉",
       "ghost": "다음을 노려보자 👻",

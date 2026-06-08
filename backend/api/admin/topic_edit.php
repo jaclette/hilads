@@ -179,14 +179,14 @@ admin_nav('/admin/topics');
 
         <!-- Expiry -->
         <div class="form-group">
-            <label for="expires_at">Expiry date &amp; time <span style="color:#555">(optional — leave blank to keep current)</span></label>
+            <label for="expires_at">Expiry date &amp; time <span style="color:#555">(optional - leave blank to keep current)</span></label>
             <input type="datetime-local" id="expires_at" name="expires_at"
                    value="<?= htmlspecialchars($post['expires_at'] ?? '', ENT_QUOTES) ?>">
             <div class="hint">
                 Current expiry:
                 <?= $topic['expires_at_ts'] > 0
                     ? date('M d, Y H:i', (int) $topic['expires_at_ts'])
-                    : '—' ?>
+                    : '-' ?>
             </div>
         </div>
 

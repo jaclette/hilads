@@ -32,7 +32,7 @@ export function useEventDetail(eventId: string): Result {
     setError(null);
     try {
       // Pass guestId so the backend embeds is_participating + participant_count
-      // directly in the event object — no secondary fetch needed, no race condition.
+      // directly in the event object - no secondary fetch needed, no race condition.
       const res = await fetchEventById(eventId, guestId ?? undefined);
       setEvent(res?.event ?? null);
       setCityName(res?.cityName ?? null);
@@ -63,7 +63,7 @@ export function useEventDetail(eventId: string): Result {
     }
   }, [event, guestId, nickname, toggling]);
 
-  // Ownership match — registered users match by account.id (stable across
+  // Ownership match - registered users match by account.id (stable across
   // devices / re-installs), guests by persistent guestId. The guest_id check
   // alone broke when a registered user opened an event from a device other
   // than the one that created it (different identity.guestId, same account):

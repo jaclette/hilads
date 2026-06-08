@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "Đây là challenge của bạn",
-        "body": "Bạn tạo challenge này — đợi người khác nhận nhé."
+        "body": "Bạn tạo challenge này - đợi người khác nhận nhé."
       },
       "mode_required": {
         "title": "Chọn local hoặc traveler trước",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "Có người đang nhận rồi",
-        "body": "Một du khách khác đang nhận thử thách này. Quay lại khi họ xong nhé — thử thách sẽ mở lại."
+        "body": "Một du khách khác đang nhận thử thách này. Quay lại khi họ xong nhé - thử thách sẽ mở lại."
       }
     }
   },
   "thread": {
     "notFound": "Không tìm thấy thread",
     "empty": "Chào hỏi 👋 và lên kế hoạch gặp nhau.",
-    "emptyIntl": "Chào nhé 👋 — xong rồi thì gửi 📸 nhé.",
+    "emptyIntl": "Chào nhé 👋 - xong rồi thì gửi 📸 nhé.",
     "cancel": {
       "creatorTitle": "Huỷ take-on này?",
       "acceptorTitle": "Bỏ challenge này?",
@@ -191,7 +191,7 @@
     "confirm": {
       "approve": {
         "title": "Đánh dấu là hoàn thành?",
-        "body": "Đây là quyết định cuối cùng — sau đó không đổi được nữa.",
+        "body": "Đây là quyết định cuối cùng - sau đó không đổi được nữa.",
         "confirm": "Đánh dấu hoàn thành"
       },
       "reject": {
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "Có người đang nhận ngay bây giờ",
-      "body": "Một du khách đang nhận thử thách này. Khi họ xong, nó sẽ trống trở lại — ghé lại sớm nhé."
+      "body": "Một du khách đang nhận thử thách này. Khi họ xong, nó sẽ trống trở lại - ghé lại sớm nhé."
     }
   },
   "postCreate": {
     "title": "Thử thách của bạn đã ra mắt",
-    "subtitle": "Giờ gieo hạt — kéo ai đó nhận trong một tiếng tới.",
+    "subtitle": "Giờ gieo hạt - kéo ai đó nhận trong một tiếng tới.",
     "thisCity": "thành phố này",
     "ctaInvite": "Gửi cho ai đó ở {{city}}",
-    "ctaInviteSub": "Chọn vài {{audience}} — bọn mình ping họ.",
+    "ctaInviteSub": "Chọn vài {{audience}} - bọn mình ping họ.",
     "ctaShare": "Chia sẻ ngoài Hilads",
     "skip": "Để sau",
     "pickerTitle": "{{audience}} ở {{city}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "Chọn ai đó trước",
     "sentTitle": "Đã gửi cho {{count}}",
     "sentSubtitle": "Họ sẽ nhận thông báo push ngay.",
-    "pickerSubtitleAll": "Không ai khớp chính xác — hiển thị tất cả ở {{city}}."
+    "pickerSubtitleAll": "Không ai khớp chính xác - hiển thị tất cả ở {{city}}."
   },
   "invitation": {
     "accept": "Chấp nhận",
@@ -311,7 +311,7 @@
     "targetCityHint": "Để \"Bất kỳ đâu\" để gửi đến mọi nơi, hoặc chọn một thành phố.",
     "proofRequirementsLabel": "Ảnh cần thể hiện gì?",
     "proofRequirementsPlaceholder": "vd. Món ăn dưới ánh sáng ban ngày, có bạn trong khung hình",
-    "proofRequirementsHint": "Bằng chứng là một bức ảnh 📸. Người tham gia sẽ thấy phần này trước khi gửi — hãy ghi rõ.",
+    "proofRequirementsHint": "Bằng chứng là một bức ảnh 📸. Người tham gia sẽ thấy phần này trước khi gửi - hãy ghi rõ.",
     "cityPicker": {
       "title": "Chọn thành phố đích",
       "searchPlaceholder": "Tìm thành phố…",
@@ -369,16 +369,16 @@
     "leaveCta": "Rời kênh",
     "errKicked": "Bạn đã bị xóa khỏi thử thách này. Không thể tham gia lại.",
     "errClosed": "Thử thách này đã đóng nhận thành viên mới.",
-    "errGeneric": "Không vào được — thử lại nhé."
+    "errGeneric": "Không vào được - thử lại nhé."
   },
   "members": {
     "title": "Trong kênh",
     "countIn": "{{count}} người trong kênh",
     "seeAll": "Xem tất cả →",
-    "empty": "Chưa có ai tham gia — hãy là người đầu tiên.",
+    "empty": "Chưa có ai tham gia - hãy là người đầu tiên.",
     "kickCta": "Xoá",
     "kickAria": "Xoá {{name}} khỏi kênh",
-    "errKick": "Không thể xoá — thử lại."
+    "errKick": "Không thể xoá - thử lại."
   },
   "notif": {
     "on": "Bật thông báo",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Đánh giá buổi gặp với {{name}}",
-      "titleUrgent": "{{name}} đã đánh giá — đến lượt bạn"
+      "titleUrgent": "{{name}} đã đánh giá - đến lượt bạn"
     },
     "sheet": {
       "title": "Buổi gặp với {{name}} thế nào?",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "Cách tính điểm",
     "title": "🏆 Thử thách hoạt động thế nào",
-    "intro": "Mỗi thử thách mang điểm cho cả hai bên — cộng dồn vào bảng xếp hạng thành phố và toàn cầu.",
+    "intro": "Mỗi thử thách mang điểm cho cả hai bên - cộng dồn vào bảng xếp hạng thành phố và toàn cầu.",
     "colStep": "Bước",
     "steps": {
       "accepted": "Nhận thử thách",
@@ -455,17 +455,17 @@
       "meet": "Gặp mặt",
       "rate": "Hai bên đánh giá"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Tổng mỗi thử thách",
     "footnote": "Điểm chỉ được trao khi cả hai cùng đánh giá.",
     "types": {
       "heading": "🎯 Hai cách chơi",
-      "local": "🏙️ Local — trong thành phố của bạn. Gặp nhau IRL mới tính.",
-      "international": "🌍 International — giữa các thành phố. Một ảnh chụp ngay làm bằng chứng."
+      "local": "🏙️ Local - trong thành phố của bạn. Gặp nhau IRL mới tính.",
+      "international": "🌍 International - giữa các thành phố. Một ảnh chụp ngay làm bằng chứng."
     },
     "lifecycle": {
       "heading": "🔁 Một lượt một người",
-      "body": "Khi người nhận xong, chat sẽ làm mới — thử thách vẫn còn, sẵn sàng cho người tiếp theo."
+      "body": "Khi người nhận xong, chat sẽ làm mới - thử thách vẫn còn, sẵn sàng cho người tiếp theo."
     },
     "pointsHeading": "💯 Cách kiếm điểm"
   },
@@ -473,7 +473,7 @@
     "unit": "điểm",
     "subtitle": {
       "accepted": "Challenge của bạn đã được nhận 🤝",
-      "date_locked": "Đã chốt lịch — đi thôi 🗓️",
+      "date_locked": "Đã chốt lịch - đi thôi 🗓️",
       "meetup": "Nhiệm vụ hoàn thành 🎉",
       "debrief": "Nhiệm vụ hoàn thành 🎉",
       "ghost": "May mắn lần sau 👻",

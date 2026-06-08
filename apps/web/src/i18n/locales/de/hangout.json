@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Bearbeiten", "delete": "🗑 Löschen" },
   "gated": {
     "title": "Treffen nur für Mitglieder",
-    "pending": "Anfrage ausstehend — du kannst der Unterhaltung beitreten, sobald ein Mitglied zustimmt.",
+    "pending": "Anfrage ausstehend - du kannst der Unterhaltung beitreten, sobald ein Mitglied zustimmt.",
     "prompt": "Bitte um Beitritt, um die Unterhaltung zu sehen und mitzuchatten.",
     "requestBtn": "Beitritt anfragen"
   },

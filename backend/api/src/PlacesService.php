@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /**
- * Thin wrapper around the Google Places API (New) — Text Search.
- * Returns normalized place objects — no business logic here.
+ * Thin wrapper around the Google Places API (New) - Text Search.
+ * Returns normalized place objects - no business logic here.
  *
  * API: POST https://places.googleapis.com/v1/places:searchText
  * Docs: https://developers.google.com/maps/documentation/places/web-service/text-search
@@ -14,7 +14,7 @@ class PlacesService
     private const TIMEOUT  = 8;
     private const ENDPOINT = 'https://places.googleapis.com/v1/places:searchText';
 
-    // Only request the fields we actually use — keeps response small and avoids
+    // Only request the fields we actually use - keeps response small and avoids
     // billing for unused field classes (Basic vs Advanced vs Preferred tiers).
     private const FIELD_MASK = 'places.id,places.displayName,places.formattedAddress,places.rating,places.userRatingCount,places.location';
 
@@ -36,7 +36,7 @@ class PlacesService
         }
 
         // Places API (New) uses POST with a JSON body.
-        // maxResultCount 20 is the API maximum — we request all available so
+        // maxResultCount 20 is the API maximum - we request all available so
         // the quality filter has the largest pool to work with before slicing.
         $body = json_encode([
             'textQuery'      => $query,
@@ -81,13 +81,13 @@ class PlacesService
         }
 
         // The new API surfaces errors as { "error": { "code": N, "message": "..." } }
-        // with a matching HTTP status code — not a legacy "status" string field.
+        // with a matching HTTP status code - not a legacy "status" string field.
         if ($httpCode !== 200) {
             $msg = $data['error']['message'] ?? "HTTP {$httpCode}";
             throw new RuntimeException("Places API error: {$msg}");
         }
 
-        // Zero results → response is {} (no "places" key) — not an error.
+        // Zero results → response is {} (no "places" key) - not an error.
 
         // ── Filter ────────────────────────────────────────────────────────────
         // Process all returned places, then sort + slice.
@@ -114,7 +114,7 @@ class PlacesService
                 continue;
             }
 
-            // Lat/lng — Places API (New) returns nested location object.
+            // Lat/lng - Places API (New) returns nested location object.
             // Captured so venue JSON-LD can emit schema.org GeoCoordinates.
             // Missing location → null (older Places responses, or rare data
             // gaps). Callers handle null gracefully.
@@ -128,7 +128,7 @@ class PlacesService
                 'rating'       => (float) $place['rating'],
                 'lat'          => $lat,
                 'lng'          => $lng,
-                // Used for sorting only — stripped before returning to callers
+                // Used for sorting only - stripped before returning to callers
                 '_review_count'=> (int) ($place['userRatingCount'] ?? 0),
             ];
         }

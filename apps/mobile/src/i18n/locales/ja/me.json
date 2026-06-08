@@ -24,7 +24,7 @@
   "agePlaceholder": "例：25",
   "fieldMyVibe": "マイ vibe",
   "fieldInterests": "興味",
-  "interestsHint": "— 最大5つまで選択",
+  "interestsHint": "- 最大5つまで選択",
   "interest": {
     "drinks": "お酒",
     "party": "パーティー",
@@ -47,12 +47,12 @@
     "tech": "テック",
     "dating": "デート"
   },
-  "noHangouts": "まだ集まりはありません — 始めましょう 🗣️",
+  "noHangouts": "まだ集まりはありません - 始めましょう 🗣️",
   "host": "ホスト",
   "going": "参加",
-  "noPlans": "まだ予定はありません — 何か見つけましょう 🔥",
+  "noPlans": "まだ予定はありません - 何か見つけましょう 🔥",
   "hosting": "主催",
-  "nothingHosted": "まだ何も主催していません — 何か始めましょう ✨",
+  "nothingHosted": "まだ何も主催していません - 何か始めましょう ✨",
   "live": "LIVE",
   "recurring": "繰り返し",
   "friendRequests": "友達リクエスト",
@@ -80,7 +80,7 @@
   "errUsernameShort": "ユーザー名は3文字以上にしてください",
   "errUsernameTaken": "そのユーザー名は使用されています",
   "errUsernameInvalid": "無効なユーザー名です",
-  "errSave": "保存に失敗しました — もう一度お試しください",
+  "errSave": "保存に失敗しました - もう一度お試しください",
   "signOutTitle": "サインアウト",
   "signOutBody": "よろしいですか？",
   "deleteAccountTitle": "アカウントを削除しますか？",
@@ -89,5 +89,5 @@
   "errorTitle": "エラー",
   "deleteAccountFail": "アカウントを削除できませんでした。もう一度お試しください。",
   "tabChallenges": "チャレンジ",
-  "noChallenges": "まだチャレンジはありません — 始めよう 🔥"
+  "noChallenges": "まだチャレンジはありません - 始めよう 🔥"
 }

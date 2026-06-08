@@ -13,7 +13,7 @@ declare(strict_types=1);
  *
  * Scope: only consulted for SSR/crawler requests (the X-Hilads-SSR header the
  * prerender sends). Real app users never touch it, so the live experience stays
- * fresh. File-based — no DB egress, no extra infra; per Render instance is fine,
+ * fresh. File-based - no DB egress, no extra infra; per Render instance is fine,
  * a short TTL on each still kills the bulk of repeat queries.
  */
 final class Cache

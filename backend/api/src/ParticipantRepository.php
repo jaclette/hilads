@@ -6,7 +6,7 @@ class ParticipantRepository
 {
     /**
      * Toggle participation for a session.
-     * sessionId is stored as guest_id — same key, same behaviour as before.
+     * sessionId is stored as guest_id - same key, same behaviour as before.
      * Returns true if now participating, false if just left.
      */
     /**
@@ -93,7 +93,7 @@ class ParticipantRepository
             }
 
             if ($r['user_id'] !== null) {
-                // Registered user who has since been deleted — show as "Former member"
+                // Registered user who has since been deleted - show as "Former member"
                 return array_merge(
                     UserResource::fromGuest($r['guest_id'], 'Former member'),
                     ['joinedAt' => $joinedAt],
@@ -112,7 +112,7 @@ class ParticipantRepository
      *
      * Returns [channelId => [ {id, displayName, thumbAvatarUrl}, ... up to $limit ]],
      * most-recent-joiner first. Powers the avatar row on event cards without an
-     * N+1 per-card request — mirrors the batched count query in EventRepository.
+     * N+1 per-card request - mirrors the batched count query in EventRepository.
      *
      * Guests / deleted users have no photo → thumbAvatarUrl is null and the
      * client renders an initial fallback, so no private photo or profile is
@@ -123,12 +123,12 @@ class ParticipantRepository
         if (empty($eventIds)) return [];
 
         $placeholders = implode(',', array_fill(0, count($eventIds), '?'));
-        // $limit is a trusted int (constant/caller) — interpolated like the other
+        // $limit is a trusted int (constant/caller) - interpolated like the other
         // LIMIT clauses here, which sidesteps a Postgres bigint <= text param mismatch.
         $limit = max(1, (int) $limit);
         // Inner DISTINCT ON collapses multiple rows for the same person (same
         // user_id, different ephemeral guest_ids) to one before we pick the top-N
-        // avatars — otherwise a user who joined repeatedly shows multiple times.
+        // avatars - otherwise a user who joined repeatedly shows multiple times.
         $stmt = Database::pdo()->prepare("
             SELECT channel_id, id, display_name, nickname, thumb_url, full_url FROM (
                 SELECT *, row_number() OVER (PARTITION BY channel_id ORDER BY joined_at DESC) AS rn
@@ -183,14 +183,14 @@ class ParticipantRepository
     /**
      * Is this caller participating in the event?
      *
-     * Matches the participant row by the session/guest key OR — for logged-in
-     * users — their user_id. The user_id match is what keeps the Join/Going
+     * Matches the participant row by the session/guest key OR - for logged-in
+     * users - their user_id. The user_id match is what keeps the Join/Going
      * button in sync with the "X going" count and attendee list: those include
      * the user's row regardless of which session created it, so the button must
      * recognise the row the same way. Without it, a registered user whose current
      * key differs from the one stored at join time (web: ephemeral per-page
      * sessionId; native: a different device's guestId) reads as "not joined"
-     * while still appearing in the count/attendee list — contradicting itself.
+     * while still appearing in the count/attendee list - contradicting itself.
      */
     public static function isIn(string $eventId, string $sessionId, ?string $userId = null): bool
     {
@@ -217,7 +217,7 @@ class ParticipantRepository
      */
     public static function delete(string $eventId): void {}
 
-    // Fire-and-forget broadcast to WS server — tells it to push the new count to viewers
+    // Fire-and-forget broadcast to WS server - tells it to push the new count to viewers
     public static function broadcastToWs(string $eventId, int $count): void
     {
         $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');

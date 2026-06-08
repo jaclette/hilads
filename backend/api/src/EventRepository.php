@@ -10,7 +10,7 @@ class EventRepository
 
     // ── Shared SELECT columns ─────────────────────────────────────────────────
 
-    // Full SELECT with channels JOIN — used for user/admin queries that need c.status.
+    // Full SELECT with channels JOIN - used for user/admin queries that need c.status.
     private const SELECT = "
         SELECT
             c.id,
@@ -49,7 +49,7 @@ class EventRepository
         LEFT JOIN event_series es ON es.id = ce.series_id
     ";
 
-    // City-optimised SELECT — no channels JOIN.
+    // City-optimised SELECT - no channels JOIN.
     // Uses denormalized ce.channel_id (event ID), ce.city_id (parent), ce.created_at.
     // Safe for city-scoped queries where expires_at > now() already excludes deleted events.
     private const SELECT_CITY = "
@@ -232,7 +232,7 @@ class EventRepository
             $ev['next_occurrence_date'] = $next;
             return $ev;
         }
-        $ev = self::format($row); // series ended — keep stored times; is_past from expires_at
+        $ev = self::format($row); // series ended - keep stored times; is_past from expires_at
         $ev['next_occurrence_date'] = null;
         return $ev;
     }
@@ -256,7 +256,7 @@ class EventRepository
 
         // One-off + canonical recurring rows only (occurrence_date IS NULL).
         // Recurring events are a single canonical row; today's occurrence is
-        // synthesized below from the series rule — no materialization needed.
+        // synthesized below from the series rule - no materialization needed.
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id        = :city_id
               AND ce.source_type    = 'hilads'
@@ -279,7 +279,7 @@ class EventRepository
                 // Recurring: only show if today is the series' next-or-current
                 // occurrence. nextOccurrenceDate clamps by starts_on / ends_on,
                 // so a series whose starts_on is in the future is correctly
-                // hidden until that date — and a series whose ends_on has
+                // hidden until that date - and a series whose ends_on has
                 // passed disappears. matchesRecurrence alone doesn't fence the
                 // window (every "daily" series would match every day).
                 $next = EventSeriesRepository::nextOccurrenceDate(self::seriesFromRow($row), $today);
@@ -294,7 +294,7 @@ class EventRepository
 
             // Now feed shows ONLY today's events (or live-now). Future events
             // are hidden here and surface in the upcoming-events screen instead
-            // — that's why this is === today, not >= today. The ongoing branch
+            // - that's why this is === today, not >= today. The ongoing branch
             // catches events that started yesterday and end today (rare, but
             // valid: an all-night gig).
             $isVisible = $startDate === $today
@@ -317,7 +317,7 @@ class EventRepository
             }
         }
 
-        // Ongoing events first, then by start time — applied to each bucket independently
+        // Ongoing events first, then by start time - applied to each bucket independently
         // so user events always sort ahead of imported venue events in the final list.
         $sortFn = function (array $a, array $b) use ($now): int {
             $aOngoing = $a['starts_at'] <= $now && $a['expires_at'] > $now ? 1 : 0;
@@ -331,7 +331,7 @@ class EventRepository
         $remainingSlots = max(0, self::MAX_HILADS - count($userEvents));
         $events = array_merge($userEvents, array_slice($importedEvents, 0, $remainingSlots));
 
-        // Batch-fetch participant counts — 1 query regardless of event count.
+        // Batch-fetch participant counts - 1 query regardless of event count.
         // Avoids the N+1 pattern where the frontend called /participants per event.
         if (!empty($events)) {
             $ids          = array_column($events, 'id');
@@ -375,13 +375,13 @@ class EventRepository
     /**
      * Returns all Hilads + public events starting in the next $days days.
      * Generates missing occurrences on-demand so days 2-7 always exist.
-     * No MAX_HILADS cap — this is a browse screen, not the city hotlist.
+     * No MAX_HILADS cap - this is a browse screen, not the city hotlist.
      */
     /**
      * Upcoming events for a city.
      * Default mode (no $fromYmd/$toYmd): the next $days days starting from now.
      * Range mode (both supplied): events whose starts_at falls in [from, to+1)
-     * in the city's timezone — used by the calendar-strip on the upcoming
+     * in the city's timezone - used by the calendar-strip on the upcoming
      * screen to fetch a specific day or a small window.
      */
     public static function getUpcoming(int $channelId, int $days = 7, ?string $fromYmd = null, ?string $toYmd = null): array
@@ -407,7 +407,7 @@ class EventRepository
         }
 
         // Fetch one-off rows in the window + ALL canonical recurring rows for the
-        // city (their stored anchor starts_at may be outside the window — the
+        // city (their stored anchor starts_at may be outside the window - the
         // in-window dates are synthesized in PHP). occurrence_date IS NULL keeps
         // any legacy materialized occurrence rows out during the migration window.
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
@@ -498,7 +498,7 @@ class EventRepository
 
         $cityId   = 'city_' . $channelId;
 
-        // One query for both source types — hits idx_channel_events_city_active.
+        // One query for both source types - hits idx_channel_events_city_active.
         // occurrence_date IS NULL: one-off + ticketmaster + canonical recurring
         // rows only (legacy materialized occurrences are excluded; recurring
         // events are synthesized below from the series rule).
@@ -511,9 +511,9 @@ class EventRepository
             LIMIT 200
         ");
         // LIMIT 200: /now only ever shows MAX_HILADS(6)+MAX_PUBLIC(10). hilads rows
-        // sort first, then soonest ticketmaster — the displayed set is always in the
+        // sort first, then soonest ticketmaster - the displayed set is always in the
         // first rows. Caps egress when a city has thousands of imported future events.
-        // ORDER BY source_type ASC: 'hilads' < 'ticketmaster' — hilads rows arrive first
+        // ORDER BY source_type ASC: 'hilads' < 'ticketmaster' - hilads rows arrive first
         $stmt->execute(['city_id' => $cityId]);
 
         $userEvents     = [];
@@ -604,7 +604,7 @@ class EventRepository
     }
 
     /**
-     * Past one-off Hilads hangouts for a city — the archive query.
+     * Past one-off Hilads hangouts for a city - the archive query.
      *   - source_type = 'hilads' (excludes Ticketmaster "Public Events")
      *   - series_id IS NULL  (excludes recurring occurrences entirely)
      *   - expires_at <= now() (finished)
@@ -620,7 +620,7 @@ class EventRepository
             $params[] = $fromTs;
             $params[] = $toTs;
         }
-        // Recency cursor — combines with the window so windowed views paginate too.
+        // Recency cursor - combines with the window so windowed views paginate too.
         if ($beforeTs !== null) {
             $where   .= " AND ce.expires_at < to_timestamp(?)";
             $params[] = $beforeTs;
@@ -645,7 +645,7 @@ class EventRepository
     }
 
     /**
-     * Look up an event in ANY state — past, current, future, or soft-deleted —
+     * Look up an event in ANY state - past, current, future, or soft-deleted -
      * so the public detail page can keep serving past events (200 OK + "Past
      * event" view) instead of 404ing them out of Google's index.
      *
@@ -668,7 +668,7 @@ class EventRepository
      */
     public static function getByUser(string $guestId, ?string $userId): array
     {
-        // Named params cannot repeat in PDO — use part_guest_id for the EXISTS clause.
+        // Named params cannot repeat in PDO - use part_guest_id for the EXISTS clause.
         if ($userId !== null) {
             $stmt = Database::pdo()->prepare(self::SELECT . "
                 WHERE c.type         = 'event'
@@ -718,7 +718,7 @@ class EventRepository
     /**
      * Returns active/upcoming Hilads events for a public profile view.
      * Matches events created by this registered user OR where they joined as a participant.
-     * Used by GET /api/v1/users/{userId}/events — requires no auth.
+     * Used by GET /api/v1/users/{userId}/events - requires no auth.
      */
     public static function getPublicByUserId(string $userId): array
     {
@@ -765,7 +765,7 @@ class EventRepository
     ): ?array {
         $pdo = Database::pdo();
 
-        // Verify ownership AND pull series_id / timezone in one query — we
+        // Verify ownership AND pull series_id / timezone in one query - we
         // need both to decide whether this is a one-shot edit (clamp dates
         // to the 48h/24h windows that prevent rogue future events) or a
         // recurring edit (preserve the 2999 sentinel on expires_at + update
@@ -798,7 +798,7 @@ class EventRepository
         if ($isRecurring) {
             // Recurring: don't clamp the start (the owner can move the series
             // to any future date) and don't touch expires_at (it's the 2999
-            // sentinel that keeps the canonical row from ageing out — clamping
+            // sentinel that keeps the canonical row from ageing out - clamping
             // it would silently turn the series into a one-shot).
             $pdo->prepare("
                 UPDATE channel_events
@@ -818,9 +818,9 @@ class EventRepository
 
             // Shift the recurrence anchor + times of day so future occurrences
             // pick up the new schedule. Compute date / time-of-day in the
-            // series timezone (NOT UTC — recurrence days are tz-aware).
+            // series timezone (NOT UTC - recurrence days are tz-aware).
             $tz = $row['series_tz'] ?: 'UTC';
-            // Note: event_series has no updated_at column (intentional —
+            // Note: event_series has no updated_at column (intentional -
             // recurrence rules are append-rare and don't need a touched-at).
             $pdo->prepare("
                 UPDATE event_series
@@ -835,7 +835,7 @@ class EventRepository
                 'sid'    => $row['series_id'],
             ]);
         } else {
-            // One-shot: clamp to the SAME bounds the create route enforces —
+            // One-shot: clamp to the SAME bounds the create route enforces -
             // up to 6 months ahead, max 24h length. Previously this was capped
             // at +48h, which silently snapped any "move event to next week"
             // edit back to today/tomorrow. The user picked a date in the form;
@@ -967,9 +967,9 @@ class EventRepository
 
         // Daily cap: 1 event per HOST DAY, keyed on the date the event takes
         // place (not the day it was inserted). A user can create their Saturday
-        // event on Tuesday and their Sunday event on Wednesday — both go
+        // event on Tuesday and their Sunday event on Wednesday - both go
         // through. Ambassadors (Legends) are exempt. TZ resolves from the
-        // target city — "the day" is the city's local calendar day. Race with
+        // target city - "the day" is the city's local calendar day. Race with
         // the insert is fine: worst case two rapid requests both pass, and the
         // client shows the limit screen via the structured
         // `event_limit_reached` error.
@@ -1224,7 +1224,7 @@ class EventRepository
      * calendar strip in the upcoming-events screen.
      *
      * Returns ['2026-05-08' => 12, '2026-05-09' => 3, ...]. Days with zero
-     * events are omitted — the client treats missing keys as zero.
+     * events are omitted - the client treats missing keys as zero.
      */
     public static function calendarSummary(int $channelId, string $fromYmd, string $toYmd): array
     {
@@ -1279,7 +1279,7 @@ class EventRepository
     /**
      * Count of events this identity has scheduled to *take place* on a given
      * calendar day in `$tz`. The "1 event per day" rule is keyed on the day
-     * the event is HOSTED (starts_at), not the day the row was inserted —
+     * the event is HOSTED (starts_at), not the day the row was inserted -
      * a user creating their Saturday event on Tuesday and their Sunday event
      * on Wednesday is fine, both go through. Matches on created_by for
      * registered users AND guest_id for anonymous, so moving from guest →

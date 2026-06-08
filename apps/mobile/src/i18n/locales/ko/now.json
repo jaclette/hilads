@@ -26,12 +26,12 @@
   "create": {
     "title": "뭐 할까요?",
     "hangoutLabel": "모임 시작하기",
-    "hangoutSub": "바로 — 지금 사람들이 참여하게 하세요",
+    "hangoutSub": "바로 - 지금 사람들이 참여하게 하세요",
     "eventLabel": "이벤트 만들기",
     "eventSub": "다른 사람들이 참여할 수 있는 걸 계획하세요",
     "cancel": "취소",
     "challengeLabel": "챌린지 시작",
-    "challengeSub": "로컬과 여행자 — 챌린지로 연결"
+    "challengeSub": "로컬과 여행자 - 챌린지로 연결"
   },
   "filterChallenges": "🔥 챌린지",
   "challengesSection": "챌린지",

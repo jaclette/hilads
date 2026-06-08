@@ -45,7 +45,7 @@ function addHoursToTime(timeStr, hours) {
  *
  * @param timezone IANA tz, e.g. "Europe/Lisbon"
  * @param timeStr  "HH:MM" 24h
- * @param dateStr  optional "YYYY-MM-DD" — defaults to today in `timezone`
+ * @param dateStr  optional "YYYY-MM-DD" - defaults to today in `timezone`
  */
 function cityTimeToUnix(timezone, timeStr, dateStr = null) {
   const day = dateStr || new Date().toLocaleDateString('en-CA', { timeZone: timezone })
@@ -147,7 +147,7 @@ function IconCoffee() {
 function IconSport() {
   return (
     <svg {...P}>
-      {/* Lightning bolt — energy, action */}
+      {/* Lightning bolt - energy, action */}
       <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
     </svg>
   )
@@ -196,7 +196,7 @@ const QUICK_PRESETS = [
   { key: 'weekends',      tk: 'weekends',     emoji: '🎉', recurrence: 'weekly', startTime: null,    endTime: null,    weekdays: [0, 6] },
 ]
 
-// Recurrence options — value drives logic, tk is the i18n key.
+// Recurrence options - value drives logic, tk is the i18n key.
 const RECURRENCE_OPTS = [
   { value: 'once',         tk: 'once' },
   { value: 'daily',        tk: 'daily' },
@@ -211,7 +211,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   const [type, setType] = useState(() => editEvent?.type || 'other')
   const [title, setTitle] = useState(() => editEvent?.title || '')
   // selectedDate carries the day-of-event in city tz as YYYY-MM-DD. Default
-  // is "today" — chips below let the user flip to tomorrow or pick any date
+  // is "today" - chips below let the user flip to tomorrow or pick any date
   // in the next 6 months. Edit mode pre-fills from the event's existing
   // starts_at; create mode starts on today (the most-discoverable path).
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -246,7 +246,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
   const isLocal = account?.mode === 'local'
 
-  // Date chip helpers — "today" / "tomorrow" / "Pick a date" mirror native UX.
+  // Date chip helpers - "today" / "tomorrow" / "Pick a date" mirror native UX.
   const todayStr    = todayInCity(tz)
   const tomorrowStr = tomorrowInCity(tz)
   const maxDateStr  = (() => {
@@ -296,7 +296,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
   function handleLocationConfirm({ place, address, lat, lng }) {
     setPickerCenter(null)
-    const label = address ? (place && !address.startsWith(place) ? `${place} — ${address}` : address) : place
+    const label = address ? (place && !address.startsWith(place) ? `${place} - ${address}` : address) : place
     setLocation(label)
     setLocationCoords({ lat, lng })
   }
@@ -395,7 +395,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
         recurrence_type: recurrence,
         weekdays: recurrence === 'weekly' ? weekdays : undefined,
         interval_days: recurrence === 'every_n_days' ? intervalDays : undefined,
-        // Anchors the recurrence series to the picked start date — backend
+        // Anchors the recurrence series to the picked start date - backend
         // accepts YYYY-MM-DD; defaults to today server-side if omitted.
         starts_on: selectedDate,
       }
@@ -464,7 +464,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
       <div className="page-body">
         <form className="cef-form" onSubmit={handleSubmit}>
 
-          {/* Quick presets — local hosts only, not in edit mode */}
+          {/* Quick presets - local hosts only, not in edit mode */}
           {isLocal && !isEdit && (
             <div className="cef-section">
               <p className="cef-label">{t('quickStart')}</p>
@@ -519,7 +519,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             />
           </div>
 
-          {/* Date — when does it happen? Editable in both create and edit. */}
+          {/* Date - when does it happen? Editable in both create and edit. */}
           <div className="cef-section">
             <p className="cef-label">{t('date')}</p>
             <div className="cef-date-row">
@@ -575,7 +575,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             </div>
           </div>
 
-          {/* Recurrence — registered users only, not available in edit mode */}
+          {/* Recurrence - registered users only, not available in edit mode */}
           {account && !isEdit && (
             <div className="cef-section">
               <p className="cef-label">{t('repeat')}</p>
@@ -624,7 +624,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
             </div>
           )}
 
-          {/* Location — tappable, opens the map picker (optional) */}
+          {/* Location - tappable, opens the map picker (optional) */}
           <div className="cef-section">
             <label className="cef-label">{t('location')}</label>
             <button

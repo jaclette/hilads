@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// First-time onboarding carousel — "seen once" flag (guests only).
+// First-time onboarding carousel - "seen once" flag (guests only).
 // Local-only (AsyncStorage); there is no persistent server-side guest record to
-// hang this on, so a reinstall will show it once more — acceptable for a
+// hang this on, so a reinstall will show it once more - acceptable for a
 // lightweight one-off intro. On a read error we deliberately default to SHOWING
 // it (better one extra view than a crash); an in-memory fallback prevents a
 // re-show in the same session if writes also fail.

@@ -53,17 +53,17 @@
     "checking": "กำลังตรวจสอบ…",
     "available": "@{{username}} ใช้ได้",
     "aboutMe": "เกี่ยวกับฉัน",
-    "charsLeft": "— เหลือ {{count}}",
+    "charsLeft": "- เหลือ {{count}}",
     "aboutPlaceholder": "ชอบสตรีทฟู้ดและบทสนทนาแบบสุ่มๆ",
     "email": "อีเมล",
-    "readOnly": "— อ่านอย่างเดียว",
+    "readOnly": "- อ่านอย่างเดียว",
     "homeCity": "เมืองที่อยู่",
     "homeCityPlaceholder": "ที่ที่คุณอาศัยอยู่",
     "age": "อายุ",
     "agePlaceholder": "อายุของคุณ",
     "myVibe": "vibe ของฉัน",
     "interests": "ความสนใจ",
-    "interestsHint": "— เลือกได้สูงสุด 5 อย่าง"
+    "interestsHint": "- เลือกได้สูงสุด 5 อย่าง"
   },
   "ambassador": {
     "title": "ที่เด็ดประจำเมือง 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "สิ่งที่คุณรักเกี่ยวกับเมืองนี้"
   },
   "hangouts": {
-    "empty": "ยังไม่มีนัดเจอ — เริ่มเลย 🗣️",
+    "empty": "ยังไม่มีนัดเจอ - เริ่มเลย 🗣️",
     "host": "เจ้าภาพ"
   },
   "events": {
     "going": "จะไป",
-    "goingEmpty": "ยังไม่มีแผน — หาอะไรทำสิ 🔥",
+    "goingEmpty": "ยังไม่มีแผน - หาอะไรทำสิ 🔥",
     "hosting": "กำลังจัด",
-    "hostingEmpty": "ยังไม่ได้จัดอะไร — เริ่มเลย ✨",
+    "hostingEmpty": "ยังไม่ได้จัดอะไร - เริ่มเลย ✨",
     "live": "ไลฟ์",
     "recurring": "↻ ประจำ",
     "upcoming": "เร็วๆ นี้",
@@ -129,7 +129,7 @@
     "generic": "เกิดข้อผิดพลาด ลองอีกครั้ง"
   },
   "challenges": {
-    "empty": "ยังไม่มีชาเลนจ์ — เปิดสักอัน 🔥",
+    "empty": "ยังไม่มีชาเลนจ์ - เปิดสักอัน 🔥",
     "challenger": "ผู้ท้าทาย"
   }
 }

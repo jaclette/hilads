@@ -5,7 +5,7 @@
   "publicEventsSection": "🎫 Öffentliche Events",
   "accountWelcome": {
     "title": "Glückwunsch, {{username}}! 🎉",
-    "subtitle": "Dein Konto ist bereit — das kannst du jetzt machen 👇",
+    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen 👇",
     "f1": "🎉 Starte ein Treffen und bring sofort Leute zusammen",
     "f2": "📅 Organisiere ein Event in deiner Stadt",
     "f3": "💬 Schreib jedem eine private Nachricht",
@@ -15,7 +15,7 @@
   },
   "onboarding": {
     "slide1Title": "Du bist in {{city}}",
-    "slide1Body": "Locals und Reisende treffen sich hier — durch echte Challenges.",
+    "slide1Body": "Locals und Reisende treffen sich hier - durch echte Challenges.",
     "slide2Title": "Locals fordern Reisende heraus. Und umgekehrt.",
     "slide2Body": "🍜 Beste Currywurst · 📍 Versteckter Ausblick · 🎭 Sprich ein bisschen Deutsch · 🙏 Hilf mit einer SIM. Echte Challenges, die zu einem echten Treffen führen.",
     "slide3Title": "So funktioniert's",
@@ -32,7 +32,7 @@
     "title": "So funktionieren Challenges",
     "slide1": {
       "title": "Challenges machen aus Reisen Geschichten",
-      "body": "Locals und Reisende fordern sich gegenseitig heraus, das echte Leben einer Stadt zu teilen — Essen, Orte, Kultur, Hilfe. Die Belohnung? Ihr trefft euch persönlich."
+      "body": "Locals und Reisende fordern sich gegenseitig heraus, das echte Leben einer Stadt zu teilen - Essen, Orte, Kultur, Hilfe. Die Belohnung? Ihr trefft euch persönlich."
     },
     "slide2": {
       "title": "Starte deine Challenge",
@@ -40,22 +40,22 @@
     },
     "slide3": {
       "title": "Jemand nimmt sie an",
-      "body": "Sie schicken eine Anfrage. Du prüfst und nimmst sie an — euer privater Thread öffnet sich zum Chatten und Planen."
+      "body": "Sie schicken eine Anfrage. Du prüfst und nimmst sie an - euer privater Thread öffnet sich zum Chatten und Planen."
     },
     "slide4": {
       "title": "Trefft euch persönlich",
-      "body": "Sucht ein Datum aus, das euch beiden passt. Die Timeline trackt jeden Schritt. Dann macht ihr's — wirklich."
+      "body": "Sucht ein Datum aus, das euch beiden passt. Die Timeline trackt jeden Schritt. Dann macht ihr's - wirklich."
     },
     "slide5": {
       "title": "Schließ es ab",
-      "body": "Nach dem Treffen markier's als erledigt. Deine Stadt, wirklich erlebt — eine Challenge nach der anderen."
+      "body": "Nach dem Treffen markier's als erledigt. Deine Stadt, wirklich erlebt - eine Challenge nach der anderen."
     },
     "next": "Weiter",
     "done": "Verstanden!",
     "skip": "Überspringen ✕",
     "slide6": {
       "title": "Über deine Stadt hinaus",
-      "body": "Fordere jemanden überall heraus. Er schickt einen Beweis — Foto mit Geotag — und du bestätigst aus der Ferne. Lokal oder global, jede Challenge zählt."
+      "body": "Fordere jemanden überall heraus. Er schickt einen Beweis - Foto mit Geotag - und du bestätigst aus der Ferne. Lokal oder global, jede Challenge zählt."
     },
     "createCta": "🔥 Challenge erstellen"
   },
@@ -149,7 +149,7 @@
   "replies_one": "💬 {{count}} Antwort",
   "replies_other": "💬 {{count}} Antworten",
   "noReplies": "Keine Antworten",
-  "noRepliesFirst": "Noch keine Antworten — sei der Erste",
+  "noRepliesFirst": "Noch keine Antworten - sei der Erste",
   "weather": {
     "clear": "klarer Himmel",
     "sunnyHot": "herrliches Wetter",

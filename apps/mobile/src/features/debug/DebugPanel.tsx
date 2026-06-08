@@ -1,5 +1,5 @@
 /**
- * Internal debug panel — only shown in dev builds or via secret gesture.
+ * Internal debug panel - only shown in dev builds or via secret gesture.
  * Shows app state, connection info, and quick-action buttons.
  */
 import { View, Text, TouchableOpacity, ScrollView, Alert, StyleSheet } from 'react-native';
@@ -75,28 +75,28 @@ export function DebugPanel() {
 
       <Text style={styles.heading}>Identity</Text>
       <View style={styles.card}>
-        <Row label="Guest ID"    value={identity?.guestId  ?? '—'} />
-        <Row label="Nickname"    value={identity?.nickname ?? '—'} />
-        <Row label="Session ID"  value={sessionId ?? '—'} />
+        <Row label="Guest ID"    value={identity?.guestId  ?? '-'} />
+        <Row label="Nickname"    value={identity?.nickname ?? '-'} />
+        <Row label="Session ID"  value={sessionId ?? '-'} />
         <Row label="Account"     value={account ? `${account.display_name} (${account.id})` : 'Guest'} />
       </View>
 
       <Text style={styles.heading}>Location</Text>
       <View style={styles.card}>
         <Row label="City"        value={city?.name ?? 'Not detected'} />
-        <Row label="Channel ID"  value={city?.channelId ?? '—'} />
+        <Row label="Channel ID"  value={city?.channelId ?? '-'} />
       </View>
 
       <Text style={styles.heading}>Actions</Text>
       <View style={styles.actions}>
         <Action title="Force WS reconnect"  onPress={handleForceReconnect} />
         <Action title="Clear session + identity" onPress={handleClearSession} danger />
-        {/* TEMPORARY — remove after confirming events appear in hilads-mobile Sentry project */}
+        {/* TEMPORARY - remove after confirming events appear in hilads-mobile Sentry project */}
         <Action
           title="Send Sentry test event"
           onPress={() => {
-            Sentry.captureMessage('Hilads mobile Sentry test — OK');
-            Alert.alert('Sentry', 'Test event sent — check hilads-mobile on sentry.io');
+            Sentry.captureMessage('Hilads mobile Sentry test - OK');
+            Alert.alert('Sentry', 'Test event sent - check hilads-mobile on sentry.io');
           }}
         />
       </View>

@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ Editar", "delete": "🗑 Excluir" },
   "gated": {
     "title": "Rolê só para membros",
-    "pending": "Pedido pendente — você poderá entrar na conversa assim que um membro aceitar.",
+    "pending": "Pedido pendente - você poderá entrar na conversa assim que um membro aceitar.",
     "prompt": "Peça para participar para ver a conversa e conversar.",
     "requestBtn": "Pedir para participar"
   },

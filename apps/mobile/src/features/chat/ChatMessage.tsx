@@ -1,13 +1,13 @@
 /**
- * ChatMessage — faithful port of the web message rendering.
+ * ChatMessage - faithful port of the web message rendering.
  *
  * Web source: App.jsx feed.map() + index.css (.message, .msg-*, .feed-join)
  *
  * API wire format uses camelCase (guestId, imageUrl, createdAt).
- * System messages have no content — text is generated from event+nickname.
+ * System messages have no content - text is generated from event+nickname.
  *
  * Types:
- *   system → centered join pill ("nickname joined") — web: .feed-join
+ *   system → centered join pill ("nickname joined") - web: .feed-join
  *   image  → photo with web-matching border-radius
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
@@ -45,7 +45,7 @@ function isLocationMessage(content: string | undefined): boolean {
 function parseLocation(content: string): { line1: string; place: string; lat?: number; lng?: number; address: string } {
   const parts = content.split('\n');
   const line1 = parts[0] ?? '';
-  // Extract the place name from "📍 nick is at Place" — the part after " is at "
+  // Extract the place name from "📍 nick is at Place" - the part after " is at "
   const isAtIdx = line1.indexOf(' is at ');
   const place = isAtIdx !== -1 ? line1.slice(isAtIdx + 7).trim() : '';
   if (parts.length >= 2) {
@@ -83,7 +83,7 @@ function LocationBubble({ content, isMine }: { content: string; isMine: boolean 
     </View>
   );
   if (hasCoords) {
-    // Use place name or address as the map label — never the social display wording ("nick is at ...")
+    // Use place name or address as the map label - never the social display wording ("nick is at ...")
     const mapLabel = place || address;
     return (
       <TouchableOpacity activeOpacity={0.75} onPress={() => openMaps(lat!, lng!, mapLabel)}>
@@ -126,13 +126,13 @@ const locStyles = StyleSheet.create({
   addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
   textMine:    { color: '#fff' },
   addrMine:    { color: 'rgba(255,255,255,0.65)' },
-  // tapHint "Tap to open in maps" — bumped 11→13 and dropped opacity 0.6
+  // tapHint "Tap to open in maps" - bumped 11→13 and dropped opacity 0.6
   // (which used to compound on top of muted2 to ~1.4:1, well below WCAG).
   tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
   tapHintMine: { color: 'rgba(255,255,255,0.65)' },
 });
 
-// ── System message text — mirrors web feedJoin variants ──────────────────────
+// ── System message text - mirrors web feedJoin variants ──────────────────────
 // Join/leave lines are generated per viewer (not stored), so they render in the
 // viewer's own locale. A hash(nickname + createdAt) picks a stable variant.
 
@@ -149,7 +149,7 @@ function systemText(message: Message): string {
   return message.content ?? `${nick} (${message.event ?? 'activity'})`;
 }
 
-// ── Entry animation hook — called unconditionally at top of ChatMessage ───────
+// ── Entry animation hook - called unconditionally at top of ChatMessage ───────
 // opacity 0→1, translateY 8→0, ease-out, 200ms
 // Must be called before any conditional returns to obey React hook rules.
 
@@ -175,7 +175,7 @@ function useEntryAnimation(duration = 200) {
 // inverted, virtualized FlatList: an animated height collapse crashed, and a
 // native-driver opacity fade left an orphaned 0-opacity native view occupying the
 // cell's space when it was removed. Per our hard preference for robustness over
-// polish, the card is simply removed — a clean data-driven reflow, nothing to
+// polish, the card is simply removed - a clean data-driven reflow, nothing to
 // orphan. (Cards still fade IN on mount via the entry animation; that's safe
 // because the view is being created, not torn down.)
 //
@@ -229,17 +229,17 @@ interface Props {
   isHighlighted?: boolean;                          // true = briefly flash orange highlight
   onReact?: (msg: Message, emoji: string) => void;  // called when a reaction pill is tapped
   onResolveJoinRequest?: (requestId: string, action: 'accept' | 'reject') => void; // hangout join req
-  // Reminder cards only — when true, the card auto-fades after a delay and calls
+  // Reminder cards only - when true, the card auto-fades after a delay and calls
   // onAutoDismiss(id) so the parent removes it from the feed. reduceMotion skips
   // the fade (instant removal).
   autoDismiss?:   boolean;
   onAutoDismiss?: (id: string) => void;
   reduceMotion?:  boolean;
-  /** PR9 — Challenger / Taker pill next to the nickname on the unified
+  /** PR9 - Challenger / Taker pill next to the nickname on the unified
    *  challenge channel. Computed by the parent against challenge.created_by
    *  and the active acceptor, passed in per message. Mirrors the web
    *  challenge-role-badge in ChallengeChatPage.jsx.
-   *  PR23 — Spectator added for posters who joined the channel but are
+   *  PR23 - Spectator added for posters who joined the channel but are
    *  neither the challenger nor the active taker. */
   roleBadge?:     'challenger' | 'taker' | 'spectator' | null;
 }
@@ -295,7 +295,7 @@ function JoinRequestCard({ message, onResolve }: {
   );
 }
 
-// ── Animated event pill — fade + slide-up on mount, staggered by index ───────
+// ── Animated event pill - fade + slide-up on mount, staggered by index ───────
 
 function AnimatedEventPill({
   message, index, autoDismiss = false, onAutoDismiss, reduceMotion = false,
@@ -347,7 +347,7 @@ function AnimatedEventPill({
   );
 }
 
-// ── Date separator — centered pill between days ───────────────────────────────
+// ── Date separator - centered pill between days ───────────────────────────────
 
 function DateSeparator({ label }: { label: string }) {
   return (
@@ -359,13 +359,13 @@ function DateSeparator({ label }: { label: string }) {
   );
 }
 
-// ── Sender identity — avatar + name, always tappable ─────────────────────────
+// ── Sender identity - avatar + name, always tappable ─────────────────────────
 // Always renders as TouchableOpacity so the tap area exists regardless of
 // whether the backend has resolved userId yet.
 //
 // Navigation ID priority: userId (registered account ID) → guestId (fallback).
-// The backend profile endpoint accepts both — it tries findById first, then
-// findByGuestId — so both forms resolve to the correct profile page.
+// The backend profile endpoint accepts both - it tries findById first, then
+// findByGuestId - so both forms resolve to the correct profile page.
 // Guests with no account get a "User not found" screen, which is the correct
 // graceful outcome. This matches DM behaviour where sender_id is always present.
 
@@ -396,16 +396,16 @@ const badgeStyles = StyleSheet.create({
     paddingVertical:   2,
   },
   text: {
-    fontSize:   FontSizes.xs,  // 13 — bumped from 11 (Apple G4 floor)
+    fontSize:   FontSizes.xs,  // 13 - bumped from 11 (Apple G4 floor)
     fontWeight: '600',
   },
 });
 
-// PR9 — role badge (Challenger / Taker) on unified challenge channel rows.
-// Mirrors the web .challenge-role-badge tokens — orange tint for challenger
+// PR9 - role badge (Challenger / Taker) on unified challenge channel rows.
+// Mirrors the web .challenge-role-badge tokens - orange tint for challenger
 // (matches the app's brand accent), green tint for taker (the "accomplished"
 // color used in the pipeline approved state).
-// PR23 — Spectator added: neutral slate palette so the badge reads "just
+// PR23 - Spectator added: neutral slate palette so the badge reads "just
 // watching" without competing with the brand colors of the two protagonists.
 const roleStyles = StyleSheet.create({
   pill: {
@@ -459,7 +459,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   contextBadge?: Badge | null;
   vibe?:         string;
   mode?:         string;
-  /** PR9 — see ChatMessage Props. */
+  /** PR9 - see ChatMessage Props. */
   roleBadge?:    'challenger' | 'taker' | 'spectator' | null;
 }) {
   const router  = useRouter();
@@ -469,7 +469,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
   // Navigate to a registered profile only when viewer is registered.
   // If viewer is a ghost, redirect to AuthGate instead.
-  // Ghost/guest authors navigate to /user/guest (no API call) — not /user/[id].
+  // Ghost/guest authors navigate to /user/guest (no API call) - not /user/[id].
   function handlePress() {
     if (userId) {
       if (!canAccessProfile(account)) {
@@ -478,7 +478,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       }
       router.push({ pathname: '/user/[id]', params: { id: userId } });
     } else if (guestId) {
-      // Ghost profiles are always viewable — route to the guest screen, not the
+      // Ghost profiles are always viewable - route to the guest screen, not the
       // registered profile screen. /user/[id] calls GET /users/{id} which only
       // accepts registered user IDs and returns 404 for guestIds.
       router.push({ pathname: '/user/guest', params: { guestId, nickname } });
@@ -550,7 +550,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     router.push({ pathname: '/user/[id]', params: { id: uid } });
   }
 
-  // Hook called unconditionally — React rules require this before any early return
+  // Hook called unconditionally - React rules require this before any early return
   const { opacity, translateY } = useEntryAnimation(200);
   const animStyle = { opacity, transform: [{ translateY }] } as const;
 
@@ -558,7 +558,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   // AnimatedEventPill which owns its own opacity). Hook runs unconditionally;
   // `enabled` gates it. cancelDismiss() is wired into the CTAs below.
   const cancelDismiss = useAutoDismissFade({
-    // The 'challenge-intro' prompt is intentionally sticky — it's an
+    // The 'challenge-intro' prompt is intentionally sticky - it's an
     // explainer pill, not a transient reminder. Stays visible until the
     // user taps it (which removes it from the feed) or scrolls past.
     enabled: autoDismiss && (message.type === 'topic' || message.type === 'challenge' || message.type === 'challenge_validated' || message.type === 'activity' || (message.type === 'prompt' && (message as { subtype?: string }).subtype !== 'challenge-intro')),
@@ -574,10 +574,10 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     Animated.timing(highlightAnim, { toValue: 0, duration: 1400, useNativeDriver: false }).start();
   }, [isHighlighted]);
 
-  // Image preview state — must be declared here (before early returns) per hooks rules
+  // Image preview state - must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
 
-  // Inline handlers — mirrors DmRow pattern to avoid stale-closure issues.
+  // Inline handlers - mirrors DmRow pattern to avoid stale-closure issues.
   // onPress/onLongPress are undefined when no handler is provided so the
   // Pressable doesn't participate in the responder system unnecessarily.
   const handlePress     = onLongPress
@@ -587,7 +587,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     ? () => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); onLongPress(message); }
     : undefined;
 
-  // ── Event feed item — web: .feed-prompt (orange pill + Join CTA) ─────────
+  // ── Event feed item - web: .feed-prompt (orange pill + Join CTA) ─────────
   if (message.type === 'event') {
     return (
       <>
@@ -603,7 +603,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── Topic feed item — blue pill + "Join →" CTA ────────────────────────────
+  // ── Topic feed item - blue pill + "Join →" CTA ────────────────────────────
   if (message.type === 'topic') {
     return (
       <>
@@ -626,11 +626,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── Challenge feed item — orange pill, "{name} défie les locaux : {title}".
+  // ── Challenge feed item - orange pill, "{name} défie les locaux : {title}".
   // Mirrors the web .feed-prompt--challenge layout. Tap → /challenge/{id}.
   //
   // Mode-aware copy:
-  //   - International rows use a single key (no audience distinction — the
+  //   - International rows use a single key (no audience distinction - the
   //     locals/travelers split doesn't apply for cross-city challenges).
   //   - Local rows keep the existing locals/travelers variants.
   if (message.type === 'challenge') {
@@ -640,7 +640,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
       : message.audience === 'explorers'
         ? 'bannerChallengeExplorers'
         : 'bannerChallengeLocals';
-    // PR19 — origin → target flag pair for the international banner. Falls
+    // PR19 - origin → target flag pair for the international banner. Falls
     // back to 🌍 when target_country is null ("anywhere" intl). The local
     // banners ignore these vars; i18next safely no-ops missing tokens.
     const fromFlag = isIntl ? countryToFlag(message.challengeCountry ?? null) || '🌐' : '';
@@ -682,7 +682,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── Challenge validated celebration — green pill, "🏆 Challenge done!
+  // ── Challenge validated celebration - green pill, "🏆 Challenge done!
   // {name} validated …". Lives next to the original creation pill (both
   // are timeline events; we don't replace the older one).
   if (message.type === 'challenge_validated') {
@@ -707,7 +707,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── Activity feed item — ambient muted text, no CTA (web: .feed-activity) ──
+  // ── Activity feed item - ambient muted text, no CTA (web: .feed-activity) ──
   if (message.type === 'activity') {
     return (
       <Animated.View style={[styles.activityRow, animStyle]}>
@@ -716,7 +716,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── Prompt feed item — orange card + CTA button (web: .feed-prompt) ─────────
+  // ── Prompt feed item - orange card + CTA button (web: .feed-prompt) ─────────
   if (message.type === 'prompt') {
     return (
       <Animated.View style={[styles.promptRow, animStyle]}>
@@ -744,11 +744,11 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     );
   }
 
-  // ── System / join message — web: .feed-join (centered pill) ──────────────
+  // ── System / join message - web: .feed-join (centered pill) ──────────────
   if (message.type === 'system') {
     const text = systemText(message);
     const time = message.createdAt ? formatSmartTime(message.createdAt) : null;
-    // Only join messages carry user identity — other system events (weather, etc.) are not tappable.
+    // Only join messages carry user identity - other system events (weather, etc.) are not tappable.
     // Distinguish registered user (userId) from guest (guestId only) to avoid routing guests
     // through the registered-user profile endpoint, which would return 404.
     const isJoin   = message.event === 'join';
@@ -894,7 +894,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
   }
 
   // ── Text message ─────────────────────────────────────────────────────────
-  // For deleted messages we render the tombstone bubble unconditionally —
+  // For deleted messages we render the tombstone bubble unconditionally -
   // server clears `content`, so the "missing content" guard below would
   // otherwise drop the row entirely.
   if (!message.content && !isDeleted) {
@@ -914,7 +914,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
         { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
       ]}>
 
-        {/* ── Avatar + author — web: .msg-meta ── */}
+        {/* ── Avatar + author - web: .msg-meta ── */}
         {!isMine && !isGrouped && (
           <SenderMeta
             nickname={message.nickname ?? '?'}
@@ -930,7 +930,7 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
           />
         )}
 
-        {/* ── Bubble + timestamp + reactions — wrapped so reactions stay attached ── */}
+        {/* ── Bubble + timestamp + reactions - wrapped so reactions stay attached ── */}
         <View style={styles.bubbleWrap}>
           <Pressable
             onPress={isDeleted ? undefined : handlePress}
@@ -1033,14 +1033,14 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
 const styles = StyleSheet.create({
 
   bubbleWrap: {
-    // No `position: 'relative'` here — that would anchor the ReactionBurstOverlay
+    // No `position: 'relative'` here - that would anchor the ReactionBurstOverlay
     // INSIDE this wrap, putting particles behind the bubble on Android and
     // clipping them inside the FlatList row. Matches DM's bubbleCol pattern so
     // the overlay anchors at the screen root and bursts from a fixed corner.
   },
 
-  // ── .feed-prompt — event orange pill ─────────────────────────────────────
-  // Centered column: title on top, Join button below — handles any title length cleanly
+  // ── .feed-prompt - event orange pill ─────────────────────────────────────
+  // Centered column: title on top, Join button below - handles any title length cleanly
   eventRow: {
     alignItems:        'center',
     marginVertical:    4,
@@ -1080,7 +1080,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ── Topic feed pill — blue variant of event pill ─────────────────────────
+  // ── Topic feed pill - blue variant of event pill ─────────────────────────
   topicPill: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -1114,7 +1114,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ── Challenge feed pill — orange brand variant, mirrors web
+  // ── Challenge feed pill - orange brand variant, mirrors web
   //    .feed-prompt--challenge (rgba(255,122,60,0.14) bg + .30 border). ────
   challengePill: {
     flexDirection:     'row',
@@ -1167,7 +1167,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Validated-celebration variant — green tint (same hue as the validated
+  // Validated-celebration variant - green tint (same hue as the validated
   // status badge on the détail screen) so the two challenge pills for the
   // same id read as distinct timeline events.
   challengeValidatedPill: {
@@ -1203,7 +1203,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ── .feed-activity — ambient muted text, centered ────────────────────────
+  // ── .feed-activity - ambient muted text, centered ────────────────────────
   // Web: align-self center, 0.8rem, color muted2, border-radius 20px, padding 4 14
   activityRow: {
     alignSelf:         'center',
@@ -1217,7 +1217,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // ── .feed-prompt — matches event pill style exactly (web: feed-prompt) ────
+  // ── .feed-prompt - matches event pill style exactly (web: feed-prompt) ────
   // Same tokens as eventPill so prompts feel like feed items, not buttons.
   promptRow: {
     alignSelf:         'center',
@@ -1254,7 +1254,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // ── .feed-join — centered pill ────────────────────────────────────────────
+  // ── .feed-join - centered pill ────────────────────────────────────────────
   // Web: font-size 0.85rem (~13.6px), font-weight 500, padding 6px 16px,
   //      margin 12px 0, border-radius 20px, bg rgba(255,255,255,0.04)
   systemRow: {
@@ -1269,7 +1269,7 @@ const styles = StyleSheet.create({
     opacity:    0.6,
   },
   systemText: {
-    fontSize:          FontSizes.xs,   // 13 — smaller than the 15 message body
+    fontSize:          FontSizes.xs,   // 13 - smaller than the 15 message body
     fontStyle:         'italic',
     fontWeight:        '400',
     color:             Colors.muted2,
@@ -1349,7 +1349,7 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
-  // Tombstone — keep the same bubble silhouette but flatten the fill so it
+  // Tombstone - keep the same bubble silhouette but flatten the fill so it
   // visually reads as inactive without losing the position-in-thread anchor.
   bubbleTombstone: {
     opacity: 0.6,
@@ -1360,7 +1360,7 @@ const styles = StyleSheet.create({
     color:      'rgba(255,255,255,0.55)',
     lineHeight: 20,
   },
-  // "edited" suffix — small muted text appended after the message content. Kept
+  // "edited" suffix - small muted text appended after the message content. Kept
   // inline (inside the same <Text>) so it wraps naturally with the last word.
   editedTag: {
     fontSize: 11,
@@ -1369,18 +1369,18 @@ const styles = StyleSheet.create({
   editedTagMine: {
     color: 'rgba(255,255,255,0.65)',
   },
-  // @mention — inline highlight on a nested <Text> (no nested <View>, which can
+  // @mention - inline highlight on a nested <Text> (no nested <View>, which can
   // render invisible on RN). Dark fill + white bold text reads on the dark
   // received bubble AND the orange/red sent bubble (#B87228): white-on-fill
   // contrast is ≥6.5:1 (vs the old orange-on-orange ~1.5:1). borderRadius isn't
   // honored on inline text backgrounds, so this is a tight highlight, not a
-  // rounded pill — but it's robust and readable everywhere.
+  // rounded pill - but it's robust and readable everywhere.
   mentionText: {
     color:           '#fff',
     fontWeight:      '700',
     backgroundColor: 'rgba(0,0,0,0.28)',
   },
-  // Online-guest mention — purple tint distinguishes it from member mentions.
+  // Online-guest mention - purple tint distinguishes it from member mentions.
   mentionGuest: {
     backgroundColor: 'rgba(139,92,246,0.30)',
   },
@@ -1435,7 +1435,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
   dateSepText: {
-    fontSize:          FontSizes.xs,  // 13 — was 11 (Apple G4 floor)
+    fontSize:          FontSizes.xs,  // 13 - was 11 (Apple G4 floor)
     fontWeight:        '600',
     color:             Colors.muted2,
     letterSpacing:     0.5,
@@ -1448,7 +1448,7 @@ const styles = StyleSheet.create({
   },
 
   // ── Per-bubble timestamp ──────────────────────────────────────────────────
-  // 13pt + new muted2 (~4.7:1) — was 11pt + #635650 (~2.4:1). Apple G4
+  // 13pt + new muted2 (~4.7:1) - was 11pt + #635650 (~2.4:1). Apple G4
   // cited "Yesterday · 03:29" as one of the unreadable cases.
   timestamp: {
     fontSize:   FontSizes.xs,
@@ -1458,7 +1458,7 @@ const styles = StyleSheet.create({
   timestampMine:  { textAlign: 'right',  paddingRight: 2 },
   timestampOther: { textAlign: 'left',   paddingLeft: 2 },
 
-  // ── Reply quote — bleeds to bubble edges (negative margins cancel padding) ─
+  // ── Reply quote - bleeds to bubble edges (negative margins cancel padding) ─
   // Mirrors the web bleed technique: quote spans full bubble width,
   // a bottom border acts as a visual separator before the message text.
   replyQuote: {

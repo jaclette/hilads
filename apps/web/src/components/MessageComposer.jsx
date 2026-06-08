@@ -5,12 +5,12 @@ import EmojiPicker from './EmojiPicker'
 import SendButton from './SendButton'
 
 /**
- * Shared chat-message composer — used by DM, City channel, Event chat, Topic.
+ * Shared chat-message composer - used by DM, City channel, Event chat, Topic.
  *
  * Sizing is unified at the DM dimensions (compact 44px attach button, 36px
  * emoji, single-line input, 54px send). All surface-specific differences
  * (placeholder, autofocus, whether the emoji button renders) come through as
- * props — never style overrides.
+ * props - never style overrides.
  *
  * The reply-preview banner (when the user is replying to a message) is owned
  * by the host screen and rendered ABOVE the composer, since DM/event/city
@@ -40,7 +40,7 @@ export default function MessageComposer({
   // Forwarded to the underlying input. Used by parents that want to collapse
   // a header block when the composer is focused (keyboard opening).
   onFocus,
-  // Mirror of onFocus — fires on blur. Parents wire it to restore a
+  // Mirror of onFocus - fires on blur. Parents wire it to restore a
   // collapsed header when the composer loses focus.
   onBlur,
   // When true, the input blurs after a successful submit. Used by the
@@ -68,7 +68,7 @@ export default function MessageComposer({
 
   return (
     <form className="dm-composer" onSubmit={handleSubmit}>
-      {/* @mention autocomplete — floats above the composer while typing "@" */}
+      {/* @mention autocomplete - floats above the composer while typing "@" */}
       {mentionSuggestions.length > 0 && (
         <div className="mention-dropdown">
           {mentionSuggestions.map(s => (
@@ -87,7 +87,7 @@ export default function MessageComposer({
           ))}
         </div>
       )}
-      {/* Hidden file picker — triggered by share sheet */}
+      {/* Hidden file picker - triggered by share sheet */}
       {fileInputRef && (
         <input
           ref={fileInputRef}

@@ -1,5 +1,5 @@
 /**
- * Blocked Users settings screen — Settings → Blocked users.
+ * Blocked Users settings screen - Settings → Blocked users.
  *
  * Required by Apple Guideline 1.2: users must be able to review and undo
  * blocks. Powered by GET /users/me/blocks (auth required).
@@ -30,7 +30,7 @@ export default function BlockedUsersScreen() {
   const [refreshing,  setRefreshing]  = useState(false);
   const [busyIds,     setBusyIds]     = useState<Set<number>>(new Set());
 
-  // Auth gate — backend requires registered user; redirect guests to landing.
+  // Auth gate - backend requires registered user; redirect guests to landing.
   useEffect(() => {
     if (!canAccessProfile(account)) {
       router.replace('/auth-gate');
@@ -43,7 +43,7 @@ export default function BlockedUsersScreen() {
       const data = await fetchMyBlocks();
       setRows(data);
     } catch {
-      // silent — empty state will show
+      // silent - empty state will show
     } finally {
       if (isRefresh) setRefreshing(false); else setLoading(false);
     }

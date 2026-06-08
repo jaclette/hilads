@@ -64,7 +64,7 @@
     "eventTag": "Evento",
     "public": "Público",
     "activeNow": "● Ativo agora",
-    "repliesNew": "Ainda sem respostas — seja o primeiro",
+    "repliesNew": "Ainda sem respostas - seja o primeiro",
     "replies_one": "💬 {{count}} resposta",
     "replies_other": "💬 {{count}} respostas",
     "going_one": "🙌 {{count}} participante",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Qual é a ideia?",
     "hangoutTitle": "Iniciar um rolê",
-    "hangoutSub": "Na hora — deixe as pessoas participarem agora",
+    "hangoutSub": "Na hora - deixe as pessoas participarem agora",
     "eventTitle": "Criar um evento",
     "eventSub": "Planeje algo para outros participarem",
     "challengeTitle": "Lançar um desafio",
-    "challengeSub": "Locais & viajantes — conectem-se através de um desafio",
+    "challengeSub": "Locais & viajantes - conectem-se através de um desafio",
     "challengePageTitle": "Criar um desafio",
     "challengeAudience": "Para quem?",
     "challengeAudLocals": "Locais",
@@ -161,7 +161,7 @@
     "going": "vão",
     "inThisHangout": "neste rolê",
     "loading": "Carregando…",
-    "empty": "Ninguém ainda — seja o primeiro a participar! 🙌"
+    "empty": "Ninguém ainda - seja o primeiro a participar! 🙌"
   },
   "nickname": {
     "label": "Apelido",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Você iniciou este evento!",
-    "sub": "Deixe ainda melhor — adicione uma descrição, mude o horário ou compartilhe.",
+    "sub": "Deixe ainda melhor - adicione uma descrição, mude o horário ou compartilhe.",
     "edit": "✏️ Editar o evento"
   },
   "feedNew": {

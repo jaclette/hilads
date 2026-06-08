@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // EN/FR/VI are all bundled statically. On React Native there is no per-visit
 // network download (Metro bundles everything into the JS bundle regardless),
-// and the locale JSON is tiny — so the web app's lazy-chunk perf contract does
+// and the locale JSON is tiny - so the web app's lazy-chunk perf contract does
 // not apply here. Bundling all three is simpler and idiomatic for RN.
 import en_common  from './locales/en/common.json';
 import en_auth    from './locales/en/auth.json';
@@ -352,7 +352,7 @@ import ar_upcoming from './locales/ar/upcoming.json';
 import ar_archive from './locales/ar/archive.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'] as const;
-// Right-to-left locales — drive native I18nManager.forceRTL.
+// Right-to-left locales - drive native I18nManager.forceRTL.
 const RTL_LOCALES = ['ar'];
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -384,7 +384,7 @@ const resources = {
 
 // Sync the native RTL flag to the locale. forceRTL persists natively and takes
 // effect on the NEXT app launch (no expo-updates to reload mid-session), so a
-// switch to/from Arabic needs an app restart to re-mirror the layout — the text
+// switch to/from Arabic needs an app restart to re-mirror the layout - the text
 // itself changes immediately via changeLanguage.
 function syncRTL(locale: string): void {
   const shouldRTL = RTL_LOCALES.includes(locale);
@@ -397,7 +397,7 @@ function isSupported(code: string | null | undefined): code is Locale {
   return !!code && (SUPPORTED as readonly string[]).includes(code);
 }
 
-// Device language (synchronous) — used as the initial default before any saved
+// Device language (synchronous) - used as the initial default before any saved
 // override is read from AsyncStorage. Falls back to English.
 function deviceLocale(): Locale {
   try {
@@ -431,13 +431,13 @@ i18n.use(initReactI18next).init({
   lowerCaseLng: true,
   interpolation: { escapeValue: false },
   returnEmptyString: false,
-  react: { useSuspense: false }, // resources are bundled — no async load to suspend on
+  react: { useSuspense: false }, // resources are bundled - no async load to suspend on
 });
 
 /**
  * Apply a manually-saved locale (overrides the device default). Call once during
  * boot, before the navigation Stack mounts, so the first translated screen
- * renders in the right language. The BootScreen covers this read — no flash.
+ * renders in the right language. The BootScreen covers this read - no flash.
  */
 export async function applyStoredLocale(): Promise<void> {
   try {
@@ -446,7 +446,7 @@ export async function applyStoredLocale(): Promise<void> {
       await i18n.changeLanguage(saved);
     }
   } catch {
-    // AsyncStorage unavailable — keep the device-locale default.
+    // AsyncStorage unavailable - keep the device-locale default.
   }
   syncRTL(i18n.language);
 }
@@ -457,7 +457,7 @@ export async function setLocale(locale: Locale): Promise<void> {
   try {
     await AsyncStorage.setItem(STORAGE_KEY, next);
   } catch {
-    // Non-fatal — the change still applies for this session.
+    // Non-fatal - the change still applies for this session.
   }
   await i18n.changeLanguage(next);
   syncRTL(next);

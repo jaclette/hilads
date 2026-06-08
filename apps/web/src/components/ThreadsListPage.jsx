@@ -5,7 +5,7 @@ import BackButton from './BackButton'
 import RateSheet from './RateSheet'
 
 /**
- * PR2 — "My challenge threads" index. Lists every relationship I'm in
+ * PR2 - "My challenge threads" index. Lists every relationship I'm in
  * (as creator OR acceptor) with last-message preview. Sorted by activity.
  *
  * Reached from the profile drawer / a "My threads" CTA. Mounted by App.jsx
@@ -30,7 +30,7 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
 
   const [threads, setThreads] = useState([])
   const [loading, setLoading] = useState(true)
-  // PR6 — rate-prompt banner state. Top entry (oldest unrated) is rendered
+  // PR6 - rate-prompt banner state. Top entry (oldest unrated) is rendered
   // above the threads list; "+N" pill when there's a stack.
   const [ratePrompts,  setRatePrompts]  = useState([])
   const [activePrompt, setActivePrompt] = useState(null)

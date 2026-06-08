@@ -3,16 +3,16 @@
 declare(strict_types=1);
 
 /**
- * UserBadgeService — resolves identity badges for users in a city context.
+ * UserBadgeService - resolves identity badges for users in a city context.
  *
  * Primary badge   (always one):
- *   ghost  👻 Ghost  — anonymous guest session (no registered account)
- *   fresh  ✨ Fresh  — registered user, account < 60 days old
- *   regular  😎 Crew  — registered user, account ≥ 60 days old
+ *   ghost  👻 Ghost  - anonymous guest session (no registered account)
+ *   fresh  ✨ Fresh  - registered user, account < 60 days old
+ *   regular  😎 Crew  - registered user, account ≥ 60 days old
  *
  * Context badge   (at most one, city-specific):
- *   host   👑 Legend — ambassador role for this city
- *   null              — no context badge
+ *   host   👑 Legend - ambassador role for this city
+ *   null              - no context badge
  */
 final class UserBadgeService
 {
@@ -119,7 +119,7 @@ final class UserBadgeService
      * Single-query batch: resolves full badges for ALL given user IDs in one round-trip.
      * Combines the batchForCity (2 queries) + ambassadorsForCity (1 query) pattern into 1.
      *
-     * Use this when you need badge data for both messages and presence users simultaneously —
+     * Use this when you need badge data for both messages and presence users simultaneously -
      * pass all unique IDs at once, then slice the result as needed.
      *
      * @param string[] $userIds        All registered user IDs to resolve (messages + presence).

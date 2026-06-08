@@ -33,7 +33,7 @@
     "title": "Jadilah warga lokal yang menggerakkan kota",
     "tagline": "Kamu tahu spot-spotnya. Tantang warga lokal atau pelancong untuk menemukannya.",
     "bullets": [
-      "Tantang warga lokal atau pelancong — makanan, tempat, budaya atau bantuan",
+      "Tantang warga lokal atau pelancong - makanan, tempat, budaya atau bantuan",
       "Bawa orang ke spot favoritmu",
       "Jadi orang lokal yang diingat orang"
     ],
@@ -60,7 +60,7 @@
       },
       {
         "title": "Luncurkan atau terima tantangan",
-        "desc": "Siapa pun bisa meluncurkan tantangan makanan, tempat, budaya atau bantuan — untuk local atau pelancong. Sisi lain yang menerima."
+        "desc": "Siapa pun bisa meluncurkan tantangan makanan, tempat, budaya atau bantuan - untuk local atau pelancong. Sisi lain yang menerima."
       },
       {
         "title": "Ketemu langsung",
@@ -82,7 +82,7 @@
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time tempat local dan pelancong saling menantang untuk menemukan kota dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon — Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat local dan pelancong saling menantang untuk menemukan kota dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon - Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",
@@ -96,10 +96,10 @@
   "international": {
     "badge": "Lintas kota",
     "tagline": "Kirim tantangan lintas kota. Terima video sebagai bukti.",
-    "sub": "Kalau kotamu sepi, dunia tidak. Tantang siapa pun di mana pun — mereka kirim bukti, kamu validasi dari jauh.",
+    "sub": "Kalau kotamu sepi, dunia tidak. Tantang siapa pun di mana pun - mereka kirim bukti, kamu validasi dari jauh.",
     "bullets": [
       "Targetkan kota tertentu, atau buka untuk siapa pun di mana pun.",
-      "Foto dengan geotag — bukti bahwa terjadi.",
+      "Foto dengan geotag - bukti bahwa terjadi.",
       "Validasi dari sofa. Tolak dengan alasan kalau tidak cocok."
     ],
     "cta": "Coba tantangan global"

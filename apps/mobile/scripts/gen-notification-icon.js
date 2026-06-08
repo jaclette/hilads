@@ -7,7 +7,7 @@
  *   - simple, readable at small sizes
  *
  * This script renders the Hilads "Hi¡" mark (from Logo.jsx, viewBox 0 0 64 64)
- * scaled to 96×96 in pure Node.js — no external dependencies.
+ * scaled to 96×96 in pure Node.js - no external dependencies.
  *
  * Run: node scripts/gen-notification-icon.js
  * Output: assets/notification-icon.png
@@ -60,19 +60,19 @@ function fillCircle(cx, cy, r) {
 
 // ── Draw Hilads "Hi¡" mark (Logo.jsx shapes, scaled 64→96, factor=1.5) ────
 
-// H — left bar  (orig: x=9,  y=13, w=8,  h=38, rx=2.5)
+// H - left bar  (orig: x=9,  y=13, w=8,  h=38, rx=2.5)
 fillRoundedRect(14, 20, 12, 57, 4);
 
-// H — right bar (orig: x=26, y=13, w=8,  h=38, rx=2.5)
+// H - right bar (orig: x=26, y=13, w=8,  h=38, rx=2.5)
 fillRoundedRect(39, 20, 12, 57, 4);
 
-// H — crossbar  (orig: x=17, y=28, w=9,  h=6,  rx=2)
+// H - crossbar  (orig: x=17, y=28, w=9,  h=6,  rx=2)
 fillRoundedRect(26, 42, 13,  9, 3);
 
-// ¡ — body      (orig: x=43, y=25, w=8,  h=26, rx=2.5)
+// ¡ - body      (orig: x=43, y=25, w=8,  h=26, rx=2.5)
 fillRoundedRect(65, 38, 12, 39, 4);
 
-// ¡ — dot       (orig: cx=47, cy=15, r=5.5)
+// ¡ - dot       (orig: cx=47, cy=15, r=5.5)
 fillCircle(71, 23, 8);
 
 // ── PNG writer (pure Node, no deps) ────────────────────────────────────────

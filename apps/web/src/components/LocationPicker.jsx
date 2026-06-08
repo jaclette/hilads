@@ -1,9 +1,9 @@
 /**
- * LocationPicker — full-screen map modal for location confirmation before sharing.
+ * LocationPicker - full-screen map modal for location confirmation before sharing.
  *
  * UX flow:
  *   1. Opens centered on user's GPS coords
- *   2. User drags map to adjust — pin stays fixed in center
+ *   2. User drags map to adjust - pin stays fixed in center
  *   3. Reverse geocodes the map center (debounced, 500ms)
  *   4. User taps "Share this spot" → onConfirm({ place, address })
  *
@@ -66,7 +66,7 @@ async function reverseGeocode(lat, lng) {
   return { place, address }
 }
 
-// ── Forward geocode (address search) via Nominatim — same provider ────────────
+// ── Forward geocode (address search) via Nominatim - same provider ────────────
 
 async function searchPlaces(query) {
   const resp = await fetch(
@@ -227,7 +227,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
             )}
           </div>
 
-          {/* Fixed pin — stays centered, map moves underneath */}
+          {/* Fixed pin - stays centered, map moves underneath */}
           <div className="loc-picker-pin" aria-hidden="true">📍</div>
 
           {/* Drag hint */}

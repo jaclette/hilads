@@ -54,7 +54,7 @@ if ($method === 'POST') {
     }
 
     // ── Avatar upload ─────────────────────────────────────────────────────────
-    // Upload only when all other fields are valid — avoids wasting R2 storage on
+    // Upload only when all other fields are valid - avoids wasting R2 storage on
     // submissions that will be rejected anyway.
     if (empty($errors)) {
         try {

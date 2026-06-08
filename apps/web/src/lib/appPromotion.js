@@ -1,7 +1,7 @@
 /**
  * App-promotion config + detection helpers.
  *
- * Both platforms are live — `android.enabled` and `ios.enabled` are true. The
+ * Both platforms are live - `android.enabled` and `ios.enabled` are true. The
  * banner / interstitial / hook resolve the per-OS store URL from detectOs()
  * (see useAppPromotion).
  *
@@ -19,7 +19,7 @@ export const appPromotion = {
   interstitialDismissalDays:  30,
   android: {
     enabled:  true,
-    // VITE_PLAY_STORE_URL was named PLAY_STORE_URL in the original spec —
+    // VITE_PLAY_STORE_URL was named PLAY_STORE_URL in the original spec -
     // this codebase uses the Vite VITE_-prefix convention everywhere else.
     storeUrl: import.meta.env.VITE_PLAY_STORE_URL
             || 'https://play.google.com/store/apps/details?id=com.hilads.app',
@@ -36,7 +36,7 @@ export const appPromotion = {
 export function detectOs(ua = (typeof navigator !== 'undefined' ? navigator.userAgent : '')) {
   if (!ua) return 'other'
   if (/iPad|iPhone|iPod/.test(ua)) return 'ios'
-  // iPad in "Request Desktop Site" mode reports MacIntel — same trick as
+  // iPad in "Request Desktop Site" mode reports MacIntel - same trick as
   // useBeforeInstallPrompt.js.
   if (typeof navigator !== 'undefined'
       && navigator.platform === 'MacIntel'
@@ -48,7 +48,7 @@ export function detectOs(ua = (typeof navigator !== 'undefined' ? navigator.user
 }
 
 // True when the page is rendered inside a surface where pushing the user to
-// the store doesn't make sense — RN WebView, custom-UA shell, PWA standalone,
+// the store doesn't make sense - RN WebView, custom-UA shell, PWA standalone,
 // or a Trusted Web Activity launched from the Play Store install.
 export function isInNativeApp() {
   if (typeof window === 'undefined') return false
@@ -59,7 +59,7 @@ export function isInNativeApp() {
   return false
 }
 
-// Respect Do Not Track / GPC for analytics. Banner UI itself still renders —
+// Respect Do Not Track / GPC for analytics. Banner UI itself still renders -
 // only the analytics events get gated.
 export function honorsDnt() {
   if (typeof navigator === 'undefined') return false

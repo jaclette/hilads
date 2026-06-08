@@ -19,7 +19,7 @@ const RESULT_CAP = 10;
  * via a search input. Selecting a city flips the leaderboard's view to that
  * city via the existing `?city_id=` query param.
  *
- * NOT a global city switcher — does NOT call setCurrentCity. Scope is just
+ * NOT a global city switcher - does NOT call setCurrentCity. Scope is just
  * the leaderboard view; the user's actual current city stays untouched.
  */
 export function LeaderboardCityPickerSheet({

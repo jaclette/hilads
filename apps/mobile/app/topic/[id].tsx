@@ -104,7 +104,7 @@ export default function TopicChatScreen() {
       setShared(true);
       setTimeout(() => setShared(false), 2000);
     } catch {
-      // dismissed or error — ignore
+      // dismissed or error - ignore
     }
   }
 
@@ -135,7 +135,7 @@ export default function TopicChatScreen() {
   // Accept/Reject a join request. The backend is first-write-wins and
   // re-broadcasts the resolved feed item over WS, so every participant's card
   // (including this one) updates via useMessages' join_request upsert. An
-  // already-resolved race returns gracefully — nothing to show the user.
+  // already-resolved race returns gracefully - nothing to show the user.
   const handleResolveJoinRequest = useCallback((requestId: string, action: 'accept' | 'reject') => {
     resolveHangoutJoinRequest(id, requestId, action)
       .then(() => { if (action === 'accept') loadParticipants(); }) // new member joined
@@ -213,7 +213,7 @@ export default function TopicChatScreen() {
   }, [id, sessionId]));
 
   // Join the WS topic room ONLY as a confirmed member. The WS server can't
-  // verify membership (no DB), so a gated/pending user must not join — otherwise
+  // verify membership (no DB), so a gated/pending user must not join - otherwise
   // they'd receive live message broadcasts despite the HTTP 403. Leaves on gate.
   useEffect(() => {
     if (gated || !id || !sessionId) return;
@@ -222,7 +222,7 @@ export default function TopicChatScreen() {
   }, [id, sessionId, gated]);
 
   // While gated (request pending), re-check membership periodically so the
-  // conversation unlocks the moment a member accepts — no manual refresh needed.
+  // conversation unlocks the moment a member accepts - no manual refresh needed.
   // (A tapped acceptance push re-opens the screen and re-loads too.)
   useEffect(() => {
     if (!gated || !account) return;
@@ -239,7 +239,7 @@ export default function TopicChatScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
-      {/* Header — back | [icon + title] | share */}
+      {/* Header - back | [icon + title] | share */}
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
           <Ionicons name="chevron-back" size={18} color={Colors.text} />
@@ -264,7 +264,7 @@ export default function TopicChatScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Topic info block — description + expiry only (title is in header) */}
+      {/* Topic info block - description + expiry only (title is in header) */}
       {topicLoading ? (
         <View style={styles.infoBlockLoading}>
           <ActivityIndicator color={Colors.accent} />
@@ -296,7 +296,7 @@ export default function TopicChatScreen() {
         </View>
       )}
 
-      {/* Members strip — same as an event's "going" strip. Members only. */}
+      {/* Members strip - same as an event's "going" strip. Members only. */}
       {!gated && participants.length > 0 && (
         <TouchableOpacity style={styles.membersStrip} activeOpacity={0.75} onPress={() => setMembersOpen(true)}>
           <AttendeeAvatars
@@ -318,7 +318,7 @@ export default function TopicChatScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Members-only gate — pending requesters cannot read or post. */}
+      {/* Members-only gate - pending requesters cannot read or post. */}
       {gated ? (
         <View style={styles.gatedWrap}>
           <Text style={styles.gatedEmoji}>🔒</Text>
@@ -430,7 +430,7 @@ export default function TopicChatScreen() {
       <MessageActionSheet
         visible={actionSheetMsg !== null}
         reactions={actionSheetMsg?.reactions ?? []}
-        onReact={() => {}}  /* Topic has no reactions yet — emoji strip is harmless visual no-op. */
+        onReact={() => {}}  /* Topic has no reactions yet - emoji strip is harmless visual no-op. */
         onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;

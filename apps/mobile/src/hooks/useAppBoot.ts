@@ -18,7 +18,7 @@ import { getColdStartNotificationRoute } from '@/features/notifications/Notifica
 
 // Boot: max time to wait for fetchChannels() before starting geo anyway.
 // If the API is unreachable, fetch() has no built-in timeout and the OS TCP
-// timeout is ~75s — this ensures geo starts even when the server is down.
+// timeout is ~75s - this ensures geo starts even when the server is down.
 const BOOT_FETCH_TIMEOUT_MS = 8_000;
 
 // watchPositionAsync: how long to wait for first GPS fix before falling back.
@@ -46,9 +46,9 @@ interface Result {
 // ── Position helper ───────────────────────────────────────────────────────────
 //
 // Three-step strategy (each step is skipped if the previous one succeeds):
-//   1. getLastKnownPositionAsync  — instant if the OS has a recent cache
-//   2. watchPositionAsync         — Android requestLocationUpdates, fires fast
-//   3. getCurrentPositionAsync    — last resort, explicit timeout to avoid hang
+//   1. getLastKnownPositionAsync  - instant if the OS has a recent cache
+//   2. watchPositionAsync         - Android requestLocationUpdates, fires fast
+//   3. getCurrentPositionAsync    - last resort, explicit timeout to avoid hang
 
 async function getPosition(): Promise<Location.LocationObject | null> {
   // ── Step 1: last known (instant) ──────────────────────────────────────────
@@ -97,7 +97,7 @@ async function getPosition(): Promise<Location.LocationObject | null> {
       },
     ).then(s => {
       if (resolved) {
-        // Already resolved (timeout fired before sub was assigned) — clean up.
+        // Already resolved (timeout fired before sub was assigned) - clean up.
         s.remove();
       } else {
         sub = s;
@@ -170,7 +170,7 @@ export function useAppBoot(): Result {
 
     const absoluteTimer = setTimeout(() => {
       if (!isCancelled()) {
-        console.warn('[geo] absolute timeout (' + GEO_ABSOLUTE_TIMEOUT_MS + 'ms) — forcing error state');
+        console.warn('[geo] absolute timeout (' + GEO_ABSOLUTE_TIMEOUT_MS + 'ms) - forcing error state');
         setGeoState('error');
       }
     }, GEO_ABSOLUTE_TIMEOUT_MS);
@@ -198,7 +198,7 @@ export function useAppBoot(): Result {
       }
 
       // ── Step 1: Permission ───────────────────────────────────────────────
-      // Check existing status first — avoids showing a dialog if permission is
+      // Check existing status first - avoids showing a dialog if permission is
       // already determined, and prevents a second concurrent requestForeground
       // call (from handleMySpot) from racing against a still-pending dialog.
       console.log('[geo] getForegroundPermissionsAsync...');
@@ -215,7 +215,7 @@ export function useAppBoot(): Result {
           if (!isCancelled()) setGeoState('denied');
           return;
         }
-        // Undetermined — show the system dialog. The 400 ms GEO_START_DELAY_MS
+        // Undetermined - show the system dialog. The 400 ms GEO_START_DELAY_MS
         // above ensures the Android window is interactive before we get here.
         // No timeout race: we wait for the user's actual response.
         console.log('[geo] requesting foreground permissions...');
@@ -240,7 +240,7 @@ export function useAppBoot(): Result {
 
       if (!pos) {
         if (__DEV__) {
-          console.warn('[geo] ⚠️  DEV: no position — injecting Ho Chi Minh City (10.7769, 106.7009)');
+          console.warn('[geo] ⚠️  DEV: no position - injecting Ho Chi Minh City (10.7769, 106.7009)');
           pos = {
             coords: { latitude: 10.7769, longitude: 106.7009, altitude: null, accuracy: 0,
                       altitudeAccuracy: null, heading: null, speed: null },
@@ -260,7 +260,7 @@ export function useAppBoot(): Result {
       // Native reverse-geocode → ISO-2 country code. Lets the backend constrain
       // nearest-city to the same country so a user on Phu Quoc (VN) doesn't get
       // snapped to Phnom Penh (KH) just because PP is geographically closer
-      // than HCMC. Failure here is non-fatal — backend falls back to global
+      // than HCMC. Failure here is non-fatal - backend falls back to global
       // nearest when no country is sent.
       let country: string | null = null;
       try {
@@ -332,16 +332,16 @@ export function useAppBoot(): Result {
         const offDisconnected = socket.on('disconnected', () => setWsConnected(false));
         socket.connect();
 
-        // Phase 3: Auth check — runs in background.
+        // Phase 3: Auth check - runs in background.
         // NOTE: setBooting(false) is intentionally NOT called here for returning users.
         // For returning users we hold the boot screen until the saved city is confirmed,
         // so the Stack never mounts into the wrong tab. For new users it fires below.
         const authPromise = loadSavedToken()
           .then(hadToken => {
-            console.log('[boot] loadSavedToken — token found in SecureStore:', hadToken);
+            console.log('[boot] loadSavedToken - token found in SecureStore:', hadToken);
             console.log('[boot] authToken in memory after load:',
               getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
-            // Skip authMe() entirely for guests — no token means no registered session.
+            // Skip authMe() entirely for guests - no token means no registered session.
             // Avoids a guaranteed 401 round-trip on every cold start for guest users.
             return hadToken ? authMe() : null;
           })
@@ -349,22 +349,22 @@ export function useAppBoot(): Result {
             console.log('[boot] authMe result:', user ? `user=${user.id}` : 'null (not authenticated)');
             if (!cancelled && user) {
               setAccount(user);  // usePushRegistration in _layout.tsx reacts to this
-              // unreadNotifications is seeded from bootstrapChannel result — no separate fetch needed.
-              console.log('[boot] account set — push registration will fire via usePushRegistration');
+              // unreadNotifications is seeded from bootstrapChannel result - no separate fetch needed.
+              console.log('[boot] account set - push registration will fire via usePushRegistration');
               console.log('[boot] authToken present:', getAuthToken() !== null ? 'yes' : 'NO');
               // Subscribe to the per-user WS channel so friend-request events
               // and other per-user notifications reach this device. The socket
-              // owns the replay on reconnect — no on('connected') subscription
+              // owns the replay on reconnect - no on('connected') subscription
               // needed (those leaked because they were never unsubscribed).
               socket.joinUser(user.id);
               // Hydrate the outgoing block set so list filters take effect
-              // immediately. Failures are non-fatal — server-side filtering is
+              // immediately. Failures are non-fatal - server-side filtering is
               // still applied; this is just the client-instant layer.
               fetchMyBlocks()
                 .then(rows => { if (!cancelled) setBlockedSet(blockedSetFromApiRows(rows)); })
                 .catch(err => console.warn('[boot] fetchMyBlocks failed (non-fatal):', String(err)));
             } else if (!cancelled) {
-              console.log('[boot] no authenticated user — push registration will wait for login');
+              console.log('[boot] no authenticated user - push registration will wait for login');
             }
             return user ?? null;
           })
@@ -383,7 +383,7 @@ export function useAppBoot(): Result {
         if (identity.channelId) {
           // Returning user: hold the boot screen (BootScreen stays visible, Stack does NOT
           // mount) until we confirm the saved city. Once confirmed, setJoined(true) and
-          // setBooting(false) are called together — React 18 batches them into a single
+          // setBooting(false) are called together - React 18 batches them into a single
           // render. When the Stack first mounts, index.tsx sees joined=true and redirects
           // directly to /(tabs)/chat. No intermediate hot-tab flash, no router.replace jump.
           console.log('[boot] returning user, fetching channels (timeout:', BOOT_FETCH_TIMEOUT_MS, 'ms)');
@@ -419,14 +419,14 @@ export function useAppBoot(): Result {
                   })
                   .catch(() => {});
                 const userId = user?.id;
-                // Socket owns replay on reconnect — call once, queues if not yet connected.
+                // Socket owns replay on reconnect - call once, queues if not yet connected.
                 socket.joinCity(saved.channelId, sessionId, displayName, userId, identity.guestId);
                 setJoined(true);
 
                 // Check for a cold-start notification deep link.
                 const notifRoute = await getColdStartNotificationRoute();
 
-                // Release the boot screen now — joined=true is already set so the Stack
+                // Release the boot screen now - joined=true is already set so the Stack
                 // mounts directly on chat (via index.tsx redirect). No router.replace needed.
                 setBooting(false);
                 startGeo(); // resolve detectedCity in background → powers "Back to my location" CTA
@@ -495,7 +495,7 @@ export function useAppBoot(): Result {
   // ── Foreground refresh ──────────────────────────────────────────────────────
   // When the app comes back to foreground, re-run the geo flow so the backend's
   // current_city_id stays accurate (two-signal transition rule fires on every
-  // /location/resolve). No background GPS — only on the foreground transition.
+  // /location/resolve). No background GPS - only on the foreground transition.
   // Throttled to once per minute to absorb rapid app switching.
 
   const lastForegroundResolveRef = useRef<number>(0);
@@ -512,7 +512,7 @@ export function useAppBoot(): Result {
       if (now - lastForegroundResolveRef.current < FOREGROUND_RESOLVE_THROTTLE_MS) return;
       lastForegroundResolveRef.current = now;
 
-      console.log('[geo] foreground refresh — re-running geo flow');
+      console.log('[geo] foreground refresh - re-running geo flow');
       let cancelled = false;
       runGeoFlow(() => cancelled);
     });

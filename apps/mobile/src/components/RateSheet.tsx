@@ -26,7 +26,7 @@ type Props = {
 /**
  * Bottom-sheet rating modal for a single rate-prompt. Stars (1–5, required)
  * + optional comment (≤500 chars). Posts to /challenges/:id/ratings. The
- * server's mutual-reveal gate is invisible to the rater — they always see
+ * server's mutual-reveal gate is invisible to the rater - they always see
  * a success confirmation; whether the counterparty's rating reveals depends
  * on whether they've also rated (the trigger handles it server-side).
  */

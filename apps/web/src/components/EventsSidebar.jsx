@@ -26,7 +26,7 @@ const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks:
 export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick }) {
   const tz = cityTimezone || 'UTC'
   const hiladsEvents = filterAndSort(events, tz)
-  // City events: don't filter by today — TM events are upcoming (backend already prunes expired ones)
+  // City events: don't filter by today - TM events are upcoming (backend already prunes expired ones)
   const publicEvents = (cityEvents || []).sort((a, b) => a.starts_at - b.starts_at)
   const topicList   = topics || []
   const totalCount  = hiladsEvents.length + publicEvents.length + topicList.length

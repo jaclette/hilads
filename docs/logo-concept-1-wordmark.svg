@@ -11,7 +11,7 @@
     fill="#f8f8fc"
     letter-spacing="-1.5">h</text>
 
-  <!-- "i" — no dot, we'll fake it -->
+  <!-- "i" - no dot, we'll fake it -->
   <!-- Mask the i-dot with a bg-colored rect, then draw our dot -->
   <text x="38" y="44"
     font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
@@ -23,7 +23,7 @@
   <!-- Kill the native i-dot -->
   <rect x="38" y="4" width="14" height="12" fill="#0a0a0f"/>
 
-  <!-- Live dot — replacing i-dot -->
+  <!-- Live dot - replacing i-dot -->
   <!-- Glow layer -->
   <circle cx="45" cy="10" r="7" fill="#06b6d4" opacity="0.18"/>
   <circle cx="45" cy="10" r="4" fill="#06b6d4" opacity="0.35"/>

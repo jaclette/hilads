@@ -24,7 +24,7 @@
   "agePlaceholder": "例如 25",
   "fieldMyVibe": "我的 VIBE",
   "fieldInterests": "兴趣",
-  "interestsHint": "— 最多选 5 个",
+  "interestsHint": "- 最多选 5 个",
   "interest": {
     "drinks": "喝酒",
     "party": "派对",
@@ -47,12 +47,12 @@
     "tech": "科技",
     "dating": "约会"
   },
-  "noHangouts": "还没有聚会 —— 发起一个 🗣️",
+  "noHangouts": "还没有聚会 -- 发起一个 🗣️",
   "host": "主办者",
   "going": "参加",
-  "noPlans": "还没有计划 —— 找点事做 🔥",
+  "noPlans": "还没有计划 -- 找点事做 🔥",
   "hosting": "主办",
-  "nothingHosted": "还没主办任何活动 —— 发起点什么 ✨",
+  "nothingHosted": "还没主办任何活动 -- 发起点什么 ✨",
   "live": "LIVE",
   "recurring": "重复",
   "friendRequests": "好友请求",
@@ -80,7 +80,7 @@
   "errUsernameShort": "用户名至少需要 3 个字符",
   "errUsernameTaken": "该用户名已被占用",
   "errUsernameInvalid": "用户名无效",
-  "errSave": "保存失败 —— 请再试一次",
+  "errSave": "保存失败 -- 请再试一次",
   "signOutTitle": "退出登录",
   "signOutBody": "确定吗？",
   "deleteAccountTitle": "删除账户？",
@@ -89,5 +89,5 @@
   "errorTitle": "错误",
   "deleteAccountFail": "无法删除账户。请再试一次。",
   "tabChallenges": "挑战",
-  "noChallenges": "暂无挑战 — 发起一个 🔥"
+  "noChallenges": "暂无挑战 - 发起一个 🔥"
 }

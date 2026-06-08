@@ -6,13 +6,13 @@ declare(strict_types=1);
  * Server-side geotag verification for International challenge proofs.
  *
  * Tolerance resolution order:
- *   1. cities.proof_geotag_tolerance_km — per-city override set via SQL
+ *   1. cities.proof_geotag_tolerance_km - per-city override set via SQL
  *      (no admin UI yet; sprawling metros like Saigon get bumped here)
  *   2. env CHALLENGE_PROOF_TOLERANCE_KM
  *   3. DEFAULT_TOLERANCE_KM constant fallback (30)
  *
  * If the challenge has no target_city_id set ("anywhere" international),
- * no bbox check applies — any geotag is accepted as verified.
+ * no bbox check applies - any geotag is accepted as verified.
  */
 final class ChallengeProofGeotag
 {
@@ -30,7 +30,7 @@ final class ChallengeProofGeotag
     public static function verify(?string $targetCityId, float $lat, float $lng): bool
     {
         if ($targetCityId === null || $targetCityId === '') {
-            // "Anywhere" — anything goes. The acceptor's geotag is still
+            // "Anywhere" - anything goes. The acceptor's geotag is still
             // stored (audit trail) but not gated.
             return true;
         }
@@ -43,7 +43,7 @@ final class ChallengeProofGeotag
         $stmt->execute([$targetCityId]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($row === false) {
-            // Target city resolved at create-time but missing now — let it
+            // Target city resolved at create-time but missing now - let it
             // through rather than fail closed (would block legitimate proofs
             // on a misconfigured DB). The audit row still has the geotag.
             error_log("[proof-geotag] target city {$targetCityId} not found in cities; passing through");
@@ -61,7 +61,7 @@ final class ChallengeProofGeotag
 
     /**
      * Distance between two GPS points (Haversine, km). Earth radius rounded
-     * to 6371 — sub-1% error at the kind of distances we care about (5–50 km
+     * to 6371 - sub-1% error at the kind of distances we care about (5–50 km
      * bbox checks). No need for an ellipsoid model here.
      */
     public static function haversineKm(float $lat1, float $lng1, float $lat2, float $lng2): float

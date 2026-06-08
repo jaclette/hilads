@@ -64,7 +64,7 @@
     "eventTag": "Evenement",
     "public": "Openbaar",
     "activeNow": "● Nu actief",
-    "repliesNew": "Nog geen reacties — wees de eerste",
+    "repliesNew": "Nog geen reacties - wees de eerste",
     "replies_one": "💬 {{count}} reactie",
     "replies_other": "💬 {{count}} reacties",
     "going_one": "🙌 {{count}} deelnemer",
@@ -138,11 +138,11 @@
   "create": {
     "title": "Wat gaan we doen?",
     "hangoutTitle": "Een meetup starten",
-    "hangoutSub": "Direct — laat mensen nu meteen meedoen",
+    "hangoutSub": "Direct - laat mensen nu meteen meedoen",
     "eventTitle": "Een evenement maken",
     "eventSub": "Plan iets waar anderen aan mee kunnen doen",
     "challengeTitle": "Start een challenge",
-    "challengeSub": "Locals & reizigers — verbind via een challenge",
+    "challengeSub": "Locals & reizigers - verbind via een challenge",
     "challengePageTitle": "Maak een challenge",
     "challengeAudience": "Voor wie?",
     "challengeAudLocals": "Locals",
@@ -161,7 +161,7 @@
     "going": "doen mee",
     "inThisHangout": "in deze meetup",
     "loading": "Laden…",
-    "empty": "Nog niemand — wees de eerste die meedoet! 🙌"
+    "empty": "Nog niemand - wees de eerste die meedoet! 🙌"
   },
   "nickname": {
     "label": "Bijnaam",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 Jij hebt dit evenement gestart!",
-    "sub": "Maak het nog beter — voeg een beschrijving toe, pas de tijd aan of deel het.",
+    "sub": "Maak het nog beter - voeg een beschrijving toe, pas de tijd aan of deel het.",
     "edit": "✏️ Evenement bewerken"
   },
   "feedNew": {

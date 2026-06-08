@@ -26,12 +26,12 @@
   "create": {
     "title": "Was geht?",
     "hangoutLabel": "Treffen starten",
-    "hangoutSub": "Sofort — lass Leute jetzt zu dir dazukommen",
+    "hangoutSub": "Sofort - lass Leute jetzt zu dir dazukommen",
     "eventLabel": "Event erstellen",
     "eventSub": "Plane etwas, an dem andere teilnehmen können",
     "cancel": "Abbrechen",
     "challengeLabel": "Challenge starten",
-    "challengeSub": "Locals & Reisende — verbindet euch durch eine Challenge"
+    "challengeSub": "Locals & Reisende - verbindet euch durch eine Challenge"
   },
   "filterChallenges": "🔥 Challenges",
   "challengesSection": "Challenges",

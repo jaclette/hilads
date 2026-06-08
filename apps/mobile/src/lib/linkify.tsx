@@ -1,7 +1,7 @@
 import React from 'react';
 import { Linking, StyleSheet, Text, type TextStyle } from 'react-native';
 
-// Auto-linkify URLs in message text. http/https only — bare "www.x.com" and
+// Auto-linkify URLs in message text. http/https only - bare "www.x.com" and
 // schemes like mailto/tel are too easy to mis-match casual typing. Trailing
 // sentence punctuation is trimmed so "see https://foo.com." doesn't link the
 // period. Returns an array of strings + Text nodes that can be embedded inside
@@ -10,7 +10,7 @@ const URL_RE   = /\bhttps?:\/\/\S+/gi;
 const TRAIL_RE = /[.,!?;:)\]}>"'»]+$/;
 
 // First http/https URL in the text (with trailing punctuation trimmed), or
-// null. Used to drive the link-preview card under chat bubbles — we only
+// null. Used to drive the link-preview card under chat bubbles - we only
 // preview the first URL per message to keep the UI tight.
 export function extractFirstUrl(text: string | null | undefined): string | null {
   if (!text) return null;
@@ -61,6 +61,6 @@ export function linkifyText(
 }
 
 const styles = StyleSheet.create({
-  // Inherits text color from parent <Text> — underline alone signals the link.
+  // Inherits text color from parent <Text> - underline alone signals the link.
   link: { textDecorationLine: 'underline' },
 });

@@ -1,10 +1,10 @@
 /**
- * useGlobalDmNotifications — always-on WS subscriptions for DM conversations.
+ * useGlobalDmNotifications - always-on WS subscriptions for DM conversations.
  *
  * Mounted in RootLayoutInner so it stays active across all screens.
  *
  * On boot: fetches the user's conversations and joins their WS rooms so
- * newConversationMessage events are received globally — not just when the
+ * newConversationMessage events are received globally - not just when the
  * dm/[id] screen is open.
  *
  * On newConversationMessage for a subscribed conversation:
@@ -38,10 +38,10 @@ export function useGlobalDmNotifications() {
     if (!uid) {
       // Expected during boot for guests and while auth is still hydrating for
       // registered users. Once setAccount() fires, the effect below re-triggers.
-      if (__DEV__) console.log('[dmChat] joinAll skipped — no account (auth not yet hydrated)');
+      if (__DEV__) console.log('[dmChat] joinAll skipped - no account (auth not yet hydrated)');
       return;
     }
-    if (__DEV__) console.log('[dmChat] joinAll — fetching conversations for userId:', uid.slice(0, 8));
+    if (__DEV__) console.log('[dmChat] joinAll - fetching conversations for userId:', uid.slice(0, 8));
     try {
       const convs = await fetchConversations();
       convIdsRef.current = new Set(convs.map(c => c.id));
@@ -58,28 +58,28 @@ export function useGlobalDmNotifications() {
     }
   }, [setUnreadDMs]);
 
-  // Re-join WS rooms using cached IDs only — no HTTP fetch.
+  // Re-join WS rooms using cached IDs only - no HTTP fetch.
   // Used on WS reconnect where the conversation list hasn't changed.
   const rejoinCached = useCallback(() => {
     const uid = accountIdRef.current;
     if (!uid || convIdsRef.current.size === 0) return;
-    if (__DEV__) console.log('[dmChat] rejoinCached —', convIdsRef.current.size, 'DM rooms');
+    if (__DEV__) console.log('[dmChat] rejoinCached -', convIdsRef.current.size, 'DM rooms');
     convIdsRef.current.forEach(id => socket.joinDm(id, uid));
-  }, []); // stable — uses refs only
+  }, []); // stable - uses refs only
 
-  // Join on boot (once account is ready — fires after auth hydration completes)
+  // Join on boot (once account is ready - fires after auth hydration completes)
   useEffect(() => {
     if (account?.id) {
-      if (__DEV__) console.log('[dmChat] joinAll triggered — account hydrated (userId:', account.id.slice(0, 8) + ')');
+      if (__DEV__) console.log('[dmChat] joinAll triggered - account hydrated (userId:', account.id.slice(0, 8) + ')');
       joinAll();
     }
   }, [account?.id, joinAll]);
 
-  // WS reconnect: re-join rooms from cache — no HTTP fetch needed.
+  // WS reconnect: re-join rooms from cache - no HTTP fetch needed.
   // The conversation list hasn't changed; the server just needs the joinDm signals again.
   useEffect(() => {
     const off = socket.on('connected', () => {
-      if (__DEV__) console.log('[dmChat] WS reconnected — rejoining cached DM rooms');
+      if (__DEV__) console.log('[dmChat] WS reconnected - rejoining cached DM rooms');
       rejoinCached();
     });
     return off;
@@ -108,7 +108,7 @@ export function useGlobalDmNotifications() {
 
       // Ignore if user is actively viewing this DM thread right now
       if (activeDmIdRef.current === conversationId) {
-        if (__DEV__) console.log('[dmChat] skipping — DM thread active for', conversationId.slice(0, 8));
+        if (__DEV__) console.log('[dmChat] skipping - DM thread active for', conversationId.slice(0, 8));
         return;
       }
 

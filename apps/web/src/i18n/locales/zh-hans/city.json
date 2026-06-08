@@ -64,7 +64,7 @@
     "eventTag": "活动",
     "public": "公开",
     "activeNow": "● 当前活跃",
-    "repliesNew": "还没有回复 — 来做第一个",
+    "repliesNew": "还没有回复 - 来做第一个",
     "replies_one": "💬 {{count}} 条回复",
     "replies_other": "💬 {{count}} 条回复",
     "going_one": "🙌 {{count}} 人参加",
@@ -138,11 +138,11 @@
   "create": {
     "title": "想做点什么？",
     "hangoutTitle": "发起聚会",
-    "hangoutSub": "即刻开始 — 让大家现在就加入你",
+    "hangoutSub": "即刻开始 - 让大家现在就加入你",
     "eventTitle": "创建活动",
     "eventSub": "策划一件别人可以加入的事",
     "challengeTitle": "发起挑战",
-    "challengeSub": "本地人和旅行者 — 通过一个挑战连接",
+    "challengeSub": "本地人和旅行者 - 通过一个挑战连接",
     "challengePageTitle": "发起挑战",
     "challengeAudience": "给谁?",
     "challengeAudLocals": "本地人",
@@ -161,7 +161,7 @@
     "going": "人参加",
     "inThisHangout": "在这个聚会里",
     "loading": "加载中…",
-    "empty": "还没有人 — 来做第一个加入的人吧！🙌"
+    "empty": "还没有人 - 来做第一个加入的人吧！🙌"
   },
   "nickname": {
     "label": "昵称",
@@ -215,7 +215,7 @@
   },
   "ownerPrompt": {
     "text": "🔥 这个活动是你发起的！",
-    "sub": "让它更出色 — 加点描述、更新时间，或分享出去。",
+    "sub": "让它更出色 - 加点描述、更新时间，或分享出去。",
     "edit": "✏️ 编辑活动"
   },
   "feedNew": {

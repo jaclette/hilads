@@ -26,7 +26,7 @@ function parse_emails(string $raw): array
         }
     }
     $unique = array_values(array_unique($valid)); // array_values = reset keys → proper JSON array
-    error_log('[admin/email] parse_emails: ' . count($unique) . ' valid, ' . count($invalid) . ' invalid — [' . implode(', ', $unique) . ']');
+    error_log('[admin/email] parse_emails: ' . count($unique) . ' valid, ' . count($invalid) . ' invalid - [' . implode(', ', $unique) . ']');
     return ['emails' => $unique, 'invalid' => $invalid];
 }
 
@@ -104,7 +104,7 @@ if ($method === 'POST') {
     $subject = trim($_POST['subject'] ?? '');
     $body    = trim($_POST['body']    ?? '');
     $isTest  = isset($_POST['send_test']);
-    // "Send to all registered users" — only applies to a real send, never a test
+    // "Send to all registered users" - only applies to a real send, never a test
     // (a test always goes to the To field so the admin can preview it first).
     $sendAll = isset($_POST['send_all_users']) && !$isTest;
 
@@ -152,7 +152,7 @@ if ($method === 'POST') {
 
                 $debug = [
                     'to'           => [$senderAddr],
-                    'bcc'          => ['(' . count($recipients) . ' registered users — BCC, batched by ' . RESEND_MAX_BCC . ')'],
+                    'bcc'          => ['(' . count($recipients) . ' registered users - BCC, batched by ' . RESEND_MAX_BCC . ')'],
                     'to_invalid'   => [],
                     'bcc_invalid'  => [],
                     'payload_keys' => ['from', 'to', 'bcc', 'subject', 'html'],
@@ -169,7 +169,7 @@ if ($method === 'POST') {
                     $savedTo = $savedSubject = $savedBody = '';
                 } elseif ($sent > 0) {
                     $error = 'Partial broadcast: ' . $sent . ' delivered, ' . $failed
-                        . ' failed (last HTTP ' . (int) $lastCode . '). Check logs before retrying — some users already received it.';
+                        . ' failed (last HTTP ' . (int) $lastCode . '). Check logs before retrying - some users already received it.';
                 } else {
                     $msg   = $lastDecoded['message'] ?? $lastDecoded['name'] ?? 'Unknown error';
                     $error = 'Broadcast failed (HTTP ' . (int) $lastCode . '): ' . $msg;
@@ -180,7 +180,7 @@ if ($method === 'POST') {
             $toParsed  = parse_emails($toRaw);
             $bccParsed = $bccRaw !== '' ? parse_emails($bccRaw) : ['emails' => [], 'invalid' => []];
 
-            // Hard block only when zero valid To addresses — invalid ones are skipped with a warning
+            // Hard block only when zero valid To addresses - invalid ones are skipped with a warning
             if (empty($toParsed['emails'])) {
                 $error = 'No valid "To" email addresses found.'
                     . (!empty($toParsed['invalid']) ? ' Invalid: ' . implode(', ', $toParsed['invalid']) : '');
@@ -199,7 +199,7 @@ if ($method === 'POST') {
                     $payload['bcc'] = $bccParsed['emails'];
                 }
 
-                error_log('[admin/email] sending — to:' . $toCount . ' bcc:' . $bccCount
+                error_log('[admin/email] sending - to:' . $toCount . ' bcc:' . $bccCount
                     . ' subject:"' . $subject . '"'
                     . ' to_list:[' . implode(', ', $toParsed['emails']) . ']'
                     . ' bcc_list:[' . implode(', ', $bccParsed['emails']) . ']');
@@ -276,7 +276,7 @@ if ($error) {
 if ($debug !== null) {
     $dp = $debug;
     echo '<div style="background:#111;border:1px solid #2a2a2a;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;font-family:monospace">';
-    echo '<div style="color:#666;text-transform:uppercase;letter-spacing:.5px;font-size:10px;margin-bottom:10px">Debug — last send</div>';
+    echo '<div style="color:#666;text-transform:uppercase;letter-spacing:.5px;font-size:10px;margin-bottom:10px">Debug - last send</div>';
 
     echo '<div style="display:grid;grid-template-columns:140px 1fr;gap:4px 0">';
 
@@ -341,13 +341,13 @@ echo '<label>From</label>';
 echo '<input type="text" name="from" value="' . htmlspecialchars($savedFrom, ENT_QUOTES) . '" required>';
 echo '</div>';
 
-// "All registered users" toggle — when checked, To is ignored and the message
+// "All registered users" toggle - when checked, To is ignored and the message
 // goes to every registered user via BCC (batched). Server-validated, so the To
 // `required` attribute is intentionally omitted (it would block submit here).
 echo '<div class="form-group">';
 echo '<label style="display:flex;align-items:center;gap:8px;font-weight:normal;text-transform:none;letter-spacing:0;cursor:pointer">';
 echo '<input type="checkbox" name="send_all_users" id="send-all-users" value="1"' . ($savedSendAll ? ' checked' : '') . '>';
-echo 'Send to all registered users <span style="color:#888;font-size:12px">(BCC — “Send” goes to everyone; “Send test” still uses the To field)</span>';
+echo 'Send to all registered users <span style="color:#888;font-size:12px">(BCC - “Send” goes to everyone; “Send test” still uses the To field)</span>';
 echo '</label>';
 echo '</div>';
 
@@ -388,7 +388,7 @@ echo '</form>';
 $allEmails = all_registered_emails();
 $emailList = implode(', ', $allEmails);
 echo '<details class="form-card" style="margin-top:20px">';
-echo '<summary style="cursor:pointer;font-weight:600">All registered emails (' . count($allEmails) . ') — copy-paste</summary>';
+echo '<summary style="cursor:pointer;font-weight:600">All registered emails (' . count($allEmails) . ') - copy-paste</summary>';
 echo '<div style="margin-top:12px">';
 echo '<textarea id="all-emails" readonly rows="6" style="width:100%;font-family:monospace;font-size:12px" onclick="this.select()" placeholder="No registered users with an email address.">' . htmlspecialchars($emailList, ENT_QUOTES) . '</textarea>';
 echo '<div class="hint">Comma-separated. Click the field to select all, or use the button.</div>';
@@ -400,7 +400,7 @@ echo '</details>';
 
 echo '</div>';
 
-// Confirm before a real broadcast (high blast radius — every registered user).
+// Confirm before a real broadcast (high blast radius - every registered user).
 // The To field stays enabled so "Send test" always works, even with the box on.
 ?>
 <script>

@@ -1,5 +1,5 @@
 /**
- * AndroidCameraCapture — in-app camera modal for Android.
+ * AndroidCameraCapture - in-app camera modal for Android.
  *
  * Why: expo-image-picker's launchCameraAsync() uses ActivityResultLauncher
  * internally. On Android 14 + singleTask MainActivity the result callback
@@ -68,11 +68,11 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
   async function takePhoto() {
     if (!cameraRef.current || !ready || taking) return;
-    console.log('[android-camera] shutter tapped — capturing...');
+    console.log('[android-camera] shutter tapped - capturing...');
     setTaking(true);
     try {
       const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.92,        // high at capture — we compress before upload
+        quality: 0.92,        // high at capture - we compress before upload
         skipProcessing: false,
       });
       if (!photo?.uri) {
@@ -101,11 +101,11 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
   async function handleUsePhoto() {
     if (!capturedUri) return;
-    console.log('[android-camera] use photo tapped — compressing...');
+    console.log('[android-camera] use photo tapped - compressing...');
     setCompressing(true);
     try {
       // SDK 53 chained API. The legacy manipulateAsync() still works but is
-      // deprecated and slated for removal in a future SDK — using the new
+      // deprecated and slated for removal in a future SDK - using the new
       // builder keeps this code compatible across upgrades.
       const ctx = ImageManipulator.manipulate(capturedUri);
       ctx.resize({ width: MAX_WIDTH });
@@ -115,7 +115,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
         `(${result.width}×${result.height})`);
       onCapture(result.uri);
     } catch (e) {
-      console.error('[android-camera] compression failed — using original:', e);
+      console.error('[android-camera] compression failed - using original:', e);
       onCapture(capturedUri); // graceful fallback
     } finally {
       setCompressing(false);
@@ -177,7 +177,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
               <Ionicons name="close" size={26} color="#fff" />
             </TouchableOpacity>
 
-            {/* Action bar — paddingBottom absorbs bottom nav bar on Android */}
+            {/* Action bar - paddingBottom absorbs bottom nav bar on Android */}
             <View style={[styles.previewBar, insets.bottom > 0 && { paddingBottom: 20 + insets.bottom }]}>
 
               {/* Retake */}
@@ -191,7 +191,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
                 <Text style={styles.retakeBtnText}>Retake</Text>
               </TouchableOpacity>
 
-              {/* Use Photo — primary CTA */}
+              {/* Use Photo - primary CTA */}
               <TouchableOpacity
                 style={[styles.useBtn, compressing && styles.btnDisabled]}
                 onPress={handleUsePhoto}

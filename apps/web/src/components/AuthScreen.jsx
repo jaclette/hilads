@@ -16,11 +16,11 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
   const [mode, setMode]       = useState(null)
-  const [eula, setEula]       = useState(false) // EULA — must start UNCHECKED (explicit user action)
+  const [eula, setEula]       = useState(false) // EULA - must start UNCHECKED (explicit user action)
   const [error, setError]     = useState(null)
   const [loading, setLoading] = useState(false)
 
-  // Username availability — debounced check against the backend.
+  // Username availability - debounced check against the backend.
   const [uStatus, setUStatus] = useState('idle') // idle|checking|available|taken|invalid
   const [uReason, setUReason] = useState(null)
   const uTimer = useRef(null)
@@ -146,7 +146,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
 
           <div className="modal-field">
             <label className="modal-label">{t('fields.password')}</label>
-            {/* PR32 — show/hide eye toggle. The reveal helps users catch
+            {/* PR32 - show/hide eye toggle. The reveal helps users catch
                 typos in a long autocomplete-disabled password field
                 (the #1 source of "wrong password" abandons). Type swaps
                 between 'password' and 'text'; the input is otherwise

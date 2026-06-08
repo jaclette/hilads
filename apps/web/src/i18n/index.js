@@ -24,13 +24,13 @@ import en_venue         from './locales/en/venue.json'
 import en_chat          from './locales/en/chat.json'
 
 export const SUPPORTED      = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
-// Right-to-left locales — drive <html dir="rtl">.
+// Right-to-left locales - drive <html dir="rtl">.
 export const RTL_LOCALES    = ['ar']
 export const DEFAULT_LOCALE = 'en'
 export const COOKIE_NAME    = 'hilads_lang'
 const NAMESPACES = ['common', 'profile', 'brand', 'landing', 'auth', 'event', 'hangout', 'challenge', 'dm', 'notifications', 'upcoming', 'archive', 'publicProfile', 'city', 'cityNames', 'venue', 'chat']
 
-// Lazy loaders — one code-split chunk per (locale, namespace). Vite turns each
+// Lazy loaders - one code-split chunk per (locale, namespace). Vite turns each
 // dynamic import() into its own chunk, fetched only when that locale is needed.
 const LOADERS = {
   fr: {
@@ -427,7 +427,7 @@ export async function loadLocale(locale) {
   loaded[locale] = true
 }
 
-// ── Persistence (cookie — readable server-side by the future edge middleware) ──
+// ── Persistence (cookie - readable server-side by the future edge middleware) ──
 export function getStoredLocale() {
   const m = typeof document !== 'undefined'
     ? document.cookie.match(new RegExp('(?:^|;\\s*)' + COOKIE_NAME + '=([^;]+)'))
@@ -444,7 +444,7 @@ function storeLocale(locale) {
 
 /**
  * Resolve the locale for the initial render. Priority:
- *   1. URL prefix  (/fr/…, /vi/…)  — Option A localized routes are authoritative
+ *   1. URL prefix  (/fr/…, /vi/…)  - Option A localized routes are authoritative
  *   2. cookie override (manual choice)
  *   3. browser language
  *   4. English

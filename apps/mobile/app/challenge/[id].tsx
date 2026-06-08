@@ -8,7 +8,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 // Read the tab-bar height directly from the context to avoid the throw
 // useBottomTabBarHeight does when called outside a Tab Navigator. Expo Router
 // pushes /challenge/[id] on top of (tabs) but the parent (tabs) navigator
-// stays mounted and its tab bar overlaps the screen's bottom edge — we need
+// stays mounted and its tab bar overlaps the screen's bottom edge - we need
 // to know that height to keep our chat input above it.
 import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -84,17 +84,17 @@ export default function ChallengeChatScreen() {
   const [membersOpen,      setMembersOpen]      = useState(false);
   const [acceptBusy,       setAcceptBusy]       = useState(false);
   const [validateBusy,     setValidateBusy]     = useState(false);
-  // PR2/3/4 — if I have an acceptance on this challenge, store the full
+  // PR2/3/4 - if I have an acceptance on this challenge, store the full
   // summary so the lifecycle pipeline can render my current phase + the
   // Accept button can morph into "Open thread →".
   const [myAcceptance, setMyAcceptance] = useState<ChallengeThreadSummary | null>(null);
 
-  // PR18 — once an acceptance is terminal (approved = both rated and the
+  // PR18 - once an acceptance is terminal (approved = both rated and the
   // mutual debrief landed, rejected = creator turned the take-on down)
   // the challenge has returned to "available" globally. From the user's
   // POV we should unlock the detail screen: drop the locked "Mission
   // accomplished" pipeline, re-show the Take-on CTA, allow them to
-  // re-engage. Chat history stays — they're still a channel participant
+  // re-engage. Chat history stays - they're still a channel participant
   // (iAmParticipant gates on membership, not on acceptance state).
   // Re-accepting creates a new acceptance row; score_events.UNIQUE
   // prevents double-earning points on the same (user, challenge, role).
@@ -113,11 +113,11 @@ export default function ChallengeChatScreen() {
   // the pipeline's "Propose a date →" sub-CTA so we don't double up.
   const [pickerOpen, setPickerOpen] = useState(false);
 
-  // Owner check — two paths, mutually exclusive:
+  // Owner check - two paths, mutually exclusive:
   //   1. Challenge has a registered creator → ownership is decided STRICTLY
   //      by account.id. The challenge's guest_id is incidental (it captures
   //      whichever guest session backed the creator's signup) and must NOT
-  //      be used as an ownership signal — the same guest_id can persist
+  //      be used as an ownership signal - the same guest_id can persist
   //      across signup/logout on a device, which would otherwise let a
   //      second account on that device falsely "own" the first's challenge.
   //   2. Challenge has NO registered creator (pure guest creation) →
@@ -128,13 +128,13 @@ export default function ChallengeChatScreen() {
       : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
   );
 
-  // "Am I currently a participant?" — derived from the participant list.
+  // "Am I currently a participant?" - derived from the participant list.
   const isParticipant = !!(
     (account?.id   && participants.some(p => p.id === account.id)) ||
     (identity?.guestId && participants.some(p => p.id === identity.guestId))
   );
 
-  // Target city — only meaningful for International challenges. For Local
+  // Target city - only meaningful for International challenges. For Local
   // challenges this stays null; the invite picker just uses the origin
   // city below (the only city involved). For "anywhere" Intl (no target
   // set), we also fall back to origin so the creator can at least invite
@@ -184,12 +184,12 @@ export default function ChallengeChatScreen() {
       .catch(() => {});
   }, [id]);
 
-  // Probe whether I already have an acceptance for this challenge — drives
+  // Probe whether I already have an acceptance for this challenge - drives
   // the Accept (+) button morph AND the lifecycle pipeline below.
   //
   // The backend stamps exactly one row per (challenge, viewer) with
   // `is_primary_for_challenge=true`, using a deterministic "most actionable
-  // first" priority. That's the source of truth — no client-side priority
+  // first" priority. That's the source of truth - no client-side priority
   // sort to keep in sync between mobile and web.
   const loadMyAcceptance = useCallback(() => {
     if (!id || !account?.id) { setMyAcceptance(null); return; }
@@ -236,7 +236,7 @@ export default function ChallengeChatScreen() {
         type:                challenge.challenge_type,
         audience:            challenge.audience,
         returnClause:        challenge.return_clause ?? '',
-        // International fields — empty string when the challenge is Local so
+        // International fields - empty string when the challenge is Local so
         // the form's defaults kick in. The create form ignores them on Local
         // edits regardless (server enforces too).
         mode:                challenge.mode ?? 'local',
@@ -283,10 +283,10 @@ export default function ChallengeChatScreen() {
     }
   }, [id, identity, challenge, t]);
 
-  // Owner-only "Manage challenge" modal — opens from the inline pill in
+  // Owner-only "Manage challenge" modal - opens from the inline pill in
   // the meta row. Bundles Edit / Close (lifecycle) / Delete.
   const [manageOpen, setManageOpen] = useState(false);
-  // International proof-spec popin — tapping the pipeline's "Waiting for
+  // International proof-spec popin - tapping the pipeline's "Waiting for
   // the proof" pill opens this read-only sheet.
   const [proofSpecOpen, setProofSpecOpen] = useState(false);
   // Imperative handle into ChallengeProofBlock so the pipeline's "Submit
@@ -294,7 +294,7 @@ export default function ChallengeChatScreen() {
   // flow directly. Replaces the standalone big button that used to live
   // inside the proof block.
   const proofRef = useRef<ChallengeProofBlockHandle>(null);
-  // PR62 — creator-side "Review the proof" modal. Opens from the pipeline
+  // PR62 - creator-side "Review the proof" modal. Opens from the pipeline
   // sub-CTA on intl when phase='proof_submitted'. Shows the photo big +
   // Approve / Reject buttons; reject swaps the same sheet into a reason
   // prompt. Backend broadcasts the verdict on WS to both sides, so the
@@ -303,7 +303,7 @@ export default function ChallengeChatScreen() {
   const [proofReviewOpen, setProofReviewOpen] = useState(false);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
-  // reachable here — that's the mutual go-private flow. International
+  // reachable here - that's the mutual go-private flow. International
   // rows are forced Public; the pill renders read-only for them.
   const [visBusy, setVisBusy] = useState(false);
   const handleToggleVisibility = useCallback(async () => {
@@ -326,12 +326,12 @@ export default function ChallengeChatScreen() {
   // Creator-only close-to-new-joins toggle. Existing participants stay;
   // /join refuses new ones while this is on.
   const [closeBusy, setCloseBusy] = useState(false);
-  // Unified visibility picker — Public / Friends / Private. Private maps
+  // Unified visibility picker - Public / Friends / Private. Private maps
   // to closed_to_new_joins=true; Public / Friends clear that flag and
   // align the visibility column.
   const [visMenuOpen, setVisMenuOpen] = useState(false);
   // Channel-header details (second pill row + pipeline + proof + members
-  // strip) collapse behind a chevron next to the share pill — frees
+  // strip) collapse behind a chevron next to the share pill - frees
   // vertical space for the chat. Default expanded.
   const [detailsOpen, setDetailsOpen] = useState(true);
   const toggleDetails = useCallback(() => {
@@ -387,10 +387,10 @@ export default function ChallengeChatScreen() {
 
   // ── Participant actions (non-owner) ──────────────────────────────────────────
 
-  // Share — uses the shared shareLink helper so Android gets URL-only in
+  // Share - uses the shared shareLink helper so Android gets URL-only in
   // `message` (Intent.EXTRA_TEXT) while iOS gets the three fields separate.
   // Available to everyone (creator + participants + drive-by visitors), even
-  // when the challenge is validated — sharing an archived défi is fine.
+  // when the challenge is validated - sharing an archived défi is fine.
   const handleShare = useCallback(async () => {
     if (!challenge) return;
     try {
@@ -401,12 +401,12 @@ export default function ChallengeChatScreen() {
       });
       track('challenge_shared', { challengeId: challenge.id });
     } catch {
-      // user cancelled or share failed — no-op
+      // user cancelled or share failed - no-op
     }
   }, [challenge, t]);
 
   /**
-   * PR2 — take-on flow.
+   * PR2 - take-on flow.
    *
    * Three paths:
    *   1. I already have a thread → just navigate to it.
@@ -418,7 +418,7 @@ export default function ChallengeChatScreen() {
   const handleAccept = useCallback(async () => {
     if (acceptBusy) return;
 
-    // Already actively accepted? No-op — the inline chat is right here.
+    // Already actively accepted? No-op - the inline chat is right here.
     // A terminal myAcceptance (approved/rejected) does NOT block: the user
     // is re-engaging with a completed challenge; the new row coexists with
     // the old, and score_events.UNIQUE keeps points from re-firing.
@@ -433,7 +433,7 @@ export default function ChallengeChatScreen() {
     setAcceptBusy(true);
     try {
       await acceptChallenge(id);
-      // Refresh the full summary — the pipeline flips to "Date" and the inline
+      // Refresh the full summary - the pipeline flips to "Date" and the inline
       // chat block mounts (both keyed off myAcceptance becoming non-null).
       loadMyAcceptance();
       track('challenge_take_on', { challengeId: id });
@@ -473,7 +473,7 @@ export default function ChallengeChatScreen() {
     return () => { offV(); offU(); };
   }, [id]);
 
-  // PR2 — refresh acceptance state when someone takes on or cancels this
+  // PR2 - refresh acceptance state when someone takes on or cancels this
   // challenge (server pushes to creator's user-room + acceptor's user-room).
   useEffect(() => {
     const onAcceptanceChange = (data: Record<string, unknown>) => {
@@ -486,7 +486,7 @@ export default function ChallengeChatScreen() {
     return () => { offA(); offC(); };
   }, [id, loadMyAcceptance]);
 
-  // PR3/4/5 — refresh on date/verdict/take-on-review pushes. Schedule block
+  // PR3/4/5 - refresh on date/verdict/take-on-review pushes. Schedule block
   // + pipeline + locked-state branches all read off myAcceptance, so a
   // single reload is enough.
   useEffect(() => {
@@ -540,7 +540,7 @@ export default function ChallengeChatScreen() {
     postImageFn,
   });
 
-  // PR33 — long-press → MessageActionSheet (react / reply / copy / edit /
+  // PR33 - long-press → MessageActionSheet (react / reply / copy / edit /
   // delete). Mirrors the event/[id].tsx wiring exactly; the underlying
   // useMessages hook already exposes setMessageReactions / editMessage /
   // deleteMessage, the new toggleChallengeReaction handles the network
@@ -569,7 +569,7 @@ export default function ChallengeChatScreen() {
   }, [iAmParticipant, reload]);
 
   // Join the challenge channel's WS room for live newMessage broadcasts.
-  // Only join once we're a confirmed participant — non-participants don't
+  // Only join once we're a confirmed participant - non-participants don't
   // need the firehose. Leaves on unmount / challenge change.
   useEffect(() => {
     if (!id || !sessionId || iAmParticipant !== true) return;
@@ -617,7 +617,7 @@ export default function ChallengeChatScreen() {
       await leaveChallengeChannel(id);
       setIAmParticipant(false);
       loadParticipants();
-    } catch { /* silent — re-probe on next visit */ }
+    } catch { /* silent - re-probe on next visit */ }
   }
   // Silence unused-var warnings when the channel-chat branch is hidden.
   void guestIdForChat;
@@ -629,7 +629,7 @@ export default function ChallengeChatScreen() {
   //
   // CRITICAL: these useMemo calls MUST sit above the conditional early
   // returns below. Calling them after the early returns is a Rules of Hooks
-  // violation — first render (challengeLoading=true) returns before reaching
+  // violation - first render (challengeLoading=true) returns before reaching
   // them, the second render (challenge loaded) reaches them, hook count
   // mismatch → React throws "Rendered more hooks than during the previous
   // render" and the screen crashes.
@@ -647,11 +647,11 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
-  // 1:1 gate — `inProgress` is true when the challenge has a non-terminal
+  // 1:1 gate - `inProgress` is true when the challenge has a non-terminal
   // acceptance owned by someone else. Visitors don't see the Accept button
   // (and see the in-progress locked state); the owner / current taker are
   // unaffected because they already have their own acceptance row. Uses
-  // `activeAcceptance` (defined near the top — terminal acceptances treated
+  // `activeAcceptance` (defined near the top - terminal acceptances treated
   // as null) so a previously-finished take doesn't keep the user locked
   // when the slot has actually freed.
   const inProgress = !!(
@@ -666,7 +666,7 @@ export default function ChallengeChatScreen() {
   // padding tightens. 0 = expanded, 1 = collapsed. Driven by:
   //   - FlatList onScroll (offset > 30 collapses)
   //   - Composer focus (collapses; blur keeps it collapsed until next reset
-  //     trigger — user can scroll back to top to expand)
+  //     trigger - user can scroll back to top to expand)
   // The FlatList is inverted (newest at bottom): contentOffset.y > 0 means
   // the user pulled UP into older messages, which is the cue to collapse.
   const headerCollapse = useRef(new Animated.Value(0)).current;
@@ -679,7 +679,7 @@ export default function ChallengeChatScreen() {
       useNativeDriver: false,
     }).start();
   }, [headerCollapse]);
-  // PR32 — onChatScroll no longer mutates the header collapse. The previous
+  // PR32 - onChatScroll no longer mutates the header collapse. The previous
   // behavior (collapse on offset > 30) ran on every scroll tick while the
   // user was pulling up to read older messages; animating the wrapper's
   // maxHeight mid-gesture made the inverted FlatList snap back to offset 0
@@ -725,7 +725,7 @@ export default function ChallengeChatScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Nav — web parity: back pill | centered title | large type emoji on
+      {/* Nav - web parity: back pill | centered title | large type emoji on
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
@@ -748,7 +748,7 @@ export default function ChallengeChatScreen() {
               <Text style={styles.navCreatorText} numberOfLines={1}>
                 {t('byCreator', { name: challenge.creator_display_name })}
               </Text>
-              {/* Notifications pill — joined participants only. Lives next
+              {/* Notifications pill - joined participants only. Lives next
                   to the creator name at the very top so subscription state
                   is visible without scrolling past the meta row. */}
               {iAmParticipant === true && account?.id && (
@@ -760,13 +760,13 @@ export default function ChallengeChatScreen() {
         <Text style={styles.navEmoji} accessibilityElementsHidden importantForAccessibility="no">{typeIcon}</Text>
       </View>
 
-      {/* Collapsible region — badges, pipeline, owner actions, challenger row
+      {/* Collapsible region - badges, pipeline, owner actions, challenger row
           and participants row all live here. Shrinks to 0 (maxHeight + opacity
           interpolation) when the chat is scrolled into older messages OR the
           composer is focused. Mirrors the event channel collapse so the
           conversation gets vertical space when it matters. */}
       <Animated.View style={{ maxHeight: collapsibleMaxHeight, opacity: collapsibleOpacity, overflow: 'hidden' }}>
-      {/* Hero — type badge + audience pill + status pill (3rd on the same row
+      {/* Hero - type badge + audience pill + status pill (3rd on the same row
           to save vertical space). The status pill is THE source of truth for
           the challenge's state and is visible to EVERYONE. Owner taps it to
           toggle (open ⇄ validated); non-owners see it as a read-only status. */}
@@ -775,7 +775,7 @@ export default function ChallengeChatScreen() {
           <View style={styles.kindBadge}>
             <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
           </View>
-          {/* Audience / mode pill — Local rows get the audience target
+          {/* Audience / mode pill - Local rows get the audience target
               (locals vs travelers); International rows swap it for a 🌐
               chip since audience doesn't apply (no IRL meetup). */}
           {(challenge.mode ?? 'local') === 'international' ? (() => {
@@ -798,7 +798,7 @@ export default function ChallengeChatScreen() {
               <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
             </View>
           )}
-          {/* Share — distinct violet tint so it doesn't blur in with the
+          {/* Share - distinct violet tint so it doesn't blur in with the
               orange admin pills below. The verb is the social growth hook
               of the screen; it deserves its own color. */}
           <TouchableOpacity
@@ -812,7 +812,7 @@ export default function ChallengeChatScreen() {
               {t('shareCta')}
             </Text>
           </TouchableOpacity>
-          {/* Collapse chevron — toggles all the details below (visibility
+          {/* Collapse chevron - toggles all the details below (visibility
               pill, manage pill, pipeline, proof block, members strip).
               Default expanded; tap to fold for more chat space.
               marginLeft:'auto' pushes it to the far right of badgeRow so
@@ -832,7 +832,7 @@ export default function ChallengeChatScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Collapsible details — everything below the always-visible badge
+        {/* Collapsible details - everything below the always-visible badge
             row. Conditional render + LayoutAnimation gives the slide-up
             collapse without a heavy Reanimated dep. */}
         {detailsOpen && (
@@ -842,7 +842,7 @@ export default function ChallengeChatScreen() {
             wrapping row at their natural width instead of stretching to
             full container width inside the column-laid hero. */}
         <View style={styles.badgeRow}>
-          {/* Leave the channel — joined participants who aren't the creator
+          {/* Leave the channel - joined participants who aren't the creator
               or active taker. */}
           {iAmParticipant === true && !isOwner && !myAcceptance && (
             <TouchableOpacity
@@ -856,7 +856,7 @@ export default function ChallengeChatScreen() {
             </TouchableOpacity>
           )}
           {/* Notifications pill moved to the header (next to "by creator"). */}
-          {/* Visibility dropdown — Public / Friends / Private. Private folds
+          {/* Visibility dropdown - Public / Friends / Private. Private folds
               the close-to-new-joins state into the same selector so the
               meta row only carries one pill. Read-only for non-owners /
               International (always Public). */}
@@ -894,7 +894,7 @@ export default function ChallengeChatScreen() {
               </TouchableOpacity>
             );
           })()}
-          {/* Manage challenge — creator-only pill. Opens a modal with
+          {/* Manage challenge - creator-only pill. Opens a modal with
               Edit / Close challenge / Delete to keep the meta row tight. */}
           {isOwner && challenge && (
             <TouchableOpacity
@@ -907,12 +907,12 @@ export default function ChallengeChatScreen() {
               <Text style={styles.sharePillInlineText} numberOfLines={1}>{t('manage.cta')}</Text>
             </TouchableOpacity>
           )}
-          {/* Close-to-new-joins pill removed — Private inside the
+          {/* Close-to-new-joins pill removed - Private inside the
               visibility dropdown above maps to closed_to_new_joins. */}
         </View>
         </View>
 
-        {/* Scoring info — small (i) button right-aligned just above the
+        {/* Scoring info - small (i) button right-aligned just above the
             pipeline. Same affordance as on the NOW Challenges section
             header. Opens the points-per-step breakdown sheet. */}
         <View style={styles.scoringInfoRow}>
@@ -937,12 +937,12 @@ export default function ChallengeChatScreen() {
               return () => setPickerOpen(true);
             }
             if ((challenge.mode ?? 'local') === 'international' && myAcceptance && !isOwner) {
-              // Acceptor with an active acceptance — tapping the pipeline's
+              // Acceptor with an active acceptance - tapping the pipeline's
               // "Submit your proof →" sub-CTA fires the photo picker + GPS
               // + upload via the ChallengeProofBlock's imperative handle.
               return () => proofRef.current?.submit();
             }
-            // PR62 — Creator + intl + acceptance is at proof_submitted
+            // PR62 - Creator + intl + acceptance is at proof_submitted
             // ⇒ open the modal review sheet. This is the "Review the proof"
             // sub-CTA path; it surfaces the photo and Approve / Reject in
             // one place instead of forcing the creator to scroll the chat
@@ -953,7 +953,7 @@ export default function ChallengeChatScreen() {
               return () => setProofReviewOpen(true);
             }
             if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
-              // Creator (no submit action) — still useful to surface the
+              // Creator (no submit action) - still useful to surface the
               // requirements popin so they can re-read what they asked for.
               return () => setProofSpecOpen(true);
             }
@@ -961,10 +961,10 @@ export default function ChallengeChatScreen() {
           })()}
         />
 
-        {/* International — proof submission + verdict block. Renders only
+        {/* International - proof submission + verdict block. Renders only
             when there's an ACTIVE acceptance; visitors and creators-
             without-acceptance see no extra surface here (the pipeline
-            educates them passively). PR46 — uses activeAcceptance so
+            educates them passively). PR46 - uses activeAcceptance so
             a TERMINAL approved acceptance no longer keeps the
             "🎉 Challenge accomplished" banner permanently locked on
             the detail page after the challenge wrapped. */}
@@ -979,7 +979,7 @@ export default function ChallengeChatScreen() {
           />
         )}
 
-        {/* Channel members strip — mounted directly under the pipeline /
+        {/* Channel members strip - mounted directly under the pipeline /
             proof block. Tap opens the full members sheet. */}
         {iAmParticipant === true && (
           <ChallengeChannelMembersStrip
@@ -991,7 +991,7 @@ export default function ChallengeChatScreen() {
         </View>
         )}{/* /detailsOpen */}
 
-        {/* PR54 — Owner re-invite CTA dropped. It was rendering between
+        {/* PR54 - Owner re-invite CTA dropped. It was rendering between
             the members strip and the chat with a glitchy clipped top
             edge on intl creator views, and the same share affordance
             already lives in the meta row (the "↗ Share" pill).
@@ -1003,7 +1003,7 @@ export default function ChallengeChatScreen() {
 
       </View>
 
-      {/* Challenger — the originating user. Tap opens their profile.
+      {/* Challenger - the originating user. Tap opens their profile.
           Quick actions (Share, Accept) sit on the right of the row so
           they read as the viewer's "what now" panel instead of two
           stacked competing pills below. */}
@@ -1041,7 +1041,7 @@ export default function ChallengeChatScreen() {
         </View>
       )}
 
-      {/* Participants row — three layouts:
+      {/* Participants row - three layouts:
             A) acceptors exist → avatars + count on the left, accept button on
                the right (icon + label when the viewer can still take on).
             B) no acceptors, viewer can take on → full-width prominent labeled
@@ -1049,7 +1049,7 @@ export default function ChallengeChatScreen() {
             C) full → "Challenge full" label, no button.
           Skipped entirely for owners on a validated challenge (nothing to do). */}
       {/* Lifecycle-state row (was "Participants · N" + accept-pill row).
-          Legacy avatar strip dropped — the channel-members strip above
+          Legacy avatar strip dropped - the channel-members strip above
           covers the "who's in" panel for everyone. Three passive states +
           the Accept CTA remain. */}
       {(() => {
@@ -1060,25 +1060,25 @@ export default function ChallengeChatScreen() {
             </View>
           );
         }
-        // PR18 — gate "Currently being taken by X" on challenge.is_in_progress
+        // PR18 - gate "Currently being taken by X" on challenge.is_in_progress
         // (server-derived: a non-terminal acceptance EXISTS) rather than on
         // otherParticipants.length, so a previously-completed challenge
         // (terminal acceptance still in the participants list) no longer
-        // reads as "in progress" — the slot is genuinely free.
+        // reads as "in progress" - the slot is genuinely free.
         if (challenge?.is_in_progress && !isValidated && !isOwner && !activeAcceptance) {
           return (
             <View style={styles.participantsRow}>
               <Text style={styles.participantsEmpty} numberOfLines={1}>
-                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '—' })}
+                {t('cta.takenBy', { name: otherParticipants[0]?.displayName ?? '-' })}
               </Text>
             </View>
           );
         }
-        // PR18 — show the Take-on CTA whenever the slot is open + viewer is
+        // PR18 - show the Take-on CTA whenever the slot is open + viewer is
         // not the owner + challenge not closed. Replaces the
         // "otherParticipants.length === 0" guard which kept a terminal user
         // (whose row is still in participants) locked at "Mission
-        // accomplished" — the bug the user reported.
+        // accomplished" - the bug the user reported.
         if (!isOwner && !isValidated && !challenge?.is_in_progress) {
           return (
             <View style={styles.participantsRow}>
@@ -1105,32 +1105,32 @@ export default function ChallengeChatScreen() {
 
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
           Mounts only when the viewer has an active acceptance for this
-          challenge — acceptors see their own thread, creators see their
+          challenge - acceptors see their own thread, creators see their
           most-recently-active acceptor's thread (server-ordered).
           paddingBottom keeps the composer above the (tabs) bar that overlaps
           this route's bottom edge (Expo Router quirk: parent tab bar isn't
           unmounted when child routes are pushed). When this screen is reached
-          via a non-tabs path, tabBarHeight=0 — no dead space. */}
+          via a non-tabs path, tabBarHeight=0 - no dead space. */}
       <KeyboardAvoidingView
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
         behavior="padding"
       >
-        {/* PR34 — show the chat for ALL participants once they're in the
+        {/* PR34 - show the chat for ALL participants once they're in the
             channel, including acceptors with phase='pending'. The pipeline
             above already conveys "waiting for the creator's review"; the
             big "En attente" block was duplicative and worse, it hid the
             very chat the acceptor needs to talk to the creator while
             waiting. Two narrow exceptions still take over the surface:
-              - Creator with a pending acceptance — they need Accept/Reject
+              - Creator with a pending acceptance - they need Accept/Reject
                 buttons, not the chat (those buttons live in the block).
-              - Acceptor whose take-on was rejected — terminal communication
+              - Acceptor whose take-on was rejected - terminal communication
                 that deserves its own surface so the user understands the
                 channel is closed for them.
             Both branches are handled inside the non-chat IIFE below. */}
         {iAmParticipant === true && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
           <>
             <FlatList
-              /* Filter out type='event' messages — they were auto-injected by
+              /* Filter out type='event' messages - they were auto-injected by
                  the old approveDate flow as "🎉 New event" cards. The flow
                  was removed, but historical rows linger; the thread chat is
                  not the place to surface event invites. */
@@ -1142,10 +1142,10 @@ export default function ChallengeChatScreen() {
                 const isGrouped = !!olderMsg && olderMsg.guestId === item.guestId && olderMsg.type !== 'system' && item.type !== 'system';
                 const showTime = item.type !== 'system' && (!newerMsg || newerMsg.guestId !== item.guestId || newerMsg.type === 'system');
                 const dateLabel = !isSameDay(item.createdAt, olderMsg?.createdAt) ? formatDateLabel(item.createdAt) : undefined;
-                // PR9 — challenger / taker pill next to the nickname (web parity).
+                // PR9 - challenger / taker pill next to the nickname (web parity).
                 // Heuristic matches ChallengeChatPage.jsx: first non-creator
                 // channel participant = active taker.
-                // PR23 — anyone else with a userId who posts in the channel
+                // PR23 - anyone else with a userId who posts in the channel
                 // is a Spectator (channel joiner without an active acceptance).
                 // Anonymous posters (no userId) get no badge.
                 const senderId = item.userId ?? null;
@@ -1194,7 +1194,7 @@ export default function ChallengeChatScreen() {
               ListEmptyComponent={!msgsLoading ? (
                 <View style={styles.emptyChat}>
                   <Text style={styles.emptyChatEmoji}>👋</Text>
-                  {/* PR61 — the local copy talks about agreeing on a meet-up
+                  {/* PR61 - the local copy talks about agreeing on a meet-up
                       date; international challenges have no meet-up step
                       (the flow is submit photo → verdict), so the date hint
                       was confusing on intl. Pick the matching variant. */}
@@ -1207,10 +1207,10 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band — Local-only AND only for the creator + ACTIVE
+            {/* Schedule band - Local-only AND only for the creator + ACTIVE
                 taker. Uses activeAcceptance so a previously-completed user
                 doesn't see a stale "proposed at HH:MM" from their old
-                approved row — the slot is open again, the schedule belongs
+                approved row - the slot is open again, the schedule belongs
                 to whoever takes it next. */}
             {(challenge.mode ?? 'local') === 'local' && activeAcceptance && account?.id && (
               <ThreadScheduleBlock
@@ -1255,7 +1255,7 @@ export default function ChallengeChatScreen() {
              - Acceptor + pending           → "Waiting for review"
              - Acceptor + rejected          → "Your take-on was declined" */
           (() => {
-            // Non-participant — show the Join CTA in place of the chat.
+            // Non-participant - show the Join CTA in place of the chat.
             // Hide while iAmParticipant is still null (probe in flight) to
             // avoid a brief flash of the visitor surface.
             if (iAmParticipant === false) {
@@ -1283,7 +1283,7 @@ export default function ChallengeChatScreen() {
             const isPending  = myAcceptance?.phase === 'pending';
             const isRejected = myAcceptance?.phase === 'rejected';
 
-            // Creator side — a pending request awaiting their review. Inline
+            // Creator side - a pending request awaiting their review. Inline
             // Accept / Reject buttons. Tapping fires the API, the WS push
             // refreshes loadMyAcceptance, and the panel morphs into the chat.
             if (isOwner && isPending && myAcceptance) {
@@ -1323,7 +1323,7 @@ export default function ChallengeChatScreen() {
               );
             }
 
-            // Acceptor — pending / rejected states.
+            // Acceptor - pending / rejected states.
             if (!isOwner && isPending) {
               const creatorName = myAcceptance?.counterparty.displayName || '?';
               return (
@@ -1358,7 +1358,7 @@ export default function ChallengeChatScreen() {
               );
             }
 
-            // Default — visitor (available) or empty-creator state.
+            // Default - visitor (available) or empty-creator state.
             return (
               <View style={styles.lockedWrap}>
                 <Text style={styles.lockedEmoji}>🔒</Text>
@@ -1374,7 +1374,7 @@ export default function ChallengeChatScreen() {
         )}
       </KeyboardAvoidingView>
 
-      {/* Date picker — opened by the pipeline's "Propose a date →" sub-CTA. */}
+      {/* Date picker - opened by the pipeline's "Propose a date →" sub-CTA. */}
       {myAcceptance && (
         <DatePickerModal
           visible={pickerOpen}
@@ -1392,7 +1392,7 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Channel members sheet — synthesizes Challenger + Taker rows
+      {/* Channel members sheet - synthesizes Challenger + Taker rows
           at the head from the challenge/acceptance context, then lists
           joined participants. Kick button surfaces for creator +
           active taker (server enforces too). */}
@@ -1406,7 +1406,7 @@ export default function ChallengeChatScreen() {
           isActiveTaker={!!myAcceptance && !myAcceptance.i_am_creator}
           onClose={() => setMembersOpen(false)}
           onSelect={(uid) => {
-            // PR27 — close the sheet first so the navigation doesn't race
+            // PR27 - close the sheet first so the navigation doesn't race
             // its dismiss animation. Ghost / unauthenticated viewers go
             // through the auth-gate (same guard used for @mentions in
             // ChatMessage); registered users land on the public profile.
@@ -1418,7 +1418,7 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Manage challenge modal — Edit / Close / Delete bundled. */}
+      {/* Manage challenge modal - Edit / Close / Delete bundled. */}
       {challenge && (
         <Modal
           visible={manageOpen && isOwner}
@@ -1464,7 +1464,7 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* PR62 — Creator's proof-review modal. Big photo + Approve / Reject
+      {/* PR62 - Creator's proof-review modal. Big photo + Approve / Reject
           + reject-reason face. Mounted unconditionally for intl creators
           (the modal renders nothing if no acceptance / no pending proof
           exists). Visibility is gated on activeAcceptance so a recently-
@@ -1478,7 +1478,7 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Proof-spec popin — read-only sheet showing what the creator asked
+      {/* Proof-spec popin - read-only sheet showing what the creator asked
           for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
       {challenge?.proof_requirements && (
         <Modal
@@ -1502,7 +1502,7 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* Visibility picker — Public / Friends / Private dropdown. */}
+      {/* Visibility picker - Public / Friends / Private dropdown. */}
       {challenge && (
         <Modal
           visible={visMenuOpen && isOwner}
@@ -1540,7 +1540,7 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* Post-create "seed it" sheet — first opens with two CTAs (invite city
+      {/* Post-create "seed it" sheet - first opens with two CTAs (invite city
           members / share externally), then morphs into a multi-select picker. */}
       <ChallengePostCreateSheet
         visible={postCreateOpen}
@@ -1552,7 +1552,7 @@ export default function ChallengeChatScreen() {
         onShare={handleShare}
       />
 
-      {/* PR33 — message action sheet (long-press on a chat bubble). Mirrors
+      {/* PR33 - message action sheet (long-press on a chat bubble). Mirrors
           the event-channel wiring: react / reply / copy / edit / delete.
           Edit + delete only render when the message belongs to the caller. */}
       <MessageActionSheet
@@ -1671,7 +1671,7 @@ const styles = StyleSheet.create({
   },
   kindBadgeText: { fontSize: 10, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.5 },
 
-  // Violet tint — see ChallengeCard for the rationale (distinct from
+  // Violet tint - see ChallengeCard for the rationale (distinct from
   // orange brand + green validated, the other pills on the same row).
   audiencePill: {
     backgroundColor:   'rgba(139,92,246,0.12)',
@@ -1681,7 +1681,7 @@ const styles = StyleSheet.create({
   },
   audiencePillText: { fontSize: 11, fontWeight: '700', color: '#A78BFA', letterSpacing: 0.3 },
 
-  // International chip — cyan, distinct from audience violet so Local vs
+  // International chip - cyan, distinct from audience violet so Local vs
   // Intl reads at a glance (mirrors the NOW-card pattern from step 8).
   intlPill: {
     backgroundColor:   'rgba(56,189,248,0.12)',
@@ -1692,7 +1692,7 @@ const styles = StyleSheet.create({
   },
   intlPillText: { fontSize: 11, fontWeight: '700', color: '#38bdf8', letterSpacing: 0.3 },
 
-  // Share inline pill — same height/padding as the kind + audience pills so
+  // Share inline pill - same height/padding as the kind + audience pills so
   // the three sit on a single row without alignment drift. Orange brand tint
   // because Share is the most user-facing growth lever on this screen.
   sharePillInline: {
@@ -1704,7 +1704,7 @@ const styles = StyleSheet.create({
   },
   sharePillInlineText: { fontSize: 11, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.3 },
 
-  // Share gets its own violet tint — distinct from the orange admin
+  // Share gets its own violet tint - distinct from the orange admin
   // pills (Manage / Leave / Visibility-public-default).
   sharePillInlineShare: {
     backgroundColor: 'rgba(167,139,250,0.10)',
@@ -1712,7 +1712,7 @@ const styles = StyleSheet.create({
   },
   sharePillInlineShareText: { color: '#c4b5fd' },
 
-  // Collapse chevron at the far right of badgeRow — toggles the channel-
+  // Collapse chevron at the far right of badgeRow - toggles the channel-
   // header details (second pill row + pipeline + proof + members strip).
   // marginLeft:'auto' floats it right so the role reads as "fold what's
   // below", not as another inline pill.
@@ -1723,7 +1723,7 @@ const styles = StyleSheet.create({
     marginLeft: 'auto',
   },
 
-  // Detail block — wraps the collapsible content below the always-visible
+  // Detail block - wraps the collapsible content below the always-visible
   // hero row. LayoutAnimation handles the height transition.
   detailsBlock: { },
 
@@ -1738,7 +1738,7 @@ const styles = StyleSheet.create({
     paddingBottom:     Spacing.xs,
   },
 
-  // Visibility pill tints — applied to BOTH the TouchableOpacity (for
+  // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into
   // pill/text objects so the View vs Text types stay clean.
   visibilityPillPublic:      { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.30)' },
@@ -1748,18 +1748,18 @@ const styles = StyleSheet.create({
   visibilityPillTextFriends: { color: '#93c5fd' },
   visibilityPillTextPrivate: { color: '#fca5a5' },
 
-  // Close-to-new-joins pill — on-state retints to a deeper orange so the
+  // Close-to-new-joins pill - on-state retints to a deeper orange so the
   // creator can see at a glance whether the channel is locked.
   closedPillOn: {
     backgroundColor: 'rgba(255,122,60,0.20)',
     borderColor:     'rgba(255,122,60,0.55)',
   },
 
-  // (Old status-pill styles removed — the ChallengePipeline component owns
+  // (Old status-pill styles removed - the ChallengePipeline component owns
   // the lifecycle visual now. The close-challenge action moved to the
   // owner-secondary row as a small ghost button.)
 
-  // Secondary housekeeping row — icon + small label, ghost styling so the
+  // Secondary housekeeping row - icon + small label, ghost styling so the
   // eye lands on the orange CTA above first.
   ownerSecondaryRow: {
     flexDirection:  'row',
@@ -1776,9 +1776,9 @@ const styles = StyleSheet.create({
   },
   ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 
-  // Primary owner CTA — "Send it to someone in {city}". Cyan rather than
+  // Primary owner CTA - "Send it to someone in {city}". Cyan rather than
   // orange so it visually separates from the share pill above (which IS
-  // orange — both stacked oranges read as the same call repeated). Cyan
+  // orange - both stacked oranges read as the same call repeated). Cyan
   // also echoes the 🌐 International badge in the row above it on intl
   // rows, so the visual link "this is the targeting CTA" reads at a
   // glance.
@@ -1799,7 +1799,7 @@ const styles = StyleSheet.create({
   ownerInviteCtaIcon: { fontSize: 14, lineHeight: 18 },
   ownerInviteCtaText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#38bdf8', flexShrink: 1 },
 
-  // Challenger row — the creator, distinguished from regular participants
+  // Challenger row - the creator, distinguished from regular participants
   // with a 👑 pill in brand orange. Bigger avatar (44px) so the originating
   // user reads as the anchor of the défi.
   challengerRow: {
@@ -1825,7 +1825,7 @@ const styles = StyleSheet.create({
   challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
   challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
 
-  // Inline quick-action group — Share is a labeled pill (verb is the
+  // Inline quick-action group - Share is a labeled pill (verb is the
   // social hook), Accept is the compact icon-only round next to it.
   quickActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   sharePill: {
@@ -1856,7 +1856,7 @@ const styles = StyleSheet.create({
     borderColor:     '#FF7A3C',
   },
 
-  // Participants row — always shown for non-owners so the Accept button
+  // Participants row - always shown for non-owners so the Accept button
   // has a permanent home; for owners only when somebody else accepted.
   participantsRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
@@ -1870,7 +1870,7 @@ const styles = StyleSheet.create({
   membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
   participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
 
-  // Labeled Accept button — full-width when nobody has taken on yet (replaces
+  // Labeled Accept button - full-width when nobody has taken on yet (replaces
   // the old "Be the first to accept" + tiny + duo) and compact when there are
   // already acceptors (sits to the right of the avatars).
   acceptCtaFull: {
@@ -1902,7 +1902,7 @@ const styles = StyleSheet.create({
   emptyChatEmoji:   { fontSize: 36 },
   emptyChatText:    { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
-  // Locked state — shown to visitors / creators with no acceptances yet.
+  // Locked state - shown to visitors / creators with no acceptances yet.
   // Centered card-like block in the middle of the empty area below the
   // participants row.
   lockedWrap: {
@@ -1927,7 +1927,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
-  // Manage / proof-spec modal — bottom-sheet style with backdrop. Reuses
+  // Manage / proof-spec modal - bottom-sheet style with backdrop. Reuses
   // the same shape as the existing MembersSheet (handle + header) but
   // simpler: stacked rows.
   modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
@@ -1961,7 +1961,7 @@ const styles = StyleSheet.create({
     borderRadius:      Radius.md,
   },
 
-  // PR5 — creator's review banner inside the locked state. Inline Reject /
+  // PR5 - creator's review banner inside the locked state. Inline Reject /
   // Accept buttons let the creator triage without leaving the challenge page.
   takeonReviewActions: {
     flexDirection: 'row',

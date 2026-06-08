@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * ChallengeProofRepository — proof submissions for International challenges.
+ * ChallengeProofRepository - proof submissions for International challenges.
  *
  * One row per submission attempt. Acceptor can re-submit up to MAX_ATTEMPTS
  * times after creator rejections; the cap is enforced in the route layer so
@@ -20,7 +20,7 @@ declare(strict_types=1);
  */
 final class ChallengeProofRepository
 {
-    /** Hard cap per acceptance — protects creator from infinite re-submissions. */
+    /** Hard cap per acceptance - protects creator from infinite re-submissions. */
     public const MAX_ATTEMPTS = 3;
 
     /**
@@ -72,7 +72,7 @@ final class ChallengeProofRepository
     /**
      * All proof attempts for an acceptance, newest first. Creator's review
      * queue + acceptor's history both render this. Bounded by MAX_ATTEMPTS
-     * so no LIMIT needed (Supabase egress notes — every challenge list query
+     * so no LIMIT needed (Supabase egress notes - every challenge list query
      * has a LIMIT, but this is bounded by the FK constraint).
      */
     public static function listByAcceptance(string $acceptanceId): array
@@ -118,7 +118,7 @@ final class ChallengeProofRepository
         ");
         $stmt->execute([$id]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        // Already-terminal rows return the existing snapshot — caller can
+        // Already-terminal rows return the existing snapshot - caller can
         // distinguish (the route layer wants to know whether to fire pushes).
         return $row ? self::normalise($row) : self::findById($id);
     }

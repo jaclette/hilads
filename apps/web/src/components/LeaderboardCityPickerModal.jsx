@@ -10,20 +10,20 @@ const RESULT_CAP = 10
  * Web parity for the mobile LeaderboardCityPickerSheet (PR13). A bottom-
  * sheet modal listing up to 10 cities, filterable by a search input.
  * Selecting a city flips the leaderboard view to that city via the
- * existing ?city_id= query param — does NOT touch the user's actual
+ * existing ?city_id= query param - does NOT touch the user's actual
  * current_city anywhere else in the app.
  *
  * Props:
- *   visible            — controls whether the modal renders
- *   selectedChannelId  — channel id of the currently-selected city ("city_<int>"
+ *   visible            - controls whether the modal renders
+ *   selectedChannelId  - channel id of the currently-selected city ("city_<int>"
  *                        is the leaderboard API shape; this picker stores
  *                        just the numeric/string channel id), used to render
  *                        a check on the matching row
- *   onSelect(channelId, city)  — called with the picked city's channelId
+ *   onSelect(channelId, city)  - called with the picked city's channelId
  *                                + the full row from /channels. Caller
  *                                wraps it into "city_<id>" before passing
  *                                to the leaderboard API.
- *   onClose            — close without picking
+ *   onClose            - close without picking
  */
 export default function LeaderboardCityPickerModal({
   visible,

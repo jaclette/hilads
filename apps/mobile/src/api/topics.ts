@@ -21,7 +21,7 @@ export async function fetchNowFeed(
   }
 }
 
-// Past archive — finished one-off hangouts + expired pulses for a city.
+// Past archive - finished one-off hangouts + expired pulses for a city.
 // GET /channels/{id}/past → { items: FeedItem[], nextCursor: number|null }
 // Items share the same normalized FeedItem shape as the now feed, so the same
 // cards render them. `before` is a unix cursor (pass nextCursor from the prior
@@ -53,7 +53,7 @@ export async function fetchPastArchive(
   }
 }
 
-// Active topics only — used when you need just the topic list.
+// Active topics only - used when you need just the topic list.
 export async function fetchCityTopics(channelId: string): Promise<Topic[]> {
   try {
     const data = await api.get<{ topics: Topic[] }>(`/channels/${channelId}/topics`);
@@ -99,7 +99,7 @@ export async function requestToJoinHangout(topicId: string): Promise<{ status: J
   try {
     return await api.post<{ status: JoinRequestStatus; requestId?: string }>(`/topics/${topicId}/join-requests`, {});
   } catch (e) {
-    // 409 conflicts (duplicate/cooldown/already_resolved) carry a body status —
+    // 409 conflicts (duplicate/cooldown/already_resolved) carry a body status -
     // surface it rather than throwing so the UI can show a friendly message.
     const body = (e as { body?: { status?: JoinRequestStatus } } | null)?.body;
     if (body?.status) return { status: body.status };
@@ -164,11 +164,11 @@ export async function fetchHangoutParticipants(topicId: string): Promise<{ parti
   }
 }
 
-// A hangout as listed on a profile — Topic DTO plus whether the profile user
+// A hangout as listed on a profile - Topic DTO plus whether the profile user
 // owns it (created it) vs merely joined.
 export type ProfileHangout = Topic & { is_owner?: boolean };
 
-/** Active hangouts a user created or joined — for the profile "Hangouts" tab. */
+/** Active hangouts a user created or joined - for the profile "Hangouts" tab. */
 export async function fetchUserHangouts(userId: string): Promise<ProfileHangout[]> {
   try {
     const data = await api.get<{ hangouts?: ProfileHangout[] }>(`/users/${userId}/hangouts`);
@@ -203,7 +203,7 @@ export async function createTopic(
   coords?: { lat: number; lng: number } | null,
 ): Promise<Topic> {
   const body: Record<string, unknown> = { guestId, title, description, category };
-  // Hangouts have no address — send the creator's coords so NOW can show distance.
+  // Hangouts have no address - send the creator's coords so NOW can show distance.
   if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
     body.lat = coords.lat;
     body.lng = coords.lng;

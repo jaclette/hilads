@@ -24,7 +24,7 @@
   "agePlaceholder": "เช่น 25",
   "fieldMyVibe": "MY VIBE",
   "fieldInterests": "ความสนใจ",
-  "interestsHint": "— เลือกได้สูงสุด 5 อย่าง",
+  "interestsHint": "- เลือกได้สูงสุด 5 อย่าง",
   "interest": {
     "drinks": "เครื่องดื่ม",
     "party": "ปาร์ตี้",
@@ -47,12 +47,12 @@
     "tech": "เทคโนโลยี",
     "dating": "เดต"
   },
-  "noHangouts": "ยังไม่มีนัดเจอ — เริ่มเลย 🗣️",
+  "noHangouts": "ยังไม่มีนัดเจอ - เริ่มเลย 🗣️",
   "host": "ผู้จัด",
   "going": "จะไป",
-  "noPlans": "ยังไม่มีแผน — หาอะไรทำกัน 🔥",
+  "noPlans": "ยังไม่มีแผน - หาอะไรทำกัน 🔥",
   "hosting": "กำลังจัด",
-  "nothingHosted": "ยังไม่มีอะไรที่จัด — เริ่มเลย ✨",
+  "nothingHosted": "ยังไม่มีอะไรที่จัด - เริ่มเลย ✨",
   "live": "LIVE",
   "recurring": "เกิดซ้ำ",
   "friendRequests": "คำขอเป็นเพื่อน",
@@ -80,7 +80,7 @@
   "errUsernameShort": "ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร",
   "errUsernameTaken": "ชื่อผู้ใช้นี้ถูกใช้แล้ว",
   "errUsernameInvalid": "ชื่อผู้ใช้ไม่ถูกต้อง",
-  "errSave": "บันทึกล้มเหลว — ลองอีกครั้ง",
+  "errSave": "บันทึกล้มเหลว - ลองอีกครั้ง",
   "signOutTitle": "ออกจากระบบ",
   "signOutBody": "แน่ใจไหม?",
   "deleteAccountTitle": "ลบบัญชีไหม?",
@@ -89,5 +89,5 @@
   "errorTitle": "ข้อผิดพลาด",
   "deleteAccountFail": "ไม่สามารถลบบัญชีได้ ลองอีกครั้ง",
   "tabChallenges": "ชาเลนจ์",
-  "noChallenges": "ยังไม่มีชาเลนจ์ — เริ่มสักอันสิ 🔥"
+  "noChallenges": "ยังไม่มีชาเลนจ์ - เริ่มสักอันสิ 🔥"
 }

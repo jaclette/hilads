@@ -53,17 +53,17 @@
     "checking": "Verificando…",
     "available": "@{{username}} está disponível",
     "aboutMe": "Sobre mim",
-    "charsLeft": "— faltam {{count}}",
+    "charsLeft": "- faltam {{count}}",
     "aboutPlaceholder": "Amo comida de rua e conversas aleatórias",
     "email": "E-mail",
-    "readOnly": "— somente leitura",
+    "readOnly": "- somente leitura",
     "homeCity": "Cidade natal",
     "homeCityPlaceholder": "Onde você mora",
     "age": "Idade",
     "agePlaceholder": "Sua idade",
     "myVibe": "Minha vibe",
     "interests": "Interesses",
-    "interestsHint": "— escolha até 5"
+    "interestsHint": "- escolha até 5"
   },
   "ambassador": {
     "title": "Dicas da cidade 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "Algo que você ama nesta cidade"
   },
   "hangouts": {
-    "empty": "Ainda não há rolês — crie um 🗣️",
+    "empty": "Ainda não há rolês - crie um 🗣️",
     "host": "Anfitrião"
   },
   "events": {
     "going": "Vou",
-    "goingEmpty": "Ainda sem planos — encontre algo 🔥",
+    "goingEmpty": "Ainda sem planos - encontre algo 🔥",
     "hosting": "Organizando",
-    "hostingEmpty": "Nada organizado ainda — comece algo ✨",
+    "hostingEmpty": "Nada organizado ainda - comece algo ✨",
     "live": "Ao vivo",
     "recurring": "↻ Recorrente",
     "upcoming": "Em breve",
@@ -129,7 +129,7 @@
     "generic": "Algo deu errado. Tente de novo."
   },
   "challenges": {
-    "empty": "Sem desafios ainda — lance um 🔥",
+    "empty": "Sem desafios ainda - lance um 🔥",
     "challenger": "Desafiador"
   }
 }

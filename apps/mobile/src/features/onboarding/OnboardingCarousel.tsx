@@ -1,5 +1,5 @@
 /**
- * OnboardingCarousel — first-time intro shown ONCE to guests (and re-openable
+ * OnboardingCarousel - first-time intro shown ONCE to guests (and re-openable
  * via the header "?"). Registered users never see it (the caller gates on
  * `account`). Lightweight: a paged horizontal ScrollView + dots, no animation
  * libs. The "seen" flag lives in AsyncStorage (see src/lib/onboarding.ts).
@@ -32,7 +32,7 @@ function buildSlides(t: TFunction, city?: string | null): Slide[] {
   return [
     { emoji: '🌍', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
     { emoji: '🤝', title: t('onboarding.slide2Title'),                  body: t('onboarding.slide2Body') },
-    // Slide 3 has no emoji — the embedded pipeline IS the visual.
+    // Slide 3 has no emoji - the embedded pipeline IS the visual.
     { kind: 'pipeline', title: t('onboarding.slide3Title'),             body: t('onboarding.slide3Body') },
     { emoji: '✨', title: t('onboarding.slide4Title'),                  body: t('onboarding.slide4Body') },
   ];
@@ -116,7 +116,7 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
             <Text style={styles.nextBtnText}>{index >= last ? t('onboarding.explore') : t('onboarding.next')}</Text>
           </TouchableOpacity>
 
-          {/* Discreet, low-emphasis signup — present on every screen. */}
+          {/* Discreet, low-emphasis signup - present on every screen. */}
           <TouchableOpacity onPress={handleSignup} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
             <Text style={styles.signupLink}>{t('onboarding.createAccount')}</Text>
           </TouchableOpacity>
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   emoji: { fontSize: 72, lineHeight: 80 },
-  // Slide 3 — embedded pipeline. Wider than the standard slide body so the
+  // Slide 3 - embedded pipeline. Wider than the standard slide body so the
   // 4 dots have room to breathe; ChallengePipeline already paints its own
   // internal padding.
   pipelineWrap: { width: '100%', maxWidth: 380, marginBottom: 8 },

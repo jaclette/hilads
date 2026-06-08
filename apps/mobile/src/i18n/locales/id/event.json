@@ -62,7 +62,7 @@
   "seeAll": "Lihat semua →",
   "oneGoing": "{{name}} ikut",
   "manyGoing": "{{name}} + {{count}} ikut",
-  "goingEmpty": "Belum ada — jadilah yang pertama gabung! 🙌",
+  "goingEmpty": "Belum ada - jadilah yang pertama gabung! 🙌",
   "noMessages": "Belum ada pesan. Bilang sesuatu! 👋",
   "composerSay": "Bilang sesuatu di {{title}} ✨",
   "composerFirst": "Jadilah yang pertama di {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Gagal menghapus acara",
   "limit": {
     "title": "Kamu sudah membuat acaramu hari ini!",
-    "body": "Di Hilads, kami menjaga semuanya tetap segar — satu acara per hari agar setiap rencana mendapat perhatian yang layak. Kembali besok untuk membuat satu lagi.",
+    "body": "Di Hilads, kami menjaga semuanya tetap segar - satu acara per hari agar setiap rencana mendapat perhatian yang layak. Kembali besok untuk membuat satu lagi.",
     "legendLink": "👑 Jadilah Legend untuk membuat acara tanpa batas",
     "legendA11y": "Pelajari cara menjadi Legend",
     "legendAlertTitle": "👑 Jadilah Legend",
-    "legendAlertBody": "Legend adalah warga lokal yang dipilih untuk menghidupkan kotanya — mereka bisa jadi host sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
+    "legendAlertBody": "Legend adalah warga lokal yang dipilih untuk menghidupkan kotanya - mereka bisa jadi host sebanyak yang mereka mau. Mau jadi salah satunya? Hubungi contact@hilads.live.",
     "gotIt": "Mengerti",
     "backToNow": "Kembali ke Now"
   },

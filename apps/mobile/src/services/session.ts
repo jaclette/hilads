@@ -1,6 +1,6 @@
 /**
  * Persists the auth token in SecureStore so sessions survive app restarts.
- * Works alongside client.ts's in-memory token — this is the durable layer.
+ * Works alongside client.ts's in-memory token - this is the durable layer.
  */
 import * as SecureStore from 'expo-secure-store';
 import { setAuthToken, getAuthToken } from '@/api/client';
@@ -16,7 +16,7 @@ export async function loadSavedToken(): Promise<boolean> {
       return true;
     }
   } catch {
-    // SecureStore unavailable (simulator quirk) — continue without
+    // SecureStore unavailable (simulator quirk) - continue without
   }
   return false;
 }

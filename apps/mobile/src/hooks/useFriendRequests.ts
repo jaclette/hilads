@@ -72,7 +72,7 @@ export function useFriendRequests(): Result {
     const offAccepted = socket.on('friendRequestAccepted', (data) => {
       const id = data.requestId as string | undefined;
       if (!id) return;
-      // I'm the SENDER; remove from outgoing — the relationship is now in
+      // I'm the SENDER; remove from outgoing - the relationship is now in
       // user_friends. Profile screens watching this event flip to "Friend".
       setOutgoing(prev => prev.filter(r => r.id !== id));
     });

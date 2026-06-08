@@ -5,7 +5,7 @@
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
     "title": "Parabéns, {{username}}! 🎉",
-    "subtitle": "Sua conta está pronta — veja o que você pode fazer agora 👇",
+    "subtitle": "Sua conta está pronta - veja o que você pode fazer agora 👇",
     "f1": "🎉 Comece um rolê e junte a galera agora mesmo",
     "f2": "📅 Organize um evento na sua cidade",
     "f3": "💬 Mande uma mensagem privada para qualquer pessoa",
@@ -15,7 +15,7 @@
   },
   "onboarding": {
     "slide1Title": "Você está em {{city}}",
-    "slide1Body": "Locais e viajantes se encontram aqui — através de desafios reais.",
+    "slide1Body": "Locais e viajantes se encontram aqui - através de desafios reais.",
     "slide2Title": "Os locais desafiam os viajantes. E vice-versa.",
     "slide2Body": "🍜 O melhor pão de queijo · 📍 Um mirante escondido · 🎭 Solte um português · 🙏 Ajude com um chip. Desafios reais que levam a um encontro real.",
     "slide3Title": "Como funciona",
@@ -32,7 +32,7 @@
     "title": "Como funcionam os desafios",
     "slide1": {
       "title": "Desafios transformam viagens em histórias",
-      "body": "Locais e viajantes se desafiam pra mostrar o que faz uma cidade real — comida, lugares, cultura, ajuda. A recompensa? Vocês se encontram pessoalmente."
+      "body": "Locais e viajantes se desafiam pra mostrar o que faz uma cidade real - comida, lugares, cultura, ajuda. A recompensa? Vocês se encontram pessoalmente."
     },
     "slide2": {
       "title": "Lança seu desafio",
@@ -40,22 +40,22 @@
     },
     "slide3": {
       "title": "Alguém aceita",
-      "body": "Te mandam um pedido. Você revisa e aceita — sua thread privada abre pra conversar e planejar."
+      "body": "Te mandam um pedido. Você revisa e aceita - sua thread privada abre pra conversar e planejar."
     },
     "slide4": {
       "title": "Se encontrem pessoalmente",
-      "body": "Escolham uma data que role pra vocês. A timeline acompanha cada passo. Aí você faz acontecer — de verdade."
+      "body": "Escolham uma data que role pra vocês. A timeline acompanha cada passo. Aí você faz acontecer - de verdade."
     },
     "slide5": {
       "title": "Fecha o desafio",
-      "body": "Depois do encontro, marca como cumprido. Sua cidade, vivida de verdade — um desafio por vez."
+      "body": "Depois do encontro, marca como cumprido. Sua cidade, vivida de verdade - um desafio por vez."
     },
     "next": "Próximo",
     "done": "Entendi!",
     "skip": "Pular ✕",
     "slide6": {
       "title": "Além da sua cidade",
-      "body": "Desafie qualquer um em qualquer lugar. Te mandam uma prova — foto com geotag — e você valida de longe. Local ou global, todo desafio conta."
+      "body": "Desafie qualquer um em qualquer lugar. Te mandam uma prova - foto com geotag - e você valida de longe. Local ou global, todo desafio conta."
     },
     "createCta": "🔥 Criar um desafio"
   },
@@ -149,7 +149,7 @@
   "replies_one": "💬 {{count}} resposta",
   "replies_other": "💬 {{count}} respostas",
   "noReplies": "Sem respostas",
-  "noRepliesFirst": "Ainda sem respostas — seja o primeiro",
+  "noRepliesFirst": "Ainda sem respostas - seja o primeiro",
   "weather": {
     "clear": "céu limpo",
     "sunnyHot": "que dia lindo",

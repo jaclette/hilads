@@ -36,7 +36,7 @@ function formatTime(ts: number): string {
   return new Date(ts * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
 }
 
-// Full date label for a one-shot event's detail header — "Today" / "Tomorrow" /
+// Full date label for a one-shot event's detail header - "Today" / "Tomorrow" /
 // "Sat, May 30". Recurring events skip this (they repeat; no single date).
 function formatEventDate(ts: number): string {
   const d        = new Date(ts * 1000);
@@ -85,7 +85,7 @@ async function openEventMaps(event: MapsTarget): Promise<void> {
   }
 }
 
-// ── Ambient activity messages — reuse the shared chat ambient list ───────────
+// ── Ambient activity messages - reuse the shared chat ambient list ───────────
 
 function toMs(ts: number | string | undefined): number {
   if (!ts) return 0;
@@ -161,7 +161,7 @@ export default function EventDetailScreen() {
     Animated.timing(headerCollapse, {
       toValue:         next,
       duration:        160,
-      useNativeDriver: false,   // animating maxHeight / paddingBottom — JS-driven
+      useNativeDriver: false,   // animating maxHeight / paddingBottom - JS-driven
     }).start();
   }, [headerCollapse]);
   const secondaryHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [80, 0] });
@@ -205,11 +205,11 @@ export default function EventDetailScreen() {
 
   useEffect(() => {
     if (!id) return;
-    // Use guestId (persistent) for participation lookup — survives app restarts
+    // Use guestId (persistent) for participation lookup - survives app restarts
     fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
   }, [id, identity?.guestId]);
 
-  // Live presence count — server emits event_presence_update { eventId, count }
+  // Live presence count - server emits event_presence_update { eventId, count }
   useEffect(() => {
     const off = socket.on('event_presence_update', (data: Record<string, unknown>) => {
       if (data.eventId === id) setPresenceCount(data.count as number);
@@ -223,14 +223,14 @@ export default function EventDetailScreen() {
     const title = event?.title ?? t('shareTitleFallback');
 
     // Descriptive text shown to iOS receivers in the share sheet preview.
-    // Crucially does NOT contain the URL — shareLink() handles platform
+    // Crucially does NOT contain the URL - shareLink() handles platform
     // differences (iOS uses separate fields, Android sends URL alone to
     // avoid WhatsApp's "Copy Link" concatenation bug).
     let message = title;
     if (event) {
       const where = event.location ? ` ${t('shareAt', { location: event.location })}` : '';
       const datePart = !(event.recurrence_label || event.series_id) ? `${formatEventDate(event.starts_at)} · ` : '';
-      const when  = ` — ${datePart}${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
+      const when  = ` - ${datePart}${formatTime(event.starts_at)}${event.ends_at ? ` → ${formatTime(event.ends_at)}` : ''}`;
       const who   = (event.participant_count ?? 0) > 0
         ? ` ${t('shareGoing', { count: event.participant_count })}`
         : '';
@@ -242,13 +242,13 @@ export default function EventDetailScreen() {
   // Refetch participants after join/leave toggle
   const handleToggle = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // joined_event is tracked server-side — no frontend duplicate
+    // joined_event is tracked server-side - no frontend duplicate
     await toggleParticipation();
     fetchEventParticipants(id, identity?.guestId).then(({ participants: p }) => setParticipants(p));
   }, [event, toggleParticipation, id, identity?.guestId]);
 
   // Auto-join when arriving from the "Join" push action (?autojoin=1). Fires once,
-  // and only if not already in — never toggles an existing participant back out.
+  // and only if not already in - never toggles an existing participant back out.
   const autoJoinedRef = useRef(false);
   useEffect(() => {
     if (autojoin === '1' && event && !event.is_participating && !toggling && !autoJoinedRef.current) {
@@ -304,7 +304,7 @@ export default function EventDetailScreen() {
   // Keep a stable ref to messages count so the ambient timer can read it without closure staleness
   messagesRef.current = messages;
 
-  // Ambient activity scheduling — mirrors web scheduleActivity.
+  // Ambient activity scheduling - mirrors web scheduleActivity.
   // Web: city ambient timer bleeds into event feed (shared state). We replicate explicitly.
   // First injection: 30s after entering. Recurring: every 60–120s.
   // Suppressed when there are already 3+ real user messages.
@@ -344,13 +344,13 @@ export default function EventDetailScreen() {
     );
   }, [messages, ambientFeed]);
 
-  // City name for back button — prefer API response (works for deeplinks), fall back to context city
+  // City name for back button - prefer API response (works for deeplinks), fall back to context city
   const cityName = eventCityName ?? city?.name ?? t('back', { ns: 'common' });
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
 
-      {/* ── Nav — web: back pill + share button ── */}
+      {/* ── Nav - web: back pill + share button ── */}
       <View style={styles.nav}>
         <TouchableOpacity
           style={styles.backPill}
@@ -367,7 +367,7 @@ export default function EventDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* ── Event info block — web: sits at top, no card, just padding + border ── */}
+      {/* ── Event info block - web: sits at top, no card, just padding + border ── */}
       {eventLoading ? (
         <View style={styles.eventBlockLoading}>
           <ActivityIndicator color={Colors.accent} />
@@ -378,7 +378,7 @@ export default function EventDetailScreen() {
         </View>
       ) : (
         <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
-          {/* Title row + Join/Edit button — always visible */}
+          {/* Title row + Join/Edit button - always visible */}
           <View style={styles.titleRow}>
             <Text
               style={styles.eventTitle}
@@ -417,7 +417,7 @@ export default function EventDetailScreen() {
             )}
           </View>
 
-          {/* Secondary lines — collapse on scroll. maxHeight + opacity drive the
+          {/* Secondary lines - collapse on scroll. maxHeight + opacity drive the
               transition; native driver is off because we're animating layout. */}
           <Animated.View
             style={{ maxHeight: secondaryHeight, opacity: secondaryOpacity, overflow: 'hidden', gap: 4 }}
@@ -442,7 +442,7 @@ export default function EventDetailScreen() {
               ) : null}
             </Text>
 
-            {/* Location — orange accent, single-line ellipsis. Tappable → Google Maps. */}
+            {/* Location - orange accent, single-line ellipsis. Tappable → Google Maps. */}
             {(event.location ?? event.venue) ? (
               <TouchableOpacity
                 onPress={() => openEventMaps(event)}
@@ -460,7 +460,7 @@ export default function EventDetailScreen() {
               </TouchableOpacity>
             ) : null}
 
-            {/* Host name — suppressed for the host themselves */}
+            {/* Host name - suppressed for the host themselves */}
             {event.host_nickname && !isOwner ? (
               <Text style={styles.eventHost} numberOfLines={1}>
                 {t('hostedBy', { name: event.host_nickname })}
@@ -748,7 +748,7 @@ const styles = StyleSheet.create({
     paddingVertical:   10,
   },
 
-  // Web: back button pill — rounded rect, dark bg, border
+  // Web: back button pill - rounded rect, dark bg, border
   backPill: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
     color:      Colors.accent,
   },
 
-  // Web: share button — same dark pill style (kept for reference)
+  // Web: share button - same dark pill style (kept for reference)
   iconBtn: {
     width:           40,
     height:          40,
@@ -797,7 +797,7 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
   },
 
-  // ── Event info block — compact: glanceable summary above the chat ────────
+  // ── Event info block - compact: glanceable summary above the chat ────────
   // paddingBottom is animated when the secondary lines collapse (see
   // blockPaddingBottom interpolation in the screen component).
   eventBlock: {
@@ -815,7 +815,7 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.border,
   },
 
-  // Title row — title fills flex (single-line ellipsis), Join button on right
+  // Title row - title fills flex (single-line ellipsis), Join button on right
   titleRow: {
     flexDirection:  'row',
     alignItems:     'center',
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     gap:            10,
   },
 
-  // Compact title — was 40/800/lh46, now 20/700/lh26 (~–50% height).
+  // Compact title - was 40/800/lh46, now 20/700/lh26 (~–50% height).
   eventTitle: {
     flex:          1,
     fontSize:      FontSizes.lg,   // 20
@@ -834,7 +834,7 @@ const styles = StyleSheet.create({
     minWidth:      0,              // ensures ellipsis kicks in inside the row
   },
 
-  // Compact Join button — was 22×12 padding / fontSize 20, now 14×6 / 13.
+  // Compact Join button - was 22×12 padding / fontSize 20, now 14×6 / 13.
   joinBtn: {
     paddingHorizontal: 14,
     paddingVertical:   6,
@@ -861,7 +861,7 @@ const styles = StyleSheet.create({
   joinBtnTextActive: {
     color: Colors.white,
   },
-  // Host-only "Edit event" CTA — violet to distinguish from the orange Join
+  // Host-only "Edit event" CTA - violet to distinguish from the orange Join
   // button (matches web .event-join-btn--edit).
   editBtn: {
     borderColor:     Colors.violet,
@@ -871,14 +871,14 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  // Time + participants — single tight muted line
+  // Time + participants - single tight muted line
   eventMeta: {
     fontSize:   13,
     color:      Colors.muted,
     lineHeight: 18,
   },
 
-  // "X going" — tappable inline span
+  // "X going" - tappable inline span
   goingLink: {
     color:               Colors.text,
     fontWeight:          '600',
@@ -887,7 +887,7 @@ const styles = StyleSheet.create({
     textDecorationColor: 'rgba(255,255,255,0.3)',
   },
 
-  // Address — orange accent, single-line ellipsis
+  // Address - orange accent, single-line ellipsis
   eventLocationRow: {
     paddingVertical: 4,   // full-width row; + hitSlop on the touchable → ≥44pt tap target
   },

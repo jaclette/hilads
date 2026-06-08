@@ -62,7 +62,7 @@
   "seeAll": "Tingnan lahat →",
   "oneGoing": "Pupunta si {{name}}",
   "manyGoing": "{{name}} + {{count}} pupunta",
-  "goingEmpty": "Wala pa — mauna kang sumali! 🙌",
+  "goingEmpty": "Wala pa - mauna kang sumali! 🙌",
   "noMessages": "Wala pang mensahe. Magsalita ka! 👋",
   "composerSay": "Magsalita sa {{title}} ✨",
   "composerFirst": "Mauna ka sa {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Hindi nabura ang event",
   "limit": {
     "title": "Nakagawa ka na ng event mo ngayong araw!",
-    "body": "Sa Hilads, pinapanatili naming sariwa ang mga bagay — isang event kada araw para makuha ng bawat plano ang atensyong karapat-dapat dito. Bumalik bukas para gumawa ng isa pa.",
+    "body": "Sa Hilads, pinapanatili naming sariwa ang mga bagay - isang event kada araw para makuha ng bawat plano ang atensyong karapat-dapat dito. Bumalik bukas para gumawa ng isa pa.",
     "legendLink": "👑 Maging Legend para gumawa ng walang limitasyong event",
     "legendA11y": "Alamin ang tungkol sa pagiging Legend",
     "legendAlertTitle": "👑 Maging Legend",
-    "legendAlertBody": "Ang mga Legend ay mga local na pinili para buhayin ang kanilang lungsod — pwede silang mag-host ng kahit ilang event na gusto nila. Gusto mong maging isa? Mag-reach out sa contact@hilads.live.",
+    "legendAlertBody": "Ang mga Legend ay mga local na pinili para buhayin ang kanilang lungsod - pwede silang mag-host ng kahit ilang event na gusto nila. Gusto mong maging isa? Mag-reach out sa contact@hilads.live.",
     "gotIt": "Nakuha ko",
     "backToNow": "Bumalik sa Now"
   },

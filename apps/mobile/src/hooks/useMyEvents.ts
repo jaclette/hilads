@@ -3,7 +3,7 @@ import { fetchMyEvents } from '@/api/events';
 import { useApp } from '@/context/AppContext';
 import type { HiladsEvent } from '@/types';
 
-/** Deduplicate recurring event series — keep the latest (highest starts_at). */
+/** Deduplicate recurring event series - keep the latest (highest starts_at). */
 function deduplicateSeries(events: HiladsEvent[]): HiladsEvent[] {
   const latestBySeries = new Map<string, HiladsEvent>();
   const singles: HiladsEvent[] = [];
@@ -38,7 +38,7 @@ export function useMyEvents(): Result {
   const [error,   setError]   = useState<string | null>(null);
 
   // Event ownership is registered-only (event creation requires auth).
-  // Skip for ghost users — they have no events and the endpoint returns 401.
+  // Skip for ghost users - they have no events and the endpoint returns 401.
   const guestId = account ? (account.guest_id ?? identity?.guestId ?? '') : '';
 
   const load = useCallback(async () => {

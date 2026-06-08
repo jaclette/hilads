@@ -1,5 +1,5 @@
 /**
- * ReactionPills — renders emoji reaction summary below a message bubble.
+ * ReactionPills - renders emoji reaction summary below a message bubble.
  *
  * Each pill shows the emoji + count. Viewer's own reactions are highlighted.
  * Tapping a pill toggles the reaction (same endpoint as long-press picker).

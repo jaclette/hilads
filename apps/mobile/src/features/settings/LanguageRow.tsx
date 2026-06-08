@@ -54,8 +54,8 @@ const LANG_FLAGS: Record<Locale, string> = {
 
 /**
  * Language picker. `trigger` chooses the affordance:
- *   - 'row'  (default) — a settings-style row (flag + "Language" + current value).
- *   - 'flag' — a compact flag button, used in the profile header.
+ *   - 'row'  (default) - a settings-style row (flag + "Language" + current value).
+ *   - 'flag' - a compact flag button, used in the profile header.
  * Both open the same modal list. `card` wraps the row in a standalone card
  * (guest layout). The list scales to any number of locales (scrollable) and
  * shows a flag beside each name.
@@ -107,7 +107,7 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>{t('language')}</Text>
             {/* Numeric maxHeight gives the ScrollView a definite bound so it
-                sizes to content and scrolls — a percentage/auto height collapses
+                sizes to content and scrolls - a percentage/auto height collapses
                 it to zero inside this content-sized sheet (RN flexShrink defaults to 0). */}
             <ScrollView
               style={{ maxHeight: height * 0.6 }}

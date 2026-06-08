@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 /**
  * Shared date+time+venue picker. Used by ThreadScheduleBlock (counter-propose)
  * and ChallengeChatPage (initial propose from the pipeline sub-CTA). Each
- * caller instantiates its own — state isolation by design.
+ * caller instantiates its own - state isolation by design.
  *
  * Mirror of apps/mobile/src/features/challenge/DatePickerModal.tsx.
  */
@@ -61,7 +61,7 @@ export default function DatePickerModal({
   }
 
   // Portal to document.body so we escape the .full-page (z-index 200)
-  // stacking context — otherwise our z-index 2000 is contained within that
+  // stacking context - otherwise our z-index 2000 is contained within that
   // context and the bottom-nav (z-index 300, sibling of .full-page in the
   // body) ends up rendering ON TOP of the modal, hiding the Submit button.
   return createPortal((
@@ -73,7 +73,7 @@ export default function DatePickerModal({
         zIndex: 2000,
       }}
     >
-      {/* Sheet — flex column: handle/header pinned top, content scrolls in
+      {/* Sheet - flex column: handle/header pinned top, content scrolls in
           the middle, Submit pinned bottom. paddingBottom clears the safe-area
           home indicator AND the mobile bottom-nav (74px) so the Submit button
           stays visible on phone-width layouts. */}
@@ -129,7 +129,7 @@ export default function DatePickerModal({
           />
         </div>
 
-        {/* Pinned submit — flexShrink: 0 keeps it visible even when content scrolls */}
+        {/* Pinned submit - flexShrink: 0 keeps it visible even when content scrolls */}
         <div style={{ padding: '8px 16px 0', flexShrink: 0 }}>
           <button
             type="button" onClick={submit}

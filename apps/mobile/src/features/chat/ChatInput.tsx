@@ -1,5 +1,5 @@
 /**
- * ChatInput — faithful port of the web .input-bar.
+ * ChatInput - faithful port of the web .input-bar.
  *
  * Web source: App.jsx form.input-bar, index.css (.upload-btn, .send-btn, .input-bar input)
  *
@@ -33,7 +33,7 @@ import { fetchMentionSuggestions, type MentionContext, type MentionSuggestion } 
 import { buildMentionsFromText, detectActiveMention, type SelectedMention, type MentionRef } from '@/lib/mentions';
 
 
-// ── Placeholder cycling — mirrors web PLACEHOLDERS array ─────────────────────
+// ── Placeholder cycling - mirrors web PLACEHOLDERS array ─────────────────────
 // Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length](). The list is localized
 // (common.composer.placeholders), picked deterministically by channel id.
 
@@ -59,16 +59,16 @@ interface Props {
   pulse?:           boolean;
   /** Parent can call pickImageRef.current?.() to trigger the image picker externally (e.g. from a feed prompt CTA). */
   pickImageRef?:    React.MutableRefObject<(() => void) | null>;
-  /** Typing indicator callbacks — parent wires these to WS typingStart/typingStop. */
+  /** Typing indicator callbacks - parent wires these to WS typingStart/typingStop. */
   onTypingStart?:   () => void;
   onTypingStop?:    () => void;
-  /** Reply context — shown as a preview strip above the input until cancelled. */
+  /** Reply context - shown as a preview strip above the input until cancelled. */
   replyingTo?:      ReplyRef | null;
   onCancelReply?:   () => void;
-  /** Edit mode — when set, the composer pre-fills with content and Send saves
+  /** Edit mode - when set, the composer pre-fills with content and Send saves
       the edit via onSubmitEdit instead of sending a new message. Parents must
       clear `editing` after onSubmitEdit resolves. Reply and edit are mutually
-      exclusive — parent should not set both. */
+      exclusive - parent should not set both. */
   editing?:         { id: string; content: string } | null;
   onSubmitEdit?:    (text: string) => void;
   onCancelEdit?:    () => void;
@@ -76,7 +76,7 @@ interface Props {
       the keyboard opening (e.g. collapse a header block to give the chat
       more vertical space). */
   onFocus?:         () => void;
-  /** Fires when the TextInput blurs. Mirror of onFocus — parents can use it
+  /** Fires when the TextInput blurs. Mirror of onFocus - parents can use it
       to restore collapsed state when the keyboard closes. */
   onBlur?:          () => void;
   /** When true, the keyboard is dismissed after a successful text send. Used
@@ -88,7 +88,7 @@ interface Props {
 export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false }: Props) {
   const { t } = useTranslation('common');
   const { account, identity, onlineUsers } = useApp();
-  // Presence mirror — read at suggest time so a guest joining/leaving doesn't
+  // Presence mirror - read at suggest time so a guest joining/leaving doesn't
   // re-fire the debounced fetch on every keystroke.
   const onlineUsersRef = useRef(onlineUsers);
   onlineUsersRef.current = onlineUsers;
@@ -179,7 +179,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         typingStopTimer.current = null;
       }, 1500);
     } else {
-      // Input cleared (e.g. after send) — stop immediately
+      // Input cleared (e.g. after send) - stop immediately
       clearTypingTimer();
       if (isTypingRef.current) {
         isTypingRef.current = false;
@@ -242,18 +242,18 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       onTypingStop?.();
     }
     // Edit mode: short-circuit normal send. We don't dirty mentions/offsets
-    // because edits are content-only — keeping the original mentions would
+    // because edits are content-only - keeping the original mentions would
     // require re-resolving offsets, which we don't want for v1 (the backend
     // also doesn't currently accept mentions on edit).
     if (editing && onSubmitEdit) {
-      // No-op when content unchanged — avoid round-trip + needless WS echo.
+      // No-op when content unchanged - avoid round-trip + needless WS echo.
       if (trimmed === editing.content) { onCancelEdit?.(); return; }
       onSubmitEdit(trimmed);
       // Parent clears `editing` after the request resolves, which triggers the
       // useEffect above to wipe text.
       return;
     }
-    // Re-derive mention offsets against the final text — tokens the user deleted
+    // Re-derive mention offsets against the final text - tokens the user deleted
     // are dropped, so only intact, explicitly-selected @mentions are sent.
     const built = mentionsEnabled ? buildMentionsFromText(trimmed, selectedMentions) : [];
     onSendText(trimmed, built.length ? built : undefined);
@@ -306,15 +306,15 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
   // expo-image-picker's launchCameraAsync() hangs on Android 14 + singleTask
   // MainActivity because the ActivityResultLauncher callback is never delivered
   // across task boundaries. AndroidCameraCapture uses expo-camera's CameraView
-  // entirely within the app process — no ActivityResultLauncher involved.
+  // entirely within the app process - no ActivityResultLauncher involved.
   function openCameraAndroid() {
-    console.log('[camera] Android path — opening in-app camera modal');
+    console.log('[camera] Android path - opening in-app camera modal');
     setAndroidCamera(true);
   }
 
   // ── iOS: use expo-image-picker as normal (works correctly on iOS) ─────────
   async function openCameraIOS() {
-    console.log('[camera] iOS path — using launchCameraAsync');
+    console.log('[camera] iOS path - using launchCameraAsync');
     try {
       console.log('[camera] checking current permission...');
       const current = await ImagePicker.getCameraPermissionsAsync();
@@ -412,7 +412,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     const nickname = account?.display_name ?? identity?.nickname ?? 'Someone';
     const label = place || 'somewhere';
     const coordLine = `${lat.toFixed(6)},${lng.toFixed(6)}`;
-    // Posted message content (broadcast to all viewers) — kept in English so
+    // Posted message content (broadcast to all viewers) - kept in English so
     // every recipient sees the same text regardless of the sender's UI locale.
     const text = address
       ? `📍 ${nickname} is at ${label}\n${coordLine}\n${address}`
@@ -469,10 +469,10 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       spotLoading={false}
     />
 
-    {/* ── @mention suggestions — appear above composer while typing "@" ── */}
+    {/* ── @mention suggestions - appear above composer while typing "@" ── */}
     {mentionQuery !== null && <MentionSuggestions suggestions={suggestions} onSelect={onSelectMention} />}
 
-    {/* ── Emoji panel — appears above composer when emoji mode is active ── */}
+    {/* ── Emoji panel - appears above composer when emoji mode is active ── */}
     {showEmoji && <EmojiPanel onSelect={insertEmoji} />}
 
     {/* ── Reply preview strip ── */}
@@ -490,7 +490,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       </View>
     )}
 
-    {/* ── Edit preview strip — visible while the user is editing one of their
+    {/* ── Edit preview strip - visible while the user is editing one of their
         own messages. Same chrome as the reply strip so the cancel affordance
         feels familiar. */}
     {editing && (
@@ -508,7 +508,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     <View style={styles.container}>
 
       {/* ── Vibe button ── */}
-      {/* Hidden while editing: edit mode is text-only — exposing the photo/spot
+      {/* Hidden while editing: edit mode is text-only - exposing the photo/spot
           attach affordance would imply you can change a text message into an
           image, which the backend doesn't support. */}
       <Animated.View style={[
@@ -551,7 +551,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         <Text style={styles.emojiBtnIcon}>😊</Text>
       </TouchableOpacity>
 
-      {/* ── Input — web: border-radius 28px, min-height 56px, padding 0 20px ── */}
+      {/* ── Input - web: border-radius 28px, min-height 56px, padding 0 20px ── */}
       <TextInput
         ref={inputRef}
         style={styles.input}
@@ -570,8 +570,8 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         onBlur={() => { clearTypingTimer(); if (isTypingRef.current) { isTypingRef.current = false; onTypingStop?.(); } onBlur?.(); }}
       />
 
-      {/* ── Send button — web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
-      {/* Gradient approximated with #B87228 (accent2 — warm amber end of gradient)  */}
+      {/* ── Send button - web: .send-btn (54×54, gradient #C24A38→#B87228, shadow) ── */}
+      {/* Gradient approximated with #B87228 (accent2 - warm amber end of gradient)  */}
       {/* Web: disabled = opacity 0.3 on the same gradient (not a different bg)      */}
       <TouchableOpacity
         style={[styles.sendBtnWrap, !canSend && styles.sendBtnDisabled]}
@@ -598,7 +598,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
 
 const styles = StyleSheet.create({
 
-  // ── Composer container — aligned with the DM composer's compact rhythm
+  // ── Composer container - aligned with the DM composer's compact rhythm
   // (apps/mobile/app/dm/[id].tsx). Single source of truth for City + Event +
   // Topic chats; shrinking values here propagates to all three.
   container: {
@@ -617,7 +617,7 @@ const styles = StyleSheet.create({
     elevation:         30, // must exceed tab bar (elevation: 24) to render above its upward shadow
   },
 
-  // ── Vibe ("+") button — 48px to match DM ──────────────────────────────────
+  // ── Vibe ("+") button - 48px to match DM ──────────────────────────────────
   vibeBtnGlow: {
     flexShrink:    0,
     borderRadius:  24,
@@ -635,7 +635,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // ── Text input — 48px min, FontSizes.sm to match DM ───────────────────────
+  // ── Text input - 48px min, FontSizes.sm to match DM ───────────────────────
   input: {
     flex:              1,
     flexShrink:        1,
@@ -653,7 +653,7 @@ const styles = StyleSheet.create({
     lineHeight:        20,
   },
 
-  // ── Send button — 48px to match DM ────────────────────────────────────────
+  // ── Send button - 48px to match DM ────────────────────────────────────────
   sendBtnWrap: {
     flexShrink:    0,
     flexGrow:      0,

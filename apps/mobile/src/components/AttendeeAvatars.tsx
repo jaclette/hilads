@@ -17,7 +17,7 @@ type Props = {
   preview:      ParticipantPreview[];
   total:        number;
   size?:        number;
-  /** Cutout border color — set to the surface behind the row (card = bg2, screen = bg). */
+  /** Cutout border color - set to the surface behind the row (card = bg2, screen = bg). */
   borderColor?: string;
   /** When set, the row becomes tappable (opens the members list) and stops the
    *  tap from bubbling to the parent card. */

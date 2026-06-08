@@ -26,12 +26,12 @@
   "create": {
     "title": "¿Qué hacemos?",
     "hangoutLabel": "Lanzar una quedada",
-    "hangoutSub": "Al instante — deja que la gente se una ahora",
+    "hangoutSub": "Al instante - deja que la gente se una ahora",
     "eventLabel": "Crear un evento",
     "eventSub": "Organiza algo a lo que unirse",
     "cancel": "Cancelar",
     "challengeLabel": "Lanzar un reto",
-    "challengeSub": "Locales y viajeros — conecten a través de un reto"
+    "challengeSub": "Locales y viajeros - conecten a través de un reto"
   },
   "filterChallenges": "🔥 Retos",
   "challengesSection": "Retos",

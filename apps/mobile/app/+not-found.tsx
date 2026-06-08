@@ -2,7 +2,7 @@ import { Redirect } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 
 /**
- * Catch-all for any route Expo Router can't match — stale deeplinks, old
+ * Catch-all for any route Expo Router can't match - stale deeplinks, old
  * builds still pointing at renamed routes (e.g. the removed `/(tabs)/hot`),
  * or future regressions. Instead of dead-ending on the "Unmatched Route"
  * screen, redirect into a valid screen: chat for joined users, the Now feed

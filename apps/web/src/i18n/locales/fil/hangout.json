@@ -32,7 +32,7 @@
   "owner": { "edit": "✏️ I-edit", "delete": "🗑 I-delete" },
   "gated": {
     "title": "Members-only na tambayan",
-    "pending": "Nakabinbin ang request — makakasali ka sa usapan kapag tinanggap ka ng isang member.",
+    "pending": "Nakabinbin ang request - makakasali ka sa usapan kapag tinanggap ka ng isang member.",
     "prompt": "Mag-request para sumali upang makita ang usapan at makachat.",
     "requestBtn": "Mag-request para sumali"
   },

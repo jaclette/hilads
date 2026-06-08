@@ -62,7 +62,7 @@
   "seeAll": "Alles bekijken →",
   "oneGoing": "{{name}} is erbij",
   "manyGoing": "{{name}} + {{count}} erbij",
-  "goingEmpty": "Nog niemand — wees de eerste om mee te doen! 🙌",
+  "goingEmpty": "Nog niemand - wees de eerste om mee te doen! 🙌",
   "noMessages": "Nog geen berichten. Zeg iets! 👋",
   "composerSay": "Zeg iets bij {{title}} ✨",
   "composerFirst": "Wees de eerste bij {{title}} ✨",
@@ -86,11 +86,11 @@
   "errDelete": "Evenement verwijderen mislukt",
   "limit": {
     "title": "Je hebt je evenement van vandaag al aangemaakt!",
-    "body": "Bij Hilads houden we het fris — één evenement per dag, zodat elk plan de aandacht krijgt die het verdient. Kom morgen terug om er nog een te maken.",
+    "body": "Bij Hilads houden we het fris - één evenement per dag, zodat elk plan de aandacht krijgt die het verdient. Kom morgen terug om er nog een te maken.",
     "legendLink": "👑 Word een Legend om onbeperkt evenementen te maken",
     "legendA11y": "Meer weten over een Legend worden",
     "legendAlertTitle": "👑 Word een Legend",
-    "legendAlertBody": "Legends zijn locals die zijn gekozen om hun stad levendig te houden — zij kunnen zoveel evenementen hosten als ze willen. Wil je er een worden? Neem contact op via contact@hilads.live.",
+    "legendAlertBody": "Legends zijn locals die zijn gekozen om hun stad levendig te houden - zij kunnen zoveel evenementen hosten als ze willen. Wil je er een worden? Neem contact op via contact@hilads.live.",
     "gotIt": "Begrepen",
     "backToNow": "Terug naar Now"
   },

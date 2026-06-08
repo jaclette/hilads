@@ -88,9 +88,9 @@ interface AppActions {
   /** Signal the NOW tab to pulse once (e.g. a chat reminder faded). Throttled. */
   pulseNow:                () => void;
   setBlockedSet:           (set: BlockedSet) => void;
-  /** Optimistic add — call right before submitBlock() so UI updates instantly. */
+  /** Optimistic add - call right before submitBlock() so UI updates instantly. */
   addBlocked:              (target: { userId?: string | null; guestId?: string | null }) => void;
-  /** Optimistic remove — call right before unblock so the row disappears instantly. */
+  /** Optimistic remove - call right before unblock so the row disappears instantly. */
   removeBlocked:           (target: { userId?: string | null; guestId?: string | null }) => void;
   logout:                  () => Promise<void>;
 }
@@ -184,7 +184,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     track('auth_logout');
     resetAnalytics();
     // Tear down the WS first so its reconnect timer doesn't replay
-    // joinRoom/joinUser against a session the server is about to reject —
+    // joinRoom/joinUser against a session the server is about to reject -
     // that produces a 1006 reconnect loop after sign-out. resetPending()
     // also drops any cached pendingCity / pendingUser so a future reconnect
     // doesn't silently re-join the signed-out account's rooms.

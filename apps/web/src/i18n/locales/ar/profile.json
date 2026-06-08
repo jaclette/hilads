@@ -53,17 +53,17 @@
     "checking": "جارٍ التحقق…",
     "available": "‏@{{username}} متاح",
     "aboutMe": "نبذة عني",
-    "charsLeft": "— بقي {{count}}",
+    "charsLeft": "- بقي {{count}}",
     "aboutPlaceholder": "أحب طعام الشارع والأحاديث العفوية",
     "email": "البريد الإلكتروني",
-    "readOnly": "— للقراءة فقط",
+    "readOnly": "- للقراءة فقط",
     "homeCity": "المدينة الأصلية",
     "homeCityPlaceholder": "أين تعيش",
     "age": "العمر",
     "agePlaceholder": "عمرك",
     "myVibe": "vibe الخاص بي",
     "interests": "الاهتمامات",
-    "interestsHint": "— اختر حتى 5"
+    "interestsHint": "- اختر حتى 5"
   },
   "ambassador": {
     "title": "مختارات المدينة 👑",
@@ -78,14 +78,14 @@
     "storyPlaceholder": "شيء تحبه في هذه المدينة"
   },
   "hangouts": {
-    "empty": "لا توجد لقاءات بعد — ابدأ واحدًا 🗣️",
+    "empty": "لا توجد لقاءات بعد - ابدأ واحدًا 🗣️",
     "host": "المضيف"
   },
   "events": {
     "going": "ذاهب",
-    "goingEmpty": "لا توجد خطط بعد — اعثر على شيء 🔥",
+    "goingEmpty": "لا توجد خطط بعد - اعثر على شيء 🔥",
     "hosting": "أستضيف",
-    "hostingEmpty": "لم تستضف شيئًا بعد — ابدأ شيئًا ✨",
+    "hostingEmpty": "لم تستضف شيئًا بعد - ابدأ شيئًا ✨",
     "live": "مباشر",
     "recurring": "↻ متكرر",
     "upcoming": "قادم",
@@ -133,7 +133,7 @@
     "generic": "حدث خطأ ما. حاول مرة أخرى."
   },
   "challenges": {
-    "empty": "لا توجد تحديات بعد — أطلق واحداً 🔥",
+    "empty": "لا توجد تحديات بعد - أطلق واحداً 🔥",
     "challenger": "صاحب التحدّي"
   }
 }

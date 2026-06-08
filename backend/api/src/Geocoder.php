@@ -1,13 +1,13 @@
 <?php
 
 /**
- * Forward geocoding via Nominatim (OpenStreetMap) — turns a free-text address
+ * Forward geocoding via Nominatim (OpenStreetMap) - turns a free-text address
  * into lat/lng. We use Nominatim because the rest of the app already does
  * (the location-picker search), and there is no Google Maps key on the client.
  *
  * Nominatim usage policy: send a real User-Agent and keep to ~1 request/second.
- * This class self-throttles process-wide (see throttle()), so callers — both the
- * single on-create lookup and the bulk backfill loop — don't need their own
+ * This class self-throttles process-wide (see throttle()), so callers - both the
+ * single on-create lookup and the bulk backfill loop - don't need their own
  * sleeps. Failures are non-fatal everywhere: the caller keeps the text address
  * and simply shows no distance.
  */
@@ -121,7 +121,7 @@ final class Geocoder
         if ($lat === null || $lng === null) {
             return null;
         }
-        // Reject the null island (0,0) — a common geocoder miss.
+        // Reject the null island (0,0) - a common geocoder miss.
         if ($lat === 0.0 && $lng === 0.0) {
             return null;
         }

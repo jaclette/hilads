@@ -3,7 +3,7 @@
     "cityTitle": "Who's in {{city}} right now | Hilads",
     "cityDesc": "See who's online and what's happening in {{city}} right now.",
     "eventTitle": "{{title}} is happening now | Hilads",
-    "eventDesc": "Join {{title}} on Hilads — see who's there and what's happening."
+    "eventDesc": "Join {{title}} on Hilads - see who's there and what's happening."
   },
   "nowTitle": "Now",
   "filterEvents": "🎉 Events",
@@ -11,7 +11,7 @@
   "publicEventsSection": "🎫 Public Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}! 🎉",
-    "subtitle": "Your account is ready — here's what you can do now 👇",
+    "subtitle": "Your account is ready - here's what you can do now 👇",
     "f1": "🎉 Start a hangout and gather people right now",
     "f2": "📅 Organize an event in your city",
     "f3": "💬 Send a private message to anyone",
@@ -21,7 +21,7 @@
   },
   "onboarding": {
     "slide1Title": "You're in {{city}}",
-    "slide1Body": "Locals and travelers meet here — through real challenges.",
+    "slide1Body": "Locals and travelers meet here - through real challenges.",
     "slide2Title": "Locals dare travelers. And back.",
     "slide2Body": "🍜 Best banh mi · 📍 Hidden viewpoint · 🎭 Speak some Vietnamese · 🙏 Help with a SIM. Real challenges that lead to a real meet-up.",
     "slide3Title": "How it works",
@@ -38,7 +38,7 @@
     "title": "How challenges work",
     "slide1": {
       "title": "Challenges turn trips into stories",
-      "body": "Locals and travelers dare each other to share what makes a city real — food, places, culture, help. The reward? You meet in person."
+      "body": "Locals and travelers dare each other to share what makes a city real - food, places, culture, help. The reward? You meet in person."
     },
     "slide2": {
       "title": "Launch your dare",
@@ -46,22 +46,22 @@
     },
     "slide3": {
       "title": "Someone takes it on",
-      "body": "They send a request. You review it and accept — your private thread unlocks so you can chat and plan."
+      "body": "They send a request. You review it and accept - your private thread unlocks so you can chat and plan."
     },
     "slide4": {
       "title": "Meet in person",
-      "body": "Pick a date you both like. The pipeline tracks every step. Then make it happen — for real."
+      "body": "Pick a date you both like. The pipeline tracks every step. Then make it happen - for real."
     },
     "slide5": {
       "title": "Wrap it up",
-      "body": "After the meet-up, mark it accomplished. Your city, lived for real — one challenge at a time."
+      "body": "After the meet-up, mark it accomplished. Your city, lived for real - one challenge at a time."
     },
     "next": "Next",
     "done": "Got it!",
     "skip": "Skip ✕",
     "slide6": {
       "title": "Beyond your city",
-      "body": "Challenge anyone, anywhere. They send proof — a geotagged photo — and you validate from afar. Local or global, every challenge counts."
+      "body": "Challenge anyone, anywhere. They send proof - a geotagged photo - and you validate from afar. Local or global, every challenge counts."
     },
     "createCta": "🔥 Create a challenge"
   },

@@ -1,11 +1,11 @@
 /**
- * Challenge slug — kept in sync with apps/web/api/sitemap.mjs (challengeSlug)
+ * Challenge slug - kept in sync with apps/web/api/sitemap.mjs (challengeSlug)
  * and apps/web/api/prerender.mjs. Algorithm matches eventSlug.ts; lives in its
  * own file so future divergence (e.g. challenge-specific URL shape) doesn't
  * leak into event code.
  *
  * The prerender layer accepts both `/challenge/{hex}` and `/challenge/{slug}-{hex}`
- * — we emit the slug form for shareability/SEO whenever a title is available.
+ * - we emit the slug form for shareability/SEO whenever a title is available.
  */
 
 interface ChallengeLike {

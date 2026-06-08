@@ -96,7 +96,7 @@
       },
       "not_creator": {
         "title": "Het is jouw eigen challenge",
-        "body": "Jij hebt deze challenge gemaakt — wacht tot iemand anders 'm accepteert."
+        "body": "Jij hebt deze challenge gemaakt - wacht tot iemand anders 'm accepteert."
       },
       "mode_required": {
         "title": "Kies eerst local of traveler",
@@ -111,14 +111,14 @@
       },
       "in_progress": {
         "title": "Iemand is hier al mee bezig",
-        "body": "Een andere reiziger pakt 'm nu op. Kom terug als ze klaar zijn — dan komt de challenge weer vrij."
+        "body": "Een andere reiziger pakt 'm nu op. Kom terug als ze klaar zijn - dan komt de challenge weer vrij."
       }
     }
   },
   "thread": {
     "notFound": "Thread niet gevonden",
     "empty": "Zeg hoi 👋 en plan wanneer jullie afspreken.",
-    "emptyIntl": "Zeg hi 👋 — drop een 📸 als het gelukt is.",
+    "emptyIntl": "Zeg hi 👋 - drop een 📸 als het gelukt is.",
     "cancel": {
       "creatorTitle": "Deze take-on annuleren?",
       "acceptorTitle": "Deze challenge laten vallen?",
@@ -191,7 +191,7 @@
     "confirm": {
       "approve": {
         "title": "Markeren als gehaald?",
-        "body": "Dit is definitief — je kunt het daarna niet meer veranderen.",
+        "body": "Dit is definitief - je kunt het daarna niet meer veranderen.",
         "confirm": "Markeer als gehaald"
       },
       "reject": {
@@ -267,15 +267,15 @@
     },
     "inProgress": {
       "title": "Iemand is hier nu mee bezig",
-      "body": "Een reiziger pakt deze challenge nu op. Als ze klaar zijn, komt 'ie weer vrij — kom snel terug."
+      "body": "Een reiziger pakt deze challenge nu op. Als ze klaar zijn, komt 'ie weer vrij - kom snel terug."
     }
   },
   "postCreate": {
     "title": "Je challenge is live",
-    "subtitle": "Zaai het nu — zorg dat iemand het binnen het uur oppakt.",
+    "subtitle": "Zaai het nu - zorg dat iemand het binnen het uur oppakt.",
     "thisCity": "deze stad",
     "ctaInvite": "Stuur het naar iemand in {{city}}",
-    "ctaInviteSub": "Kies een paar {{audience}} — wij pingen ze.",
+    "ctaInviteSub": "Kies een paar {{audience}} - wij pingen ze.",
     "ctaShare": "Deel buiten Hilads",
     "skip": "Misschien later",
     "pickerTitle": "{{audience}} in {{city}}",
@@ -285,7 +285,7 @@
     "sendCtaEmpty": "Kies eerst iemand",
     "sentTitle": "Gestuurd naar {{count}}",
     "sentSubtitle": "Ze krijgen nu een push-melding.",
-    "pickerSubtitleAll": "Geen exacte match — iedereen in {{city}} wordt getoond."
+    "pickerSubtitleAll": "Geen exacte match - iedereen in {{city}} wordt getoond."
   },
   "invitation": {
     "accept": "Accepteren",
@@ -311,7 +311,7 @@
     "targetCityHint": "Laat \"Waar dan ook\" staan om reizigers overal te bereiken, of kies een stad.",
     "proofRequirementsLabel": "Wat moet de foto laten zien?",
     "proofRequirementsPlaceholder": "bv. Het gerecht bij daglicht, met jou erbij",
-    "proofRequirementsHint": "Het bewijs is een foto 📸. De deelnemer ziet dit vóór het versturen — wees specifiek.",
+    "proofRequirementsHint": "Het bewijs is een foto 📸. De deelnemer ziet dit vóór het versturen - wees specifiek.",
     "cityPicker": {
       "title": "Kies een doelstad",
       "searchPlaceholder": "Zoek een stad…",
@@ -369,16 +369,16 @@
     "leaveCta": "Verlaat het kanaal",
     "errKicked": "Je bent uit deze challenge verwijderd. Je kunt niet opnieuw meedoen.",
     "errClosed": "Deze challenge is gesloten voor nieuwe deelnemers.",
-    "errGeneric": "Lukte niet — probeer opnieuw."
+    "errGeneric": "Lukte niet - probeer opnieuw."
   },
   "members": {
     "title": "In het kanaal",
     "countIn": "{{count}} in het kanaal",
     "seeAll": "Toon alles →",
-    "empty": "Nog niemand meegedaan — wees de eerste.",
+    "empty": "Nog niemand meegedaan - wees de eerste.",
     "kickCta": "Verwijderen",
     "kickAria": "{{name}} uit het kanaal verwijderen",
-    "errKick": "Verwijderen mislukt — probeer het opnieuw."
+    "errKick": "Verwijderen mislukt - probeer het opnieuw."
   },
   "notif": {
     "on": "Meldingen aan",
@@ -406,7 +406,7 @@
   "ratePrompts": {
     "banner": {
       "title": "Beoordeel je ontmoeting met {{name}}",
-      "titleUrgent": "{{name}} heeft beoordeeld — jij bent"
+      "titleUrgent": "{{name}} heeft beoordeeld - jij bent"
     },
     "sheet": {
       "title": "Hoe was het met {{name}}?",
@@ -447,7 +447,7 @@
   "scoringInfo": {
     "aria": "Hoe punten werken",
     "title": "🏆 Hoe challenges werken",
-    "intro": "Elke challenge levert beide kanten punten op — die tellen mee in je stad- en wereldklassement.",
+    "intro": "Elke challenge levert beide kanten punten op - die tellen mee in je stad- en wereldklassement.",
     "colStep": "Stap",
     "steps": {
       "accepted": "Challenge geaccepteerd",
@@ -455,17 +455,17 @@
       "meet": "Meet-up",
       "rate": "Beiden beoordelen"
     },
-    "noPoints": "—",
+    "noPoints": "-",
     "totalLabel": "Totaal per challenge",
     "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen.",
     "types": {
       "heading": "🎯 Twee manieren om te spelen",
-      "local": "🏙️ Lokaal — in jouw stad. Spreek IRL af om het te laten tellen.",
-      "international": "🌍 Internationaal — tussen steden. Een instant foto als bewijs."
+      "local": "🏙️ Lokaal - in jouw stad. Spreek IRL af om het te laten tellen.",
+      "international": "🌍 Internationaal - tussen steden. Een instant foto als bewijs."
     },
     "lifecycle": {
       "heading": "🔁 Eén challenge per keer",
-      "body": "Als de uitvoerder klaar is, wordt de chat gewist — de challenge blijft, klaar voor de volgende avonturier."
+      "body": "Als de uitvoerder klaar is, wordt de chat gewist - de challenge blijft, klaar voor de volgende avonturier."
     },
     "pointsHeading": "💯 Zo verdien je punten"
   },
@@ -473,7 +473,7 @@
     "unit": "punten",
     "subtitle": {
       "accepted": "Je challenge is geaccepteerd 🤝",
-      "date_locked": "Afspraak bevestigd — let’s go 🗓️",
+      "date_locked": "Afspraak bevestigd - let’s go 🗓️",
       "meetup": "Missie geslaagd 🎉",
       "debrief": "Missie geslaagd 🎉",
       "ghost": "Volgende keer beter 👻",

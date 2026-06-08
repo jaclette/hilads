@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hilads — Concept 01 Refined</title>
+  <title>Hilads - Concept 01 Refined</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
@@ -120,8 +120,8 @@
 </head>
 <body>
 
-<h1 class="page-title">Hilads / Logo — Concept 01 Refined</h1>
-<h2 class="page-sub">H¡ — Alive, not decorative</h2>
+<h1 class="page-title">Hilads / Logo - Concept 01 Refined</h1>
+<h2 class="page-sub">H¡ - Alive, not decorative</h2>
 
 
 <!-- ═══════════════════════════════════════════════════ -->
@@ -150,9 +150,9 @@
     </linearGradient>
 
     <!--
-      NOISE FILTER — very subtle organic grain
+      NOISE FILTER - very subtle organic grain
       Adds micro-variation that breaks the pure digital look.
-      Opacity: 0.07 — barely perceptible, just enough to remove "plastic" feel.
+      Opacity: 0.07 - barely perceptible, just enough to remove "plastic" feel.
     -->
     <filter id="noise-overlay" x="0%" y="0%" width="100%" height="100%" color-interpolation-filters="sRGB">
       <feTurbulence type="fractalNoise" baseFrequency="0.68 0.72" numOctaves="4"
@@ -184,12 +184,12 @@
 <!--  1. MAIN ICON                                       -->
 <!-- ═══════════════════════════════════════════════════ -->
 <section>
-  <div class="section-label">01 — Main icon</div>
+  <div class="section-label">01 - Main icon</div>
   <div class="row">
 
     <!-- 96px dark -->
     <div class="cell">
-      <div class="cell-label">96px — dark</div>
+      <div class="cell-label">96px - dark</div>
       <div class="bg-dark">
         <svg id="icon-main" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -223,7 +223,7 @@
           <rect width="64" height="64" rx="15" fill="url(#g-icon)" filter="url(#icon-noise)"/>
 
           <!--
-            H — slightly heavier strokes than C01 original.
+            H - slightly heavier strokes than C01 original.
             Width 7 → 8. Crossbar slightly thicker.
             This helps the silhouette read at small sizes.
           -->
@@ -232,7 +232,7 @@
           <rect x="17" y="28" width="9"  height="6"  rx="2"   fill="white"/>
 
           <!--
-            ¡ — narrower gap from H, tighter composition.
+            ¡ - narrower gap from H, tighter composition.
             Stroke width matches H bars (8px).
           -->
           <rect x="43" y="25" width="8" height="26" rx="2.5" fill="white"/>
@@ -240,9 +240,9 @@
           <!--
             PRESENCE DOT
             Three layers:
-              1. Outer glow ring — large, very soft, animates
-              2. Mid glow — slightly smaller, more opaque
-              3. Core dot — sharp, always visible
+              1. Outer glow ring - large, very soft, animates
+              2. Mid glow - slightly smaller, more opaque
+              3. Core dot - sharp, always visible
             Default color: warm off-white / cream.
           -->
           <!-- Outer glow -->
@@ -263,7 +263,7 @@
 
     <!-- 96px light -->
     <div class="cell">
-      <div class="cell-label">96px — light</div>
+      <div class="cell-label">96px - light</div>
       <div class="bg-light">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -293,7 +293,7 @@
 
     <!-- 96px white bg -->
     <div class="cell">
-      <div class="cell-label">96px — white</div>
+      <div class="cell-label">96px - white</div>
       <div class="bg-white">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -323,11 +323,11 @@
 <!--  2. SIZE MATRIX                                     -->
 <!-- ═══════════════════════════════════════════════════ -->
 <section>
-  <div class="section-label">02 — Size matrix (readability test)</div>
+  <div class="section-label">02 - Size matrix (readability test)</div>
   <div class="row" style="align-items: center;">
 
     <!--
-      128px — full detail
+      128px - full detail
     -->
     <div class="cell">
       <div class="cell-label">128px</div>
@@ -377,9 +377,9 @@
     </div>
 
     <!--
-      32px — simplified geometry.
+      32px - simplified geometry.
       At this size:
-        - H crossbar must be thicker (6px instead of 6px — same, but rx reduced)
+        - H crossbar must be thicker (6px instead of 6px - same, but rx reduced)
         - ¡ dot must be larger relative to stroke (ratio: dot r=4.5 vs stroke w=7)
         - rx on rects reduced so corners don't eat mass
         - Same viewBox keeps proportion math identical.
@@ -395,15 +395,15 @@
               <stop offset="100%" stop-color="#CC8030"/>
             </linearGradient>
           </defs>
-          <!-- Slightly warmer/brighter gradient for small sizes — better contrast -->
+          <!-- Slightly warmer/brighter gradient for small sizes - better contrast -->
           <rect width="64" height="64" rx="12" fill="url(#g-32)"/>
-          <!-- H — same positions, slightly reduced rx for sharper silhouette -->
+          <!-- H - same positions, slightly reduced rx for sharper silhouette -->
           <rect x="9"  y="13" width="8" height="38" rx="1.5" fill="white"/>
           <rect x="26" y="13" width="8" height="38" rx="1.5" fill="white"/>
           <rect x="17" y="28" width="9"  height="6"  rx="1"   fill="white"/>
           <!-- ¡ -->
           <rect x="43" y="25" width="8" height="26" rx="1.5" fill="white"/>
-          <!-- Dot — at 32px this is 2.25px radius, must be perceptible -->
+          <!-- Dot - at 32px this is 2.25px radius, must be perceptible -->
           <circle cx="47" cy="15" r="5.5" fill="white"/>
         </svg>
       </div>
@@ -430,7 +430,7 @@
       </div>
     </div>
 
-    <!-- 16px — favicon territory -->
+    <!-- 16px - favicon territory -->
     <div class="cell">
       <div class="cell-label">16px</div>
       <div class="bg-dark">
@@ -455,8 +455,8 @@
 
   <div class="note">
     <strong>32px strategy:</strong> Same viewBox geometry, brighter gradient variant (better contrast at small size),
-    reduced corner radius on rects (silhouette stays sharp). The dot at 32px renders at ~2.75px —
-    perceptible and distinctive. At 16px it becomes a pixel cluster — acceptable for favicon.
+    reduced corner radius on rects (silhouette stays sharp). The dot at 32px renders at ~2.75px -
+    perceptible and distinctive. At 16px it becomes a pixel cluster - acceptable for favicon.
   </div>
 </section>
 
@@ -465,7 +465,7 @@
 <!--  3. MONOCHROME / SILHOUETTE TEST                    -->
 <!-- ═══════════════════════════════════════════════════ -->
 <section>
-  <div class="section-label">03 — Monochrome silhouette</div>
+  <div class="section-label">03 - Monochrome silhouette</div>
   <div class="row">
 
     <!-- White on dark -->
@@ -540,17 +540,17 @@
 
   <div class="note">
     <strong>Silhouette reads cleanly:</strong> H + ¡ are immediately legible without color.
-    The dot is the dominant accent element — distinct from both letter bodies.
+    The dot is the dominant accent element - distinct from both letter bodies.
     Knockout version (gradient background, letter shapes cut out) works well for merchandise / emboss.
   </div>
 </section>
 
 
 <!-- ═══════════════════════════════════════════════════ -->
-<!--  4. PRESENCE DOT — STATES                           -->
+<!--  4. PRESENCE DOT - STATES                           -->
 <!-- ═══════════════════════════════════════════════════ -->
 <section>
-  <div class="section-label">04 — Presence dot states</div>
+  <div class="section-label">04 - Presence dot states</div>
 
   <div class="state-bar">
     <span class="state-label">Activity level:</span>
@@ -594,7 +594,7 @@
 
     <!-- State: Idle -->
     <div class="cell">
-      <div class="cell-label">Idle — breathing (3s)</div>
+      <div class="cell-label">Idle - breathing (3s)</div>
       <div class="bg-dark">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -622,7 +622,7 @@
 
     <!-- State: Active (someone chatting) -->
     <div class="cell">
-      <div class="cell-label">Active — faster (1.4s)</div>
+      <div class="cell-label">Active - faster (1.4s)</div>
       <div class="bg-dark">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -650,7 +650,7 @@
 
     <!-- State: Busy (high activity) -->
     <div class="cell">
-      <div class="cell-label">Busy — quick (0.7s)</div>
+      <div class="cell-label">Busy - quick (0.7s)</div>
       <div class="bg-dark">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="96" height="96">
           <defs>
@@ -684,7 +684,7 @@
   <div class="note">
     <strong>Semantic encoding:</strong>
     Cream/white = city is there, quiet. Green = people are talking. Orange = it's busy right now.
-    The dot reads identically to a user presence indicator — the logo IS the product.
+    The dot reads identically to a user presence indicator - the logo IS the product.
   </div>
 </section>
 
@@ -694,12 +694,12 @@
 <!--  5. WORDMARK                                        -->
 <!-- ═══════════════════════════════════════════════════ -->
 <section>
-  <div class="section-label">05 — Wordmark</div>
+  <div class="section-label">05 - Wordmark</div>
   <div class="row">
 
     <!-- Wordmark dark -->
     <div class="cell">
-      <div class="cell-label">Full — dark bg</div>
+      <div class="cell-label">Full - dark bg</div>
       <div class="bg-dark" style="min-width: 300px;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 52" width="272" height="52">
           <defs>
@@ -710,7 +710,7 @@
             </linearGradient>
           </defs>
           <!--
-            "hi" in gradient — slightly heavier weight makes the gradient letterforms
+            "hi" in gradient - slightly heavier weight makes the gradient letterforms
             feel grounded next to the white "lads"
           -->
           <text x="0" y="42"
@@ -720,7 +720,7 @@
             fill="url(#g-wm)"
             letter-spacing="-1.5">h</text>
 
-          <!-- i stem — no system dot, we control it -->
+          <!-- i stem - no system dot, we control it -->
           <text x="28" y="42"
             font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
             font-weight="900"
@@ -729,12 +729,12 @@
             letter-spacing="-1.5">i</text>
           <!-- Erase system i dot -->
           <rect x="27" y="1" width="16" height="13" fill="#0d0d1a"/>
-          <!-- Presence dot — same semantic as icon, same warm cream color -->
+          <!-- Presence dot - same semantic as icon, same warm cream color -->
           <circle cx="35" cy="8.5" r="5.5" fill="#f0e8d8">
             <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite"/>
           </circle>
 
-          <!-- "lads" — white, recedes behind the branded "hi" -->
+          <!-- "lads" - white, recedes behind the branded "hi" -->
           <text x="48" y="42"
             font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
             font-weight="900"
@@ -748,7 +748,7 @@
 
     <!-- Wordmark light -->
     <div class="cell">
-      <div class="cell-label">Full — light bg</div>
+      <div class="cell-label">Full - light bg</div>
       <div class="bg-light" style="min-width: 300px;">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 52" width="272" height="52">
           <defs>

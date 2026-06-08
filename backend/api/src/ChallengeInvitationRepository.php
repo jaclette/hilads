@@ -3,11 +3,11 @@
 declare(strict_types=1);
 
 /**
- * ChallengeInvitationRepository — one row per (challenge, invitee) ping.
+ * ChallengeInvitationRepository - one row per (challenge, invitee) ping.
  *
  * The creator hand-picks city members after publishing a challenge and sends
  * them a personalised invitation. The invitation does NOT bypass the regular
- * take-on flow — it just deep-links the invitee to the challenge (or fires the
+ * take-on flow - it just deep-links the invitee to the challenge (or fires the
  * take-on path on Accept tap) so the existing pending-review machinery owns
  * the actual acceptance lifecycle. We track invitations separately so the
  * creator can see who they already invited and so push action buttons can
@@ -36,7 +36,7 @@ class ChallengeInvitationRepository
     {
         $id = bin2hex(random_bytes(16));
 
-        // ON CONFLICT … DO UPDATE — flip ignored→pending, keep accepted as-is,
+        // ON CONFLICT … DO UPDATE - flip ignored→pending, keep accepted as-is,
         // pending re-touches to pending. We compare xmax=0 to detect insert vs
         // update; xmax is the deletion txid and is 0 for fresh inserts only.
         $stmt = Database::pdo()->prepare("
@@ -66,7 +66,7 @@ class ChallengeInvitationRepository
         ];
     }
 
-    /** Backwards-compat shim — older callers that just need the row. */
+    /** Backwards-compat shim - older callers that just need the row. */
     public static function create(string $challengeId, string $inviterUserId, string $inviteeUserId): ?array
     {
         $res = self::createOrTouch($challengeId, $inviterUserId, $inviteeUserId);

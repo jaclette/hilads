@@ -1,7 +1,7 @@
 /**
  * Deferred push notification permission.
  *
- * Strategy: ask after the user has experienced value — specifically after
+ * Strategy: ask after the user has experienced value - specifically after
  * they sign in or after they've sent their first message. Don't ask on
  * first launch.
  *
@@ -27,7 +27,7 @@ interface Result {
 
 export function usePushNotifications(): Result {
 
-  // ── Mount proof — confirms this hook is alive in the current render tree ────
+  // ── Mount proof - confirms this hook is alive in the current render tree ────
   useEffect(() => {
     console.log('[push-hook] ── usePushNotifications MOUNTED ────────────────');
     console.log('[push-hook] API_URL =', API_URL);
@@ -39,7 +39,7 @@ export function usePushNotifications(): Result {
     console.log('[push-hook] ── requestIfAppropriate called ──────────────────');
     console.log('[push-hook] API_URL =', API_URL);
     console.log('[push-hook] authToken =',
-      getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO — push will get 401');
+      getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO - push will get 401');
 
     await setupNotificationChannel();
 
@@ -54,8 +54,8 @@ export function usePushNotifications(): Result {
     }
 
     if (asked) {
-      // Previously asked — still attempt registration in case user enabled in Settings.
-      console.log('[push-hook] already asked, not yet granted — attempting silent re-register');
+      // Previously asked - still attempt registration in case user enabled in Settings.
+      console.log('[push-hook] already asked, not yet granted - attempting silent re-register');
       await requestAndRegisterPush();
       return;
     }
