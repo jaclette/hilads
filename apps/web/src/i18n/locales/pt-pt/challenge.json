@@ -445,7 +445,7 @@
   },
   "scoringInfo": {
     "aria": "Como funcionam os pontos",
-    "title": "🏆 Como funcionam os pontos",
+    "title": "🏆 Como funcionam os desafios",
     "intro": "Cada desafio dá pontos aos dois lados — somam-se na tua classificação de cidade e mundial.",
     "colStep": "Etapa",
     "steps": {
@@ -456,7 +456,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Total por desafio",
-    "footnote": "Os pontos só são atribuídos quando ambos avaliam o encontro."
+    "footnote": "Os pontos só são atribuídos quando ambos avaliam o encontro.",
+    "types": {
+      "heading": "🎯 Duas formas de jogar",
+      "local": "🏙️ Local — na tua cidade. Encontro presencial para contar.",
+      "international": "🌍 Internacional — entre cidades. Foto instantânea como prova."
+    },
+    "lifecycle": {
+      "heading": "🔁 Um desafio de cada vez",
+      "body": "Quando o tomador termina, o chat reinicia — o desafio fica, pronto para o próximo aventureiro."
+    },
+    "pointsHeading": "💯 Como ganhar pontos"
   },
   "scoreCelebration": {
     "unit": "pontos",

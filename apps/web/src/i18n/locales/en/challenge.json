@@ -171,7 +171,7 @@
   },
   "scoringInfo": {
     "aria": "How points work",
-    "title": "🏆 How points work",
+    "title": "🏆 How challenges work",
     "intro": "Each challenge earns points for both sides — they roll up into your city + world leaderboards.",
     "colStep": "Step",
     "steps": {
@@ -182,7 +182,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Total per challenge",
-    "footnote": "Points are awarded only when both parties rate the meet-up."
+    "footnote": "Points are awarded only when both parties rate the meet-up.",
+    "types": {
+      "heading": "🎯 Two ways to play",
+      "local": "🏙️ Local — in your city. Meet up IRL to make it count.",
+      "international": "🌍 International — across cities. Snap an instant photo as proof."
+    },
+    "lifecycle": {
+      "heading": "🔁 One run at a time",
+      "body": "When the taker wraps up, the chat resets — challenge stays, ready for the next adventurer."
+    },
+    "pointsHeading": "💯 How you earn points"
   },
   "leaderboard": {
     "title": "🏆 Leaderboard",

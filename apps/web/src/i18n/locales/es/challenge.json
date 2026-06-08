@@ -445,7 +445,7 @@
   },
   "scoringInfo": {
     "aria": "Cómo funcionan los puntos",
-    "title": "🏆 Cómo funcionan los puntos",
+    "title": "🏆 Cómo funcionan los retos",
     "intro": "Cada reto da puntos a ambos lados — se suman a tu clasificación de ciudad y mundial.",
     "colStep": "Paso",
     "steps": {
@@ -456,7 +456,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Total por reto",
-    "footnote": "Los puntos solo se otorgan cuando ambos valoran el encuentro."
+    "footnote": "Los puntos solo se otorgan cuando ambos valoran el encuentro.",
+    "types": {
+      "heading": "🎯 Dos formas de jugar",
+      "local": "🏙️ Local — en tu ciudad. Quédate IRL para que cuente.",
+      "international": "🌍 Internacional — entre ciudades. Una foto instantánea como prueba."
+    },
+    "lifecycle": {
+      "heading": "🔁 Un reto a la vez",
+      "body": "Cuando termine quien lo toma, el chat se reinicia — el reto sigue ahí, listo para el siguiente."
+    },
+    "pointsHeading": "💯 Cómo ganas puntos"
   },
   "scoreCelebration": {
     "unit": "puntos",

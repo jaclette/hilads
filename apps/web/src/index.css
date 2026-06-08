@@ -975,11 +975,39 @@ html, body, #root {
 }
 .scoring-info-body {
   padding: 4px 16px 16px;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 .scoring-info-intro {
   font-size: 13px;
   color: var(--muted, #b3b3b3);
   margin: 0 0 12px;
+}
+
+/* New top sections — challenge types + lifecycle. Light card so the
+   two intro blocks read as distinct chapters above the dense points
+   table without competing for attention. */
+.scoring-info-section {
+  background:    var(--surface2, #1e1812);
+  border-radius: 10px;
+  padding:       12px 14px;
+  margin-top:    8px;
+  display:       flex;
+  flex-direction: column;
+  gap:           6px;
+}
+.scoring-info-section-heading {
+  font-size:      15px;
+  font-weight:    800;
+  color:          var(--text);
+  letter-spacing: -0.2px;
+  margin:         12px 0 4px;
+}
+.scoring-info-section-body {
+  font-size:   14px;
+  line-height: 1.4;
+  color:       var(--text);
+  margin:      0;
 }
 .scoring-info-header-row {
   display: flex;

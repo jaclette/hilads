@@ -449,7 +449,7 @@
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",
-    "title": "🏆 Cara kerja poin",
+    "title": "🏆 Cara kerja challenge",
     "intro": "Tiap challenge memberi poin ke kedua belah pihak — masuk ke papan peringkat kota dan dunia.",
     "colStep": "Langkah",
     "steps": {
@@ -460,7 +460,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Total per challenge",
-    "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya."
+    "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya.",
+    "types": {
+      "heading": "🎯 Dua cara main",
+      "local": "🏙️ Lokal — di kotamu. Ketemu langsung biar sah.",
+      "international": "🌍 Internasional — antar kota. Foto instan jadi bukti."
+    },
+    "lifecycle": {
+      "heading": "🔁 Satu per satu",
+      "body": "Ketika yang mengambil selesai, chat di-reset — challenge tetap ada, siap untuk petualang berikutnya."
+    },
+    "pointsHeading": "💯 Cara dapat poin"
   },
   "scoreCelebration": {
     "unit": "poin",

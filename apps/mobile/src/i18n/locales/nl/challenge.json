@@ -449,7 +449,7 @@
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",
-    "title": "🏆 Hoe punten werken",
+    "title": "🏆 Hoe challenges werken",
     "intro": "Elke challenge levert beide kanten punten op — die tellen mee in je stad- en wereldklassement.",
     "colStep": "Stap",
     "steps": {
@@ -460,7 +460,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Totaal per challenge",
-    "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen."
+    "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen.",
+    "types": {
+      "heading": "🎯 Twee manieren om te spelen",
+      "local": "🏙️ Lokaal — in jouw stad. Spreek IRL af om het te laten tellen.",
+      "international": "🌍 Internationaal — tussen steden. Een instant foto als bewijs."
+    },
+    "lifecycle": {
+      "heading": "🔁 Eén challenge per keer",
+      "body": "Als de uitvoerder klaar is, wordt de chat gewist — de challenge blijft, klaar voor de volgende avonturier."
+    },
+    "pointsHeading": "💯 Zo verdien je punten"
   },
   "scoreCelebration": {
     "unit": "punten",

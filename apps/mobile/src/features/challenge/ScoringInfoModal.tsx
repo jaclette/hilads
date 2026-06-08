@@ -48,6 +48,28 @@ export function ScoringInfoModal({
 
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.title}>{t('scoringInfo.title')}</Text>
+
+          {/* 1 — Two flavours of challenge. Short, emoji-led: the user
+              should land on this and instantly know what kind of game
+              they're stepping into. */}
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>{t('scoringInfo.types.heading')}</Text>
+            <Text style={styles.sectionBody}>{t('scoringInfo.types.local')}</Text>
+            <Text style={styles.sectionBody}>{t('scoringInfo.types.international')}</Text>
+          </View>
+
+          {/* 2 — Lifecycle reassurance. Explains the per-acceptance chat
+              reset we shipped in dd3ff3a3: the challenge persists, the
+              conversation doesn't. */}
+          <View style={styles.section}>
+            <Text style={styles.sectionHeading}>{t('scoringInfo.lifecycle.heading')}</Text>
+            <Text style={styles.sectionBody}>{t('scoringInfo.lifecycle.body')}</Text>
+          </View>
+
+          {/* 3 — Points breakdown, kept verbatim from the prior modal so
+              the numbers in score_rules + the muscle memory of returning
+              users both stay intact. */}
+          <Text style={styles.sectionHeading}>{t('scoringInfo.pointsHeading')}</Text>
           <Text style={styles.intro}>{t('scoringInfo.intro')}</Text>
 
           <View style={styles.headerRow}>
@@ -118,6 +140,30 @@ const styles = StyleSheet.create({
 
   title:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
   intro:  { fontSize: FontSizes.sm, color: Colors.muted, marginBottom: Spacing.sm },
+
+  // New section blocks above the points table. Light card-ish styling
+  // so the two intro sections feel distinct from the dense points table
+  // without screaming for attention.
+  section: {
+    backgroundColor:   Colors.bg3,
+    borderRadius:      Radius.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical:   12,
+    gap:               6,
+    marginTop:         Spacing.xs,
+  },
+  sectionHeading: {
+    fontSize:      FontSizes.md,
+    fontWeight:    '800',
+    color:         Colors.text,
+    letterSpacing: -0.2,
+    marginTop:     Spacing.sm,
+  },
+  sectionBody: {
+    fontSize:   FontSizes.sm,
+    lineHeight: 20,
+    color:      Colors.text,
+  },
 
   headerRow: {
     flexDirection: 'row', alignItems: 'center',

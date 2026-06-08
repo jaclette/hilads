@@ -449,7 +449,7 @@
   },
   "scoringInfo": {
     "aria": "Cách tính điểm",
-    "title": "🏆 Cách tính điểm",
+    "title": "🏆 Thử thách hoạt động thế nào",
     "intro": "Mỗi thử thách mang điểm cho cả hai bên — cộng dồn vào bảng xếp hạng thành phố và toàn cầu.",
     "colStep": "Bước",
     "steps": {
@@ -460,7 +460,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Tổng mỗi thử thách",
-    "footnote": "Điểm chỉ được trao khi cả hai cùng đánh giá."
+    "footnote": "Điểm chỉ được trao khi cả hai cùng đánh giá.",
+    "types": {
+      "heading": "🎯 Hai cách chơi",
+      "local": "🏙️ Local — trong thành phố của bạn. Gặp nhau IRL mới tính.",
+      "international": "🌍 International — giữa các thành phố. Một ảnh chụp ngay làm bằng chứng."
+    },
+    "lifecycle": {
+      "heading": "🔁 Một lượt một người",
+      "body": "Khi người nhận xong, chat sẽ làm mới — thử thách vẫn còn, sẵn sàng cho người tiếp theo."
+    },
+    "pointsHeading": "💯 Cách kiếm điểm"
   },
   "scoreCelebration": {
     "unit": "điểm",

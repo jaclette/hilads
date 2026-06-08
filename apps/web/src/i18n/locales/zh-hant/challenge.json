@@ -445,7 +445,7 @@
   },
   "scoringInfo": {
     "aria": "積分如何獲得",
-    "title": "🏆 積分如何獲得",
+    "title": "🏆 挑戰如何運作",
     "intro": "每個挑戰都會給雙方加分 —— 計入你的城市和全球排行榜。",
     "colStep": "步驟",
     "steps": {
@@ -456,7 +456,17 @@
     },
     "noPoints": "—",
     "totalLabel": "每個挑戰合計",
-    "footnote": "只有雙方都完成評分後才會發放積分。"
+    "footnote": "只有雙方都完成評分後才會發放積分。",
+    "types": {
+      "heading": "🎯 兩種玩法",
+      "local": "🏙️ 本地 — 在同城。線下見面才算數。",
+      "international": "🌍 國際 — 跨城市。一張即時照片作證明。"
+    },
+    "lifecycle": {
+      "heading": "🔁 一次只來一位",
+      "body": "挑戰者完成後,聊天會重置——挑戰仍在,等待下一位冒險者。"
+    },
+    "pointsHeading": "💯 如何賺取積分"
   },
   "scoreCelebration": {
     "unit": "積分",

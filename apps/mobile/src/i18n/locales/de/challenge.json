@@ -449,7 +449,7 @@
   },
   "scoringInfo": {
     "aria": "Wie Punkte vergeben werden",
-    "title": "🏆 Wie Punkte vergeben werden",
+    "title": "🏆 So funktionieren Challenges",
     "intro": "Jede Challenge bringt beiden Seiten Punkte — sie fließen in deine Stadt- und Weltbestenliste ein.",
     "colStep": "Schritt",
     "steps": {
@@ -460,7 +460,17 @@
     },
     "noPoints": "—",
     "totalLabel": "Gesamt pro Challenge",
-    "footnote": "Punkte gibt es nur, wenn beide das Treffen bewerten."
+    "footnote": "Punkte gibt es nur, wenn beide das Treffen bewerten.",
+    "types": {
+      "heading": "🎯 Zwei Arten zu spielen",
+      "local": "🏙️ Lokal — in deiner Stadt. IRL treffen, damit es zählt.",
+      "international": "🌍 International — zwischen Städten. Ein Sofortfoto als Beweis."
+    },
+    "lifecycle": {
+      "heading": "🔁 Eine Challenge nach der anderen",
+      "body": "Wenn der Annehmer fertig ist, wird der Chat geleert — die Challenge bleibt, bereit für den Nächsten."
+    },
+    "pointsHeading": "💯 So sammelst du Punkte"
   },
   "scoreCelebration": {
     "unit": "Punkte",

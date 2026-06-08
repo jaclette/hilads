@@ -445,7 +445,7 @@
   },
   "scoringInfo": {
     "aria": "积分如何获得",
-    "title": "🏆 积分如何获得",
+    "title": "🏆 挑战如何运作",
     "intro": "每个挑战都会给双方加分 —— 计入你的城市和全球排行榜。",
     "colStep": "步骤",
     "steps": {
@@ -456,7 +456,17 @@
     },
     "noPoints": "—",
     "totalLabel": "每个挑战合计",
-    "footnote": "只有双方都完成评分后才会发放积分。"
+    "footnote": "只有双方都完成评分后才会发放积分。",
+    "types": {
+      "heading": "🎯 两种玩法",
+      "local": "🏙️ 本地 — 在同城。线下见面才算数。",
+      "international": "🌍 国际 — 跨城市。一张即时照片作证明。"
+    },
+    "lifecycle": {
+      "heading": "🔁 一次只来一位",
+      "body": "挑战者完成后,聊天会重置——挑战仍在,等待下一位冒险者。"
+    },
+    "pointsHeading": "💯 如何赚取积分"
   },
   "scoreCelebration": {
     "unit": "积分",
