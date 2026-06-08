@@ -135,7 +135,7 @@ export function ChallengeVersusCard({
         />
 
         <View style={styles.versusCenter} pointerEvents="none">
-          <Text style={styles.versusGlyph}>{isValidated ? '🏆' : '→'}</Text>
+          <Text style={styles.versusGlyph}>{isValidated ? '🏆' : '⚡'}</Text>
         </View>
 
         {showOpenSlot ? (

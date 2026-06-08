@@ -152,7 +152,7 @@ export default function ChallengeVersusCard({
         </span>
 
         <span className="challenge-versus-center" aria-hidden="true">
-          {isValidated ? '🏆' : '→'}
+          {isValidated ? '🏆' : '⚡'}
         </span>
 
         {hasTaker ? (
