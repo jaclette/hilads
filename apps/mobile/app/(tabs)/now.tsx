@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
+  type ViewToken,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
@@ -17,6 +18,7 @@ import { fetchCanCreateEvent, fetchEventParticipants } from '@/api/events';
 import { fetchCityChallenges } from '@/api/challenges';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import type { FeedItem, HiladsEvent, UserDTO, Challenge } from '@/types';
 import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
@@ -24,7 +26,7 @@ import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
-import { ChallengeCard } from '@/components/ChallengeCard';
+import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Cap the inline challenge strip shown on NOW. The full list lives at
@@ -138,6 +140,24 @@ export default function NowScreen() {
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
   const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>('all');
+  // Set of currently-visible challenge ids — drives the open-slot pulse
+  // animation on ChallengeVersusCard. Updated by FlatList's
+  // onViewableItemsChanged so off-screen cards stop redrawing and entry-
+  // level Android doesn't burn battery on a long scroll. The ref keeps
+  // the latest viewability config stable across re-renders (RN errors if
+  // it changes between renders).
+  const [visibleChallengeIds, setVisibleChallengeIds] = useState<Set<string>>(() => new Set());
+  const viewabilityConfigRef = useRef({ itemVisiblePercentThreshold: 10 });
+  const onViewableItemsChangedRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
+    const next = new Set<string>();
+    for (const v of viewableItems) {
+      const item = v.item as { kind?: string; challenge?: { id?: string } } | null;
+      if (item?.kind === 'challenge' && item.challenge?.id) {
+        next.add(item.challenge.id);
+      }
+    }
+    setVisibleChallengeIds(next);
+  });
   // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
   // pull-to-refresh (getLastKnownPositionAsync - no watcher, no permission prompt;
   // permission was already requested at boot). null → no usable location → cards
@@ -644,6 +664,8 @@ export default function NowScreen() {
           removeClippedSubviews
           maxToRenderPerBatch={6}
           windowSize={5}
+          viewabilityConfig={viewabilityConfigRef.current}
+          onViewableItemsChanged={onViewableItemsChangedRef.current}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
               // The Challenges section header carries the scoring-info (i)
@@ -663,8 +685,9 @@ export default function NowScreen() {
             if (item.kind === 'challenge') {
               const ch = item.challenge;
               return (
-                <ChallengeCard
+                <ChallengeVersusCard
                   challenge={ch}
+                  animated={visibleChallengeIds.has(ch.id)}
                   onPress={() => {
                     track('challenge_opened', { challengeId: ch.id });
                     router.push(`/challenge/${ch.id}` as never);
@@ -672,6 +695,25 @@ export default function NowScreen() {
                   onAvatarsPress={() => {
                     track('challenge_opened', { challengeId: ch.id, via: 'avatars' });
                     router.push(`/challenge/${ch.id}` as never);
+                  }}
+                  onAcceptPress={() => {
+                    // Open-slot shortcut. Lands on the challenge channel —
+                    // the accept-challenge CTA there is already the
+                    // primary one and runs the same guest gate / auth
+                    // flow we'd otherwise duplicate here.
+                    track('challenge_opened', { challengeId: ch.id, via: 'open_slot' });
+                    router.push(`/challenge/${ch.id}` as never);
+                  }}
+                  onAvatarPress={(uid) => {
+                    // Profile gate — ghost users can't open registered
+                    // profiles. Identical guard as the chat surface so
+                    // a guest tapping an avatar lands on /auth-gate
+                    // instead of a 404.
+                    if (!canAccessProfile(account)) {
+                      router.push('/auth-gate' as never);
+                      return;
+                    }
+                    router.push({ pathname: '/user/[id]', params: { id: uid } });
                   }}
                 />
               );

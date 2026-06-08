@@ -15,7 +15,7 @@ import type { FeedItem } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
-import { ChallengeCard } from '@/components/ChallengeCard';
+import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
 
 // ── Date helpers ────────────────────────────────────────────────────────────
 
@@ -348,12 +348,14 @@ export default function PastArchiveScreen() {
               );
             }
             if (item.kind === 'challenge') {
-              // ChallengeCard expects a Challenge object - the past endpoint
-              // returns one with the same shape (id, title, challenge_type,
-              // audience, status, participant_count, participants_preview).
+              // Past archive is exclusively validated challenges (state 4)
+              // so the versus row always renders both avatars + 🏆. The
+              // open-slot pulse never fires here — animated=false avoids
+              // the loop setup for an unreachable code path.
               return (
-                <ChallengeCard
+                <ChallengeVersusCard
                   challenge={item as unknown as import('@/types').Challenge}
+                  animated={false}
                   onPress={() => { track('challenge_opened', { challengeId: item.id, from: 'archive' }); router.push(`/challenge/${item.id}`); }}
                 />
               );

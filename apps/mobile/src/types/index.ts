@@ -279,6 +279,17 @@ export interface Challenge {
   creator_display_name?:     string | null;
   creator_username?:         string | null;
   creator_thumb_avatar_url?: string | null;
+  /** Versus-layout: the currently-active taker on this challenge. Resolved
+   *  server-side from the most-recent non-rejected acceptance + the
+   *  taker's users row. Null when nobody has taken it on (states 1 / 3).
+   *  Stays populated through state 4 (validated) so the versus layout
+   *  keeps both avatars visible after completion. acceptor_country is the
+   *  taker's CURRENT-city ISO-2 (their flag = identity), distinct from
+   *  the challenge's target_country. */
+  acceptor_user_id?:          string | null;
+  acceptor_display_name?:     string | null;
+  acceptor_thumb_avatar_url?: string | null;
+  acceptor_country?:          string | null;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'
@@ -334,7 +345,7 @@ export interface FeedItem {
   city_id?:       string;
 
   // ── Challenge-only fields (present when kind === 'challenge') ─────────────
-  // Subset of Challenge - enough for ChallengeCard to render in past archive.
+  // Subset of Challenge - enough for ChallengeVersusCard to render in past archive.
   challenge_type?: ChallengeType;
   audience?:       ChallengeAudience;
   status?:         'open' | 'validated';

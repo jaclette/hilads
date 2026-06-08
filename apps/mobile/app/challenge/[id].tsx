@@ -1671,7 +1671,7 @@ const styles = StyleSheet.create({
   },
   kindBadgeText: { fontSize: 10, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.5 },
 
-  // Violet tint - see ChallengeCard for the rationale (distinct from
+  // Violet tint - see ChallengeVersusCard for the rationale (distinct from
   // orange brand + green validated, the other pills on the same row).
   audiencePill: {
     backgroundColor:   'rgba(139,92,246,0.12)',

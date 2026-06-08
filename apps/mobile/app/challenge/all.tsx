@@ -8,7 +8,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { fetchCityChallenges, fetchValidatedChallenges } from '@/api/challenges';
-import { ChallengeCard } from '@/components/ChallengeCard';
+import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
 import { track } from '@/services/analytics';
 import type { Challenge, ChallengeType } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -176,10 +176,18 @@ export default function AllChallengesScreen() {
           data={data}
           keyExtractor={c => c.id}
           renderItem={({ item }) => (
-            <ChallengeCard
+            <ChallengeVersusCard
               challenge={item}
+              // Smaller list, short scroll path — leaving the pulse
+              // always-on here keeps the screen reading "alive" even on
+              // a half-empty list. Skip viewability wiring for v1.
+              animated
               onPress={() => {
                 track('challenge_opened', { challengeId: item.id, source: 'see_all' });
+                router.push(`/challenge/${item.id}` as never);
+              }}
+              onAcceptPress={() => {
+                track('challenge_opened', { challengeId: item.id, source: 'see_all_open_slot' });
                 router.push(`/challenge/${item.id}` as never);
               }}
             />
