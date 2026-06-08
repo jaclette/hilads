@@ -6318,7 +6318,15 @@ img.pub-profile-avatar {
   flex: 1;
   min-width: 0;
   line-height: 1.2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
+/* Type emoji sits to the left of the marquee at its natural width
+   so the marquee only clips the title text, not the icon. */
+.er-title-emoji { flex: 0 0 auto; }
+/* Marquee clip window — takes the remaining row width inside .er-title. */
+.er-title-marquee { flex: 1 1 auto; min-width: 0; }
 
 .er-going {
   font-size: 0.72rem;

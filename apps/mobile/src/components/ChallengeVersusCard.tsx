@@ -8,6 +8,7 @@ import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
 import { OpenChallengeSlot } from '@/components/OpenChallengeSlot';
 import { RankBadge } from '@/components/RankBadge';
+import { MarqueeText } from '@/components/MarqueeText';
 
 /**
  * Versus-layout challenge card. Replaces the previous flat ChallengeCard
@@ -154,10 +155,20 @@ export function ChallengeVersusCard({
         )}
       </View>
 
-      {/* Title row — type emoji + title. */}
+      {/* Title row — type emoji + title. Long titles auto-scroll left
+          (same MarqueeText primitive the weather pill uses); short
+          titles render static. `animated` is the FlatList viewport
+          flag — when the card is off-screen the marquee pauses so we
+          don't burn CPU on rows the user can't see. */}
       <View style={styles.titleRow}>
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
-        <Text style={styles.title} numberOfLines={2}>{challenge.title}</Text>
+        <MarqueeText
+          text={challenge.title}
+          textStyle={styles.title}
+          style={styles.titleMarquee}
+          fadeColor={Colors.bg2}
+          active={animated}
+        />
       </View>
 
       {/* "by {name}" line — null for pure-guest challenges. The avatar tap
@@ -421,9 +432,13 @@ const styles = StyleSheet.create({
     color:      Colors.muted,
   },
 
-  titleRow:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  titleEmoji: { fontSize: 22, lineHeight: 24 },
-  title:      { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 20 },
+  titleRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  titleEmoji:   { fontSize: 22, lineHeight: 24 },
+  // MarqueeText clip window — takes the remaining row width and clips
+  // overflow so the scroll happens inside this box, not over the type
+  // emoji or the card padding.
+  titleMarquee: { flex: 1, height: 22 },
+  title:        { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22 },
 
   byCreator: {
     fontSize:   12,

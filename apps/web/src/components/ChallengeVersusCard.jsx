@@ -4,6 +4,7 @@ import AvatarWithFlag from './AvatarWithFlag'
 import OpenChallengeSlot from './OpenChallengeSlot'
 import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
+import { Marquee } from './Marquee'
 
 /**
  * Versus-layout challenge card. Web mirror of the mobile
@@ -196,9 +197,14 @@ export default function ChallengeVersusCard({
         )}
       </div>
 
-      {/* Title + type chip. */}
+      {/* Title + type chip. Long titles auto-scroll left through the
+          same Marquee primitive the weather pill uses — short titles
+          render static with the usual CSS ellipsis fallback. */}
       <div className="er-header">
-        <span className="er-title">{typeIcon} {c.title}</span>
+        <span className="er-title">
+          <span className="er-title-emoji">{typeIcon}</span>
+          <Marquee text={c.title} className="er-title-marquee" fadeColor="#161210" />
+        </span>
         <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`)}</span>
       </div>
 
