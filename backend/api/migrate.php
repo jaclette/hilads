@@ -1818,4 +1818,23 @@ run($pdo, "
     )
 ", 'visible_ratings view');
 
+// ── Self-heal monthly rank columns ────────────────────────────────────────
+// The denormalised users.monthly_rank_* columns are kept fresh by
+// route-level recalc hooks fired after each scoring action. If any
+// score_event ever lands without firing its hook (cold migration,
+// admin tool, direct SQL backfill, code path we forgot to wire), the
+// column drifts and the versus-card badge goes silent for that user.
+//
+// Run a full recalc on every deploy as a safety net. Bounded write
+// set (top-10 + currently-non-NULL rows) keeps the cost trivial even
+// on the production data, and the function is idempotent — running it
+// when the columns are already correct is a no-op.
+require_once __DIR__ . '/src/MonthlyRankService.php';
+try {
+    $summary = MonthlyRankService::recalcAll();
+    echo "  rank recalc: {$summary['cities']} cities + world in {$summary['total_ms']}ms\n";
+} catch (\Throwable $e) {
+    echo "  rank recalc: SKIPPED (" . $e->getMessage() . ")\n";
+}
+
 echo "\nDone.\n";

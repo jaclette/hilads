@@ -56,6 +56,10 @@ admin_nav('/admin');
     <div style="display:flex; gap:12px; flex-wrap:wrap;">
         <a href="/admin/users" class="btn btn-secondary">→ Manage Users</a>
         <a href="/admin/events" class="btn btn-secondary">→ Manage Events</a>
+        <form method="POST" action="/admin/ranks/recalc-all" style="margin:0; display:inline-block;">
+            <?= csrf_input() ?>
+            <button type="submit" class="btn btn-secondary">↻ Recalculate ranks</button>
+        </form>
     </div>
 
     <!-- PR51 - Danger zone. Reset every user's leaderboard score back to

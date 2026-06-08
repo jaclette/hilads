@@ -234,6 +234,59 @@ class MonthlyRankService
     }
 
     /**
+     * Self-heal: recompute ranks for EVERY city that has any active
+     * monthly scorer this month, plus the world. Use sparingly — this
+     * is the bulk version of recalcAfterScoreChange and is intended
+     * for two paths only:
+     *
+     *   1. /admin/ranks/recalc-all — manual operator trigger when the
+     *      denormalised columns drift (e.g. a code path inserted a
+     *      score_event without firing the route-level recalc hook).
+     *   2. migrate.php — runs on every deploy so the columns
+     *      auto-correct after schema changes or stale data accumulates
+     *      across releases.
+     *
+     * Returns the counts so the caller can surface them ("recalc'd 3
+     * cities + world in 142ms").
+     */
+    public static function recalcAll(): array
+    {
+        $started     = microtime(true);
+        $currentMonth = gmdate('Y-m');
+        $pdo         = Database::pdo();
+
+        $stmt = $pdo->prepare("
+            SELECT DISTINCT current_city_id
+            FROM users
+            WHERE deleted_at      IS NULL
+              AND current_city_id IS NOT NULL
+              AND score_month     > 0
+              AND score_month_ref = :month
+        ");
+        $stmt->execute(['month' => $currentMonth]);
+        $cityIds = array_values(array_filter(
+            $stmt->fetchAll(\PDO::FETCH_COLUMN),
+            static fn($c) => is_string($c) && $c !== ''
+        ));
+
+        $cityMs = 0;
+        foreach ($cityIds as $cityId) {
+            $cityMs += self::recalcCity($cityId);
+        }
+        $worldMs = self::recalcWorld();
+
+        $totalMs = (int) round((microtime(true) - $started) * 1000);
+        $summary = [
+            'cities'  => count($cityIds),
+            'city_ms' => $cityMs,
+            'world_ms'=> $worldMs,
+            'total_ms'=> $totalMs,
+        ];
+        error_log('[rank_recalc] all ' . json_encode($summary));
+        return $summary;
+    }
+
+    /**
      * Wipe both rank columns to NULL — used by /admin/scores_reset.php
      * which zeros every user's score in one go. Run inside the same
      * transaction that resets the scores so the columns stay
