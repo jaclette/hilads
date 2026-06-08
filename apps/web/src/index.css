@@ -834,6 +834,19 @@ html, body, #root {
 .leaderboard-row.is-me {
   background: rgba(255, 122, 60, 0.08);
 }
+.leaderboard-row--tappable {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.leaderboard-row--tappable:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+.leaderboard-row--tappable.is-me:hover {
+  background: rgba(255, 122, 60, 0.14);
+}
+.leaderboard-row--tappable:active {
+  opacity: 0.85;
+}
 .leaderboard-rank {
   min-width: 44px;
   font-size: 15px;

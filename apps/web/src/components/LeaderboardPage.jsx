@@ -33,7 +33,7 @@ function avatarColors(name = '') {
 
 const PAGE_SIZE = 50
 
-export default function LeaderboardPage({ account, city, cityChannelId, onBack, initialScope = 'city' }) {
+export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, initialScope = 'city' }) {
   const { t } = useTranslation('challenge')
 
   // PR38 — initialScope lets callers (e.g. the score celebration popin's
@@ -154,6 +154,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
                 entry={e}
                 isMe={e.user_id === me?.user_id}
                 showCity={scope === 'world'}
+                onPress={onOpenProfile ? () => onOpenProfile(e.user_id, e.displayName) : undefined}
                 t={t}
               />
             ))}
@@ -181,6 +182,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
               }}
               isMe
               showCity={scope === 'world'}
+              onPress={onOpenProfile ? () => onOpenProfile(me.user_id, account?.display_name ?? '') : undefined}
               t={t}
             />
           ) : (
@@ -207,7 +209,7 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
   )
 }
 
-function LeaderboardRow({ entry, isMe, showCity = false, t }) {
+function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
   const [c1, c2] = avatarColors(entry.displayName)
   // PR40 — world-scope rows show a "🇫🇷 Paris" chip under the name so the
   // user can see where each scorer is from. Matches the native row layout
@@ -217,7 +219,13 @@ function LeaderboardRow({ entry, isMe, showCity = false, t }) {
   const cityLabel = showCity && entry.cityName    ? localizeCityName(entry.cityName) : null
   const hasCityChip = !!(flag || cityLabel)
   return (
-    <li className={`leaderboard-row${isMe ? ' is-me' : ''}`}>
+    <li
+      className={`leaderboard-row${isMe ? ' is-me' : ''}${onPress ? ' leaderboard-row--tappable' : ''}`}
+      onClick={onPress}
+      role={onPress ? 'button' : undefined}
+      tabIndex={onPress ? 0 : undefined}
+      onKeyDown={onPress ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPress() } } : undefined}
+    >
       <span className="leaderboard-rank">#{entry.rank}</span>
       <span
         className="leaderboard-avatar"

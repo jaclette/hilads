@@ -11,6 +11,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import { avatarColor } from '@/lib/avatarColors';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
@@ -91,6 +92,21 @@ export default function LeaderboardScreen() {
   // True iff the caller appears in the visible page — avoids a duplicate row.
   const meInPage = !!me && me.rank !== null && entries.some(e => e.user_id === me.user_id);
 
+  // Open the row's user profile. Self → the Me tab (already known + editable);
+  // others → the registered-user profile, behind canAccessProfile so guests
+  // hit the auth gate instead of a 404 on the registered profile endpoint.
+  const handleRowPress = useCallback((userId: string, isMe: boolean) => {
+    if (isMe) {
+      router.push('/(tabs)/me');
+      return;
+    }
+    if (!canAccessProfile(account)) {
+      router.push('/auth-gate');
+      return;
+    }
+    router.push({ pathname: '/user/[id]', params: { id: userId } });
+  }, [router, account]);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Header
@@ -126,14 +142,18 @@ export default function LeaderboardScreen() {
           keyExtractor={(e) => e.user_id}
           contentContainerStyle={styles.list}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
-          renderItem={({ item }) => (
-            <Row
-              entry={item}
-              isMe={item.user_id === me?.user_id}
-              showCity={scope === 'world'}
-              t={t}
-            />
-          )}
+          renderItem={({ item }) => {
+            const isMeRow = item.user_id === me?.user_id;
+            return (
+              <Row
+                entry={item}
+                isMe={isMeRow}
+                showCity={scope === 'world'}
+                onPress={() => handleRowPress(item.user_id, isMeRow)}
+                t={t}
+              />
+            );
+          }}
           ItemSeparatorComponent={() => <View style={styles.sep} />}
         />
       )}
@@ -154,6 +174,7 @@ export default function LeaderboardScreen() {
               }}
               isMe
               showCity={scope === 'world'}
+              onPress={() => handleRowPress(me.user_id, true)}
               t={t}
             />
           ) : (
@@ -335,7 +356,7 @@ function Segmented<T extends string>({
 // ── Row ──────────────────────────────────────────────────────────────────────
 
 function Row({
-  entry, isMe, showCity, t,
+  entry, isMe, showCity, onPress, t,
 }: {
   entry: LeaderboardEntry;
   isMe:  boolean;
@@ -343,12 +364,22 @@ function Row({
    *  world scope; city scope hides it as redundant (everyone in the list
    *  shares the same city). */
   showCity?: boolean;
+  /** Tap navigates to the row's profile (self → Me tab, others → /user/[id]
+   *  behind canAccessProfile). The whole row is the touch target. */
+  onPress?: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
   const flag = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : null;
   return (
-    <View style={[styles.row, isMe && styles.rowMe]}>
+    <TouchableOpacity
+      style={[styles.row, isMe && styles.rowMe]}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      disabled={!onPress}
+      accessibilityRole="button"
+      accessibilityLabel={entry.displayName}
+    >
       <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
       <View style={[styles.avatar, { backgroundColor: avatarColor(entry.user_id) }]}>
         {entry.thumbAvatarUrl ? (
@@ -376,7 +407,7 @@ function Row({
       <Text style={[styles.points, isMe && styles.pointsMe]}>
         {t('leaderboard.points', { points: entry.points })}
       </Text>
-    </View>
+    </TouchableOpacity>
   );
 }
 

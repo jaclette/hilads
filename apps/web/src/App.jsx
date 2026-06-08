@@ -6447,6 +6447,18 @@ export default function App() {
           cityChannelId={channelId}
           initialScope={leaderboardScope}
           onBack={() => setShowLeaderboard(false)}
+          onOpenProfile={(userId, displayName) => {
+            // Tapping a row opens the user's profile drawer (the same one
+            // the chat surfaces hit via openProfile). Self-row routes to
+            // the Me profile via the existing drawer.
+            if (account && userId === account.id) {
+              setShowLeaderboard(false)
+              setShowProfileDrawer(true)
+              return
+            }
+            setShowLeaderboard(false)
+            openProfile(userId, displayName ?? '')
+          }}
         />
       )}
 
