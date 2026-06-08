@@ -117,10 +117,25 @@ class ChallengeRepository
         LEFT JOIN users u           ON u.id = cc.created_by
         LEFT JOIN messages m        ON m.channel_id = c.id AND m.type IN ('text', 'image')
         LEFT JOIN LATERAL (
+            -- Pick the taker to render in the right-hand avatar slot.
+            -- The slot must vacate the moment the previous round ends —
+            -- otherwise an Available card still shows the last winner's
+            -- face. Two cases that DO surface a taker:
+            --   1. An in-progress acceptance (same definition as
+            --      IS_IN_PROGRESS_SQL — drives the 'In progress' pill).
+            --   2. The winning acceptance, but only while the challenge
+            --      itself is still in its validated state. Once the
+            --      creator unvalidates / reopens the channel for a new
+            --      round, the prior 'approved' row no longer counts.
+            -- Pending requests (creator hasn't reviewed yet) and rejected
+            -- ones never show in the slot.
             SELECT ca.acceptor_user_id
             FROM challenge_acceptances ca
             WHERE ca.challenge_id = c.id
-              AND ca.phase <> 'rejected'
+              AND (
+                  " . \ChallengeAcceptanceRepository::IS_IN_PROGRESS_SQL . "
+                  OR (ca.phase = 'approved' AND cc.status = 'validated')
+              )
             ORDER BY ca.created_at DESC
             LIMIT 1
         ) ac ON TRUE
