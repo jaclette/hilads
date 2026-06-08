@@ -345,13 +345,13 @@ class MessageRepository
      * filter the bubble; content is the user-visible text. channel_id can be
      * either an int (city) or a 16-char hex (thread channels).
      */
-    public static function addSystemMessage(int|string $channelId, string $content, string $event = 'system'): array
+    public static function addSystemMessage(int|string $channelId, string $content, string $event = 'system', ?string $challengeAcceptanceId = null): array
     {
         $id = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, content, nickname)
-            VALUES (?, ?, 'system', ?, ?, '')
-        ")->execute([$id, self::dbKey($channelId), $event, $content]);
+            INSERT INTO messages (id, channel_id, type, event, content, nickname, challenge_acceptance_id)
+            VALUES (?, ?, 'system', ?, ?, '', ?)
+        ")->execute([$id, self::dbKey($channelId), $event, $content, $challengeAcceptanceId]);
 
         return [
             'id'        => $id,
@@ -359,6 +359,135 @@ class MessageRepository
             'event'     => $event,
             'content'   => $content,
             'createdAt' => time(),
+        ];
+    }
+
+    /**
+     * Read messages for a CHALLENGE channel, scoped to a single acceptance.
+     *
+     * - When $acceptanceId is non-null (a run is currently in progress), the
+     *   result includes only messages stamped with that id. Previous runs'
+     *   messages stay in the DB but are invisible to the current acceptor,
+     *   giving them a clean conversation lane.
+     * - When $acceptanceId is null (no active acceptance — between runs or
+     *   pre-first-acceptance), only NULL-stamped messages surface. These
+     *   are pre-acceptance system events + cross-run chatter; once a new
+     *   run starts they vanish from the view of the new acceptor.
+     *
+     * Mirrors getByChannel's cursor + LIMIT + hasMore semantics so the
+     * frontend pagination layer doesn't need a separate code path.
+     */
+    public static function getByChallengeChannel(
+        int|string $channelId,
+        ?string $acceptanceId,
+        ?string $beforeId = null,
+        int $limit = self::DEFAULT_LIMIT
+    ): array {
+        $dbChan = self::dbKey($channelId);
+        $limit  = max(1, min(self::MAX_LIMIT, $limit));
+        $fetch  = $limit + 1;
+
+        // Match the same idx_messages_channel index strategy used by
+        // getByChannel: index scan on (channel_id, created_at DESC), then
+        // tighten on challenge_acceptance_id (or its IS NULL form). The
+        // partial index from migrate.php speeds the non-null branch.
+        $acceptanceClause = $acceptanceId === null
+            ? 'AND challenge_acceptance_id IS NULL'
+            : 'AND challenge_acceptance_id = :acc';
+
+        if ($beforeId !== null) {
+            $sql = "
+                SELECT id, channel_id, type, event,
+                       guest_id, user_id, nickname, content, image_url, created_at, mentions,
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                       edited_at, deleted_at
+                FROM (
+                    SELECT
+                        id, channel_id, type, event,
+                        guest_id, user_id, nickname, content, image_url, mentions,
+                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                        EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
+                        EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
+                    FROM messages
+                    WHERE channel_id = :chan
+                      AND created_at < (SELECT created_at FROM messages WHERE id = :before)
+                      {$acceptanceClause}
+                    ORDER BY created_at DESC
+                    LIMIT :lim
+                ) sub
+                ORDER BY created_at ASC
+            ";
+            $stmt = Database::pdo()->prepare($sql);
+            $stmt->bindValue(':chan',   $dbChan);
+            $stmt->bindValue(':before', $beforeId);
+            $stmt->bindValue(':lim',    $fetch, \PDO::PARAM_INT);
+            if ($acceptanceId !== null) $stmt->bindValue(':acc', $acceptanceId);
+            $stmt->execute();
+        } else {
+            $sql = "
+                SELECT id, channel_id, type, event,
+                       guest_id, user_id, nickname, content, image_url, created_at, mentions,
+                       reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                       edited_at, deleted_at
+                FROM (
+                    SELECT
+                        id, channel_id, type, event,
+                        guest_id, user_id, nickname, content, image_url, mentions,
+                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                        EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                        EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
+                        EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
+                    FROM messages
+                    WHERE channel_id = :chan
+                      {$acceptanceClause}
+                    ORDER BY created_at DESC
+                    LIMIT :lim
+                ) sub
+                ORDER BY created_at ASC
+            ";
+            $stmt = Database::pdo()->prepare($sql);
+            $stmt->bindValue(':chan', $dbChan);
+            $stmt->bindValue(':lim',  $fetch, \PDO::PARAM_INT);
+            if ($acceptanceId !== null) $stmt->bindValue(':acc', $acceptanceId);
+            $stmt->execute();
+        }
+
+        $rows    = $stmt->fetchAll();
+        $hasMore = count($rows) > $limit;
+        if ($hasMore) array_shift($rows);
+
+        // Same retroactive userId resolution as getByChannel — copy/pasted
+        // rather than abstracted out so this method stays a drop-in
+        // replacement for the route layer.
+        $needsResolution = array_filter(
+            $rows,
+            static fn($r) => ($r['type'] === 'text' || $r['type'] === 'image')
+                          && empty($r['user_id'])
+                          && !empty($r['guest_id'])
+        );
+        if (!empty($needsResolution)) {
+            $guestIds    = array_values(array_unique(array_column($needsResolution, 'guest_id')));
+            $in          = implode(',', array_fill(0, count($guestIds), '?'));
+            $ustmt       = Database::pdo()->prepare("SELECT id, guest_id FROM users WHERE guest_id IN ($in)");
+            $ustmt->execute($guestIds);
+            $guestToUser = array_column($ustmt->fetchAll(), 'id', 'guest_id');
+            foreach ($rows as &$row) {
+                if (
+                    empty($row['user_id'])
+                    && !empty($row['guest_id'])
+                    && ($row['type'] === 'text' || $row['type'] === 'image')
+                    && isset($guestToUser[$row['guest_id']])
+                ) {
+                    $row['user_id'] = $guestToUser[$row['guest_id']];
+                }
+            }
+            unset($row);
+        }
+
+        return [
+            'messages' => array_map([self::class, 'format'], $rows),
+            'hasMore'  => $hasMore,
         ];
     }
 
@@ -418,19 +547,22 @@ class MessageRepository
         ?string $replyToNickname = null,
         ?string $replyToContent = null,
         string $replyToType = 'text',
-        array $mentions = []
+        array $mentions = [],
+        ?string $challengeAcceptanceId = null
     ): array {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
             INSERT INTO messages
                 (id, channel_id, type, guest_id, user_id, nickname, content, mentions,
-                 reply_to_id, reply_to_nickname, reply_to_content, reply_to_type)
-            VALUES (?, ?, 'text', ?, ?, ?, ?, ?::jsonb, ?, ?, ?, ?)
+                 reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                 challenge_acceptance_id)
+            VALUES (?, ?, 'text', ?, ?, ?, ?, ?::jsonb, ?, ?, ?, ?, ?)
         ")->execute([
             $id, self::dbKey($channelId), $guestId, $userId, $nickname, $content,
             json_encode(array_values($mentions)),
             $replyToId, $replyToNickname, $replyToContent, $replyToType,
+            $challengeAcceptanceId,
         ]);
 
         $result = [
@@ -531,14 +663,14 @@ class MessageRepository
         unset($msg);
     }
 
-    public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl, ?string $userId = null): array
+    public static function addImage(int|string $channelId, string $guestId, string $nickname, string $imageUrl, ?string $userId = null, ?string $challengeAcceptanceId = null): array
     {
         $id = bin2hex(random_bytes(8));
 
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, guest_id, user_id, nickname, image_url, content)
-            VALUES (?, ?, 'image', ?, ?, ?, ?, '')
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $imageUrl]);
+            INSERT INTO messages (id, channel_id, type, guest_id, user_id, nickname, image_url, content, challenge_acceptance_id)
+            VALUES (?, ?, 'image', ?, ?, ?, ?, '', ?)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $imageUrl, $challengeAcceptanceId]);
 
         return [
             'id'        => $id,

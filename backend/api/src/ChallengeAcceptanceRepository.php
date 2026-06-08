@@ -227,6 +227,30 @@ class ChallengeAcceptanceRepository
     }
 
     /**
+     * The id of the single currently-active acceptance on this challenge,
+     * or null if none is active. Used to stamp new messages with the
+     * current run's acceptance_id and to filter the challenge chat read
+     * to that run only, so each new acceptor sees a clean slate.
+     *
+     * Same "active" definition as hasActiveAcceptance() — IS_ACTIVE_SQL
+     * keeps pending in the active set so the moment a request lands the
+     * channel is already scoped to that prospective run.
+     */
+    public static function findActiveAcceptanceId(string $challengeId): ?string
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT ca.id FROM challenge_acceptances ca
+            WHERE ca.challenge_id = :id
+              AND " . self::IS_ACTIVE_SQL . "
+            ORDER BY ca.created_at DESC
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $challengeId]);
+        $val = $stmt->fetchColumn();
+        return $val === false ? null : (string) $val;
+    }
+
+    /**
      * Thread-channel access gate. True iff the given user is one of the two
      * parties of this thread (the acceptor OR the challenge creator).
      * Used by the thread message read/write routes.

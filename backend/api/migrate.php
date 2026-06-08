@@ -664,6 +664,52 @@ run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_nickname TEXT"
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_content  TEXT", 'messages.reply_to_content');
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS reply_to_type     TEXT NOT NULL DEFAULT 'text'", 'messages.reply_to_type');
 
+// messages — per-acceptance scoping for challenge channels.
+//
+// A challenge channel persists across multiple sequential acceptances on the
+// same channel_challenges row. Without this column, every new acceptor saw
+// the previous run's conversation when they landed on the channel — confusing
+// + leaks chat between runs. The column binds each message to the acceptance
+// that was active when it was written; the GET messages route filters to
+// "messages whose acceptance is the current active one" so each run reads
+// like a fresh chat. Messages outside any acceptance window (creator chatter
+// between runs, pre-acceptance system events) get NULL — they're visible
+// during the same "no active acceptance" state but hidden once a new run
+// starts.
+//
+// ON DELETE SET NULL: when an acceptance is cancelled & hard-deleted, leave
+// its messages in place (don't cascade-delete the chat). They'll fall back
+// to NULL and behave like cross-acceptance writes.
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS challenge_acceptance_id TEXT REFERENCES challenge_acceptances(id) ON DELETE SET NULL", 'messages.challenge_acceptance_id');
+// Partial index — the column is only meaningful for challenge channels
+// (city / event / DM channels never set it), so skip the NULL rows that
+// dominate the table.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_acceptance_channel
+    ON messages (channel_id, challenge_acceptance_id, created_at DESC)
+    WHERE challenge_acceptance_id IS NOT NULL", 'idx_messages_acceptance_channel');
+
+// One-shot backfill: stamp every existing challenge-channel message with the
+// most recent prior acceptance (any phase — including rejected). Heuristic:
+// "the acceptance that was already created by the time this message landed".
+// Messages older than the first acceptance keep NULL (pre-acceptance system
+// events like challenge creation banners), which is what we want.
+//
+// Idempotent: the WHERE challenge_acceptance_id IS NULL guard means re-runs
+// only touch rows the prior run didn't already stamp.
+run($pdo, "
+    UPDATE messages m
+    SET challenge_acceptance_id = (
+        SELECT ca.id
+        FROM challenge_acceptances ca
+        WHERE ca.challenge_id = m.channel_id
+          AND ca.created_at  <= m.created_at
+        ORDER BY ca.created_at DESC
+        LIMIT 1
+    )
+    WHERE m.challenge_acceptance_id IS NULL
+      AND m.channel_id IN (SELECT channel_id FROM channel_challenges)
+", 'backfill — stamp challenge messages with prior acceptance');
+
 // conversation_messages — reply support
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_id       TEXT REFERENCES conversation_messages(id) ON DELETE SET NULL", 'conversation_messages.reply_to_id');
 run($pdo, "ALTER TABLE conversation_messages ADD COLUMN IF NOT EXISTS reply_to_nickname TEXT", 'conversation_messages.reply_to_nickname');

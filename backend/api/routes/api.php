@@ -10979,7 +10979,11 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
-        $res = MessageRepository::getByChannel($challengeId, $beforeId ?: null, $limit);
+        // Each acceptance run gets its own chat lane — read only messages
+        // stamped with the currently-active acceptance, or only NULL-stamped
+        // messages when no run is in progress (pre/between-acceptance state).
+        $activeAcceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
+        $res = MessageRepository::getByChallengeChannel($challengeId, $activeAcceptanceId, $beforeId ?: null, $limit);
 
         // PR58 — enrich each text/image message with the sender's
         // mode + vibe + primaryBadge so the author chip renders the
@@ -11093,6 +11097,13 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
     $senderUser   = AuthService::currentUser();
     $senderUserId = $senderUser['id'] ?? null;
 
+    // Stamp every write with the currently-active acceptance so the chat
+    // is scoped per run. NULL is correct when there is no active run (the
+    // creator chatting between acceptances, etc.) — those messages will
+    // be hidden the moment a new acceptor lands and the read filter
+    // tightens to the new acceptance id.
+    $activeAcceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
+
     if ($type === 'image') {
         if (empty($imageUrl) || !is_string($imageUrl)) {
             Response::json(['error' => 'imageUrl is required for image messages'], 400);
@@ -11106,7 +11117,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
             Response::json(['error' => 'Invalid image reference'], 400);
         }
         try {
-            $message = MessageRepository::addImage($challengeId, $guestId, $nickname, $imageUrl, $senderUserId);
+            $message = MessageRepository::addImage($challengeId, $guestId, $nickname, $imageUrl, $senderUserId, $activeAcceptanceId);
         } catch (\Throwable $e) {
             error_log("[challenge-msg] DB error inserting image message challengeId={$challengeId}: " . $e->getMessage());
             Response::json(['error' => 'Failed to send message'], 500);
@@ -11135,7 +11146,8 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
                 $replySnap['nickname'] ?? null,
                 $replySnap['content']  ?? null,
                 $replySnap['type']     ?? 'text',
-                $mentions
+                $mentions,
+                $activeAcceptanceId
             );
         } catch (\Throwable $e) {
             error_log("[challenge-msg] DB error inserting message challengeId={$challengeId}: " . $e->getMessage());
