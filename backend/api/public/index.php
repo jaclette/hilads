@@ -68,6 +68,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/ChallengeParticipantRepository.php';
     require_once __DIR__ . '/../src/ModerationService.php';
     require_once __DIR__ . '/../src/R2Uploader.php';
+    require_once __DIR__ . '/../src/ImageProcessor.php';
     // Push broadcast page needs these - both for the page itself and for the
     // deferred dispatch loop that runs after the response flushes.
     // PushBroadcastService::dispatch → NotificationRepository::createUnchecked
@@ -198,6 +199,7 @@ require_once __DIR__ . '/../src/PushBroadcastService.php';
 require_once __DIR__ . '/../src/PushService.php';
 require_once __DIR__ . '/../src/MobilePushService.php';
 require_once __DIR__ . '/../src/R2Uploader.php';
+require_once __DIR__ . '/../src/ImageProcessor.php';
 require_once __DIR__ . '/../src/TicketmasterImporter.php';
 require_once __DIR__ . '/../src/WeatherService.php';
 require_once __DIR__ . '/../src/UserBadgeService.php';

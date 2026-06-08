@@ -26,6 +26,16 @@ $topScorer = $pdo->query("
     LIMIT 1
 ")->fetch(\PDO::FETCH_ASSOC) ?: null;
 
+// Avatar thumbnail backfill — how many users still serve the full
+// profile_photo_url as their "thumb" via the COALESCE fallback. Each
+// of those costs 500 kB-3 MB on every card render.
+$thumbsMissing = (int)$pdo->query("
+    SELECT COUNT(*) FROM users
+    WHERE deleted_at IS NULL
+      AND profile_photo_url       IS NOT NULL
+      AND profile_thumb_photo_url IS NULL
+")->fetchColumn();
+
 admin_head('Dashboard');
 admin_nav('/admin');
 ?>
@@ -59,6 +69,12 @@ admin_nav('/admin');
         <form method="POST" action="/admin/ranks/recalc-all" style="margin:0; display:inline-block;">
             <?= csrf_input() ?>
             <button type="submit" class="btn btn-secondary">↻ Recalculate ranks</button>
+        </form>
+        <form method="POST" action="/admin/thumbs/backfill" style="margin:0; display:inline-block;">
+            <?= csrf_input() ?>
+            <button type="submit" class="btn btn-secondary" <?= $thumbsMissing === 0 ? 'disabled' : '' ?>>
+                🖼 Backfill avatar thumbnails<?= $thumbsMissing > 0 ? " ({$thumbsMissing})" : '' ?>
+            </button>
         </form>
     </div>
 

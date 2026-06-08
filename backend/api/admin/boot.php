@@ -127,6 +127,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/ranks/recalc-all' && $method === 'POST') {
     require __DIR__ . '/ranks_recalc.php';
 
+} elseif ($uri === '/admin/thumbs/backfill' && $method === 'POST') {
+    require __DIR__ . '/thumbs_backfill.php';
+
 } elseif ($uri === '/admin/email') {
     require __DIR__ . '/email.php';
 
