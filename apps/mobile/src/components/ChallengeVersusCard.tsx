@@ -7,6 +7,7 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
 import { OpenChallengeSlot } from '@/components/OpenChallengeSlot';
+import { RankBadge } from '@/components/RankBadge';
 
 /**
  * Versus-layout challenge card. Replaces the previous flat ChallengeCard
@@ -192,14 +193,20 @@ function ChallengerAvatar({
 }) {
   const country = isInternational ? (challenge.country ?? null) : null;
   const userId  = challenge.created_by ?? null;
+  // Badge scope follows the duel: local → city rank, international →
+  // world rank. Backend already applies the staleness guard so this
+  // value is null whenever the user's score_month_ref has rolled over.
+  const rank    = pickRank(challenge, 'creator', isInternational);
   const inner = (
-    <AvatarWithFlag
-      userId={userId}
-      displayName={challenge.creator_display_name ?? '?'}
-      photoUrl={challenge.creator_thumb_avatar_url ?? null}
-      countryCode={country}
-      size={AVATAR_SIZE}
-    />
+    <AvatarBadgeStack rank={rank}>
+      <AvatarWithFlag
+        userId={userId}
+        displayName={challenge.creator_display_name ?? '?'}
+        photoUrl={challenge.creator_thumb_avatar_url ?? null}
+        countryCode={country}
+        size={AVATAR_SIZE}
+      />
+    </AvatarBadgeStack>
   );
   if (onAvatarPress && userId) {
     return (
@@ -220,6 +227,7 @@ function TakerAvatar({
 }) {
   const country = isInternational ? (challenge.acceptor_country ?? null) : null;
   const userId  = challenge.acceptor_user_id ?? null;
+  const rank    = pickRank(challenge, 'acceptor', isInternational);
 
   // Soft fade + scale entry — every time the taker identity changes
   // (null → user via a fresh acceptance landing over WS, or one taker
@@ -227,8 +235,18 @@ function TakerAvatar({
   // userId so React unmounts + remounts cleanly between identities.
   return (
     <FadeInAvatarSlot key={userId ?? 'taker'}>
-      {onAvatarPress && userId ? (
-        <TouchableOpacity activeOpacity={0.75} onPress={() => onAvatarPress(userId)}>
+      <AvatarBadgeStack rank={rank}>
+        {onAvatarPress && userId ? (
+          <TouchableOpacity activeOpacity={0.75} onPress={() => onAvatarPress(userId)}>
+            <AvatarWithFlag
+              userId={userId}
+              displayName={challenge.acceptor_display_name ?? '?'}
+              photoUrl={challenge.acceptor_thumb_avatar_url ?? null}
+              countryCode={country}
+              size={AVATAR_SIZE}
+            />
+          </TouchableOpacity>
+        ) : (
           <AvatarWithFlag
             userId={userId}
             displayName={challenge.acceptor_display_name ?? '?'}
@@ -236,17 +254,50 @@ function TakerAvatar({
             countryCode={country}
             size={AVATAR_SIZE}
           />
-        </TouchableOpacity>
-      ) : (
-        <AvatarWithFlag
-          userId={userId}
-          displayName={challenge.acceptor_display_name ?? '?'}
-          photoUrl={challenge.acceptor_thumb_avatar_url ?? null}
-          countryCode={country}
-          size={AVATAR_SIZE}
-        />
-      )}
+        )}
+      </AvatarBadgeStack>
     </FadeInAvatarSlot>
+  );
+}
+
+/**
+ * Select the rank to render based on challenge mode + which party.
+ * Local challenges → in_city; international → worldwide. Returns null
+ * for the "no badge" path so the caller doesn't have to branch.
+ */
+function pickRank(
+  challenge: Challenge,
+  party: 'creator' | 'acceptor',
+  isInternational: boolean,
+): number | null {
+  if (party === 'creator') {
+    return (isInternational
+      ? challenge.creator_monthly_rank_worldwide
+      : challenge.creator_monthly_rank_in_city) ?? null;
+  }
+  return (isInternational
+    ? challenge.acceptor_monthly_rank_worldwide
+    : challenge.acceptor_monthly_rank_in_city) ?? null;
+}
+
+/**
+ * Wraps an avatar with the rank badge floating astride the top edge.
+ * Badge tilts -10° (per spec) for a pinned-medal effect; the flag
+ * lives at bottom-right of the avatar so the two overlays never
+ * overlap. Rank null = the wrapper is a transparent passthrough so
+ * we don't pay layout cost for non-ranked users.
+ */
+function AvatarBadgeStack({
+  rank, children,
+}: { rank: number | null; children: React.ReactNode }) {
+  if (rank == null) return <>{children}</>;
+  return (
+    <View style={styles.badgeStack}>
+      {children}
+      <View style={styles.badgeAnchor} pointerEvents="none">
+        <RankBadge rank={rank} />
+      </View>
+    </View>
   );
 }
 
@@ -378,5 +429,17 @@ const styles = StyleSheet.create({
     fontSize:   12,
     fontWeight: '600',
     color:      Colors.muted,
+  },
+
+  // Badge anchor sits relative to the avatar so the medal/pill floats
+  // astride its top edge. Slightly inset from the absolute corner so
+  // it reads as "pinned" rather than "stuck in the corner".
+  badgeStack: {
+    position: 'relative',
+  },
+  badgeAnchor: {
+    position: 'absolute',
+    top:    -8,
+    left:   -6,
   },
 });

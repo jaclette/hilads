@@ -290,6 +290,17 @@ export interface Challenge {
   acceptor_display_name?:     string | null;
   acceptor_thumb_avatar_url?: string | null;
   acceptor_country?:          string | null;
+  /** Monthly rank badges on the versus avatars (Top 10 + podium for
+   *  Top 3). NULL = user is outside the relevant top-10 OR their
+   *  cached score_month_ref is stale (month rollover). The card reads
+   *  in_city for local challenges and worldwide for international,
+   *  matching the duel's narrative scope. Both parties expose both
+   *  scopes so the same DTO covers asymmetric cases (e.g. #1 in city
+   *  duelling a worldwide-only newcomer). */
+  creator_monthly_rank_in_city?:    number | null;
+  creator_monthly_rank_worldwide?:  number | null;
+  acceptor_monthly_rank_in_city?:   number | null;
+  acceptor_monthly_rank_worldwide?: number | null;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'
