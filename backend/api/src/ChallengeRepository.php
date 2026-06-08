@@ -85,11 +85,33 @@ class ChallengeRepository
                 -- references channels(id) so either works semantically.
                 WHERE ca.challenge_id = c.id
                   AND " . \ChallengeAcceptanceRepository::IS_IN_PROGRESS_SQL . "
-            )                                                       AS is_in_progress
+            )                                                       AS is_in_progress,
+            -- Versus-layout: the active taker's identity for the right-hand
+            -- avatar slot. LATERAL pulls the most-recent non-rejected
+            -- acceptance per challenge (1 row max via LIMIT 1). All three
+            -- non-terminal phases (pending/accepted/scheduled) AND the
+            -- terminal approved phase resolve here, so the card renders the
+            -- taker on both in-progress AND validated state. Rejected rows
+            -- are filtered out so a declined request doesn't leak into the
+            -- avatar. acceptor_country is derived from the taker's CURRENT
+            -- city (NOT the challenge target) — flag = identity.
+            ac.acceptor_user_id,
+            au.display_name             AS acceptor_display_name,
+            COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
+            au.current_city_id          AS acceptor_current_city_id
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
         LEFT JOIN users u           ON u.id = cc.created_by
         LEFT JOIN messages m        ON m.channel_id = c.id AND m.type IN ('text', 'image')
+        LEFT JOIN LATERAL (
+            SELECT ca.acceptor_user_id
+            FROM challenge_acceptances ca
+            WHERE ca.challenge_id = c.id
+              AND ca.phase <> 'rejected'
+            ORDER BY ca.created_at DESC
+            LIMIT 1
+        ) ac ON TRUE
+        LEFT JOIN users au          ON au.id = ac.acceptor_user_id
     ";
 
     /**
@@ -169,6 +191,17 @@ class ChallengeRepository
             'creator_display_name'     => $row['creator_display_name']     ?? null,
             'creator_username'         => $row['creator_username']         ?? null,
             'creator_thumb_avatar_url' => $row['creator_thumb_avatar_url'] ?? null,
+            // Versus-layout: the active taker's identity. Powers the
+            // right-hand avatar on the card (and the same on detail).
+            // Populated via the LATERAL acceptance join in SELECT above;
+            // null when the challenge has no non-rejected acceptance yet
+            // (State 1 / 3 — open or participants-only).
+            // acceptor_country is the taker's CURRENT city (their flag =
+            // identity), distinct from the challenge's target_country.
+            'acceptor_user_id'         => $row['acceptor_user_id']         ?? null,
+            'acceptor_display_name'    => $row['acceptor_display_name']    ?? null,
+            'acceptor_thumb_avatar_url'=> $row['acceptor_thumb_avatar_url']?? null,
+            'acceptor_country'         => self::countryForCityId($row['acceptor_current_city_id'] ?? null),
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
@@ -264,7 +297,10 @@ class ChallengeRepository
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
-                     u.profile_thumb_photo_url, u.profile_photo_url
+                     u.profile_thumb_photo_url, u.profile_photo_url,
+                     ac.acceptor_user_id, au.display_name,
+                     au.profile_thumb_photo_url, au.profile_photo_url,
+                     au.current_city_id
             ORDER BY cc.created_at DESC
             LIMIT $limit
         ");
@@ -307,7 +343,10 @@ class ChallengeRepository
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
-                     u.profile_thumb_photo_url, u.profile_photo_url
+                     u.profile_thumb_photo_url, u.profile_photo_url,
+                     ac.acceptor_user_id, au.display_name,
+                     au.profile_thumb_photo_url, au.profile_photo_url,
+                     au.current_city_id
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit
         ");
@@ -343,7 +382,10 @@ class ChallengeRepository
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
-                     u.profile_thumb_photo_url, u.profile_photo_url
+                     u.profile_thumb_photo_url, u.profile_photo_url,
+                     ac.acceptor_user_id, au.display_name,
+                     au.profile_thumb_photo_url, au.profile_photo_url,
+                     au.current_city_id
         ");
         $stmt->execute($params);
         $row = $stmt->fetch();
@@ -374,7 +416,10 @@ class ChallengeRepository
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
-                     u.profile_thumb_photo_url, u.profile_photo_url
+                     u.profile_thumb_photo_url, u.profile_photo_url,
+                     ac.acceptor_user_id, au.display_name,
+                     au.profile_thumb_photo_url, au.profile_photo_url,
+                     au.current_city_id
         ");
         $stmt->execute(['id' => $challengeId]);
         $row = $stmt->fetch();
