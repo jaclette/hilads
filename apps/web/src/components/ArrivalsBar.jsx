@@ -128,7 +128,12 @@ export function ArrivalsSheet({ open, arrivals, onClose, onTapUser, formatTime }
           {arrivals.length === 0 ? (
             <p className="arrivals-sheet-empty">{t('arrivalsBar.empty')}</p>
           ) : (
-            arrivals.map(a => {
+            // Newest at the top → oldest at the bottom. Mirrors the
+            // chat feed's reading order; spec was the inverse of
+            // the previous chronological dump.
+            [...arrivals]
+              .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
+              .map(a => {
               const tappable = !!a.userId || !!a.guestId
               return (
                 <button

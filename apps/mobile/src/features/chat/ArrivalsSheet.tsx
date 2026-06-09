@@ -72,7 +72,12 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
           {arrivals.length === 0 ? (
             <Text style={styles.empty}>{t('arrivalsBar.empty')}</Text>
           ) : (
-            arrivals.map(m => {
+            // Newest at the top → oldest at the bottom. Mirrors the
+            // chat feed's reading order so a user scanning recent
+            // activity sees the most relevant rows first.
+            [...arrivals]
+              .sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0))
+              .map(m => {
               const tappable = !!m.userId || !!m.guestId;
               return (
                 <TouchableOpacity
