@@ -21,6 +21,7 @@ import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 const GAP = 40             // px between the two looping copies (native: gap)
 const SPEED = 25           // px/sec - duration is derived so speed stays constant
 const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
+const EPSILON = 1          // px - measurement noise threshold for re-renders
 // Marginal overflows (a few px) hit ellipsis instead of triggering a constant
 // scroll — without this threshold every locale whose translation crept ~1 px
 // over the clip would marquee forever, which read as "flashing" on the
