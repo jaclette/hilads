@@ -26,6 +26,11 @@
       "pageTitle": "Tung thử thách",
       "title": "Khách lướt qua, không tung thử thách được.",
       "sub": "Đăng ký để tung thử thách cho người địa phương hoặc du khách và xác nhận nó."
+    },
+    "accept_challenge": {
+      "pageTitle": "Nhận thử thách",
+      "title": "Đăng ký để nhận thử thách này",
+      "sub": "30 giây. Bạn quay lại ngay với thử thách."
     }
   },
   "welcome": {

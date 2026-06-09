@@ -26,6 +26,11 @@
       "pageTitle": "Lançar um desafio",
       "title": "Fantasmas vêem, mas não desafiam.",
       "sub": "Cria conta para lançar um desafio a locais ou viajantes e validá-lo."
+    },
+    "accept_challenge": {
+      "pageTitle": "Aceitar um desafio",
+      "title": "Regista-te para aceitar este desafio",
+      "sub": "30 segundos. Voltas direto ao desafio."
     }
   },
   "welcome": {

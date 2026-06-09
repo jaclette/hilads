@@ -26,6 +26,11 @@
       "pageTitle": "Launch a challenge",
       "title": "Ghosts can browse, but can't challenge.",
       "sub": "Sign up to launch a challenge for locals or travelers, and own its validation."
+    },
+    "accept_challenge": {
+      "pageTitle": "Accept a challenge",
+      "title": "Sign up to take this challenge",
+      "sub": "Takes 30 seconds. You'll come right back to the challenge."
     }
   },
   "welcome": {

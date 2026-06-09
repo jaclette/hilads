@@ -26,6 +26,11 @@
       "pageTitle": "Mag-launch ng challenge",
       "title": "Pwede tumingin ang ghosts, pero hindi makakahamon.",
       "sub": "Mag-sign up para mag-launch ng challenge sa mga lokal o biyahero at i-validate ito."
+    },
+    "accept_challenge": {
+      "pageTitle": "Tanggapin ang hamon",
+      "title": "Mag-sign up para kunin ang hamon na ito",
+      "sub": "30 segundo lang. Babalik ka kaagad sa hamon."
     }
   },
   "welcome": {

@@ -26,6 +26,11 @@
       "pageTitle": "Lançar um desafio",
       "title": "Fantasmas olham, mas não desafiam.",
       "sub": "Cadastre-se para lançar um desafio para locais ou viajantes e validá-lo."
+    },
+    "accept_challenge": {
+      "pageTitle": "Aceitar um desafio",
+      "title": "Cadastre-se para aceitar este desafio",
+      "sub": "30 segundos. Você volta direto pro desafio."
     }
   },
   "welcome": {

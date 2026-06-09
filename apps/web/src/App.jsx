@@ -210,8 +210,8 @@ const GUEST_GATE_COPY = {
   accept_challenge: {
     pageTitle: 'Accept a challenge',
     emoji:     '🤝',
-    title:     "Ghosts can browse, but can't accept.",
-    sub:       "Sign up to take on a challenge, chat with the challenger, and plan when you'll meet IRL.",
+    title:     'Sign up to take this challenge',
+    sub:       "Takes 30 seconds. You'll come right back to the challenge.",
   },
 }
 

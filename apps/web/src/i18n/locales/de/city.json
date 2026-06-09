@@ -26,6 +26,11 @@
       "pageTitle": "Challenge starten",
       "title": "Ghosts schauen zu, aber sie fordern niemanden heraus.",
       "sub": "Registriere dich, um eine Challenge an Locals oder Reisende zu starten und sie zu validieren."
+    },
+    "accept_challenge": {
+      "pageTitle": "Challenge annehmen",
+      "title": "Registrier dich, um diese Challenge anzunehmen",
+      "sub": "30 Sekunden. Du landest direkt wieder auf der Challenge."
     }
   },
   "welcome": {

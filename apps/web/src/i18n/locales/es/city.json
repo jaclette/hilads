@@ -26,6 +26,11 @@
       "pageTitle": "Lanzar un reto",
       "title": "Los fantasmas miran, pero no retan.",
       "sub": "Regístrate para lanzar un reto a locales o viajeros y validarlo."
+    },
+    "accept_challenge": {
+      "pageTitle": "Aceptar un desafío",
+      "title": "Regístrate para aceptar este desafío",
+      "sub": "30 segundos. Vuelves al desafío al instante."
     }
   },
   "welcome": {

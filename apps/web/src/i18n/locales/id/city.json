@@ -26,6 +26,11 @@
       "pageTitle": "Luncurkan tantangan",
       "title": "Hantu boleh lihat, tapi tak bisa menantang.",
       "sub": "Daftar untuk meluncurkan tantangan ke warga lokal atau pelancong dan memvalidasinya."
+    },
+    "accept_challenge": {
+      "pageTitle": "Terima tantangan",
+      "title": "Daftar untuk menerima tantangan ini",
+      "sub": "30 detik. Kamu langsung balik ke tantangan."
     }
   },
   "welcome": {

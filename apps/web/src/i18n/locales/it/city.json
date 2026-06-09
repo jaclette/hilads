@@ -26,6 +26,11 @@
       "pageTitle": "Lancia una sfida",
       "title": "I fantasmi guardano, ma non sfidano.",
       "sub": "Iscriviti per lanciare una sfida a locali o viaggiatori e poterla validare."
+    },
+    "accept_challenge": {
+      "pageTitle": "Accettare una sfida",
+      "title": "Iscriviti per accettare questa sfida",
+      "sub": "30 secondi. Torni subito alla sfida."
     }
   },
   "welcome": {
