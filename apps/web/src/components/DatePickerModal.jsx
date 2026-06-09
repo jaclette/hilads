@@ -27,8 +27,16 @@ export default function DatePickerModal({
   initialVenue,
 }) {
   const { t } = useTranslation('challenge')
+  // Chip selections — fast path for the common case (within the next
+  // 8 days, at one of the 6 preset times).
   const [dayOffset, setDayOffset] = useState(0)
   const [timeKey,   setTimeKey]   = useState('19:00')
+  // Free-form selections — escape hatch when the user wants a day past
+  // the chip horizon, OR a time the presets don't cover. When either
+  // is non-null it WINS over the chip on submit, and the chip
+  // de-highlights so it's clear which value's in play.
+  const [customDate, setCustomDate] = useState(null) // 'YYYY-MM-DD' or null
+  const [customTime, setCustomTime] = useState(null) // 'HH:MM'      or null
   const [venue,     setVenue]     = useState(initialVenue ?? '')
 
   useEffect(() => {
@@ -38,9 +46,21 @@ export default function DatePickerModal({
     const offset = Math.round(
       (new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime() - todayMidnight.getTime()) / 86400000,
     )
-    if (offset >= 0 && offset <= 7) setDayOffset(offset)
+    if (offset >= 0 && offset <= 7) {
+      setDayOffset(offset)
+      setCustomDate(null)
+    } else {
+      // Outside the chip horizon → drop into the date input so the
+      // initial value round-trips faithfully.
+      setCustomDate(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)
+    }
     const matched = TIME_PRESETS.find(p => p.h === d.getHours() && p.m === d.getMinutes())
-    if (matched) setTimeKey(matched.key)
+    if (matched) {
+      setTimeKey(matched.key)
+      setCustomTime(null)
+    } else {
+      setCustomTime(`${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`)
+    }
     if (initialVenue) setVenue(initialVenue)
   }, [initialStartsAt, initialVenue])
 
@@ -52,10 +72,36 @@ export default function DatePickerModal({
     return { offset: i, label: d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' }) }
   })
 
+  // Min/max bounds for the native date input — never let the user
+  // propose a meet-up in the past, and cap at +90 days so an
+  // accidental keystroke doesn't book something a decade out.
+  const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  const minDateAttr = fmt(today)
+  const maxDate = new Date(today); maxDate.setDate(today.getDate() + 90)
+  const maxDateAttr = fmt(maxDate)
+
   function submit() {
-    const preset = TIME_PRESETS.find(p => p.key === timeKey)
-    const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + dayOffset)
-    d.setHours(preset.h, preset.m, 0, 0)
+    // Resolve the day: custom > chip. Custom is a YYYY-MM-DD string
+    // (local midnight); chip is an offset from today.
+    let d
+    if (customDate) {
+      const [y, m, day] = customDate.split('-').map(Number)
+      d = new Date(y, (m || 1) - 1, day || 1)
+      d.setHours(0, 0, 0, 0)
+    } else {
+      d = new Date(today); d.setDate(today.getDate() + dayOffset)
+    }
+    // Resolve the time: custom > chip. Custom is HH:MM; chip is a key.
+    let h = 19, mn = 0
+    if (customTime) {
+      const [hh, mm] = customTime.split(':').map(Number)
+      h = isFinite(hh) ? hh : 19
+      mn = isFinite(mm) ? mm : 0
+    } else {
+      const preset = TIME_PRESETS.find(p => p.key === timeKey)
+      if (preset) { h = preset.h; mn = preset.m }
+    }
+    d.setHours(h, mn, 0, 0)
     const startsAt = Math.floor(d.getTime() / 1000)
     onSubmit(startsAt, startsAt + 2 * 3600, venue.trim() || null)
   }
@@ -101,21 +147,44 @@ export default function DatePickerModal({
           <div style={pillsRow}>
             {dayLabels.map(d => (
               <button
-                key={d.offset} type="button" onClick={() => setDayOffset(d.offset)}
-                style={d.offset === dayOffset ? pillSelected : pill}
+                key={d.offset} type="button"
+                onClick={() => { setDayOffset(d.offset); setCustomDate(null) }}
+                style={d.offset === dayOffset && !customDate ? pillSelected : pill}
               >{d.label}</button>
             ))}
           </div>
+          {/* Or pick a specific day. Native <input type=date> for
+              free locale-aware UI + keyboard input. Setting it
+              de-selects the day chip; clearing it falls back to the
+              chip selection. */}
+          <input
+            type="date"
+            value={customDate ?? ''}
+            min={minDateAttr}
+            max={maxDateAttr}
+            onChange={e => setCustomDate(e.target.value || null)}
+            style={specificInput}
+            aria-label={t('schedule.picker.specificDate', { defaultValue: 'Pick a specific date' })}
+          />
 
           <div style={sectionLabel}>{t('schedule.picker.timeLabel')}</div>
           <div style={pillsGrid}>
             {TIME_PRESETS.map(p => (
               <button
-                key={p.key} type="button" onClick={() => setTimeKey(p.key)}
-                style={p.key === timeKey ? pillSelected : pill}
+                key={p.key} type="button"
+                onClick={() => { setTimeKey(p.key); setCustomTime(null) }}
+                style={p.key === timeKey && !customTime ? pillSelected : pill}
               >{p.key}</button>
             ))}
           </div>
+          {/* Or pick a specific time. */}
+          <input
+            type="time"
+            value={customTime ?? ''}
+            onChange={e => setCustomTime(e.target.value || null)}
+            style={specificInput}
+            aria-label={t('schedule.picker.specificTime', { defaultValue: 'Pick a specific time' })}
+          />
 
           <div style={sectionLabel}>{t('schedule.picker.whereLabel')}</div>
           <input
@@ -163,4 +232,20 @@ const pillSelected = {
   background: 'rgba(255,122,60,0.14)',
   borderColor: '#FF7A3C',
   color: '#FF7A3C', fontWeight: 800,
+}
+// Free-form date / time inputs — sit below their chip rows and act as
+// an escape hatch when none of the chips match. Visually tertiary
+// (small, muted border) so they read as "or, pick exactly". Native
+// inputs carry locale-aware UI on every modern browser.
+const specificInput = {
+  marginTop: 8,
+  width: '100%',
+  boxSizing: 'border-box',
+  background: 'var(--bg-2, #1f1a17)',
+  border: '1px solid rgba(255,255,255,0.10)',
+  borderRadius: 10,
+  padding: '8px 10px',
+  color: 'var(--text, #fff)',
+  fontSize: 13,
+  colorScheme: 'dark',
 }
