@@ -11814,6 +11814,18 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(34, 197, 94, 0.25);
   color: #4ade80;
 }
+/* "⏳ In progress" — amber tint matches the native mobile pill. There IS
+   an earlier .challenge-badge--in-progress definition further up the file
+   (line ~4376), but the generic .challenge-badge baseline defined right
+   above THIS block lands later in the cascade with the same specificity,
+   so the baseline's grey background was winning. Re-declare here, after
+   the baseline, so the amber actually takes. Keep this block as the
+   source of truth and remove the earlier one if you stumble on it. */
+.challenge-badge--in-progress {
+  background: rgba(251, 191, 36, 0.10);
+  border-color: rgba(251, 191, 36, 0.30);
+  color: #fbbf24;
+}
 
 .challenge-actions {
   padding: 10px 16px 12px;
