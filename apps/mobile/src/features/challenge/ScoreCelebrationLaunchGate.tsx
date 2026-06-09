@@ -45,16 +45,30 @@ export function ScoreCelebrationLaunchGate() {
   }, [account?.id, closed]);
 
   // Live re-fetch triggers. Any WS event that emits score_events
-  // server-side should reset `closed` + clear `data` so the existing
-  // fetch effect re-runs and the popin surfaces without the user
-  // having to relaunch the app. Two known surfaces today:
-  //   - mutual_rating_complete (PR47): debrief +30/+40 lands
-  //   - challenge_date_approved:        date_locked +5/+5 lands
-  // Both broadcast to BOTH parties (proposer + approver / rater +
-  // ratee), so the listener fires on whichever side earned points.
+  // server-side fetches /me/score-celebration directly here and
+  // surfaces the popin if there's a non-zero delta. We can't rely on
+  // the cold-start effect above re-firing — setting closed=false
+  // when it's already false is a React no-op and the dep change is
+  // skipped. Direct fetch sidesteps that.
+  //
+  // Two surfaces today:
+  //   - mutual_rating_complete: debrief +30/+40 lands
+  //   - challenge_date_approved: date_locked +5/+5 lands
+  // Both broadcast to BOTH parties, so the listener fires on
+  // whichever side earned points.
   useEffect(() => {
     if (!account?.id) return;
-    const trigger = () => { setClosed(false); setData(null); };
+    const trigger = async () => {
+      try {
+        const result = await fetchScoreCelebration();
+        if (result?.points > 0) {
+          setClosed(false);
+          setData(result);
+        }
+      } catch {
+        // non-fatal — gate stays as-is, user can re-launch the app
+      }
+    };
     const offRating = socket.on('mutual_rating_complete', trigger);
     const offDate   = socket.on('challenge_date_approved', trigger);
     return () => { offRating(); offDate(); };

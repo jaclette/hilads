@@ -8538,6 +8538,36 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
         // city + world ranks may have flipped. Service dedupes the
         // city if they share one (local challenge case).
         MonthlyRankService::recalcAfterScoreChange($callerId, $rateeId);
+
+        // Reopen the challenge channel so a new taker can start the
+        // next round. The completed acceptance row stays as 'approved'
+        // (the mutual-rating trigger already flipped it; the +5/+5
+        // +30/+40 score_events are attributed to it for the history).
+        // Only the channel-level status resets so the card on the city
+        // feed flips from "Validated" back to "Available" and any
+        // viewer who didn't trigger the reset sees it via WS.
+        try {
+            $stmt = Database::pdo()->prepare("
+                UPDATE channel_challenges
+                SET status       = 'open',
+                    validated_at = NULL,
+                    updated_at   = now()
+                WHERE channel_id = :id
+                  AND status     = 'validated'
+                RETURNING channel_id, city_id
+            ");
+            $stmt->execute(['id' => $challengeId]);
+            $resetRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($resetRow && is_string($resetRow['city_id'] ?? null)
+                && preg_match('/^city_(\d+)$/', $resetRow['city_id'], $m)) {
+                $reopened = ChallengeRepository::findById($challengeId, null);
+                if ($reopened !== null) {
+                    broadcastChallengeUnvalidatedToWs((int) $m[1], $reopened);
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[ratings] channel reset after mutual failed (non-fatal): ' . $e->getMessage());
+        }
     } else {
         // FIRST rating just landed - the OTHER party hasn't rated yet.
         // Two side-effects, both non-fatal so the rating insert is never

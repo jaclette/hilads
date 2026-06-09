@@ -29,15 +29,26 @@ export default function ScoreCelebrationLaunchGate({ account, refetchKey = 0, on
     return () => { cancelled = true }
   }, [account?.id, closed])
 
-  // PR47 - host bumps refetchKey on the WS 'mutual_rating_complete'
-  // event. Reset closed + data so the fetch effect above re-runs and
-  // surfaces the new debrief points popin without a page reload.
+  // Host bumps refetchKey on a WS event that earned points
+  // (mutual_rating_complete, challenge_date_approved). We can't rely
+  // on the cold-start effect above re-firing — `closed` is initially
+  // false, so setting it to false again is a no-op and React skips
+  // the dep change. Fetch directly here instead, then surface the
+  // popin once we have a non-zero delta. This is what makes the
+  // second rater see their +30/+40 popin without leaving the page.
   useEffect(() => {
-    if (refetchKey > 0) {
-      setClosed(false)
-      setData(null)
-    }
-  }, [refetchKey])
+    if (refetchKey <= 0 || !account?.id) return
+    let cancelled = false
+    ;(async () => {
+      const result = await fetchScoreCelebration()
+      if (cancelled) return
+      if (result && result.points > 0) {
+        setClosed(false)
+        setData(result)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [refetchKey, account?.id])
 
   // Shared cleanup - acks the watermark and closes the modal. Used by
   // both the "Let's go" CTA path and the row-tap → leaderboard path so
