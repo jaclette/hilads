@@ -43,13 +43,26 @@
     "inProgress": "進行中",
     "takeIt": "受ける",
     "takerLabel": "挑戦者",
-    "rankBadge": "{{rank}} 位"
+    "rankBadge": "{{rank}} 位",
+    "photoBadge": "フォト"
   },
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",
   "forLocals": "🏠 ローカル向け",
   "forExplorers": "🧳 旅行者向け",
+  "validation": {
+    "label": "どう認証する？",
+    "meet": {
+      "label": "🤝 直接会う",
+      "hint": "実際に会って一緒に体験しましょう",
+      "bonusChip": "直接会うと+50ポイントのボーナス"
+    },
+    "photo_proof": {
+      "label": "📸 写真で証明",
+      "hint": "離れた場所から写真で証明を受けます"
+    }
+  },
   "notFound": "チャレンジが見つかりません",
   "typeBadge": {
     "food": "食チャレンジ",
@@ -490,7 +503,8 @@
       "meetup": "ミッション達成 🎉",
       "debrief": "ミッション達成 🎉",
       "ghost": "次回頑張ろう 👻",
-      "default": "ランキングを駆け上がってる 🚀"
+      "default": "ランキングを駆け上がってる 🚀",
+      "meet_bonus": "直接会うボーナス獲得 🤝"
     },
     "rank": {
       "city": "{{city}}で {{rank}}位",
@@ -509,7 +523,8 @@
       "meetup": "対面",
       "debrief": "相互評価",
       "ghost": "すっぽかし",
-      "default": "獲得"
+      "default": "獲得",
+      "meet_bonus": "直接会うボーナス"
     },
     "event": {
       "deletedChallenge": "削除されたチャレンジ",

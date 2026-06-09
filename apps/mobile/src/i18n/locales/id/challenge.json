@@ -43,13 +43,26 @@
     "inProgress": "Berlangsung",
     "takeIt": "Saya terima",
     "takerLabel": "Penerima",
-    "rankBadge": "Peringkat {{rank}}"
+    "rankBadge": "Peringkat {{rank}}",
+    "photoBadge": "Foto"
   },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
   "openBadge": "Terbuka",
   "forLocals": "🏠 Untuk local",
   "forExplorers": "🧳 Untuk pelancong",
+  "validation": {
+    "label": "Validasinya gimana?",
+    "meet": {
+      "label": "🤝 Ketemuan",
+      "hint": "Rasakan langsung bareng",
+      "bonusChip": "+50 bonus kalau kalian ketemuan"
+    },
+    "photo_proof": {
+      "label": "📸 Bukti foto",
+      "hint": "Terima bukti dari jauh"
+    }
+  },
   "notFound": "Tantangan tidak ditemukan",
   "typeBadge": {
     "food": "Tantangan makanan",
@@ -490,7 +503,8 @@
       "meetup": "Misi selesai 🎉",
       "debrief": "Misi selesai 🎉",
       "ghost": "Semoga lebih beruntung lain kali 👻",
-      "default": "Kamu naik peringkat 🚀"
+      "default": "Kamu naik peringkat 🚀",
+      "meet_bonus": "Bonus ketemuan kebuka 🤝"
     },
     "rank": {
       "city": "#{{rank}} di {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Sudah bertemu",
       "debrief": "Saling beri rating",
       "ghost": "Ghosting",
-      "default": "Diraih"
+      "default": "Diraih",
+      "meet_bonus": "Bonus ketemuan"
     },
     "event": {
       "deletedChallenge": "Challenge dihapus",

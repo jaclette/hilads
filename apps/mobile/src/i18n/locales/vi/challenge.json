@@ -43,13 +43,26 @@
     "inProgress": "Đang diễn ra",
     "takeIt": "Nhận thử thách",
     "takerLabel": "Người nhận",
-    "rankBadge": "Hạng {{rank}}"
+    "rankBadge": "Hạng {{rank}}",
+    "photoBadge": "Ảnh"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
   "openBadge": "Mở",
   "forLocals": "🏠 Cho người địa phương",
   "forExplorers": "🧳 Cho du khách",
+  "validation": {
+    "label": "Xác minh kiểu nào?",
+    "meet": {
+      "label": "🤝 Gặp mặt",
+      "hint": "Cùng nhau trải nghiệm trực tiếp",
+      "bonusChip": "Gặp mặt được thêm +50 thưởng"
+    },
+    "photo_proof": {
+      "label": "📸 Ảnh chứng minh",
+      "hint": "Chấp nhận chứng minh từ xa"
+    }
+  },
   "notFound": "Không tìm thấy thử thách",
   "typeBadge": {
     "food": "Thử thách ăn uống",
@@ -490,7 +503,8 @@
       "meetup": "Nhiệm vụ hoàn thành 🎉",
       "debrief": "Nhiệm vụ hoàn thành 🎉",
       "ghost": "May mắn lần sau 👻",
-      "default": "Bạn đang leo bảng xếp hạng 🚀"
+      "default": "Bạn đang leo bảng xếp hạng 🚀",
+      "meet_bonus": "Mở khóa thưởng gặp mặt 🤝"
     },
     "rank": {
       "city": "#{{rank}} tại {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Đã gặp",
       "debrief": "Cả hai đã đánh giá",
       "ghost": "Ghosted",
-      "default": "Đã đạt"
+      "default": "Đã đạt",
+      "meet_bonus": "Thưởng gặp mặt"
     },
     "event": {
       "deletedChallenge": "Challenge đã xoá",

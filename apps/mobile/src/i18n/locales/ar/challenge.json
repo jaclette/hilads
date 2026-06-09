@@ -43,13 +43,26 @@
     "inProgress": "قيد التنفيذ",
     "takeIt": "أتقبله",
     "takerLabel": "المتلقي",
-    "rankBadge": "المرتبة {{rank}}"
+    "rankBadge": "المرتبة {{rank}}",
+    "photoBadge": "صورة"
   },
   "statusInProgress": "التحدي جارٍ",
   "statusAccomplished": "تم إنجاز التحدي",
   "openBadge": "مفتوح",
   "forLocals": "🏠 للمحليين",
   "forExplorers": "🧳 للمسافرين",
+  "validation": {
+    "label": "كيف تتم المصادقة؟",
+    "meet": {
+      "label": "🤝 لقاء",
+      "hint": "عيشوا التجربة معًا وجهًا لوجه",
+      "bonusChip": "+50 مكافأة عند لقائكما وجهًا لوجه"
+    },
+    "photo_proof": {
+      "label": "📸 صورة كإثبات",
+      "hint": "قبول الإثبات عن بُعد"
+    }
+  },
   "notFound": "لم يُعثر على التحدي",
   "typeBadge": {
     "food": "تحدي طعام",
@@ -490,7 +503,8 @@
       "meetup": "المهمة منجزة 🎉",
       "debrief": "المهمة منجزة 🎉",
       "ghost": "حظ أفضل في المرة القادمة 👻",
-      "default": "أنت تتقدم في الترتيب 🚀"
+      "default": "أنت تتقدم في الترتيب 🚀",
+      "meet_bonus": "تم فتح مكافأة اللقاء 🤝"
     },
     "rank": {
       "city": "#{{rank}} في {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "تم اللقاء",
       "debrief": "تقييم متبادل",
       "ghost": "تجاهل",
-      "default": "مكتسبة"
+      "default": "مكتسبة",
+      "meet_bonus": "مكافأة اللقاء"
     },
     "event": {
       "deletedChallenge": "تحدي محذوف",

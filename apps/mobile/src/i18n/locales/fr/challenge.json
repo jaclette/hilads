@@ -43,13 +43,26 @@
     "inProgress": "En cours",
     "takeIt": "Je le relève",
     "takerLabel": "Preneur",
-    "rankBadge": "Rang {{rank}}"
+    "rankBadge": "Rang {{rank}}",
+    "photoBadge": "Photo"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",
   "forLocals": "🏠 Pour les locaux",
   "forExplorers": "🧳 Pour les voyageurs",
+  "validation": {
+    "label": "Comment valider ?",
+    "meet": {
+      "label": "🤝 Rencontre",
+      "hint": "Partagez l'expérience en vrai",
+      "bonusChip": "+50 bonus Rencontre quand vous vous voyez"
+    },
+    "photo_proof": {
+      "label": "📸 Preuve photo",
+      "hint": "Accepter la preuve à distance"
+    }
+  },
   "notFound": "Défi introuvable",
   "typeBadge": {
     "food": "Défi bouffe",
@@ -490,7 +503,8 @@
       "meetup": "Mission accomplie 🎉",
       "debrief": "Mission accomplie 🎉",
       "ghost": "Tu feras mieux la prochaine fois 👻",
-      "default": "Tu grimpes au classement 🚀"
+      "default": "Tu grimpes au classement 🚀",
+      "meet_bonus": "Bonus Rencontre débloqué 🤝"
     },
     "rank": {
       "city": "#{{rank}} à {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Rencontré",
       "debrief": "Notés tous les deux",
       "ghost": "Ghosté",
-      "default": "Gagnés"
+      "default": "Gagnés",
+      "meet_bonus": "Bonus Rencontre"
     },
     "event": {
       "deletedChallenge": "Challenge supprimé",

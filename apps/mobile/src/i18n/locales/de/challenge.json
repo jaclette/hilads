@@ -43,13 +43,26 @@
     "inProgress": "Aktiv",
     "takeIt": "Annehmen",
     "takerLabel": "Annehmer",
-    "rankBadge": "Rang {{rank}}"
+    "rankBadge": "Rang {{rank}}",
+    "photoBadge": "Foto"
   },
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",
   "forLocals": "🏠 Für Locals",
   "forExplorers": "🧳 Für Reisende",
+  "validation": {
+    "label": "Wie validieren?",
+    "meet": {
+      "label": "🤝 Treffen",
+      "hint": "Erlebt es gemeinsam vor Ort",
+      "bonusChip": "+50 Treff-Bonus, wenn ihr euch trefft"
+    },
+    "photo_proof": {
+      "label": "📸 Foto-Beweis",
+      "hint": "Beweis aus der Ferne annehmen"
+    }
+  },
   "notFound": "Challenge nicht gefunden",
   "typeBadge": {
     "food": "Food Challenge",
@@ -490,7 +503,8 @@
       "meetup": "Mission erfüllt 🎉",
       "debrief": "Mission erfüllt 🎉",
       "ghost": "Beim nächsten Mal klappt’s 👻",
-      "default": "Du steigst im Ranking 🚀"
+      "default": "Du steigst im Ranking 🚀",
+      "meet_bonus": "Treff-Bonus freigeschaltet 🤝"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Getroffen",
       "debrief": "Beide bewertet",
       "ghost": "Geghostet",
-      "default": "Verdient"
+      "default": "Verdient",
+      "meet_bonus": "Treff-Bonus"
     },
     "event": {
       "deletedChallenge": "Gelöschter Challenge",

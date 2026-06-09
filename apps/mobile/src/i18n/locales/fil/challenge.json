@@ -43,13 +43,26 @@
     "inProgress": "Ongoing",
     "takeIt": "Tatanggapin ko",
     "takerLabel": "Tagapagtanggap",
-    "rankBadge": "Ranggo {{rank}}"
+    "rankBadge": "Ranggo {{rank}}",
+    "photoBadge": "Photo"
   },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
   "openBadge": "Bukas",
   "forLocals": "🏠 Para sa mga local",
   "forExplorers": "🧳 Para sa mga biyahero",
+  "validation": {
+    "label": "Paano i-validate?",
+    "meet": {
+      "label": "🤝 Magkita",
+      "hint": "I-share ang experience nang harap-harapan",
+      "bonusChip": "+50 bonus pag nag-meet kayo in person"
+    },
+    "photo_proof": {
+      "label": "📸 Photo proof",
+      "hint": "Tanggapin ang proof remotely"
+    }
+  },
   "notFound": "Hindi nahanap ang challenge",
   "typeBadge": {
     "food": "Pagkain challenge",
@@ -490,7 +503,8 @@
       "meetup": "Mission accomplished 🎉",
       "debrief": "Mission accomplished 🎉",
       "ghost": "Sa susunod ulit 👻",
-      "default": "Umaakyat ka sa ranking 🚀"
+      "default": "Umaakyat ka sa ranking 🚀",
+      "meet_bonus": "Na-unlock ang meet bonus 🤝"
     },
     "rank": {
       "city": "#{{rank}} sa {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Nagkita",
       "debrief": "Parehong nag-rate",
       "ghost": "Ghosted",
-      "default": "Nakuha"
+      "default": "Nakuha",
+      "meet_bonus": "Meet bonus"
     },
     "event": {
       "deletedChallenge": "Tinanggal na challenge",

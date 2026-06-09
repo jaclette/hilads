@@ -43,13 +43,26 @@
     "inProgress": "กำลังทำ",
     "takeIt": "รับมือ",
     "takerLabel": "ผู้รับ",
-    "rankBadge": "อันดับ {{rank}}"
+    "rankBadge": "อันดับ {{rank}}",
+    "photoBadge": "ภาพถ่าย"
   },
   "statusInProgress": "ชาเลนจ์กำลังดำเนินอยู่",
   "statusAccomplished": "ชาเลนจ์สำเร็จ",
   "openBadge": "เปิด",
   "forLocals": "🏠 สำหรับคนท้องถิ่น",
   "forExplorers": "🧳 สำหรับนักสำรวจ",
+  "validation": {
+    "label": "ยืนยันยังไงดี?",
+    "meet": {
+      "label": "🤝 เจอกัน",
+      "hint": "มาแชร์ประสบการณ์ด้วยกันตัวต่อตัว",
+      "bonusChip": "+50 โบนัสเมื่อนัดเจอกัน"
+    },
+    "photo_proof": {
+      "label": "📸 พิสูจน์ด้วยภาพ",
+      "hint": "รับการพิสูจน์จากระยะไกล"
+    }
+  },
   "notFound": "ไม่พบชาเลนจ์",
   "typeBadge": {
     "food": "ชาเลนจ์อาหาร",
@@ -486,7 +499,8 @@
       "meetup": "ภารกิจสำเร็จ 🎉",
       "debrief": "ภารกิจสำเร็จ 🎉",
       "ghost": "คราวหน้าโชคดีกว่านี้ 👻",
-      "default": "คุณกำลังไต่อันดับ 🚀"
+      "default": "คุณกำลังไต่อันดับ 🚀",
+      "meet_bonus": "ปลดล็อกโบนัสนัดเจอ 🤝"
     },
     "rank": {
       "city": "อันดับ {{rank}} ใน {{city}}",
@@ -505,7 +519,8 @@
       "meetup": "เจอกันแล้ว",
       "debrief": "ให้คะแนนแล้วทั้งคู่",
       "ghost": "หายไป",
-      "default": "ได้รับ"
+      "default": "ได้รับ",
+      "meet_bonus": "โบนัสนัดเจอ"
     },
     "event": {
       "deletedChallenge": "ชาเลนจ์ที่ถูกลบ",

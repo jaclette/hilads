@@ -43,13 +43,26 @@
     "inProgress": "進行中",
     "takeIt": "我接受",
     "takerLabel": "接戰者",
-    "rankBadge": "第 {{rank}} 名"
+    "rankBadge": "第 {{rank}} 名",
+    "photoBadge": "照片"
   },
   "statusInProgress": "挑戰進行中",
   "statusAccomplished": "挑戰搞定",
   "openBadge": "開放",
   "forLocals": "🏠 給在地人",
   "forExplorers": "🧳 給旅人",
+  "validation": {
+    "label": "如何驗證？",
+    "meet": {
+      "label": "🤝 見面",
+      "hint": "一起親身體驗",
+      "bonusChip": "見面再拿 +50 獎勵"
+    },
+    "photo_proof": {
+      "label": "📸 照片驗證",
+      "hint": "遠端接受照片驗證"
+    }
+  },
   "notFound": "找不到挑戰",
   "typeBadge": {
     "food": "美食挑戰",
@@ -490,7 +503,8 @@
       "meetup": "任務完成 🎉",
       "debrief": "任務完成 🎉",
       "ghost": "下次再來 👻",
-      "default": "你正在榜上攀升 🚀"
+      "default": "你正在榜上攀升 🚀",
+      "meet_bonus": "見面獎勵解鎖 🤝"
     },
     "rank": {
       "city": "{{city}} 第 {{rank}} 名",
@@ -509,7 +523,8 @@
       "meetup": "已見面",
       "debrief": "雙方評價",
       "ghost": "放鴿子",
-      "default": "獲得"
+      "default": "獲得",
+      "meet_bonus": "見面獎勵"
     },
     "event": {
       "deletedChallenge": "已刪除的挑戰",

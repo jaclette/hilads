@@ -43,13 +43,26 @@
     "inProgress": "जारी",
     "takeIt": "मैं लूंगा",
     "takerLabel": "चुनौती लेने वाला",
-    "rankBadge": "रैंक {{rank}}"
+    "rankBadge": "रैंक {{rank}}",
+    "photoBadge": "फ़ोटो"
   },
   "statusInProgress": "चुनौती जारी है",
   "statusAccomplished": "चुनौती पूरी की",
   "openBadge": "ओपन",
   "forLocals": "🏠 लोकल्स के लिए",
   "forExplorers": "🧳 यात्रियों के लिए",
+  "validation": {
+    "label": "सत्यापन कैसे करें?",
+    "meet": {
+      "label": "🤝 मिलना",
+      "hint": "अनुभव साथ में करें आमने-सामने",
+      "bonusChip": "आमने-सामने मिलने पर +50 बोनस"
+    },
+    "photo_proof": {
+      "label": "📸 फ़ोटो प्रमाण",
+      "hint": "दूर से प्रमाण स्वीकार करें"
+    }
+  },
   "notFound": "चैलेंज नहीं मिला",
   "typeBadge": {
     "food": "फ़ूड चैलेंज",
@@ -486,7 +499,8 @@
       "meetup": "मिशन पूरा 🎉",
       "debrief": "मिशन पूरा 🎉",
       "ghost": "अगली बार बेहतर 👻",
-      "default": "तू रैंकिंग में ऊपर चढ़ रहा है 🚀"
+      "default": "तू रैंकिंग में ऊपर चढ़ रहा है 🚀",
+      "meet_bonus": "मिलने का बोनस अनलॉक 🤝"
     },
     "rank": {
       "city": "{{city}} में #{{rank}}",
@@ -505,7 +519,8 @@
       "meetup": "मिले",
       "debrief": "दोनों ने रेट किया",
       "ghost": "ग़ायब",
-      "default": "कमाए"
+      "default": "कमाए",
+      "meet_bonus": "मिलने का बोनस"
     },
     "event": {
       "deletedChallenge": "हटाया गया challenge",

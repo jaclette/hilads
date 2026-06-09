@@ -43,13 +43,26 @@
     "inProgress": "Bezig",
     "takeIt": "Ik doe mee",
     "takerLabel": "Aannemer",
-    "rankBadge": "Rang {{rank}}"
+    "rankBadge": "Rang {{rank}}",
+    "photoBadge": "Foto"
   },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
   "openBadge": "Open",
   "forLocals": "🏠 Voor locals",
   "forExplorers": "🧳 Voor reizigers",
+  "validation": {
+    "label": "Hoe valideren?",
+    "meet": {
+      "label": "🤝 Afspreken",
+      "hint": "Beleef het samen in het echt",
+      "bonusChip": "+50 ontmoetingsbonus als jullie elkaar zien"
+    },
+    "photo_proof": {
+      "label": "📸 Foto-bewijs",
+      "hint": "Accepteer het bewijs op afstand"
+    }
+  },
   "notFound": "Challenge niet gevonden",
   "typeBadge": {
     "food": "Eten challenge",
@@ -490,7 +503,8 @@
       "meetup": "Missie geslaagd 🎉",
       "debrief": "Missie geslaagd 🎉",
       "ghost": "Volgende keer beter 👻",
-      "default": "Je klimt in de ranglijst 🚀"
+      "default": "Je klimt in de ranglijst 🚀",
+      "meet_bonus": "Ontmoetingsbonus vrijgespeeld 🤝"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Ontmoet",
       "debrief": "Beiden beoordeeld",
       "ghost": "Geghost",
-      "default": "Verdiend"
+      "default": "Verdiend",
+      "meet_bonus": "Ontmoetingsbonus"
     },
     "event": {
       "deletedChallenge": "Verwijderde challenge",

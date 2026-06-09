@@ -43,13 +43,26 @@
     "inProgress": "In corso",
     "takeIt": "Ci sto",
     "takerLabel": "Sfidato",
-    "rankBadge": "Posizione {{rank}}"
+    "rankBadge": "Posizione {{rank}}",
+    "photoBadge": "Foto"
   },
   "statusInProgress": "Sfida in corso",
   "statusAccomplished": "Sfida vinta",
   "openBadge": "Aperta",
   "forLocals": "🏠 Per i local",
   "forExplorers": "🧳 Per i viaggiatori",
+  "validation": {
+    "label": "Come convalidare?",
+    "meet": {
+      "label": "🤝 Incontro",
+      "hint": "Vivete l'esperienza di persona",
+      "bonusChip": "+50 di bonus Incontro se vi vedete"
+    },
+    "photo_proof": {
+      "label": "📸 Prova fotografica",
+      "hint": "Accetta la prova a distanza"
+    }
+  },
   "notFound": "Sfida non trovata",
   "typeBadge": {
     "food": "Sfida cibo",
@@ -490,7 +503,8 @@
       "meetup": "Missione compiuta 🎉",
       "debrief": "Missione compiuta 🎉",
       "ghost": "Sarà per la prossima volta 👻",
-      "default": "Stai scalando la classifica 🚀"
+      "default": "Stai scalando la classifica 🚀",
+      "meet_bonus": "Bonus Incontro sbloccato 🤝"
     },
     "rank": {
       "city": "#{{rank}} a {{city}}",
@@ -509,7 +523,8 @@
       "meetup": "Incontrati",
       "debrief": "Entrambi valutati",
       "ghost": "Ghostato",
-      "default": "Guadagnati"
+      "default": "Guadagnati",
+      "meet_bonus": "Bonus Incontro"
     },
     "event": {
       "deletedChallenge": "Challenge eliminato",

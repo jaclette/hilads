@@ -43,13 +43,26 @@
     "inProgress": "In progress",
     "takeIt": "Take it on",
     "takerLabel": "Taker",
-    "rankBadge": "Rank {{rank}}"
+    "rankBadge": "Rank {{rank}}",
+    "photoBadge": "Photo"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",
   "openBadge": "Open",
   "forLocals": "🏠 For locals",
   "forExplorers": "🧳 For travelers",
+  "validation": {
+    "label": "How to validate?",
+    "meet": {
+      "label": "🤝 Meet",
+      "hint": "Share the experience in person",
+      "bonusChip": "+50 Meet bonus when you both meet up"
+    },
+    "photo_proof": {
+      "label": "📸 Photo proof",
+      "hint": "Accept proof at a distance"
+    }
+  },
   "notFound": "Challenge not found",
   "typeBadge": {
     "food": "Food challenge",
@@ -508,7 +521,8 @@
       "meetup": "Mission accomplished 🎉",
       "debrief": "Mission accomplished 🎉",
       "ghost": "Better luck next time 👻",
-      "default": "You’re climbing the ranks 🚀"
+      "default": "You’re climbing the ranks 🚀",
+      "meet_bonus": "Meet bonus unlocked 🤝"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -527,7 +541,8 @@
       "meetup": "Met up",
       "debrief": "Both rated",
       "ghost": "Ghosted",
-      "default": "Earned"
+      "default": "Earned",
+      "meet_bonus": "Meet bonus"
     },
     "event": {
       "deletedChallenge": "Deleted challenge",

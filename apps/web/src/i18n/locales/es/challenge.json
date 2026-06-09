@@ -43,13 +43,26 @@
     "inProgress": "En curso",
     "takeIt": "Lo acepto",
     "takerLabel": "Receptor",
-    "rankBadge": "Puesto {{rank}}"
+    "rankBadge": "Puesto {{rank}}",
+    "photoBadge": "Foto"
   },
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",
   "openBadge": "Abierto",
   "forLocals": "🏠 Para locales",
   "forExplorers": "🧳 Para viajeros",
+  "validation": {
+    "label": "¿Cómo validar?",
+    "meet": {
+      "label": "🤝 Quedar",
+      "hint": "Compartid la experiencia en persona",
+      "bonusChip": "+50 de bonus si quedáis en persona"
+    },
+    "photo_proof": {
+      "label": "📸 Prueba con foto",
+      "hint": "Acepta la prueba a distancia"
+    }
+  },
   "notFound": "Reto no encontrado",
   "typeBadge": {
     "food": "Reto comida",
@@ -486,7 +499,8 @@
       "meetup": "¡Misión cumplida! 🎉",
       "debrief": "¡Misión cumplida! 🎉",
       "ghost": "¡Suerte la próxima! 👻",
-      "default": "¡Estás escalando posiciones! 🚀"
+      "default": "¡Estás escalando posiciones! 🚀",
+      "meet_bonus": "¡Bonus de quedada desbloqueado! 🤝"
     },
     "rank": {
       "city": "#{{rank}} en {{city}}",
@@ -505,7 +519,8 @@
       "meetup": "Encuentro",
       "debrief": "Ambos valoraron",
       "ghost": "Ghosted",
-      "default": "Ganados"
+      "default": "Ganados",
+      "meet_bonus": "Bonus quedada"
     },
     "event": {
       "deletedChallenge": "Challenge eliminado",
