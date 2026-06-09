@@ -9358,24 +9358,6 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
     $updated = $result['acceptance'];
 
-    // Push to the OTHER party — the one who didn't tap approve. That's
-    // the proposer (the approver is currently looking at the HTTP
-    // response; the proposer needs the WS nudge so their phase pill
-    // flips to "scheduled" without a manual refresh).
-    try {
-        $proposerId = $acceptance['proposed_by_user_id'] ?? null;
-        if (!empty($proposerId)) {
-            broadcastChallengeDateApprovedToWs($proposerId, [
-                'acceptanceId'    => $acceptanceId,
-                'challengeId'     => $acceptance['challenge_id'],
-                'threadChannelId' => $acceptance['thread_channel_id'],
-                'acceptance'      => $updated,
-            ]);
-        }
-    } catch (\Throwable $e) {
-        error_log('[challenges] ws approve-date broadcast failed (non-fatal): ' . $e->getMessage());
-    }
-
     // date_approved_at UPDATE fires the +5 / +5 date_locked trigger
     // for BOTH challenger AND taker. Both their rank scopes may have
     // shifted; the service dedupes their cities internally.
@@ -9385,6 +9367,60 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     ]));
     if (!empty($userIds)) {
         MonthlyRankService::recalcAfterScoreChange(...$userIds);
+    }
+
+    // WS broadcast to BOTH parties. Each side earned +5 from the
+    // date_locked trigger above — both need the live signal so the
+    // ScoreCelebrationLaunchGate refetches without an app reload.
+    // The party who tapped Approve also gets the broadcast (in
+    // addition to their HTTP response) — costs nothing and keeps
+    // multi-device sessions consistent.
+    $proposerId = $acceptance['proposed_by_user_id'] ?? null;
+    $approverId = $userId;
+    $broadcastTargets = array_values(array_unique(array_filter([$proposerId, $approverId])));
+    foreach ($broadcastTargets as $targetId) {
+        try {
+            broadcastChallengeDateApprovedToWs($targetId, [
+                'acceptanceId'    => $acceptanceId,
+                'challengeId'     => $acceptance['challenge_id'],
+                'threadChannelId' => $acceptance['thread_channel_id'],
+                'acceptance'      => $updated,
+                // Hint to the client which side it is — saves them
+                // re-deriving from the acceptance payload.
+                'approverUserId'  => $approverId,
+                'proposerUserId'  => $proposerId,
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[challenges] ws approve-date broadcast failed to ' . $targetId
+                . ' (non-fatal): ' . $e->getMessage());
+        }
+    }
+
+    // Push notification to the proposer — they weren't looking when
+    // their date was approved. Until this landed the approve-date
+    // flow was WS-only, so a backgrounded proposer learned nothing
+    // happened. Mirrors the challenge_date_proposed push surface in
+    // shape and click-through path.
+    try {
+        if (!empty($proposerId) && $proposerId !== $approverId) {
+            $approverName   = (string) ($authUser['display_name'] ?? 'Someone');
+            $challengeTitle = (string) ($challenge['title']        ?? '');
+            NotificationRepository::create(
+                $proposerId,
+                'challenge_date_approved',
+                '✅ Date approved',
+                "{$approverName} approved your date for \"{$challengeTitle}\"",
+                [
+                    'challengeId'    => $acceptance['challenge_id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'approverUserId' => $approverId,
+                    'approverName'   => $approverName,
+                    'challengeTitle' => $challengeTitle,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-date push failed (non-fatal): ' . $e->getMessage());
     }
 
     Response::json(['acceptance' => $updated]);

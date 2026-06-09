@@ -44,20 +44,20 @@ export function ScoreCelebrationLaunchGate() {
     return () => { cancelled = true; };
   }, [account?.id, closed]);
 
-  // PR47 - mutual-rating WS listener. Fires when this user (either as
-  // rater or ratee) just completed the mutual rating loop. Reset
-  // `closed` so the existing fetch effect re-runs and surfaces the new
-  // debrief points popin - no need for the user to relaunch the app.
+  // Live re-fetch triggers. Any WS event that emits score_events
+  // server-side should reset `closed` + clear `data` so the existing
+  // fetch effect re-runs and the popin surfaces without the user
+  // having to relaunch the app. Two known surfaces today:
+  //   - mutual_rating_complete (PR47): debrief +30/+40 lands
+  //   - challenge_date_approved:        date_locked +5/+5 lands
+  // Both broadcast to BOTH parties (proposer + approver / rater +
+  // ratee), so the listener fires on whichever side earned points.
   useEffect(() => {
     if (!account?.id) return;
-    const off = socket.on('mutual_rating_complete', () => {
-      setClosed(false);
-      // Force the effect to re-run even if `closed` was already false
-      // by clearing the existing data - otherwise visibility stays as
-      // it was. The next fetch repopulates with the new delta.
-      setData(null);
-    });
-    return () => { off(); };
+    const trigger = () => { setClosed(false); setData(null); };
+    const offRating = socket.on('mutual_rating_complete', trigger);
+    const offDate   = socket.on('challenge_date_approved', trigger);
+    return () => { offRating(); offDate(); };
   }, [account?.id]);
 
   // Shared cleanup - ack + close. Used by both the CTA path and the

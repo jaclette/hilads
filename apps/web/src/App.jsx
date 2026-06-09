@@ -2649,6 +2649,14 @@ export default function App() {
         setCelebrationRefetchKey(k => k + 1)
       })
 
+      // Date approved - the date_locked trigger awarded +5/+5 to both
+      // parties. Same refetch + popin pattern as mutual rating so the
+      // recipient (proposer who just heard "approved" via WS, or the
+      // approver via HTTP) sees the celebration without a reload.
+      socket.on('challenge_date_approved', () => {
+        setCelebrationRefetchKey(k => k + 1)
+      })
+
       // First rating just landed - the counterparty rated US. Bump the
       // rate-prompt refetch key so RatePromptLaunchGate re-runs its
       // /me/rate-prompts fetch and surfaces the RateSheet for OUR side

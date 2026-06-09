@@ -374,6 +374,29 @@ final class NotificationI18n
             'ru'      => ["📅 Предложена дата",            "{name} предложил дату для «{title}»"],
             'ar'      => ["📅 تم اقتراح موعد",             "{name} اقترح موعداً لـ \"{title}\""],
         ],
+        // Date approved - fires to the PROPOSER when the other party
+        // signs off on their proposal. Counterpart to
+        // challenge_date_proposed; both lock the meet-up calendar.
+        'challenge_date_approved' => [
+            'fr'      => ["✅ Date confirmée",            "{name} a validé ta date pour « {title} »"],
+            'vi'      => ["✅ Ngày được xác nhận",        "{name} đã xác nhận ngày cho \"{title}\""],
+            'es'      => ["✅ Fecha confirmada",          "{name} confirmó tu fecha para \"{title}\""],
+            'it'      => ["✅ Data confermata",           "{name} ha confermato la tua data per \"{title}\""],
+            'pt-br'   => ["✅ Data confirmada",           "{name} confirmou sua data para \"{title}\""],
+            'pt-pt'   => ["✅ Data confirmada",           "{name} confirmou a tua data para \"{title}\""],
+            'de'      => ["✅ Termin bestätigt",          "{name} hat deinen Termin für \"{title}\" bestätigt"],
+            'nl'      => ["✅ Datum bevestigd",           "{name} bevestigde je datum voor \"{title}\""],
+            'zh-hans' => ["✅ 日期已确认",                 "{name} 确认了你为「{title}」提议的日期"],
+            'zh-hant' => ["✅ 日期已確認",                 "{name} 確認了你為「{title}」提議的日期"],
+            'ja'      => ["✅ 日程確定",                   "{name} があなたの「{title}」の日程を承認"],
+            'ko'      => ["✅ 날짜 확정",                  "{name} 님이 \"{title}\" 의 날짜를 확정했어요"],
+            'fil'     => ["✅ Petsa kumpirmado",          "Kinumpirma ni {name} ang petsa mo para sa \"{title}\""],
+            'th'      => ["✅ ยืนยันวันแล้ว",                "{name} ยืนยันวันที่คุณเสนอสำหรับ \"{title}\""],
+            'id'      => ["✅ Tanggal dikonfirmasi",       "{name} mengonfirmasi tanggalmu untuk \"{title}\""],
+            'hi'      => ["✅ तारीख तय हुई",                  "{name} ने \"{title}\" के लिए आपकी तारीख को मंज़ूरी दी"],
+            'ru'      => ["✅ Дата подтверждена",          "{name} подтвердил твою дату для «{title}»"],
+            'ar'      => ["✅ تم تأكيد الموعد",             "{name} أكّد موعدك لـ \"{title}\""],
+        ],
         // Verdict approved - fires to the ACCEPTOR after the meet-up,
         // the creator marked it as done.
         'challenge_verdict_approved' => [

@@ -257,6 +257,10 @@ class NotificationRepository
             // where the ScheduleBlock surfaces the Approve / Counter-
             // propose buttons.
             'challenge_date_proposed'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // Date approved - same target as proposed; recipient lands
+            // in the channel to see "✅ Meet on …" + the celebration
+            // popin the SCG re-fires off the WS broadcast on entry.
+            'challenge_date_approved'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             // New message in a challenge channel - fan-out to creator,
             // active takers, and explicit spectators. Tap lands in the
             // challenge chat just like an event message lands in the
@@ -290,6 +294,7 @@ class NotificationRepository
             'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
             'rating_received'         => 'chrating-'     . ($data['challengeId'] ?? 'c'),
             'challenge_date_proposed' => 'chdate-'       . ($data['challengeId'] ?? 'c'),
+            'challenge_date_approved' => 'chdateok-'     . ($data['challengeId'] ?? 'c'),
             // Tag per (challenge, conversation) so a burst of messages
             // collapses into one push group on the device (mirrors how
             // dm_message / event_message tag by their channel).
