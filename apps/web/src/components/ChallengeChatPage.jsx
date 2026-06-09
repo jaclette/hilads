@@ -37,6 +37,7 @@ import ConfirmDialog from './ConfirmDialog'
 import DatePickerModal from './DatePickerModal'
 import MessageComposer from './MessageComposer'
 import ThreadScheduleBlock from './ThreadScheduleBlock'
+import { Marquee } from './Marquee'
 
 // Slug builder - mirrors apps/web/api/sitemap.mjs:challengeSlug and
 // apps/mobile/src/lib/challengeSlug.ts. Kept inline since it's a single
@@ -1192,9 +1193,16 @@ export default function ChallengeChatPage({
                   onOpenChallengeIntro?.()
                 }}
               >
-                <span className="challenge-intro-banner-text">
-                  {t('prompt.challengeIntroText', { ns: 'city' })}
-                </span>
+                {/* Long titles auto-scroll left through the same
+                    Marquee primitive the weather pill uses so the
+                    full "🔥 New here? Learn how challenges work"
+                    string is reachable even when it overflows the
+                    row. Short strings render static. */}
+                <Marquee
+                  text={t('prompt.challengeIntroText', { ns: 'city' })}
+                  className="challenge-intro-banner-text"
+                  fadeColor="#161210"
+                />
                 <span className="challenge-intro-banner-cta">
                   {t('prompt.challengeIntroCta', { ns: 'city' })} →
                 </span>

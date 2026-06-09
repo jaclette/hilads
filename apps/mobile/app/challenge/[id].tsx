@@ -42,6 +42,7 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { proposeDate as proposeDateApi, approveTakeOn, rejectTakeOn } from '@/api/challenges';
 import { ChallengeChannelMembersSheet } from '@/features/challenge/ChallengeChannelMembersSheet';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
+import { MarqueeText } from '@/components/MarqueeText';
 import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet';
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
@@ -1276,9 +1277,17 @@ export default function ChallengeChatScreen() {
                   }}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.introBannerText} numberOfLines={1}>
-                    {i18n.t('promptChallengeIntro', { ns: 'chat' })}
-                  </Text>
+                  {/* Long titles auto-scroll left through the same
+                      MarqueeText primitive the weather pill uses, so
+                      the full "🔥 New here? Learn how challenges work"
+                      string is reachable even when it overflows the
+                      row. Short strings render static. */}
+                  <MarqueeText
+                    text={i18n.t('promptChallengeIntro', { ns: 'chat' })}
+                    textStyle={styles.introBannerText}
+                    style={styles.introBannerMarquee}
+                    fadeColor={Colors.bg2}
+                  />
                   <Text style={styles.introBannerCta} numberOfLines={1}>
                     {i18n.t('promptChallengeIntroCta', { ns: 'chat' })} →
                   </Text>
@@ -1818,11 +1827,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap:            8,
   },
+  // Marquee clip window — claims the leftover row space between the
+  // banner padding and the "Show me →" CTA so long titles only scroll
+  // inside this region. Fixed height matches one line of the body
+  // font so the banner doesn't grow when a long string lands.
+  introBannerMarquee: { flex: 1, height: 18 },
   introBannerText: {
-    flex:       1,
     color:      Colors.text,
     fontSize:   FontSizes.sm,
     fontWeight: '600',
+    lineHeight: 18,
   },
   introBannerCta: {
     color:      Colors.accent,

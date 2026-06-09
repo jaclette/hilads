@@ -6569,13 +6569,15 @@ img.pub-profile-avatar {
   text-align: left;
 }
 .challenge-intro-banner-text {
+  /* Marquee clip-window class. color / font are inherited by the
+     inner .marquee-text spans, so the static and animated branches
+     both pick them up. Overflow + nowrap live on .marquee-text;
+     here we just claim leftover row width. */
   color: var(--text);
   font-size: 0.85rem;
   font-weight: 600;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 .challenge-intro-banner-cta {
   color: #FF7A3C;
