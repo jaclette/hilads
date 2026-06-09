@@ -166,12 +166,16 @@ export default function ChallengeChatPage({
   // audience so the entry surface has one focused CTA. Dismissed
   // per-session via × or by tapping into the auth flow.
   const [showGuestWelcome, setShowGuestWelcome] = useState(true)
+  // `id` is needed by the useEffect dep array below, so it must be
+  // declared before the effect — the dep array evaluates at render
+  // time and a `const` declared later would TDZ on every mount
+  // (this exact pattern was crashing the page with "Cannot access
+  // 'ke' before initialization" because the bundler inlined the
+  // forward reference).
+  const id = challenge?.id
   useEffect(() => {
     if (!id) return
     setShowChallengeIntroBanner(false)
-    // Don't shadow the outer `t` from useTranslation — the bundler
-    // ended up emitting a TDZ-trapped reference and the whole page
-    // crashed on every challenge channel mount.
     const timer = setTimeout(() => setShowChallengeIntroBanner(true), 8000)
     return () => clearTimeout(timer)
   }, [id])
@@ -214,7 +218,9 @@ export default function ChallengeChatPage({
   // mis-label the origin city as the target.
   const [targetCityNameOnly,     setTargetCityNameOnly]     = useState(null)
 
-  const id = challenge?.id
+  // `id` was moved up — it has to be declared before the useEffect
+  // that depends on it (see the "Cannot access 'ke' before
+  // initialization" fix above). Don't redeclare it here.
 
   // Owner check - two mutually exclusive paths:
   //   1. Challenge has a registered creator → strict account.id match. The
