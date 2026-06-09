@@ -1128,6 +1128,18 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_acceptor  ON challenge_acceptanc
 // Per-challenge acceptances (creator's view of who took it on + cap check).
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptances (challenge_id,    created_at DESC)", 'idx_chacc_challenge');
 
+// Re-take after a finished round. The original `UNIQUE (challenge_id,
+// acceptor_user_id)` table-level constraint blocked any second acceptance
+// from the same user — even after both parties rated and the channel
+// auto-reopened, the previous taker tapping "Take on the challenge" silently
+// no-op'd (route returned the stale terminal row + INSERT would have hit
+// the unique). Swap for a partial UNIQUE that fires only on ACTIVE phases,
+// so historical terminal rows coexist with one fresh active row per user.
+run($pdo, "ALTER TABLE challenge_acceptances DROP CONSTRAINT IF EXISTS challenge_acceptances_challenge_id_acceptor_user_id_key", 'drop strict chacc unique');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_chacc_active_per_user
+            ON challenge_acceptances (challenge_id, acceptor_user_id)
+            WHERE phase NOT IN ('approved', 'rejected')", 'partial unique active acceptance per user');
+
 // Step D rollback - challenge_thread channels are no longer auto-created on
 // accept. The 1:1 private chat moved to the unified public challenge channel
 // (badges distinguish roles). Existing acceptances keep their thread_channel_id

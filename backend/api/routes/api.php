@@ -8770,9 +8770,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json(['error' => "You created this challenge - you can't accept it", 'code' => 'not_creator'], 403);
     }
 
-    // Idempotency: already accepted? Return the existing acceptance (201 would
-    // be misleading; 200 = "you're already in, here's your acceptance").
-    $existing = ChallengeAcceptanceRepository::findExisting($challengeId, $userId);
+    // Idempotency: already actively accepted? Return the existing row (201
+    // would be misleading; 200 = "you're already in, here's your acceptance").
+    // Active-only on purpose — a terminal row from a prior round (the user
+    // was the taker, both rated, channel reopened) must NOT short-circuit
+    // the new accept attempt; otherwise tapping "Take on the challenge"
+    // silently no-ops because the server hands back the stale terminal row
+    // and the client maps it to activeAcceptance=null, leaving the CTA on.
+    $existing = ChallengeAcceptanceRepository::findActiveByUser($challengeId, $userId);
     if ($existing !== null) {
         Response::json($existing);
     }

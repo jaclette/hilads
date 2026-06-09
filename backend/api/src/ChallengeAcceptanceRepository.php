@@ -274,11 +274,38 @@ class ChallengeAcceptanceRepository
         return (bool) $stmt->fetchColumn();
     }
 
-    /** Idempotency probe - has this user already accepted this challenge? */
+    /** Idempotency probe - has this user already accepted this challenge?
+     *  Returns the most recent row (active or terminal). Callers that care
+     *  only about "currently the acceptor" must filter terminal phases
+     *  themselves — see findActiveByUser() for the active-only variant. */
     public static function findExisting(string $challengeId, string $acceptorUserId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE ca.challenge_id = :cid AND ca.acceptor_user_id = :uid
+            ORDER BY ca.created_at DESC
+            LIMIT 1
+        ");
+        $stmt->execute(['cid' => $challengeId, 'uid' => $acceptorUserId]);
+        $row = $stmt->fetch();
+        return $row ? self::format($row) : null;
+    }
+
+    /**
+     * Active-only variant of findExisting — same WHERE keys, but also gated
+     * on IS_ACTIVE_SQL so a terminal row from a prior round (approved /
+     * rejected / ghosted scheduled) doesn't short-circuit re-acceptance.
+     * Used by the /accept idempotency check so the user can re-take a
+     * challenge whose previous round wrapped up + got reopened by the
+     * mutual-rating flow.
+     */
+    public static function findActiveByUser(string $challengeId, string $acceptorUserId): ?array
+    {
+        $stmt = Database::pdo()->prepare(self::SELECT . "
+            WHERE ca.challenge_id = :cid
+              AND ca.acceptor_user_id = :uid
+              AND " . self::IS_ACTIVE_SQL . "
+            ORDER BY ca.created_at DESC
+            LIMIT 1
         ");
         $stmt->execute(['cid' => $challengeId, 'uid' => $acceptorUserId]);
         $row = $stmt->fetch();
