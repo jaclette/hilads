@@ -23,6 +23,10 @@ function buildSlides(t) {
     // reads like a story: "this is how it works in your city, AND beyond it."
     // Spec: "Local or global, every challenge counts."
     { emoji: '🌐', title: t('challengeIntro.slide6.title'), body: t('challengeIntro.slide6.body') },
+    // Points / leaderboards. Bookends local + international with the
+    // reward layer: every challenge climbs you up TWO monthly boards
+    // (your city + worldwide).
+    { emoji: '🏆', title: t('challengeIntro.slide7.title'), body: t('challengeIntro.slide7.body') },
   ]
 }
 
