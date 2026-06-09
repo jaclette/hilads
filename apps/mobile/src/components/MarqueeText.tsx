@@ -51,6 +51,16 @@ interface MarqueeTextProps {
 }
 
 const EPSILON = 1;
+// Marginal overflows hit ellipsis instead of triggering a constant scroll —
+// without this threshold any locale whose translation crept ~1 px over the
+// clip would marquee forever, which read as "flashing" on the challenge-
+// intro banner. Real overflows still scroll.
+const OVERFLOW_FACTOR = 1.15;
+// Ms held at the end of each loop iteration before snapping invisibly back
+// to the start. The snap is hidden by the duplicate copy mechanism, but
+// the eye still needs a still moment per cycle or the continuous scroll
+// reads as flicker.
+const END_HOLD_MS = 1500;
 
 export function MarqueeText({
   text,
@@ -58,8 +68,8 @@ export function MarqueeText({
   style,
   fadeColor,
   gap = 40,
-  speed = 40,
-  initialDelay = 1500,
+  speed = 25,
+  initialDelay = 3000,
   fadeWidth = 14,
   active = true,
   reduceMotion = false,
@@ -69,7 +79,7 @@ export function MarqueeText({
   const [containerW, setContainerW] = useState(0);
   const [textW, setTextW] = useState(0);
 
-  const overflows     = textW > 0 && containerW > 0 && textW > containerW + EPSILON;
+  const overflows     = textW > 0 && containerW > 0 && textW > containerW * OVERFLOW_FACTOR;
   const shouldMarquee = overflows && !reduceMotion;
 
   const onContainerLayout = (e: LayoutChangeEvent) => {
@@ -84,8 +94,11 @@ export function MarqueeText({
   // New text → drop the stale measurement so we don't marquee on the wrong width.
   useEffect(() => { setTextW(0); }, [text]);
 
-  // Drive the loop. Restarts (from the start, after the initial delay) whenever
-  // visibility or geometry changes; stops + resets when paused or static.
+  // Drive the loop. Each iteration holds at the start (initialDelay), scrolls
+  // for distance/speed ms, then holds at the end (END_HOLD_MS) before the
+  // loop resets translateX to 0. The reset is invisible because copy 2 sits
+  // exactly where copy 1 began. Restarts whenever visibility or geometry
+  // changes; stops + resets when paused or static.
   useEffect(() => {
     translateX.setValue(0);
     if (!shouldMarquee || !active) return;
@@ -93,17 +106,18 @@ export function MarqueeText({
     const distance = textW + gap;
     const duration = (distance / speed) * 1000;
 
-    const starter = Animated.sequence([
-      Animated.delay(initialDelay),
-      Animated.loop(
+    const starter = Animated.loop(
+      Animated.sequence([
+        Animated.delay(initialDelay),
         Animated.timing(translateX, {
           toValue:         -distance,
           duration,
           easing:          Easing.linear,
           useNativeDriver: true,
         }),
-      ),
-    ]);
+        Animated.delay(END_HOLD_MS),
+      ]),
+    );
     starter.start();
     return () => {
       starter.stop();

@@ -19,10 +19,20 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 
 const GAP = 40             // px between the two looping copies (native: gap)
-const SPEED = 40           // px/sec - duration is derived so speed stays constant
-const INITIAL_DELAY = 1500 // ms before the first scroll (native: initialDelay)
+const SPEED = 25           // px/sec - duration is derived so speed stays constant
 const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
-const EPSILON = 1
+// Marginal overflows (a few px) hit ellipsis instead of triggering a constant
+// scroll — without this threshold every locale whose translation crept ~1 px
+// over the clip would marquee forever, which read as "flashing" on the
+// challenge-intro banner. Real overflows still scroll.
+const OVERFLOW_FACTOR = 1.15
+// Hold-at-start / hold-at-end percentages of each keyframe iteration. The
+// scroll itself fills the middle 70 %; with SPEED constant, the resulting
+// dwell times scale with text length (~3 s start / ~2 s end on a typical
+// banner overflow). Together they kill the "looping flicker" the seamless
+// duplicate-copy mechanism produces during continuous scroll.
+const SCROLL_PCT_START = 18 // % of iteration spent holding at the start
+const SCROLL_PCT_END   = 88 // % at which the scroll completes
 
 export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
   const clipRef = useRef(null)
@@ -50,10 +60,13 @@ export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
     return () => ro.disconnect()
   }, [text])
 
-  const overflows = textW > 0 && clipW > 0 && textW > clipW + EPSILON
+  const overflows = textW > 0 && clipW > 0 && textW > clipW * OVERFLOW_FACTOR
   const animate = overflows && !reduceMotion
   const distance = textW + GAP
-  const duration = distance / SPEED // seconds
+  // Total iteration = scroll time / scroll-portion. Scroll-portion is
+  // (END - START) / 100 so the hold percentages at either end are honoured.
+  const scrollDuration = distance / SPEED
+  const duration = scrollDuration / ((SCROLL_PCT_END - SCROLL_PCT_START) / 100)
 
   return (
     <span
@@ -72,7 +85,8 @@ export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
             style={{
               '--marquee-distance': `${distance}px`,
               '--marquee-duration': `${duration}s`,
-              '--marquee-delay': `${INITIAL_DELAY}ms`,
+              '--marquee-scroll-start': `${SCROLL_PCT_START}%`,
+              '--marquee-scroll-end':   `${SCROLL_PCT_END}%`,
             }}
           >
             <span className="marquee-text">{text}</span>
