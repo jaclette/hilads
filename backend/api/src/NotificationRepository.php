@@ -253,6 +253,10 @@ class NotificationRepository
             // challenge so the RatePromptLaunchGate can surface the
             // RateSheet for the side that hasn't rated yet.
             'rating_received'                 => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // Date proposed - tap lands the recipient in the channel
+            // where the ScheduleBlock surfaces the Approve / Counter-
+            // propose buttons.
+            'challenge_date_proposed'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             // New message in a challenge channel - fan-out to creator,
             // active takers, and explicit spectators. Tap lands in the
             // challenge chat just like an event message lands in the
@@ -285,6 +289,7 @@ class NotificationRepository
             'challenge_invitation'    => 'chinv-'         . ($data['invitationId'] ?? 'x'),
             'challenge_rated_complete' => 'chrated-'      . ($data['challengeId'] ?? 'c'),
             'rating_received'         => 'chrating-'     . ($data['challengeId'] ?? 'c'),
+            'challenge_date_proposed' => 'chdate-'       . ($data['challengeId'] ?? 'c'),
             // Tag per (challenge, conversation) so a burst of messages
             // collapses into one push group on the device (mirrors how
             // dm_message / event_message tag by their channel).

@@ -9208,8 +9208,8 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
 
     // Push to the OTHER party (the proposer's own devices update via the
     // HTTP response + a client-side fan-out / state set).
+    $otherUserId = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
     try {
-        $otherUserId = $isAcceptor ? $challenge['created_by'] : $acceptance['acceptor_user_id'];
         if ($otherUserId !== null) {
             broadcastChallengeDateProposedToWs($otherUserId, [
                 'acceptanceId'     => $acceptanceId,
@@ -9221,6 +9221,35 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
         }
     } catch (\Throwable $e) {
         error_log('[challenges] ws propose-date broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Persistent + push notification to the OTHER party. Until this
+    // landed the propose-date flow was WS-only — anyone who'd
+    // backgrounded the app missed the proposal entirely and the date
+    // sat awaiting approval no one knew about. NotificationRepository
+    // re-renders the title/body per recipient locale (see
+    // NotificationI18n::T['challenge_date_proposed']); the strings here
+    // are just the English fallback.
+    try {
+        if ($otherUserId !== null) {
+            $proposerName   = (string) ($authUser['display_name'] ?? 'Someone');
+            $challengeTitle = (string) ($challenge['title']        ?? '');
+            NotificationRepository::create(
+                $otherUserId,
+                'challenge_date_proposed',
+                '📅 New date proposed',
+                "{$proposerName} proposed a date for \"{$challengeTitle}\"",
+                [
+                    'challengeId'    => $acceptance['challenge_id'],
+                    'acceptanceId'   => $acceptanceId,
+                    'proposerUserId' => $userId,
+                    'proposerName'   => $proposerName,
+                    'challengeTitle' => $challengeTitle,
+                ],
+            );
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] propose-date push failed (non-fatal): ' . $e->getMessage());
     }
 
     Response::json($updated);
@@ -9294,8 +9323,22 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
-    if ($challenge['created_by'] !== $userId) {
-        Response::json(['error' => 'Only the challenge creator can approve'], 403);
+    // Either the challenger OR the active taker is a "thread member" who
+    // could potentially approve. The proposer themself MUST NOT approve
+    // their own proposal — only the other party signs off. This flips
+    // the prior "only creator can approve" rule, which was wrong for the
+    // common case of a creator-side proposal (they'd approve their own
+    // date, defeating the whole "mutual agreement" point).
+    $isChallenger = ($challenge['created_by']         ?? null) === $userId;
+    $isAcceptor   = ($acceptance['acceptor_user_id']  ?? null) === $userId;
+    if (!$isChallenger && !$isAcceptor) {
+        Response::json(['error' => 'Not a participant in this acceptance'], 403);
+    }
+    if (($acceptance['proposed_by_user_id'] ?? null) === $userId) {
+        Response::json([
+            'error' => "You can't approve your own proposal — the other party does.",
+            'code'  => 'self_proposal',
+        ], 403);
     }
     if ($acceptance['phase'] !== 'accepted') {
         Response::json(['error' => 'Date already scheduled', 'code' => 'phase_locked'], 409);
@@ -9315,10 +9358,14 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
     $updated = $result['acceptance'];
 
-    // Push to the acceptor - their phase pill flips to "scheduled".
+    // Push to the OTHER party — the one who didn't tap approve. That's
+    // the proposer (the approver is currently looking at the HTTP
+    // response; the proposer needs the WS nudge so their phase pill
+    // flips to "scheduled" without a manual refresh).
     try {
-        if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeDateApprovedToWs($acceptance['acceptor_user_id'], [
+        $proposerId = $acceptance['proposed_by_user_id'] ?? null;
+        if (!empty($proposerId)) {
+            broadcastChallengeDateApprovedToWs($proposerId, [
                 'acceptanceId'    => $acceptanceId,
                 'challengeId'     => $acceptance['challenge_id'],
                 'threadChannelId' => $acceptance['thread_channel_id'],

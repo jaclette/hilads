@@ -21,7 +21,7 @@ function formatMeetupDate(unixSeconds, locale) {
   return `${day} · ${time}`
 }
 
-function derive(acceptance, iAmCreator, locale, isInternational) {
+function derive(acceptance, iAmCreator, myUserId, locale, isInternational) {
   if (!acceptance) {
     // Visitors don't get a sub-CTA here - the participants row below has the
     // labeled "Take on the challenge" button. Two prompts read as a repeat.
@@ -73,12 +73,17 @@ function derive(acceptance, iAmCreator, locale, isInternational) {
 
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null
+    // The OTHER party — whoever did NOT propose — sees "Approve date".
+    // The proposer sees "Awaiting their approval". Mirrors the
+    // ScheduleBlock fix so the pipeline label and the actual button
+    // stay in sync regardless of who proposed.
+    const iProposed = hasProposal && !!myUserId && acceptance.proposed_by_user_id === myUserId
     return {
       active: 'date',
       done:   new Set(['accept']),
       rejected: false,
       subCtaKey: hasProposal
-        ? (iAmCreator ? 'pipeline.subcta.approveDate' : 'pipeline.subcta.dateAwaiting')
+        ? (iProposed ? 'pipeline.subcta.dateAwaiting' : 'pipeline.subcta.approveDate')
         : 'pipeline.subcta.proposeDate',
     }
   }
@@ -108,12 +113,12 @@ function derive(acceptance, iAmCreator, locale, isInternational) {
   return { active: null, done: new Set(['accept', 'date', 'meet']), rejected: true, subCtaKey: 'pipeline.subcta.closed' }
 }
 
-export default function ChallengePipeline({ acceptance, iAmCreator, mode = 'local', onClick }) {
+export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = null, mode = 'local', onClick }) {
   const { t, i18n } = useTranslation('challenge')
   const isInternational = mode === 'international'
   const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL
   const REJECT_STEP = isInternational ? 'verdict' : 'wrap'
-  const state   = derive(acceptance, iAmCreator, i18n.language, isInternational)
+  const state   = derive(acceptance, iAmCreator, myUserId, i18n.language, isInternational)
   const interactive = !!onClick && !!acceptance
 
   return (

@@ -55,6 +55,7 @@ interface PipelineState {
 function derive(
   acceptance: ChallengeThreadSummary | null,
   iAmCreator: boolean,
+  myUserId: string | null,
   locale: string,
   isInternational: boolean,
 ): PipelineState {
@@ -136,12 +137,20 @@ function derive(
 
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null;
+    // The OTHER party — whoever did NOT propose — sees "Approve date".
+    // The proposer sees "Awaiting their approval". Previously gated on
+    // iAmCreator, which meant the challenger's own proposal looked
+    // approvable by them; the matching ScheduleBlock fix lifts the
+    // same rule, so the two stay in sync.
+    const iProposed = hasProposal
+      && !!myUserId
+      && acceptance.proposed_by_user_id === myUserId;
     return {
       active: 'date',
       done: new Set<Step>(['accept']),
       rejected: false,
       subCtaKey: hasProposal
-        ? (iAmCreator ? 'pipeline.subcta.approveDate' : 'pipeline.subcta.dateAwaiting')
+        ? (iProposed ? 'pipeline.subcta.dateAwaiting' : 'pipeline.subcta.approveDate')
         : 'pipeline.subcta.proposeDate',
     };
   }
@@ -196,18 +205,24 @@ const STEP_ICONS: Record<Step, string> = {
 export function ChallengePipeline({
   acceptance,
   iAmCreator,
+  myUserId = null,
   mode = 'local',
   onPress,
 }: {
   acceptance: ChallengeThreadSummary | null;
   iAmCreator: boolean;
+  /** Used to derive "did I propose this date?" — required for the
+   *  accepted-phase sub-CTA to know whether to say "Approve date" or
+   *  "Awaiting their approval". Optional for back-compat; older
+   *  callers fall through to the iAmCreator-only behaviour. */
+  myUserId?: string | null;
   mode?: 'local' | 'international';
   onPress?: () => void;
 }) {
   const { t, i18n } = useTranslation('challenge');
   const isInternational = mode === 'international';
   const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL;
-  const state = derive(acceptance, iAmCreator, i18n.language, isInternational);
+  const state = derive(acceptance, iAmCreator, myUserId, i18n.language, isInternational);
   // Step that should render in red on a final 'rejected' state (last step
   // before terminal - wrap for Local, verdict for International).
   const REJECT_STEP: Step = isInternational ? 'verdict' : 'wrap';

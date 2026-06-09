@@ -865,6 +865,7 @@ export default function ChallengeChatPage({
       <ChallengePipeline
         acceptance={activeAcceptance}
         iAmCreator={isOwner}
+        myUserId={account?.id ?? null}
         mode={challenge.mode ?? 'local'}
         onClick={(() => {
           // Local: tap pipeline subCta to open the date picker (existing).

@@ -1008,6 +1008,7 @@ export default function ChallengeChatScreen() {
         <ChallengePipeline
           acceptance={activeAcceptance}
           iAmCreator={isOwner}
+          myUserId={account?.id ?? null}
           mode={challenge.mode ?? 'local'}
           onPress={(() => {
             if ((challenge.mode ?? 'local') === 'local'

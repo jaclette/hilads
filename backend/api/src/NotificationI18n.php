@@ -350,6 +350,30 @@ final class NotificationI18n
             'ru'      => ["✕ Заявка отклонена",        "{name} отклонил твою заявку на «{title}»."],
             'ar'      => ["✕ تم رفض الطلب",            "{name} رفض طلبك لـ \"{title}\"."],
         ],
+        // Date proposed - fires to the OTHER party (whoever didn't
+        // propose) when a date is put forward on the meet-up thread.
+        // Until this push existed the propose-date flow was WS-only,
+        // so a backgrounded recipient never learned a date was waiting.
+        'challenge_date_proposed' => [
+            'fr'      => ["📅 Date proposée",            "{name} propose une date pour « {title} »"],
+            'vi'      => ["📅 Đề xuất ngày gặp",          "{name} đề xuất ngày cho \"{title}\""],
+            'es'      => ["📅 Fecha propuesta",           "{name} propuso una fecha para \"{title}\""],
+            'it'      => ["📅 Data proposta",             "{name} ha proposto una data per \"{title}\""],
+            'pt-br'   => ["📅 Data proposta",             "{name} propôs uma data para \"{title}\""],
+            'pt-pt'   => ["📅 Data proposta",             "{name} propôs uma data para \"{title}\""],
+            'de'      => ["📅 Termin vorgeschlagen",      "{name} hat einen Termin für \"{title}\" vorgeschlagen"],
+            'nl'      => ["📅 Datum voorgesteld",         "{name} stelde een datum voor \"{title}\" voor"],
+            'zh-hans' => ["📅 提议了日期",                  "{name} 为「{title}」提议了日期"],
+            'zh-hant' => ["📅 提議了日期",                  "{name} 為「{title}」提議了日期"],
+            'ja'      => ["📅 日程提案",                   "{name} が「{title}」の日程を提案"],
+            'ko'      => ["📅 날짜 제안",                  "{name} 님이 \"{title}\" 의 날짜를 제안했어요"],
+            'fil'     => ["📅 May iminungkahing araw",    "Nag-mungkahi si {name} ng petsa para sa \"{title}\""],
+            'th'      => ["📅 เสนอวัน",                   "{name} เสนอวันสำหรับ \"{title}\""],
+            'id'      => ["📅 Tanggal diusulkan",         "{name} mengusulkan tanggal untuk \"{title}\""],
+            'hi'      => ["📅 तारीख का सुझाव",              "{name} ने \"{title}\" के लिए तारीख का सुझाव दिया"],
+            'ru'      => ["📅 Предложена дата",            "{name} предложил дату для «{title}»"],
+            'ar'      => ["📅 تم اقتراح موعد",             "{name} اقترح موعداً لـ \"{title}\""],
+        ],
         // Verdict approved - fires to the ACCEPTOR after the meet-up,
         // the creator marked it as done.
         'challenge_verdict_approved' => [

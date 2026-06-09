@@ -224,10 +224,12 @@ export function ThreadScheduleBlock({
           </Text>
         </View>
         <View style={styles.bandActions}>
-          {/* Creator-only Approve, shown for ANY proposal (theirs or other's).
-              Creator-proposed flow: they propose, then immediately tap Approve
-              to lock - explicit by design (matches "creator approves" spec). */}
-          {iAmCreator && (
+          {/* The party who did NOT propose signs off. Previously this
+              was gated on iAmCreator, which meant the challenger could
+              approve their OWN proposal (defeating the mutual-agreement
+              point) and the taker had no way to approve a creator-side
+              proposal at all. */}
+          {!iProposed && (
             <TouchableOpacity style={styles.actionPrimary} onPress={handleApprove} activeOpacity={0.85} disabled={busy !== null}>
               {busy === 'approve'
                 ? <ActivityIndicator size="small" color={Colors.white} />

@@ -196,7 +196,12 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
           </div>
         </div>
         <div style={{ display: 'flex', gap: 6 }}>
-          {iAmCreator && (
+          {/* The party who did NOT propose signs off. Previously gated
+              on iAmCreator, which meant the challenger could approve
+              their OWN proposal (defeating the mutual-agreement point)
+              and the taker had no way to approve a creator-side
+              proposal at all. */}
+          {!iProposed && (
             <button
               type="button"
               onClick={handleApprove}
