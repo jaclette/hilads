@@ -1770,15 +1770,12 @@ html, body, #root {
   filter: drop-shadow(0 0 9px rgba(255, 122, 60, 0.42));
 }
 
-/* NOW tab attention pulse - fires once (2 beats) when a chat reminder dismisses,
-   then stops (class removed on animationend). Disabled under reduced motion. */
-.bottom-nav-icon--now-pulse {
-  animation: now-tab-pulse 0.6s ease-in-out 2;
-}
-@keyframes now-tab-pulse {
-  0%, 100% { transform: scale(1); }
-  50%      { transform: scale(1.14); }
-}
+/* NOW tab attention pulse removed: the ephemeral event / hangout /
+   challenge cards that used to dismiss in the chat feed are gone
+   (folded into the persistent .city-activity-pill above the
+   messages), so there's nothing left to gesture toward. Keeping the
+   class as a no-op rather than ripping every callsite. */
+.bottom-nav-icon--now-pulse { animation: none; }
 
 /* Reduce-motion static indicator: a small orange dot on the NOW icon, shown
    briefly after a reminder is removed (no animation). */
@@ -6450,6 +6447,45 @@ img.pub-profile-avatar {
   border-bottom: 1px solid var(--border);
   line-height: 1.5;
   font-style: italic;
+}
+
+/* Persistent city-activity counter pill — single tappable row above
+   the chat feed (below the ArrivalsBar). Mirrors the challenge-intro
+   banner so the two surfaces feel like siblings. Replaces the noisy
+   event / hangout / challenge cards that used to fan into the feed
+   and auto-dismiss. */
+.city-activity-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 6px 12px;
+  padding: 8px 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  border-radius: 10px;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  width: calc(100% - 24px);
+}
+.city-activity-pill:hover {
+  background: rgba(255, 122, 60, 0.05);
+}
+.city-activity-pill-text {
+  flex: 1;
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.city-activity-pill-cta {
+  color: #FF7A3C;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 /* "Learn how challenges work" banner — slim row above the chat feed

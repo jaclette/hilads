@@ -3641,16 +3641,10 @@ export default function App() {
       prevEventCountRef.current = events.length
       return
     }
-    if (events.length > prevEventCountRef.current) {
-      const newOnes = events.slice(prevEventCountRef.current)
-      newOnes.forEach(event => {
-        const id = `event-msg-${event.id}`
-        setFeed(prev => {
-          if (prev.some(f => f.id === id)) return prev
-          return [...prev, { type: 'event', id, eventId: event.id, title: event.title, text: `🎉 New event: ${event.title}`, cta: 'Join' }]
-        })
-      })
-    }
+    // Event pills no longer fan into the chat feed — they're folded
+    // into the single persistent city-activity counter above the
+    // messages list. We still track the count so the counter ticks
+    // up in real time when a fresh event lands.
     prevEventCountRef.current = events.length
   }, [events]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -3663,49 +3657,16 @@ export default function App() {
       prevChallengeCountRef.current = cityChallenges.length
       return
     }
-    if (cityChallenges.length > prevChallengeCountRef.current) {
-      // Cap the chat-feed challenge prompts at the 5 newest - older
-      // challenges still live in the NOW feed and the Challenges filter
-      // (paginated). Without this cap a freshly-rebuilt feed would inject
-      // every challenge ever created in the city.
-      const newest = cityChallenges.slice(0, 5)
-      newest.forEach(ch => {
-        const id = `challenge-msg-${ch.id}`
-        setFeed(prev => {
-          if (prev.some(f => f.id === id)) return prev
-          return [...prev, {
-            type:        'challenge',
-            id,
-            challengeId: ch.id,
-            title:       ch.title,
-            nickname:    ch.nickname,
-            audience:    ch.audience,
-            mode:        ch.mode ?? 'local',
-            // PR19 - origin + target country codes so the international
-            // banner can render "🇫🇷 → 🇻🇳 International challenge: …" via
-            // countryToFlag at render time. Local rows ignore these.
-            country:        ch.country        ?? null,
-            targetCountry:  ch.target_country ?? null,
-          }]
-        })
-      })
-    }
+    // Challenge pills no longer fan into the chat feed — see the
+    // events branch above. Count is read live by the activity pill.
     prevChallengeCountRef.current = cityChallenges.length
   }, [cityChallenges]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Inject active topics into city feed when topics load or a new topic appears.
-  // Uses same dedup guard as events (prev.some). Topics sorted by activity DESC -
-  // reverse so most-active topic ends up at the bottom (newest position).
-  useEffect(() => {
-    if (!activeRef.current || activeEventIdRef.current) return
-    ;[...topics].reverse().forEach(topic => {
-      const id = `topic-msg-${topic.id}`
-      setFeed(prev => {
-        if (prev.some(f => f.id === id)) return prev
-        return [...prev, { type: 'topic', id, topicId: topic.id }]
-      })
-    })
-  }, [topics]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Topic / hangout pills no longer fan into the chat feed — folded
+  // into the single persistent city-activity counter above the
+  // messages list. The `topics` state is still kept so the counter
+  // can read its length and the rest of the app (NOW feed, hangouts
+  // surfaces) keeps working.
 
   function cityScore(ch) {
     return ((ch.eventCount ?? 0) * 10) + ((ch.topicCount ?? 0) * 5) + (ch.activeUsers * 3) + (ch.messageCount * 1)
@@ -4290,6 +4251,30 @@ export default function App() {
             }
           }}
         />
+
+        {/* Single persistent city-activity pill — replaces the
+            ephemeral event / hangout / challenge cards that used to
+            flicker through the feed. Stays at the top of the chat
+            until the user taps it; the tap opens the NOW drawer
+            where the full lists live. Hidden when nothing's happening
+            so it doesn't read as a "0 / 0 / 0" empty state. */}
+        {(cityChallenges.length + events.length + topics.length) > 0 && (() => {
+          const parts = []
+          if (cityChallenges.length > 0) parts.push(`${cityChallenges.length} ${cityChallenges.length === 1 ? t('cityActivity.challengeOne', { defaultValue: 'challenge' }) : t('cityActivity.challengeMany', { defaultValue: 'challenges' })}`)
+          if (events.length > 0)         parts.push(`${events.length} ${events.length === 1 ? t('cityActivity.eventOne', { defaultValue: 'event' }) : t('cityActivity.eventMany', { defaultValue: 'events' })}`)
+          if (topics.length > 0)         parts.push(`${topics.length} ${topics.length === 1 ? t('cityActivity.hangoutOne', { defaultValue: 'hangout' }) : t('cityActivity.hangoutMany', { defaultValue: 'hangouts' })}`)
+          return (
+            <button
+              type="button"
+              className="city-activity-pill"
+              onClick={goToNowTab}
+              aria-label={`🔥 ${parts.join(' · ')}`}
+            >
+              <span className="city-activity-pill-text">🔥 {parts.join(' · ')}</span>
+              <span className="city-activity-pill-cta">{t('cityActivity.cta', { defaultValue: 'See all' })} →</span>
+            </button>
+          )
+        })()}
 
         <div className="messages" ref={messagesContainerRef}>
           {loadingOlder && (

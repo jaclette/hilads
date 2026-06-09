@@ -1,7 +1,6 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { Tabs, useFocusEffect } from 'expo-router';
-import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Animated } from 'react-native';
-import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,10 +25,6 @@ const BAR_BG_SOLID   = '#0d0b09';                 // --bg, matches the dot ring 
 const DOT_HOT     = '#FF7A3C';
 const DOT_GREEN   = '#3DDC84';
 const DOT_PROFILE = '#8B5CF6';
-
-// Neon flash for the NOW tab when a feed bump lands - a bright, hot amber flame
-// that fades in over the dim base icon so the dismissal is hard to miss.
-const NOW_NEON = '#FFC400';
 
 // ── Tab definitions - 4 primary tabs matching web .bottom-nav ─────────────────
 
@@ -104,36 +99,11 @@ function ActivePill() {
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
-  const { nowPulse } = useApp();
-  const reduceMotion = useReducedMotion();
 
-  // One-shot scale pulse on the NOW icon when a chat reminder dismisses. Driven
-  // by the throttled `nowPulse` counter; a ref guards against firing on mount or
-  // looping. Reduce-motion → no pulse (the NOW tab's permanent dot is the cue).
-  const nowScale     = useRef(new Animated.Value(1)).current;
-  // Opacity of the neon flame overlay (0→1→0, twice). Opacity is native-driver
-  // safe; animating a vector-icon color prop is not (it crashed).
-  const nowGlow      = useRef(new Animated.Value(0)).current;
-  const lastPulseRef = useRef(0);
-  useEffect(() => {
-    if (nowPulse === lastPulseRef.current) return;
-    lastPulseRef.current = nowPulse;
-    if (nowPulse === 0 || reduceMotion) return;
-    Animated.parallel([
-      Animated.sequence([
-        Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
-        Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
-        Animated.timing(nowScale, { toValue: 1.14, duration: 140, useNativeDriver: true }),
-        Animated.timing(nowScale, { toValue: 1,    duration: 140, useNativeDriver: true }),
-      ]),
-      Animated.sequence([
-        Animated.timing(nowGlow, { toValue: 1, duration: 140, useNativeDriver: true }),
-        Animated.timing(nowGlow, { toValue: 0, duration: 140, useNativeDriver: true }),
-        Animated.timing(nowGlow, { toValue: 1, duration: 140, useNativeDriver: true }),
-        Animated.timing(nowGlow, { toValue: 0, duration: 140, useNativeDriver: true }),
-      ]),
-    ]).start();
-  }, [nowPulse, reduceMotion, nowScale, nowGlow]);
+  // Scale + flame-glow pulse on the NOW icon was removed: the city chat's
+  // ephemeral activity cards (which fired pulseNow on dismissal) are
+  // gone, and the user found the bump distracting. The persistent
+  // "activity counter" pill inside the chat now carries that signal.
 
   return (
     <View style={[styles.container, { paddingBottom: Math.max(10, insets.bottom) }]}>
@@ -141,8 +111,6 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = state.index === routeIndex;
         const color      = focused ? ACTIVE_COLOR : INACTIVE_COLOR;
-
-        const isNow = tab.name === 'now';
 
         return (
           <Pressable
@@ -167,31 +135,17 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {focused && <ActivePill />}
 
-            {/* Icon - web: .bottom-nav-icon (26×26 with optional glow). The NOW
-                tab's wrapper carries the dismissal pulse scale. */}
-            <Animated.View
-              style={[
-                styles.iconWrap,
-                focused && styles.iconWrapActive,
-                tab.name === 'now' && { transform: [{ scale: nowScale }] },
-              ]}
-            >
+            {/* Icon - web: .bottom-nav-icon (26×26). Plain static icon — no
+                pulse, no glow overlay (removed alongside the noisy city-chat
+                activity pills). */}
+            <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
               <Ionicons
                 name={focused ? tab.icon : tab.outline}
                 size={30}
                 color={color}
               />
-              {/* Neon flame that ignites over the base icon on a feed bump. */}
-              {isNow && (
-                <Animated.View
-                  pointerEvents="none"
-                  style={[StyleSheet.absoluteFill, styles.nowGlow, { opacity: nowGlow }]}
-                >
-                  <Ionicons name="flame" size={30} color={NOW_NEON} />
-                </Animated.View>
-              )}
               <TabDot kind={tab.dot} />
-            </Animated.View>
+            </View>
           </Pressable>
         );
       })}
@@ -263,11 +217,6 @@ const styles = StyleSheet.create({
   iconWrap: {
     width:          32,
     height:         32,
-    alignItems:     'center',
-    justifyContent: 'center',
-  },
-  // Neon flame overlay - centered over the base icon, opacity-flashed on a bump.
-  nowGlow: {
     alignItems:     'center',
     justifyContent: 'center',
   },

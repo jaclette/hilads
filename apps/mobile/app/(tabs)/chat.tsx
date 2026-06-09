@@ -43,7 +43,7 @@ import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { MarqueeText } from '@/components/MarqueeText';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Colors, FontSizes, Spacing, buildCityUrl } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, buildCityUrl } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
@@ -137,7 +137,6 @@ export default function ChatTab() {
     clearEventChatCounts,
     bootstrapData,
     joined, setShowOnboarding,
-    pulseNow,
   } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -705,11 +704,13 @@ export default function ChatTab() {
   // non-animated reflow is the safe trade. The id lives in exactly one of the
   // three arrays; filtering all three is harmless + simple.
   function handleAutoDismiss(id: string) {
-    setPromptItems(prev   => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
-    setEventFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
-    setTopicFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
-    setChallengeFeedItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
-    pulseNow();
+    // Only the chat prompts (e.g. "Learn how challenges work") still
+    // ride the in-feed auto-dismiss path. The event / hangout /
+    // challenge pills are no longer rendered inline — they're folded
+    // into the single persistent activity counter above the FlatList —
+    // so dismissal there is moot. pulseNow() was the NOW tab's bump
+    // animation; both the pulse and its driver are gone.
+    setPromptItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
   }
 
   async function handlePromptCta(subtype: string) {
@@ -778,22 +779,30 @@ export default function ChatTab() {
   );
   const [arrivalsSheetOpen, setArrivalsSheetOpen] = useState(false);
 
-  // Unified feed - weather AND join system messages excluded.
-  // Weather renders as a pill in the header; joins render in the ArrivalsBar.
+  // Unified feed - weather, joins, AND city-activity pills excluded.
+  // Weather renders in the header; joins render in the ArrivalsBar; the
+  // events / hangouts / challenges that used to appear-and-disappear as
+  // inline cards are now folded into a single persistent count pill
+  // above the feed (see CityActivityCountPill below). Tapping that pill
+  // navigates to /(tabs)/now where the full lists live.
   //
   // Sorted newest-first for the inverted FlatList:
   //   index 0 = bottom of screen (newest message, near input)
   //   high index = top of screen (oldest, user scrolls up)
-  //
-  // Event/topic/prompt items are synthesised with createdAt ≈ load time.
-  // Sorting by timestamp places them naturally at the bottom of history.
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m =>
       !(m.type === 'system' && (m.event === 'weather' || m.event === 'join'))
     );
-    return [...chat, ...eventFeedItems, ...topicFeedItems, ...challengeFeedItems, ...promptItems]
+    return [...chat, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, eventFeedItems, topicFeedItems, challengeFeedItems, promptItems]);
+  }, [messages, promptItems]);
+
+  // Counts that feed the persistent activity pill. Pulled from the same
+  // state arrays we used to inject pills into the feed — we keep the
+  // fetches + WS handlers untouched so the counter ticks up in real time
+  // when a new event / hangout / challenge lands.
+  const cityActivityCount =
+    eventFeedItems.length + topicFeedItems.length + challengeFeedItems.length;
 
   // ── Reply callbacks ───────────────────────────────────────────────────────────
 
@@ -1028,6 +1037,52 @@ export default function ChatTab() {
           aren't drowned out by ambient "X just landed" rows. Default shows a
           neutral label; on a new arrival it morphs in-place for 3s. */}
       <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} />
+
+      {/* Single persistent activity pill — replaces the ephemeral event /
+          hangout / challenge cards that used to flicker through the feed.
+          Stays visible at the top of the chat for the lifetime of this
+          city; taps land the user on /(tabs)/now where the full lists
+          live. Hidden when there's literally nothing happening so it
+          doesn't read as "0 / 0 / 0" to a quiet-city visitor. */}
+      {cityActivityCount > 0 && (() => {
+        const parts: string[] = [];
+        if (challengeFeedItems.length > 0) {
+          parts.push(i18n.t('cityActivity.challenges', {
+            ns: 'chat', count: challengeFeedItems.length,
+            defaultValue_one: '{{count}} challenge',
+            defaultValue: '{{count}} challenges',
+          }));
+        }
+        if (eventFeedItems.length > 0) {
+          parts.push(i18n.t('cityActivity.events', {
+            ns: 'chat', count: eventFeedItems.length,
+            defaultValue_one: '{{count}} event',
+            defaultValue: '{{count}} events',
+          }));
+        }
+        if (topicFeedItems.length > 0) {
+          parts.push(i18n.t('cityActivity.hangouts', {
+            ns: 'chat', count: topicFeedItems.length,
+            defaultValue_one: '{{count}} hangout',
+            defaultValue: '{{count}} hangouts',
+          }));
+        }
+        const label = `🔥 ${parts.join(' · ')}`;
+        return (
+          <TouchableOpacity
+            style={styles.activityPill}
+            onPress={() => router.push('/(tabs)/now')}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+            accessibilityLabel={label}
+          >
+            <Text style={styles.activityPillText} numberOfLines={1}>{label}</Text>
+            <Text style={styles.activityPillCta} numberOfLines={1}>
+              {i18n.t('cityActivity.cta', { ns: 'chat', defaultValue: 'See all' })} →
+            </Text>
+          </TouchableOpacity>
+        );
+      })()}
 
       {/* Error banner */}
       {error && (
@@ -1437,6 +1492,37 @@ const styles = StyleSheet.create({
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
+
+  // Persistent city-activity counter pill — sits below the ArrivalsBar,
+  // above the chat list. Visually echoes the "Learn how challenges work"
+  // banner inside the challenge channel so the two surfaces feel like
+  // siblings (warm dark fill, faint orange ring, orange CTA on the right).
+  activityPill: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'space-between',
+    gap:               8,
+    marginHorizontal:  Spacing.md,
+    marginTop:         Spacing.xs,
+    marginBottom:      Spacing.xs,
+    paddingVertical:   8,
+    paddingHorizontal: 12,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.md,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.30)',
+  },
+  activityPillText: {
+    flex:       1,
+    color:      Colors.text,
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+  },
+  activityPillCta: {
+    color:      Colors.accent,
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+  },
 
   // ── Typing indicator bar ──────────────────────────────────────────────────
   // Sits between messages and input. Subtle - just a dim text label.
