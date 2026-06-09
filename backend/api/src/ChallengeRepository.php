@@ -993,8 +993,11 @@ class ChallengeRepository
 
     public static function participantCount(string $challengeId): int
     {
+        // DISTINCT user: a single acceptor who took, finished, and re-took the
+        // challenge in successive rounds has two non-rejected rows. They're
+        // one participant, not two.
         $stmt = Database::pdo()->prepare("
-            SELECT COUNT(*) FROM challenge_acceptances
+            SELECT COUNT(DISTINCT acceptor_user_id) FROM challenge_acceptances
             WHERE challenge_id = ? AND phase != 'rejected'
         ");
         $stmt->execute([$challengeId]);
@@ -1005,23 +1008,30 @@ class ChallengeRepository
     public static function participantUserIds(string $challengeId): array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT acceptor_user_id FROM challenge_acceptances
+            SELECT DISTINCT acceptor_user_id FROM challenge_acceptances
             WHERE challenge_id = ? AND phase != 'rejected'
         ");
         $stmt->execute([$challengeId]);
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
-    /** Up to $limit acceptor avatar previews (most-recent first). */
+    /** Up to $limit acceptor avatar previews (most-recent acceptance per user, newest first). */
     public static function participantPreview(string $challengeId, int $limit = 5): array
     {
         $limit = max(1, min(20, $limit));
+        // PARTITION BY user → keep one row per user (the most-recent
+        // acceptance). Otherwise a re-take after a finished round would
+        // duplicate the same avatar in the preview strip.
         $stmt  = Database::pdo()->prepare("
-            SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-            FROM challenge_acceptances ca
-            JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
-            WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
-            ORDER BY ca.created_at DESC
+            SELECT id, display_name, profile_thumb_photo_url, profile_photo_url FROM (
+                SELECT u.id, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url,
+                       ca.created_at,
+                       row_number() OVER (PARTITION BY ca.acceptor_user_id ORDER BY ca.created_at DESC) AS rn
+                FROM challenge_acceptances ca
+                JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
+                WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
+            ) t WHERE rn = 1
+            ORDER BY created_at DESC
             LIMIT " . $limit);
         $stmt->execute([$challengeId]);
         return array_map(static fn(array $r): array => [
@@ -1037,15 +1047,23 @@ class ChallengeRepository
         if (empty($challengeIds)) return [];
         $limit = max(1, min(20, $limit));
         $in    = implode(',', array_fill(0, count($challengeIds), '?'));
+        // Two-stage window: first reduce to one row per (challenge, user) by
+        // taking the latest acceptance, then rank within each challenge so
+        // the per-row limit clips to N distinct users (not N acceptance rows).
         $stmt  = Database::pdo()->prepare("
             SELECT challenge_id, id, display_name, thumb_url, full_url FROM (
-                SELECT ca.challenge_id, u.id, u.display_name,
-                       u.profile_thumb_photo_url AS thumb_url,
-                       u.profile_photo_url       AS full_url,
-                       row_number() OVER (PARTITION BY ca.challenge_id ORDER BY ca.created_at DESC) AS rn
-                FROM challenge_acceptances ca
-                JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
-                WHERE ca.challenge_id IN ($in) AND ca.phase != 'rejected'
+                SELECT challenge_id, id, display_name, thumb_url, full_url,
+                       row_number() OVER (PARTITION BY challenge_id ORDER BY created_at DESC) AS rn
+                FROM (
+                    SELECT ca.challenge_id, u.id, u.display_name,
+                           u.profile_thumb_photo_url AS thumb_url,
+                           u.profile_photo_url       AS full_url,
+                           ca.created_at,
+                           row_number() OVER (PARTITION BY ca.challenge_id, ca.acceptor_user_id ORDER BY ca.created_at DESC) AS user_rn
+                    FROM challenge_acceptances ca
+                    JOIN users u ON u.id = ca.acceptor_user_id AND u.deleted_at IS NULL
+                    WHERE ca.challenge_id IN ($in) AND ca.phase != 'rejected'
+                ) latest_per_user WHERE user_rn = 1
             ) t WHERE rn <= " . $limit);
         $stmt->execute(array_values($challengeIds));
         $map = [];
@@ -1065,7 +1083,7 @@ class ChallengeRepository
         if (empty($challengeIds)) return [];
         $in   = implode(',', array_fill(0, count($challengeIds), '?'));
         $stmt = Database::pdo()->prepare("
-            SELECT challenge_id, COUNT(*) AS cnt
+            SELECT challenge_id, COUNT(DISTINCT acceptor_user_id) AS cnt
             FROM challenge_acceptances
             WHERE challenge_id IN ($in) AND phase != 'rejected'
             GROUP BY challenge_id
@@ -1086,17 +1104,24 @@ class ChallengeRepository
      */
     public static function getParticipants(string $challengeId): array
     {
+        // PARTITION BY user → keep one row per user even when a re-take left
+        // a second non-rejected acceptance behind. Order remains by FIRST
+        // join time (oldest acceptance the user has on this challenge) so
+        // the members list reflects when they first appeared.
         $stmt = Database::pdo()->prepare("
-            SELECT ca.acceptor_user_id AS user_id,
-                   EXTRACT(EPOCH FROM ca.created_at)::int AS joined_at,
-                   CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
-                   CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
-                   CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
-                   CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS user_created_at
-            FROM challenge_acceptances ca
-            LEFT JOIN users u ON u.id = ca.acceptor_user_id
-            WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
-            ORDER BY ca.created_at ASC
+            SELECT user_id, joined_at, display_name, profile_photo_url, vibe, user_created_at FROM (
+                SELECT ca.acceptor_user_id AS user_id,
+                       EXTRACT(EPOCH FROM ca.created_at)::int AS joined_at,
+                       CASE WHEN u.deleted_at IS NULL THEN u.display_name      ELSE NULL END AS display_name,
+                       CASE WHEN u.deleted_at IS NULL THEN u.profile_photo_url ELSE NULL END AS profile_photo_url,
+                       CASE WHEN u.deleted_at IS NULL THEN u.vibe              ELSE NULL END AS vibe,
+                       CASE WHEN u.deleted_at IS NULL THEN u.created_at        ELSE NULL END AS user_created_at,
+                       row_number() OVER (PARTITION BY ca.acceptor_user_id ORDER BY ca.created_at ASC) AS rn
+                FROM challenge_acceptances ca
+                LEFT JOIN users u ON u.id = ca.acceptor_user_id
+                WHERE ca.challenge_id = ? AND ca.phase != 'rejected'
+            ) t WHERE rn = 1
+            ORDER BY joined_at ASC
         ");
         $stmt->execute([$challengeId]);
         return array_map(static function (array $r): array {
