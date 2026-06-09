@@ -169,8 +169,11 @@ export default function ChallengeChatPage({
   useEffect(() => {
     if (!id) return
     setShowChallengeIntroBanner(false)
-    const t = setTimeout(() => setShowChallengeIntroBanner(true), 8000)
-    return () => clearTimeout(t)
+    // Don't shadow the outer `t` from useTranslation — the bundler
+    // ended up emitting a TDZ-trapped reference and the whole page
+    // crashed on every challenge channel mount.
+    const timer = setTimeout(() => setShowChallengeIntroBanner(true), 8000)
+    return () => clearTimeout(timer)
   }, [id])
 
   // Unified challenge channel chat - replaces the prior 1:1 thread surface.
