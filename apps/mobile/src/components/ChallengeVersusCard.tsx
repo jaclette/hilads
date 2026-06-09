@@ -390,15 +390,19 @@ const styles = StyleSheet.create({
   },
   validatedBadgeText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
+  // "⏳ In progress" — amber so it reads as "actively in motion"
+  // without competing with the validated-green or available-green
+  // pills. Grey was indistinguishable from a disabled state and
+  // washed out next to the ⏳ emoji.
   statusPill: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   'rgba(251,191,36,0.10)',
     borderRadius:      Radius.full,
     paddingHorizontal: 8,
     paddingVertical:   2,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       'rgba(251,191,36,0.30)',
   },
-  statusPillText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
+  statusPillText: { fontSize: 10, fontWeight: '700', color: '#fbbf24', letterSpacing: 0.3 },
 
   availablePill: {
     backgroundColor:   'rgba(34,197,94,0.10)',

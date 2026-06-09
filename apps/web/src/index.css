@@ -4347,6 +4347,22 @@ html, body, #root {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+/* "⏳ In progress" pill — third badge on the kind+audience row when
+   a non-terminal acceptance is active. Amber tint so it reads as
+   "actively in motion" without competing with the brand-orange
+   take-on CTAs or the green available/validated pills. */
+.challenge-badge--in-progress {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(251, 191, 36, 0.10);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.30);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 3px 10px;
+}
+
 /* Inline status pill - third badge on the kind+audience row. Filled (not
    tinted like the other two) so it carries more visual weight; reads as
    both a status indicator and a tappable owner control. */

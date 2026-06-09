@@ -106,7 +106,12 @@ export default function ChallengeVersusCard({
             ✓ {t('validatedBadge')}
           </span>
         ) : c.is_in_progress ? (
-          <span className="challenge-badge challenge-badge--status">
+          // --in-progress (amber) instead of --status (brand orange).
+          // The shared --status class is reused by interactive owner
+          // controls elsewhere and reading "loud orange" on the NOW
+          // feed felt overstated — switched to a calmer amber that
+          // still passes the visibility bar.
+          <span className="challenge-badge challenge-badge--in-progress">
             ⏳ {t('card.inProgress')}
           </span>
         ) : (
