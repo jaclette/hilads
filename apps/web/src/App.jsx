@@ -2981,7 +2981,7 @@ export default function App() {
   // top-level flag before setting its own. Without this, tapping e.g. NOW
   // then HERE leaves both drawer flags true and closing the top one reveals
   // the one underneath instead of returning to the City Channel.
-  function goToNowTab() {
+  function goToNowTab(initialFilter) {
     setShowCityPicker(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
@@ -2989,6 +2989,13 @@ export default function App() {
     setShowNotifications(false)
     setViewingProfile(null)
     dismissFullPageOverlays()
+    // Optional filter pre-selection — callers can pass 'challenges',
+    // 'events', or 'topics' to land the user on a specific bucket
+    // (e.g. the city-chat activity pills route here pre-filtered).
+    // Anything else (incl. no arg) keeps the current selector.
+    if (initialFilter === 'challenges' || initialFilter === 'events' || initialFilter === 'topics' || initialFilter === 'all') {
+      setNowFilter(initialFilter)
+    }
     setShowEventDrawer(true)
   }
   function goToHereTab() {
@@ -4252,29 +4259,43 @@ export default function App() {
           }}
         />
 
-        {/* Single persistent city-activity pill — replaces the
-            ephemeral event / hangout / challenge cards that used to
-            flicker through the feed. Stays at the top of the chat
-            until the user taps it; the tap opens the NOW drawer
-            where the full lists live. Hidden when nothing's happening
-            so it doesn't read as a "0 / 0 / 0" empty state. */}
-        {(cityChallenges.length + events.length + topics.length) > 0 && (() => {
-          const parts = []
-          if (cityChallenges.length > 0) parts.push(`${cityChallenges.length} ${cityChallenges.length === 1 ? t('cityActivity.challengeOne', { defaultValue: 'challenge' }) : t('cityActivity.challengeMany', { defaultValue: 'challenges' })}`)
-          if (events.length > 0)         parts.push(`${events.length} ${events.length === 1 ? t('cityActivity.eventOne', { defaultValue: 'event' }) : t('cityActivity.eventMany', { defaultValue: 'events' })}`)
-          if (topics.length > 0)         parts.push(`${topics.length} ${topics.length === 1 ? t('cityActivity.hangoutOne', { defaultValue: 'hangout' }) : t('cityActivity.hangoutMany', { defaultValue: 'hangouts' })}`)
-          return (
-            <button
-              type="button"
-              className="city-activity-pill"
-              onClick={goToNowTab}
-              aria-label={`🔥 ${parts.join(' · ')}`}
-            >
-              <span className="city-activity-pill-text">🔥 {parts.join(' · ')}</span>
-              <span className="city-activity-pill-cta">{t('cityActivity.cta', { defaultValue: 'See all' })} →</span>
-            </button>
-          )
-        })()}
+        {/* City-activity pills — one per content type. Each tap routes
+            to NOW pre-filtered (challenges or events). Hidden when zero
+            of that type so each pill only appears when there's
+            something to surface. Hangouts no longer get their own
+            pill — per spec only events + challenges split out. */}
+        {(cityChallenges.length + events.length) > 0 && (
+          <div className="city-activity-pill-row">
+            {cityChallenges.length > 0 && (
+              <button
+                type="button"
+                className="city-activity-pill city-activity-pill--half"
+                onClick={() => goToNowTab('challenges')}
+              >
+                <span className="city-activity-pill-text">
+                  🔥 {cityChallenges.length} {cityChallenges.length === 1
+                    ? t('cityActivity.challengeOne', { defaultValue: 'challenge' })
+                    : t('cityActivity.challengeMany', { defaultValue: 'challenges' })}
+                </span>
+                <span className="city-activity-pill-cta">→</span>
+              </button>
+            )}
+            {events.length > 0 && (
+              <button
+                type="button"
+                className="city-activity-pill city-activity-pill--half"
+                onClick={() => goToNowTab('events')}
+              >
+                <span className="city-activity-pill-text">
+                  🎉 {events.length} {events.length === 1
+                    ? t('cityActivity.eventOne', { defaultValue: 'event' })
+                    : t('cityActivity.eventMany', { defaultValue: 'events' })}
+                </span>
+                <span className="city-activity-pill-cta">→</span>
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="messages" ref={messagesContainerRef}>
           {loadingOlder && (

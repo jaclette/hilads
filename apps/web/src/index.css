@@ -6449,17 +6449,20 @@ img.pub-profile-avatar {
   font-style: italic;
 }
 
-/* Persistent city-activity counter pill — single tappable row above
-   the chat feed (below the ArrivalsBar). Mirrors the challenge-intro
-   banner so the two surfaces feel like siblings. Replaces the noisy
-   event / hangout / challenge cards that used to fan into the feed
-   and auto-dismiss. */
+/* City-activity counter pills — one row, up to two pills (challenges
+   + events). Each pill routes to the NOW drawer with a pre-applied
+   filter. Replaces the noisy event / hangout / challenge cards that
+   used to fan into the feed and auto-dismiss. */
+.city-activity-pill-row {
+  display: flex;
+  gap: 8px;
+  margin: 6px 12px;
+}
 .city-activity-pill {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin: 6px 12px;
   padding: 8px 12px;
   background: var(--surface);
   border: 1px solid rgba(255, 122, 60, 0.30);
@@ -6467,7 +6470,10 @@ img.pub-profile-avatar {
   cursor: pointer;
   color: inherit;
   text-align: left;
-  width: calc(100% - 24px);
+}
+.city-activity-pill--half {
+  flex: 1;
+  min-width: 0;
 }
 .city-activity-pill:hover {
   background: rgba(255, 122, 60, 0.05);

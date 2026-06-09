@@ -797,12 +797,13 @@ export default function ChatTab() {
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
   }, [messages, promptItems]);
 
-  // Counts that feed the persistent activity pill. Pulled from the same
-  // state arrays we used to inject pills into the feed — we keep the
-  // fetches + WS handlers untouched so the counter ticks up in real time
-  // when a new event / hangout / challenge lands.
-  const cityActivityCount =
-    eventFeedItems.length + topicFeedItems.length + challengeFeedItems.length;
+  // Counts that feed the persistent activity pills. Pulled from the
+  // same state arrays we used to inject pills into the feed — we keep
+  // the fetches + WS handlers untouched so the counters tick up in
+  // real time when a new event / challenge lands. Hangouts (topics)
+  // continue to be tracked for the NOW screen but no longer have a
+  // dedicated city-chat pill (per spec — only events + challenges
+  // got the split treatment).
 
   // ── Reply callbacks ───────────────────────────────────────────────────────────
 
@@ -1044,45 +1045,48 @@ export default function ChatTab() {
           city; taps land the user on /(tabs)/now where the full lists
           live. Hidden when there's literally nothing happening so it
           doesn't read as "0 / 0 / 0" to a quiet-city visitor. */}
-      {cityActivityCount > 0 && (() => {
-        const parts: string[] = [];
-        if (challengeFeedItems.length > 0) {
-          parts.push(i18n.t('cityActivity.challenges', {
-            ns: 'chat', count: challengeFeedItems.length,
-            defaultValue_one: '{{count}} challenge',
-            defaultValue: '{{count}} challenges',
-          }));
-        }
-        if (eventFeedItems.length > 0) {
-          parts.push(i18n.t('cityActivity.events', {
-            ns: 'chat', count: eventFeedItems.length,
-            defaultValue_one: '{{count}} event',
-            defaultValue: '{{count}} events',
-          }));
-        }
-        if (topicFeedItems.length > 0) {
-          parts.push(i18n.t('cityActivity.hangouts', {
-            ns: 'chat', count: topicFeedItems.length,
-            defaultValue_one: '{{count}} hangout',
-            defaultValue: '{{count}} hangouts',
-          }));
-        }
-        const label = `🔥 ${parts.join(' · ')}`;
-        return (
-          <TouchableOpacity
-            style={styles.activityPill}
-            onPress={() => router.push('/(tabs)/now')}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={label}
-          >
-            <Text style={styles.activityPillText} numberOfLines={1}>{label}</Text>
-            <Text style={styles.activityPillCta} numberOfLines={1}>
-              {i18n.t('cityActivity.cta', { ns: 'chat', defaultValue: 'See all' })} →
-            </Text>
-          </TouchableOpacity>
-        );
-      })()}
+      {/* Activity pills — one per content type. Tapping each routes to
+          /(tabs)/now with a ?filter= param so the NOW screen opens
+          pre-filtered to that type. Hidden when zero of that type so
+          each row only appears when there's something to show. */}
+      {(challengeFeedItems.length + eventFeedItems.length) > 0 && (
+        <View style={styles.activityPillRow}>
+          {challengeFeedItems.length > 0 && (
+            <TouchableOpacity
+              style={[styles.activityPill, styles.activityPillHalf]}
+              onPress={() => router.push('/(tabs)/now?filter=challenges' as never)}
+              activeOpacity={0.75}
+              accessibilityRole="button"
+            >
+              <Text style={styles.activityPillText} numberOfLines={1}>
+                {i18n.t('cityActivity.challenges', {
+                  ns: 'chat', count: challengeFeedItems.length,
+                  defaultValue_one: '🔥 {{count}} challenge',
+                  defaultValue: '🔥 {{count}} challenges',
+                })}
+              </Text>
+              <Text style={styles.activityPillCta} numberOfLines={1}>→</Text>
+            </TouchableOpacity>
+          )}
+          {eventFeedItems.length > 0 && (
+            <TouchableOpacity
+              style={[styles.activityPill, styles.activityPillHalf]}
+              onPress={() => router.push('/(tabs)/now?filter=events' as never)}
+              activeOpacity={0.75}
+              accessibilityRole="button"
+            >
+              <Text style={styles.activityPillText} numberOfLines={1}>
+                {i18n.t('cityActivity.events', {
+                  ns: 'chat', count: eventFeedItems.length,
+                  defaultValue_one: '🎉 {{count}} event',
+                  defaultValue: '🎉 {{count}} events',
+                })}
+              </Text>
+              <Text style={styles.activityPillCta} numberOfLines={1}>→</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       {/* Error banner */}
       {error && (
@@ -1493,18 +1497,29 @@ const styles = StyleSheet.create({
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
-  // Persistent city-activity counter pill — sits below the ArrivalsBar,
-  // above the chat list. Visually echoes the "Learn how challenges work"
+  // Persistent city-activity counters — one row, up to two pills (one
+  // per content type). Each is tappable and routes to NOW with a
+  // pre-applied filter. Visual echoes the "Learn how challenges work"
   // banner inside the challenge channel so the two surfaces feel like
   // siblings (warm dark fill, faint orange ring, orange CTA on the right).
+  activityPillRow: {
+    flexDirection:    'row',
+    gap:              8,
+    marginHorizontal: Spacing.md,
+    marginTop:        Spacing.xs,
+    marginBottom:     Spacing.xs,
+  },
+  activityPillHalf: {
+    flex: 1,
+    marginHorizontal: 0,
+    marginTop:        0,
+    marginBottom:     0,
+  },
   activityPill: {
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'space-between',
     gap:               8,
-    marginHorizontal:  Spacing.md,
-    marginTop:         Spacing.xs,
-    marginBottom:      Spacing.xs,
     paddingVertical:   8,
     paddingHorizontal: 12,
     backgroundColor:   Colors.bg2,

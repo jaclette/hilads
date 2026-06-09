@@ -5,7 +5,7 @@ import {
   type ViewToken,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import * as Location from 'expo-location';
@@ -139,7 +139,27 @@ export default function NowScreen() {
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
-  const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>('all');
+  // ?filter=challenges|events|topics primes the initial selector when
+  // the user lands here from the city-chat activity pills (one pill per
+  // type). Anything else (no param, malformed) falls back to 'all' so
+  // a direct tap on the NOW tab keeps the full overview.
+  const filterParam = useLocalSearchParams<{ filter?: string }>().filter;
+  const initialFilter: 'all' | 'challenges' | 'events' | 'topics' =
+    filterParam === 'challenges' || filterParam === 'events' || filterParam === 'topics'
+      ? filterParam : 'all';
+  const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>(initialFilter);
+  // Re-sync if the URL param changes (e.g. user taps another pill while
+  // already on this screen — router.push fires a new param without
+  // remounting). Doesn't touch the user's manual toggles.
+  const lastParamRef = useRef<string | undefined>(typeof filterParam === 'string' ? filterParam : undefined);
+  useEffect(() => {
+    const v = typeof filterParam === 'string' ? filterParam : undefined;
+    if (v === lastParamRef.current) return;
+    lastParamRef.current = v;
+    if (v === 'challenges' || v === 'events' || v === 'topics' || v === 'all') {
+      setFilter(v);
+    }
+  }, [filterParam]);
   // Set of currently-visible challenge ids — drives the open-slot pulse
   // animation on ChallengeVersusCard. Updated by FlatList's
   // onViewableItemsChanged so off-screen cards stop redrawing and entry-
