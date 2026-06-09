@@ -1499,6 +1499,19 @@ run($pdo, "
     CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus'))
 ", 'score_events add new kind check');
 
+// Per-round scoring. The original UNIQUE (user_id, challenge_id, role, kind)
+// made each kind single-shot PER CHALLENGE, which silently dropped points
+// when a user took the SAME challenge again after the channel auto-reopened
+// (chacc partial-unique change above + mutual-rating reopen). Add an
+// acceptance_id column + scope the UNIQUE to (user, challenge, role, kind,
+// acceptance_id) so each take-on round earns independently. Historical rows
+// have acceptance_id NULL and stay distinct from new rows (Postgres
+// NULL-distinct semantics on composite UNIQUE), so backfill is unnecessary.
+run($pdo, "ALTER TABLE score_events ADD COLUMN IF NOT EXISTS acceptance_id TEXT REFERENCES challenge_acceptances(id) ON DELETE CASCADE", 'score_events.acceptance_id');
+run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_user_id_challenge_id_role_kind_key", 'drop old score_events strict unique');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_per_round
+            ON score_events (user_id, challenge_id, role, kind, acceptance_id)", 'score_events per-round unique');
+
 // Mutual ratings. UNIQUE (challenge_id, rater_id) → one rating per
 // rater per challenge. Both parties rating is the meetup proof.
 run($pdo, "
@@ -1593,11 +1606,11 @@ run($pdo, "
         SELECT points INTO pts FROM score_rules WHERE kind = 'accepted' AND role = 'challenger';
         IF pts IS NULL THEN RETURN NEW; END IF;
 
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
         VALUES (encode(gen_random_bytes(8), 'hex'),
                 challenger_id, NEW.challenge_id, 'challenger', 'accepted',
-                pts, origin_city, current_month)
-        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+                pts, origin_city, current_month, NEW.id)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
 
         RETURN NEW;
     END;
@@ -1699,11 +1712,11 @@ run($pdo, "
         SELECT points INTO pts_c FROM score_rules WHERE kind = 'date_locked' AND role = 'challenger';
         SELECT points INTO pts_t FROM score_rules WHERE kind = 'date_locked' AND role = 'taker';
 
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
         VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'date_locked', COALESCE(pts_c, 0), origin_city, current_month),
-          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), taker_city,  current_month)
-        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+          (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'date_locked', COALESCE(pts_c, 0), origin_city, current_month, NEW.id),
+          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'date_locked', COALESCE(pts_t, 0), taker_city,  current_month, NEW.id)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
 
         RETURN NEW;
     END;
@@ -1736,6 +1749,7 @@ run($pdo, "
         cnt              INT;
         challenger_id    TEXT;
         taker_id         TEXT;
+        acceptance_id    TEXT;
         origin_city      TEXT;
         challenge_mode   TEXT;
         v_method         TEXT;
@@ -1757,7 +1771,11 @@ run($pdo, "
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
-        SELECT ca.acceptor_user_id INTO taker_id
+        -- Capture the active acceptance id so per-round score_events stay
+        -- distinct (the user could have taken this challenge in an earlier
+        -- round; ON CONFLICT key includes acceptance_id).
+        SELECT ca.acceptor_user_id, ca.id
+        INTO taker_id, acceptance_id
         FROM challenge_acceptances ca
         WHERE ca.challenge_id = NEW.challenge_id
           AND ca.phase <> 'rejected'
@@ -1784,26 +1802,24 @@ run($pdo, "
         SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
         SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
 
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
         VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month),
-          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month)
-        ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month, acceptance_id),
+          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month, acceptance_id)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
 
         -- Meet bonus: only when the creator chose Meet at creation. Fires once
-        -- per challenge per role via the existing UNIQUE (user, challenge,
-        -- role, kind) constraint — same idempotency story as debrief above.
-        -- Cities follow the debrief mapping so the bonus shows up on the same
-        -- leaderboard as the base points.
+        -- per (user, challenge, role, kind, acceptance) round, so a re-take
+        -- earns it again as long as a new acceptance row was created.
         IF COALESCE(v_method, 'meet') = 'meet' THEN
             SELECT points INTO pts_meet_bonus_c FROM score_rules WHERE kind = 'meet_bonus' AND role = 'challenger';
             SELECT points INTO pts_meet_bonus_t FROM score_rules WHERE kind = 'meet_bonus' AND role = 'taker';
 
-            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
             VALUES
-              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month),
-              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month)
-            ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month, acceptance_id),
+              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month, acceptance_id)
+            ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
         END IF;
 
         UPDATE challenge_acceptances
