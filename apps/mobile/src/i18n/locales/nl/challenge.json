@@ -54,12 +54,12 @@
   "validation": {
     "label": "Hoe valideren?",
     "meet": {
-      "label": "🤝 Afspreken",
+      "label": "Afspreken",
       "hint": "Beleef het samen in het echt",
       "bonusChip": "+50 ontmoetingsbonus als jullie elkaar zien"
     },
     "photo_proof": {
-      "label": "📸 Foto-bewijs",
+      "label": "Foto-bewijs",
       "hint": "Accepteer het bewijs op afstand"
     }
   },

@@ -54,12 +54,12 @@
   "validation": {
     "label": "Como validar?",
     "meet": {
-      "label": "🤝 Encontrar",
+      "label": "Encontrar",
       "hint": "Compartilhem a experiência pessoalmente",
       "bonusChip": "+50 de bônus se vocês se encontrarem pessoalmente"
     },
     "photo_proof": {
-      "label": "📸 Prova com foto",
+      "label": "Prova com foto",
       "hint": "Aceite a prova à distância"
     }
   },

@@ -54,12 +54,12 @@
   "validation": {
     "label": "어떻게 인증할까요?",
     "meet": {
-      "label": "🤝 직접 만남",
+      "label": "직접 만남",
       "hint": "직접 만나서 같이 경험해요",
       "bonusChip": "직접 만나면 +50 보너스"
     },
     "photo_proof": {
-      "label": "📸 사진 인증",
+      "label": "사진 인증",
       "hint": "멀리서 사진으로 인증받기"
     }
   },

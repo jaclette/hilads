@@ -54,12 +54,12 @@
   "validation": {
     "label": "How to validate?",
     "meet": {
-      "label": "🤝 Meet",
+      "label": "Meet",
       "hint": "Share the experience in person",
       "bonusChip": "+50 Meet bonus when you both meet up"
     },
     "photo_proof": {
-      "label": "📸 Photo proof",
+      "label": "Photo proof",
       "hint": "Accept proof at a distance"
     }
   },

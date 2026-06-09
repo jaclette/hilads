@@ -54,12 +54,12 @@
   "validation": {
     "label": "如何驗證？",
     "meet": {
-      "label": "🤝 見面",
+      "label": "見面",
       "hint": "一起親身體驗",
       "bonusChip": "見面再拿 +50 獎勵"
     },
     "photo_proof": {
-      "label": "📸 照片驗證",
+      "label": "照片驗證",
       "hint": "遠端接受照片驗證"
     }
   },

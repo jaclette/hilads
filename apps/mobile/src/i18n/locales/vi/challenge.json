@@ -54,12 +54,12 @@
   "validation": {
     "label": "Xác minh kiểu nào?",
     "meet": {
-      "label": "🤝 Gặp mặt",
+      "label": "Gặp mặt",
       "hint": "Cùng nhau trải nghiệm trực tiếp",
       "bonusChip": "Gặp mặt được thêm +50 thưởng"
     },
     "photo_proof": {
-      "label": "📸 Ảnh chứng minh",
+      "label": "Ảnh chứng minh",
       "hint": "Chấp nhận chứng minh từ xa"
     }
   },

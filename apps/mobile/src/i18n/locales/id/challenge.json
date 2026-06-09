@@ -54,12 +54,12 @@
   "validation": {
     "label": "Validasinya gimana?",
     "meet": {
-      "label": "🤝 Ketemuan",
+      "label": "Ketemuan",
       "hint": "Rasakan langsung bareng",
       "bonusChip": "+50 bonus kalau kalian ketemuan"
     },
     "photo_proof": {
-      "label": "📸 Bukti foto",
+      "label": "Bukti foto",
       "hint": "Terima bukti dari jauh"
     }
   },

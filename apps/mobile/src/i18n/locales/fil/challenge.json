@@ -54,12 +54,12 @@
   "validation": {
     "label": "Paano i-validate?",
     "meet": {
-      "label": "🤝 Magkita",
+      "label": "Magkita",
       "hint": "I-share ang experience nang harap-harapan",
       "bonusChip": "+50 bonus pag nag-meet kayo in person"
     },
     "photo_proof": {
-      "label": "📸 Photo proof",
+      "label": "Photo proof",
       "hint": "Tanggapin ang proof remotely"
     }
   },

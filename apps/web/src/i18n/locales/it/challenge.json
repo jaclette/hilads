@@ -54,12 +54,12 @@
   "validation": {
     "label": "Come convalidare?",
     "meet": {
-      "label": "🤝 Incontro",
+      "label": "Incontro",
       "hint": "Vivete l'esperienza di persona",
       "bonusChip": "+50 di bonus Incontro se vi vedete"
     },
     "photo_proof": {
-      "label": "📸 Prova fotografica",
+      "label": "Prova fotografica",
       "hint": "Accetta la prova a distanza"
     }
   },
