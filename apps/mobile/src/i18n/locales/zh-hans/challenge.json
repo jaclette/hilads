@@ -516,5 +516,9 @@
       "andMore": "另外 {{count}} 项"
     },
     "total": "总分: {{total}} 分"
+  },
+  "welcomeGuest": {
+    "title": "👋 欢迎！无需注册即可畅聊。",
+    "cta": "想接下这个挑战？3秒注册 →"
   }
 }

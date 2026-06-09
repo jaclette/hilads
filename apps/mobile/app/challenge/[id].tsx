@@ -124,6 +124,13 @@ export default function ChallengeChatScreen() {
   // dispose it for the rest of this session.
   const [showChallengeIntro,       setShowChallengeIntro]       = useState(false);
   const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false);
+  // Guest welcome banner — shown immediately (no 8 s delay) to anyone
+  // landing on a public challenge without an account. Dismissed on ×
+  // or after tapping into the auth-gate, per session. Replaces the
+  // intro banner for that audience so they don't see two stacked
+  // affordances on entry. Guests are by definition the audience for
+  // the explicit "chat free / sign up to take it" message.
+  const [showGuestWelcome, setShowGuestWelcome] = useState(true);
   // Picker for the FIRST proposal (no existing proposal yet). Counter-propose
   // has its own picker inside ThreadScheduleBlock; this one is reached from
   // the pipeline's "Propose a date →" sub-CTA so we don't double up.
@@ -1217,12 +1224,49 @@ export default function ChallengeChatScreen() {
             Both branches are handled inside the non-chat IIFE below. */}
         {(challengeIsPublic || iAmParticipant === true) && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
           <>
+            {/* Guest welcome — fires on entry for any unauthenticated
+                viewer of a public channel. Two-line: "chat free, no
+                sign-up" + a direct sign-up CTA that ports the existing
+                returnTo handshake so they land back here primed to tap
+                Take-on. × dismisses for the session. */}
+            {!account?.id && challengeIsPublic && showGuestWelcome ? (
+              <View style={styles.guestWelcome}>
+                <TouchableOpacity
+                  style={styles.guestWelcomeBody}
+                  onPress={() => {
+                    setShowGuestWelcome(false);
+                    const returnTo = encodeURIComponent(`/challenge/${id}`);
+                    router.push(`/auth-gate?reason=accept_challenge&returnTo=${returnTo}` as never);
+                  }}
+                  activeOpacity={0.75}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.guestWelcomeText} numberOfLines={2}>
+                    {i18n.t('welcomeGuest.title', { ns: 'challenge', defaultValue: '👋 Welcome! Chat freely here — no sign-up needed.' })}
+                  </Text>
+                  <Text style={styles.guestWelcomeCta} numberOfLines={2}>
+                    {i18n.t('welcomeGuest.cta', { ns: 'challenge', defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowGuestWelcome(false)}
+                  hitSlop={10}
+                  accessibilityLabel={i18n.t('close', { ns: 'common' })}
+                  style={styles.guestWelcomeClose}
+                >
+                  <Ionicons name="close" size={16} color={Colors.muted2} />
+                </TouchableOpacity>
+              </View>
+            ) : null}
+
             {/* "Learn how challenges work" banner — same primitive the city
                 chat surfaces from its delayed feed prompt. Sits above the
                 FlatList (not inside it) so the inverted message list keeps
                 its scroll behaviour intact and the banner stays anchored to
-                the top edge. Tap → opens the carousel; × → dismiss. */}
-            {showChallengeIntroBanner && (
+                the top edge. Tap → opens the carousel; × → dismiss.
+                Hidden for guests — they get the welcome banner above
+                instead so the entry surface stays focused on one CTA. */}
+            {account?.id && showChallengeIntroBanner && (
               <View style={styles.introBanner}>
                 <TouchableOpacity
                   style={styles.introBannerBody}
@@ -1784,6 +1828,43 @@ const styles = StyleSheet.create({
     color:      Colors.accent,
     fontSize:   FontSizes.sm,
     fontWeight: '700',
+  },
+
+  // Guest welcome — slightly taller than the intro banner because the
+  // copy splits across two lines (welcome + sign-up CTA). Same warm-
+  // dark fill + accent-orange ring so the two surfaces feel like
+  // siblings even though only one shows at a time.
+  guestWelcome: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    gap:               8,
+    marginHorizontal:  Spacing.md,
+    marginTop:         Spacing.xs,
+    marginBottom:      Spacing.xs,
+    paddingVertical:   10,
+    paddingHorizontal: 12,
+    backgroundColor:   Colors.bg2,
+    borderRadius:      Radius.md,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.30)',
+  },
+  guestWelcomeBody: {
+    flex: 1,
+    gap:  2,
+  },
+  guestWelcomeText: {
+    color:      Colors.text,
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+  },
+  guestWelcomeCta: {
+    color:      Colors.accent,
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+  },
+  guestWelcomeClose: {
+    alignSelf: 'flex-start',
+    paddingTop: 2,
   },
 
   // Nav

@@ -516,5 +516,9 @@
       "andMore": "en nog {{count}}"
     },
     "total": "Totaal: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 Welkom! Praat vrij mee, geen account nodig.",
+    "cta": "Wil je deze challenge accepteren? Account in 3 seconden →"
   }
 }

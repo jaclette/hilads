@@ -534,5 +534,9 @@
       "andMore": "and {{count}} more"
     },
     "total": "Total: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 Welcome! Chat freely here — no sign-up needed.",
+    "cta": "Want to take this challenge? Sign up in 3 seconds →"
   }
 }

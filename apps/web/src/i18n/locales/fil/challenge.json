@@ -512,5 +512,9 @@
       "andMore": "at {{count}} pa"
     },
     "total": "Total: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 Welcome! Mag-chat ka nang malaya, walang sign-up.",
+    "cta": "Gusto kunin ang hamon na ito? Mag-sign up sa 3 segundo →"
   }
 }

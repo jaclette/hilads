@@ -516,5 +516,9 @@
       "andMore": "y {{count}} más"
     },
     "total": "Total: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 ¡Bienvenido! Charla libremente, sin registro.",
+    "cta": "¿Quieres aceptar este desafío? Regístrate en 3 segundos →"
   }
 }

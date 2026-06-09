@@ -512,5 +512,9 @@
       "andMore": "e altri {{count}}"
     },
     "total": "Totale: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 Benvenuto! Chatta liberamente, senza iscrizione.",
+    "cta": "Vuoi accettare questa sfida? Iscriviti in 3 secondi →"
   }
 }

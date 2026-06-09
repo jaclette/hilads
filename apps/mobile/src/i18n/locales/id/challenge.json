@@ -516,5 +516,9 @@
       "andMore": "dan {{count}} lainnya"
     },
     "total": "Total: {{total}} poin"
+  },
+  "welcomeGuest": {
+    "title": "👋 Selamat datang! Ngobrol bebas tanpa daftar.",
+    "cta": "Mau ambil tantangan ini? Daftar dalam 3 detik →"
   }
 }

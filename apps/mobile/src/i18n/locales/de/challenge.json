@@ -516,5 +516,9 @@
       "andMore": "und {{count}} weitere"
     },
     "total": "Gesamt: {{total}} Pkt."
+  },
+  "welcomeGuest": {
+    "title": "👋 Willkommen! Schreib einfach mit, ohne Anmeldung.",
+    "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden →"
   }
 }

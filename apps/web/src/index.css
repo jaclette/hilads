@@ -6494,6 +6494,54 @@ img.pub-profile-avatar {
   flex-shrink: 0;
 }
 
+/* Guest welcome — sits at the same spot as the intro banner but
+   shows only for guests on public channels. Two-line copy (welcome
+   + sign-up CTA) so the visual height is slightly taller; same warm
+   ring + orange CTA so guests recognise it as the action surface. */
+.challenge-guest-welcome {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 6px 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  border-radius: 10px;
+}
+.challenge-guest-welcome-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+}
+.challenge-guest-welcome-text {
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.challenge-guest-welcome-cta {
+  color: #FF7A3C;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.challenge-guest-welcome-close {
+  background: transparent;
+  border: 0;
+  color: var(--muted2);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  align-self: flex-start;
+}
+.challenge-guest-welcome-close:hover { color: var(--text); }
+
 /* "Learn how challenges work" banner — slim row above the chat feed
    on a challenge channel. Mirrors the city-chat prompt visual so the
    two surfaces read as the same affordance. */

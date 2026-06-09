@@ -161,6 +161,11 @@ export default function ChallengeChatPage({
   // learn the rules without backtracking. Appears 8 s after entering
   // the channel, dismissed on × or after tap-to-open.
   const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false)
+  // Guest welcome banner — fires on entry for any unauthenticated
+  // viewer of a public channel. Replaces the intro banner for that
+  // audience so the entry surface has one focused CTA. Dismissed
+  // per-session via × or by tapping into the auth flow.
+  const [showGuestWelcome, setShowGuestWelcome] = useState(true)
   useEffect(() => {
     if (!id) return
     setShowChallengeIntroBanner(false)
@@ -1129,11 +1134,46 @@ export default function ChallengeChatPage({
           server-side gated either way. */}
       {(challengeIsPublic || iAmParticipant === true) && (
       <>
+          {/* Guest welcome — fires on entry for any unauthenticated
+              viewer. Two-line: "chat free, no sign-up" + a direct
+              sign-up CTA that routes through the existing onNeedAuth
+              gate, keeping the activeChallenge mounted underneath so
+              the user lands back on the same challenge after auth. */}
+          {!account?.id && challengeIsPublic && showGuestWelcome ? (
+            <div className="challenge-guest-welcome">
+              <button
+                type="button"
+                className="challenge-guest-welcome-body"
+                onClick={() => {
+                  setShowGuestWelcome(false)
+                  onNeedAuth?.('accept_challenge')
+                }}
+              >
+                <span className="challenge-guest-welcome-text">
+                  {t('welcomeGuest.title', { defaultValue: '👋 Welcome! Chat freely here — no sign-up needed.' })}
+                </span>
+                <span className="challenge-guest-welcome-cta">
+                  {t('welcomeGuest.cta', { defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
+                </span>
+              </button>
+              <button
+                type="button"
+                className="challenge-guest-welcome-close"
+                onClick={() => setShowGuestWelcome(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+          ) : null}
+
           {/* "Learn how challenges work" banner — same primitive as the
               city chat. Sits above the feed (not inside it) so the
               chat's scroll behaviour is untouched. Tap → opens the
-              shared carousel mounted at App level; × → dismiss. */}
-          {showChallengeIntroBanner && (
+              shared carousel mounted at App level; × → dismiss.
+              Hidden for guests — the welcome banner above is their
+              single CTA on entry. */}
+          {account?.id && showChallengeIntroBanner && (
             <div className="challenge-intro-banner">
               <button
                 type="button"

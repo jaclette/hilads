@@ -516,5 +516,9 @@
       "andMore": "và {{count}} nữa"
     },
     "total": "Tổng: {{total}} pts"
+  },
+  "welcomeGuest": {
+    "title": "👋 Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
+    "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây →"
   }
 }
