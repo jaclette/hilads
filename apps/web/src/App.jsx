@@ -211,7 +211,7 @@ const GUEST_GATE_COPY = {
     pageTitle: 'Accept a challenge',
     emoji:     '🤝',
     title:     'Sign up to take this challenge',
-    sub:       "Takes 30 seconds. You'll come right back to the challenge.",
+    sub:       "Takes 3 seconds. You'll come right back to the challenge.",
   },
 }
 
