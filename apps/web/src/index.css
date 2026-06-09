@@ -1381,15 +1381,14 @@ html, body, #root {
 .marquee-fade--right { right: 0; background: linear-gradient(to left,  var(--marquee-fade, #1a1a1a), transparent); }
 
 @keyframes marquee-scroll {
-  /* Hold-at-start (0 → 18 %), scroll (18 → 88 %), hold-at-end (88 → 100 %).
-     The two dwell stretches kill the loop-snap flicker that made the
-     challenge-intro banner read as "flashing": continuous scroll never gives
-     the eye a still moment, so each wrap-around feels like a hard cut.
-     With the linear scroll only occupying 70 % of the iteration the dwell
-     time scales with text length (~3 s start / ~2 s end on a typical
-     banner overflow at SPEED = 25 px/s). */
+  /* Single-copy snap-back: hold-at-start (0 → 18 %), scroll (18 → 78 %),
+     hold-at-end (78 → 100 %). The duplicate-copy seamless-loop variant
+     made BOTH copies visible during the scroll on narrow clips, which
+     read as a flash; with one copy and a snap-back the user sees a
+     clean scroll, a still moment at the end, then a reset back to
+     the start (mostly hidden by the right-edge fade + initial hold). */
   0%, 18%   { transform: translateX(0); }
-  88%, 100% { transform: translateX(calc(-1 * var(--marquee-distance))); }
+  78%, 100% { transform: translateX(calc(-1 * var(--marquee-distance))); }
 }
 
 /* Belt-and-suspenders: the component already renders static under reduced

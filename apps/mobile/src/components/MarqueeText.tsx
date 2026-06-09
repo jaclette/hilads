@@ -61,6 +61,8 @@ const OVERFLOW_FACTOR = 1.15;
 // the eye still needs a still moment per cycle or the continuous scroll
 // reads as flicker.
 const END_HOLD_MS = 1500;
+// Px past the right edge so the last glyph fully clears the right fade.
+const LEAD = 12;
 
 export function MarqueeText({
   text,
@@ -94,16 +96,17 @@ export function MarqueeText({
   // New text → drop the stale measurement so we don't marquee on the wrong width.
   useEffect(() => { setTextW(0); }, [text]);
 
-  // Drive the loop. Each iteration holds at the start (initialDelay), scrolls
-  // for distance/speed ms, then holds at the end (END_HOLD_MS) before the
-  // loop resets translateX to 0. The reset is invisible because copy 2 sits
-  // exactly where copy 1 began. Restarts whenever visibility or geometry
-  // changes; stops + resets when paused or static.
+  // Single-copy snap-back. Each iteration: hold at the start (initialDelay),
+  // scroll one copy left so its end clears the right fade, hold at the end
+  // (END_HOLD_MS), then Animated.loop resets translateX to 0 — that reset
+  // is the snap, mostly masked by the right-edge fade + the next hold.
+  // The previous seamless-loop variant kept both text copies on track at
+  // once, which was visible on narrow clips and read as a flash.
   useEffect(() => {
     translateX.setValue(0);
     if (!shouldMarquee || !active) return;
 
-    const distance = textW + gap;
+    const distance = Math.max(0, textW - containerW + LEAD);
     const duration = (distance / speed) * 1000;
 
     const starter = Animated.loop(
@@ -123,7 +126,7 @@ export function MarqueeText({
       starter.stop();
       translateX.setValue(0);
     };
-  }, [shouldMarquee, active, textW, gap, speed, initialDelay, translateX]);
+  }, [shouldMarquee, active, textW, containerW, speed, initialDelay, translateX]);
 
   const transparent = toTransparent(fadeColor);
 
@@ -140,9 +143,9 @@ export function MarqueeText({
 
       {shouldMarquee ? (
         <>
+          {/* Single copy — no duplicate, no inter-copy gap. The animation
+              scrolls this one Text left, holds, then snaps back. */}
           <Animated.View style={[styles.row, { transform: [{ translateX }] }]}>
-            <Text style={[textStyle, styles.noShrink]} numberOfLines={1}>{text}</Text>
-            <View style={{ width: gap }} />
             <Text style={[textStyle, styles.noShrink]} numberOfLines={1}>{text}</Text>
           </Animated.View>
 
