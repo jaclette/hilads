@@ -1028,8 +1028,13 @@ export default function ChallengeChatScreen() {
           iAmCreator={isOwner}
           myUserId={account?.id ?? null}
           mode={challenge.mode ?? 'local'}
+          validationMethod={challenge.validation_method ?? 'meet'}
           onPress={(() => {
+            // Local + meet only: open date picker. Local + photo_proof has
+            // no date step, so don't intercept the tap to a picker that
+            // would never get acted on.
             if ((challenge.mode ?? 'local') === 'local'
+                && (challenge.validation_method ?? 'meet') === 'meet'
                 && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
               return () => setPickerOpen(true);
             }
@@ -1391,12 +1396,16 @@ export default function ChallengeChatScreen() {
               ) : null}
             />
 
-            {/* Schedule band - Local-only AND only for the creator + ACTIVE
-                taker. Uses activeAcceptance so a previously-completed user
+            {/* Schedule band - Local-MEET only (skip on photo-proof: no
+                date to schedule, the timeline goes straight from accept
+                to proof submission). Only for the creator + ACTIVE taker.
+                Uses activeAcceptance so a previously-completed user
                 doesn't see a stale "proposed at HH:MM" from their old
-                approved row - the slot is open again, the schedule belongs
-                to whoever takes it next. */}
-            {(challenge.mode ?? 'local') === 'local' && activeAcceptance && account?.id && (
+                approved row - the slot is open again, the schedule
+                belongs to whoever takes it next. */}
+            {(challenge.mode ?? 'local') === 'local'
+              && (challenge.validation_method ?? 'meet') === 'meet'
+              && activeAcceptance && account?.id && (
               <ThreadScheduleBlock
                 thread={activeAcceptance}
                 myUserId={account.id}

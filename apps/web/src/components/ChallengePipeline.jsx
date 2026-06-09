@@ -21,7 +21,7 @@ function formatMeetupDate(unixSeconds, locale) {
   return `${day} · ${time}`
 }
 
-function derive(acceptance, iAmCreator, myUserId, locale, isInternational) {
+function derive(acceptance, iAmCreator, myUserId, locale, usesPhotoProof) {
   if (!acceptance) {
     // Visitors don't get a sub-CTA here - the participants row below has the
     // labeled "Take on the challenge" button. Two prompts read as a repeat.
@@ -35,7 +35,22 @@ function derive(acceptance, iAmCreator, myUserId, locale, isInternational) {
   const phase  = acceptance.effective_phase ?? acceptance.phase
   const cpName = acceptance.counterparty.displayName
 
-  if (isInternational) {
+  // Photo-proof flow — international (auto-approved at take-on, no
+  // 'pending') AND local-with-photo_proof (still 'pending' first since
+  // the creator vets the request). From 'accepted' onwards the two
+  // branches are identical: no date concertation, no meet-up step.
+  if (usesPhotoProof) {
+    if (phase === 'pending') {
+      return {
+        active: 'accept',
+        done: new Set(),
+        rejected: false,
+        subCtaKey: iAmCreator
+          ? 'pipeline.subcta.creatorReviewPending'
+          : 'pipeline.subcta.acceptorAwaitingReview',
+        subCtaName: cpName,
+      }
+    }
     if (phase === 'accepted') {
       return {
         active: 'proof',
@@ -113,12 +128,13 @@ function derive(acceptance, iAmCreator, myUserId, locale, isInternational) {
   return { active: null, done: new Set(['accept', 'date', 'meet']), rejected: true, subCtaKey: 'pipeline.subcta.closed' }
 }
 
-export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = null, mode = 'local', onClick }) {
+export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = null, mode = 'local', validationMethod = 'meet', onClick }) {
   const { t, i18n } = useTranslation('challenge')
   const isInternational = mode === 'international'
-  const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL
-  const REJECT_STEP = isInternational ? 'verdict' : 'wrap'
-  const state   = derive(acceptance, iAmCreator, myUserId, i18n.language, isInternational)
+  const usesPhotoProof  = isInternational || validationMethod === 'photo_proof'
+  const STEPS = usesPhotoProof ? STEPS_INTERNATIONAL : STEPS_LOCAL
+  const REJECT_STEP = usesPhotoProof ? 'verdict' : 'wrap'
+  const state   = derive(acceptance, iAmCreator, myUserId, i18n.language, usesPhotoProof)
   const interactive = !!onClick && !!acceptance
 
   return (

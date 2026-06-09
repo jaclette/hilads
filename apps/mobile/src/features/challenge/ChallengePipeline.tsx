@@ -57,6 +57,7 @@ function derive(
   iAmCreator: boolean,
   myUserId: string | null,
   locale: string,
+  usesPhotoProof: boolean,
   isInternational: boolean,
 ): PipelineState {
   if (!acceptance) {
@@ -75,12 +76,24 @@ function derive(
   const phase = acceptance.effective_phase ?? acceptance.phase;
   const cpName = acceptance.counterparty.displayName;
 
-  // ── International ───────────────────────────────────────────────────────
-  // No 'pending' (auto-approved at take-on). No date concertation. Phases:
-  //   accepted → acceptor uploads proof   → 'proof' is the active step
-  //   proof_submitted → creator verdicts  → 'verdict' is the active step
-  //   approved/rejected → terminal
-  if (isInternational) {
+  // ── Photo-proof flow (international + local-with-photo_proof) ───────────
+  // International auto-approves at take-on (no 'pending'); local-with-photo_
+  // proof still goes through pending → accepted → proof → verdict. From
+  // 'accepted' onwards the two are identical: no date concertation, no
+  // meet-up step — taker uploads proof, creator verdicts.
+  if (usesPhotoProof) {
+    if (phase === 'pending') {
+      // Local-with-photo_proof only — international skips this phase.
+      return {
+        active: 'accept',
+        done: new Set<Step>(),
+        rejected: false,
+        subCtaKey: iAmCreator
+          ? 'pipeline.subcta.creatorReviewPending'
+          : 'pipeline.subcta.acceptorAwaitingReview',
+        subCtaName: cpName,
+      };
+    }
     if (phase === 'accepted') {
       return {
         active: 'proof',
@@ -207,6 +220,7 @@ export function ChallengePipeline({
   iAmCreator,
   myUserId = null,
   mode = 'local',
+  validationMethod = 'meet',
   onPress,
 }: {
   acceptance: ChallengeThreadSummary | null;
@@ -217,15 +231,21 @@ export function ChallengePipeline({
    *  callers fall through to the iAmCreator-only behaviour. */
   myUserId?: string | null;
   mode?: 'local' | 'international';
+  /** Local challenges where the creator picked photo proof at creation
+   *  follow the same 3-step pipeline (accept → proof → verdict) as
+   *  international, plus a 'pending' branch since local still vets
+   *  the take-on request. Older callers default to 'meet'. */
+  validationMethod?: 'meet' | 'photo_proof';
   onPress?: () => void;
 }) {
   const { t, i18n } = useTranslation('challenge');
   const isInternational = mode === 'international';
-  const STEPS = isInternational ? STEPS_INTERNATIONAL : STEPS_LOCAL;
-  const state = derive(acceptance, iAmCreator, myUserId, i18n.language, isInternational);
+  const usesPhotoProof  = isInternational || validationMethod === 'photo_proof';
+  const STEPS = usesPhotoProof ? STEPS_INTERNATIONAL : STEPS_LOCAL;
+  const state = derive(acceptance, iAmCreator, myUserId, i18n.language, usesPhotoProof, isInternational);
   // Step that should render in red on a final 'rejected' state (last step
-  // before terminal - wrap for Local, verdict for International).
-  const REJECT_STEP: Step = isInternational ? 'verdict' : 'wrap';
+  // before terminal - wrap for Local meet, verdict for photo-proof).
+  const REJECT_STEP: Step = usesPhotoProof ? 'verdict' : 'wrap';
   const interactive = !!onPress && !!acceptance;
 
   return (

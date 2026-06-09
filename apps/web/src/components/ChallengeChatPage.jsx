@@ -891,9 +891,12 @@ export default function ChallengeChatPage({
         iAmCreator={isOwner}
         myUserId={account?.id ?? null}
         mode={challenge.mode ?? 'local'}
+        validationMethod={challenge.validation_method ?? 'meet'}
         onClick={(() => {
-          // Local: tap pipeline subCta to open the date picker (existing).
+          // Local + meet only: tap pipeline subCta to open the date picker.
+          // Local + photo_proof skips the date step entirely.
           if ((challenge.mode ?? 'local') === 'local'
+              && (challenge.validation_method ?? 'meet') === 'meet'
               && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
             return () => setPickerOpen(true)
           }
@@ -1353,12 +1356,15 @@ export default function ChallengeChatPage({
             <div ref={bottomRef} aria-hidden="true" />
           </div>
 
-          {/* Schedule band - Local + the viewer is the creator OR ACTIVE
-              acceptor. Use activeAcceptance so a previously-completed
-              user doesn't see a stale "proposed at HH:MM" band from
-              their old approved row - the slot is open again, the
-              schedule belongs to whoever takes it next. */}
-          {(challenge.mode ?? 'local') === 'local' && activeAcceptance && account?.id && (
+          {/* Schedule band - Local-MEET only (no date step on photo-
+              proof). Viewer is the creator OR ACTIVE acceptor. Use
+              activeAcceptance so a previously-completed user doesn't
+              see a stale "proposed at HH:MM" band from their old
+              approved row - the slot is open again, the schedule
+              belongs to whoever takes it next. */}
+          {(challenge.mode ?? 'local') === 'local'
+            && (challenge.validation_method ?? 'meet') === 'meet'
+            && activeAcceptance && account?.id && (
             <ThreadScheduleBlock
               thread={activeAcceptance}
               myUserId={account.id}
