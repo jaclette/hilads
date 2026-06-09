@@ -71,7 +71,15 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
       <>
-        <div style={{ ...bandBase, ...bandScheduled }}>
+        {/* The whole band is the touch target — the small icon button
+            was too easy to miss. The pencil stays as a visual cue. */}
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          disabled={busy !== null}
+          aria-label={t('schedule.editCta')}
+          style={{ ...bandBase, ...bandScheduled, background: bandScheduled.background, border: 0, padding: bandBase.padding, cursor: 'pointer', textAlign: 'left', width: '100%' }}
+        >
           <span style={{ fontSize: 16 }}>✅</span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, fontWeight: 800, color: '#22c55e' }}>{t('schedule.scheduled.title')}</div>
@@ -79,16 +87,8 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
               {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setPickerOpen(true)}
-            disabled={busy !== null}
-            title={t('schedule.editCta')}
-            style={iconBtnSecondary}
-          >
-            ✏️
-          </button>
-        </div>
+          <span style={{ ...iconBtnSecondary, pointerEvents: 'none' }} aria-hidden="true">✏️</span>
+        </button>
         {pickerOpen && (
           <DatePickerModal
             onClose={() => setPickerOpen(false)}

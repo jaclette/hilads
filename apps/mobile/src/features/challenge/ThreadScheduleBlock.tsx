@@ -97,13 +97,22 @@ export function ThreadScheduleBlock({
   }
 
   // ── Render: phase='scheduled' (meetup in the future) ──────────────────────
-  // Either party can tap ✏️ to reschedule - the backend flips phase back to
-  // 'accepted', clears date_approved_at, and the other party re-approves
-  // the new proposal.
+  // Either party can tap anywhere on the band to reschedule — the backend
+  // flips phase back to 'accepted', clears date_approved_at, and the other
+  // party re-approves the new proposal. The whole row is the touch target
+  // (a 32×32 pencil button was too small to land reliably); the pencil
+  // stays as a visual cue.
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
       <>
-        <View style={[styles.band, styles.bandScheduled]}>
+        <TouchableOpacity
+          style={[styles.band, styles.bandScheduled]}
+          onPress={() => setPickerOpen(true)}
+          activeOpacity={0.75}
+          disabled={busy !== null}
+          accessibilityRole="button"
+          accessibilityLabel={t('schedule.editCta')}
+        >
           <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
           <View style={styles.bandTextWrap}>
             <Text style={styles.bandTitleScheduled}>{t('schedule.scheduled.title')}</Text>
@@ -111,16 +120,10 @@ export function ThreadScheduleBlock({
               {formatDateLine(thread.proposed_starts_at, thread.proposed_ends_at, thread.proposed_venue, locale, t)}
             </Text>
           </View>
-          <TouchableOpacity
-            style={styles.actionSecondary}
-            onPress={() => setPickerOpen(true)}
-            activeOpacity={0.85}
-            disabled={busy !== null}
-            accessibilityLabel={t('schedule.editCta')}
-          >
+          <View style={styles.actionSecondary}>
             <Ionicons name="pencil" size={16} color={Colors.muted} />
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
         {pickerOpen && (
           <DatePickerModal
             visible={pickerOpen}
