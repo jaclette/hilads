@@ -1216,6 +1216,30 @@ export default function ChallengeChatScreen() {
       })()}
       </Animated.View>
 
+      {/* Owner re-invite CTA — parity with the web ChallengeChatPage. Visible
+          only while the challenge is genuinely free (not validated, not
+          actively held). Opens the same post-create seed sheet so the
+          creator can re-ping more members or share again at any later
+          moment. Cyan tint matches the international badge so on intl
+          rows the visual link "this targets the city" reads at a glance.
+          inviteCityName already resolves to the TARGET city for intl with
+          a target, falling through to the origin city otherwise — so the
+          label says "in Paris" for HCMC→Paris challenges, "in HCMC" for
+          plain locals, etc. */}
+      {isOwner && !isValidated && !challenge?.is_in_progress && (
+        <TouchableOpacity
+          style={styles.ownerInviteCta}
+          onPress={() => setPostCreateOpen(true)}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+        >
+          <Text style={styles.ownerInviteCtaIcon}>⚡</Text>
+          <Text style={styles.ownerInviteCtaText} numberOfLines={1}>
+            {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
+          </Text>
+        </TouchableOpacity>
+      )}
+
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
           Mounts only when the viewer has an active acceptance for this
           challenge - acceptors see their own thread, creators see their
