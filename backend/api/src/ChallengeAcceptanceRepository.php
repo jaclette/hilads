@@ -38,11 +38,17 @@ class ChallengeAcceptanceRepository
     // Previously derived from a JOINed channel_events row, but date approval
     // no longer creates an event - the proposed_starts_at/ends_at columns on
     // the acceptance row are the source of truth.
+    // 30 minutes after the meetup STARTS the verdict step unlocks —
+    // not when the meetup ends. The picker defaults proposed_ends_at
+    // to starts_at + 2h, so the prior `COALESCE(ends, starts) < now()`
+    // rule meant a 12:30 PM lunch couldn't be wrapped up until 2:30
+    // PM. Half an hour gives just enough time to actually be in the
+    // place together before the wrap-up CTA appears.
     private const EFFECTIVE_PHASE = "
         CASE
           WHEN ca.phase = 'scheduled'
                AND ca.proposed_starts_at IS NOT NULL
-               AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now()
+               AND (ca.proposed_starts_at + interval '30 minutes') < now()
             THEN 'debrief'
           ELSE ca.phase
         END

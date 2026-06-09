@@ -8389,7 +8389,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
                   ca.phase = 'approved'
                   OR (ca.phase = 'scheduled'
                       AND ca.proposed_starts_at IS NOT NULL
-                      AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now())
+                      AND (ca.proposed_starts_at + interval '30 minutes') < now())
               )
             ORDER BY ca.created_at DESC
             LIMIT 1
@@ -10510,7 +10510,7 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
             AND (
                 (ca.phase = 'scheduled'
                  AND ca.proposed_starts_at IS NOT NULL
-                 AND COALESCE(ca.proposed_ends_at, ca.proposed_starts_at) < now())
+                 AND (ca.proposed_starts_at + interval '30 minutes') < now())
                 OR ca.phase = 'approved'
             )
             AND NOT EXISTS (
