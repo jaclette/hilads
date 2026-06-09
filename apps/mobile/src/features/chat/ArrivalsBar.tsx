@@ -47,11 +47,17 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
   const { t }     = useTranslation('chat');
   const { account } = useApp();
 
-  // Track which arrival ids we've already shown live so the first batch of
-  // historical joins doesn't replay. Seeded lazily on the FIRST observation of
-  // the arrivals list (which may be empty at mount and populate async).
-  const seenRef    = useRef<Set<string>>(new Set());
-  const seededRef  = useRef(false);
+  // Track which arrival ids we've already processed so a re-render of the
+  // same list doesn't replay them.
+  const seenRef = useRef<Set<string>>(new Set());
+
+  // Mount time in seconds (matches msg.createdAt). Only arrivals stamped
+  // AFTER we mounted count as "live" — historical join messages from the
+  // initial fetch (or from a WS catchup batch on reconnect) are seeded
+  // silently so the bar stays in its default "Recent arrivals" state
+  // until somebody actually arrives in real time. Same threshold used
+  // by /(tabs)/chat to gate live-feed effects.
+  const mountedAtRef = useRef(Date.now() / 1000);
 
   // Queue of arrivals waiting to display (oldest-first inside the queue).
   // `current` is the one being displayed (null = default state).
@@ -59,23 +65,19 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
   const queueRef              = useRef<Message[]>([]);
   const timerRef              = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Detect new arrivals on every render of the arrivals list. The first pass
-  // just seeds `seen`; from then on, anything not in `seen` is treated as fresh.
+  // Detect new arrivals on every render of the arrivals list. The dedup
+  // set + createdAt threshold together guarantee historical messages
+  // never trigger the live banner.
   useEffect(() => {
-    if (!seededRef.current) {
-      arrivals.forEach(m => seenRef.current.add(arrivalKey(m)));
-      seededRef.current = true;
-      return;
-    }
     // arrivals are newest-first - walk from oldest-new to newest-new to preserve order
     const fresh: Message[] = [];
     for (let i = arrivals.length - 1; i >= 0; i--) {
       const m = arrivals[i];
       const key = arrivalKey(m);
-      if (!seenRef.current.has(key)) {
-        seenRef.current.add(key);
-        fresh.push(m);
-      }
+      if (seenRef.current.has(key)) continue;
+      seenRef.current.add(key);
+      const ts = typeof m.createdAt === 'number' ? m.createdAt : 0;
+      if (ts >= mountedAtRef.current) fresh.push(m);
     }
     if (fresh.length === 0) return;
 

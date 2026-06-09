@@ -27,28 +27,33 @@ function capQueue(q) {
 
 export function ArrivalsBar({ arrivals, onOpen, onTapUser }) {
   const { t } = useTranslation('city')
-  const seenRef   = useRef(new Set())
-  const seededRef = useRef(false)
-  const queueRef  = useRef([])
+  const seenRef = useRef(new Set())
+  const queueRef = useRef([])
   const [current, setCurrent] = useState(null)
 
+  // Mount time in seconds (matches a.createdAt). Only arrivals stamped
+  // AFTER we mounted count as "live" — historical joins from the
+  // initial fetch (or from a WS catchup batch on reconnect) get seeded
+  // silently so the bar stays in its default "Recent arrivals" state
+  // until somebody actually arrives in real time. The previous
+  // "seededRef on first render" gate broke when the parent fed `[]`
+  // first and the fetched feed arrived later: that whole second batch
+  // was treated as fresh and replayed in the bar.
+  const mountedAtRef = useRef(Date.now() / 1000)
+
   // Detect new arrivals. arrivals is newest-first; walk oldest→newest so the
-  // queue preserves chronological order. The first pass just seeds `seen` so
-  // historical joins (which may arrive async after mount) never replay live.
+  // queue preserves chronological order. The createdAt threshold + dedup
+  // set together guarantee historical messages never trigger the live
+  // banner — regardless of when the parent populates the list.
   useEffect(() => {
-    if (!seededRef.current) {
-      arrivals.forEach(a => seenRef.current.add(arrivalKey(a)))
-      seededRef.current = true
-      return
-    }
     const fresh = []
     for (let i = arrivals.length - 1; i >= 0; i--) {
       const a = arrivals[i]
       const key = arrivalKey(a)
-      if (!seenRef.current.has(key)) {
-        seenRef.current.add(key)
-        fresh.push(a)
-      }
+      if (seenRef.current.has(key)) continue
+      seenRef.current.add(key)
+      const ts = typeof a.createdAt === 'number' ? a.createdAt : 0
+      if (ts >= mountedAtRef.current) fresh.push(a)
     }
     if (fresh.length === 0) return
     if (current === null) {
