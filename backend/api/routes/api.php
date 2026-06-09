@@ -7524,6 +7524,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     $mode               = $body['mode']               ?? 'local';
     $targetChannelIdRaw = $body['targetCityChannelId'] ?? null;
     $proofRequirements  = $body['proofRequirements']   ?? null;
+    // Validation method. International is always 'photo_proof' (forced
+    // below regardless of client input); local creators pick. Older
+    // clients that don't send the field get 'meet' (the historical
+    // default + the column DEFAULT).
+    $validationMethod   = $body['validationMethod']    ?? null;
     // Visibility - older clients omit it; default 'public'. Only 'public' /
     // 'friends' accepted at create-time; 'private' is reachable only via
     // the mutual privacy_requests flow (PR #4) post-acceptance.
@@ -7549,6 +7554,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     }
     if (!in_array($mode, ChallengeRepository::ALLOWED_MODES, true)) {
         Response::json(['error' => 'mode must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_MODES)], 400);
+    }
+    // International is locked to photo_proof — no UI choice + server
+    // overrides whatever the client sent. Local creators pick; default
+    // 'meet' preserves the historical IRL flow when the client omits
+    // the field (older builds).
+    if ($mode === 'international') {
+        $validationMethod = 'photo_proof';
+    } elseif ($validationMethod === null) {
+        $validationMethod = 'meet';
+    }
+    if (!in_array($validationMethod, ChallengeRepository::ALLOWED_VALIDATION_METHODS, true)) {
+        Response::json([
+            'error' => 'validationMethod must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_VALIDATION_METHODS),
+        ], 400);
     }
     if (!in_array($visibility, ChallengeRepository::allowedVisibilitiesAtInput(), true)) {
         // 'private' explicitly excluded - the route surfaces a tailored message
@@ -7623,6 +7642,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             $targetCityId,
             $proofRequirements,
             $visibility,
+            $validationMethod,
         );
 
         try {
@@ -10263,6 +10283,9 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
 
     // Top-kind lookup - the kind that contributed the most. Ties broken by
     // most recent first (so a +30 debrief outranks a stale +5 acceptance).
+    // The detailed per-event list at line ~10435 below already carries the
+    // kind + points per row, so the client groups client-side when it
+    // needs to highlight "+50 Meet bonus" alongside the base debrief.
     $topStmt = $pdo->prepare("
         SELECT kind, SUM(points) AS pts
         FROM score_events

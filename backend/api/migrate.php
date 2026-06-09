@@ -1260,6 +1260,20 @@ run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km
 // constraint on the column itself so we can flex later without a migration.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public'", 'channel_challenges.visibility');
 
+// PR — validation method per local challenge. International is always
+// 'photo_proof' (no UI choice); local creators pick at creation. The
+// default keeps every existing row on the historical Meet flow; the
+// backfill below locks international rows to photo_proof to match
+// their UX so the column is consistent across the whole table.
+run($pdo, "ALTER TABLE channel_challenges
+    ADD COLUMN IF NOT EXISTS validation_method TEXT NOT NULL DEFAULT 'meet'", 'channel_challenges.validation_method');
+run($pdo, "ALTER TABLE channel_challenges DROP CONSTRAINT IF EXISTS channel_challenges_validation_method_check", 'drop old validation_method check');
+run($pdo, "ALTER TABLE channel_challenges
+    ADD CONSTRAINT channel_challenges_validation_method_check
+    CHECK (validation_method IN ('meet','photo_proof'))", 'add validation_method check');
+run($pdo, "UPDATE channel_challenges SET validation_method = 'photo_proof'
+    WHERE mode = 'international' AND validation_method <> 'photo_proof'", 'backfill intl → photo_proof');
+
 // Sitemap + feed + profile queries all gate on visibility - index it.
 // Composite with status covers the common path (visibility='public' AND
 // status='open'); single-column is fine for the smaller branches.
@@ -1432,7 +1446,13 @@ run($pdo, "
         ('date_locked', 'taker',       5),
         ('debrief',     'challenger', 30),
         ('debrief',     'taker',      40),
-        ('ghost',       'taker',       0)
+        ('ghost',       'taker',       0),
+        -- Meet bonus: only fires when channel_challenges.validation_method='meet'
+        -- and both ratings have landed (see on_challenge_rating_insert trigger
+        -- below). Same +50 for both sides — meeting in person is the soul
+        -- of Hilads and the leaderboard structure should reflect that.
+        ('meet_bonus',  'challenger', 50),
+        ('meet_bonus',  'taker',      50)
     ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points
 ", 'score_rules seed');
 
@@ -1445,7 +1465,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1456,15 +1476,15 @@ run($pdo, "
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_user_month ON score_events (user_id, month_ref)", 'idx_score_events_user_month');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_city_month ON score_events (city_id, month_ref)", 'idx_score_events_city_month');
 
-// PR12: extend the kind CHECK to allow 'date_locked'. The CREATE TABLE
-// above carries the up-to-date constraint for fresh DBs; this DROP +
-// re-ADD updates a pre-existing table where the constraint was authored
-// before 'date_locked' existed. Both are idempotent at re-run.
+// Extend the kind CHECK to allow 'date_locked' (PR12) and 'meet_bonus'
+// (Meet bonus PR). Idempotent DROP + re-ADD updates pre-existing tables;
+// new DBs inherit the latest constraint from the CREATE TABLE above (kept
+// in sync with this list).
 run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_check", 'score_events drop old kind check');
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus'))
 ", 'score_events add new kind check');
 
 // Mutual ratings. UNIQUE (challenge_id, rater_id) → one rating per
@@ -1701,15 +1721,18 @@ run($pdo, "
 run($pdo, "
     CREATE OR REPLACE FUNCTION on_challenge_rating_insert() RETURNS TRIGGER AS \$\$
     DECLARE
-        cnt            INT;
-        challenger_id  TEXT;
-        taker_id       TEXT;
-        origin_city    TEXT;
-        challenge_mode TEXT;
-        taker_city     TEXT;
-        pts_debrief_c  INT;
-        pts_debrief_t  INT;
-        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+        cnt              INT;
+        challenger_id    TEXT;
+        taker_id         TEXT;
+        origin_city      TEXT;
+        challenge_mode   TEXT;
+        v_method         TEXT;
+        taker_city       TEXT;
+        pts_debrief_c    INT;
+        pts_debrief_t    INT;
+        pts_meet_bonus_c INT;
+        pts_meet_bonus_t INT;
+        current_month    TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
     BEGIN
         SELECT COUNT(DISTINCT rater_id) INTO cnt
         FROM challenge_ratings
@@ -1717,8 +1740,8 @@ run($pdo, "
 
         IF cnt < 2 THEN RETURN NEW; END IF;
 
-        SELECT cc.created_by, cc.city_id, cc.mode
-        INTO challenger_id, origin_city, challenge_mode
+        SELECT cc.created_by, cc.city_id, cc.mode, cc.validation_method
+        INTO challenger_id, origin_city, challenge_mode, v_method
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
@@ -1743,11 +1766,9 @@ run($pdo, "
             taker_city := origin_city;
         END IF;
 
-        -- PR10: meetup events no longer written. The combined points live
-        -- on debrief now (30 + 40). cnt<2 short-circuit above, ON CONFLICT
-        -- idempotency, and the phase='approved' flip below are unchanged.
-        -- The 'meetup' value stays allowed in the score_events kind CHECK
-        -- so historical rows from earlier runs keep validating.
+        -- Base debrief points (always fire on mutual rating). PR10 folded the
+        -- old 'meetup' kind into debrief; the 'meetup' value stays allowed in
+        -- the score_events kind CHECK so historical rows keep validating.
         SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
         SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
 
@@ -1756,6 +1777,22 @@ run($pdo, "
           (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month),
           (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month)
         ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+
+        -- Meet bonus: only when the creator chose Meet at creation. Fires once
+        -- per challenge per role via the existing UNIQUE (user, challenge,
+        -- role, kind) constraint — same idempotency story as debrief above.
+        -- Cities follow the debrief mapping so the bonus shows up on the same
+        -- leaderboard as the base points.
+        IF COALESCE(v_method, 'meet') = 'meet' THEN
+            SELECT points INTO pts_meet_bonus_c FROM score_rules WHERE kind = 'meet_bonus' AND role = 'challenger';
+            SELECT points INTO pts_meet_bonus_t FROM score_rules WHERE kind = 'meet_bonus' AND role = 'taker';
+
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+            VALUES
+              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month),
+              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month)
+            ON CONFLICT (user_id, challenge_id, role, kind) DO NOTHING;
+        END IF;
 
         UPDATE challenge_acceptances
         SET phase       = 'approved',

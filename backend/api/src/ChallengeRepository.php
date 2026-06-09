@@ -58,6 +58,10 @@ class ChallengeRepository
             cc.mode,
             cc.target_city_id,
             cc.proof_requirements,
+            -- Validation method (Meet vs Photo). International is locked to
+            -- 'photo_proof' (DB column + UI + create-route enforcement); local
+            -- creators pick at creation. Card + ProofBlock branch off this.
+            cc.validation_method,
             -- Visibility (privacy round 2). 'public' default; 'friends' / 'private'
             -- gate the row out of sitemap, public city feed, and crawler-visible
             -- surfaces at the route layer.
@@ -198,6 +202,10 @@ class ChallengeRepository
             // and for "anywhere" international rows; proof_requirements only
             // populated on international.
             'mode'                 => $row['mode']               ?? 'local',
+            // 'meet' default keeps every pre-PR row on the historical IRL
+            // flow. International rows are forced to 'photo_proof' by the
+            // migrate backfill + the create/update routes.
+            'validation_method'    => $row['validation_method']  ?? 'meet',
             'target_city_id'       => $row['target_city_id']     ?? null,
             'proof_requirements'   => $row['proof_requirements'] ?? null,
             // Origin + target country (ISO-2). Resolved via the cached
@@ -345,7 +353,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -393,7 +401,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -434,7 +442,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -470,7 +478,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements,
+                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -518,7 +526,7 @@ class ChallengeRepository
             SELECT c.id, cc.city_id, cc.created_by, cc.guest_id, cc.title,
                    cc.challenge_type, cc.audience, cc.status,
                    cc.max_participants, cc.return_clause,
-                   cc.mode, cc.target_city_id, cc.proof_requirements,
+                   cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                    cc.visibility,
             cc.closed_to_new_joins,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS validated_at,
@@ -568,6 +576,7 @@ class ChallengeRepository
                 'mode'               => $ch['mode']               ?? 'local',
                 'target_city_id'     => $ch['target_city_id']     ?? null,
                 'proof_requirements' => $ch['proof_requirements'] ?? null,
+                'validation_method'  => $ch['validation_method']  ?? 'meet',
                 'visibility'         => $ch['visibility']         ?? 'public',
                 'message_count'      => $stats['message_count']    ?? 0,
                 'last_activity_at'   => $stats['last_activity_at'] ?? null,
@@ -588,6 +597,9 @@ class ChallengeRepository
      * Returns the freshly-built challenge via findById (consistent shape).
      */
     public const ALLOWED_MODES         = ['local', 'international'];
+    /** Validation methods. International is locked to photo_proof in the
+     *  create/update routes regardless of input. Local creators pick. */
+    public const ALLOWED_VALIDATION_METHODS = ['meet', 'photo_proof'];
     /** Values acceptable at CREATE / EDIT time. 'private' is intentionally
      *  excluded - it's reachable only via the mutual privacy_requests flow
      *  (PR #4). Smuggling it via the body would bypass the mutual gate. */
@@ -605,12 +617,18 @@ class ChallengeRepository
         string $mode = 'local',
         ?string $targetCityId = null,
         ?string $proofRequirements = null,
-        string $visibility = 'public'
+        string $visibility = 'public',
+        string $validationMethod = 'meet'
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
         if (!in_array($mode,          self::ALLOWED_MODES,     true)) $mode          = 'local';
         if (!in_array($visibility,    self::ALLOWED_VISIBILITIES_AT_INPUT, true)) $visibility = 'public';
+        if (!in_array($validationMethod, self::ALLOWED_VALIDATION_METHODS, true)) $validationMethod = 'meet';
+        // International is always photo_proof — the route should already
+        // have forced it, but defense in depth so a misbehaving caller
+        // can't smuggle a 'meet' international row.
+        if ($mode === 'international') $validationMethod = 'photo_proof';
 
         // Normalize return_clause: trim, treat empty string as null. Client is
         // expected to send the per-type template pre-filled; nulls fall back to
@@ -658,10 +676,10 @@ class ChallengeRepository
         $pdo->prepare("
             INSERT INTO channel_challenges
                 (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause,
-                 mode, target_city_id, proof_requirements, visibility)
+                 mode, target_city_id, proof_requirements, validation_method, visibility)
             VALUES
                 (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause,
-                 :mode, :target_city_id, :proof_requirements, :visibility)
+                 :mode, :target_city_id, :proof_requirements, :validation_method, :visibility)
         ")->execute([
             'channel_id'         => $id,
             'city_id'            => $cityId,
@@ -674,6 +692,7 @@ class ChallengeRepository
             'mode'               => $mode,
             'target_city_id'     => $targetCityId,
             'proof_requirements' => $proofRequirements,
+            'validation_method'  => $validationMethod,
             'visibility'         => $visibility,
         ]);
 
