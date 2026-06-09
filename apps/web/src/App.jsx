@@ -6329,6 +6329,7 @@ export default function App() {
           }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
+          onOpenChallengeIntro={() => setShowChallengeIntro(true)}
           onNeedAuth={(reason) => {
             // KEEP activeChallenge set so the challenge view stays mounted
             // underneath the guest-gate overlay (.full-page z-index:200).

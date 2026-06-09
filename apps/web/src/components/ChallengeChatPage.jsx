@@ -96,6 +96,7 @@ export default function ChallengeChatPage({
   onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
   onSendDm,        // host opens a 1:1 DM with the given userId
   onOpenProfile,   // host opens another user's public profile (PR27 - members modal row tap)
+  onOpenChallengeIntro, // host opens the "How challenges work" carousel (already mounted at App level)
   socket,
   sessionId,
 }) {
@@ -153,6 +154,19 @@ export default function ChallengeChatPage({
   const [iAmParticipant, setIAmParticipant] = useState(null)
   const [joiningChannel, setJoiningChannel] = useState(false)
   const [joinError,      setJoinError]      = useState(null)
+
+  // "Learn how challenges work" banner — same primitive the city chat
+  // surfaces from its delayed feed prompt. Mounted here too so a user
+  // who lands straight on a challenge (deeplink, push, share) can still
+  // learn the rules without backtracking. Appears 8 s after entering
+  // the channel, dismissed on × or after tap-to-open.
+  const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false)
+  useEffect(() => {
+    if (!id) return
+    setShowChallengeIntroBanner(false)
+    const t = setTimeout(() => setShowChallengeIntroBanner(true), 8000)
+    return () => clearTimeout(t)
+  }, [id])
 
   // Unified challenge channel chat - replaces the prior 1:1 thread surface.
   // Reads + sends both gated on participation server-side; the chat block
@@ -1114,6 +1128,37 @@ export default function ChallengeChatPage({
           server-side gated either way. */}
       {(challengeIsPublic || iAmParticipant === true) && (
       <>
+          {/* "Learn how challenges work" banner — same primitive as the
+              city chat. Sits above the feed (not inside it) so the
+              chat's scroll behaviour is untouched. Tap → opens the
+              shared carousel mounted at App level; × → dismiss. */}
+          {showChallengeIntroBanner && (
+            <div className="challenge-intro-banner">
+              <button
+                type="button"
+                className="challenge-intro-banner-body"
+                onClick={() => {
+                  setShowChallengeIntroBanner(false)
+                  onOpenChallengeIntro?.()
+                }}
+              >
+                <span className="challenge-intro-banner-text">
+                  {t('prompt.challengeIntroText', { ns: 'city' })}
+                </span>
+                <span className="challenge-intro-banner-cta">
+                  {t('prompt.challengeIntroCta', { ns: 'city' })} →
+                </span>
+              </button>
+              <button
+                type="button"
+                className="challenge-intro-banner-close"
+                onClick={() => setShowChallengeIntroBanner(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+          )}
           <div
             className="topic-chat-feed"
             ref={feedRef}
