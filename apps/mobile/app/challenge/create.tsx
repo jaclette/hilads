@@ -308,7 +308,7 @@ export default function CreateChallengeScreen() {
                 return (
                   <TouchableOpacity
                     key={vm}
-                    style={[styles.audienceBtn, selected && styles.audienceBtnSelected]}
+                    style={[styles.validationCard, selected && styles.audienceBtnSelected]}
                     onPress={() => setValidationMethod(vm)}
                     activeOpacity={0.7}
                   >
@@ -744,6 +744,24 @@ const styles = StyleSheet.create({
   audienceBtnSelected: {
     borderColor:     '#FF7A3C',
     backgroundColor: 'rgba(255,122,60,0.10)',
+  },
+  // Validation cards stack their emoji-label-hint vertically because three
+  // lines on one row didn't fit at the screen width — the hint overflowed
+  // past the card border and the next card's icon read as a duplicate of
+  // the previous card's text. Column layout + a square-ish card keeps each
+  // value scannable in one glance.
+  validationCard: {
+    flex:              1,
+    flexDirection:     'column',
+    paddingVertical:   Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    borderRadius:      Radius.md,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+    backgroundColor:   Colors.bg2,
+    alignItems:        'center',
+    justifyContent:    'flex-start',
+    gap:               4,
   },
   audienceLabel: {
     fontSize:   FontSizes.md,
