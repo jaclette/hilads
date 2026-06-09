@@ -92,6 +92,10 @@ export interface InternationalChallengeFields {
   mode?:                 'local' | 'international';
   targetCityChannelId?:  string | number | null;
   proofRequirements?:    string | null;
+  /** Validation method per challenge. International is locked to
+   *  'photo_proof' by the server regardless of input; local creators
+   *  pick. Default 'meet' preserves the historical IRL flow. */
+  validationMethod?:     'meet' | 'photo_proof' | null;
   visibility?:           'public' | 'friends' | null;
 }
 
@@ -115,6 +119,7 @@ export async function createChallenge(
     mode:                intl.mode ?? 'local',
     targetCityChannelId: intl.targetCityChannelId ?? null,
     proofRequirements:   intl.proofRequirements ?? null,
+    validationMethod:    intl.validationMethod ?? null,
     visibility:          intl.visibility ?? 'public',
   });
 }
@@ -306,7 +311,7 @@ export async function fetchRatePrompts(): Promise<RatePrompt[]> {
 }
 
 // PR17 - Score celebration popin (the "+X points!" launch surface).
-export type ScoreEventKind = 'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost';
+export type ScoreEventKind = 'accepted' | 'date_locked' | 'meetup' | 'debrief' | 'ghost' | 'meet_bonus';
 
 export interface ScoreCelebrationEvent {
   id:              string;

@@ -10,6 +10,7 @@ const KIND_KEYS = {
   meetup:      'scoreCelebration.subtitle.meetup',
   debrief:     'scoreCelebration.subtitle.debrief',
   ghost:       'scoreCelebration.subtitle.ghost',
+  meet_bonus:  'scoreCelebration.subtitle.meet_bonus',
 }
 
 // Short kind label + emoji for the per-event rows. Distinct keys from the
@@ -20,6 +21,7 @@ const KIND_SHORT_KEYS = {
   meetup:      'scoreCelebration.kindShort.meetup',
   debrief:     'scoreCelebration.kindShort.debrief',
   ghost:       'scoreCelebration.kindShort.ghost',
+  meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 }
 const KIND_EMOJI = {
   accepted:    '🤝',
@@ -27,6 +29,7 @@ const KIND_EMOJI = {
   meetup:      '🎉',
   debrief:     '🎉',
   ghost:       '👻',
+  meet_bonus:  '🤝',
 }
 
 /**
@@ -136,8 +139,12 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
               const emoji   = KIND_EMOJI[ev.kind] ?? '🏆'
               const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default'
               const title   = ev.challenge_title ?? t('scoreCelebration.event.deletedChallenge')
+              const isBonus = ev.kind === 'meet_bonus'
               return (
-                <div key={ev.id} className="score-celebration-event">
+                <div
+                  key={ev.id}
+                  className={`score-celebration-event${isBonus ? ' score-celebration-event--bonus' : ''}`}
+                >
                   <span className="score-celebration-event-points">+{ev.points}</span>
                   <span className="score-celebration-event-body">
                     <span className="score-celebration-event-title">{title}</span>

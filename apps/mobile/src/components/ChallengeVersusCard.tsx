@@ -109,6 +109,17 @@ export function ChallengeVersusCard({
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>
         )}
+        {/* Photo proof on a local challenge — surface a 📸 badge so
+            scrollers can spot the lower-friction-but-no-Meet-bonus
+            variant at a glance. Meet is the default and stays
+            unbadged on purpose (less visual noise). International
+            rows are inherently photo-proof and use the flag pill above
+            instead, so we skip this badge for them too. */}
+        {!isInternational && challenge.validation_method === 'photo_proof' && (
+          <View style={styles.photoBadge}>
+            <Text style={styles.photoBadgeText}>📸 {t('card.photoBadge', { defaultValue: 'Photo' })}</Text>
+          </View>
+        )}
         {isValidated ? (
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
@@ -403,6 +414,20 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(251,191,36,0.30)',
   },
   statusPillText: { fontSize: 10, fontWeight: '700', color: '#fbbf24', letterSpacing: 0.3 },
+
+  // "📸 Photo" badge — local + photo_proof variant. Cool blue tint so
+  // it reads as the calm/alternative path (warm orange + amber + green
+  // are already in use for the type/status badges). Meet stays
+  // unbadged on purpose since it's the default.
+  photoBadge: {
+    backgroundColor:   'rgba(96,165,250,0.10)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(96,165,250,0.30)',
+  },
+  photoBadgeText: { fontSize: 10, fontWeight: '700', color: '#60a5fa', letterSpacing: 0.3 },
 
   availablePill: {
     backgroundColor:   'rgba(34,197,94,0.10)',

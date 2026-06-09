@@ -32,6 +32,15 @@ type ChallengeMode = 'local' | 'international';
 const MODES: ChallengeMode[] = ['local', 'international'];
 const MODE_ICONS: Record<ChallengeMode, string> = { local: '🏙️', international: '🌐' };
 
+// Validation method (Meet vs Photo proof) — only relevant for local
+// challenges. International is locked to 'photo_proof' server-side.
+// Meet earns a +50 bonus on the mutual rating; Photo earns only the
+// base points. Default 'meet' preserves the historical IRL flow.
+type ValidationMethod = 'meet' | 'photo_proof';
+const VALIDATION_METHODS: ValidationMethod[] = ['meet', 'photo_proof'];
+const VALIDATION_ICONS: Record<ValidationMethod, string> = { meet: '🤝', photo_proof: '📸' };
+const MEET_BONUS_POINTS = 50;
+
 export default function CreateChallengeScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -61,6 +70,15 @@ export default function CreateChallengeScreen() {
     : 'local';
 
   const [mode,     setMode]     = useState<ChallengeMode>(initialMode);
+  // Validation method — local-only; international rows are forced to
+  // 'photo_proof' server-side. Default 'meet' so the historical flow
+  // (and the +50 bonus) is opt-out, not opt-in.
+  const initialValidationMethod: ValidationMethod = VALIDATION_METHODS.includes(
+    (params as { validationMethod?: string }).validationMethod as ValidationMethod,
+  )
+    ? ((params as { validationMethod: string }).validationMethod as ValidationMethod)
+    : 'meet';
+  const [validationMethod, setValidationMethod] = useState<ValidationMethod>(initialValidationMethod);
   const [audience, setAudience] = useState<ChallengeAudience>(initialAudience);
   const [type,     setType]     = useState<ChallengeType>(initialType);
   const [title,    setTitle]    = useState(typeof params.title === 'string' ? params.title : '');
@@ -155,6 +173,11 @@ export default function CreateChallengeScreen() {
           mode,
           targetCityChannelId: targetChannelIdForSubmit,
           proofRequirements:   trimmedProofRequirements,
+          // International is forced to 'photo_proof' server-side; we
+          // just pass the local-only choice through. The server also
+          // ignores this field on edit (validation_method is locked
+          // for the lifetime of the challenge — same rule as mode).
+          validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForSubmit,
         },
       );
@@ -274,6 +297,42 @@ export default function CreateChallengeScreen() {
                 );
               })}
             </View>
+
+            {/* Validation method — 2 cards. Meet is the celebrated path
+                (+50 bonus chip fades in below); Photo is the lower-friction
+                alternative (base points only, no bonus, no negative copy). */}
+            <Text style={styles.sectionLabel}>{t('validation.label')}</Text>
+            <View style={styles.audienceRow}>
+              {VALIDATION_METHODS.map(vm => {
+                const selected = validationMethod === vm;
+                return (
+                  <TouchableOpacity
+                    key={vm}
+                    style={[styles.audienceBtn, selected && styles.audienceBtnSelected]}
+                    onPress={() => setValidationMethod(vm)}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={styles.audienceEmoji}>{VALIDATION_ICONS[vm]}</Text>
+                    <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
+                      {t(`validation.${vm}.label`)}
+                    </Text>
+                    <Text style={styles.audienceHint} numberOfLines={2}>
+                      {t(`validation.${vm}.hint`)}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            {validationMethod === 'meet' && (
+              <View style={styles.bonusChip}>
+                <Text style={styles.bonusChipText}>
+                  {t('validation.meet.bonusChip', {
+                    points: MEET_BONUS_POINTS,
+                    defaultValue: `🏆 Meet bonus: +${MEET_BONUS_POINTS} pts on top of the base reward`,
+                  })}
+                </Text>
+              </View>
+            )}
           </>
         )}
 
@@ -692,6 +751,36 @@ const styles = StyleSheet.create({
     color:      Colors.muted,
   },
   audienceLabelSelected: { color: '#FF7A3C' },
+  // Short hint line under the label inside a card (used by the
+  // validation-method cards). Keeps the card scannable without
+  // shrinking the primary label.
+  audienceHint: {
+    fontSize:   FontSizes.xs,
+    color:      Colors.muted2,
+    textAlign:  'center',
+    marginTop:  2,
+  },
+
+  // Meet-bonus chip — fades in below the validation cards when Meet
+  // is selected. Amber treatment to echo the in-progress badge on
+  // the versus card and the "Meet bonus" celebration row.
+  bonusChip: {
+    alignSelf:        'flex-start',
+    flexDirection:    'row',
+    alignItems:       'center',
+    paddingVertical:  6,
+    paddingHorizontal:10,
+    marginTop:        Spacing.xs,
+    backgroundColor:  'rgba(251,191,36,0.10)',
+    borderRadius:     Radius.full,
+    borderWidth:      1,
+    borderColor:      'rgba(251,191,36,0.30)',
+  },
+  bonusChipText: {
+    color:      '#fbbf24',
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+  },
 
   // Type grid - 4 squares in a 2×2 or single row depending on width. Stays
   // visually balanced via flex-basis ~22% each (lets 4 fit one row on phones).

@@ -166,6 +166,16 @@ export default function ChallengeChatScreen() {
   // fetch — much safer than the reverse.
   const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public';
 
+  // Photo-proof verdict path. International is always photo-proof
+  // (locked server-side). Local challenges where the creator picked
+  // photo at creation also use the same submission UI + creator
+  // review modal. Older clients that never sent validation_method
+  // get 'meet' from the format() default, so this evaluates false
+  // for them — preserving the historical IRL flow.
+  const usesPhotoProof =
+    (challenge?.mode ?? 'local') === 'international'
+    || (challenge?.validation_method ?? 'meet') === 'photo_proof';
+
   // Target city - only meaningful for International challenges. For Local
   // challenges this stays null; the invite picker just uses the origin
   // city below (the only city involved). For "anywhere" Intl (no target
@@ -1023,23 +1033,23 @@ export default function ChallengeChatScreen() {
                 && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
               return () => setPickerOpen(true);
             }
-            if ((challenge.mode ?? 'local') === 'international' && myAcceptance && !isOwner) {
+            if (usesPhotoProof && myAcceptance && !isOwner) {
               // Acceptor with an active acceptance - tapping the pipeline's
               // "Submit your proof →" sub-CTA fires the photo picker + GPS
               // + upload via the ChallengeProofBlock's imperative handle.
               return () => proofRef.current?.submit();
             }
-            // PR62 - Creator + intl + acceptance is at proof_submitted
-            // ⇒ open the modal review sheet. This is the "Review the proof"
+            // Creator + photo-proof + acceptance is at proof_submitted ⇒ open
+            // the modal review sheet. This is the "Review the proof"
             // sub-CTA path; it surfaces the photo and Approve / Reject in
             // one place instead of forcing the creator to scroll the chat
             // for the photo then hunt for the inline verdict row.
-            if ((challenge.mode ?? 'local') === 'international'
+            if (usesPhotoProof
                 && isOwner
                 && activeAcceptance?.phase === 'proof_submitted') {
               return () => setProofReviewOpen(true);
             }
-            if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
+            if (usesPhotoProof && challenge.proof_requirements) {
               // Creator (no submit action) - still useful to surface the
               // requirements popin so they can re-read what they asked for.
               return () => setProofSpecOpen(true);
@@ -1048,14 +1058,16 @@ export default function ChallengeChatScreen() {
           })()}
         />
 
-        {/* International - proof submission + verdict block. Renders only
-            when there's an ACTIVE acceptance; visitors and creators-
-            without-acceptance see no extra surface here (the pipeline
-            educates them passively). PR46 - uses activeAcceptance so
-            a TERMINAL approved acceptance no longer keeps the
-            "🎉 Challenge accomplished" banner permanently locked on
-            the detail page after the challenge wrapped. */}
-        {(challenge.mode ?? 'local') === 'international' && activeAcceptance && (
+        {/* Photo-proof submission + verdict block. Renders for every
+            challenge that uses the photo flow (international + local
+            with validation_method='photo_proof') whenever there's an
+            ACTIVE acceptance; visitors and creators-without-acceptance
+            see no extra surface here (the pipeline educates them
+            passively). Uses activeAcceptance so a terminal approved
+            acceptance no longer keeps the "🎉 Challenge accomplished"
+            banner permanently locked on the detail page after the
+            challenge wrapped. */}
+        {usesPhotoProof && activeAcceptance && (
           <ChallengeProofBlock
             ref={proofRef}
             acceptanceId={activeAcceptance.id}
@@ -1628,12 +1640,11 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* PR62 - Creator's proof-review modal. Big photo + Approve / Reject
-          + reject-reason face. Mounted unconditionally for intl creators
-          (the modal renders nothing if no acceptance / no pending proof
-          exists). Visibility is gated on activeAcceptance so a recently-
-          resolved acceptance doesn't pop the sheet on remount. */}
-      {(challenge?.mode ?? 'local') === 'international' && isOwner && activeAcceptance && (
+      {/* Creator's proof-review modal. Big photo + Approve / Reject +
+          reject-reason face. Mounted for any photo-proof creator (intl
+          + local-with-photo) with an active acceptance — the modal
+          renders nothing if there's no pending proof. */}
+      {usesPhotoProof && isOwner && activeAcceptance && (
         <ProofReviewModal
           visible={proofReviewOpen}
           onClose={() => setProofReviewOpen(false)}

@@ -31,6 +31,15 @@ const AUDIENCES = [
   { value: 'explorers', icon: '🧳' },
 ]
 
+// Validation method — only relevant for local challenges. International
+// is locked to 'photo_proof' server-side. Meet earns +50 mutual-rating
+// bonus on top of the base points; Photo earns base only.
+const VALIDATION_METHODS = [
+  { value: 'meet',        icon: '🤝' },
+  { value: 'photo_proof', icon: '📸' },
+]
+const MEET_BONUS_POINTS = 50
+
 /**
  * Input with an animated marquee placeholder. When the placeholder text is
  * wider than the input, the overlay slides left to reveal the end, then back.
@@ -101,6 +110,10 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
 
   // Edit mode pre-populates from the existing challenge; create starts fresh.
   const [mode,            setMode]            = useState(editChallenge?.mode             ?? 'local')
+  // Validation method — local-only choice. International rows are
+  // forced to 'photo_proof' server-side. Default 'meet' preserves
+  // the historical IRL flow + carries the +50 bonus.
+  const [validationMethod, setValidationMethod] = useState(editChallenge?.validation_method ?? 'meet')
   const [audience,        setAudience]        = useState(editChallenge?.audience         ?? 'locals')
   const [type,            setType]            = useState(editChallenge?.challenge_type   ?? 'food')
   const [title,           setTitle]           = useState(editChallenge?.title            ?? '')
@@ -186,6 +199,8 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           mode,
           targetCityChannelId: targetForApi,
           proofRequirements:   trimmedProof,
+          // Local-only choice; server forces 'photo_proof' for international.
+          validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForApi,
         })
         onCreated?.(challenge)
@@ -300,6 +315,40 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Validation method (Local only). Meet is celebrated with the
+              +50 bonus chip below; Photo is the lower-friction
+              alternative (no chip, no negative copy). */}
+          {mode === 'local' && (
+            <div className="cef-section">
+              <p className="cef-label">{t('validation.label', { ns: 'challenge', defaultValue: 'How will you validate?' })}</p>
+              <div className="cef-audience-row">
+                {VALIDATION_METHODS.map(vm => (
+                  <button
+                    key={vm.value}
+                    type="button"
+                    className={`cef-audience-btn${validationMethod === vm.value ? ' selected' : ''}`}
+                    onClick={() => setValidationMethod(vm.value)}
+                  >
+                    <span className="cef-audience-emoji" aria-hidden="true">{vm.icon}</span>
+                    <span>{t(`validation.${vm.value}.label`, { ns: 'challenge', defaultValue: vm.value === 'meet' ? 'Meet' : 'Photo proof' })}</span>
+                    <span className="cef-audience-hint">
+                      {t(`validation.${vm.value}.hint`, { ns: 'challenge', defaultValue: vm.value === 'meet' ? 'share the experience in person' : 'accept proof at a distance' })}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              {validationMethod === 'meet' && (
+                <div className="cef-bonus-chip" role="status">
+                  {t('validation.meet.bonusChip', {
+                    ns: 'challenge',
+                    points: MEET_BONUS_POINTS,
+                    defaultValue: `🏆 Meet bonus: +${MEET_BONUS_POINTS} pts on top of the base reward`,
+                  })}
+                </div>
+              )}
             </div>
           )}
 

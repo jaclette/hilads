@@ -101,6 +101,13 @@ export default function ChallengeVersusCard({
             </span>
           )
         })()}
+        {/* Photo proof on a local challenge — see mobile twin for the
+            reasoning. Meet stays unbadged because it's the default. */}
+        {!isInternational && c.validation_method === 'photo_proof' && (
+          <span className="challenge-badge challenge-badge--photo">
+            📸 {t('card.photoBadge', { defaultValue: 'Photo' })}
+          </span>
+        )}
         {isValidated ? (
           <span className="challenge-badge challenge-badge--validated">
             ✓ {t('validatedBadge')}

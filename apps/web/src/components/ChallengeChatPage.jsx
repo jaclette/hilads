@@ -249,6 +249,15 @@ export default function ChallengeChatPage({
   // initial fetch.
   const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public'
 
+  // Photo-proof verdict path. International is always photo (locked
+  // server-side). Local challenges where the creator picked photo at
+  // creation use the same submission UI + creator review modal. Older
+  // rows that never carried validation_method get 'meet' from the
+  // backend formatter default — historical IRL flow stays the same.
+  const usesPhotoProof =
+    (challenge?.mode ?? 'local') === 'international'
+    || (challenge?.validation_method ?? 'meet') === 'photo_proof'
+
   // ── Loads ──────────────────────────────────────────────────────────────────
 
   const loadChallenge = useCallback(async () => {
@@ -888,32 +897,34 @@ export default function ChallengeChatPage({
               && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
             return () => setPickerOpen(true)
           }
-          // PR62 - Creator + intl + acceptance at proof_submitted ⇒ open
-          // the modal review sheet. This is the "Review the proof" CTA path.
-          if ((challenge.mode ?? 'local') === 'international'
+          // Creator + photo-proof + acceptance at proof_submitted ⇒ open
+          // the modal review sheet. Same path for intl and for local
+          // challenges whose creator picked photo at creation.
+          if (usesPhotoProof
               && isOwner
               && activeAcceptance?.phase === 'proof_submitted') {
             return () => setProofReviewOpen(true)
           }
-          // International: tap the "Waiting for the proof" pill to re-read
+          // Photo-proof: tap the "Waiting for the proof" pill to re-read
           // what the creator asked for (acceptor + creator). Only matters
           // when there's a spec to show.
-          if ((challenge.mode ?? 'local') === 'international' && challenge.proof_requirements) {
+          if (usesPhotoProof && challenge.proof_requirements) {
             return () => setProofSpecOpen(true)
           }
           return undefined
         })()}
       />
 
-      {/* International - proof submission + verdict surface. Renders only
-          when there's an ACTIVE acceptance; visitors and creators-without-
-          acceptance see no extra surface here (the pipeline above
-          educates them passively). PR46 - uses activeAcceptance instead
-          of myAcceptance so a TERMINAL approved acceptance no longer
-          keeps the "🎉 Challenge accomplished" banner permanently
-          locked on the detail page after the challenge wrapped. Same
-          shape as the pipeline + schedule-band fixes in PR18. */}
-      {(challenge.mode ?? 'local') === 'international' && activeAcceptance && (
+      {/* Photo-proof submission + verdict surface. Renders for every
+          challenge that uses the photo flow (international + local
+          with validation_method='photo_proof') whenever there's an
+          ACTIVE acceptance; visitors and creators-without-acceptance
+          see no extra surface here (the pipeline above educates them
+          passively). Uses activeAcceptance instead of myAcceptance so
+          a terminal approved acceptance no longer keeps the
+          "🎉 Challenge accomplished" banner permanently locked on the
+          detail page after the challenge wrapped. */}
+      {usesPhotoProof && activeAcceptance && (
         <ChallengeProofBlock
           acceptanceId={activeAcceptance.id}
           iAmCreator={isOwner}
@@ -1559,8 +1570,8 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* PR62 - Creator's "Review the proof" modal. */}
-      {(challenge.mode ?? 'local') === 'international' && isOwner && activeAcceptance && (
+      {/* Creator's "Review the proof" modal — intl + local-with-photo. */}
+      {usesPhotoProof && isOwner && activeAcceptance && (
         <ProofReviewModal
           visible={proofReviewOpen}
           onClose={() => setProofReviewOpen(false)}

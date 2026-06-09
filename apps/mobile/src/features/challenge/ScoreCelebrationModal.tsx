@@ -25,6 +25,7 @@ const KIND_KEYS: Record<string, string> = {
   meetup:      'scoreCelebration.subtitle.meetup',
   debrief:     'scoreCelebration.subtitle.debrief',
   ghost:       'scoreCelebration.subtitle.ghost',
+  meet_bonus:  'scoreCelebration.subtitle.meet_bonus',
 };
 
 // Per-kind short-label key + emoji used in the event rows. These are the
@@ -37,6 +38,7 @@ const KIND_SHORT_KEYS: Record<string, string> = {
   meetup:      'scoreCelebration.kindShort.meetup',
   debrief:     'scoreCelebration.kindShort.debrief',
   ghost:       'scoreCelebration.kindShort.ghost',
+  meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 };
 const KIND_EMOJI: Record<string, string> = {
   accepted:    '🤝',
@@ -44,6 +46,7 @@ const KIND_EMOJI: Record<string, string> = {
   meetup:      '🎉',
   debrief:     '🎉',
   ghost:       '👻',
+  meet_bonus:  '🤝',
 };
 
 /**
@@ -233,14 +236,18 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
                 const kindKey = KIND_SHORT_KEYS[ev.kind] ?? 'scoreCelebration.kindShort.default';
                 const title   = ev.challenge_title
                   ?? t('scoreCelebration.event.deletedChallenge');
+                const isBonus = ev.kind === 'meet_bonus';
                 return (
-                  <View key={ev.id} style={styles.eventRow}>
-                    <View style={styles.eventPoints}>
-                      <Text style={styles.eventPointsText}>+{ev.points}</Text>
+                  <View key={ev.id} style={[styles.eventRow, isBonus && styles.eventRowBonus]}>
+                    <View style={[styles.eventPoints, isBonus && styles.eventPointsBonus]}>
+                      <Text style={[styles.eventPointsText, isBonus && styles.eventPointsTextBonus]}>+{ev.points}</Text>
                     </View>
                     <View style={styles.eventBody}>
                       <Text style={styles.eventTitle} numberOfLines={1}>{title}</Text>
-                      <Text style={styles.eventKind} numberOfLines={1}>
+                      <Text
+                        style={[styles.eventKind, isBonus && styles.eventKindBonus]}
+                        numberOfLines={1}
+                      >
                         {emoji} {t(kindKey)}
                       </Text>
                     </View>
@@ -440,6 +447,22 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.xs,
     fontWeight: '600',
     color:      Colors.muted,
+  },
+  // Meet bonus tile — amber recolor of the base event row so the
+  // "+50 Meet bonus" reads as a distinct extra reward rather than
+  // another base-payout step. Background/border/pill all shift.
+  eventRowBonus: {
+    backgroundColor: 'rgba(251,191,36,0.10)',
+    borderColor:     'rgba(251,191,36,0.34)',
+  },
+  eventPointsBonus: {
+    backgroundColor: 'rgba(251,191,36,0.22)',
+  },
+  eventPointsTextBonus: {
+    color: '#fbbf24',
+  },
+  eventKindBonus: {
+    color: '#fbbf24',
   },
   eventsMore: {
     fontSize:   FontSizes.xs,

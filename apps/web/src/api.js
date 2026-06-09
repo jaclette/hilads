@@ -605,6 +605,9 @@ export async function createChallenge(channelId, guestId, nickname, title, chall
       mode:                intl.mode ?? 'local',
       targetCityChannelId: intl.targetCityChannelId ?? null,
       proofRequirements:   intl.proofRequirements ?? null,
+      // Validation method: local-only choice ('meet' | 'photo_proof').
+      // Server forces 'photo_proof' on International rows regardless.
+      validationMethod:    intl.validationMethod ?? null,
       // 'public' | 'friends' only at create-time. Server forces 'public'
       // on International rows regardless of what we send.
       visibility:          intl.visibility ?? 'public',

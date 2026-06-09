@@ -4347,6 +4347,22 @@ html, body, #root {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
+/* "📸 Photo" badge — local + photo_proof variant. Cool blue tint so
+   scrollers can spot the lower-friction-but-no-Meet-bonus path. Meet
+   stays unbadged because it's the default; international rows use the
+   flag pill above instead. */
+.challenge-badge--photo {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(96, 165, 250, 0.10);
+  color: #60a5fa;
+  border: 1px solid rgba(96, 165, 250, 0.30);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 3px 10px;
+}
+
 /* "⏳ In progress" pill — third badge on the kind+audience row when
    a non-terminal acceptance is active. Amber tint so it reads as
    "actively in motion" without competing with the brand-orange
@@ -11870,6 +11886,37 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.10);
 }
+/* Short hint line under the primary label inside a card. Used by the
+   validation-method cards. */
+.cef-audience-hint {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted2);
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* Meet-bonus chip — fades in below the validation-method cards when
+   Meet is selected. Amber treatment matches the in-progress badge on
+   the versus card + the Meet bonus row in the celebration popin. */
+.cef-bonus-chip {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(251, 191, 36, 0.10);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.30);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  animation: cef-bonus-fade-in 220ms ease-out;
+}
+@keyframes cef-bonus-fade-in {
+  from { opacity: 0; transform: translateY(-2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 .cef-type-grid {
   display: grid;
@@ -13828,6 +13875,21 @@ body.has-app-promo-banner .page-header {
   color: var(--muted2);
   text-align: center;
   margin-top: 2px;
+}
+
+/* Meet bonus tile — same shape as a regular event row but amber instead
+   of orange, so the "+50 Meet bonus" reads as a distinct extra reward
+   rather than another step of the base payout. */
+.score-celebration-event--bonus {
+  background: rgba(251, 191, 36, 0.10);
+  border-color: rgba(251, 191, 36, 0.34);
+}
+.score-celebration-event--bonus .score-celebration-event-points {
+  background: rgba(251, 191, 36, 0.22);
+  color: #fbbf24;
+}
+.score-celebration-event--bonus .score-celebration-event-kind {
+  color: #fbbf24;
 }
 
 .score-celebration-divider {

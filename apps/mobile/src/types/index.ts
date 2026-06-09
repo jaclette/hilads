@@ -264,6 +264,10 @@ export interface Challenge {
   /** Creator-authored proof spec shown to acceptors before they upload.
    *  International only - null on local rows. */
   proof_requirements?:   string | null;
+  /** Validation method per challenge. International is locked to
+   *  'photo_proof' server-side; local creators pick at creation.
+   *  Default 'meet' preserves the historical IRL flow. */
+  validation_method?:    'meet' | 'photo_proof';
   /** 1:1 model - true iff the challenge has a non-terminal acceptance right
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
