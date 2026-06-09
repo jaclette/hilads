@@ -4,7 +4,8 @@
   "audience": "给谁?",
   "aud": {
     "locals": "本地人",
-    "explorers": "旅行者"
+    "explorers": "旅行者",
+    "members": "成员"
   },
   "type": "类型",
   "tp": {

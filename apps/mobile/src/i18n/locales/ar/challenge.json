@@ -4,7 +4,8 @@
   "audience": "لمن؟",
   "aud": {
     "locals": "المحليون",
-    "explorers": "المسافرون"
+    "explorers": "المسافرون",
+    "members": "الأعضاء"
   },
   "type": "النوع",
   "tp": {

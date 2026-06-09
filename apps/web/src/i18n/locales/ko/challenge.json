@@ -4,7 +4,8 @@
   "audience": "누구를 위해?",
   "aud": {
     "locals": "로컬",
-    "explorers": "여행자"
+    "explorers": "여행자",
+    "members": "멤버"
   },
   "type": "유형",
   "tp": {

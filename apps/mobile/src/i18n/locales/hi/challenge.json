@@ -4,7 +4,8 @@
   "audience": "किसके लिए?",
   "aud": {
     "locals": "लोकल्स",
-    "explorers": "यात्रियों"
+    "explorers": "यात्रियों",
+    "members": "सदस्य"
   },
   "type": "टाइप",
   "tp": {

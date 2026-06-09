@@ -4,7 +4,8 @@
   "audience": "Voor wie?",
   "aud": {
     "locals": "Locals",
-    "explorers": "Reizigers"
+    "explorers": "Reizigers",
+    "members": "Leden"
   },
   "type": "Type",
   "tp": {

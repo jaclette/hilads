@@ -4,7 +4,8 @@
   "audience": "Per chi?",
   "aud": {
     "locals": "Local",
-    "explorers": "Viaggiatori"
+    "explorers": "Viaggiatori",
+    "members": "Membri"
   },
   "type": "Tipo",
   "tp": {

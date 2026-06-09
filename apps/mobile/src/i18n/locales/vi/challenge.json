@@ -4,7 +4,8 @@
   "audience": "Dành cho ai?",
   "aud": {
     "locals": "Người địa phương",
-    "explorers": "Du khách"
+    "explorers": "Du khách",
+    "members": "Thành viên"
   },
   "type": "Loại",
   "tp": {

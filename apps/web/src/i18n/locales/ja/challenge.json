@@ -4,7 +4,8 @@
   "audience": "誰に向けて?",
   "aud": {
     "locals": "ローカル",
-    "explorers": "旅行者"
+    "explorers": "旅行者",
+    "members": "メンバー"
   },
   "type": "タイプ",
   "tp": {

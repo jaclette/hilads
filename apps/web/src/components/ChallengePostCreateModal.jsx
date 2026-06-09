@@ -57,7 +57,12 @@ export default function ChallengePostCreateModal({
 
 function SeedView({ challenge, cityName, t, onPickPeople, onShare, onSkip }) {
   const city = cityName || t('postCreate.thisCity')
-  const audienceLabel = challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers')
+  // International picker pings any city member; audience filter only
+  // applies to local challenges (the backend gate matches this).
+  const isInternational = (challenge.mode ?? 'local') === 'international'
+  const audienceLabel = isInternational
+    ? t('aud.members', { defaultValue: 'Members' })
+    : (challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers'))
   return (
     <>
       <div className="cpcm-title">{t('postCreate.title')} 🎯</div>
@@ -85,7 +90,13 @@ function SeedView({ challenge, cityName, t, onPickPeople, onShare, onSkip }) {
 }
 
 function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDone, onBack }) {
-  const mode = challenge.audience === 'locals' ? 'local' : 'exploring'
+  // International targets ANYONE in the target city (locals + travelers) —
+  // the backend accept gate doesn't check mode for international. Skip the
+  // mode filter so the picker doesn't hide half the eligible people.
+  const isInternational = (challenge.mode ?? 'local') === 'international'
+  const mode = isInternational
+    ? undefined
+    : (challenge.audience === 'locals' ? 'local' : 'exploring')
   const [members,   setMembers]   = useState([])
   const [loading,   setLoading]   = useState(true)
   const [error,     setError]     = useState(null)
@@ -117,14 +128,20 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
 
     ;(async () => {
       try {
-        // 1. Try strict mode filter first - respects the audience.
+        // International: no mode filter — fetch all members in one pass.
+        if (mode === undefined) {
+          const all = await fetchCityMembers(cityChannelId, { limit: 50 })
+          if (!active) return
+          setMembers(filterUsable(all.members))
+          return
+        }
+        // Local: strict mode filter first, fall back to the whole city if
+        // empty. Most accounts have mode IS NULL (joined before the picker
+        // existed); the accept path re-checks mode and surfaces a clear
+        // error if the invitee can't take it on.
         const strict = await fetchCityMembers(cityChannelId, { limit: 50, mode })
         if (!active) return
         let list = filterUsable(strict.members)
-        // 2. Strict filter is empty? Most users in low-traffic cities have
-        //    mode IS NULL - show the whole city so the creator can still pick
-        //    someone. The accept path re-checks mode and surfaces a clear
-        //    error if the invitee can't take it on.
         if (list.length === 0) {
           const all = await fetchCityMembers(cityChannelId, { limit: 50 })
           if (!active) return
@@ -164,7 +181,10 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
     }
   }
 
-  const audienceLabel = challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers')
+  // International picker reads "Members in {city}" — both modes welcome.
+  const audienceLabel = isInternational
+    ? t('aud.members', { defaultValue: 'Members' })
+    : (challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers'))
   const city = cityName || ''
 
   if (sentCount !== null) {

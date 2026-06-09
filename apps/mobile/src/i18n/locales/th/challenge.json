@@ -4,7 +4,8 @@
   "audience": "สำหรับใคร?",
   "aud": {
     "locals": "คนท้องถิ่น",
-    "explorers": "นักสำรวจ"
+    "explorers": "นักสำรวจ",
+    "members": "สมาชิก"
   },
   "type": "ประเภท",
   "tp": {

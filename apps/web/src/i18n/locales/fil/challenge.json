@@ -4,7 +4,8 @@
   "audience": "Para kanino?",
   "aud": {
     "locals": "Mga local",
-    "explorers": "Mga biyahero"
+    "explorers": "Mga biyahero",
+    "members": "Members"
   },
   "type": "Uri",
   "tp": {

@@ -4,7 +4,8 @@
   "audience": "Untuk siapa?",
   "aud": {
     "locals": "Local",
-    "explorers": "Pelancong"
+    "explorers": "Pelancong",
+    "members": "Anggota"
   },
   "type": "Jenis",
   "tp": {

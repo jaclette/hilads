@@ -84,7 +84,12 @@ function SeedView({
   onSkip:       () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
-  const audienceLabel = challenge?.audience === 'locals' ? t('aud.locals') : t('aud.explorers');
+  // International picker pings any city member; audience filtering only
+  // applies to local challenges.
+  const isInternational = (challenge?.mode ?? 'local') === 'international';
+  const audienceLabel = isInternational
+    ? t('aud.members', { defaultValue: 'Members' })
+    : (challenge?.audience === 'locals' ? t('aud.locals') : t('aud.explorers'));
   const city = cityName ?? t('postCreate.thisCity');
   return (
     <View style={styles.body}>
@@ -125,7 +130,14 @@ function PickerView({
   onBack: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
-  const mode = challenge?.audience === 'locals' ? 'local' : 'exploring';
+  // International challenges target ANYONE in the target city — both locals
+  // and travelers are valid candidates (the backend accept gate doesn't
+  // check mode for international, only the target city). So we skip the
+  // mode filter entirely. Local challenges keep the audience-based filter.
+  const isInternational = (challenge?.mode ?? 'local') === 'international';
+  const mode = isInternational
+    ? undefined
+    : (challenge?.audience === 'locals' ? 'local' : 'exploring');
   const [members,  setMembers]  = useState<UserDTO[]>([]);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
@@ -152,11 +164,18 @@ function PickerView({
       );
 
       try {
-        // 1. Strict mode filter first.
+        // International: skip the mode filter directly — no need for the
+        // two-stage strict/fallback dance because there's no strict pass.
+        if (mode === undefined) {
+          const all = await fetchCityMembers(cityChannelId, { limit: 50 });
+          if (!active) return;
+          setMembers(filterUsable(all.members));
+          return;
+        }
+        // Local: strict mode filter first, fall back to all members if empty.
         const strict = await fetchCityMembers(cityChannelId, { limit: 50, mode });
         if (!active) return;
         let list = filterUsable(strict.members);
-        // 2. Empty? Re-fetch without the filter so we still show the roster.
         if (list.length === 0) {
           const all = await fetchCityMembers(cityChannelId, { limit: 50 });
           if (!active) return;
@@ -197,7 +216,11 @@ function PickerView({
     }
   }
 
-  const audienceLabel = challenge?.audience === 'locals' ? t('aud.locals') : t('aud.explorers');
+  // International picker reads "Members in {city}" — both modes welcome.
+  // Local keeps the audience-specific label (Locals / Travelers).
+  const audienceLabel = isInternational
+    ? t('aud.members', { defaultValue: 'Members' })
+    : (challenge?.audience === 'locals' ? t('aud.locals') : t('aud.explorers'));
   const city = cityName ?? '';
 
   if (sentCount !== null) {
