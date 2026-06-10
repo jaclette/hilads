@@ -547,6 +547,7 @@ export interface OnlineUser {
   userId?: string;
   nickname: string;
   profilePhotoUrl?: string;
+  profileThumbPhotoUrl?: string;
   isRegistered: boolean;
   primaryBadge?: Badge;
   contextBadge?: Badge | null;
@@ -566,7 +567,11 @@ export interface User {
   username?: string | null;
   display_name: string;
   profile_photo_url?: string;
-  /** Thumbnail URL (≤400 px). Falls back to profile_photo_url server-side. */
+  /** Snake-case thumbnail URL (≤400 px) — same shape as profile_photo_url
+   *  for callers that hold the raw account row from /me. Falls back to
+   *  profile_photo_url server-side when no thumbnail was generated. */
+  profile_thumb_photo_url?: string;
+  /** Camel-case thumbnail URL — surfaced by UserResource DTOs (lists). */
   thumbAvatarUrl?: string | null;
   home_city?: string;
   about_me?: string | null;

@@ -734,7 +734,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                     style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
                   >
                     {f.avatarUrl
-                      ? <img className="my-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
+                      ? <img className="my-friend-avatar" src={f.thumbAvatarUrl ?? f.avatarUrl} alt={f.displayName} />
                       : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
                           {(f.displayName || '?')[0].toUpperCase()}
                         </span>

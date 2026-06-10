@@ -667,7 +667,7 @@ export default function PublicProfileScreen() {
                       activeOpacity={0.7}
                     >
                       {f.avatarUrl ? (
-                        <Image source={{ uri: f.avatarUrl }} style={styles.friendAvatar} resizeMode="cover" />
+                        <Image source={{ uri: f.thumbAvatarUrl ?? f.avatarUrl }} style={styles.friendAvatar} resizeMode="cover" />
                       ) : (
                         <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                           <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>

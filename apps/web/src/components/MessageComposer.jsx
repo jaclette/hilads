@@ -79,7 +79,7 @@ export default function MessageComposer({
               onMouseDown={e => { e.preventDefault(); onMentionSelect?.(s) }}
             >
               {s.avatarUrl
-                ? <img className="mention-option-avatar" src={s.avatarUrl} alt="" />
+                ? <img className="mention-option-avatar" src={s.thumbAvatarUrl ?? s.avatarUrl} alt="" />
                 : <span className="mention-option-avatar mention-option-avatar--initial">{s.isGuest ? '👻' : (s.displayName ?? '?')[0].toUpperCase()}</span>}
               <span className="mention-option-handle">@{s.username}</span>
               <span className="mention-option-name">{s.isGuest ? '👻 Guest · online' : s.displayName}</span>

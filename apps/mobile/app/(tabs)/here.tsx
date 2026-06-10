@@ -93,7 +93,7 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress}>
       <View style={styles.avatarWrap}>
         {user.profilePhotoUrl ? (
-          <Image source={{ uri: user.profilePhotoUrl }} style={styles.avatar} />
+          <Image source={{ uri: user.profileThumbPhotoUrl ?? user.profilePhotoUrl }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
             <Text style={[styles.avatarText, { color }]}>{initials}</Text>
@@ -136,7 +136,7 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
       {member.avatarUrl ? (
-        <Image source={{ uri: member.avatarUrl }} style={styles.avatar} />
+        <Image source={{ uri: member.thumbAvatarUrl ?? member.avatarUrl }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
           <Text style={[styles.avatarText, { color }]}>{initials}</Text>
@@ -241,7 +241,8 @@ export default function HereScreen() {
       contextBadge:    contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
       vibe:            crew?.vibe ?? u.vibe,
       mode:            crew?.mode ?? u.mode,
-      profilePhotoUrl: crew?.avatarUrl ?? (isSelf ? (account?.profile_photo_url ?? undefined) : undefined) ?? u.profilePhotoUrl,
+      profilePhotoUrl:      crew?.avatarUrl      ?? (isSelf ? (account?.profile_photo_url       ?? undefined) : undefined) ?? u.profilePhotoUrl,
+      profileThumbPhotoUrl: crew?.thumbAvatarUrl ?? (isSelf ? (account?.profile_thumb_photo_url ?? undefined) : undefined) ?? u.profileThumbPhotoUrl,
     };
   }), [onlineUsers, crewLookup, mySessionId, account]);
 
@@ -395,7 +396,7 @@ export default function HereScreen() {
                   activeOpacity={0.7}
                 >
                   {m.avatarUrl ? (
-                    <Image source={{ uri: m.avatarUrl }} style={[styles.avatar, styles.legendAvatar]} />
+                    <Image source={{ uri: m.thumbAvatarUrl ?? m.avatarUrl }} style={[styles.avatar, styles.legendAvatar]} />
                   ) : (
                     <View style={[styles.avatar, styles.legendAvatar, { backgroundColor: color + '28', borderColor: 'rgba(255,193,7,0.35)' }]}>
                       <Text style={[styles.avatarText, { color }]}>{initials}</Text>

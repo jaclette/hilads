@@ -556,7 +556,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                           style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
                         >
                           {f.avatarUrl
-                            ? <img className="pub-profile-friend-avatar" src={f.avatarUrl} alt={f.displayName} />
+                            ? <img className="pub-profile-friend-avatar" src={f.thumbAvatarUrl ?? f.avatarUrl} alt={f.displayName} />
                             : <span
                                 className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
                                 style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}

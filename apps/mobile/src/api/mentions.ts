@@ -2,12 +2,13 @@ import { api } from './client';
 import type { MentionRef } from '@/types';
 
 export interface MentionSuggestion {
-  userId?:      string;   // member suggestion
-  guestId?:     string;   // online-guest suggestion (live-only)
-  isGuest?:     boolean;
-  username:     string;
-  displayName:  string;
-  avatarUrl:    string | null;
+  userId?:        string;   // member suggestion
+  guestId?:       string;   // online-guest suggestion (live-only)
+  isGuest?:       boolean;
+  username:       string;
+  displayName:    string;
+  avatarUrl:      string | null;
+  thumbAvatarUrl?: string | null;
 }
 
 export type MentionContext = 'city' | 'event' | 'topic' | 'challenge';
