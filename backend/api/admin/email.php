@@ -41,10 +41,6 @@ function prepare_html(string $body): string
     return nl2br(htmlspecialchars($body, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
 }
 
-// Resend allows at most 50 recipients (to + cc + bcc) per request. We reserve
-// one slot for the visible `to` (the sender itself) and fill the rest with BCC.
-const RESEND_MAX_BCC = 49;
-
 /** Single Resend API call. Returns ['code'=>int, 'decoded'=>?array, 'raw'=>string]. */
 function resend_send(string $apiKey, array $payload): array
 {
@@ -117,46 +113,55 @@ if ($method === 'POST') {
             $error = 'RESEND_API_KEY is not configured.';
         } elseif ($sendAll) {
             // ── Broadcast to all registered users ─────────────────────────────
-            // Privacy: recipients go in BCC (hidden from each other), with the
-            // sender itself as the single visible `to`. Batched to respect
-            // Resend's 50-recipients-per-request limit.
+            // Privacy: BCC at scale is unreliable (some providers strip it,
+            // recipients sometimes see the bundle). Loop instead - one Resend
+            // call per recipient, each with that user as the sole `to`. No
+            // address is ever visible to another user.
             $html       = prepare_html($body);
             $recipients = all_registered_emails();
-            $senderAddr = extract_email($from);
 
-            if ($senderAddr === null) {
-                $error = 'Could not read a sender address from "From" to use as the visible To.';
-            } elseif (empty($recipients)) {
+            if (empty($recipients)) {
                 $error = 'No registered users with an email address were found.';
             } else {
-                $batches  = array_chunk($recipients, RESEND_MAX_BCC);
-                $sent = 0; $failed = 0; $lastCode = null; $lastDecoded = null; $firstId = null;
-                error_log('[admin/email] broadcast to ' . count($recipients) . ' registered users in ' . count($batches) . ' batch(es)');
+                // 1:1 send takes ~350ms per recipient (RTT + 200ms pacing).
+                // PHP default 30s + Render's web timeout would clip large
+                // lists mid-loop; lift the in-handler caps so the loop runs
+                // to completion. ignore_user_abort means a closed admin tab
+                // doesn't kill the broadcast already in flight.
+                @set_time_limit(0);
+                ignore_user_abort(true);
 
-                foreach ($batches as $batch) {
+                $sent = 0; $failed = 0; $lastCode = null; $lastDecoded = null; $firstId = null;
+                $failedAddrs = [];
+                error_log('[admin/email] broadcast (1:1) to ' . count($recipients) . ' registered users');
+
+                foreach ($recipients as $addr) {
                     $r = resend_send($apiKey, [
                         'from'    => $from,
-                        'to'      => [$senderAddr],
-                        'bcc'     => $batch,
+                        'to'      => [$addr],
                         'subject' => $subject,
                         'html'    => $html,
                     ]);
                     $lastCode = $r['code']; $lastDecoded = $r['decoded'];
                     if ($r['code'] >= 200 && $r['code'] < 300) {
-                        $sent += count($batch);
+                        $sent++;
                         $firstId = $firstId ?? ($r['decoded']['id'] ?? null);
                     } else {
-                        $failed += count($batch);
+                        $failed++;
+                        $failedAddrs[] = $addr;
                     }
+                    // Modest pacing to stay clear of Resend's per-second rate
+                    // limit (default 2 req/s, often higher). 200ms = 5 req/s.
+                    usleep(200000);
                 }
 
                 $debug = [
-                    'to'           => [$senderAddr],
-                    'bcc'          => ['(' . count($recipients) . ' registered users - BCC, batched by ' . RESEND_MAX_BCC . ')'],
+                    'to'           => ['(' . count($recipients) . ' registered users - 1:1, no shared visibility)'],
+                    'bcc'          => [],
                     'to_invalid'   => [],
                     'bcc_invalid'  => [],
-                    'payload_keys' => ['from', 'to', 'bcc', 'subject', 'html'],
-                    'bcc_in_payload' => ['(' . count($recipients) . ' BCC recipients across ' . count($batches) . ' batch' . (count($batches) !== 1 ? 'es' : '') . ')'],
+                    'payload_keys' => ['from', 'to', 'subject', 'html'],
+                    'bcc_in_payload' => null,
                     'http_code'    => $lastCode,
                     'resend_id'    => $firstId,
                     'resend_raw'   => $lastDecoded,
@@ -164,12 +169,15 @@ if ($method === 'POST') {
 
                 if ($failed === 0) {
                     $success = 'Broadcast sent to ' . $sent . ' registered user' . ($sent !== 1 ? 's' : '')
-                        . ' (BCC, ' . count($batches) . ' batch' . (count($batches) !== 1 ? 'es' : '') . ').';
+                        . ' (1:1, no shared visibility).';
                     // Clear after a successful full broadcast so a refresh can't re-blast everyone.
                     $savedTo = $savedSubject = $savedBody = '';
                 } elseif ($sent > 0) {
                     $error = 'Partial broadcast: ' . $sent . ' delivered, ' . $failed
-                        . ' failed (last HTTP ' . (int) $lastCode . '). Check logs before retrying - some users already received it.';
+                        . ' failed (last HTTP ' . (int) $lastCode . '). Failed addresses: '
+                        . implode(', ', array_slice($failedAddrs, 0, 20))
+                        . (count($failedAddrs) > 20 ? ' (+' . (count($failedAddrs) - 20) . ' more, see logs)' : '')
+                        . '. Retry the failed addresses via the To field.';
                 } else {
                     $msg   = $lastDecoded['message'] ?? $lastDecoded['name'] ?? 'Unknown error';
                     $error = 'Broadcast failed (HTTP ' . (int) $lastCode . '): ' . $msg;
@@ -347,7 +355,7 @@ echo '</div>';
 echo '<div class="form-group">';
 echo '<label style="display:flex;align-items:center;gap:8px;font-weight:normal;text-transform:none;letter-spacing:0;cursor:pointer">';
 echo '<input type="checkbox" name="send_all_users" id="send-all-users" value="1"' . ($savedSendAll ? ' checked' : '') . '>';
-echo 'Send to all registered users <span style="color:#888;font-size:12px">(BCC - “Send” goes to everyone; “Send test” still uses the To field)</span>';
+echo 'Send to all registered users <span style="color:#888;font-size:12px">(1:1 - each user gets their own copy, no shared visibility; "Send test" still uses the To field)</span>';
 echo '</label>';
 echo '</div>';
 
