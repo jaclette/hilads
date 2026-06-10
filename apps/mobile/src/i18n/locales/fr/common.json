@@ -1,8 +1,8 @@
 {
   "nowTitle": "Maintenant",
-  "filterEvents": "🎉 Événements",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ Sorties",
-  "publicEventsSection": "🎫 Événements publics",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "Bravo, {{username}} ! 🎉",
     "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant 👇",

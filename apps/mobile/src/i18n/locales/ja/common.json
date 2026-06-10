@@ -1,8 +1,8 @@
 {
   "nowTitle": "今",
-  "filterEvents": "🎉 イベント",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ 集まり",
-  "publicEventsSection": "🎫 公開イベント",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "おめでとう、{{username}}さん！🎉",
     "subtitle": "アカウントの準備ができました--今すぐできることはこちら 👇",

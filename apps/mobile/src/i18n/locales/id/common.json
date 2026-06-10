@@ -1,8 +1,8 @@
 {
   "nowTitle": "Sekarang",
-  "filterEvents": "🎉 Acara",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ Nongkrong",
-  "publicEventsSection": "🎫 Acara publik",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "Selamat, {{username}}! 🎉",
     "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang 👇",

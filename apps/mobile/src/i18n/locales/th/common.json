@@ -1,8 +1,8 @@
 {
   "nowTitle": "ตอนนี้",
-  "filterEvents": "🎉 กิจกรรม",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ นัดเจอ",
-  "publicEventsSection": "🎫 กิจกรรมสาธารณะ",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "ยินดีด้วย {{username}}! 🎉",
     "subtitle": "บัญชีของคุณพร้อมแล้ว - นี่คือสิ่งที่คุณทำได้ตอนนี้ 👇",

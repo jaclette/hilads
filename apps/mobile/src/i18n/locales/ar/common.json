@@ -1,8 +1,8 @@
 {
   "nowTitle": "الآن",
-  "filterEvents": "🎉 فعاليات",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ لقاءات",
-  "publicEventsSection": "🎫 فعاليات عامة",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "تهانينا، {{username}}! 🎉",
     "subtitle": "حسابك جاهز - إليك ما يمكنك فعله الآن 👇",

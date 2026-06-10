@@ -1,8 +1,8 @@
 {
   "nowTitle": "现在",
-  "filterEvents": "🎉 活动",
+  "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ 聚会",
-  "publicEventsSection": "🎫 公开活动",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "恭喜你，{{username}}！🎉",
     "subtitle": "你的账号已就绪--现在你可以这样玩 👇",
