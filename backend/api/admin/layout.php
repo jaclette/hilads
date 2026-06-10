@@ -122,6 +122,24 @@ td { padding: 9px 12px; vertical-align: middle; }
 .pagination .current { background: #FF7A3C; color: #fff; padding: 4px 8px; border-radius: 4px; }
 .pagination .sep { color: #333; }
 
+/* Searchable city picker (.city-picker) - vanilla autocomplete combo used by
+   user_create / user_edit. Text input filters a scrollable result list; click
+   commits to the hidden home_city field. */
+.city-picker { position: relative; }
+.city-picker-options {
+    list-style: none; margin: 4px 0 0; padding: 0;
+    position: absolute; z-index: 100; left: 0; right: 0; top: 100%;
+    max-height: 280px; overflow-y: auto;
+    background: #1a1a1a; border: 1px solid #333; border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+.city-picker-options li {
+    padding: 8px 12px; cursor: pointer; font-size: 13px; color: #ddd; user-select: none;
+}
+.city-picker-options li:hover, .city-picker-options li.active { background: #2a2a2a; color: #FF7A3C; }
+.city-picker-options li .match { color: #FF7A3C; }
+.city-picker-empty { padding: 10px 12px; color: #555; font-size: 12px; font-style: italic; }
+
 /* Login */
 .login-page { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
 .login-box { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 36px 32px; width: 340px; }
@@ -130,6 +148,72 @@ td { padding: 9px 12px; vertical-align: middle; }
 .login-box .form-group label { color: #777; }
 .login-box .btn-primary { width: 100%; justify-content: center; padding: 10px; margin-top: 4px; }
 </style>
+<script>
+// Shared searchable-city picker init. Each .city-picker in the page
+// gets a focus/input/blur cycle wired up: typing filters the list,
+// click commits to the hidden field. Used by user_create.php and
+// user_edit.php (each passes its own city array on page load).
+function initCityPickers(cities) {
+    if (!Array.isArray(cities) || cities.length === 0) return;
+    const MAX_RESULTS = 100;
+    document.querySelectorAll(".city-picker").forEach(function (picker) {
+        const search  = picker.querySelector(".city-picker-search");
+        const hidden  = picker.querySelector("input[type=\"hidden\"]");
+        const options = picker.querySelector(".city-picker-options");
+        if (!search || !hidden || !options) return;
+        let activeIdx = -1;
+
+        function render(query) {
+            const q = (query || "").trim().toLowerCase();
+            const list = q === ""
+                ? cities.slice(0, MAX_RESULTS)
+                : cities.filter(function (c) { return c.toLowerCase().indexOf(q) !== -1; }).slice(0, MAX_RESULTS);
+            if (list.length === 0) {
+                options.innerHTML = "<li class=\"city-picker-empty\">No matches</li>";
+            } else {
+                options.innerHTML = list.map(function (c) {
+                    const safe = c.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+                    return "<li data-city=\"" + safe + "\">" + safe + "</li>";
+                }).join("");
+            }
+            options.hidden = false;
+            activeIdx = -1;
+        }
+
+        function setActive(idx) {
+            const items = options.querySelectorAll("li[data-city]");
+            items.forEach(function (li) { li.classList.remove("active"); });
+            if (idx < 0 || idx >= items.length) { activeIdx = -1; return; }
+            activeIdx = idx;
+            items[idx].classList.add("active");
+            items[idx].scrollIntoView({ block: "nearest" });
+        }
+
+        function commit(city) {
+            search.value = city;
+            hidden.value = city;
+            options.hidden = true;
+        }
+
+        search.addEventListener("focus",  function () { render(search.value); });
+        search.addEventListener("input",  function () { render(search.value); hidden.value = search.value; });
+        search.addEventListener("blur",   function () { setTimeout(function () { options.hidden = true; }, 150); });
+        search.addEventListener("keydown", function (e) {
+            const items = options.querySelectorAll("li[data-city]");
+            if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.min(activeIdx + 1, items.length - 1)); }
+            else if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+            else if (e.key === "Enter" && activeIdx >= 0) { e.preventDefault(); commit(items[activeIdx].dataset.city); }
+            else if (e.key === "Escape") { options.hidden = true; activeIdx = -1; }
+        });
+        options.addEventListener("mousedown", function (e) {
+            const li = e.target.closest("li[data-city]");
+            if (!li) return;
+            e.preventDefault(); // keep focus so blur does not race the click
+            commit(li.dataset.city);
+        });
+    });
+}
+</script>
 </head>
 <body>
 ';

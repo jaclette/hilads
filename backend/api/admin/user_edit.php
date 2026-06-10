@@ -354,17 +354,17 @@ admin_nav('/admin/users');
         <hr class="section-divider">
 
         <div class="form-group">
-            <label for="home_city">Home city</label>
-            <select id="home_city" name="home_city">
-                <option value="">- None -</option>
-                <?php $selectedHomeCity = (string)($post['home_city'] ?? ''); ?>
-                <?php foreach ($cities as $c): ?>
-                    <option value="<?= htmlspecialchars($c['name'], ENT_QUOTES) ?>"
-                            <?= $selectedHomeCity === $c['name'] ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($c['name'], ENT_QUOTES) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
+            <label for="home_city_search">Home city</label>
+            <?php $selectedHomeCity = (string)($post['home_city'] ?? ''); ?>
+            <div class="city-picker">
+                <input type="text" id="home_city_search" class="city-picker-search"
+                       autocomplete="off" placeholder="Search <?= count($cities) ?> cities..."
+                       value="<?= htmlspecialchars($selectedHomeCity, ENT_QUOTES) ?>">
+                <input type="hidden" id="home_city" name="home_city"
+                       value="<?= htmlspecialchars($selectedHomeCity, ENT_QUOTES) ?>">
+                <ul class="city-picker-options" hidden></ul>
+            </div>
+            <div class="hint">Type to search. Leave blank for none.</div>
         </div>
 
         <!-- PR16 - Live city (current_city_id) override. Searchable list of
@@ -510,6 +510,14 @@ admin_nav('/admin/users');
         </div>
     </form>
 </div>
+
+<script>
+(function () {
+    const CITIES = <?= json_encode(array_map(static fn(array $c): string => (string)$c['name'], $cities), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) ?>;
+    initCityPickers(CITIES);
+})();
+</script>
+
 <style>
 /* Avatar picker */
 .avatar-picker { display:flex; align-items:center; gap:20px; }
