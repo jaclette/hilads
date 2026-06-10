@@ -138,6 +138,7 @@ td { padding: 9px 12px; vertical-align: middle; }
 }
 .city-picker-options li:hover, .city-picker-options li.active { background: #2a2a2a; color: #FF7A3C; }
 .city-picker-options li .match { color: #FF7A3C; }
+.city-picker-flag { display: inline-block; width: 24px; margin-right: 8px; font-size: 14px; line-height: 1; text-align: center; }
 .city-picker-empty { padding: 10px 12px; color: #555; font-size: 12px; font-style: italic; }
 
 /* Login */
@@ -153,9 +154,23 @@ td { padding: 9px 12px; vertical-align: middle; }
 // gets a focus/input/blur cycle wired up: typing filters the list,
 // click commits to the hidden field. Used by user_create.php and
 // user_edit.php (each passes its own city array on page load).
+//
+// `cities` is an array of {name, country} objects. The country is an
+// ISO 3166-1 alpha-2 code (e.g. "FR") that gets rendered as a flag
+// emoji next to the city name for fast visual scanning.
 function initCityPickers(cities) {
     if (!Array.isArray(cities) || cities.length === 0) return;
     const MAX_RESULTS = 100;
+
+    function flagEmoji(cc) {
+        if (!cc || cc.length !== 2) return "";
+        const A = "A".charCodeAt(0);
+        return String.fromCodePoint(
+            0x1F1E6 + cc.toUpperCase().charCodeAt(0) - A,
+            0x1F1E6 + cc.toUpperCase().charCodeAt(1) - A
+        );
+    }
+
     document.querySelectorAll(".city-picker").forEach(function (picker) {
         const search  = picker.querySelector(".city-picker-search");
         const hidden  = picker.querySelector("input[type=\"hidden\"]");
@@ -167,13 +182,14 @@ function initCityPickers(cities) {
             const q = (query || "").trim().toLowerCase();
             const list = q === ""
                 ? cities.slice(0, MAX_RESULTS)
-                : cities.filter(function (c) { return c.toLowerCase().indexOf(q) !== -1; }).slice(0, MAX_RESULTS);
+                : cities.filter(function (c) { return (c.name || "").toLowerCase().indexOf(q) !== -1; }).slice(0, MAX_RESULTS);
             if (list.length === 0) {
                 options.innerHTML = "<li class=\"city-picker-empty\">No matches</li>";
             } else {
                 options.innerHTML = list.map(function (c) {
-                    const safe = c.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-                    return "<li data-city=\"" + safe + "\">" + safe + "</li>";
+                    const safe = (c.name || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+                    const flag = flagEmoji(c.country || "");
+                    return "<li data-city=\"" + safe + "\"><span class=\"city-picker-flag\">" + flag + "</span>" + safe + "</li>";
                 }).join("");
             }
             options.hidden = false;

@@ -263,7 +263,13 @@ admin_nav('/admin/users');
 
 <script>
 (function () {
-    const CITIES = <?= json_encode(array_map(static fn(array $c): string => (string)$c['name'], $cities), JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE) ?>;
+    const CITIES = <?= json_encode(
+        array_map(static fn(array $c): array => [
+            'name'    => (string) ($c['name']    ?? ''),
+            'country' => (string) ($c['country'] ?? ''),
+        ], $cities),
+        JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE,
+    ) ?>;
     initCityPickers(CITIES);
 })();
 </script>
