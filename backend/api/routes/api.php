@@ -11495,6 +11495,14 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
             unset($msg);
         }
 
+        // Hydrate emoji reactions - mirrors the city + event + conversation
+        // GETs. Without this, reactions written via POST .../reactions live
+        // in message_reactions but never come back to the client on history
+        // load, so leaving + reopening the challenge channel reads as "the
+        // reaction was lost". One query batched across the page of messages.
+        $viewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+        MessageRepository::attachReactions($res['messages'], $viewerGuestId ?: null, $viewerId);
+
         Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
     } catch (\Throwable $e) {
         error_log('[challenge-messages] GET failed for challenge ' . $challengeId . ': ' . $e->getMessage());
