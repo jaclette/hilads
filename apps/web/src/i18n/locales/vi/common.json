@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Ai đang ở {{city}} ngay bây giờ | Hilads",
-    "cityDesc": "Xem ai đang online và điều gì đang diễn ra ở {{city}} ngay bây giờ.",
-    "eventTitle": "{{title}} đang diễn ra ngay bây giờ | Hilads",
-    "eventDesc": "Tham gia {{title}} trên Hilads - xem ai đang ở đó và điều gì đang diễn ra."
+    "cityTitle": "Trở thành người địa phương ở {{city}} — Hilads",
+    "cityDesc": "Trở thành người địa phương ở {{city}}: tham gia challenge, gặp gỡ ở meetup, tham gia hangout, khám phá Local Events. Chat trực tiếp với người đang online.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Tham gia {{title}} trên Hilads — một Local Event đang diễn ra. Xem ai đến và chat trực tiếp."
   },
   "nowTitle": "Bây giờ",
   "filterEvents": "🎉 Local Events",

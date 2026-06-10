@@ -1,14 +1,14 @@
 {
   "meta": {
-    "cityTitle": "Who's in {{city}} right now | Hilads",
-    "cityDesc": "See who's online and what's happening in {{city}} right now.",
-    "eventTitle": "{{title}} is happening now | Hilads",
-    "eventDesc": "Join {{title}} on Hilads - see who's there and what's happening."
+    "cityTitle": "Become local in {{city}} — Hilads",
+    "cityDesc": "Become local in {{city}}: take on a challenge, join a meetup, drop into a hangout, find Local Events. Live chat with people online now.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Join {{title}} on Hilads — a Local Event happening now. See who's going and live-chat with people online."
   },
   "nowTitle": "Now",
   "filterEvents": "🎉 Local Events",
   "filterHangouts": "🗣️ Hangouts",
-  "publicEventsSection": "🎫 Public Events",
+  "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
     "title": "Congrats, {{username}}! 🎉",
     "subtitle": "Your account is ready - here's what you can do now 👇",

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Кто сейчас в {{city}} | Hilads",
-    "cityDesc": "Посмотри, кто онлайн и что сейчас происходит в {{city}}.",
-    "eventTitle": "{{title}} происходит прямо сейчас | Hilads",
-    "eventDesc": "Присоединяйся к {{title}} в Hilads - смотри, кто там и что происходит."
+    "cityTitle": "Стань местным в {{city}} — Hilads",
+    "cityDesc": "Стань местным в {{city}}: бросай challenge, иди на meetup, заходи в hangout, открывай Local Events. Живой чат с теми, кто онлайн.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Заходи в {{title}} на Hilads — Local Event, который идёт прямо сейчас. Смотри кто будет и общайся в живом чате."
   },
   "nowTitle": "Сейчас",
   "filterEvents": "🎉 Local Events",

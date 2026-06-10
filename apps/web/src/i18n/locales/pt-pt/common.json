@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Quem está em {{city}} agora | Hilads",
-    "cityDesc": "Vê quem está online e o que se passa em {{city}} agora.",
-    "eventTitle": "{{title}} está a acontecer agora | Hilads",
-    "eventDesc": "Junta-te a {{title}} no Hilads - vê quem está lá e o que se passa."
+    "cityTitle": "Torna-te local em {{city}} — Hilads",
+    "cityDesc": "Torna-te local em {{city}}: lança um challenge, junta-te a um meetup, cai num hangout, descobre Local Events. Chat ao vivo com quem está online.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Junta-te a {{title}} no Hilads — um Local Event a acontecer agora. Vê quem vai e conversa ao vivo."
   },
   "nowTitle": "Agora",
   "filterEvents": "🎉 Local Events",

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Wie is er nu in {{city}} | Hilads",
-    "cityDesc": "Zie wie online is en wat er nu gebeurt in {{city}}.",
-    "eventTitle": "{{title}} is nu bezig | Hilads",
-    "eventDesc": "Doe mee met {{title}} op Hilads - zie wie er is en wat er gebeurt."
+    "cityTitle": "Word local in {{city}} — Hilads",
+    "cityDesc": "Word local in {{city}}: start een challenge, sluit aan bij een meetup, duik een hangout in, ontdek Local Events. Live chat met mensen online.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Sluit aan bij {{title}} op Hilads — een Local Event dat nu plaatsvindt. Zie wie er komt en chat live."
   },
   "nowTitle": "Nu",
   "filterEvents": "🎉 Local Events",

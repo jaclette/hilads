@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Siapa yang ada di {{city}} sekarang | Hilads",
-    "cityDesc": "Lihat siapa yang online dan apa yang sedang terjadi di {{city}} sekarang.",
-    "eventTitle": "{{title}} sedang berlangsung sekarang | Hilads",
-    "eventDesc": "Gabung {{title}} di Hilads - lihat siapa yang ada di sana dan apa yang terjadi."
+    "cityTitle": "Jadi orang lokal di {{city}} — Hilads",
+    "cityDesc": "Jadi orang lokal di {{city}}: ikut challenge, gabung meetup, masuk hangout, temukan Local Events. Chat langsung dengan yang sedang online.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Gabung {{title}} di Hilads — Local Event yang sedang berlangsung. Lihat siapa yang datang dan ngobrol langsung."
   },
   "nowTitle": "Sekarang",
   "filterEvents": "🎉 Local Events",

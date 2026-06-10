@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "いま {{city}} にいるのは誰？ | Hilads",
-    "cityDesc": "いまオンラインの人と、{{city}} で起きていることをチェック。",
-    "eventTitle": "{{title}} は今まさに開催中 | Hilads",
-    "eventDesc": "Hilads で {{title}} に参加しよう--誰がいて何が起きているか見てみよう。"
+    "cityTitle": "{{city}}でローカルになろう — Hilads",
+    "cityDesc": "{{city}}でローカルになろう：チャレンジに挑む、ミートアップに参加、ハングアウトに入る、Local Eventsを見つける。今オンラインの人とライブチャット。",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "{{title}}にHiladsで参加 — 今行われているLocal Event。誰が参加するか見て、ライブチャットで話そう。"
   },
   "nowTitle": "今",
   "filterEvents": "🎉 Local Events",

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "此刻誰在 {{city}} | Hilads",
-    "cityDesc": "看看此刻誰在線上，以及 {{city}} 正在發生什麼。",
-    "eventTitle": "{{title}} 正在進行 | Hilads",
-    "eventDesc": "在 Hilads 上加入 {{title}}--看看誰在現場、正在發生什麼。"
+    "cityTitle": "在 {{city}} 成為在地人 — Hilads",
+    "cityDesc": "在 {{city}} 成為在地人：參與 challenge、加入 meetup、進入 hangout、發現 Local Events。和正線上的人即時聊天。",
+    "eventTitle": "Local Event：{{title}} | Hilads",
+    "eventDesc": "在 Hilads 加入 {{title}} — 一個正在進行的 Local Event。看誰會去，即時聊天。"
   },
   "nowTitle": "現在",
   "filterEvents": "🎉 Local Events",

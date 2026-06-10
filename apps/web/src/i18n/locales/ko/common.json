@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "지금 {{city}}에 누가 있을까 | Hilads",
-    "cityDesc": "지금 누가 접속해 있고 {{city}}에서 무슨 일이 일어나는지 확인하세요.",
-    "eventTitle": "{{title}} 지금 진행 중 | Hilads",
-    "eventDesc": "Hilads에서 {{title}}에 참여하세요 - 누가 있고 무슨 일이 일어나는지 확인하세요."
+    "cityTitle": "{{city}}에서 로컬이 되어요 — Hilads",
+    "cityDesc": "{{city}}에서 로컬이 되어요: 챌린지 도전, 모임 참여, 행아웃 진입, Local Events 발견. 지금 온라인인 사람과 실시간 채팅.",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "{{title}}에 Hilads에서 참여해요 — 지금 진행 중인 Local Event. 누가 가는지 보고 실시간으로 대화해요."
   },
   "nowTitle": "지금",
   "filterEvents": "🎉 Local Events",

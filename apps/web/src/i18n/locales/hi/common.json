@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "अभी {{city}} में कौन है | Hilads",
-    "cityDesc": "देखें कि अभी कौन ऑनलाइन है और {{city}} में क्या हो रहा है।",
-    "eventTitle": "{{title}} अभी चल रहा है | Hilads",
-    "eventDesc": "Hilads पर {{title}} में शामिल हों - देखें कौन है और क्या हो रहा है।"
+    "cityTitle": "{{city}} में लोकल बनिए — Hilads",
+    "cityDesc": "{{city}} में लोकल बनिए: challenges लीजिए, meetups में जुड़िए, hangouts में पहुँचिए, Local Events खोजिए। ऑनलाइन लोगों के साथ लाइव चैट।",
+    "eventTitle": "Local Event: {{title}} | Hilads",
+    "eventDesc": "Hilads पर {{title}} में जुड़िए — एक Local Event जो अभी हो रहा है। देखिए कौन आ रहा है और लाइव चैट कीजिए।"
   },
   "nowTitle": "अभी",
   "filterEvents": "🎉 Local Events",
