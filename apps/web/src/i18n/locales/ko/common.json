@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "첨부 추가",
-    "emoji": "이모지"
+    "emoji": "이모지",
+    "placeholderCity": "도시에 인사해요 👋",
+    "placeholderHangout": "참여한다고 알려요 🙌",
+    "placeholderEvent": "참가자들과 이야기해요 🎉",
+    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥"
   },
   "vibe": {
     "party": "파티",

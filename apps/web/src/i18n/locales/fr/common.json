@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "Ajouter une pièce jointe",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderCity": "Dis bonjour à ta ville 👋",
+    "placeholderHangout": "Dis-leur que tu es là 🙌",
+    "placeholderEvent": "Discute avec les participants 🎉",
+    "placeholderChallenge": "Encourage-les ou donne ton astuce 🔥"
   },
   "vibe": {
     "party": "Fête",

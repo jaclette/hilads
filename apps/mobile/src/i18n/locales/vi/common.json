@@ -131,7 +131,11 @@
     "locPermTitle": "Cần quyền vị trí",
     "locPermSettings": "Vui lòng bật vị trí trong Cài đặt → Hilads → Vị trí.",
     "locNeededTitle": "Cần vị trí",
-    "locNeededBody": "Cho phép truy cập vị trí để chia sẻ spot của bạn."
+    "locNeededBody": "Cho phép truy cập vị trí để chia sẻ spot của bạn.",
+    "placeholderCity": "Chào thành phố của bạn 👋",
+    "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
+    "placeholderEvent": "Trò chuyện với người tham dự 🎉",
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥"
   },
   "modeHeading": "CHẾ ĐỘ",
   "mode": {

@@ -131,7 +131,11 @@
     "locPermTitle": "Perlu akses lokasi",
     "locPermSettings": "Aktifkan lokasi di Pengaturan → Hilads → Lokasi.",
     "locNeededTitle": "Perlu lokasi",
-    "locNeededBody": "Izinkan akses lokasi untuk membagikan tempatmu."
+    "locNeededBody": "Izinkan akses lokasi untuk membagikan tempatmu.",
+    "placeholderCity": "Sapa kotamu 👋",
+    "placeholderHangout": "Kasih tahu kamu ikutan 🙌",
+    "placeholderEvent": "Ngobrol sama yang datang 🎉",
+    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥"
   },
   "modeHeading": "MODE",
   "mode": {

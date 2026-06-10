@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "Magdagdag ng attachment",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderCity": "Mag-hi sa city mo 👋",
+    "placeholderHangout": "Sabihin na sasali ka 🙌",
+    "placeholderEvent": "Mag-chat sa mga papasok 🎉",
+    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥"
   },
   "vibe": {
     "party": "Party",

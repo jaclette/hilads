@@ -131,7 +131,11 @@
     "locPermTitle": "ต้องการการเข้าถึงตำแหน่ง",
     "locPermSettings": "โปรดเปิดตำแหน่งใน Settings → Hilads → Location",
     "locNeededTitle": "ต้องการตำแหน่ง",
-    "locNeededBody": "อนุญาตการเข้าถึงตำแหน่งเพื่อแชร์ที่อยู่ของคุณ"
+    "locNeededBody": "อนุญาตการเข้าถึงตำแหน่งเพื่อแชร์ที่อยู่ของคุณ",
+    "placeholderCity": "ทักทายเมืองของคุณ 👋",
+    "placeholderHangout": "บอกพวกเขาว่าคุณมาแล้ว 🙌",
+    "placeholderEvent": "พูดคุยกับผู้เข้าร่วม 🎉",
+    "placeholderChallenge": "เชียร์พวกเขา หรือแชร์เคล็ดลับของคุณ 🔥"
   },
   "modeHeading": "MODE",
   "mode": {

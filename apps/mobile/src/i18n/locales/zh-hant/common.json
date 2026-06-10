@@ -131,7 +131,11 @@
     "locPermTitle": "需要位置存取權限",
     "locPermSettings": "請在設定 → Hilads → 位置中開啟定位。",
     "locNeededTitle": "需要位置資訊",
-    "locNeededBody": "請允許存取位置，才能分享你的地點。"
+    "locNeededBody": "請允許存取位置，才能分享你的地點。",
+    "placeholderCity": "和你的城市打個招呼 👋",
+    "placeholderHangout": "告訴大家你來了 🙌",
+    "placeholderEvent": "和參加的人聊聊 🎉",
+    "placeholderChallenge": "為他們加油，或分享你的小提示 🔥"
   },
   "modeHeading": "模式",
   "mode": {

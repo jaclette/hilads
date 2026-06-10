@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "अटैचमेंट जोड़ें",
-    "emoji": "इमोजी"
+    "emoji": "इमोजी",
+    "placeholderCity": "अपने शहर को हाय कहो 👋",
+    "placeholderHangout": "बताओ कि आप शामिल हो 🙌",
+    "placeholderEvent": "जाने वालों से बात करो 🎉",
+    "placeholderChallenge": "हौसला बढ़ाओ या अपना टिप शेयर करो 🔥"
   },
   "vibe": {
     "party": "पार्टी",

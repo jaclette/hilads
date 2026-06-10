@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "เพิ่มไฟล์แนบ",
-    "emoji": "อิโมจิ"
+    "emoji": "อิโมจิ",
+    "placeholderCity": "ทักทายเมืองของคุณ 👋",
+    "placeholderHangout": "บอกพวกเขาว่าคุณมาแล้ว 🙌",
+    "placeholderEvent": "พูดคุยกับผู้เข้าร่วม 🎉",
+    "placeholderChallenge": "เชียร์พวกเขา หรือแชร์เคล็ดลับของคุณ 🔥"
   },
   "vibe": {
     "party": "ปาร์ตี้",

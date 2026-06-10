@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "Добавить вложение",
-    "emoji": "Эмодзи"
+    "emoji": "Эмодзи",
+    "placeholderCity": "Поздоровайся со своим городом 👋",
+    "placeholderHangout": "Дай знать, что ты в деле 🙌",
+    "placeholderEvent": "Пообщайся с участниками 🎉",
+    "placeholderChallenge": "Поддержи их или поделись советом 🔥"
   },
   "vibe": {
     "party": "Вечеринка",

@@ -131,7 +131,11 @@
     "locPermTitle": "Locatietoegang vereist",
     "locPermSettings": "Schakel locatie in via Instellingen → Hilads → Locatie.",
     "locNeededTitle": "Locatie nodig",
-    "locNeededBody": "Geef locatietoegang om je plek te delen."
+    "locNeededBody": "Geef locatietoegang om je plek te delen.",
+    "placeholderCity": "Zeg hoi tegen je stad 👋",
+    "placeholderHangout": "Laat ze weten dat je erbij bent 🙌",
+    "placeholderEvent": "Chat met de aanwezigen 🎉",
+    "placeholderChallenge": "Moedig ze aan of deel je tip 🔥"
   },
   "modeHeading": "MODUS",
   "mode": {

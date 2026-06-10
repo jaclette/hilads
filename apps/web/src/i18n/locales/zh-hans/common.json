@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "添加附件",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderCity": "和你的城市打个招呼 👋",
+    "placeholderHangout": "告诉大家你来了 🙌",
+    "placeholderEvent": "和参加的人聊聊 🎉",
+    "placeholderChallenge": "为他们加油，或分享你的小贴士 🔥"
   },
   "vibe": {
     "party": "派对",

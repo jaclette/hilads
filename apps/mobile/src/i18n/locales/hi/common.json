@@ -131,7 +131,11 @@
     "locPermTitle": "लोकेशन ऐक्सेस चाहिए",
     "locPermSettings": "कृपया Settings → Hilads → Location में लोकेशन चालू करें।",
     "locNeededTitle": "लोकेशन चाहिए",
-    "locNeededBody": "अपनी जगह शेयर करने के लिए लोकेशन ऐक्सेस की अनुमति दें।"
+    "locNeededBody": "अपनी जगह शेयर करने के लिए लोकेशन ऐक्सेस की अनुमति दें।",
+    "placeholderCity": "अपने शहर को हाय कहो 👋",
+    "placeholderHangout": "बताओ कि आप शामिल हो 🙌",
+    "placeholderEvent": "जाने वालों से बात करो 🎉",
+    "placeholderChallenge": "हौसला बढ़ाओ या अपना टिप शेयर करो 🔥"
   },
   "modeHeading": "MODE",
   "mode": {

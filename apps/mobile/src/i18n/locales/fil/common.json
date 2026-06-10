@@ -131,7 +131,11 @@
     "locPermTitle": "Kailangan ng access sa lokasyon",
     "locPermSettings": "Paki-enable ang lokasyon sa Mga setting → Hilads → Location.",
     "locNeededTitle": "Kailangan ng lokasyon",
-    "locNeededBody": "Payagan ang access sa lokasyon para i-share ang spot mo."
+    "locNeededBody": "Payagan ang access sa lokasyon para i-share ang spot mo.",
+    "placeholderCity": "Mag-hi sa city mo 👋",
+    "placeholderHangout": "Sabihin na sasali ka 🙌",
+    "placeholderEvent": "Mag-chat sa mga papasok 🎉",
+    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥"
   },
   "modeHeading": "MODE",
   "mode": {

@@ -131,7 +131,11 @@
     "locPermTitle": "Standortzugriff erforderlich",
     "locPermSettings": "Bitte aktiviere den Standort in Einstellungen → Hilads → Standort.",
     "locNeededTitle": "Standort erforderlich",
-    "locNeededBody": "Erlaube den Standortzugriff, um deinen Spot zu teilen."
+    "locNeededBody": "Erlaube den Standortzugriff, um deinen Spot zu teilen.",
+    "placeholderCity": "Sag hallo zu deiner Stadt 👋",
+    "placeholderHangout": "Sag Bescheid, dass du dabei bist 🙌",
+    "placeholderEvent": "Chatte mit den Teilnehmern 🎉",
+    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp 🔥"
   },
   "modeHeading": "MODUS",
   "mode": {

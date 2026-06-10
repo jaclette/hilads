@@ -131,7 +131,11 @@
     "locPermTitle": "Acesso à localização necessário",
     "locPermSettings": "Ativa a localização em Definições → Hilads → Localização.",
     "locNeededTitle": "Localização necessária",
-    "locNeededBody": "Permite o acesso à localização para partilhares o teu sítio."
+    "locNeededBody": "Permite o acesso à localização para partilhares o teu sítio.",
+    "placeholderCity": "Diz olá à tua cidade 👋",
+    "placeholderHangout": "Avisa que estás dentro 🙌",
+    "placeholderEvent": "Conversa com quem vai 🎉",
+    "placeholderChallenge": "Apoia-os ou partilha a tua dica 🔥"
   },
   "modeHeading": "MODO",
   "mode": {

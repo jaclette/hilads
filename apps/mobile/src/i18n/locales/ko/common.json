@@ -131,7 +131,11 @@
     "locPermTitle": "위치 접근이 필요해요",
     "locPermSettings": "설정 → Hilads → 위치에서 위치를 켜 주세요.",
     "locNeededTitle": "위치가 필요해요",
-    "locNeededBody": "내 자리를 공유하려면 위치 접근을 허용해 주세요."
+    "locNeededBody": "내 자리를 공유하려면 위치 접근을 허용해 주세요.",
+    "placeholderCity": "도시에 인사해요 👋",
+    "placeholderHangout": "참여한다고 알려요 🙌",
+    "placeholderEvent": "참가자들과 이야기해요 🎉",
+    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥"
   },
   "modeHeading": "모드",
   "mode": {

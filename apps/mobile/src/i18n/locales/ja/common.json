@@ -131,7 +131,11 @@
     "locPermTitle": "位置情報へのアクセスが必要です",
     "locPermSettings": "設定 → Hilads → 位置情報 で位置情報を有効にしてください。",
     "locNeededTitle": "位置情報が必要です",
-    "locNeededBody": "今いる場所をシェアするには位置情報へのアクセスを許可してください。"
+    "locNeededBody": "今いる場所をシェアするには位置情報へのアクセスを許可してください。",
+    "placeholderCity": "街にあいさつしよう 👋",
+    "placeholderHangout": "参加するって伝えよう 🙌",
+    "placeholderEvent": "参加者と話そう 🎉",
+    "placeholderChallenge": "応援したり、コツを共有しよう 🔥"
   },
   "modeHeading": "モード",
   "mode": {

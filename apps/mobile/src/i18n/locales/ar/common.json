@@ -131,7 +131,11 @@
     "locPermTitle": "الوصول إلى الموقع مطلوب",
     "locPermSettings": "يُرجى تفعيل الموقع في الإعدادات ← Hilads ← الموقع.",
     "locNeededTitle": "الموقع مطلوب",
-    "locNeededBody": "اسمح بالوصول إلى الموقع لمشاركة مكانك."
+    "locNeededBody": "اسمح بالوصول إلى الموقع لمشاركة مكانك.",
+    "placeholderCity": "ألقِ التحيّة على مدينتك 👋",
+    "placeholderHangout": "أخبرهم أنك معهم 🙌",
+    "placeholderEvent": "تحدّث مع الحاضرين 🎉",
+    "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥"
   },
   "modeHeading": "الوضع",
   "mode": {

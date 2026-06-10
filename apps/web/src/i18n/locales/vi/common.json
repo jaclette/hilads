@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "Thêm tệp đính kèm",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderCity": "Chào thành phố của bạn 👋",
+    "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
+    "placeholderEvent": "Trò chuyện với người tham dự 🎉",
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥"
   },
   "vibe": {
     "party": "Tiệc tùng",

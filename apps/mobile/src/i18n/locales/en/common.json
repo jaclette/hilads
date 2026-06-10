@@ -131,7 +131,11 @@
     "locPermTitle": "Location access required",
     "locPermSettings": "Please enable location in Settings → Hilads → Location.",
     "locNeededTitle": "Location needed",
-    "locNeededBody": "Allow location access to share your spot."
+    "locNeededBody": "Allow location access to share your spot.",
+    "placeholderCity": "Say hi to your city 👋",
+    "placeholderHangout": "Let them know you're in 🙌",
+    "placeholderEvent": "Chat with attendees 🎉",
+    "placeholderChallenge": "Cheer them on, or share your tip 🔥"
   },
   "modeHeading": "MODE",
   "mode": {

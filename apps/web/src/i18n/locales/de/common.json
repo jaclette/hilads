@@ -111,7 +111,11 @@
   },
   "composer": {
     "attach": "Anhang hinzufügen",
-    "emoji": "Emoji"
+    "emoji": "Emoji",
+    "placeholderCity": "Sag hallo zu deiner Stadt 👋",
+    "placeholderHangout": "Sag Bescheid, dass du dabei bist 🙌",
+    "placeholderEvent": "Chatte mit den Teilnehmern 🎉",
+    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp 🔥"
   },
   "vibe": {
     "party": "Party",
