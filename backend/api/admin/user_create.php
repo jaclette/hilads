@@ -64,6 +64,23 @@ if ($method === 'POST') {
         }
     }
 
+    // ── Resolve current_city_id from the picked home_city ─────────────────────
+    // Under MEMBERS_USE_CURRENT_CITY=on (prod), the People Here / city crew
+    // membership query reads ONLY current_city_id, not home_city. An admin-
+    // created fake with home_city='Stockholm' but current_city_id=NULL
+    // wouldn't show up in Stockholm's crew. Default the live city to the
+    // home city on Create so the fake appears immediately; the Edit page
+    // can split them later (Swede travelling in Tokyo etc.).
+    $currentCityId = null;
+    if ($homeCity !== null) {
+        foreach ($cities as $c) {
+            if (strcasecmp(trim((string) ($c['name'] ?? '')), $homeCity) === 0) {
+                $currentCityId = 'city_' . $c['id'];
+                break;
+            }
+        }
+    }
+
     // ── Create user ───────────────────────────────────────────────────────────
     if (empty($errors)) {
         try {
@@ -72,6 +89,7 @@ if ($method === 'POST') {
                 'email'             => $email,
                 'password_hash'     => password_hash($password, PASSWORD_BCRYPT),
                 'home_city'         => $homeCity,
+                'current_city_id'   => $currentCityId,
                 'vibe'              => $vibe,
                 'interests'         => json_encode($interests),
                 'birth_year'        => $birthYear,

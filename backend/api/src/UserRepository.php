@@ -150,13 +150,24 @@ class UserRepository
         $id  = bin2hex(random_bytes(16));
         $now = time();
 
+        // current_city_id is optional - admin-form CreateUser auto-derives it
+        // from the picked home_city so the fake appears in that city's crew
+        // immediately under the MEMBERS_USE_CURRENT_CITY=on rule. The
+        // current_city_set_at + current_city_last_confirmed_at timestamps
+        // are populated to "now" so the two-signal transition rule treats
+        // the placement as already-confirmed rather than a fresh GPS hint.
+        $currentCityId = $data['current_city_id'] ?? null;
+
         $stmt = Database::pdo()->prepare('
             INSERT INTO users
                 (id, email, password_hash, display_name, birth_year,
                  profile_photo_url, home_city, interests, vibe, is_fake, is_verified,
+                 current_city_id, current_city_set_at, current_city_last_confirmed_at,
                  created_at, updated_at)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false, ?, ?)
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false,
+                 ?, ?, ?,
+                 ?, ?)
         ');
 
         try {
@@ -171,6 +182,9 @@ class UserRepository
                 $data['interests']         ?? '[]',
                 $data['vibe']              ?? 'chill',
                 $data['is_fake']           ?? 0,
+                $currentCityId,
+                $currentCityId !== null ? date('c', $now) : null,
+                $currentCityId !== null ? date('c', $now) : null,
                 $now,
                 $now,
             ]);
