@@ -160,12 +160,12 @@ class UserRepository
 
         $stmt = Database::pdo()->prepare('
             INSERT INTO users
-                (id, email, password_hash, display_name, birth_year,
+                (id, email, password_hash, username, display_name, birth_year,
                  profile_photo_url, home_city, interests, vibe, is_fake, is_verified,
                  current_city_id, current_city_set_at, current_city_last_confirmed_at,
                  created_at, updated_at)
             VALUES
-                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false,
+                (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, false,
                  ?, ?, ?,
                  ?, ?)
         ');
@@ -175,6 +175,7 @@ class UserRepository
                 $id,
                 $data['email']             ?? null,
                 $data['password_hash']     ?? null,
+                $data['username']          ?? null,
                 $data['display_name'],
                 $data['birth_year']        ?? null,
                 $data['profile_photo_url'] ?? null,
@@ -192,7 +193,13 @@ class UserRepository
                 $now,
             ]);
         } catch (\PDOException $e) {
+            // SQLSTATE 23xxx = integrity constraint violation. Distinguish
+            // username vs email collisions so the form can surface the right
+            // error to the admin (mirrors the regular create() path above).
             if (str_starts_with((string) $e->getCode(), '23')) {
+                if (stripos($e->getMessage(), 'username') !== false) {
+                    throw new \RuntimeException('username_taken');
+                }
                 throw new \RuntimeException('email_already_exists');
             }
             throw $e;

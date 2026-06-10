@@ -20,6 +20,7 @@ if ($method === 'POST') {
     csrf_verify();
 
     $displayName  = mb_substr(trim($post['display_name'] ?? ''), 0, 40);
+    $usernameRaw  = trim($post['username'] ?? '');
     $email        = strtolower(trim($post['email'] ?? ''));
     $password     = $post['password'] ?? '';
     $homeCity     = trim($post['home_city'] ?? '') ?: null;
@@ -46,6 +47,19 @@ if ($method === 'POST') {
     }
     if ($birthYear !== null && ($birthYear < 1900 || $birthYear > (int)date('Y') - 13)) {
         $errors[] = 'Invalid birth year.';
+    }
+
+    // ── Username: explicit value validated; blank auto-generated post-checks ──
+    $username = null;
+    if ($usernameRaw !== '') {
+        $usernameError = UsernameService::validate($usernameRaw);
+        if ($usernameError !== null) {
+            $errors[] = $usernameError . '.';
+        } elseif (!UsernameService::isAvailable($usernameRaw)) {
+            $errors[] = 'That username is already taken.';
+        } else {
+            $username = UsernameService::normalize($usernameRaw);
+        }
     }
 
     // Email uniqueness
@@ -81,11 +95,17 @@ if ($method === 'POST') {
         }
     }
 
+    // Auto-generate a unique handle from display name when admin left blank.
+    if (empty($errors) && $username === null) {
+        $username = UsernameService::generateUnique($displayName);
+    }
+
     // ── Create user ───────────────────────────────────────────────────────────
     if (empty($errors)) {
         try {
             $user = UserRepository::adminCreate([
                 'display_name'      => $displayName,
+                'username'          => $username,
                 'email'             => $email,
                 'password_hash'     => password_hash($password, PASSWORD_BCRYPT),
                 'home_city'         => $homeCity,
@@ -101,6 +121,8 @@ if ($method === 'POST') {
         } catch (\RuntimeException $e) {
             if ($e->getMessage() === 'email_already_exists') {
                 $errors[] = 'An account with this email already exists.';
+            } elseif ($e->getMessage() === 'username_taken') {
+                $errors[] = 'That username is already taken.';
             } else {
                 throw $e;
             }
@@ -172,6 +194,15 @@ admin_nav('/admin/users');
                    value="<?= htmlspecialchars($post['display_name'] ?? '', ENT_QUOTES) ?>"
                    placeholder="e.g. Sophie M.">
             <div class="hint">Max 40 characters.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" maxlength="20"
+                   value="<?= htmlspecialchars($post['username'] ?? '', ENT_QUOTES) ?>"
+                   placeholder="auto-generated from display name if blank"
+                   pattern="[a-zA-Z0-9_]+" autocapitalize="off" autocomplete="off">
+            <div class="hint">3-20 chars, a-z 0-9 _ only. Leave blank to auto-generate a unique handle from the display name.</div>
         </div>
 
         <div class="form-group">
