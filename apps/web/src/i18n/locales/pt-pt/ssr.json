@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Não estás só de passagem. Torna-te local em qualquer cidade — cada challenge, cada encontro, cada sítio conquista o teu lugar. Em tempo real, sem registo.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Não estás só de passagem. Torna-te local em qualquer cidade - cada challenge, cada encontro, cada sítio conquista o teu lugar. Em tempo real, sem registo.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads transforma qualquer cidade num lugar onde te podes tornar local. Lança challenges, junta-te a meetups, encontra hangouts, descobre Local Events — cada passo conquista o teu lugar. Em tempo real, sem registo.",
+    "intro": "Hilads transforma qualquer cidade num lugar onde te podes tornar local. Lança challenges, junta-te a meetups, encontra hangouts, descobre Local Events - cada passo conquista o teu lugar. Em tempo real, sem registo.",
     "aboutHeading": "Como funciona a Hilads",
-    "aboutBody": "Escolhe a tua cidade. Lança um challenge para locais ou viajantes, junta-te a um meetup, encontra um hangout, ou descobre Local Events. Quanto mais constróis aqui, mais local te tornas — e mais sobes em Most Local.",
+    "aboutBody": "Escolhe a tua cidade. Lança um challenge para locais ou viajantes, junta-te a um meetup, encontra um hangout, ou descobre Local Events. Quanto mais constróis aqui, mais local te tornas - e mais sobes em Most Local.",
     "citiesCta": "Explorar todas as cidades da Hilads",
     "subhead": "🔥 Torna-te local em qualquer cidade que visites."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "tudo o resto que está a acontecer em {city}"
   },
   "city": {
-    "title": "Torna-te local em {city} — Hilads",
+    "title": "Torna-te local em {city} - Hilads",
     "descHigh": "Torna-te local em {city}: {count}+ Local Events esta semana, mais challenges, meetups e hangouts. Chat ao vivo com quem está online. Sem registo.",
     "descMid": "Torna-te local em {city}: entra num meetup esta noite, lança um challenge ou cai num hangout. Chat ao vivo com quem está online. Sem registo.",
     "descLow": "Torna-te local em {city}: lança um challenge, vê quem está online ou começa um hangout. Chat ao vivo, Local Events, atividade em tempo real. Sem registo.",

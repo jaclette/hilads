@@ -2982,7 +2982,7 @@ export default function App() {
     setShowNotifications(false)
     setViewingProfile(null)
     dismissFullPageOverlays()
-    // Optional filter pre-selection — callers can pass 'challenges',
+    // Optional filter pre-selection - callers can pass 'challenges',
     // 'events', or 'topics' to land the user on a specific bucket
     // (e.g. the city-chat activity pills route here pre-filtered).
     // Anything else (incl. no arg) keeps the current selector.
@@ -3628,7 +3628,7 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current, t)
 
-  // City composer placeholder — single brand-aligned string, no rotation.
+  // City composer placeholder - single brand-aligned string, no rotation.
   const cityComposerPlaceholder = t('composer.placeholderCity', { ns: 'common' })
 
   // Inject a new-event message when events array grows (real-time event added).
@@ -3638,7 +3638,7 @@ export default function App() {
       prevEventCountRef.current = events.length
       return
     }
-    // Event pills no longer fan into the chat feed — they're folded
+    // Event pills no longer fan into the chat feed - they're folded
     // into the single persistent city-activity counter above the
     // messages list. We still track the count so the counter ticks
     // up in real time when a fresh event lands.
@@ -3654,12 +3654,12 @@ export default function App() {
       prevChallengeCountRef.current = cityChallenges.length
       return
     }
-    // Challenge pills no longer fan into the chat feed — see the
+    // Challenge pills no longer fan into the chat feed - see the
     // events branch above. Count is read live by the activity pill.
     prevChallengeCountRef.current = cityChallenges.length
   }, [cityChallenges]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Topic / hangout pills no longer fan into the chat feed — folded
+  // Topic / hangout pills no longer fan into the chat feed - folded
   // into the single persistent city-activity counter above the
   // messages list. The `topics` state is still kept so the counter
   // can read its length and the rest of the app (NOW feed, hangouts
@@ -4249,11 +4249,11 @@ export default function App() {
           }}
         />
 
-        {/* City-activity pills — one per content type. Each tap routes
+        {/* City-activity pills - one per content type. Each tap routes
             to NOW pre-filtered (challenges or events). Hidden when zero
             of that type so each pill only appears when there's
             something to surface. Hangouts no longer get their own
-            pill — per spec only events + challenges split out. */}
+            pill - per spec only events + challenges split out. */}
         {(cityChallenges.length + events.length) > 0 && (
           <div className="city-activity-pill-row">
             {cityChallenges.length > 0 && (
@@ -5832,14 +5832,14 @@ export default function App() {
             // Local state reset must run SYNCHRONOUSLY so the UI transitions
             // out of the profile screen immediately on click. The previous
             // version awaited authLogout() + unregisterPush() before any
-            // setState — if those network calls hung (slow backend, offline
+            // setState - if those network calls hung (slow backend, offline
             // device, push API stuck), the UI froze on the profile screen
             // for as long as the request took (or forever, on hang). What
             // the user saw was "Sign Out does nothing".
             //
             // The WS disconnect still runs synchronously (it's just a
             // .close() call, doesn't hit the network). The push + auth
-            // cleanups fire-and-forget in parallel — the cookie stays
+            // cleanups fire-and-forget in parallel - the cookie stays
             // alive for a moment but the next request hits 401 anyway,
             // and the next mount lands on LandingPage either way.
             socketRef.current?.disconnect()
@@ -5863,7 +5863,7 @@ export default function App() {
           }}
           onDeleteAccount={() => {
             // Account is already soft-deleted + session cleared by the API.
-            // Mirror the same client-side teardown as Sign out — including
+            // Mirror the same client-side teardown as Sign out - including
             // the sync state reset so the UI doesn't freeze on the profile
             // screen if push unregistration hangs.
             track('account_deleted')
@@ -6334,7 +6334,7 @@ export default function App() {
             // KEEP activeChallenge set so the challenge view stays mounted
             // underneath the guest-gate overlay (.full-page z-index:200).
             // After successful auth the gate closes and the user lands
-            // right back on the originating challenge — no extra return-
+            // right back on the originating challenge - no extra return-
             // path plumbing needed; the challenge was always there.
             setGuestGate({ reason })
           }}
@@ -6494,7 +6494,7 @@ export default function App() {
 
       {/* First-time guest onboarding carousel (also re-openable via header "?").
           The 4th screen has three CTAs that App-side state setters wire to
-          the relevant destinations — no router on web, so we hand the
+          the relevant destinations - no router on web, so we hand the
           component callbacks instead of routes. */}
       {showOnboarding && (
         <OnboardingCarousel

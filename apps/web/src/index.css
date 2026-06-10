@@ -1963,7 +1963,7 @@ html, body, #root {
   font-weight: 500;
 }
 
-/* Profile monthly rank — two-line block tucked between identity header
+/* Profile monthly rank - two-line block tucked between identity header
    and mode selector on /me, and between hero pill + about-me on the
    public profile. Same shape both surfaces so the visual reads
    identically. */
@@ -4353,7 +4353,7 @@ html, body, #root {
   gap: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-/* "📸 Photo" badge — local + photo_proof variant. Cool blue tint so
+/* "📸 Photo" badge - local + photo_proof variant. Cool blue tint so
    scrollers can spot the lower-friction-but-no-Meet-bonus path. Meet
    stays unbadged because it's the default; international rows use the
    flag pill above instead. */
@@ -4369,7 +4369,7 @@ html, body, #root {
   padding: 3px 10px;
 }
 
-/* "⏳ In progress" pill — third badge on the kind+audience row when
+/* "⏳ In progress" pill - third badge on the kind+audience row when
    a non-terminal acceptance is active. Amber tint so it reads as
    "actively in motion" without competing with the brand-orange
    take-on CTAs or the green available/validated pills. */
@@ -6360,7 +6360,7 @@ img.pub-profile-avatar {
 /* Type emoji sits to the left of the marquee at its natural width
    so the marquee only clips the title text, not the icon. */
 .er-title-emoji { flex: 0 0 auto; }
-/* Marquee clip window — takes the remaining row width inside .er-title. */
+/* Marquee clip window - takes the remaining row width inside .er-title. */
 .er-title-marquee { flex: 1 1 auto; min-width: 0; }
 
 .er-going {
@@ -6487,7 +6487,7 @@ img.pub-profile-avatar {
   font-style: italic;
 }
 
-/* City-activity counter pills — one row, up to two pills (challenges
+/* City-activity counter pills - one row, up to two pills (challenges
    + events). Each pill routes to the NOW drawer with a pre-applied
    filter. Replaces the noisy event / hangout / challenge cards that
    used to fan into the feed and auto-dismiss. */
@@ -6532,7 +6532,7 @@ img.pub-profile-avatar {
   flex-shrink: 0;
 }
 
-/* Guest welcome — sits at the same spot as the intro banner but
+/* Guest welcome - sits at the same spot as the intro banner but
    shows only for guests on public channels. Two-line copy (welcome
    + sign-up CTA) so the visual height is slightly taller; same warm
    ring + orange CTA so guests recognise it as the action surface. */
@@ -6580,7 +6580,7 @@ img.pub-profile-avatar {
 }
 .challenge-guest-welcome-close:hover { color: var(--text); }
 
-/* "Learn how challenges work" banner — slim row above the chat feed
+/* "Learn how challenges work" banner - slim row above the chat feed
    on a challenge channel. Mirrors the city-chat prompt visual so the
    two surfaces read as the same affordance. */
 .challenge-intro-banner {
@@ -11656,7 +11656,7 @@ body.has-app-promo-banner .page-header {
 }
 .onboarding-signup-link:hover { color: var(--text); }
 
-/* Screen 2 — three-tool list. Vertically stacked, left-aligned for
+/* Screen 2 - three-tool list. Vertically stacked, left-aligned for
    readability inside the centered slide. */
 .onboarding-tool-list {
   list-style: none;
@@ -11675,7 +11675,7 @@ body.has-app-promo-banner .page-header {
   color: var(--text);
 }
 
-/* Screen 4 — three CTAs stacked vertically. The first two carry brand
+/* Screen 4 - three CTAs stacked vertically. The first two carry brand
    weight (accent fill); the third is muted so "Just look around" reads
    as a no-commitment alternative without disappearing entirely. */
 .onboarding-cta-stack {
@@ -11872,7 +11872,7 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(34, 197, 94, 0.25);
   color: #4ade80;
 }
-/* "⏳ In progress" — amber tint matches the native mobile pill. There IS
+/* "⏳ In progress" - amber tint matches the native mobile pill. There IS
    an earlier .challenge-badge--in-progress definition further up the file
    (line ~4376), but the generic .challenge-badge baseline defined right
    above THIS block lands later in the cascade with the same specificity,
@@ -11973,7 +11973,7 @@ body.has-app-promo-banner .page-header {
   text-align: center;
 }
 
-/* Meet-bonus chip — fades in below the validation-method cards when
+/* Meet-bonus chip - fades in below the validation-method cards when
    Meet is selected. Amber treatment matches the in-progress badge on
    the versus card + the Meet bonus row in the celebration popin. */
 .cef-bonus-chip {
@@ -12110,7 +12110,7 @@ body.has-app-promo-banner .page-header {
   pointer-events: none;  /* arrow / trophy is decorative, not tappable */
 }
 /* Per-avatar tap target. Keeps the card's onClick from being overridden by
-   the avatar's own button — modern browsers stop propagation by default
+   the avatar's own button - modern browsers stop propagation by default
    when an inner button is clicked, no extra wiring needed. */
 .challenge-versus-avatar-btn {
   background: transparent;
@@ -12133,7 +12133,7 @@ body.has-app-promo-banner .page-header {
   padding:          0;
   animation:        open-slot-pulse 2.4s ease-in-out infinite;
   /* The component sets animation-play-state inline based on viewport
-     intersection — declared here as the resting default. */
+     intersection - declared here as the resting default. */
   animation-play-state: running;
 }
 .open-challenge-slot:hover {
@@ -12155,7 +12155,7 @@ body.has-app-promo-banner .page-header {
   .open-challenge-slot { animation: none !important; }
 }
 
-/* Fresh taker arrival — soft fade + scale on the right-side avatar when
+/* Fresh taker arrival - soft fade + scale on the right-side avatar when
    a Challenge prop with acceptor_user_id changes. Component sets a key
    on the wrapping element so React unmounts + remounts, retriggering
    this entrance animation. */
@@ -12177,7 +12177,7 @@ body.has-app-promo-banner .page-header {
    medal effect.
 
    The badge is rendered absolutely-positioned by the parent versus card
-   (.challenge-versus-rank-anchor) — these rules define the disc itself,
+   (.challenge-versus-rank-anchor) - these rules define the disc itself,
    independent of where it lives. */
 .rank-badge {
   display:          inline-flex;
@@ -12194,7 +12194,7 @@ body.has-app-promo-banner .page-header {
   line-height:      1;
 }
 
-/* Tier 1 — podium. Gradient stops aligned with the universally-read
+/* Tier 1 - podium. Gradient stops aligned with the universally-read
    gold/silver/bronze palette so users don't need to learn a new
    vocabulary. End stop slightly darker than start so the disc reads
    as 3D. Number colour is a dark tint of the same hue so it stays
@@ -12214,7 +12214,7 @@ body.has-app-promo-banner .page-header {
 }
 .rank-badge--podium-3 .rank-badge-number { color: #3A1F0A; }
 
-/* Top-left highlight on podium discs — a near-white slice that reads
+/* Top-left highlight on podium discs - a near-white slice that reads
    as a specular reflection on the metal. Pure decoration. */
 .rank-badge-sheen {
   position:     absolute;
@@ -12222,7 +12222,7 @@ body.has-app-promo-banner .page-header {
   pointer-events: none;
 }
 
-/* Tier 2 — neutral pill. Dark surface + accent-orange thin border, no
+/* Tier 2 - neutral pill. Dark surface + accent-orange thin border, no
    gradient, no glow. Intentionally one tier "down" from the podium so
    the eye reads the hierarchy at a glance. */
 .rank-badge--neutral {
@@ -13953,7 +13953,7 @@ body.has-app-promo-banner .page-header {
   margin-top: 2px;
 }
 
-/* Meet bonus tile — same shape as a regular event row but amber instead
+/* Meet bonus tile - same shape as a regular event row but amber instead
    of orange, so the "+50 Meet bonus" reads as a distinct extra reward
    rather than another step of the base payout. */
 .score-celebration-event--bonus {

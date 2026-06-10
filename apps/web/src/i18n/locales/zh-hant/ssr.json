@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "你不只是路過，在任何城市都能成為在地人 — 每個 challenge、每次見面、每個地方都為你贏得位置。即時，無需註冊。",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "你不只是路過，在任何城市都能成為在地人 - 每個 challenge、每次見面、每個地方都為你贏得位置。即時，無需註冊。",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads 把任何城市都變成你可以成為在地人的地方。參與 challenge、加入 meetup、找到 hangout、發現 Local Events — 每一步都為你贏得位置。即時，無需註冊。",
+    "intro": "Hilads 把任何城市都變成你可以成為在地人的地方。參與 challenge、加入 meetup、找到 hangout、發現 Local Events - 每一步都為你贏得位置。即時，無需註冊。",
     "aboutHeading": "Hilads 怎麼用",
-    "aboutBody": "選好你的城市。為在地人或旅行者發起一個 challenge、加入一個 meetup、找到一個 hangout，或發現 Local Events。在這裡建立越多，你就越在地 — 在 Most Local 上爬得越高。",
+    "aboutBody": "選好你的城市。為在地人或旅行者發起一個 challenge、加入一個 meetup、找到一個 hangout，或發現 Local Events。在這裡建立越多，你就越在地 - 在 Most Local 上爬得越高。",
     "citiesCta": "瀏覽所有 Hilads 城市",
     "subhead": "🔥 在你造訪的每一座城市成為在地人。"
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "{city} 正在發生的其他一切"
   },
   "city": {
-    "title": "在 {city} 成為在地人 — Hilads",
+    "title": "在 {city} 成為在地人 - Hilads",
     "descHigh": "在 {city} 成為在地人：本週 {count}+ Local Events，還有 challenges、meetups 和 hangouts。和正線上的人即時聊天。無需註冊。",
     "descMid": "在 {city} 成為在地人：今晚加入 meetup、發起 challenge，或進入一個 hangout。和正線上的人即時聊天。無需註冊。",
     "descLow": "在 {city} 成為在地人：發起 challenge、看看誰在線、開一個 hangout。即時聊天、Local Events、即時活動。無需註冊。",

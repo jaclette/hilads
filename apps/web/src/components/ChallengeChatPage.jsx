@@ -156,19 +156,19 @@ export default function ChallengeChatPage({
   const [joiningChannel, setJoiningChannel] = useState(false)
   const [joinError,      setJoinError]      = useState(null)
 
-  // "Learn how challenges work" banner — same primitive the city chat
+  // "Learn how challenges work" banner - same primitive the city chat
   // surfaces from its delayed feed prompt. Mounted here too so a user
   // who lands straight on a challenge (deeplink, push, share) can still
   // learn the rules without backtracking. Appears 8 s after entering
   // the channel, dismissed on × or after tap-to-open.
   const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false)
-  // Guest welcome banner — fires on entry for any unauthenticated
+  // Guest welcome banner - fires on entry for any unauthenticated
   // viewer of a public channel. Replaces the intro banner for that
   // audience so the entry surface has one focused CTA. Dismissed
   // per-session via × or by tapping into the auth flow.
   const [showGuestWelcome, setShowGuestWelcome] = useState(true)
   // `id` is needed by the useEffect dep array below, so it must be
-  // declared before the effect — the dep array evaluates at render
+  // declared before the effect - the dep array evaluates at render
   // time and a `const` declared later would TDZ on every mount
   // (this exact pattern was crashing the page with "Cannot access
   // 'ke' before initialization" because the bundler inlined the
@@ -219,7 +219,7 @@ export default function ChallengeChatPage({
   // mis-label the origin city as the target.
   const [targetCityNameOnly,     setTargetCityNameOnly]     = useState(null)
 
-  // `id` was moved up — it has to be declared before the useEffect
+  // `id` was moved up - it has to be declared before the useEffect
   // that depends on it (see the "Cannot access 'ke' before
   // initialization" fix above). Don't redeclare it here.
 
@@ -241,7 +241,7 @@ export default function ChallengeChatPage({
     (guest?.guestId && participants.some(p => p.id === guest.guestId))
   )
 
-  // Public channels are open to anyone — guests included. The chat surface
+  // Public channels are open to anyone - guests included. The chat surface
   // renders inline regardless of iAmParticipant; the participation gate
   // below only applies to friends / private rows (which surface a small
   // lock state in place of the conversation). Defaulting to 'public' on
@@ -253,7 +253,7 @@ export default function ChallengeChatPage({
   // server-side). Local challenges where the creator picked photo at
   // creation use the same submission UI + creator review modal. Older
   // rows that never carried validation_method get 'meet' from the
-  // backend formatter default — historical IRL flow stays the same.
+  // backend formatter default - historical IRL flow stays the same.
   const usesPhotoProof =
     (challenge?.mode ?? 'local') === 'international'
     || (challenge?.validation_method ?? 'meet') === 'photo_proof'
@@ -540,7 +540,7 @@ export default function ChallengeChatPage({
     const content = composer.trim()
     if (!content || sending || !id) return
     // Guest-aware sender identity. Public channels accept anyone with a
-    // (guestId, nickname) tuple — same model city channels use. Friends/
+    // (guestId, nickname) tuple - same model city channels use. Friends/
     // private (where canRead is false above) never render the composer
     // for non-members, so we don't need to extra-guard here.
     const senderId       = account?.id ?? guest?.guestId ?? null
@@ -702,7 +702,7 @@ export default function ChallengeChatPage({
   )
   const otherParticipants = participants.filter(p => p !== creator)
 
-  // Active taker — derived from challenge.acceptor_user_id so it stays
+  // Active taker - derived from challenge.acceptor_user_id so it stays
   // accurate after a finished round. The previous taker often lingers
   // in `participants` (they joined the channel), so otherParticipants[0]
   // would surface their TAKER pill even after the LATERAL slot was
@@ -1142,7 +1142,7 @@ export default function ChallengeChatPage({
       {/* Non-public + non-participant → conversation is locked. No CTA,
           no join step: friends/private channels are tied to creator +
           taker only, so anyone else just sees a short explainer in
-          place of the chat. Public channels never render this — the
+          place of the chat. Public channels never render this - the
           chat below mounts directly for anyone. */}
       {!challengeIsPublic && iAmParticipant === false && (
         <div className="challenge-join-gate">
@@ -1158,7 +1158,7 @@ export default function ChallengeChatPage({
           server-side gated either way. */}
       {(challengeIsPublic || iAmParticipant === true) && (
       <>
-          {/* Guest welcome — fires on entry for any unauthenticated
+          {/* Guest welcome - fires on entry for any unauthenticated
               viewer. Two-line: "chat free, no sign-up" + a direct
               sign-up CTA that routes through the existing onNeedAuth
               gate, keeping the activeChallenge mounted underneath so
@@ -1174,7 +1174,7 @@ export default function ChallengeChatPage({
                 }}
               >
                 <span className="challenge-guest-welcome-text">
-                  {t('welcomeGuest.title', { defaultValue: '👋 Welcome! Chat freely here — no sign-up needed.' })}
+                  {t('welcomeGuest.title', { defaultValue: '👋 Welcome! Chat freely here - no sign-up needed.' })}
                 </span>
                 <span className="challenge-guest-welcome-cta">
                   {t('welcomeGuest.cta', { defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
@@ -1191,11 +1191,11 @@ export default function ChallengeChatPage({
             </div>
           ) : null}
 
-          {/* "Learn how challenges work" banner — same primitive as the
+          {/* "Learn how challenges work" banner - same primitive as the
               city chat. Sits above the feed (not inside it) so the
               chat's scroll behaviour is untouched. Tap → opens the
               shared carousel mounted at App level; × → dismiss.
-              Hidden for guests — the welcome banner above is their
+              Hidden for guests - the welcome banner above is their
               single CTA on entry. */}
           {account?.id && showChallengeIntroBanner && (
             <div className="challenge-intro-banner">
@@ -1576,7 +1576,7 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* Creator's "Review the proof" modal — intl + local-with-photo. */}
+      {/* Creator's "Review the proof" modal - intl + local-with-photo. */}
       {usesPhotoProof && isOwner && activeAcceptance && (
         <ProofReviewModal
           visible={proofReviewOpen}

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Trở thành người địa phương ở {{city}} — Hilads",
+    "cityTitle": "Trở thành người địa phương ở {{city}} - Hilads",
     "cityDesc": "Trở thành người địa phương ở {{city}}: tham gia challenge, gặp gỡ ở meetup, tham gia hangout, khám phá Local Events. Chat trực tiếp với người đang online.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Tham gia {{title}} trên Hilads — một Local Event đang diễn ra. Xem ai đến và chat trực tiếp."
+    "eventDesc": "Tham gia {{title}} trên Hilads - một Local Event đang diễn ra. Xem ai đến và chat trực tiếp."
   },
   "nowTitle": "Bây giờ",
   "filterEvents": "🎉 Local Events",
@@ -25,13 +25,13 @@
     "fallbackCity": "thành phố của bạn",
     "slide1": {
       "title": "Become local. Anywhere.",
-      "body": "Hilads là app biến du khách thành người địa phương — và giúp người địa phương chia sẻ những gì làm thành phố của họ sống động."
+      "body": "Hilads là app biến du khách thành người địa phương - và giúp người địa phương chia sẻ những gì làm thành phố của họ sống động."
     },
     "slide2": {
       "title": "Ba cách sống thành phố",
-      "itemChallenges": "🤝 Challenges — thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
-      "itemHangouts": "🎉 Hangouts — buổi gặp gỡ thoải mái khi bạn muốn. Cà phê, bia rượu, đi dạo, gì cũng được.",
-      "itemEvents": "📍 Local Events — những khoảnh khắc lớn hơn do cộng đồng tổ chức."
+      "itemChallenges": "🤝 Challenges - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
+      "itemHangouts": "🎉 Hangouts - buổi gặp gỡ thoải mái khi bạn muốn. Cà phê, bia rượu, đi dạo, gì cũng được.",
+      "itemEvents": "📍 Local Events - những khoảnh khắc lớn hơn do cộng đồng tổ chức."
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
@@ -48,7 +48,7 @@
     "title": "Thử thách hoạt động thế nào",
     "slide1": {
       "title": "Thử thách biến chuyến đi thành câu chuyện",
-      "body": "Người dân địa phương và du khách thách nhau để chia sẻ thành phố thật sự - đồ ăn, địa điểm, văn hoá, giúp đỡ. Phần thưởng? Gặp mặt trực tiếp — hoặc gửi chứng minh từ xa."
+      "body": "Người dân địa phương và du khách thách nhau để chia sẻ thành phố thật sự - đồ ăn, địa điểm, văn hoá, giúp đỡ. Phần thưởng? Gặp mặt trực tiếp - hoặc gửi chứng minh từ xa."
     },
     "slide2": {
       "title": "Tung thử thách của bạn",
@@ -75,7 +75,7 @@
     },
     "slide7": {
       "title": "Trở thành người địa phương nhất",
-      "body": "Mỗi challenge đều có điểm — cả thành phố lẫn toàn cầu. Gặp mặt trực tiếp được thêm +50 thưởng. Người địa phương hay du khách, điều quan trọng là bạn xây dựng gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
+      "body": "Mỗi challenge đều có điểm - cả thành phố lẫn toàn cầu. Gặp mặt trực tiếp được thêm +50 thưởng. Người địa phương hay du khách, điều quan trọng là bạn xây dựng gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
     },
     "createCta": "🔥 Tạo thử thách"
   },

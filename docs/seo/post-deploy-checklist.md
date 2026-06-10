@@ -6,7 +6,7 @@ Use this every time we ship a copy/structure change that affects how Google sees
 
 - [ ] Web build is green: `cd apps/web && npx vite build`.
 - [ ] No new TS errors in mobile: `cd apps/mobile && npx tsc --noEmit` (baseline error count must not grow).
-- [ ] Spot-check the new strings render in EN + at least one non-Latin locale (ja or ar) — open `dist/index.html` or the Vercel preview URL.
+- [ ] Spot-check the new strings render in EN + at least one non-Latin locale (ja or ar) - open `dist/index.html` or the Vercel preview URL.
 - [ ] If structured data changed, validate it: paste the rendered HTML for `https://hilads.live/` and `https://hilads.live/city/ho-chi-minh-city` into Google's [Rich Results Test](https://search.google.com/test/rich-results).
 
 ## 1. After Vercel deploy lands (T+0)
@@ -14,9 +14,9 @@ Use this every time we ship a copy/structure change that affects how Google sees
 Vercel prerender is request-time, so updated copy is served on the next request. CDN cache (`s-maxage=3600`) means crawlers may still see stale strings for up to **1 hour** post-deploy.
 
 - [ ] Confirm the deploy succeeded in the Vercel dashboard.
-- [ ] In an incognito window, hit `https://hilads.live/` and view source — verify the new `<title>`, `<meta name="description">`, and OG/Twitter tags landed.
+- [ ] In an incognito window, hit `https://hilads.live/` and view source - verify the new `<title>`, `<meta name="description">`, and OG/Twitter tags landed.
 - [ ] Repeat for one city page: `https://hilads.live/city/ho-chi-minh-city`.
-- [ ] (Optional) Force the CDN to refresh sooner by triggering an empty Vercel redeploy (no-op commit or "Redeploy" button) — cold-start invalidates the shell cache used by `prerender.mjs`.
+- [ ] (Optional) Force the CDN to refresh sooner by triggering an empty Vercel redeploy (no-op commit or "Redeploy" button) - cold-start invalidates the shell cache used by `prerender.mjs`.
 
 ## 2. Submit the sitemap (T+1h)
 
@@ -35,12 +35,12 @@ It includes the home, all city pages, all event detail pages, and all challenge 
 
 ## 3. Request indexing for high-priority URLs (T+1h)
 
-GSC's URL Inspection lets us nudge Google to re-crawl specific URLs sooner than its natural cadence (typically days to weeks). Use this sparingly — Google quotas around 10 requests/day.
+GSC's URL Inspection lets us nudge Google to re-crawl specific URLs sooner than its natural cadence (typically days to weeks). Use this sparingly - Google quotas around 10 requests/day.
 
 Submit for re-indexing:
 
-- [ ] `https://hilads.live/` (home — highest traffic + brand panel)
-- [ ] Top city pages (pick 3–5 based on current traffic — check Search Console → Performance → Pages for the leaders before this PR):
+- [ ] `https://hilads.live/` (home - highest traffic + brand panel)
+- [ ] Top city pages (pick 3–5 based on current traffic - check Search Console → Performance → Pages for the leaders before this PR):
   - [ ] `https://hilads.live/city/ho-chi-minh-city`
   - [ ] `https://hilads.live/city/paris`
   - [ ] `https://hilads.live/city/tokyo`
@@ -49,25 +49,25 @@ Submit for re-indexing:
 
 For each: paste the URL in the GSC URL Inspection bar → **Test live URL** → confirm "Page is available to Google" → **Request indexing**.
 
-## 4. Day 7 — coverage + early signals
+## 4. Day 7 - coverage + early signals
 
 After 7 days, expect Google to have re-crawled the home + top city pages at minimum.
 
 - [ ] **Coverage report** (GSC → Indexing → Pages): no spike in "Crawled - currently not indexed" or "Discovered - currently not indexed" on the changed pages.
-- [ ] **Page indexing → All known pages**: total indexed count is stable or growing (a drop of more than 5% across 7 days is a yellow flag — investigate which URLs dropped out).
+- [ ] **Page indexing → All known pages**: total indexed count is stable or growing (a drop of more than 5% across 7 days is a yellow flag - investigate which URLs dropped out).
 - [ ] **Rich results report** (GSC → Enhancements): the new `TouristAttraction` and `OfferCatalog` types should appear with 0 errors and 0 warnings. Errors here = structured data is malformed and Google may ignore it.
 - [ ] **Search performance → Queries**: queries for "become local" or "local in [city]" should start appearing (small volume, but the existence is the signal).
 - [ ] **Search performance → Pages**: existing top pages should hold or gain impressions. A drop of more than 15% in impressions on a previously high-traffic city page is a red flag.
 
-## 5. Day 21 — full re-evaluation
+## 5. Day 21 - full re-evaluation
 
 Three weeks is enough for Google to settle on the new content and recompute the ranking signal mix.
 
 - [ ] **Search performance** (last 28 days vs. previous 28 days, "Pages" tab):
   - Total clicks: within ±10% of prior period is healthy. Drop of more than 20% = regression worth triaging.
   - Total impressions: same threshold.
-- [ ] **Queries comparison**: "become local in [city]" and "[city] local" types of queries should show up in the leaderboard. If they don't, the new title/H1 might not be getting picked up — re-check rendered HTML.
-- [ ] **CTR comparison**: the new titles emphasize "become local" rather than feature list — CTR may move (up or down). Track the delta on top 10 pages and note in this doc.
+- [ ] **Queries comparison**: "become local in [city]" and "[city] local" types of queries should show up in the leaderboard. If they don't, the new title/H1 might not be getting picked up - re-check rendered HTML.
+- [ ] **CTR comparison**: the new titles emphasize "become local" rather than feature list - CTR may move (up or down). Track the delta on top 10 pages and note in this doc.
 - [ ] **Rich snippets** (Google search "site:hilads.live"): do any city URLs surface event/offer rich snippets in SERP? If yes, the new structured data is being consumed.
 
 ## 6. Rollback criteria
@@ -86,7 +86,7 @@ If those two conditions hit, the rollback path is:
   - `copy(landing): refresh hero sub + SEO meta`
 - Revert in the OPPOSITE order to avoid leaving partial states (events rename first, then city, then home).
 - After revert: redo this checklist from step 1.
-- Don't roll back the tagline change (`copy(tagline): "Challenge the city." → "Become local. Anywhere."`) — that one's a brand decision, not an SEO experiment.
+- Don't roll back the tagline change (`copy(tagline): "Challenge the city." → "Become local. Anywhere."`) - that one's a brand decision, not an SEO experiment.
 
 ## 7. Cache-buster cheat sheet (when in doubt)
 

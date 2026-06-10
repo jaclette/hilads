@@ -1130,7 +1130,7 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_chacc_challenge ON challenge_acceptanc
 
 // Re-take after a finished round. The original `UNIQUE (challenge_id,
 // acceptor_user_id)` table-level constraint blocked any second acceptance
-// from the same user — even after both parties rated and the channel
+// from the same user - even after both parties rated and the channel
 // auto-reopened, the previous taker tapping "Take on the challenge" silently
 // no-op'd (route returned the stale terminal row + INSERT would have hit
 // the unique). Swap for a partial UNIQUE that fires only on ACTIVE phases,
@@ -1272,7 +1272,7 @@ run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS proof_geotag_tolerance_km
 // constraint on the column itself so we can flex later without a migration.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS visibility TEXT NOT NULL DEFAULT 'public'", 'channel_challenges.visibility');
 
-// PR — validation method per local challenge. International is always
+// PR - validation method per local challenge. International is always
 // 'photo_proof' (no UI choice); local creators pick at creation. The
 // default keeps every existing row on the historical Meet flow; the
 // backfill below locks international rows to photo_proof to match
@@ -1393,17 +1393,17 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS score_month_ref  TEXT",   
 // Monthly rank badges on challenge cards (Top 10 + podium for Top 3).
 // NULL = user is outside the relevant top-10; non-null = the user's
 // position (1..10). Recomputed inline by MonthlyRankService at every
-// score- or city-change route — there is no cron. Two columns because
+// score- or city-change route - there is no cron. Two columns because
 // the badge scope follows the duel scope: local challenges read in-city
 // rank, international challenges read worldwide rank. See
 // src/MonthlyRankService.php for the recalc SQL.
 //
 // Stored in users (not score_events) because reads happen on the
-// already-joined creator + acceptor rows in the Challenge DTO — no
+// already-joined creator + acceptor rows in the Challenge DTO - no
 // extra JOIN, zero egress impact on the existing list query.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_rank_in_city   INT", 'users.monthly_rank_in_city');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_rank_worldwide INT", 'users.monthly_rank_worldwide');
-// Partial indexes — only non-null rows matter (top 10 per scope),
+// Partial indexes - only non-null rows matter (top 10 per scope),
 // which is at most a few hundred users globally. Lookup by id is the
 // only access pattern at read time so we don't need a real index;
 // these are mostly here to remind ops the column is sparse.
@@ -1461,7 +1461,7 @@ run($pdo, "
         ('ghost',       'taker',       0),
         -- Meet bonus: only fires when channel_challenges.validation_method='meet'
         -- and both ratings have landed (see on_challenge_rating_insert trigger
-        -- below). Same +50 for both sides — meeting in person is the soul
+        -- below). Same +50 for both sides - meeting in person is the soul
         -- of Hilads and the leaderboard structure should reflect that.
         ('meet_bonus',  'challenger', 50),
         ('meet_bonus',  'taker',      50)
@@ -1892,7 +1892,7 @@ run($pdo, "
 //
 // Run a full recalc on every deploy as a safety net. Bounded write
 // set (top-10 + currently-non-NULL rows) keeps the cost trivial even
-// on the production data, and the function is idempotent — running it
+// on the production data, and the function is idempotent - running it
 // when the columns are already correct is a no-op.
 require_once __DIR__ . '/src/MonthlyRankService.php';
 try {

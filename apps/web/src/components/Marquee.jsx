@@ -8,7 +8,7 @@
  *   - SINGLE-COPY scroll with snap-back. ONE text element translates from 0 to
  *     -(textW - clipW + LEAD), holds at the end so the trailing words are
  *     fully readable, then snaps invisibly back to the start. NO duplicate
- *     copy and NO seamless loop — the duplicate-copy mechanism (previous
+ *     copy and NO seamless loop - the duplicate-copy mechanism (previous
  *     impl) made both copies of the text visible mid-scroll on narrow
  *     clips, which read as a constant flash. The snap-back is hidden by
  *     the edge fade.
@@ -26,7 +26,7 @@ const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
 const EPSILON = 1          // px - measurement noise threshold for re-renders
 const LEAD = 12            // px past the end so the last glyph fully clears the right fade
 // Marginal overflows (a few px) hit ellipsis instead of triggering a constant
-// scroll — without this threshold every locale whose translation crept ~1 px
+// scroll - without this threshold every locale whose translation crept ~1 px
 // over the clip would marquee forever, which read as "flashing".
 const OVERFLOW_FACTOR = 1.15
 // Per-iteration phase percentages: hold-at-start (0→18%), scroll (18→78%),

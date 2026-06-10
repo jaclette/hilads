@@ -51,7 +51,7 @@ interface MarqueeTextProps {
 }
 
 const EPSILON = 1;
-// Marginal overflows hit ellipsis instead of triggering a constant scroll —
+// Marginal overflows hit ellipsis instead of triggering a constant scroll -
 // without this threshold any locale whose translation crept ~1 px over the
 // clip would marquee forever, which read as "flashing" on the challenge-
 // intro banner. Real overflows still scroll.
@@ -98,7 +98,7 @@ export function MarqueeText({
 
   // Single-copy snap-back. Each iteration: hold at the start (initialDelay),
   // scroll one copy left so its end clears the right fade, hold at the end
-  // (END_HOLD_MS), then Animated.loop resets translateX to 0 — that reset
+  // (END_HOLD_MS), then Animated.loop resets translateX to 0 - that reset
   // is the snap, mostly masked by the right-edge fade + the next hold.
   // The previous seamless-loop variant kept both text copies on track at
   // once, which was visible on narrow clips and read as a flash.
@@ -143,7 +143,7 @@ export function MarqueeText({
 
       {shouldMarquee ? (
         <>
-          {/* Single copy — no duplicate, no inter-copy gap. The animation
+          {/* Single copy - no duplicate, no inter-copy gap. The animation
               scrolls this one Text left, holds, then snaps back. */}
           <Animated.View style={[styles.row, { transform: [{ translateX }] }]}>
             <Text style={[textStyle, styles.noShrink]} numberOfLines={1}>{text}</Text>

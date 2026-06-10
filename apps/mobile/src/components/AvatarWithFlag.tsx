@@ -25,18 +25,18 @@ import { avatarColor } from '@/lib/avatarColors';
  */
 
 export interface AvatarWithFlagProps {
-  /** Stable identifier — drives the deterministic fallback color. */
+  /** Stable identifier - drives the deterministic fallback color. */
   userId?: string | null;
-  /** Display name — falls back to "?" if missing. First char only when
+  /** Display name - falls back to "?" if missing. First char only when
    *  rendering the initial. */
   displayName?: string | null;
   /** Thumbnail URL. When null/undefined the fallback initial is drawn. */
   photoUrl?: string | null;
   /** ISO-2 country code (e.g. "VN"). Anything else suppresses the flag.
-   *  Pass the user's CURRENT-city country here — the flag is identity,
+   *  Pass the user's CURRENT-city country here - the flag is identity,
    *  not target / completion location. */
   countryCode?: string | null;
-  /** Avatar diameter in px. Default 72 — matches the versus-layout
+  /** Avatar diameter in px. Default 72 - matches the versus-layout
    *  spec (70-80 px). Flag overlay scales proportionally. */
   size?: number;
 }

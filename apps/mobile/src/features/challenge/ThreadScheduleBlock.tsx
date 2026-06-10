@@ -97,7 +97,7 @@ export function ThreadScheduleBlock({
   }
 
   // ── Render: phase='scheduled' (meetup in the future) ──────────────────────
-  // Either party can tap anywhere on the band to reschedule — the backend
+  // Either party can tap anywhere on the band to reschedule - the backend
   // flips phase back to 'accepted', clears date_approved_at, and the other
   // party re-approves the new proposal. The whole row is the touch target
   // (a 32×32 pencil button was too small to land reliably); the pencil

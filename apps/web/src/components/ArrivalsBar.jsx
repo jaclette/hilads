@@ -32,7 +32,7 @@ export function ArrivalsBar({ arrivals, onOpen, onTapUser }) {
   const [current, setCurrent] = useState(null)
 
   // Mount time in seconds (matches a.createdAt). Only arrivals stamped
-  // AFTER we mounted count as "live" — historical joins from the
+  // AFTER we mounted count as "live" - historical joins from the
   // initial fetch (or from a WS catchup batch on reconnect) get seeded
   // silently so the bar stays in its default "Recent arrivals" state
   // until somebody actually arrives in real time. The previous
@@ -44,7 +44,7 @@ export function ArrivalsBar({ arrivals, onOpen, onTapUser }) {
   // Detect new arrivals. arrivals is newest-first; walk oldest→newest so the
   // queue preserves chronological order. The createdAt threshold + dedup
   // set together guarantee historical messages never trigger the live
-  // banner — regardless of when the parent populates the list.
+  // banner - regardless of when the parent populates the list.
   useEffect(() => {
     const fresh = []
     for (let i = arrivals.length - 1; i >= 0; i--) {

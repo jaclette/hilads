@@ -47,7 +47,7 @@ export function ScoreCelebrationLaunchGate() {
   // Live re-fetch triggers. Any WS event that emits score_events
   // server-side fetches /me/score-celebration directly here and
   // surfaces the popin if there's a non-zero delta. We can't rely on
-  // the cold-start effect above re-firing — setting closed=false
+  // the cold-start effect above re-firing - setting closed=false
   // when it's already false is a React no-op and the dep change is
   // skipped. Direct fetch sidesteps that.
   //
@@ -66,7 +66,7 @@ export function ScoreCelebrationLaunchGate() {
           setData(result);
         }
       } catch {
-        // non-fatal — gate stays as-is, user can re-launch the app
+        // non-fatal - gate stays as-is, user can re-launch the app
       }
     };
     const offRating = socket.on('mutual_rating_complete', trigger);

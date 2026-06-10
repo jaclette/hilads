@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 /**
- * Image utilities — currently just avatar thumbnail generation.
+ * Image utilities - currently just avatar thumbnail generation.
  *
  * Was a free function in routes/api.php; lifted into a class so the
  * admin thumb-backfill tool (which doesn't load routes/api.php) can
  * call the same code path the upload route uses. No state, no DB,
- * no R2 — pure pixel pushing on a local filesystem.
+ * no R2 - pure pixel pushing on a local filesystem.
  */
 class ImageProcessor
 {
@@ -28,7 +28,7 @@ class ImageProcessor
      *
      * Callers MUST unlink the returned path when done with it.
      *
-     * Safe to call on any valid image — if the source is already
+     * Safe to call on any valid image - if the source is already
      * smaller than $maxDim, it is re-encoded as JPEG but not enlarged.
      */
     public static function generateAvatarThumbnail(
@@ -84,7 +84,7 @@ class ImageProcessor
             return null;
         }
 
-        // Preserve transparency for PNG sources — flatten onto white
+        // Preserve transparency for PNG sources - flatten onto white
         // because the destination is JPEG (no alpha channel).
         imagealphablending($dst, false);
         imagesavealpha($dst, true);

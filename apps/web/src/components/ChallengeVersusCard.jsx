@@ -12,13 +12,13 @@ import { Marquee } from './Marquee'
  * (or open slot), badges + title + participants row underneath.
  *
  * Four states map 1-to-1 to the spec, same as native:
- *   1. Available           — no taker → OpenChallengeSlot, pulses (paused
+ *   1. Available           - no taker → OpenChallengeSlot, pulses (paused
  *                            off-screen via IntersectionObserver inside)
- *   2. In Progress         — taker avatar fades + scales in (keyed on
+ *   2. In Progress         - taker avatar fades + scales in (keyed on
  *                            acceptor_user_id so a fresh WS acceptance
  *                            re-triggers the entrance)
- *   3. Pseudo-Available    — same visual as state 1
- *   4. Validated           — both avatars stay, → becomes 🏆 (decorative,
+ *   3. Pseudo-Available    - same visual as state 1
+ *   4. Validated           - both avatars stay, → becomes 🏆 (decorative,
  *                            non-tappable per the spec)
  *
  * Tap handling:
@@ -62,7 +62,7 @@ export default function ChallengeVersusCard({
     : c.acceptor_monthly_rank_in_city
 
   // Stop the avatar's onClick from also triggering the card's onClick.
-  // React event bubbling, not CSS pointer-events — keeps focus/keyboard
+  // React event bubbling, not CSS pointer-events - keeps focus/keyboard
   // behaviour intact (the inner button is still a real button).
   const handleAvatarClick = (userId) => (e) => {
     e.stopPropagation()
@@ -76,7 +76,7 @@ export default function ChallengeVersusCard({
       style={{ cursor: 'pointer', textAlign: 'left' }}
       onClick={onClick}
     >
-      {/* Badge row — unchanged from the previous flat card. */}
+      {/* Badge row - unchanged from the previous flat card. */}
       <div className="er-badges">
         {isInternational
           ? (() => {
@@ -101,7 +101,7 @@ export default function ChallengeVersusCard({
             </span>
           )
         })()}
-        {/* Photo proof on a local challenge — see mobile twin for the
+        {/* Photo proof on a local challenge - see mobile twin for the
             reasoning. Meet stays unbadged because it's the default. */}
         {!isInternational && c.validation_method === 'photo_proof' && (
           <span className="challenge-badge challenge-badge--photo">
@@ -116,7 +116,7 @@ export default function ChallengeVersusCard({
           // --in-progress (amber) instead of --status (brand orange).
           // The shared --status class is reused by interactive owner
           // controls elsewhere and reading "loud orange" on the NOW
-          // feed felt overstated — switched to a calmer amber that
+          // feed felt overstated - switched to a calmer amber that
           // still passes the visibility bar.
           <span className="challenge-badge challenge-badge--in-progress">
             ⏳ {t('card.inProgress')}
@@ -128,7 +128,7 @@ export default function ChallengeVersusCard({
         )}
       </div>
 
-      {/* Versus row — the hero of the card. Fixed-height; arrow / trophy
+      {/* Versus row - the hero of the card. Fixed-height; arrow / trophy
           in the middle is decorative. Each avatar slot is its own
           positioning context (.challenge-versus-avatar-stack) so the
           rank badge can absolute-anchor on top-left without leaking
@@ -210,7 +210,7 @@ export default function ChallengeVersusCard({
       </div>
 
       {/* Title + type chip. Long titles auto-scroll left through the
-          same Marquee primitive the weather pill uses — short titles
+          same Marquee primitive the weather pill uses - short titles
           render static with the usual CSS ellipsis fallback. */}
       <div className="er-header">
         <span className="er-title">

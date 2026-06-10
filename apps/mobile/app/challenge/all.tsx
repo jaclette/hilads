@@ -178,7 +178,7 @@ export default function AllChallengesScreen() {
           renderItem={({ item }) => (
             <ChallengeVersusCard
               challenge={item}
-              // Smaller list, short scroll path — leaving the pulse
+              // Smaller list, short scroll path - leaving the pulse
               // always-on here keeps the screen reading "alive" even on
               // a half-empty list. Skip viewability wiring for v1.
               animated

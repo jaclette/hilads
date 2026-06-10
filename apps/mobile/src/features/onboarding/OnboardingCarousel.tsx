@@ -1,18 +1,18 @@
 /**
- * OnboardingCarousel — 4-screen first-launch flow.
+ * OnboardingCarousel - 4-screen first-launch flow.
  *
- *   1. Promise          — "Become local. Anywhere." brand tagline
- *   2. Three tools      — Challenges / Hangouts / Local Events
- *   3. Earn your place  — points = how local you've become
- *   4. Invitation       — three CTAs (challenge / Most Local / look around)
+ *   1. Promise          - "Become local. Anywhere." brand tagline
+ *   2. Three tools      - Challenges / Hangouts / Local Events
+ *   3. Earn your place  - points = how local you've become
+ *   4. Invitation       - three CTAs (challenge / Most Local / look around)
  *
  * Mounted on first guest entry via showOnboarding in AppContext. Shown
- * once per device — flag persists in AsyncStorage via src/lib/onboarding.
+ * once per device - flag persists in AsyncStorage via src/lib/onboarding.
  * The first CTA on screen 4 hands the NOW tab a ?filter=challenges query
  * param; the NOW tab consumes it on mount (see app/(tabs)/now.tsx). The
  * second pushes the existing /leaderboard route with scope=city.
  *
- * Light scroll-paged horizontal carousel — RN native paging, no animation
+ * Light scroll-paged horizontal carousel - RN native paging, no animation
  * lib. Mirrors the web component in apps/web/src/components/OnboardingCarousel.jsx.
  */
 
@@ -52,7 +52,7 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
   const goTo = (i: number) => scrollRef.current?.scrollTo({ x: i * width, animated: true });
   const handleAdvance = () => goTo(Math.min(index + 1, last));
 
-  // Three final CTAs — each closes the modal first (markOnboardingSeen
+  // Three final CTAs - each closes the modal first (markOnboardingSeen
   // happens in the host effect that calls onClose), then routes.
   const handleTakeChallenge = () => {
     onClose();
@@ -91,14 +91,14 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
           onMomentumScrollEnd={onScroll}
           style={styles.track}
         >
-          {/* Screen 1 — promise */}
+          {/* Screen 1 - promise */}
           <View style={[styles.slide, { width }]}>
             <Text style={styles.emoji}>🌍</Text>
             <Text style={styles.title}>{t('onboarding.slide1.title')}</Text>
             <Text style={styles.body}>{t('onboarding.slide1.body')}</Text>
           </View>
 
-          {/* Screen 2 — three tools */}
+          {/* Screen 2 - three tools */}
           <View style={[styles.slide, { width }]}>
             <Text style={styles.title}>{t('onboarding.slide2.title')}</Text>
             <View style={styles.itemList}>
@@ -108,14 +108,14 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
             </View>
           </View>
 
-          {/* Screen 3 — earn your place */}
+          {/* Screen 3 - earn your place */}
           <View style={[styles.slide, { width }]}>
             <Text style={styles.emoji}>✨</Text>
             <Text style={styles.title}>{t('onboarding.slide3.title')}</Text>
             <Text style={styles.body}>{t('onboarding.slide3.body', { city: where })}</Text>
           </View>
 
-          {/* Screen 4 — invitation */}
+          {/* Screen 4 - invitation */}
           <View style={[styles.slide, { width }]}>
             <Text style={styles.title}>{t('onboarding.slide4.title')}</Text>
             <View style={styles.ctaStack}>
@@ -145,7 +145,7 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
             ))}
           </View>
 
-          {/* Next button only on screens 1-3. Screen 4's CTAs replace it —
+          {/* Next button only on screens 1-3. Screen 4's CTAs replace it -
               showing both would clutter the invitation surface. */}
           {index < last && (
             <TouchableOpacity style={styles.nextBtn} onPress={handleAdvance} activeOpacity={0.85}>
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     maxWidth: 340,
   },
 
-  // Screen 2 — three tools list. Items stack vertically, left-aligned for
+  // Screen 2 - three tools list. Items stack vertically, left-aligned for
   // readability inside a centered slide.
   itemList: {
     width: '100%',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
 
-  // Screen 4 — three vertically-stacked CTAs of roughly equal visual weight
+  // Screen 4 - three vertically-stacked CTAs of roughly equal visual weight
   // (the third is muted to read as "no commitment"). Each opens a different
   // in-app destination so the user lands somewhere actionable.
   ctaStack: {

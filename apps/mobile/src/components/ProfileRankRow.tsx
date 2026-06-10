@@ -37,7 +37,7 @@ export function ProfileRankRow({
   if (!rank) return null;
   const { city, global, score_month: score, has_city: hasCity, top_n: topN } = rank;
   // Hide entirely when the user has neither a city scope nor any
-  // monthly score — there is literally nothing to convey. New
+  // monthly score - there is literally nothing to convey. New
   // registrations without geolocation hit this path.
   if (!hasCity && score === 0 && global == null) return null;
 

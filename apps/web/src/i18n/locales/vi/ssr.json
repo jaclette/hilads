@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Bạn không chỉ ghé qua. Trở thành người địa phương ở bất cứ thành phố nào — mỗi challenge, mỗi cuộc gặp, mỗi địa điểm kiếm cho bạn chỗ đứng. Thời gian thực, không cần đăng ký.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Bạn không chỉ ghé qua. Trở thành người địa phương ở bất cứ thành phố nào - mỗi challenge, mỗi cuộc gặp, mỗi địa điểm kiếm cho bạn chỗ đứng. Thời gian thực, không cần đăng ký.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads biến bất cứ thành phố nào thành nơi bạn có thể trở thành người địa phương. Tham gia challenge, gặp gỡ ở meetup, tìm hangout, khám phá Local Events — mỗi bước đều giúp bạn có chỗ đứng. Thời gian thực, không cần đăng ký.",
+    "intro": "Hilads biến bất cứ thành phố nào thành nơi bạn có thể trở thành người địa phương. Tham gia challenge, gặp gỡ ở meetup, tìm hangout, khám phá Local Events - mỗi bước đều giúp bạn có chỗ đứng. Thời gian thực, không cần đăng ký.",
     "aboutHeading": "Hilads hoạt động thế nào",
-    "aboutBody": "Chọn thành phố của bạn. Khởi xướng một challenge cho người địa phương hoặc du khách, tham gia meetup, tìm hangout, hoặc khám phá Local Events. Càng xây dựng ở đây nhiều, bạn càng trở thành người địa phương — và càng lên cao trên Most Local.",
+    "aboutBody": "Chọn thành phố của bạn. Khởi xướng một challenge cho người địa phương hoặc du khách, tham gia meetup, tìm hangout, hoặc khám phá Local Events. Càng xây dựng ở đây nhiều, bạn càng trở thành người địa phương - và càng lên cao trên Most Local.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
     "subhead": "🔥 Trở thành người địa phương ở bất cứ thành phố nào bạn ghé thăm."
   },
@@ -85,7 +85,7 @@
     "everythingElseLink": "tất cả những điều khác đang diễn ra ở {city}"
   },
   "city": {
-    "title": "Trở thành người địa phương ở {city} — Hilads",
+    "title": "Trở thành người địa phương ở {city} - Hilads",
     "descHigh": "Trở thành người địa phương ở {city}: {count}+ Local Events tuần này, cùng challenges, meetups và hangouts. Chat trực tiếp với người đang online. Không cần đăng ký.",
     "descMid": "Trở thành người địa phương ở {city}: gặp gỡ ở meetup tối nay, khởi xướng challenge, hoặc tham gia hangout. Chat trực tiếp với người đang online. Không cần đăng ký.",
     "descLow": "Trở thành người địa phương ở {city}: khởi xướng challenge, xem ai đang online, hoặc mở hangout. Chat trực tiếp, Local Events, hoạt động thời gian thực. Không cần đăng ký.",

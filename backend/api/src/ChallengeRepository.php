@@ -98,14 +98,14 @@ class ChallengeRepository
             -- taker on both in-progress AND validated state. Rejected rows
             -- are filtered out so a declined request doesn't leak into the
             -- avatar. acceptor_country is derived from the taker's CURRENT
-            -- city (NOT the challenge target) — flag = identity.
+            -- city (NOT the challenge target) - flag = identity.
             ac.acceptor_user_id,
             au.display_name             AS acceptor_display_name,
             COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
             au.current_city_id          AS acceptor_current_city_id,
             -- Monthly rank badges (Top 10 + podium for Top 3) for both
             -- avatars on the versus row. NULL = outside top-10 in that
-            -- scope. Both creator AND acceptor expose both scopes — the
+            -- scope. Both creator AND acceptor expose both scopes - the
             -- card chooses which to read based on challenge mode (local
             -- → in_city, international → worldwide). Plus the formatter
             -- below applies a score_month_ref staleness guard so month
@@ -122,11 +122,11 @@ class ChallengeRepository
         LEFT JOIN messages m        ON m.channel_id = c.id AND m.type IN ('text', 'image')
         LEFT JOIN LATERAL (
             -- Pick the taker to render in the right-hand avatar slot.
-            -- The slot must vacate the moment the previous round ends —
+            -- The slot must vacate the moment the previous round ends -
             -- otherwise an Available card still shows the last winner's
             -- face. Two cases that DO surface a taker:
             --   1. An in-progress acceptance (same definition as
-            --      IS_IN_PROGRESS_SQL — drives the 'In progress' pill).
+            --      IS_IN_PROGRESS_SQL - drives the 'In progress' pill).
             --   2. The winning acceptance, but only while the challenge
             --      itself is still in its validated state. Once the
             --      creator unvalidates / reopens the channel for a new
@@ -231,7 +231,7 @@ class ChallengeRepository
             // right-hand avatar on the card (and the same on detail).
             // Populated via the LATERAL acceptance join in SELECT above;
             // null when the challenge has no non-rejected acceptance yet
-            // (State 1 / 3 — open or participants-only).
+            // (State 1 / 3 - open or participants-only).
             // acceptor_country is the taker's CURRENT city (their flag =
             // identity), distinct from the challenge's target_country.
             'acceptor_user_id'         => $row['acceptor_user_id']         ?? null,
@@ -258,7 +258,7 @@ class ChallengeRepository
     /**
      * Pass-through that NULLs the rank when score_month_ref is stale.
      * Anything older than the current UTC month signals "this rank
-     * reflects a prior month" — drop it so the badge surface doesn't
+     * reflects a prior month" - drop it so the badge surface doesn't
      * lie until the next recalc.
      */
     private static function staleGuard(mixed $rank, ?string $monthRef): ?int
@@ -625,7 +625,7 @@ class ChallengeRepository
         if (!in_array($mode,          self::ALLOWED_MODES,     true)) $mode          = 'local';
         if (!in_array($visibility,    self::ALLOWED_VISIBILITIES_AT_INPUT, true)) $visibility = 'public';
         if (!in_array($validationMethod, self::ALLOWED_VALIDATION_METHODS, true)) $validationMethod = 'meet';
-        // International is always photo_proof — the route should already
+        // International is always photo_proof - the route should already
         // have forced it, but defense in depth so a misbehaving caller
         // can't smuggle a 'meet' international row.
         if ($mode === 'international') $validationMethod = 'photo_proof';

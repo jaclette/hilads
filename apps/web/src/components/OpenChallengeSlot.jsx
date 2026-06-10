@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
  * Dashed orange ring + centered `+`, breathing on a 2.4s loop via a
  * CSS keyframe (see .open-challenge-slot in index.css). The component
  * uses an IntersectionObserver to set `animation-play-state` to
- * `paused` when the slot leaves the viewport — long feeds don't burn
+ * `paused` when the slot leaves the viewport - long feeds don't burn
  * CPU repainting off-screen pulses.
  *
  * Tap fires the optional onClick (the open-slot shortcut to the
@@ -24,7 +24,7 @@ export default function OpenChallengeSlot({
   // viewport. threshold:0 fires as soon as a single pixel intersects
   // (or doesn't), which is what we want: the moment any of the slot
   // is visible, the pulse resumes; once it's fully off-screen, it
-  // stops on the current frame. Cheap — no rAF, no scroll listener.
+  // stops on the current frame. Cheap - no rAF, no scroll listener.
   useEffect(() => {
     const el = elRef.current
     if (!el || typeof IntersectionObserver === 'undefined') return

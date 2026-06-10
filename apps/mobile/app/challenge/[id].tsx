@@ -110,13 +110,13 @@ export default function ChallengeChatScreen() {
   // Resolves via a single GET /participants/me probe.
   //
   // Note: this gate now applies ONLY to non-public challenges. Public
-  // channels (visibility='public', the default) are open to anyone — the
+  // channels (visibility='public', the default) are open to anyone - the
   // conversation surface is part of the public detail page, no join
   // step. See challengeIsPublic below.
   const [iAmParticipant, setIAmParticipant] = useState<boolean | null>(null);
   const [joiningChannel, setJoiningChannel] = useState(false);
 
-  // "How challenges work" carousel — same primitive the city chat
+  // "How challenges work" carousel - same primitive the city chat
   // surfaces from its delayed feed prompt. Mounting it here too so a
   // user who lands straight on a challenge (deeplink, push, share) can
   // still learn the rules without backtracking. Banner appears 8 s
@@ -125,7 +125,7 @@ export default function ChallengeChatScreen() {
   // dispose it for the rest of this session.
   const [showChallengeIntro,       setShowChallengeIntro]       = useState(false);
   const [showChallengeIntroBanner, setShowChallengeIntroBanner] = useState(false);
-  // Guest welcome banner — shown immediately (no 8 s delay) to anyone
+  // Guest welcome banner - shown immediately (no 8 s delay) to anyone
   // landing on a public challenge without an account. Dismissed on ×
   // or after tapping into the auth-gate, per session. Replaces the
   // intro banner for that audience so they don't see two stacked
@@ -158,12 +158,12 @@ export default function ChallengeChatScreen() {
     (identity?.guestId && participants.some(p => p.id === identity.guestId))
   );
 
-  // Public channels are open to anyone — guests included. The conversation
+  // Public channels are open to anyone - guests included. The conversation
   // surface renders inline regardless of iAmParticipant. Only friends /
   // private fall back to the gated view (and there, the lock state
   // explains the channel is private). Defaulting to 'public' on a null
   // challenge means we never flash the locked surface during the initial
-  // fetch — much safer than the reverse.
+  // fetch - much safer than the reverse.
   const challengeIsPublic = (challenge?.visibility ?? 'public') === 'public';
 
   // Photo-proof verdict path. International is always photo-proof
@@ -171,7 +171,7 @@ export default function ChallengeChatScreen() {
   // photo at creation also use the same submission UI + creator
   // review modal. Older clients that never sent validation_method
   // get 'meet' from the format() default, so this evaluates false
-  // for them — preserving the historical IRL flow.
+  // for them - preserving the historical IRL flow.
   const usesPhotoProof =
     (challenge?.mode ?? 'local') === 'international'
     || (challenge?.validation_method ?? 'meet') === 'photo_proof';
@@ -468,7 +468,7 @@ export default function ChallengeChatScreen() {
 
     // Guest? Send them to register first. Carry the originating
     // challenge id as ?returnTo so the user lands back on this exact
-    // screen post-signup, primed to tap Take-on again — instead of
+    // screen post-signup, primed to tap Take-on again - instead of
     // landing on the NOW feed and having to re-find the challenge.
     if (!account?.id) {
       const returnTo = encodeURIComponent(`/challenge/${id}`);
@@ -556,7 +556,7 @@ export default function ChallengeChatScreen() {
   const nicknameForChat = nickname ?? '';
 
   // Guest-aware sender identity. Public channels accept anyone with a
-  // (guestId, nickname) tuple — same model city channels use. Registered
+  // (guestId, nickname) tuple - same model city channels use. Registered
   // users pass their user id + display name; guests fall back to their
   // auto-generated guestId + nickname from the boot identity. Either way
   // the backend stuffs it into messages.guest_id and the read DTO
@@ -623,7 +623,7 @@ export default function ChallengeChatScreen() {
     }
   }, [iAmParticipant, reload]);
 
-  // "Learn how challenges work" banner — show 8 s after the screen
+  // "Learn how challenges work" banner - show 8 s after the screen
   // mounts for each new challenge id. Resets when the user moves to
   // a different challenge so the prompt reappears in that new context.
   useEffect(() => {
@@ -634,7 +634,7 @@ export default function ChallengeChatScreen() {
   }, [id]);
 
   // Join the challenge channel's WS room for live newMessage broadcasts.
-  // Public channels are open — any viewer (guest included) joins the room
+  // Public channels are open - any viewer (guest included) joins the room
   // so their feed updates live. Private/friends keep the participation
   // gate so non-members don't get the firehose. Leaves on unmount /
   // challenge change.
@@ -715,12 +715,12 @@ export default function ChallengeChatScreen() {
     [participants, creator],
   );
 
-  // Active taker — derived from challenge.acceptor_user_id so it stays
+  // Active taker - derived from challenge.acceptor_user_id so it stays
   // accurate when the channel reopens after a finished round. The
   // previous taker often lingers in `participants` (they joined the
   // channel), so falling back to otherParticipants[0] would surface
   // their TAKER pill even after the LATERAL slot was vacated. Hydrate
-  // from `participants` when available (richer DTO — vibe/mode) and
+  // from `participants` when available (richer DTO - vibe/mode) and
   // fall back to the acceptor_* snapshot shipped on the challenge.
   const activeTaker = useMemo<UserDTO | null>(() => {
     if (!challenge?.acceptor_user_id) return null;
@@ -1187,7 +1187,7 @@ export default function ChallengeChatScreen() {
         // !activeAcceptance: server-side `is_in_progress` (IS_IN_PROGRESS_SQL)
         // intentionally excludes 'pending' so the city feed reads "Available"
         // while the creator is reviewing. On the DETAIL page that signal is
-        // wrong for the requester themselves — they already have an active
+        // wrong for the requester themselves - they already have an active
         // pending acceptance, so re-rendering the Accept CTA is misleading
         // (and previously surfaced as a half-clipped orange pill stuck under
         // the members strip while the screen was waiting on the creator's
@@ -1216,14 +1216,14 @@ export default function ChallengeChatScreen() {
       })()}
       </Animated.View>
 
-      {/* Owner re-invite CTA — parity with the web ChallengeChatPage. Visible
+      {/* Owner re-invite CTA - parity with the web ChallengeChatPage. Visible
           only while the challenge is genuinely free (not validated, not
           actively held). Opens the same post-create seed sheet so the
           creator can re-ping more members or share again at any later
           moment. Cyan tint matches the international badge so on intl
           rows the visual link "this targets the city" reads at a glance.
           inviteCityName already resolves to the TARGET city for intl with
-          a target, falling through to the origin city otherwise — so the
+          a target, falling through to the origin city otherwise - so the
           label says "in Paris" for HCMC→Paris challenges, "in HCMC" for
           plain locals, etc. */}
       {isOwner && !isValidated && !challenge?.is_in_progress && (
@@ -1266,7 +1266,7 @@ export default function ChallengeChatScreen() {
             Both branches are handled inside the non-chat IIFE below. */}
         {(challengeIsPublic || iAmParticipant === true) && !(isOwner && myAcceptance?.phase === 'pending') && !(!isOwner && myAcceptance?.phase === 'rejected') ? (
           <>
-            {/* Guest welcome — fires on entry for any unauthenticated
+            {/* Guest welcome - fires on entry for any unauthenticated
                 viewer of a public channel. Two-line: "chat free, no
                 sign-up" + a direct sign-up CTA that ports the existing
                 returnTo handshake so they land back here primed to tap
@@ -1276,12 +1276,12 @@ export default function ChallengeChatScreen() {
                 <TouchableOpacity
                   style={styles.guestWelcomeBody}
                   onPress={() => {
-                    // Push to sign-up BEFORE flipping local state — if state
+                    // Push to sign-up BEFORE flipping local state - if state
                     // updates batch with re-render and the navigation gets
                     // dropped, the user at least sees the gate. Route
                     // straight to /sign-up (skipping /auth-gate's marketing
                     // intermezzo) since the banner copy already promised
-                    // "3 seconds" — the user is convinced, give them the
+                    // "3 seconds" - the user is convinced, give them the
                     // form. The returnTo handshake brings them back here
                     // post-signup primed to tap Take-on.
                     const returnTo = encodeURIComponent(`/challenge/${id}`);
@@ -1292,7 +1292,7 @@ export default function ChallengeChatScreen() {
                   accessibilityRole="button"
                 >
                   <Text style={styles.guestWelcomeText} numberOfLines={2}>
-                    {i18n.t('welcomeGuest.title', { ns: 'challenge', defaultValue: '👋 Welcome! Chat freely here — no sign-up needed.' })}
+                    {i18n.t('welcomeGuest.title', { ns: 'challenge', defaultValue: '👋 Welcome! Chat freely here - no sign-up needed.' })}
                   </Text>
                   <Text style={styles.guestWelcomeCta} numberOfLines={2}>
                     {i18n.t('welcomeGuest.cta', { ns: 'challenge', defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
@@ -1309,12 +1309,12 @@ export default function ChallengeChatScreen() {
               </View>
             ) : null}
 
-            {/* "Learn how challenges work" banner — same primitive the city
+            {/* "Learn how challenges work" banner - same primitive the city
                 chat surfaces from its delayed feed prompt. Sits above the
                 FlatList (not inside it) so the inverted message list keeps
                 its scroll behaviour intact and the banner stays anchored to
                 the top edge. Tap → opens the carousel; × → dismiss.
-                Hidden for guests — they get the welcome banner above
+                Hidden for guests - they get the welcome banner above
                 instead so the entry surface stays focused on one CTA. */}
             {account?.id && showChallengeIntroBanner && (
               <View style={styles.introBanner}>
@@ -1481,7 +1481,7 @@ export default function ChallengeChatScreen() {
              - Acceptor + pending           → "Waiting for review"
              - Acceptor + rejected          → "Your take-on was declined"
              Public channels never reach this branch when the viewer isn't
-             a participant — the chat above renders for them directly. */
+             a participant - the chat above renders for them directly. */
           (() => {
             // Non-public + non-participant → conversation is locked. No
             // CTA, no join step (those channels are tied to creator +
@@ -1684,7 +1684,7 @@ export default function ChallengeChatScreen() {
 
       {/* Creator's proof-review modal. Big photo + Approve / Reject +
           reject-reason face. Mounted for any photo-proof creator (intl
-          + local-with-photo) with an active acceptance — the modal
+          + local-with-photo) with an active acceptance - the modal
           renders nothing if there's no pending proof. */}
       {usesPhotoProof && isOwner && activeAcceptance && (
         <ProofReviewModal
@@ -1834,7 +1834,7 @@ export default function ChallengeChatScreen() {
         onClose={() => setActionSheetMsg(null)}
       />
 
-      {/* "How challenges work" carousel — shared primitive used by the
+      {/* "How challenges work" carousel - shared primitive used by the
           city-chat intro prompt. Last slide CTA routes to /challenge/
           create so a newcomer who just learned the rules can launch
           one without backtracking. */}
@@ -1856,7 +1856,7 @@ const styles = StyleSheet.create({
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
   errorText: { fontSize: FontSizes.md, color: Colors.red, padding: Spacing.md, textAlign: 'center' },
 
-  // "Learn how challenges work" banner — slim row above the chat
+  // "Learn how challenges work" banner - slim row above the chat
   // list, mirroring the visual of the city-chat prompt pill so the
   // two surfaces read as the same affordance.
   introBanner: {
@@ -1880,7 +1880,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap:            8,
   },
-  // Marquee clip window — claims the leftover row space between the
+  // Marquee clip window - claims the leftover row space between the
   // banner padding and the "Show me →" CTA so long titles only scroll
   // inside this region. Fixed height matches one line of the body
   // font so the banner doesn't grow when a long string lands.
@@ -1897,7 +1897,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-  // Guest welcome — slightly taller than the intro banner because the
+  // Guest welcome - slightly taller than the intro banner because the
   // copy splits across two lines (welcome + sign-up CTA). Same warm-
   // dark fill + accent-orange ring so the two surfaces feel like
   // siblings even though only one shows at a time.

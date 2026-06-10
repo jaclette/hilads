@@ -25,7 +25,7 @@ const MODES = [
 // Allowlist of return-path prefixes accepted on the ?returnTo query
 // param. Keeping this tight prevents an attacker from crafting a
 // signup deeplink that bounces the user to an arbitrary internal
-// (or external) screen — only the surfaces we actually launch signup
+// (or external) screen - only the surfaces we actually launch signup
 // from are honoured.
 const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];
 

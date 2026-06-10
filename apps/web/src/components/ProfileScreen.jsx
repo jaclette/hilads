@@ -330,7 +330,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
 
-          {/* Monthly rank — between identity header and mode selector so
+          {/* Monthly rank - between identity header and mode selector so
               it sits in the visible top area without crowding the
               identity row itself. Hides when there's nothing to show. */}
           <ProfileRankRow

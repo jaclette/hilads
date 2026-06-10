@@ -369,7 +369,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 </div>
               )}
 
-              {/* Monthly rank — this user's rank in THEIR own current
+              {/* Monthly rank - this user's rank in THEIR own current
                   city + worldwide. Distinct from the viewer-city pill
                   above. */}
               <ProfileRankRow

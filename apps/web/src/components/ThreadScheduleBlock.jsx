@@ -71,7 +71,7 @@ export default function ThreadScheduleBlock({ thread, myUserId, onChange, hideEm
   if (phase === 'scheduled' && thread.proposed_starts_at) {
     return (
       <>
-        {/* The whole band is the touch target — the small icon button
+        {/* The whole band is the touch target - the small icon button
             was too easy to miss. The pencil stays as a visual cue. */}
         <button
           type="button"

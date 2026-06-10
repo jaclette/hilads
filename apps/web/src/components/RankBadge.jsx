@@ -12,7 +12,7 @@
  * Null / non-positive rank → renders nothing so callers don't have
  * to branch on the no-badge path.
  *
- * Decorative — no tap target. The parent absolute-positions this on
+ * Decorative - no tap target. The parent absolute-positions this on
  * top of the avatar; we just render the disc.
  */
 export default function RankBadge({ rank, size = 24, ariaLabel }) {
@@ -42,7 +42,7 @@ export default function RankBadge({ rank, size = 24, ariaLabel }) {
         aria-label={ariaLabel}
         role={ariaLabel ? 'img' : undefined}
       >
-        {/* Inner highlight — small near-white slice at the top-left so
+        {/* Inner highlight - small near-white slice at the top-left so
             the disc reads as polished metal rather than a flat fill.
             Pure decoration. */}
         <span

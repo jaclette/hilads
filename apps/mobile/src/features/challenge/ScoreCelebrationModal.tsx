@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color:      Colors.muted,
   },
-  // Meet bonus tile — amber recolor of the base event row so the
+  // Meet bonus tile - amber recolor of the base event row so the
   // "+50 Meet bonus" reads as a distinct extra reward rather than
   // another base-payout step. Background/border/pill all shift.
   eventRowBonus: {

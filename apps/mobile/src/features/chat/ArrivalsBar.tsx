@@ -52,7 +52,7 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
   const seenRef = useRef<Set<string>>(new Set());
 
   // Mount time in seconds (matches msg.createdAt). Only arrivals stamped
-  // AFTER we mounted count as "live" — historical join messages from the
+  // AFTER we mounted count as "live" - historical join messages from the
   // initial fetch (or from a WS catchup batch on reconnect) are seeded
   // silently so the bar stays in its default "Recent arrivals" state
   // until somebody actually arrives in real time. Same threshold used

@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Diventa locale a {{city}} — Hilads",
+    "cityTitle": "Diventa locale a {{city}} - Hilads",
     "cityDesc": "Diventa locale a {{city}}: lancia un challenge, unisciti a un meetup, entra in un hangout, scopri Local Events. Chat live con chi è online.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Partecipa a {{title}} su Hilads — un Local Event in corso. Vedi chi viene e chatta live."
+    "eventDesc": "Partecipa a {{title}} su Hilads - un Local Event in corso. Vedi chi viene e chatta live."
   },
   "nowTitle": "Adesso",
   "filterEvents": "🎉 Local Events",
@@ -25,13 +25,13 @@
     "fallbackCity": "la tua città",
     "slide1": {
       "title": "Become local. Anywhere.",
-      "body": "Hilads è l'app che trasforma i viaggiatori in locali — e aiuta i locali a condividere ciò che rende viva la loro città."
+      "body": "Hilads è l'app che trasforma i viaggiatori in locali - e aiuta i locali a condividere ciò che rende viva la loro città."
     },
     "slide2": {
       "title": "Tre modi di vivere la città",
-      "itemChallenges": "🤝 Challenges — sfida o lasciati sfidare per scoprire posti nascosti, assaggiare cibo vero, condividere cultura o dare una mano.",
-      "itemHangouts": "🎉 Hangouts — incontri casual quando ne hai voglia. Caffè, drink, passeggiate, qualsiasi cosa.",
-      "itemEvents": "📍 Local Events — i momenti più grandi organizzati dalla community."
+      "itemChallenges": "🤝 Challenges - sfida o lasciati sfidare per scoprire posti nascosti, assaggiare cibo vero, condividere cultura o dare una mano.",
+      "itemHangouts": "🎉 Hangouts - incontri casual quando ne hai voglia. Caffè, drink, passeggiate, qualsiasi cosa.",
+      "itemEvents": "📍 Local Events - i momenti più grandi organizzati dalla community."
     },
     "slide3": {
       "title": "Guadagna il tuo posto in città",
@@ -48,7 +48,7 @@
     "title": "Come funzionano le sfide",
     "slide1": {
       "title": "Le sfide trasformano i viaggi in storie",
-      "body": "Locals e viaggiatori si sfidano per far vivere la città davvero - cibo, posti, cultura, aiuto. La ricompensa? Vedersi di persona — o mandare una prova a distanza."
+      "body": "Locals e viaggiatori si sfidano per far vivere la città davvero - cibo, posti, cultura, aiuto. La ricompensa? Vedersi di persona - o mandare una prova a distanza."
     },
     "slide2": {
       "title": "Lancia la tua sfida",
@@ -75,7 +75,7 @@
     },
     "slide7": {
       "title": "Diventa il più locale",
-      "body": "Ogni challenge ti dà punti — nella tua città E nel mondo. Vedetevi di persona per un bonus di +50. Locale o viaggiatore, conta quello che costruisci qui. Classifica nuova ogni mese."
+      "body": "Ogni challenge ti dà punti - nella tua città E nel mondo. Vedetevi di persona per un bonus di +50. Locale o viaggiatore, conta quello che costruisci qui. Classifica nuova ogni mese."
     },
     "createCta": "🔥 Crea una sfida"
   },

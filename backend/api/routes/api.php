@@ -1156,7 +1156,7 @@ $router->add('GET', '/api/v1/auth/me', function () {
         }
     }
 
-    // Monthly ranks for the profile screen ("Me" tab). Bounded read — at
+    // Monthly ranks for the profile screen ("Me" tab). Bounded read - at
     // most 4 cheap LIMIT-101 lookups per call. Always returned (even when
     // null) so the client can render the "not ranked yet" state without
     // a second round-trip.
@@ -1328,7 +1328,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
 
     // current_city for the rank row ("#N in Ho Chi Minh City" + flag).
     // Distinct from home_city / homeCity (above) which is the user-edited
-    // home tag — current_city follows last-geolocation, which is the
+    // home tag - current_city follows last-geolocation, which is the
     // axis monthly_rank.city is scoped against. One small JOIN; country
     // comes along so the client renders the flag without a second hop.
     $currentCityName    = null;
@@ -1979,7 +1979,7 @@ $router->add('POST', '/api/v1/location/resolve', function () {
     $authUserForCity = AuthService::currentUser();
     if ($authUserForCity !== null) {
         $geoChannelId = 'city_' . $city['id'];
-        // Snapshot the old city BEFORE the UPDATE — the CASE expression
+        // Snapshot the old city BEFORE the UPDATE - the CASE expression
         // may or may not flip current_city_id this call depending on the
         // two-signal gate. We compare old vs. new after the UPDATE to
         // decide whether a rank recalc is warranted (geolocation pings
@@ -3625,7 +3625,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     }
 });
 
-// Avatar thumbnail generation lives in ImageProcessor — same code path
+// Avatar thumbnail generation lives in ImageProcessor - same code path
 // used by /admin/thumbs/backfill so the upload and backfill flows can
 // never drift apart.
 
@@ -7555,7 +7555,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     if (!in_array($mode, ChallengeRepository::ALLOWED_MODES, true)) {
         Response::json(['error' => 'mode must be one of: ' . implode(', ', ChallengeRepository::ALLOWED_MODES)], 400);
     }
-    // International is locked to photo_proof — no UI choice + server
+    // International is locked to photo_proof - no UI choice + server
     // overrides whatever the client sent. Local creators pick; default
     // 'meet' preserves the historical IRL flow when the client omits
     // the field (older builds).
@@ -8772,7 +8772,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
 
     // Idempotency: already actively accepted? Return the existing row (201
     // would be misleading; 200 = "you're already in, here's your acceptance").
-    // Active-only on purpose — a terminal row from a prior round (the user
+    // Active-only on purpose - a terminal row from a prior round (the user
     // was the taker, both rated, channel reopened) must NOT short-circuit
     // the new accept attempt; otherwise tapping "Take on the challenge"
     // silently no-ops because the server hands back the stale terminal row
@@ -8931,7 +8931,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
 
     // International acceptances land in phase='accepted' which fires
     // the +5 challenger trigger inline. Local rows insert in 'pending'
-    // — no score yet, no recalc needed here (approve-takeon path handles
+    // - no score yet, no recalc needed here (approve-takeon path handles
     // it). The challenger is the only user whose score moved.
     if ($isInternational && !empty($challenge['created_by'])) {
         MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
@@ -9279,7 +9279,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
     }
 
     // Persistent + push notification to the OTHER party. Until this
-    // landed the propose-date flow was WS-only — anyone who'd
+    // landed the propose-date flow was WS-only - anyone who'd
     // backgrounded the app missed the proposal entirely and the date
     // sat awaiting approval no one knew about. NotificationRepository
     // re-renders the title/body per recipient locale (see
@@ -9380,7 +9380,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
     // Either the challenger OR the active taker is a "thread member" who
     // could potentially approve. The proposer themself MUST NOT approve
-    // their own proposal — only the other party signs off. This flips
+    // their own proposal - only the other party signs off. This flips
     // the prior "only creator can approve" rule, which was wrong for the
     // common case of a creator-side proposal (they'd approve their own
     // date, defeating the whole "mutual agreement" point).
@@ -9391,7 +9391,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
     if (($acceptance['proposed_by_user_id'] ?? null) === $userId) {
         Response::json([
-            'error' => "You can't approve your own proposal — the other party does.",
+            'error' => "You can't approve your own proposal - the other party does.",
             'code'  => 'self_proposal',
         ], 403);
     }
@@ -9425,10 +9425,10 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
     }
 
     // WS broadcast to BOTH parties. Each side earned +5 from the
-    // date_locked trigger above — both need the live signal so the
+    // date_locked trigger above - both need the live signal so the
     // ScoreCelebrationLaunchGate refetches without an app reload.
     // The party who tapped Approve also gets the broadcast (in
-    // addition to their HTTP response) — costs nothing and keeps
+    // addition to their HTTP response) - costs nothing and keeps
     // multi-device sessions consistent.
     $proposerId = $acceptance['proposed_by_user_id'] ?? null;
     $approverId = $userId;
@@ -9440,7 +9440,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
                 'challengeId'     => $acceptance['challenge_id'],
                 'threadChannelId' => $acceptance['thread_channel_id'],
                 'acceptance'      => $updated,
-                // Hint to the client which side it is — saves them
+                // Hint to the client which side it is - saves them
                 // re-deriving from the acceptance payload.
                 'approverUserId'  => $approverId,
                 'proposerUserId'  => $proposerId,
@@ -9451,7 +9451,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
         }
     }
 
-    // Push notification to the proposer — they weren't looking when
+    // Push notification to the proposer - they weren't looking when
     // their date was approved. Until this landed the approve-date
     // flow was WS-only, so a backgrounded proposer learned nothing
     // happened. Mirrors the challenge_date_proposed push surface in
@@ -11254,7 +11254,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
     }
 
     // International invitations auto-accept → +5 challenger fires.
-    // Local invitations land in 'pending' — no score yet (see
+    // Local invitations land in 'pending' - no score yet (see
     // approve-takeon for that hook). Mirrors POST /challenges/:id/accept.
     if ($isInternational && !empty($challenge['created_by'])) {
         MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
@@ -11370,7 +11370,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
             Response::json(['error' => 'Challenge not found'], 404);
         }
         // PUBLIC challenges: skip the participation gate entirely. The
-        // conversation is part of the public surface — any viewer
+        // conversation is part of the public surface - any viewer
         // (including anon guests) can read. Same model city channels use.
         // FRIENDS / PRIVATE: keep the participation gate so only the
         // creator + active taker (+ explicit joiners) can read.
@@ -11460,7 +11460,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 
     // Visibility-aware - anon/out-of-scope can't post to a friends/private
     // challenge. PUBLIC channels open the post path to anyone (mirrors
-    // the city channel post route — guestId + nickname is enough).
+    // the city channel post route - guestId + nickname is enough).
     $viewerIdForVisibility = AuthService::currentUser()['id'] ?? null;
     $challenge = ChallengeRepository::findById($challengeId, $viewerIdForVisibility);
     if ($challenge === null) {
@@ -11488,7 +11488,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
 
     enforceRateLimit('challenge_message', 45, 300, $challengeId);
     // Guest-specific global cap. Per-IP, NOT scoped to a single
-    // challenge — stops a single attacker from rotating across many
+    // challenge - stops a single attacker from rotating across many
     // public challenges to bypass the per-challenge bucket above.
     // Registered users skip this; their per-challenge cap already
     // applies and they're identified.

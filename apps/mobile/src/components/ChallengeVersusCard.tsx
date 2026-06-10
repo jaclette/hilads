@@ -13,20 +13,20 @@ import { MarqueeText } from '@/components/MarqueeText';
 /**
  * Versus-layout challenge card. Replaces the previous flat ChallengeCard
  * across NOW, past archive, and the "all challenges" list. The hero of
- * the card is now the duel — challenger avatar ← arrow → taker avatar
- * (or an open slot inviting the next taker) — with optional country
+ * the card is now the duel - challenger avatar ← arrow → taker avatar
+ * (or an open slot inviting the next taker) - with optional country
  * flag overlays on each avatar for international challenges.
  *
  * Four visual states (computed inside, mapped from Challenge):
- *   1. Available           — no taker yet → OpenChallengeSlot with pulse
- *   2. In Progress         — active taker → real avatar (with their
+ *   1. Available           - no taker yet → OpenChallengeSlot with pulse
+ *   2. In Progress         - active taker → real avatar (with their
  *                            CURRENT-city flag for international)
- *   3. Pseudo-Available    — participants joined as spectators but no
+ *   3. Pseudo-Available    - participants joined as spectators but no
  *                            active acceptor → visually identical to 1
- *   4. Validated           — challenge completed → both avatars stay
+ *   4. Validated           - challenge completed → both avatars stay
  *                            visible; arrow becomes 🏆 (decorative)
  *
- * The arrow / trophy is decorative — non-tappable. Avatars and the
+ * The arrow / trophy is decorative - non-tappable. Avatars and the
  * open slot have their own tap handlers; the card itself is also
  * tappable (opens the challenge channel).
  *
@@ -47,19 +47,19 @@ const AVATAR_SIZE = 72;
 
 export interface ChallengeVersusCardProps {
   challenge: Challenge;
-  /** Card tap — opens the challenge channel. */
+  /** Card tap - opens the challenge channel. */
   onPress: () => void;
-  /** Participant row tap — opens the participants modal. */
+  /** Participant row tap - opens the participants modal. */
   onAvatarsPress?: () => void;
-  /** Open-slot tap — shortcut to the accept-challenge flow. When
+  /** Open-slot tap - shortcut to the accept-challenge flow. When
    *  omitted the slot falls through to the card's onPress (channel). */
   onAcceptPress?: () => void;
-  /** Avatar tap — opens that user's profile. Called with the userId of
+  /** Avatar tap - opens that user's profile. Called with the userId of
    *  the tapped party (challenger or taker). When omitted the avatar
    *  is decorative. */
   onAvatarPress?: (userId: string) => void;
   /** Drives the open-slot pulse loop. Set false when the card is off-
-   *  screen — the loop stops on the current frame and no redraw runs. */
+   *  screen - the loop stops on the current frame and no redraw runs. */
   animated?: boolean;
 }
 
@@ -86,7 +86,7 @@ export function ChallengeVersusCard({
 
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
-      {/* Top row — kind badge + audience/intl pill + status badge. Unchanged
+      {/* Top row - kind badge + audience/intl pill + status badge. Unchanged
           from the previous flat card; only the section below the row is new. */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
@@ -109,7 +109,7 @@ export function ChallengeVersusCard({
             <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
           </View>
         )}
-        {/* Photo proof on a local challenge — surface a 📸 badge so
+        {/* Photo proof on a local challenge - surface a 📸 badge so
             scrollers can spot the lower-friction-but-no-Meet-bonus
             variant at a glance. Meet is the default and stays
             unbadged on purpose (less visual noise). International
@@ -135,9 +135,9 @@ export function ChallengeVersusCard({
         )}
       </View>
 
-      {/* Versus — the hero of the card. Fixed-height row so the layout
+      {/* Versus - the hero of the card. Fixed-height row so the layout
           doesn't jump between states. Center is the directional arrow
-          (→) or a trophy (🏆) once the duel is closed — purely decorative,
+          (→) or a trophy (🏆) once the duel is closed - purely decorative,
           not tappable. */}
       <View style={styles.versusRow}>
         <ChallengerAvatar
@@ -166,10 +166,10 @@ export function ChallengeVersusCard({
         )}
       </View>
 
-      {/* Title row — type emoji + title. Long titles auto-scroll left
+      {/* Title row - type emoji + title. Long titles auto-scroll left
           (same MarqueeText primitive the weather pill uses); short
           titles render static. `animated` is the FlatList viewport
-          flag — when the card is off-screen the marquee pauses so we
+          flag - when the card is off-screen the marquee pauses so we
           don't burn CPU on rows the user can't see. */}
       <View style={styles.titleRow}>
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
@@ -182,7 +182,7 @@ export function ChallengeVersusCard({
         />
       </View>
 
-      {/* "by {name}" line — null for pure-guest challenges. The avatar tap
+      {/* "by {name}" line - null for pure-guest challenges. The avatar tap
           targets are now the big versus avatars above; this row is just
           the textual attribution. */}
       {challenge.creator_display_name ? (
@@ -191,7 +191,7 @@ export function ChallengeVersusCard({
         </Text>
       ) : null}
 
-      {/* Participants — unchanged. */}
+      {/* Participants - unchanged. */}
       <AttendeeAvatars
         preview={challenge.participants_preview ?? []}
         total={challenge.participant_count ?? 0}
@@ -251,7 +251,7 @@ function TakerAvatar({
   const userId  = challenge.acceptor_user_id ?? null;
   const rank    = pickRank(challenge, 'acceptor', isInternational);
 
-  // Soft fade + scale entry — every time the taker identity changes
+  // Soft fade + scale entry - every time the taker identity changes
   // (null → user via a fresh acceptance landing over WS, or one taker
   // replacing a prior rejected one), the avatar fades in. Keyed on
   // userId so React unmounts + remounts cleanly between identities.
@@ -346,7 +346,7 @@ function FadeInAvatarSlot({ children }: { children: React.ReactNode }) {
 }
 
 // ── Styles ──────────────────────────────────────────────────────────────────
-// Same warm orange tint as the previous flat card — keeps the brand
+// Same warm orange tint as the previous flat card - keeps the brand
 // continuity. New section: the fixed-height versus row.
 
 const styles = StyleSheet.create({
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
   },
   validatedBadgeText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  // "⏳ In progress" — amber so it reads as "actively in motion"
+  // "⏳ In progress" - amber so it reads as "actively in motion"
   // without competing with the validated-green or available-green
   // pills. Grey was indistinguishable from a disabled state and
   // washed out next to the ⏳ emoji.
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   },
   statusPillText: { fontSize: 10, fontWeight: '700', color: '#fbbf24', letterSpacing: 0.3 },
 
-  // "📸 Photo" badge — local + photo_proof variant. Cool blue tint so
+  // "📸 Photo" badge - local + photo_proof variant. Cool blue tint so
   // it reads as the calm/alternative path (warm orange + amber + green
   // are already in use for the type/status badges). Meet stays
   // unbadged on purpose since it's the default.
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
   },
   availablePillText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
-  // Versus row — fixed height = avatar diameter + ~10px breathing room so
+  // Versus row - fixed height = avatar diameter + ~10px breathing room so
   // the card height doesn't jump when the right side flips between the
   // open slot and a real avatar.
   versusRow: {
@@ -463,7 +463,7 @@ const styles = StyleSheet.create({
 
   titleRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
   titleEmoji:   { fontSize: 22, lineHeight: 24 },
-  // MarqueeText clip window — takes the remaining row width and clips
+  // MarqueeText clip window - takes the remaining row width and clips
   // overflow so the scroll happens inside this box, not over the type
   // emoji or the card padding.
   titleMarquee: { flex: 1, height: 22 },

@@ -506,7 +506,7 @@ export default function MeScreen() {
               </View>
             </View>
 
-            {/* Monthly rank — slotted between identity + mode so it sits in
+            {/* Monthly rank - slotted between identity + mode so it sits in
                 the sticky-identity block and stays visible at the top of
                 the screen. Renders nothing when the user has no city
                 scope AND no monthly score yet (fresh signup). */}

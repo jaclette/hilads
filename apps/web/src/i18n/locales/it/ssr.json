@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Non sei solo di passaggio. Diventa locale in qualsiasi città — ogni challenge, ogni incontro, ogni posto guadagna il tuo posto. In tempo reale, senza registrazione.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Non sei solo di passaggio. Diventa locale in qualsiasi città - ogni challenge, ogni incontro, ogni posto guadagna il tuo posto. In tempo reale, senza registrazione.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads trasforma ogni città in un posto in cui diventare locale. Lancia challenge, unisciti a meetup, trova hangout, scopri Local Events — ogni passo ti guadagna il tuo posto. In tempo reale, senza registrazione.",
+    "intro": "Hilads trasforma ogni città in un posto in cui diventare locale. Lancia challenge, unisciti a meetup, trova hangout, scopri Local Events - ogni passo ti guadagna il tuo posto. In tempo reale, senza registrazione.",
     "aboutHeading": "Come funziona Hilads",
-    "aboutBody": "Scegli la tua città. Lancia un challenge per locali o viaggiatori, unisciti a un meetup, trova un hangout, o scopri Local Events. Più costruisci qui, più diventi locale — e più sali su Most Local.",
+    "aboutBody": "Scegli la tua città. Lancia un challenge per locali o viaggiatori, unisciti a un meetup, trova un hangout, o scopri Local Events. Più costruisci qui, più diventi locale - e più sali su Most Local.",
     "citiesCta": "Esplora tutte le città di Hilads",
     "subhead": "🔥 Diventa locale in qualsiasi città che visiti."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "tutto il resto che sta succedendo a {city}"
   },
   "city": {
-    "title": "Diventa locale a {city} — Hilads",
+    "title": "Diventa locale a {city} - Hilads",
     "descHigh": "Diventa locale a {city}: {count}+ Local Events questa settimana, più challenge, meetup e hangout. Chat live con chi è online. Senza registrazione.",
     "descMid": "Diventa locale a {city}: unisciti a un meetup stasera, lancia un challenge o entra in un hangout. Chat live con chi è online. Senza registrazione.",
     "descLow": "Diventa locale a {city}: lancia un challenge, vedi chi è online o avvia un hangout. Chat live, Local Events, attività in tempo reale. Senza registrazione.",

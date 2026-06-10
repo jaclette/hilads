@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Je bent niet zomaar op bezoek. Word local in elke stad — elke challenge, elke afspraak, elke plek verdient je plek. Real-time, zonder account.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Je bent niet zomaar op bezoek. Word local in elke stad - elke challenge, elke afspraak, elke plek verdient je plek. Real-time, zonder account.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads maakt van elke stad een plek waar je local kunt worden. Start challenges, sluit aan bij meetups, vind hangouts, ontdek Local Events — elke stap verdient je plek. Real-time, zonder account.",
+    "intro": "Hilads maakt van elke stad een plek waar je local kunt worden. Start challenges, sluit aan bij meetups, vind hangouts, ontdek Local Events - elke stap verdient je plek. Real-time, zonder account.",
     "aboutHeading": "Zo werkt Hilads",
-    "aboutBody": "Kies je stad. Start een challenge voor locals of reizigers, sluit aan bij een meetup, vind een hangout, of ontdek Local Events. Hoe meer je hier opbouwt, hoe lokaler je wordt — en hoe hoger je klimt op Most Local.",
+    "aboutBody": "Kies je stad. Start een challenge voor locals of reizigers, sluit aan bij een meetup, vind een hangout, of ontdek Local Events. Hoe meer je hier opbouwt, hoe lokaler je wordt - en hoe hoger je klimt op Most Local.",
     "citiesCta": "Blader door alle Hilads-steden",
     "subhead": "🔥 Word local in elke stad die je bezoekt."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "al het andere dat gebeurt in {city}"
   },
   "city": {
-    "title": "Word local in {city} — Hilads",
+    "title": "Word local in {city} - Hilads",
     "descHigh": "Word local in {city}: {count}+ Local Events deze week, plus challenges, meetups en hangouts. Live chat met mensen die nu online zijn. Zonder account.",
     "descMid": "Word local in {city}: sluit vanavond aan bij een meetup, start een challenge of duik een hangout in. Live chat met mensen online. Zonder account.",
     "descLow": "Word local in {city}: start een challenge, zie wie online is of begin een hangout. Live chat, Local Events, real-time activiteit. Zonder account.",

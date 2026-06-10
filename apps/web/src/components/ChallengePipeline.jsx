@@ -35,7 +35,7 @@ function derive(acceptance, iAmCreator, myUserId, locale, usesPhotoProof) {
   const phase  = acceptance.effective_phase ?? acceptance.phase
   const cpName = acceptance.counterparty.displayName
 
-  // Photo-proof flow — international (auto-approved at take-on, no
+  // Photo-proof flow - international (auto-approved at take-on, no
   // 'pending') AND local-with-photo_proof (still 'pending' first since
   // the creator vets the request). From 'accepted' onwards the two
   // branches are identical: no date concertation, no meet-up step.
@@ -88,7 +88,7 @@ function derive(acceptance, iAmCreator, myUserId, locale, usesPhotoProof) {
 
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null
-    // The OTHER party — whoever did NOT propose — sees "Approve date".
+    // The OTHER party - whoever did NOT propose - sees "Approve date".
     // The proposer sees "Awaiting their approval". Mirrors the
     // ScheduleBlock fix so the pipeline label and the actual button
     // stay in sync regardless of who proposed.

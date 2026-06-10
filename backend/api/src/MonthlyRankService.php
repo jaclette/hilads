@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Monthly rank recalc — denormalised onto users.monthly_rank_in_city and
+ * Monthly rank recalc - denormalised onto users.monthly_rank_in_city and
  * users.monthly_rank_worldwide. Called inline at the end of every route
  * that changes a user's monthly score or current city.
  *
@@ -17,7 +17,7 @@ declare(strict_types=1);
  *     failure mode, constant background load even when the app is quiet.
  *   - The recalc itself is small (single-city UPDATE) and cheap (<20ms
  *     city, <100ms world). It sits inside routes that the user is
- *     already waiting on a celebration animation for — the inline cost
+ *     already waiting on a celebration animation for - the inline cost
  *     is invisible.
  *
  * Each call writes ONLY the top-10 rank values (1..10). Users outside
@@ -29,7 +29,7 @@ class MonthlyRankService
     /**
      * Bounded-rank cap used by ranksForUser() (read-time computation for
      * profile screens). Returns null beyond this position so the
-     * profile renders "Outside the top 100" rather than "#347" — same
+     * profile renders "Outside the top 100" rather than "#347" - same
      * threshold as /me/scores so the two surfaces agree.
      *
      * Distinct from the denormalised columns, which now store the
@@ -39,7 +39,7 @@ class MonthlyRankService
     private const TOP_N_BOUNDED = 100;
 
     /**
-     * Read-time monthly ranks for an arbitrary user — used by profile
+     * Read-time monthly ranks for an arbitrary user - used by profile
      * screens. Same bounded LIMIT-(N+1) trick as /me/scores so the cost
      * stays flat regardless of total user count. Returns null when the
      * user is outside the top 100 of either scope (the client renders
@@ -117,13 +117,13 @@ class MonthlyRankService
     /**
      * Recompute monthly_rank_in_city for the home cities of each user
      * passed in AND monthly_rank_worldwide globally. Callers list the
-     * user(s) whose score just changed — the service looks up each
+     * user(s) whose score just changed - the service looks up each
      * user's current_city_id internally so the route doesn't have to.
      * Multiple users in the same city collapse to a single city
      * recalc; the world recalc fires once regardless.
      *
      * Wraps everything in a single try/catch so a flaky DB never
-     * breaks the originating action (rating, approve, accept) — that
+     * breaks the originating action (rating, approve, accept) - that
      * action already succeeded by the time we get here.
      *
      * Logs city + world durations at info level so we have
@@ -164,7 +164,7 @@ class MonthlyRankService
 
     /**
      * Resolve a list of user ids to the set of distinct current_city_id
-     * values. Null cities (users without geolocation) are dropped — no
+     * values. Null cities (users without geolocation) are dropped - no
      * city to recalc for them.
      */
     private static function resolveCurrentCities(array $userIds): array
@@ -189,7 +189,7 @@ class MonthlyRankService
     /**
      * Same as recalcAfterScoreChange but for routes that move a user
      * between cities (POST /me/city, /location/resolve, admin edit).
-     * The OLD city needs a recalc too — losing a top-10 user shifts
+     * The OLD city needs a recalc too - losing a top-10 user shifts
      * everyone below them up one rank.
      *
      * Pass null for $oldCityId on creation paths where the user had
@@ -234,14 +234,14 @@ class MonthlyRankService
 
     /**
      * Self-heal: recompute ranks for EVERY city that has any active
-     * monthly scorer this month, plus the world. Use sparingly — this
+     * monthly scorer this month, plus the world. Use sparingly - this
      * is the bulk version of recalcAfterScoreChange and is intended
      * for two paths only:
      *
-     *   1. /admin/ranks/recalc-all — manual operator trigger when the
+     *   1. /admin/ranks/recalc-all - manual operator trigger when the
      *      denormalised columns drift (e.g. a code path inserted a
      *      score_event without firing the route-level recalc hook).
-     *   2. migrate.php — runs on every deploy so the columns
+     *   2. migrate.php - runs on every deploy so the columns
      *      auto-correct after schema changes or stale data accumulates
      *      across releases.
      *
@@ -286,7 +286,7 @@ class MonthlyRankService
     }
 
     /**
-     * Wipe both rank columns to NULL — used by /admin/scores_reset.php
+     * Wipe both rank columns to NULL - used by /admin/scores_reset.php
      * which zeros every user's score in one go. Run inside the same
      * transaction that resets the scores so the columns stay
      * consistent with the cleared values.
@@ -302,13 +302,13 @@ class MonthlyRankService
         ");
     }
 
-    // ── Inner queries — single transactional UPDATE per scope ────────
+    // ── Inner queries - single transactional UPDATE per scope ────────
 
     /**
      * Returns the elapsed milliseconds so the caller can log it. The
      * UPDATE uses a CTE: rank-window every active monthly scorer in
      * $cityId, then write the exact rank onto each one (no top-N cap
-     * — the versus card shows a medal for every ranked user, not
+     * - the versus card shows a medal for every ranked user, not
      * just the top 10). Users with score_month=0 OR a stale
      * score_month_ref drop out of the CTE and get NULL'd by the
      * inner-subquery branch.
@@ -355,7 +355,7 @@ class MonthlyRankService
     }
 
     /**
-     * Same shape as recalcCity, unpartitioned — world ranks. Touches
+     * Same shape as recalcCity, unpartitioned - world ranks. Touches
      * every user whose monthly_rank_worldwide is currently non-null OR
      * who appears in the CTE this month, so the write set covers
      * every ranked user (no cap) plus former rankers who dropped out.

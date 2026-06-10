@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "{{city}}에서 로컬이 되어요 — Hilads",
+    "cityTitle": "{{city}}에서 로컬이 되어요 - Hilads",
     "cityDesc": "{{city}}에서 로컬이 되어요: 챌린지 도전, 모임 참여, 행아웃 진입, Local Events 발견. 지금 온라인인 사람과 실시간 채팅.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "{{title}}에 Hilads에서 참여해요 — 지금 진행 중인 Local Event. 누가 가는지 보고 실시간으로 대화해요."
+    "eventDesc": "{{title}}에 Hilads에서 참여해요 - 지금 진행 중인 Local Event. 누가 가는지 보고 실시간으로 대화해요."
   },
   "nowTitle": "지금",
   "filterEvents": "🎉 Local Events",
@@ -25,13 +25,13 @@
     "fallbackCity": "당신의 도시",
     "slide1": {
       "title": "Become local. Anywhere.",
-      "body": "Hilads는 여행자를 로컬로 만들어주는 앱이에요 — 그리고 로컬이 자기 도시를 살아 숨 쉬게 하는 것들을 나누는 곳이에요."
+      "body": "Hilads는 여행자를 로컬로 만들어주는 앱이에요 - 그리고 로컬이 자기 도시를 살아 숨 쉬게 하는 것들을 나누는 곳이에요."
     },
     "slide2": {
       "title": "도시를 사는 세 가지 방법",
-      "itemChallenges": "🤝 Challenges — 숨은 장소를 발견하거나, 진짜 음식을 맛보거나, 문화를 나누거나, 도움을 줘요. 도전하고 도전받아요.",
-      "itemHangouts": "🎉 Hangouts — 내키면 모이는 가벼운 만남. 커피, 술, 산책, 뭐든지.",
-      "itemEvents": "📍 Local Events — 커뮤니티가 여는 더 큰 순간들."
+      "itemChallenges": "🤝 Challenges - 숨은 장소를 발견하거나, 진짜 음식을 맛보거나, 문화를 나누거나, 도움을 줘요. 도전하고 도전받아요.",
+      "itemHangouts": "🎉 Hangouts - 내키면 모이는 가벼운 만남. 커피, 술, 산책, 뭐든지.",
+      "itemEvents": "📍 Local Events - 커뮤니티가 여는 더 큰 순간들."
     },
     "slide3": {
       "title": "도시에서 당신의 자리를 만드세요",
@@ -75,7 +75,7 @@
     },
     "slide7": {
       "title": "가장 로컬한 사람이 되어요",
-      "body": "챌린지마다 포인트를 받아요 — 도시 안에서도, 전 세계에서도. 직접 만나면 +50 보너스까지 챙겨요. 로컬이든 여행자든, 중요한 건 여기서 무엇을 만드는지예요. 매달 새 리더보드가 열려요."
+      "body": "챌린지마다 포인트를 받아요 - 도시 안에서도, 전 세계에서도. 직접 만나면 +50 보너스까지 챙겨요. 로컬이든 여행자든, 중요한 건 여기서 무엇을 만드는지예요. 매달 새 리더보드가 열려요."
     },
     "createCta": "🔥 챌린지 만들기"
   },

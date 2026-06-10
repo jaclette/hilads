@@ -149,7 +149,7 @@ export default function NowScreen() {
       ? filterParam : 'all';
   const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>(initialFilter);
   // Re-sync if the URL param changes (e.g. user taps another pill while
-  // already on this screen — router.push fires a new param without
+  // already on this screen - router.push fires a new param without
   // remounting). Doesn't touch the user's manual toggles.
   const lastParamRef = useRef<string | undefined>(typeof filterParam === 'string' ? filterParam : undefined);
   useEffect(() => {
@@ -160,7 +160,7 @@ export default function NowScreen() {
       setFilter(v);
     }
   }, [filterParam]);
-  // Set of currently-visible challenge ids — drives the open-slot pulse
+  // Set of currently-visible challenge ids - drives the open-slot pulse
   // animation on ChallengeVersusCard. Updated by FlatList's
   // onViewableItemsChanged so off-screen cards stop redrawing and entry-
   // level Android doesn't burn battery on a long scroll. The ref keeps
@@ -717,7 +717,7 @@ export default function NowScreen() {
                     router.push(`/challenge/${ch.id}` as never);
                   }}
                   onAcceptPress={() => {
-                    // Open-slot shortcut. Lands on the challenge channel —
+                    // Open-slot shortcut. Lands on the challenge channel -
                     // the accept-challenge CTA there is already the
                     // primary one and runs the same guest gate / auth
                     // flow we'd otherwise duplicate here.
@@ -725,7 +725,7 @@ export default function NowScreen() {
                     router.push(`/challenge/${ch.id}` as never);
                   }}
                   onAvatarPress={(uid) => {
-                    // Profile gate — ghost users can't open registered
+                    // Profile gate - ghost users can't open registered
                     // profiles. Identical guard as the chat surface so
                     // a guest tapping an avatar lands on /auth-gate
                     // instead of a 404.

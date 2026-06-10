@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Maging local sa {{city}} — Hilads",
+    "cityTitle": "Maging local sa {{city}} - Hilads",
     "cityDesc": "Maging local sa {{city}}: sumali sa challenges, mag-meetup, mag-hangout, tuklasin ang Local Events. Live chat sa mga online ngayon.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Sumali sa {{title}} sa Hilads — isang Local Event na nangyayari ngayon. Tingnan kung sino ang papasok at mag-live chat."
+    "eventDesc": "Sumali sa {{title}} sa Hilads - isang Local Event na nangyayari ngayon. Tingnan kung sino ang papasok at mag-live chat."
   },
   "nowTitle": "Ngayon",
   "filterEvents": "🎉 Local Events",
@@ -25,13 +25,13 @@
     "fallbackCity": "iyong city",
     "slide1": {
       "title": "Become local. Anywhere.",
-      "body": "Ang Hilads ay ang app na nagpapasok sa mga traveler bilang local — at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
+      "body": "Ang Hilads ay ang app na nagpapasok sa mga traveler bilang local - at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
     },
     "slide2": {
       "title": "Tatlong paraan para mabuhay sa city",
-      "itemChallenges": "🤝 Challenges — mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
-      "itemHangouts": "🎉 Hangouts — casual meetups kapag may gana ka. Coffee, drinks, walks, anuman.",
-      "itemEvents": "📍 Local Events — mas malaking moments na hosted ng community."
+      "itemChallenges": "🤝 Challenges - mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
+      "itemHangouts": "🎉 Hangouts - casual meetups kapag may gana ka. Coffee, drinks, walks, anuman.",
+      "itemEvents": "📍 Local Events - mas malaking moments na hosted ng community."
     },
     "slide3": {
       "title": "Kitain ang puwesto mo sa city",
@@ -48,7 +48,7 @@
     "title": "Paano gumagana ang challenges",
     "slide1": {
       "title": "Ang challenges, nagiging stories ang biyahe",
-      "body": "Magka-challenge ang locals at travelers para i-share kung ano talaga ang city - food, places, culture, help. Ano ang reward? Mag-meet in person — or magpadala ng proof remotely."
+      "body": "Magka-challenge ang locals at travelers para i-share kung ano talaga ang city - food, places, culture, help. Ano ang reward? Mag-meet in person - or magpadala ng proof remotely."
     },
     "slide2": {
       "title": "I-launch ang challenge mo",
@@ -75,7 +75,7 @@
     },
     "slide7": {
       "title": "Maging pinaka-local",
-      "body": "Bawat challenge may points — sa city mo AT sa worldwide leaderboard. Magkita kayo in person para sa +50 bonus. Local o traveler, ang mahalaga ay kung ano ang ginagawa mo dito. Bagong leaderboard kada buwan."
+      "body": "Bawat challenge may points - sa city mo AT sa worldwide leaderboard. Magkita kayo in person para sa +50 bonus. Local o traveler, ang mahalaga ay kung ano ang ginagawa mo dito. Bagong leaderboard kada buwan."
     },
     "createCta": "🔥 Gumawa ng challenge"
   },

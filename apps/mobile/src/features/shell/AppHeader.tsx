@@ -15,7 +15,7 @@
  * The "Become local. Anywhere." tagline mirrors the web persistent header
  * (`.header-tagline`): ~11px, white at 50% opacity, wrapping onto two lines at
  * maxWidth 76. Brand-locked English in every locale (same rule as the other
- * 6 locked brand terms — see [[i18n-initiative]] in memory).
+ * 6 locked brand terms - see [[i18n-initiative]] in memory).
  */
 
 import React from 'react';

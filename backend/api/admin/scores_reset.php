@@ -44,7 +44,7 @@ try {
             OR score_month_ref IS NOT NULL
     ");
     // The score wipe leaves monthly_rank_* dangling on every user that
-    // had a rank — clear them in the same transaction so the badge
+    // had a rank - clear them in the same transaction so the badge
     // surface stays consistent with the cleared ledger.
     MonthlyRankService::clearAll($pdo);
 

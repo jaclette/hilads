@@ -130,7 +130,7 @@ function PickerView({
   onBack: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
-  // International challenges target ANYONE in the target city — both locals
+  // International challenges target ANYONE in the target city - both locals
   // and travelers are valid candidates (the backend accept gate doesn't
   // check mode for international, only the target city). So we skip the
   // mode filter entirely. Local challenges keep the audience-based filter.
@@ -164,7 +164,7 @@ function PickerView({
       );
 
       try {
-        // International: skip the mode filter directly — no need for the
+        // International: skip the mode filter directly - no need for the
         // two-stage strict/fallback dance because there's no strict pass.
         if (mode === undefined) {
           const all = await fetchCityMembers(cityChannelId, { limit: 50 });
@@ -216,7 +216,7 @@ function PickerView({
     }
   }
 
-  // International picker reads "Members in {city}" — both modes welcome.
+  // International picker reads "Members in {city}" - both modes welcome.
   // Local keeps the audience-specific label (Locals / Travelers).
   const audienceLabel = isInternational
     ? t('aud.members', { defaultValue: 'Members' })

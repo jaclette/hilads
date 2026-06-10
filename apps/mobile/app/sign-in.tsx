@@ -16,7 +16,7 @@ import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-// Same allowlist as sign-up — returnTo accepted only on the surfaces
+// Same allowlist as sign-up - returnTo accepted only on the surfaces
 // we launch auth from. Keeps a tampered deeplink from redirecting out
 // of the app or to a screen we didn't intend.
 const RETURN_TO_ALLOWLIST = ['/challenge/', '/event/', '/t/'];

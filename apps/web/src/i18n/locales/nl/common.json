@@ -1,9 +1,9 @@
 {
   "meta": {
-    "cityTitle": "Word local in {{city}} — Hilads",
+    "cityTitle": "Word local in {{city}} - Hilads",
     "cityDesc": "Word local in {{city}}: start een challenge, sluit aan bij een meetup, duik een hangout in, ontdek Local Events. Live chat met mensen online.",
     "eventTitle": "Local Event: {{title}} | Hilads",
-    "eventDesc": "Sluit aan bij {{title}} op Hilads — een Local Event dat nu plaatsvindt. Zie wie er komt en chat live."
+    "eventDesc": "Sluit aan bij {{title}} op Hilads - een Local Event dat nu plaatsvindt. Zie wie er komt en chat live."
   },
   "nowTitle": "Nu",
   "filterEvents": "🎉 Local Events",
@@ -25,13 +25,13 @@
     "fallbackCity": "jouw stad",
     "slide1": {
       "title": "Become local. Anywhere.",
-      "body": "Hilads is de app die reizigers tot locals maakt — en locals helpt te delen wat hun stad tot leven brengt."
+      "body": "Hilads is de app die reizigers tot locals maakt - en locals helpt te delen wat hun stad tot leven brengt."
     },
     "slide2": {
       "title": "Drie manieren om de stad te beleven",
-      "itemChallenges": "🤝 Challenges — daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
-      "itemHangouts": "🎉 Hangouts — losse afspraken wanneer het je uitkomt. Koffie, borrels, wandelingen, wat dan ook.",
-      "itemEvents": "📍 Local Events — de grotere momenten, georganiseerd door de community."
+      "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
+      "itemHangouts": "🎉 Hangouts - losse afspraken wanneer het je uitkomt. Koffie, borrels, wandelingen, wat dan ook.",
+      "itemEvents": "📍 Local Events - de grotere momenten, georganiseerd door de community."
     },
     "slide3": {
       "title": "Verdien je plek in de stad",
@@ -48,7 +48,7 @@
     "title": "Zo werken challenges",
     "slide1": {
       "title": "Challenges maken van reizen verhalen",
-      "body": "Locals en reizigers dagen elkaar uit om de stad echt te beleven - eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt zien — of bewijs vanop afstand sturen."
+      "body": "Locals en reizigers dagen elkaar uit om de stad echt te beleven - eten, plekken, cultuur, hulp. De beloning? Elkaar in het echt zien - of bewijs vanop afstand sturen."
     },
     "slide2": {
       "title": "Start je challenge",
@@ -75,7 +75,7 @@
     },
     "slide7": {
       "title": "Word de meest lokale",
-      "body": "Elke challenge levert je punten op — in jouw stad EN wereldwijd. Spreek persoonlijk af voor een bonus van +50. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranking."
+      "body": "Elke challenge levert je punten op - in jouw stad EN wereldwijd. Spreek persoonlijk af voor een bonus van +50. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranking."
     },
     "createCta": "🔥 Maak een challenge"
   },

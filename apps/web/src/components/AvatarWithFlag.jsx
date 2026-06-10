@@ -18,7 +18,7 @@ import { countryToFlag } from '../lib/countryFlag'
  * challenges, non-international surfaces).
  */
 export default function AvatarWithFlag({
-  userId,        // unused on web for now — kept for API symmetry with mobile
+  userId,        // unused on web for now - kept for API symmetry with mobile
   displayName,
   photoUrl,
   countryCode,

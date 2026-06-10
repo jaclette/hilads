@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "आप सिर्फ़ घूमने नहीं आए हैं। किसी भी शहर में लोकल बनिए — हर challenge, हर मुलाक़ात, हर जगह आपकी जगह कमाती है। रियल-टाइम, बिना साइन-अप।",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "आप सिर्फ़ घूमने नहीं आए हैं। किसी भी शहर में लोकल बनिए - हर challenge, हर मुलाक़ात, हर जगह आपकी जगह कमाती है। रियल-टाइम, बिना साइन-अप।",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads किसी भी शहर को ऐसी जगह बना देता है जहाँ आप लोकल बन सकते हैं। challenges लीजिए, meetups में जुड़िए, hangouts ढूँढिए, Local Events खोजिए — हर कदम आपको जगह दिलाता है। रियल-टाइम, बिना साइन-अप।",
+    "intro": "Hilads किसी भी शहर को ऐसी जगह बना देता है जहाँ आप लोकल बन सकते हैं। challenges लीजिए, meetups में जुड़िए, hangouts ढूँढिए, Local Events खोजिए - हर कदम आपको जगह दिलाता है। रियल-टाइम, बिना साइन-अप।",
     "aboutHeading": "Hilads कैसे काम करता है",
-    "aboutBody": "अपना शहर चुनिए। लोकल या यात्रियों के लिए challenge लीजिए, meetup में जुड़िए, hangout ढूँढिए, या Local Events खोजिए। जितना आप यहाँ बनाते हैं, उतने ही ज़्यादा लोकल बनते हैं — और Most Local में ऊँचाई पर पहुँचते हैं।",
+    "aboutBody": "अपना शहर चुनिए। लोकल या यात्रियों के लिए challenge लीजिए, meetup में जुड़िए, hangout ढूँढिए, या Local Events खोजिए। जितना आप यहाँ बनाते हैं, उतने ही ज़्यादा लोकल बनते हैं - और Most Local में ऊँचाई पर पहुँचते हैं।",
     "citiesCta": "Hilads के सभी शहर देखो",
     "subhead": "🔥 जिस भी शहर में जाएँ, वहाँ लोकल बनिए।"
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "{city} में और जो कुछ हो रहा है"
   },
   "city": {
-    "title": "{city} में लोकल बनिए — Hilads",
+    "title": "{city} में लोकल बनिए - Hilads",
     "descHigh": "{city} में लोकल बनिए: इस हफ़्ते {count}+ Local Events, साथ ही challenges, meetups और hangouts। ऑनलाइन लोगों के साथ लाइव चैट। बिना साइन-अप।",
     "descMid": "{city} में लोकल बनिए: आज रात meetup में जुड़िए, challenge शुरू कीजिए या hangout में पहुँचिए। ऑनलाइन लोगों के साथ लाइव चैट। बिना साइन-अप।",
     "descLow": "{city} में लोकल बनिए: challenge शुरू कीजिए, देखिए कौन ऑनलाइन है, या hangout खोलिए। लाइव चैट, Local Events, रियल-टाइम। बिना साइन-अप।",

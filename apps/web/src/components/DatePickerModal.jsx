@@ -27,11 +27,11 @@ export default function DatePickerModal({
   initialVenue,
 }) {
   const { t } = useTranslation('challenge')
-  // Chip selections — fast path for the common case (within the next
+  // Chip selections - fast path for the common case (within the next
   // 8 days, at one of the 6 preset times).
   const [dayOffset, setDayOffset] = useState(0)
   const [timeKey,   setTimeKey]   = useState('19:00')
-  // Free-form selections — escape hatch when the user wants a day past
+  // Free-form selections - escape hatch when the user wants a day past
   // the chip horizon, OR a time the presets don't cover. When either
   // is non-null it WINS over the chip on submit, and the chip
   // de-highlights so it's clear which value's in play.
@@ -72,7 +72,7 @@ export default function DatePickerModal({
     return { offset: i, label: d.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric' }) }
   })
 
-  // Min/max bounds for the native date input — never let the user
+  // Min/max bounds for the native date input - never let the user
   // propose a meet-up in the past, and cap at +90 days so an
   // accidental keystroke doesn't book something a decade out.
   const fmt = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -233,7 +233,7 @@ const pillSelected = {
   borderColor: '#FF7A3C',
   color: '#FF7A3C', fontWeight: 800,
 }
-// Free-form date / time inputs — sit below their chip rows and act as
+// Free-form date / time inputs - sit below their chip rows and act as
 // an escape hatch when none of the chips match. Visually tertiary
 // (small, muted border) so they read as "or, pick exactly". Native
 // inputs carry locale-aware UI on every modern browser.

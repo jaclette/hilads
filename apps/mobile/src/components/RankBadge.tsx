@@ -5,12 +5,12 @@ import { Colors } from '@/constants';
 /**
  * Rank badge for the versus-card avatars. Two tiers:
  *
- *   Tier 1 — podium (#1 / #2 / #3): metallic gradient disc with a
+ *   Tier 1 - podium (#1 / #2 / #3): metallic gradient disc with a
  *   subtle ring + inner highlight. Reads as "this player won the
  *   month."
  *
- *   Tier 2 — rank ≥ 4 (no cap): sober dark disc with a thin
- *   accent-orange border. Same visual for #4 and #347 — only the
+ *   Tier 2 - rank ≥ 4 (no cap): sober dark disc with a thin
+ *   accent-orange border. Same visual for #4 and #347 - only the
  *   number changes. Reads as "ranked this month" without competing
  *   visually with the podium.
  *
@@ -28,7 +28,7 @@ export interface RankBadgeProps {
   rank: number | null | undefined;
   /** Disc diameter. Spec says 22-26px. Defaults to 24. */
   size?: number;
-  /** Screen-reader label, e.g. "Rank 1". Optional — when omitted, the
+  /** Screen-reader label, e.g. "Rank 1". Optional - when omitted, the
    *  badge is purely visual and the avatar's a11y label carries the
    *  context. */
   accessibilityLabel?: string;
@@ -77,7 +77,7 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
           end={{ x: 0.8, y: 1 }}
           style={[styles.disc, { borderRadius: size / 2 }]}
         >
-          {/* Inner highlight — a soft, almost-white sheen at the top
+          {/* Inner highlight - a soft, almost-white sheen at the top
               left so the disc reads as a polished metal coin instead
               of a flat fill. Pure visual; positioned via a small
               absolute overlay. */}
@@ -100,9 +100,9 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
     );
   }
 
-  // Tier 2 — neutral pill for #4 through ∞. Same dark surface +
-  // accent-orange thin border for every non-podium rank — only the
-  // number changes — so the hierarchy reads at a glance (gold/silver/
+  // Tier 2 - neutral pill for #4 through ∞. Same dark surface +
+  // accent-orange thin border for every non-podium rank - only the
+  // number changes - so the hierarchy reads at a glance (gold/silver/
   // bronze stand alone; everyone else shares one visual).
   return (
     <View

@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "No solo estás de paso. Vuélvete local en cualquier ciudad — cada challenge, cada quedada, cada lugar gana tu sitio. En tiempo real, sin registro.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "No solo estás de paso. Vuélvete local en cualquier ciudad - cada challenge, cada quedada, cada lugar gana tu sitio. En tiempo real, sin registro.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads convierte cualquier ciudad en un sitio en el que volverte local. Lanza challenges, únete a meetups, encuentra hangouts, descubre Local Events — cada paso te gana tu sitio. En tiempo real, sin registro.",
+    "intro": "Hilads convierte cualquier ciudad en un sitio en el que volverte local. Lanza challenges, únete a meetups, encuentra hangouts, descubre Local Events - cada paso te gana tu sitio. En tiempo real, sin registro.",
     "aboutHeading": "Cómo funciona Hilads",
-    "aboutBody": "Elige tu ciudad. Lanza un challenge para locales o viajeros, únete a un meetup, encuentra un hangout, o descubre Local Events. Cuanto más construyes aquí, más local te vuelves — y más subes en Most Local.",
+    "aboutBody": "Elige tu ciudad. Lanza un challenge para locales o viajeros, únete a un meetup, encuentra un hangout, o descubre Local Events. Cuanto más construyes aquí, más local te vuelves - y más subes en Most Local.",
     "citiesCta": "Explorar todas las ciudades de Hilads",
     "subhead": "🔥 Vuélvete local en cualquier ciudad que visites."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "todo lo demás que pasa en {city}"
   },
   "city": {
-    "title": "Vuélvete local en {city} — Hilads",
+    "title": "Vuélvete local en {city} - Hilads",
     "descHigh": "Vuélvete local en {city}: {count}+ Local Events esta semana, más challenges, meetups y hangouts. Chat en directo con la gente conectada. Sin registro.",
     "descMid": "Vuélvete local en {city}: únete a un meetup esta noche, lanza un challenge o métete en un hangout. Chat en directo con la gente conectada. Sin registro.",
     "descLow": "Vuélvete local en {city}: lanza un challenge, mira quién está conectado o arranca un hangout. Chat en directo, Local Events, actividad en tiempo real. Sin registro.",

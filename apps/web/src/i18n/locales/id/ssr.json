@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Kamu bukan cuma mampir. Jadi orang lokal di kota mana pun — tiap challenge, tiap pertemuan, tiap tempat meraih tempatmu. Real-time, tanpa daftar.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Kamu bukan cuma mampir. Jadi orang lokal di kota mana pun - tiap challenge, tiap pertemuan, tiap tempat meraih tempatmu. Real-time, tanpa daftar.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads mengubah kota mana pun jadi tempat di mana kamu bisa jadi orang lokal. Ikut challenge, gabung meetup, cari hangout, temukan Local Events — tiap langkah meraih tempatmu. Real-time, tanpa daftar.",
+    "intro": "Hilads mengubah kota mana pun jadi tempat di mana kamu bisa jadi orang lokal. Ikut challenge, gabung meetup, cari hangout, temukan Local Events - tiap langkah meraih tempatmu. Real-time, tanpa daftar.",
     "aboutHeading": "Cara kerja Hilads",
-    "aboutBody": "Pilih kotamu. Buka challenge buat lokal atau traveler, gabung meetup, cari hangout, atau temukan Local Events. Makin banyak yang kamu bangun di sini, makin lokal kamu jadinya — dan makin tinggi naik di Most Local.",
+    "aboutBody": "Pilih kotamu. Buka challenge buat lokal atau traveler, gabung meetup, cari hangout, atau temukan Local Events. Makin banyak yang kamu bangun di sini, makin lokal kamu jadinya - dan makin tinggi naik di Most Local.",
     "citiesCta": "Jelajahi semua kota di Hilads",
     "subhead": "🔥 Jadi orang lokal di kota mana pun yang kamu kunjungi."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "semua hal lain yang terjadi di {city}"
   },
   "city": {
-    "title": "Jadi orang lokal di {city} — Hilads",
+    "title": "Jadi orang lokal di {city} - Hilads",
     "descHigh": "Jadi orang lokal di {city}: {count}+ Local Events minggu ini, plus challenges, meetups, dan hangouts. Chat langsung dengan yang sedang online. Tanpa daftar.",
     "descMid": "Jadi orang lokal di {city}: gabung meetup malam ini, mulai challenge, atau masuk hangout. Chat langsung dengan yang sedang online. Tanpa daftar.",
     "descLow": "Jadi orang lokal di {city}: mulai challenge, lihat siapa online, atau buka hangout. Chat langsung, Local Events, aktivitas real-time. Tanpa daftar.",

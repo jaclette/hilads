@@ -11,7 +11,7 @@ import { countryToFlag } from '../lib/countryFlag'
  *   🌐      [Badge]  #N worldwide      ← global scope
  *
  * Hides itself entirely when the user has no city scope AND no monthly
- * score yet (fresh signup) — there is nothing meaningful to show.
+ * score yet (fresh signup) - there is nothing meaningful to show.
  */
 export default function ProfileRankRow({ rank, cityName, cityCountry }) {
   const { t } = useTranslation('challenge')

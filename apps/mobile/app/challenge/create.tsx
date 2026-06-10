@@ -32,7 +32,7 @@ type ChallengeMode = 'local' | 'international';
 const MODES: ChallengeMode[] = ['local', 'international'];
 const MODE_ICONS: Record<ChallengeMode, string> = { local: '🏙️', international: '🌐' };
 
-// Validation method (Meet vs Photo proof) — only relevant for local
+// Validation method (Meet vs Photo proof) - only relevant for local
 // challenges. International is locked to 'photo_proof' server-side.
 // Meet earns a +50 bonus on the mutual rating; Photo earns only the
 // base points. Default 'meet' preserves the historical IRL flow.
@@ -70,7 +70,7 @@ export default function CreateChallengeScreen() {
     : 'local';
 
   const [mode,     setMode]     = useState<ChallengeMode>(initialMode);
-  // Validation method — local-only; international rows are forced to
+  // Validation method - local-only; international rows are forced to
   // 'photo_proof' server-side. Default 'meet' so the historical flow
   // (and the +50 bonus) is opt-out, not opt-in.
   const initialValidationMethod: ValidationMethod = VALIDATION_METHODS.includes(
@@ -176,7 +176,7 @@ export default function CreateChallengeScreen() {
           // International is forced to 'photo_proof' server-side; we
           // just pass the local-only choice through. The server also
           // ignores this field on edit (validation_method is locked
-          // for the lifetime of the challenge — same rule as mode).
+          // for the lifetime of the challenge - same rule as mode).
           validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForSubmit,
         },
@@ -298,7 +298,7 @@ export default function CreateChallengeScreen() {
               })}
             </View>
 
-            {/* Validation method — 2 cards. Meet is the celebrated path
+            {/* Validation method - 2 cards. Meet is the celebrated path
                 (+50 bonus chip fades in below); Photo is the lower-friction
                 alternative (base points only, no bonus, no negative copy). */}
             <Text style={styles.sectionLabel}>{t('validation.label')}</Text>
@@ -746,7 +746,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,122,60,0.10)',
   },
   // Validation cards stack their emoji-label-hint vertically because three
-  // lines on one row didn't fit at the screen width — the hint overflowed
+  // lines on one row didn't fit at the screen width - the hint overflowed
   // past the card border and the next card's icon read as a duplicate of
   // the previous card's text. Column layout + a square-ish card keeps each
   // value scannable in one glance.
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     marginTop:  2,
   },
 
-  // Meet-bonus chip — fades in below the validation cards when Meet
+  // Meet-bonus chip - fades in below the validation cards when Meet
   // is selected. Amber treatment to echo the in-progress badge on
   // the versus card and the "Meet bonus" celebration row.
   bonusChip: {

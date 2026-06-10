@@ -1,9 +1,9 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "단순한 방문이 아니에요. 어느 도시에서든 로컬이 되세요 — 챌린지, 만남, 스폿 하나하나가 자리를 만들어줘요. 실시간, 가입 없음.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "단순한 방문이 아니에요. 어느 도시에서든 로컬이 되세요 - 챌린지, 만남, 스폿 하나하나가 자리를 만들어줘요. 실시간, 가입 없음.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads는 어떤 도시든 로컬이 될 수 있는 공간으로 바꿔줘요. 챌린지에 도전하고, 모임에 참여하고, 행아웃을 찾고, Local Events를 발견해요 — 매 순간이 당신의 자리를 만들어요. 실시간, 가입 없음.",
+    "intro": "Hilads는 어떤 도시든 로컬이 될 수 있는 공간으로 바꿔줘요. 챌린지에 도전하고, 모임에 참여하고, 행아웃을 찾고, Local Events를 발견해요 - 매 순간이 당신의 자리를 만들어요. 실시간, 가입 없음.",
     "aboutHeading": "Hilads 사용법",
     "aboutBody": "도시를 골라요. 로컬이나 여행자를 위한 챌린지를 시작하거나, 모임에 참여하거나, 행아웃을 찾거나, Local Events를 발견해요. 여기서 더 많이 만들수록 더 로컬이 되고, Most Local에서 더 높이 올라가요.",
     "citiesCta": "모든 Hilads 도시 둘러보기",
@@ -84,7 +84,7 @@
     "everythingElseLink": "{city}에서 일어나는 그 밖의 모든 것"
   },
   "city": {
-    "title": "{city}에서 로컬이 되어요 — Hilads",
+    "title": "{city}에서 로컬이 되어요 - Hilads",
     "descHigh": "{city}에서 로컬이 되어요: 이번 주 Local Events {count}+개, 챌린지, 모임, 행아웃까지. 지금 온라인인 사람과 실시간 채팅. 가입 없음.",
     "descMid": "{city}에서 로컬이 되어요: 오늘 밤 모임에 참여, 챌린지 시작, 행아웃에 들어가요. 지금 온라인인 사람과 실시간 채팅. 가입 없음.",
     "descLow": "{city}에서 로컬이 되어요: 챌린지 시작, 누가 온라인인지 확인, 행아웃 열기. 실시간 채팅, Local Events. 가입 없음.",

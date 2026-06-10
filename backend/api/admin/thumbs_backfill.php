@@ -8,7 +8,7 @@ csrf_verify();
 // Backfill profile thumbnails for users who uploaded their photo
 // BEFORE the on-upload thumbnail pipeline shipped (or whose thumb
 // generation failed). Without this, the COALESCE fallback in every
-// avatar SELECT serves the full-size original — 500 kB JPEG /
+// avatar SELECT serves the full-size original - 500 kB JPEG /
 // 2-3 MB PNG payloads on what renders as a 48 px avatar (visible
 // in the Network tab on the Now feed).
 //
@@ -17,7 +17,7 @@ csrf_verify();
 // 400 px via the existing generateAvatarThumbnail() helper, upload
 // the JPEG to R2 with a thumb_*.jpg name, and update the column.
 //
-// Each iteration is independent — partial progress is fine; the
+// Each iteration is independent - partial progress is fine; the
 // script just resumes where it left off on the next click.
 
 $pdo = Database::pdo();
@@ -111,7 +111,7 @@ if (!empty($errors)) {
     error_log('[admin-thumbs-backfill] errors: ' . implode(' | ', array_slice($errors, 0, 10)));
 }
 
-// Surface the actual error reasons when nothing succeeded — without
+// Surface the actual error reasons when nothing succeeded - without
 // this the operator stares at "10 skipped" with no signal as to why
 // (download failure, GD missing, unsupported MIME, etc.).
 $detail = '';

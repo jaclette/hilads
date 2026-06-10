@@ -2,12 +2,12 @@ import { useRef, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 /**
- * OnboardingCarousel — 4-screen first-launch flow.
+ * OnboardingCarousel - 4-screen first-launch flow.
  *
- *   1. Promise          — "Become local. Anywhere." brand tagline
- *   2. Three tools      — Challenges / Hangouts / Local Events
- *   3. Earn your place  — points = how local you've become
- *   4. Invitation       — three CTAs (challenge / Most Local / look around)
+ *   1. Promise          - "Become local. Anywhere." brand tagline
+ *   2. Three tools      - Challenges / Hangouts / Local Events
+ *   3. Earn your place  - points = how local you've become
+ *   4. Invitation       - three CTAs (challenge / Most Local / look around)
  *
  * Web mirror of apps/mobile/src/features/onboarding/OnboardingCarousel.tsx.
  * Same content, same brand-locked English phrases ("Become local.
@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next'
  *
  * The 3 final CTAs are wired through callbacks (onTakeChallenge /
  * onMostLocal / onLookAround) so App.jsx owns the navigation primitives
- * — there's no router on web, just state setters (setNowFilter,
+ * - there's no router on web, just state setters (setNowFilter,
  * setShowLeaderboard + setLeaderboardScope).
  *
  * Scroll mechanics: CSS scroll-snap on .onboarding-track + smooth
@@ -56,14 +56,14 @@ export default function OnboardingCarousel({
       <button className="onboarding-skip" onClick={onClose} aria-label="Skip intro">{t('onboarding.skip')}</button>
 
       <div className="onboarding-track" ref={trackRef} onScroll={onScroll}>
-        {/* Screen 1 — promise */}
+        {/* Screen 1 - promise */}
         <div className="onboarding-slide">
           <div className="onboarding-emoji">🌍</div>
           <h2 className="onboarding-title">{t('onboarding.slide1.title')}</h2>
           <p className="onboarding-body">{t('onboarding.slide1.body')}</p>
         </div>
 
-        {/* Screen 2 — three tools */}
+        {/* Screen 2 - three tools */}
         <div className="onboarding-slide">
           <h2 className="onboarding-title">{t('onboarding.slide2.title')}</h2>
           <ul className="onboarding-tool-list">
@@ -73,14 +73,14 @@ export default function OnboardingCarousel({
           </ul>
         </div>
 
-        {/* Screen 3 — earn your place */}
+        {/* Screen 3 - earn your place */}
         <div className="onboarding-slide">
           <div className="onboarding-emoji">✨</div>
           <h2 className="onboarding-title">{t('onboarding.slide3.title')}</h2>
           <p className="onboarding-body">{t('onboarding.slide3.body', { city: where })}</p>
         </div>
 
-        {/* Screen 4 — invitation */}
+        {/* Screen 4 - invitation */}
         <div className="onboarding-slide">
           <h2 className="onboarding-title">{t('onboarding.slide4.title')}</h2>
           <div className="onboarding-cta-stack">
@@ -111,7 +111,7 @@ export default function OnboardingCarousel({
         </div>
 
         {/* Advance button only on screens 1-3. Screen 4's three CTAs
-            replace it — showing a fourth button would clutter the
+            replace it - showing a fourth button would clutter the
             invitation surface. */}
         {index < lastIndex && (
           <button type="button" className="onboarding-next" onClick={handleAdvance}>

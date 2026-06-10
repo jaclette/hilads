@@ -31,7 +31,7 @@ const AUDIENCES = [
   { value: 'explorers', icon: '🧳' },
 ]
 
-// Validation method — only relevant for local challenges. International
+// Validation method - only relevant for local challenges. International
 // is locked to 'photo_proof' server-side. Meet earns +50 mutual-rating
 // bonus on top of the base points; Photo earns base only.
 const VALIDATION_METHODS = [
@@ -110,7 +110,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
 
   // Edit mode pre-populates from the existing challenge; create starts fresh.
   const [mode,            setMode]            = useState(editChallenge?.mode             ?? 'local')
-  // Validation method — local-only choice. International rows are
+  // Validation method - local-only choice. International rows are
   // forced to 'photo_proof' server-side. Default 'meet' preserves
   // the historical IRL flow + carries the +50 bonus.
   const [validationMethod, setValidationMethod] = useState(editChallenge?.validation_method ?? 'meet')

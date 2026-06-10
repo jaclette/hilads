@@ -350,7 +350,7 @@ export default function PastArchiveScreen() {
             if (item.kind === 'challenge') {
               // Past archive is exclusively validated challenges (state 4)
               // so the versus row always renders both avatars + 🏆. The
-              // open-slot pulse never fires here — animated=false avoids
+              // open-slot pulse never fires here - animated=false avoids
               // the loop setup for an unreachable code path.
               return (
                 <ChallengeVersusCard

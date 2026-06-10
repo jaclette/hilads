@@ -31,7 +31,7 @@ export default function ScoreCelebrationLaunchGate({ account, refetchKey = 0, on
 
   // Host bumps refetchKey on a WS event that earned points
   // (mutual_rating_complete, challenge_date_approved). We can't rely
-  // on the cold-start effect above re-firing — `closed` is initially
+  // on the cold-start effect above re-firing - `closed` is initially
   // false, so setting it to false again is a no-op and React skips
   // the dep change. Fetch directly here instead, then surface the
   // popin once we have a non-zero delta. This is what makes the

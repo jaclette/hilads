@@ -409,7 +409,7 @@ export interface UserDTO {
 
 /**
  * Bounded read-time monthly ranks. Mirrors the PHP MonthlyRankService::ranksForUser
- * shape — used on profile screens (own + other) for the "#N in {city}" + "#N
+ * shape - used on profile screens (own + other) for the "#N in {city}" + "#N
  * worldwide" rows. null = outside the top 100 (top_n). score_month=0 + null
  * rank = no monthly score yet → "Not ranked this month" copy.
  */
@@ -427,7 +427,7 @@ export interface PublicProfile extends UserDTO {
   homeCity?:  string | null;
   /** Live last-geolocated city name. Distinct from homeCity (user-edited). Drives the rank-row "in X" label. */
   currentCity?: string | null;
-  /** ISO country code for the currentCity — used to render the flag emoji on the rank row. */
+  /** ISO country code for the currentCity - used to render the flag emoji on the rank row. */
   currentCityCountry?: string | null;
   aboutMe?:   string | null;
   interests?: string[];
@@ -447,7 +447,7 @@ export interface PublicProfile extends UserDTO {
     id:        string;
     direction: 'outgoing' | 'incoming';
   } | null;
-  /** Monthly ranks (city + worldwide) — null beyond the top 100. */
+  /** Monthly ranks (city + worldwide) - null beyond the top 100. */
   monthlyRank?: MonthlyRank | null;
 }
 
@@ -567,11 +567,11 @@ export interface User {
   username?: string | null;
   display_name: string;
   profile_photo_url?: string;
-  /** Snake-case thumbnail URL (≤400 px) — same shape as profile_photo_url
+  /** Snake-case thumbnail URL (≤400 px) - same shape as profile_photo_url
    *  for callers that hold the raw account row from /me. Falls back to
    *  profile_photo_url server-side when no thumbnail was generated. */
   profile_thumb_photo_url?: string;
-  /** Camel-case thumbnail URL — surfaced by UserResource DTOs (lists). */
+  /** Camel-case thumbnail URL - surfaced by UserResource DTOs (lists). */
   thumbAvatarUrl?: string | null;
   home_city?: string;
   about_me?: string | null;

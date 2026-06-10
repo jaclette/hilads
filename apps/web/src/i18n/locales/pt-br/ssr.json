@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Você não está só de passagem. Vire local em qualquer cidade — cada challenge, cada encontro, cada lugar conquista seu espaço. Em tempo real, sem cadastro.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Você não está só de passagem. Vire local em qualquer cidade - cada challenge, cada encontro, cada lugar conquista seu espaço. Em tempo real, sem cadastro.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads transforma qualquer cidade num lugar onde você pode virar local. Lance challenges, entre em meetups, encontre hangouts, descubra Local Events — cada passo conquista seu espaço. Em tempo real, sem cadastro.",
+    "intro": "Hilads transforma qualquer cidade num lugar onde você pode virar local. Lance challenges, entre em meetups, encontre hangouts, descubra Local Events - cada passo conquista seu espaço. Em tempo real, sem cadastro.",
     "aboutHeading": "Como a Hilads funciona",
-    "aboutBody": "Escolha sua cidade. Lance um challenge pra locais ou viajantes, entre num meetup, encontre um hangout, ou descubra Local Events. Quanto mais você constrói aqui, mais local você vira — e mais sobe em Most Local.",
+    "aboutBody": "Escolha sua cidade. Lance um challenge pra locais ou viajantes, entre num meetup, encontre um hangout, ou descubra Local Events. Quanto mais você constrói aqui, mais local você vira - e mais sobe em Most Local.",
     "citiesCta": "Explorar todas as cidades da Hilads",
     "subhead": "🔥 Vire local em qualquer cidade que visitar."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "tudo o mais que está rolando em {city}"
   },
   "city": {
-    "title": "Vire local em {city} — Hilads",
+    "title": "Vire local em {city} - Hilads",
     "descHigh": "Vire local em {city}: {count}+ Local Events nesta semana, mais challenges, meetups e hangouts. Chat ao vivo com quem está online. Sem cadastro.",
     "descMid": "Vire local em {city}: entre num meetup hoje, lance um challenge ou caia num hangout. Chat ao vivo com quem está online. Sem cadastro.",
     "descLow": "Vire local em {city}: lance um challenge, veja quem está online ou comece um hangout. Chat ao vivo, Local Events, atividade em tempo real. Sem cadastro.",

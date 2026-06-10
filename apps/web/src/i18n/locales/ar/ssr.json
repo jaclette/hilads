@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "أنت لست مجرد زائر. كن محليًا في أي مدينة — كل تحدٍّ، كل لقاء، كل مكان يكسبك مكانك. في الزمن الفعلي، دون تسجيل.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "أنت لست مجرد زائر. كن محليًا في أي مدينة - كل تحدٍّ، كل لقاء، كل مكان يكسبك مكانك. في الزمن الفعلي، دون تسجيل.",
     "h1": "Become local. Anywhere.",
-    "intro": "يحوّل Hilads أي مدينة إلى مكان يمكنك أن تصبح فيه محليًا. ادخل في تحديات، انضم إلى meetups، اعثر على hangouts، اكتشف Local Events — كل خطوة تكسبك مكانك. في الزمن الفعلي، دون تسجيل.",
+    "intro": "يحوّل Hilads أي مدينة إلى مكان يمكنك أن تصبح فيه محليًا. ادخل في تحديات، انضم إلى meetups، اعثر على hangouts، اكتشف Local Events - كل خطوة تكسبك مكانك. في الزمن الفعلي، دون تسجيل.",
     "aboutHeading": "كيف يعمل Hilads",
-    "aboutBody": "اختر مدينتك. أطلق challenge للمحليين أو المسافرين، انضم إلى meetup، اعثر على hangout، أو اكتشف Local Events. كلما بنيت هنا أكثر، أصبحت محليًا أكثر — وارتفعت في Most Local.",
+    "aboutBody": "اختر مدينتك. أطلق challenge للمحليين أو المسافرين، انضم إلى meetup، اعثر على hangout، أو اكتشف Local Events. كلما بنيت هنا أكثر، أصبحت محليًا أكثر - وارتفعت في Most Local.",
     "citiesCta": "تصفّح كل مدن Hilads",
     "subhead": "🔥 كن محليًا في أي مدينة تزورها."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "كل ما يحدث أيضًا في {city}"
   },
   "city": {
-    "title": "كن محليًا في {city} — Hilads",
+    "title": "كن محليًا في {city} - Hilads",
     "descHigh": "كن محليًا في {city}: {count}+ من Local Events هذا الأسبوع، إضافة إلى challenges وmeetups وhangouts. دردشة حية مع المتصلين الآن. دون تسجيل.",
     "descMid": "كن محليًا في {city}: انضم إلى meetup الليلة، أطلق challenge أو ادخل hangout. دردشة حية مع المتصلين. دون تسجيل.",
     "descLow": "كن محليًا في {city}: أطلق challenge، شاهد من المتصل، أو افتح hangout. دردشة حية، Local Events، نشاط آني. دون تسجيل.",

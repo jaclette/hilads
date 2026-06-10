@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Hindi ka lang nag-bisita. Maging local sa kahit anong city — bawat challenge, bawat meet, bawat lugar ang kumikita ng puwesto mo. Real-time, walang sign-up.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Hindi ka lang nag-bisita. Maging local sa kahit anong city - bawat challenge, bawat meet, bawat lugar ang kumikita ng puwesto mo. Real-time, walang sign-up.",
     "h1": "Become local. Anywhere.",
-    "intro": "Ginagawang local-ready ng Hilads ang kahit anong city. Sumali sa challenges, mag-meetup, maghanap ng hangout, tuklasin ang Local Events — bawat hakbang ay kumikita ng puwesto mo. Real-time, walang sign-up.",
+    "intro": "Ginagawang local-ready ng Hilads ang kahit anong city. Sumali sa challenges, mag-meetup, maghanap ng hangout, tuklasin ang Local Events - bawat hakbang ay kumikita ng puwesto mo. Real-time, walang sign-up.",
     "aboutHeading": "Paano gumagana ang Hilads",
-    "aboutBody": "Pumili ng city. Mag-launch ng challenge para sa locals o travelers, sumali sa meetup, maghanap ng hangout, o tuklasin ang Local Events. Mas marami kang itinatayo dito, mas local ka na — at mas mataas ang puwesto mo sa Most Local.",
+    "aboutBody": "Pumili ng city. Mag-launch ng challenge para sa locals o travelers, sumali sa meetup, maghanap ng hangout, o tuklasin ang Local Events. Mas marami kang itinatayo dito, mas local ka na - at mas mataas ang puwesto mo sa Most Local.",
     "citiesCta": "I-browse lahat ng cities ng Hilads",
     "subhead": "🔥 Maging local sa kahit anong city na bisitahin mo."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "lahat ng iba pang nangyayari sa {city}"
   },
   "city": {
-    "title": "Maging local sa {city} — Hilads",
+    "title": "Maging local sa {city} - Hilads",
     "descHigh": "Maging local sa {city}: {count}+ Local Events this week, plus challenges, meetups, at hangouts. Live chat sa mga nag-online ngayon. Walang sign-up.",
     "descMid": "Maging local sa {city}: sumali sa meetup mamayang gabi, mag-launch ng challenge, o pumasok sa hangout. Live chat sa mga online. Walang sign-up.",
     "descLow": "Maging local sa {city}: mag-launch ng challenge, tingnan kung sino ang online, o magsimula ng hangout. Live chat, Local Events, real-time activity. Walang sign-up.",

@@ -135,7 +135,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           >
             {focused && <ActivePill />}
 
-            {/* Icon - web: .bottom-nav-icon (26×26). Plain static icon — no
+            {/* Icon - web: .bottom-nav-icon (26×26). Plain static icon - no
                 pulse, no glow overlay (removed alongside the noisy city-chat
                 activity pills). */}
             <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>

@@ -5,7 +5,7 @@ declare(strict_types=1);
 admin_require_login();
 csrf_verify();
 
-// Manual rank recalc — exposed because the route-level recalc hooks
+// Manual rank recalc - exposed because the route-level recalc hooks
 // only fire on score-changing actions (rate / approve / accept / etc).
 // If a user's monthly_rank_* column drifts (cold path inserted a
 // score_event without triggering a hook, or a backfill bypassed PHP),
@@ -13,7 +13,7 @@ csrf_verify();
 // forces a fresh recalc for every city + worldwide so the columns
 // match the live leaderboard.
 //
-// Safe to call repeatedly — the recalc UPDATE only writes rows where
+// Safe to call repeatedly - the recalc UPDATE only writes rows where
 // the new rank differs from the old, so back-to-back hits are no-ops.
 
 try {

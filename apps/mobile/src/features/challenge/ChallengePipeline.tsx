@@ -80,10 +80,10 @@ function derive(
   // International auto-approves at take-on (no 'pending'); local-with-photo_
   // proof still goes through pending → accepted → proof → verdict. From
   // 'accepted' onwards the two are identical: no date concertation, no
-  // meet-up step — taker uploads proof, creator verdicts.
+  // meet-up step - taker uploads proof, creator verdicts.
   if (usesPhotoProof) {
     if (phase === 'pending') {
-      // Local-with-photo_proof only — international skips this phase.
+      // Local-with-photo_proof only - international skips this phase.
       return {
         active: 'accept',
         done: new Set<Step>(),
@@ -150,7 +150,7 @@ function derive(
 
   if (phase === 'accepted') {
     const hasProposal = acceptance.proposed_starts_at != null;
-    // The OTHER party — whoever did NOT propose — sees "Approve date".
+    // The OTHER party - whoever did NOT propose - sees "Approve date".
     // The proposer sees "Awaiting their approval". Previously gated on
     // iAmCreator, which meant the challenger's own proposal looked
     // approvable by them; the matching ScheduleBlock fix lifts the
@@ -225,7 +225,7 @@ export function ChallengePipeline({
 }: {
   acceptance: ChallengeThreadSummary | null;
   iAmCreator: boolean;
-  /** Used to derive "did I propose this date?" — required for the
+  /** Used to derive "did I propose this date?" - required for the
    *  accepted-phase sub-CTA to know whether to say "Approve date" or
    *  "Awaiting their approval". Optional for back-compat; older
    *  callers fall through to the iAmCreator-only behaviour. */

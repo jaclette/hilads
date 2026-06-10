@@ -1,11 +1,11 @@
 {
   "home": {
-    "title": "Hilads — Become local. Anywhere.",
-    "description": "Du bist nicht nur zu Besuch. Werde local in jeder Stadt — jede Challenge, jedes Treffen, jeder Spot verdient dir deinen Platz. In Echtzeit, ohne Anmeldung.",
+    "title": "Hilads - Become local. Anywhere.",
+    "description": "Du bist nicht nur zu Besuch. Werde local in jeder Stadt - jede Challenge, jedes Treffen, jeder Spot verdient dir deinen Platz. In Echtzeit, ohne Anmeldung.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads macht aus jeder Stadt einen Ort, an dem du local werden kannst. Starte Challenges, geh zu Meetups, finde Hangouts, entdecke Local Events — jeder Schritt verdient dir deinen Platz. In Echtzeit, ohne Anmeldung.",
+    "intro": "Hilads macht aus jeder Stadt einen Ort, an dem du local werden kannst. Starte Challenges, geh zu Meetups, finde Hangouts, entdecke Local Events - jeder Schritt verdient dir deinen Platz. In Echtzeit, ohne Anmeldung.",
     "aboutHeading": "So funktioniert Hilads",
-    "aboutBody": "Wähle deine Stadt. Starte eine Challenge für Locals oder Reisende, geh zu einem Meetup, finde ein Hangout, oder entdecke Local Events. Je mehr du hier baust, desto lokaler wirst du — und desto höher kletterst du auf Most Local.",
+    "aboutBody": "Wähle deine Stadt. Starte eine Challenge für Locals oder Reisende, geh zu einem Meetup, finde ein Hangout, oder entdecke Local Events. Je mehr du hier baust, desto lokaler wirst du - und desto höher kletterst du auf Most Local.",
     "citiesCta": "Alle Hilads-Städte durchstöbern",
     "subhead": "🔥 Werde local in jeder Stadt, die du besuchst."
   },
@@ -84,7 +84,7 @@
     "everythingElseLink": "alles andere, was in {city} passiert"
   },
   "city": {
-    "title": "Werde local in {city} — Hilads",
+    "title": "Werde local in {city} - Hilads",
     "descHigh": "Werde local in {city}: {count}+ Local Events diese Woche, plus Challenges, Meetups und Hangouts. Live-Chat mit Leuten, die gerade online sind. Ohne Anmeldung.",
     "descMid": "Werde local in {city}: heute Abend zu einem Meetup, starte eine Challenge oder steig in einen Hangout ein. Live-Chat mit Leuten online. Ohne Anmeldung.",
     "descLow": "Werde local in {city}: starte eine Challenge, sieh wer online ist oder eröffne einen Hangout. Live-Chat, Local Events, Echtzeit-Aktivität. Ohne Anmeldung.",

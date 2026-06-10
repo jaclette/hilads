@@ -706,8 +706,8 @@ export default function ChatTab() {
   function handleAutoDismiss(id: string) {
     // Only the chat prompts (e.g. "Learn how challenges work") still
     // ride the in-feed auto-dismiss path. The event / hangout /
-    // challenge pills are no longer rendered inline — they're folded
-    // into the single persistent activity counter above the FlatList —
+    // challenge pills are no longer rendered inline - they're folded
+    // into the single persistent activity counter above the FlatList -
     // so dismissal there is moot. pulseNow() was the NOW tab's bump
     // animation; both the pulse and its driver are gone.
     setPromptItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
@@ -798,11 +798,11 @@ export default function ChatTab() {
   }, [messages, promptItems]);
 
   // Counts that feed the persistent activity pills. Pulled from the
-  // same state arrays we used to inject pills into the feed — we keep
+  // same state arrays we used to inject pills into the feed - we keep
   // the fetches + WS handlers untouched so the counters tick up in
   // real time when a new event / challenge lands. Hangouts (topics)
   // continue to be tracked for the NOW screen but no longer have a
-  // dedicated city-chat pill (per spec — only events + challenges
+  // dedicated city-chat pill (per spec - only events + challenges
   // got the split treatment).
 
   // ── Reply callbacks ───────────────────────────────────────────────────────────
@@ -1039,13 +1039,13 @@ export default function ChatTab() {
           neutral label; on a new arrival it morphs in-place for 3s. */}
       <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} />
 
-      {/* Single persistent activity pill — replaces the ephemeral event /
+      {/* Single persistent activity pill - replaces the ephemeral event /
           hangout / challenge cards that used to flicker through the feed.
           Stays visible at the top of the chat for the lifetime of this
           city; taps land the user on /(tabs)/now where the full lists
           live. Hidden when there's literally nothing happening so it
           doesn't read as "0 / 0 / 0" to a quiet-city visitor. */}
-      {/* Activity pills — one per content type. Tapping each routes to
+      {/* Activity pills - one per content type. Tapping each routes to
           /(tabs)/now with a ?filter= param so the NOW screen opens
           pre-filtered to that type. Hidden when zero of that type so
           each row only appears when there's something to show. */}
@@ -1497,7 +1497,7 @@ const styles = StyleSheet.create({
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
-  // Persistent city-activity counters — one row, up to two pills (one
+  // Persistent city-activity counters - one row, up to two pills (one
   // per content type). Each is tappable and routes to NOW with a
   // pre-applied filter. Visual echoes the "Learn how challenges work"
   // banner inside the challenge channel so the two surfaces feel like

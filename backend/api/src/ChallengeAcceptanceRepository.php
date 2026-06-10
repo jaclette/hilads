@@ -38,7 +38,7 @@ class ChallengeAcceptanceRepository
     // Previously derived from a JOINed channel_events row, but date approval
     // no longer creates an event - the proposed_starts_at/ends_at columns on
     // the acceptance row are the source of truth.
-    // 30 minutes after the meetup STARTS the verdict step unlocks —
+    // 30 minutes after the meetup STARTS the verdict step unlocks -
     // not when the meetup ends. The picker defaults proposed_ends_at
     // to starts_at + 2h, so the prior `COALESCE(ends, starts) < now()`
     // rule meant a 12:30 PM lunch couldn't be wrapped up until 2:30
@@ -277,7 +277,7 @@ class ChallengeAcceptanceRepository
     /** Idempotency probe - has this user already accepted this challenge?
      *  Returns the most recent row (active or terminal). Callers that care
      *  only about "currently the acceptor" must filter terminal phases
-     *  themselves — see findActiveByUser() for the active-only variant. */
+     *  themselves - see findActiveByUser() for the active-only variant. */
     public static function findExisting(string $challengeId, string $acceptorUserId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
@@ -291,7 +291,7 @@ class ChallengeAcceptanceRepository
     }
 
     /**
-     * Active-only variant of findExisting — same WHERE keys, but also gated
+     * Active-only variant of findExisting - same WHERE keys, but also gated
      * on IS_ACTIVE_SQL so a terminal row from a prior round (approved /
      * rejected / ghosted scheduled) doesn't short-circuit re-acceptance.
      * Used by the /accept idempotency check so the user can re-take a

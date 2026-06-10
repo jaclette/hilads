@@ -90,7 +90,7 @@ function SeedView({ challenge, cityName, t, onPickPeople, onShare, onSkip }) {
 }
 
 function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDone, onBack }) {
-  // International targets ANYONE in the target city (locals + travelers) —
+  // International targets ANYONE in the target city (locals + travelers) -
   // the backend accept gate doesn't check mode for international. Skip the
   // mode filter so the picker doesn't hide half the eligible people.
   const isInternational = (challenge.mode ?? 'local') === 'international'
@@ -128,7 +128,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
 
     ;(async () => {
       try {
-        // International: no mode filter — fetch all members in one pass.
+        // International: no mode filter - fetch all members in one pass.
         if (mode === undefined) {
           const all = await fetchCityMembers(cityChannelId, { limit: 50 })
           if (!active) return
@@ -181,7 +181,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
     }
   }
 
-  // International picker reads "Members in {city}" — both modes welcome.
+  // International picker reads "Members in {city}" - both modes welcome.
   const audienceLabel = isInternational
     ? t('aud.members', { defaultValue: 'Members' })
     : (challenge.audience === 'locals' ? t('aud.locals') : t('aud.explorers'))

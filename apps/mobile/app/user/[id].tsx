@@ -473,7 +473,7 @@ export default function PublicProfileScreen() {
                 </View>
               ) : null}
 
-              {/* Monthly rank — this user's rank in THEIR own current city +
+              {/* Monthly rank - this user's rank in THEIR own current city +
                   worldwide. Distinct from the viewer's city above. Renders
                   nothing when the user has no current city + no monthly
                   score. */}

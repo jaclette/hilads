@@ -26,7 +26,7 @@ $topScorer = $pdo->query("
     LIMIT 1
 ")->fetch(\PDO::FETCH_ASSOC) ?: null;
 
-// Avatar thumbnail backfill — how many users still serve the full
+// Avatar thumbnail backfill - how many users still serve the full
 // profile_photo_url as their "thumb" via the COALESCE fallback. Each
 // of those costs 500 kB-3 MB on every card render.
 $thumbsMissing = (int)$pdo->query("

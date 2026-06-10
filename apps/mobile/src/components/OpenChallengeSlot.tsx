@@ -7,8 +7,8 @@ import { Colors } from '@/constants';
  * versus layout. Dashed orange ring at the size of the challenger's avatar
  * with a centered + glyph, breathing on a 2.4s loop to invite a take-on.
  *
- * The pulse is intentionally subtle — opacity 0.85 → 1.0, scale 1.00 → 1.05
- * — so a long feed of open challenges doesn't strobe. `animated={false}`
+ * The pulse is intentionally subtle - opacity 0.85 → 1.0, scale 1.00 → 1.05
+ * - so a long feed of open challenges doesn't strobe. `animated={false}`
  * stops the loop entirely (callers drive this from FlatList's
  * onViewableItemsChanged so off-screen cards don't pulse).
  *
@@ -18,13 +18,13 @@ import { Colors } from '@/constants';
  */
 
 export interface OpenChallengeSlotProps {
-  /** Slot diameter — matches the avatar size on the same card. */
+  /** Slot diameter - matches the avatar size on the same card. */
   size?: number;
   /** When false, the resting pulse stops on the current frame. Use this
    *  with FlatList viewability so the loop doesn't redraw off-screen. */
   animated?: boolean;
   /** Optional tap target. When provided the slot becomes a button (the
-   *  card itself is still tappable too — see the card's wrapper). */
+   *  card itself is still tappable too - see the card's wrapper). */
   onPress?: () => void;
   /** A11y label for screen readers ("Take this challenge on"). */
   accessibilityLabel?: string;
@@ -37,7 +37,7 @@ export function OpenChallengeSlot({
   accessibilityLabel,
 }: OpenChallengeSlotProps) {
   // Driver feeds both the opacity tween and the scale tween. Native
-  // driver — no JS heap pressure during the loop, key for keeping the
+  // driver - no JS heap pressure during the loop, key for keeping the
   // feed buttery on entry-level Android.
   const pulse = useRef(new Animated.Value(0)).current;
 

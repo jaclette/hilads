@@ -42,7 +42,7 @@ export default function AuthGateScreen() {
   const gateReason: GateReason = (reason as GateReason) in GATE_EMOJI ? (reason as GateReason) : 'view_profile';
 
   // Carry the returnTo through to /sign-up (and /sign-in) so the user
-  // lands back on the originating screen after a successful auth —
+  // lands back on the originating screen after a successful auth -
   // not on the default post-signup chat tab. Allowlisted in sign-up.tsx
   // so an attacker can't fashion a deeplink that redirects out of the app.
   const authPath = (base: '/sign-up' | '/sign-in') =>
