@@ -109,14 +109,6 @@
   "openSettings": "設定を開く",
   "composer": {
     "placeholderDefault": "メッセージを送ろう…",
-    "placeholders": [
-      "あいさつしよう 👋",
-      "今夜は誰が出かける？",
-      "予定ある？ 👀",
-      "ここで何が起きてる？",
-      "誰か一緒にどう？ 🍻",
-      "メッセージを送ろう…"
-    ],
     "attach": "添付を追加",
     "sendPhotoTitle": "写真を送る",
     "takePhoto": "写真を撮る",

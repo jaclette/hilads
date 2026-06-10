@@ -109,14 +109,6 @@
   "openSettings": "설정 열기",
   "composer": {
     "placeholderDefault": "메시지를 남겨보세요…",
-    "placeholders": [
-      "인사해 보세요 👋",
-      "오늘 밤 누가 나왔나요?",
-      "무슨 계획 있어요? 👀",
-      "여기 무슨 일이 일어나고 있나요?",
-      "같이 뭔가 할 사람? 🍻",
-      "메시지를 남겨보세요…"
-    ],
     "attach": "첨부 추가",
     "sendPhotoTitle": "사진 보내기",
     "takePhoto": "사진 찍기",

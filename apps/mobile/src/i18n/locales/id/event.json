@@ -34,9 +34,18 @@
   "location": "LOKASI",
   "locationPlaceholder": "Opsional · ketuk untuk atur di peta",
   "preset": {
-    "daily_spot": { "label": "Spot harian", "desc": "Setiap hari" },
-    "every_evening": { "label": "Setiap malam", "desc": "Harian · 20.00" },
-    "weekends": { "label": "Akhir pekan", "desc": "Sab & Min" }
+    "daily_spot": {
+      "label": "Spot harian",
+      "desc": "Setiap hari"
+    },
+    "every_evening": {
+      "label": "Setiap malam",
+      "desc": "Harian · 20.00"
+    },
+    "weekends": {
+      "label": "Akhir pekan",
+      "desc": "Sab & Min"
+    }
   },
   "submitCreate": "Buat acara",
   "submitStart": "Mulai acara",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} ikut",
   "goingEmpty": "Belum ada - jadilah yang pertama gabung! 🙌",
   "noMessages": "Belum ada pesan. Bilang sesuatu! 👋",
-  "composerSay": "Bilang sesuatu di {{title}} ✨",
-  "composerFirst": "Jadilah yang pertama di {{title}} ✨",
   "mapsError": "Tidak bisa membuka maps",
   "mapsA11y": "Buka alamat di Google Maps: {{address}}",
   "mapsHint": "Membuka Google Maps dengan lokasi tempat ini",
@@ -94,6 +101,19 @@
     "gotIt": "Mengerti",
     "backToNow": "Kembali ke Now"
   },
-  "recur": {"everyday":"Setiap hari","weekly":"Mingguan","everyNDays_one":"Setiap {{count}} hari","everyNDays_other":"Setiap {{count}} hari"},
-  "weekdays": ["Min","Sen","Sel","Rab","Kam","Jum","Sab"]
+  "recur": {
+    "everyday": "Setiap hari",
+    "weekly": "Mingguan",
+    "everyNDays_one": "Setiap {{count}} hari",
+    "everyNDays_other": "Setiap {{count}} hari"
+  },
+  "weekdays": [
+    "Min",
+    "Sen",
+    "Sel",
+    "Rab",
+    "Kam",
+    "Jum",
+    "Sab"
+  ]
 }

@@ -34,9 +34,18 @@
   "location": "ĐỊA ĐIỂM",
   "locationPlaceholder": "Tùy chọn · chạm để đặt trên bản đồ",
   "preset": {
-    "daily_spot": { "label": "Spot hằng ngày", "desc": "Mỗi ngày" },
-    "every_evening": { "label": "Mỗi tối", "desc": "Hằng ngày · 20h" },
-    "weekends": { "label": "Cuối tuần", "desc": "Thứ 7 & CN" }
+    "daily_spot": {
+      "label": "Spot hằng ngày",
+      "desc": "Mỗi ngày"
+    },
+    "every_evening": {
+      "label": "Mỗi tối",
+      "desc": "Hằng ngày · 20h"
+    },
+    "weekends": {
+      "label": "Cuối tuần",
+      "desc": "Thứ 7 & CN"
+    }
   },
   "submitCreate": "Tạo sự kiện",
   "submitStart": "Bắt đầu sự kiện",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} tham gia",
   "goingEmpty": "Chưa có ai - hãy là người đầu tiên! 🙌",
   "noMessages": "Chưa có tin nhắn. Nói gì đó đi! 👋",
-  "composerSay": "Nói gì đó tại {{title}} ✨",
-  "composerFirst": "Hãy là người đầu tiên tại {{title}} ✨",
   "mapsError": "Không thể mở bản đồ",
   "mapsA11y": "Mở địa chỉ trong Google Maps: {{address}}",
   "mapsHint": "Mở Google Maps tại địa điểm của sự kiện này",
@@ -94,6 +101,19 @@
     "gotIt": "Đã hiểu",
     "backToNow": "Quay lại Now"
   },
-  "recur": {"everyday":"Mỗi ngày","weekly":"Hàng tuần","everyNDays_one":"Mỗi {{count}} ngày","everyNDays_other":"Mỗi {{count}} ngày"},
-  "weekdays": ["CN","T2","T3","T4","T5","T6","T7"]
+  "recur": {
+    "everyday": "Mỗi ngày",
+    "weekly": "Hàng tuần",
+    "everyNDays_one": "Mỗi {{count}} ngày",
+    "everyNDays_other": "Mỗi {{count}} ngày"
+  },
+  "weekdays": [
+    "CN",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7"
+  ]
 }

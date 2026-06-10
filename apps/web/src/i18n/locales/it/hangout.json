@@ -3,7 +3,14 @@
     "startTitle": "Lancia un ritrovo",
     "editTitle": "Modifica il ritrovo",
     "category": "Categoria",
-    "cat": { "general": "Generale", "tips": "Consigli", "food": "Cibo", "drinks": "Drink", "help": "Aiuto", "meetup": "Incontro" },
+    "cat": {
+      "general": "Generale",
+      "tips": "Consigli",
+      "food": "Cibo",
+      "drinks": "Drink",
+      "help": "Aiuto",
+      "meetup": "Incontro"
+    },
     "titleLabel": "A cosa stai pensando?",
     "titlePlaceholder": "es. Miglior posto per il caffè in zona?",
     "detailsLabel": "Aggiungi dettagli",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} in questo ritrovo",
     "seeAll": "Vedi tutto →"
   },
-  "owner": { "edit": "✏️ Modifica", "delete": "🗑 Elimina" },
+  "owner": {
+    "edit": "✏️ Modifica",
+    "delete": "🗑 Elimina"
+  },
   "gated": {
     "title": "Ritrovo solo per membri",
     "pending": "Richiesta in sospeso - potrai partecipare alla conversazione non appena un membro accetta.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Accettato da {{name}}",
     "declined": "Richiesta rifiutata"
   },
-  "modes": { "local": "Locale", "exploring": "In esplorazione" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Messaggio originale non disponibile" },
-  "composer": { "reply": "Rispondi alla conversazione…", "start": "Anima il vibe ✨" },
+  "modes": {
+    "local": "Locale",
+    "exploring": "In esplorazione"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Messaggio originale non disponibile"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Impossibile ottenere la tua posizione. Attiva l'accesso alla posizione e riprova.",
     "imageType": "Seleziona un'immagine JPEG, PNG o WebP.",

@@ -34,9 +34,18 @@
   "location": "LOCATION",
   "locationPlaceholder": "Optional · tap to set on map",
   "preset": {
-    "daily_spot": { "label": "Daily spot", "desc": "Every day" },
-    "every_evening": { "label": "Every evening", "desc": "Daily · 8pm" },
-    "weekends": { "label": "Weekends", "desc": "Sat & Sun" }
+    "daily_spot": {
+      "label": "Daily spot",
+      "desc": "Every day"
+    },
+    "every_evening": {
+      "label": "Every evening",
+      "desc": "Daily · 8pm"
+    },
+    "weekends": {
+      "label": "Weekends",
+      "desc": "Sat & Sun"
+    }
   },
   "submitCreate": "Create event",
   "submitStart": "Start an event",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} going",
   "goingEmpty": "No one yet - be the first to join! 🙌",
   "noMessages": "No messages yet. Say something! 👋",
-  "composerSay": "Say something at {{title}} ✨",
-  "composerFirst": "Be the first at {{title}} ✨",
   "mapsError": "Couldn't open maps",
   "mapsA11y": "Open address in Google Maps: {{address}}",
   "mapsHint": "Opens Google Maps with this venue's location",
@@ -94,6 +101,19 @@
     "gotIt": "Got it",
     "backToNow": "Back to Now"
   },
-  "recur": {"everyday":"Every day","weekly":"Weekly","everyNDays_one":"Every {{count}} day","everyNDays_other":"Every {{count}} days"},
-  "weekdays": ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+  "recur": {
+    "everyday": "Every day",
+    "weekly": "Weekly",
+    "everyNDays_one": "Every {{count}} day",
+    "everyNDays_other": "Every {{count}} days"
+  },
+  "weekdays": [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+  ]
 }

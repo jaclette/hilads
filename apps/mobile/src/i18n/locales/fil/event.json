@@ -34,9 +34,18 @@
   "location": "LOCATION",
   "locationPlaceholder": "Opsyonal · i-tap para itakda sa mapa",
   "preset": {
-    "daily_spot": { "label": "Daily spot", "desc": "Araw-araw" },
-    "every_evening": { "label": "Tuwing gabi", "desc": "Araw-araw · 8pm" },
-    "weekends": { "label": "Weekends", "desc": "Sab at Lin" }
+    "daily_spot": {
+      "label": "Daily spot",
+      "desc": "Araw-araw"
+    },
+    "every_evening": {
+      "label": "Tuwing gabi",
+      "desc": "Araw-araw · 8pm"
+    },
+    "weekends": {
+      "label": "Weekends",
+      "desc": "Sab at Lin"
+    }
   },
   "submitCreate": "Gumawa ng event",
   "submitStart": "Magsimula ng event",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} pupunta",
   "goingEmpty": "Wala pa - mauna kang sumali! 🙌",
   "noMessages": "Wala pang mensahe. Magsalita ka! 👋",
-  "composerSay": "Magsalita sa {{title}} ✨",
-  "composerFirst": "Mauna ka sa {{title}} ✨",
   "mapsError": "Hindi mabuksan ang maps",
   "mapsA11y": "Buksan ang address sa Google Maps: {{address}}",
   "mapsHint": "Binubuksan ang Google Maps sa lokasyon ng venue na ito",
@@ -94,6 +101,19 @@
     "gotIt": "Nakuha ko",
     "backToNow": "Bumalik sa Now"
   },
-  "recur": {"everyday":"Araw-araw","weekly":"Lingguhan","everyNDays_one":"Bawat {{count}} araw","everyNDays_other":"Bawat {{count}} araw"},
-  "weekdays": ["Lin","Lun","Mar","Miy","Huw","Biy","Sab"]
+  "recur": {
+    "everyday": "Araw-araw",
+    "weekly": "Lingguhan",
+    "everyNDays_one": "Bawat {{count}} araw",
+    "everyNDays_other": "Bawat {{count}} araw"
+  },
+  "weekdays": [
+    "Lin",
+    "Lun",
+    "Mar",
+    "Miy",
+    "Huw",
+    "Biy",
+    "Sab"
+  ]
 }

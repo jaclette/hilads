@@ -109,14 +109,6 @@
   "openSettings": "Mở cài đặt",
   "composer": {
     "placeholderDefault": "Gửi một tin nhắn…",
-    "placeholders": [
-      "Chào 👋",
-      "Tối nay ai đi chơi?",
-      "Có kế hoạch gì không? 👀",
-      "Ở đây đang có gì?",
-      "Ai muốn làm gì đó không? 🍻",
-      "Gửi một tin nhắn…"
-    ],
     "attach": "Thêm tệp đính kèm",
     "sendPhotoTitle": "Gửi ảnh",
     "takePhoto": "Chụp ảnh",

@@ -3,7 +3,14 @@
     "startTitle": "모임 시작하기",
     "editTitle": "모임 수정",
     "category": "카테고리",
-    "cat": { "general": "일반", "tips": "팁", "food": "맛집", "drinks": "술", "help": "도움", "meetup": "모임" },
+    "cat": {
+      "general": "일반",
+      "tips": "팁",
+      "food": "맛집",
+      "drinks": "술",
+      "help": "도움",
+      "meetup": "모임"
+    },
     "titleLabel": "무슨 생각을 하고 있나요?",
     "titlePlaceholder": "예: 이 근처 최고의 커피 맛집은?",
     "detailsLabel": "세부 정보 추가",
@@ -29,7 +36,10 @@
     "countIn": "이 모임에 {{count}}명",
     "seeAll": "전체 보기 →"
   },
-  "owner": { "edit": "✏️ 수정", "delete": "🗑 삭제" },
+  "owner": {
+    "edit": "✏️ 수정",
+    "delete": "🗑 삭제"
+  },
   "gated": {
     "title": "멤버 전용 모임",
     "pending": "요청 대기 중 - 멤버가 수락하면 대화에 참여할 수 있어요.",
@@ -53,9 +63,15 @@
     "acceptedBy": "{{name}}님이 수락함",
     "declined": "요청 거절됨"
   },
-  "modes": { "local": "Local", "exploring": "탐색 중" },
-  "reply": { "photo": "📷 사진", "unavailable": "원본 메시지를 사용할 수 없어요" },
-  "composer": { "reply": "대화에 답글 달기…", "start": "vibe를 띄워 보세요 ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "탐색 중"
+  },
+  "reply": {
+    "photo": "📷 사진",
+    "unavailable": "원본 메시지를 사용할 수 없어요"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "위치를 가져오지 못했어요. 위치 접근을 허용하고 다시 시도해 주세요.",
     "imageType": "JPEG, PNG 또는 WebP 이미지를 선택해 주세요.",

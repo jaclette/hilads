@@ -109,14 +109,6 @@
   "openSettings": "Ouvrir les réglages",
   "composer": {
     "placeholderDefault": "Écris un message…",
-    "placeholders": [
-      "Dis bonjour 👋",
-      "Qui sort ce soir ?",
-      "Des plans ? 👀",
-      "Qu'est-ce qui se passe ici ?",
-      "Quelqu'un partant pour un truc ? 🍻",
-      "Écris un message…"
-    ],
     "attach": "Ajouter une pièce jointe",
     "sendPhotoTitle": "Envoyer une photo",
     "takePhoto": "Prendre une photo",

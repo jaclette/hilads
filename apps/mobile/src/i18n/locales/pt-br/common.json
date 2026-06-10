@@ -109,14 +109,6 @@
   "openSettings": "Abrir configurações",
   "composer": {
     "placeholderDefault": "Mande uma mensagem…",
-    "placeholders": [
-      "Manda um oi 👋",
-      "Quem vai sair hoje?",
-      "Algum plano? 👀",
-      "O que tá rolando por aqui?",
-      "Alguém topa fazer algo? 🍻",
-      "Mande uma mensagem…"
-    ],
     "attach": "Adicionar anexo",
     "sendPhotoTitle": "Enviar uma foto",
     "takePhoto": "Tirar foto",

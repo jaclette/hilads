@@ -368,7 +368,6 @@
     "label": "Filtrar por modo",
     "all": "Todos"
   },
-  "chatPlaceholder": "Di algo en el canal…",
   "messageCreator": "Enviar mensaje privado a {{name}}",
   "badge": {
     "challenger": "Retador",

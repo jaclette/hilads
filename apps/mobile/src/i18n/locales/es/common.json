@@ -109,14 +109,6 @@
   "openSettings": "Abrir ajustes",
   "composer": {
     "placeholderDefault": "Escribe un mensaje…",
-    "placeholders": [
-      "Saluda 👋",
-      "¿Quién sale esta noche?",
-      "¿Algún plan? 👀",
-      "¿Qué está pasando aquí?",
-      "¿Alguien se apunta a algo? 🍻",
-      "Escribe un mensaje…"
-    ],
     "attach": "Añadir un adjunto",
     "sendPhotoTitle": "Enviar una foto",
     "takePhoto": "Hacer una foto",

@@ -237,18 +237,6 @@
   "replyPreview": {
     "photo": "📷 Litrato"
   },
-  "placeholder": {
-    "event": "Magsabi ng kahit ano sa {{title}} ✨",
-    "eventFirst": "Maging una sa {{title}} ✨"
-  },
-  "placeholders": [
-    "Mag-hi 👋",
-    "Sino ang lalabas ngayong gabi?",
-    "May plano ba? 👀",
-    "Ano ang nangyayari rito?",
-    "May gustong sumama sa kahit ano? 🍻",
-    "Mag-drop ng mensahe…"
-  ],
   "typing": {
     "one": "Nagta-type si {{name}}…",
     "two": "Nagta-type sina {{a}} at {{b}}…",

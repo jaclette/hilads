@@ -109,14 +109,6 @@
   "openSettings": "Buka Pengaturan",
   "composer": {
     "placeholderDefault": "Tulis pesan…",
-    "placeholders": [
-      "Sapa dulu 👋",
-      "Siapa yang keluar malam ini?",
-      "Ada rencana? 👀",
-      "Ada apa di sini?",
-      "Ada yang mau ikut sesuatu? 🍻",
-      "Tulis pesan…"
-    ],
     "attach": "Tambah lampiran",
     "sendPhotoTitle": "Kirim foto",
     "takePhoto": "Ambil Foto",

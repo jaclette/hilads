@@ -368,7 +368,6 @@
     "label": "모드로 필터",
     "all": "전체"
   },
-  "chatPlaceholder": "채널에 메시지 남기기…",
   "messageCreator": "{{name}}님에게 비공개 메시지",
   "badge": {
     "challenger": "도전 만든 사람",

@@ -368,7 +368,6 @@
     "label": "กรองตามโหมด",
     "all": "ทั้งหมด"
   },
-  "chatPlaceholder": "พิมพ์อะไรในช่อง…",
   "messageCreator": "ส่งข้อความส่วนตัวถึง {{name}}",
   "badge": {
     "challenger": "ผู้ท้า",

@@ -3,7 +3,14 @@
     "startTitle": "Start a hangout",
     "editTitle": "Edit hangout",
     "category": "Category",
-    "cat": { "general": "General", "tips": "Tips", "food": "Food", "drinks": "Drinks", "help": "Help", "meetup": "Meet up" },
+    "cat": {
+      "general": "General",
+      "tips": "Tips",
+      "food": "Food",
+      "drinks": "Drinks",
+      "help": "Help",
+      "meetup": "Meet up"
+    },
     "titleLabel": "What's on your mind?",
     "titlePlaceholder": "e.g. Best coffee spot in the area?",
     "detailsLabel": "Add details",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} in this hangout",
     "seeAll": "See all →"
   },
-  "owner": { "edit": "✏️ Edit", "delete": "🗑 Delete" },
+  "owner": {
+    "edit": "✏️ Edit",
+    "delete": "🗑 Delete"
+  },
   "gated": {
     "title": "Members-only hangout",
     "pending": "Request pending - you'll be able to join the conversation once a member accepts.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Accepted by {{name}}",
     "declined": "Request declined"
   },
-  "modes": { "local": "Local", "exploring": "Exploring" },
-  "reply": { "photo": "📷 Photo", "unavailable": "Original message unavailable" },
-  "composer": { "reply": "Reply to the conversation…", "start": "Start the vibe ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploring"
+  },
+  "reply": {
+    "photo": "📷 Photo",
+    "unavailable": "Original message unavailable"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Couldn't get your location. Please enable location access and try again.",
     "imageType": "Please select a JPEG, PNG, or WebP image.",

@@ -368,7 +368,6 @@
     "label": "Filtrar por modo",
     "all": "Todos"
   },
-  "chatPlaceholder": "Diz algo no canal…",
   "messageCreator": "Manda mensagem privada a {{name}}",
   "badge": {
     "challenger": "Desafiador",

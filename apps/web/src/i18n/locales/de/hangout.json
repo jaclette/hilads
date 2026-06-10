@@ -3,7 +3,14 @@
     "startTitle": "Ein Treffen starten",
     "editTitle": "Treffen bearbeiten",
     "category": "Kategorie",
-    "cat": { "general": "Allgemein", "tips": "Tipps", "food": "Essen", "drinks": "Drinks", "help": "Hilfe", "meetup": "Treffen" },
+    "cat": {
+      "general": "Allgemein",
+      "tips": "Tipps",
+      "food": "Essen",
+      "drinks": "Drinks",
+      "help": "Hilfe",
+      "meetup": "Treffen"
+    },
     "titleLabel": "Was geht dir durch den Kopf?",
     "titlePlaceholder": "z. B. Bester Kaffee-Spot in der Gegend?",
     "detailsLabel": "Details hinzufügen",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} in diesem Treffen",
     "seeAll": "Alle ansehen →"
   },
-  "owner": { "edit": "✏️ Bearbeiten", "delete": "🗑 Löschen" },
+  "owner": {
+    "edit": "✏️ Bearbeiten",
+    "delete": "🗑 Löschen"
+  },
   "gated": {
     "title": "Treffen nur für Mitglieder",
     "pending": "Anfrage ausstehend - du kannst der Unterhaltung beitreten, sobald ein Mitglied zustimmt.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Angenommen von {{name}}",
     "declined": "Anfrage abgelehnt"
   },
-  "modes": { "local": "Local", "exploring": "Exploring" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Originalnachricht nicht verfügbar" },
-  "composer": { "reply": "Auf die Unterhaltung antworten…", "start": "Bring den vibe in Schwung ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploring"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Originalnachricht nicht verfügbar"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Dein Standort konnte nicht ermittelt werden. Aktiviere den Standortzugriff und versuch es erneut.",
     "imageType": "Bitte wähle ein JPEG-, PNG- oder WebP-Bild.",

@@ -109,14 +109,6 @@
   "openSettings": "打开设置",
   "composer": {
     "placeholderDefault": "发条消息…",
-    "placeholders": [
-      "打个招呼 👋",
-      "今晚谁出来玩？",
-      "有什么计划吗？ 👀",
-      "这里在发生什么？",
-      "有人想一起做点什么吗？ 🍻",
-      "发条消息…"
-    ],
     "attach": "添加附件",
     "sendPhotoTitle": "发送照片",
     "takePhoto": "拍照",

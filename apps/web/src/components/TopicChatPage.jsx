@@ -677,7 +677,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         onFileSelect={handleImageSelect}
         onShareClick={() => setShowShareSheet(true)}
         showEmojiButton={false}
-        placeholder={messages.length > 0 ? t('composer.reply') : t('composer.start')}
+        placeholder={t('composer.placeholderHangout', { ns: 'common' })}
         mentionSuggestions={mentions.suggestions}
         onMentionSelect={mentions.selectMention}
         uploading={uploading}

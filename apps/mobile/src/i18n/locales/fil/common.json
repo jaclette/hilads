@@ -109,14 +109,6 @@
   "openSettings": "Buksan ang Mga setting",
   "composer": {
     "placeholderDefault": "Mag-iwan ng mensahe…",
-    "placeholders": [
-      "Mag-hi 👋",
-      "Sino ang gimik ngayong gabi?",
-      "May plano ba? 👀",
-      "Anong nangyayari dito?",
-      "May gusto bang gumawa ng kahit ano? 🍻",
-      "Mag-iwan ng mensahe…"
-    ],
     "attach": "Magdagdag ng attachment",
     "sendPhotoTitle": "Magpadala ng larawan",
     "takePhoto": "Kumuha ng Larawan",

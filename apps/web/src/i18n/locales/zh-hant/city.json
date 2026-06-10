@@ -237,18 +237,6 @@
   "replyPreview": {
     "photo": "📷 照片"
   },
-  "placeholder": {
-    "event": "在 {{title}} 說點什麼 ✨",
-    "eventFirst": "成為 {{title}} 的第一個人 ✨"
-  },
-  "placeholders": [
-    "打招呼 👋",
-    "今晚誰出來玩？",
-    "有什麼計畫嗎？👀",
-    "這裡發生什麼事？",
-    "有人想一起做點什麼嗎？🍻",
-    "留個訊息…"
-  ],
   "typing": {
     "one": "{{name}} 正在輸入…",
     "two": "{{a}} 和 {{b}} 正在輸入…",

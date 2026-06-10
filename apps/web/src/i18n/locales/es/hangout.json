@@ -3,7 +3,14 @@
     "startTitle": "Lanzar una quedada",
     "editTitle": "Editar la quedada",
     "category": "Categoría",
-    "cat": { "general": "General", "tips": "Consejos", "food": "Comida", "drinks": "Bebidas", "help": "Ayuda", "meetup": "Quedada" },
+    "cat": {
+      "general": "General",
+      "tips": "Consejos",
+      "food": "Comida",
+      "drinks": "Bebidas",
+      "help": "Ayuda",
+      "meetup": "Quedada"
+    },
     "titleLabel": "¿Qué se te pasa por la cabeza?",
     "titlePlaceholder": "p. ej. ¿Mejor café de la zona?",
     "detailsLabel": "Añade detalles",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} en esta quedada",
     "seeAll": "Ver todo →"
   },
-  "owner": { "edit": "✏️ Editar", "delete": "🗑 Eliminar" },
+  "owner": {
+    "edit": "✏️ Editar",
+    "delete": "🗑 Eliminar"
+  },
   "gated": {
     "title": "Quedada solo para miembros",
     "pending": "Solicitud pendiente - podrás unirte a la conversación en cuanto un miembro acepte.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Aceptado por {{name}}",
     "declined": "Solicitud rechazada"
   },
-  "modes": { "local": "Local", "exploring": "Explorando" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Mensaje original no disponible" },
-  "composer": { "reply": "Responde a la conversación…", "start": "Anima el ambiente ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Explorando"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Mensaje original no disponible"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "No se pudo obtener tu ubicación. Activa la localización e inténtalo de nuevo.",
     "imageType": "Elige una imagen JPEG, PNG o WebP.",

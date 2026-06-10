@@ -46,7 +46,5 @@
   "gatedRequest": "Request to join to see the conversation and chat.",
   "requestToJoin": "Request to join",
   "emptyReplies": "No replies yet. Say something! 💬",
-  "composerReply": "Reply to the conversation ✨",
-  "composerFirst": "Be the first to reply ✨",
   "inThisHangout": "in this hangout"
 }

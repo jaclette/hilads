@@ -231,18 +231,6 @@
   "replyPreview": {
     "photo": "📷 Ảnh"
   },
-  "placeholder": {
-    "event": "Nói gì đó tại {{title}} ✨",
-    "eventFirst": "Hãy là người đầu tiên tại {{title}} ✨"
-  },
-  "placeholders": [
-    "Chào 👋",
-    "Tối nay ai đi chơi?",
-    "Có kế hoạch gì không? 👀",
-    "Ở đây đang có gì?",
-    "Ai muốn làm gì đó không? 🍻",
-    "Gửi một tin nhắn…"
-  ],
   "typing": {
     "one": "{{name}} đang nhập…",
     "two": "{{a}} và {{b}} đang nhập…",

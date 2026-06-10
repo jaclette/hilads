@@ -3,7 +3,14 @@
     "startTitle": "एक मुलाक़ात शुरू करें",
     "editTitle": "मुलाक़ात एडिट करें",
     "category": "श्रेणी",
-    "cat": { "general": "General", "tips": "टिप्स", "food": "खाना", "drinks": "ड्रिंक्स", "help": "मदद", "meetup": "मीटअप" },
+    "cat": {
+      "general": "General",
+      "tips": "टिप्स",
+      "food": "खाना",
+      "drinks": "ड्रिंक्स",
+      "help": "मदद",
+      "meetup": "मीटअप"
+    },
     "titleLabel": "आपके मन में क्या है?",
     "titlePlaceholder": "जैसे आसपास सबसे बढ़िया कॉफ़ी की जगह?",
     "detailsLabel": "डिटेल्स जोड़ें",
@@ -29,7 +36,10 @@
     "countIn": "इस मुलाक़ात में {{count}}",
     "seeAll": "सभी देखें →"
   },
-  "owner": { "edit": "✏️ एडिट करें", "delete": "🗑 हटाएं" },
+  "owner": {
+    "edit": "✏️ एडिट करें",
+    "delete": "🗑 हटाएं"
+  },
   "gated": {
     "title": "सिर्फ़ मेंबर्स के लिए मुलाक़ात",
     "pending": "रिक्वेस्ट पेंडिंग - जैसे ही कोई मेंबर स्वीकार करेगा, आप बातचीत में शामिल हो पाएंगे।",
@@ -53,9 +63,15 @@
     "acceptedBy": "{{name}} ने स्वीकार किया",
     "declined": "रिक्वेस्ट अस्वीकार की गई"
   },
-  "modes": { "local": "Local", "exploring": "Exploring" },
-  "reply": { "photo": "📷 फ़ोटो", "unavailable": "मूल मैसेज उपलब्ध नहीं" },
-  "composer": { "reply": "बातचीत का जवाब दें…", "start": "vibe शुरू करें ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploring"
+  },
+  "reply": {
+    "photo": "📷 फ़ोटो",
+    "unavailable": "मूल मैसेज उपलब्ध नहीं"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "आपकी लोकेशन नहीं ली जा सकी। कृपया लोकेशन एक्सेस ऑन करें और फिर से कोशिश करें।",
     "imageType": "कृपया JPEG, PNG या WebP इमेज चुनें।",

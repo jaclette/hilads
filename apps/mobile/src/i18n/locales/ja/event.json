@@ -34,9 +34,18 @@
   "location": "場所",
   "locationPlaceholder": "任意 · タップしてマップで設定",
   "preset": {
-    "daily_spot": { "label": "毎日のスポット", "desc": "毎日" },
-    "every_evening": { "label": "毎晩", "desc": "毎日 · 20:00" },
-    "weekends": { "label": "週末", "desc": "土・日" }
+    "daily_spot": {
+      "label": "毎日のスポット",
+      "desc": "毎日"
+    },
+    "every_evening": {
+      "label": "毎晩",
+      "desc": "毎日 · 20:00"
+    },
+    "weekends": {
+      "label": "週末",
+      "desc": "土・日"
+    }
   },
   "submitCreate": "イベントを作成",
   "submitStart": "イベントを始める",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} ほか{{count}}人が参加",
   "goingEmpty": "まだ誰もいません - 最初に参加しよう！ 🙌",
   "noMessages": "まだメッセージはありません。何か言ってみよう！ 👋",
-  "composerSay": "{{title}}で何か言ってみよう ✨",
-  "composerFirst": "{{title}}で最初の一人になろう ✨",
   "mapsError": "マップを開けませんでした",
   "mapsA11y": "Google Mapsで住所を開く：{{address}}",
   "mapsHint": "この会場の場所をGoogle Mapsで開きます",
@@ -94,6 +101,19 @@
     "gotIt": "了解",
     "backToNow": "Nowに戻る"
   },
-  "recur": {"everyday":"毎日","weekly":"毎週","everyNDays_one":"{{count}}日ごと","everyNDays_other":"{{count}}日ごと"},
-  "weekdays": ["日","月","火","水","木","金","土"]
+  "recur": {
+    "everyday": "毎日",
+    "weekly": "毎週",
+    "everyNDays_one": "{{count}}日ごと",
+    "everyNDays_other": "{{count}}日ごと"
+  },
+  "weekdays": [
+    "日",
+    "月",
+    "火",
+    "水",
+    "木",
+    "金",
+    "土"
+  ]
 }

@@ -34,9 +34,18 @@
   "location": "МЕСТО",
   "locationPlaceholder": "По желанию · нажми, чтобы указать на карте",
   "preset": {
-    "daily_spot": { "label": "Ежедневное место", "desc": "Каждый день" },
-    "every_evening": { "label": "Каждый вечер", "desc": "Ежедневно · 20:00" },
-    "weekends": { "label": "Выходные", "desc": "Сб и Вс" }
+    "daily_spot": {
+      "label": "Ежедневное место",
+      "desc": "Каждый день"
+    },
+    "every_evening": {
+      "label": "Каждый вечер",
+      "desc": "Ежедневно · 20:00"
+    },
+    "weekends": {
+      "label": "Выходные",
+      "desc": "Сб и Вс"
+    }
   },
   "submitCreate": "Создать событие",
   "submitStart": "Запустить событие",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + ещё {{count}} идут",
   "goingEmpty": "Пока никого - присоединись первым! 🙌",
   "noMessages": "Пока нет сообщений. Скажи что-нибудь! 👋",
-  "composerSay": "Скажи что-нибудь на {{title}} ✨",
-  "composerFirst": "Будь первым на {{title}} ✨",
   "mapsError": "Не удалось открыть карты",
   "mapsA11y": "Открыть адрес в Google Maps: {{address}}",
   "mapsHint": "Открывает Google Maps с местоположением этого заведения",
@@ -94,6 +101,21 @@
     "gotIt": "Понятно",
     "backToNow": "Назад к Now"
   },
-  "recur": {"everyday":"Каждый день","weekly":"Еженедельно","everyNDays_one":"Каждый {{count}} день","everyNDays_few":"Каждые {{count}} дня","everyNDays_many":"Каждые {{count}} дней","everyNDays_other":"Каждые {{count}} дней"},
-  "weekdays": ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"]
+  "recur": {
+    "everyday": "Каждый день",
+    "weekly": "Еженедельно",
+    "everyNDays_one": "Каждый {{count}} день",
+    "everyNDays_few": "Каждые {{count}} дня",
+    "everyNDays_many": "Каждые {{count}} дней",
+    "everyNDays_other": "Каждые {{count}} дней"
+  },
+  "weekdays": [
+    "Вс",
+    "Пн",
+    "Вт",
+    "Ср",
+    "Чт",
+    "Пт",
+    "Сб"
+  ]
 }

@@ -34,9 +34,18 @@
   "location": "地点",
   "locationPlaceholder": "可选 · 点击在地图上设置",
   "preset": {
-    "daily_spot": { "label": "每日地点", "desc": "每天" },
-    "every_evening": { "label": "每天晚上", "desc": "每天 · 晚 8 点" },
-    "weekends": { "label": "周末", "desc": "周六和周日" }
+    "daily_spot": {
+      "label": "每日地点",
+      "desc": "每天"
+    },
+    "every_evening": {
+      "label": "每天晚上",
+      "desc": "每天 · 晚 8 点"
+    },
+    "weekends": {
+      "label": "周末",
+      "desc": "周六和周日"
+    }
   },
   "submitCreate": "创建活动",
   "submitStart": "发起一个活动",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} 人要去",
   "goingEmpty": "还没有人 - 来当第一个加入的人！ 🙌",
   "noMessages": "还没有消息。说点什么吧！ 👋",
-  "composerSay": "在 {{title}} 说点什么 ✨",
-  "composerFirst": "来当 {{title}} 的第一个 ✨",
   "mapsError": "无法打开地图",
   "mapsA11y": "在 Google Maps 中打开地址：{{address}}",
   "mapsHint": "用 Google Maps 打开该场地的位置",
@@ -94,6 +101,19 @@
     "gotIt": "知道了",
     "backToNow": "返回 Now"
   },
-  "recur": {"everyday":"每天","weekly":"每周","everyNDays_one":"每 {{count}} 天","everyNDays_other":"每 {{count}} 天"},
-  "weekdays": ["日","一","二","三","四","五","六"]
+  "recur": {
+    "everyday": "每天",
+    "weekly": "每周",
+    "everyNDays_one": "每 {{count}} 天",
+    "everyNDays_other": "每 {{count}} 天"
+  },
+  "weekdays": [
+    "日",
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+    "六"
+  ]
 }

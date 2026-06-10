@@ -368,7 +368,6 @@
     "label": "Фильтр по режиму",
     "all": "Все"
   },
-  "chatPlaceholder": "Напишите что-нибудь в канал…",
   "messageCreator": "Написать {{name}} в личку",
   "badge": {
     "challenger": "Автор",

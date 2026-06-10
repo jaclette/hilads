@@ -34,9 +34,18 @@
   "location": "สถานที่",
   "locationPlaceholder": "ไม่บังคับ · แตะเพื่อกำหนดบนแผนที่",
   "preset": {
-    "daily_spot": { "label": "ที่ประจำทุกวัน", "desc": "ทุกวัน" },
-    "every_evening": { "label": "ทุกเย็น", "desc": "ทุกวัน · 20:00 น." },
-    "weekends": { "label": "สุดสัปดาห์", "desc": "เสาร์ & อาทิตย์" }
+    "daily_spot": {
+      "label": "ที่ประจำทุกวัน",
+      "desc": "ทุกวัน"
+    },
+    "every_evening": {
+      "label": "ทุกเย็น",
+      "desc": "ทุกวัน · 20:00 น."
+    },
+    "weekends": {
+      "label": "สุดสัปดาห์",
+      "desc": "เสาร์ & อาทิตย์"
+    }
   },
   "submitCreate": "สร้างกิจกรรม",
   "submitStart": "เริ่มกิจกรรม",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} จะไป",
   "goingEmpty": "ยังไม่มีใคร - เป็นคนแรกที่เข้าร่วม! 🙌",
   "noMessages": "ยังไม่มีข้อความ พูดอะไรหน่อยสิ! 👋",
-  "composerSay": "พูดอะไรที่ {{title}} ✨",
-  "composerFirst": "เป็นคนแรกที่ {{title}} ✨",
   "mapsError": "ไม่สามารถเปิดแผนที่ได้",
   "mapsA11y": "เปิดที่อยู่ใน Google Maps: {{address}}",
   "mapsHint": "เปิด Google Maps ที่ตำแหน่งของสถานที่นี้",
@@ -94,6 +101,19 @@
     "gotIt": "เข้าใจแล้ว",
     "backToNow": "กลับไปที่ Now"
   },
-  "recur": {"everyday":"ทุกวัน","weekly":"ทุกสัปดาห์","everyNDays_one":"ทุกๆ {{count}} วัน","everyNDays_other":"ทุกๆ {{count}} วัน"},
-  "weekdays": ["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."]
+  "recur": {
+    "everyday": "ทุกวัน",
+    "weekly": "ทุกสัปดาห์",
+    "everyNDays_one": "ทุกๆ {{count}} วัน",
+    "everyNDays_other": "ทุกๆ {{count}} วัน"
+  },
+  "weekdays": [
+    "อา.",
+    "จ.",
+    "อ.",
+    "พ.",
+    "พฤ.",
+    "ศ.",
+    "ส."
+  ]
 }

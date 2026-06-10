@@ -109,14 +109,6 @@
   "openSettings": "Abrir definições",
   "composer": {
     "placeholderDefault": "Deixa uma mensagem…",
-    "placeholders": [
-      "Diz olá 👋",
-      "Quem sai esta noite?",
-      "Algum plano? 👀",
-      "O que se passa por aqui?",
-      "Alguém alinha em algo? 🍻",
-      "Deixa uma mensagem…"
-    ],
     "attach": "Adicionar anexo",
     "sendPhotoTitle": "Enviar uma foto",
     "takePhoto": "Tirar foto",

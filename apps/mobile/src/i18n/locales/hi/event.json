@@ -34,9 +34,18 @@
   "location": "जगह",
   "locationPlaceholder": "वैकल्पिक · मैप पर सेट करने के लिए टैप करें",
   "preset": {
-    "daily_spot": { "label": "रोज़ की जगह", "desc": "हर दिन" },
-    "every_evening": { "label": "हर शाम", "desc": "रोज़ · रात 8 बजे" },
-    "weekends": { "label": "वीकेंड", "desc": "शनि और रवि" }
+    "daily_spot": {
+      "label": "रोज़ की जगह",
+      "desc": "हर दिन"
+    },
+    "every_evening": {
+      "label": "हर शाम",
+      "desc": "रोज़ · रात 8 बजे"
+    },
+    "weekends": {
+      "label": "वीकेंड",
+      "desc": "शनि और रवि"
+    }
   },
   "submitCreate": "इवेंट बनाएं",
   "submitStart": "एक इवेंट शुरू करें",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} जा रहे हैं",
   "goingEmpty": "अभी कोई नहीं - शामिल होने वाले पहले आप बनें! 🙌",
   "noMessages": "अभी कोई मैसेज नहीं। कुछ कहें! 👋",
-  "composerSay": "{{title}} पर कुछ कहें ✨",
-  "composerFirst": "{{title}} पर पहले आप बनें ✨",
   "mapsError": "मैप नहीं खुल सका",
   "mapsA11y": "पता Google Maps में खोलें: {{address}}",
   "mapsHint": "इस जगह की लोकेशन के साथ Google Maps खोलता है",
@@ -94,6 +101,19 @@
     "gotIt": "समझ गए",
     "backToNow": "Now पर वापस"
   },
-  "recur": {"everyday":"हर दिन","weekly":"साप्ताहिक","everyNDays_one":"हर {{count}} दिन","everyNDays_other":"हर {{count}} दिन"},
-  "weekdays": ["रवि","सोम","मंगल","बुध","गुरु","शुक्र","शनि"]
+  "recur": {
+    "everyday": "हर दिन",
+    "weekly": "साप्ताहिक",
+    "everyNDays_one": "हर {{count}} दिन",
+    "everyNDays_other": "हर {{count}} दिन"
+  },
+  "weekdays": [
+    "रवि",
+    "सोम",
+    "मंगल",
+    "बुध",
+    "गुरु",
+    "शुक्र",
+    "शनि"
+  ]
 }

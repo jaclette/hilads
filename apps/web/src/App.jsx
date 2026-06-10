@@ -457,15 +457,6 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
   )
 }
 
-const PLACEHOLDERS = [
-  () => `Say hi 👋`,
-  () => `Who's out tonight?`,
-  () => `Any plans? 👀`,
-  () => `What's happening here?`,
-  () => `Anyone up for something? 🍻`,
-  () => `Drop a message…`,
-]
-
 const AMBIENT_MESSAGES = [
   () => `🔥 People are arriving`,
   () => `🍻 Who's out tonight?`,
@@ -3643,11 +3634,8 @@ export default function App() {
 
   const typingLabel = typingText(typingUsers, sessionIdRef.current, t)
 
-  // City composer placeholder - translated list, picked deterministically by channel.
-  const cityPlaceholderList = t('placeholders', { returnObjects: true })
-  const cityComposerPlaceholder = Array.isArray(cityPlaceholderList) && cityPlaceholderList.length > 0
-    ? cityPlaceholderList[channelId % cityPlaceholderList.length]
-    : ''
+  // City composer placeholder — single brand-aligned string, no rotation.
+  const cityComposerPlaceholder = t('composer.placeholderCity', { ns: 'common' })
 
   // Inject a new-event message when events array grows (real-time event added).
   // Only in city chat. Stays in feed permanently like a normal message.
@@ -4842,9 +4830,7 @@ export default function App() {
           onEmojiSelect={insertEmoji}
           onEmojiClose={() => setShowEmoji(false)}
           placeholder={activeEvent
-            ? feed.some(f => f.type === 'message')
-              ? t('placeholder.event', { title: activeEvent.title })
-              : t('placeholder.eventFirst', { title: activeEvent.title })
+            ? t('composer.placeholderEvent', { ns: 'common' })
             : city ? cityComposerPlaceholder : ''
           }
           uploading={uploading}

@@ -3,7 +3,14 @@
     "startTitle": "Iniciar um convívio",
     "editTitle": "Editar o convívio",
     "category": "Categoria",
-    "cat": { "general": "Geral", "tips": "Dicas", "food": "Comida", "drinks": "Copos", "help": "Ajuda", "meetup": "Encontro" },
+    "cat": {
+      "general": "Geral",
+      "tips": "Dicas",
+      "food": "Comida",
+      "drinks": "Copos",
+      "help": "Ajuda",
+      "meetup": "Encontro"
+    },
     "titleLabel": "O que te vai na cabeça?",
     "titlePlaceholder": "ex. Melhor café da zona?",
     "detailsLabel": "Adicionar detalhes",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} neste convívio",
     "seeAll": "Ver todos →"
   },
-  "owner": { "edit": "✏️ Editar", "delete": "🗑 Eliminar" },
+  "owner": {
+    "edit": "✏️ Editar",
+    "delete": "🗑 Eliminar"
+  },
   "gated": {
     "title": "Convívio só para membros",
     "pending": "Pedido pendente - vais poder juntar-te à conversa assim que um membro aceitar.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Aceite por {{name}}",
     "declined": "Pedido recusado"
   },
-  "modes": { "local": "Local", "exploring": "A explorar" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Mensagem original indisponível" },
-  "composer": { "reply": "Responde à conversa…", "start": "Anima a vibe ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "A explorar"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Mensagem original indisponível"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Não foi possível obter a tua localização. Ativa o acesso à localização e tenta novamente.",
     "imageType": "Escolhe uma imagem JPEG, PNG ou WebP.",

@@ -34,9 +34,18 @@
   "location": "LUOGO",
   "locationPlaceholder": "Facoltativo · tocca per posizionare sulla mappa",
   "preset": {
-    "daily_spot": { "label": "Spot quotidiano", "desc": "Ogni giorno" },
-    "every_evening": { "label": "Ogni sera", "desc": "Ogni giorno · 20:00" },
-    "weekends": { "label": "Weekend", "desc": "Sab e Dom" }
+    "daily_spot": {
+      "label": "Spot quotidiano",
+      "desc": "Ogni giorno"
+    },
+    "every_evening": {
+      "label": "Ogni sera",
+      "desc": "Ogni giorno · 20:00"
+    },
+    "weekends": {
+      "label": "Weekend",
+      "desc": "Sab e Dom"
+    }
   },
   "submitCreate": "Crea evento",
   "submitStart": "Lancia un evento",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} ci saranno",
   "goingEmpty": "Ancora nessuno - sii il primo a partecipare! 🙌",
   "noMessages": "Ancora nessun messaggio. Di' qualcosa! 👋",
-  "composerSay": "Di' qualcosa a {{title}} ✨",
-  "composerFirst": "Sii il primo a {{title}} ✨",
   "mapsError": "Impossibile aprire Mappe",
   "mapsA11y": "Apri l'indirizzo in Google Maps: {{address}}",
   "mapsHint": "Apre Google Maps con la posizione di questo locale",
@@ -94,6 +101,19 @@
     "gotIt": "Capito",
     "backToNow": "Torna a Now"
   },
-  "recur": {"everyday":"Ogni giorno","weekly":"Ogni settimana","everyNDays_one":"Ogni {{count}} giorno","everyNDays_other":"Ogni {{count}} giorni"},
-  "weekdays": ["Dom","Lun","Mar","Mer","Gio","Ven","Sab"]
+  "recur": {
+    "everyday": "Ogni giorno",
+    "weekly": "Ogni settimana",
+    "everyNDays_one": "Ogni {{count}} giorno",
+    "everyNDays_other": "Ogni {{count}} giorni"
+  },
+  "weekdays": [
+    "Dom",
+    "Lun",
+    "Mar",
+    "Mer",
+    "Gio",
+    "Ven",
+    "Sab"
+  ]
 }

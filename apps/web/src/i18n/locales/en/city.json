@@ -237,18 +237,6 @@
   "replyPreview": {
     "photo": "📷 Photo"
   },
-  "placeholder": {
-    "event": "Say something at {{title}} ✨",
-    "eventFirst": "Be the first at {{title}} ✨"
-  },
-  "placeholders": [
-    "Say hi 👋",
-    "Who's out tonight?",
-    "Any plans? 👀",
-    "What's happening here?",
-    "Anyone up for something? 🍻",
-    "Drop a message…"
-  ],
   "typing": {
     "one": "{{name}} is typing…",
     "two": "{{a}} and {{b}} are typing…",

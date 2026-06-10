@@ -34,9 +34,18 @@
   "location": "LIEU",
   "locationPlaceholder": "Optionnel · touche pour placer sur la carte",
   "preset": {
-    "daily_spot": { "label": "Spot quotidien", "desc": "Chaque jour" },
-    "every_evening": { "label": "Chaque soir", "desc": "Quotidien · 20h" },
-    "weekends": { "label": "Week-ends", "desc": "Sam & Dim" }
+    "daily_spot": {
+      "label": "Spot quotidien",
+      "desc": "Chaque jour"
+    },
+    "every_evening": {
+      "label": "Chaque soir",
+      "desc": "Quotidien · 20h"
+    },
+    "weekends": {
+      "label": "Week-ends",
+      "desc": "Sam & Dim"
+    }
   },
   "submitCreate": "Créer un événement",
   "submitStart": "Lancer un événement",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} y vont",
   "goingEmpty": "Personne pour l'instant - sois le premier ! 🙌",
   "noMessages": "Pas encore de messages. Dis quelque chose ! 👋",
-  "composerSay": "Dis quelque chose à {{title}} ✨",
-  "composerFirst": "Sois le premier à {{title}} ✨",
   "mapsError": "Impossible d'ouvrir Maps",
   "mapsA11y": "Ouvrir l'adresse dans Google Maps : {{address}}",
   "mapsHint": "Ouvre Google Maps sur le lieu de cet événement",
@@ -94,6 +101,19 @@
     "gotIt": "Compris",
     "backToNow": "Retour à Now"
   },
-  "recur": {"everyday":"Tous les jours","weekly":"Hebdomadaire","everyNDays_one":"Tous les {{count}} jour","everyNDays_other":"Tous les {{count}} jours"},
-  "weekdays": ["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"]
+  "recur": {
+    "everyday": "Tous les jours",
+    "weekly": "Hebdomadaire",
+    "everyNDays_one": "Tous les {{count}} jour",
+    "everyNDays_other": "Tous les {{count}} jours"
+  },
+  "weekdays": [
+    "Dim",
+    "Lun",
+    "Mar",
+    "Mer",
+    "Jeu",
+    "Ven",
+    "Sam"
+  ]
 }

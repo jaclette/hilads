@@ -3,7 +3,14 @@
     "startTitle": "Lancer une sortie",
     "editTitle": "Modifier la sortie",
     "category": "Catégorie",
-    "cat": { "general": "Général", "tips": "Astuces", "food": "Cuisine", "drinks": "Boissons", "help": "Aide", "meetup": "Rencontre" },
+    "cat": {
+      "general": "Général",
+      "tips": "Astuces",
+      "food": "Cuisine",
+      "drinks": "Boissons",
+      "help": "Aide",
+      "meetup": "Rencontre"
+    },
     "titleLabel": "Qu'est-ce qui te passe par la tête ?",
     "titlePlaceholder": "ex. Meilleur café du coin ?",
     "detailsLabel": "Ajoute des détails",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} dans cette sortie",
     "seeAll": "Voir tout →"
   },
-  "owner": { "edit": "✏️ Modifier", "delete": "🗑 Supprimer" },
+  "owner": {
+    "edit": "✏️ Modifier",
+    "delete": "🗑 Supprimer"
+  },
   "gated": {
     "title": "Sortie réservée aux membres",
     "pending": "Demande en attente - tu pourras rejoindre la conversation dès qu'un membre accepte.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Accepté par {{name}}",
     "declined": "Demande refusée"
   },
-  "modes": { "local": "Local", "exploring": "Exploration" },
-  "reply": { "photo": "📷 Photo", "unavailable": "Message d'origine indisponible" },
-  "composer": { "reply": "Réponds à la conversation…", "start": "Lance l'ambiance ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploration"
+  },
+  "reply": {
+    "photo": "📷 Photo",
+    "unavailable": "Message d'origine indisponible"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Impossible d'obtenir ta position. Active la localisation et réessaie.",
     "imageType": "Choisis une image JPEG, PNG ou WebP.",

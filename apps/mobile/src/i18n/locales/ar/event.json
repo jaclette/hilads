@@ -34,9 +34,18 @@
   "location": "الموقع",
   "locationPlaceholder": "اختياري · انقر للتحديد على الخريطة",
   "preset": {
-    "daily_spot": { "label": "مكان يومي", "desc": "كل يوم" },
-    "every_evening": { "label": "كل مساء", "desc": "يوميًا · 8 مساءً" },
-    "weekends": { "label": "عطلات نهاية الأسبوع", "desc": "السبت والأحد" }
+    "daily_spot": {
+      "label": "مكان يومي",
+      "desc": "كل يوم"
+    },
+    "every_evening": {
+      "label": "كل مساء",
+      "desc": "يوميًا · 8 مساءً"
+    },
+    "weekends": {
+      "label": "عطلات نهاية الأسبوع",
+      "desc": "السبت والأحد"
+    }
   },
   "submitCreate": "إنشاء فعالية",
   "submitStart": "بدء فعالية",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} سيذهبون",
   "goingEmpty": "لا أحد بعد - كن أول من ينضم! 🙌",
   "noMessages": "لا رسائل بعد. قل شيئًا! 👋",
-  "composerSay": "قل شيئًا في {{title}} ✨",
-  "composerFirst": "كن أول من يتحدّث في {{title}} ✨",
   "mapsError": "تعذّر فتح الخرائط",
   "mapsA11y": "فتح العنوان في خرائط Google: {{address}}",
   "mapsHint": "يفتح خرائط Google على موقع هذا المكان",
@@ -94,6 +101,23 @@
     "gotIt": "فهمت",
     "backToNow": "العودة إلى Now"
   },
-  "recur": {"everyday":"كل يوم","weekly":"أسبوعيًا","everyNDays_zero":"كل {{count}} يوم","everyNDays_one":"كل يوم","everyNDays_two":"كل يومين","everyNDays_few":"كل {{count}} أيام","everyNDays_many":"كل {{count}} يومًا","everyNDays_other":"كل {{count}} يوم"},
-  "weekdays": ["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"]
+  "recur": {
+    "everyday": "كل يوم",
+    "weekly": "أسبوعيًا",
+    "everyNDays_zero": "كل {{count}} يوم",
+    "everyNDays_one": "كل يوم",
+    "everyNDays_two": "كل يومين",
+    "everyNDays_few": "كل {{count}} أيام",
+    "everyNDays_many": "كل {{count}} يومًا",
+    "everyNDays_other": "كل {{count}} يوم"
+  },
+  "weekdays": [
+    "الأحد",
+    "الإثنين",
+    "الثلاثاء",
+    "الأربعاء",
+    "الخميس",
+    "الجمعة",
+    "السبت"
+  ]
 }

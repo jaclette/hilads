@@ -3,7 +3,14 @@
     "startTitle": "Magsimula ng tambayan",
     "editTitle": "I-edit ang tambayan",
     "category": "Kategorya",
-    "cat": { "general": "General", "tips": "Mga tip", "food": "Pagkain", "drinks": "Inumin", "help": "Tulong", "meetup": "Meetup" },
+    "cat": {
+      "general": "General",
+      "tips": "Mga tip",
+      "food": "Pagkain",
+      "drinks": "Inumin",
+      "help": "Tulong",
+      "meetup": "Meetup"
+    },
     "titleLabel": "Ano ang nasa isip mo?",
     "titlePlaceholder": "hal. Pinakamagandang coffee spot sa lugar?",
     "detailsLabel": "Magdagdag ng detalye",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} sa tambayan na ito",
     "seeAll": "Tingnan lahat →"
   },
-  "owner": { "edit": "✏️ I-edit", "delete": "🗑 I-delete" },
+  "owner": {
+    "edit": "✏️ I-edit",
+    "delete": "🗑 I-delete"
+  },
   "gated": {
     "title": "Members-only na tambayan",
     "pending": "Nakabinbin ang request - makakasali ka sa usapan kapag tinanggap ka ng isang member.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Tinanggap ni {{name}}",
     "declined": "Tinanggihan ang request"
   },
-  "modes": { "local": "Local", "exploring": "Nag-e-explore" },
-  "reply": { "photo": "📷 Larawan", "unavailable": "Hindi available ang orihinal na mensahe" },
-  "composer": { "reply": "Tumugon sa usapan…", "start": "Start the vibe ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Nag-e-explore"
+  },
+  "reply": {
+    "photo": "📷 Larawan",
+    "unavailable": "Hindi available ang orihinal na mensahe"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Hindi nakuha ang lokasyon mo. I-enable ang location access at subukan ulit.",
     "imageType": "Pumili ng JPEG, PNG, o WebP na larawan.",

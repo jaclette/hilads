@@ -34,9 +34,18 @@
   "location": "LOCATIE",
   "locationPlaceholder": "Optioneel · tik om op de kaart te zetten",
   "preset": {
-    "daily_spot": { "label": "Dagelijkse spot", "desc": "Elke dag" },
-    "every_evening": { "label": "Elke avond", "desc": "Dagelijks · 20:00" },
-    "weekends": { "label": "Weekenden", "desc": "Za & Zo" }
+    "daily_spot": {
+      "label": "Dagelijkse spot",
+      "desc": "Elke dag"
+    },
+    "every_evening": {
+      "label": "Elke avond",
+      "desc": "Dagelijks · 20:00"
+    },
+    "weekends": {
+      "label": "Weekenden",
+      "desc": "Za & Zo"
+    }
   },
   "submitCreate": "Evenement maken",
   "submitStart": "Een evenement starten",
@@ -64,8 +73,6 @@
   "manyGoing": "{{name}} + {{count}} erbij",
   "goingEmpty": "Nog niemand - wees de eerste om mee te doen! 🙌",
   "noMessages": "Nog geen berichten. Zeg iets! 👋",
-  "composerSay": "Zeg iets bij {{title}} ✨",
-  "composerFirst": "Wees de eerste bij {{title}} ✨",
   "mapsError": "Kon Maps niet openen",
   "mapsA11y": "Adres openen in Google Maps: {{address}}",
   "mapsHint": "Opent Google Maps op de locatie van deze plek",
@@ -94,6 +101,19 @@
     "gotIt": "Begrepen",
     "backToNow": "Terug naar Now"
   },
-  "recur": {"everyday":"Elke dag","weekly":"Wekelijks","everyNDays_one":"Elke {{count}} dag","everyNDays_other":"Elke {{count}} dagen"},
-  "weekdays": ["Zo","Ma","Di","Wo","Do","Vr","Za"]
+  "recur": {
+    "everyday": "Elke dag",
+    "weekly": "Wekelijks",
+    "everyNDays_one": "Elke {{count}} dag",
+    "everyNDays_other": "Elke {{count}} dagen"
+  },
+  "weekdays": [
+    "Zo",
+    "Ma",
+    "Di",
+    "Wo",
+    "Do",
+    "Vr",
+    "Za"
+  ]
 }

@@ -237,18 +237,6 @@
   "replyPreview": {
     "photo": "📷 Foto"
   },
-  "placeholder": {
-    "event": "Katakan sesuatu di {{title}} ✨",
-    "eventFirst": "Jadilah yang pertama di {{title}} ✨"
-  },
-  "placeholders": [
-    "Sapa 👋",
-    "Siapa yang keluar malam ini?",
-    "Ada rencana? 👀",
-    "Apa yang terjadi di sini?",
-    "Ada yang mau ikut sesuatu? 🍻",
-    "Kirim pesan…"
-  ],
   "typing": {
     "one": "{{name}} sedang mengetik…",
     "two": "{{a}} dan {{b}} sedang mengetik…",

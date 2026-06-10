@@ -3,7 +3,14 @@
     "startTitle": "发起一个聚会",
     "editTitle": "编辑聚会",
     "category": "分类",
-    "cat": { "general": "综合", "tips": "贴士", "food": "美食", "drinks": "喝一杯", "help": "求助", "meetup": "聚会" },
+    "cat": {
+      "general": "综合",
+      "tips": "贴士",
+      "food": "美食",
+      "drinks": "喝一杯",
+      "help": "求助",
+      "meetup": "聚会"
+    },
     "titleLabel": "你在想什么？",
     "titlePlaceholder": "例如：这附近最好喝的咖啡在哪？",
     "detailsLabel": "添加详情",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} 人在这个聚会里",
     "seeAll": "查看全部 →"
   },
-  "owner": { "edit": "✏️ 编辑", "delete": "🗑 删除" },
+  "owner": {
+    "edit": "✏️ 编辑",
+    "delete": "🗑 删除"
+  },
   "gated": {
     "title": "仅限成员的聚会",
     "pending": "请求待处理 - 成员接受后你就能加入对话。",
@@ -53,9 +63,15 @@
     "acceptedBy": "由 {{name}} 接受",
     "declined": "请求已拒绝"
   },
-  "modes": { "local": "本地", "exploring": "探索中" },
-  "reply": { "photo": "📷 照片", "unavailable": "原始消息不可用" },
-  "composer": { "reply": "回复这段对话…", "start": "点燃这个 vibe ✨" },
+  "modes": {
+    "local": "本地",
+    "exploring": "探索中"
+  },
+  "reply": {
+    "photo": "📷 照片",
+    "unavailable": "原始消息不可用"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "无法获取你的位置。请开启定位权限后重试。",
     "imageType": "请选择 JPEG、PNG 或 WebP 图片。",

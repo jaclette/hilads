@@ -237,18 +237,6 @@
   "replyPreview": {
     "photo": "📷 Foto"
   },
-  "placeholder": {
-    "event": "Zeg iets bij {{title}} ✨",
-    "eventFirst": "Wees de eerste bij {{title}} ✨"
-  },
-  "placeholders": [
-    "Zeg hallo 👋",
-    "Wie is er vanavond op pad?",
-    "Plannen? 👀",
-    "Wat gebeurt hier?",
-    "Heeft iemand zin in iets? 🍻",
-    "Stuur een bericht…"
-  ],
   "typing": {
     "one": "{{name}} is aan het typen…",
     "two": "{{a}} en {{b}} zijn aan het typen…",

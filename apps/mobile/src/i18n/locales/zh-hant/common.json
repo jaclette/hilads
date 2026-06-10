@@ -109,14 +109,6 @@
   "openSettings": "開啟設定",
   "composer": {
     "placeholderDefault": "傳個訊息…",
-    "placeholders": [
-      "打個招呼 👋",
-      "今晚誰要出來？",
-      "有什麼計畫嗎？ 👀",
-      "這裡發生了什麼事？",
-      "有人想一起做點什麼嗎？ 🍻",
-      "傳個訊息…"
-    ],
     "attach": "新增附件",
     "sendPhotoTitle": "傳送照片",
     "takePhoto": "拍照",

@@ -3,7 +3,14 @@
     "startTitle": "開一個聚會",
     "editTitle": "編輯聚會",
     "category": "類別",
-    "cat": { "general": "一般", "tips": "撇步", "food": "美食", "drinks": "小酌", "help": "求助", "meetup": "聚會" },
+    "cat": {
+      "general": "一般",
+      "tips": "撇步",
+      "food": "美食",
+      "drinks": "小酌",
+      "help": "求助",
+      "meetup": "聚會"
+    },
     "titleLabel": "你在想什麼？",
     "titlePlaceholder": "例如：這一帶最棒的咖啡店？",
     "detailsLabel": "新增詳細資訊",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} 人在這個聚會",
     "seeAll": "查看全部 →"
   },
-  "owner": { "edit": "✏️ 編輯", "delete": "🗑 刪除" },
+  "owner": {
+    "edit": "✏️ 編輯",
+    "delete": "🗑 刪除"
+  },
   "gated": {
     "title": "僅限成員的聚會",
     "pending": "邀請待處理 - 成員接受後你就能加入對話。",
@@ -53,9 +63,15 @@
     "acceptedBy": "已由 {{name}} 接受",
     "declined": "邀請已拒絕"
   },
-  "modes": { "local": "在地", "exploring": "探索中" },
-  "reply": { "photo": "📷 相片", "unavailable": "原始訊息無法使用" },
-  "composer": { "reply": "回覆對話…", "start": "炒熱這個 vibe ✨" },
+  "modes": {
+    "local": "在地",
+    "exploring": "探索中"
+  },
+  "reply": {
+    "photo": "📷 相片",
+    "unavailable": "原始訊息無法使用"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "無法取得你的位置。請啟用位置存取權後再試一次。",
     "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",

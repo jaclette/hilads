@@ -3,7 +3,14 @@
     "startTitle": "Start een meetup",
     "editTitle": "Meetup bewerken",
     "category": "Categorie",
-    "cat": { "general": "Algemeen", "tips": "Tips", "food": "Eten", "drinks": "Borrelen", "help": "Hulp", "meetup": "Afspreken" },
+    "cat": {
+      "general": "Algemeen",
+      "tips": "Tips",
+      "food": "Eten",
+      "drinks": "Borrelen",
+      "help": "Hulp",
+      "meetup": "Afspreken"
+    },
     "titleLabel": "Wat houdt je bezig?",
     "titlePlaceholder": "bijv. Beste koffieplek in de buurt?",
     "detailsLabel": "Details toevoegen",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} in deze meetup",
     "seeAll": "Alles bekijken →"
   },
-  "owner": { "edit": "✏️ Bewerken", "delete": "🗑 Verwijderen" },
+  "owner": {
+    "edit": "✏️ Bewerken",
+    "delete": "🗑 Verwijderen"
+  },
   "gated": {
     "title": "Meetup alleen voor leden",
     "pending": "Verzoek in behandeling - je kunt aan het gesprek meedoen zodra een lid akkoord gaat.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Geaccepteerd door {{name}}",
     "declined": "Verzoek geweigerd"
   },
-  "modes": { "local": "Local", "exploring": "Verkennen" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Oorspronkelijk bericht niet beschikbaar" },
-  "composer": { "reply": "Reageer op het gesprek…", "start": "Breng de vibe op gang ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Verkennen"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Oorspronkelijk bericht niet beschikbaar"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Je locatie kon niet worden opgehaald. Schakel locatietoegang in en probeer opnieuw.",
     "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",

@@ -3,7 +3,14 @@
     "startTitle": "集まりを始める",
     "editTitle": "集まりを編集",
     "category": "カテゴリー",
-    "cat": { "general": "一般", "tips": "豆知識", "food": "グルメ", "drinks": "お酒", "help": "ヘルプ", "meetup": "ミートアップ" },
+    "cat": {
+      "general": "一般",
+      "tips": "豆知識",
+      "food": "グルメ",
+      "drinks": "お酒",
+      "help": "ヘルプ",
+      "meetup": "ミートアップ"
+    },
     "titleLabel": "今どんな気分？",
     "titlePlaceholder": "例：このあたりで一番のコーヒースポットは？",
     "detailsLabel": "詳細を追加",
@@ -29,7 +36,10 @@
     "countIn": "この集まりに{{count}}人",
     "seeAll": "すべて見る →"
   },
-  "owner": { "edit": "✏️ 編集", "delete": "🗑 削除" },
+  "owner": {
+    "edit": "✏️ 編集",
+    "delete": "🗑 削除"
+  },
   "gated": {
     "title": "メンバー限定の集まり",
     "pending": "リクエスト保留中 - メンバーが承認すると会話に参加できます。",
@@ -53,9 +63,15 @@
     "acceptedBy": "{{name}} が承認しました",
     "declined": "リクエストを拒否しました"
   },
-  "modes": { "local": "ローカル", "exploring": "探索中" },
-  "reply": { "photo": "📷 写真", "unavailable": "元のメッセージは利用できません" },
-  "composer": { "reply": "会話に返信…", "start": "vibe を盛り上げよう ✨" },
+  "modes": {
+    "local": "ローカル",
+    "exploring": "探索中"
+  },
+  "reply": {
+    "photo": "📷 写真",
+    "unavailable": "元のメッセージは利用できません"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "現在地を取得できませんでした。位置情報へのアクセスを許可して再試行してください。",
     "imageType": "JPEG、PNG、または WebP の画像を選択してください。",

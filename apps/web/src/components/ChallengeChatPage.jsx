@@ -1401,7 +1401,7 @@ export default function ChallengeChatPage({
             onBlur={() => collapseHeader(false)}
             dismissOnSend
             sending={sending}
-            placeholder={t('chatPlaceholder')}
+            placeholder={t('composer.placeholderChallenge', { ns: 'common' })}
             showEmojiButton={false}
           />
       </>

@@ -3,7 +3,14 @@
     "startTitle": "Mulai nongkrong",
     "editTitle": "Edit nongkrong",
     "category": "Kategori",
-    "cat": { "general": "Umum", "tips": "Tips", "food": "Makanan", "drinks": "Minuman", "help": "Bantuan", "meetup": "Meetup" },
+    "cat": {
+      "general": "Umum",
+      "tips": "Tips",
+      "food": "Makanan",
+      "drinks": "Minuman",
+      "help": "Bantuan",
+      "meetup": "Meetup"
+    },
     "titleLabel": "Apa yang ada di pikiranmu?",
     "titlePlaceholder": "mis. Spot kopi terbaik di sekitar sini?",
     "detailsLabel": "Tambahkan detail",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} di nongkrong ini",
     "seeAll": "Lihat semua →"
   },
-  "owner": { "edit": "✏️ Edit", "delete": "🗑 Hapus" },
+  "owner": {
+    "edit": "✏️ Edit",
+    "delete": "🗑 Hapus"
+  },
   "gated": {
     "title": "Nongkrong khusus anggota",
     "pending": "Permintaan menunggu - kamu bisa bergabung ke percakapan begitu seorang anggota menerima.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Diterima oleh {{name}}",
     "declined": "Permintaan ditolak"
   },
-  "modes": { "local": "Local", "exploring": "Exploring" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Pesan asli tidak tersedia" },
-  "composer": { "reply": "Balas percakapan…", "start": "Mulai vibe-nya ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Exploring"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Pesan asli tidak tersedia"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Tidak bisa mengambil lokasimu. Aktifkan akses lokasi dan coba lagi.",
     "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",

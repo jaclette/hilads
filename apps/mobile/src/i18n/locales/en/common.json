@@ -109,14 +109,6 @@
   "openSettings": "Open Settings",
   "composer": {
     "placeholderDefault": "Drop a message…",
-    "placeholders": [
-      "Say hi 👋",
-      "Who's out tonight?",
-      "Any plans? 👀",
-      "What's happening here?",
-      "Anyone up for something? 🍻",
-      "Drop a message…"
-    ],
     "attach": "Add attachment",
     "sendPhotoTitle": "Send a photo",
     "takePhoto": "Take Photo",

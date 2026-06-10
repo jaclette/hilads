@@ -133,7 +133,6 @@
       }
     }
   },
-  "chatPlaceholder": "Say something to the channel…",
   "messageCreator": "Message {{name}} privately",
   "join": {
     "gateTitle": "Become a spectator",

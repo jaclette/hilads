@@ -3,7 +3,14 @@
     "startTitle": "Começar um rolê",
     "editTitle": "Editar o rolê",
     "category": "Categoria",
-    "cat": { "general": "Geral", "tips": "Dicas", "food": "Comida", "drinks": "Drinks", "help": "Ajuda", "meetup": "Encontro" },
+    "cat": {
+      "general": "Geral",
+      "tips": "Dicas",
+      "food": "Comida",
+      "drinks": "Drinks",
+      "help": "Ajuda",
+      "meetup": "Encontro"
+    },
     "titleLabel": "O que você está pensando?",
     "titlePlaceholder": "ex. Melhor café da região?",
     "detailsLabel": "Adicionar detalhes",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} neste rolê",
     "seeAll": "Ver todos →"
   },
-  "owner": { "edit": "✏️ Editar", "delete": "🗑 Excluir" },
+  "owner": {
+    "edit": "✏️ Editar",
+    "delete": "🗑 Excluir"
+  },
   "gated": {
     "title": "Rolê só para membros",
     "pending": "Pedido pendente - você poderá entrar na conversa assim que um membro aceitar.",
@@ -53,9 +63,15 @@
     "acceptedBy": "Aceito por {{name}}",
     "declined": "Pedido recusado"
   },
-  "modes": { "local": "Local", "exploring": "Explorando" },
-  "reply": { "photo": "📷 Foto", "unavailable": "Mensagem original indisponível" },
-  "composer": { "reply": "Responda à conversa…", "start": "Anime a vibe ✨" },
+  "modes": {
+    "local": "Local",
+    "exploring": "Explorando"
+  },
+  "reply": {
+    "photo": "📷 Foto",
+    "unavailable": "Mensagem original indisponível"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "Não foi possível obter sua localização. Ative o acesso à localização e tente de novo.",
     "imageType": "Selecione uma imagem JPEG, PNG ou WebP.",

@@ -3,7 +3,14 @@
     "startTitle": "ابدأ لقاءً",
     "editTitle": "تعديل اللقاء",
     "category": "الفئة",
-    "cat": { "general": "عام", "tips": "نصائح", "food": "طعام", "drinks": "مشروبات", "help": "مساعدة", "meetup": "لقاء" },
+    "cat": {
+      "general": "عام",
+      "tips": "نصائح",
+      "food": "طعام",
+      "drinks": "مشروبات",
+      "help": "مساعدة",
+      "meetup": "لقاء"
+    },
     "titleLabel": "ما الذي يدور في ذهنك؟",
     "titlePlaceholder": "مثال: أفضل مكان لتناول القهوة في المنطقة؟",
     "detailsLabel": "أضف تفاصيل",
@@ -29,7 +36,10 @@
     "countIn": "{{count}} في هذا اللقاء",
     "seeAll": "عرض الكل →"
   },
-  "owner": { "edit": "✏️ تعديل", "delete": "🗑 حذف" },
+  "owner": {
+    "edit": "✏️ تعديل",
+    "delete": "🗑 حذف"
+  },
   "gated": {
     "title": "لقاء للأعضاء فقط",
     "pending": "الطلب قيد الانتظار - ستتمكن من الانضمام إلى المحادثة بمجرد أن يقبل أحد الأعضاء.",
@@ -53,9 +63,15 @@
     "acceptedBy": "قَبِله {{name}}",
     "declined": "رُفض الطلب"
   },
-  "modes": { "local": "محلي", "exploring": "استكشاف" },
-  "reply": { "photo": "📷 صورة", "unavailable": "الرسالة الأصلية غير متاحة" },
-  "composer": { "reply": "رد على المحادثة…", "start": "ابدأ الـvibe ✨" },
+  "modes": {
+    "local": "محلي",
+    "exploring": "استكشاف"
+  },
+  "reply": {
+    "photo": "📷 صورة",
+    "unavailable": "الرسالة الأصلية غير متاحة"
+  },
+  "composer": {},
   "errors": {
     "locFailed": "تعذّر الحصول على موقعك. يرجى تفعيل الوصول إلى الموقع والمحاولة مرة أخرى.",
     "imageType": "يرجى اختيار صورة بصيغة JPEG أو PNG أو WebP.",
