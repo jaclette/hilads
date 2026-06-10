@@ -26,7 +26,27 @@
     "next": "Volgende",
     "explore": "Eerst verkennen",
     "createAccount": "Een account aanmaken",
-    "fallbackCity": "jouw stad"
+    "fallbackCity": "jouw stad",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hilads is de app die reizigers tot locals maakt — en locals helpt te delen wat hun stad tot leven brengt."
+    },
+    "slide2": {
+      "title": "Drie manieren om de stad te beleven",
+      "itemChallenges": "🤝 Challenges — daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
+      "itemHangouts": "🎉 Hangouts — losse afspraken wanneer het je uitkomt. Koffie, borrels, wandelingen, wat dan ook.",
+      "itemEvents": "📍 Local Events — de grotere momenten, georganiseerd door de community."
+    },
+    "slide3": {
+      "title": "Verdien je plek in de stad",
+      "body": "Elke challenge die je voltooit, elke afspraak, elke plek die je ontdekt levert je punten op. Punten laten zien hoe local je bent geworden in {{city}}. Bereik de top van Most Local en verdien je plek tussen wie de stad tot leven brengt."
+    },
+    "slide4": {
+      "title": "Klaar om te beginnen?",
+      "ctaChallenge": "📍 Start je eerste challenge in {{city}}",
+      "ctaMostLocal": "🤝 Ontdek Most Local van {{city}}",
+      "ctaLookAround": "👀 Eerst even rondkijken"
+    }
   },
   "challengeIntro": {
     "title": "Zo werken challenges",

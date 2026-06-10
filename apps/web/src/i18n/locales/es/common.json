@@ -32,7 +32,27 @@
     "next": "Siguiente",
     "explore": "Explorar primero",
     "createAccount": "Crear una cuenta",
-    "fallbackCity": "tu ciudad"
+    "fallbackCity": "tu ciudad",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hilads es la app que convierte a viajeros en locales — y ayuda a los locales a compartir lo que hace que su ciudad esté viva."
+    },
+    "slide2": {
+      "title": "Tres formas de vivir la ciudad",
+      "itemChallenges": "🤝 Challenges — desafía o déjate desafiar para descubrir lugares ocultos, probar comida real, compartir cultura o echar una mano.",
+      "itemHangouts": "🎉 Hangouts — quedadas casuales cuando te apetezca. Café, copas, paseos, lo que sea.",
+      "itemEvents": "📍 Local Events — los grandes momentos organizados por la comunidad."
+    },
+    "slide3": {
+      "title": "Gana tu sitio en la ciudad",
+      "body": "Cada challenge que completas, cada quedada, cada lugar que descubres te da puntos. Los puntos reflejan lo local que te has vuelto en {{city}}. Llega al top de Most Local y gana tu sitio entre los que hacen que la ciudad esté viva."
+    },
+    "slide4": {
+      "title": "¿Listo para empezar?",
+      "ctaChallenge": "📍 Lanza tu primer challenge en {{city}}",
+      "ctaMostLocal": "🤝 Descubre Most Local de {{city}}",
+      "ctaLookAround": "👀 Solo explorar por ahora"
+    }
   },
   "challengeIntro": {
     "title": "Cómo funcionan los retos",

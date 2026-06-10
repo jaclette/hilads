@@ -26,7 +26,27 @@
     "next": "Lanjut",
     "explore": "Jelajahi dulu",
     "createAccount": "Buat akun",
-    "fallbackCity": "kotamu"
+    "fallbackCity": "kotamu",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hilads adalah app yang mengubah traveler jadi orang lokal — dan membantu orang lokal berbagi apa yang membuat kotanya hidup."
+    },
+    "slide2": {
+      "title": "Tiga cara menghidupi kota",
+      "itemChallenges": "🤝 Challenges — tantang atau ditantang buat menemukan tempat tersembunyi, mencicipi makanan asli, berbagi budaya, atau bantu.",
+      "itemHangouts": "🎉 Hangouts — kumpul-kumpul santai kapan aja kamu mau. Kopi, ngedrink, jalan-jalan, apa aja.",
+      "itemEvents": "📍 Local Events — momen yang lebih besar yang diadakan komunitas."
+    },
+    "slide3": {
+      "title": "Raih tempatmu di kota",
+      "body": "Setiap challenge yang kamu selesaikan, setiap pertemuan, setiap tempat yang kamu temukan kasih kamu poin. Poin mencerminkan seberapa lokal kamu sudah jadi di {{city}}. Naik ke puncak Most Local dan raih tempatmu di antara orang-orang yang menghidupkan kota."
+    },
+    "slide4": {
+      "title": "Siap mulai?",
+      "ctaChallenge": "📍 Ambil challenge pertama di {{city}}",
+      "ctaMostLocal": "🤝 Lihat Most Local {{city}}",
+      "ctaLookAround": "👀 Lihat-lihat dulu aja"
+    }
   },
   "challengeIntro": {
     "title": "Cara kerja tantangan",

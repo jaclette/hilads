@@ -32,7 +32,27 @@
     "next": "次へ",
     "explore": "まずは見てみる",
     "createAccount": "アカウントを作成",
-    "fallbackCity": "あなたの街"
+    "fallbackCity": "あなたの街",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hiladsは、旅行者をローカルに変えるアプリ — そしてローカルが自分の街の魅力を共有する場所です。"
+    },
+    "slide2": {
+      "title": "街を生きる、3つの方法",
+      "itemChallenges": "🤝 Challenges — 隠れたスポットを発見、本物の料理を味わう、文化を分かち合う、手助けする。挑む側にも、挑まれる側にも。",
+      "itemHangouts": "🎉 Hangouts — 気が向いたときのカジュアルな集まり。コーヒー、ドリンク、散歩、何でも。",
+      "itemEvents": "📍 Local Events — コミュニティが開く、もっと大きな集まり。"
+    },
+    "slide3": {
+      "title": "街での居場所を手に入れよう",
+      "body": "クリアしたチャレンジ、参加したミートアップ、見つけたスポット、すべてがポイントになります。ポイントは、あなたが{{city}}でどれだけローカルになったかを表します。Most Localの頂点に立って、街を生かす人たちの中での居場所を手に入れましょう。"
+    },
+    "slide4": {
+      "title": "始める準備はできましたか？",
+      "ctaChallenge": "📍 {{city}}で初めてのチャレンジを始める",
+      "ctaMostLocal": "🤝 {{city}}のMost Localを見る",
+      "ctaLookAround": "👀 今はとりあえず見るだけ"
+    }
   },
   "challengeIntro": {
     "title": "挑戦の仕組み",

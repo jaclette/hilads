@@ -26,7 +26,27 @@
     "next": "Tiếp",
     "explore": "Khám phá trước",
     "createAccount": "Tạo tài khoản",
-    "fallbackCity": "thành phố của bạn"
+    "fallbackCity": "thành phố của bạn",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hilads là app biến du khách thành người địa phương — và giúp người địa phương chia sẻ những gì làm thành phố của họ sống động."
+    },
+    "slide2": {
+      "title": "Ba cách sống thành phố",
+      "itemChallenges": "🤝 Challenges — thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
+      "itemHangouts": "🎉 Hangouts — buổi gặp gỡ thoải mái khi bạn muốn. Cà phê, bia rượu, đi dạo, gì cũng được.",
+      "itemEvents": "📍 Local Events — những khoảnh khắc lớn hơn do cộng đồng tổ chức."
+    },
+    "slide3": {
+      "title": "Kiếm chỗ đứng trong thành phố",
+      "body": "Mỗi challenge bạn hoàn thành, mỗi cuộc gặp, mỗi địa điểm bạn khám phá đều cộng điểm cho bạn. Điểm phản ánh bạn đã trở thành người địa phương ở {{city}} đến mức nào. Lên đỉnh Most Local và kiếm chỗ đứng giữa những người làm cho thành phố sống động."
+    },
+    "slide4": {
+      "title": "Sẵn sàng bắt đầu?",
+      "ctaChallenge": "📍 Nhận challenge đầu tiên ở {{city}}",
+      "ctaMostLocal": "🤝 Khám phá Most Local của {{city}}",
+      "ctaLookAround": "👀 Cứ ngó qua đã"
+    }
   },
   "challengeIntro": {
     "title": "Thử thách hoạt động thế nào",

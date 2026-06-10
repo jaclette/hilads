@@ -32,7 +32,27 @@
     "next": "Next",
     "explore": "Mag-explore muna",
     "createAccount": "Gumawa ng account",
-    "fallbackCity": "iyong city"
+    "fallbackCity": "iyong city",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Ang Hilads ay ang app na nagpapasok sa mga traveler bilang local — at tumutulong sa mga local na i-share kung ano ang nagpapabuhay sa kanilang city."
+    },
+    "slide2": {
+      "title": "Tatlong paraan para mabuhay sa city",
+      "itemChallenges": "🤝 Challenges — mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
+      "itemHangouts": "🎉 Hangouts — casual meetups kapag may gana ka. Coffee, drinks, walks, anuman.",
+      "itemEvents": "📍 Local Events — mas malaking moments na hosted ng community."
+    },
+    "slide3": {
+      "title": "Kitain ang puwesto mo sa city",
+      "body": "Bawat challenge na natapos mo, bawat meet, bawat spot na natuklasan mo, may points. Pinapakita ng points kung gaano ka na ka-local sa {{city}}. Abutin ang top ng Most Local at kitain ang puwesto mo kasama ang mga taong nagpapabuhay sa city."
+    },
+    "slide4": {
+      "title": "Ready ka na bang mag-start?",
+      "ctaChallenge": "📍 Subukan ang first challenge mo sa {{city}}",
+      "ctaMostLocal": "🤝 Tuklasin ang Most Local ng {{city}}",
+      "ctaLookAround": "👀 Mag-tingin-tingin muna"
+    }
   },
   "challengeIntro": {
     "title": "Paano gumagana ang challenges",

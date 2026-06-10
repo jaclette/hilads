@@ -32,7 +32,27 @@
     "next": "下一步",
     "explore": "先逛逛",
     "createAccount": "建立帳號",
-    "fallbackCity": "你的城市"
+    "fallbackCity": "你的城市",
+    "slide1": {
+      "title": "Become local. Anywhere.",
+      "body": "Hilads 是把旅行者變成在地人的 app — 也幫在地人分享讓自己城市鮮活的一切。"
+    },
+    "slide2": {
+      "title": "體驗城市的三種方式",
+      "itemChallenges": "🤝 Challenges — 發起或接受挑戰，發現隱藏地點、品嚐真味、分享文化、伸出援手。",
+      "itemHangouts": "🎉 Hangouts — 想見就見的輕鬆聚會。咖啡、小酌、散步，什麼都行。",
+      "itemEvents": "📍 Local Events — 社群舉辦的更大規模時刻。"
+    },
+    "slide3": {
+      "title": "在城市裡贏得你的位置",
+      "body": "完成的每一個 challenge、每一次見面、每一個發現的地方都為你贏得積分。積分反映你在 {{city}} 變得有多在地。登上 Most Local 的頂峰，贏得在讓城市鮮活的人當中的位置。"
+    },
+    "slide4": {
+      "title": "準備好出發了嗎？",
+      "ctaChallenge": "📍 在 {{city}} 接受你的第一個 challenge",
+      "ctaMostLocal": "🤝 看看 {{city}} 的 Most Local",
+      "ctaLookAround": "👀 先隨便看看"
+    }
   },
   "challengeIntro": {
     "title": "挑戰是怎麼運作的",
