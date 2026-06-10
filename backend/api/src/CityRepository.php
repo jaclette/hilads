@@ -90,6 +90,27 @@ class CityRepository
     }
 
     /**
+     * Map a city display name to its channel id ("city_<int>"). Case-
+     * insensitive, trims whitespace. Returns null when no exact match.
+     *
+     * Used by signup / profile-edit paths that store users.home_city as a
+     * raw string and need to derive current_city_id so the user appears in
+     * the City Crew (members query filters on current_city_id under
+     * MEMBERS_USE_CURRENT_CITY=on).
+     */
+    public static function findChannelIdByName(string $name): ?string
+    {
+        $needle = strtolower(trim($name));
+        if ($needle === '') return null;
+        foreach (self::load() as $city) {
+            if (strtolower(trim((string) ($city['name'] ?? ''))) === $needle) {
+                return 'city_' . $city['id'];
+            }
+        }
+        return null;
+    }
+
+    /**
      * Find the closest city to a GPS point, optionally constrained to a country.
      *
      * When the client passes the GPS point's country (resolved via native

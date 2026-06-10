@@ -1251,6 +1251,48 @@ $router->add('PUT', '/api/v1/profile', function () {
         throw $e;
     }
 
+    // Auto-derive current_city_id from home_city on first set. Under
+    // MEMBERS_USE_CURRENT_CITY=on (prod), the City Crew / People Here
+    // query reads ONLY current_city_id. A registered user who set
+    // home_city='Manaus' without ever having GPS resolve was invisible
+    // in Manaus's crew because current_city_id stayed NULL.
+    //
+    // Only triggers when (a) the caller actually sent home_city in this
+    // PUT and the resulting value is non-null, AND (b) the user has NO
+    // current_city_id yet. Never overwrites a live current_city: a Swede
+    // travelling in Tokyo (current_city=Tokyo) updating home_city to
+    // Berlin should NOT be moved to Berlin's crew - the two-signal rule
+    // owns transitions once a current_city exists.
+    if (array_key_exists('home_city', $fields)
+        && is_string($updated['home_city'] ?? null)
+        && $updated['home_city'] !== ''
+        && empty($updated['current_city_id'])
+    ) {
+        $derivedCityId = CityRepository::findChannelIdByName($updated['home_city']);
+        if ($derivedCityId !== null) {
+            Database::pdo()->prepare("
+                UPDATE users
+                   SET current_city_id                = :city,
+                       current_city_set_at            = COALESCE(current_city_set_at, now()),
+                       current_city_last_confirmed_at = COALESCE(current_city_last_confirmed_at, now()),
+                       updated_at                     = :now
+                 WHERE id = :id
+            ")->execute([
+                'city' => $derivedCityId,
+                'now'  => time(),
+                'id'   => $user['id'],
+            ]);
+            // City leaderboard recalc - the user now belongs in this city's
+            // ranks. Non-fatal: failure here doesn't roll back the placement.
+            try {
+                MonthlyRankService::recalcAfterCityChange($user['id'], null, $derivedCityId);
+            } catch (\Throwable $e) {
+                error_log('[profile] derived city recalc failed user=' . $user['id'] . ': ' . $e->getMessage());
+            }
+            $updated = UserRepository::findById($user['id']) ?? $updated;
+        }
+    }
+
     Response::json(['user' => AuthService::ownFields($updated)]);
 });
 

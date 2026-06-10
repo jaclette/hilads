@@ -777,6 +777,29 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_guest_id      ON users (guest_id
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_home_city_lower ON users (LOWER(TRIM(home_city)))", 'idx_users_home_city_lower');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_users_current_city ON users (current_city_id) WHERE current_city_id IS NOT NULL", 'idx_users_current_city');
 
+// Backfill: registered users who set home_city in their profile but never
+// had GPS resolve are invisible in their city's crew (MEMBERS_USE_CURRENT_CITY=on
+// filters on current_city_id only). One-shot UPDATE keyed on
+// current_city_id IS NULL so re-runs are no-ops. Goes through to channels +
+// cities (case-insensitive name match) so we capture every recognised city,
+// not just those still spelled exactly as the city display name. Confidence
+// timestamps are stamped to now() so the two-signal transition rule treats
+// the placement as already-confirmed.
+run($pdo, "
+    UPDATE users u
+       SET current_city_id                = ch.id,
+           current_city_set_at            = COALESCE(u.current_city_set_at, now()),
+           current_city_last_confirmed_at = COALESCE(u.current_city_last_confirmed_at, now())
+      FROM channels ch
+      JOIN cities ci ON ci.channel_id = ch.id
+     WHERE u.current_city_id IS NULL
+       AND u.deleted_at IS NULL
+       AND u.home_city IS NOT NULL
+       AND lower(trim(u.home_city)) = lower(trim(ch.name))
+       AND ch.type = 'city'
+       AND ch.status = 'active'
+", 'backfill users.current_city_id from home_city');
+
 // channels
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channels_parent        ON channels (parent_id) WHERE parent_id IS NOT NULL", 'idx_channels_parent');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channels_type          ON channels (type)", 'idx_channels_type');
