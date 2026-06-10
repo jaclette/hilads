@@ -137,7 +137,7 @@ admin_nav('/admin/users');
                     <?php foreach ($users as $u): ?>
                         <?php $isDeleted = $u['deleted_at'] !== null; ?>
                         <tr <?= $isDeleted ? 'style="opacity:0.5"' : '' ?>>
-                            <td class="td-mono"><?= htmlspecialchars(substr($u['id'], 0, 12), ENT_QUOTES) ?>…</td>
+                            <td class="td-mono" style="white-space:nowrap"><?= htmlspecialchars($u['id'], ENT_QUOTES) ?></td>
                             <td>
                                 <strong><?= htmlspecialchars($u['display_name'] ?? '-', ENT_QUOTES) ?></strong>
                                 <?php if ($u['is_fake']): ?>
