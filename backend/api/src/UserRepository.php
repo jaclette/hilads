@@ -181,7 +181,10 @@ class UserRepository
                 $data['home_city']         ?? null,
                 $data['interests']         ?? '[]',
                 $data['vibe']              ?? 'chill',
-                $data['is_fake']           ?? 0,
+                // PDO + Postgres: a raw PHP false binds as '' which the
+                // BOOLEAN column rejects ("invalid input syntax for type
+                // boolean: ''"). Cast to int 0/1 so the bind is unambiguous.
+                (int) (bool) ($data['is_fake'] ?? false),
                 $currentCityId,
                 $currentCityId !== null ? date('c', $now) : null,
                 $currentCityId !== null ? date('c', $now) : null,
