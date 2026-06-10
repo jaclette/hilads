@@ -523,10 +523,21 @@ export default function NowScreen() {
     });
   }, [items, filter, blockedSet, distanceById]);
 
-  // Top 5 challenges for the inline strip (open status, most-recent first -
-  // backend already sorts). Both 'all' and 'challenges' filters surface them.
+  // Top 5 challenges for the inline strip. Backend hands them back open
+  // status + most-recent first. We re-sort to put LOCAL ahead of
+  // INTERNATIONAL while keeping the recent-first order stable within
+  // each bucket - matches the web filteredChallenges memo so the two
+  // platforms agree on which rows lead the strip.
   const topChallenges = useMemo(
-    () => (filter === 'events' || filter === 'topics' ? [] : challenges.slice(0, NOW_CHALLENGES_CAP)),
+    () => {
+      if (filter === 'events' || filter === 'topics') return [];
+      const sorted = [...challenges].sort((a, b) => {
+        const am = (a.mode ?? 'local') === 'international' ? 1 : 0;
+        const bm = (b.mode ?? 'local') === 'international' ? 1 : 0;
+        return am - bm;
+      });
+      return sorted.slice(0, NOW_CHALLENGES_CAP);
+    },
     [challenges, filter],
   );
 

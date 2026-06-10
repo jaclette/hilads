@@ -1078,15 +1078,25 @@ export default function App() {
   // scroll guard so they can't drift. Outside the Challenges filter the list
   // is passed through unchanged (the NOW "all" view caps at 5 anyway).
   const filteredChallenges = useMemo(() => {
-    if (nowFilter !== 'challenges') return cityChallenges
     let pool = cityChallenges
-    if (challengeModeFilter !== 'all') {
-      pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
+    if (nowFilter === 'challenges') {
+      if (challengeModeFilter !== 'all') {
+        pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
+      }
+      if (challengeTypeFilter !== 'all') {
+        pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
+      }
     }
-    if (challengeTypeFilter !== 'all') {
-      pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
-    }
-    return pool
+    // Local first, international last. Stable within each bucket so the
+    // backend ordering (recent first) survives - we only push intl rows
+    // below locals, not reshuffle within them. Applied in both views so
+    // the NOW "All" challenge strip and the dedicated Challenges sub-tab
+    // share the same priority signal.
+    return [...pool].sort((a, b) => {
+      const am = (a.mode ?? 'local') === 'international' ? 1 : 0
+      const bm = (b.mode ?? 'local') === 'international' ? 1 : 0
+      return am - bm
+    })
   }, [cityChallenges, nowFilter, challengeTypeFilter, challengeModeFilter])
 
   // Scroll-to-load-more - three gates so we never spam the rendering loop
