@@ -4,7 +4,7 @@
  *
  * Contains:
  *   - Left:   notification bell with unread badge (registered users only)
- *   - Center: Hilads logo + "Challenge the city." tagline to its right
+ *   - Center: Hilads logo + "Become local. Anywhere." tagline to its right
  *   - Right:  optional tab-specific extra(s) (e.g. Share on MY CITY),
  *             then the DM icon with unread badge (registered users only)
  *
@@ -12,10 +12,10 @@
  * Tab-specific elements (city selector, chips, filter pills, titles) render
  * BELOW this component inside each tab's own header container.
  *
- * The "Challenge the city." tagline mirrors the web persistent header
+ * The "Become local. Anywhere." tagline mirrors the web persistent header
  * (`.header-tagline`): ~11px, white at 50% opacity, wrapping onto two lines at
- * maxWidth 76. (Previously dropped over an Apple Guideline 4 "microscopic text"
- * note; restored at product request for parity with the web header.)
+ * maxWidth 76. Brand-locked English in every locale (same rule as the other
+ * 6 locked brand terms — see [[i18n-initiative]] in memory).
  */
 
 import React from 'react';
@@ -121,7 +121,7 @@ export function AppHeader({ rightExtra }: Props) {
         <View style={styles.iconGlow}>
           <HiladsIcon size={36} />
         </View>
-        <Text style={styles.tagline}>{'Challenge\nthe city.'}</Text>
+        <Text style={styles.tagline}>{'Become local.\nAnywhere.'}</Text>
       </View>
 
       {/* Right: tab-specific extras + DM icon */}

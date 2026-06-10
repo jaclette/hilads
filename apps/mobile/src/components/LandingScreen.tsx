@@ -301,7 +301,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                   </Text>
 
                   {/* ob-tagline */}
-                  <Text style={styles.tagline}>Challenge the city.</Text>
+                  <Text style={styles.tagline}>Become local. Anywhere.</Text>
 
                   {/* ob-activity-block: people + events together */}
                   <View style={styles.activityBlock}>
