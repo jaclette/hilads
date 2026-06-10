@@ -174,14 +174,16 @@ admin_nav('/admin/users');
 
         <div class="form-group">
             <label for="home_city">Home city</label>
-            <input type="text" id="home_city" name="home_city"
-                   value="<?= htmlspecialchars($post['home_city'] ?? '', ENT_QUOTES) ?>"
-                   list="cities-list" placeholder="e.g. Paris">
-            <datalist id="cities-list">
+            <select id="home_city" name="home_city">
+                <option value="">- None -</option>
+                <?php $selectedHomeCity = (string)($post['home_city'] ?? ''); ?>
                 <?php foreach ($cities as $c): ?>
-                    <option value="<?= htmlspecialchars($c['name'], ENT_QUOTES) ?>">
+                    <option value="<?= htmlspecialchars($c['name'], ENT_QUOTES) ?>"
+                            <?= $selectedHomeCity === $c['name'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($c['name'], ENT_QUOTES) ?>
+                    </option>
                 <?php endforeach; ?>
-            </datalist>
+            </select>
         </div>
 
         <div class="form-group">
