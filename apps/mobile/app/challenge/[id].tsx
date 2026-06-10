@@ -1440,6 +1440,7 @@ export default function ChallengeChatScreen() {
 
             <ChatInput
               sending={sending}
+              placeholder={i18n.t('composer.placeholderChallenge', { ns: 'common' })}
               onFocus={() => collapseTo(1)}
               onBlur={() => collapseTo(0)}
               dismissOnSend

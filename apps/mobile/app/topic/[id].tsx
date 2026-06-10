@@ -410,11 +410,7 @@ export default function TopicChatScreen() {
           mentionChannelId={id}
           onSendText={(text, mentions) => sendText(text, null, mentions)}
           onSendImage={sendImage}
-          placeholder={
-            messages.some(m => m.type !== 'system')
-              ? t('composerReply')
-              : t('composerFirst')
-          }
+          placeholder={t('composer.placeholderHangout', { ns: 'common' })}
           editing={editingMsg}
           onSubmitEdit={async (text) => {
             if (!editingMsg) return;

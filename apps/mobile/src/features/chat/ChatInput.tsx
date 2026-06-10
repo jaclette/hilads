@@ -17,7 +17,6 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
@@ -32,18 +31,6 @@ import { MentionSuggestions } from './MentionSuggestions';
 import { fetchMentionSuggestions, type MentionContext, type MentionSuggestion } from '@/api/mentions';
 import { buildMentionsFromText, detectActiveMention, type SelectedMention, type MentionRef } from '@/lib/mentions';
 
-
-// ── Placeholder cycling - mirrors web PLACEHOLDERS array ─────────────────────
-// Web: PLACEHOLDERS[channelId % PLACEHOLDERS.length](). The list is localized
-// (common.composer.placeholders), picked deterministically by channel id.
-
-export function getPlaceholder(channelId: string): string {
-  const list = i18n.t('composer.placeholders', { ns: 'common', returnObjects: true }) as string[];
-  if (!Array.isArray(list) || list.length === 0) return '';
-  const n = parseInt(channelId, 10);
-  const idx = isNaN(n) ? 0 : n % list.length;
-  return list[idx] ?? list[0];
-}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 

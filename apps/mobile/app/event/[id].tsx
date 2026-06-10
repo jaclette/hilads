@@ -578,11 +578,7 @@ export default function EventDetailScreen() {
               sendText(text, reply, mentions);
             }}
             onSendImage={sendImage}
-            placeholder={
-              messages.some(m => m.type !== 'system')
-                ? t('composerSay', { title: event.title })
-                : t('composerFirst', { title: event.title })
-            }
+            placeholder={t('composer.placeholderEvent', { ns: 'common' })}
             replyingTo={replyingTo}
             onCancelReply={() => setReplyingTo(null)}
             editing={editingMsg}

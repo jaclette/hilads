@@ -34,7 +34,7 @@ import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
-import { ChatInput, getPlaceholder } from '@/features/chat/ChatInput';
+import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsBar } from '@/features/chat/ArrivalsBar';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
@@ -1240,7 +1240,7 @@ export default function ChatTab() {
           mentionChannelId={channelId}
           onSendText={handleSendText}
           onSendImage={sendImage}
-          placeholder={getPlaceholder(channelId)}
+          placeholder={i18n.t('composer.placeholderCity', { ns: 'common' })}
           pickImageRef={pickImageRef}
           onTypingStart={handleTypingStart}
           onTypingStop={handleTypingStop}
