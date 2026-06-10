@@ -441,7 +441,7 @@
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   },
   "leaderboard": {
-    "title": "🏆 Klassement",
+    "title": "🏆 De meest lokale",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -465,7 +465,8 @@
       "title": "Nog niemand op het bord",
       "body": "Wees de eerste die een challenge aangaat en punten scoort."
     },
-    "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen."
+    "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen.",
+    "neutral": "🏆 De meest lokale"
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",

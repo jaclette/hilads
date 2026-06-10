@@ -441,7 +441,7 @@
     "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
   },
   "leaderboard": {
-    "title": "🏆 Clasificación",
+    "title": "🏆 Los más locales",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -465,7 +465,8 @@
       "title": "Nadie en la clasificación todavía",
       "body": "Sé el primero en aceptar un reto y ganar puntos."
     },
-    "errLoad": "No se pudo cargar la clasificación. Desliza para reintentar."
+    "errLoad": "No se pudo cargar la clasificación. Desliza para reintentar.",
+    "neutral": "🏆 Los más locales"
   },
   "scoringInfo": {
     "aria": "Cómo funcionan los puntos",

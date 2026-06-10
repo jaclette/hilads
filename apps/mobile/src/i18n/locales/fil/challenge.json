@@ -445,7 +445,7 @@
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   },
   "leaderboard": {
-    "title": "🏆 Leaderboard",
+    "title": "🏆 Pinaka-local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -469,7 +469,8 @@
       "title": "Wala pang nasa board",
       "body": "Maging una sa pag-take ng challenge at makakuha ng points."
     },
-    "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit."
+    "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
+    "neutral": "🏆 Pinaka-local"
   },
   "scoringInfo": {
     "aria": "Paano gumagana ang points",

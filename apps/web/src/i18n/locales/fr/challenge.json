@@ -441,7 +441,7 @@
     "errSubmit": "Impossible d’envoyer la note. Réessaie."
   },
   "leaderboard": {
-    "title": "🏆 Classement",
+    "title": "🏆 Les plus locaux",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -465,7 +465,8 @@
       "title": "Personne au classement",
       "body": "Sois le premier à relever un défi et marquer des points."
     },
-    "errLoad": "Impossible de charger le classement. Tire pour réessayer."
+    "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
+    "neutral": "🏆 Les plus locaux"
   },
   "scoringInfo": {
     "aria": "Comment marchent les points",

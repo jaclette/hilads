@@ -445,7 +445,7 @@
     "errSubmit": "评分提交失败，请重试。"
   },
   "leaderboard": {
-    "title": "🏆 排行榜",
+    "title": "🏆 最本地",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -469,7 +469,8 @@
       "title": "排行榜还空着",
       "body": "成为第一个接受挑战并获得分数的人。"
     },
-    "errLoad": "加载排行榜失败，下拉重试。"
+    "errLoad": "加载排行榜失败，下拉重试。",
+    "neutral": "🏆 最本地"
   },
   "scoringInfo": {
     "aria": "积分如何获得",

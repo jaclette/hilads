@@ -441,7 +441,7 @@
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
   },
   "leaderboard": {
-    "title": "🏆 Bảng xếp hạng",
+    "title": "🏆 Người dân địa phương nhất",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -465,7 +465,8 @@
       "title": "Chưa ai trên bảng",
       "body": "Hãy là người đầu tiên nhận thử thách và kiếm điểm."
     },
-    "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại."
+    "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại.",
+    "neutral": "🏆 Người dân địa phương nhất"
   },
   "scoringInfo": {
     "aria": "Cách tính điểm",

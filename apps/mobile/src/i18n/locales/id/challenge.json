@@ -445,7 +445,7 @@
     "errSubmit": "Gagal kirim rating. Coba lagi."
   },
   "leaderboard": {
-    "title": "🏆 Papan peringkat",
+    "title": "🏆 Paling lokal",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -469,7 +469,8 @@
       "title": "Belum ada di papan",
       "body": "Jadi yang pertama menerima challenge dan dapat poin."
     },
-    "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi."
+    "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi.",
+    "neutral": "🏆 Paling lokal"
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",

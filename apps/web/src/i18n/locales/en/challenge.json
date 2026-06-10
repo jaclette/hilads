@@ -218,7 +218,7 @@
     "pointsHeading": "💯 How you earn points"
   },
   "leaderboard": {
-    "title": "🏆 Leaderboard",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -242,7 +242,8 @@
       "title": "Nobody's on the board yet",
       "body": "Be the first to take a challenge and earn points."
     },
-    "errLoad": "Couldn't load the leaderboard. Pull to retry."
+    "errLoad": "Couldn't load the leaderboard. Pull to retry.",
+    "neutral": "🏆 Most Local"
   },
   "schedule": {
     "proposeCta": "Propose a date 📅",

@@ -252,7 +252,7 @@
     "errSubmit": "Couldn't submit your rating. Try again."
   },
   "leaderboard": {
-    "title": "🏆 Leaderboard",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -280,7 +280,8 @@
     "cityPicker": {
       "searchPlaceholder": "Search cities…",
       "empty": "No cities match."
-    }
+    },
+    "neutral": "🏆 Most Local"
   },
   "schedule": {
     "proposeCta": "Propose a date 📅",
