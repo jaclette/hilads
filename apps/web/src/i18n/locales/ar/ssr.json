@@ -84,11 +84,11 @@
     "everythingElseLink": "كل ما يحدث أيضًا في {city}"
   },
   "city": {
-    "title": "تحديات وفعاليات في {city} {timeframe} - التقِ بالسكان المحليين | Hilads",
-    "descHigh": "اقبل تحدّياً محلياً في {city} هذا الأسبوع - {count}+ فعالية للمشاركة، دردشة مباشرة مع السكان المحليين. بلا تسجيل.",
-    "descMid": "اقبل تحدّياً أو انضم إلى لقاء في {city} الليلة - عشاء، سطح، دردشة المدينة المباشرة. بلا تسجيل.",
-    "descLow": "اقبل تحدّياً محلياً أو شاهد من في {city} الآن - دردشة مباشرة، لقاءات، نشاط لحظي. بلا تسجيل.",
-    "h1": "{timeframe} في {city}",
+    "title": "كن محليًا في {city} — Hilads",
+    "descHigh": "كن محليًا في {city}: {count}+ من Local Events هذا الأسبوع، إضافة إلى challenges وmeetups وhangouts. دردشة حية مع المتصلين الآن. دون تسجيل.",
+    "descMid": "كن محليًا في {city}: انضم إلى meetup الليلة، أطلق challenge أو ادخل hangout. دردشة حية مع المتصلين. دون تسجيل.",
+    "descLow": "كن محليًا في {city}: أطلق challenge، شاهد من المتصل، أو افتح hangout. دردشة حية، Local Events، نشاط آني. دون تسجيل.",
+    "h1": "كن محليًا في {city}",
     "introEventsOne": "فعالية واحدة قادمة",
     "introEventsMany": "{count} فعالية قادمة",
     "introVenuesOne": "مكان واحد",

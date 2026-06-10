@@ -84,11 +84,11 @@
     "everythingElseLink": "semua hal lain yang terjadi di {city}"
   },
   "city": {
-    "title": "Tantangan & acara di {city} {timeframe} - temui warga lokal | Hilads",
-    "descHigh": "Ambil tantangan lokal di {city} minggu ini - {count}+ acara untuk diikuti, chat langsung dengan warga lokal. Tanpa daftar.",
-    "descMid": "Ambil tantangan atau ikut acara di {city} malam ini - makan malam, nongkrong, chat kota langsung. Tanpa daftar.",
-    "descLow": "Ambil tantangan lokal atau lihat siapa di {city} sekarang - chat kota langsung, acara, aktivitas waktu nyata. Tanpa daftar.",
-    "h1": "{timeframe} di {city}",
+    "title": "Jadi orang lokal di {city} — Hilads",
+    "descHigh": "Jadi orang lokal di {city}: {count}+ Local Events minggu ini, plus challenges, meetups, dan hangouts. Chat langsung dengan yang sedang online. Tanpa daftar.",
+    "descMid": "Jadi orang lokal di {city}: gabung meetup malam ini, mulai challenge, atau masuk hangout. Chat langsung dengan yang sedang online. Tanpa daftar.",
+    "descLow": "Jadi orang lokal di {city}: mulai challenge, lihat siapa online, atau buka hangout. Chat langsung, Local Events, aktivitas real-time. Tanpa daftar.",
+    "h1": "Jadi orang lokal di {city}",
     "introEventsOne": "1 acara mendatang",
     "introEventsMany": "{count} acara mendatang",
     "introVenuesOne": "1 tempat",

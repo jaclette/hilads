@@ -112,11 +112,11 @@
     "everythingElseLink": "tout ce qui se passe d'autre à {city}"
   },
   "city": {
-    "title": "Défis & événements à {city} {timeframe} - rencontres locales | Hilads",
-    "descHigh": "Relève un défi local à {city} cette semaine - {count}+ événements à rejoindre, chat live avec des locaux. Sans inscription.",
-    "descMid": "Relève un défi ou rejoins un événement à {city} ce soir - dîners, soirées, chat live de la ville. Sans inscription.",
-    "descLow": "Relève un défi local ou vois qui est à {city} en ce moment - chat live, rencontres, sorties. En temps réel, sans inscription.",
-    "h1": "{timeframe} à {city}",
+    "title": "Deviens local à {city} — Hilads",
+    "descHigh": "Deviens local à {city} : {count}+ Local Events cette semaine, plus des challenges, meetups et hangouts. Chat live avec les gens en ligne. Sans inscription.",
+    "descMid": "Deviens local à {city} : rejoins un meetup ce soir, lance un challenge ou plonge dans un hangout. Chat live avec les gens en ligne. Sans inscription.",
+    "descLow": "Deviens local à {city} : lance un challenge, vois qui est en ligne ou démarre un hangout. Chat live, Local Events, activité en temps réel. Sans inscription.",
+    "h1": "Deviens local à {city}",
     "introEventsOne": "1 événement à venir",
     "introEventsMany": "{count} événements à venir",
     "introVenuesOne": "1 lieu",

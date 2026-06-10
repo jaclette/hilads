@@ -847,7 +847,21 @@ function composeCityJsonLd(payload, canonicalUrl, upcomingEvents, challenges) {
   }
   for (const k of Object.keys(place.address)) if (place.address[k] === undefined) delete place.address[k]
 
-  const graph = [place, composeBreadcrumb([
+  // TouristAttraction reinforces that the page is an entry point for
+  // visitors who want to become local in this city — Google's brand
+  // panel + travel-intent queries both lean on this type. Same @id as
+  // the Place node so they're recognised as the same entity with two
+  // type signals.
+  const touristAttraction = {
+    '@type':         'TouristAttraction',
+    '@id':           `${canonicalUrl}#tourist-attraction`,
+    name:            `Become local in ${payload.city}`,
+    description:     `Take on challenges, join meetups, drop into hangouts, find Local Events — every step earns your place in ${payload.city}.`,
+    url:             canonicalUrl,
+    containedInPlace: { '@id': canonicalUrl },
+  }
+
+  const graph = [place, touristAttraction, composeBreadcrumb([
     { name: 'Home',         url: `${SITE_BASE}/` },
     { name: payload.city,   url: canonicalUrl    },
   ])]

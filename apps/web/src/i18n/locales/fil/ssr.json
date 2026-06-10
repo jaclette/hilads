@@ -84,11 +84,11 @@
     "everythingElseLink": "lahat ng iba pang nangyayari sa {city}"
   },
   "city": {
-    "title": "Mga challenge at event sa {city} {timeframe} - makilala ang mga lokal | Hilads",
-    "descHigh": "Tanggapin ang isang lokal na challenge sa {city} ngayong linggo - {count}+ event na pwedeng salihan, live na city chat. Walang signup.",
-    "descMid": "Tanggapin ang isang challenge o sumali sa meetup sa {city} ngayong gabi - dinner, lakad, live na city chat. Walang signup.",
-    "descLow": "Tanggapin ang isang lokal na challenge o tingnan kung sino ang nasa {city} ngayon - live chat, meetup, aktibidad. Walang signup.",
-    "h1": "{timeframe} sa {city}",
+    "title": "Maging local sa {city} — Hilads",
+    "descHigh": "Maging local sa {city}: {count}+ Local Events this week, plus challenges, meetups, at hangouts. Live chat sa mga nag-online ngayon. Walang sign-up.",
+    "descMid": "Maging local sa {city}: sumali sa meetup mamayang gabi, mag-launch ng challenge, o pumasok sa hangout. Live chat sa mga online. Walang sign-up.",
+    "descLow": "Maging local sa {city}: mag-launch ng challenge, tingnan kung sino ang online, o magsimula ng hangout. Live chat, Local Events, real-time activity. Walang sign-up.",
+    "h1": "Maging local sa {city}",
     "introEventsOne": "1 paparating na event",
     "introEventsMany": "{count} paparating na event",
     "introVenuesOne": "1 lugar",

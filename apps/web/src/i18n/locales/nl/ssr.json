@@ -84,11 +84,11 @@
     "everythingElseLink": "al het andere dat gebeurt in {city}"
   },
   "city": {
-    "title": "Challenges & events in {city} {timeframe} - ontmoet locals | Hilads",
-    "descHigh": "Doe mee aan een lokale challenge in {city} deze week - {count}+ events om aan te sluiten, live citychat. Geen aanmelding.",
-    "descMid": "Doe mee aan een challenge of meetup in {city} vanavond - etentjes, rooftops, live citychat. Geen aanmelding.",
-    "descLow": "Doe mee aan een lokale challenge of zie wie er nu in {city} is - live citychat, meetups, real-time activiteit. Geen aanmelding.",
-    "h1": "{timeframe} in {city}",
+    "title": "Word local in {city} — Hilads",
+    "descHigh": "Word local in {city}: {count}+ Local Events deze week, plus challenges, meetups en hangouts. Live chat met mensen die nu online zijn. Zonder account.",
+    "descMid": "Word local in {city}: sluit vanavond aan bij een meetup, start een challenge of duik een hangout in. Live chat met mensen online. Zonder account.",
+    "descLow": "Word local in {city}: start een challenge, zie wie online is of begin een hangout. Live chat, Local Events, real-time activiteit. Zonder account.",
+    "h1": "Word local in {city}",
     "introEventsOne": "1 komend evenement",
     "introEventsMany": "{count} komende evenementen",
     "introVenuesOne": "1 locatie",

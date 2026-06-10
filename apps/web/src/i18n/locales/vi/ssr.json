@@ -85,11 +85,11 @@
     "everythingElseLink": "tất cả những điều khác đang diễn ra ở {city}"
   },
   "city": {
-    "title": "Thử thách & sự kiện tại {city} {timeframe} - gặp người địa phương | Hilads",
-    "descHigh": "Nhận một thử thách tại {city} tuần này - {count}+ sự kiện để tham gia, chat trực tiếp với người địa phương. Không cần đăng ký.",
-    "descMid": "Nhận thử thách hoặc tham gia buổi gặp ở {city} tối nay - ăn tối, gặp mặt, chat trực tiếp. Không cần đăng ký.",
-    "descLow": "Nhận một thử thách hoặc xem ai đang ở {city} ngay bây giờ - chat trực tiếp, gặp gỡ, hoạt động thời gian thực. Không cần đăng ký.",
-    "h1": "{timeframe} ở {city}",
+    "title": "Trở thành người địa phương ở {city} — Hilads",
+    "descHigh": "Trở thành người địa phương ở {city}: {count}+ Local Events tuần này, cùng challenges, meetups và hangouts. Chat trực tiếp với người đang online. Không cần đăng ký.",
+    "descMid": "Trở thành người địa phương ở {city}: gặp gỡ ở meetup tối nay, khởi xướng challenge, hoặc tham gia hangout. Chat trực tiếp với người đang online. Không cần đăng ký.",
+    "descLow": "Trở thành người địa phương ở {city}: khởi xướng challenge, xem ai đang online, hoặc mở hangout. Chat trực tiếp, Local Events, hoạt động thời gian thực. Không cần đăng ký.",
+    "h1": "Trở thành người địa phương ở {city}",
     "introEventsOne": "1 sự kiện sắp tới",
     "introEventsMany": "{count} sự kiện sắp tới",
     "introVenuesOne": "1 địa điểm",

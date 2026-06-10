@@ -84,11 +84,11 @@
     "everythingElseLink": "{city} 正在發生的其他一切"
   },
   "city": {
-    "title": "{city}{timeframe}的挑戰與活動 - 結識本地人 | Hilads",
-    "descHigh": "本週在 {city} 接受本地挑戰 - {count}+ 場活動可加入，與當地人即時聊天。無需註冊。",
-    "descMid": "今晚在 {city} 接受挑戰或加入活動 - 晚餐、聚會、即時城市聊天。無需註冊。",
-    "descLow": "在 {city} 接受本地挑戰，或看看現在誰在城裡 - 即時城市聊天、聚會、即時活動。無需註冊。",
-    "h1": "{city} 的 {timeframe}",
+    "title": "在 {city} 成為在地人 — Hilads",
+    "descHigh": "在 {city} 成為在地人：本週 {count}+ Local Events，還有 challenges、meetups 和 hangouts。和正線上的人即時聊天。無需註冊。",
+    "descMid": "在 {city} 成為在地人：今晚加入 meetup、發起 challenge，或進入一個 hangout。和正線上的人即時聊天。無需註冊。",
+    "descLow": "在 {city} 成為在地人：發起 challenge、看看誰在線、開一個 hangout。即時聊天、Local Events、即時活動。無需註冊。",
+    "h1": "在 {city} 成為在地人",
     "introEventsOne": "1 個即將登場的活動",
     "introEventsMany": "{count} 個即將登場的活動",
     "introVenuesOne": "1 個場地",

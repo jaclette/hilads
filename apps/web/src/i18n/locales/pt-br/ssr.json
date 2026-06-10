@@ -84,11 +84,11 @@
     "everythingElseLink": "tudo o mais que está rolando em {city}"
   },
   "city": {
-    "title": "Desafios & eventos em {city} {timeframe} - conheça os locais | Hilads",
-    "descHigh": "Topa um desafio local em {city} esta semana - {count}+ eventos pra ir, chat ao vivo com os locais. Sem cadastro.",
-    "descMid": "Topa um desafio ou entra num rolê em {city} hoje - jantares, encontros, chat ao vivo da cidade. Sem cadastro.",
-    "descLow": "Topa um desafio local ou veja quem está em {city} agora - chat ao vivo, encontros, atividade em tempo real. Sem cadastro.",
-    "h1": "{timeframe} em {city}",
+    "title": "Vire local em {city} — Hilads",
+    "descHigh": "Vire local em {city}: {count}+ Local Events nesta semana, mais challenges, meetups e hangouts. Chat ao vivo com quem está online. Sem cadastro.",
+    "descMid": "Vire local em {city}: entre num meetup hoje, lance um challenge ou caia num hangout. Chat ao vivo com quem está online. Sem cadastro.",
+    "descLow": "Vire local em {city}: lance um challenge, veja quem está online ou comece um hangout. Chat ao vivo, Local Events, atividade em tempo real. Sem cadastro.",
+    "h1": "Vire local em {city}",
     "introEventsOne": "1 evento em breve",
     "introEventsMany": "{count} eventos em breve",
     "introVenuesOne": "1 local",
