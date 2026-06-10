@@ -1772,7 +1772,7 @@ run($pdo, "
         cnt              INT;
         challenger_id    TEXT;
         taker_id         TEXT;
-        acceptance_id    TEXT;
+        v_acceptance_id  TEXT;
         origin_city      TEXT;
         challenge_mode   TEXT;
         v_method         TEXT;
@@ -1796,9 +1796,11 @@ run($pdo, "
 
         -- Capture the active acceptance id so per-round score_events stay
         -- distinct (the user could have taken this challenge in an earlier
-        -- round; ON CONFLICT key includes acceptance_id).
+        -- round; ON CONFLICT key includes acceptance_id). Prefix with v_ so
+        -- it doesn't collide with score_events.acceptance_id in the
+        -- ON CONFLICT clause (Postgres 42702 ambiguous column otherwise).
         SELECT ca.acceptor_user_id, ca.id
-        INTO taker_id, acceptance_id
+        INTO taker_id, v_acceptance_id
         FROM challenge_acceptances ca
         WHERE ca.challenge_id = NEW.challenge_id
           AND ca.phase <> 'rejected'
@@ -1827,8 +1829,8 @@ run($pdo, "
 
         INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
         VALUES
-          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month, acceptance_id),
-          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month, acceptance_id)
+          (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month, v_acceptance_id),
+          (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month, v_acceptance_id)
         ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
 
         -- Meet bonus: only when the creator chose Meet at creation. Fires once
@@ -1840,8 +1842,8 @@ run($pdo, "
 
             INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
             VALUES
-              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month, acceptance_id),
-              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month, acceptance_id)
+              (encode(gen_random_bytes(8),'hex'), challenger_id, NEW.challenge_id, 'challenger', 'meet_bonus', COALESCE(pts_meet_bonus_c, 0), origin_city, current_month, v_acceptance_id),
+              (encode(gen_random_bytes(8),'hex'), taker_id,      NEW.challenge_id, 'taker',      'meet_bonus', COALESCE(pts_meet_bonus_t, 0), taker_city,  current_month, v_acceptance_id)
             ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
         END IF;
 
