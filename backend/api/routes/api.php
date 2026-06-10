@@ -326,6 +326,25 @@ function broadcastChallengeAcceptedToWs(string $creatorUserId, array $payload): 
     ]);
 }
 
+/**
+ * International proof verdict (approve/reject). The proof routes used to call
+ * broadcastChallengeAcceptedToWs and stuff the real event name inside the
+ * payload — but that helper hardcodes 'event' => 'challenge_accepted', so
+ * the actual WS event delivered to clients was wrong (`challenge_accepted`
+ * instead of `challenge_proof_approved`). Clients couldn't subscribe to
+ * the right name and verdicts looked silent until a reload.
+ */
+function broadcastChallengeProofVerdictToWs(string $targetUserId, string $verdict, array $payload): void
+{
+    $event = $verdict === 'approved' ? 'challenge_proof_approved' : 'challenge_proof_rejected';
+    error_log("[ws-broadcast] → {$event} target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => $event,
+        'payload' => $payload,
+    ]);
+}
+
 function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $payload): void
 {
     error_log("[ws-broadcast] → challenge-acceptance-cancelled target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
@@ -9910,25 +9929,22 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         error_log('[proof] approve push failed (non-fatal): ' . $e->getMessage());
     }
 
-    // PR62 - broadcast the verdict on the WS so the acceptor's screen
-    // (and the creator's other devices) flip to "approved" without a
-    // manual reload. Reuses the same channel as the proof_submitted
-    // event (PR43); existing client listeners just call loadMyAcceptance
-    // so we don't need a new event handler in the apps.
+    // Broadcast the verdict on the WS so the acceptor's screen + the
+    // creator's other devices flip to "approved" without a manual reload.
+    // Uses broadcastChallengeProofVerdictToWs so the actual event name on
+    // the wire is `challenge_proof_approved` (not the old `challenge_accepted`
+    // bug where the intended event was buried inside the payload and the
+    // helper hardcoded a different one).
     try {
+        $verdictPayload = [
+            'challengeId'  => $challenge['id'],
+            'acceptanceId' => $acceptanceId,
+        ];
         if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], [
-                'event'        => 'challenge_proof_approved',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-            ]);
+            broadcastChallengeProofVerdictToWs($challenge['created_by'], 'approved', $verdictPayload);
         }
         if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
-                'event'        => 'challenge_proof_approved',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-            ]);
+            broadcastChallengeProofVerdictToWs($acceptance['acceptor_user_id'], 'approved', $verdictPayload);
         }
     } catch (\Throwable $e) {
         error_log('[proof] approve ws broadcast failed (non-fatal): ' . $e->getMessage());
@@ -10019,24 +10035,20 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
         error_log('[proof] reject push failed (non-fatal): ' . $e->getMessage());
     }
 
-    // PR62 - broadcast the verdict on the WS so both sides refresh
-    // without a manual reload. Same pattern as the approve path above.
+    // Broadcast the verdict on the WS so both sides refresh without a
+    // manual reload. Same fix as the approve path — actual wire event is
+    // `challenge_proof_rejected` now, not the old buried-in-payload form.
     try {
+        $verdictPayload = [
+            'challengeId'  => $challenge['id'],
+            'acceptanceId' => $acceptanceId,
+            'isFinal'      => $isFinal,
+        ];
         if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], [
-                'event'        => 'challenge_proof_rejected',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-                'isFinal'      => $isFinal,
-            ]);
+            broadcastChallengeProofVerdictToWs($challenge['created_by'], 'rejected', $verdictPayload);
         }
         if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
-                'event'        => 'challenge_proof_rejected',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-                'isFinal'      => $isFinal,
-            ]);
+            broadcastChallengeProofVerdictToWs($acceptance['acceptor_user_id'], 'rejected', $verdictPayload);
         }
     } catch (\Throwable $e) {
         error_log('[proof] reject ws broadcast failed (non-fatal): ' . $e->getMessage());

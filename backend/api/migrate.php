@@ -1841,6 +1841,72 @@ run($pdo, "
     FOR EACH ROW EXECUTE FUNCTION on_challenge_rating_insert()
 ", 'trg_chrate_mutual_complete');
 
+// ── Trigger: international proof approval → debrief ────────────────────────
+//
+// For LOCAL challenges, debrief points fire from the mutual-rating trigger
+// above. International challenges have no rating step - the photo verdict
+// IS the debrief signal. Without this trigger, an approved international
+// proof earned ZERO debrief points (only the 'accepted' kind from
+// on_challenge_acceptance_score), the score-celebration popin had nothing
+// to surface, and the user got a silent verdict.
+//
+// Mirrors the rating trigger's shape: same +30/+40 split, same per-round
+// idempotency via score_events UNIQUE (user, challenge, role, kind,
+// acceptance_id), same taker-city = current_city_id fallback so the points
+// land on the taker's home leaderboard rather than the challenger's.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_proof_verdict() RETURNS TRIGGER AS \$\$
+    DECLARE
+        challenger_id  TEXT;
+        origin_city    TEXT;
+        challenge_mode TEXT;
+        taker_city     TEXT;
+        pts_debrief_c  INT;
+        pts_debrief_t  INT;
+        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        -- Only fire on the transition INTO 'approved'. A row already at
+        -- 'approved' that gets touched (re-approval is impossible today but
+        -- the guard is cheap) shouldn't re-credit.
+        IF NEW.phase <> 'approved' OR OLD.phase = 'approved' THEN RETURN NEW; END IF;
+
+        SELECT cc.created_by, cc.city_id, cc.mode
+        INTO challenger_id, origin_city, challenge_mode
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        -- LOCAL flow earns debrief from the mutual-rating trigger; double-
+        -- firing here would create a duplicate row that the ON CONFLICT would
+        -- silently swallow, but skipping LOCAL keeps the intent clear and
+        -- avoids the extra round-trip.
+        IF challenge_mode <> 'international' THEN RETURN NEW; END IF;
+        IF challenger_id IS NULL OR NEW.acceptor_user_id IS NULL THEN RETURN NEW; END IF;
+
+        SELECT u.current_city_id INTO taker_city
+        FROM users u WHERE u.id = NEW.acceptor_user_id;
+        taker_city := COALESCE(taker_city, origin_city);
+
+        SELECT points INTO pts_debrief_c FROM score_rules WHERE kind = 'debrief' AND role = 'challenger';
+        SELECT points INTO pts_debrief_t FROM score_rules WHERE kind = 'debrief' AND role = 'taker';
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+        VALUES
+          (encode(gen_random_bytes(8),'hex'), challenger_id,        NEW.challenge_id, 'challenger', 'debrief', COALESCE(pts_debrief_c, 0), origin_city, current_month, NEW.id),
+          (encode(gen_random_bytes(8),'hex'), NEW.acceptor_user_id, NEW.challenge_id, 'taker',      'debrief', COALESCE(pts_debrief_t, 0), taker_city,  current_month, NEW.id)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_proof_verdict');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_intl_debrief ON challenge_acceptances", 'drop trg_chacc_intl_debrief');
+run($pdo, "
+    CREATE TRIGGER trg_chacc_intl_debrief
+    AFTER UPDATE OF phase ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_proof_verdict()
+", 'trg_chacc_intl_debrief');
+
 // ── Backfill: re-attribute international-challenge taker points to the
 // taker's own city ──────────────────────────────────────────────────────────
 // Before this migration, both triggers above credited the taker to the

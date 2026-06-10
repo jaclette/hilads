@@ -2652,6 +2652,17 @@ export default function App() {
         setCelebrationRefetchKey(k => k + 1)
       })
 
+      // International proof approved - the proof-verdict trigger awarded
+      // debrief +30/+40 to both parties (this is the verdict moment for
+      // international, equivalent to mutual rating on local). Same
+      // refetch path so the creator (who just hit Approve) and the
+      // acceptor (who hears about it via WS) both see the celebration
+      // without a reload. Reject path skipped intentionally - no points
+      // are earned on rejection, no celebration to surface.
+      socket.on('challenge_proof_approved', () => {
+        setCelebrationRefetchKey(k => k + 1)
+      })
+
       // First rating just landed - the counterparty rated US. Bump the
       // rate-prompt refetch key so RatePromptLaunchGate re-runs its
       // /me/rate-prompts fetch and surfaces the RateSheet for OUR side

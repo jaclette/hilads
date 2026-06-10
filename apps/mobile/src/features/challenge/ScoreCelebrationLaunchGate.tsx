@@ -69,9 +69,14 @@ export function ScoreCelebrationLaunchGate() {
         // non-fatal - gate stays as-is, user can re-launch the app
       }
     };
-    const offRating = socket.on('mutual_rating_complete', trigger);
+    const offRating = socket.on('mutual_rating_complete',  trigger);
     const offDate   = socket.on('challenge_date_approved', trigger);
-    return () => { offRating(); offDate(); };
+    // International debrief: photo approval = the verdict. The proof_verdict
+    // trigger fires +30/+40 score events on phase = 'approved', and the
+    // backend broadcasts challenge_proof_approved to both creator and
+    // acceptor. Subscribe here so the modal pops without a reload.
+    const offProof  = socket.on('challenge_proof_approved', trigger);
+    return () => { offRating(); offDate(); offProof(); };
   }, [account?.id]);
 
   // Shared cleanup - ack + close. Used by both the CTA path and the
