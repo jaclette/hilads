@@ -14,18 +14,8 @@
     "cta": "Ayo mulai 🚀"
   },
   "onboarding": {
-    "slide1Title": "Kamu di {{city}}",
-    "slide1Body": "Warga lokal dan pelancong bertemu di sini - lewat tantangan nyata.",
-    "slide2Title": "Lokal menantang pelancong. Begitu juga sebaliknya.",
-    "slide2Body": "🍜 Nasi goreng terbaik · 📍 Spot tersembunyi · 🎭 Coba bahasa Indonesia · 🙏 Bantu soal SIM. Tantangan nyata yang berujung pada pertemuan nyata.",
-    "slide3Title": "Cara kerjanya",
-    "slide3Body": "Terima, pilih tanggal bareng, ketemu langsung, ceritakan kisahnya.",
-    "slide4Title": "Terima tantangan pertamamu",
-    "slide4Body": "Akun gratis. Pilih nama. Langsung gas.",
     "skip": "Lewati ✕",
     "next": "Lanjut",
-    "explore": "Jelajahi dulu",
-    "createAccount": "Buat akun",
     "fallbackCity": "kotamu",
     "slide1": {
       "title": "Become local. Anywhere.",

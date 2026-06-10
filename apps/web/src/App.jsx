@@ -6506,18 +6506,29 @@ export default function App() {
         />
       )}
 
-      {/* First-time guest onboarding carousel (also re-openable via header "?"). */}
+      {/* First-time guest onboarding carousel (also re-openable via header "?").
+          The 4th screen has three CTAs that App-side state setters wire to
+          the relevant destinations — no router on web, so we hand the
+          component callbacks instead of routes. */}
       {showOnboarding && (
         <OnboardingCarousel
           city={localizeCityName(city)}
-          onSignup={() => {
+          onClose={() => {
             markOnboardingSeen()
             setShowOnboarding(false)
-            setShowAuthScreenTab('signup')
-            setShowProfileDrawer(true)
-            setShowAuthScreen(true)
           }}
-          onClose={() => {
+          onTakeChallenge={() => {
+            markOnboardingSeen()
+            setShowOnboarding(false)
+            setNowFilter('challenges')
+          }}
+          onMostLocal={() => {
+            markOnboardingSeen()
+            setShowOnboarding(false)
+            setLeaderboardScope('city')
+            setShowLeaderboard(true)
+          }}
+          onLookAround={() => {
             markOnboardingSeen()
             setShowOnboarding(false)
           }}

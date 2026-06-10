@@ -14,18 +14,8 @@
     "cta": "Andiamo! 🚀"
   },
   "onboarding": {
-    "slide1Title": "Sei a {{city}}",
-    "slide1Body": "Local e viaggiatori si incontrano qui - attraverso sfide vere.",
-    "slide2Title": "I local sfidano i viaggiatori. E viceversa.",
-    "slide2Body": "🍜 La migliore carbonara · 📍 Un punto panoramico nascosto · 🎭 Dì qualcosa in italiano · 🙏 Aiuto con una SIM. Sfide vere che portano a un incontro vero.",
-    "slide3Title": "Come funziona",
-    "slide3Body": "Accettala, scegliete una data insieme, vi vedete dal vivo, raccontate la storia.",
-    "slide4Title": "Accetta la tua prima sfida",
-    "slide4Body": "Account gratuito. Scegli un nome. Buttati.",
     "skip": "Salta ✕",
     "next": "Avanti",
-    "explore": "Esplora prima",
-    "createAccount": "Crea un account",
     "fallbackCity": "la tua città",
     "slide1": {
       "title": "Become local. Anywhere.",

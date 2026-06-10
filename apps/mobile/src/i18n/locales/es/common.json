@@ -14,18 +14,8 @@
     "cta": "¡Vamos! 🚀"
   },
   "onboarding": {
-    "slide1Title": "Estás en {{city}}",
-    "slide1Body": "Locales y viajeros se encuentran aquí - a través de retos reales.",
-    "slide2Title": "Los locales retan a los viajeros. Y al revés.",
-    "slide2Body": "🍜 La mejor paella · 📍 Un mirador escondido · 🎭 Suelta unas palabras en español · 🙏 Ayuda con una SIM. Retos reales que llevan a un encuentro real.",
-    "slide3Title": "Cómo funciona",
-    "slide3Body": "Lo aceptas, ponéis fecha juntos, os veis en persona, contáis la historia.",
-    "slide4Title": "Acepta el primero",
-    "slide4Body": "Cuenta gratis. Elige un nombre. A por ello.",
     "skip": "Saltar ✕",
     "next": "Siguiente",
-    "explore": "Explorar primero",
-    "createAccount": "Crear una cuenta",
     "fallbackCity": "tu ciudad",
     "slide1": {
       "title": "Become local. Anywhere.",

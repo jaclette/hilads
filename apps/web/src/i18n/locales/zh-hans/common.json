@@ -20,18 +20,8 @@
     "cta": "出发吧 🚀"
   },
   "onboarding": {
-    "slide1Title": "你正在{{city}}",
-    "slide1Body": "本地人和旅行者在这里相遇 - 通过真实的挑战。",
-    "slide2Title": "本地人挑战旅行者。反之亦然。",
-    "slide2Body": "🍜 最棒的火锅 · 📍 隐藏观景点 · 🎭 说几句中文 · 🙏 帮忙搞 SIM 卡。真实的挑战，带来真实的见面。",
-    "slide3Title": "玩法",
-    "slide3Body": "接下挑战，一起定个日子，线下见面，分享故事。",
-    "slide4Title": "接下你的第一个挑战",
-    "slide4Body": "免费账号。起个名字。加入吧。",
     "skip": "跳过 ✕",
     "next": "下一步",
-    "explore": "先逛逛",
-    "createAccount": "创建账号",
     "fallbackCity": "你的城市",
     "slide1": {
       "title": "Become local. Anywhere.",

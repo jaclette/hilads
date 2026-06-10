@@ -20,18 +20,8 @@
     "cta": "Bora 🚀"
   },
   "onboarding": {
-    "slide1Title": "Você está em {{city}}",
-    "slide1Body": "Locais e viajantes se encontram aqui - através de desafios reais.",
-    "slide2Title": "Os locais desafiam os viajantes. E vice-versa.",
-    "slide2Body": "🍜 O melhor pão de queijo · 📍 Um mirante escondido · 🎭 Solte um português · 🙏 Ajude com um chip. Desafios reais que levam a um encontro real.",
-    "slide3Title": "Como funciona",
-    "slide3Body": "Você aceita, marcam uma data juntos, se encontram pessoalmente, contam a história.",
-    "slide4Title": "Aceite o primeiro",
-    "slide4Body": "Conta grátis. Escolha um nome. Bora.",
     "skip": "Pular ✕",
     "next": "Próximo",
-    "explore": "Explorar primeiro",
-    "createAccount": "Criar uma conta",
     "fallbackCity": "sua cidade",
     "slide1": {
       "title": "Become local. Anywhere.",

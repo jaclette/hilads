@@ -20,18 +20,8 @@
     "cta": "Bắt đầu thôi 🚀"
   },
   "onboarding": {
-    "slide1Title": "Bạn đang ở {{city}}",
-    "slide1Body": "Người địa phương và du khách gặp nhau ở đây - qua những thử thách thực sự.",
-    "slide2Title": "Người địa phương thách du khách. Và ngược lại.",
-    "slide2Body": "🍜 Bánh mì ngon nhất · 📍 Điểm ngắm cảnh giấu · 🎭 Nói vài câu tiếng Việt · 🙏 Giúp với SIM. Những thử thách thật dẫn đến cuộc gặp thật.",
-    "slide3Title": "Cách thức hoạt động",
-    "slide3Body": "Bạn nhận lời, cùng nhau chọn ngày, gặp nhau ngoài đời, kể lại câu chuyện.",
-    "slide4Title": "Nhận thử thách đầu tiên",
-    "slide4Body": "Tài khoản miễn phí. Chọn một cái tên. Lao vào.",
     "skip": "Bỏ qua ✕",
     "next": "Tiếp",
-    "explore": "Khám phá trước",
-    "createAccount": "Tạo tài khoản",
     "fallbackCity": "thành phố của bạn",
     "slide1": {
       "title": "Become local. Anywhere.",

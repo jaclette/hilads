@@ -20,18 +20,8 @@
     "cta": "출발해요 🚀"
   },
   "onboarding": {
-    "slide1Title": "지금 {{city}}에 있어요",
-    "slide1Body": "현지인과 여행자가 여기서 만나요 - 진짜 챌린지를 통해서요.",
-    "slide2Title": "현지인이 여행자에게 챌린지. 그 반대도요.",
-    "slide2Body": "🍜 최고의 김치찌개 · 📍 숨겨진 뷰포인트 · 🎭 한국어 한마디 해보기 · 🙏 SIM 도와주기. 진짜 만남으로 이어지는 진짜 챌린지.",
-    "slide3Title": "이렇게 작동해요",
-    "slide3Body": "받아들이고, 같이 날짜를 정하고, 직접 만나고, 이야기를 나눠요.",
-    "slide4Title": "첫 챌린지를 받아보세요",
-    "slide4Body": "무료 계정. 이름 선택. 바로 시작.",
     "skip": "건너뛰기 ✕",
     "next": "다음",
-    "explore": "먼저 둘러보기",
-    "createAccount": "계정 만들기",
     "fallbackCity": "당신의 도시",
     "slide1": {
       "title": "Become local. Anywhere.",

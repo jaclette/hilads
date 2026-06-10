@@ -20,18 +20,8 @@
     "cta": "Let's go 🚀"
   },
   "onboarding": {
-    "slide1Title": "Je bent in {{city}}",
-    "slide1Body": "Locals en reizigers ontmoeten elkaar hier - via echte challenges.",
-    "slide2Title": "Locals dagen reizigers uit. En andersom.",
-    "slide2Body": "🍜 De beste bitterballen · 📍 Een verborgen uitzichtpunt · 🎭 Spreek een beetje Nederlands · 🙏 Help met een SIM. Echte challenges die leiden tot een echte ontmoeting.",
-    "slide3Title": "Zo werkt het",
-    "slide3Body": "Neem 'm aan, prik samen een datum, ontmoet elkaar IRL, deel het verhaal.",
-    "slide4Title": "Neem je eerste aan",
-    "slide4Body": "Gratis account. Kies een naam. Duik erin.",
     "skip": "Overslaan ✕",
     "next": "Volgende",
-    "explore": "Eerst verkennen",
-    "createAccount": "Een account aanmaken",
     "fallbackCity": "jouw stad",
     "slide1": {
       "title": "Become local. Anywhere.",

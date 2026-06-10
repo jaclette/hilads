@@ -14,18 +14,8 @@
     "cta": "Los geht's 🚀"
   },
   "onboarding": {
-    "slide1Title": "Du bist in {{city}}",
-    "slide1Body": "Locals und Reisende treffen sich hier - durch echte Challenges.",
-    "slide2Title": "Locals fordern Reisende heraus. Und umgekehrt.",
-    "slide2Body": "🍜 Beste Currywurst · 📍 Versteckter Ausblick · 🎭 Sprich ein bisschen Deutsch · 🙏 Hilf mit einer SIM. Echte Challenges, die zu einem echten Treffen führen.",
-    "slide3Title": "So funktioniert's",
-    "slide3Body": "Nimm sie an, sucht gemeinsam einen Termin, trefft euch IRL, teilt die Story.",
-    "slide4Title": "Nimm deine erste an",
-    "slide4Body": "Kostenloses Konto. Wähl einen Namen. Leg los.",
     "skip": "Überspringen ✕",
     "next": "Weiter",
-    "explore": "Zuerst erkunden",
-    "createAccount": "Konto erstellen",
     "fallbackCity": "deine Stadt",
     "slide1": {
       "title": "Become local. Anywhere.",

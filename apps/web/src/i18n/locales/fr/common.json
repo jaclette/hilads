@@ -20,18 +20,8 @@
     "cta": "C'est parti 🚀"
   },
   "onboarding": {
-    "slide1Title": "Tu es à {{city}}",
-    "slide1Body": "Locaux et voyageurs se rencontrent ici - autour de vrais défis.",
-    "slide2Title": "Les locaux défient les voyageurs. Et vice-versa.",
-    "slide2Body": "🍜 Le meilleur pho · 📍 Un spot caché · 🎭 Quelques mots de vietnamien · 🙏 De l'aide pour une carte SIM. De vrais défis qui mènent à une vraie rencontre.",
-    "slide3Title": "Comment ça marche",
-    "slide3Body": "Tu relèves, vous fixez une date, vous vous voyez en vrai, vous racontez.",
-    "slide4Title": "Relève ton premier défi",
-    "slide4Body": "Compte gratuit. Choisis un pseudo. C'est parti.",
     "skip": "Passer ✕",
     "next": "Suivant",
-    "explore": "Explorer d'abord",
-    "createAccount": "Créer un compte",
     "fallbackCity": "ta ville",
     "slide1": {
       "title": "Become local. Anywhere.",

@@ -14,18 +14,8 @@
     "cta": "出發吧 🚀"
   },
   "onboarding": {
-    "slide1Title": "你正在{{city}}",
-    "slide1Body": "在地人和旅人在這裡相遇 - 透過真實的挑戰。",
-    "slide2Title": "在地人挑戰旅人。反之亦然。",
-    "slide2Body": "🍜 最棒的牛肉麵 · 📍 隱藏觀景點 · 🎭 說幾句中文 · 🙏 幫忙搞 SIM 卡。真實的挑戰，帶來真實的見面。",
-    "slide3Title": "玩法",
-    "slide3Body": "接下挑戰，一起約個日子，線下見面，分享故事。",
-    "slide4Title": "接下你的第一個挑戰",
-    "slide4Body": "免費帳號。取個名字。加入吧。",
     "skip": "跳過 ✕",
     "next": "下一步",
-    "explore": "先逛逛",
-    "createAccount": "建立帳號",
     "fallbackCity": "你的城市",
     "slide1": {
       "title": "Become local. Anywhere.",

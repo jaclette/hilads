@@ -20,18 +20,8 @@
     "cta": "Let's go 🚀"
   },
   "onboarding": {
-    "slide1Title": "You're in {{city}}",
-    "slide1Body": "Locals and travelers meet here - through real challenges.",
-    "slide2Title": "Locals dare travelers. And back.",
-    "slide2Body": "🍜 Best banh mi · 📍 Hidden viewpoint · 🎭 Speak some Vietnamese · 🙏 Help with a SIM. Real challenges that lead to a real meet-up.",
-    "slide3Title": "How it works",
-    "slide3Body": "Take it on, pick a date together, meet IRL, share the story.",
-    "slide4Title": "Take on your first one",
-    "slide4Body": "Free account. Pick a name. Jump in.",
     "skip": "Skip ✕",
     "next": "Next",
-    "explore": "Explore first",
-    "createAccount": "Create an account",
     "fallbackCity": "your city",
     "slide1": {
       "title": "Become local. Anywhere.",

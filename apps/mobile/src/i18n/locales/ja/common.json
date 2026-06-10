@@ -14,18 +14,8 @@
     "cta": "さあ行こう 🚀"
   },
   "onboarding": {
-    "slide1Title": "{{city}}にいます",
-    "slide1Body": "地元の人と旅行者がここで出会います - 本物のチャレンジを通して。",
-    "slide2Title": "地元が旅行者にチャレンジ。その逆も。",
-    "slide2Body": "🍜 一番おいしいラーメン · 📍 隠れた絶景スポット · 🎭 ちょっとだけ日本語を話す · 🙏 SIMの手助け。本物のチャレンジが、本物の出会いにつながります。",
-    "slide3Title": "使い方",
-    "slide3Body": "受けて、一緒に日付を決めて、リアルに会って、ストーリーをシェアします。",
-    "slide4Title": "最初のチャレンジを受けてみる",
-    "slide4Body": "無料アカウント。名前を選ぶ。飛び込もう。",
     "skip": "スキップ ✕",
     "next": "次へ",
-    "explore": "まずは見てみる",
-    "createAccount": "アカウントを作成",
     "fallbackCity": "あなたの街",
     "slide1": {
       "title": "Become local. Anywhere.",
