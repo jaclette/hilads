@@ -39,10 +39,10 @@ type TabDef = {
 };
 
 const TABS: TabDef[] = [
-  { name: 'now',  label: 'Now',     icon: 'flame',  outline: 'flame-outline',  dot: 'hot'     },
-  { name: 'chat', label: 'My city', icon: 'business', outline: 'business-outline', dot: null      },
-  { name: 'here', label: 'Here',    icon: 'people', outline: 'people-outline', dot: 'green'   },
-  { name: 'me',   label: 'Me',      icon: 'person', outline: 'person-outline', dot: 'profile' },
+  { name: 'now',  label: 'Now',     icon: 'flame',    outline: 'flame-outline',    dot: null },
+  { name: 'chat', label: 'My city', icon: 'business', outline: 'business-outline', dot: null },
+  { name: 'here', label: 'Here',    icon: 'people',   outline: 'people-outline',   dot: null },
+  { name: 'me',   label: 'Me',      icon: 'person',   outline: 'person-outline',   dot: null },
 ];
 
 // ── Notification dot - absolute-positioned, top-right of icon box ─────────────

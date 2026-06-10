@@ -350,8 +350,6 @@ function NavIconEvents() {
       <path d="M12 2C9 6.5 6 10 6 14a6 6 0 0 0 12 0c0-4-3-7.5-6-12z" />
       {/* Inner flame core */}
       <path d="M12 9c-1.5 2-2.5 3.5-2.5 5a2.5 2.5 0 0 0 5 0c0-1.5-1-3-2.5-5z" strokeWidth="1.4" />
-      {/* Live dot */}
-      <circle cx="18.5" cy="5" r="2.2" fill="var(--hot-dot)" stroke="none" />
     </svg>
   )
 }
@@ -383,8 +381,6 @@ function NavIconPeople() {
       {/* Front person */}
       <circle cx="15.5" cy="8" r="3.5" />
       <path d="M8 21a9 9 0 0 1 14 0" />
-      {/* Green presence dot - always green, not accent */}
-      <circle cx="20.5" cy="3.5" r="2.5" fill="var(--green)" stroke="var(--bg)" strokeWidth="1" />
     </svg>
   )
 }
@@ -396,8 +392,6 @@ function NavIconProfile() {
       <circle cx="12" cy="8" r="4" />
       {/* Shoulders */}
       <path d="M4 21a9 9 0 0 1 16 0" />
-      {/* Status dot */}
-      <circle cx="19.5" cy="5" r="2.2" fill="var(--profile-dot)" stroke="none" />
     </svg>
   )
 }
