@@ -1276,9 +1276,17 @@ export default function ChallengeChatScreen() {
                 <TouchableOpacity
                   style={styles.guestWelcomeBody}
                   onPress={() => {
-                    setShowGuestWelcome(false);
+                    // Push to sign-up BEFORE flipping local state — if state
+                    // updates batch with re-render and the navigation gets
+                    // dropped, the user at least sees the gate. Route
+                    // straight to /sign-up (skipping /auth-gate's marketing
+                    // intermezzo) since the banner copy already promised
+                    // "3 seconds" — the user is convinced, give them the
+                    // form. The returnTo handshake brings them back here
+                    // post-signup primed to tap Take-on.
                     const returnTo = encodeURIComponent(`/challenge/${id}`);
-                    router.push(`/auth-gate?reason=accept_challenge&returnTo=${returnTo}` as never);
+                    router.push(`/sign-up?returnTo=${returnTo}` as never);
+                    setShowGuestWelcome(false);
                   }}
                   activeOpacity={0.75}
                   accessibilityRole="button"
