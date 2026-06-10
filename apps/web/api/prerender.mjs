@@ -647,12 +647,31 @@ const ORG_NODE = {
 // Google's brand panel; WebSite establishes site identity. SearchAction is
 // omitted because there's no functional /?q= search endpoint yet - adding it
 // without a backing route would trigger a structured-data warning in GSC.
+// Enumerates the four experience types Hilads offers. Surfaced via
+// Organization.hasOfferCatalog on every prerendered page so the brand panel
+// + city pages all carry the same machine-readable "ways to become local"
+// signal. Names track the user-facing brand terms — "Local Events" stays
+// English (brand-locked), the others read as plain category labels.
+const HILADS_OFFER_CATALOG = {
+  '@type': 'OfferCatalog',
+  '@id':   `${SITE_BASE}/#offer-catalog`,
+  name:    'Ways to become local on Hilads',
+  itemListElement: [
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Challenges',   description: 'Take on or launch a challenge for locals or travelers in your city.' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Meetups',      description: 'Meet people in person — agree on a date and meet up.' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Hangouts',     description: 'Drop into casual hangouts happening right now in your city.' } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Local Events', description: 'Find and join real local events happening in your city.' } },
+  ],
+}
+
 const ORG_GRAPH_NODE = {
   '@type': 'Organization',
   '@id':   `${SITE_BASE}/#organization`,
   name:    'Hilads',
   url:     SITE_BASE,
   logo:    `${SITE_BASE}/og/og-default.png`,
+  description: 'Hilads turns any city into a place you can become local in — through challenges, meetups, hangouts, and Local Events.',
+  hasOfferCatalog: HILADS_OFFER_CATALOG,
 }
 
 const WEBSITE_GRAPH_NODE = {

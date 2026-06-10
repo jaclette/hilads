@@ -1,13 +1,13 @@
 {
   "home": {
-    "title": "Hilads - Kết nối người địa phương & du khách qua những thử thách",
+    "title": "Hilads — Become local. Anywhere.",
     "description": "Bạn không chỉ ghé qua. Trở thành người địa phương ở bất cứ thành phố nào — mỗi challenge, mỗi cuộc gặp, mỗi địa điểm kiếm cho bạn chỗ đứng. Thời gian thực, không cần đăng ký.",
     "h1": "Become local. Anywhere.",
-    "intro": "Hilads kết nối người địa phương và du khách trong mỗi thành phố qua những thử thách. Tạo một thử thách cho phía bên kia - chọn loại, đặt tiêu đề, xem mọi người chấp nhận. Khi hoàn thành, người tạo xác nhận. Thời gian thực, không cần đăng ký.",
+    "intro": "Hilads biến bất cứ thành phố nào thành nơi bạn có thể trở thành người địa phương. Tham gia challenge, gặp gỡ ở meetup, tìm hangout, khám phá Local Events — mỗi bước đều giúp bạn có chỗ đứng. Thời gian thực, không cần đăng ký.",
     "aboutHeading": "Hilads hoạt động thế nào",
-    "aboutBody": "Chọn thành phố của bạn. Tạo một thử thách cho phía bên kia, hoặc chấp nhận một thử thách mà bạn thích. Gặp người địa phương và du khách qua những gì bạn thực sự muốn làm - ăn uống, địa điểm, văn hóa, giúp đỡ. Hilads làm cho mỗi thành phố trở nên sống động, ngay bây giờ.",
+    "aboutBody": "Chọn thành phố của bạn. Khởi xướng một challenge cho người địa phương hoặc du khách, tham gia meetup, tìm hangout, hoặc khám phá Local Events. Càng xây dựng ở đây nhiều, bạn càng trở thành người địa phương — và càng lên cao trên Most Local.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
-    "subhead": "🔥 Nơi người địa phương và du khách kết nối qua thử thách."
+    "subhead": "🔥 Trở thành người địa phương ở bất cứ thành phố nào bạn ghé thăm."
   },
   "_note": "Vietnamese SSR strings are DRAFTS - pending native review.",
   "brand": "Hilads",
