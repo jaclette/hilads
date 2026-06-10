@@ -1,8 +1,19 @@
 /**
- * OnboardingCarousel - first-time intro shown ONCE to guests (and re-openable
- * via the header "?"). Registered users never see it (the caller gates on
- * `account`). Lightweight: a paged horizontal ScrollView + dots, no animation
- * libs. The "seen" flag lives in AsyncStorage (see src/lib/onboarding.ts).
+ * OnboardingCarousel — 4-screen first-launch flow.
+ *
+ *   1. Promise          — "Become local. Anywhere." brand tagline
+ *   2. Three tools      — Challenges / Hangouts / Local Events
+ *   3. Earn your place  — points = how local you've become
+ *   4. Invitation       — three CTAs (challenge / Most Local / look around)
+ *
+ * Mounted on first guest entry via showOnboarding in AppContext. Shown
+ * once per device — flag persists in AsyncStorage via src/lib/onboarding.
+ * The first CTA on screen 4 hands the NOW tab a ?filter=challenges query
+ * param; the NOW tab consumes it on mount (see app/(tabs)/now.tsx). The
+ * second pushes the existing /leaderboard route with scope=city.
+ *
+ * Light scroll-paged horizontal carousel — RN native paging, no animation
+ * lib. Mirrors the web component in apps/web/src/components/OnboardingCarousel.jsx.
  */
 
 import { useRef, useState, useCallback } from 'react';
@@ -13,30 +24,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import type { TFunction } from 'i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
-import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
-
-// kind='pipeline' slot embeds the lifecycle visual (the same component that
-// renders on the challenge detail screen) so newcomers see the actual journey,
-// not just text describing it. emoji is omitted for that slide.
-interface Slide {
-  emoji?: string;
-  title:  string;
-  body:   string;
-  kind?:  'pipeline';
-}
-
-function buildSlides(t: TFunction, city?: string | null): Slide[] {
-  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' });
-  return [
-    { emoji: '🌍', title: t('onboarding.slide1Title', { city: where }), body: t('onboarding.slide1Body') },
-    { emoji: '🤝', title: t('onboarding.slide2Title'),                  body: t('onboarding.slide2Body') },
-    // Slide 3 has no emoji - the embedded pipeline IS the visual.
-    { kind: 'pipeline', title: t('onboarding.slide3Title'),             body: t('onboarding.slide3Body') },
-    { emoji: '✨', title: t('onboarding.slide4Title'),                  body: t('onboarding.slide4Body') },
-  ];
-}
 
 interface Props {
   visible: boolean;
@@ -52,8 +40,9 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
   const scrollRef = useRef<ScrollView>(null);
   const [index, setIndex] = useState(0);
 
-  const slides = buildSlides(t, city);
-  const last   = slides.length - 1;
+  const where = city || t('onboarding.fallbackCity', { defaultValue: 'your city' });
+  const SLIDES = 4;
+  const last = SLIDES - 1;
 
   const onScroll = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / width);
@@ -61,9 +50,21 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
   }, [width]);
 
   const goTo = (i: number) => scrollRef.current?.scrollTo({ x: i * width, animated: true });
-  // Primary button advances; on the last slide it dismisses (so does Skip).
-  const handleNext   = () => (index >= last ? onClose() : goTo(index + 1));
-  const handleSignup = () => { onClose(); router.push('/auth-gate'); };
+  const handleAdvance = () => goTo(Math.min(index + 1, last));
+
+  // Three final CTAs — each closes the modal first (markOnboardingSeen
+  // happens in the host effect that calls onClose), then routes.
+  const handleTakeChallenge = () => {
+    onClose();
+    // NOW tab consumes ?filter=challenges on mount and pre-applies the
+    // Challenges filter chip. Falls back to default 'all' if missing.
+    router.push('/(tabs)/now?filter=challenges' as never);
+  };
+  const handleMostLocal = () => {
+    onClose();
+    router.push({ pathname: '/leaderboard', params: { scope: 'city' } } as never);
+  };
+  const handleLookAround = () => onClose();
 
   return (
     <Modal
@@ -90,36 +91,67 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
           onMomentumScrollEnd={onScroll}
           style={styles.track}
         >
-          {slides.map((s, i) => (
-            <View key={i} style={[styles.slide, { width }]}>
-              {s.kind === 'pipeline' ? (
-                <View style={styles.pipelineWrap}>
-                  <ChallengePipeline acceptance={null} iAmCreator={false} />
-                </View>
-              ) : (
-                <Text style={styles.emoji}>{s.emoji}</Text>
-              )}
-              <Text style={styles.title}>{s.title}</Text>
-              <Text style={styles.body}>{s.body}</Text>
+          {/* Screen 1 — promise */}
+          <View style={[styles.slide, { width }]}>
+            <Text style={styles.emoji}>🌍</Text>
+            <Text style={styles.title}>{t('onboarding.slide1.title')}</Text>
+            <Text style={styles.body}>{t('onboarding.slide1.body')}</Text>
+          </View>
+
+          {/* Screen 2 — three tools */}
+          <View style={[styles.slide, { width }]}>
+            <Text style={styles.title}>{t('onboarding.slide2.title')}</Text>
+            <View style={styles.itemList}>
+              <Text style={styles.item}>{t('onboarding.slide2.itemChallenges')}</Text>
+              <Text style={styles.item}>{t('onboarding.slide2.itemHangouts')}</Text>
+              <Text style={styles.item}>{t('onboarding.slide2.itemEvents')}</Text>
             </View>
-          ))}
+          </View>
+
+          {/* Screen 3 — earn your place */}
+          <View style={[styles.slide, { width }]}>
+            <Text style={styles.emoji}>✨</Text>
+            <Text style={styles.title}>{t('onboarding.slide3.title')}</Text>
+            <Text style={styles.body}>{t('onboarding.slide3.body', { city: where })}</Text>
+          </View>
+
+          {/* Screen 4 — invitation */}
+          <View style={[styles.slide, { width }]}>
+            <Text style={styles.title}>{t('onboarding.slide4.title')}</Text>
+            <View style={styles.ctaStack}>
+              <TouchableOpacity style={styles.ctaPrimary} onPress={handleTakeChallenge} activeOpacity={0.85}>
+                <Text style={styles.ctaPrimaryText} numberOfLines={2}>
+                  {t('onboarding.slide4.ctaChallenge', { city: where })}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.ctaPrimary} onPress={handleMostLocal} activeOpacity={0.85}>
+                <Text style={styles.ctaPrimaryText} numberOfLines={2}>
+                  {t('onboarding.slide4.ctaMostLocal', { city: where })}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.ctaTertiary} onPress={handleLookAround} activeOpacity={0.7}>
+                <Text style={styles.ctaTertiaryText} numberOfLines={2}>
+                  {t('onboarding.slide4.ctaLookAround')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </ScrollView>
 
         <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, 20) }]}>
           <View style={styles.dots}>
-            {slides.map((_, i) => (
+            {Array.from({ length: SLIDES }).map((_, i) => (
               <View key={i} style={[styles.dot, i === index && styles.dotActive]} />
             ))}
           </View>
 
-          <TouchableOpacity style={styles.nextBtn} onPress={handleNext} activeOpacity={0.85}>
-            <Text style={styles.nextBtnText}>{index >= last ? t('onboarding.explore') : t('onboarding.next')}</Text>
-          </TouchableOpacity>
-
-          {/* Discreet, low-emphasis signup - present on every screen. */}
-          <TouchableOpacity onPress={handleSignup} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={styles.signupLink}>{t('onboarding.createAccount')}</Text>
-          </TouchableOpacity>
+          {/* Next button only on screens 1-3. Screen 4's CTAs replace it —
+              showing both would clutter the invitation surface. */}
+          {index < last && (
+            <TouchableOpacity style={styles.nextBtn} onPress={handleAdvance} activeOpacity={0.85}>
+              <Text style={styles.nextBtnText}>{t('onboarding.next', { defaultValue: 'Next' })}</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>
@@ -142,13 +174,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
-    gap: Spacing.md,
+    gap: Spacing.lg,
   },
   emoji: { fontSize: 72, lineHeight: 80 },
-  // Slide 3 - embedded pipeline. Wider than the standard slide body so the
-  // 4 dots have room to breathe; ChallengePipeline already paints its own
-  // internal padding.
-  pipelineWrap: { width: '100%', maxWidth: 380, marginBottom: 8 },
   title: {
     fontSize: FontSizes.xl,
     fontWeight: '800',
@@ -160,7 +188,60 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     color: Colors.muted,
     textAlign: 'center',
-    maxWidth: 320,
+    maxWidth: 340,
+  },
+
+  // Screen 2 — three tools list. Items stack vertically, left-aligned for
+  // readability inside a centered slide.
+  itemList: {
+    width: '100%',
+    maxWidth: 360,
+    gap: Spacing.md,
+    marginTop: Spacing.sm,
+  },
+  item: {
+    fontSize: FontSizes.md,
+    lineHeight: 22,
+    color: Colors.text,
+    textAlign: 'left',
+  },
+
+  // Screen 4 — three vertically-stacked CTAs of roughly equal visual weight
+  // (the third is muted to read as "no commitment"). Each opens a different
+  // in-app destination so the user lands somewhere actionable.
+  ctaStack: {
+    width: '100%',
+    maxWidth: 340,
+    gap: 12,
+    marginTop: Spacing.lg,
+  },
+  ctaPrimary: {
+    paddingVertical: 14,
+    paddingHorizontal: Spacing.md,
+    borderRadius: 14,
+    backgroundColor: Colors.accent,
+    alignItems: 'center',
+    shadowColor: Colors.accent,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  ctaPrimaryText: {
+    fontSize: FontSizes.md,
+    fontWeight: '700',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  ctaTertiary: {
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  ctaTertiaryText: {
+    fontSize: FontSizes.sm,
+    fontWeight: '600',
+    color: Colors.muted,
+    textAlign: 'center',
   },
 
   footer: {
@@ -196,12 +277,4 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   nextBtnText: { fontSize: FontSizes.md, fontWeight: '700', color: '#fff' },
-
-  signupLink: {
-    fontSize: FontSizes.sm,
-    fontWeight: '600',
-    color: Colors.muted,
-    textDecorationLine: 'underline',
-    padding: 4,
-  },
 });
