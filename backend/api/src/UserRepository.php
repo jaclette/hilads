@@ -232,10 +232,18 @@ class UserRepository
         $sets   = [];
         $values = [];
 
+        // Columns that map to Postgres BOOLEAN. PDO + Postgres: a raw PHP
+        // false binds as '' which the BOOLEAN column rejects ("invalid input
+        // syntax for type boolean: ''"). Same fix as adminCreate; applied
+        // here so the admin Edit page can save fakes without 500ing.
+        $boolColumns = ['is_fake'];
+
         foreach ($allowed as $key) {
             if (array_key_exists($key, $fields)) {
                 $sets[]   = "$key = ?";
-                $values[] = $fields[$key];
+                $values[] = in_array($key, $boolColumns, true)
+                    ? (int) (bool) $fields[$key]
+                    : $fields[$key];
             }
         }
 
