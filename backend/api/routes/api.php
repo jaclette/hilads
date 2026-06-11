@@ -327,6 +327,50 @@ function broadcastChallengeAcceptedToWs(string $creatorUserId, array $payload): 
 }
 
 /**
+ * Per-user unread push for new event-chat messages.
+ *
+ * Background: the WS server enforces a single event room per socket
+ * (see backend/ws/server.js handleJoinEvent's defensive auto-leave). Only
+ * the user actively viewing an event channel is in its room - everyone
+ * else gets nothing via the city/event broadcast lane. The mobile client
+ * previously tried to join all subscribed events in a forEach loop, but
+ * the server kept evicting the prior membership, so background unread
+ * never worked AND each loop iteration triggered a participants_update
+ * cascade to whatever room got evicted.
+ *
+ * Fix: stop the client loop entirely and instead push to each
+ * participant's per-user channel directly from here. The user channel
+ * supports multi-socket fan-out and doesn't conflict with single-room
+ * event chat. Sender is excluded so they don't get a self-notify ping.
+ */
+function broadcastEventMessageToParticipants(string $eventId, array $message, ?string $excludeUserId): void
+{
+    try {
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT user_id FROM event_participants
+            WHERE channel_id = ?
+              AND user_id IS NOT NULL
+              AND (CAST(? AS text) IS NULL OR user_id::text != CAST(? AS text))
+        ");
+        $stmt->execute([$eventId, $excludeUserId, $excludeUserId]);
+        $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (empty($userIds)) return;
+
+        $payload = ['channelId' => $eventId, 'message' => $message];
+        foreach ($userIds as $uid) {
+            postToWs('/broadcast/user-event', [
+                'userId'  => $uid,
+                'event'   => 'newEventMessage',
+                'payload' => $payload,
+            ]);
+        }
+        error_log("[ws-broadcast] → newEventMessage event={$eventId} participants=" . count($userIds));
+    } catch (\Throwable $e) {
+        error_log('[ws-broadcast] newEventMessage push failed (non-fatal): ' . $e->getMessage());
+    }
+}
+
+/**
  * International proof verdict (approve/reject). The proof routes used to call
  * broadcastChallengeAcceptedToWs and stuff the real event name inside the
  * payload — but that helper hardcodes 'event' => 'challenge_accepted', so
@@ -5438,6 +5482,11 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
 
     $message = enrichBroadcastMessage($message, $senderUser ?? null);
     broadcastMessageToWs($eventId, $message);
+    // Per-user push so background-event unread badges actually update.
+    // The WS event-room is single-slot, so a participant who isn't on the
+    // event screen right now would never get the message via the channel
+    // broadcast above. See broadcastEventMessageToParticipants for the why.
+    broadcastEventMessageToParticipants($eventId, $message, $senderUserId);
 
     // Notify registered event participants - non-fatal: a notification failure must never
     // prevent the message response from reaching the sender.
