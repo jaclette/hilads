@@ -89,7 +89,7 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $userId = $m[1];
     require __DIR__ . '/user_edit.php';
 
-} elseif (preg_match('#^/admin/users/([^/]+)/delete$#', $uri, $m) && $method === 'POST') {
+} elseif (preg_match('#^/admin/users/([^/]+)/delete$#', $uri, $m)) {
     $userId = $m[1];
     require __DIR__ . '/user_delete.php';
 
