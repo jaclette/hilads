@@ -136,6 +136,11 @@ export default function GuestProfileCard({ guestId, nickname, cityName, account,
                   rows={3}
                   disabled={reportBusy}
                 />
+                {reportReason.trim().length < 10 && (
+                  <p style={{ margin: '6px 2px 0', fontSize: 12, color: '#8a8a8a' }}>
+                    {reportReason.trim().length}/10
+                  </p>
+                )}
                 {reportError && <p className="pub-profile-report-error">{reportError}</p>}
                 <div className="pub-profile-report-actions">
                   <button type="submit" className="pub-profile-report-submit" disabled={reportReason.trim().length < 10 || reportBusy}>
