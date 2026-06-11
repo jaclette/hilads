@@ -174,6 +174,11 @@ admin_nav('/admin/reports');
                                         <a href="/admin/users/<?= urlencode($r['target_user_id']) ?>/delete" class="btn btn-danger btn-sm">Delete account</a>
                                     <?php elseif ($r['target_user_id'] && $r['target_deleted_at'] !== null): ?>
                                         <span style="color:#444;font-size:11px;align-self:center">account deleted</span>
+                                    <?php elseif ($r['target_guest_id']): ?>
+                                        <form method="POST" action="/admin/reports/<?= (int)$r['id'] ?>/ban-guest" style="margin:0">
+                                            <?= csrf_input() ?>
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Block this guest + their recent IPs from posting for 7 days">Ban guest</button>
+                                        </form>
                                     <?php endif; ?>
                                 </div>
                             </td>

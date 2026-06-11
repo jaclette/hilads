@@ -53,6 +53,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/CityRepository.php';
     require_once __DIR__ . '/../src/UserRepository.php';
     require_once __DIR__ . '/../src/UsernameService.php';
+    require_once __DIR__ . '/../src/BanRepository.php';
     require_once __DIR__ . '/../src/EventRepository.php';
     require_once __DIR__ . '/../src/EventSeriesRepository.php';
     require_once __DIR__ . '/../src/EventRedirectRepository.php';
@@ -157,6 +158,7 @@ require_once __DIR__ . '/../src/Cache.php';
 require_once __DIR__ . '/../src/UserRepository.php';
 require_once __DIR__ . '/../src/AuthService.php';
 require_once __DIR__ . '/../src/UsernameService.php';
+require_once __DIR__ . '/../src/BanRepository.php';
 
 require_once __DIR__ . '/../src/Response.php';
 require_once __DIR__ . '/../src/Router.php';

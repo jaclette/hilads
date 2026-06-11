@@ -4285,6 +4285,12 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         Response::json(['error' => 'guestId is required'], 400);
     }
 
+    // Abuse gate: a banned guest/IP can't create events either. Fails open
+    // pre-migration (see BanRepository::isBanned).
+    if (BanRepository::isBanned($guestId, Request::ip())) {
+        Response::json(['error' => 'You can no longer create events in this city.', 'code' => 'banned'], 403);
+    }
+
     if (empty($nickname) || !is_string($nickname)) {
         Response::json(['error' => 'nickname is required'], 400);
     }
@@ -4303,6 +4309,13 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
 
     if (mb_strlen($title) < 3) {
         Response::json(['error' => 'title must be at least 3 characters'], 400);
+    }
+
+    // [A] Moderate the event title - it gets announced into the city chat.
+    $evtModHit = ModerationService::check($title);
+    if ($evtModHit !== null) {
+        error_log("[moderation] event title blocked channelId={$channelId} reason={$evtModHit['reason']} hit={$evtModHit['hit']}");
+        Response::json(['error' => 'Your event title was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
     }
 
     if ($locationHint !== null) {
@@ -5719,6 +5732,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         Response::json(['error' => 'guestId is required'], 400);
     }
 
+    // Abuse gate: block a banned guest/IP from posting. Fails open if the bans
+    // table isn't migrated yet (BanRepository::isBanned swallows that), so a
+    // code-before-migration deploy can't break the chat.
+    $clientIp = Request::ip();
+    if (BanRepository::isBanned($guestId, $clientIp)) {
+        Response::json(['error' => 'You can no longer post in this city.', 'code' => 'banned'], 403);
+    }
+
     if (empty($nickname) || !is_string($nickname)) {
         Response::json(['error' => 'nickname is required'], 400);
     }
@@ -5767,6 +5788,26 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             Response::json(['error' => 'content must not exceed 1000 characters'], 400);
         }
 
+        // [A] Content moderation - same gate already used on challenge messages.
+        // Blocklist/regex come from CHALLENGE_MODERATION_* env (with a small
+        // built-in default). Generic error so we don't hand spammers a hint.
+        $modHit = ModerationService::check($content);
+        if ($modHit !== null) {
+            error_log("[moderation] city message blocked channelId={$channelId} reason={$modHit['reason']} hit={$modHit['hit']}");
+            Response::json(['error' => 'Your message was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
+        }
+
+        // [A] Duplicate/flood dampening: reject the exact same text from the same
+        // guest in the same city within a short window. Best-effort via APCu -
+        // skipped entirely if the extension is unavailable (mirrors RateLimiter).
+        if (function_exists('apcu_fetch')) {
+            $dupKey = 'dupmsg|' . $channelId . '|' . $guestId . '|' . md5($content);
+            if (apcu_fetch($dupKey)) {
+                Response::json(['error' => 'Looks like a duplicate - try saying something new.', 'code' => 'duplicate'], 429);
+            }
+            apcu_store($dupKey, 1, 30); // 30s window
+        }
+
         $msgSender       = AuthService::currentUser();
         $msgSenderUserId = $msgSender['id'] ?? null;
         $replySnap       = resolveReplySnapshot($body['replyToMessageId'] ?? null);
@@ -5779,6 +5820,18 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             $replySnap['type']     ?? 'text',
             $mentions
         );
+    }
+
+    // [B] Stamp the poster's IP for abuse forensics + guest-ban IP lookups.
+    // Best-effort, separate write: a pre-migration deploy (column absent) must
+    // never lose the message, so this is swallowed on error.
+    if (!empty($message['id']) && $clientIp !== 'unknown') {
+        try {
+            Database::pdo()->prepare("UPDATE messages SET ip_address = ? WHERE id = ?")
+                ->execute([$clientIp, $message['id']]);
+        } catch (\Throwable $e) {
+            error_log('[bans] ip stamp skipped: ' . $e->getMessage());
+        }
     }
 
     $message = enrichBroadcastMessage($message, $msgSender ?? null);

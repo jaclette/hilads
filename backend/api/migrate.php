@@ -1019,6 +1019,30 @@ run($pdo, "
 // push_broadcasts: history page reads recent rows DESC.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_broadcasts_recent ON push_broadcasts (created_at DESC)", 'idx_push_broadcasts_recent');
 
+// ── Abuse bans (guest / IP) ───────────────────────────────────────────────────
+// Lets ops block a returning anonymous guest. A row bans EITHER a guest_id or an
+// ip_address (one non-null), with an expiry. Checked on every city message POST
+// (BanRepository::isBanned). Time-boxed, per-identity - no global collateral.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS bans (
+        id          BIGSERIAL   PRIMARY KEY,
+        guest_id    TEXT,
+        ip_address  TEXT,
+        reason      TEXT,
+        created_by  TEXT,
+        created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+        expires_at  TIMESTAMPTZ,
+        CONSTRAINT chk_ban_target CHECK (guest_id IS NOT NULL OR ip_address IS NOT NULL)
+    )
+", 'bans');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_bans_guest_id   ON bans (guest_id)   WHERE guest_id   IS NOT NULL", 'idx_bans_guest_id');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_bans_ip_address ON bans (ip_address) WHERE ip_address IS NOT NULL", 'idx_bans_ip_address');
+
+// messages.ip_address: stamped on city messages for abuse forensics + so a guest
+// ban can also block the IPs that guest posted from. Nullable, additive.
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS ip_address TEXT", 'messages.ip_address');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_guest_recent ON messages (guest_id, created_at DESC) WHERE guest_id IS NOT NULL", 'idx_messages_guest_recent');
+
 // ── Backfill usernames for legacy users ─────────────────────────────────────
 // Every registered user needs a unique @-handle (mentions reference it). New
 // signups always provide one; this fills rows created before usernames existed.
