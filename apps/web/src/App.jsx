@@ -3959,27 +3959,25 @@ export default function App() {
               <span className="online-pulse" />
               {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
             </button>
-            {account && (
-              <>
-                <span className="header-city-sep" aria-hidden="true">·</span>
-                <button
-                  type="button"
-                  className="header-city-leaderboard"
-                  onClick={() => setShowLeaderboard(true)}
-                  aria-label={
-                    myCityRank
-                      ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
-                      : t('leaderboard.chip.neutral', { ns: 'challenge' })
-                  }
-                >
-                  {myCityRank === null
-                    ? t('leaderboard.chip.neutral', { ns: 'challenge' })
-                    : myCityRank > 99
-                      ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
-                      : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
-                </button>
-              </>
-            )}
+            <>
+              <span className="header-city-sep" aria-hidden="true">·</span>
+              <button
+                type="button"
+                className="header-city-leaderboard"
+                onClick={() => setShowLeaderboard(true)}
+                aria-label={
+                  myCityRank
+                    ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
+                    : t('leaderboard.chip.neutral', { ns: 'challenge' })
+                }
+              >
+                {myCityRank === null
+                  ? t('leaderboard.chip.neutral', { ns: 'challenge' })
+                  : myCityRank > 99
+                    ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
+                    : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
+              </button>
+            </>
           </div>
           {weatherLabel && (
             <span className="header-weather">{weatherLabel}</span>
@@ -4230,23 +4228,21 @@ export default function App() {
                     <span className="chip-live-dot" aria-hidden="true" />
                     {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
                   </button>
-                  {account && (
-                    <button
-                      className="header-chip header-chip--leaderboard"
-                      onClick={() => setShowLeaderboard(true)}
-                      aria-label={
-                        myCityRank
-                          ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
-                          : t('leaderboard.chip.neutral', { ns: 'challenge' })
-                      }
-                    >
-                      {myCityRank === null
-                        ? t('leaderboard.chip.neutral', { ns: 'challenge' })
-                        : myCityRank > 99
-                          ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
-                          : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
-                    </button>
-                  )}
+                  <button
+                    className="header-chip header-chip--leaderboard"
+                    onClick={() => setShowLeaderboard(true)}
+                    aria-label={
+                      myCityRank
+                        ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
+                        : t('leaderboard.chip.neutral', { ns: 'challenge' })
+                    }
+                  >
+                    {myCityRank === null
+                      ? t('leaderboard.chip.neutral', { ns: 'challenge' })
+                      : myCityRank > 99
+                        ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
+                        : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
+                  </button>
                 </div>
 
               </div>
