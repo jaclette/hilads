@@ -25,10 +25,13 @@ const SPEED = 25           // px/sec - duration is derived so speed stays consta
 const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
 const EPSILON = 1          // px - measurement noise threshold for re-renders
 const LEAD = 12            // px past the end so the last glyph fully clears the right fade
-// Marginal overflows (a few px) hit ellipsis instead of triggering a constant
-// scroll - without this threshold every locale whose translation crept ~1 px
-// over the clip would marquee forever, which read as "flashing".
-const OVERFLOW_FACTOR = 1.15
+// Tiny jitter buffer so 1-2 px measurement noise doesn't toggle marquee
+// on/off across re-renders. Previously 1.15 (15%) to suppress the OLD
+// seamless-duplicate flash - but the single-copy snap-back mechanism now
+// in use handles small overflows gracefully (long start/end holds dominate
+// the cycle), so a 15% buffer just blocks real overflows like the weather
+// pill from scrolling at all. 2% catches jitter without false negatives.
+const OVERFLOW_FACTOR = 1.02
 // Per-iteration phase percentages: hold-at-start (0→18%), scroll (18→78%),
 // hold-at-end (78→100%). The two dwell stretches let the eye actually read
 // the start and end of the text; the snap from 100% back to 0% happens

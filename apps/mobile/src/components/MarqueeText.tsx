@@ -51,11 +51,14 @@ interface MarqueeTextProps {
 }
 
 const EPSILON = 1;
-// Marginal overflows hit ellipsis instead of triggering a constant scroll -
-// without this threshold any locale whose translation crept ~1 px over the
-// clip would marquee forever, which read as "flashing" on the challenge-
-// intro banner. Real overflows still scroll.
-const OVERFLOW_FACTOR = 1.15;
+// Tiny jitter buffer so 1-2 px measurement noise doesn't toggle marquee
+// on/off across re-renders. Previously 1.15 (15%) to suppress a flashing
+// loop on the challenge-intro banner under the OLD seamless-duplicate
+// mechanism - but the single-copy snap-back mechanism (current) handles
+// small overflows gracefully (long start/end holds dominate the cycle),
+// so a 15% buffer just blocks real overflows like the weather pill from
+// scrolling at all. 2% catches measurement jitter without false negatives.
+const OVERFLOW_FACTOR = 1.02;
 // Ms held at the end of each loop iteration before snapping invisibly back
 // to the start. The snap is hidden by the duplicate copy mechanism, but
 // the eye still needs a still moment per cycle or the continuous scroll
