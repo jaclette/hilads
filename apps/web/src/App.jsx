@@ -4529,9 +4529,13 @@ export default function App() {
                 >
                   {!isMine && !isGrouped && (
                     <div
-                      className={`msg-meta${item.userId ? ' msg-meta--tappable' : ''}`}
-                      onClick={item.userId ? () => openProfile(item.userId, item.nickname) : undefined}
-                      title={item.userId ? `View ${item.nickname}'s profile` : undefined}
+                      className={`msg-meta${(item.userId || item.guestId) ? ' msg-meta--tappable' : ''}`}
+                      onClick={
+                        item.userId    ? () => openProfile(item.userId, item.nickname)
+                        : item.guestId ? () => setGuestProfile({ guestId: item.guestId, nickname: item.nickname ?? '' })
+                        : undefined
+                      }
+                      title={item.userId ? `View ${item.nickname}'s profile` : (item.guestId ? `View ${item.nickname}` : undefined)}
                     >
                       <span
                         className="msg-avatar"
@@ -5741,6 +5745,8 @@ export default function App() {
           guestId={guestProfile.guestId}
           nickname={guestProfile.nickname}
           cityName={city}
+          account={account}
+          guest={guest}
           onBack={() => setGuestProfile(null)}
         />
       )}
