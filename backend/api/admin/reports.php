@@ -43,7 +43,8 @@ $stmt = $pdo->prepare("
            r.reporter_user_id, r.reporter_guest_id,
            r.target_user_id,   r.target_guest_id, r.target_nickname,
            ru.display_name AS reporter_name,
-           tu.display_name AS target_name
+           tu.display_name AS target_name,
+           tu.deleted_at   AS target_deleted_at
     $baseFrom
     $whereClause
     ORDER BY r.created_at DESC
@@ -167,6 +168,12 @@ admin_nav('/admin/reports');
                                             <input type="hidden" name="status" value="open">
                                             <button type="submit" class="btn btn-secondary btn-sm">Reopen</button>
                                         </form>
+                                    <?php endif; ?>
+
+                                    <?php if ($r['target_user_id'] && $r['target_deleted_at'] === null): ?>
+                                        <a href="/admin/users/<?= urlencode($r['target_user_id']) ?>/delete" class="btn btn-danger btn-sm">Delete account</a>
+                                    <?php elseif ($r['target_user_id'] && $r['target_deleted_at'] !== null): ?>
+                                        <span style="color:#444;font-size:11px;align-self:center">account deleted</span>
                                     <?php endif; ?>
                                 </div>
                             </td>
