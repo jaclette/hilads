@@ -91,7 +91,7 @@ export default function AllChallengesScreen() {
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('createTitle')}</Text>
+          <Text style={styles.headerTitle}>{t('allTitle')}</Text>
         </View>
       </View>
 
@@ -250,22 +250,29 @@ const styles = StyleSheet.create({
   typeChipsRow: {
     paddingHorizontal: Spacing.md,
     paddingTop:        Spacing.sm,
-    paddingBottom:     Spacing.xs,
+    paddingBottom:     Spacing.sm,
     gap:               6,
+    alignItems:        'center',
   },
   typeChip: {
-    paddingHorizontal: 10,
-    paddingVertical:   5,
+    paddingHorizontal: 12,
+    paddingVertical:   7,
+    minHeight:         32,
     borderRadius:      Radius.full,
     borderWidth:       1,
     borderColor:       'rgba(255,255,255,0.10)',
     backgroundColor:   'rgba(255,255,255,0.04)',
+    alignItems:        'center',
+    justifyContent:    'center',
   },
   typeChipActive: {
     borderColor:     'rgba(255,122,60,0.45)',
     backgroundColor: 'rgba(255,122,60,0.14)',
   },
-  typeChipText:       { fontSize: 12, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
+  // Explicit lineHeight - without it Android measures the Text taller than
+  // the chip's content box, producing the squished half-pill that read as
+  // "broken" in the bug report. fontSize+letterSpacing unchanged.
+  typeChipText:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
   typeChipTextActive: { color: '#FF7A3C' },
 
   list:   { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl * 2 },
