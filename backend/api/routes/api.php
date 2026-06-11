@@ -10740,8 +10740,11 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
 // me.rank uses true competition ranking, so ties at the top all show
 // me.rank=1 if the caller is one of them.
 $router->add('GET', '/api/v1/leaderboard', function () {
-    $authUser = AuthService::requireAuth();
-    $callerId = $authUser['id'];
+    // Public read - guests can browse city/world rankings (discovery surface).
+    // $callerId is null for guests; it only personalizes the `me` block below,
+    // and every "me" query degrades to no-row/null rank when id is null.
+    $authUser = AuthService::currentUser();
+    $callerId = $authUser['id'] ?? null;
 
     $scope  = in_array($_GET['scope']  ?? '', ['city', 'world', 'cities'], true) ? $_GET['scope']  : 'city';
     $period = in_array($_GET['period'] ?? '', ['month', 'alltime'], true) ? $_GET['period'] : 'month';
