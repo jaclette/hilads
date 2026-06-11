@@ -20,7 +20,7 @@ function avatarColors(name) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function GuestProfileCard({ guestId, nickname, cityName, account, guest, onBack }) {
-  const { t, i18n } = useTranslation()
+  const { t, i18n } = useTranslation('publicProfile')
   const name    = nickname || 'Ghost'
   const initial = name[0].toUpperCase()
   const [c1, c2] = avatarColors(name)
