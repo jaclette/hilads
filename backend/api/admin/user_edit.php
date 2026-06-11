@@ -500,12 +500,7 @@ admin_nav('/admin/users');
             <button type="submit" class="btn btn-primary">Save changes</button>
             <a href="/admin/users/<?= urlencode($userId) ?>/roles" class="btn btn-secondary">Manage roles</a>
             <?php if (!$isDeleted): ?>
-                <form method="POST" action="/admin/users/<?= urlencode($userId) ?>/delete"
-                      style="margin:0"
-                      onsubmit="return confirm('Delete user «<?= htmlspecialchars(addslashes($user['display_name'] ?? ''), ENT_QUOTES) ?>»?\n\nThis will deactivate their account and sign them out.\nMessages and events will be preserved.\n\nThis can be reversed by an engineer.')">
-                    <?= csrf_input() ?>
-                    <button type="submit" class="btn btn-danger">Delete user</button>
-                </form>
+                <a href="/admin/users/<?= urlencode($userId) ?>/delete" class="btn btn-danger">Delete user</a>
             <?php endif; ?>
         </div>
     </form>
