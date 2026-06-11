@@ -257,11 +257,14 @@ class EventRepository
         // One-off + canonical recurring rows only (occurrence_date IS NULL).
         // Recurring events are a single canonical row; today's occurrence is
         // synthesized below from the series rule - no materialization needed.
+        // Canonical rows (series_id IS NOT NULL) skip the expires_at filter -
+        // their stored expires_at is the first occurrence's anchor, not the
+        // series end. See getAllByChannel for the bug this mirrors.
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id        = :city_id
               AND ce.source_type    = 'hilads'
               AND ce.occurrence_date IS NULL
-              AND ce.expires_at     > now()
+              AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
             ORDER BY ce.starts_at ASC
         ");
         $stmt->execute(['city_id' => 'city_' . $channelId]);
@@ -502,11 +505,23 @@ class EventRepository
         // occurrence_date IS NULL: one-off + ticketmaster + canonical recurring
         // rows only (legacy materialized occurrences are excluded; recurring
         // events are synthesized below from the series rule).
+        //
+        // For canonical recurring rows (series_id IS NOT NULL), expires_at is
+        // just an anchor of the stored occurrence - the SERIES rule decides what
+        // shows in the window, not the stored row's expires_at. Filtering by
+        // expires_at > now() here silently drops series whose stored anchor
+        // happens to be in the past (e.g. the series was first scheduled weeks
+        // ago and the canonical row was never reanchored). Bug surfaced as:
+        // weekly Thursday series appeared in /upcoming for today but were
+        // missing from the Now feed. /upcoming had this fix already
+        // (getUpcoming WHERE clause); mirror it here so the two paths agree.
+        // One-offs (series_id IS NULL) still need expires_at > now() to drop
+        // past one-shots before they ship through the per-event window filter.
         $stmt = Database::pdo()->prepare(self::SELECT_CITY . "
             WHERE ce.city_id      = :city_id
               AND ce.source_type IN ('hilads', 'ticketmaster')
               AND ce.occurrence_date IS NULL
-              AND ce.expires_at   > now()
+              AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
             ORDER BY ce.source_type ASC, ce.starts_at ASC
             LIMIT 200
         ");
