@@ -62,7 +62,7 @@ export default function LeaderboardCityPickerModal({
     const q = query.trim().toLowerCase()
     if (!q) return cities.slice(0, RESULT_CAP)
     return cities
-      .filter(c => (c.name ?? '').toLowerCase().includes(q) || (c.country ?? '').toLowerCase().includes(q))
+      .filter(c => (c.city ?? c.name ?? '').toLowerCase().includes(q) || (c.country ?? '').toLowerCase().includes(q))
       .slice(0, RESULT_CAP)
   }, [cities, query])
 
@@ -111,7 +111,7 @@ export default function LeaderboardCityPickerModal({
                   onClick={() => onSelect(item.channelId, item)}
                 >
                   <span className="leaderboard-city-picker-flag" aria-hidden="true">{flag}</span>
-                  <span className="leaderboard-city-picker-name">{localizeCityName(item.name)}</span>
+                  <span className="leaderboard-city-picker-name">{localizeCityName(item.city ?? item.name)}</span>
                   {isSelected && <span className="leaderboard-city-picker-check" aria-hidden="true">✓</span>}
                 </button>
               )
