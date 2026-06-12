@@ -29,7 +29,7 @@ export default function ChallengesTab() {
       </View>
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>🔥 {t('hiChallengeTitle')}</Text>
+          <Text style={styles.headerTitle}>🔥 {t('noun')}</Text>
           {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
