@@ -4,6 +4,7 @@ import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform } from
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import Svg, { Path, Circle } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
@@ -95,6 +96,28 @@ function ActivePill() {
   );
 }
 
+// ── EVENTS tab icon - party popper, ported 1:1 from the web NavIconParty SVG
+// so it matches (Ionicons has no party-popper). Tints with the active color
+// like every other tab icon. ──────────────────────────────────────────────────
+
+function NavIconParty({ color, size = 30 }: { color: string; size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke={color} strokeWidth={1.9} strokeLinecap="round" strokeLinejoin="round">
+      {/* Cone */}
+      <Path d="M3 21 8.5 8l7.5 7.5z" />
+      {/* Streamers */}
+      <Path d="M14 6c1.2-1.2 3-1.2 4 0" strokeWidth={1.4} />
+      <Path d="M16.5 3.5c.9-.9 2.4-.9 3.3 0" strokeWidth={1.4} />
+      <Path d="M19 9c1-.3 1.8.5 1.5 1.5" strokeWidth={1.4} />
+      {/* Confetti dots */}
+      <Circle cx={13} cy={12} r={0.7} fill={color} stroke="none" />
+      <Circle cx={20} cy={14} r={0.7} fill={color} stroke="none" />
+      <Circle cx={17.5} cy={18} r={0.7} fill={color} stroke="none" />
+    </Svg>
+  );
+}
+
 // ── Custom tab bar - faithful port of web .bottom-nav ─────────────────────────
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
@@ -139,11 +162,9 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
                 pulse, no glow overlay (removed alongside the noisy city-chat
                 activity pills). */}
             <View style={[styles.iconWrap, focused && styles.iconWrapActive]}>
-              <Ionicons
-                name={focused ? tab.icon : tab.outline}
-                size={30}
-                color={color}
-              />
+              {tab.name === 'events'
+                ? <NavIconParty color={color} size={30} />
+                : <Ionicons name={focused ? tab.icon : tab.outline} size={30} color={color} />}
               <TabDot kind={tab.dot} />
             </View>
           </Pressable>
