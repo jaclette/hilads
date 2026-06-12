@@ -435,6 +435,18 @@ function broadcastChallengeDateWithdrawnToWs(string $targetUserId, array $payloa
     ]);
 }
 
+/** Taker abandoned an active take-on. Fires to the creator so their open
+ *  challenge screen resets the pipeline (the challenge is now un-taken). */
+function broadcastChallengeAcceptorLeftToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-acceptor-left target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_acceptor_left',
+        'payload' => $payload,
+    ]);
+}
+
 /** PR5 - creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
 function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $payload): void
 {
@@ -9291,6 +9303,77 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
     }
 
     Response::json(['acceptance' => $updated]);
+});
+
+// POST /api/v1/acceptances/{acceptanceId}/abandon
+// The TAKER leaves an active take-on. Hard-deletes the acceptance (the challenge
+// reopens from zero - hasActiveAcceptance is live-derived) and wipes the
+// challenge channel chat for a clean slate, then pushes + WS-resets the creator.
+// Acceptor-only; active phases only (pending/accepted/scheduled) - terminal
+// rows (approved/rejected) 409.
+$router->add('POST', '/api/v1/acceptances/{acceptanceId}/abandon', function (array $params) {
+    $acceptanceId = $params['acceptanceId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $acceptanceId)) {
+        Response::json(['error' => 'Invalid acceptanceId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    if ($acceptance === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+    if ($acceptance['acceptor_user_id'] !== $userId) {
+        Response::json(['error' => 'Only the taker can leave', 'code' => 'not_acceptor'], 403);
+    }
+    if (!in_array($acceptance['phase'], ['pending', 'accepted', 'scheduled'], true)) {
+        Response::json(['error' => "Can't leave at this stage", 'code' => 'phase_locked'], 409);
+    }
+
+    $challenge = ChallengeRepository::findByIdUnchecked($acceptance['challenge_id']);
+
+    try {
+        $wiped = ChallengeAcceptanceRepository::abandon($acceptanceId);
+    } catch (\Throwable $e) {
+        error_log('[challenges] abandon failed acc=' . $acceptanceId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to leave challenge'], 500);
+    }
+    if ($wiped === null) {
+        Response::json(['error' => 'Acceptance not found'], 404);
+    }
+
+    // Notify + reset the creator (skip if challenge/creator is gone, or the
+    // creator somehow equals the acceptor).
+    $creatorId      = is_array($challenge) ? ($challenge['created_by'] ?? null) : null;
+    $challengeTitle = is_array($challenge) ? (string) ($challenge['title'] ?? '') : '';
+    if ($creatorId !== null && $creatorId !== $userId) {
+        $acceptorName = (string) ($authUser['display_name'] ?? 'Someone');
+        $data = [
+            'challengeId'    => $acceptance['challenge_id'],
+            'acceptanceId'   => $acceptanceId,
+            'acceptorUserId' => $userId,
+            'acceptorName'   => $acceptorName,
+            'challengeTitle' => $challengeTitle,
+        ];
+        try {
+            broadcastChallengeAcceptorLeftToWs($creatorId, $data);
+        } catch (\Throwable $e) {
+            error_log('[challenges] abandon WS broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+        try {
+            NotificationRepository::create(
+                $creatorId,
+                'challenge_acceptor_left',
+                '👋 Taker left',
+                "{$acceptorName} left the challenge \"{$challengeTitle}\"",
+                $data,
+            );
+        } catch (\Throwable $e) {
+            error_log('[challenges] abandon push failed (non-fatal): ' . $e->getMessage());
+        }
+    }
+
+    Response::json(['ok' => true, 'challengeId' => $acceptance['challenge_id']]);
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/cancel

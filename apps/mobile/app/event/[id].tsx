@@ -484,7 +484,9 @@ export default function EventDetailScreen() {
       {event && (
         <KeyboardAvoidingView
           style={styles.flex}
-          behavior="padding"
+          // Android: rely on the window's adjustResize (no KAV behavior) - layering
+          // 'padding' on top left a black gap on interactive keyboard dismissal.
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
           <FlatList
             ref={flatListRef}

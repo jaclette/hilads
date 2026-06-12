@@ -20,6 +20,7 @@ import {
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
   kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
+  abandonAcceptance,
 } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
@@ -384,6 +385,33 @@ export default function ChallengeChatPage({
       setIAmParticipant(false)
       loadParticipants()
     } catch { /* silent - UI will re-probe on next visit */ }
+  }
+
+  // The TAKER abandons their take-on: timeline resets, challenge reopens, chat
+  // is wiped, creator is notified. Confirm first - it can't be undone.
+  function handleLeaveTakeon() {
+    if (!myAcceptance) return
+    const accId = myAcceptance.id
+    setAlertModal({
+      emoji: '🚪',
+      title: t('leaveTakeon.confirmTitle'),
+      body:  t('leaveTakeon.confirmBody'),
+      primary: {
+        label: t('leaveTakeon.confirmCta'),
+        destructive: true,
+        onPress: async () => {
+          try {
+            await abandonAcceptance(accId)
+            setMyAcceptance(null)
+            loadChallenge()
+            loadParticipants()
+          } catch {
+            setAlertModal({ emoji: '😬', title: t('leaveTakeon.failed'), body: '' })
+          }
+        },
+      },
+      secondary: {},
+    })
   }
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
@@ -853,6 +881,20 @@ export default function ChallengeChatPage({
             </button>
           )
         })()}
+        {/* Leave the take-on - the TAKER backs out: timeline resets to zero,
+            the challenge reopens, the creator is notified. Active phases only
+            (matches the backend gate). */}
+        {myAcceptance && !isOwner
+          && ['pending', 'accepted', 'scheduled'].includes(myAcceptance.phase) && (
+          <button
+            type="button"
+            className="challenge-share-pill challenge-share-pill--inline challenge-leave-pill"
+            onClick={handleLeaveTakeon}
+          >
+            <span aria-hidden="true">🚪</span>
+            <span className="challenge-share-pill-text">{t('leaveTakeon.pill')}</span>
+          </button>
+        )}
         {isOwner && (
           <button
             type="button"

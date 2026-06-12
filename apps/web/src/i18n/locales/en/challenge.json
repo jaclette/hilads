@@ -147,6 +147,13 @@
     "errClosed": "This challenge is closed to new joins.",
     "errGeneric": "Couldn't hop in - try again."
   },
+  "leaveTakeon": {
+    "pill": "Leave",
+    "confirmTitle": "Leave this challenge?",
+    "confirmBody": "The timeline resets to zero and the challenge reopens for others. This can't be undone.",
+    "confirmCta": "Leave",
+    "failed": "Couldn't leave - try again."
+  },
   "lock": {
     "private": {
       "title": "🔒 This challenge is private",

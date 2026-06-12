@@ -631,7 +631,9 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
   return (
     <KeyboardAvoidingView
       style={styles.flex}
-      behavior="padding"
+      // Android: rely on the window's adjustResize (no KAV behavior) - layering
+      // 'padding' on top left a black gap on interactive keyboard dismissal.
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
       {error && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>

@@ -544,6 +544,39 @@ class ChallengeAcceptanceRepository
         return self::findById($acceptanceId);
     }
 
+    /**
+     * Taker abandons an active take-on. Hard-deletes the acceptance row (so the
+     * challenge reopens instantly - hasActiveAcceptance() is live-derived) AND
+     * wipes the challenge channel's chat for a clean slate. Atomic. The route
+     * gates on acceptor identity + active phase before calling this; here we
+     * just need the challenge_id, which we read before deleting.
+     * Returns the wiped challenge_id, or null if the acceptance was already gone.
+     */
+    public static function abandon(string $acceptanceId): ?string
+    {
+        $pdo = Database::pdo();
+        $row = self::findById($acceptanceId);
+        if ($row === null) return null;
+        $challengeId = $row['challenge_id'];
+
+        $pdo->beginTransaction();
+        try {
+            // Clean slate: drop every message in the challenge channel.
+            // message_reactions cascade on messages FK; reply_to_id self-refs
+            // SET NULL but we're deleting them all anyway.
+            $pdo->prepare("DELETE FROM messages WHERE channel_id = :cid")
+                ->execute(['cid' => $challengeId]);
+            // Reopen from zero: removing the active row frees the 1:1 slot.
+            $pdo->prepare("DELETE FROM challenge_acceptances WHERE id = :id")
+                ->execute(['id' => $acceptanceId]);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+        return $challengeId;
+    }
+
     // ── PR3: date concertation ────────────────────────────────────────────────
 
     /**

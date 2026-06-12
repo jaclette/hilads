@@ -1057,6 +1057,22 @@ export async function rejectTakeOn(acceptanceId) {
   return res.json()
 }
 
+// Taker leaves an active take-on: deletes the acceptance (challenge reopens
+// from zero), wipes the challenge chat, pushes + WS-resets the creator.
+export async function abandonAcceptance(acceptanceId) {
+  const res = await fetch(`${BASE}/acceptances/${encodeURIComponent(acceptanceId)}/abandon`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to leave challenge')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

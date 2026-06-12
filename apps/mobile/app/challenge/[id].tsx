@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList, Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +23,7 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
+  abandonAcceptance,
 } from '@/api/challenges';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import * as Clipboard from 'expo-clipboard';
@@ -537,14 +538,18 @@ export default function ChallengeChatScreen() {
   // single reload is enough.
   useEffect(() => {
     const onChange = () => loadMyAcceptance();
+    // Taker left → the creator's screen must reset the whole challenge (it's
+    // un-taken now), not just myAcceptance.
+    const onReset  = () => { loadMyAcceptance(); loadChallenge(); loadParticipants(); };
     const off1 = socket.on('challenge_date_proposed',     onChange);
     const off2 = socket.on('challenge_date_withdrawn',    onChange);
     const off3 = socket.on('challenge_date_approved',     onChange);
     const off4 = socket.on('challenge_verdict_approved',  onChange);
     const off5 = socket.on('challenge_verdict_rejected',  onChange);
     const off6 = socket.on('challenge_takeon_reviewed',   onChange);
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); };
-  }, [loadMyAcceptance]);
+    const off7 = socket.on('challenge_acceptor_left',     onReset);
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); };
+  }, [loadMyAcceptance, loadChallenge, loadParticipants]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────
   // Replaces the per-acceptance THREAD chat. Reads + sends both gate on
@@ -686,6 +691,34 @@ export default function ChallengeChatScreen() {
       setIAmParticipant(false);
       loadParticipants();
     } catch { /* silent - re-probe on next visit */ }
+  }
+
+  // The TAKER abandons their take-on: timeline resets, challenge reopens, chat
+  // is wiped, creator is notified. Confirm first - it can't be undone.
+  function handleLeaveTakeon() {
+    if (!myAcceptance) return;
+    const accId = myAcceptance.id;
+    Alert.alert(
+      t('leaveTakeon.confirmTitle'),
+      t('leaveTakeon.confirmBody'),
+      [
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+        {
+          text: t('leaveTakeon.confirmCta'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await abandonAcceptance(accId);
+              setMyAcceptance(null);
+              loadChallenge();
+              loadParticipants();
+            } catch {
+              Alert.alert(t('leaveTakeon.failed'));
+            }
+          },
+        },
+      ],
+    );
   }
   // Silence unused-var warnings when the channel-chat branch is hidden.
   void guestIdForChat;
@@ -990,6 +1023,22 @@ export default function ChallengeChatScreen() {
               </TouchableOpacity>
             );
           })()}
+          {/* Leave the take-on - the TAKER (active acceptance) backs out:
+              timeline resets to zero, the challenge reopens, the creator is
+              pushed. Active phases only (matches the backend gate). */}
+          {myAcceptance && !isOwner
+            && ['pending', 'accepted', 'scheduled'].includes(myAcceptance.phase) && (
+            <TouchableOpacity
+              style={styles.sharePillInline}
+              onPress={handleLeaveTakeon}
+              activeOpacity={0.75}
+              accessibilityLabel={t('leaveTakeon.pill')}
+            >
+              <Text style={[styles.sharePillInlineText, { color: '#ff6b6b' }]} numberOfLines={1}>
+                {t('leaveTakeon.pill')}
+              </Text>
+            </TouchableOpacity>
+          )}
           {/* Manage challenge - creator-only pill. Opens a modal with
               Edit / Close challenge / Delete to keep the meta row tight. */}
           {isOwner && challenge && (
@@ -1250,7 +1299,9 @@ export default function ChallengeChatScreen() {
           via a non-tabs path, tabBarHeight=0 - no dead space. */}
       <KeyboardAvoidingView
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
-        behavior="padding"
+        // Android: rely on the window's adjustResize (no KAV behavior) - layering
+        // 'padding' on top left a black gap on interactive keyboard dismissal.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         {/* PR34 - show the chat for ALL participants once they're in the
             channel, including acceptors with phase='pending'. The pipeline

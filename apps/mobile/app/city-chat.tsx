@@ -86,7 +86,10 @@ export default function CityChatScreen() {
 
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // Android: no KAV behavior - the window's adjustResize already lifts
+        // the composer, and layering KAV on top left a black gap on interactive
+        // (swipe) keyboard dismissal. iOS doesn't resize, so it keeps 'padding'.
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         {/* Message list */}
         {loading ? (

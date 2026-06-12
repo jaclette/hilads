@@ -278,6 +278,15 @@ export async function rejectTakeOn(acceptanceId: string): Promise<{ acceptance: 
   );
 }
 
+/** Taker leaves an active take-on: deletes the acceptance (challenge reopens
+ *  from zero), wipes the challenge chat, pushes + WS-resets the creator. */
+export async function abandonAcceptance(acceptanceId: string): Promise<{ ok: boolean; challengeId: string }> {
+  return api.post<{ ok: boolean; challengeId: string }>(
+    `/acceptances/${acceptanceId}/abandon`,
+    {},
+  );
+}
+
 // ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
 
 /** Creator approves the take-on as accomplished (post-debrief). Final state. */

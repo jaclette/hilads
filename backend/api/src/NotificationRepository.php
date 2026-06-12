@@ -257,6 +257,8 @@ class NotificationRepository
             // where the ScheduleBlock surfaces the Approve / Counter-
             // propose buttons.
             'challenge_date_proposed'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // Taker left - creator taps through to their (now reopened) challenge.
+            'challenge_acceptor_left'         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             // Date approved - same target as proposed; recipient lands
             // in the channel to see "✅ Meet on …" + the celebration
             // popin the SCG re-fires off the WS broadcast on entry.

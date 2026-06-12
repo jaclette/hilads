@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, AppState, Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
@@ -335,7 +335,9 @@ export default function TopicChatScreen() {
       ) : (
       /* Messages + Input */
       <>
-      <KeyboardAvoidingView style={styles.flex} behavior="padding">
+      {/* Android: no KAV behavior (adjustResize lifts the composer); 'padding'
+          on top left a black gap on interactive keyboard dismissal. */}
+      <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <FlatList
           data={messages}
           keyExtractor={(m, i) => m.id ?? String(i)}
