@@ -8424,9 +8424,16 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/notification-preference',
             'code'  => 'invalid_preference',
         ], 400);
     }
+    // Gate on participation (creator / active acceptor / explicit joiner). The
+    // repo UPSERT below materializes a participant row for implicit members
+    // (acceptors who never hit /join), so without this guard any authed user
+    // could silently "join" by toggling notifications.
+    if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
+        Response::json(['error' => 'Not a participant - join the challenge first.', 'code' => 'not_participant'], 403);
+    }
     $ok = ChallengeParticipantRepository::setNotificationPreference($challengeId, $userId, $pref);
     if (!$ok) {
-        Response::json(['error' => 'Not a participant - join the challenge first.', 'code' => 'not_participant'], 403);
+        Response::json(['error' => 'Could not save preference', 'code' => 'save_failed'], 500);
     }
     Response::json(['ok' => true, 'preference' => $pref]);
 });

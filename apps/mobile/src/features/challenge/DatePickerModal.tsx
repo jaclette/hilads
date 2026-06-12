@@ -58,7 +58,11 @@ export function DatePickerModal({
   const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const bottomInset = tabBarHeight || insets.bottom;
   const [dayOffset, setDayOffset] = useState<number | null>(0);
-  const [timeKey,   setTimeKey]   = useState<string | null>('19:00');
+  // No default start time. Previously this defaulted to '19:00', so a user who
+  // set only the (required, default-less) END time left the START on 7 PM - the
+  // proposal then showed "7:00 PM" instead of the time they meant. Start now
+  // requires an explicit pick, symmetric with end; canSubmit gates on it.
+  const [timeKey,   setTimeKey]   = useState<string | null>(null);
   const [endTimeKey, setEndTimeKey] = useState<string | null>(null);
   const [venue,     setVenue]     = useState<string>(initialVenue ?? '');
   // Free-form selections (any date / any time) that fall outside the chip

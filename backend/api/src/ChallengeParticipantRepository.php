@@ -183,13 +183,24 @@ class ChallengeParticipantRepository
         if (!in_array($preference, self::ALLOWED_NOTIFICATION_PREFERENCES, true)) {
             $preference = 'milestones';
         }
+        // UPSERT, not UPDATE: the creator and active acceptors are *implicit*
+        // participants (isParticipant passes them via channel_challenges /
+        // challenge_acceptances) and may have no challenge_participants row yet.
+        // A bare UPDATE hit 0 rows for them → the toggle 403'd → the client's
+        // optimistic flip reverted ("notifications pill won't switch"). The
+        // route guards on isParticipant first, so this only materializes a row
+        // for someone who already belongs in the channel. Same (channel_id,
+        // guest_id) key + guest_id=user_id convention as join().
         $stmt = Database::pdo()->prepare("
-            UPDATE challenge_participants
-            SET notification_preference = ?
-            WHERE channel_id = ? AND user_id = ?
+            INSERT INTO challenge_participants (channel_id, guest_id, user_id, joined_at, notification_preference)
+            VALUES (:cid, :uid, :uid, now(), :pref)
+            ON CONFLICT (channel_id, guest_id) DO UPDATE SET
+                notification_preference = EXCLUDED.notification_preference,
+                user_id = COALESCE(EXCLUDED.user_id, challenge_participants.user_id)
+            RETURNING channel_id
         ");
-        $stmt->execute([$preference, $challengeId, $userId]);
-        return $stmt->rowCount() > 0;
+        $stmt->execute(['cid' => $challengeId, 'uid' => $userId, 'pref' => $preference]);
+        return $stmt->fetchColumn() !== false;
     }
 
     public static function getNotificationPreference(string $challengeId, string $userId): string
