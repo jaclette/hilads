@@ -337,9 +337,9 @@ function ShareVibeBtn({ eventId, title, city }) {
 }
 
 // ── Feature flags ─────────────────────────────────────────────────────────────
-// Hangouts (topics) are put to sleep: hidden from the bar, feeds, and the
-// create chooser. Code stays in place and dormant - flip to true to revive.
-const HANGOUTS_ENABLED = false
+// Hangouts (topics) are re-enabled as the "Hi now" temporality in the Hi Local
+// feed (spontaneous, ~8h TTL) alongside events ("Hi later").
+const HANGOUTS_ENABLED = true
 
 // ── Bottom nav icons ──────────────────────────────────────────────────────────
 
@@ -5057,7 +5057,7 @@ export default function App() {
             {renderAppHeader()}
           </div>
           <div className="page-header">
-            <span className="page-title">{t('filterEvents', { ns: 'common' })}</span>
+            <span className="page-title">{t('hiLocalTitle', { ns: 'common' })}</span>
           </div>
           <div className="page-body" ref={nowBodyRef}>
             {(() => {
@@ -5094,7 +5094,7 @@ export default function App() {
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); openHangout(topic) }}>
                     <div className="er-header">
                       <span className="er-title">{icon} {topic.title}</span>
-                      <span className="er-going er-going--topic">{t('feed.hangoutTag')}</span>
+                      <span className="er-going er-going--now">🔥 {t('feed.nowTag')}</span>
                     </div>
                     <div className="er-badges">
                       {activeNow && <span className="now-active-badge">{t('feed.activeNow')}</span>}
@@ -5139,7 +5139,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">{t('feed.public')}</span>
-                        : <span className="er-going er-going--event">{t('feed.eventTag')}</span>}
+                        : <span className="er-going er-going--later">📅 {t('feed.laterTag')}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -5254,8 +5254,8 @@ export default function App() {
                 return bAct - aAct
               })
 
-              // Events tab → events only (Challenges + Hangouts moved out).
-              const filtered = unified.filter(i => i._kind === 'event')
+              // Hi Local → both temporalities: events ("Later") + topics ("Now").
+              const filtered = unified
 
               // Only truly empty when there are no public events to show below either.
               if (filtered.length === 0 && publicEvents.length === 0) {
@@ -5286,17 +5286,23 @@ export default function App() {
               The + always opens the create chooser regardless of user mode,
               so both flows ("Start a pulse" / "Host your spot") sit behind
               one consistent picker UX. */}
-          {/* Events tab → a single, direct "Create an event" CTA (no chooser,
-              so no "Launch a challenge" here). "See what's coming" sits below
-              as a secondary. */}
-          <div className="now-actions-bar" style={{ flexDirection: 'column', gap: 8 }}>
-            <button
-              className="upcoming-cta upcoming-cta--inline"
-              style={{ background: 'rgba(255,122,60,0.16)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.35)', fontWeight: 700 }}
-              onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
-            >
-              🎉 {t('feed.createEvent')}
-            </button>
+          {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous
+              hangout) + "Hi later" (planned event). "See what's coming" below. */}
+          <div className="now-actions-bar now-actions-bar--hilocal">
+            <div className="hilocal-cta-row">
+              <button
+                className="hilocal-cta hilocal-cta--now"
+                onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
+              >
+                🔥 {t('feed.hiNow')}
+              </button>
+              <button
+                className="hilocal-cta hilocal-cta--later"
+                onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
+              >
+                📅 {t('feed.hiLater')}
+              </button>
+            </div>
             <button
               className="upcoming-cta upcoming-cta--inline"
               onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}

@@ -67,6 +67,10 @@
   "feed": {
     "hangoutTag": "Hangout",
     "eventTag": "Event",
+    "nowTag": "Now",
+    "laterTag": "Later",
+    "hiNow": "Hi now",
+    "hiLater": "Hi later",
     "public": "Public",
     "activeNow": "● Active now",
     "repliesNew": "No replies yet - be first",

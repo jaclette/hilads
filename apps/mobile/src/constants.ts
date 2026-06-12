@@ -12,9 +12,9 @@ export const BASE_URL =
   process.env.EXPO_PUBLIC_BASE_URL ?? 'https://hilads.live';
 
 // ── Feature flags ─────────────────────────────────────────────────────────────
-// Hangouts (topics) are put to sleep: hidden from the bar, feeds, and the
-// create sheet. Code stays in place and dormant - flip to true to revive.
-export const HANGOUTS_ENABLED = false;
+// Hangouts (topics) are re-enabled as the "Hi now" temporality in the Hi Local
+// feed (spontaneous, ~8h TTL) alongside events ("Hi later").
+export const HANGOUTS_ENABLED = true;
 
 // ── Link builders ─────────────────────────────────────────────────────────────
 

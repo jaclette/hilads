@@ -6676,7 +6676,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
             $description,
             $category,
             $userId,
-            24,        // default TTL hours
+            8,         // "Hi now" TTL hours - spontaneous, survives late-night (11pm → ~7am)
             $lat,
             $lng,
         );

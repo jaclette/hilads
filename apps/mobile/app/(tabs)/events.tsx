@@ -467,12 +467,9 @@ export default function NowScreen() {
   }, [items, publicEvents, userLocation]);
 
   const filteredItems = useMemo(() => {
-    // 'challenges' filter hides events + hangouts entirely - the strip below
-    // is the only section in that mode.
-    if (filter === 'challenges') return [];
-    const base = filter === 'events' ? items.filter(i => i.kind === 'event')
-               : filter === 'topics' ? items.filter(i => i.kind === 'topic')
-               : items;
+    // Hi Local → both temporalities: events ("Later") + topics/hangouts ("Now").
+    // fetchNowFeed returns only events + topics, so no kind filter is needed.
+    const base = items;
     // Block filter (Apple G1.2) - drop events / topics whose host or creator
     // the viewer has blocked. Public Ticketmaster events have no human host
     // so they're filtered separately below.
@@ -619,7 +616,7 @@ export default function NowScreen() {
       {/* Tab-specific title (sub-header) */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('filterEvents', { ns: 'common' })}</Text>
+          <Text style={styles.headerTitle}>{t('hiLocalTitle', { ns: 'common' })}</Text>
           {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
@@ -758,20 +755,28 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Sticky bottom action - a single direct "Create an event" CTA (no
-          chooser, so no "Launch a challenge" here). "See what's coming" sits
-          below as a secondary. Safe-area-aware via insets.bottom. */}
+      {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous hangout)
+          + "Hi later" (planned event). "See what's coming" below. */}
       {city && (
         <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
-          <TouchableOpacity
-            style={styles.createEventCta}
-            activeOpacity={0.85}
-            onPress={handleHostSpot}
-            accessibilityLabel={t('create.eventLabel')}
-            accessibilityRole="button"
-          >
-            <Text style={styles.createEventCtaText}>🎉 {t('create.eventLabel')}</Text>
-          </TouchableOpacity>
+          <View style={styles.hilocalRow}>
+            <TouchableOpacity
+              style={[styles.hilocalCta, styles.hilocalCtaNow]}
+              activeOpacity={0.85}
+              onPress={handleStartPulse}
+              accessibilityRole="button"
+            >
+              <Text style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🔥 {t('hiNow')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.hilocalCta, styles.hilocalCtaLater]}
+              activeOpacity={0.85}
+              onPress={handleHostSpot}
+              accessibilityRole="button"
+            >
+              <Text style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>📅 {t('hiLater')}</Text>
+            </TouchableOpacity>
+          </View>
           <TouchableOpacity
             style={styles.upcomingCta}
             activeOpacity={0.75}
@@ -981,6 +986,22 @@ const styles = StyleSheet.create({
     fontSize:   15,
     fontWeight: '800',
   },
+
+  // Hi Local → two create CTAs side by side: Now (coral) + Later (neutral).
+  hilocalRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  hilocalCta: {
+    flex:            1,
+    alignItems:      'center',
+    justifyContent:  'center',
+    paddingVertical: 14,
+    borderRadius:    14,
+    borderWidth:     1,
+  },
+  hilocalCtaNow:   { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.45)' },
+  hilocalCtaLater: { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.18)' },
+  hilocalCtaText:      { fontSize: 15, fontWeight: '800' },
+  hilocalCtaTextNow:   { color: Colors.accent },
+  hilocalCtaTextLater: { color: Colors.text },
 
   // Wide pill on the left - orange-tinted, mirrors web .upcoming-cta.
   upcomingCta: {

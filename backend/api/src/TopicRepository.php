@@ -5,7 +5,7 @@ declare(strict_types=1);
 class TopicRepository
 {
     private const ALLOWED_CATEGORIES = ['general', 'tips', 'food', 'drinks', 'help', 'meetup'];
-    private const DEFAULT_TTL_HOURS  = 24;
+    private const DEFAULT_TTL_HOURS  = 8;  // "Hi now" items live ~8h from creation
 
     // ── Shared SELECT (topic + message stats) ─────────────────────────────────
 

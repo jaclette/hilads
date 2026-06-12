@@ -87,7 +87,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
       onPress={onPress}
     >
       <View style={styles.cardTitleRow}>
-        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>Event</Text></View>
+        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>📅 {t('laterTag', { ns: 'now' })}</Text></View>
         {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>{t('public')}</Text></View>}
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>
@@ -151,14 +151,14 @@ const styles = StyleSheet.create({
   cardHost:         { fontSize: 11,           color: Colors.muted2, lineHeight: 14 },
 
   kindBadgeEvent: {
-    backgroundColor:   'rgba(255,122,60,0.12)',
+    backgroundColor:   'rgba(255,255,255,0.06)',
     borderRadius:      Radius.full,
     paddingHorizontal: 7,
     paddingVertical:   1,
     borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.22)',
+    borderColor:       'rgba(255,255,255,0.14)',
   },
-  kindBadgeText: { fontSize: 9, fontWeight: '700', color: Colors.accent, letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: 9, fontWeight: '700', color: Colors.muted, letterSpacing: 0.5 },
 
   publicBadge: {
     backgroundColor:   'rgba(255,255,255,0.07)',

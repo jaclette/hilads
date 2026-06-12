@@ -45,7 +45,7 @@ export function TopicCard({
   return (
     <TouchableOpacity style={styles.topicCard} activeOpacity={0.75} onPress={onPress}>
       <View style={styles.cardKindRow}>
-        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>Hangout</Text></View>
+        <View style={styles.kindBadgeTopic}><Text style={styles.kindBadgeTopicText}>🔥 {t('nowTag', { ns: 'now' })}</Text></View>
         {activeNow && (
           <View style={styles.activeNowBadge}>
             <Text style={styles.activeNowText}>{t('activeNow')}</Text>
@@ -86,14 +86,14 @@ export function TopicCard({
 const styles = StyleSheet.create({
   cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
   kindBadgeTopic: {
-    backgroundColor:   'rgba(96,165,250,0.12)',
+    backgroundColor:   'rgba(255,122,60,0.12)',
     borderRadius:      Radius.full,
     paddingHorizontal: 7,
     paddingVertical:   1,
     borderWidth:       1,
-    borderColor:       'rgba(96,165,250,0.22)',
+    borderColor:       'rgba(255,122,60,0.22)',
   },
-  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: '#60a5fa', letterSpacing: 0.5 },
+  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: Colors.accent, letterSpacing: 0.5 },
 
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardIcon:     { fontSize: 16, lineHeight: 18 },
