@@ -1310,14 +1310,25 @@ export default function ChallengeChatPage({
                         </div>
                       )}
                       <div className="msg-content">
-                        {/* PR31 - linkify URLs (matches TopicChatPage / city
-                            chat) and render a LinkPreviewCard for the first
-                            link in the message. */}
-                        <span className="msg-text">{linkifyText(m.content ?? '', `c-${m.id ?? idx}-`)}</span>
-                        {(() => {
-                          const u = extractFirstUrl(m.content)
-                          return u ? <LinkPreviewCard url={u} /> : null
-                        })()}
+                        {m.type === 'image' && m.imageUrl ? (
+                          <img
+                            src={m.imageUrl}
+                            alt=""
+                            className="msg-image"
+                            style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }}
+                          />
+                        ) : (
+                          <>
+                            {/* PR31 - linkify URLs (matches TopicChatPage / city
+                                chat) and render a LinkPreviewCard for the first
+                                link in the message. */}
+                            <span className="msg-text">{linkifyText(m.content ?? '', `c-${m.id ?? idx}-`)}</span>
+                            {(() => {
+                              const u = extractFirstUrl(m.content)
+                              return u ? <LinkPreviewCard url={u} /> : null
+                            })()}
+                          </>
+                        )}
                       </div>
                     </div>
                     {/* PR33 - reaction pills below the bubble; clicking a
