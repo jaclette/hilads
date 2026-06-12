@@ -1164,7 +1164,7 @@ html, body, #root {
   white-space: normal;   /* override the old hero rule that set nowrap */
   overflow: visible;
   text-overflow: unset;
-  /* Tagline carries an explicit <br/> break ("Challenge" / "the city.")
+  /* Tagline carries an explicit <br/> break ("Become local." / "Anywhere.")
      so we no longer depend on word-wrap math. max-width stays as a
      defensive cap so a longer locale variant can't blow up the header. */
   max-width: 90px;
