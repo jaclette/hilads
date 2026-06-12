@@ -5286,22 +5286,22 @@ export default function App() {
               The + always opens the create chooser regardless of user mode,
               so both flows ("Start a pulse" / "Host your spot") sit behind
               one consistent picker UX. */}
-          <div className="now-actions-bar">
+          {/* Events tab → a single, direct "Create an event" CTA (no chooser,
+              so no "Launch a challenge" here). "See what's coming" sits below
+              as a secondary. */}
+          <div className="now-actions-bar" style={{ flexDirection: 'column', gap: 8 }}>
+            <button
+              className="upcoming-cta upcoming-cta--inline"
+              style={{ background: 'rgba(255,122,60,0.16)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.35)', fontWeight: 700 }}
+              onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
+            >
+              🎉 {t('feed.createEvent')}
+            </button>
             <button
               className="upcoming-cta upcoming-cta--inline"
               onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
             >
               {t('feed.seeComing')}
-            </button>
-            <button
-              className="now-create-btn"
-              onClick={() => { setShowEventDrawer(false); setShowCreateChooser(true) }}
-              aria-label={t('feed.createNew')}
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
             </button>
           </div>
           {/* Discreet archive entry - muted text link under the upcoming pill. */}
