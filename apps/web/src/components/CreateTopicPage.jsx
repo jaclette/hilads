@@ -81,24 +81,6 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
       <div className="page-body">
         <form className="cef-form" onSubmit={handleSubmit}>
 
-          {/* Category */}
-          <div className="cef-section">
-            <p className="cef-label">{t('create.category')}</p>
-            <div className="cef-category-grid">
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  className={`cef-cat-btn${category === cat.value ? ' selected' : ''}`}
-                  onClick={() => setCategory(cat.value)}
-                >
-                  <span style={{ fontSize: 22 }}>{cat.icon}</span>
-                  <span className="cef-cat-label">{t(`create.cat.${cat.value}`)}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Title */}
           <div className="cef-section">
             <label className="cef-label">{t('create.titleLabel')}</label>

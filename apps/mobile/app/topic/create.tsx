@@ -129,25 +129,6 @@ export default function CreateTopicScreen() {
 
       <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent} keyboardShouldPersistTaps="handled">
 
-        {/* Category chips */}
-        <Text style={styles.sectionLabel}>{t('category')}</Text>
-        <View style={styles.categoryGrid}>
-          {CATEGORIES.map(cat => {
-            const selected = category === cat.value;
-            return (
-              <TouchableOpacity
-                key={cat.value}
-                style={[styles.catChip, selected && styles.catChipSelected]}
-                activeOpacity={0.7}
-                onPress={() => setCategory(cat.value)}
-              >
-                <Text style={styles.catIcon}>{cat.icon}</Text>
-                <Text style={[styles.catLabel, selected && styles.catLabelSelected]}>{t(`cat.${cat.value}`)}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
         {/* Title */}
         <Text style={styles.sectionLabel}>{t('titleLabel')}</Text>
         <TextInput
