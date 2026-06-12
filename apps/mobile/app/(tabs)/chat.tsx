@@ -1076,11 +1076,7 @@ export default function ChatTab() {
               accessibilityRole="button"
             >
               <Text style={styles.activityPillText} numberOfLines={1}>
-                {i18n.t('cityActivity.events', {
-                  ns: 'chat', count: eventFeedItems.length,
-                  defaultValue_one: '🎉 {{count}} event',
-                  defaultValue: '🎉 {{count}} events',
-                })}
+                🎉 {eventFeedItems.length} {eventFeedItems.length === 1 ? 'Hi local' : 'Hi locals'}
               </Text>
               <Text style={styles.activityPillCta} numberOfLines={1}>→</Text>
             </TouchableOpacity>

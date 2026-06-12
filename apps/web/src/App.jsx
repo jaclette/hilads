@@ -4341,9 +4341,7 @@ export default function App() {
                 onClick={goToEventsTab}
               >
                 <span className="city-activity-pill-text">
-                  🎉 {events.length} {events.length === 1
-                    ? t('cityActivity.eventOne', { defaultValue: 'event' })
-                    : t('cityActivity.eventMany', { defaultValue: 'events' })}
+                  🎉 {events.length} {events.length === 1 ? 'Hi local' : 'Hi locals'}
                 </span>
                 <span className="city-activity-pill-cta">→</span>
               </button>
