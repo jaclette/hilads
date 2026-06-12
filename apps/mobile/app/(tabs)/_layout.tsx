@@ -39,10 +39,10 @@ type TabDef = {
 };
 
 const TABS: TabDef[] = [
-  { name: 'now',  label: 'Now',     icon: 'flame',    outline: 'flame-outline',    dot: null },
-  { name: 'chat', label: 'My city', icon: 'business', outline: 'business-outline', dot: null },
-  { name: 'here', label: 'Here',    icon: 'people',   outline: 'people-outline',   dot: null },
-  { name: 'me',   label: 'Me',      icon: 'person',   outline: 'person-outline',   dot: null },
+  { name: 'chat',       label: 'My city',    icon: 'home',   outline: 'home-outline',    dot: null },
+  { name: 'challenges', label: 'Challenges', icon: 'flame',  outline: 'flame-outline',   dot: null },
+  { name: 'events',     label: 'Events',     icon: 'balloon', outline: 'balloon-outline', dot: null },
+  { name: 'me',         label: 'Me',         icon: 'person', outline: 'person-outline',  dot: null },
 ];
 
 // ── Notification dot - absolute-positioned, top-right of icon box ─────────────
@@ -290,15 +290,18 @@ export default function TabsLayout() {
   return (
     <>
       <Tabs
-        initialRouteName={joined ? 'chat' : 'now'}
+        initialRouteName={joined ? 'chat' : 'events'}
         tabBar={props => <CustomTabBar {...props} />}
         screenOptions={{ headerShown: false }}
       >
-        {/* ── 4 primary tabs ─────────────────────────────────────────────── */}
-        <Tabs.Screen name="now"  options={{ title: 'Now' }} />
-        <Tabs.Screen name="chat" options={{ title: 'My city' }} />
+        {/* ── 4 primary tabs (MY CITY · CHALLENGES · EVENTS · ME) ─────────── */}
+        <Tabs.Screen name="chat"       options={{ title: 'My city' }} />
+        <Tabs.Screen name="challenges" options={{ title: 'Challenges' }} />
+        <Tabs.Screen name="events"     options={{ title: 'Events' }} />
+        <Tabs.Screen name="me"         options={{ title: 'Me' }} />
+        {/* HERE is off the bar but still a route - reached via the city
+            "nearby" pill (chat.tsx). Not in TABS, so no bottom-bar button. */}
         <Tabs.Screen name="here" options={{ title: 'Here' }} />
-        <Tabs.Screen name="me"   options={{ title: 'Me' }} />
       </Tabs>
 
       {/* First-time guest onboarding (auto-shown from chat.tsx; "?" reopens it). */}

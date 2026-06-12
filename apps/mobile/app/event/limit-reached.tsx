@@ -64,7 +64,7 @@ export default function EventLimitReachedScreen() {
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
-          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/now')}
+          onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/events')}
           activeOpacity={0.75}
         >
           <Ionicons name="chevron-back" size={20} color={Colors.text} />
@@ -99,7 +99,7 @@ export default function EventLimitReachedScreen() {
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryBtn}
-          onPress={() => router.replace('/(tabs)/now')}
+          onPress={() => router.replace('/(tabs)/events')}
           activeOpacity={0.85}
         >
           <Text style={styles.primaryBtnText}>{t('limit.backToNow')}</Text>

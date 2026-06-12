@@ -58,7 +58,7 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
     onClose();
     // NOW tab consumes ?filter=challenges on mount and pre-applies the
     // Challenges filter chip. Falls back to default 'all' if missing.
-    router.push('/(tabs)/now?filter=challenges' as never);
+    router.push('/(tabs)/challenges' as never);
   };
   const handleMostLocal = () => {
     onClose();

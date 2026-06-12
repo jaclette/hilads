@@ -139,27 +139,12 @@ export default function NowScreen() {
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
-  // ?filter=challenges|events|topics primes the initial selector when
-  // the user lands here from the city-chat activity pills (one pill per
-  // type). Anything else (no param, malformed) falls back to 'all' so
-  // a direct tap on the NOW tab keeps the full overview.
-  const filterParam = useLocalSearchParams<{ filter?: string }>().filter;
-  const initialFilter: 'all' | 'challenges' | 'events' | 'topics' =
-    filterParam === 'challenges' || filterParam === 'events' || filterParam === 'topics'
-      ? filterParam : 'all';
-  const [filter,        setFilter]        = useState<'all' | 'challenges' | 'events' | 'topics'>(initialFilter);
-  // Re-sync if the URL param changes (e.g. user taps another pill while
-  // already on this screen - router.push fires a new param without
-  // remounting). Doesn't touch the user's manual toggles.
-  const lastParamRef = useRef<string | undefined>(typeof filterParam === 'string' ? filterParam : undefined);
-  useEffect(() => {
-    const v = typeof filterParam === 'string' ? filterParam : undefined;
-    if (v === lastParamRef.current) return;
-    lastParamRef.current = v;
-    if (v === 'challenges' || v === 'events' || v === 'topics' || v === 'all') {
-      setFilter(v);
-    }
-  }, [filterParam]);
+  // Events tab → always the events view. Challenges moved to their own tab and
+  // Hangouts are dormant, so the memos below (which key off `filter`) naturally
+  // yield events-only: no challenges strip, no topic rows. Held in (never-set)
+  // state so its type stays the wide union — a plain `const … = 'events'` would
+  // be narrowed to the literal and trip TS's no-overlap check in those guards.
+  const [filter] = useState<'all' | 'challenges' | 'events' | 'topics'>('events');
   // Set of currently-visible challenge ids - drives the open-slot pulse
   // animation on ChallengeVersusCard. Updated by FlatList's
   // onViewableItemsChanged so off-screen cards stop redrawing and entry-
@@ -634,37 +619,10 @@ export default function NowScreen() {
       {/* Tab-specific title (sub-header) */}
       <View style={styles.header}>
         <View style={styles.headerCenter}>
-          <Text style={styles.headerTitle}>{t('nowTitle', { ns: 'common' })}</Text>
+          <Text style={styles.headerTitle}>{t('filterEvents', { ns: 'common' })}</Text>
           {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
-
-      {/* Filter pills - order: All → Challenges (new primary) → Hangouts → Events.
-          Spec: "Défi filter chip placed before Sortie and Événements".
-          Horizontally scrollable so longer locale labels (e.g. "Mga Challenge")
-          or future filters never clip on narrow screens. */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterBar}
-        contentContainerStyle={styles.filterBarContent}
-      >
-        {(['all', 'challenges', 'topics', 'events'] as const).map(f => (
-          <TouchableOpacity
-            key={f}
-            style={[styles.filterPill, filter === f && styles.filterPillActive]}
-            onPress={() => setFilter(f)}
-            activeOpacity={0.75}
-          >
-            <Text style={[styles.filterPillText, filter === f && styles.filterPillTextActive]}>
-              {f === 'all'        ? t('filterAll')
-                : f === 'challenges' ? t('filterChallenges')
-                : f === 'events'     ? t('filterEvents', { ns: 'common' })
-                :                      t('filterHangouts', { ns: 'common' })}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
 
       {loading && !refreshing ? (
         <View style={styles.center}>
@@ -800,38 +758,29 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Sticky bottom action - single horizontal row pinned above the tab bar.
-          [ See what's coming 🔮 ─────────────────────────── ] [+]
-          The + opens CreateSheet which picks between Create an event / Share a moment
-          (preserves both routes + analytics). Safe-area-aware via insets.bottom. */}
+      {/* Sticky bottom action - a single direct "Create an event" CTA (no
+          chooser, so no "Launch a challenge" here). "See what's coming" sits
+          below as a secondary. Safe-area-aware via insets.bottom. */}
       {city && (
         <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
-          <View style={styles.bottomActionsRow}>
-            <TouchableOpacity
-              style={styles.upcomingCta}
-              activeOpacity={0.75}
-              onPress={handleSeeUpcoming}
-            >
-              <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-              <Text style={styles.upcomingCtaText} numberOfLines={1}>{t('seeComing')}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.createFab}
-              activeOpacity={0.85}
-              onPress={() => setShowCreateSheet(true)}
-              accessibilityLabel={t('createNew')}
-              accessibilityRole="button"
-            >
-              <LinearGradient
-                colors={Gradients.primary.colors}
-                start={Gradients.primary.start}
-                end={Gradients.primary.end}
-                style={styles.createFabGradient}
-              />
-              <Ionicons name="add" size={28} color={Colors.white} />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.createEventCta}
+            activeOpacity={0.85}
+            onPress={handleHostSpot}
+            accessibilityLabel={t('create.eventLabel')}
+            accessibilityRole="button"
+          >
+            <Text style={styles.createEventCtaText}>🎉 {t('create.eventLabel')}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.upcomingCta}
+            activeOpacity={0.75}
+            onPress={handleSeeUpcoming}
+          >
+            <Text style={styles.upcomingCtaEmoji}>🔮</Text>
+            <Text style={styles.upcomingCtaText} numberOfLines={1}>{t('seeComing')}</Text>
+            <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
+          </TouchableOpacity>
           {/* Discreet archive entry - muted text link under the upcoming pill. */}
           <TouchableOpacity
             style={styles.pastLink}
@@ -843,14 +792,6 @@ export default function NowScreen() {
           </TouchableOpacity>
         </View>
       )}
-
-      <CreateSheet
-        visible={showCreateSheet}
-        onClose={() => setShowCreateSheet(false)}
-        onSelectChallenge={handleCreateChallenge}
-        onSelectEvent={handleHostSpot}
-        onSelectTopic={handleStartPulse}
-      />
 
       <MembersSheet
         visible={membersOpen}
@@ -1019,6 +960,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems:    'center',
     gap:           10,
+  },
+
+  // Primary "Create an event" CTA - orange-tinted, full width, opens event
+  // creation directly (no chooser). Mirrors the web events tab.
+  createEventCta: {
+    flexDirection:   'row',
+    alignItems:      'center',
+    justifyContent:  'center',
+    gap:             8,
+    paddingVertical: 14,
+    borderRadius:    14,
+    backgroundColor: 'rgba(255,122,60,0.16)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,122,60,0.35)',
+    marginBottom:    8,
+  },
+  createEventCtaText: {
+    color:      Colors.accent,
+    fontSize:   15,
+    fontWeight: '800',
   },
 
   // Wide pill on the left - orange-tinted, mirrors web .upcoming-cta.

@@ -11,6 +11,11 @@ export const WS_URL =
 export const BASE_URL =
   process.env.EXPO_PUBLIC_BASE_URL ?? 'https://hilads.live';
 
+// ── Feature flags ─────────────────────────────────────────────────────────────
+// Hangouts (topics) are put to sleep: hidden from the bar, feeds, and the
+// create sheet. Code stays in place and dormant - flip to true to revive.
+export const HANGOUTS_ENABLED = false;
+
 // ── Link builders ─────────────────────────────────────────────────────────────
 
 import { eventSlug } from '@/lib/eventSlug';

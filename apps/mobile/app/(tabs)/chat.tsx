@@ -728,7 +728,7 @@ export default function ChatTab() {
       } catch { /* fall through */ }
       router.push('/event/create');
     } else if (subtype === 'explore') {
-      router.push('/(tabs)/now');
+      router.push('/(tabs)/events');
     } else if (subtype === 'challenge-intro') {
       setShowChallengeIntro(true);
     }
@@ -1054,7 +1054,7 @@ export default function ChatTab() {
           {challengeFeedItems.length > 0 && (
             <TouchableOpacity
               style={[styles.activityPill, styles.activityPillHalf]}
-              onPress={() => router.push('/(tabs)/now?filter=challenges' as never)}
+              onPress={() => router.push('/(tabs)/challenges' as never)}
               activeOpacity={0.75}
               accessibilityRole="button"
             >
@@ -1071,7 +1071,7 @@ export default function ChatTab() {
           {eventFeedItems.length > 0 && (
             <TouchableOpacity
               style={[styles.activityPill, styles.activityPillHalf]}
-              onPress={() => router.push('/(tabs)/now?filter=events' as never)}
+              onPress={() => router.push('/(tabs)/events' as never)}
               activeOpacity={0.75}
               accessibilityRole="button"
             >

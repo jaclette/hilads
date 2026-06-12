@@ -14,5 +14,5 @@ import { useApp } from '@/context/AppContext';
  */
 export default function NotFound() {
   const { joined } = useApp();
-  return <Redirect href={joined ? '/(tabs)/chat' : '/(tabs)/now'} />;
+  return <Redirect href={joined ? '/(tabs)/chat' : '/(tabs)/events'} />;
 }

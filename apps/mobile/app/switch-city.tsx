@@ -244,7 +244,7 @@ export default function SwitchCityScreen() {
             if (router.canGoBack()) { router.back(); return; }
             if (!activeCity) {
               setJoined(false);
-              router.replace('/(tabs)/now');
+              router.replace('/(tabs)/events');
             } else {
               router.replace('/(tabs)/chat');
             }

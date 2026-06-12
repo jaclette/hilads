@@ -186,11 +186,11 @@ function resolveRoute(data: NotifData): string | null {
     case 'event_message':
     case 'event_join':
       if (data.eventId) return `/event/${data.eventId}`;
-      return '/(tabs)/now';
+      return '/(tabs)/events';
 
     case 'new_event':
       if (data.eventId) return `/event/${data.eventId}`;
-      return '/(tabs)/now';
+      return '/(tabs)/events';
 
     case 'mention':
       // Route to the message's context: event chat, pulse, or city chat.
@@ -201,7 +201,7 @@ function resolveRoute(data: NotifData): string | null {
     case 'topic_message':
     case 'new_topic':
       if (data.topicId) return `/topic/${data.topicId}`;
-      return '/(tabs)/now';
+      return '/(tabs)/events';
 
     case 'join_request':
       // Tapping the body (not an Accept/Decline action) opens the hangout, where

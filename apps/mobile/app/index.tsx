@@ -6,5 +6,5 @@ import { useApp } from '@/context/AppContext';
 // we redirect straight to chat - no intermediate hot-tab flash.
 export default function Index() {
   const { joined } = useApp();
-  return <Redirect href={joined ? '/(tabs)/chat' : '/(tabs)/now'} />;
+  return <Redirect href={joined ? '/(tabs)/chat' : '/(tabs)/events'} />;
 }
