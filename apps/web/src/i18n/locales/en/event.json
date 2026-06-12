@@ -5,7 +5,11 @@
     "vibeTitle": "Share this vibe",
     "eventAria": "Share event"
   },
-  "title": { "edit": "Edit event", "host": "Host an event", "create": "Create event" },
+  "title": {
+    "edit": "Edit event",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Delete this event?",
     "confirmBody": "This will remove the event and all messages. This can't be undone.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Quick start",
   "presets": {
-    "dailySpot": "Daily spot", "dailySpotDesc": "Every day",
-    "everyEvening": "Every evening", "everyEveningDesc": "Daily · 8pm",
-    "weekends": "Weekends", "weekendsDesc": "Sat & Sun"
+    "dailySpot": "Daily spot",
+    "dailySpotDesc": "Every day",
+    "everyEvening": "Every evening",
+    "everyEveningDesc": "Daily · 8pm",
+    "weekends": "Weekends",
+    "weekendsDesc": "Sat & Sun"
   },
   "category": "Category",
   "categories": {
-    "drinks": "Drinks", "party": "Party", "music": "Music", "food": "Food",
-    "coffee": "Coffee", "sport": "Sport", "meetup": "Meetup", "other": "Other"
+    "drinks": "Drinks",
+    "party": "Party",
+    "music": "Music",
+    "food": "Food",
+    "coffee": "Coffee",
+    "sport": "Sport",
+    "meetup": "Meetup",
+    "other": "Other"
   },
   "titleLabel": "Title",
   "titlePlaceholder": "e.g. Jazz night at Rooftop Bar",
@@ -34,8 +47,21 @@
   "starts": "Starts",
   "ends": "Ends",
   "repeat": "Repeat",
-  "recurrence": { "once": "Once", "daily": "Daily", "weekly": "Weekly", "everyNDays": "Every N days" },
-  "weekdays": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  "recurrence": {
+    "once": "Once",
+    "daily": "Daily",
+    "weekly": "Weekly",
+    "everyNDays": "Every N days"
+  },
+  "weekdays": [
+    "Sun",
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat"
+  ],
   "intervalEvery": "Every",
   "intervalDays": "days",
   "location": "Location",
@@ -50,9 +76,17 @@
     "locFailed": "Couldn't get your location. Enable location access, or skip the map."
   },
   "submit": {
-    "saving": "Saving…", "creating": "Creating…",
-    "saveChanges": "Save changes", "openSpot": "Open your spot",
-    "startEvent": "Start an event", "create": "Create event"
+    "saving": "Saving…",
+    "creating": "Creating…",
+    "saveChanges": "Save changes",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Every day","weekly":"Weekly","everyNDays_one":"Every {{count}} day","everyNDays_other":"Every {{count}} days"}
+  "recur": {
+    "everyday": "Every day",
+    "weekly": "Weekly",
+    "everyNDays_one": "Every {{count}} day",
+    "everyNDays_other": "Every {{count}} days"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "startTitle": "Start een meetup",
+  "startTitle": "Hi now",
   "editTitle": "Meetup bewerken",
   "category": "Categorie",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Details toevoegen",
   "optional": "(optioneel)",
   "detailsPlaceholder": "Geef er wat context bij…",
-  "expiry": "⏱ Verloopt automatisch over 24 u",
+  "expiry": "⏱ Verloopt automatisch over 8 u",
   "saveChanges": "Opslaan",
-  "startCta": "Start een meetup 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Opslaan mislukt",
   "errStart": "Meetup starten mislukt",
   "yourHangout": "je meetup",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Gesprek op Hilads",
   "shareMessage": "Nieuw gesprek: \"{{title}}\" - doe mee op Hilads.",
   "shareMessageFallback": "Doe mee aan het gesprek op Hilads.",
-  "activeFor": "24 u actief",
+  "activeFor": "8 u actief",
   "edit": "Bewerken",
   "delete": "Verwijderen",
   "notFound": "Meetup niet gevonden of verlopen",

@@ -1,6 +1,6 @@
 {
-  "createTitle": "Event erstellen",
-  "hostTitle": "Ein Event hosten",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "SCHNELLSTART",
   "category": "KATEGORIE",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sa & So"
     }
   },
-  "submitCreate": "Event erstellen",
-  "submitStart": "Ein Event starten",
-  "submitOpenSpot": "Öffne deinen Spot",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Keine Stadt ausgewählt",
   "errTitle": "Titel ist erforderlich",
   "errDuration": "Das Event muss mindestens 15 Minuten dauern",

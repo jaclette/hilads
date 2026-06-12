@@ -1,5 +1,5 @@
 {
-  "startTitle": "Start a hangout",
+  "startTitle": "Hi now",
   "editTitle": "Edit hangout",
   "category": "Category",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Add details",
   "optional": "(optional)",
   "detailsPlaceholder": "Give it some context…",
-  "expiry": "⏱ Auto-expires in 24 h",
+  "expiry": "⏱ Auto-expires in 8 h",
   "saveChanges": "Save changes",
-  "startCta": "Start a hangout 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Failed to save changes",
   "errStart": "Failed to start hangout",
   "yourHangout": "your hangout",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversation on Hilads",
   "shareMessage": "New conversation: \"{{title}}\" - jump in on Hilads.",
   "shareMessageFallback": "Jump into the conversation on Hilads.",
-  "activeFor": "Active for 24 h",
+  "activeFor": "Active for 8 h",
   "edit": "Edit",
   "delete": "Delete",
   "notFound": "Hangout not found or expired",

@@ -5,7 +5,11 @@
     "vibeTitle": "شارك هذا الـvibe",
     "eventAria": "مشاركة الفعالية"
   },
-  "title": { "edit": "تعديل الفعالية", "host": "استضف فعالية", "create": "إنشاء فعالية" },
+  "title": {
+    "edit": "تعديل الفعالية",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "حذف هذه الفعالية؟",
     "confirmBody": "سيؤدي هذا إلى إزالة الفعالية وجميع الرسائل. لا يمكن التراجع عن هذا.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "بداية سريعة",
   "presets": {
-    "dailySpot": "spot يومي", "dailySpotDesc": "كل يوم",
-    "everyEvening": "كل مساء", "everyEveningDesc": "يوميًا · 8 مساءً",
-    "weekends": "عطلات نهاية الأسبوع", "weekendsDesc": "السبت والأحد"
+    "dailySpot": "spot يومي",
+    "dailySpotDesc": "كل يوم",
+    "everyEvening": "كل مساء",
+    "everyEveningDesc": "يوميًا · 8 مساءً",
+    "weekends": "عطلات نهاية الأسبوع",
+    "weekendsDesc": "السبت والأحد"
   },
   "category": "الفئة",
   "categories": {
-    "drinks": "مشروبات", "party": "حفلة", "music": "موسيقى", "food": "طعام",
-    "coffee": "قهوة", "sport": "رياضة", "meetup": "لقاء", "other": "أخرى"
+    "drinks": "مشروبات",
+    "party": "حفلة",
+    "music": "موسيقى",
+    "food": "طعام",
+    "coffee": "قهوة",
+    "sport": "رياضة",
+    "meetup": "لقاء",
+    "other": "أخرى"
   },
   "titleLabel": "العنوان",
   "titlePlaceholder": "مثال: ليلة جاز في Rooftop Bar",
@@ -34,8 +47,21 @@
   "starts": "يبدأ",
   "ends": "ينتهي",
   "repeat": "تكرار",
-  "recurrence": { "once": "مرة واحدة", "daily": "يوميًا", "weekly": "أسبوعيًا", "everyNDays": "كل N يوم" },
-  "weekdays": ["أحد", "إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت"],
+  "recurrence": {
+    "once": "مرة واحدة",
+    "daily": "يوميًا",
+    "weekly": "أسبوعيًا",
+    "everyNDays": "كل N يوم"
+  },
+  "weekdays": [
+    "أحد",
+    "إثنين",
+    "ثلاثاء",
+    "أربعاء",
+    "خميس",
+    "جمعة",
+    "سبت"
+  ],
   "intervalEvery": "كل",
   "intervalDays": "أيام",
   "location": "الموقع",
@@ -50,9 +76,21 @@
     "locFailed": "تعذّر الحصول على موقعك. فعّل الوصول إلى الموقع، أو تخطَّ الخريطة."
   },
   "submit": {
-    "saving": "جارٍ الحفظ…", "creating": "جارٍ الإنشاء…",
-    "saveChanges": "حفظ التغييرات", "openSpot": "افتح spot الخاص بك",
-    "startEvent": "ابدأ فعالية", "create": "إنشاء فعالية"
+    "saving": "جارٍ الحفظ…",
+    "creating": "جارٍ الإنشاء…",
+    "saveChanges": "حفظ التغييرات",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"كل يوم","weekly":"أسبوعيًا","everyNDays_zero":"كل {{count}} يوم","everyNDays_one":"كل يوم","everyNDays_two":"كل يومين","everyNDays_few":"كل {{count}} أيام","everyNDays_many":"كل {{count}} يومًا","everyNDays_other":"كل {{count}} يوم"}
+  "recur": {
+    "everyday": "كل يوم",
+    "weekly": "أسبوعيًا",
+    "everyNDays_zero": "كل {{count}} يوم",
+    "everyNDays_one": "كل يوم",
+    "everyNDays_two": "كل يومين",
+    "everyNDays_few": "كل {{count}} أيام",
+    "everyNDays_many": "كل {{count}} يومًا",
+    "everyNDays_other": "كل {{count}} يوم"
+  }
 }

@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Iniciar um convívio",
+    "startTitle": "Hi now",
     "editTitle": "Editar o convívio",
     "category": "Categoria",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Adicionar detalhes",
     "optional": "(opcional)",
     "detailsPlaceholder": "Dá-lhe algum contexto…",
-    "expiry": "⏱ Expira em 24 h",
+    "expiry": "⏱ Expira em 8 h",
     "saving": "A guardar…",
     "starting": "A iniciar…",
     "saveChanges": "Guardar alterações",
-    "startCta": "Iniciar um convívio 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Um de cada vez",
     "limitTitle": "Já tens um convívio",
     "limitSub": "Só podes ter um convívio de cada vez. Vai a «{{title}}» ou elimina-o para iniciar um novo.",

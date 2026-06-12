@@ -1,5 +1,5 @@
 {
-  "startTitle": "เริ่มนัดเจอ",
+  "startTitle": "Hi now",
   "editTitle": "แก้ไขนัดเจอ",
   "category": "หมวดหมู่",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "เพิ่มรายละเอียด",
   "optional": "(ไม่บังคับ)",
   "detailsPlaceholder": "ใส่บริบทสักหน่อย…",
-  "expiry": "⏱ หมดอายุอัตโนมัติใน 24 ชม.",
+  "expiry": "⏱ หมดอายุอัตโนมัติใน 8 ชม.",
   "saveChanges": "บันทึก",
-  "startCta": "เริ่มนัดเจอ 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "บันทึกการเปลี่ยนแปลงไม่สำเร็จ",
   "errStart": "เริ่มนัดเจอไม่สำเร็จ",
   "yourHangout": "นัดเจอของคุณ",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "การสนทนาบน Hilads",
   "shareMessage": "การสนทนาใหม่: \"{{title}}\" - เข้าร่วมบน Hilads",
   "shareMessageFallback": "เข้าร่วมการสนทนาบน Hilads",
-  "activeFor": "ใช้งานได้ 24 ชม.",
+  "activeFor": "ใช้งานได้ 8 ชม.",
   "edit": "แก้ไข",
   "delete": "ลบ",
   "notFound": "ไม่พบนัดเจอหรือหมดอายุแล้ว",

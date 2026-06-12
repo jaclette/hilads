@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "ابدأ لقاءً",
+    "startTitle": "Hi now",
     "editTitle": "تعديل اللقاء",
     "category": "الفئة",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "أضف تفاصيل",
     "optional": "(اختياري)",
     "detailsPlaceholder": "أعطِ بعض السياق…",
-    "expiry": "⏱ ينتهي تلقائيًا خلال 24 س",
+    "expiry": "⏱ ينتهي تلقائيًا خلال 8 س",
     "saving": "جارٍ الحفظ…",
     "starting": "جارٍ البدء…",
     "saveChanges": "حفظ التغييرات",
-    "startCta": "ابدأ لقاءً 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "واحد في كل مرة",
     "limitTitle": "لديك لقاء بالفعل",
     "limitSub": "يمكنك تشغيل لقاء واحد في كل مرة. توجّه إلى «{{title}}»، أو احذفه لبدء واحد جديد.",

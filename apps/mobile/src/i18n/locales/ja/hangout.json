@@ -1,5 +1,5 @@
 {
-  "startTitle": "集まりを始める",
+  "startTitle": "Hi now",
   "editTitle": "集まりを編集",
   "category": "カテゴリー",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "詳細を追加",
   "optional": "（任意）",
   "detailsPlaceholder": "少し背景を書いてみよう…",
-  "expiry": "⏱ 24時間で自動的に期限切れ",
+  "expiry": "⏱ 8時間で自動的に期限切れ",
   "saveChanges": "変更を保存",
-  "startCta": "集まりを始める 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "変更の保存に失敗しました",
   "errStart": "集まりを始められませんでした",
   "yourHangout": "あなたの集まり",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Hiladsでの会話",
   "shareMessage": "新しい会話：「{{title}}」 - Hiladsで参加しよう。",
   "shareMessageFallback": "Hiladsで会話に参加しよう。",
-  "activeFor": "24時間アクティブ",
+  "activeFor": "8時間アクティブ",
   "edit": "編集",
   "delete": "削除",
   "notFound": "集まりが見つからないか期限切れです",

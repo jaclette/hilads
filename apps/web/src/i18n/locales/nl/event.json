@@ -5,7 +5,11 @@
     "vibeTitle": "Deel deze vibe",
     "eventAria": "Evenement delen"
   },
-  "title": { "edit": "Evenement bewerken", "host": "Organiseer een evenement", "create": "Evenement maken" },
+  "title": {
+    "edit": "Evenement bewerken",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Dit evenement verwijderen?",
     "confirmBody": "Hiermee verwijder je het evenement en alle berichten. Dit kan niet ongedaan worden gemaakt.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Snel starten",
   "presets": {
-    "dailySpot": "Dagelijkse spot", "dailySpotDesc": "Elke dag",
-    "everyEvening": "Elke avond", "everyEveningDesc": "Dagelijks · 20:00",
-    "weekends": "Weekenden", "weekendsDesc": "Za & zo"
+    "dailySpot": "Dagelijkse spot",
+    "dailySpotDesc": "Elke dag",
+    "everyEvening": "Elke avond",
+    "everyEveningDesc": "Dagelijks · 20:00",
+    "weekends": "Weekenden",
+    "weekendsDesc": "Za & zo"
   },
   "category": "Categorie",
   "categories": {
-    "drinks": "Borrelen", "party": "Feest", "music": "Muziek", "food": "Eten",
-    "coffee": "Koffie", "sport": "Sport", "meetup": "Meetup", "other": "Overig"
+    "drinks": "Borrelen",
+    "party": "Feest",
+    "music": "Muziek",
+    "food": "Eten",
+    "coffee": "Koffie",
+    "sport": "Sport",
+    "meetup": "Meetup",
+    "other": "Overig"
   },
   "titleLabel": "Titel",
   "titlePlaceholder": "bijv. Jazzavond op het dakterras",
@@ -34,8 +47,21 @@
   "starts": "Begint",
   "ends": "Eindigt",
   "repeat": "Herhalen",
-  "recurrence": { "once": "Eenmalig", "daily": "Dagelijks", "weekly": "Wekelijks", "everyNDays": "Om de N dagen" },
-  "weekdays": ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"],
+  "recurrence": {
+    "once": "Eenmalig",
+    "daily": "Dagelijks",
+    "weekly": "Wekelijks",
+    "everyNDays": "Om de N dagen"
+  },
+  "weekdays": [
+    "Zo",
+    "Ma",
+    "Di",
+    "Wo",
+    "Do",
+    "Vr",
+    "Za"
+  ],
   "intervalEvery": "Om de",
   "intervalDays": "dagen",
   "location": "Locatie",
@@ -50,9 +76,17 @@
     "locFailed": "Je locatie kon niet worden opgehaald. Schakel locatietoegang in of sla de kaart over."
   },
   "submit": {
-    "saving": "Opslaan…", "creating": "Maken…",
-    "saveChanges": "Wijzigingen opslaan", "openSpot": "Open je spot",
-    "startEvent": "Start een evenement", "create": "Evenement maken"
+    "saving": "Opslaan…",
+    "creating": "Maken…",
+    "saveChanges": "Wijzigingen opslaan",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Elke dag","weekly":"Wekelijks","everyNDays_one":"Om de {{count}} dag","everyNDays_other":"Om de {{count}} dagen"}
+  "recur": {
+    "everyday": "Elke dag",
+    "weekly": "Wekelijks",
+    "everyNDays_one": "Om de {{count}} dag",
+    "everyNDays_other": "Om de {{count}} dagen"
+  }
 }

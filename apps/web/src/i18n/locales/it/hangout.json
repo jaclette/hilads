@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Lancia un ritrovo",
+    "startTitle": "Hi now",
     "editTitle": "Modifica il ritrovo",
     "category": "Categoria",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Aggiungi dettagli",
     "optional": "(facoltativo)",
     "detailsPlaceholder": "Dai un po' di contesto…",
-    "expiry": "⏱ Scade tra 24 h",
+    "expiry": "⏱ Scade tra 8 h",
     "saving": "Salvataggio…",
     "starting": "Avvio…",
     "saveChanges": "Salva",
-    "startCta": "Lancia un ritrovo 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Uno alla volta",
     "limitTitle": "Hai già un ritrovo",
     "limitSub": "Puoi avere un solo ritrovo alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",

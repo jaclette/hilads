@@ -5294,7 +5294,7 @@ export default function App() {
                 className="hilocal-cta hilocal-cta--now"
                 onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
               >
-                🔥 {t('feed.hiNow')}
+                🗣️ {t('feed.hiNow')}
               </button>
               <button
                 className="hilocal-cta hilocal-cta--later"

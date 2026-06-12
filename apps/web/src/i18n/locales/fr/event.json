@@ -5,7 +5,11 @@
     "vibeTitle": "Partager ce vibe",
     "eventAria": "Partager l'événement"
   },
-  "title": { "edit": "Modifier l'événement", "host": "Organise un événement", "create": "Créer un événement" },
+  "title": {
+    "edit": "Modifier l'événement",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Supprimer cet événement ?",
     "confirmBody": "Cela supprimera l'événement et tous les messages. C'est irréversible.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Démarrage rapide",
   "presets": {
-    "dailySpot": "Spot quotidien", "dailySpotDesc": "Tous les jours",
-    "everyEvening": "Tous les soirs", "everyEveningDesc": "Chaque jour · 20h",
-    "weekends": "Week-ends", "weekendsDesc": "Sam. & dim."
+    "dailySpot": "Spot quotidien",
+    "dailySpotDesc": "Tous les jours",
+    "everyEvening": "Tous les soirs",
+    "everyEveningDesc": "Chaque jour · 20h",
+    "weekends": "Week-ends",
+    "weekendsDesc": "Sam. & dim."
   },
   "category": "Catégorie",
   "categories": {
-    "drinks": "Boissons", "party": "Fête", "music": "Musique", "food": "Cuisine",
-    "coffee": "Café", "sport": "Sport", "meetup": "Rencontre", "other": "Autre"
+    "drinks": "Boissons",
+    "party": "Fête",
+    "music": "Musique",
+    "food": "Cuisine",
+    "coffee": "Café",
+    "sport": "Sport",
+    "meetup": "Rencontre",
+    "other": "Autre"
   },
   "titleLabel": "Titre",
   "titlePlaceholder": "ex. Soirée jazz au Rooftop Bar",
@@ -34,8 +47,21 @@
   "starts": "Début",
   "ends": "Fin",
   "repeat": "Répéter",
-  "recurrence": { "once": "Une fois", "daily": "Chaque jour", "weekly": "Chaque semaine", "everyNDays": "Tous les N jours" },
-  "weekdays": ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"],
+  "recurrence": {
+    "once": "Une fois",
+    "daily": "Chaque jour",
+    "weekly": "Chaque semaine",
+    "everyNDays": "Tous les N jours"
+  },
+  "weekdays": [
+    "Dim",
+    "Lun",
+    "Mar",
+    "Mer",
+    "Jeu",
+    "Ven",
+    "Sam"
+  ],
   "intervalEvery": "Tous les",
   "intervalDays": "jours",
   "location": "Lieu",
@@ -50,9 +76,17 @@
     "locFailed": "Impossible d'obtenir ta position. Active la localisation, ou passe la carte."
   },
   "submit": {
-    "saving": "Enregistrement…", "creating": "Création…",
-    "saveChanges": "Enregistrer", "openSpot": "Ouvre ton spot",
-    "startEvent": "Lancer un événement", "create": "Créer un événement"
+    "saving": "Enregistrement…",
+    "creating": "Création…",
+    "saveChanges": "Enregistrer",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Tous les jours","weekly":"Hebdomadaire","everyNDays_one":"Tous les {{count}} jour","everyNDays_other":"Tous les {{count}} jours"}
+  "recur": {
+    "everyday": "Tous les jours",
+    "weekly": "Hebdomadaire",
+    "everyNDays_one": "Tous les {{count}} jour",
+    "everyNDays_other": "Tous les {{count}} jours"
+  }
 }

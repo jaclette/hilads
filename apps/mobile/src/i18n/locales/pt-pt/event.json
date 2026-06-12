@@ -1,6 +1,6 @@
 {
-  "createTitle": "Criar um evento",
-  "hostTitle": "Organizar um evento",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "INÍCIO RÁPIDO",
   "category": "CATEGORIA",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sáb e Dom"
     }
   },
-  "submitCreate": "Criar um evento",
-  "submitStart": "Começar um evento",
-  "submitOpenSpot": "Abre o teu sítio",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Nenhuma cidade selecionada",
   "errTitle": "O título é obrigatório",
   "errDuration": "O evento deve durar pelo menos 15 minutos",

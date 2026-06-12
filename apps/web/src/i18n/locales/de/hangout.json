@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Ein Treffen starten",
+    "startTitle": "Hi now",
     "editTitle": "Treffen bearbeiten",
     "category": "Kategorie",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Details hinzufügen",
     "optional": "(optional)",
     "detailsPlaceholder": "Gib etwas Kontext…",
-    "expiry": "⏱ Läuft automatisch in 24 Std. ab",
+    "expiry": "⏱ Läuft automatisch in 8 Std. ab",
     "saving": "Wird gespeichert…",
     "starting": "Wird gestartet…",
     "saveChanges": "Änderungen speichern",
-    "startCta": "Ein Treffen starten 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Eins nach dem anderen",
     "limitTitle": "Du hast bereits ein Treffen",
     "limitSub": "Du kannst nur ein Treffen gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch es, um ein neues zu starten.",

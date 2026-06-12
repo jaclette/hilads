@@ -1,5 +1,5 @@
 {
-  "startTitle": "發起聚會",
+  "startTitle": "Hi now",
   "editTitle": "編輯聚會",
   "category": "類別",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "新增詳細資訊",
   "optional": "（選填）",
   "detailsPlaceholder": "補充一點背景…",
-  "expiry": "⏱ 24 小時後自動到期",
+  "expiry": "⏱ 8 小時後自動到期",
   "saveChanges": "儲存變更",
-  "startCta": "發起聚會 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "儲存變更失敗",
   "errStart": "無法發起聚會",
   "yourHangout": "你的聚會",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Hilads 上的對話",
   "shareMessage": "新對話：「{{title}}」 - 在 Hilads 加入吧。",
   "shareMessageFallback": "在 Hilads 加入這場對話吧。",
-  "activeFor": "活躍 24 小時",
+  "activeFor": "活躍 8 小時",
   "edit": "編輯",
   "delete": "刪除",
   "notFound": "找不到聚會或已到期",

@@ -1,6 +1,6 @@
 {
-  "createTitle": "إنشاء فعالية",
-  "hostTitle": "استضافة فعالية",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "بداية سريعة",
   "category": "الفئة",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "السبت والأحد"
     }
   },
-  "submitCreate": "إنشاء فعالية",
-  "submitStart": "بدء فعالية",
-  "submitOpenSpot": "افتح مكانك",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "لم يتم اختيار مدينة",
   "errTitle": "العنوان مطلوب",
   "errDuration": "يجب أن تستمر الفعالية 15 دقيقة على الأقل",

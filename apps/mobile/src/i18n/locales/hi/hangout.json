@@ -1,5 +1,5 @@
 {
-  "startTitle": "एक मुलाक़ात शुरू करें",
+  "startTitle": "Hi now",
   "editTitle": "मुलाक़ात एडिट करें",
   "category": "कैटेगरी",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "विवरण जोड़ें",
   "optional": "(वैकल्पिक)",
   "detailsPlaceholder": "थोड़ा संदर्भ दें…",
-  "expiry": "⏱ 24 घंटे में अपने-आप समाप्त",
+  "expiry": "⏱ 8 घंटे में अपने-आप समाप्त",
   "saveChanges": "सेव करें",
-  "startCta": "एक मुलाक़ात शुरू करें 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "बदलाव सेव नहीं हो सके",
   "errStart": "मुलाक़ात शुरू नहीं हो सकी",
   "yourHangout": "आपकी मुलाक़ात",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Hilads पर बातचीत",
   "shareMessage": "नई बातचीत: \"{{title}}\" - Hilads पर शामिल हों।",
   "shareMessageFallback": "Hilads पर बातचीत में शामिल हों।",
-  "activeFor": "24 घंटे तक ऐक्टिव",
+  "activeFor": "8 घंटे तक ऐक्टिव",
   "edit": "एडिट करें",
   "delete": "डिलीट करें",
   "notFound": "मुलाक़ात नहीं मिली या समाप्त हो गई",

@@ -1,6 +1,6 @@
 {
-  "createTitle": "Gumawa ng event",
-  "hostTitle": "Mag-host ng event",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "QUICK START",
   "category": "CATEGORY",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sab at Lin"
     }
   },
-  "submitCreate": "Gumawa ng event",
-  "submitStart": "Magsimula ng event",
-  "submitOpenSpot": "Buksan ang spot mo",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Walang piniling lungsod",
   "errTitle": "Kailangan ang title",
   "errDuration": "Dapat hindi bababa sa 15 minuto ang event",

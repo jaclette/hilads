@@ -1,5 +1,5 @@
 {
-  "startTitle": "Começar um convívio",
+  "startTitle": "Hi now",
   "editTitle": "Editar o convívio",
   "category": "Categoria",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Adiciona detalhes",
   "optional": "(opcional)",
   "detailsPlaceholder": "Dá-lhe algum contexto…",
-  "expiry": "⏱ Expira automaticamente em 24 h",
+  "expiry": "⏱ Expira automaticamente em 8 h",
   "saveChanges": "Guardar",
-  "startCta": "Começar um convívio 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Falha ao guardar",
   "errStart": "Não foi possível começar o convívio",
   "yourHangout": "o teu convívio",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversa no Hilads",
   "shareMessage": "Nova conversa: \"{{title}}\" - entra no Hilads.",
   "shareMessageFallback": "Entra na conversa no Hilads.",
-  "activeFor": "Ativo durante 24 h",
+  "activeFor": "Ativo durante 8 h",
   "edit": "Editar",
   "delete": "Eliminar",
   "notFound": "Convívio não encontrado ou expirado",

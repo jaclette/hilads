@@ -5,7 +5,11 @@
     "vibeTitle": "इस vibe को शेयर करें",
     "eventAria": "इवेंट शेयर करें"
   },
-  "title": { "edit": "इवेंट एडिट करें", "host": "इवेंट होस्ट करें", "create": "इवेंट बनाएं" },
+  "title": {
+    "edit": "इवेंट एडिट करें",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "यह इवेंट हटाएं?",
     "confirmBody": "इससे इवेंट और सारे मैसेज हट जाएंगे। इसे वापस नहीं किया जा सकता।",
@@ -16,14 +20,23 @@
   },
   "quickStart": "क्विक स्टार्ट",
   "presets": {
-    "dailySpot": "डेली spot", "dailySpotDesc": "हर दिन",
-    "everyEvening": "हर शाम", "everyEveningDesc": "रोज़ · रात 8 बजे",
-    "weekends": "वीकेंड", "weekendsDesc": "शनि और रवि"
+    "dailySpot": "डेली spot",
+    "dailySpotDesc": "हर दिन",
+    "everyEvening": "हर शाम",
+    "everyEveningDesc": "रोज़ · रात 8 बजे",
+    "weekends": "वीकेंड",
+    "weekendsDesc": "शनि और रवि"
   },
   "category": "श्रेणी",
   "categories": {
-    "drinks": "ड्रिंक्स", "party": "पार्टी", "music": "संगीत", "food": "खाना",
-    "coffee": "कॉफ़ी", "sport": "खेल", "meetup": "मीटअप", "other": "अन्य"
+    "drinks": "ड्रिंक्स",
+    "party": "पार्टी",
+    "music": "संगीत",
+    "food": "खाना",
+    "coffee": "कॉफ़ी",
+    "sport": "खेल",
+    "meetup": "मीटअप",
+    "other": "अन्य"
   },
   "titleLabel": "टाइटल",
   "titlePlaceholder": "जैसे रूफ़टॉप बार में जैज़ नाइट",
@@ -34,8 +47,21 @@
   "starts": "शुरू",
   "ends": "खत्म",
   "repeat": "दोहराएं",
-  "recurrence": { "once": "एक बार", "daily": "रोज़", "weekly": "हर हफ़्ते", "everyNDays": "हर N दिन" },
-  "weekdays": ["रवि", "सोम", "मंगल", "बुध", "गुरु", "शुक्र", "शनि"],
+  "recurrence": {
+    "once": "एक बार",
+    "daily": "रोज़",
+    "weekly": "हर हफ़्ते",
+    "everyNDays": "हर N दिन"
+  },
+  "weekdays": [
+    "रवि",
+    "सोम",
+    "मंगल",
+    "बुध",
+    "गुरु",
+    "शुक्र",
+    "शनि"
+  ],
   "intervalEvery": "हर",
   "intervalDays": "दिन",
   "location": "लोकेशन",
@@ -50,9 +76,17 @@
     "locFailed": "आपकी लोकेशन नहीं ली जा सकी। लोकेशन एक्सेस ऑन करें, या मैप छोड़ दें।"
   },
   "submit": {
-    "saving": "सेव हो रहा है…", "creating": "बन रहा है…",
-    "saveChanges": "बदलाव सेव करें", "openSpot": "अपना spot खोलें",
-    "startEvent": "इवेंट शुरू करें", "create": "इवेंट बनाएं"
+    "saving": "सेव हो रहा है…",
+    "creating": "बन रहा है…",
+    "saveChanges": "बदलाव सेव करें",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"हर दिन","weekly":"हर हफ़्ते","everyNDays_one":"हर {{count}} दिन","everyNDays_other":"हर {{count}} दिन"}
+  "recur": {
+    "everyday": "हर दिन",
+    "weekly": "हर हफ़्ते",
+    "everyNDays_one": "हर {{count}} दिन",
+    "everyNDays_other": "हर {{count}} दिन"
+  }
 }

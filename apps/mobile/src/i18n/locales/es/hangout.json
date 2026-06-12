@@ -1,5 +1,5 @@
 {
-  "startTitle": "Lanzar una quedada",
+  "startTitle": "Hi now",
   "editTitle": "Editar la quedada",
   "category": "Categoría",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Añade detalles",
   "optional": "(opcional)",
   "detailsPlaceholder": "Da un poco de contexto…",
-  "expiry": "⏱ Caduca en 24 h",
+  "expiry": "⏱ Caduca en 8 h",
   "saveChanges": "Guardar",
-  "startCta": "Lanzar una quedada 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Error al guardar",
   "errStart": "No se pudo lanzar la quedada",
   "yourHangout": "tu quedada",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversación en Hilads",
   "shareMessage": "Nueva conversación: «{{title}}» - únete en Hilads.",
   "shareMessageFallback": "Únete a la conversación en Hilads.",
-  "activeFor": "Activo durante 24 h",
+  "activeFor": "Activo durante 8 h",
   "edit": "Editar",
   "delete": "Eliminar",
   "notFound": "Quedada no encontrada o caducada",

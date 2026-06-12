@@ -1,6 +1,6 @@
 {
-  "createTitle": "Buat acara",
-  "hostTitle": "Jadi host acara",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "MULAI CEPAT",
   "category": "KATEGORI",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sab & Min"
     }
   },
-  "submitCreate": "Buat acara",
-  "submitStart": "Mulai acara",
-  "submitOpenSpot": "Buka spot-mu",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Belum ada kota dipilih",
   "errTitle": "Judul wajib diisi",
   "errDuration": "Acara harus berlangsung minimal 15 menit",

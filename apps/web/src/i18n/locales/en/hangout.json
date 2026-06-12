@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Start a hangout",
+    "startTitle": "Hi now",
     "editTitle": "Edit hangout",
     "category": "Category",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Add details",
     "optional": "(optional)",
     "detailsPlaceholder": "Give it some context…",
-    "expiry": "⏱ Auto-expires in 24 h",
+    "expiry": "⏱ Auto-expires in 8 h",
     "saving": "Saving…",
     "starting": "Starting…",
     "saveChanges": "Save changes",
-    "startCta": "Start a hangout 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "One at a time",
     "limitTitle": "You already have a hangout",
     "limitSub": "You can run one hangout at a time. Head to “{{title}}”, or delete it to start a new one.",

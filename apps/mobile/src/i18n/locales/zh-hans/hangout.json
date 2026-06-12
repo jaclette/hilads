@@ -1,5 +1,5 @@
 {
-  "startTitle": "发起一个聚会",
+  "startTitle": "Hi now",
   "editTitle": "编辑聚会",
   "category": "类别",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "添加详情",
   "optional": "（可选）",
   "detailsPlaceholder": "补充一些背景…",
-  "expiry": "⏱ 24 小时后自动到期",
+  "expiry": "⏱ 8 小时后自动到期",
   "saveChanges": "保存",
-  "startCta": "发起一个聚会 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "保存失败",
   "errStart": "无法发起聚会",
   "yourHangout": "你的聚会",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Hilads 上的对话",
   "shareMessage": "新对话：“{{title}}” - 在 Hilads 上加入吧。",
   "shareMessageFallback": "在 Hilads 上加入对话。",
-  "activeFor": "活跃 24 小时",
+  "activeFor": "活跃 8 小时",
   "edit": "编辑",
   "delete": "删除",
   "notFound": "未找到聚会或已到期",

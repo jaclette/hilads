@@ -1,6 +1,6 @@
 {
-  "createTitle": "Создать событие",
-  "hostTitle": "Провести событие",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "БЫСТРЫЙ СТАРТ",
   "category": "КАТЕГОРИЯ",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Сб и Вс"
     }
   },
-  "submitCreate": "Создать событие",
-  "submitStart": "Запустить событие",
-  "submitOpenSpot": "Открой своё место",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Город не выбран",
   "errTitle": "Название обязательно",
   "errDuration": "Событие должно длиться не менее 15 минут",

@@ -6405,13 +6405,20 @@ img.pub-profile-avatar {
   gap: 8px;
   align-items: stretch;
 }
-.hilocal-cta-row { display: flex; gap: 8px; }
+.hilocal-cta-row { display: flex; gap: 8px; align-items: stretch; }
 .hilocal-cta {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 13px 12px;
   border-radius: 14px;
   font-size: 0.95rem;
   font-weight: 700;
+  white-space: nowrap;
+  text-align: center;
   cursor: pointer;
   border: 1px solid;
   background: transparent;

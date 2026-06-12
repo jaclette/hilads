@@ -5,7 +5,11 @@
     "vibeTitle": "Chia sẻ vibe này",
     "eventAria": "Chia sẻ sự kiện"
   },
-  "title": { "edit": "Sửa sự kiện", "host": "Tổ chức sự kiện", "create": "Tạo sự kiện" },
+  "title": {
+    "edit": "Sửa sự kiện",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Xóa sự kiện này?",
     "confirmBody": "Thao tác này sẽ xóa sự kiện và tất cả tin nhắn. Không thể hoàn tác.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Bắt đầu nhanh",
   "presets": {
-    "dailySpot": "Spot hằng ngày", "dailySpotDesc": "Mỗi ngày",
-    "everyEvening": "Mỗi tối", "everyEveningDesc": "Hằng ngày · 20h",
-    "weekends": "Cuối tuần", "weekendsDesc": "Thứ 7 & CN"
+    "dailySpot": "Spot hằng ngày",
+    "dailySpotDesc": "Mỗi ngày",
+    "everyEvening": "Mỗi tối",
+    "everyEveningDesc": "Hằng ngày · 20h",
+    "weekends": "Cuối tuần",
+    "weekendsDesc": "Thứ 7 & CN"
   },
   "category": "Danh mục",
   "categories": {
-    "drinks": "Đồ uống", "party": "Tiệc tùng", "music": "Âm nhạc", "food": "Ẩm thực",
-    "coffee": "Cà phê", "sport": "Thể thao", "meetup": "Gặp gỡ", "other": "Khác"
+    "drinks": "Đồ uống",
+    "party": "Tiệc tùng",
+    "music": "Âm nhạc",
+    "food": "Ẩm thực",
+    "coffee": "Cà phê",
+    "sport": "Thể thao",
+    "meetup": "Gặp gỡ",
+    "other": "Khác"
   },
   "titleLabel": "Tiêu đề",
   "titlePlaceholder": "vd. Đêm jazz tại Rooftop Bar",
@@ -34,8 +47,21 @@
   "starts": "Bắt đầu",
   "ends": "Kết thúc",
   "repeat": "Lặp lại",
-  "recurrence": { "once": "Một lần", "daily": "Hằng ngày", "weekly": "Hằng tuần", "everyNDays": "Mỗi N ngày" },
-  "weekdays": ["CN", "T2", "T3", "T4", "T5", "T6", "T7"],
+  "recurrence": {
+    "once": "Một lần",
+    "daily": "Hằng ngày",
+    "weekly": "Hằng tuần",
+    "everyNDays": "Mỗi N ngày"
+  },
+  "weekdays": [
+    "CN",
+    "T2",
+    "T3",
+    "T4",
+    "T5",
+    "T6",
+    "T7"
+  ],
   "intervalEvery": "Mỗi",
   "intervalDays": "ngày",
   "location": "Địa điểm",
@@ -50,9 +76,17 @@
     "locFailed": "Không lấy được vị trí của bạn. Bật quyền vị trí, hoặc bỏ qua bản đồ."
   },
   "submit": {
-    "saving": "Đang lưu…", "creating": "Đang tạo…",
-    "saveChanges": "Lưu thay đổi", "openSpot": "Mở spot của bạn",
-    "startEvent": "Bắt đầu sự kiện", "create": "Tạo sự kiện"
+    "saving": "Đang lưu…",
+    "creating": "Đang tạo…",
+    "saveChanges": "Lưu thay đổi",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Mỗi ngày","weekly":"Hàng tuần","everyNDays_one":"Mỗi {{count}} ngày","everyNDays_other":"Mỗi {{count}} ngày"}
+  "recur": {
+    "everyday": "Mỗi ngày",
+    "weekly": "Hàng tuần",
+    "everyNDays_one": "Mỗi {{count}} ngày",
+    "everyNDays_other": "Mỗi {{count}} ngày"
+  }
 }

@@ -1,6 +1,6 @@
 {
-  "createTitle": "สร้างกิจกรรม",
-  "hostTitle": "เป็นเจ้าภาพกิจกรรม",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "เริ่มอย่างรวดเร็ว",
   "category": "หมวดหมู่",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "เสาร์ & อาทิตย์"
     }
   },
-  "submitCreate": "สร้างกิจกรรม",
-  "submitStart": "เริ่มกิจกรรม",
-  "submitOpenSpot": "เปิดสถานที่ของคุณ",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "ยังไม่ได้เลือกเมือง",
   "errTitle": "ต้องระบุชื่อ",
   "errDuration": "กิจกรรมต้องมีความยาวอย่างน้อย 15 นาที",

@@ -1,6 +1,6 @@
 {
-  "createTitle": "이벤트 만들기",
-  "hostTitle": "이벤트 호스트하기",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "빠른 시작",
   "category": "카테고리",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "토 & 일"
     }
   },
-  "submitCreate": "이벤트 만들기",
-  "submitStart": "이벤트 시작하기",
-  "submitOpenSpot": "내 자리 열기",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "선택된 도시가 없어요",
   "errTitle": "제목이 필요해요",
   "errDuration": "이벤트는 최소 15분 이상이어야 해요",

@@ -1,5 +1,5 @@
 {
-  "startTitle": "모임 시작하기",
+  "startTitle": "Hi now",
   "editTitle": "모임 편집",
   "category": "카테고리",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "상세 추가",
   "optional": "(선택)",
   "detailsPlaceholder": "조금 설명해 주세요…",
-  "expiry": "⏱ 24시간 후 자동 만료",
+  "expiry": "⏱ 8시간 후 자동 만료",
   "saveChanges": "저장",
-  "startCta": "모임 시작하기 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "저장하지 못했어요",
   "errStart": "모임을 시작하지 못했어요",
   "yourHangout": "내 모임",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Hilads에서의 대화",
   "shareMessage": "새 대화: \"{{title}}\" - Hilads에서 참여하세요.",
   "shareMessageFallback": "Hilads에서 대화에 참여하세요.",
-  "activeFor": "24시간 동안 활성",
+  "activeFor": "8시간 동안 활성",
   "edit": "편집",
   "delete": "삭제",
   "notFound": "모임을 찾을 수 없거나 만료되었어요",

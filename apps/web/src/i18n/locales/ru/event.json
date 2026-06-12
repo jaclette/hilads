@@ -5,7 +5,11 @@
     "vibeTitle": "Поделиться этим vibe",
     "eventAria": "Поделиться событием"
   },
-  "title": { "edit": "Редактировать событие", "host": "Организовать событие", "create": "Создать событие" },
+  "title": {
+    "edit": "Редактировать событие",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Удалить это событие?",
     "confirmBody": "Это удалит событие и все сообщения. Это нельзя отменить.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Быстрый старт",
   "presets": {
-    "dailySpot": "Место на каждый день", "dailySpotDesc": "Каждый день",
-    "everyEvening": "Каждый вечер", "everyEveningDesc": "Ежедневно · 20:00",
-    "weekends": "Выходные", "weekendsDesc": "Сб и вс"
+    "dailySpot": "Место на каждый день",
+    "dailySpotDesc": "Каждый день",
+    "everyEvening": "Каждый вечер",
+    "everyEveningDesc": "Ежедневно · 20:00",
+    "weekends": "Выходные",
+    "weekendsDesc": "Сб и вс"
   },
   "category": "Категория",
   "categories": {
-    "drinks": "Напитки", "party": "Вечеринка", "music": "Музыка", "food": "Еда",
-    "coffee": "Кофе", "sport": "Спорт", "meetup": "Встреча", "other": "Другое"
+    "drinks": "Напитки",
+    "party": "Вечеринка",
+    "music": "Музыка",
+    "food": "Еда",
+    "coffee": "Кофе",
+    "sport": "Спорт",
+    "meetup": "Встреча",
+    "other": "Другое"
   },
   "titleLabel": "Название",
   "titlePlaceholder": "напр. Джаз-вечер на крыше бара",
@@ -34,8 +47,21 @@
   "starts": "Начало",
   "ends": "Конец",
   "repeat": "Повтор",
-  "recurrence": { "once": "Один раз", "daily": "Ежедневно", "weekly": "Еженедельно", "everyNDays": "Каждые N дней" },
-  "weekdays": ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
+  "recurrence": {
+    "once": "Один раз",
+    "daily": "Ежедневно",
+    "weekly": "Еженедельно",
+    "everyNDays": "Каждые N дней"
+  },
+  "weekdays": [
+    "Вс",
+    "Пн",
+    "Вт",
+    "Ср",
+    "Чт",
+    "Пт",
+    "Сб"
+  ],
   "intervalEvery": "Каждые",
   "intervalDays": "дн.",
   "location": "Место",
@@ -50,9 +76,19 @@
     "locFailed": "Не удалось определить твоё местоположение. Разреши доступ к геолокации или пропусти карту."
   },
   "submit": {
-    "saving": "Сохранение…", "creating": "Создание…",
-    "saveChanges": "Сохранить изменения", "openSpot": "Открой своё место",
-    "startEvent": "Начать событие", "create": "Создать событие"
+    "saving": "Сохранение…",
+    "creating": "Создание…",
+    "saveChanges": "Сохранить изменения",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Каждый день","weekly":"Еженедельно","everyNDays_one":"Каждый {{count}} день","everyNDays_few":"Каждые {{count}} дня","everyNDays_many":"Каждые {{count}} дней","everyNDays_other":"Каждые {{count}} дня"}
+  "recur": {
+    "everyday": "Каждый день",
+    "weekly": "Еженедельно",
+    "everyNDays_one": "Каждый {{count}} день",
+    "everyNDays_few": "Каждые {{count}} дня",
+    "everyNDays_many": "Каждые {{count}} дней",
+    "everyNDays_other": "Каждые {{count}} дня"
+  }
 }

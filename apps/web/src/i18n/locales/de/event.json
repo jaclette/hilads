@@ -5,7 +5,11 @@
     "vibeTitle": "Diesen vibe teilen",
     "eventAria": "Event teilen"
   },
-  "title": { "edit": "Event bearbeiten", "host": "Ein Event hosten", "create": "Event erstellen" },
+  "title": {
+    "edit": "Event bearbeiten",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "Dieses Event löschen?",
     "confirmBody": "Damit werden das Event und alle Nachrichten entfernt. Das kann nicht rückgängig gemacht werden.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "Schnellstart",
   "presets": {
-    "dailySpot": "Täglicher Spot", "dailySpotDesc": "Jeden Tag",
-    "everyEvening": "Jeden Abend", "everyEveningDesc": "Täglich · 20 Uhr",
-    "weekends": "Wochenenden", "weekendsDesc": "Sa. & So."
+    "dailySpot": "Täglicher Spot",
+    "dailySpotDesc": "Jeden Tag",
+    "everyEvening": "Jeden Abend",
+    "everyEveningDesc": "Täglich · 20 Uhr",
+    "weekends": "Wochenenden",
+    "weekendsDesc": "Sa. & So."
   },
   "category": "Kategorie",
   "categories": {
-    "drinks": "Drinks", "party": "Party", "music": "Musik", "food": "Essen",
-    "coffee": "Kaffee", "sport": "Sport", "meetup": "Meetup", "other": "Sonstiges"
+    "drinks": "Drinks",
+    "party": "Party",
+    "music": "Musik",
+    "food": "Essen",
+    "coffee": "Kaffee",
+    "sport": "Sport",
+    "meetup": "Meetup",
+    "other": "Sonstiges"
   },
   "titleLabel": "Titel",
   "titlePlaceholder": "z. B. Jazz-Abend in der Rooftop Bar",
@@ -34,8 +47,21 @@
   "starts": "Beginnt",
   "ends": "Endet",
   "repeat": "Wiederholen",
-  "recurrence": { "once": "Einmal", "daily": "Täglich", "weekly": "Wöchentlich", "everyNDays": "Alle N Tage" },
-  "weekdays": ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
+  "recurrence": {
+    "once": "Einmal",
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "everyNDays": "Alle N Tage"
+  },
+  "weekdays": [
+    "So",
+    "Mo",
+    "Di",
+    "Mi",
+    "Do",
+    "Fr",
+    "Sa"
+  ],
   "intervalEvery": "Alle",
   "intervalDays": "Tage",
   "location": "Ort",
@@ -50,9 +76,17 @@
     "locFailed": "Dein Standort konnte nicht ermittelt werden. Aktiviere den Standortzugriff oder überspring die Karte."
   },
   "submit": {
-    "saving": "Wird gespeichert…", "creating": "Wird erstellt…",
-    "saveChanges": "Änderungen speichern", "openSpot": "Eröffne deinen Spot",
-    "startEvent": "Ein Event starten", "create": "Event erstellen"
+    "saving": "Wird gespeichert…",
+    "creating": "Wird erstellt…",
+    "saveChanges": "Änderungen speichern",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"Jeden Tag","weekly":"Wöchentlich","everyNDays_one":"Alle {{count}} Tag","everyNDays_other":"Alle {{count}} Tage"}
+  "recur": {
+    "everyday": "Jeden Tag",
+    "weekly": "Wöchentlich",
+    "everyNDays_one": "Alle {{count}} Tag",
+    "everyNDays_other": "Alle {{count}} Tage"
+  }
 }

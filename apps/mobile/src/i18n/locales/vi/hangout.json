@@ -1,5 +1,5 @@
 {
-  "startTitle": "Tạo tụ tập",
+  "startTitle": "Hi now",
   "editTitle": "Sửa tụ tập",
   "category": "Danh mục",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Thêm chi tiết",
   "optional": "(tùy chọn)",
   "detailsPlaceholder": "Cho thêm chút ngữ cảnh…",
-  "expiry": "⏱ Tự hết hạn sau 24 giờ",
+  "expiry": "⏱ Tự hết hạn sau 8 giờ",
   "saveChanges": "Lưu thay đổi",
-  "startCta": "Tạo tụ tập 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Lưu thay đổi thất bại",
   "errStart": "Không thể tạo tụ tập",
   "yourHangout": "tụ tập của bạn",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Cuộc trò chuyện trên Hilads",
   "shareMessage": "Cuộc trò chuyện mới: “{{title}}” - tham gia trên Hilads.",
   "shareMessageFallback": "Tham gia cuộc trò chuyện trên Hilads.",
-  "activeFor": "Hoạt động trong 24 giờ",
+  "activeFor": "Hoạt động trong 8 giờ",
   "edit": "Sửa",
   "delete": "Xóa",
   "notFound": "Không tìm thấy tụ tập hoặc đã hết hạn",

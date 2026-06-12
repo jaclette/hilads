@@ -1,6 +1,6 @@
 {
-  "createTitle": "इवेंट बनाएं",
-  "hostTitle": "एक इवेंट होस्ट करें",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "क्विक स्टार्ट",
   "category": "कैटेगरी",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "शनि और रवि"
     }
   },
-  "submitCreate": "इवेंट बनाएं",
-  "submitStart": "एक इवेंट शुरू करें",
-  "submitOpenSpot": "अपनी जगह खोलें",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "कोई शहर चुना नहीं गया",
   "errTitle": "टाइटल ज़रूरी है",
   "errDuration": "इवेंट कम से कम 15 मिनट लंबा होना चाहिए",

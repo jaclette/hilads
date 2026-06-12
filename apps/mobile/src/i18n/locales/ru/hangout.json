@@ -1,5 +1,5 @@
 {
-  "startTitle": "Запустить тусовку",
+  "startTitle": "Hi now",
   "editTitle": "Изменить тусовку",
   "category": "Категория",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Добавь детали",
   "optional": "(по желанию)",
   "detailsPlaceholder": "Добавь немного контекста…",
-  "expiry": "⏱ Автоматически истекает через 24 ч",
+  "expiry": "⏱ Автоматически истекает через 8 ч",
   "saveChanges": "Сохранить",
-  "startCta": "Запустить тусовку 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Не удалось сохранить изменения",
   "errStart": "Не удалось запустить тусовку",
   "yourHangout": "твоя тусовка",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Разговор на Hilads",
   "shareMessage": "Новый разговор: «{{title}}» - подключайся на Hilads.",
   "shareMessageFallback": "Подключайся к разговору на Hilads.",
-  "activeFor": "Активен 24 ч",
+  "activeFor": "Активен 8 ч",
   "edit": "Изменить",
   "delete": "Удалить",
   "notFound": "Тусовка не найдена или истекла",

@@ -1,5 +1,5 @@
 {
-  "startTitle": "Começar um rolê",
+  "startTitle": "Hi now",
   "editTitle": "Editar o rolê",
   "category": "Categoria",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Adicionar detalhes",
   "optional": "(opcional)",
   "detailsPlaceholder": "Dê um pouco de contexto…",
-  "expiry": "⏱ Expira automaticamente em 24 h",
+  "expiry": "⏱ Expira automaticamente em 8 h",
   "saveChanges": "Salvar",
-  "startCta": "Começar um rolê 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Falha ao salvar",
   "errStart": "Não foi possível começar o rolê",
   "yourHangout": "seu rolê",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversa no Hilads",
   "shareMessage": "Nova conversa: \"{{title}}\" - entre no Hilads.",
   "shareMessageFallback": "Entre na conversa no Hilads.",
-  "activeFor": "Ativo por 24 h",
+  "activeFor": "Ativo por 8 h",
   "edit": "Editar",
   "delete": "Excluir",
   "notFound": "Rolê não encontrado ou expirado",

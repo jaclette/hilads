@@ -1,5 +1,5 @@
 {
-  "startTitle": "Treffen starten",
+  "startTitle": "Hi now",
   "editTitle": "Treffen bearbeiten",
   "category": "Kategorie",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Details hinzufügen",
   "optional": "(optional)",
   "detailsPlaceholder": "Gib etwas Kontext…",
-  "expiry": "⏱ Läuft automatisch in 24 Std. ab",
+  "expiry": "⏱ Läuft automatisch in 8 Std. ab",
   "saveChanges": "Speichern",
-  "startCta": "Treffen starten 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Speichern fehlgeschlagen",
   "errStart": "Treffen konnte nicht gestartet werden",
   "yourHangout": "dein Treffen",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Unterhaltung auf Hilads",
   "shareMessage": "Neue Unterhaltung: „{{title}}“ - steig auf Hilads ein.",
   "shareMessageFallback": "Steig in die Unterhaltung auf Hilads ein.",
-  "activeFor": "24 Std. aktiv",
+  "activeFor": "8 Std. aktiv",
   "edit": "Bearbeiten",
   "delete": "Löschen",
   "notFound": "Treffen nicht gefunden oder abgelaufen",

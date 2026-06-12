@@ -1,5 +1,5 @@
 {
-  "startTitle": "Magsimula ng tambayan",
+  "startTitle": "Hi now",
   "editTitle": "I-edit ang tambayan",
   "category": "Category",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Magdagdag ng detalye",
   "optional": "(opsyonal)",
   "detailsPlaceholder": "Bigyan ng konteksto…",
-  "expiry": "⏱ Awtomatikong mag-e-expire sa 24 h",
+  "expiry": "⏱ Awtomatikong mag-e-expire sa 8 h",
   "saveChanges": "I-save ang mga pagbabago",
-  "startCta": "Magsimula ng tambayan 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Hindi na-save ang mga pagbabago",
   "errStart": "Hindi nasimulan ang tambayan",
   "yourHangout": "ang tambayan mo",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Usapan sa Hilads",
   "shareMessage": "Bagong usapan: \"{{title}}\" - sumabak sa Hilads.",
   "shareMessageFallback": "Sumabak sa usapan sa Hilads.",
-  "activeFor": "Active sa loob ng 24 h",
+  "activeFor": "Active sa loob ng 8 h",
   "edit": "I-edit",
   "delete": "Burahin",
   "notFound": "Hindi nahanap o nag-expire na ang tambayan",

@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Lancer une sortie",
+    "startTitle": "Hi now",
     "editTitle": "Modifier la sortie",
     "category": "Catégorie",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Ajoute des détails",
     "optional": "(optionnel)",
     "detailsPlaceholder": "Donne un peu de contexte…",
-    "expiry": "⏱ Expire dans 24 h",
+    "expiry": "⏱ Expire dans 8 h",
     "saving": "Enregistrement…",
     "starting": "Lancement…",
     "saveChanges": "Enregistrer",
-    "startCta": "Lancer une sortie 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Une à la fois",
     "limitTitle": "Tu as déjà une sortie",
     "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",

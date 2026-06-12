@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Começar um rolê",
+    "startTitle": "Hi now",
     "editTitle": "Editar o rolê",
     "category": "Categoria",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Adicionar detalhes",
     "optional": "(opcional)",
     "detailsPlaceholder": "Dê um pouco de contexto…",
-    "expiry": "⏱ Expira automaticamente em 24 h",
+    "expiry": "⏱ Expira automaticamente em 8 h",
     "saving": "Salvando…",
     "starting": "Começando…",
     "saveChanges": "Salvar alterações",
-    "startCta": "Começar um rolê 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Um de cada vez",
     "limitTitle": "Você já tem um rolê",
     "limitSub": "Você pode ter um rolê de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",

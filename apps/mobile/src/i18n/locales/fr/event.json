@@ -1,6 +1,6 @@
 {
-  "createTitle": "Créer un événement",
-  "hostTitle": "Organiser un événement",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "DÉMARRAGE RAPIDE",
   "category": "CATÉGORIE",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sam & Dim"
     }
   },
-  "submitCreate": "Créer un événement",
-  "submitStart": "Lancer un événement",
-  "submitOpenSpot": "Ouvre ton spot",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Aucune ville sélectionnée",
   "errTitle": "Le titre est requis",
   "errDuration": "L'événement doit durer au moins 15 minutes",

@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Lanzar una quedada",
+    "startTitle": "Hi now",
     "editTitle": "Editar la quedada",
     "category": "Categoría",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Añade detalles",
     "optional": "(opcional)",
     "detailsPlaceholder": "Da un poco de contexto…",
-    "expiry": "⏱ Caduca en 24 h",
+    "expiry": "⏱ Caduca en 8 h",
     "saving": "Guardando…",
     "starting": "Lanzando…",
     "saveChanges": "Guardar",
-    "startCta": "Lanzar una quedada 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Una a la vez",
     "limitTitle": "Ya tienes una quedada",
     "limitSub": "Solo puedes tener una quedada a la vez. Ve a «{{title}}» o elimínala para lanzar una nueva.",

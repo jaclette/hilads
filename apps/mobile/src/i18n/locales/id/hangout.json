@@ -1,5 +1,5 @@
 {
-  "startTitle": "Mulai nongkrong",
+  "startTitle": "Hi now",
   "editTitle": "Edit nongkrong",
   "category": "Kategori",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Tambah detail",
   "optional": "(opsional)",
   "detailsPlaceholder": "Beri sedikit konteks…",
-  "expiry": "⏱ Otomatis berakhir dalam 24 j",
+  "expiry": "⏱ Otomatis berakhir dalam 8 j",
   "saveChanges": "Simpan perubahan",
-  "startCta": "Mulai nongkrong 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Gagal menyimpan perubahan",
   "errStart": "Gagal memulai nongkrong",
   "yourHangout": "nongkrong-mu",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Percakapan di Hilads",
   "shareMessage": "Percakapan baru: \"{{title}}\" - gabung di Hilads.",
   "shareMessageFallback": "Gabung ke percakapan di Hilads.",
-  "activeFor": "Aktif selama 24 j",
+  "activeFor": "Aktif selama 8 j",
   "edit": "Edit",
   "delete": "Hapus",
   "notFound": "Nongkrong tidak ditemukan atau sudah berakhir",

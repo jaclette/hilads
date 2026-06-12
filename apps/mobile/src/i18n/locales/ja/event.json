@@ -1,6 +1,6 @@
 {
-  "createTitle": "イベントを作成",
-  "hostTitle": "イベントを主催",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "クイックスタート",
   "category": "カテゴリー",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "土・日"
     }
   },
-  "submitCreate": "イベントを作成",
-  "submitStart": "イベントを始める",
-  "submitOpenSpot": "あなたのスポットを開く",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "街が選択されていません",
   "errTitle": "タイトルは必須です",
   "errDuration": "イベントは少なくとも15分以上にしてください",

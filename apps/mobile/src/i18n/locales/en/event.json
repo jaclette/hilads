@@ -1,6 +1,6 @@
 {
-  "createTitle": "Create event",
-  "hostTitle": "Host an event",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "QUICK START",
   "category": "CATEGORY",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sat & Sun"
     }
   },
-  "submitCreate": "Create event",
-  "submitStart": "Start an event",
-  "submitOpenSpot": "Open your spot",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "No city selected",
   "errTitle": "Title is required",
   "errDuration": "Event must be at least 15 minutes long",

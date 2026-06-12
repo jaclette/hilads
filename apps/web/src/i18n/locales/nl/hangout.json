@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Start een meetup",
+    "startTitle": "Hi now",
     "editTitle": "Meetup bewerken",
     "category": "Categorie",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Details toevoegen",
     "optional": "(optioneel)",
     "detailsPlaceholder": "Geef het wat context…",
-    "expiry": "⏱ Verloopt automatisch na 24 u",
+    "expiry": "⏱ Verloopt automatisch na 8 u",
     "saving": "Opslaan…",
     "starting": "Starten…",
     "saveChanges": "Wijzigingen opslaan",
-    "startCta": "Start een meetup 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Eén tegelijk",
     "limitTitle": "Je hebt al een meetup",
     "limitSub": "Je kunt één meetup tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",

@@ -5,7 +5,11 @@
     "vibeTitle": "이 vibe 공유하기",
     "eventAria": "이벤트 공유"
   },
-  "title": { "edit": "이벤트 수정", "host": "이벤트 주최하기", "create": "이벤트 만들기" },
+  "title": {
+    "edit": "이벤트 수정",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "이 이벤트를 삭제할까요?",
     "confirmBody": "이벤트와 모든 메시지가 삭제돼요. 되돌릴 수 없어요.",
@@ -16,14 +20,23 @@
   },
   "quickStart": "빠른 시작",
   "presets": {
-    "dailySpot": "데일리 스팟", "dailySpotDesc": "매일",
-    "everyEvening": "매일 저녁", "everyEveningDesc": "매일 · 오후 8시",
-    "weekends": "주말", "weekendsDesc": "토 & 일"
+    "dailySpot": "데일리 스팟",
+    "dailySpotDesc": "매일",
+    "everyEvening": "매일 저녁",
+    "everyEveningDesc": "매일 · 오후 8시",
+    "weekends": "주말",
+    "weekendsDesc": "토 & 일"
   },
   "category": "카테고리",
   "categories": {
-    "drinks": "술", "party": "파티", "music": "음악", "food": "맛집",
-    "coffee": "커피", "sport": "스포츠", "meetup": "모임", "other": "기타"
+    "drinks": "술",
+    "party": "파티",
+    "music": "음악",
+    "food": "맛집",
+    "coffee": "커피",
+    "sport": "스포츠",
+    "meetup": "모임",
+    "other": "기타"
   },
   "titleLabel": "제목",
   "titlePlaceholder": "예: 루프탑 바에서 재즈의 밤",
@@ -34,8 +47,21 @@
   "starts": "시작",
   "ends": "종료",
   "repeat": "반복",
-  "recurrence": { "once": "한 번", "daily": "매일", "weekly": "매주", "everyNDays": "N일마다" },
-  "weekdays": ["일", "월", "화", "수", "목", "금", "토"],
+  "recurrence": {
+    "once": "한 번",
+    "daily": "매일",
+    "weekly": "매주",
+    "everyNDays": "N일마다"
+  },
+  "weekdays": [
+    "일",
+    "월",
+    "화",
+    "수",
+    "목",
+    "금",
+    "토"
+  ],
   "intervalEvery": "마다",
   "intervalDays": "일",
   "location": "위치",
@@ -50,9 +76,17 @@
     "locFailed": "위치를 가져오지 못했어요. 위치 접근을 허용하거나 지도를 건너뛰세요."
   },
   "submit": {
-    "saving": "저장하는 중…", "creating": "만드는 중…",
-    "saveChanges": "변경 사항 저장", "openSpot": "내 스팟 열기",
-    "startEvent": "이벤트 시작하기", "create": "이벤트 만들기"
+    "saving": "저장하는 중…",
+    "creating": "만드는 중…",
+    "saveChanges": "변경 사항 저장",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"매일","weekly":"매주","everyNDays_one":"{{count}}일마다","everyNDays_other":"{{count}}일마다"}
+  "recur": {
+    "everyday": "매일",
+    "weekly": "매주",
+    "everyNDays_one": "{{count}}일마다",
+    "everyNDays_other": "{{count}}일마다"
+  }
 }

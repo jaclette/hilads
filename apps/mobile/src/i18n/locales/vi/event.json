@@ -1,6 +1,6 @@
 {
-  "createTitle": "Tạo sự kiện",
-  "hostTitle": "Tổ chức sự kiện",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "BẮT ĐẦU NHANH",
   "category": "DANH MỤC",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Thứ 7 & CN"
     }
   },
-  "submitCreate": "Tạo sự kiện",
-  "submitStart": "Bắt đầu sự kiện",
-  "submitOpenSpot": "Mở spot của bạn",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "Chưa chọn thành phố",
   "errTitle": "Cần có tiêu đề",
   "errDuration": "Sự kiện phải kéo dài ít nhất 15 phút",

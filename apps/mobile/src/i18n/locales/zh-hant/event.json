@@ -1,6 +1,6 @@
 {
-  "createTitle": "建立活動",
-  "hostTitle": "舉辦活動",
+  "createTitle": "Hi later",
+  "hostTitle": "Hi later",
   "quickStart": "快速開始",
   "category": "類別",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "週六與週日"
     }
   },
-  "submitCreate": "建立活動",
-  "submitStart": "發起活動",
-  "submitOpenSpot": "開放你的地點",
+  "submitCreate": "📅 Hi later",
+  "submitStart": "📅 Hi later",
+  "submitOpenSpot": "📅 Hi later",
   "errNoCity": "尚未選擇城市",
   "errTitle": "標題為必填",
   "errDuration": "活動長度至少需要 15 分鐘",

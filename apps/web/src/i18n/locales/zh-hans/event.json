@@ -5,7 +5,11 @@
     "vibeTitle": "分享这个 vibe",
     "eventAria": "分享活动"
   },
-  "title": { "edit": "编辑活动", "host": "举办一个活动", "create": "创建活动" },
+  "title": {
+    "edit": "编辑活动",
+    "host": "Hi later",
+    "create": "Hi later"
+  },
   "delete": {
     "confirmTitle": "删除这个活动？",
     "confirmBody": "这将删除该活动和所有消息。此操作无法撤销。",
@@ -16,14 +20,23 @@
   },
   "quickStart": "快速开始",
   "presets": {
-    "dailySpot": "每日据点", "dailySpotDesc": "每天",
-    "everyEvening": "每个晚上", "everyEveningDesc": "每天 · 晚上 8 点",
-    "weekends": "周末", "weekendsDesc": "周六和周日"
+    "dailySpot": "每日据点",
+    "dailySpotDesc": "每天",
+    "everyEvening": "每个晚上",
+    "everyEveningDesc": "每天 · 晚上 8 点",
+    "weekends": "周末",
+    "weekendsDesc": "周六和周日"
   },
   "category": "分类",
   "categories": {
-    "drinks": "喝一杯", "party": "派对", "music": "音乐", "food": "美食",
-    "coffee": "咖啡", "sport": "运动", "meetup": "聚会", "other": "其他"
+    "drinks": "喝一杯",
+    "party": "派对",
+    "music": "音乐",
+    "food": "美食",
+    "coffee": "咖啡",
+    "sport": "运动",
+    "meetup": "聚会",
+    "other": "其他"
   },
   "titleLabel": "标题",
   "titlePlaceholder": "例如：天台酒吧爵士之夜",
@@ -34,8 +47,21 @@
   "starts": "开始",
   "ends": "结束",
   "repeat": "重复",
-  "recurrence": { "once": "一次", "daily": "每天", "weekly": "每周", "everyNDays": "每 N 天" },
-  "weekdays": ["日", "一", "二", "三", "四", "五", "六"],
+  "recurrence": {
+    "once": "一次",
+    "daily": "每天",
+    "weekly": "每周",
+    "everyNDays": "每 N 天"
+  },
+  "weekdays": [
+    "日",
+    "一",
+    "二",
+    "三",
+    "四",
+    "五",
+    "六"
+  ],
   "intervalEvery": "每",
   "intervalDays": "天",
   "location": "地点",
@@ -50,9 +76,17 @@
     "locFailed": "无法获取你的位置。请开启定位权限，或跳过地图。"
   },
   "submit": {
-    "saving": "保存中…", "creating": "创建中…",
-    "saveChanges": "保存更改", "openSpot": "开起你的据点",
-    "startEvent": "发起一个活动", "create": "创建活动"
+    "saving": "保存中…",
+    "creating": "创建中…",
+    "saveChanges": "保存更改",
+    "openSpot": "📅 Hi later",
+    "startEvent": "📅 Hi later",
+    "create": "📅 Hi later"
   },
-  "recur": {"everyday":"每天","weekly":"每周","everyNDays_one":"每 {{count}} 天","everyNDays_other":"每 {{count}} 天"}
+  "recur": {
+    "everyday": "每天",
+    "weekly": "每周",
+    "everyNDays_one": "每 {{count}} 天",
+    "everyNDays_other": "每 {{count}} 天"
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "startTitle": "ابدأ لقاءً",
+  "startTitle": "Hi now",
   "editTitle": "تعديل اللقاء",
   "category": "الفئة",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "أضف تفاصيل",
   "optional": "(اختياري)",
   "detailsPlaceholder": "أضف بعض السياق…",
-  "expiry": "⏱ ينتهي تلقائيًا خلال 24 س",
+  "expiry": "⏱ ينتهي تلقائيًا خلال 8 س",
   "saveChanges": "حفظ التغييرات",
-  "startCta": "ابدأ لقاءً 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "فشل حفظ التغييرات",
   "errStart": "فشل بدء اللقاء",
   "yourHangout": "لقاؤك",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "محادثة على Hilads",
   "shareMessage": "محادثة جديدة: «{{title}}» - انضم إليها على Hilads.",
   "shareMessageFallback": "انضم إلى المحادثة على Hilads.",
-  "activeFor": "نشط لمدة 24 س",
+  "activeFor": "نشط لمدة 8 س",
   "edit": "تعديل",
   "delete": "حذف",
   "notFound": "لم يتم العثور على اللقاء أو انتهى",

@@ -1,5 +1,5 @@
 {
-  "startTitle": "Lancia un ritrovo",
+  "startTitle": "Hi now",
   "editTitle": "Modifica ritrovo",
   "category": "Categoria",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Aggiungi dettagli",
   "optional": "(facoltativo)",
   "detailsPlaceholder": "Dai un po' di contesto…",
-  "expiry": "⏱ Scade automaticamente tra 24 h",
+  "expiry": "⏱ Scade automaticamente tra 8 h",
   "saveChanges": "Salva",
-  "startCta": "Lancia un ritrovo 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Impossibile salvare",
   "errStart": "Impossibile lanciare il ritrovo",
   "yourHangout": "il tuo ritrovo",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversazione su Hilads",
   "shareMessage": "Nuova conversazione: «{{title}}» - unisciti su Hilads.",
   "shareMessageFallback": "Unisciti alla conversazione su Hilads.",
-  "activeFor": "Attivo per 24 h",
+  "activeFor": "Attivo per 8 h",
   "edit": "Modifica",
   "delete": "Elimina",
   "notFound": "Ritrovo non trovato o scaduto",

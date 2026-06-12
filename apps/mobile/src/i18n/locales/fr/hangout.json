@@ -1,5 +1,5 @@
 {
-  "startTitle": "Lancer une sortie",
+  "startTitle": "Hi now",
   "editTitle": "Modifier la sortie",
   "category": "Catégorie",
   "cat": {
@@ -15,9 +15,9 @@
   "detailsLabel": "Ajoute des détails",
   "optional": "(optionnel)",
   "detailsPlaceholder": "Donne un peu de contexte…",
-  "expiry": "⏱ Expire dans 24 h",
+  "expiry": "⏱ Expire dans 8 h",
   "saveChanges": "Enregistrer",
-  "startCta": "Lancer une sortie 🗣️",
+  "startCta": "🗣️ Hi now",
   "errSave": "Échec de l'enregistrement",
   "errStart": "Impossible de lancer la sortie",
   "yourHangout": "ta sortie",
@@ -34,7 +34,7 @@
   "shareTitleFallback": "Conversation sur Hilads",
   "shareMessage": "Nouvelle conversation : « {{title}} » - rejoins sur Hilads.",
   "shareMessageFallback": "Rejoins la conversation sur Hilads.",
-  "activeFor": "Actif pendant 24 h",
+  "activeFor": "Actif pendant 8 h",
   "edit": "Modifier",
   "delete": "Supprimer",
   "notFound": "Sortie introuvable ou expirée",

@@ -766,7 +766,7 @@ export default function NowScreen() {
               onPress={handleStartPulse}
               accessibilityRole="button"
             >
-              <Text style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🔥 {t('hiNow')}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaLater]}
@@ -774,7 +774,7 @@ export default function NowScreen() {
               onPress={handleHostSpot}
               accessibilityRole="button"
             >
-              <Text style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>📅 {t('hiLater')}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>📅 {t('hiLater')}</Text>
             </TouchableOpacity>
           </View>
           <TouchableOpacity
@@ -988,7 +988,7 @@ const styles = StyleSheet.create({
   },
 
   // Hi Local → two create CTAs side by side: Now (coral) + Later (neutral).
-  hilocalRow: { flexDirection: 'row', gap: 8, marginBottom: 8 },
+  hilocalRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginBottom: 8 },
   hilocalCta: {
     flex:            1,
     alignItems:      'center',

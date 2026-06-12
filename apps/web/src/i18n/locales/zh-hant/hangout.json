@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "開一個聚會",
+    "startTitle": "Hi now",
     "editTitle": "編輯聚會",
     "category": "類別",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "新增詳細資訊",
     "optional": "（選填）",
     "detailsPlaceholder": "給點背景說明…",
-    "expiry": "⏱ 24 小時後自動到期",
+    "expiry": "⏱ 8 小時後自動到期",
     "saving": "儲存中…",
     "starting": "開啟中…",
     "saveChanges": "儲存變更",
-    "startCta": "開一個聚會 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "一次一個",
     "limitTitle": "你已經有一個聚會了",
     "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或將它刪除以開一個新的。",

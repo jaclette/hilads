@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "发起一个聚会",
+    "startTitle": "Hi now",
     "editTitle": "编辑聚会",
     "category": "分类",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "添加详情",
     "optional": "（可选）",
     "detailsPlaceholder": "补充点背景信息…",
-    "expiry": "⏱ 24 小时后自动到期",
+    "expiry": "⏱ 8 小时后自动到期",
     "saving": "保存中…",
     "starting": "发起中…",
     "saveChanges": "保存更改",
-    "startCta": "发起一个聚会 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "一次一个",
     "limitTitle": "你已经有一个聚会了",
     "limitSub": "你一次只能运行一个聚会。去“{{title}}”看看，或删除它来发起新的。",

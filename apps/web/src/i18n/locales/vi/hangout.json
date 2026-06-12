@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Tạo tụ tập",
+    "startTitle": "Hi now",
     "editTitle": "Sửa tụ tập",
     "category": "Danh mục",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Thêm chi tiết",
     "optional": "(tùy chọn)",
     "detailsPlaceholder": "Cho thêm chút ngữ cảnh…",
-    "expiry": "⏱ Tự hết hạn sau 24 giờ",
+    "expiry": "⏱ Tự hết hạn sau 8 giờ",
     "saving": "Đang lưu…",
     "starting": "Đang tạo…",
     "saveChanges": "Lưu thay đổi",
-    "startCta": "Tạo tụ tập 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Mỗi lần một cái",
     "limitTitle": "Bạn đã có một tụ tập",
     "limitSub": "Bạn chỉ có thể chạy một tụ tập cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",

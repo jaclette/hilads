@@ -1,6 +1,6 @@
 {
   "create": {
-    "startTitle": "Mulai nongkrong",
+    "startTitle": "Hi now",
     "editTitle": "Edit nongkrong",
     "category": "Kategori",
     "cat": {
@@ -16,11 +16,11 @@
     "detailsLabel": "Tambahkan detail",
     "optional": "(opsional)",
     "detailsPlaceholder": "Beri sedikit konteks…",
-    "expiry": "⏱ Berakhir otomatis dalam 24 jam",
+    "expiry": "⏱ Berakhir otomatis dalam 8 jam",
     "saving": "Menyimpan…",
     "starting": "Memulai…",
     "saveChanges": "Simpan perubahan",
-    "startCta": "Mulai nongkrong 🗣️",
+    "startCta": "🗣️ Hi now",
     "limitHeader": "Satu per satu",
     "limitTitle": "Kamu sudah punya nongkrong",
     "limitSub": "Kamu hanya bisa menjalankan satu nongkrong dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
