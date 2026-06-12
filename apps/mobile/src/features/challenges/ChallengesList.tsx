@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
@@ -35,7 +35,7 @@ const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
  * route and the CHALLENGES bottom tab (which feeds `channelId` from the active
  * city instead of a route param).
  */
-export function ChallengesList({ channelId }: { channelId: string | null }) {
+export function ChallengesList({ channelId, headerExtra }: { channelId: string | null; headerExtra?: ReactNode }) {
   const router = useRouter();
   const { t } = useTranslation('challenge');
 
@@ -80,8 +80,12 @@ export function ChallengesList({ channelId }: { channelId: string | null }) {
     return <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>;
   }
 
-  return (
-    <View style={styles.root}>
+  // Most Local (headerExtra) + filters scroll WITH the feed - only the screen
+  // header + intro line above this component stay sticky.
+  const listHeader = (
+    <View>
+      {headerExtra}
+
       {/* Tab pills - Open (default) vs Validated (archive) */}
       <View style={styles.tabBar}>
         {(['open', 'validated'] as const).map(v => (
@@ -135,21 +139,17 @@ export function ChallengesList({ channelId }: { channelId: string | null }) {
           );
         })}
       </ScrollView>
+    </View>
+  );
 
-      {loading && !refreshing ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>
-      ) : data.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyEmoji}>{tab === 'open' ? '🔥' : '✓'}</Text>
-          <Text style={styles.emptyTitle}>
-            {tab === 'open' ? t('noOpen', { defaultValue: 'No active challenges yet' }) : t('noValidated', { defaultValue: 'No validated challenges yet' })}
-          </Text>
-        </View>
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={c => c.id}
-          renderItem={({ item }) => (
+  return (
+    <View style={styles.root}>
+      <FlatList
+        data={data}
+        keyExtractor={c => c.id}
+        ListHeaderComponent={listHeader}
+        renderItem={({ item }) => (
+          <View style={styles.cardWrap}>
             <ChallengeVersusCard
               challenge={item}
               animated
@@ -162,16 +162,27 @@ export function ChallengesList({ channelId }: { channelId: string | null }) {
                 router.push(`/challenge/${item.id}` as never);
               }}
             />
-          )}
-          contentContainerStyle={styles.list}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={Colors.accent} />
-          }
-        />
-      )}
+          </View>
+        )}
+        ListEmptyComponent={
+          loading
+            ? <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>
+            : (
+              <View style={styles.empty}>
+                <Text style={styles.emptyEmoji}>{tab === 'open' ? '🔥' : '✓'}</Text>
+                <Text style={styles.emptyTitle}>
+                  {tab === 'open' ? t('noOpen', { defaultValue: 'No active challenges yet' }) : t('noValidated', { defaultValue: 'No validated challenges yet' })}
+                </Text>
+              </View>
+            )
+        }
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={Colors.accent} />
+        }
+      />
 
-      {/* Create a challenge - the only create entry now that the CreateSheet
-          chooser is gone. Guests are gated to /auth-gate inside the route. */}
+      {/* Create a challenge - fixed below the scroll. Guests gated in the route. */}
       <TouchableOpacity
         style={styles.createCta}
         activeOpacity={0.85}
@@ -236,9 +247,10 @@ const styles = StyleSheet.create({
   typeChipText:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
   typeChipTextActive: { color: '#FF7A3C' },
 
-  list:   { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl * 2 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  empty:  { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
+  listContent: { paddingBottom: Spacing.xl * 2 },
+  cardWrap:    { paddingHorizontal: Spacing.md, marginBottom: Spacing.sm },
+  center: { justifyContent: 'center', alignItems: 'center', paddingVertical: Spacing.xl },
+  empty:  { justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
   emptyEmoji: { fontSize: 44 },
   emptyTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
 

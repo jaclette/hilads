@@ -46,13 +46,17 @@ export default function ChallengesTab() {
         </TouchableOpacity>
       </View>
 
-      {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
-      <MostLocalCard
+      {/* Most Local + filters scroll with the feed (headerExtra) - only the
+          app header + title + intro line above stay sticky. */}
+      <ChallengesList
         channelId={city?.channelId ?? null}
-        onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
+        headerExtra={
+          <MostLocalCard
+            channelId={city?.channelId ?? null}
+            onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
+          />
+        }
       />
-
-      <ChallengesList channelId={city?.channelId ?? null} />
 
       <ChallengeIntroCarousel
         visible={showChallengeIntro}
