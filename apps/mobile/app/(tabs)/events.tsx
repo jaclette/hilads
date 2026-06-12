@@ -759,33 +759,34 @@ export default function NowScreen() {
           + "Hi later" (planned event). "See what's coming" below. */}
       {city && (
         <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
+          {/* Line 1: Hi now, full width, alone. */}
+          <TouchableOpacity
+            style={[styles.hilocalCta, styles.hilocalCtaNow]}
+            activeOpacity={0.85}
+            onPress={handleStartPulse}
+            accessibilityRole="button"
+          >
+            <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
+          </TouchableOpacity>
+          {/* Line 2: Hi later + See what's coming, side by side. */}
           <View style={styles.hilocalRow}>
             <TouchableOpacity
-              style={[styles.hilocalCta, styles.hilocalCtaNow]}
-              activeOpacity={0.85}
-              onPress={handleStartPulse}
-              accessibilityRole="button"
-            >
-              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.hilocalCta, styles.hilocalCtaLater]}
+              style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
               activeOpacity={0.85}
               onPress={handleHostSpot}
               accessibilityRole="button"
             >
               <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>📅 {t('hiLater')}</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
+              activeOpacity={0.85}
+              onPress={handleSeeUpcoming}
+              accessibilityRole="button"
+            >
+              <Text numberOfLines={2} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🔮 {t('seeComing')}</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            style={styles.upcomingCta}
-            activeOpacity={0.75}
-            onPress={handleSeeUpcoming}
-          >
-            <Text style={styles.upcomingCtaEmoji}>🔮</Text>
-            <Text style={styles.upcomingCtaText} numberOfLines={1}>{t('seeComing')}</Text>
-            <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
-          </TouchableOpacity>
           {/* Discreet archive entry - muted text link under the upcoming pill. */}
           <TouchableOpacity
             style={styles.pastLink}
@@ -990,13 +991,15 @@ const styles = StyleSheet.create({
   // Hi Local → two create CTAs side by side: Now (coral) + Later (neutral).
   hilocalRow: { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginBottom: 8 },
   hilocalCta: {
-    flex:            1,
     alignItems:      'center',
     justifyContent:  'center',
     paddingVertical: 14,
+    paddingHorizontal: 8,
     borderRadius:    14,
     borderWidth:     1,
+    marginBottom:    8,   // line-1 (Hi now) gap to the row below
   },
+  hilocalCtaFlex: { flex: 1, marginBottom: 0 },   // row children: equal width, no extra gap
   hilocalCtaNow:   { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.45)' },
   hilocalCtaLater: { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.18)' },
   hilocalCtaText:      { fontSize: 15, fontWeight: '800' },

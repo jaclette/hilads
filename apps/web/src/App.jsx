@@ -5287,26 +5287,28 @@ export default function App() {
           {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous
               hangout) + "Hi later" (planned event). "See what's coming" below. */}
           <div className="now-actions-bar now-actions-bar--hilocal">
+            {/* Line 1: Hi now, full width, alone. */}
+            <button
+              className="hilocal-cta hilocal-cta--now"
+              onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
+            >
+              🗣️ {t('feed.hiNow')}
+            </button>
+            {/* Line 2: Hi later + See what's coming, side by side. */}
             <div className="hilocal-cta-row">
-              <button
-                className="hilocal-cta hilocal-cta--now"
-                onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
-              >
-                🗣️ {t('feed.hiNow')}
-              </button>
               <button
                 className="hilocal-cta hilocal-cta--later"
                 onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
               >
                 📅 {t('feed.hiLater')}
               </button>
+              <button
+                className="hilocal-cta hilocal-cta--coming"
+                onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
+              >
+                {t('feed.seeComing')}
+              </button>
             </div>
-            <button
-              className="upcoming-cta upcoming-cta--inline"
-              onClick={() => { setShowEventDrawer(false); setShowUpcomingEvents(true) }}
-            >
-              {t('feed.seeComing')}
-            </button>
           </div>
           {/* Discreet archive entry - muted text link under the upcoming pill. */}
           <button

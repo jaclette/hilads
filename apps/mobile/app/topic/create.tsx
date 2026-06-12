@@ -161,23 +161,6 @@ export default function CreateTopicScreen() {
           returnKeyType="next"
         />
 
-        {/* Description */}
-        <Text style={styles.sectionLabel}>
-          {t('detailsLabel')}{'  '}
-          <Text style={styles.optional}>{t('optional')}</Text>
-        </Text>
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          value={description}
-          onChangeText={setDescription}
-          placeholder={t('detailsPlaceholder')}
-          placeholderTextColor={Colors.muted2}
-          maxLength={300}
-          multiline
-          numberOfLines={3}
-          textAlignVertical="top"
-        />
-
         {/* Expiry note */}
         {!editId ? <Text style={styles.expiryNote}>{t('expiry')}</Text> : null}
 

@@ -113,20 +113,6 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
             />
           </div>
 
-          {/* Description */}
-          <div className="cef-section">
-            <label className="cef-label">{t('create.detailsLabel')} <span style={{ color: 'var(--muted, #888)', fontWeight: 400 }}>{t('create.optional')}</span></label>
-            <textarea
-              className="cef-input"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder={t('create.detailsPlaceholder')}
-              maxLength={300}
-              rows={3}
-              style={{ resize: 'none', lineHeight: 1.5 }}
-            />
-          </div>
-
           {/* Expiry note */}
           {!isEdit && (
             <p style={{ fontSize: 13, color: '#888', margin: '4px 0 0', textAlign: 'center' }}>

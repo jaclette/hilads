@@ -6406,18 +6406,18 @@ img.pub-profile-avatar {
   align-items: stretch;
 }
 .hilocal-cta-row { display: flex; gap: 8px; align-items: stretch; }
+.hilocal-cta-row > .hilocal-cta { flex: 1 1 0; min-width: 0; }
 .hilocal-cta {
-  flex: 1 1 0;
-  min-width: 0;
+  width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 13px 12px;
+  padding: 14px 12px;
   border-radius: 14px;
   font-size: 0.95rem;
   font-weight: 700;
-  white-space: nowrap;
+  line-height: 1.2;
   text-align: center;
   cursor: pointer;
   border: 1px solid;
@@ -6430,7 +6430,8 @@ img.pub-profile-avatar {
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.10);
 }
-.hilocal-cta--later {
+.hilocal-cta--later,
+.hilocal-cta--coming {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.18);
 }
