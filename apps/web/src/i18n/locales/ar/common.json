@@ -30,8 +30,8 @@
     "slide2": {
       "title": "ثلاث طرق لتعيش المدينة",
       "itemChallenges": "🤝 Challenges - تحدَّ أو اقبل التحدي لاكتشاف أماكن خفيّة، تذوّق الطعام الحقيقي، مشاركة الثقافة، أو تقديم المساعدة.",
-      "itemHangouts": "🎉 Hangouts - لقاءات عفويّة وقتما تشاء. قهوة، مشروبات، تمشية، أيّ شيء.",
-      "itemEvents": "📍 Local Events - اللحظات الأكبر التي ينظمها المجتمع."
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "اكسب مكانك في المدينة",
@@ -41,7 +41,9 @@
       "title": "مستعد للبدء؟",
       "ctaChallenge": "📍 تَحدَّ challengeك الأول في {{city}}",
       "ctaMostLocal": "🤝 اكتشف Most Local في {{city}}",
-      "ctaLookAround": "👀 سأتصفّح فقط الآن"
+      "ctaLookAround": "👀 سأتصفّح فقط الآن",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

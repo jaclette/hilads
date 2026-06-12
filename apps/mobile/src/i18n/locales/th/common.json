@@ -24,8 +24,8 @@
     "slide2": {
       "title": "สามวิธีในการใช้ชีวิตในเมือง",
       "itemChallenges": "🤝 Challenges - ท้าทายหรือถูกท้าทายเพื่อค้นพบสถานที่ลับ ลิ้มรสอาหารจริง แบ่งปันวัฒนธรรม หรือช่วยเหลือ",
-      "itemHangouts": "🎉 Hangouts - การพบปะแบบสบายๆ เมื่ออยากเจอ กาแฟ ดื่ม เดินเล่น อะไรก็ได้",
-      "itemEvents": "📍 Local Events - โมเมนต์ใหญ่ๆ ที่ชุมชนจัด"
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "สร้างที่ของคุณในเมือง",
@@ -35,7 +35,9 @@
       "title": "พร้อมเริ่มต้นหรือยัง?",
       "ctaChallenge": "📍 รับชาเลนจ์แรกใน {{city}}",
       "ctaMostLocal": "🤝 ดู Most Local ของ {{city}}",
-      "ctaLookAround": "👀 ขอดูก่อน"
+      "ctaLookAround": "👀 ขอดูก่อน",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

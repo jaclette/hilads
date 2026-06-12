@@ -2,15 +2,14 @@
  * OnboardingCarousel - 4-screen first-launch flow.
  *
  *   1. Promise          - "Become local. Anywhere." brand tagline
- *   2. Three tools      - Challenges / Hangouts / Local Events
+ *   2. Three tools      - Challenges / Hi now / Hi later
  *   3. Earn your place  - points = how local you've become
- *   4. Invitation       - three CTAs (challenge / Most Local / look around)
+ *   4. Invitation       - four CTAs (challenge / Hi now / Hi later / look around)
  *
  * Mounted on first guest entry via showOnboarding in AppContext. Shown
  * once per device - flag persists in AsyncStorage via src/lib/onboarding.
- * The first CTA on screen 4 hands the NOW tab a ?filter=challenges query
- * param; the NOW tab consumes it on mount (see app/(tabs)/now.tsx). The
- * second pushes the existing /leaderboard route with scope=city.
+ * The first CTA on screen 4 routes to the Challenges tab; the Hi now /
+ * Hi later CTAs both open the 👋 Hi Local feed (the Events tab).
  *
  * Light scroll-paged horizontal carousel - RN native paging, no animation
  * lib. Mirrors the web component in apps/web/src/components/OnboardingCarousel.jsx.
@@ -60,9 +59,15 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
     // Challenges filter chip. Falls back to default 'all' if missing.
     router.push('/(tabs)/challenges' as never);
   };
-  const handleMostLocal = () => {
+  // Hi now / Hi later both land on the 👋 Hi Local feed (Events tab) so a
+  // first-time user sees what's happening now/later before anything else.
+  const handleHiNow = () => {
     onClose();
-    router.push({ pathname: '/leaderboard', params: { scope: 'city' } } as never);
+    router.push('/(tabs)/events' as never);
+  };
+  const handleHiLater = () => {
+    onClose();
+    router.push('/(tabs)/events' as never);
   };
   const handleLookAround = () => onClose();
 
@@ -124,9 +129,14 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
                   {t('onboarding.slide4.ctaChallenge', { city: where })}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.ctaPrimary} onPress={handleMostLocal} activeOpacity={0.85}>
+              <TouchableOpacity style={styles.ctaPrimary} onPress={handleHiNow} activeOpacity={0.85}>
                 <Text style={styles.ctaPrimaryText} numberOfLines={2}>
-                  {t('onboarding.slide4.ctaMostLocal', { city: where })}
+                  {t('onboarding.slide4.ctaHiNow')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.ctaPrimary} onPress={handleHiLater} activeOpacity={0.85}>
+                <Text style={styles.ctaPrimaryText} numberOfLines={2}>
+                  {t('onboarding.slide4.ctaHiLater')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.ctaTertiary} onPress={handleLookAround} activeOpacity={0.7}>

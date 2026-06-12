@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Drei Wege, die Stadt zu erleben",
       "itemChallenges": "🤝 Challenges - fordere oder werde gefordert, versteckte Spots zu entdecken, echtes Essen zu probieren, Kultur zu teilen oder zu helfen.",
-      "itemHangouts": "🎉 Hangouts - lockere Treffen, wann immer du Lust hast. Kaffee, Drinks, Spaziergänge, was immer.",
-      "itemEvents": "📍 Local Events - die größeren Momente, organisiert von der Community."
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "Verdien dir deinen Platz in der Stadt",
@@ -41,7 +41,9 @@
       "title": "Bereit anzufangen?",
       "ctaChallenge": "📍 Starte deine erste Challenge in {{city}}",
       "ctaMostLocal": "🤝 Entdecke Most Local von {{city}}",
-      "ctaLookAround": "👀 Erst mal umschauen"
+      "ctaLookAround": "👀 Erst mal umschauen",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

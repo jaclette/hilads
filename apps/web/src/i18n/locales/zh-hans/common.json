@@ -30,8 +30,8 @@
     "slide2": {
       "title": "体验城市的三种方式",
       "itemChallenges": "🤝 Challenges - 发起或接受挑战，发现隐藏地点、品尝真味、分享文化、伸出援手。",
-      "itemHangouts": "🎉 Hangouts - 想见就见的轻松聚会。咖啡、小酌、散步，什么都行。",
-      "itemEvents": "📍 Local Events - 社区组织的更大规模时刻。"
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "在城市里赢得你的位置",
@@ -41,7 +41,9 @@
       "title": "准备好出发了吗？",
       "ctaChallenge": "📍 在 {{city}} 接受你的第一个 challenge",
       "ctaMostLocal": "🤝 看看 {{city}} 的 Most Local",
-      "ctaLookAround": "👀 先随便看看"
+      "ctaLookAround": "👀 先随便看看",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

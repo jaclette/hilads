@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Ba cách sống thành phố",
       "itemChallenges": "🤝 Challenges - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
-      "itemHangouts": "🎉 Hangouts - buổi gặp gỡ thoải mái khi bạn muốn. Cà phê, bia rượu, đi dạo, gì cũng được.",
-      "itemEvents": "📍 Local Events - những khoảnh khắc lớn hơn do cộng đồng tổ chức."
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
@@ -41,7 +41,9 @@
       "title": "Sẵn sàng bắt đầu?",
       "ctaChallenge": "📍 Nhận challenge đầu tiên ở {{city}}",
       "ctaMostLocal": "🤝 Khám phá Most Local của {{city}}",
-      "ctaLookAround": "👀 Cứ ngó qua đã"
+      "ctaLookAround": "👀 Cứ ngó qua đã",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

@@ -24,8 +24,8 @@
     "slide2": {
       "title": "도시를 사는 세 가지 방법",
       "itemChallenges": "🤝 Challenges - 숨은 장소를 발견하거나, 진짜 음식을 맛보거나, 문화를 나누거나, 도움을 줘요. 도전하고 도전받아요.",
-      "itemHangouts": "🎉 Hangouts - 내키면 모이는 가벼운 만남. 커피, 술, 산책, 뭐든지.",
-      "itemEvents": "📍 Local Events - 커뮤니티가 여는 더 큰 순간들."
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "도시에서 당신의 자리를 만드세요",
@@ -35,7 +35,9 @@
       "title": "시작할 준비됐어요?",
       "ctaChallenge": "📍 {{city}}에서 첫 챌린지 시작하기",
       "ctaMostLocal": "🤝 {{city}}의 Most Local 보기",
-      "ctaLookAround": "👀 일단 둘러보기"
+      "ctaLookAround": "👀 일단 둘러보기",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {

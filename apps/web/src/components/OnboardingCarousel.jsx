@@ -5,19 +5,19 @@ import { useTranslation } from 'react-i18next'
  * OnboardingCarousel - 4-screen first-launch flow.
  *
  *   1. Promise          - "Become local. Anywhere." brand tagline
- *   2. Three tools      - Challenges / Hangouts / Local Events
+ *   2. Three tools      - Challenges / Hi now / Hi later
  *   3. Earn your place  - points = how local you've become
- *   4. Invitation       - three CTAs (challenge / Most Local / look around)
+ *   4. Invitation       - four CTAs (challenge / Hi now / Hi later / look around)
  *
  * Web mirror of apps/mobile/src/features/onboarding/OnboardingCarousel.tsx.
  * Same content, same brand-locked English phrases ("Become local.
- * Anywhere.", "Most Local", "Local Events", "Challenges", "Hangouts")
+ * Anywhere.", "Most Local", "Hi now", "Hi later", "Challenges")
  * carried through every locale via t().
  *
- * The 3 final CTAs are wired through callbacks (onTakeChallenge /
- * onMostLocal / onLookAround) so App.jsx owns the navigation primitives
- * - there's no router on web, just state setters (setNowFilter,
- * setShowLeaderboard + setLeaderboardScope).
+ * The final CTAs are wired through callbacks (onTakeChallenge / onHiNow /
+ * onHiLater / onLookAround) so App.jsx owns the navigation primitives
+ * - there's no router on web, just state setters (setShowEventDrawer,
+ * goToChallengesTab). Hi now / Hi later both open the 👋 Hi Local feed.
  *
  * Scroll mechanics: CSS scroll-snap on .onboarding-track + smooth
  * scrollTo. No animation library.
@@ -27,7 +27,8 @@ export default function OnboardingCarousel({
   city,
   onClose,
   onTakeChallenge,
-  onMostLocal,
+  onHiNow,
+  onHiLater,
   onLookAround,
 }) {
   const { t } = useTranslation('common')
@@ -87,8 +88,11 @@ export default function OnboardingCarousel({
             <button type="button" className="onboarding-cta-primary" onClick={onTakeChallenge}>
               {t('onboarding.slide4.ctaChallenge', { city: where })}
             </button>
-            <button type="button" className="onboarding-cta-primary" onClick={onMostLocal}>
-              {t('onboarding.slide4.ctaMostLocal', { city: where })}
+            <button type="button" className="onboarding-cta-primary" onClick={onHiNow}>
+              {t('onboarding.slide4.ctaHiNow')}
+            </button>
+            <button type="button" className="onboarding-cta-primary" onClick={onHiLater}>
+              {t('onboarding.slide4.ctaHiLater')}
             </button>
             <button type="button" className="onboarding-cta-tertiary" onClick={onLookAround}>
               {t('onboarding.slide4.ctaLookAround')}

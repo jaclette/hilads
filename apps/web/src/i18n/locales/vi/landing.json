@@ -4,8 +4,8 @@
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
-    "events_other": "🎉 {{count}} sự kiện đang diễn ra",
-    "hangouts_other": "🗣️ {{count}} tụ tập đang hoạt động",
+    "events_other": "📅 {{count}} Hi later happening",
+    "hangouts_other": "🗣️ {{count}} Hi now active",
     "replies_other": "{{count}} trả lời",
     "pickCity": "Chọn một thành phố\nvà tham gia",
     "locating": "› đang xác định thành phố của bạn...",
@@ -22,7 +22,9 @@
     "logIn": "Đăng nhập",
     "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè",
     "challenges_one": "🔥 {{count}} thử thách đang mở",
-    "challenges_other": "🔥 {{count}} thử thách đang mở"
+    "challenges_other": "🔥 {{count}} thử thách đang mở",
+    "events_one": "📅 {{count}} Hi later happening",
+    "hangouts_one": "🗣️ {{count}} Hi now active"
   },
   "local": {
     "badge": "🌍 Người địa phương",

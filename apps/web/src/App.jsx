@@ -6569,11 +6569,15 @@ export default function App() {
             setShowOnboarding(false)
             goToChallengesTab()
           }}
-          onMostLocal={() => {
+          onHiNow={() => {
             markOnboardingSeen()
             setShowOnboarding(false)
-            setLeaderboardScope('city')
-            setShowLeaderboard(true)
+            setShowEventDrawer(true)
+          }}
+          onHiLater={() => {
+            markOnboardingSeen()
+            setShowOnboarding(false)
+            setShowEventDrawer(true)
           }}
           onLookAround={() => {
             markOnboardingSeen()

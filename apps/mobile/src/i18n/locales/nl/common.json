@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Drie manieren om de stad te beleven",
       "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
-      "itemHangouts": "🎉 Hangouts - losse afspraken wanneer het je uitkomt. Koffie, borrels, wandelingen, wat dan ook.",
-      "itemEvents": "📍 Local Events - de grotere momenten, georganiseerd door de community."
+      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
+      "itemEvents": "📅 Hi later - plan a moment to meet"
     },
     "slide3": {
       "title": "Verdien je plek in de stad",
@@ -35,7 +35,9 @@
       "title": "Klaar om te beginnen?",
       "ctaChallenge": "📍 Start je eerste challenge in {{city}}",
       "ctaMostLocal": "🤝 Ontdek Most Local van {{city}}",
-      "ctaLookAround": "👀 Eerst even rondkijken"
+      "ctaLookAround": "👀 Eerst even rondkijken",
+      "ctaHiNow": "🗣️ Hi now",
+      "ctaHiLater": "📅 Hi later"
     }
   },
   "challengeIntro": {
