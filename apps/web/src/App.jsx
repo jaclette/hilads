@@ -5331,7 +5331,7 @@ export default function App() {
             {renderAppHeader()}
           </div>
           <div className="page-header">
-            <span className="page-title">🔥 {t('noun', { ns: 'challenge' })}</span>
+            <span className="page-title">🔥 {t('hiChallengeTitle', { ns: 'challenge' })}</span>
           </div>
           <div className="page-body" ref={challengesBodyRef}>
             {/* Context line + How it works → reuses the challenge-intro carousel. */}

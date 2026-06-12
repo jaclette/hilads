@@ -536,5 +536,6 @@
   "welcomeGuest": {
     "title": "👋 ¡Bienvenido! Charla libremente, sin registro.",
     "cta": "¿Quieres aceptar este desafío? Regístrate en 3 segundos →"
-  }
+  },
+  "hiChallengeTitle": "Hi Challenge"
 }

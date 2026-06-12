@@ -536,5 +536,6 @@
   "welcomeGuest": {
     "title": "👋 환영해요! 가입 없이 자유롭게 채팅하세요.",
     "cta": "이 챌린지에 도전하고 싶나요? 3초면 가입 →"
-  }
+  },
+  "hiChallengeTitle": "Hi Challenge"
 }

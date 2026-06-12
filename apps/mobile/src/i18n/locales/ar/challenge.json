@@ -542,5 +542,6 @@
   "welcomeGuest": {
     "title": "👋 أهلًا بك! دردش بحرية، بلا تسجيل.",
     "cta": "تريد قبول هذا التحدي؟ سجّل في ٣ ثوانٍ →"
-  }
+  },
+  "hiChallengeTitle": "Hi Challenge"
 }
