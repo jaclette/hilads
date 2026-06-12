@@ -70,7 +70,7 @@ export function TopicCard({
       <Text style={styles.topicMeta}>
         {replies > 0
           ? `${t('replies', { count: replies })}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : pastMode ? t('noReplies') : t('noRepliesFirst')}
+          : pastMode ? t('noReplies') : (topic.host_nickname ? t('sayHi', { name: topic.host_nickname }) : t('noRepliesFirst'))}
       </Text>
       {!pastMode ? (
         <AttendeeAvatars

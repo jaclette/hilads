@@ -161,6 +161,7 @@
   "replies_other": "💬 {{count}} replies",
   "noReplies": "No replies",
   "noRepliesFirst": "No replies yet - be first",
+  "sayHi": "Say hi to {{name}}",
   "weather": {
     "clear": "clear skies",
     "sunnyHot": "gorgeous out",

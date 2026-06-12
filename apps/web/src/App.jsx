@@ -5112,9 +5112,9 @@ export default function App() {
                         <Marquee
                           text={replies > 0
                             ? `${t('feed.replies', { count: replies })}${timeAgo ? ` · ${timeAgo}` : ''}`
-                            : t('feed.repliesNew')}
+                            : (topic.host_nickname ? t('feed.sayHi', { name: topic.host_nickname }) : t('feed.sayHiGeneric'))}
                           className="now-reply-marquee"
-                          fadeColor="#2b1814"
+                          fadeColor="#101a2b"
                         />
                       </span>
                     </div>

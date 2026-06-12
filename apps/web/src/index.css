@@ -6857,7 +6857,8 @@ img.pub-profile-avatar {
   min-width: 0;
   display: flex;
   overflow: hidden;
-  background: #2b1814;
+  background: #101a2b;
+  color: #60a5fa;
 }
 .now-reply-marquee { flex: 1 1 auto; min-width: 0; }
 

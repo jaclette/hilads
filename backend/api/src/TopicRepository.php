@@ -20,12 +20,14 @@ class TopicRepository
             ct.category,
             ct.venue_lat,
             ct.venue_lng,
+            uc.display_name                                    AS host_nickname,
             COUNT(m.id)                                        AS message_count,
             EXTRACT(EPOCH FROM MAX(m.created_at))::INTEGER     AS last_activity_at,
             EXTRACT(EPOCH FROM ct.expires_at)::INTEGER         AS expires_at,
             EXTRACT(EPOCH FROM c.created_at)::INTEGER          AS created_at
         FROM channels c
         JOIN channel_topics ct ON ct.channel_id = c.id
+        LEFT JOIN users uc ON uc.id = ct.created_by
         LEFT JOIN messages m ON m.channel_id = c.id AND m.type IN ('text', 'image')
     ";
 
@@ -41,6 +43,7 @@ class TopicRepository
             'category'         => $row['category'],
             'venue_lat'        => isset($row['venue_lat']) ? (float) $row['venue_lat'] : null,
             'venue_lng'        => isset($row['venue_lng']) ? (float) $row['venue_lng'] : null,
+            'host_nickname'    => $row['host_nickname'] ?? null,
             'message_count'    => (int) ($row['message_count'] ?? 0),
             'last_activity_at' => isset($row['last_activity_at']) ? (int) $row['last_activity_at'] : null,
             'expires_at'       => (int) $row['expires_at'],
@@ -103,10 +106,12 @@ class TopicRepository
                 ct.category,
                 ct.venue_lat,
                 ct.venue_lng,
+                uc.display_name AS host_nickname,
                 EXTRACT(EPOCH FROM ct.expires_at)::INTEGER AS expires_at,
                 EXTRACT(EPOCH FROM c.created_at)::INTEGER  AS created_at
             FROM channels c
             JOIN channel_topics ct ON ct.channel_id = c.id
+            LEFT JOIN users uc ON uc.id = ct.created_by
             WHERE ct.city_id    = :city_id
               AND c.status      = 'active'
               AND ct.expires_at > now()
@@ -151,6 +156,7 @@ class TopicRepository
                 'category'         => $topic['category'],
                 'venue_lat'        => $topic['venue_lat'] ?? null,
                 'venue_lng'        => $topic['venue_lng'] ?? null,
+                'host_nickname'    => $topic['host_nickname'] ?? null,
                 'message_count'    => $stats !== null ? $stats['message_count']    : 0,
                 'last_activity_at' => $stats !== null ? $stats['last_activity_at'] : null,
                 'expires_at'       => $topic['expires_at'],
@@ -257,7 +263,8 @@ class TopicRepository
               AND c.status    = 'active'
               AND ct.expires_at > now()
             GROUP BY c.id, ct.city_id, ct.created_by, ct.guest_id,
-                     ct.title, ct.description, ct.category, ct.venue_lat, ct.venue_lng, ct.expires_at
+                     ct.title, ct.description, ct.category, ct.venue_lat, ct.venue_lng, ct.expires_at,
+                     uc.display_name
         ");
         $stmt->execute(['id' => $topicId]);
         $row = $stmt->fetch();
