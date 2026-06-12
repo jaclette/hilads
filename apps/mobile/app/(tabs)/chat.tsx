@@ -1037,7 +1037,21 @@ export default function ChatTab() {
       {/* Arrivals strip - extracted from the main feed so real messages
           aren't drowned out by ambient "X just landed" rows. Default shows a
           neutral label; on a new arrival it morphs in-place for 3s. */}
-      <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} />
+      {/* Recent arrivals, with a "Hi now" pill (active hangouts) to its right
+          when there's at least one. No hangouts → arrivals bar fills the line. */}
+      <View style={styles.arrivalsRow}>
+        <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} style={styles.arrivalsBarInline} />
+        {topicFeedItems.length > 0 && (
+          <TouchableOpacity
+            style={styles.hiNowPill}
+            onPress={() => router.push('/(tabs)/events' as never)}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+          >
+            <Text style={styles.hiNowPillText} numberOfLines={1}>🗣️ {topicFeedItems.length} Hi now</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Single persistent activity pill - replaces the ephemeral event /
           hangout / challenge cards that used to flicker through the feed.
@@ -1498,6 +1512,19 @@ const styles = StyleSheet.create({
   // pre-applied filter. Visual echoes the "Learn how challenges work"
   // banner inside the challenge channel so the two surfaces feel like
   // siblings (warm dark fill, faint orange ring, orange CTA on the right).
+  // Recent arrivals + optional "Hi now" pill share one line.
+  arrivalsRow:       { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginHorizontal: Spacing.md },
+  arrivalsBarInline: { marginHorizontal: 0, flex: 1 },
+  hiNowPill: {
+    justifyContent:    'center',
+    paddingHorizontal: 12,
+    borderRadius:      10,
+    backgroundColor:   'rgba(255,122,60,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.30)',
+  },
+  hiNowPillText: { color: Colors.accent, fontWeight: '700', fontSize: 13 },
+
   activityPillRow: {
     flexDirection:    'row',
     gap:              8,

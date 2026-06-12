@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, type StyleProp, type ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -40,9 +40,10 @@ function joinText(m: Message): string {
 type Props = {
   arrivals:       Message[];   // all join messages, newest-first (same source as the feed)
   onOpenSheet:    () => void;
+  style?:         StyleProp<ViewStyle>;   // lets the parent flex it inline next to a sibling pill
 };
 
-export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
+export function ArrivalsBar({ arrivals, onOpenSheet, style }: Props) {
   const router    = useRouter();
   const { t }     = useTranslation('chat');
   const { account } = useApp();
@@ -140,7 +141,7 @@ export function ArrivalsBar({ arrivals, onOpenSheet }: Props) {
 
   return (
     <TouchableOpacity
-      style={styles.bar}
+      style={[styles.bar, style]}
       activeOpacity={0.75}
       onPress={handlePress}
       accessibilityRole="button"

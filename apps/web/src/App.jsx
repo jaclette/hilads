@@ -4301,17 +4301,26 @@ export default function App() {
             aren't drowned by ambient join lines. Default shows a neutral
             label; on a new arrival it morphs in-place for 3s. Same items as
             before (post-throttle, post own-arrival filter from toFeedItem). */}
-        <ArrivalsBar
-          arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
-          onOpen={() => setShowArrivalsSheet(true)}
-          onTapUser={(a) => {
-            if (a.userId) {
-              openProfile(a.userId, a.nickname ?? '')
-            } else if (a.guestId) {
-              setGuestProfile({ guestId: a.guestId, nickname: a.nickname ?? '' })
-            }
-          }}
-        />
+        {/* Recent arrivals, with a "Hi now" pill (active hangouts) to its right
+            when there's at least one. No hangouts → arrivals bar fills the line. */}
+        <div className="arrivals-row">
+          <ArrivalsBar
+            arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
+            onOpen={() => setShowArrivalsSheet(true)}
+            onTapUser={(a) => {
+              if (a.userId) {
+                openProfile(a.userId, a.nickname ?? '')
+              } else if (a.guestId) {
+                setGuestProfile({ guestId: a.guestId, nickname: a.nickname ?? '' })
+              }
+            }}
+          />
+          {topics.length > 0 && (
+            <button type="button" className="hi-now-pill" onClick={goToEventsTab}>
+              🗣️ {topics.length} Hi now
+            </button>
+          )}
+        </div>
 
         {/* City-activity pills - one per content type. Each tap routes
             to NOW pre-filtered (challenges or events). Hidden when zero

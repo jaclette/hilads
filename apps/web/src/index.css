@@ -4096,6 +4096,38 @@ html, body, #root {
 /* ── Arrivals bar (between chat header and messages) ─────────────────────────
    Fixed height; only the inner content crossfades so the messages list never
    reflows. Two absolutely-positioned layers (default + live) toggle opacity. */
+/* Recent arrivals + optional "Hi now" pill share one line. The row carries the
+   margins; the arrivals bar flexes to fill and the pill sits on the right. */
+.arrivals-row {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  margin: 6px 12px 4px;
+}
+.arrivals-row .arrivals-bar {
+  width: auto;
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+.hi-now-pill {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: rgba(255, 122, 60, 0.10);
+  border: 1px solid rgba(255, 122, 60, 0.30);
+  color: #FF7A3C;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.hi-now-pill:active { opacity: 0.85; }
+
 .arrivals-bar {
   position: relative;
   display: block;
