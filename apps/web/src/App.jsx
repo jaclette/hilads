@@ -335,6 +335,11 @@ function ShareVibeBtn({ eventId, title, city }) {
   )
 }
 
+// ── Feature flags ─────────────────────────────────────────────────────────────
+// Hangouts (topics) are put to sleep: hidden from the bar, feeds, and the
+// create chooser. Code stays in place and dormant - flip to true to revive.
+const HANGOUTS_ENABLED = false
+
 // ── Bottom nav icons ──────────────────────────────────────────────────────────
 
 const NAV_ICON_PROPS = {
@@ -392,6 +397,36 @@ function NavIconProfile() {
       <circle cx="12" cy="8" r="4" />
       {/* Shoulders */}
       <path d="M4 21a9 9 0 0 1 16 0" />
+    </svg>
+  )
+}
+
+// MY CITY tab - house (replaces the old building glyph).
+function NavIconHouse() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Roof + walls */}
+      <path d="M3 11.5 12 4l9 7.5" />
+      <path d="M5 10v10h14V10" />
+      {/* Door */}
+      <path d="M10 20v-5a2 2 0 0 1 4 0v5" />
+    </svg>
+  )
+}
+
+// EVENTS tab - party popper.
+function NavIconParty() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      {/* Cone */}
+      <path d="M3 21 8.5 8l7.5 7.5z" />
+      {/* Streamers / confetti */}
+      <path d="M14 6c1.2-1.2 3-1.2 4 0" strokeWidth="1.4" />
+      <path d="M16.5 3.5c.9-.9 2.4-.9 3.3 0" strokeWidth="1.4" />
+      <path d="M19 9c1-.3 1.8.5 1.5 1.5" strokeWidth="1.4" />
+      <circle cx="13" cy="12" r="0.6" />
+      <circle cx="20" cy="14" r="0.6" />
+      <circle cx="17.5" cy="18" r="0.6" />
     </svg>
   )
 }
@@ -974,9 +1009,10 @@ export default function App() {
   // ProfileScreen (signed-in ME) has its own internal scroll - not preserved
   // here; see TODO in ProfileScreen.jsx if that becomes important.
   const tabScrollTops = useRef({ now: 0, here: 0, meGuest: 0 })
-  const nowBodyRef     = useRef(null)
-  const hereBodyRef    = useRef(null)
-  const meGuestBodyRef = useRef(null)
+  const nowBodyRef        = useRef(null)
+  const challengesBodyRef = useRef(null)
+  const hereBodyRef       = useRef(null)
+  const meGuestBodyRef    = useRef(null)
 
   useEffect(() => {
     if (!showEventDrawer) return
@@ -1017,7 +1053,8 @@ export default function App() {
   const [showCreateEvent,    setShowCreateEvent]    = useState(false)
   const [showCreateTopic,    setShowCreateTopic]    = useState(false)
   const [showCreateChooser,  setShowCreateChooser]  = useState(false)
-  const [nowFilter,          setNowFilter]          = useState('all') // 'all' | 'challenges' | 'events' | 'topics'
+  // CHALLENGES tab - its own drawer (split out of the old NOW drawer).
+  const [showChallengesDrawer, setShowChallengesDrawer] = useState(false)
   // Sub-filter chips inside the Challenges filter - food / place / culture /
   // help. Reset to 'all' whenever the parent filter leaves 'challenges'.
   const [challengeTypeFilter, setChallengeTypeFilter] = useState('all')
@@ -1061,11 +1098,11 @@ export default function App() {
   // leak whatever cap the user paginated to last time.
   useEffect(() => {
     setChallengesShownCount(NOW_CHALLENGES_CAP)
-    if (nowFilter !== 'challenges') {
+    if (!showChallengesDrawer) {
       setChallengeTypeFilter('all')
       setChallengeModeFilter('all')
     }
-  }, [nowFilter])
+  }, [showChallengesDrawer])
 
   // Reset the visible-count when either sub-filter changes - switching from
   // "food" to "place" (or Local→Intl) should land the user at the top of
@@ -1079,13 +1116,13 @@ export default function App() {
   // is passed through unchanged (the NOW "all" view caps at 5 anyway).
   const filteredChallenges = useMemo(() => {
     let pool = cityChallenges
-    if (nowFilter === 'challenges') {
-      if (challengeModeFilter !== 'all') {
-        pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
-      }
-      if (challengeTypeFilter !== 'all') {
-        pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
-      }
+    // The Challenges drawer is the only consumer now - always apply the
+    // mode + type sub-filters.
+    if (challengeModeFilter !== 'all') {
+      pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
+    }
+    if (challengeTypeFilter !== 'all') {
+      pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
     }
     // Local first, international last. Stable within each bucket so the
     // backend ordering (recent first) survives - we only push intl rows
@@ -1097,7 +1134,7 @@ export default function App() {
       const bm = (b.mode ?? 'local') === 'international' ? 1 : 0
       return am - bm
     })
-  }, [cityChallenges, nowFilter, challengeTypeFilter, challengeModeFilter])
+  }, [cityChallenges, challengeTypeFilter, challengeModeFilter])
 
   // Scroll-to-load-more - three gates so we never spam the rendering loop
   // (and, when backend pagination lands, the API):
@@ -1111,8 +1148,8 @@ export default function App() {
     filteredChallengesLengthRef.current = filteredChallenges.length
   }, [filteredChallenges])
   useEffect(() => {
-    if (nowFilter !== 'challenges') return
-    const el = nowBodyRef.current
+    if (!showChallengesDrawer) return
+    const el = challengesBodyRef.current
     if (!el) return
     const onScroll = () => {
       const remaining = el.scrollHeight - el.scrollTop - el.clientHeight
@@ -1125,7 +1162,7 @@ export default function App() {
     }
     el.addEventListener('scroll', onScroll, { passive: true })
     return () => el.removeEventListener('scroll', onScroll)
-  }, [nowFilter, challengesShownCount])
+  }, [showChallengesDrawer, challengesShownCount])
 
   // Hangouts are members-only - gate guests to signup, otherwise open the channel.
   const openHangout = (topic) => {
@@ -2983,6 +3020,7 @@ export default function App() {
   function goToCityChannel() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
+    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
@@ -2991,30 +3029,38 @@ export default function App() {
     dismissFullPageOverlays()
   }
 
-  // Bottom-tab handlers for NOW / HERE / ME - each clears every other
-  // top-level flag before setting its own. Without this, tapping e.g. NOW
-  // then HERE leaves both drawer flags true and closing the top one reveals
-  // the one underneath instead of returning to the City Channel.
-  function goToNowTab(initialFilter) {
+  // Bottom-tab handlers for CHALLENGES / EVENTS / HERE / ME - each clears every
+  // other top-level flag before setting its own. Without this, tapping e.g.
+  // EVENTS then CHALLENGES leaves both drawer flags true and closing the top
+  // one reveals the one underneath instead of returning to the City Channel.
+  function goToEventsTab() {
     setShowCityPicker(false)
+    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
     setShowNotifications(false)
     setViewingProfile(null)
     dismissFullPageOverlays()
-    // Optional filter pre-selection - callers can pass 'challenges',
-    // 'events', or 'topics' to land the user on a specific bucket
-    // (e.g. the city-chat activity pills route here pre-filtered).
-    // Anything else (incl. no arg) keeps the current selector.
-    if (initialFilter === 'challenges' || initialFilter === 'events' || initialFilter === 'topics' || initialFilter === 'all') {
-      setNowFilter(initialFilter)
-    }
     setShowEventDrawer(true)
+  }
+  // Back-compat alias - some call sites still reference goToNowTab.
+  const goToNowTab = goToEventsTab
+  function goToChallengesTab() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    dismissFullPageOverlays()
+    setShowChallengesDrawer(true)
   }
   function goToHereTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
+    setShowChallengesDrawer(false)
     setShowProfileDrawer(false)
     setShowConversations(false)
     setShowNotifications(false)
@@ -3025,6 +3071,7 @@ export default function App() {
   function goToMeTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
+    setShowChallengesDrawer(false)
     setShowPeopleDrawer(false)
     setShowConversations(false)
     setShowNotifications(false)
@@ -4277,7 +4324,7 @@ export default function App() {
               <button
                 type="button"
                 className="city-activity-pill city-activity-pill--half"
-                onClick={() => goToNowTab('challenges')}
+                onClick={goToChallengesTab}
               >
                 <span className="city-activity-pill-text">
                   🔥 {cityChallenges.length} {cityChallenges.length === 1
@@ -4291,7 +4338,7 @@ export default function App() {
               <button
                 type="button"
                 className="city-activity-pill city-activity-pill--half"
-                onClick={() => goToNowTab('events')}
+                onClick={goToEventsTab}
               >
                 <span className="city-activity-pill-text">
                   🎉 {events.length} {events.length === 1
@@ -4857,40 +4904,44 @@ export default function App() {
 
         {/* Bottom navigation - mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
-          <button
-            type="button"
-            className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
-            onClick={goToNowTab}
-            aria-label="Now"
-          >
-            <span
-              className={`bottom-nav-icon${nowTabPulsing ? ' bottom-nav-icon--now-pulse' : ''}`}
-              onAnimationEnd={() => setNowTabPulsing(false)}
-            >
-              <NavIconEvents />
-              {nowTabDot && <span className="bottom-nav-now-dot" aria-hidden="true" />}
-            </span>
-          </button>
+          {/* MY CITY */}
           <button
             type="button"
             className={`bottom-nav-tab${
-              !showEventDrawer && !showCityPicker && !showPeopleDrawer &&
+              !showEventDrawer && !showChallengesDrawer && !showCityPicker && !showPeopleDrawer &&
               !showProfileDrawer && !showConversations && !showNotifications
                 ? ' active' : ''
             }`}
             onClick={goToCityChannel}
             aria-label="My city"
           >
-            <span className="bottom-nav-icon"><NavIconCity /></span>
+            <span className="bottom-nav-icon"><NavIconHouse /></span>
           </button>
+          {/* CHALLENGES */}
           <button
             type="button"
-            className={`bottom-nav-tab${showPeopleDrawer ? ' active' : ''}`}
-            onClick={goToHereTab}
-            aria-label="People here"
+            className={`bottom-nav-tab${showChallengesDrawer ? ' active' : ''}`}
+            onClick={goToChallengesTab}
+            aria-label="Challenges"
           >
-            <span className="bottom-nav-icon"><NavIconPeople /></span>
+            <span className="bottom-nav-icon"><NavIconEvents /></span>
           </button>
+          {/* EVENTS */}
+          <button
+            type="button"
+            className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
+            onClick={goToEventsTab}
+            aria-label="Events"
+          >
+            <span
+              className={`bottom-nav-icon${nowTabPulsing ? ' bottom-nav-icon--now-pulse' : ''}`}
+              onAnimationEnd={() => setNowTabPulsing(false)}
+            >
+              <NavIconParty />
+              {nowTabDot && <span className="bottom-nav-now-dot" aria-hidden="true" />}
+            </span>
+          </button>
+          {/* PROFILE */}
           <button
             type="button"
             className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
@@ -5006,151 +5057,10 @@ export default function App() {
             {renderAppHeader()}
           </div>
           <div className="page-header">
-            <span className="page-title">{t('nowTitle', { ns: 'common' })}</span>
-          </div>
-          <div className="now-filter-bar">
-            {['all', 'challenges', 'topics', 'events'].map(f => (
-              <button
-                key={f}
-                className={`now-filter-pill${nowFilter === f ? ' now-filter-pill--active' : ''}`}
-                onClick={() => setNowFilter(f)}
-              >
-                {f === 'all'           ? t('feed.filterAll')
-                  : f === 'challenges' ? t('filterChallenges', { ns: 'common' })
-                  : f === 'events'     ? t('filterEvents',     { ns: 'common' })
-                  :                      t('filterHangouts',   { ns: 'common' })}
-              </button>
-            ))}
+            <span className="page-title">{t('filterEvents', { ns: 'common' })}</span>
           </div>
           <div className="page-body" ref={nowBodyRef}>
-            {/* Challenges strip - shown on All + Challenges filters per spec.
-                On 'all'      → top 5 newest + "See all" CTA when there are more.
-                On 'challenges' → type sub-filter chips, paginated cap with
-                                  scroll-to-load (5 at a time). */}
-            {(nowFilter === 'all' || nowFilter === 'challenges') && cityChallenges.length > 0 && (() => {
-              // filteredChallenges + reset effects live above; we just slice
-              // here to respect the visible-cap (paginated on the Challenges
-              // filter, hard 5 on the All filter).
-              const visibleCap = nowFilter === 'challenges' ? challengesShownCount : NOW_CHALLENGES_CAP
-              const visibleChallenges = filteredChallenges.slice(0, visibleCap)
-              const hasMoreInFilter   = filteredChallenges.length > visibleChallenges.length
-              const hasMoreTotal      = cityChallenges.length > NOW_CHALLENGES_CAP
-              return (
-              <div className="now-challenges-section">
-                {nowFilter === 'all' && (
-                  <p
-                    className="events-group-label"
-                    style={{ padding: '10px 12px 2px', color: '#FF7A3C', display: 'flex', alignItems: 'center', gap: 8 }}
-                  >
-                    <span style={{ flex: 1 }}>🔥 {t('noun', { ns: 'challenge' })}</span>
-                    <ScoringInfoButton />
-                  </p>
-                )}
-                {nowFilter === 'challenges' && (
-                  <>
-                    {/* Mode sub-filter - All / Local / International */}
-                    <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
-                      {[
-                        { key: 'all',           emoji: '✨' },
-                        { key: 'local',         emoji: '🏙️' },
-                        { key: 'international', emoji: '🌐' },
-                      ].map(({ key, emoji }) => (
-                        <button
-                          key={key}
-                          type="button"
-                          role="tab"
-                          aria-selected={challengeModeFilter === key}
-                          className={`challenge-type-chip${challengeModeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                          onClick={() => setChallengeModeFilter(key)}
-                        >
-                          <span aria-hidden="true">{emoji}</span>
-                          <span>{key === 'all'
-                            ? t('modeFilter.all',           { ns: 'challenge' })
-                            : t(`mode.${key}`,              { ns: 'challenge' })}</span>
-                        </button>
-                      ))}
-                    </div>
-                    {/* Type sub-filter - Food / Place / Culture / Help */}
-                    <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
-                      {[
-                        { key: 'all',     emoji: '✨' },
-                        { key: 'food',    emoji: '🍜' },
-                        { key: 'place',   emoji: '📍' },
-                        { key: 'culture', emoji: '🎭' },
-                        { key: 'help',    emoji: '🤝' },
-                      ].map(({ key, emoji }) => (
-                        <button
-                          key={key}
-                          type="button"
-                          role="tab"
-                          aria-selected={challengeTypeFilter === key}
-                          className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                          onClick={() => setChallengeTypeFilter(key)}
-                        >
-                          <span aria-hidden="true">{emoji}</span>
-                          <span>{key === 'all'
-                            ? t('typeFilter.all', { ns: 'challenge' })
-                            : t(`tp.${key}`, { ns: 'challenge' })}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </>
-                )}
-                {visibleChallenges.map(c => (
-                  <ChallengeVersusCard
-                    key={c.id}
-                    challenge={c}
-                    onClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
-                    onAcceptClick={() => { setShowEventDrawer(false); setActiveChallenge(c) }}
-                    onAvatarClick={(uid) => {
-                      setShowEventDrawer(false)
-                      openProfile(uid, '')
-                    }}
-                  />
-                ))}
-                {/* "See all challenges" CTA on the All filter - switches the
-                    parent filter to 'challenges' so the user lands inside
-                    the full list (with type chips + pagination). */}
-                {nowFilter === 'all' && hasMoreTotal && (
-                  <button
-                    type="button"
-                    className="challenge-see-all"
-                    onClick={() => setNowFilter('challenges')}
-                  >
-                    {t('seeAllChallenges', { ns: 'challenge', defaultValue: 'See all challenges →' })}
-                  </button>
-                )}
-                {/* Type-bucket empty state - the user picked a type that has
-                    no challenges right now. Sit silent on the parent feed; a
-                    tiny inline hint is enough. */}
-                {nowFilter === 'challenges' && filteredChallenges.length === 0 && (
-                  <div className="challenge-type-empty">
-                    {t('typeFilter.empty', { ns: 'challenge', defaultValue: 'Nothing in this category right now.' })}
-                  </div>
-                )}
-                {/* Inline loader hint when there are more challenges to show.
-                    The scroll listener bumps challengesShownCount; the array
-                    re-slices and the hint disappears on its own. */}
-                {nowFilter === 'challenges' && hasMoreInFilter && (
-                  <div className="challenge-load-more-hint">…</div>
-                )}
-              </div>
-              )
-            })()}
-
-            {/* Empty state for the 'challenges' filter - only fires when the
-                whole challenges array is empty (no validated either). */}
-            {nowFilter === 'challenges' && cityChallenges.length === 0 && (
-              <div className="events-empty-state">
-                <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
-                <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateChallenge() }} style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}>
-                  🔥 {t('createCta', { ns: 'challenge' })}
-                </button>
-              </div>
-            )}
-
-            {/* Filter='challenges' → don't render events/topics below */}
-            {nowFilter !== 'challenges' && (() => {
+            {(() => {
               const openCreate = () => { tryOpenCreateEvent({ fromDrawer: true }) }
               const tz = cityTimezone || 'UTC'
               const hiladsEvents = [...events].sort((a, b) => a.starts_at - b.starts_at)
@@ -5296,7 +5206,7 @@ export default function App() {
                 )
               }
 
-              if (totalVisibleEvents === 0 && topics.length === 0) {
+              if (totalVisibleEvents === 0) {
                 const isLocalUser = account?.mode === 'local'
                 return (
                   <div className="events-empty-state">
@@ -5307,7 +5217,9 @@ export default function App() {
                     <button className="events-empty-cta" onClick={openCreate}>
                       {isLocalUser ? t('feed.openPlace') : t('feed.createEvent')}
                     </button>
-                    <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
+                    {HANGOUTS_ENABLED && (
+                      <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
+                    )}
                   </div>
                 )
               }
@@ -5315,7 +5227,7 @@ export default function App() {
               // Unified list: merge hilads events + topics, sort by activity
               const nowTs = Date.now() / 1000
               const taggedEvents = hiladsEvents.map(e => ({ ...e, _kind: 'event' }))
-              const taggedTopics = topics.map(t => ({ ...t, _kind: 'topic' }))
+              const taggedTopics = HANGOUTS_ENABLED ? topics.map(t => ({ ...t, _kind: 'topic' })) : []
               const unified = [...taggedEvents, ...taggedTopics].sort((a, b) => {
                 // Hangouts take priority over events
                 const aTopic = a._kind === 'topic' ? 1 : 0
@@ -5342,36 +5254,24 @@ export default function App() {
                 return bAct - aAct
               })
 
-              const filtered = nowFilter === 'events'
-                ? unified.filter(i => i._kind === 'event')
-                : nowFilter === 'topics'
-                  ? unified.filter(i => i._kind === 'topic')
-                  : unified
+              // Events tab → events only (Challenges + Hangouts moved out).
+              const filtered = unified.filter(i => i._kind === 'event')
 
-              if (filtered.length === 0) {
+              // Only truly empty when there are no public events to show below either.
+              if (filtered.length === 0 && publicEvents.length === 0) {
                 return (
                   <div className="events-empty-state">
-                    <p className="events-empty-title">
-                      {nowFilter === 'events' ? t('feed.noEvents') : t('feed.noHangouts')}
-                    </p>
-                    <p className="events-empty-sub">
-                      {nowFilter === 'events' ? t('feed.noEventsSub', { city }) : t('feed.noHangoutsSub')}
-                    </p>
-                    {nowFilter === 'events'
-                      ? <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
-                      : <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
-                    }
+                    <p className="events-empty-title">{t('feed.noEvents')}</p>
+                    <p className="events-empty-sub">{t('feed.noEventsSub', { city })}</p>
+                    <button className="events-empty-cta" onClick={openCreate}>{t('feed.createEvent')}</button>
                   </div>
                 )
               }
 
               return (
                 <>
-                  {filtered.map(item => item._kind === 'topic'
-                    ? renderTopicRow(item)
-                    : renderEventRow(item, 'hilads')
-                  )}
-                  {nowFilter !== 'topics' && publicEvents.length > 0 && (
+                  {filtered.map(item => renderEventRow(item, 'hilads'))}
+                  {publicEvents.length > 0 && (
                     <>
                       <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>{t('feed.groupPublicTicket')}</p>
                       {publicEvents.map(event => renderEventRow(event, 'public'))}
@@ -5416,6 +5316,109 @@ export default function App() {
           >
             {t('feed.seeHappened')} →
           </button>
+        </div>
+      )}
+
+      {/* ── CHALLENGES tab ── split out of the old NOW drawer. Always renders
+          its mode + type sub-filters; pagination via challengesBodyRef. */}
+      {showChallengesDrawer && (
+        <div className="full-page full-page--tab">
+          <div className="tab-app-header">
+            {renderAppHeader()}
+          </div>
+          <div className="page-header">
+            <span className="page-title">🔥 {t('noun', { ns: 'challenge' })}</span>
+          </div>
+          <div className="page-body" ref={challengesBodyRef}>
+            {cityChallenges.length === 0 ? (
+              <div className="events-empty-state">
+                <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
+                <button className="events-empty-cta" onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }} style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}>
+                  🔥 {t('createCta', { ns: 'challenge' })}
+                </button>
+              </div>
+            ) : (() => {
+              const visibleChallenges = filteredChallenges.slice(0, challengesShownCount)
+              const hasMoreInFilter   = filteredChallenges.length > visibleChallenges.length
+              return (
+              <div className="now-challenges-section">
+                {/* Mode sub-filter - All / Local / International */}
+                <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
+                  {[
+                    { key: 'all',           emoji: '✨' },
+                    { key: 'local',         emoji: '🏙️' },
+                    { key: 'international', emoji: '🌐' },
+                  ].map(({ key, emoji }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      role="tab"
+                      aria-selected={challengeModeFilter === key}
+                      className={`challenge-type-chip${challengeModeFilter === key ? ' challenge-type-chip--active' : ''}`}
+                      onClick={() => setChallengeModeFilter(key)}
+                    >
+                      <span aria-hidden="true">{emoji}</span>
+                      <span>{key === 'all'
+                        ? t('modeFilter.all', { ns: 'challenge' })
+                        : t(`mode.${key}`,    { ns: 'challenge' })}</span>
+                    </button>
+                  ))}
+                </div>
+                {/* Type sub-filter - Food / Place / Culture / Help */}
+                <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
+                  {[
+                    { key: 'all',     emoji: '✨' },
+                    { key: 'food',    emoji: '🍜' },
+                    { key: 'place',   emoji: '📍' },
+                    { key: 'culture', emoji: '🎭' },
+                    { key: 'help',    emoji: '🤝' },
+                  ].map(({ key, emoji }) => (
+                    <button
+                      key={key}
+                      type="button"
+                      role="tab"
+                      aria-selected={challengeTypeFilter === key}
+                      className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
+                      onClick={() => setChallengeTypeFilter(key)}
+                    >
+                      <span aria-hidden="true">{emoji}</span>
+                      <span>{key === 'all'
+                        ? t('typeFilter.all', { ns: 'challenge' })
+                        : t(`tp.${key}`, { ns: 'challenge' })}</span>
+                    </button>
+                  ))}
+                </div>
+                {visibleChallenges.map(c => (
+                  <ChallengeVersusCard
+                    key={c.id}
+                    challenge={c}
+                    onClick={() => { setShowChallengesDrawer(false); setActiveChallenge(c) }}
+                    onAcceptClick={() => { setShowChallengesDrawer(false); setActiveChallenge(c) }}
+                    onAvatarClick={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
+                  />
+                ))}
+                {filteredChallenges.length === 0 && (
+                  <div className="challenge-type-empty">
+                    {t('typeFilter.empty', { ns: 'challenge', defaultValue: 'Nothing in this category right now.' })}
+                  </div>
+                )}
+                {hasMoreInFilter && (
+                  <div className="challenge-load-more-hint">…</div>
+                )}
+              </div>
+              )
+            })()}
+          </div>
+          {/* Bottom action bar - create a challenge. */}
+          <div className="now-actions-bar">
+            <button
+              className="upcoming-cta upcoming-cta--inline"
+              style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}
+              onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
+            >
+              🔥 {t('createCta', { ns: 'challenge' })}
+            </button>
+          </div>
         </div>
       )}
 
@@ -6289,6 +6292,7 @@ export default function App() {
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>
+            {HANGOUTS_ENABLED && (
             <button
               className="create-chooser-option"
               onClick={() => {
@@ -6303,6 +6307,7 @@ export default function App() {
               </span>
               <span className="create-chooser-arrow">→</span>
             </button>
+            )}
             <button
               className="create-chooser-option"
               onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
@@ -6529,7 +6534,7 @@ export default function App() {
           onTakeChallenge={() => {
             markOnboardingSeen()
             setShowOnboarding(false)
-            setNowFilter('challenges')
+            goToChallengesTab()
           }}
           onMostLocal={() => {
             markOnboardingSeen()
