@@ -6405,7 +6405,7 @@ img.pub-profile-avatar {
   gap: 8px;
   align-items: stretch;
 }
-.hilocal-cta-row { display: flex; gap: 8px; align-items: stretch; }
+.hilocal-cta-row { display: flex; gap: 8px; align-items: stretch; width: 100%; }
 .hilocal-cta-row > .hilocal-cta { flex: 1 1 0; min-width: 0; }
 .hilocal-cta {
   width: 100%;
@@ -6418,6 +6418,7 @@ img.pub-profile-avatar {
   font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.2;
+  white-space: nowrap;
   text-align: center;
   cursor: pointer;
   border: 1px solid;
