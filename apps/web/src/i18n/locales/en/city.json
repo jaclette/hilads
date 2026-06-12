@@ -76,6 +76,7 @@
     "repliesNew": "No replies yet - be first",
     "sayHi": "Say hi to {{name}}",
     "sayHiGeneric": "Say hi 👋",
+    "hostWaiting": "Waiting for the first hi 👋",
     "replies_one": "💬 {{count}} reply",
     "replies_other": "💬 {{count}} replies",
     "going_one": "🙌 {{count}} going",

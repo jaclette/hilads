@@ -716,6 +716,10 @@ export default function NowScreen() {
               return (
                 <TopicCard
                   topic={item as FeedItem & { kind: 'topic' }}
+                  isHost={
+                    (!!(item as FeedItem).created_by && (item as FeedItem).created_by === account?.id)
+                    || (!!(item as FeedItem).guest_id && (item as FeedItem).guest_id === identity?.guestId)
+                  }
                   distanceLabel={topicMeters !== undefined ? formatDistance(topicMeters) : undefined}
                   onAvatarsPress={() => openMembers('topic', item.id, (item as FeedItem).participant_count ?? 0)}
                   onPress={() => {

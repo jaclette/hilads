@@ -25,7 +25,7 @@ function timeAgo(ts: number): string {
 }
 
 export function TopicCard({
-  topic, onPress, pastMode = false, distanceLabel, onAvatarsPress,
+  topic, onPress, pastMode = false, distanceLabel, onAvatarsPress, isHost = false,
 }: {
   topic: FeedItem & { kind: 'topic' };
   onPress: () => void;
@@ -34,6 +34,8 @@ export function TopicCard({
   distanceLabel?: string | null;
   // NOW feed only - tapping the member row opens the members list.
   onAvatarsPress?: () => void;
+  // NOW feed only - viewer created this hangout (show "waiting" not "say hi to self").
+  isHost?: boolean;
 }) {
   const { t } = useTranslation('common');
   const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
@@ -70,7 +72,9 @@ export function TopicCard({
       <Text style={styles.topicMeta}>
         {replies > 0
           ? `${t('replies', { count: replies })}${lastAct ? ` · ${timeAgo(lastAct)}` : ''}`
-          : pastMode ? t('noReplies') : (topic.host_nickname ? t('sayHi', { name: topic.host_nickname }) : t('noRepliesFirst'))}
+          : pastMode ? t('noReplies')
+          : isHost ? t('hostWaiting')
+          : (topic.host_nickname ? t('sayHi', { name: topic.host_nickname }) : t('noRepliesFirst'))}
       </Text>
       {!pastMode ? (
         <AttendeeAvatars

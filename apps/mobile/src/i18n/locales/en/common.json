@@ -162,6 +162,7 @@
   "noReplies": "No replies",
   "noRepliesFirst": "No replies yet - be first",
   "sayHi": "Say hi to {{name}}",
+  "hostWaiting": "Waiting for the first hi 👋",
   "weather": {
     "clear": "clear skies",
     "sunnyHot": "gorgeous out",

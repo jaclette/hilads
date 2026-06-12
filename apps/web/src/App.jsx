@@ -5087,6 +5087,8 @@ export default function App() {
               const renderTopicRow = (topic) => {
                 const icon = CATEGORY_ICONS[topic.category] ?? '🗣️'
                 const replies = topic.message_count ?? 0
+                const isHost = (topic.created_by && topic.created_by === SELF_IDENTITY.userId)
+                  || (topic.guest_id && topic.guest_id === SELF_IDENTITY.guestId)
                 const activeNow = topic.active_now === true
                 const timeAgo = topic.last_activity_at
                   ? (() => {
@@ -5112,6 +5114,7 @@ export default function App() {
                         <Marquee
                           text={replies > 0
                             ? `${t('feed.replies', { count: replies })}${timeAgo ? ` · ${timeAgo}` : ''}`
+                            : isHost ? t('feed.hostWaiting')
                             : (topic.host_nickname ? t('feed.sayHi', { name: topic.host_nickname }) : t('feed.sayHiGeneric'))}
                           className="now-reply-marquee"
                           fadeColor="#101a2b"
