@@ -5268,7 +5268,10 @@ export default function App() {
 
               return (
                 <>
-                  {filtered.map(item => renderEventRow(item, 'hilads'))}
+                  {filtered.map(item => item._kind === 'topic'
+                    ? renderTopicRow(item)
+                    : renderEventRow(item, 'hilads')
+                  )}
                   {publicEvents.length > 0 && (
                     <>
                       <p className="events-group-label events-group-label--city" style={{ padding: '18px 12px 2px' }}>{t('feed.groupPublicTicket')}</p>
