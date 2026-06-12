@@ -1,9 +1,13 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { ChallengesList } from '@/features/challenges/ChallengesList';
+import { MostLocalCard } from '@/features/challenges/MostLocalCard';
+import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeCityName } from '@/i18n/cityName';
 import { Colors, FontSizes, Spacing } from '@/constants';
 
@@ -15,6 +19,8 @@ import { Colors, FontSizes, Spacing } from '@/constants';
 export default function ChallengesTab() {
   const { t } = useTranslation('challenge');
   const { city } = useApp();
+  const router = useRouter();
+  const [showChallengeIntro, setShowChallengeIntro] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -27,7 +33,32 @@ export default function ChallengesTab() {
           {city && <Text style={styles.headerSub}>{localizeCityName(city.name)}</Text>}
         </View>
       </View>
+
+      {/* Context line + How it works → reuses the challenge-intro carousel. */}
+      <View style={styles.intro}>
+        <Text style={styles.introText}>{t('tabIntro')}</Text>
+        <TouchableOpacity
+          onPress={() => setShowChallengeIntro(true)}
+          activeOpacity={0.7}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={styles.introLink}>{t('howItWorks')} →</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
+      <MostLocalCard
+        channelId={city?.channelId ?? null}
+        onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
+      />
+
       <ChallengesList channelId={city?.channelId ?? null} />
+
+      <ChallengeIntroCarousel
+        visible={showChallengeIntro}
+        onClose={() => setShowChallengeIntro(false)}
+        onCreateChallenge={() => { setShowChallengeIntro(false); router.push('/challenge/create' as never); }}
+      />
     </SafeAreaView>
   );
 }
@@ -47,4 +78,16 @@ const styles = StyleSheet.create({
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+
+  intro: {
+    flexDirection:     'row',
+    alignItems:        'flex-start',
+    justifyContent:    'space-between',
+    gap:               12,
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.sm,
+    paddingBottom:     Spacing.md,
+  },
+  introText: { flex: 1, fontSize: 13, lineHeight: 18, color: Colors.muted },
+  introLink: { fontSize: 13, fontWeight: '600', color: '#60a5fa' },
 });

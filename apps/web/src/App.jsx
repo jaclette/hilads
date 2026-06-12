@@ -47,6 +47,7 @@ import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
 import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
+import MostLocalCard from './components/MostLocalCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import PastArchiveScreen from './components/PastArchiveScreen'
@@ -5329,6 +5330,18 @@ export default function App() {
             <span className="page-title">🔥 {t('noun', { ns: 'challenge' })}</span>
           </div>
           <div className="page-body" ref={challengesBodyRef}>
+            {/* Context line + How it works → reuses the challenge-intro carousel. */}
+            <div className="challenge-tab-intro">
+              <p className="challenge-tab-intro-text">{t('tabIntro', { ns: 'challenge' })}</p>
+              <button type="button" className="challenge-tab-intro-link" onClick={() => setShowChallengeIntro(true)}>
+                {t('howItWorks', { ns: 'challenge' })} →
+              </button>
+            </div>
+            {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
+            <MostLocalCard
+              channelId={channelId}
+              onSeeAll={() => { setLeaderboardScope('city'); setShowLeaderboard(true) }}
+            />
             {cityChallenges.length === 0 ? (
               <div className="events-empty-state">
                 <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
