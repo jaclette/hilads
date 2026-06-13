@@ -3,6 +3,7 @@ import React, {
   useContext,
   useState,
   useCallback,
+  useMemo,
   useRef,
   type ReactNode,
 } from 'react';
@@ -97,6 +98,9 @@ interface AppActions {
 
 const AppContext = createContext<(AppState & AppActions) | null>(null);
 
+// Max event-chat previews kept in memory at once (newest by previewAt win).
+const EVENT_PREVIEW_CAP = 40;
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [booting,      setBooting]      = useState(true);
   const [bootError,    setBootError]    = useState<string | null>(null);
@@ -159,8 +163,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setAccount(u);
   }, []);
 
+  // Bounded: this Record was only ever cleared on logout, so it grew per
+  // event-chat across every city for the whole session (and the spread made
+  // each context update heavier). Cap to the newest N by previewAt.
   const setEventChatPreview = useCallback((eventId: string, preview: EventChatPreview) => {
-    setEventChatPreviewsRaw(prev => ({ ...prev, [eventId]: preview }));
+    setEventChatPreviewsRaw(prev => {
+      const next = { ...prev, [eventId]: preview };
+      const keys = Object.keys(next);
+      if (keys.length > EVENT_PREVIEW_CAP) {
+        keys.sort((a, b) => (next[a].previewAt < next[b].previewAt ? -1 : 1));
+        for (let i = 0; i < keys.length - EVENT_PREVIEW_CAP; i++) delete next[keys[i]];
+      }
+      return next;
+    });
   }, []);
 
   const removeEventChatPreview = useCallback((eventId: string) => {
@@ -203,39 +218,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     socket.connect();
   }, []);
 
+  // Stable wrappers (hoisted out of the value object so the value can be
+  // memoized below - hooks can't run inside useMemo).
+  const setSessionIdCb          = useCallback((id: string) => setSessionId(id), []);
+  const setCityCb               = useCallback((c: City) => setCity(c), []);
+  const setActiveEventIdCb      = useCallback((id: string | null) => setActiveEventId(id), []);
+  const setActiveDmIdCb         = useCallback((id: string | null) => setActiveDmId(id), []);
+  const setGeoStateCb           = useCallback((s: GeoState) => setGeoState(s), []);
+  const setDetectedCityCb       = useCallback((c: City | null) => setDetectedCity(c), []);
+  const setJoinedCb             = useCallback((j: boolean) => setJoined(j), []);
+  const setOnlineUsersCb        = useCallback((u: OnlineUser[]) => setOnlineUsers(u), []);
+  const setBootstrapDataCb      = useCallback((d: BootstrapData | null) => setBootstrapData(d), []);
+  const setShowOnboardingCb     = useCallback((s: boolean) => setShowOnboarding(s), []);
+  const setShowAccountWelcomeCb = useCallback((s: boolean) => setShowAccountWelcome(s), []);
+
+  // Memoize the context value. Without this a NEW object was created on every
+  // provider render, so every WS-driven state tick (presence, online users,
+  // unread counts) re-rendered ALL useApp() consumers - and a city switch,
+  // which bursts several such ticks, felt heavy. Every callback below is stable
+  // (useState setters / useCallback []), so the value only changes when real
+  // state changes.
+  const value = useMemo(() => ({
+    booting, bootError, identity, sessionId, account, city, wsConnected,
+    unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
+    geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    setBooting, setBootError,
+    setIdentity,
+    setSessionId:            setSessionIdCb,
+    setAccount:              setAccountWithLog,
+    setCity:                 setCityCb,
+    setWsConnected,
+    setUnreadDMs,
+    setUnreadNotifications,
+    setEventChatPreview,
+    removeEventChatPreview,
+    clearEventChatCounts,
+    setActiveEventId:        setActiveEventIdCb,
+    setActiveDmId:           setActiveDmIdCb,
+    setGeoState:             setGeoStateCb,
+    setDetectedCity:         setDetectedCityCb,
+    setJoined:               setJoinedCb,
+    setOnlineUsers:          setOnlineUsersCb,
+    setBootstrapData:        setBootstrapDataCb,
+    setShowOnboarding:       setShowOnboardingCb,
+    setShowAccountWelcome:   setShowAccountWelcomeCb,
+    pulseNow,
+    setBlockedSet,
+    addBlocked,
+    removeBlocked,
+    logout,
+  }), [
+    booting, bootError, identity, sessionId, account, city, wsConnected,
+    unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
+    geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    setIdentity, setSessionIdCb, setAccountWithLog, setCityCb, setEventChatPreview,
+    removeEventChatPreview, clearEventChatCounts, setActiveEventIdCb, setActiveDmIdCb,
+    setGeoStateCb, setDetectedCityCb, setJoinedCb, setOnlineUsersCb, setBootstrapDataCb,
+    setShowOnboardingCb, setShowAccountWelcomeCb, pulseNow, setBlockedSet, addBlocked,
+    removeBlocked, logout,
+  ]);
+
   return (
-    <AppContext.Provider
-      value={{
-        booting, bootError, identity, sessionId, account, city, wsConnected,
-        unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-        geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
-        setBooting, setBootError,
-        setIdentity,
-        setSessionId:            useCallback((id: string) => setSessionId(id), []),
-        setAccount:              setAccountWithLog,
-        setCity:                 useCallback((c: City) => setCity(c), []),
-        setWsConnected,
-        setUnreadDMs,
-        setUnreadNotifications,
-        setEventChatPreview,
-        removeEventChatPreview,
-        clearEventChatCounts,
-        setActiveEventId:        useCallback((id: string | null) => setActiveEventId(id), []),
-        setActiveDmId:           useCallback((id: string | null) => setActiveDmId(id), []),
-        setGeoState:             useCallback((s: GeoState) => setGeoState(s), []),
-        setDetectedCity:         useCallback((c: City | null) => setDetectedCity(c), []),
-        setJoined:               useCallback((j: boolean) => setJoined(j), []),
-        setOnlineUsers:          useCallback((u: OnlineUser[]) => setOnlineUsers(u), []),
-        setBootstrapData:        useCallback((d: BootstrapData | null) => setBootstrapData(d), []),
-        setShowOnboarding:       useCallback((s: boolean) => setShowOnboarding(s), []),
-        setShowAccountWelcome:   useCallback((s: boolean) => setShowAccountWelcome(s), []),
-        pulseNow,
-        setBlockedSet,
-        addBlocked,
-        removeBlocked,
-        logout,
-      }}
-    >
+    <AppContext.Provider value={value}>
       {children}
     </AppContext.Provider>
   );
