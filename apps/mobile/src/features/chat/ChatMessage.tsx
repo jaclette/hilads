@@ -12,7 +12,7 @@
  *   text   → bubble with avatar + author (grouped = avatar hidden)
  */
 
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, memo } from 'react';
 import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform, Linking } from 'react-native';
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { MessageImage } from './MessageImage';
@@ -539,7 +539,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null }: Props) {
+function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null }: Props) {
   const router = useRouter();
   const { t } = useTranslation('chat');
   const { account } = useApp();
@@ -1027,6 +1027,12 @@ export function ChatMessage({ message, myGuestId, isGrouped = false, index = 0, 
     </>
   );
 }
+
+// Memoized: this row used to re-render on every parent (presence/WS) tick even
+// when its own message didn't change, re-running linkify/mention regex each
+// time. Shallow prop compare is correct here - the parent now passes stable
+// callbacks + value props (see renderMessage in (tabs)/chat.tsx).
+export const ChatMessage = memo(ChatMessageInner);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 

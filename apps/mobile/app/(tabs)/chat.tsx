@@ -670,7 +670,9 @@ export default function ChatTab() {
   // height collapse (it crashed when the cell was removed mid-animation); a tiny
   // non-animated reflow is the safe trade. The id lives in exactly one of the
   // three arrays; filtering all three is harmless + simple.
-  function handleAutoDismiss(id: string) {
+  // useCallback so the memoized renderItem (and React.memo'd rows) stay stable
+  // across the frequent presence/WS re-renders of this screen.
+  const handleAutoDismiss = useCallback((id: string) => {
     // Only the chat prompts (e.g. "Learn how challenges work") still
     // ride the in-feed auto-dismiss path. The event / hangout /
     // challenge pills are no longer rendered inline - they're folded
@@ -678,9 +680,9 @@ export default function ChatTab() {
     // so dismissal there is moot. pulseNow() was the NOW tab's bump
     // animation; both the pulse and its driver are gone.
     setPromptItems(prev => prev.some(p => p.id === id) ? prev.filter(p => p.id !== id) : prev);
-  }
+  }, []);
 
-  async function handlePromptCta(subtype: string) {
+  const handlePromptCta = useCallback(async (subtype: string) => {
     setPromptItems(prev => prev.filter(p => p.subtype !== subtype));
     if (subtype === 'photo') {
       pickImageRef.current?.();
@@ -699,7 +701,7 @@ export default function ChatTab() {
     } else if (subtype === 'challenge-intro') {
       setShowChallengeIntro(true);
     }
-  }
+  }, [city, identity?.guestId, router]);
 
   // Start scheduling when the channel becomes active; cancel on channel change or unmount.
   useEffect(() => {
@@ -867,6 +869,68 @@ export default function ChatTab() {
       console.warn('[chat] reaction failed:', e);
     }
   }, [channelId, identity, account, setMessageReactions]);
+
+  // Stable renderItem so a presence/WS re-render of this screen doesn't recreate
+  // the row closure (which, with non-memoized rows, re-rendered the whole
+  // visible list + re-ran linkify/mention regex per row). Deps exclude anything
+  // that changes on a presence tick - only message-list / highlight / handler
+  // changes recompute it.
+  const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
+    const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
+    const newerMsg = allMessages[index - 1]; // newer (lower index)
+    const isGrouped =
+      !!olderMsg &&
+      olderMsg.guestId === item.guestId &&
+      olderMsg.type !== 'system' &&
+      olderMsg.type !== 'event' &&
+      olderMsg.type !== 'topic' &&
+      olderMsg.type !== 'activity' &&
+      olderMsg.type !== 'prompt' &&
+      item.type !== 'system' &&
+      item.type !== 'event' &&
+      item.type !== 'topic' &&
+      item.type !== 'activity' &&
+      item.type !== 'prompt';
+    const showTime =
+      item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' &&
+      item.type !== 'activity' && item.type !== 'prompt' && (
+        !newerMsg ||
+        newerMsg.guestId !== item.guestId ||
+        newerMsg.type === 'system'
+      );
+    const dateLabel =
+      item.type !== 'event' && item.type !== 'topic' &&
+      item.type !== 'activity' && item.type !== 'prompt' &&
+      !isSameDay(item.createdAt, olderMsg?.createdAt)
+        ? formatDateLabel(item.createdAt)
+        : undefined;
+    return (
+      <ChatMessage
+        message={item}
+        myGuestId={identity?.guestId}
+        index={index}
+        isGrouped={isGrouped}
+        showTime={showTime}
+        dateLabel={dateLabel}
+        onPromptCta={handlePromptCta}
+        onLongPress={handleMessageLongPress}
+        onReplyQuotePress={scrollToMessage}
+        isHighlighted={highlightedMsgId === item.id}
+        onReact={handleReact}
+        autoDismiss={
+          item.type === 'event'
+          || item.type === 'topic'
+          || item.type === 'challenge'
+          || item.type === 'challenge_validated'
+          || item.type === 'prompt'
+          || item.type === 'activity'
+        }
+        onAutoDismiss={handleAutoDismiss}
+        reduceMotion={reduceMotion}
+      />
+    );
+  }, [allMessages, identity?.guestId, highlightedMsgId, handlePromptCta,
+      handleMessageLongPress, scrollToMessage, handleReact, handleAutoDismiss, reduceMotion]);
 
   // No city yet - prompt to pick one
   if (!city) {
@@ -1091,64 +1155,14 @@ export default function ChatTab() {
             // off-screen. Silent no-op matches the other surfaces (city-chat,
             // dm, event): no crash, no jump if the message isn't laid out.
             onScrollToIndexFailed={() => {}}
-            renderItem={({ item, index }) => {
-              const olderMsg = allMessages[index + 1]; // older (higher index in inverted list)
-              const newerMsg = allMessages[index - 1]; // newer (lower index)
-              const isGrouped =
-                !!olderMsg &&
-                olderMsg.guestId === item.guestId &&
-                olderMsg.type !== 'system' &&
-                olderMsg.type !== 'event' &&
-                olderMsg.type !== 'topic' &&
-                olderMsg.type !== 'activity' &&
-                olderMsg.type !== 'prompt' &&
-                item.type !== 'system' &&
-                item.type !== 'event' &&
-                item.type !== 'topic' &&
-                item.type !== 'activity' &&
-                item.type !== 'prompt';
-              // showTime: last (newest) message in a sender run - newerMsg differs or absent
-              const showTime =
-                item.type !== 'system' && item.type !== 'event' && item.type !== 'topic' &&
-                item.type !== 'activity' && item.type !== 'prompt' && (
-                  !newerMsg ||
-                  newerMsg.guestId !== item.guestId ||
-                  newerMsg.type === 'system'
-                );
-              // dateLabel: show when this item starts a new calendar day vs the older message
-              const dateLabel =
-                item.type !== 'event' && item.type !== 'topic' &&
-                item.type !== 'activity' && item.type !== 'prompt' &&
-                !isSameDay(item.createdAt, olderMsg?.createdAt)
-                  ? formatDateLabel(item.createdAt)
-                  : undefined;
-              return (
-                <ChatMessage
-                  message={item}
-                  myGuestId={identity?.guestId}
-                  index={index}
-                  isGrouped={isGrouped}
-                  showTime={showTime}
-                  dateLabel={dateLabel}
-                  onPromptCta={handlePromptCta}
-                  onLongPress={handleMessageLongPress}
-                  onReplyQuotePress={scrollToMessage}
-                  isHighlighted={highlightedMsgId === item.id}
-                  onReact={handleReact}
-                  autoDismiss={
-                    item.type === 'event'
-                    || item.type === 'topic'
-                    || item.type === 'challenge'
-                    || item.type === 'challenge_validated'
-                    || item.type === 'prompt'
-                    || item.type === 'activity'
-                  }
-                  onAutoDismiss={handleAutoDismiss}
-                  reduceMotion={reduceMotion}
-                />
-              );
-            }}
+            renderItem={renderMessage}
             inverted
+            // Virtualization budget: render fewer rows per batch / keep a smaller
+            // window mounted so a busy feed doesn't mount dozens of heavy bubbles.
+            windowSize={9}
+            maxToRenderPerBatch={8}
+            initialNumToRender={12}
+            removeClippedSubviews
             contentContainerStyle={styles.listContent}
             keyboardShouldPersistTaps="handled"
             onEndReached={hasMore ? loadOlder : undefined}
