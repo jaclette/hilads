@@ -34,7 +34,7 @@ if ($user['deleted_at'] !== null) {
 }
 
 $name  = $user['display_name'] ?? $userId;
-$email = $user['email'] ?? '—';
+$email = $user['email'] ?? '-';
 
 admin_head('Delete user');
 admin_nav('/admin/users');
