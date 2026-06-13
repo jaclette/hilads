@@ -64,6 +64,9 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
   // null the cursor and silently kill load-older. DMs never hit this.
   const oldestIdRef    = useRef<string | null>(initialData ? (initialData.messages.find(m => m.id)?.id ?? null) : null);
   const loadingOlderRef = useRef(false);              // guards against concurrent loadOlder calls
+  // Monotonic token so a slow load() from the PREVIOUS channel can't clobber the
+  // new channel's messages after a fast city switch (A→B before A's fetch lands).
+  const loadSeqRef      = useRef(0);
 
   // Stable timestamp → ms. API sends createdAt as unix seconds (number) or ISO string.
   function toMs(ts: number | string | undefined): number {
@@ -123,10 +126,12 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
 
   // Initial load
   const load = useCallback(async () => {
+    const seq = ++loadSeqRef.current; // newest load wins; older resolutions bail
     setLoading(true);
     setError(null);
     try {
       const { messages: msgs, hasMore: more } = await loadFn();
+      if (seq !== loadSeqRef.current) return; // superseded by a newer load (channel changed)
       if (__DEV__) {
         console.log('[messages] count:', msgs.length, 'hasMore:', more);
         if (msgs.length > 0) console.log('[messages] sample:', JSON.stringify(msgs[msgs.length - 1]));
@@ -136,9 +141,9 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       setMessages([...msgs].reverse()); // newest first for inverted FlatList
       setHasMore(more);
     } catch {
-      setError('Failed to load messages');
+      if (seq === loadSeqRef.current) setError('Failed to load messages');
     } finally {
-      setLoading(false);
+      if (seq === loadSeqRef.current) setLoading(false);
     }
   }, [loadFn]);
 

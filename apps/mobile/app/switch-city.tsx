@@ -18,7 +18,7 @@
  *              stats: N online (green) · N events · N msgs
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
   TouchableOpacity, ActivityIndicator, TextInput, RefreshControl,
@@ -138,6 +138,9 @@ export default function SwitchCityScreen() {
   const { t } = useTranslation('cities');
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
+  // Guards a double-tap / rapid re-pick from firing the switch sequence twice
+  // (setCity + joinChannel + WS join + navigate) before navigation settles.
+  const switchingRef = useRef(false);
   const [cities,        setCities]        = useState<City[]>([]);  // ranked top-10 (filter mode)
   const [allCities,     setAllCities]     = useState<City[]>([]);  // all cities unranked (search mode)
   const [loading,       setLoading]       = useState(true);
@@ -179,6 +182,8 @@ export default function SwitchCityScreen() {
   }
 
   function switchToCity(item: City) {
+    if (switchingRef.current) return; // ignore rapid double-taps
+    switchingRef.current = true;
     setCity(item);
     if (identity) {
       const updated = { ...identity, channelId: item.channelId };

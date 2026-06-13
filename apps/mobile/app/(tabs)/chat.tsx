@@ -269,71 +269,19 @@ export default function ChatTab() {
     console.log('[event-banners] dismissed banner', id);
   }, []);
 
-  useEffect(() => {
-    // data.event is the WS event name string ('new_event') - event payload is in data.hiladsEvent
-    const off = socket.on('new_event', (data: { hiladsEvent?: HiladsEvent; channelId?: string | number }) => {
-      console.log('[event-banners] incoming event', data.hiladsEvent?.id,
-        '| ws channelId:', data.channelId, '| local channelId:', channelId);
-
-      // String coercion handles server sending channelId as number vs string
-      if (!data.hiladsEvent || String(data.channelId) !== String(channelId)) return;
-
-      const { id, title } = data.hiladsEvent;
-      console.log('[event-banners] adding banner id=' + id + ' title=' + title);
-
-      setEventBanners(prev => {
-        if (prev.some(b => b.id === id)) {
-          console.log('[event-banners] dedup - banner already shown for', id);
-          return prev;
-        }
-        const next = [{ id, title }, ...prev].slice(0, 3); // cap at 3
-        console.log('[event-banners] active banners count =', next.length);
-        return next;
-      });
-
-      // Also inject into the chat feed (same as web setFeed pattern)
-      if (!seenEventIds.current.has(id)) {
-        seenEventIds.current.add(id);
-        const feedMsg: Message = {
-          id:        `event-msg-${id}`,
-          type:      'event',
-          eventId:   id,
-          content:   title,
-          nickname:  '',
-          createdAt: Date.now() / 1000,
-        };
-        setEventFeedItems(prev => [feedMsg, ...prev]);
-        console.log('[event-feed] injected feed item via WS for event', id);
-      }
-
-      // Each banner gets its own 20s auto-expire timer
-      if (bannerTimers.current.has(id)) clearTimeout(bannerTimers.current.get(id)!);
-      const t = setTimeout(() => {
-        console.log('[event-banners] expiring banner', id);
-        setEventBanners(prev => prev.filter(b => b.id !== id));
-        bannerTimers.current.delete(id);
-      }, 20_000);
-      bannerTimers.current.set(id, t);
-    });
-
-    return () => {
-      off();
-      bannerTimers.current.forEach(t => clearTimeout(t));
-      bannerTimers.current.clear();
-      console.log('[event-banners] cleared due to channel change or unmount');
-    };
-  }, [channelId]);
-
-  // ── Event feed item synthesis (mirrors web prevEventCountRef pattern) ───────
-  // Web: when events array grows, inject { type: 'event', id: 'event-msg-{id}', ... }
-  // into the feed. Native mirrors this: on channel load, fetch events and synthesize.
-
+  // ── Events: initial synthesis + a SINGLE new_event subscription ─────────────
+  // Was two separate effects both subscribed to 'new_event' (one for banners,
+  // one for feed pills) - every event ran both handlers. They're merged here so
+  // there's one subscription that does banner + feed-pill + auto-expire, plus
+  // the one-time fetchCityEvents synthesis of already-live events. Feed +
+  // banners reset on channel change (they're per-city).
   useEffect(() => {
     if (!channelId) return;
     seenEventIds.current.clear();
     setEventFeedItems([]);
+    setEventBanners([]);
 
-    // Fetch current events for this city and synthesize feed pills.
+    // One-time: synthesize feed pills for events already live in this city.
     fetchCityEvents(channelId).then(evts => {
       const now = Date.now() / 1000;
       const fresh: Message[] = [];
@@ -347,24 +295,43 @@ export default function ChatTab() {
       if (fresh.length > 0) setEventFeedItems(prev => [...prev, ...fresh]);
     }).catch(() => {});
 
-    // WS: new event created in this city - append pill immediately (no poll needed).
-    const offEvent = socket.on('new_event', (data: Record<string, unknown>) => {
-      if (String(data.channelId) !== String(channelId)) return;
-      const ev = data.hiladsEvent as Record<string, unknown> | undefined;
-      const eventId = (ev?.id ?? '') as string;
-      if (!eventId || seenEventIds.current.has(eventId)) return;
-      seenEventIds.current.add(eventId);
-      setEventFeedItems(prev => [...prev, {
-        id:        `event-msg-${eventId}`,
-        type:      'event' as const,
-        eventId,
-        content:   (ev?.title as string) ?? '',
-        nickname:  '',
-        createdAt: Date.now() / 1000,
-      }]);
+    // Live: a new event in this city → banner + feed pill + 20s auto-expire.
+    const off = socket.on('new_event', (data: { hiladsEvent?: HiladsEvent; channelId?: string | number }) => {
+      // String coercion handles server sending channelId as number vs string.
+      if (!data.hiladsEvent || String(data.channelId) !== String(channelId)) return;
+      const { id, title } = data.hiladsEvent;
+
+      setEventBanners(prev => {
+        if (prev.some(b => b.id === id)) return prev;
+        return [{ id, title }, ...prev].slice(0, 3); // cap at 3
+      });
+
+      if (!seenEventIds.current.has(id)) {
+        seenEventIds.current.add(id);
+        setEventFeedItems(prev => [{
+          id:        `event-msg-${id}`,
+          type:      'event',
+          eventId:   id,
+          content:   title,
+          nickname:  '',
+          createdAt: Date.now() / 1000,
+        }, ...prev]);
+      }
+
+      // Per-banner 20s auto-expire timer.
+      if (bannerTimers.current.has(id)) clearTimeout(bannerTimers.current.get(id)!);
+      const t = setTimeout(() => {
+        setEventBanners(prev => prev.filter(b => b.id !== id));
+        bannerTimers.current.delete(id);
+      }, 20_000);
+      bannerTimers.current.set(id, t);
     });
 
-    return () => { offEvent(); };
+    return () => {
+      off();
+      bannerTimers.current.forEach(t => clearTimeout(t));
+      bannerTimers.current.clear();
+    };
   }, [channelId]);
 
   // ── Topic feed item synthesis ─────────────────────────────────────────────
