@@ -1073,6 +1073,22 @@ export async function abandonAcceptance(acceptanceId) {
   return res.json()
 }
 
+// Creator restarts from zero: removes the active taker (deletes their
+// acceptance), wipes the chat, reopens the challenge, pushes + WS-resets the taker.
+export async function restartChallenge(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/restart`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({}),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data?.error || 'Failed to restart challenge')
+  }
+  return res.json()
+}
+
 export async function fetchUpcomingEvents(channelId, opts = {}) {
   // Backwards-compat: callers used to pass `days` as a positional number.
   // Accept either `fetchUpcomingEvents(id, 14)` or

@@ -20,7 +20,7 @@ import {
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
   kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
-  abandonAcceptance,
+  abandonAcceptance, restartChallenge,
 } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
@@ -680,6 +680,34 @@ export default function ChallengeChatPage({
       secondary: {},
     })
   }, [id, guest, busy, t, onDeleted])
+
+  // Restart (creator): remove the current taker, wipe the chat, reopen from zero.
+  const handleRestart = useCallback(() => {
+    if (busy) return
+    setAlertModal({
+      emoji: '🔄',
+      title: t('restart.confirmTitle'),
+      body:  t('restart.confirmBody'),
+      primary: {
+        label: t('restart.confirmCta'),
+        destructive: true,
+        onPress: async () => {
+          setBusy('restart')
+          try {
+            await restartChallenge(id)
+            loadChallenge()
+            loadParticipants()
+            loadMyAcceptance()
+          } catch {
+            setAlertModal({ emoji: '😬', title: t('restart.failed'), body: '' })
+          } finally {
+            setBusy(null)
+          }
+        },
+      },
+      secondary: {},
+    })
+  }, [id, busy, t, loadChallenge, loadParticipants, loadMyAcceptance])
 
   // Edit: hand off to the parent (App.jsx) which opens the CreateChallengePage
   // in edit mode. No need for a local edit form - single source of truth.
@@ -1582,6 +1610,17 @@ export default function ChallengeChatPage({
               >
                 {isValidated ? `✓ ${t('reopenCta')}` : `🔒 ${t('closeCta')}`}
               </button>
+              {/* Restart - only when there's an active taker to remove. */}
+              {challenge?.is_in_progress && (
+                <button
+                  type="button"
+                  className="modal-btn modal-btn--ghost"
+                  onClick={() => { setManageOpen(false); handleRestart() }}
+                  disabled={busy !== null}
+                >
+                  🔄 {busy === 'restart' ? '…' : t('restart.cta')}
+                </button>
+              )}
               <button
                 type="button"
                 className="modal-btn modal-btn--danger"

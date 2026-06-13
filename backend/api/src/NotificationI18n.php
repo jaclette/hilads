@@ -350,6 +350,27 @@ final class NotificationI18n
             'ru'      => ["✕ Заявка отклонена",        "{name} отклонил твою заявку на «{title}»."],
             'ar'      => ["✕ تم رفض الطلب",            "{name} رفض طلبك لـ \"{title}\"."],
         ],
+        // Creator restarted the challenge from zero → the removed taker is told.
+        'challenge_restarted' => [
+            'fr'      => ["🔄 Défi relancé",            "{name} a relancé « {title} » - la participation a été réinitialisée"],
+            'vi'      => ["🔄 Thử thách khởi động lại",  "{name} đã khởi động lại \"{title}\" - lượt tham gia đã được đặt lại"],
+            'es'      => ["🔄 Reto reiniciado",          "{name} reinició \"{title}\" - la participación se restableció"],
+            'it'      => ["🔄 Sfida riavviata",          "{name} ha riavviato \"{title}\" - la partecipazione è stata azzerata"],
+            'pt-br'   => ["🔄 Desafio reiniciado",       "{name} reiniciou \"{title}\" - a participação foi zerada"],
+            'pt-pt'   => ["🔄 Desafio reiniciado",       "{name} reiniciou \"{title}\" - a participação foi reposta"],
+            'de'      => ["🔄 Challenge neu gestartet",  "{name} hat \"{title}\" neu gestartet - deine Teilnahme wurde zurückgesetzt"],
+            'nl'      => ["🔄 Challenge herstart",        "{name} heeft \"{title}\" herstart - je deelname is gereset"],
+            'zh-hans' => ["🔄 挑战已重启",                "{name} 重启了\"{title}\" - 你的参与已重置"],
+            'zh-hant' => ["🔄 挑戰已重啟",                "{name} 重啟了「{title}」- 你的參與已重置"],
+            'ja'      => ["🔄 チャレンジが再開",          "{name} が「{title}」を再開しました - 参加はリセットされました"],
+            'ko'      => ["🔄 챌린지 재시작",             "{name} 님이 \"{title}\"를 재시작했어요 - 참여가 초기화됐어요"],
+            'fil'     => ["🔄 Ni-restart ang challenge",  "Ni-restart ni {name} ang \"{title}\" - na-reset ang takeon mo"],
+            'th'      => ["🔄 รีสตาร์ทชาเลนจ์แล้ว",       "{name} รีสตาร์ท \"{title}\" - การเข้าร่วมถูกรีเซ็ต"],
+            'id'      => ["🔄 Tantangan dimulai ulang",   "{name} memulai ulang \"{title}\" - partisipasimu direset"],
+            'hi'      => ["🔄 चैलेंज रीस्टार्ट हुआ",          "{name} ने \"{title}\" रीस्टार्ट किया - आपकी भागीदारी रीसेट हो गई"],
+            'ru'      => ["🔄 Испытание перезапущено",    "{name} перезапустил «{title}» - участие сброшено"],
+            'ar'      => ["🔄 تمت إعادة تشغيل التحدي",     "{name} أعاد تشغيل \"{title}\" - تمت إعادة تعيين مشاركتك"],
+        ],
         // Taker abandoned an active take-on → the creator's challenge reopens.
         'challenge_acceptor_left' => [
             'fr'      => ["👋 Défi abandonné",          "{name} a quitté le défi « {title} »"],
@@ -757,6 +778,7 @@ final class NotificationI18n
             'challenge_proof_submitted' => 'acceptorName',
             'challenge_takeon_approved',
             'challenge_takeon_rejected',
+            'challenge_restarted',
             'challenge_proof_approved',
             'challenge_proof_rejected' => 'creatorName',
             // verdict_* both already pass senderName=creatorName, so the

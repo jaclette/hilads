@@ -154,6 +154,13 @@
     "confirmCta": "Leave",
     "failed": "Couldn't leave - try again."
   },
+  "restart": {
+    "cta": "Restart the challenge",
+    "confirmTitle": "Restart the challenge?",
+    "confirmBody": "This removes the current taker, wipes the chat, and reopens the challenge from zero. This can't be undone.",
+    "confirmCta": "Restart",
+    "failed": "Couldn't restart - try again."
+  },
   "lock": {
     "private": {
       "title": "🔒 This challenge is private",

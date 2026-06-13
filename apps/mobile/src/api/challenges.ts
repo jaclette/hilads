@@ -287,6 +287,16 @@ export async function abandonAcceptance(acceptanceId: string): Promise<{ ok: boo
   );
 }
 
+/** Creator restarts from zero: removes the active taker (deletes their
+ *  acceptance), wipes the chat, reopens the challenge, pushes + WS-resets the
+ *  removed taker. */
+export async function restartChallenge(challengeId: string): Promise<{ ok: boolean; challengeId: string }> {
+  return api.post<{ ok: boolean; challengeId: string }>(
+    `/challenges/${challengeId}/restart`,
+    {},
+  );
+}
+
 // ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
 
 /** Creator approves the take-on as accomplished (post-debrief). Final state. */

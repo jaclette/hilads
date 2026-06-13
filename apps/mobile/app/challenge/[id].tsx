@@ -23,7 +23,7 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance,
+  abandonAcceptance, restartChallenge,
 } from '@/api/challenges';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import * as Clipboard from 'expo-clipboard';
@@ -309,6 +309,27 @@ export default function ChallengeChatScreen() {
     ]);
   }, [id, identity, router, t]);
 
+  // Creator restarts from zero: removes the current taker, wipes the chat,
+  // reopens the challenge. Confirm first - it can't be undone.
+  const handleRestart = useCallback(() => {
+    Alert.alert(t('restart.confirmTitle'), t('restart.confirmBody'), [
+      { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+      {
+        text: t('restart.confirmCta'), style: 'destructive',
+        onPress: async () => {
+          try {
+            await restartChallenge(id);
+            loadChallenge();
+            loadParticipants();
+            loadMyAcceptance();
+          } catch {
+            Alert.alert(t('restart.failed'));
+          }
+        },
+      },
+    ]);
+  }, [id, t, loadChallenge, loadParticipants, loadMyAcceptance]);
+
   const handleToggleStatus = useCallback(async () => {
     if (!identity || !challenge) return;
     const wasValidated = challenge.status === 'validated';
@@ -548,7 +569,9 @@ export default function ChallengeChatScreen() {
     const off5 = socket.on('challenge_verdict_rejected',  onChange);
     const off6 = socket.on('challenge_takeon_reviewed',   onChange);
     const off7 = socket.on('challenge_acceptor_left',     onReset);
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); };
+    // Creator restarted → the removed taker's screen resets (their take-on is gone).
+    const off8 = socket.on('challenge_restarted',         onReset);
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); };
   }, [loadMyAcceptance, loadChallenge, loadParticipants]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────
@@ -1721,6 +1744,17 @@ export default function ChallengeChatScreen() {
                 {isValidated ? t('reopenCta') : t('closeCta')}
               </Text>
             </TouchableOpacity>
+            {/* Restart - only when there's an active taker to remove. */}
+            {challenge?.is_in_progress && (
+              <TouchableOpacity
+                style={styles.manageRow}
+                onPress={() => { setManageOpen(false); handleRestart(); }}
+                activeOpacity={0.75}
+              >
+                <Ionicons name="refresh-outline" size={18} color="#FF7A3C" />
+                <Text style={[styles.manageRowText, { color: '#FF7A3C' }]}>{t('restart.cta')}</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={[styles.manageRow, styles.manageRowDanger]}
               onPress={() => { setManageOpen(false); handleDelete(); }}

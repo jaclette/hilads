@@ -447,6 +447,18 @@ function broadcastChallengeAcceptorLeftToWs(string $targetUserId, array $payload
     ]);
 }
 
+/** Creator restarted the challenge - fires to the removed taker so their open
+ *  screen resets (their take-on is gone, the challenge reopened). */
+function broadcastChallengeRestartedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge-restarted target=user:{$targetUserId} challengeId=" . ($payload['challengeId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_restarted',
+        'payload' => $payload,
+    ]);
+}
+
 /** PR5 - creator approved or rejected a pending take-on request. payload.decision = 'approved' | 'rejected' */
 function broadcastChallengeTakeOnReviewedToWs(string $targetUserId, array $payload): void
 {
@@ -9374,6 +9386,75 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/abandon', function (arr
     }
 
     Response::json(['ok' => true, 'challengeId' => $acceptance['challenge_id']]);
+});
+
+// POST /api/v1/challenges/{challengeId}/restart
+// The CREATOR restarts from zero: removes the current active taker (deletes
+// their acceptance), wipes the challenge channel chat, and reopens the
+// challenge, then pushes + WS-resets the removed taker. Creator-only; 409 if
+// there's no active taker to remove.
+$router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Only the creator can restart this challenge', 'code' => 'not_creator'], 403);
+    }
+
+    $acceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
+    if ($acceptanceId === null) {
+        Response::json(['error' => 'No active taker to remove', 'code' => 'no_active_taker'], 409);
+    }
+    $acceptance = ChallengeAcceptanceRepository::findById($acceptanceId);
+    $takerId    = is_array($acceptance) ? ($acceptance['acceptor_user_id'] ?? null) : null;
+
+    try {
+        $wiped = ChallengeAcceptanceRepository::abandon($acceptanceId);
+    } catch (\Throwable $e) {
+        error_log('[challenges] restart failed ch=' . $challengeId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to restart challenge'], 500);
+    }
+    if ($wiped === null) {
+        Response::json(['error' => 'No active taker to remove', 'code' => 'no_active_taker'], 409);
+    }
+
+    // Notify + reset the removed taker.
+    $challengeTitle = (string) ($challenge['title'] ?? '');
+    if ($takerId !== null && $takerId !== $userId) {
+        $creatorName = (string) ($authUser['display_name'] ?? 'The creator');
+        $data = [
+            'challengeId'    => $challengeId,
+            'acceptanceId'   => $acceptanceId,
+            'creatorName'    => $creatorName,
+            'challengeTitle' => $challengeTitle,
+        ];
+        try {
+            broadcastChallengeRestartedToWs($takerId, $data);
+        } catch (\Throwable $e) {
+            error_log('[challenges] restart WS broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+        try {
+            NotificationRepository::create(
+                $takerId,
+                'challenge_restarted',
+                '🔄 Challenge restarted',
+                "{$creatorName} restarted \"{$challengeTitle}\" - the take-on was reset",
+                $data,
+            );
+        } catch (\Throwable $e) {
+            error_log('[challenges] restart push failed (non-fatal): ' . $e->getMessage());
+        }
+    }
+
+    Response::json(['ok' => true, 'challengeId' => $challengeId]);
 });
 
 // POST /api/v1/acceptances/{acceptanceId}/cancel
