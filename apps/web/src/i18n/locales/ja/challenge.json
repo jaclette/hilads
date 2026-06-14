@@ -3,6 +3,11 @@
   "howItWorks": "使い方",
   "mostLocal": "Most Local",
   "seeAll": "すべて見る",
+  "leaderboardCta": {
+    "title": "🏆 都市ランキング",
+    "view": "見る",
+    "sub": "最初にランクインしよう - チャレンジを出して完了させて"
+  },
   "createTitle": "チャレンジを作成",
   "editTitle": "チャレンジを編集",
   "audience": "誰に向けて?",
@@ -313,6 +318,16 @@
     "ignore": "無視"
   },
   "byCreator": "{{name}} さん",
+  "inspiration": {
+    "heading": "💡 チャレンジのアイデア",
+    "sub": "他の街のローカルが何を始めてるか見て - ヒントに",
+    "firstLocal": "🌱 {{city}} で最初のローカルになろう",
+    "firstLocalSub": "チャレンジを出そう · 来た旅行者が受けてくれる",
+    "reward": "最初のチャレンジ · +10 🏆",
+    "launchFirst": "🔥 最初のチャレンジを出す",
+    "createYours": "🔥 {{city}} で自分のを作る",
+    "by": "{{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "タイプで絞り込み",
     "all": "すべて",
@@ -473,10 +488,12 @@
   },
   "scoringInfo": {
     "aria": "ポイントの仕組み",
+    "helpLabel": "🏆 ポイントの稼ぎ方",
     "title": "🏆 チャレンジの仕組み",
     "intro": "チャレンジは双方にポイントが入ります - 都市と世界のランキングに加算されます。",
     "colStep": "ステップ",
     "steps": {
+      "created": "チャレンジ作成",
       "accepted": "チャレンジ受諾",
       "date": "日付決定",
       "meet": "集まる",
@@ -484,7 +501,7 @@
     },
     "noPoints": "-",
     "totalLabel": "1チャレンジ合計",
-    "footnote": "ポイントは双方が集まりを評価したときに付与されます。",
+    "footnote": "作成ポイント（+10）はすぐ入ります。それ以外は双方が対面を評価したときだけ付与されます。",
     "types": {
       "heading": "🎯 2つの遊び方",
       "local": "🏙️ ローカル - 同じ街で。直接会って成立。",

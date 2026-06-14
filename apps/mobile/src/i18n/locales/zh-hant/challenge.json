@@ -3,6 +3,11 @@
   "howItWorks": "玩法介紹",
   "mostLocal": "Most Local",
   "seeAll": "查看全部",
+  "leaderboardCta": {
+    "title": "🏆 城市排行榜",
+    "view": "查看",
+    "sub": "成為第一個上榜的人 - 發起並完成一個挑戰"
+  },
   "createTitle": "發起挑戰",
   "allTitle": "全部 Challenges",
   "editTitle": "編輯挑戰",
@@ -318,6 +323,16 @@
     "ignore": "忽略"
   },
   "byCreator": "由 {{name}} 發起",
+  "inspiration": {
+    "heading": "💡 挑戰靈感",
+    "sub": "看看別處的在地人發起了什麼 - 獲取靈感",
+    "firstLocal": "🌱 成為 {{city}} 的第一個在地人",
+    "firstLocalSub": "發起一個挑戰 · 到來的旅人會來接受",
+    "reward": "首個挑戰 · +10 🏆",
+    "launchFirst": "🔥 發起第一個挑戰",
+    "createYours": "🔥 在 {{city}} 建立你的挑戰",
+    "by": "來自 {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "按類型篩選",
     "all": "全部",
@@ -479,10 +494,12 @@
   },
   "scoringInfo": {
     "aria": "積分如何獲得",
+    "helpLabel": "🏆 如何賺取積分",
     "title": "🏆 挑戰如何運作",
     "intro": "每個挑戰都會給雙方加分 -- 計入你的城市和全球排行榜。",
     "colStep": "步驟",
     "steps": {
+      "created": "已建立挑戰",
       "accepted": "接受挑戰",
       "date": "約定日期",
       "meet": "見面",
@@ -490,7 +507,7 @@
     },
     "noPoints": "-",
     "totalLabel": "每個挑戰合計",
-    "footnote": "只有雙方都完成評分後才會發放積分。",
+    "footnote": "建立積分（+10）立即到帳。其餘積分只有在雙方都評價見面後才發放。",
     "types": {
       "heading": "🎯 兩種玩法",
       "local": "🏙️ 本地 - 在同城。線下見面才算數。",

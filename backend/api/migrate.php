@@ -1506,7 +1506,7 @@ run($pdo, "
         -- event until earned\" - inserting at creation IS the credit). Capped
         -- at the first 3 creations per user per UTC day (see
         -- on_challenge_create_award trigger below).
-        ('challenge_created', 'challenger',  2),
+        ('challenge_created', 'challenger', 10),
         -- Challenge first taken: SEEDED BUT INACTIVE. No trigger emits this
         -- kind yet - it's a dormant rule we can wire up later (award the
         -- creator when their challenge gets its first take-on) by adding an
@@ -1723,7 +1723,7 @@ run($pdo, "
 // ── Trigger: challenge-created reward (immediate, take-on-independent) ─────
 //
 // Fires AFTER INSERT ON channel_challenges - the moment a challenge is
-// created. Credits the CREATOR +2 (score_rules.challenge_created.challenger)
+// created. Credits the CREATOR +10 (score_rules.challenge_created.challenger)
 // right away, regardless of whether anyone ever takes it on. This is NOT
 // caught by the \"only after double-rating\" rule: that deferral is implemented
 // purely by NOT inserting an event until it's earned (the sync trigger

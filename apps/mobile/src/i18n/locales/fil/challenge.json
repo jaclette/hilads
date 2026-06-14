@@ -3,6 +3,11 @@
   "howItWorks": "Paano ito gumagana",
   "mostLocal": "Most Local",
   "seeAll": "Tingnan lahat",
+  "leaderboardCta": {
+    "title": "🏆 City leaderboard",
+    "view": "Tingnan",
+    "sub": "Maging una sa ranking - maglunsad at tapusin ang isang challenge"
+  },
   "createTitle": "Gumawa ng challenge",
   "allTitle": "Lahat ng Challenges",
   "editTitle": "I-edit ang challenge",
@@ -318,6 +323,16 @@
     "ignore": "Huwag pansinin"
   },
   "byCreator": "ni {{name}}",
+  "inspiration": {
+    "heading": "💡 Mga ideya ng challenge",
+    "sub": "Kung ano ang nilulunsad ng mga local sa ibang lugar - magpa-inspire",
+    "firstLocal": "🌱 Maging unang local sa {{city}}",
+    "firstLocalSub": "Maglunsad ng challenge · tatanggapin ng mga dumarating na biyahero",
+    "reward": "Unang challenge · +10 🏆",
+    "launchFirst": "🔥 Ilunsad ang unang challenge",
+    "createYours": "🔥 Gawin ang sa iyo sa {{city}}",
+    "by": "ni {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "I-filter ayon sa uri",
     "all": "Lahat",
@@ -479,10 +494,12 @@
   },
   "scoringInfo": {
     "aria": "Paano gumagana ang points",
+    "helpLabel": "🏆 Paano kumita ng points",
     "title": "🏆 Paano gumagana ang challenges",
     "intro": "Bawat challenge ay nagbibigay ng points sa parehong panig - pumupunta sa city + world leaderboards mo.",
     "colStep": "Hakbang",
     "steps": {
+      "created": "Nagawa ang challenge",
       "accepted": "Take-on accepted",
       "date": "May date na",
       "meet": "Meet-up",
@@ -490,7 +507,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Total kada challenge",
-    "footnote": "Binibigay lang ang points kapag pareho nang nag-rate ng meet-up.",
+    "footnote": "Ang creation points (+10) ay agad na dumarating. Ang iba ay ibinibigay lang kapag pareho nang nag-rate sa meet-up.",
     "types": {
       "heading": "🎯 Dalawang paraan ng paglalaro",
       "local": "🏙️ Local - sa iyong city. Magkita IRL para mabilang.",

@@ -3,6 +3,11 @@
   "howItWorks": "So funktioniert's",
   "mostLocal": "Most Local",
   "seeAll": "Alle ansehen",
+  "leaderboardCta": {
+    "title": "🏆 Stadt-Bestenliste",
+    "view": "Ansehen",
+    "sub": "Sei der Erste im Ranking - starte und beende eine Challenge"
+  },
   "createTitle": "Challenge starten",
   "editTitle": "Challenge bearbeiten",
   "audience": "Für wen?",
@@ -313,6 +318,16 @@
     "ignore": "Ignorieren"
   },
   "byCreator": "von {{name}}",
+  "inspiration": {
+    "heading": "💡 Challenge-Ideen",
+    "sub": "Was Locals woanders starten - lass dich inspirieren",
+    "firstLocal": "🌱 Sei der erste Local in {{city}}",
+    "firstLocalSub": "Starte eine Challenge · ankommende Reisende nehmen sie an",
+    "reward": "Erste Challenge · +10 🏆",
+    "launchFirst": "🔥 Starte die erste Challenge",
+    "createYours": "🔥 Erstelle deine in {{city}}",
+    "by": "von {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Nach Typ filtern",
     "all": "Alle",
@@ -473,10 +488,12 @@
   },
   "scoringInfo": {
     "aria": "Wie Punkte vergeben werden",
+    "helpLabel": "🏆 So sammelst du Punkte",
     "title": "🏆 So funktionieren Challenges",
     "intro": "Jede Challenge bringt beiden Seiten Punkte - sie fließen in deine Stadt- und Weltbestenliste ein.",
     "colStep": "Schritt",
     "steps": {
+      "created": "Challenge erstellt",
       "accepted": "Challenge angenommen",
       "date": "Termin steht",
       "meet": "Treffen",
@@ -484,7 +501,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Gesamt pro Challenge",
-    "footnote": "Punkte gibt es nur, wenn beide das Treffen bewerten.",
+    "footnote": "Erstellungspunkte (+10) gibt es sofort. Alles andere erst, wenn beide das Treffen bewerten.",
     "types": {
       "heading": "🎯 Zwei Arten zu spielen",
       "local": "🏙️ Lokal - in deiner Stadt. IRL treffen, damit es zählt.",

@@ -3,6 +3,11 @@
   "howItWorks": "Hoe het werkt",
   "mostLocal": "Most Local",
   "seeAll": "Alles bekijken",
+  "leaderboardCta": {
+    "title": "🏆 Stadklassement",
+    "view": "Bekijk",
+    "sub": "Wees de eerste in het klassement - start en voltooi een challenge"
+  },
   "createTitle": "Maak een challenge",
   "allTitle": "Alle Challenges",
   "editTitle": "Challenge bewerken",
@@ -318,6 +323,16 @@
     "ignore": "Negeren"
   },
   "byCreator": "door {{name}}",
+  "inspiration": {
+    "heading": "💡 Challenge-ideeën",
+    "sub": "Wat locals elders starten - doe inspiratie op",
+    "firstLocal": "🌱 Wees de eerste local in {{city}}",
+    "firstLocalSub": "Start een challenge · reizigers die aankomen pakken hem op",
+    "reward": "Eerste challenge · +10 🏆",
+    "launchFirst": "🔥 Start de eerste challenge",
+    "createYours": "🔥 Maak die van jou in {{city}}",
+    "by": "door {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Filter op type",
     "all": "Alle",
@@ -479,10 +494,12 @@
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",
+    "helpLabel": "🏆 Zo verdien je punten",
     "title": "🏆 Hoe challenges werken",
     "intro": "Elke challenge levert beide kanten punten op - die tellen mee in je stad- en wereldklassement.",
     "colStep": "Stap",
     "steps": {
+      "created": "Challenge aangemaakt",
       "accepted": "Challenge geaccepteerd",
       "date": "Datum gepland",
       "meet": "Meet-up",
@@ -490,7 +507,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Totaal per challenge",
-    "footnote": "Punten worden alleen toegekend als beiden de meet-up beoordelen.",
+    "footnote": "Aanmaakpunten (+10) krijg je meteen. De rest pas als beiden de meet-up beoordelen.",
     "types": {
       "heading": "🎯 Twee manieren om te spelen",
       "local": "🏙️ Lokaal - in jouw stad. Spreek IRL af om het te laten tellen.",

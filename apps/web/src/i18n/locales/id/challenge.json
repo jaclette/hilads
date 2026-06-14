@@ -3,6 +3,11 @@
   "howItWorks": "Cara kerjanya",
   "mostLocal": "Most Local",
   "seeAll": "Lihat semua",
+  "leaderboardCta": {
+    "title": "🏆 Papan peringkat kota",
+    "view": "Lihat",
+    "sub": "Jadilah yang pertama masuk peringkat - luncurkan dan selesaikan tantangan"
+  },
   "createTitle": "Buat tantangan",
   "editTitle": "Edit tantangan",
   "audience": "Untuk siapa?",
@@ -313,6 +318,16 @@
     "ignore": "Abaikan"
   },
   "byCreator": "oleh {{name}}",
+  "inspiration": {
+    "heading": "💡 Ide tantangan",
+    "sub": "Apa yang diluncurkan warga lokal di tempat lain - cari inspirasi",
+    "firstLocal": "🌱 Jadilah warga lokal pertama di {{city}}",
+    "firstLocalSub": "Luncurkan tantangan · pelancong yang datang akan menerimanya",
+    "reward": "Tantangan pertama · +10 🏆",
+    "launchFirst": "🔥 Luncurkan tantangan pertama",
+    "createYours": "🔥 Buat milikmu di {{city}}",
+    "by": "oleh {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Filter berdasarkan tipe",
     "all": "Semua",
@@ -473,10 +488,12 @@
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",
+    "helpLabel": "🏆 Cara dapat poin",
     "title": "🏆 Cara kerja challenge",
     "intro": "Tiap challenge memberi poin ke kedua belah pihak - masuk ke papan peringkat kota dan dunia.",
     "colStep": "Langkah",
     "steps": {
+      "created": "Tantangan dibuat",
       "accepted": "Challenge diterima",
       "date": "Tanggal fix",
       "meet": "Bertemu",
@@ -484,7 +501,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Total per challenge",
-    "footnote": "Poin diberikan hanya jika keduanya menilai pertemuannya.",
+    "footnote": "Poin pembuatan (+10) langsung masuk. Sisanya hanya diberikan saat kedua pihak menilai pertemuan.",
     "types": {
       "heading": "🎯 Dua cara main",
       "local": "🏙️ Lokal - di kotamu. Ketemu langsung biar sah.",

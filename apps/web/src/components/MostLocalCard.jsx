@@ -46,8 +46,19 @@ export default function MostLocalCard({ channelId, onSeeAll }) {
     return () => { alive = false }
   }, [channelId])
 
-  // Nobody ranked yet → don't render the card at all (keeps the tab clean).
-  if (entries && entries.length === 0) return null
+  // Nobody ranked yet → still surface a leaderboard entry point (a tappable
+  // CTA banner), instead of hiding the leaderboard until someone ranks.
+  if (entries && entries.length === 0) {
+    return (
+      <button type="button" className="most-local-card most-local-cta" onClick={onSeeAll}>
+        <span className="most-local-head most-local-cta-head">
+          <span className="most-local-title">{t('leaderboardCta.title')}</span>
+          <span className="most-local-seeall">{t('leaderboardCta.view')} ›</span>
+        </span>
+        <span className="most-local-cta-sub">{t('leaderboardCta.sub')}</span>
+      </button>
+    )
+  }
 
   const byRank = r => (entries ?? []).find(e => e.rank === r)
   const first = byRank(1), second = byRank(2), third = byRank(3)

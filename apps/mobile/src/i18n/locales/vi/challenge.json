@@ -3,6 +3,11 @@
   "howItWorks": "Cách hoạt động",
   "mostLocal": "Most Local",
   "seeAll": "Xem tất cả",
+  "leaderboardCta": {
+    "title": "🏆 Bảng xếp hạng thành phố",
+    "view": "Xem",
+    "sub": "Hãy là người đầu tiên lên hạng - tạo và hoàn thành một thử thách"
+  },
   "createTitle": "Tạo một thử thách",
   "allTitle": "Tất cả Challenges",
   "editTitle": "Chỉnh sửa thử thách",
@@ -318,6 +323,16 @@
     "ignore": "Bỏ qua"
   },
   "byCreator": "của {{name}}",
+  "inspiration": {
+    "heading": "💡 Ý tưởng thử thách",
+    "sub": "Xem dân địa phương nơi khác tạo gì - lấy cảm hứng",
+    "firstLocal": "🌱 Hãy là người địa phương đầu tiên ở {{city}}",
+    "firstLocalSub": "Tạo một thử thách · du khách đến sẽ nhận",
+    "reward": "Thử thách đầu · +10 🏆",
+    "launchFirst": "🔥 Tạo thử thách đầu tiên",
+    "createYours": "🔥 Tạo của bạn ở {{city}}",
+    "by": "bởi {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Lọc theo loại",
     "all": "Tất cả",
@@ -479,10 +494,12 @@
   },
   "scoringInfo": {
     "aria": "Cách tính điểm",
+    "helpLabel": "🏆 Cách kiếm điểm",
     "title": "🏆 Thử thách hoạt động thế nào",
     "intro": "Mỗi thử thách mang điểm cho cả hai bên - cộng dồn vào bảng xếp hạng thành phố và toàn cầu.",
     "colStep": "Bước",
     "steps": {
+      "created": "Đã tạo thử thách",
       "accepted": "Nhận thử thách",
       "date": "Chốt ngày",
       "meet": "Gặp mặt",
@@ -490,7 +507,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Tổng mỗi thử thách",
-    "footnote": "Điểm chỉ được trao khi cả hai cùng đánh giá.",
+    "footnote": "Điểm tạo (+10) được trao ngay. Phần còn lại chỉ được trao khi cả hai cùng đánh giá buổi gặp.",
     "types": {
       "heading": "🎯 Hai cách chơi",
       "local": "🏙️ Local - trong thành phố của bạn. Gặp nhau IRL mới tính.",

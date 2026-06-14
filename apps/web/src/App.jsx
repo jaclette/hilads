@@ -5372,6 +5372,11 @@ export default function App() {
                 {t('howItWorks', { ns: 'challenge' })} →
               </button>
             </div>
+            {/* "How to earn points" helper - the challenges browser had no
+                scoring affordance (only the channel did). Labeled pill. */}
+            <div className="challenge-tab-scoring">
+              <ScoringInfoButton labeled />
+            </div>
             {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
             <MostLocalCard
               channelId={channelId}

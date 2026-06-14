@@ -12,6 +12,7 @@ import {
 import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
 import { ExampleChallengeCard } from '@/components/ExampleChallengeCard';
 import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
+import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
@@ -121,6 +122,13 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   const listHeader = (
     <View>
       {headerExtra}
+
+      {/* "How to earn points" helper - the challenges browser had no scoring
+          affordance (only the channel + NOW did). Labeled pill so it reads
+          clearly, not a stray (i). */}
+      <View style={styles.scoringRow}>
+        <ScoringInfoButton labeled />
+      </View>
 
       {/* Tab pills - Open (default) vs Validated (archive) */}
       <View style={styles.tabBar}>
@@ -264,6 +272,13 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
+
+  scoringRow: {
+    flexDirection:     'row',
+    justifyContent:    'flex-end',
+    paddingHorizontal: Spacing.md,
+    paddingTop:        Spacing.sm,
+  },
 
   tabBar: {
     flexDirection:     'row',

@@ -42,8 +42,25 @@ export function MostLocalCard({ channelId, onSeeAll }: { channelId: number | str
     return () => { alive = false; };
   }, [channelId]);
 
-  // Nobody ranked yet → don't render the card at all.
-  if (entries && entries.length === 0) return null;
+  // Nobody ranked yet → still surface a leaderboard entry point (a tappable
+  // CTA banner), instead of hiding the leaderboard until someone ranks.
+  if (entries && entries.length === 0) {
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={onSeeAll}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={t('leaderboardCta.title')}
+      >
+        <View style={styles.head}>
+          <Text style={styles.title}>{t('leaderboardCta.title')}</Text>
+          <Text style={styles.seeAll}>{t('leaderboardCta.view')} ›</Text>
+        </View>
+        <Text style={styles.emptySub}>{t('leaderboardCta.sub')}</Text>
+      </TouchableOpacity>
+    );
+  }
 
   const byRank = (r: number) => (entries ?? []).find(e => e.rank === r);
   const first = byRank(1), second = byRank(2), third = byRank(3);
@@ -87,6 +104,9 @@ const styles = StyleSheet.create({
   head:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
   title: { fontSize: 15, fontWeight: '800', color: Colors.text },
   seeAll: { fontSize: 13, fontWeight: '600', color: '#60a5fa' },
+  // Empty-leaderboard CTA: the head row's marginBottom is collapsed (no
+  // podium below), the sub line carries the "be first ranked" nudge.
+  emptySub: { fontSize: 12, fontWeight: '500', color: Colors.muted, marginTop: -8 },
 
   podium: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 10 },
   slot:   { flex: 1, alignItems: 'center', gap: 6 },

@@ -983,6 +983,28 @@ html, body, #root {
 .scoring-info-btn:hover  { opacity: 0.85; }
 .scoring-info-btn:active { opacity: 0.65; transform: scale(0.96); }
 
+/* Labeled variant - "🏆 How to earn points" pill for the challenges browser,
+   where a bare (i) was too easy to miss. */
+.scoring-info-pill {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             6px;
+  background:      rgba(255, 201, 60, 0.10);
+  border:          1px solid rgba(255, 201, 60, 0.30);
+  color:           #FFC93C;
+  border-radius:   999px;
+  padding:         6px 12px;
+  font-size:       0.8rem;
+  font-weight:     800;
+  letter-spacing:  0.2px;
+  cursor:          pointer;
+  transition:      opacity 0.15s, transform 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.scoring-info-pill:hover  { opacity: 0.85; }
+.scoring-info-pill:active { opacity: 0.65; transform: scale(0.97); }
+.challenge-tab-scoring { display: flex; justify-content: flex-start; margin: 0 0 12px; }
+
 .scoring-info-panel {
   max-width: 480px;
   width: 92%;
@@ -13259,6 +13281,17 @@ body.has-app-promo-banner .page-header {
   border: 0.5px solid rgba(255, 255, 255, 0.10);
   border-radius: 14px;
 }
+/* Empty-leaderboard CTA variant - whole card is the tappable button. */
+.most-local-cta {
+  display: block;
+  width: calc(100% - 24px);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.most-local-cta-head { margin-bottom: 6px; }
+.most-local-cta-sub { font-size: 12px; font-weight: 500; color: var(--muted2); }
 .most-local-head {
   display: flex;
   align-items: center;

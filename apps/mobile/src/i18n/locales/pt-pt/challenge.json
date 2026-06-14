@@ -3,6 +3,11 @@
   "howItWorks": "Como funciona",
   "mostLocal": "Most Local",
   "seeAll": "Ver tudo",
+  "leaderboardCta": {
+    "title": "🏆 Classificação da cidade",
+    "view": "Ver",
+    "sub": "Sê o primeiro no ranking - lança e termina um desafio"
+  },
   "createTitle": "Criar um desafio",
   "allTitle": "Todos os Challenges",
   "editTitle": "Editar desafio",
@@ -318,6 +323,16 @@
     "ignore": "Ignorar"
   },
   "byCreator": "por {{name}}",
+  "inspiration": {
+    "heading": "💡 Ideias de desafios",
+    "sub": "O que os locais lançam noutros sítios - inspira-te",
+    "firstLocal": "🌱 Sê o primeiro local em {{city}}",
+    "firstLocalSub": "Lança um desafio · os viajantes que chegam vão aceitá-lo",
+    "reward": "Primeiro desafio · +10 🏆",
+    "launchFirst": "🔥 Lança o primeiro desafio",
+    "createYours": "🔥 Cria o teu em {{city}}",
+    "by": "por {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Filtrar por tipo",
     "all": "Todos",
@@ -479,10 +494,12 @@
   },
   "scoringInfo": {
     "aria": "Como funcionam os pontos",
+    "helpLabel": "🏆 Como ganhar pontos",
     "title": "🏆 Como funcionam os desafios",
     "intro": "Cada desafio dá pontos aos dois lados - somam-se na tua classificação de cidade e mundial.",
     "colStep": "Etapa",
     "steps": {
+      "created": "Desafio criado",
       "accepted": "Desafio aceite",
       "date": "Data marcada",
       "meet": "Encontro",
@@ -490,7 +507,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Total por desafio",
-    "footnote": "Os pontos só são atribuídos quando ambos avaliam o encontro.",
+    "footnote": "Os pontos de criação (+10) são atribuídos de imediato. O resto só é atribuído quando ambos avaliam o encontro.",
     "types": {
       "heading": "🎯 Duas formas de jogar",
       "local": "🏙️ Local - na tua cidade. Encontro presencial para contar.",

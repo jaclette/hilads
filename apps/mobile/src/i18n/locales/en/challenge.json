@@ -3,6 +3,11 @@
   "howItWorks": "How it works",
   "mostLocal": "Most Local",
   "seeAll": "See all",
+  "leaderboardCta": {
+    "title": "🏆 City leaderboard",
+    "view": "View",
+    "sub": "Be the first ranked - launch and finish a challenge"
+  },
   "createTitle": "Create a challenge",
   "allTitle": "All Challenges",
   "editTitle": "Edit challenge",
@@ -90,7 +95,7 @@
     "sub": "What locals launch elsewhere - get inspired",
     "firstLocal": "🌱 Be the first local in {{city}}",
     "firstLocalSub": "Drop a challenge · arriving travelers will take it on",
-    "reward": "First challenge · +2 🏆",
+    "reward": "First challenge · +10 🏆",
     "launchFirst": "🔥 Launch the first challenge",
     "createYours": "🔥 Create yours in {{city}}",
     "by": "by {{name}} · {{city}}"
@@ -157,6 +162,7 @@
   },
   "scoringInfo": {
     "aria": "How points work",
+    "helpLabel": "🏆 How to earn points",
     "title": "🏆 How challenges work",
     "intro": "Each challenge earns points for both sides - they roll up into your city + world leaderboards.",
     "colStep": "Step",
@@ -169,7 +175,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Total per challenge",
-    "footnote": "Creation points (+2) land instantly. Everything else is awarded only when both parties rate the meet-up.",
+    "footnote": "Creation points (+10) land instantly. Everything else is awarded only when both parties rate the meet-up.",
     "types": {
       "heading": "🎯 Two ways to play",
       "local": "🏙️ Local - in your city. Meet up IRL to make it count.",

@@ -15,30 +15,41 @@ import { useTranslation } from 'react-i18next'
  * mobile pass shipped these keys for all 18 non-en locales - they live
  * in the same JSON file on web.
  */
-export default function ScoringInfoButton({ size = 22, className = '' }) {
+export default function ScoringInfoButton({ size = 22, className = '', labeled = false }) {
   const { t } = useTranslation('challenge')
   const [open, setOpen] = useState(false)
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={t('scoringInfo.aria')}
-        className={`scoring-info-btn ${className}`}
-        style={{ width: size, height: size, borderRadius: size / 2 }}
-      >
-        <svg
-          width={size - 6} height={size - 6}
-          viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" strokeWidth="2"
-          strokeLinecap="round" strokeLinejoin="round"
+      {labeled ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={t('scoringInfo.aria')}
+          className={`scoring-info-pill ${className}`}
         >
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8"  x2="12.01" y2="8" />
-        </svg>
-      </button>
+          {t('scoringInfo.helpLabel')}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={t('scoringInfo.aria')}
+          className={`scoring-info-btn ${className}`}
+          style={{ width: size, height: size, borderRadius: size / 2 }}
+        >
+          <svg
+            width={size - 6} height={size - 6}
+            viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2"
+            strokeLinecap="round" strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8"  x2="12.01" y2="8" />
+          </svg>
+        </button>
+      )}
 
       {open && <ScoringInfoModal onClose={() => setOpen(false)} t={t} />}
     </>
@@ -50,7 +61,7 @@ function ScoringInfoModal({ onClose, t }) {
     // Creation reward (+2 challenger) - credited instantly at creation,
     // capped at the first 3/day. Sits above the per-run steps; the total
     // below is the per-challenge-run total and intentionally excludes it.
-    { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 2,  taker: null },
+    { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
     { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: null },
     { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
     { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },

@@ -3,6 +3,11 @@
   "howItWorks": "이용 방법",
   "mostLocal": "Most Local",
   "seeAll": "전체 보기",
+  "leaderboardCta": {
+    "title": "🏆 도시 리더보드",
+    "view": "보기",
+    "sub": "가장 먼저 랭크에 올라보세요 - 챌린지를 시작하고 완료하세요"
+  },
   "createTitle": "챌린지 만들기",
   "editTitle": "챌린지 편집",
   "audience": "누구를 위해?",
@@ -313,6 +318,16 @@
     "ignore": "무시"
   },
   "byCreator": "{{name}}님",
+  "inspiration": {
+    "heading": "💡 챌린지 아이디어",
+    "sub": "다른 도시 로컬들이 뭘 올리는지 보기 - 영감 얻기",
+    "firstLocal": "🌱 {{city}}의 첫 로컬이 되어보세요",
+    "firstLocalSub": "챌린지를 올리세요 · 도착하는 여행자가 받아줘요",
+    "reward": "첫 챌린지 · +10 🏆",
+    "launchFirst": "🔥 첫 챌린지 시작하기",
+    "createYours": "🔥 {{city}}에서 내 챌린지 만들기",
+    "by": "{{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "타입으로 필터",
     "all": "전체",
@@ -473,10 +488,12 @@
   },
   "scoringInfo": {
     "aria": "포인트가 어떻게 쌓이는지",
+    "helpLabel": "🏆 포인트 얻는 법",
     "title": "🏆 챌린지 작동 방식",
     "intro": "챌린지마다 양쪽 모두 포인트를 얻어요 - 도시·세계 리더보드에 합산돼요.",
     "colStep": "단계",
     "steps": {
+      "created": "챌린지 생성",
       "accepted": "챌린지 수락",
       "date": "날짜 확정",
       "meet": "만남",
@@ -484,7 +501,7 @@
     },
     "noPoints": "-",
     "totalLabel": "챌린지당 합계",
-    "footnote": "양쪽이 모두 만남을 평가했을 때 포인트가 부여돼요.",
+    "footnote": "생성 포인트(+10)는 즉시 적립돼요. 나머지는 양쪽 모두 만남을 평가해야 지급돼요.",
     "types": {
       "heading": "🎯 두 가지 플레이 방식",
       "local": "🏙️ 로컬 - 같은 도시. 직접 만나야 인정.",

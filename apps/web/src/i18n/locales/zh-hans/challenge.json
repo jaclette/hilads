@@ -3,6 +3,11 @@
   "howItWorks": "玩法介绍",
   "mostLocal": "Most Local",
   "seeAll": "查看全部",
+  "leaderboardCta": {
+    "title": "🏆 城市排行榜",
+    "view": "查看",
+    "sub": "成为第一个上榜的人 - 发起并完成一个挑战"
+  },
   "createTitle": "发起挑战",
   "editTitle": "编辑挑战",
   "audience": "给谁?",
@@ -313,6 +318,16 @@
     "ignore": "忽略"
   },
   "byCreator": "由 {{name}} 发起",
+  "inspiration": {
+    "heading": "💡 挑战灵感",
+    "sub": "看看别处的本地人发起了什么 - 获取灵感",
+    "firstLocal": "🌱 成为 {{city}} 的第一个本地人",
+    "firstLocalSub": "发起一个挑战 · 到来的旅行者会来接受",
+    "reward": "首个挑战 · +10 🏆",
+    "launchFirst": "🔥 发起第一个挑战",
+    "createYours": "🔥 在 {{city}} 创建你的挑战",
+    "by": "来自 {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "按类型筛选",
     "all": "全部",
@@ -473,10 +488,12 @@
   },
   "scoringInfo": {
     "aria": "积分如何获得",
+    "helpLabel": "🏆 如何赚取积分",
     "title": "🏆 挑战如何运作",
     "intro": "每个挑战都会给双方加分 -- 计入你的城市和全球排行榜。",
     "colStep": "步骤",
     "steps": {
+      "created": "已创建挑战",
       "accepted": "接受挑战",
       "date": "约定日期",
       "meet": "见面",
@@ -484,7 +501,7 @@
     },
     "noPoints": "-",
     "totalLabel": "每个挑战合计",
-    "footnote": "只有双方都完成评分后才会发放积分。",
+    "footnote": "创建积分（+10）立即到账。其余积分只有在双方都评价见面后才发放。",
     "types": {
       "heading": "🎯 两种玩法",
       "local": "🏙️ 本地 - 在同城。线下见面才算数。",
