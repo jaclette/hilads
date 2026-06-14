@@ -14,7 +14,8 @@ import { localizeCityName } from '@/i18n/cityName';
 import { fetchNowFeed, fetchHangoutParticipants } from '@/api/topics';
 import { haversineMeters, formatDistance } from '@/lib/distance';
 import { MembersSheet } from '@/components/MembersSheet';
-import { fetchCanCreateEvent, fetchEventParticipants } from '@/api/events';
+import { fetchCanCreateEvent, fetchEventParticipants, fetchEventInspiration, type EventInspirationExample } from '@/api/events';
+import { ExampleEventCard } from '@/components/ExampleEventCard';
 import { fetchCityChallenges } from '@/api/challenges';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
@@ -139,6 +140,11 @@ export default function NowScreen() {
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
+  // Inspiration ("idea book") for the zero-activity empty state. Fetched lazily
+  // only once the feed has loaded empty, so active cities never pay for it.
+  const [eventInspiration,     setEventInspiration]     = useState<EventInspirationExample[]>([]);
+  const [eventInspirationCity, setEventInspirationCity] = useState<string | null>(null);
+  const inspirationTriedRef = useRef(false);
   // Events tab → always the events view. Challenges moved to their own tab and
   // Hangouts are dormant, so the memos below (which key off `filter`) naturally
   // yield events-only: no challenges strip, no topic rows. Held in (never-set)
@@ -571,6 +577,27 @@ export default function NowScreen() {
     [filteredItems, topChallenges, challenges.length, publicEvents, filter, distanceById, t],
   );
 
+  // Inspiration "idea book" for the genuine zero-activity empty state. Re-armed
+  // on city change; fetched lazily only once the feed has loaded empty.
+  useEffect(() => {
+    inspirationTriedRef.current = false;
+    setEventInspiration([]);
+    setEventInspirationCity(null);
+  }, [city?.channelId]);
+
+  useEffect(() => {
+    if (loading || error || listData.length > 0 || !city?.channelId) return;
+    if (inspirationTriedRef.current) return;
+    inspirationTriedRef.current = true;
+    let alive = true;
+    fetchEventInspiration(String(city.channelId)).then(r => {
+      if (!alive) return;
+      setEventInspiration(r.examples);
+      setEventInspirationCity(r.city);
+    });
+    return () => { alive = false; };
+  }, [loading, error, listData.length, city?.channelId]);
+
   // Still booting or waiting for city - keep showing spinner.
   if (!city && (booting || loading)) {
     return (
@@ -633,12 +660,39 @@ export default function NowScreen() {
           </TouchableOpacity>
         </View>
       ) : listData.length === 0 ? (
-        <FilterEmptyState
-          filter={filter}
-          city={localizeCityName(city?.name)}
-          userMode={userMode}
-          onStartPulse={handleStartPulse}
-        />
+        <ScrollView
+          contentContainerStyle={styles.emptyScroll}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={Colors.accent} />
+          }
+        >
+          {/* Local hero stays on top, dominant. */}
+          <FilterEmptyState
+            filter={filter}
+            city={localizeCityName(city?.name)}
+            userMode={userMode}
+            onStartPulse={handleStartPulse}
+          />
+
+          {/* Inspiration "idea book" - inert example hangouts/events from the
+              most-active other city. NOT joinable: each card's only action
+              routes back to LOCAL creation. Renders nothing when empty. */}
+          {eventInspiration.length > 0 && (
+            <View style={styles.inspirationBlock}>
+              <Text style={styles.inspirationHeading}>{t('inspiration.heading')}</Text>
+              <Text style={styles.inspirationSub}>{t('inspiration.sub')}</Text>
+              {eventInspiration.map((ex, i) => (
+                <ExampleEventCard
+                  key={`${ex.title}-${i}`}
+                  example={ex}
+                  sourceCity={eventInspirationCity ?? ''}
+                  currentCity={localizeCityName(city?.name) ?? (city?.name ?? '')}
+                  onCreate={() => router.push('/event/create' as never)}
+                />
+              ))}
+            </View>
+          )}
+        </ScrollView>
       ) : (
         <FlatList
           data={listData}
@@ -942,6 +996,15 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center',
     padding: Spacing.xl, gap: Spacing.sm,
   },
+  emptyScroll: { flexGrow: 1, paddingTop: Spacing.xl, paddingBottom: Spacing.xl },
+  inspirationBlock: {
+    width:             '100%',
+    paddingHorizontal: Spacing.md,
+    gap:               Spacing.sm,
+    marginTop:         Spacing.lg,
+  },
+  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'left' },
+  inspirationSub:     { fontSize: 12, fontWeight: '600', color: Colors.muted, textAlign: 'left', marginBottom: 2 },
   emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
   emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
   emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },

@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Meetup-ideeën",
+    "sub": "Wat locals elders organiseren - doe inspiratie op",
+    "openYours": "🔥 Start die van jou in {{city}}",
+    "by": "door {{name}} · {{city}}",
+    "hangout": "Meetup",
+    "event": "Evenement"
+  },
   "guestGate": {
     "createAccount": "Account maken",
     "signIn": "Inloggen",

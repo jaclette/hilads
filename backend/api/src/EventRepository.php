@@ -1347,4 +1347,109 @@ class EventRepository
         $today = (new DateTime('today', new DateTimeZone($tz)))->format('Y-m-d');
         return self::eventsHostedOnDateCount($pdo, $userId, $guestId, $today, $tz);
     }
+
+    /**
+     * Inspiration block for the zero-activity events / Hi-Local empty state.
+     * Picks the single most-active OTHER city by count of currently-active
+     * hangouts + events, and returns up to 3 of them as a read-only "idea
+     * book". NOT joinable: callers render these in an inert card whose only
+     * action routes back to LOCAL creation - so we return the bare minimum
+     * (kind, title, host name + avatar) and deliberately NO id, time, going
+     * count, or RSVP state. Mirrors ChallengeRepository::getInspiration.
+     *
+     * "Most active" = most active hangouts+events, tie-broken by recency.
+     * idx_channel_topics_city covers the topic side; bounded by the small set
+     * of currently-active items + the LIMIT 3 sample. Egress-safe: counting
+     * never leaves the DB.
+     *
+     * Returns [] when no other city qualifies, so the block renders nothing.
+     *
+     * @return array{city: ?string, cityId: ?string, examples: array<int, array<string, mixed>>}
+     */
+    public static function getInspiration(string $excludeCityId): array
+    {
+        $empty = ['city' => null, 'cityId' => null, 'examples' => []];
+        $pdo   = Database::pdo();
+
+        // 1) Most-active OTHER city, counting active hangouts + events.
+        $pick = $pdo->prepare("
+            SELECT city_id, COUNT(*) AS n, MAX(created_at) AS recent FROM (
+                SELECT ce.city_id, ce.created_at
+                FROM channel_events ce
+                JOIN channels c ON c.id = ce.channel_id
+                WHERE c.status = 'active'
+                  AND ce.source_type = 'hilads'
+                  AND ce.occurrence_date IS NULL
+                  AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
+                  AND ce.city_id <> :ex1
+                UNION ALL
+                SELECT ct.city_id, ct.created_at
+                FROM channel_topics ct
+                JOIN channels c ON c.id = ct.channel_id
+                WHERE c.status = 'active'
+                  AND ct.expires_at > now()
+                  AND ct.city_id <> :ex2
+            ) AS items
+            GROUP BY city_id
+            ORDER BY n DESC, recent DESC
+            LIMIT 1
+        ");
+        $pick->execute(['ex1' => $excludeCityId, 'ex2' => $excludeCityId]);
+        $cityId = $pick->fetchColumn();
+        if ($cityId === false || $cityId === null) return $empty;
+
+        // 2) Up to 3 examples from that city (mix of events + hangouts). Lean
+        //    projection - only what an inert card renders. Host name is always
+        //    present (events: denormalized host_nickname; hangouts: require a
+        //    registered creator via JOIN users so display_name exists). Avatar
+        //    may be null for guest-hosted events.
+        $sample = $pdo->prepare("
+            SELECT kind, title, host_name, host_avatar FROM (
+                SELECT 'event' AS kind, ce.title AS title,
+                       ce.host_nickname AS host_name,
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS host_avatar,
+                       ce.created_at AS created_at
+                FROM channel_events ce
+                JOIN channels c ON c.id = ce.channel_id
+                LEFT JOIN users u ON u.id = ce.created_by
+                WHERE ce.city_id = :city1
+                  AND c.status = 'active'
+                  AND ce.source_type = 'hilads'
+                  AND ce.occurrence_date IS NULL
+                  AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
+                  AND ce.host_nickname IS NOT NULL
+                UNION ALL
+                SELECT 'hangout' AS kind, ct.title AS title,
+                       u.display_name AS host_name,
+                       COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS host_avatar,
+                       ct.created_at AS created_at
+                FROM channel_topics ct
+                JOIN channels c ON c.id = ct.channel_id
+                JOIN users u ON u.id = ct.created_by
+                WHERE ct.city_id = :city2
+                  AND c.status = 'active'
+                  AND ct.expires_at > now()
+            ) AS items
+            ORDER BY created_at DESC
+            LIMIT 3
+        ");
+        $sample->execute(['city1' => $cityId, 'city2' => $cityId]);
+        $rows = $sample->fetchAll();
+        if (empty($rows)) return $empty;
+
+        $name = null;
+        if (preg_match('/^city_(\d+)$/', (string) $cityId, $m)) {
+            $c = CityRepository::findById((int) $m[1]);
+            $name = $c['name'] ?? null;
+        }
+
+        $examples = array_map(static fn(array $r): array => [
+            'kind'        => $r['kind'],
+            'title'       => $r['title'],
+            'host_name'   => $r['host_name'],
+            'host_avatar' => $r['host_avatar'],
+        ], $rows);
+
+        return ['city' => $name, 'cityId' => $cityId, 'examples' => $examples];
+    }
 }

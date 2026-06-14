@@ -19,6 +19,38 @@ export async function fetchCityEvents(channelId: string, guestId?: string): Prom
   })) as HiladsEvent[];
 }
 
+// ── Events/hangouts inspiration (zero-activity empty state) ──────────────────
+/** One inert example for the events empty state. No id by design - read-only
+ *  inspiration, never joinable. */
+export interface EventInspirationExample {
+  kind:        'event' | 'hangout';
+  title:       string;
+  host_name:   string | null;
+  host_avatar: string | null;
+}
+export interface EventInspiration {
+  city:     string | null;   // source city name (for the small "by … · city" line)
+  cityId:   string | null;
+  examples: EventInspirationExample[];
+}
+
+/**
+ * Up to 3 example hangouts/events from the most-active OTHER city, for the
+ * zero-activity events empty state. Read-only - the payload carries no event
+ * id, so there is no way to open or join these from the client. Returns an
+ * empty list (block renders nothing) when no other city qualifies / on error.
+ */
+export async function fetchEventInspiration(excludeChannelId: string): Promise<EventInspiration> {
+  try {
+    return await api.get<EventInspiration>('/events/inspiration', {
+      params: { excludeChannelId },
+    });
+  } catch (err) {
+    console.warn('[fetchEventInspiration] failed:', err);
+    return { city: null, cityId: null, examples: [] };
+  }
+}
+
 // Public (ticketmaster) events for a city - mirrors web fetchCityEvents().
 // Endpoint: GET /channels/{id}/city-events
 export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEvent[]> {

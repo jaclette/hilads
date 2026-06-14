@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Treffen-Ideen",
+    "sub": "Was Locals woanders organisieren - lass dich inspirieren",
+    "openYours": "🔥 Starte dein eigenes in {{city}}",
+    "by": "von {{name}} · {{city}}",
+    "hangout": "Treffen",
+    "event": "Event"
+  },
   "guestGate": {
     "createAccount": "Konto erstellen",
     "signIn": "Anmelden",

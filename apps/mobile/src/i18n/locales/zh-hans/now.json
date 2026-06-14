@@ -13,6 +13,14 @@
   "beFirstEvent": "来当第一个创建活动的人",
   "hangoutTalk": "发起一个聚会，让城市聊起来",
   "startHangout": "发起一个聚会 🗣️",
+  "inspiration": {
+    "heading": "💡 聚会灵感",
+    "sub": "看看别处的本地人组织了什么 - 获取灵感",
+    "openYours": "🔥 在 {{city}} 开你自己的",
+    "by": "来自 {{name}} · {{city}}",
+    "hangout": "聚会",
+    "event": "活动"
+  },
   "loadError": "无法加载动态",
   "noCityTitle": "未选择城市",
   "noCitySub": "选一座城市，看看正在发生什么。",

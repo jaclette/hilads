@@ -13,6 +13,14 @@
   "beFirstEvent": "Wees de eerste die er een aanmaakt",
   "hangoutTalk": "Start een meetup en breng de stad aan het praten",
   "startHangout": "Start een meetup 🗣️",
+  "inspiration": {
+    "heading": "💡 Meetup-ideeën",
+    "sub": "Wat locals elders organiseren - doe inspiratie op",
+    "openYours": "🔥 Start die van jou in {{city}}",
+    "by": "door {{name}} · {{city}}",
+    "hangout": "Meetup",
+    "event": "Evenement"
+  },
   "loadError": "Kon de feed niet laden",
   "noCityTitle": "Geen stad geselecteerd",
   "noCitySub": "Kies een stad om te zien wat er gebeurt.",

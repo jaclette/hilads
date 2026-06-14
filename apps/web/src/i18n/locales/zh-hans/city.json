@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 聚会灵感",
+    "sub": "看看别处的本地人组织了什么 - 获取灵感",
+    "openYours": "🔥 在 {{city}} 开你自己的",
+    "by": "来自 {{name}} · {{city}}",
+    "hangout": "聚会",
+    "event": "活动"
+  },
   "guestGate": {
     "createAccount": "创建账户",
     "signIn": "登录",

@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Idee per ritrovi",
+    "sub": "Cosa organizzano i local altrove - lasciati ispirare",
+    "openYours": "🔥 Crea il tuo a {{city}}",
+    "by": "di {{name}} · {{city}}",
+    "hangout": "Ritrovo",
+    "event": "Evento"
+  },
   "guestGate": {
     "createAccount": "Crea un account",
     "signIn": "Accedi",

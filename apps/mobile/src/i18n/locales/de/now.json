@@ -13,6 +13,14 @@
   "beFirstEvent": "Sei der Erste, der eins erstellt",
   "hangoutTalk": "Starte ein Treffen und bring die Stadt zum Reden",
   "startHangout": "Treffen starten 🗣️",
+  "inspiration": {
+    "heading": "💡 Treffen-Ideen",
+    "sub": "Was Locals woanders organisieren - lass dich inspirieren",
+    "openYours": "🔥 Starte dein eigenes in {{city}}",
+    "by": "von {{name}} · {{city}}",
+    "hangout": "Treffen",
+    "event": "Event"
+  },
   "loadError": "Feed konnte nicht geladen werden",
   "noCityTitle": "Keine Stadt ausgewählt",
   "noCitySub": "Wähle eine Stadt, um zu sehen, was los ist.",

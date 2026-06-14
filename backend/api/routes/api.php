@@ -2751,6 +2751,27 @@ $router->add('GET', '/api/v1/cities/{slug}/venues', function (array $params) {
     Response::json($payload);
 });
 
+// GET /api/v1/events/inspiration?excludeChannelId={id}
+// Read-only "idea book" for the zero-activity events/Hi-Local empty state:
+// up to 3 active hangouts/events from the most-active OTHER city, shown
+// purely as inspiration. NOT joinable - the client renders these in an inert
+// card whose only action routes back to LOCAL creation. Guest-readable;
+// returns only kind/title/host (no id), so nothing here can open or join the
+// remote event. Bounded (LIMIT 3) + index-friendly. Empty -> renders nothing.
+//
+// MUST be registered before GET /events/{eventId} below - the router matches
+// in registration order, so {eventId} would otherwise swallow "inspiration".
+$router->add('GET', '/api/v1/events/inspiration', function () {
+    $exclude = filter_var($_GET['excludeChannelId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $excludeCityId = $exclude === false ? '' : 'city_' . $exclude;
+    try {
+        Response::json(EventRepository::getInspiration($excludeCityId));
+    } catch (\Throwable $e) {
+        error_log('[events] GET inspiration failed: ' . $e->getMessage());
+        Response::json(['city' => null, 'cityId' => null, 'examples' => []], 200);
+    }
+});
+
 // GET /api/v1/events/{eventId}
 // Returns a single event by hex channel ID. Used for deep-linked event URLs.
 // Optional query params: guestId (32-char hex) - when provided, adds participant_count

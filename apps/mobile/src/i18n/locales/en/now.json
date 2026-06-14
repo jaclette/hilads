@@ -13,6 +13,14 @@
   "beFirstEvent": "Be the first to create one",
   "hangoutTalk": "Start a hangout and get the city talking",
   "startHangout": "Start a hangout 🗣️",
+  "inspiration": {
+    "heading": "💡 Hangout ideas",
+    "sub": "What locals organise elsewhere - get inspired",
+    "openYours": "🔥 Open yours in {{city}}",
+    "by": "by {{name}} · {{city}}",
+    "hangout": "Hangout",
+    "event": "Event"
+  },
   "nowTag": "Now",
   "laterTag": "Later",
   "hiNow": "Hi now",

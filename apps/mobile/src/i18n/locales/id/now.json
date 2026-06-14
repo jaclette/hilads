@@ -13,6 +13,14 @@
   "beFirstEvent": "Jadilah yang pertama membuatnya",
   "hangoutTalk": "Mulai nongkrong dan buat kota ramai",
   "startHangout": "Mulai nongkrong 🗣️",
+  "inspiration": {
+    "heading": "💡 Ide nongkrong",
+    "sub": "Apa yang diadakan warga lokal di tempat lain - cari inspirasi",
+    "openYours": "🔥 Buat punyamu di {{city}}",
+    "by": "oleh {{name}} · {{city}}",
+    "hangout": "Nongkrong",
+    "event": "Acara"
+  },
   "loadError": "Tidak bisa memuat feed",
   "noCityTitle": "Belum ada kota dipilih",
   "noCitySub": "Pilih kota untuk melihat apa yang sedang terjadi.",

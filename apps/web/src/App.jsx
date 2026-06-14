@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import ChallengeVersusCard from './components/ChallengeVersusCard'
 import ExampleChallengeCard from './components/ExampleChallengeCard'
+import ExampleEventCard from './components/ExampleEventCard'
 import EmptyCityChallenges from './components/EmptyCityChallenges'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
@@ -900,6 +901,11 @@ export default function App() {
   // Events state
   const [events, setEvents] = useState([])
   const [cityEvents, setCityEvents] = useState([])
+  // Inspiration "idea book" for the zero-activity events empty state. Read-only
+  // examples from the most-active OTHER city; fetched lazily only when the
+  // events drawer is open AND empty, so active cities never pay for it.
+  const [eventInspiration,     setEventInspiration]     = useState([])
+  const [eventInspirationCity, setEventInspirationCity] = useState(null)
 
   const [previewTimezone, setPreviewTimezone] = useState(() => loadIdentity()?.timezone ?? 'UTC')
   const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
@@ -1169,6 +1175,24 @@ export default function App() {
     })
     return () => { alive = false }
   }, [showChallengesDrawer, cityChallenges.length, channelId])
+
+  // Lazy inspiration fetch for the events drawer: only when it's open AND the
+  // city has zero events (matches the empty-state condition). Re-runs on city
+  // change. Empty result → the block renders nothing.
+  useEffect(() => {
+    if (!showEventDrawer || events.length > 0 || cityEvents.length > 0 || !channelId) {
+      setEventInspiration([])
+      setEventInspirationCity(null)
+      return
+    }
+    let alive = true
+    fetchEventInspiration(channelId).then(r => {
+      if (!alive) return
+      setEventInspiration(r.examples ?? [])
+      setEventInspirationCity(r.city ?? null)
+    })
+    return () => { alive = false }
+  }, [showEventDrawer, events.length, cityEvents.length, channelId])
 
   // Scroll-to-load-more - three gates so we never spam the rendering loop
   // (and, when backend pagination lands, the API):
@@ -5243,6 +5267,26 @@ export default function App() {
                     </button>
                     {HANGOUTS_ENABLED && (
                       <button className="events-empty-cta" onClick={() => { setShowEventDrawer(false); openCreateHangout() }} style={{ marginTop: 8, background: 'rgba(96,165,250,0.12)', color: '#60a5fa', borderColor: 'rgba(96,165,250,0.25)' }}>{t('feed.startHangout')}</button>
+                    )}
+
+                    {/* Inspiration "idea book" - inert example hangouts/events
+                        from the most-active other city. NOT joinable: each
+                        card's only action routes back to LOCAL creation.
+                        Renders nothing when no other city qualifies. */}
+                    {eventInspiration.length > 0 && (
+                      <div className="challenge-inspiration-block">
+                        <p className="challenge-inspiration-heading">{t('inspiration.heading')}</p>
+                        <p className="challenge-inspiration-sub">{t('inspiration.sub')}</p>
+                        {eventInspiration.map((ex, i) => (
+                          <ExampleEventCard
+                            key={`${ex.title}-${i}`}
+                            example={ex}
+                            sourceCity={eventInspirationCity ?? ''}
+                            currentCity={city ? localizeCityName(city) : ''}
+                            onCreate={openCreate}
+                          />
+                        ))}
+                      </div>
                     )}
                   </div>
                 )

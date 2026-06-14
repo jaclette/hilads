@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Ideias de convívios",
+    "sub": "O que os locais organizam noutros sítios - inspira-te",
+    "openYours": "🔥 Cria o teu em {{city}}",
+    "by": "por {{name}} · {{city}}",
+    "hangout": "Convívio",
+    "event": "Evento"
+  },
   "guestGate": {
     "createAccount": "Criar uma conta",
     "signIn": "Iniciar sessão",

@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Ideas de quedadas",
+    "sub": "Lo que organizan los locales en otros lados - inspírate",
+    "openYours": "🔥 Crea la tuya en {{city}}",
+    "by": "por {{name}} · {{city}}",
+    "hangout": "Quedada",
+    "event": "Evento"
+  },
   "guestGate": {
     "createAccount": "Crear una cuenta",
     "signIn": "Iniciar sesión",

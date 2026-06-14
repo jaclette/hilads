@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Ide nongkrong",
+    "sub": "Apa yang diadakan warga lokal di tempat lain - cari inspirasi",
+    "openYours": "🔥 Buat punyamu di {{city}}",
+    "by": "oleh {{name}} · {{city}}",
+    "hangout": "Nongkrong",
+    "event": "Acara"
+  },
   "guestGate": {
     "createAccount": "Buat akun",
     "signIn": "Masuk",

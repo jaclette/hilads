@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Des idées de sorties",
+    "sub": "Ce que les locaux organisent ailleurs - inspire-toi",
+    "openYours": "🔥 Ouvre le tien à {{city}}",
+    "by": "par {{name}} · {{city}}",
+    "hangout": "Sortie",
+    "event": "Événement"
+  },
   "guestGate": {
     "createAccount": "Créer un compte",
     "signIn": "Se connecter",

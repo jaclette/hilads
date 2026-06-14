@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 集まりのアイデア",
+    "sub": "他の街のローカルが何を企画してるか見て - ヒントに",
+    "openYours": "🔥 {{city}} で自分のを開く",
+    "by": "{{name}} · {{city}}",
+    "hangout": "集まり",
+    "event": "イベント"
+  },
   "guestGate": {
     "createAccount": "アカウントを作成",
     "signIn": "ログイン",

@@ -13,6 +13,14 @@
   "beFirstEvent": "Sé el primero en crear uno",
   "hangoutTalk": "Lanza una quedada y haz que la ciudad hable",
   "startHangout": "Lanzar una quedada 🗣️",
+  "inspiration": {
+    "heading": "💡 Ideas de quedadas",
+    "sub": "Lo que organizan los locales en otros lados - inspírate",
+    "openYours": "🔥 Crea la tuya en {{city}}",
+    "by": "por {{name}} · {{city}}",
+    "hangout": "Quedada",
+    "event": "Evento"
+  },
   "loadError": "No se pudo cargar el feed",
   "noCityTitle": "Ninguna ciudad seleccionada",
   "noCitySub": "Elige una ciudad para ver qué está pasando.",

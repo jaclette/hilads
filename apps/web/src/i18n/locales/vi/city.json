@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Ý tưởng tụ tập",
+    "sub": "Xem dân địa phương nơi khác tổ chức gì - lấy cảm hứng",
+    "openYours": "🔥 Tạo cái của bạn ở {{city}}",
+    "by": "bởi {{name}} · {{city}}",
+    "hangout": "Tụ tập",
+    "event": "Sự kiện"
+  },
   "guestGate": {
     "createAccount": "Tạo tài khoản",
     "signIn": "Đăng nhập",

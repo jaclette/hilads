@@ -13,6 +13,14 @@
   "beFirstEvent": "Hãy là người đầu tiên tạo một cái",
   "hangoutTalk": "Tạo tụ tập và khiến cả thành phố trò chuyện",
   "startHangout": "Tạo tụ tập 🗣️",
+  "inspiration": {
+    "heading": "💡 Ý tưởng tụ tập",
+    "sub": "Xem dân địa phương nơi khác tổ chức gì - lấy cảm hứng",
+    "openYours": "🔥 Tạo cái của bạn ở {{city}}",
+    "by": "bởi {{name}} · {{city}}",
+    "hangout": "Tụ tập",
+    "event": "Sự kiện"
+  },
   "loadError": "Không thể tải nguồn cấp",
   "noCityTitle": "Chưa chọn thành phố",
   "noCitySub": "Chọn một thành phố để xem có gì đang diễn ra.",

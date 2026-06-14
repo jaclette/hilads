@@ -500,6 +500,23 @@ export async function fetchChallengeInspiration(excludeChannelId) {
   }
 }
 
+// Read-only "idea book" for the zero-activity events empty state: up to 3
+// example hangouts/events from the most-active OTHER city. The payload carries
+// NO event id (kind/title/host only), so nothing here can open or join the
+// remote event. Returns { city, cityId, examples }; empty list on error / when
+// no other city qualifies.
+export async function fetchEventInspiration(excludeChannelId) {
+  const empty = { city: null, cityId: null, examples: [] }
+  try {
+    const res = await fetch(`${BASE}/events/inspiration?excludeChannelId=${encodeURIComponent(excludeChannelId)}`)
+    if (!res.ok) return empty
+    const data = await res.json()
+    return { city: data.city ?? null, cityId: data.cityId ?? null, examples: data.examples ?? [] }
+  } catch {
+    return empty
+  }
+}
+
 export async function fetchValidatedChallenges(channelId, { limit = 30, before } = {}) {
   const params = new URLSearchParams({ limit: String(limit) })
   if (before) params.set('before', String(before))

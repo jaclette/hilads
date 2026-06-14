@@ -13,6 +13,14 @@
   "beFirstEvent": "最初に作ってみよう",
   "hangoutTalk": "集まりを始めて街を盛り上げよう",
   "startHangout": "集まりを始める 🗣️",
+  "inspiration": {
+    "heading": "💡 集まりのアイデア",
+    "sub": "他の街のローカルが何を企画してるか見て - ヒントに",
+    "openYours": "🔥 {{city}} で自分のを開く",
+    "by": "{{name}} · {{city}}",
+    "hangout": "集まり",
+    "event": "イベント"
+  },
   "loadError": "フィードを読み込めませんでした",
   "noCityTitle": "街が選択されていません",
   "noCitySub": "街を選んで何が起きているか見てみましょう。",

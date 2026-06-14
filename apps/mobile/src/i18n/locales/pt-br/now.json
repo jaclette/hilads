@@ -13,6 +13,14 @@
   "beFirstEvent": "Seja o primeiro a criar um",
   "hangoutTalk": "Comece um rolê e faça a cidade falar",
   "startHangout": "Começar um rolê 🗣️",
+  "inspiration": {
+    "heading": "💡 Ideias de rolês",
+    "sub": "O que os locais organizam em outros lugares - se inspire",
+    "openYours": "🔥 Crie o seu em {{city}}",
+    "by": "por {{name}} · {{city}}",
+    "hangout": "Rolê",
+    "event": "Evento"
+  },
   "loadError": "Não foi possível carregar o feed",
   "noCityTitle": "Nenhuma cidade selecionada",
   "noCitySub": "Escolha uma cidade para ver o que está rolando.",

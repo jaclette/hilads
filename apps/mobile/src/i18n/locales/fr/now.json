@@ -13,6 +13,14 @@
   "beFirstEvent": "Sois le premier à en créer un",
   "hangoutTalk": "Lance une sortie et fais parler la ville",
   "startHangout": "Lancer une sortie 🗣️",
+  "inspiration": {
+    "heading": "💡 Des idées de sorties",
+    "sub": "Ce que les locaux organisent ailleurs - inspire-toi",
+    "openYours": "🔥 Ouvre le tien à {{city}}",
+    "by": "par {{name}} · {{city}}",
+    "hangout": "Sortie",
+    "event": "Événement"
+  },
   "loadError": "Impossible de charger le fil",
   "noCityTitle": "Aucune ville sélectionnée",
   "noCitySub": "Choisis une ville pour voir ce qui se passe.",

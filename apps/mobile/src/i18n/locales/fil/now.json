@@ -13,6 +13,14 @@
   "beFirstEvent": "Mauna kang gumawa ng isa",
   "hangoutTalk": "Magsimula ng tambayan at pag-usapin ang lungsod",
   "startHangout": "Magsimula ng tambayan 🗣️",
+  "inspiration": {
+    "heading": "💡 Mga ideya ng tambayan",
+    "sub": "Kung ano ang inoorganisa ng mga local sa ibang lugar - magpa-inspire",
+    "openYours": "🔥 Buksan ang sa iyo sa {{city}}",
+    "by": "ni {{name}} · {{city}}",
+    "hangout": "Tambayan",
+    "event": "Event"
+  },
   "loadError": "Hindi ma-load ang feed",
   "noCityTitle": "Walang piniling lungsod",
   "noCitySub": "Pumili ng lungsod para makita ang nangyayari.",

@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Mga ideya ng tambayan",
+    "sub": "Kung ano ang inoorganisa ng mga local sa ibang lugar - magpa-inspire",
+    "openYours": "🔥 Buksan ang sa iyo sa {{city}}",
+    "by": "ni {{name}} · {{city}}",
+    "hangout": "Tambayan",
+    "event": "Event"
+  },
   "guestGate": {
     "createAccount": "Gumawa ng account",
     "signIn": "Mag-sign in",

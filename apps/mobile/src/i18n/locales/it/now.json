@@ -13,6 +13,14 @@
   "beFirstEvent": "Sii il primo a crearne uno",
   "hangoutTalk": "Lancia un ritrovo e fai parlare la città",
   "startHangout": "Lancia un ritrovo 🗣️",
+  "inspiration": {
+    "heading": "💡 Idee per ritrovi",
+    "sub": "Cosa organizzano i local altrove - lasciati ispirare",
+    "openYours": "🔥 Crea il tuo a {{city}}",
+    "by": "di {{name}} · {{city}}",
+    "hangout": "Ritrovo",
+    "event": "Evento"
+  },
   "loadError": "Impossibile caricare il feed",
   "noCityTitle": "Nessuna città selezionata",
   "noCitySub": "Scegli una città per vedere cosa succede.",

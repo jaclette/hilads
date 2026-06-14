@@ -1,4 +1,12 @@
 {
+  "inspiration": {
+    "heading": "💡 Hangout ideas",
+    "sub": "What locals organise elsewhere - get inspired",
+    "openYours": "🔥 Open yours in {{city}}",
+    "by": "by {{name}} · {{city}}",
+    "hangout": "Hangout",
+    "event": "Event"
+  },
   "guestGate": {
     "createAccount": "Create account",
     "signIn": "Sign in",
