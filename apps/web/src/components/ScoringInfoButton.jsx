@@ -47,6 +47,10 @@ export default function ScoringInfoButton({ size = 22, className = '' }) {
 
 function ScoringInfoModal({ onClose, t }) {
   const steps = [
+    // Creation reward (+2 challenger) - credited instantly at creation,
+    // capped at the first 3/day. Sits above the per-run steps; the total
+    // below is the per-challenge-run total and intentionally excludes it.
+    { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 2,  taker: null },
     { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: null },
     { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
     { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },

@@ -1500,6 +1500,18 @@ run($pdo, "DELETE FROM score_rules WHERE kind = 'meetup'", 'score_rules drop mee
 // parties earn +5. Trigger below writes the score_events.
 run($pdo, "
     INSERT INTO score_rules (kind, role, points) VALUES
+        -- Challenge created: credited IMMEDIATELY to the creator at creation
+        -- time, independent of whether anyone ever takes it, and NOT subject
+        -- to the double-rating rule (the deferral is just \"don't insert the
+        -- event until earned\" - inserting at creation IS the credit). Capped
+        -- at the first 3 creations per user per UTC day (see
+        -- on_challenge_create_award trigger below).
+        ('challenge_created', 'challenger',  2),
+        -- Challenge first taken: SEEDED BUT INACTIVE. No trigger emits this
+        -- kind yet - it's a dormant rule we can wire up later (award the
+        -- creator when their challenge gets its first take-on) by adding an
+        -- emitter. Until then it credits nobody.
+        ('challenge_first_taken', 'taker',   3),
         ('accepted',    'challenger',  5),
         ('date_locked', 'challenger',  5),
         ('date_locked', 'taker',       5),
@@ -1524,7 +1536,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1534,16 +1546,21 @@ run($pdo, "
 ", 'score_events');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_user_month ON score_events (user_id, month_ref)", 'idx_score_events_user_month');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_city_month ON score_events (city_id, month_ref)", 'idx_score_events_city_month');
+// Powers the challenge-created daily cap: a bounded, single-user range scan
+// (user_id, kind, today) - never reads beyond this user's challenge_created
+// rows for the current UTC day. Egress-safe: the count never leaves the DB.
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_score_events_user_kind_date ON score_events (user_id, kind, created_at)", 'idx_score_events_user_kind_date');
 
-// Extend the kind CHECK to allow 'date_locked' (PR12) and 'meet_bonus'
-// (Meet bonus PR). Idempotent DROP + re-ADD updates pre-existing tables;
-// new DBs inherit the latest constraint from the CREATE TABLE above (kept
-// in sync with this list).
+// Extend the kind CHECK to allow 'date_locked' (PR12), 'meet_bonus'
+// (Meet bonus PR), and 'challenge_created' / 'challenge_first_taken'
+// (creation reward PR). Idempotent DROP + re-ADD updates pre-existing
+// tables; new DBs inherit the latest constraint from the CREATE TABLE
+// above (kept in sync with this list).
 run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_check", 'score_events drop old kind check');
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken'))
 ", 'score_events add new kind check');
 
 // Per-round scoring. The original UNIQUE (user_id, challenge_id, role, kind)
@@ -1702,6 +1719,71 @@ run($pdo, "
         score_month_ref = to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM')
     WHERE u.id IN (SELECT DISTINCT user_id FROM bad)
 ", 'PR42 - clean up premature accepted score_events + resync user aggregates');
+
+// ── Trigger: challenge-created reward (immediate, take-on-independent) ─────
+//
+// Fires AFTER INSERT ON channel_challenges - the moment a challenge is
+// created. Credits the CREATOR +2 (score_rules.challenge_created.challenger)
+// right away, regardless of whether anyone ever takes it on. This is NOT
+// caught by the \"only after double-rating\" rule: that deferral is implemented
+// purely by NOT inserting an event until it's earned (the sync trigger
+// credits users.score_* on every score_events INSERT, unconditionally), so
+// inserting here at creation time IS an immediate, exempt credit.
+//
+// Daily cap: only the FIRST 3 creations per user per UTC day earn points -
+// the 4th+ still creates the challenge but silently earns nothing (no error,
+// no user-facing block). The cap count is a bounded, single-user,
+// index-backed range scan (idx_score_events_user_kind_date) on today's rows
+// only, so it adds no egress and no full scan.
+//
+// Idempotency / never-re-award-on-edit: the trigger is INSERT-only, and a
+// challenge's channel_challenges row is inserted exactly once at creation
+// (edits are UPDATEs, restarts reuse acceptances - never a new row), so it
+// fires exactly once per challenge. acceptance_id stays NULL (no round).
+//
+// Guests (created_by NULL) can't earn - skipped.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_create_award() RETURNS TRIGGER AS \$\$
+    DECLARE
+        pts           INT;
+        today_count   INT;
+        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        IF NEW.created_by IS NULL THEN RETURN NEW; END IF;
+
+        SELECT points INTO pts FROM score_rules
+        WHERE kind = 'challenge_created' AND role = 'challenger';
+        IF pts IS NULL THEN RETURN NEW; END IF;
+
+        -- Bounded, single-user, today-only count. The AT TIME ZONE 'UTC'
+        -- round-trip pins the day boundary to UTC regardless of the session
+        -- timezone (a bare timestamp compared to timestamptz would otherwise
+        -- be cast in the session tz).
+        SELECT COUNT(*) INTO today_count
+        FROM score_events
+        WHERE user_id = NEW.created_by
+          AND kind = 'challenge_created'
+          AND created_at >= (date_trunc('day', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC');
+
+        IF today_count >= 3 THEN RETURN NEW; END IF;
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref)
+        VALUES (encode(gen_random_bytes(8), 'hex'),
+                NEW.created_by, NEW.channel_id, 'challenger', 'challenge_created',
+                pts, NEW.city_id, current_month)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_create_award');
+
+run($pdo, "DROP TRIGGER IF EXISTS trg_chchal_created_award ON channel_challenges", 'drop trg_chchal_created_award');
+run($pdo, "
+    CREATE TRIGGER trg_chchal_created_award
+    AFTER INSERT ON channel_challenges
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_create_award()
+", 'trg_chchal_created_award');
 
 // ── PR12: date-locked points trigger ──────────────────────────────────────
 // Fires when challenge_acceptances.date_approved_at flips from NULL to a

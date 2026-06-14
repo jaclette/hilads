@@ -477,6 +477,7 @@
     "intro": "Chaque défi rapporte des points aux deux côtés - ils alimentent ton classement de ville et mondial.",
     "colStep": "Étape",
     "steps": {
+      "created": "Défi créé",
       "accepted": "Take-on accepté",
       "date": "Date fixée",
       "meet": "Rencontre",
@@ -484,7 +485,7 @@
     },
     "noPoints": "-",
     "totalLabel": "Total par défi",
-    "footnote": "Les points ne sont attribués qu’après la double notation.",
+    "footnote": "Les points de création (+2) sont attribués instantanément. Le reste n’est attribué qu’après la double notation.",
     "types": {
       "heading": "🎯 Deux façons de jouer",
       "local": "🏙️ Local - dans ta ville. Tu te retrouves IRL pour valider.",
