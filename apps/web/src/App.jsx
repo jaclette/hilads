@@ -14,7 +14,6 @@ import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
-import { localizeWeather } from './weather'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
@@ -822,6 +821,24 @@ function buildOnlineUsers(users, mySessionId) {
   }))
 }
 
+// City short name for the challenge hero (English-only this phase, mirrors
+// mobile). Known cities map to a canonical short form; else full name unless
+// it's too long (>12 chars), then ellipsize.
+const CITY_SHORT = {
+  'Ho Chi Minh City': 'HCMC',
+  'New York City':    'NYC',
+  'New York':         'NYC',
+  'San Francisco':    'SF',
+  'Los Angeles':      'LA',
+  'Rio de Janeiro':   'Rio',
+}
+function cityShortName(name) {
+  if (!name) return ''
+  if (CITY_SHORT[name]) return CITY_SHORT[name]
+  if (name.length <= 12) return name
+  return name.slice(0, 11).trimEnd() + '…'
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -854,14 +871,6 @@ export default function App() {
   const reactionBurstIdRef = useRef(0)
   const triggerReactionBurstRef = useRef(null)
   const [onlineCount, setOnlineCount] = useState(null)
-  const weatherLabel = useMemo(() => {
-    // Find the most recent weather item (last in chronological feed). The
-    // backend string is English; localizeWeather rebuilds it from the emoji +
-    // temperature in the active language (i18n.language in deps recomputes it
-    // on a language switch).
-    const w = [...feed].reverse().find(item => item.type === 'activity' && item.subtype === 'weather')
-    return localizeWeather(w?.text, city)
-  }, [feed, city, i18n.language])
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)
@@ -3983,6 +3992,33 @@ export default function App() {
     )
   }
 
+  // Challenge hero (mobile city home). Combines the city's open-challenge count
+  // with the viewer's rank; copy adapts to each state. English-only this phase.
+  function renderChallengeHero() {
+    const short = cityShortName(city).toUpperCase()
+    const noun  = cityChallenges.length === 1 ? 'CHALLENGE' : 'CHALLENGES'
+    let main, sub
+    if (cityChallenges.length === 0) {
+      main = `🌱 NO CHALLENGES YET IN ${short}`
+      sub  = 'Create the first one for travelers to accept →'
+    } else if (myCityRank === null) {
+      main = `🔥 ${cityChallenges.length} ${noun} IN ${short}`
+      sub  = 'Accept your first challenge to start climbing →'
+    } else if (myCityRank === 1) {
+      main = `🔥 ${cityChallenges.length} ${noun} · 🏆 #1 IN ${short}`
+      sub  = 'Defend your title →'
+    } else {
+      main = `🔥 ${cityChallenges.length} ${noun} · 🏆 #${myCityRank} IN ${short}`
+      sub  = 'Tap to accept your next challenge →'
+    }
+    return (
+      <button type="button" className="ch-hero" onClick={goToChallengesTab} aria-label={main}>
+        <span className="ch-hero-main">{main}</span>
+        <span className="ch-hero-sub">{sub}</span>
+      </button>
+    )
+  }
+
   function renderCityHero(className = 'header-hero') {
     return (
       <div className={className}>
@@ -4026,9 +4062,6 @@ export default function App() {
               </button>
             </>
           </div>
-          {weatherLabel && (
-            <span className="header-weather">{weatherLabel}</span>
-          )}
         </div>
       </div>
     )
@@ -4232,130 +4265,78 @@ export default function App() {
                 {/* Section 1: shared app header (Share is MY-CITY-only) */}
                 {renderAppHeader({ withShare: true })}
 
-                {/* Section 2: city hero name - tappable → switch city */}
+                {/* Section 2: city row - name selector (left) + compact "recent"
+                    pill (right). Online + rank move into the hero / pills below;
+                    weather is gone. */}
                 {city && (
-                  <button
-                    type="button"
-                    className="header-city-row header-city-row-button"
-                    onClick={openCityPicker}
-                    aria-label={t('header.changeCity')}
-                  >
-                    <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{localizeCityName(city)}
-                    <svg
-                      className="header-city-row-chevron"
-                      width="14" height="14" viewBox="0 0 24 24"
-                      fill="none" stroke="currentColor" strokeWidth="2.4"
-                      strokeLinecap="round" strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <polyline points="6 9 12 15 18 9" />
-                    </svg>
-                  </button>
-                )}
-
-                {/* Section 3: context chips */}
-                <div className="header-chips">
-                  {weatherLabel && (
+                  <div className="ch-city-row">
                     <button
-                      className="header-chip header-chip--weather"
-                      onClick={() => { /* TODO: open weather detail view */ }}
-                      aria-label={t('header.currentWeather', { label: weatherLabel })}
+                      type="button"
+                      className="header-city-row header-city-row-button ch-city-selector"
+                      onClick={openCityPicker}
+                      aria-label={t('header.changeCity')}
                     >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+                      <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{localizeCityName(city)}
+                      <svg
+                        className="header-city-row-chevron"
+                        width="14" height="14" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" strokeWidth="2.4"
+                        strokeLinecap="round" strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
                       </svg>
-                      <Marquee text={weatherLabel} className="header-weather-marquee" fadeColor="#1a1a1a" />
                     </button>
-                  )}
-                  <button
-                    className="header-chip header-chip--online"
-                    onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null); }}
-                    aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
-                  >
-                    <span className="chip-live-dot" aria-hidden="true" />
-                    {onlineCount != null ? t('header.online', { count: onlineCount }) : t('header.liveNow')}
-                  </button>
-                  <button
-                    className="header-chip header-chip--leaderboard"
-                    onClick={() => setShowLeaderboard(true)}
-                    aria-label={
-                      myCityRank
-                        ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
-                        : t('leaderboard.chip.neutral', { ns: 'challenge' })
-                    }
-                  >
-                    {myCityRank === null
-                      ? t('leaderboard.chip.neutral', { ns: 'challenge' })
-                      : myCityRank > 99
-                        ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
-                        : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      className="ch-recent-pill"
+                      onClick={() => setShowArrivalsSheet(true)}
+                      aria-label={`${feed.filter(i => i.type === 'activity' && i.subtype === 'join').length} recent arrivals`}
+                    >
+                      ✈️ {feed.filter(i => i.type === 'activity' && i.subtype === 'join').length} recent
+                    </button>
+                  </div>
+                )}
 
               </div>
             </>
           )}
         </header>
 
-        {/* Arrivals strip - extracted from the main feed so real messages
-            aren't drowned by ambient join lines. Default shows a neutral
-            label; on a new arrival it morphs in-place for 3s. Same items as
-            before (post-throttle, post own-arrival filter from toFeedItem). */}
-        {/* Recent arrivals, with a "Hi now" pill (active hangouts) to its right
-            when there's at least one. No hangouts → arrivals bar fills the line. */}
-        <div className="arrivals-row">
-          <ArrivalsBar
-            arrivals={feed.filter(i => i.type === 'activity' && i.subtype === 'join')}
-            onOpen={() => setShowArrivalsSheet(true)}
-            onTapUser={(a) => {
-              if (a.userId) {
-                openProfile(a.userId, a.nickname ?? '')
-              } else if (a.guestId) {
-                setGuestProfile({ guestId: a.guestId, nickname: a.nickname ?? '' })
-              }
-            }}
-          />
-          {topics.length > 0 && (
-            <button type="button" className="hi-now-pill" onClick={goToEventsTab}>
-              🗣️ {topics.length} Hi now
-            </button>
-          )}
-        </div>
-
-        {/* City-activity pills - one per content type. Each tap routes
-            to NOW pre-filtered (challenges or events). Hidden when zero
-            of that type so each pill only appears when there's
-            something to surface. Hangouts no longer get their own
-            pill - per spec only events + challenges split out. */}
-        {(cityChallenges.length + events.length) > 0 && (
-          <div className="city-activity-pill-row">
-            {cityChallenges.length > 0 && (
+        {/* ── City home redesign: challenge HERO + secondary pills. Replaces
+            the old arrivals strip + activity pills. Hi locals = topics
+            (spontaneous), Hi later = events (planned); both → the Hi Local
+            feed. 0-count pills stay visible but greyed. ── */}
+        {city && (
+          <>
+            {renderChallengeHero()}
+            <div className="ch-pills">
               <button
                 type="button"
-                className="city-activity-pill city-activity-pill--half"
-                onClick={goToChallengesTab}
+                className={`ch-pill${!onlineCount ? ' ch-pill--muted' : ''}`}
+                onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+                aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
               >
-                <span className="city-activity-pill-text">
-                  🔥 {cityChallenges.length} {cityChallenges.length === 1
-                    ? t('cityActivity.challengeOne', { defaultValue: 'challenge' })
-                    : t('cityActivity.challengeMany', { defaultValue: 'challenges' })}
-                </span>
-                <span className="city-activity-pill-cta">→</span>
+                🔴 {onlineCount ?? 0} nearby
               </button>
-            )}
-            {events.length > 0 && (
               <button
                 type="button"
-                className="city-activity-pill city-activity-pill--half"
+                className={`ch-pill ch-pill--accent${!topics.length ? ' ch-pill--muted' : ''}`}
                 onClick={goToEventsTab}
+                aria-label={`${topics.length} Hi locals`}
               >
-                <span className="city-activity-pill-text">
-                  🎉 {events.length} {events.length === 1 ? 'Hi local' : 'Hi locals'}
-                </span>
-                <span className="city-activity-pill-cta">→</span>
+                💬 {topics.length} Hi locals
               </button>
-            )}
-          </div>
+              <button
+                type="button"
+                className={`ch-pill ch-pill--accent${!events.length ? ' ch-pill--muted' : ''}`}
+                onClick={goToEventsTab}
+                aria-label={`${events.length} Hi later`}
+              >
+                ⏰ {events.length} Hi later
+              </button>
+            </div>
+          </>
         )}
 
         <div className="messages" ref={messagesContainerRef}>
