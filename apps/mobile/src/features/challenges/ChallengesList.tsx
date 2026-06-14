@@ -11,6 +11,7 @@ import {
 } from '@/api/challenges';
 import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
 import { ExampleChallengeCard } from '@/components/ExampleChallengeCard';
+import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
@@ -209,21 +210,13 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
                   {tab === 'open' ? t('noOpen', { defaultValue: 'No active challenges yet' }) : t('noValidated', { defaultValue: 'No validated challenges yet' })}
                 </Text>
 
-                {/* Local hero CTA - dominant, always on top of the empty
-                    state. The act of creating earns +2 instantly (see the
-                    challenge_created reward). Routes to LOCAL creation. */}
+                {/* Shared lead-with-action hero - identical to the home
+                    screen's zero-challenge state. */}
                 {tab === 'open' && (
-                  <TouchableOpacity
-                    style={styles.heroCta}
-                    activeOpacity={0.85}
-                    onPress={() => router.push('/challenge/create' as never)}
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.heroCtaText}>
-                      {currentCityName ? t('inspiration.firstLocal', { city: currentCityName }) : t('createCta')}
-                    </Text>
-                    <Text style={styles.heroCtaReward}>{t('inspiration.reward')}</Text>
-                  </TouchableOpacity>
+                  <EmptyCityChallenges
+                    city={currentCityName}
+                    onCreate={() => router.push('/challenge/create' as never)}
+                  />
                 )}
 
                 {/* Inspiration "idea book" - inert example cards from the
@@ -327,24 +320,6 @@ const styles = StyleSheet.create({
   empty:  { justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
   emptyEmoji: { fontSize: 44 },
   emptyTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
-
-  // Dominant local hero - filled accent so it clearly outweighs the inert
-  // example cards below it.
-  heroCta: {
-    marginTop:        Spacing.sm,
-    flexDirection:    'row',
-    alignItems:       'center',
-    justifyContent:   'center',
-    gap:              8,
-    paddingVertical:  14,
-    paddingHorizontal: Spacing.lg,
-    borderRadius:     14,
-    backgroundColor:  'rgba(255,122,60,0.18)',
-    borderWidth:      1,
-    borderColor:      'rgba(255,122,60,0.45)',
-  },
-  heroCtaText:   { color: Colors.accent, fontSize: 15, fontWeight: '800', textAlign: 'center' },
-  heroCtaReward: { color: '#FFC93C', fontSize: 13, fontWeight: '800' },
 
   inspirationBlock: {
     width:     '100%',

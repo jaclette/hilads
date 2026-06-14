@@ -9,6 +9,7 @@ import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import ChallengeVersusCard from './components/ChallengeVersusCard'
 import ExampleChallengeCard from './components/ExampleChallengeCard'
+import EmptyCityChallenges from './components/EmptyCityChallenges'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -4019,12 +4020,21 @@ export default function App() {
   // Challenge hero (mobile city home). Combines the city's open-challenge count
   // with the viewer's rank; copy adapts to each state. English-only this phase.
   function renderChallengeHero() {
+    // Zero-challenge cities lead with ACTION via the shared component (same
+    // one the challenge tab uses), never with "no challenges yet".
+    if (cityChallenges.length === 0) {
+      return (
+        <div className="ch-hero-empty-wrap">
+          <EmptyCityChallenges
+            city={localizeCityName(city)}
+            onCreate={openCreateChallenge}
+          />
+        </div>
+      )
+    }
     const short = cityShortName(city)
     let main, sub
-    if (cityChallenges.length === 0) {
-      main = t('cityHero.mainEmpty', { city: short })
-      sub  = t('cityHero.subEmpty')
-    } else if (myCityRank === null) {
+    if (myCityRank === null) {
       main = t('cityHero.mainUnranked', { count: cityChallenges.length, city: short })
       sub  = t('cityHero.subUnranked')
     } else if (myCityRank === 1) {
@@ -4348,7 +4358,7 @@ export default function App() {
                 onClick={goToEventsTab}
                 aria-label={`${topics.length} Hi now`}
               >
-                🗣️ {topics.length} Hi now
+                🗣️ {topics.length > 0 ? `${topics.length} ` : ''}Hi now
               </button>
               <button
                 type="button"
@@ -4356,7 +4366,7 @@ export default function App() {
                 onClick={goToEventsTab}
                 aria-label={`${events.length} Hi later`}
               >
-                ⏰ {events.length} Hi later
+                ⏰ {events.length > 0 ? `${events.length} ` : ''}Hi later
               </button>
             </div>
           </>
@@ -5369,14 +5379,12 @@ export default function App() {
             />
             {cityChallenges.length === 0 ? (
               <div className="events-empty-state">
-                <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
-                {/* Local hero CTA - dominant, on top of the inspiration block.
-                    Creating a challenge earns +2 instantly. Routes to LOCAL
-                    creation. */}
-                <button className="events-empty-cta challenge-empty-hero" onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}>
-                  <span>{city ? t('inspiration.firstLocal', { ns: 'challenge', city: localizeCityName(city) }) : `🔥 ${t('createCta', { ns: 'challenge' })}`}</span>
-                  <span className="challenge-empty-hero-reward">{t('inspiration.reward', { ns: 'challenge' })}</span>
-                </button>
+                {/* Shared lead-with-action hero - identical to the home
+                    screen's zero-challenge state. */}
+                <EmptyCityChallenges
+                  city={city ? localizeCityName(city) : ''}
+                  onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
+                />
 
                 {/* Inspiration "idea book" - inert example cards from the
                     most-active other city. NOT takeable: each card's only

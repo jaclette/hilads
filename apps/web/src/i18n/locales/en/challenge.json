@@ -87,8 +87,10 @@
   "inspiration": {
     "heading": "💡 Challenge ideas",
     "sub": "What locals launch elsewhere - get inspired",
-    "firstLocal": "🔥 Be the first local in {{city}}",
-    "reward": "+2 🏆",
+    "firstLocal": "🌱 Be the first local in {{city}}",
+    "firstLocalSub": "Drop a challenge · arriving travelers will take it on",
+    "reward": "First challenge · +2 🏆",
+    "launchFirst": "🔥 Launch the first challenge",
     "createYours": "🔥 Create yours in {{city}}",
     "by": "by {{name}} · {{city}}"
   },

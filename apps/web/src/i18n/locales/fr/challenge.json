@@ -316,8 +316,10 @@
   "inspiration": {
     "heading": "💡 Des idées de défis",
     "sub": "Ce que les locaux lancent ailleurs - inspire-toi",
-    "firstLocal": "🔥 Sois le premier local à {{city}}",
-    "reward": "+2 🏆",
+    "firstLocal": "🌱 Sois le premier local de {{city}}",
+    "firstLocalSub": "Lance un défi · les voyageurs qui arrivent le relèveront",
+    "reward": "Premier défi · +2 🏆",
+    "launchFirst": "🔥 Lancer le premier défi",
     "createYours": "🔥 Crée le tien à {{city}}",
     "by": "par {{name}} · {{city}}"
   },

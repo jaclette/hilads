@@ -38,6 +38,7 @@ import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
 import { AppHeader } from '@/features/shell/AppHeader';
+import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Colors, FontSizes, Spacing, Radius, buildCityUrl } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
@@ -958,17 +959,26 @@ export default function ChatTab() {
         </View>
 
         {/* ── HERO: challenges + rank. Full-width, tappable → challenges list.
-            Subtitle + copy adapt to the count / rank state (see heroMain). ── */}
-        <TouchableOpacity
-          style={styles.hero}
-          onPress={() => router.push('/(tabs)/challenges' as never)}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel={heroMain}
-        >
-          <Text style={styles.heroMain} numberOfLines={2}>{heroMain}</Text>
-          <Text style={styles.heroSub} numberOfLines={1}>{heroSub}</Text>
-        </TouchableOpacity>
+            Subtitle + copy adapt to the count / rank state (see heroMain).
+            Zero-challenge cities lead with ACTION via the shared
+            EmptyCityChallenges (same component the challenge tab uses). ── */}
+        {challengeCount === 0 ? (
+          <EmptyCityChallenges
+            city={localizeCityName(city.name)}
+            onCreate={() => router.push('/challenge/create' as never)}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.hero}
+            onPress={() => router.push('/(tabs)/challenges' as never)}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel={heroMain}
+          >
+            <Text style={styles.heroMain} numberOfLines={2}>{heroMain}</Text>
+            <Text style={styles.heroSub} numberOfLines={1}>{heroSub}</Text>
+          </TouchableOpacity>
+        )}
 
         {/* ── Secondary pills: nearby / Hi locals / Hi later. Equal width;
             0-count pills stay visible but greyed (still tappable → the target
@@ -991,7 +1001,7 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={`${topicFeedItems.length} Hi now`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🗣️ {topicFeedItems.length} Hi now</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🗣️ {topicFeedItems.length > 0 ? `${topicFeedItems.length} ` : ''}Hi now</Text>
           </TouchableOpacity>
           {/* Hi later = planned events. Both land on the unified Hi Local feed. */}
           <TouchableOpacity
@@ -1001,7 +1011,7 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={`${eventFeedItems.length} Hi later`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length} Hi later</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi later</Text>
           </TouchableOpacity>
         </View>
 
