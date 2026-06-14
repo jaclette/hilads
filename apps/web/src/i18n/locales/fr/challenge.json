@@ -338,7 +338,7 @@
     "label": "Mode",
     "local": "Local",
     "international": "International",
-    "localHint": "Dans ta ville. Se termine par un rendez-vous IRL.",
+    "localHint": "Dans ta ville. Se termine par un rendez-vous en vrai.",
     "internationalHint": "N'importe où dans le monde. On t'envoie une preuve, tu valides à distance."
   },
   "intl": {
@@ -504,7 +504,7 @@
     "footnote": "Les points de création (+10) sont attribués instantanément. Le reste n’est attribué qu’après la double notation.",
     "types": {
       "heading": "🎯 Deux façons de jouer",
-      "local": "🏙️ Local - dans ta ville. Tu te retrouves IRL pour valider.",
+      "local": "🏙️ Local - dans ta ville. Tu te retrouves en vrai pour valider.",
       "international": "🌍 International - entre villes. Une photo instantanée comme preuve."
     },
     "lifecycle": {
