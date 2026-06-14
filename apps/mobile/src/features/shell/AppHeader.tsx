@@ -20,47 +20,12 @@
 
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import { Colors } from '@/constants';
-
-// Direct port of the web `.chat-header` background:
-//   radial-gradient(ellipse 90% 55% at 50% -10%,
-//                   rgba(194,74,56,0.10) 0%, transparent 60%), var(--surface)
-// react-native-svg can render real radial gradients (expo-linear-gradient
-// can't), so we lay one absolute-fill SVG behind the topBar row. The bg
-// fallback color on glowWrap (#161210) covers any subpixel gap.
-function HeaderRadialGlow() {
-  return (
-    <Svg
-      style={StyleSheet.absoluteFillObject}
-      width="100%"
-      height="100%"
-      preserveAspectRatio="none"
-      pointerEvents="none"
-    >
-      <Defs>
-        <RadialGradient
-          id="appHeaderGlow"
-          cx="50%"
-          cy="-10%"
-          rx="90%"
-          ry="55%"
-          fx="50%"
-          fy="-10%"
-        >
-          <Stop offset="0%"  stopColor="#C24A38" stopOpacity={0.10} />
-          <Stop offset="60%" stopColor="#C24A38" stopOpacity={0} />
-        </RadialGradient>
-      </Defs>
-      <Rect x="0" y="0" width="100%" height="100%" fill="url(#appHeaderGlow)" />
-    </Svg>
-  );
-}
 
 interface Props {
   /** Optional nodes injected immediately to the left of the DM icon. */
@@ -80,7 +45,6 @@ export function AppHeader({ rightExtra }: Props) {
 
   return (
     <View style={styles.glowWrap}>
-    <HeaderRadialGlow />
     <View style={styles.topBar}>
 
       {/* Left: notification bell (members) - or a subtle "?" for guests that
@@ -160,13 +124,13 @@ export function AppHeader({ rightExtra }: Props) {
 // pixel-for-pixel. Do not change these without updating the MY CITY context
 // sections below this component (city row, chips) which sit on the same rhythm.
 const styles = StyleSheet.create({
-  // Header surface strip. The radial orange ellipse rendered by
-  // <HeaderRadialGlow /> sits behind topBar via absoluteFillObject. No
-  // overflow:hidden here - the SVG is bounded to its own Rect (100% × 100%)
-  // so it can't bleed, and clipping the wrapper would clip the bell's
-  // notification badge (positioned top:-5/right:-5 to overflow the icon).
+  // Header surface strip. No overflow:hidden here - clipping the wrapper
+  // would clip the bell's notification badge (positioned top:-5/right:-5 to
+  // overflow the icon).
   glowWrap: {
-    backgroundColor: Colors.bg2,
+    // Match the page background (not the lighter bg2) so the header reads as
+    // one seamless surface with the rest of the screen - no visible band/seam.
+    backgroundColor: Colors.bg,
   },
   topBar: {
     flexDirection: 'row',
