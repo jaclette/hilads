@@ -84,6 +84,14 @@
   "shareCopied": "Link copied ✓",
   "noun": "Challenge",
   "byCreator": "by {{name}}",
+  "inspiration": {
+    "heading": "💡 Challenge ideas",
+    "sub": "What locals launch elsewhere - get inspired",
+    "firstLocal": "🔥 Be the first local in {{city}}",
+    "reward": "+2 🏆",
+    "createYours": "🔥 Create yours in {{city}}",
+    "by": "by {{name}} · {{city}}"
+  },
   "examples": {
     "label": "Need ideas? Tap one",
     "food": [

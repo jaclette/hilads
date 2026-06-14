@@ -50,6 +50,40 @@ export async function fetchValidatedChallenges(
   }
 }
 
+/** One inert example for the zero-challenge empty state. No challenge id by
+ *  design - these are read-only inspiration, never takeable. */
+export interface InspirationExample {
+  title:                    string;
+  challenge_type:           ChallengeType;
+  creator_username:         string | null;
+  creator_display_name:     string | null;
+  creator_thumb_avatar_url: string | null;
+}
+
+export interface ChallengeInspiration {
+  city:     string | null;   // source city name (for the small "by … · city" line)
+  cityId:   string | null;
+  examples: InspirationExample[];
+}
+
+/**
+ * Up to 3 example challenges from the most-active OTHER city, for the
+ * zero-challenge empty state. Read-only "idea book" - the payload carries no
+ * challenge id, so there is no way to open or take these from the client.
+ * Returns an empty list (block renders nothing) when no other city qualifies
+ * or on any error.
+ */
+export async function fetchChallengeInspiration(excludeChannelId: string): Promise<ChallengeInspiration> {
+  try {
+    return await api.get<ChallengeInspiration>('/challenges/inspiration', {
+      params: { excludeChannelId },
+    });
+  } catch (err) {
+    console.warn('[fetchChallengeInspiration] failed:', err);
+    return { city: null, cityId: null, examples: [] };
+  }
+}
+
 export async function fetchChallengeById(challengeId: string): Promise<{
   challenge: Challenge;
   channelId: number;

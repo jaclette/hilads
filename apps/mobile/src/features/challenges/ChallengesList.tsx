@@ -1,12 +1,18 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { fetchCityChallenges, fetchValidatedChallenges } from '@/api/challenges';
+import {
+  fetchCityChallenges, fetchValidatedChallenges, fetchChallengeInspiration,
+  type InspirationExample,
+} from '@/api/challenges';
 import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
+import { ExampleChallengeCard } from '@/components/ExampleChallengeCard';
+import { useApp } from '@/context/AppContext';
+import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import type { Challenge, ChallengeType } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -38,6 +44,8 @@ const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
 export function ChallengesList({ channelId, headerExtra }: { channelId: string | null; headerExtra?: ReactNode }) {
   const router = useRouter();
   const { t } = useTranslation('challenge');
+  const { city } = useApp();
+  const currentCityName = localizeCityName(city?.name ?? '') || (city?.name ?? '');
 
   const [tab,        setTab]        = useState<Tab>('open');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
@@ -46,6 +54,33 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   const [pastList,   setPastList]   = useState<Challenge[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Inspiration ("idea book") for the genuine zero-challenge empty state.
+  // Fetched lazily - only once the open tab has loaded empty - so populated
+  // cities never pay for it. Re-armed on city change.
+  const [inspiration,     setInspiration]     = useState<InspirationExample[]>([]);
+  const [inspirationCity, setInspirationCity] = useState<string | null>(null);
+  const inspirationTriedRef = useRef(false);
+
+  useEffect(() => {
+    // New city → reset so the block re-evaluates for it.
+    inspirationTriedRef.current = false;
+    setInspiration([]);
+    setInspirationCity(null);
+  }, [channelId]);
+
+  useEffect(() => {
+    if (loading || tab !== 'open' || openList.length > 0 || !channelId) return;
+    if (inspirationTriedRef.current) return;
+    inspirationTriedRef.current = true;
+    let alive = true;
+    fetchChallengeInspiration(channelId).then(r => {
+      if (!alive) return;
+      setInspiration(r.examples);
+      setInspirationCity(r.city);
+    });
+    return () => { alive = false; };
+  }, [loading, tab, openList.length, channelId]);
 
   const load = useCallback(async (isRefresh = false) => {
     if (!channelId) return;
@@ -173,6 +208,45 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
                 <Text style={styles.emptyTitle}>
                   {tab === 'open' ? t('noOpen', { defaultValue: 'No active challenges yet' }) : t('noValidated', { defaultValue: 'No validated challenges yet' })}
                 </Text>
+
+                {/* Local hero CTA - dominant, always on top of the empty
+                    state. The act of creating earns +2 instantly (see the
+                    challenge_created reward). Routes to LOCAL creation. */}
+                {tab === 'open' && (
+                  <TouchableOpacity
+                    style={styles.heroCta}
+                    activeOpacity={0.85}
+                    onPress={() => router.push('/challenge/create' as never)}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.heroCtaText}>
+                      {currentCityName ? t('inspiration.firstLocal', { city: currentCityName }) : t('createCta')}
+                    </Text>
+                    <Text style={styles.heroCtaReward}>{t('inspiration.reward')}</Text>
+                  </TouchableOpacity>
+                )}
+
+                {/* Inspiration "idea book" - inert example cards from the
+                    most-active other city. Only in the open-tab zero state,
+                    only when at least one example came back. */}
+                {tab === 'open' && inspiration.length > 0 && (
+                  <View style={styles.inspirationBlock}>
+                    <Text style={styles.inspirationHeading}>{t('inspiration.heading')}</Text>
+                    <Text style={styles.inspirationSub}>{t('inspiration.sub')}</Text>
+                    {inspiration.map((ex, i) => (
+                      <ExampleChallengeCard
+                        key={`${ex.title}-${i}`}
+                        example={ex}
+                        sourceCity={inspirationCity ?? ''}
+                        currentCity={currentCityName}
+                        onCreate={() => {
+                          track('challenge_inspiration_create', { source: 'empty_state' });
+                          router.push('/challenge/create' as never);
+                        }}
+                      />
+                    ))}
+                  </View>
+                )}
               </View>
             )
         }
@@ -253,6 +327,32 @@ const styles = StyleSheet.create({
   empty:  { justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
   emptyEmoji: { fontSize: 44 },
   emptyTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+
+  // Dominant local hero - filled accent so it clearly outweighs the inert
+  // example cards below it.
+  heroCta: {
+    marginTop:        Spacing.sm,
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'center',
+    gap:              8,
+    paddingVertical:  14,
+    paddingHorizontal: Spacing.lg,
+    borderRadius:     14,
+    backgroundColor:  'rgba(255,122,60,0.18)',
+    borderWidth:      1,
+    borderColor:      'rgba(255,122,60,0.45)',
+  },
+  heroCtaText:   { color: Colors.accent, fontSize: 15, fontWeight: '800', textAlign: 'center' },
+  heroCtaReward: { color: '#FFC93C', fontSize: 13, fontWeight: '800' },
+
+  inspirationBlock: {
+    width:     '100%',
+    marginTop: Spacing.lg,
+    gap:       Spacing.sm,
+  },
+  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'left' },
+  inspirationSub:     { fontSize: 12, fontWeight: '600', color: Colors.muted, textAlign: 'left', marginBottom: 2 },
 
   createCta: {
     marginHorizontal: Spacing.md,

@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
 import ChallengeVersusCard from './components/ChallengeVersusCard'
+import ExampleChallengeCard from './components/ExampleChallengeCard'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -1076,6 +1077,11 @@ export default function App() {
   const NOW_CHALLENGES_CAP = 5
   const [challengesShownCount, setChallengesShownCount] = useState(NOW_CHALLENGES_CAP)
   const [cityChallenges,     setCityChallenges]     = useState([])
+  // Inspiration "idea book" for the zero-challenge empty state. Read-only
+  // examples from the most-active OTHER city; fetched lazily only when the
+  // challenges tab is open AND empty, so populated cities never pay for it.
+  const [challengeInspiration,     setChallengeInspiration]     = useState([])
+  const [challengeInspirationCity, setChallengeInspirationCity] = useState(null)
   const [activeTopic,        setActiveTopic]        = useState(null)  // topic object
   const [activeChallenge,    setActiveChallenge]    = useState(null)  // challenge object - opens ChallengeChatPage
   const [showCreateChallenge, setShowCreateChallenge] = useState(false)
@@ -1144,6 +1150,24 @@ export default function App() {
       return am - bm
     })
   }, [cityChallenges, challengeTypeFilter, challengeModeFilter])
+
+  // Lazy inspiration fetch: only when the challenges tab is open AND the city
+  // has zero challenges. Re-runs on city change (channelId in deps). Bounded
+  // server-side (up to 3); empty result → the block renders nothing.
+  useEffect(() => {
+    if (!showChallengesDrawer || cityChallenges.length > 0 || !channelId) {
+      setChallengeInspiration([])
+      setChallengeInspirationCity(null)
+      return
+    }
+    let alive = true
+    fetchChallengeInspiration(channelId).then(r => {
+      if (!alive) return
+      setChallengeInspiration(r.examples ?? [])
+      setChallengeInspirationCity(r.city ?? null)
+    })
+    return () => { alive = false }
+  }, [showChallengesDrawer, cityChallenges.length, channelId])
 
   // Scroll-to-load-more - three gates so we never spam the rendering loop
   // (and, when backend pagination lands, the API):
@@ -5346,9 +5370,33 @@ export default function App() {
             {cityChallenges.length === 0 ? (
               <div className="events-empty-state">
                 <p className="events-empty-title">{t('noun', { ns: 'challenge' })}</p>
-                <button className="events-empty-cta" onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }} style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}>
-                  🔥 {t('createCta', { ns: 'challenge' })}
+                {/* Local hero CTA - dominant, on top of the inspiration block.
+                    Creating a challenge earns +2 instantly. Routes to LOCAL
+                    creation. */}
+                <button className="events-empty-cta challenge-empty-hero" onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}>
+                  <span>{city ? t('inspiration.firstLocal', { ns: 'challenge', city: localizeCityName(city) }) : `🔥 ${t('createCta', { ns: 'challenge' })}`}</span>
+                  <span className="challenge-empty-hero-reward">{t('inspiration.reward', { ns: 'challenge' })}</span>
                 </button>
+
+                {/* Inspiration "idea book" - inert example cards from the
+                    most-active other city. NOT takeable: each card's only
+                    action routes back to LOCAL creation. Renders nothing
+                    when no other city qualifies. */}
+                {challengeInspiration.length > 0 && (
+                  <div className="challenge-inspiration-block">
+                    <p className="challenge-inspiration-heading">{t('inspiration.heading', { ns: 'challenge' })}</p>
+                    <p className="challenge-inspiration-sub">{t('inspiration.sub', { ns: 'challenge' })}</p>
+                    {challengeInspiration.map((ex, i) => (
+                      <ExampleChallengeCard
+                        key={`${ex.title}-${i}`}
+                        example={ex}
+                        sourceCity={challengeInspirationCity ?? ''}
+                        currentCity={city ? localizeCityName(city) : ''}
+                        onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (() => {
               const visibleChallenges = filteredChallenges.slice(0, challengesShownCount)

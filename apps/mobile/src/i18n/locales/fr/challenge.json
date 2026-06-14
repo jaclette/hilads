@@ -318,6 +318,14 @@
     "ignore": "Ignorer"
   },
   "byCreator": "par {{name}}",
+  "inspiration": {
+    "heading": "💡 Des idées de défis",
+    "sub": "Ce que les locaux lancent ailleurs - inspire-toi",
+    "firstLocal": "🔥 Sois le premier local à {{city}}",
+    "reward": "+2 🏆",
+    "createYours": "🔥 Crée le tien à {{city}}",
+    "by": "par {{name}} · {{city}}"
+  },
   "typeFilter": {
     "label": "Filtrer par type",
     "all": "Toutes",

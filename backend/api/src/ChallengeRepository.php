@@ -376,6 +376,92 @@ class ChallengeRepository
     }
 
     /**
+     * Inspiration block for the zero-challenge empty state. Picks the single
+     * most-active OTHER city that currently has open PUBLIC challenges by a
+     * registered creator, and returns up to 3 of them as a read-only
+     * "recipe book". Deliberately NOT a takeable feed: callers render these
+     * in an inert card whose only action routes back to LOCAL creation, so
+     * we return the bare minimum (title, type, creator name + avatar) - no
+     * challenge id, no acceptance/visibility/participant state, nothing the
+     * client could use to open or take the remote challenge.
+     *
+     * "Most active" here = most open public challenges, tie-broken by
+     * recency. That's the relevant signal for "which city has the richest
+     * idea book", and keeps this to two small, fully-indexed queries
+     * (idx_channel_challenges_city_status) instead of the heavy GROUP-BY +
+     * participant enrichment of getByCity. Egress-safe: the candidate scan
+     * is bounded by the (small) set of currently-open public challenges, the
+     * sample is LIMIT 3.
+     *
+     * Returns [] when no other city qualifies, so the whole block renders
+     * nothing in that case.
+     *
+     * @param string $excludeCityId The caller's current city ('city_<int>'),
+     *                              excluded so we never show a city its own
+     *                              challenges as "elsewhere".
+     * @return array{city: ?string, cityId: ?string, examples: array<int, array<string, mixed>>}
+     */
+    public static function getInspiration(string $excludeCityId): array
+    {
+        $empty = ['city' => null, 'cityId' => null, 'examples' => []];
+        $pdo   = Database::pdo();
+
+        // 1) Pick the most-active OTHER city with open public challenges.
+        $pick = $pdo->prepare("
+            SELECT cc.city_id, COUNT(*) AS n, MAX(cc.created_at) AS recent
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id
+            WHERE cc.status      = 'open'
+              AND cc.visibility  = 'public'
+              AND c.status       = 'active'
+              AND cc.created_by IS NOT NULL
+              AND cc.city_id    <> :exclude
+            GROUP BY cc.city_id
+            ORDER BY n DESC, recent DESC
+            LIMIT 1
+        ");
+        $pick->execute(['exclude' => $excludeCityId]);
+        $cityId = $pick->fetchColumn();
+        if ($cityId === false || $cityId === null) return $empty;
+
+        // 2) Up to 3 examples from that city. Lean projection - only what an
+        //    inert example card renders. JOIN users (not LEFT): created_by is
+        //    NOT NULL per the candidate filter, so the creator always exists.
+        $sample = $pdo->prepare("
+            SELECT cc.title, cc.challenge_type,
+                   u.username AS creator_username,
+                   u.display_name AS creator_display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id
+            JOIN users    u ON u.id = cc.created_by
+            WHERE cc.city_id     = :city
+              AND cc.status      = 'open'
+              AND cc.visibility  = 'public'
+              AND c.status       = 'active'
+            ORDER BY cc.created_at DESC
+            LIMIT 3
+        ");
+        $sample->execute(['city' => $cityId]);
+        $rows = $sample->fetchAll();
+        if (empty($rows)) return $empty;
+
+        $examples = array_map(static fn(array $r): array => [
+            'title'                    => $r['title'],
+            'challenge_type'           => $r['challenge_type'],
+            'creator_username'         => $r['creator_username'],
+            'creator_display_name'     => $r['creator_display_name'],
+            'creator_thumb_avatar_url' => $r['creator_thumb_avatar_url'],
+        ], $rows);
+
+        return [
+            'city'     => self::cityNameForCityId($cityId),
+            'cityId'   => $cityId,
+            'examples' => $examples,
+        ];
+    }
+
+    /**
      * Validated (archived) challenges for a city - feeds the "See past
      * challenges" CTA. Most-recently-validated first.
      */

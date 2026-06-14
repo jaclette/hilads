@@ -483,6 +483,23 @@ export async function fetchCityChallenges(channelId, limit = 50) {
   return data.challenges ?? []
 }
 
+// Read-only "idea book" for the zero-challenge empty state: up to 3 example
+// challenges from the most-active OTHER city. The payload carries NO challenge
+// id (title/type/creator only), so nothing here can open or take the remote
+// challenge. Returns { city, cityId, examples }; empty list on error / when no
+// other city qualifies.
+export async function fetchChallengeInspiration(excludeChannelId) {
+  const empty = { city: null, cityId: null, examples: [] }
+  try {
+    const res = await fetch(`${BASE}/challenges/inspiration?excludeChannelId=${encodeURIComponent(excludeChannelId)}`)
+    if (!res.ok) return empty
+    const data = await res.json()
+    return { city: data.city ?? null, cityId: data.cityId ?? null, examples: data.examples ?? [] }
+  } catch {
+    return empty
+  }
+}
+
 export async function fetchValidatedChallenges(channelId, { limit = 30, before } = {}) {
   const params = new URLSearchParams({ limit: String(limit) })
   if (before) params.set('before', String(before))

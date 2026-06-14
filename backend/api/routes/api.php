@@ -7700,6 +7700,25 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', functio
 });
 
 // POST /api/v1/channels/{channelId}/challenges
+// GET /api/v1/challenges/inspiration?excludeChannelId={id}
+// Read-only "idea book" for the zero-challenge empty state: up to 3 open
+// public challenges from the most-active OTHER city, shown purely as
+// inspiration. NOT takeable - the client renders these in an inert card
+// whose only action routes back to LOCAL creation. Guest-readable; returns
+// only title/type/creator (no challenge id), so nothing here can open or
+// take the remote challenge. Bounded (LIMIT 3) + fully indexed. Empty
+// payload -> the client renders nothing.
+$router->add('GET', '/api/v1/challenges/inspiration', function () {
+    $exclude = filter_var($_GET['excludeChannelId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $excludeCityId = $exclude === false ? '' : 'city_' . $exclude;
+    try {
+        Response::json(ChallengeRepository::getInspiration($excludeCityId));
+    } catch (\Throwable $e) {
+        error_log('[challenges] GET inspiration failed: ' . $e->getMessage());
+        Response::json(['city' => null, 'cityId' => null, 'examples' => []], 200);
+    }
+});
+
 // Create a new challenge. Requires a registered account - guests may browse,
 // accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so
