@@ -32,7 +32,7 @@
       "title": "Three ways to live the city",
       "itemChallenges": "🤝 Challenges - dare or be dared to discover hidden spots, taste real food, share culture, or help out.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi plan - plan a moment to meet"
+      "itemEvents": "🎉 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Earn your place in the city",
@@ -44,7 +44,7 @@
       "ctaMostLocal": "🤝 Discover Most Local of {{city}}",
       "ctaLookAround": "👀 Just look around for now",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi plan"
+      "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {

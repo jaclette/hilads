@@ -834,7 +834,7 @@ export default function NowScreen() {
               onPress={handleHostSpot}
               accessibilityRole="button"
             >
-              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>📅 {t('hiLater')}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}

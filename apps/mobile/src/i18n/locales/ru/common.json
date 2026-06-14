@@ -25,7 +25,7 @@
       "title": "Три способа жить городом",
       "itemChallenges": "🤝 Challenges - бросай или принимай вызов: найди скрытые места, попробуй настоящую еду, поделись культурой или помоги.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi plan - plan a moment to meet"
+      "itemEvents": "🎉 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Заслужи своё место в городе",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 Открой Most Local в {{city}}",
       "ctaLookAround": "👀 Пока просто осмотрюсь",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi plan"
+      "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {

@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 {{count}} คนกำลังออกมาเที่ยวตอนนี้",
     "peopleLive_other": "🔥 {{count}} คนกำลังออกมาเที่ยวตอนนี้",
-    "events_one": "📅 {{count}} Hi plan happening",
-    "events_other": "📅 {{count}} Hi plan happening",
+    "events_one": "🎉 {{count}} Hi plan happening",
+    "events_other": "🎉 {{count}} Hi plan happening",
     "hangouts_one": "🗣️ {{count}} Hi now active",
     "hangouts_other": "🗣️ {{count}} Hi now active",
     "replies_one": "{{count}} ตอบกลับ",

@@ -47,9 +47,9 @@
       "desc": "토 & 일"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "선택된 도시가 없어요",
   "errTitle": "제목이 필요해요",
   "errDuration": "이벤트는 최소 15분 이상이어야 해요",

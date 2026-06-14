@@ -25,7 +25,7 @@
       "title": "Drei Wege, die Stadt zu erleben",
       "itemChallenges": "🤝 Challenges - fordere oder werde gefordert, versteckte Spots zu entdecken, echtes Essen zu probieren, Kultur zu teilen oder zu helfen.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi plan - plan a moment to meet"
+      "itemEvents": "🎉 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Verdien dir deinen Platz in der Stadt",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 Entdecke Most Local von {{city}}",
       "ctaLookAround": "👀 Erst mal umschauen",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi plan"
+      "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {

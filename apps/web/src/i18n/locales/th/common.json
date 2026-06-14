@@ -31,7 +31,7 @@
       "title": "สามวิธีในการใช้ชีวิตในเมือง",
       "itemChallenges": "🤝 Challenges - ท้าทายหรือถูกท้าทายเพื่อค้นพบสถานที่ลับ ลิ้มรสอาหารจริง แบ่งปันวัฒนธรรม หรือช่วยเหลือ",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi plan - plan a moment to meet"
+      "itemEvents": "🎉 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "สร้างที่ของคุณในเมือง",
@@ -43,7 +43,7 @@
       "ctaMostLocal": "🤝 ดู Most Local ของ {{city}}",
       "ctaLookAround": "👀 ขอดูก่อน",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi plan"
+      "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {

@@ -4390,7 +4390,7 @@ export default function App() {
                 onClick={goToEventsTab}
                 aria-label={`${events.length} Hi plan`}
               >
-                ⏰ {events.length > 0 ? `${events.length} ` : ''}Hi plan
+                🎉 {events.length > 0 ? `${events.length} ` : ''}Hi plan
               </button>
             </div>
           </>
@@ -5187,7 +5187,7 @@ export default function App() {
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">{t('feed.public')}</span>
-                        : <span className="er-going er-going--later">📅 {t('feed.laterTag')}</span>}
+                        : <span className="er-going er-going--later">🎉 {t('feed.laterTag')}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
@@ -5373,7 +5373,7 @@ export default function App() {
                 className="hilocal-cta hilocal-cta--later"
                 onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
               >
-                📅 {t('feed.hiLater')}
+                🎉 {t('feed.hiLater')}
               </button>
               <button
                 className="hilocal-cta hilocal-cta--coming"

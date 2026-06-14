@@ -47,9 +47,9 @@
       "desc": "周六和周日"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "未选择城市",
   "errTitle": "标题为必填项",
   "errDuration": "活动时长至少需要 15 分钟",

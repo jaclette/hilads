@@ -47,9 +47,9 @@
       "desc": "Sat & Sun"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "No city selected",
   "errTitle": "Title is required",
   "errDuration": "Event must be at least 15 minutes long",

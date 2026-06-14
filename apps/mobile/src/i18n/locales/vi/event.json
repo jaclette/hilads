@@ -47,9 +47,9 @@
       "desc": "Thứ 7 & CN"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "Chưa chọn thành phố",
   "errTitle": "Cần có tiêu đề",
   "errDuration": "Sự kiện phải kéo dài ít nhất 15 phút",

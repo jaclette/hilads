@@ -47,9 +47,9 @@
       "desc": "Sáb y Dom"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "Ninguna ciudad seleccionada",
   "errTitle": "El título es obligatorio",
   "errDuration": "El evento debe durar al menos 15 minutos",

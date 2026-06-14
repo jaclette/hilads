@@ -87,7 +87,7 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
       onPress={onPress}
     >
       <View style={styles.cardTitleRow}>
-        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>📅 {t('laterTag', { ns: 'now' })}</Text></View>
+        <View style={styles.kindBadgeEvent}><Text style={styles.kindBadgeText}>🎉 {t('laterTag', { ns: 'now' })}</Text></View>
         {isPublic && <View style={styles.publicBadge}><Text style={styles.publicBadgeText}>{t('public')}</Text></View>}
         <Text style={styles.cardIcon}>{icon}</Text>
         <Text style={styles.cardTitle} numberOfLines={1}>{event.title}</Text>

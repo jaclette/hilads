@@ -1011,7 +1011,7 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={`${eventFeedItems.length} Hi plan`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi plan</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🎉 {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi plan</Text>
           </TouchableOpacity>
         </View>
 

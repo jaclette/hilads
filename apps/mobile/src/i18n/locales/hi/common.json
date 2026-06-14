@@ -25,7 +25,7 @@
       "title": "शहर को जीने के तीन तरीके",
       "itemChallenges": "🤝 Challenges - चुनौती दीजिए या लीजिए - छुपी जगहें खोजिए, असली खाना चखिए, संस्कृति बाँटिए, या मदद कीजिए।",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi plan - plan a moment to meet"
+      "itemEvents": "🎉 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "शहर में अपनी जगह कमाइए",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 {{city}} के Most Local को देखिए",
       "ctaLookAround": "👀 अभी सिर्फ़ देखना है",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi plan"
+      "ctaHiLater": "🎉 Hi plan"
     }
   },
   "challengeIntro": {

@@ -47,9 +47,9 @@
       "desc": "Sab & Min"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "Belum ada kota dipilih",
   "errTitle": "Judul wajib diisi",
   "errDuration": "Acara harus berlangsung minimal 15 menit",

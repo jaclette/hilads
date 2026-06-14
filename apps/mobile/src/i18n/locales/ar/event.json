@@ -47,9 +47,9 @@
       "desc": "السبت والأحد"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "لم يتم اختيار مدينة",
   "errTitle": "العنوان مطلوب",
   "errDuration": "يجب أن تستمر الفعالية 15 دقيقة على الأقل",

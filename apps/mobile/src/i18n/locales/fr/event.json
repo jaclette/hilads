@@ -47,9 +47,9 @@
       "desc": "Sam & Dim"
     }
   },
-  "submitCreate": "📅 Hi plan",
-  "submitStart": "📅 Hi plan",
-  "submitOpenSpot": "📅 Hi plan",
+  "submitCreate": "🎉 Hi plan",
+  "submitStart": "🎉 Hi plan",
+  "submitOpenSpot": "🎉 Hi plan",
   "errNoCity": "Aucune ville sélectionnée",
   "errTitle": "Le titre est requis",
   "errDuration": "L'événement doit durer au moins 15 minutes",

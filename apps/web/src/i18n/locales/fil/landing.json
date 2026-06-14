@@ -5,8 +5,8 @@
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
     "peopleLive_other": "🔥 {{count}} tao ang nagta-tambay ngayon",
-    "events_one": "📅 {{count}} Hi plan happening",
-    "events_other": "📅 {{count}} Hi plan happening",
+    "events_one": "🎉 {{count}} Hi plan happening",
+    "events_other": "🎉 {{count}} Hi plan happening",
     "hangouts_one": "🗣️ {{count}} Hi now active",
     "hangouts_other": "🗣️ {{count}} Hi now active",
     "replies_one": "{{count}} tugon",
