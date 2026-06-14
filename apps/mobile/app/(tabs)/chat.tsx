@@ -14,13 +14,12 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView,
-  TouchableOpacity, Animated, AppState, Alert,
+  TouchableOpacity, Animated, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import { useIsFocused } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -36,19 +35,15 @@ import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
-import { ArrivalsBar } from '@/features/chat/ArrivalsBar';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
-import { HiladsIcon } from '@/components/HiladsIcon';
 import { AppHeader } from '@/features/shell/AppHeader';
-import { MarqueeText } from '@/components/MarqueeText';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Colors, FontSizes, Spacing, Radius, buildCityUrl } from '@/constants';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
-import { localizeWeather } from '@/lib/weather';
 import { fetchLeaderboard } from '@/api/leaderboard';
 import type { Message, ReplyRef, MentionRef } from '@/types';
 
@@ -100,27 +95,23 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
-// ── Chip live dot - red pulsing dot for the "hanging out" chip ───────────────
-// Gentle scale 1→1.15→1 over 2s, matching web .chip-live-dot @keyframes.
-
-function ChipLiveDot() {
-  const scale = useRef(new Animated.Value(1)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.timing(scale, { toValue: 1.15, duration: 1000, useNativeDriver: true }),
-        Animated.timing(scale, { toValue: 1,    duration: 1000, useNativeDriver: true }),
-      ]),
-    ).start();
-  }, []);
-
-  return (
-    <Animated.View style={[styles.chipLiveDot, { transform: [{ scale }] }]} />
-  );
+// ── City short name for the challenge hero ───────────────────────────────────
+// Hero copy is English-only for this phase (per spec). Known cities map to a
+// canonical short form; otherwise keep the full name unless it's too long
+// (>12 chars), then ellipsize. Add to SHORT as needed.
+const CITY_SHORT: Record<string, string> = {
+  'Ho Chi Minh City': 'HCMC',
+  'New York City':    'NYC',
+  'New York':         'NYC',
+  'San Francisco':    'SF',
+  'Los Angeles':      'LA',
+  'Rio de Janeiro':   'Rio',
+};
+function cityShortName(name: string): string {
+  if (CITY_SHORT[name]) return CITY_SHORT[name];
+  if (name.length <= 12) return name;
+  return name.slice(0, 11).trimEnd() + '…';
 }
-
-// ── Screen ────────────────────────────────────────────────────────────────────
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 // Tab bar is in-flow (flex-column sibling), so the screen content area ends
@@ -404,95 +395,46 @@ export default function ChatTab() {
   // locaux : <title>"). Same pattern as events: fetch on channel load to
   // synthesize current items, WS new_challenge appends fresh ones.
 
+  // Open-challenge count for the city, used by the hero ("{n} CHALLENGES").
+  // Seeded from the full fetch; kept in sync by the WS handlers below.
+  // seenChallengeIds/seenValidatedIds dedup the +1 / -1 against re-fired events.
   const seenChallengeIds = useRef(new Set<string>());
-  const [challengeFeedItems, setChallengeFeedItems] = useState<Message[]>([]);
+  const seenValidatedIds = useRef(new Set<string>());
+  const [challengeCount, setChallengeCount] = useState(0);
 
   useEffect(() => {
     if (!channelId) return;
     seenChallengeIds.current.clear();
-    setChallengeFeedItems([]);
+    seenValidatedIds.current.clear();
+    setChallengeCount(0);
 
     fetchCityChallenges(channelId).then(chs => {
-      // Cap the chat-feed prompts at the 5 newest. Older challenges still
-      // surface in the NOW feed (paginated) and the Challenges filter; the
-      // chat surface is meant to feel "live" - too many prompts at once
-      // pushes real conversation off the screen.
-      const newest = chs.slice(0, 5);
-      const now = Date.now() / 1000;
-      const fresh: Message[] = [];
-      for (const c of newest) {
-        if (!seenChallengeIds.current.has(c.id)) {
-          seenChallengeIds.current.add(c.id);
-          // participants_preview[0] is the creator (auto-joined at create
-          // time); fall back to a generic placeholder if for some reason
-          // the preview is empty.
-          const creatorName = c.participants_preview?.[0]?.displayName ?? '';
-          fresh.push({
-            id:          `challenge-msg-${c.id}`,
-            type:        'challenge',
-            challengeId: c.id,
-            content:     c.title,
-            nickname:    creatorName,
-            audience:    c.audience,
-            challengeMode: c.mode ?? 'local',
-            challengeStatus: c.status,
-            // International rows render with origin → target flags instead
-            // of the "{{name}} sent a cross-city challenge" wording; pass
-            // both codes through so ChatMessage can build the label.
-            challengeCountry:       c.country ?? null,
-            challengeTargetCountry: c.target_country ?? null,
-            createdAt:   now,
-          });
-        }
-      }
-      if (fresh.length > 0) setChallengeFeedItems(prev => [...prev, ...fresh]);
+      setChallengeCount(chs.length);
+      // Remember the ids already counted so a racing `new_challenge` WS event
+      // for one of them can't double-count.
+      chs.forEach(c => seenChallengeIds.current.add(c.id));
     }).catch(() => {});
 
-    // WS: new challenge created - append pill immediately (no poll).
+    // WS: new challenge created → bump the hero count (deduped against the
+    // initial fetch + repeat events).
     const offChallenge = socket.on('new_challenge', (data: Record<string, unknown>) => {
       if (String(data.channelId) !== String(channelId)) return;
       const ch = data.challenge as Record<string, unknown> | undefined;
       const id = (ch?.id ?? '') as string;
       if (!id || seenChallengeIds.current.has(id)) return;
       seenChallengeIds.current.add(id);
-      setChallengeFeedItems(prev => [...prev, {
-        id:          `challenge-msg-${id}`,
-        type:        'challenge' as const,
-        challengeId: id,
-        content:     (ch?.title as string) ?? '',
-        nickname:    (ch?.nickname as string) ?? '',
-        audience:    (ch?.audience as 'locals' | 'explorers') ?? 'locals',
-        challengeMode: ((ch?.mode as 'local' | 'international') ?? 'local'),
-        challengeStatus: (ch?.status as 'open' | 'validated') ?? 'open',
-        // PR19 - origin + target flags for the international banner (see
-        // chat-list synthesis above).
-        challengeCountry:       (ch?.country        as string | null) ?? null,
-        challengeTargetCountry: (ch?.target_country as string | null) ?? null,
-        createdAt:   Date.now() / 1000,
-      }]);
+      setChallengeCount(c => c + 1);
     });
 
-    // WS: challenge validated - celebration pill, separate from the creation
-    // pill so both events stay in the timeline. Dedup id is per-challenge
-    // (not per-validation) since validate is idempotent.
-    const seenValidatedKey = (id: string) => `challenge-validated-${id}`;
+    // WS: challenge validated → leaves the open pool, so drop it from the hero
+    // count (once per challenge; validate is idempotent).
     const offValidated = socket.on('challenge_validated', (data: Record<string, unknown>) => {
       if (String(data.channelId) !== String(channelId)) return;
       const ch = data.challenge as Record<string, unknown> | undefined;
       const id = (ch?.id ?? '') as string;
-      if (!id) return;
-      const itemId = seenValidatedKey(id);
-      setChallengeFeedItems(prev => {
-        if (prev.some(p => p.id === itemId)) return prev;
-        return [...prev, {
-          id:          itemId,
-          type:        'challenge_validated' as const,
-          challengeId: id,
-          content:     (ch?.title as string) ?? '',
-          nickname:    (ch?.nickname as string) ?? '',
-          createdAt:   Date.now() / 1000,
-        }];
-      });
+      if (!id || seenValidatedIds.current.has(id)) return;
+      seenValidatedIds.current.add(id);
+      setChallengeCount(c => Math.max(0, c - 1));
     });
 
     return () => { offChallenge(); offValidated(); };
@@ -722,22 +664,7 @@ export default function ChatTab() {
     };
   }, [channelId]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Weather - extracted from messages for header display, not rendered in the feed.
-  const weatherLabel = useMemo<string | null>(() => {
-    const w = messages.find(m => m.type === 'system' && m.event === 'weather');
-    return localizeWeather(w?.content, city?.name);
-  }, [messages, city?.name, i18n.language]);
-
-  // Weather pill marquee gating: scroll only while this tab is focused AND the
-  // app is foregrounded (battery), and never under OS reduce-motion.
-  const isFocused    = useIsFocused();
   const reduceMotion = useReducedMotion();
-  const [appActive, setAppActive] = useState(() => AppState.currentState === 'active');
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', s => setAppActive(s === 'active'));
-    return () => sub.remove();
-  }, []);
-  const weatherActive = isFocused && appActive;
 
   // Arrivals - extracted from the same `messages` stream and shown in the
   // dedicated ArrivalsBar / ArrivalsSheet, NOT in the main feed. Newest-first
@@ -953,6 +880,26 @@ export default function ChatTab() {
 
   const flag = cityFlag(city.country);
 
+  // ── Hero copy (English-only this phase, per spec). Combines the city's open
+  // challenge count with the viewer's rank; the subtitle adapts to each state.
+  const cityShort = cityShortName(city.name).toUpperCase();
+  const noun      = challengeCount === 1 ? 'CHALLENGE' : 'CHALLENGES';
+  let heroMain: string;
+  let heroSub:  string;
+  if (challengeCount === 0) {
+    heroMain = `🌱 NO CHALLENGES YET IN ${cityShort}`;
+    heroSub  = 'Create the first one for travelers to accept →';
+  } else if (myCityRank === null) {
+    heroMain = `🔥 ${challengeCount} ${noun} IN ${cityShort}`;
+    heroSub  = 'Accept your first challenge to start climbing →';
+  } else if (myCityRank === 1) {
+    heroMain = `🔥 ${challengeCount} ${noun} · 🏆 #1 IN ${cityShort}`;
+    heroSub  = 'Defend your title →';
+  } else {
+    heroMain = `🔥 ${challengeCount} ${noun} · 🏆 #${myCityRank} IN ${cityShort}`;
+    heroSub  = 'Tap to accept your next challenge →';
+  }
+
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
@@ -982,152 +929,83 @@ export default function ChatTab() {
           )}
         />
 
-        {/* ── Section 2: City hero name - tappable → switch city ── */}
-        <TouchableOpacity
-          style={styles.cityHeroRow}
-          onPress={() => router.push('/switch-city' as never)}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
-          accessibilityRole="button"
-          accessibilityLabel={t('changeCity')}
-        >
-          {/* Left spacer balances the right chevron so the name stays centered. */}
-          <View style={styles.cityHeroSpacer} />
-          <Text style={styles.cityHeroName} numberOfLines={2}>
-            {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
-          </Text>
-          <Ionicons
-            name="chevron-down"
-            size={18}
-            color="rgba(255,255,255,0.45)"
-            style={styles.cityHeroChevron}
-          />
-        </TouchableOpacity>
-
-        {/* ── Section 3: Context chips ── */}
-        <View style={styles.chipsRow}>
-          {weatherLabel && (
-            <TouchableOpacity
-              style={[styles.chip, styles.chipWeather]}
-              activeOpacity={0.75}
-              // Under reduce-motion the text is static + truncated, so make the
-              // pill reveal the full message on tap. (No marquee in that mode.)
-              onPress={() => { if (reduceMotion) Alert.alert(t('weatherAlert'), weatherLabel); }}
-              accessibilityLabel={t('currentWeather', { label: weatherLabel })}
-              accessibilityRole="button"
-            >
-              <Ionicons name="cloud-outline" size={13} color="rgba(255,255,255,0.45)" />
-              <MarqueeText
-                text={weatherLabel}
-                textStyle={styles.chipWeatherText}
-                style={styles.chipWeatherMarquee}
-                fadeColor="#1a1a1a"
-                active={weatherActive}
-                reduceMotion={reduceMotion}
-              />
-            </TouchableOpacity>
-          )}
+        {/* ── City row: name selector (left) + compact "recent" pill (right) ──
+            City name ellipsizes first on narrow screens; the recent pill never
+            shrinks (flexShrink 0). */}
+        <View style={styles.cityRow}>
           <TouchableOpacity
-            style={[styles.chip, styles.chipOnline]}
-            activeOpacity={0.75}
-            onPress={() => router.push('/(tabs)/here' as never)}
-            accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
+            style={styles.citySelector}
+            onPress={() => router.push('/switch-city' as never)}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             accessibilityRole="button"
+            accessibilityLabel={t('changeCity')}
           >
-            <ChipLiveDot />
-            <Text style={styles.chipOnlineText}>
-              {onlineCount != null ? t('online', { count: onlineCount }) : t('liveNow')}
+            <Text style={styles.cityName} numberOfLines={1}>
+              {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
             </Text>
+            <Ionicons name="chevron-down" size={18} color="rgba(255,255,255,0.45)" style={styles.cityChevron} />
           </TouchableOpacity>
-
-          {account && (
           <TouchableOpacity
-            style={[styles.chip, styles.chipLeaderboard]}
+            style={styles.recentPill}
+            onPress={() => setArrivalsSheetOpen(true)}
             activeOpacity={0.75}
-            onPress={() => router.push('/leaderboard' as never)}
             accessibilityRole="button"
-            accessibilityLabel={
-              myCityRank
-                ? t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })
-                : t('leaderboard.chip.neutral', { ns: 'challenge' })
-            }
+            accessibilityLabel={`${arrivals.length} recent arrivals`}
           >
-            <Text style={styles.chipLeaderboardText}>
-              {myCityRank === null
-                ? t('leaderboard.chip.neutral', { ns: 'challenge' })
-                : myCityRank > 99
-                  ? t('leaderboard.chip.rankedOver', { ns: 'challenge' })
-                  : t('leaderboard.chip.ranked', { rank: myCityRank, ns: 'challenge' })}
-            </Text>
+            <Text style={styles.recentPillText} numberOfLines={1}>✈️ {arrivals.length} recent</Text>
           </TouchableOpacity>
-          )}
         </View>
 
-      </View>
+        {/* ── HERO: challenges + rank. Full-width, tappable → challenges list.
+            Subtitle + copy adapt to the count / rank state (see heroMain). ── */}
+        <TouchableOpacity
+          style={styles.hero}
+          onPress={() => router.push('/(tabs)/challenges' as never)}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={heroMain}
+        >
+          <Text style={styles.heroMain} numberOfLines={2}>{heroMain}</Text>
+          <Text style={styles.heroSub} numberOfLines={1}>{heroSub}</Text>
+        </TouchableOpacity>
 
-      {/* Arrivals strip - extracted from the main feed so real messages
-          aren't drowned out by ambient "X just landed" rows. Default shows a
-          neutral label; on a new arrival it morphs in-place for 3s. */}
-      {/* Recent arrivals, with a "Hi now" pill (active hangouts) to its right
-          when there's at least one. No hangouts → arrivals bar fills the line. */}
-      <View style={styles.arrivalsRow}>
-        <ArrivalsBar arrivals={arrivals} onOpenSheet={() => setArrivalsSheetOpen(true)} style={styles.arrivalsBarInline} />
-        {topicFeedItems.length > 0 && (
+        {/* ── Secondary pills: nearby / Hi locals / Hi later. Equal width;
+            0-count pills stay visible but greyed (still tappable → the target
+            screen's own empty state). ── */}
+        <View style={styles.pillsRow}>
           <TouchableOpacity
-            style={styles.hiNowPill}
+            style={[styles.pill, !onlineCount && styles.pillMuted]}
+            onPress={() => router.push('/(tabs)/here' as never)}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+            accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
+          >
+            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🔴 {onlineCount ?? 0} nearby</Text>
+          </TouchableOpacity>
+          {/* Hi locals = spontaneous "Hi now" hangouts (topics). */}
+          <TouchableOpacity
+            style={[styles.pill, styles.pillAccent, !topicFeedItems.length && styles.pillMuted]}
             onPress={() => router.push('/(tabs)/events' as never)}
             activeOpacity={0.75}
             accessibilityRole="button"
+            accessibilityLabel={`${topicFeedItems.length} Hi locals`}
           >
-            <Text style={styles.hiNowPillText} numberOfLines={1}>🗣️ {topicFeedItems.length} Hi now</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>💬 {topicFeedItems.length} Hi locals</Text>
           </TouchableOpacity>
-        )}
-      </View>
-
-      {/* Single persistent activity pill - replaces the ephemeral event /
-          hangout / challenge cards that used to flicker through the feed.
-          Stays visible at the top of the chat for the lifetime of this
-          city; taps land the user on /(tabs)/now where the full lists
-          live. Hidden when there's literally nothing happening so it
-          doesn't read as "0 / 0 / 0" to a quiet-city visitor. */}
-      {/* Activity pills - one per content type. Tapping each routes to
-          /(tabs)/now with a ?filter= param so the NOW screen opens
-          pre-filtered to that type. Hidden when zero of that type so
-          each row only appears when there's something to show. */}
-      {(challengeFeedItems.length + eventFeedItems.length) > 0 && (
-        <View style={styles.activityPillRow}>
-          {challengeFeedItems.length > 0 && (
-            <TouchableOpacity
-              style={[styles.activityPill, styles.activityPillHalf]}
-              onPress={() => router.push('/(tabs)/challenges' as never)}
-              activeOpacity={0.75}
-              accessibilityRole="button"
-            >
-              <Text style={styles.activityPillText} numberOfLines={1}>
-                {i18n.t('cityActivity.challenges', {
-                  ns: 'chat', count: challengeFeedItems.length,
-                  defaultValue_one: '🔥 {{count}} challenge',
-                  defaultValue: '🔥 {{count}} challenges',
-                })}
-              </Text>
-              <Text style={styles.activityPillCta} numberOfLines={1}>→</Text>
-            </TouchableOpacity>
-          )}
-          {eventFeedItems.length > 0 && (
-            <TouchableOpacity
-              style={[styles.activityPill, styles.activityPillHalf]}
-              onPress={() => router.push('/(tabs)/events' as never)}
-              activeOpacity={0.75}
-              accessibilityRole="button"
-            >
-              <Text style={styles.activityPillText} numberOfLines={1}>
-                🎉 {eventFeedItems.length} {eventFeedItems.length === 1 ? 'Hi local' : 'Hi locals'}
-              </Text>
-              <Text style={styles.activityPillCta} numberOfLines={1}>→</Text>
-            </TouchableOpacity>
-          )}
+          {/* Hi later = planned events. Both land on the unified Hi Local feed. */}
+          <TouchableOpacity
+            style={[styles.pill, styles.pillAccent, !eventFeedItems.length && styles.pillMuted]}
+            onPress={() => router.push('/(tabs)/events' as never)}
+            activeOpacity={0.75}
+            accessibilityRole="button"
+            accessibilityLabel={`${eventFeedItems.length} Hi later`}
+          >
+            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length} Hi later</Text>
+          </TouchableOpacity>
         </View>
-      )}
+
+      </View>
 
       {/* Error banner */}
       {error && (
@@ -1385,162 +1263,109 @@ const styles = StyleSheet.create({
     elevation:     10,
   },
 
-  // ── Section 2: City hero name ─────────────────────────────────────────────
-  cityHeroRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: 12,
+  // ── City row: selector (left, ellipsizes) + compact "recent" pill (right) ──
+  cityRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           10,
   },
-  // The name takes a DEFINITE width (flex:1) rather than letting RN infer it
-  // from the text's intrinsic size inside a centered row. That inference was
-  // unreliable per-platform - a too-narrow width forced the name to wrap and
-  // the clipped 2nd line read as a dropped last word ("New York"→"New",
-  // "Ho Chi Minh City"→"Ho Chi Minh", "Bangkok"→empty). With flex:1 the Text
-  // gets the real available width on both iOS and Android, so it renders on one
-  // line. The left spacer (cityHeroSpacer) mirrors the chevron's width so the
-  // centered text stays visually centered in the header.
-  cityHeroName: {
-    flex:          1,
-    fontSize:      24,
-    fontWeight:    '500',
+  citySelector: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    flexShrink:    1,        // ellipsize the city name first when space is tight
+    minWidth:      0,
+  },
+  cityName: {
+    flexShrink:    1,
+    fontSize:      22,
+    fontWeight:    '600',
     color:         Colors.text,
-    lineHeight:    29,
     letterSpacing: -0.3,
-    textAlign:     'center',
   },
-  cityHeroSpacer: {
-    width: 24,   // = chevron (18) + its marginLeft (6); keeps the name centered
+  cityChevron: {
+    marginLeft: 4,
+    flexShrink: 0,
   },
-  cityHeroChevron: {
-    marginTop:  2,   // visually align with the text x-height, not its box
-    marginLeft: 6,
+  recentPill: {
+    marginLeft:        'auto', // pin to the right edge
+    flexShrink:        0,      // never shrink - the city name truncates instead
+    paddingVertical:   6,
+    paddingHorizontal: 12,
+    borderRadius:      999,
+    backgroundColor:   Colors.bg2,
+    borderWidth:       1,
+    borderColor:       Colors.border,
+  },
+  recentPillText: {
+    fontSize:   12,
+    fontWeight: '600',
+    color:      Colors.muted,
   },
 
-  // ── Section 3: Context chips ───────────────────────────────────────────────
-  // Single-row layout. Weather chip shrinks + truncates when copy is long
-  // ("Light drizzle · 36°C, grab a jacket"); activity chip stays fixed-size.
-  chipsRow: {
-    flexDirection:  'row',
-    gap:            8,
-    justifyContent: 'center',
-    alignItems:     'center',
-    minWidth:       0,
-  },
-  chip: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               6,
-    paddingVertical:   7,
-    paddingHorizontal: 13,
-    borderRadius:      999,
+  // ── Hero challenge card - full width, orange-rimmed glow, two lines ──
+  hero: {
+    paddingVertical:   16,
+    paddingHorizontal: 16,
+    borderRadius:      Radius.lg,
+    backgroundColor:   Colors.bg2,
     borderWidth:       1,
-    minWidth:          0,
+    borderColor:       'rgba(255,122,60,0.35)',
+    gap:               4,
+    shadowColor:   Colors.accent,
+    shadowOpacity: 0.22,
+    shadowRadius:  14,
+    shadowOffset:  { width: 0, height: 0 },
+    elevation:     6,
   },
-  chipWeather: {
-    backgroundColor: '#1a1a1a',
-    borderColor:     'rgba(255,255,255,0.08)',
-    flexShrink:      1,    // weather copy can be long; let it truncate
+  heroMain: {
+    color:         Colors.text,
+    fontSize:      FontSizes.md,
+    fontWeight:    '800',
+    letterSpacing: 0.2,
   },
-  chipWeatherText: {
-    // Was 12pt at rgba(255,255,255,0.45) (~4.0:1) - failed WCAG AA at body
-    // size. Bumped to xs (13pt) and routed through the theme token.
+  heroSub: {
+    color:      Colors.muted,
     fontSize:   FontSizes.xs,
     fontWeight: '500',
-    color:      Colors.muted,
-    flexShrink: 1,
-  },
-  // Marquee clip window - shrinks to share the row, clips/scrolls long copy.
-  chipWeatherMarquee: {
-    flexShrink: 1,
-  },
-  chipOnline: {
-    backgroundColor: 'rgba(239,68,68,0.12)',
-    borderColor:     'rgba(239,68,68,0.28)',
-    flexShrink:      0,    // activity chip never shrinks
-  },
-  chipOnlineText: {
-    fontSize:   12,
-    fontWeight: '500',
-    color:      '#fca5a5',
-  },
-  // Red animated dot inside the online chip
-  chipLiveDot: {
-    width:           7,
-    height:          7,
-    borderRadius:    4,
-    backgroundColor: '#ef4444',
-    flexShrink:      0,
-  },
-  // Leaderboard chip - amber/orange tint, distinct from online (red) and
-  // weather (grey) so it reads at a glance as the "scoring/rank" affordance.
-  chipLeaderboard: {
-    backgroundColor: 'rgba(255,201,60,0.12)',
-    borderColor:     'rgba(255,201,60,0.32)',
-    flexShrink:      0,
-  },
-  chipLeaderboardText: {
-    fontSize:   12,
-    fontWeight: '700',
-    color:      '#FFC93C',
   },
 
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
-  // Persistent city-activity counters - one row, up to two pills (one
-  // per content type). Each is tappable and routes to NOW with a
-  // pre-applied filter. Visual echoes the "Learn how challenges work"
-  // banner inside the challenge channel so the two surfaces feel like
-  // siblings (warm dark fill, faint orange ring, orange CTA on the right).
-  // Recent arrivals + optional "Hi now" pill share one line.
-  arrivalsRow:       { flexDirection: 'row', alignItems: 'stretch', gap: 8, marginHorizontal: Spacing.md },
-  arrivalsBarInline: { marginHorizontal: 0, flex: 1 },
-  hiNowPill: {
-    justifyContent:    'center',
-    paddingHorizontal: 12,
-    borderRadius:      10,
-    backgroundColor:   'rgba(255,122,60,0.10)',
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.30)',
+  // ── Secondary pills - 3 equal-width, evenly spaced (nearby / Hi locals /
+  // Hi later). 0-count pills get pillMuted (neutral border + muted text).
+  pillsRow: {
+    flexDirection: 'row',
+    gap:           8,
   },
-  hiNowPillText: { color: Colors.accent, fontWeight: '700', fontSize: 13 },
-
-  activityPillRow: {
-    flexDirection:    'row',
-    gap:              8,
-    marginHorizontal: Spacing.md,
-    marginTop:        Spacing.xs,
-    marginBottom:     Spacing.xs,
-  },
-  activityPillHalf: {
-    flex: 1,
-    marginHorizontal: 0,
-    marginTop:        0,
-    marginBottom:     0,
-  },
-  activityPill: {
-    flexDirection:     'row',
+  pill: {
+    flex:              1,
     alignItems:        'center',
-    justifyContent:    'space-between',
-    gap:               8,
-    paddingVertical:   8,
-    paddingHorizontal: 12,
+    justifyContent:    'center',
+    paddingVertical:   9,
+    paddingHorizontal: 6,
     backgroundColor:   Colors.bg2,
     borderRadius:      Radius.md,
     borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.30)',
+    borderColor:       Colors.border,
   },
-  activityPillText: {
-    flex:       1,
-    color:      Colors.text,
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
+  pillAccent: {
+    borderColor: 'rgba(255,122,60,0.30)',
   },
-  activityPillCta: {
-    color:      Colors.accent,
-    fontSize:   FontSizes.sm,
+  pillMuted: {
+    borderColor: Colors.border,
+  },
+  pillText: {
+    fontSize:   12,
     fontWeight: '700',
+    color:      Colors.text,
+  },
+  pillTextAccent: {
+    color: Colors.accent,
+  },
+  pillTextMuted: {
+    color: Colors.muted,
   },
 
   // ── Typing indicator bar ──────────────────────────────────────────────────
