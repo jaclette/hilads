@@ -62,7 +62,7 @@ function ScoringInfoModal({ onClose, t }) {
     // capped at the first 3/day. Sits above the per-run steps; the total
     // below is the per-challenge-run total and intentionally excludes it.
     { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
-    { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: null },
+    { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: 5    },
     { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
     { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
   ]
@@ -119,7 +119,7 @@ function ScoringInfoModal({ onClose, t }) {
           <div className="scoring-info-total-row">
             <span className="scoring-info-total-label">{t('scoringInfo.totalLabel')}</span>
             <span className="scoring-info-total-value">40</span>
-            <span className="scoring-info-total-value">45</span>
+            <span className="scoring-info-total-value">50</span>
           </div>
 
           <p className="scoring-info-footnote">{t('scoringInfo.footnote')}</p>

@@ -1513,6 +1513,7 @@ run($pdo, "
         -- emitter. Until then it credits nobody.
         ('challenge_first_taken', 'taker',   3),
         ('accepted',    'challenger',  5),
+        ('accepted',    'taker',       5),
         ('date_locked', 'challenger',  5),
         ('date_locked', 'taker',       5),
         ('debrief',     'challenger', 30),
@@ -1650,31 +1651,55 @@ run($pdo, "
 run($pdo, "
     CREATE OR REPLACE FUNCTION on_challenge_acceptance_score() RETURNS TRIGGER AS \$\$
     DECLARE
-        challenger_id TEXT;
-        origin_city   TEXT;
-        pts           INT;
-        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+        challenger_id  TEXT;
+        origin_city    TEXT;
+        challenge_mode TEXT;
+        taker_city     TEXT;
+        pts_c          INT;
+        pts_t          INT;
+        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
     BEGIN
         -- Gate: only fire when the take-on has been APPROVED. Pending
         -- requests don't count (the creator may still reject); rejected
         -- rows obviously don't earn anything either.
         IF NEW.phase IN ('pending', 'rejected') THEN RETURN NEW; END IF;
 
-        SELECT cc.created_by, cc.city_id
-        INTO challenger_id, origin_city
+        SELECT cc.created_by, cc.city_id, cc.mode
+        INTO challenger_id, origin_city, challenge_mode
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
         IF challenger_id IS NULL THEN RETURN NEW; END IF;
 
-        SELECT points INTO pts FROM score_rules WHERE kind = 'accepted' AND role = 'challenger';
-        IF pts IS NULL THEN RETURN NEW; END IF;
+        -- Challenger gets the take-on-accepted reward.
+        SELECT points INTO pts_c FROM score_rules WHERE kind = 'accepted' AND role = 'challenger';
+        IF pts_c IS NOT NULL THEN
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+            VALUES (encode(gen_random_bytes(8), 'hex'),
+                    challenger_id, NEW.challenge_id, 'challenger', 'accepted',
+                    pts_c, origin_city, current_month, NEW.id)
+            ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+        END IF;
 
-        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
-        VALUES (encode(gen_random_bytes(8), 'hex'),
-                challenger_id, NEW.challenge_id, 'challenger', 'accepted',
-                pts, origin_city, current_month, NEW.id)
-        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+        -- Taker gets the SAME take-on-accepted reward (registered takers only;
+        -- guest acceptances have no user_id and can't hold score). International
+        -- takers earn on THEIR city's board, mirroring the date/debrief triggers.
+        IF NEW.acceptor_user_id IS NOT NULL THEN
+            SELECT points INTO pts_t FROM score_rules WHERE kind = 'accepted' AND role = 'taker';
+            IF pts_t IS NOT NULL THEN
+                IF challenge_mode = 'international' THEN
+                    SELECT u.current_city_id INTO taker_city FROM users u WHERE u.id = NEW.acceptor_user_id;
+                    taker_city := COALESCE(taker_city, origin_city);
+                ELSE
+                    taker_city := origin_city;
+                END IF;
+                INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+                VALUES (encode(gen_random_bytes(8), 'hex'),
+                        NEW.acceptor_user_id, NEW.challenge_id, 'taker', 'accepted',
+                        pts_t, taker_city, current_month, NEW.id)
+                ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+            END IF;
+        END IF;
 
         RETURN NEW;
     END;
