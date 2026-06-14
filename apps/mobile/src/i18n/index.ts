@@ -352,8 +352,6 @@ import ar_upcoming from './locales/ar/upcoming.json';
 import ar_archive from './locales/ar/archive.json';
 
 export const SUPPORTED = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar'] as const;
-// Right-to-left locales - drive native I18nManager.forceRTL.
-const RTL_LOCALES = ['ar'];
 export type Locale = (typeof SUPPORTED)[number];
 export const DEFAULT_LOCALE: Locale = 'en';
 export const STORAGE_KEY = 'hilads_lang'; // mirrors the web cookie name
@@ -382,14 +380,19 @@ const resources = {
   ar: { common: ar_common, auth: ar_auth, landing: ar_landing, here: ar_here, now: ar_now, chat: ar_chat, event: ar_event, hangout: ar_hangout, challenge: ar_challenge, dm: ar_dm, notifications: ar_notifications, publicProfile: ar_publicProfile, me: ar_me, misc: ar_misc, cities: ar_cities, cityNames: ar_cityNames, upcoming: ar_upcoming, archive: ar_archive },
 };
 
-// Sync the native RTL flag to the locale. forceRTL persists natively and takes
-// effect on the NEXT app launch (no expo-updates to reload mid-session), so a
-// switch to/from Arabic needs an app restart to re-mirror the layout - the text
-// itself changes immediately via changeLanguage.
-function syncRTL(locale: string): void {
-  const shouldRTL = RTL_LOCALES.includes(locale);
-  if (I18nManager.isRTL !== shouldRTL) {
-    try { I18nManager.allowRTL(shouldRTL); I18nManager.forceRTL(shouldRTL); } catch { /* no-op */ }
+// Lock the app to LTR layout regardless of locale.
+//
+// RN's I18nManager.forceRTL mirrors the ENTIRE layout (it swaps left/right) and
+// only applies after a full relaunch. The app isn't built for RTL: forcing it
+// flipped the "Hi" logo to "iH", reversed the header (bell/DM) and the bottom
+// tab bar, and - because the flag only flips on relaunch - a brief switch to
+// Arabic left the UI stuck mirrored while showing English. Arabic TEXT still
+// renders right-to-left inside Text nodes (Unicode bidi), so only the LAYOUT is
+// pinned LTR. `locale` is now unused but kept for the call sites.
+function syncRTL(_locale: string): void {
+  if (I18nManager.isRTL) {
+    // Revert a previously-forced RTL session. Takes effect on the next launch.
+    try { I18nManager.allowRTL(false); I18nManager.forceRTL(false); } catch { /* no-op */ }
   }
 }
 
