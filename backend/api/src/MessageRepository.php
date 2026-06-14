@@ -145,11 +145,17 @@ class MessageRepository
      * @param limit     Page size (1-100, default 50).
      * @return array{ messages: array, hasMore: bool }
      */
-    public static function getByChannel(int|string $channelId, ?string $beforeId = null, int $limit = self::DEFAULT_LIMIT): array
+    public static function getByChannel(int|string $channelId, ?string $beforeId = null, int $limit = self::DEFAULT_LIMIT, bool $excludeJoins = false): array
     {
         $dbChan = self::dbKey($channelId);
         $limit  = max(1, min(self::MAX_LIMIT, $limit));
         $fetch  = $limit + 1; // fetch one extra to detect hasMore
+        // City channels accumulate long runs of "X just landed" join rows that
+        // otherwise fill the latest-N window and bury real chat. City reads pass
+        // excludeJoins=true and fetch a small capped set of recent joins
+        // separately (getRecentJoins) for the arrivals bar. No-op for
+        // event/topic channels (they have no join rows).
+        $joinFilter = $excludeJoins ? " AND NOT (type = 'system' AND event = 'join')" : '';
 
         // Fetch messages with a pure index scan - no JOIN inside the LIMIT subquery.
         // The LEFT JOIN to users for retroactive userId resolution is done as a separate
@@ -177,7 +183,7 @@ class MessageRepository
                         EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
                         EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
                     FROM messages
-                    WHERE channel_id = ?
+                    WHERE channel_id = ?$joinFilter
                       AND created_at < (SELECT created_at FROM messages WHERE id = ?)
                     ORDER BY created_at DESC
                     LIMIT ?
@@ -200,7 +206,7 @@ class MessageRepository
                         EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
                         EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
                     FROM messages
-                    WHERE channel_id = ?
+                    WHERE channel_id = ?$joinFilter
                     ORDER BY created_at DESC
                     LIMIT ?
                 ) sub
@@ -253,6 +259,31 @@ class MessageRepository
             'messages' => $messages,
             'hasMore'  => $hasMore,
         ];
+    }
+
+    /**
+     * Latest N "X just landed" join rows for a city, formatted like getByChannel
+     * messages. Used to keep the arrivals bar populated when the main chat read
+     * excludes joins (so arrivals don't bury real chat history).
+     */
+    public static function getRecentJoins(int|string $channelId, int $cap = 15): array
+    {
+        $dbChan = self::dbKey($channelId);
+        $cap    = max(1, min(50, $cap));
+        $stmt = Database::pdo()->prepare("
+            SELECT id, channel_id, type, event,
+                   guest_id, user_id, nickname, content, image_url, mentions,
+                   reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
+                   EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
+                   EXTRACT(EPOCH FROM edited_at)::INTEGER  AS edited_at,
+                   EXTRACT(EPOCH FROM deleted_at)::INTEGER AS deleted_at
+            FROM messages
+            WHERE channel_id = ? AND type = 'system' AND event = 'join'
+            ORDER BY created_at DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$dbChan, $cap]);
+        return array_map([self::class, 'format'], $stmt->fetchAll());
     }
 
     public static function getStats(int $channelId): array

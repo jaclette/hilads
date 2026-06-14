@@ -3291,10 +3291,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $limit = min(100, max(10, (int) ($_GET['limit'] ?? 25)));
 
         // ── q5: chat messages ─────────────────────────────────────────────────
+        // Exclude "X just landed" join rows from the chat read - in a low-chat
+        // city they fill the window and bury real history. Recent arrivals are
+        // merged back below (capped) so the arrivals bar still works.
         $tq5a        = microtime(true);
-        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true);
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
+        if ($beforeId === null) {
+            $recentJoins = MessageRepository::getRecentJoins($channelId, 15);
+            if (!empty($recentJoins)) {
+                $messages = array_merge($recentJoins, $messages);
+                usort($messages, static fn($a, $b) => ($a['createdAt'] ?? $a['created_at'] ?? 0) <=> ($b['createdAt'] ?? $b['created_at'] ?? 0));
+            }
+        }
         $tq5b        = microtime(true);
 
         // ── Block filter (Apple G1.2) ─────────────────────────────────────────
@@ -3614,9 +3624,19 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
 
         $tMsg0       = microtime(true);
-        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit);
+        // Exclude "X just landed" join rows from the chat read (they otherwise
+        // fill the window and bury real history in low-chat cities); merge a
+        // capped set of recent arrivals back on the initial page for the bar.
+        $msgResult   = MessageRepository::getByChannel($channelId, $beforeId ?: null, $limit, true);
         $messages    = $msgResult['messages'];
         $hasMore     = $msgResult['hasMore'];
+        if ($beforeId === null) {
+            $recentJoins = MessageRepository::getRecentJoins($channelId, 15);
+            if (!empty($recentJoins)) {
+                $messages = array_merge($recentJoins, $messages);
+                usort($messages, static fn($a, $b) => ($a['createdAt'] ?? $a['created_at'] ?? 0) <=> ($b['createdAt'] ?? $b['created_at'] ?? 0));
+            }
+        }
         $tMsg1       = microtime(true); // after message fetch
 
         // ── Block filter (Apple G1.2) ─────────────────────────────────────────
