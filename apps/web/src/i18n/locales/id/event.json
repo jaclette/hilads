@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "Edit acara",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "Hapus acara ini?",
@@ -79,9 +79,9 @@
     "saving": "Menyimpan…",
     "creating": "Membuat…",
     "saveChanges": "Simpan perubahan",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "Setiap hari",

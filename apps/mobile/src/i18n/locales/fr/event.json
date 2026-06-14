@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "DÉMARRAGE RAPIDE",
   "category": "CATÉGORIE",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sam & Dim"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "Aucune ville sélectionnée",
   "errTitle": "Le titre est requis",
   "errDuration": "L'événement doit durer au moins 15 minutes",

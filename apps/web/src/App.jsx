@@ -4388,9 +4388,9 @@ export default function App() {
                 type="button"
                 className={`ch-pill ch-pill--accent${!events.length ? ' ch-pill--muted' : ''}`}
                 onClick={goToEventsTab}
-                aria-label={`${events.length} Hi later`}
+                aria-label={`${events.length} Hi plan`}
               >
-                ⏰ {events.length > 0 ? `${events.length} ` : ''}Hi later
+                ⏰ {events.length > 0 ? `${events.length} ` : ''}Hi plan
               </button>
             </div>
           </>

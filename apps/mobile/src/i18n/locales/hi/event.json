@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "क्विक स्टार्ट",
   "category": "कैटेगरी",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "शनि और रवि"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "कोई शहर चुना नहीं गया",
   "errTitle": "टाइटल ज़रूरी है",
   "errDuration": "इवेंट कम से कम 15 मिनट लंबा होना चाहिए",

@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "इवेंट एडिट करें",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "यह इवेंट हटाएं?",
@@ -79,9 +79,9 @@
     "saving": "सेव हो रहा है…",
     "creating": "बन रहा है…",
     "saveChanges": "बदलाव सेव करें",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "हर दिन",

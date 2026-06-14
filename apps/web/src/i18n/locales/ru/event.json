@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "Редактировать событие",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "Удалить это событие?",
@@ -79,9 +79,9 @@
     "saving": "Сохранение…",
     "creating": "Создание…",
     "saveChanges": "Сохранить изменения",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "Каждый день",

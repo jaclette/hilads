@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "编辑活动",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "删除这个活动？",
@@ -79,9 +79,9 @@
     "saving": "保存中…",
     "creating": "创建中…",
     "saveChanges": "保存更改",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "每天",

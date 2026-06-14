@@ -25,7 +25,7 @@
       "title": "Três formas de viver a cidade",
       "itemChallenges": "🤝 Challenges - desafie ou seja desafiado a descobrir lugares escondidos, provar comida de verdade, compartilhar cultura ou ajudar.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi later - plan a moment to meet"
+      "itemEvents": "📅 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Conquiste seu espaço na cidade",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 Descubra Most Local de {{city}}",
       "ctaLookAround": "👀 Só dar uma olhada por enquanto",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi later"
+      "ctaHiLater": "📅 Hi plan"
     }
   },
   "challengeIntro": {

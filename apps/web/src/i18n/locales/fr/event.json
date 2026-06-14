@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "Modifier l'événement",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "Supprimer cet événement ?",
@@ -79,9 +79,9 @@
     "saving": "Enregistrement…",
     "creating": "Création…",
     "saveChanges": "Enregistrer",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "Tous les jours",

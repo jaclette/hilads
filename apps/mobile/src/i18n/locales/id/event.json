@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "MULAI CEPAT",
   "category": "KATEGORI",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sab & Min"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "Belum ada kota dipilih",
   "errTitle": "Judul wajib diisi",
   "errDuration": "Acara harus berlangsung minimal 15 menit",

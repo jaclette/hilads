@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "เริ่มอย่างรวดเร็ว",
   "category": "หมวดหมู่",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "เสาร์ & อาทิตย์"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "ยังไม่ได้เลือกเมือง",
   "errTitle": "ต้องระบุชื่อ",
   "errDuration": "กิจกรรมต้องมีความยาวอย่างน้อย 15 นาที",

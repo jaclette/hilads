@@ -1009,9 +1009,9 @@ export default function ChatTab() {
             onPress={() => router.push('/(tabs)/events' as never)}
             activeOpacity={0.75}
             accessibilityRole="button"
-            accessibilityLabel={`${eventFeedItems.length} Hi later`}
+            accessibilityLabel={`${eventFeedItems.length} Hi plan`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi later</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>⏰ {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi plan</Text>
           </TouchableOpacity>
         </View>
 

@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "SNEL STARTEN",
   "category": "CATEGORIE",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Za & Zo"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "Geen stad geselecteerd",
   "errTitle": "Titel is verplicht",
   "errDuration": "Het evenement moet minstens 15 minuten duren",

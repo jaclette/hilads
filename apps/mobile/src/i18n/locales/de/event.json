@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "SCHNELLSTART",
   "category": "KATEGORIE",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Sa & So"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "Keine Stadt ausgewählt",
   "errTitle": "Titel ist erforderlich",
   "errDuration": "Das Event muss mindestens 15 Minuten dauern",

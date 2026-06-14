@@ -25,7 +25,7 @@
       "title": "Tiga cara menghidupi kota",
       "itemChallenges": "🤝 Challenges - tantang atau ditantang buat menemukan tempat tersembunyi, mencicipi makanan asli, berbagi budaya, atau bantu.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi later - plan a moment to meet"
+      "itemEvents": "📅 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Raih tempatmu di kota",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 Lihat Most Local {{city}}",
       "ctaLookAround": "👀 Lihat-lihat dulu aja",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi later"
+      "ctaHiLater": "📅 Hi plan"
     }
   },
   "challengeIntro": {

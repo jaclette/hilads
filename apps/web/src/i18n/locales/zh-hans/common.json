@@ -31,7 +31,7 @@
       "title": "体验城市的三种方式",
       "itemChallenges": "🤝 Challenges - 发起或接受挑战，发现隐藏地点、品尝真味、分享文化、伸出援手。",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi later - plan a moment to meet"
+      "itemEvents": "📅 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "在城市里赢得你的位置",
@@ -43,7 +43,7 @@
       "ctaMostLocal": "🤝 看看 {{city}} 的 Most Local",
       "ctaLookAround": "👀 先随便看看",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi later"
+      "ctaHiLater": "📅 Hi plan"
     }
   },
   "challengeIntro": {

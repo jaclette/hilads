@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "I-edit ang event",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "I-delete ang event na ito?",
@@ -79,9 +79,9 @@
     "saving": "Sine-save…",
     "creating": "Ginagawa…",
     "saveChanges": "I-save ang mga pagbabago",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "Araw-araw",

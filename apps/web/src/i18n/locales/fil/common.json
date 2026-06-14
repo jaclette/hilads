@@ -31,7 +31,7 @@
       "title": "Tatlong paraan para mabuhay sa city",
       "itemChallenges": "🤝 Challenges - mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi later - plan a moment to meet"
+      "itemEvents": "📅 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "Kitain ang puwesto mo sa city",
@@ -43,7 +43,7 @@
       "ctaMostLocal": "🤝 Tuklasin ang Most Local ng {{city}}",
       "ctaLookAround": "👀 Mag-tingin-tingin muna",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi later"
+      "ctaHiLater": "📅 Hi plan"
     }
   },
   "challengeIntro": {

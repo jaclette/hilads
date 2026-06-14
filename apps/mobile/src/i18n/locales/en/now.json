@@ -22,9 +22,9 @@
     "event": "Event"
   },
   "nowTag": "Now",
-  "laterTag": "Later",
+  "laterTag": "Plan",
   "hiNow": "Hi now",
-  "hiLater": "Hi later",
+  "hiLater": "Hi plan",
   "loadError": "Could not load feed",
   "noCityTitle": "No city selected",
   "noCitySub": "Pick a city to see what's happening.",

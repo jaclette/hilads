@@ -7,8 +7,8 @@
   },
   "title": {
     "edit": "Evenement bewerken",
-    "host": "Hi later",
-    "create": "Hi later"
+    "host": "Hi plan",
+    "create": "Hi plan"
   },
   "delete": {
     "confirmTitle": "Dit evenement verwijderen?",
@@ -79,9 +79,9 @@
     "saving": "Opslaan…",
     "creating": "Maken…",
     "saveChanges": "Wijzigingen opslaan",
-    "openSpot": "📅 Hi later",
-    "startEvent": "📅 Hi later",
-    "create": "📅 Hi later"
+    "openSpot": "📅 Hi plan",
+    "startEvent": "📅 Hi plan",
+    "create": "📅 Hi plan"
   },
   "recur": {
     "everyday": "Elke dag",

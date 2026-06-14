@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "BẮT ĐẦU NHANH",
   "category": "DANH MỤC",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "Thứ 7 & CN"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "Chưa chọn thành phố",
   "errTitle": "Cần có tiêu đề",
   "errDuration": "Sự kiện phải kéo dài ít nhất 15 phút",

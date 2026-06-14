@@ -1,6 +1,6 @@
 {
-  "createTitle": "Hi later",
-  "hostTitle": "Hi later",
+  "createTitle": "Hi plan",
+  "hostTitle": "Hi plan",
   "quickStart": "クイックスタート",
   "category": "カテゴリー",
   "cat": {
@@ -47,9 +47,9 @@
       "desc": "土・日"
     }
   },
-  "submitCreate": "📅 Hi later",
-  "submitStart": "📅 Hi later",
-  "submitOpenSpot": "📅 Hi later",
+  "submitCreate": "📅 Hi plan",
+  "submitStart": "📅 Hi plan",
+  "submitOpenSpot": "📅 Hi plan",
   "errNoCity": "街が選択されていません",
   "errTitle": "タイトルは必須です",
   "errDuration": "イベントは少なくとも15分以上にしてください",

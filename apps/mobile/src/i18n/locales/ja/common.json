@@ -25,7 +25,7 @@
       "title": "街を生きる、3つの方法",
       "itemChallenges": "🤝 Challenges - 隠れたスポットを発見、本物の料理を味わう、文化を分かち合う、手助けする。挑む側にも、挑まれる側にも。",
       "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "📅 Hi later - plan a moment to meet"
+      "itemEvents": "📅 Hi plan - plan a moment to meet"
     },
     "slide3": {
       "title": "街での居場所を手に入れよう",
@@ -37,7 +37,7 @@
       "ctaMostLocal": "🤝 {{city}}のMost Localを見る",
       "ctaLookAround": "👀 今はとりあえず見るだけ",
       "ctaHiNow": "🗣️ Hi now",
-      "ctaHiLater": "📅 Hi later"
+      "ctaHiLater": "📅 Hi plan"
     }
   },
   "challengeIntro": {
