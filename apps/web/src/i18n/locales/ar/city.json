@@ -268,5 +268,17 @@
     "label": "✈️ وصول حديث",
     "sheetTitle": "الوصول",
     "empty": "لا توجد وصول بعد"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
+    "mainUnranked": "🔥 {{count}} تحديات في {{city}}",
+    "mainTop": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
+    "mainEmpty": "🌱 لا تحديات بعد في {{city}}",
+    "subRanked": "اضغط لقبول التحدي التالي →",
+    "subUnranked": "اقبل أول تحدٍّ لتبدأ الصعود →",
+    "subTop": "دافع عن لقبك →",
+    "subEmpty": "أنشئ الأول ليقبله المسافرون →",
+    "nearby": "{{count}} قريبون",
+    "recent": "{{count}} وصلوا حديثًا"
   }
 }

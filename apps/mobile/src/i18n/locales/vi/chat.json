@@ -93,5 +93,17 @@
     "label": "✈️ Vừa đến",
     "sheetTitle": "Mới đến",
     "empty": "Chưa có ai đến"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
+    "mainUnranked": "🔥 {{count}} thử thách ở {{city}}",
+    "mainTop": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
+    "mainEmpty": "🌱 chưa có thử thách nào ở {{city}}",
+    "subRanked": "Chạm để nhận thử thách tiếp theo →",
+    "subUnranked": "Nhận thử thách đầu tiên để bắt đầu leo hạng →",
+    "subTop": "Bảo vệ ngôi đầu →",
+    "subEmpty": "Tạo thử thách đầu tiên cho du khách nhận →",
+    "nearby": "{{count}} gần đây",
+    "recent": "{{count}} vừa đến"
   }
 }

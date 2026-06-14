@@ -252,5 +252,17 @@
     "label": "✈️ มาถึงล่าสุด",
     "sheetTitle": "การมาถึง",
     "empty": "ยังไม่มีใครมาถึง"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} ชาเลนจ์ · 🏆 #{{rank}} ใน {{city}}",
+    "mainUnranked": "🔥 {{count}} ชาเลนจ์ ใน {{city}}",
+    "mainTop": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}",
+    "mainEmpty": "🌱 ยังไม่มีชาเลนจ์ใน {{city}}",
+    "subRanked": "แตะเพื่อรับชาเลนจ์ถัดไป →",
+    "subUnranked": "รับชาเลนจ์แรกเพื่อเริ่มไต่อันดับ →",
+    "subTop": "ป้องกันแชมป์ของคุณ →",
+    "subEmpty": "สร้างอันแรกให้นักเดินทางรับ →",
+    "nearby": "ใกล้ ๆ {{count}} คน",
+    "recent": "เพิ่งมา {{count}} คน"
   }
 }

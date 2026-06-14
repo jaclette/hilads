@@ -252,5 +252,17 @@
     "label": "✈️ 最近の到着",
     "sheetTitle": "到着",
     "empty": "まだ到着なし"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{city}}の挑戦 {{count}}件 · 🏆 #{{rank}}",
+    "mainUnranked": "🔥 {{city}}の挑戦 {{count}}件",
+    "mainTop": "🔥 {{city}}の挑戦 {{count}}件 · 🏆 #1",
+    "mainEmpty": "🌱 {{city}}にはまだ挑戦がありません",
+    "subRanked": "タップして次の挑戦を受ける →",
+    "subUnranked": "最初の挑戦を受けて上を目指そう →",
+    "subTop": "タイトルを防衛しよう →",
+    "subEmpty": "最初の挑戦を作って旅行者に →",
+    "nearby": "近くに{{count}}人",
+    "recent": "最近{{count}}人"
   }
 }

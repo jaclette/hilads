@@ -93,5 +93,17 @@
     "label": "✈️ Recente aankomsten",
     "sheetTitle": "Aankomsten",
     "empty": "Nog geen aankomsten"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
+    "mainUnranked": "🔥 {{count}} challenges in {{city}}",
+    "mainTop": "🔥 {{count}} challenges · 🏆 #1 in {{city}}",
+    "mainEmpty": "🌱 nog geen challenges in {{city}}",
+    "subRanked": "Tik om je volgende challenge aan te gaan →",
+    "subUnranked": "Ga je eerste challenge aan om te klimmen →",
+    "subTop": "Verdedig je titel →",
+    "subEmpty": "Maak de eerste voor reizigers →",
+    "nearby": "{{count}} dichtbij",
+    "recent": "{{count}} nieuw"
   }
 }

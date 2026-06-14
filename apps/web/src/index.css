@@ -6668,6 +6668,7 @@ img.pub-profile-avatar {
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.01em;
+  text-transform: uppercase;
 }
 .ch-hero-sub {
   color: var(--muted2);

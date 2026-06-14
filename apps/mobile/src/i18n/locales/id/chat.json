@@ -93,5 +93,17 @@
     "label": "✈️ Kedatangan terkini",
     "sheetTitle": "Kedatangan",
     "empty": "Belum ada kedatangan"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} tantangan · 🏆 #{{rank}} di {{city}}",
+    "mainUnranked": "🔥 {{count}} tantangan di {{city}}",
+    "mainTop": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}",
+    "mainEmpty": "🌱 belum ada tantangan di {{city}}",
+    "subRanked": "Ketuk untuk terima tantangan berikutnya →",
+    "subUnranked": "Terima tantangan pertamamu untuk mulai naik →",
+    "subTop": "Pertahankan gelarmu →",
+    "subEmpty": "Buat yang pertama untuk para pelancong →",
+    "nearby": "{{count}} di dekatmu",
+    "recent": "{{count}} baru tiba"
   }
 }

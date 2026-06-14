@@ -880,24 +880,24 @@ export default function ChatTab() {
 
   const flag = cityFlag(city.country);
 
-  // ── Hero copy (English-only this phase, per spec). Combines the city's open
-  // challenge count with the viewer's rank; the subtitle adapts to each state.
-  const cityShort = cityShortName(city.name).toUpperCase();
-  const noun      = challengeCount === 1 ? 'CHALLENGE' : 'CHALLENGES';
+  // ── Hero copy. Localized via the cityHero.* keys; the main line is
+  // uppercased by style (so translations stay normal-case and Latin scripts
+  // read as caps, non-Latin as-is). City uses the short form (HCMC).
+  const cityShort = cityShortName(city.name);
   let heroMain: string;
   let heroSub:  string;
   if (challengeCount === 0) {
-    heroMain = `🌱 NO CHALLENGES YET IN ${cityShort}`;
-    heroSub  = 'Create the first one for travelers to accept →';
+    heroMain = t('cityHero.mainEmpty', { city: cityShort });
+    heroSub  = t('cityHero.subEmpty');
   } else if (myCityRank === null) {
-    heroMain = `🔥 ${challengeCount} ${noun} IN ${cityShort}`;
-    heroSub  = 'Accept your first challenge to start climbing →';
+    heroMain = t('cityHero.mainUnranked', { count: challengeCount, city: cityShort });
+    heroSub  = t('cityHero.subUnranked');
   } else if (myCityRank === 1) {
-    heroMain = `🔥 ${challengeCount} ${noun} · 🏆 #1 IN ${cityShort}`;
-    heroSub  = 'Defend your title →';
+    heroMain = t('cityHero.mainTop', { count: challengeCount, city: cityShort });
+    heroSub  = t('cityHero.subTop');
   } else {
-    heroMain = `🔥 ${challengeCount} ${noun} · 🏆 #${myCityRank} IN ${cityShort}`;
-    heroSub  = 'Tap to accept your next challenge →';
+    heroMain = t('cityHero.mainRanked', { count: challengeCount, rank: myCityRank, city: cityShort });
+    heroSub  = t('cityHero.subRanked');
   }
 
   return (
@@ -953,7 +953,7 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={`${arrivals.length} recent arrivals`}
           >
-            <Text style={styles.recentPillText} numberOfLines={1}>✈️ {arrivals.length} recent</Text>
+            <Text style={styles.recentPillText} numberOfLines={1}>✈️ {t('cityHero.recent', { count: arrivals.length })}</Text>
           </TouchableOpacity>
         </View>
 
@@ -981,17 +981,17 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
           >
-            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🔴 {onlineCount ?? 0} nearby</Text>
+            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🔴 {t('cityHero.nearby', { count: onlineCount ?? 0 })}</Text>
           </TouchableOpacity>
-          {/* Hi locals = spontaneous "Hi now" hangouts (topics). */}
+          {/* Hi now = spontaneous hangouts (topics). */}
           <TouchableOpacity
             style={[styles.pill, styles.pillAccent, !topicFeedItems.length && styles.pillMuted]}
             onPress={() => router.push('/(tabs)/events' as never)}
             activeOpacity={0.75}
             accessibilityRole="button"
-            accessibilityLabel={`${topicFeedItems.length} Hi locals`}
+            accessibilityLabel={`${topicFeedItems.length} Hi now`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>💬 {topicFeedItems.length} Hi locals</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🗣️ {topicFeedItems.length} Hi now</Text>
           </TouchableOpacity>
           {/* Hi later = planned events. Both land on the unified Hi Local feed. */}
           <TouchableOpacity
@@ -1322,6 +1322,7 @@ const styles = StyleSheet.create({
     fontSize:      FontSizes.md,
     fontWeight:    '800',
     letterSpacing: 0.2,
+    textTransform: 'uppercase',
   },
   heroSub: {
     color:      Colors.muted,

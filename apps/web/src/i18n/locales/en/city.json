@@ -259,5 +259,17 @@
     "label": "✈️ Recent arrivals",
     "sheetTitle": "Arrivals",
     "empty": "No arrivals yet"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
+    "mainUnranked": "🔥 {{count}} challenges in {{city}}",
+    "mainTop": "🔥 {{count}} challenges · 🏆 #1 in {{city}}",
+    "mainEmpty": "🌱 no challenges yet in {{city}}",
+    "subRanked": "Tap to accept your next challenge →",
+    "subUnranked": "Accept your first challenge to start climbing →",
+    "subTop": "Defend your title →",
+    "subEmpty": "Create the first one for travelers to accept →",
+    "nearby": "{{count}} nearby",
+    "recent": "{{count}} recent"
   }
 }

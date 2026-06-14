@@ -93,5 +93,17 @@
     "label": "✈️ 最近到达",
     "sheetTitle": "到达",
     "empty": "暂无到达"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
+    "mainUnranked": "🔥 {{city}} {{count}} 个挑战",
+    "mainTop": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
+    "mainEmpty": "🌱 {{city}} 还没有挑战",
+    "subRanked": "点击接受下一个挑战 →",
+    "subUnranked": "接受第一个挑战，开始攀升 →",
+    "subTop": "卫冕你的头衔 →",
+    "subEmpty": "创建第一个，让旅行者接受 →",
+    "nearby": "附近 {{count}} 人",
+    "recent": "最近 {{count}} 位"
   }
 }

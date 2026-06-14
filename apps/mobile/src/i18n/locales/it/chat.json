@@ -93,5 +93,17 @@
     "label": "✈️ Arrivi recenti",
     "sheetTitle": "Arrivi",
     "empty": "Ancora nessun arrivo"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} sfide · 🏆 #{{rank}} a {{city}}",
+    "mainUnranked": "🔥 {{count}} sfide a {{city}}",
+    "mainTop": "🔥 {{count}} sfide · 🏆 #1 a {{city}}",
+    "mainEmpty": "🌱 ancora nessuna sfida a {{city}}",
+    "subRanked": "Tocca per accettare la prossima sfida →",
+    "subUnranked": "Accetta la tua prima sfida per iniziare a salire →",
+    "subTop": "Difendi il tuo titolo →",
+    "subEmpty": "Crea la prima per i viaggiatori →",
+    "nearby": "{{count}} vicino",
+    "recent": "{{count}} recenti"
   }
 }

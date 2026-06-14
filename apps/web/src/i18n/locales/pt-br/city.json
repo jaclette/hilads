@@ -252,5 +252,17 @@
     "label": "✈️ Chegadas recentes",
     "sheetTitle": "Chegadas",
     "empty": "Ainda sem chegadas"
+  },
+  "cityHero": {
+    "mainRanked": "🔥 {{count}} desafios · 🏆 #{{rank}} em {{city}}",
+    "mainUnranked": "🔥 {{count}} desafios em {{city}}",
+    "mainTop": "🔥 {{count}} desafios · 🏆 #1 em {{city}}",
+    "mainEmpty": "🌱 ainda sem desafios em {{city}}",
+    "subRanked": "Toque para aceitar seu próximo desafio →",
+    "subUnranked": "Aceite seu primeiro desafio para começar a subir →",
+    "subTop": "Defenda seu título →",
+    "subEmpty": "Crie o primeiro para os viajantes aceitarem →",
+    "nearby": "{{count}} por perto",
+    "recent": "{{count}} recentes"
   }
 }

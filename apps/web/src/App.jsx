@@ -3995,21 +3995,20 @@ export default function App() {
   // Challenge hero (mobile city home). Combines the city's open-challenge count
   // with the viewer's rank; copy adapts to each state. English-only this phase.
   function renderChallengeHero() {
-    const short = cityShortName(city).toUpperCase()
-    const noun  = cityChallenges.length === 1 ? 'CHALLENGE' : 'CHALLENGES'
+    const short = cityShortName(city)
     let main, sub
     if (cityChallenges.length === 0) {
-      main = `🌱 NO CHALLENGES YET IN ${short}`
-      sub  = 'Create the first one for travelers to accept →'
+      main = t('cityHero.mainEmpty', { city: short })
+      sub  = t('cityHero.subEmpty')
     } else if (myCityRank === null) {
-      main = `🔥 ${cityChallenges.length} ${noun} IN ${short}`
-      sub  = 'Accept your first challenge to start climbing →'
+      main = t('cityHero.mainUnranked', { count: cityChallenges.length, city: short })
+      sub  = t('cityHero.subUnranked')
     } else if (myCityRank === 1) {
-      main = `🔥 ${cityChallenges.length} ${noun} · 🏆 #1 IN ${short}`
-      sub  = 'Defend your title →'
+      main = t('cityHero.mainTop', { count: cityChallenges.length, city: short })
+      sub  = t('cityHero.subTop')
     } else {
-      main = `🔥 ${cityChallenges.length} ${noun} · 🏆 #${myCityRank} IN ${short}`
-      sub  = 'Tap to accept your next challenge →'
+      main = t('cityHero.mainRanked', { count: cityChallenges.length, rank: myCityRank, city: short })
+      sub  = t('cityHero.subRanked')
     }
     return (
       <button type="button" className="ch-hero" onClick={goToChallengesTab} aria-label={main}>
@@ -4293,7 +4292,7 @@ export default function App() {
                       onClick={() => setShowArrivalsSheet(true)}
                       aria-label={`${feed.filter(i => i.type === 'activity' && i.subtype === 'join').length} recent arrivals`}
                     >
-                      ✈️ {feed.filter(i => i.type === 'activity' && i.subtype === 'join').length} recent
+                      ✈️ {t('cityHero.recent', { count: feed.filter(i => i.type === 'activity' && i.subtype === 'join').length })}
                     </button>
                   </div>
                 )}
@@ -4317,15 +4316,15 @@ export default function App() {
                 onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
                 aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
               >
-                🔴 {onlineCount ?? 0} nearby
+                🔴 {t('cityHero.nearby', { count: onlineCount ?? 0 })}
               </button>
               <button
                 type="button"
                 className={`ch-pill ch-pill--accent${!topics.length ? ' ch-pill--muted' : ''}`}
                 onClick={goToEventsTab}
-                aria-label={`${topics.length} Hi locals`}
+                aria-label={`${topics.length} Hi now`}
               >
-                💬 {topics.length} Hi locals
+                🗣️ {topics.length} Hi now
               </button>
               <button
                 type="button"
