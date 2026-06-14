@@ -171,6 +171,11 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems:    'center',
+    // Breathing room below the status bar: without it the icons sit flush
+    // against the safe-area edge and the bell's overflowing unread badge
+    // (top:-5) clips under the (translucent) status bar.
+    paddingTop:    10,
+    paddingBottom: 6,
   },
   // Equal-flex side rails keep the center block geometrically centered
   // regardless of how many action buttons sit on either side (e.g. MY CITY's
