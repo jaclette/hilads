@@ -840,7 +840,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   Colors.bg,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
