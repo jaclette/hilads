@@ -6674,6 +6674,7 @@ img.pub-profile-avatar {
 .ch-city-row {
   display: flex;
   align-items: center;
+  justify-content: center;  /* keep city name + recent pill grouped & centered */
   gap: 10px;
   margin: 0 12px;
 }
@@ -6697,7 +6698,6 @@ img.pub-profile-avatar {
   letter-spacing: -0.3px;
 }
 .ch-recent-pill {
-  margin-left: auto;
   flex: 0 0 auto;
   padding: 6px 12px;
   border-radius: 999px;

@@ -1275,9 +1275,10 @@ const styles = StyleSheet.create({
 
   // ── City row: selector (left, ellipsizes) + compact "recent" pill (right) ──
   cityRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           10,
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'center', // keep city name + recent pill grouped & centered
+    gap:            10,
   },
   citySelector: {
     flexDirection: 'row',
@@ -1297,7 +1298,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   recentPill: {
-    marginLeft:        'auto', // pin to the right edge
     flexShrink:        0,      // never shrink - the city name truncates instead
     paddingVertical:   6,
     paddingHorizontal: 12,
