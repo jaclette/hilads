@@ -4,8 +4,8 @@
     "sub": "他の街のローカルが何を企画してるか見て - ヒントに",
     "openYours": "🔥 {{city}} で自分のを開く",
     "by": "{{name}} · {{city}}",
-    "hangout": "集まり",
-    "event": "イベント"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "guestGate": {
     "createAccount": "アカウントを作成",

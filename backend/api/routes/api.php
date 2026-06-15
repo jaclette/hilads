@@ -4148,15 +4148,20 @@ $router->add('GET', '/api/v1/channels/{channelId}/city-events', function (array 
     Response::json(['events' => $events]);
 });
 
-// Past archive - finished one-off hangouts + expired pulses for a city.
-// ?type=both|hangouts|pulses, ?limit (≤20), ?before=<unix> cursor, and an
+// Past archive - finished one-off events + validated challenges for a city.
+// Ephemeral hangouts (Sorties/topics) are excluded by design.
+// ?type=both|hangouts|challenges, ?limit (≤20), ?before=<unix> cursor, and an
 // optional ?from=YYYY-MM-DD&to=YYYY-MM-DD window clamped to ≤14 days. Default
 // (no range, no cursor) = the 10 most recent past items. Public, no auth.
 $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params) {
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) Response::json(['error' => 'Invalid channelId'], 400);
 
-    $type   = in_array($_GET['type'] ?? 'both', ['both', 'hangouts', 'pulses', 'challenges'], true) ? $_GET['type'] : 'both';
+    // Hangouts (pulses/topics, the spontaneous "Hi now" Sorties) are ephemeral
+    // and intentionally NOT archived - the past activity surface is for things
+    // that actually happened (planned events + validated challenges). 'pulses'
+    // is dropped from the whitelist so it falls back to 'both' (no topics).
+    $type   = in_array($_GET['type'] ?? 'both', ['both', 'hangouts', 'challenges'], true) ? $_GET['type'] : 'both';
     $limit  = max(1, min(20, (int) ($_GET['limit'] ?? 10)));
     $before = isset($_GET['before']) && ctype_digit((string) $_GET['before']) ? (int) $_GET['before'] : null;
 
@@ -4184,7 +4189,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/past', function (array $params
     // 'challenges') skip the other two source queries. 'both' = all three.
     $now      = time();
     $hangouts = in_array($type, ['both', 'hangouts'],   true) ? EventRepository::getPastOneOff($channelId, $before, $limit, $fromTs, $toTs) : [];
-    $pulses   = in_array($type, ['both', 'pulses'],     true) ? TopicRepository::getPastByCity($channelId, $before, $limit, $fromTs, $toTs) : [];
+    // Topics (Sorties) are ephemeral - never part of the past archive.
+    $pulses   = [];
     $challenges = in_array($type, ['both', 'challenges'], true)
         ? ChallengeRepository::getValidatedByCity('city_' . $channelId, $limit, $before, $membersViewerUserId)
         : [];

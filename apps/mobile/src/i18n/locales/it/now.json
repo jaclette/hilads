@@ -18,8 +18,8 @@
     "sub": "Cosa organizzano i local altrove - lasciati ispirare",
     "openYours": "🔥 Crea il tuo a {{city}}",
     "by": "di {{name}} · {{city}}",
-    "hangout": "Ritrovo",
-    "event": "Evento"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "loadError": "Impossibile caricare il feed",
   "noCityTitle": "Nessuna città selezionata",

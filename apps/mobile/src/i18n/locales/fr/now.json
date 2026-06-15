@@ -18,8 +18,8 @@
     "sub": "Ce que les locaux organisent ailleurs - inspire-toi",
     "openYours": "🔥 Ouvre le tien à {{city}}",
     "by": "par {{name}} · {{city}}",
-    "hangout": "Sortie",
-    "event": "Événement"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "loadError": "Impossible de charger le fil",
   "noCityTitle": "Aucune ville sélectionnée",

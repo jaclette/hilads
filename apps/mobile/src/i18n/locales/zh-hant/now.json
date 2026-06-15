@@ -18,8 +18,8 @@
     "sub": "看看別處的在地人辦了什麼 - 獲取靈感",
     "openYours": "🔥 在 {{city}} 開你自己的",
     "by": "來自 {{name}} · {{city}}",
-    "hangout": "聚會",
-    "event": "活動"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "loadError": "無法載入動態",
   "noCityTitle": "尚未選擇城市",

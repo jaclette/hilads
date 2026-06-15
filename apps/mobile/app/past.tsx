@@ -40,7 +40,8 @@ function prettyRange(from: string, to: string): string {
 
 type RangeKey  = 'recent' | '7' | '14' | 'custom';
 type Range     = { key: RangeKey; from?: string; to?: string };
-type FilterType = 'both' | 'hangouts' | 'pulses' | 'challenges';
+// Hangouts (Sorties/pulses) are ephemeral and excluded from the past archive.
+type FilterType = 'both' | 'hangouts' | 'challenges';
 
 const PAGE = 12;
 
@@ -266,7 +267,7 @@ export default function PastArchiveScreen() {
 
       {/* Type filter */}
       <View style={styles.filterBar}>
-        {(['both', 'challenges', 'pulses', 'hangouts'] as const).map(f => (
+        {(['both', 'challenges', 'hangouts'] as const).map(f => (
           <TouchableOpacity
             key={f}
             style={[styles.filterPill, type === f && styles.filterPillActive]}
@@ -276,7 +277,6 @@ export default function PastArchiveScreen() {
             <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
               {f === 'both'       ? t('filterAll')
                 : f === 'hangouts' ? '🎉 Events'
-                : f === 'pulses'   ? '🗣️ Hangouts'
                 :                    t('filterChallenges')}
             </Text>
           </TouchableOpacity>

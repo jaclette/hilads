@@ -4,8 +4,8 @@
     "sub": "다른 도시 로컬들이 뭘 여는지 보기 - 영감 얻기",
     "openYours": "🔥 {{city}}에서 내 것 열기",
     "by": "{{name}} · {{city}}",
-    "hangout": "모임",
-    "event": "이벤트"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "guestGate": {
     "createAccount": "계정 만들기",

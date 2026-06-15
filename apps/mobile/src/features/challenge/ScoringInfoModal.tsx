@@ -34,6 +34,7 @@ export function ScoringInfoModal({
     labelKey:    string;
     challenger:  number | null;
     taker:       number | null;
+    highlight?:  boolean;
   }> = [
     // Creation reward (+2 challenger) - credited instantly at creation,
     // capped at the first 3/day. Sits above the per-run steps; the total
@@ -41,6 +42,9 @@ export function ScoringInfoModal({
     { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
     { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: 5    },
     { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
+    // Meet bonus - the biggest reward, only when you actually meet up in
+    // person (validation = Meet). Highlighted because it's the whole point.
+    { icon: '🤝', labelKey: 'scoringInfo.steps.meet',     challenger: 50, taker: 50, highlight: true },
     { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
   ];
 
@@ -102,13 +106,13 @@ export function ScoringInfoModal({
           </View>
 
           {steps.map((s) => (
-            <View key={s.labelKey} style={styles.row}>
+            <View key={s.labelKey} style={[styles.row, s.highlight && styles.rowHighlight]}>
               <Text style={styles.rowIcon}>{s.icon}</Text>
-              <Text style={styles.rowLabel} numberOfLines={1}>{t(s.labelKey)}</Text>
-              <Text style={[styles.rowPoints, s.challenger === null && styles.rowPointsMuted]}>
+              <Text style={[styles.rowLabel, s.highlight && styles.rowLabelHighlight]} numberOfLines={1}>{t(s.labelKey)}</Text>
+              <Text style={[styles.rowPoints, s.highlight && styles.rowPointsHighlight, s.challenger === null && styles.rowPointsMuted]}>
                 {s.challenger === null ? t('scoringInfo.noPoints') : `+${s.challenger}`}
               </Text>
-              <Text style={[styles.rowPoints, s.taker === null && styles.rowPointsMuted]}>
+              <Text style={[styles.rowPoints, s.highlight && styles.rowPointsHighlight, s.taker === null && styles.rowPointsMuted]}>
                 {s.taker === null ? t('scoringInfo.noPoints') : `+${s.taker}`}
               </Text>
             </View>
@@ -116,8 +120,8 @@ export function ScoringInfoModal({
 
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>{t('scoringInfo.totalLabel')}</Text>
-            <Text style={styles.totalValue}>40</Text>
-            <Text style={styles.totalValue}>50</Text>
+            <Text style={styles.totalValue}>90</Text>
+            <Text style={styles.totalValue}>100</Text>
           </View>
 
           <Text style={styles.footnote}>{t('scoringInfo.footnote')}</Text>
@@ -189,6 +193,17 @@ const styles = StyleSheet.create({
   rowLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
   rowPoints: { width: 88, fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', textAlign: 'right' },
   rowPointsMuted: { color: Colors.muted2, fontWeight: '600' },
+  // Meet bonus - gold-tinted so it reads as the prize (the whole point).
+  rowHighlight: {
+    backgroundColor:   'rgba(255,201,60,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,201,60,0.30)',
+    borderRadius:      12,
+    paddingHorizontal: 8,
+    marginVertical:    2,
+  },
+  rowLabelHighlight:  { color: '#FFC93C', fontWeight: '800' },
+  rowPointsHighlight: { color: '#FFC93C' },
 
   totalRow: {
     flexDirection: 'row', alignItems: 'center',

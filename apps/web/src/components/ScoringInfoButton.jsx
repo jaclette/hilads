@@ -64,6 +64,9 @@ function ScoringInfoModal({ onClose, t }) {
     { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
     { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: 5    },
     { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
+    // Meet bonus - the biggest reward, only when you actually meet up in
+    // person (validation = Meet). Highlighted because it's the whole point.
+    { icon: '🤝', labelKey: 'scoringInfo.steps.meet',     challenger: 50, taker: 50, highlight: true },
     { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
   ]
 
@@ -104,7 +107,7 @@ function ScoringInfoModal({ onClose, t }) {
           </div>
 
           {steps.map((s) => (
-            <div key={s.labelKey} className="scoring-info-row">
+            <div key={s.labelKey} className={`scoring-info-row${s.highlight ? ' scoring-info-row--highlight' : ''}`}>
               <span className="scoring-info-icon">{s.icon}</span>
               <span className="scoring-info-label">{t(s.labelKey)}</span>
               <span className={`scoring-info-points${s.challenger === null ? ' scoring-info-points--muted' : ''}`}>
@@ -118,8 +121,8 @@ function ScoringInfoModal({ onClose, t }) {
 
           <div className="scoring-info-total-row">
             <span className="scoring-info-total-label">{t('scoringInfo.totalLabel')}</span>
-            <span className="scoring-info-total-value">40</span>
-            <span className="scoring-info-total-value">50</span>
+            <span className="scoring-info-total-value">90</span>
+            <span className="scoring-info-total-value">100</span>
           </div>
 
           <p className="scoring-info-footnote">{t('scoringInfo.footnote')}</p>

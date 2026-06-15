@@ -18,8 +18,8 @@
     "sub": "Xem dân địa phương nơi khác tổ chức gì - lấy cảm hứng",
     "openYours": "🔥 Tạo cái của bạn ở {{city}}",
     "by": "bởi {{name}} · {{city}}",
-    "hangout": "Tụ tập",
-    "event": "Sự kiện"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "loadError": "Không thể tải nguồn cấp",
   "noCityTitle": "Chưa chọn thành phố",

@@ -18,8 +18,8 @@
     "sub": "Lo que organizan los locales en otros lados - inspírate",
     "openYours": "🔥 Crea la tuya en {{city}}",
     "by": "por {{name}} · {{city}}",
-    "hangout": "Quedada",
-    "event": "Evento"
+    "hangout": "Hi now",
+    "event": "Hi plan"
   },
   "loadError": "No se pudo cargar el feed",
   "noCityTitle": "Ninguna ciudad seleccionada",

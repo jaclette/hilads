@@ -1073,6 +1073,16 @@ html, body, #root {
   align-items: center;
   padding: 10px 0;
 }
+/* Meet bonus - the biggest reward; gold-tinted so it reads as the prize. */
+.scoring-info-row--highlight {
+  background: rgba(255, 201, 60, 0.10);
+  border: 1px solid rgba(255, 201, 60, 0.30);
+  border-radius: 12px;
+  padding: 10px 10px;
+  margin: 2px 0;
+}
+.scoring-info-row--highlight .scoring-info-label { color: #FFC93C; font-weight: 800; }
+.scoring-info-row--highlight .scoring-info-points { color: #FFC93C; }
 .scoring-info-icon { width: 28px; font-size: 18px; }
 .scoring-info-label {
   flex: 1;
@@ -6643,13 +6653,18 @@ img.pub-profile-avatar {
   gap: 10px;
   margin: 0 12px;
 }
-/* City selector hugs its content + ellipsizes first; recent pill never shrinks. */
+/* City selector hugs its content + ellipsizes first; recent pill never shrinks.
+   Left-aligned: override the centered .header-city-row-button defaults (text
+   centering + auto side-margins) so flag + name + chevron sit at the left. */
 .ch-city-selector {
   flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  margin: 0;
+  justify-content: flex-start;
+  text-align: left;
 }
 .ch-recent-pill {
   margin-left: auto;
