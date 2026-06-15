@@ -945,11 +945,7 @@ export default function ChallengeChatScreen() {
                 <Text style={styles.intlPillText} numberOfLines={1}>{label}</Text>
               </View>
             );
-          })() : (
-            <View style={styles.audiencePill}>
-              <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
-            </View>
-          )}
+          })() : null /* Local = for everyone in the city; no audience pill. */}
           {/* Share - distinct violet tint so it doesn't blur in with the
               orange admin pills below. The verb is the social growth hook
               of the screen; it deserves its own color. */}

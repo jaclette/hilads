@@ -9089,30 +9089,13 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json($existing);
     }
 
-    // Mode/audience gate - Local-only. International challenges target
-    // anyone (or anyone in city B) and have no in-person meetup, so neither
-    // the user's local/traveler mode nor the challenge.audience field gates
-    // take-on. The proof verdict is the gate that matters.
+    // Mode/audience gate REMOVED for local challenges - they are now "for
+    // everyone in the city" (the locals/travelers audience choice was dropped
+    // at creation for being too much friction). Anyone can take on a local
+    // challenge regardless of their local/traveler mode. International
+    // challenges never gated on mode anyway (the proof verdict is the gate).
     $isInternational = ($challenge['mode'] ?? 'local') === 'international';
-    if (!$isInternational) {
-        $expectedMode = $challenge['audience'] === 'locals' ? 'local' : 'exploring';
-        $actualMode   = $authUser['mode'] ?? null;
-        if (empty($actualMode)) {
-            Response::json([
-                'error'         => 'Set your mode (local or traveler) before accepting challenges',
-                'code'          => 'mode_required',
-                'required_mode' => $expectedMode,
-            ], 403);
-        }
-        if ($actualMode !== $expectedMode) {
-            $needLabel = $expectedMode === 'local' ? 'locals' : 'travelers';
-            Response::json([
-                'error'         => "Only {$needLabel} can accept this challenge",
-                'code'          => 'mode_mismatch',
-                'required_mode' => $expectedMode,
-            ], 403);
-        }
-    } else {
+    if ($isInternational) {
         // PR49 - International challenge with a TARGET city: only users
         // whose current_city_id matches that target can take it on.
         // target_city_id IS NULL = "anywhere" → no gate (kept open).

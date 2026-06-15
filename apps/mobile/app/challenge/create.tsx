@@ -275,29 +275,11 @@ export default function CreateChallengeScreen() {
           {mode === 'local' ? t('mode.localHint') : t('mode.internationalHint')}
         </Text>
 
-        {/* Audience toggle (Local only) - 2-pill row, full width, thumb-friendly */}
+        {/* Local challenges are for everyone in the city - no locals/travelers
+            audience choice (removed: too much friction). Stored audience stays
+            'locals' for back-compat but no longer gates who can take it on. */}
         {mode === 'local' && (
           <>
-            <Text style={styles.sectionLabel}>{t('audience')}</Text>
-            <View style={styles.audienceRow}>
-              {AUDIENCES.map(a => {
-                const selected = audience === a;
-                return (
-                  <TouchableOpacity
-                    key={a}
-                    style={[styles.audienceBtn, selected && styles.audienceBtnSelected]}
-                    onPress={() => setAudience(a)}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={styles.audienceEmoji}>{AUDIENCE_ICONS[a]}</Text>
-                    <Text style={[styles.audienceLabel, selected && styles.audienceLabelSelected]}>
-                      {t(`aud.${a}`)}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-
             {/* Validation method - 2 cards. Meet is the celebrated path
                 (+50 bonus chip fades in below); Photo is the lower-friction
                 alternative (base points only, no bonus, no negative copy). */}

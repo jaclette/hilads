@@ -89,9 +89,7 @@ export default function ChallengeVersusCard({
                 <span className="challenge-badge challenge-badge--international">{label}</span>
               )
             })()
-          : (
-            <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-          )}
+          : null /* Local = for everyone in the city; no audience pill. */}
         {(() => {
           const v = c.visibility ?? 'public'
           if (v === 'public') return null

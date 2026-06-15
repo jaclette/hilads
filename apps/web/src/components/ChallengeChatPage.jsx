@@ -847,9 +847,7 @@ export default function ChallengeChatPage({
           return (
             <span className="challenge-badge challenge-badge--international">{label}</span>
           )
-        })() : (
-          <span className="challenge-badge challenge-badge--audience">{audienceLabel}</span>
-        )}
+        })() : null /* Local = for everyone in the city; no audience pill. */}
         <button
           type="button"
           className="challenge-share-pill challenge-share-pill--inline challenge-share-pill--share"

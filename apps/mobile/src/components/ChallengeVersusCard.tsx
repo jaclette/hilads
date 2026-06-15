@@ -104,11 +104,7 @@ export function ChallengeVersusCard({
               <Text style={styles.intlPillText} numberOfLines={1}>{label}</Text>
             </View>
           );
-        })() : (
-          <View style={styles.audiencePill}>
-            <Text style={styles.audiencePillText}>{audienceLabel[challenge.audience]}</Text>
-          </View>
-        )}
+        })() : null /* Local = for everyone in the city; no audience pill. */}
         {/* Photo proof on a local challenge - surface a 📸 badge so
             scrollers can spot the lower-friction-but-no-Meet-bonus
             variant at a glance. Meet is the default and stays
