@@ -20,6 +20,7 @@ type Props = {
 // Per-kind subtitle key. Falls back to `default` when the server hasn't
 // classified the top kind (older events, ghost path, etc.).
 const KIND_KEYS: Record<string, string> = {
+  challenge_created: 'scoreCelebration.subtitle.challenge_created',
   accepted:    'scoreCelebration.subtitle.accepted',
   date_locked: 'scoreCelebration.subtitle.date_locked',
   meetup:      'scoreCelebration.subtitle.meetup',
@@ -33,6 +34,7 @@ const KIND_KEYS: Record<string, string> = {
 // challenge title. Distinct from the subtitle keys above (which are full
 // sentences for the single-event lead).
 const KIND_SHORT_KEYS: Record<string, string> = {
+  challenge_created: 'scoreCelebration.kindShort.challenge_created',
   accepted:    'scoreCelebration.kindShort.accepted',
   date_locked: 'scoreCelebration.kindShort.date_locked',
   meetup:      'scoreCelebration.kindShort.meetup',
@@ -41,6 +43,7 @@ const KIND_SHORT_KEYS: Record<string, string> = {
   meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 };
 const KIND_EMOJI: Record<string, string> = {
+  challenge_created: '🎯',
   accepted:    '🤝',
   date_locked: '🗓️',
   meetup:      '🎉',

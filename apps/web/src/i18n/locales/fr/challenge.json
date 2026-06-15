@@ -522,7 +522,8 @@
       "debrief": "Mission accomplie 🎉",
       "ghost": "Tu feras mieux la prochaine fois 👻",
       "default": "Tu grimpes au classement 🚀",
-      "meet_bonus": "Bonus Rencontre débloqué 🤝"
+      "meet_bonus": "Bonus Rencontre débloqué 🤝",
+      "challenge_created": "Tu as lancé un défi 🎯"
     },
     "rank": {
       "city": "#{{rank}} à {{city}}",
@@ -542,7 +543,8 @@
       "debrief": "Notés tous les deux",
       "ghost": "Ghosté",
       "default": "Gagnés",
-      "meet_bonus": "Bonus Rencontre"
+      "meet_bonus": "Bonus Rencontre",
+      "challenge_created": "Défi créé"
     },
     "event": {
       "deletedChallenge": "Challenge supprimé",

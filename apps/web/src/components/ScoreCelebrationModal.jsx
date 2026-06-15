@@ -5,6 +5,7 @@ import { countryToFlag } from '../lib/countryFlag'
 // Per-kind subtitle key - same mapping as the native modal. Falls through
 // to `default` when top_kind is null or unknown (older / ghost events).
 const KIND_KEYS = {
+  challenge_created: 'scoreCelebration.subtitle.challenge_created',
   accepted:    'scoreCelebration.subtitle.accepted',
   date_locked: 'scoreCelebration.subtitle.date_locked',
   meetup:      'scoreCelebration.subtitle.meetup',
@@ -16,6 +17,7 @@ const KIND_KEYS = {
 // Short kind label + emoji for the per-event rows. Distinct keys from the
 // subtitle copy above (which is a full sentence for the headline path).
 const KIND_SHORT_KEYS = {
+  challenge_created: 'scoreCelebration.kindShort.challenge_created',
   accepted:    'scoreCelebration.kindShort.accepted',
   date_locked: 'scoreCelebration.kindShort.date_locked',
   meetup:      'scoreCelebration.kindShort.meetup',
@@ -24,6 +26,7 @@ const KIND_SHORT_KEYS = {
   meet_bonus:  'scoreCelebration.kindShort.meet_bonus',
 }
 const KIND_EMOJI = {
+  challenge_created: '🎯',
   accepted:    '🤝',
   date_locked: '🗓️',
   meetup:      '🎉',

@@ -579,7 +579,8 @@
       "debrief": "Mission accomplished 🎉",
       "ghost": "Better luck next time 👻",
       "default": "You’re climbing the ranks 🚀",
-      "meet_bonus": "Meet bonus unlocked 🤝"
+      "meet_bonus": "Meet bonus unlocked 🤝",
+      "challenge_created": "You launched a challenge 🎯"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -599,7 +600,8 @@
       "debrief": "Both rated",
       "ghost": "Ghosted",
       "default": "Earned",
-      "meet_bonus": "Meet bonus"
+      "meet_bonus": "Meet bonus",
+      "challenge_created": "Challenge created"
     },
     "event": {
       "deletedChallenge": "Deleted challenge",
