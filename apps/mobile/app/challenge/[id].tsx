@@ -1096,7 +1096,13 @@ export default function ChallengeChatScreen() {
               - otherwise → no-op (informational). The thread chat is right
                 below this, no navigation needed. */}
         <ChallengePipeline
-          acceptance={activeAcceptance}
+          // Creator has no acceptance of their own - drive the timeline off
+          // the active taker's phase so it reflects real progress (e.g. an
+          // accepted international challenge sitting at the Proof step) instead
+          // of rendering empty. Takers keep their own acceptance.
+          acceptance={activeAcceptance ?? (isOwner && challenge.acceptor_user_id && challenge.acceptor_phase
+            ? ({ phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase } as unknown as ChallengeThreadSummary)
+            : null)}
           iAmCreator={isOwner}
           myUserId={account?.id ?? null}
           mode={challenge.mode ?? 'local'}

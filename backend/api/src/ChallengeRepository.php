@@ -100,6 +100,7 @@ class ChallengeRepository
             -- avatar. acceptor_country is derived from the taker's CURRENT
             -- city (NOT the challenge target) - flag = identity.
             ac.acceptor_user_id,
+            ac.phase                    AS acceptor_phase,
             au.display_name             AS acceptor_display_name,
             COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
             au.current_city_id          AS acceptor_current_city_id,
@@ -133,7 +134,7 @@ class ChallengeRepository
             --      round, the prior 'approved' row no longer counts.
             -- Pending requests (creator hasn't reviewed yet) and rejected
             -- ones never show in the slot.
-            SELECT ca.acceptor_user_id
+            SELECT ca.acceptor_user_id, ca.phase
             FROM challenge_acceptances ca
             WHERE ca.challenge_id = c.id
               AND (
@@ -235,6 +236,7 @@ class ChallengeRepository
             // acceptor_country is the taker's CURRENT city (their flag =
             // identity), distinct from the challenge's target_country.
             'acceptor_user_id'         => $row['acceptor_user_id']         ?? null,
+            'acceptor_phase'           => $row['acceptor_phase']           ?? null,
             'acceptor_display_name'    => $row['acceptor_display_name']    ?? null,
             'acceptor_thumb_avatar_url'=> $row['acceptor_thumb_avatar_url']?? null,
             'acceptor_country'         => self::countryForCityId($row['acceptor_current_city_id'] ?? null),
@@ -360,7 +362,7 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
-                     ac.acceptor_user_id, au.display_name,
+                     ac.acceptor_user_id, ac.phase, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
                      au.current_city_id,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
@@ -503,7 +505,7 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
-                     ac.acceptor_user_id, au.display_name,
+                     ac.acceptor_user_id, ac.phase, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
                      au.current_city_id,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
@@ -544,7 +546,7 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
-                     ac.acceptor_user_id, au.display_name,
+                     ac.acceptor_user_id, ac.phase, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
                      au.current_city_id,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
@@ -580,7 +582,7 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
-                     ac.acceptor_user_id, au.display_name,
+                     ac.acceptor_user_id, ac.phase, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
                      au.current_city_id,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref

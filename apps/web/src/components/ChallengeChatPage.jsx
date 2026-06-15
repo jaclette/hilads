@@ -957,7 +957,12 @@ export default function ChallengeChatPage({
           acceptance phase. Educational for visitors / creator-without-an-
           acceptance. Tap navigates to the thread where the real actions are. */}
       <ChallengePipeline
-        acceptance={activeAcceptance}
+        // Creator has no acceptance of their own - drive the timeline off the
+        // active taker's phase so it reflects real progress (e.g. an accepted
+        // international challenge at the Proof step) instead of rendering empty.
+        acceptance={activeAcceptance ?? (isOwner && challenge.acceptor_user_id && challenge.acceptor_phase
+          ? { phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase }
+          : null)}
         iAmCreator={isOwner}
         myUserId={account?.id ?? null}
         mode={challenge.mode ?? 'local'}

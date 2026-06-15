@@ -291,6 +291,10 @@ export interface Challenge {
    *  taker's CURRENT-city ISO-2 (their flag = identity), distinct from
    *  the challenge's target_country. */
   acceptor_user_id?:          string | null;
+  /** Phase of the active taker's acceptance (accepted | proof_submitted |
+   *  approved | ...). Lets the creator's pipeline reflect the taker's real
+   *  progress even though the creator has no acceptance of their own. */
+  acceptor_phase?:            string | null;
   acceptor_display_name?:     string | null;
   acceptor_thumb_avatar_url?: string | null;
   acceptor_country?:          string | null;
