@@ -81,6 +81,7 @@ class NotificationRepository
             'event_message'                                             => 'event_message_push',
             'event_join'                                                => 'event_join_push',
             'new_event'                                                 => 'new_event_push',
+            'new_challenge'                                             => 'new_challenge_push',
             'mention'                                                   => 'mention_push',
             'channel_message'                                           => 'channel_message_push',
             'city_join'                                                 => 'city_join_push',
@@ -112,6 +113,7 @@ class NotificationRepository
             'event_message_push'   => true,
             'event_join_push'      => false,
             'new_event_push'       => true,
+            'new_challenge_push'   => true,
             'mention_push'         => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
@@ -222,6 +224,7 @@ class NotificationRepository
             'dm_message'                      => '/conversations',
             'event_message', 'event_join',
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
+            'new_challenge'                   => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/',
             // Mention deep-links to the message's context: event chat, pulse, or city chat.
             'mention'                         => isset($data['eventId']) ? "/event/{$data['eventId']}"
                                                 : (isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/'),
@@ -731,6 +734,7 @@ class NotificationRepository
         // cross-city heads-up fired to everyone whose current_city_id matches
         // the target city when a creator in city A targets city B.
         $useCurrentCity = $type === 'new_event'
+                       || $type === 'new_challenge'
                        || $type === 'city_join'
                        || $type === 'challenge_international_target';
 

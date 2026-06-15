@@ -12,6 +12,8 @@
     "eventJoinSub": "When a new person joins an event you're going to",
     "newEventLabel": "New events in your city",
     "newEventSub": "When someone creates an event in your city",
+    "newChallengeLabel": "New challenges in your city",
+    "newChallengeSub": "When someone launches a challenge in your city",
     "cityJoinLabel": "Someone arrived in your city",
     "cityJoinSub": "When anyone joins the city channel you're in",
     "friendLabel": "Friend requests",

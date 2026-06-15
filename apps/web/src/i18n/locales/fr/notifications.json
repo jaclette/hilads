@@ -10,6 +10,8 @@
     "mentionDesc": "Quand quelqu'un te @mentionne dans un message ou une sortie",
     "newEventName": "Nouveaux événements dans ta ville",
     "newEventDesc": "Quand quelqu'un crée un événement dans ta ville",
+    "newChallengeName": "Nouveaux défis dans ta ville",
+    "newChallengeDesc": "Quand quelqu'un lance un défi dans ta ville",
     "friendName": "Demandes d'amis",
     "friendDesc": "Quand quelqu'un t'envoie une demande d'ami ou accepte la tienne",
     "notesName": "Notes ✨",

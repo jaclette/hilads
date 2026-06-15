@@ -1017,6 +1017,7 @@ $router->add('GET', '/internal/run-migrations', function () {
         ['vibe_received_push',      'BOOLEAN NOT NULL DEFAULT TRUE'],
         ['profile_view_push',       'BOOLEAN NOT NULL DEFAULT TRUE'],
         ['admin_announcement_push', 'BOOLEAN NOT NULL DEFAULT TRUE'],
+        ['new_challenge_push',      'BOOLEAN NOT NULL DEFAULT TRUE'],
     ] as [$col, $def]) {
         try {
             $pdo->exec("ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS $col $def");
@@ -7963,6 +7964,33 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             }
         } catch (\Throwable $e) {
             error_log('[challenges] intl fan-out push failed (non-fatal): ' . $e->getMessage());
+        }
+
+        // ── New-challenge push to the ORIGIN city ──────────────────────────
+        // "New challenge in your city" - fired to city members (current_city_id)
+        // who haven't opted out (new_challenge_push, default on). Public only;
+        // registered creators only. Same fan-out cap + per-(recipient,city,type)
+        // rate limit as new_event. The international TARGET push above is a
+        // separate signal to a different city, so the two never double up.
+        try {
+            if ($userId !== null && ($challenge['visibility'] ?? 'public') === 'public') {
+                $cityRow = CityRepository::findById($channelId);
+                NotificationRepository::notifyCityOnlineUsers(
+                    'city_' . $channelId,
+                    $userId, // exclude the creator
+                    'new_challenge',
+                    '🔥 New challenge in ' . ($cityRow['name'] ?? 'your city'),
+                    $challenge['title'] ?? null,
+                    [
+                        'challengeId'    => $challenge['id'],
+                        'challengeTitle' => $challenge['title'] ?? '',
+                        'challengeType'  => $challengeType,
+                        'cityName'       => $cityRow['name'] ?? '',
+                    ],
+                );
+            }
+        } catch (\Throwable $e) {
+            error_log('[challenges] new_challenge city fan-out failed (non-fatal): ' . $e->getMessage());
         }
 
         AnalyticsService::defer('created_challenge', $userId ?? $guestId, [

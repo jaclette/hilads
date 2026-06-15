@@ -10,6 +10,8 @@
     "mentionDesc": "When someone @mentions you in a message or hangout",
     "newEventName": "New events in your city",
     "newEventDesc": "When someone creates an event in your city",
+    "newChallengeName": "New challenges in your city",
+    "newChallengeDesc": "When someone launches a challenge in your city",
     "friendName": "Friend requests",
     "friendDesc": "When someone sends you a friend request or accepts yours",
     "notesName": "Notes ✨",

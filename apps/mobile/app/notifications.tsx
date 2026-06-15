@@ -75,6 +75,7 @@ export default function NotificationsScreen() {
     event_message_push:   true,
     event_join_push:      false,
     new_event_push:       true,
+    new_challenge_push:   true,
     mention_push:         true,
     channel_message_push: false,
     city_join_push:       false,
@@ -250,6 +251,8 @@ export default function NotificationsScreen() {
             <PrefRow label={t('pref.eventJoinLabel')} subtitle={t('pref.eventJoinSub')} value={prefs.event_join_push} onChange={v => togglePref('event_join_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.newEventLabel')} subtitle={t('pref.newEventSub')} value={prefs.new_event_push} onChange={v => togglePref('new_event_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label={t('pref.newChallengeLabel')} subtitle={t('pref.newChallengeSub')} value={prefs.new_challenge_push} onChange={v => togglePref('new_challenge_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.cityJoinLabel')} subtitle={t('pref.cityJoinSub')} value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
             <View style={styles.prefDivider} />

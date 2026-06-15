@@ -11,6 +11,7 @@ class NotificationPreferencesRepository
             'event_message_push'   => true,
             'event_join_push'      => false,
             'new_event_push'       => true,
+            'new_challenge_push'   => true,
             'mention_push'         => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
@@ -27,7 +28,7 @@ class NotificationPreferencesRepository
     {
         try {
             $stmt = Database::pdo()->prepare("
-                SELECT dm_push, event_message_push, event_join_push, new_event_push, mention_push,
+                SELECT dm_push, event_message_push, event_join_push, new_event_push, new_challenge_push, mention_push,
                        channel_message_push, city_join_push, friend_request_push, vibe_received_push,
                        profile_view_push, topic_reply_push, new_topic_push, admin_announcement_push
                 FROM notification_preferences
@@ -45,6 +46,7 @@ class NotificationPreferencesRepository
                 'event_message_push'   => (bool) $row['event_message_push'],
                 'event_join_push'      => (bool) $row['event_join_push'],
                 'new_event_push'       => (bool) $row['new_event_push'],
+                'new_challenge_push'   => (bool) ($row['new_challenge_push'] ?? true),
                 'mention_push'         => (bool) ($row['mention_push'] ?? true),
                 'channel_message_push' => (bool) $row['channel_message_push'],
                 'city_join_push'       => (bool) $row['city_join_push'],

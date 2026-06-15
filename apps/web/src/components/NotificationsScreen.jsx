@@ -223,6 +223,18 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
+              <span className="notif-pref-name">{t('prefs.newChallengeName')}</span>
+              <span className="notif-pref-desc">{t('prefs.newChallengeDesc')}</span>
+            </div>
+            <Toggle
+              checked={prefs?.new_challenge_push ?? true}
+              onChange={v => handleTogglePref('new_challenge_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
               <span className="notif-pref-name">{t('prefs.friendName')}</span>
               <span className="notif-pref-desc">{t('prefs.friendDesc')}</span>
             </div>
