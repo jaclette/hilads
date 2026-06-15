@@ -76,7 +76,11 @@ export function ScoreCelebrationLaunchGate() {
     // backend broadcasts challenge_proof_approved to both creator and
     // acceptor. Subscribe here so the modal pops without a reload.
     const offProof  = socket.on('challenge_proof_approved', trigger);
-    return () => { offRating(); offDate(); offProof(); };
+    // Challenge created: the +10 challenge_created reward fires on creation.
+    // The backend pings the creator's room so the "+10 points!" modal pops
+    // right after they launch a challenge (self-gates if the daily cap hit).
+    const offCreate = socket.on('challenge_created_self', trigger);
+    return () => { offRating(); offDate(); offProof(); offCreate(); };
   }, [account?.id]);
 
   // Shared cleanup - ack + close. Used by both the CTA path and the

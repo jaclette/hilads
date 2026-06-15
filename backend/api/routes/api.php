@@ -7924,6 +7924,26 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
         }
 
+        // ── Score-celebration nudge to the creator ─────────────────────────
+        // The +10 "challenge_created" reward fires synchronously via the DB
+        // trigger inside create(), so /me/score-celebration already has a fresh
+        // delta. Ping the creator's own room so the ScoreCelebrationLaunchGate
+        // re-fetches and pops the "+10 points!" modal right after creating -
+        // same user-room mechanism as rating/date/proof. Self-gating: if the
+        // daily cap was already hit (no reward), the fetch returns 0 and no
+        // modal shows.
+        if ($userId !== null) {
+            try {
+                postToWs('/broadcast/user-event', [
+                    'userId'  => $userId,
+                    'event'   => 'challenge_created_self',
+                    'payload' => ['challengeId' => $challenge['id']],
+                ]);
+            } catch (\Throwable $e) {
+                error_log('[challenges] score-celebration nudge failed (non-fatal): ' . $e->getMessage());
+            }
+        }
+
         // ── Cross-city push fan-out (International with target_city_id) ─────
         // Notify users whose current_city_id matches the target city. Uses
         // NotificationRepository::notifyCityOnlineUsers which:

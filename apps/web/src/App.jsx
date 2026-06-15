@@ -2758,6 +2758,13 @@ export default function App() {
         setCelebrationRefetchKey(k => k + 1)
       })
 
+      // Challenge just created by US - the +10 challenge_created reward landed.
+      // The backend pings our room so the "+10 points!" celebration pops right
+      // after creating (self-gates if the daily cap was hit).
+      socket.on('challenge_created_self', () => {
+        setCelebrationRefetchKey(k => k + 1)
+      })
+
       // First rating just landed - the counterparty rated US. Bump the
       // rate-prompt refetch key so RatePromptLaunchGate re-runs its
       // /me/rate-prompts fetch and surfaces the RateSheet for OUR side
