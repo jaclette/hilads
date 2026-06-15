@@ -6665,6 +6665,12 @@ img.pub-profile-avatar {
   margin: 0;
   justify-content: flex-start;
   text-align: left;
+  /* Match the native city title size (.header-city-row-button's `font:
+     inherit` otherwise shrinks it to the body default). Mobile cityName =
+     22px / 600 / -0.3. */
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
 }
 .ch-recent-pill {
   margin-left: auto;
