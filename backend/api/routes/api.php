@@ -3097,6 +3097,31 @@ $router->add('POST', '/api/v1/channels/{channelId}/join', function (array $param
         // (city_join / channel_message) can find this member online.
         try { PresenceRepository::stampUser($channelId, $sessionId, $joinUserId); }
         catch (\Throwable $e) { error_log('[channel_join] presence stamp failed: ' . $e->getMessage()); }
+
+        // Seed current_city_id on first genuine arrival. A logged-in user who
+        // joins a city chat without ever hitting GPS-resolve or the explicit
+        // picker (e.g. landed via a /city link or a restored detected city)
+        // would otherwise stay current_city_id=NULL - present + chatting yet
+        // invisible to City Crew / leaderboard. Mirror /location/resolve's
+        // "first city ever -> commit" rule: set ONLY when NULL so browsing
+        // another city's chat never moves a user's already-committed city.
+        try {
+            $seedCityId = 'city_' . $channelId;
+            $seedStmt = Database::pdo()->prepare("
+                UPDATE users SET
+                  current_city_id                = :city,
+                  current_city_set_at            = now(),
+                  current_city_last_confirmed_at = now()
+                WHERE id = :uid AND current_city_id IS NULL
+            ");
+            $seedStmt->execute(['city' => $seedCityId, 'uid' => $joinUserId]);
+            if ($seedStmt->rowCount() > 0) {
+                // NULL -> city: the user becomes a ranked member of this city.
+                MonthlyRankService::recalcAfterCityChange($joinUserId, null, $seedCityId);
+            }
+        } catch (\Throwable $e) {
+            error_log('[channel_join] current_city seed failed: ' . $e->getMessage());
+        }
     }
 
     // ── Post-response: analytics ──────────────────────────────────────────────
@@ -3258,6 +3283,27 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     // (city_join / channel_message) can find this member online.
                     try { PresenceRepository::stampUser($channelId, $sessionId, $uid); }
                     catch (\Throwable $e) { error_log('[bootstrap] presence stamp failed: ' . $e->getMessage()); }
+
+                    // Seed current_city_id on first genuine arrival (NULL only),
+                    // mirroring the /channels/{id}/join handler - so a user who
+                    // reaches a city via bootstrap (e.g. a /city link or restored
+                    // detected city) without GPS-resolve / explicit pick still
+                    // becomes a counted City Crew + leaderboard member.
+                    try {
+                        $seedStmt = $pdo->prepare("
+                            UPDATE users SET
+                              current_city_id                = :city,
+                              current_city_set_at            = now(),
+                              current_city_last_confirmed_at = now()
+                            WHERE id = :uid AND current_city_id IS NULL
+                        ");
+                        $seedStmt->execute(['city' => $deferChannel, 'uid' => $uid]);
+                        if ($seedStmt->rowCount() > 0) {
+                            MonthlyRankService::recalcAfterCityChange($uid, null, $deferChannel);
+                        }
+                    } catch (\Throwable $e) {
+                        error_log('[bootstrap] current_city seed failed: ' . $e->getMessage());
+                    }
                 }
             } catch (\Throwable $e) {
                 error_log('[bootstrap] membership upsert failed: ' . $e->getMessage());
