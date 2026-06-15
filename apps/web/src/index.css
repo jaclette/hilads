@@ -173,12 +173,28 @@ html, body, #root {
   line-height: 1;
 }
 
-/* "lads" half of the lockup variant. Weight/size/color are set inline from
-   the LOCKUP block in Logo.jsx (single source of truth); this just nails the
-   vertical rhythm so it sits flush with the square. */
-.logo-lads {
-  line-height: 1;
-  display: inline-block;
+/* Brand block in the persistent header: the "Hi" mark beside a column that
+   stacks the brand NAME over the tagline. Web twin of the mobile BrandLockup.
+   ✏️ Tune the name here (size/weight/color); tagline keeps its own rule. */
+.header-brand-text {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+.header-brand-name {
+  font-weight: 700;
+  font-size: 1.0625rem;            /* 17px - bigger than the tagline so it leads */
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  color: var(--text);             /* full-opacity warm-white = visible. #fff = exact glyph match */
+}
+/* Inside the brand column the tagline is a single line under the name (the
+   old 90px cap forced a 2-line wrap). Doesn't set `display`, so the
+   <340px "hide tagline" media rule still wins on very narrow phones. */
+.header-brand-text .header-tagline {
+  max-width: none;
+  white-space: nowrap;
 }
 
 /* ── Onboarding ───────────────────────────────────────── */

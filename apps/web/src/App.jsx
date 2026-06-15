@@ -3196,8 +3196,11 @@ export default function App() {
           )}
         </div>
         <div className="header-top-center">
-          <Logo variant="lockup" size="md" />
-          <span className="header-tagline">Become local.<br />Anywhere.</span>
+          <Logo variant="icon" size="md" />
+          <span className="header-brand-text">
+            <span className="header-brand-name">Hilads</span>
+            <span className="header-tagline">Become local. Anywhere.</span>
+          </span>
         </div>
         <div className="header-top-right">
           {withShare && city && (
@@ -4092,8 +4095,11 @@ export default function App() {
     return (
       <div className={className}>
         <div className="header-hero-brand">
-          <Logo variant="lockup" size="lg" />
-          <span className="header-tagline">Become local.<br />Anywhere.</span>
+          <Logo variant="icon" size="lg" />
+          <span className="header-brand-text">
+            <span className="header-brand-name">Hilads</span>
+            <span className="header-tagline">Become local. Anywhere.</span>
+          </span>
         </div>
         <div className="header-hero-city">
           <div className="header-city-line">

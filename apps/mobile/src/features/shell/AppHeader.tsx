@@ -80,12 +80,10 @@ export function AppHeader({ rightExtra }: Props) {
         )}
       </View>
 
-      {/* Center: "Hilads" lockup + tagline to its right (mirrors web header).
-          The lockup turns the bare "Hi" mark into the readable brand NAME;
-          the tagline stays untouched beside it. */}
+      {/* Center: brand block - the "Hi" mark beside the brand NAME "Hilads"
+          stacked over the tagline (mirrors web persistent header). */}
       <View style={styles.topCenter}>
-        <BrandLockup iconSize={36} glow />
-        <Text style={styles.tagline}>{'Become local.\nAnywhere.'}</Text>
+        <BrandLockup iconSize={36} glow tagline={'Become local. Anywhere.'} />
       </View>
 
       {/* Right: tab-specific extras + DM icon */}
