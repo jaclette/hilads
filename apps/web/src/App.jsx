@@ -246,7 +246,12 @@ function setPageMeta(title, description) {
  */
 function composeCityShare(cityName) {
   const url   = `${window.location.origin}/city/${cityToSlug(cityName)}`
-  const title = `What's happening in ${cityName} right now`
+  // Web shares pass ONLY { title, url } to navigator.share (text is dropped to
+  // keep Copy clean - see share() below), so the title is the one text field
+  // the recipient sees in the share dialog. Lead with the brand name so the
+  // app is recommendable by name. The OG preview still supplies the city +
+  // live-activity description from the page itself.
+  const title = `Become local in ${cityName} with Hilads 🔥`
   return { title, url }
 }
 
