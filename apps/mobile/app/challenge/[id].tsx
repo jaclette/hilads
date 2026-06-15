@@ -162,7 +162,19 @@ export default function ChallengeChatScreen() {
   const effectiveActiveAcceptance: ChallengeThreadSummary | null =
     activeAcceptance
     ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
-          ? ({ id: challenge.acceptor_acceptance_id, phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase } as unknown as ChallengeThreadSummary)
+          ? ({
+              id: challenge.acceptor_acceptance_id,
+              phase: challenge.acceptor_phase,
+              effective_phase: challenge.acceptor_phase,
+              // ChallengePipeline.derive() reads acceptance.counterparty.displayName
+              // unconditionally - omitting it crashes the creator's view as soon as
+              // a taker exists. Fill it from the taker (the creator's counterparty).
+              counterparty: {
+                id:             challenge.acceptor_user_id ?? '',
+                displayName:    challenge.acceptor_display_name ?? '',
+                thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
+              },
+            } as unknown as ChallengeThreadSummary)
           : null);
 
   // "Am I currently a participant?" - derived from the participant list.

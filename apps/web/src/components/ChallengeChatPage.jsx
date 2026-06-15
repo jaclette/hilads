@@ -243,7 +243,19 @@ export default function ChallengeChatPage({
   // creator's pipeline advances and the proof-review modal can fetch/judge.
   const effectiveActiveAcceptance = activeAcceptance
     ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
-          ? { id: challenge.acceptor_acceptance_id, phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase }
+          ? {
+              id: challenge.acceptor_acceptance_id,
+              phase: challenge.acceptor_phase,
+              effective_phase: challenge.acceptor_phase,
+              // ChallengePipeline reads acceptance.counterparty.displayName
+              // unconditionally - omit it and the creator's view crashes once a
+              // taker exists. Fill from the taker (the creator's counterparty).
+              counterparty: {
+                id:             challenge.acceptor_user_id ?? '',
+                displayName:    challenge.acceptor_display_name ?? '',
+                thumbAvatarUrl: challenge.acceptor_thumb_avatar_url ?? null,
+              },
+            }
           : null)
   const isValidated = challenge?.status === 'validated'
   const isParticipant = !!(
