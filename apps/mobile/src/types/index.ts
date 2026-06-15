@@ -295,6 +295,10 @@ export interface Challenge {
    *  approved | ...). Lets the creator's pipeline reflect the taker's real
    *  progress even though the creator has no acceptance of their own. */
   acceptor_phase?:            string | null;
+  /** Id of the active taker's acceptance - lets the creator open the proof
+   *  review + proof block (which fetch by acceptance id) without an
+   *  acceptance of their own. */
+  acceptor_acceptance_id?:    string | null;
   acceptor_display_name?:     string | null;
   acceptor_thumb_avatar_url?: string | null;
   acceptor_country?:          string | null;

@@ -153,6 +153,18 @@ export default function ChallengeChatScreen() {
       : (identity?.guestId && challenge?.guest_id && identity.guestId === challenge.guest_id)
   );
 
+  // The acceptance that drives the pipeline + proof review/block. For the
+  // TAKER it's their own (activeAcceptance). The CREATOR has none of their
+  // own, so fall back to a synthetic built from the active taker's snapshot
+  // on the challenge (id + phase) - this is what lets the creator see the
+  // pipeline advance to Proof and open the proof block / review modal (both
+  // fetch by acceptance id; the backend authorizes the creator).
+  const effectiveActiveAcceptance: ChallengeThreadSummary | null =
+    activeAcceptance
+    ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
+          ? ({ id: challenge.acceptor_acceptance_id, phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase } as unknown as ChallengeThreadSummary)
+          : null);
+
   // "Am I currently a participant?" - derived from the participant list.
   const isParticipant = !!(
     (account?.id   && participants.some(p => p.id === account.id)) ||
@@ -1092,13 +1104,10 @@ export default function ChallengeChatScreen() {
               - otherwise → no-op (informational). The thread chat is right
                 below this, no navigation needed. */}
         <ChallengePipeline
-          // Creator has no acceptance of their own - drive the timeline off
-          // the active taker's phase so it reflects real progress (e.g. an
-          // accepted international challenge sitting at the Proof step) instead
-          // of rendering empty. Takers keep their own acceptance.
-          acceptance={activeAcceptance ?? (isOwner && challenge.acceptor_user_id && challenge.acceptor_phase
-            ? ({ phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase } as unknown as ChallengeThreadSummary)
-            : null)}
+          // Creator has no acceptance of their own - effectiveActiveAcceptance
+          // falls back to the taker's snapshot so the timeline reflects real
+          // progress (e.g. an international challenge at the Proof step).
+          acceptance={effectiveActiveAcceptance}
           iAmCreator={isOwner}
           myUserId={account?.id ?? null}
           mode={challenge.mode ?? 'local'}
@@ -1125,7 +1134,7 @@ export default function ChallengeChatScreen() {
             // for the photo then hunt for the inline verdict row.
             if (usesPhotoProof
                 && isOwner
-                && activeAcceptance?.phase === 'proof_submitted') {
+                && effectiveActiveAcceptance?.phase === 'proof_submitted') {
               return () => setProofReviewOpen(true);
             }
             if (usesPhotoProof && challenge.proof_requirements) {
@@ -1146,14 +1155,14 @@ export default function ChallengeChatScreen() {
             acceptance no longer keeps the "🎉 Challenge accomplished"
             banner permanently locked on the detail page after the
             challenge wrapped. */}
-        {usesPhotoProof && activeAcceptance && (
+        {usesPhotoProof && effectiveActiveAcceptance && (
           <ChallengeProofBlock
             ref={proofRef}
-            acceptanceId={activeAcceptance.id}
+            acceptanceId={effectiveActiveAcceptance.id}
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}
             proofRequirements={challenge.proof_requirements ?? null}
-            acceptancePhase={activeAcceptance.phase}
+            acceptancePhase={effectiveActiveAcceptance.phase}
           />
         )}
 
@@ -1773,11 +1782,11 @@ export default function ChallengeChatScreen() {
           reject-reason face. Mounted for any photo-proof creator (intl
           + local-with-photo) with an active acceptance - the modal
           renders nothing if there's no pending proof. */}
-      {usesPhotoProof && isOwner && activeAcceptance && (
+      {usesPhotoProof && isOwner && effectiveActiveAcceptance && (
         <ProofReviewModal
           visible={proofReviewOpen}
           onClose={() => setProofReviewOpen(false)}
-          acceptanceId={activeAcceptance.id}
+          acceptanceId={effectiveActiveAcceptance.id}
           onVerdict={() => { loadMyAcceptance(); loadChallenge(); }}
         />
       )}

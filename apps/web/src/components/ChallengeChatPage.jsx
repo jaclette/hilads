@@ -236,6 +236,15 @@ export default function ChallengeChatPage({
       ? (account?.id && account.id === challenge.created_by)
       : (guest?.guestId && challenge?.guest_id && guest.guestId === challenge.guest_id)
   )
+  // The creator never accepts their own challenge, so activeAcceptance is
+  // null for them - yet they still need the pipeline + proof-review keyed on
+  // the TAKER's acceptance. Synthesize one from the acceptor_* fields the
+  // backend now exposes (acceptor_acceptance_id + acceptor_phase) so the
+  // creator's pipeline advances and the proof-review modal can fetch/judge.
+  const effectiveActiveAcceptance = activeAcceptance
+    ?? ((isOwner && challenge?.acceptor_acceptance_id && challenge?.acceptor_phase)
+          ? { id: challenge.acceptor_acceptance_id, phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase }
+          : null)
   const isValidated = challenge?.status === 'validated'
   const isParticipant = !!(
     (account?.id    && participants.some(p => p.id === account.id)) ||
@@ -958,9 +967,7 @@ export default function ChallengeChatPage({
         // Creator has no acceptance of their own - drive the timeline off the
         // active taker's phase so it reflects real progress (e.g. an accepted
         // international challenge at the Proof step) instead of rendering empty.
-        acceptance={activeAcceptance ?? (isOwner && challenge.acceptor_user_id && challenge.acceptor_phase
-          ? { phase: challenge.acceptor_phase, effective_phase: challenge.acceptor_phase }
-          : null)}
+        acceptance={effectiveActiveAcceptance}
         iAmCreator={isOwner}
         myUserId={account?.id ?? null}
         mode={challenge.mode ?? 'local'}
@@ -978,7 +985,7 @@ export default function ChallengeChatPage({
           // challenges whose creator picked photo at creation.
           if (usesPhotoProof
               && isOwner
-              && activeAcceptance?.phase === 'proof_submitted') {
+              && effectiveActiveAcceptance?.phase === 'proof_submitted') {
             return () => setProofReviewOpen(true)
           }
           // Photo-proof: tap the "Waiting for the proof" pill to re-read
@@ -1000,13 +1007,13 @@ export default function ChallengeChatPage({
           a terminal approved acceptance no longer keeps the
           "🎉 Challenge accomplished" banner permanently locked on the
           detail page after the challenge wrapped. */}
-      {usesPhotoProof && activeAcceptance && (
+      {usesPhotoProof && effectiveActiveAcceptance && (
         <ChallengeProofBlock
-          acceptanceId={activeAcceptance.id}
+          acceptanceId={effectiveActiveAcceptance.id}
           iAmCreator={isOwner}
           iAmAcceptor={!isOwner}
           proofRequirements={challenge.proof_requirements ?? null}
-          acceptancePhase={activeAcceptance.phase}
+          acceptancePhase={effectiveActiveAcceptance.phase}
         />
       )}
 
@@ -1672,12 +1679,12 @@ export default function ChallengeChatPage({
       )}
 
       {/* Creator's "Review the proof" modal - intl + local-with-photo. */}
-      {usesPhotoProof && isOwner && activeAcceptance && (
+      {usesPhotoProof && isOwner && effectiveActiveAcceptance && (
         <ProofReviewModal
           visible={proofReviewOpen}
           onClose={() => setProofReviewOpen(false)}
-          acceptanceId={activeAcceptance.id}
-          onVerdict={() => { loadMyAcceptance() }}
+          acceptanceId={effectiveActiveAcceptance.id}
+          onVerdict={() => { loadMyAcceptance(); loadChallenge() }}
         />
       )}
 
