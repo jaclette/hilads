@@ -1,8 +1,13 @@
 // ── Logo ──────────────────────────────────────────────────────────────────────
 // Reusable brand mark. Embeds SVG inline for crisp rendering at any size.
 //
-// variant: 'icon' | 'wordmark'  (default: 'wordmark')
-// size:    'sm' | 'md' | 'lg'   (default: 'md')
+// variant: 'icon' | 'wordmark' | 'lockup'  (default: 'wordmark')
+// size:    'sm' | 'md' | 'lg'              (default: 'md')
+//
+//   - 'icon'     → just the orange "Hi" square.
+//   - 'wordmark' → square + full "hilads" in orange-gradient text.
+//   - 'lockup'   → square + "lads" so the eye reads "Hilads" as one word.
+//                  Web twin of the mobile <BrandLockup/>. Tune via LOCKUP below.
 //
 // Each instance generates a unique gradient ID via useId() to prevent
 // cross-SVG gradient resolution issues when multiple Logo instances are in
@@ -16,12 +21,34 @@ const SIZES = {
   lg: { icon: 46, fontSize: '1.5rem',  gap: 11 },
 }
 
+/**
+ * ✏️  TUNE ME - the "lads" half of the lockup variant. Mirrors the mobile
+ * BrandLockup LOCKUP block so web + native stay visually in sync.
+ */
+const LOCKUP = {
+  /** "lads" size as a fraction of the square (0.72 ≈ the "Hi" cap-height). */
+  fontRatio:     0.72,
+  /** Heavy to match the chunky bars. 700 / 800 / 900. */
+  fontWeight:    800,
+  /** undefined → site font. Swap to a geometric/brand family here if desired. */
+  fontFamily:    undefined,
+  /** Tight tracking reads more like one word. */
+  letterSpacing: '0.005em',
+  /** Gap (px) between the square and "lads". Small = tighter word. */
+  gap:           2,
+  /** Vertical nudge (em) on "lads" only. +down / -up. */
+  verticalOffset: '0em',
+  /** Warm-white to match the square's glyphs (== --text). '#fff' = exact. */
+  color:         'var(--text)',
+}
+
 export default function Logo({ variant = 'wordmark', size = 'md' }) {
   const uid = useId()
   const gid = `hi-g-${uid.replace(/:/g, '')}`
   const s = SIZES[size] || SIZES.md
+  const gap = variant === 'lockup' ? LOCKUP.gap : s.gap
   return (
-    <span className="logo" style={{ gap: s.gap }}>
+    <span className="logo" style={{ gap }}>
       <svg
         width={s.icon}
         height={s.icon}
@@ -51,6 +78,22 @@ export default function Logo({ variant = 'wordmark', size = 'md' }) {
       {variant === 'wordmark' && (
         <span className="logo-wordmark" style={{ fontSize: s.fontSize }}>
           hilads
+        </span>
+      )}
+
+      {variant === 'lockup' && (
+        <span
+          className="logo-lads"
+          style={{
+            fontSize:      Math.round(s.icon * LOCKUP.fontRatio),
+            fontWeight:    LOCKUP.fontWeight,
+            fontFamily:    LOCKUP.fontFamily,
+            letterSpacing: LOCKUP.letterSpacing,
+            color:         LOCKUP.color,
+            transform:     `translateY(${LOCKUP.verticalOffset})`,
+          }}
+        >
+          lads
         </span>
       )}
     </span>

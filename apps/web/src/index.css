@@ -173,6 +173,14 @@ html, body, #root {
   line-height: 1;
 }
 
+/* "lads" half of the lockup variant. Weight/size/color are set inline from
+   the LOCKUP block in Logo.jsx (single source of truth); this just nails the
+   vertical rhythm so it sits flush with the square. */
+.logo-lads {
+  line-height: 1;
+  display: inline-block;
+}
+
 /* ── Onboarding ───────────────────────────────────────── */
 
 .ob-screen {

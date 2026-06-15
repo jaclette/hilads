@@ -3196,7 +3196,7 @@ export default function App() {
           )}
         </div>
         <div className="header-top-center">
-          <Logo variant="icon" size="md" />
+          <Logo variant="lockup" size="md" />
           <span className="header-tagline">Become local.<br />Anywhere.</span>
         </div>
         <div className="header-top-right">
@@ -4092,7 +4092,7 @@ export default function App() {
     return (
       <div className={className}>
         <div className="header-hero-brand">
-          <Logo variant="icon" size="lg" />
+          <Logo variant="lockup" size="lg" />
           <span className="header-tagline">Become local.<br />Anywhere.</span>
         </div>
         <div className="header-hero-city">
