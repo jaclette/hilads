@@ -603,9 +603,11 @@ export async function sendChallengeMessage(
   guestId: string,
   nickname: string,
   content: string,
+  replyToMessageId?: string | null,
   mentions?: import('./mentions').MentionInput[],
 ): Promise<Message> {
   const body: Record<string, unknown> = { guestId, nickname, content };
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
   if (mentions && mentions.length) body.mentions = mentions;
   return api.post<Message>(`/challenges/${challengeId}/messages`, body);
 }

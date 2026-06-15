@@ -624,9 +624,9 @@ export default function ChallengeChatScreen() {
     [id, iAmParticipant, challengeIsPublic],
   );
   const postTextFn = useCallback(
-    (content: string): Promise<Message> =>
+    (content: string, replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> =>
       id && senderId
-        ? sendChallengeMessage(id, senderId, senderNickname, content)
+        ? sendChallengeMessage(id, senderId, senderNickname, content, replyToId ?? null, mentions)
         : Promise.reject(new Error('No challenge channel')),
     [id, senderId, senderNickname],
   );
@@ -1546,13 +1546,15 @@ export default function ChallengeChatScreen() {
             <ChatInput
               sending={sending}
               placeholder={i18n.t('composer.placeholderChallenge', { ns: 'common' })}
+              mentionContext="challenge"
+              mentionChannelId={id}
               onFocus={() => collapseTo(1)}
               onBlur={() => collapseTo(0)}
               dismissOnSend
-              onSendText={(text) => {
+              onSendText={(text, mentions) => {
                 const reply = replyingToRef.current;
                 setReplyingTo(null);
-                sendText(text, reply);
+                sendText(text, reply, mentions);
               }}
               onSendImage={sendImage}
               replyingTo={replyingTo}
