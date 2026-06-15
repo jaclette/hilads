@@ -262,15 +262,18 @@
     "empty": "尚無抵達"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 {{rank}} 名",
-    "mainUnranked": "🔥 {{city}} {{count}} 個挑戰",
-    "mainTop": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 1 名",
     "mainEmpty": "🌱 {{city}} 還沒有挑戰",
     "subRanked": "點擊接受下一個挑戰 →",
     "subUnranked": "接受第一個挑戰，開始往上爬 →",
     "subTop": "衛冕你的頭銜 →",
     "subEmpty": "建立第一個，讓旅客接受 →",
     "nearby": "附近 {{count}} 人",
-    "recent": "最近 {{count}} 位"
+    "recent": "最近 {{count}} 位",
+    "mainUnranked_one": "🔥 {{city}} {{count}} 個挑戰",
+    "mainUnranked_other": "🔥 {{city}} {{count}} 個挑戰",
+    "mainRanked_one": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 {{rank}} 名",
+    "mainRanked_other": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 {{rank}} 名",
+    "mainTop_one": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 1 名",
+    "mainTop_other": "🔥 {{city}} {{count}} 個挑戰 · 🏆 第 1 名"
   }
 }

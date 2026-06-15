@@ -270,15 +270,24 @@
     "empty": "Пока никто не пришёл"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} испытаний · 🏆 #{{rank}} в {{city}}",
-    "mainUnranked": "🔥 {{count}} испытаний в {{city}}",
-    "mainTop": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}",
     "mainEmpty": "🌱 пока нет испытаний в {{city}}",
     "subRanked": "Нажми, чтобы принять следующее испытание →",
     "subUnranked": "Прими первое испытание и начни подъём →",
     "subTop": "Защити свой титул →",
     "subEmpty": "Создай первое для путешественников →",
     "nearby": "{{count}} рядом",
-    "recent": "{{count}} недавно"
+    "recent": "{{count}} недавно",
+    "mainUnranked_one": "🔥 {{count}} испытание в {{city}}",
+    "mainUnranked_other": "🔥 {{count}} испытаний в {{city}}",
+    "mainUnranked_few": "🔥 {{count}} испытания в {{city}}",
+    "mainUnranked_many": "🔥 {{count}} испытаний в {{city}}",
+    "mainRanked_one": "🔥 {{count}} испытание · 🏆 #{{rank}} в {{city}}",
+    "mainRanked_other": "🔥 {{count}} испытаний · 🏆 #{{rank}} в {{city}}",
+    "mainRanked_few": "🔥 {{count}} испытания · 🏆 #{{rank}} в {{city}}",
+    "mainRanked_many": "🔥 {{count}} испытаний · 🏆 #{{rank}} в {{city}}",
+    "mainTop_one": "🔥 {{count}} испытание · 🏆 #1 в {{city}}",
+    "mainTop_other": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}",
+    "mainTop_few": "🔥 {{count}} испытания · 🏆 #1 в {{city}}",
+    "mainTop_many": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}"
   }
 }

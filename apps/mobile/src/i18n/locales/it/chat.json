@@ -95,15 +95,18 @@
     "empty": "Ancora nessun arrivo"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} sfide · 🏆 #{{rank}} a {{city}}",
-    "mainUnranked": "🔥 {{count}} sfide a {{city}}",
-    "mainTop": "🔥 {{count}} sfide · 🏆 #1 a {{city}}",
     "mainEmpty": "🌱 ancora nessuna sfida a {{city}}",
     "subRanked": "Tocca per accettare la prossima sfida →",
     "subUnranked": "Accetta la tua prima sfida per iniziare a salire →",
     "subTop": "Difendi il tuo titolo →",
     "subEmpty": "Crea la prima per i viaggiatori →",
     "nearby": "{{count}} vicino",
-    "recent": "{{count}} recenti"
+    "recent": "{{count}} recenti",
+    "mainUnranked_one": "🔥 {{count}} sfida a {{city}}",
+    "mainUnranked_other": "🔥 {{count}} sfide a {{city}}",
+    "mainRanked_one": "🔥 {{count}} sfida · 🏆 #{{rank}} a {{city}}",
+    "mainRanked_other": "🔥 {{count}} sfide · 🏆 #{{rank}} a {{city}}",
+    "mainTop_one": "🔥 {{count}} sfida · 🏆 #1 a {{city}}",
+    "mainTop_other": "🔥 {{count}} sfide · 🏆 #1 a {{city}}"
   }
 }

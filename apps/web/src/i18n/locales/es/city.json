@@ -262,15 +262,18 @@
     "empty": "Aún no hay llegadas"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} retos · 🏆 #{{rank}} en {{city}}",
-    "mainUnranked": "🔥 {{count}} retos en {{city}}",
-    "mainTop": "🔥 {{count}} retos · 🏆 #1 en {{city}}",
     "mainEmpty": "🌱 aún no hay retos en {{city}}",
     "subRanked": "Toca para aceptar tu próximo reto →",
     "subUnranked": "Acepta tu primer reto para empezar a subir →",
     "subTop": "Defiende tu título →",
     "subEmpty": "Crea el primero para que los viajeros lo acepten →",
     "nearby": "{{count}} cerca",
-    "recent": "{{count}} recientes"
+    "recent": "{{count}} recientes",
+    "mainUnranked_one": "🔥 {{count}} reto en {{city}}",
+    "mainUnranked_other": "🔥 {{count}} retos en {{city}}",
+    "mainRanked_one": "🔥 {{count}} reto · 🏆 #{{rank}} en {{city}}",
+    "mainRanked_other": "🔥 {{count}} retos · 🏆 #{{rank}} en {{city}}",
+    "mainTop_one": "🔥 {{count}} reto · 🏆 #1 en {{city}}",
+    "mainTop_other": "🔥 {{count}} retos · 🏆 #1 en {{city}}"
   }
 }

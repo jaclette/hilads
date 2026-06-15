@@ -262,15 +262,18 @@
     "empty": "Nog geen aankomsten"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
-    "mainUnranked": "🔥 {{count}} challenges in {{city}}",
-    "mainTop": "🔥 {{count}} challenges · 🏆 #1 in {{city}}",
     "mainEmpty": "🌱 nog geen challenges in {{city}}",
     "subRanked": "Tik om je volgende challenge aan te gaan →",
     "subUnranked": "Ga je eerste challenge aan om te klimmen →",
     "subTop": "Verdedig je titel →",
     "subEmpty": "Maak de eerste voor reizigers →",
     "nearby": "{{count}} dichtbij",
-    "recent": "{{count}} nieuw"
+    "recent": "{{count}} nieuw",
+    "mainUnranked_one": "🔥 {{count}} challenge in {{city}}",
+    "mainUnranked_other": "🔥 {{count}} challenges in {{city}}",
+    "mainRanked_one": "🔥 {{count}} challenge · 🏆 #{{rank}} in {{city}}",
+    "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
+    "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 in {{city}}",
+    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}"
   }
 }

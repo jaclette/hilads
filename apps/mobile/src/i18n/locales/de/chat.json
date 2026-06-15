@@ -95,15 +95,18 @@
     "empty": "Noch keine Ankünfte"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} Challenges · 🏆 #{{rank}} in {{city}}",
-    "mainUnranked": "🔥 {{count}} Challenges in {{city}}",
-    "mainTop": "🔥 {{count}} Challenges · 🏆 #1 in {{city}}",
     "mainEmpty": "🌱 noch keine Challenges in {{city}}",
     "subRanked": "Tippe, um deine nächste Challenge anzunehmen →",
     "subUnranked": "Nimm deine erste Challenge an und steig auf →",
     "subTop": "Verteidige deinen Titel →",
     "subEmpty": "Erstelle die erste für Reisende →",
     "nearby": "{{count}} in der Nähe",
-    "recent": "{{count}} neue"
+    "recent": "{{count}} neue",
+    "mainUnranked_one": "🔥 {{count}} Challenge in {{city}}",
+    "mainUnranked_other": "🔥 {{count}} Challenges in {{city}}",
+    "mainRanked_one": "🔥 {{count}} Challenge · 🏆 #{{rank}} in {{city}}",
+    "mainRanked_other": "🔥 {{count}} Challenges · 🏆 #{{rank}} in {{city}}",
+    "mainTop_one": "🔥 {{count}} Challenge · 🏆 #1 in {{city}}",
+    "mainTop_other": "🔥 {{count}} Challenges · 🏆 #1 in {{city}}"
   }
 }

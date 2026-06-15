@@ -262,15 +262,18 @@
     "empty": "Aucune arrivée pour l'instant"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} défis · 🏆 #{{rank}} à {{city}}",
-    "mainUnranked": "🔥 {{count}} défis à {{city}}",
-    "mainTop": "🔥 {{count}} défis · 🏆 #1 à {{city}}",
     "mainEmpty": "🌱 aucun défi pour l'instant à {{city}}",
     "subRanked": "Touche pour relever ton prochain défi →",
     "subUnranked": "Relève ton premier défi pour commencer à grimper →",
     "subTop": "Défends ton titre →",
     "subEmpty": "Crée le premier pour que les voyageurs le relèvent →",
     "nearby": "{{count}} à proximité",
-    "recent": "{{count}} récents"
+    "recent": "{{count}} récents",
+    "mainUnranked_one": "🔥 {{count}} défi à {{city}}",
+    "mainUnranked_other": "🔥 {{count}} défis à {{city}}",
+    "mainRanked_one": "🔥 {{count}} défi · 🏆 #{{rank}} à {{city}}",
+    "mainRanked_other": "🔥 {{count}} défis · 🏆 #{{rank}} à {{city}}",
+    "mainTop_one": "🔥 {{count}} défi · 🏆 #1 à {{city}}",
+    "mainTop_other": "🔥 {{count}} défis · 🏆 #1 à {{city}}"
   }
 }

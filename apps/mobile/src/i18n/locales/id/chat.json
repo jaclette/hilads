@@ -95,15 +95,18 @@
     "empty": "Belum ada kedatangan"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} tantangan · 🏆 #{{rank}} di {{city}}",
-    "mainUnranked": "🔥 {{count}} tantangan di {{city}}",
-    "mainTop": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}",
     "mainEmpty": "🌱 belum ada tantangan di {{city}}",
     "subRanked": "Ketuk untuk terima tantangan berikutnya →",
     "subUnranked": "Terima tantangan pertamamu untuk mulai naik →",
     "subTop": "Pertahankan gelarmu →",
     "subEmpty": "Buat yang pertama untuk para pelancong →",
     "nearby": "{{count}} di dekatmu",
-    "recent": "{{count}} baru tiba"
+    "recent": "{{count}} baru tiba",
+    "mainUnranked_one": "🔥 {{count}} tantangan di {{city}}",
+    "mainUnranked_other": "🔥 {{count}} tantangan di {{city}}",
+    "mainRanked_one": "🔥 {{count}} tantangan · 🏆 #{{rank}} di {{city}}",
+    "mainRanked_other": "🔥 {{count}} tantangan · 🏆 #{{rank}} di {{city}}",
+    "mainTop_one": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}",
+    "mainTop_other": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}"
   }
 }

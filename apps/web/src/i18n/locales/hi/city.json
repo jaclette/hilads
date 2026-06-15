@@ -262,15 +262,18 @@
     "empty": "अभी तक कोई नहीं आया"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
-    "mainUnranked": "🔥 {{city}} में {{count}} चैलेंज",
-    "mainTop": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
     "mainEmpty": "🌱 {{city}} में अभी कोई चैलेंज नहीं",
     "subRanked": "अगला चैलेंज स्वीकार करने के लिए टैप करें →",
     "subUnranked": "पहला चैलेंज स्वीकार करें और ऊपर चढ़ें →",
     "subTop": "अपना खिताब बचाएँ →",
     "subEmpty": "यात्रियों के लिए पहला बनाएँ →",
     "nearby": "{{count}} पास में",
-    "recent": "{{count}} हाल ही में"
+    "recent": "{{count}} हाल ही में",
+    "mainUnranked_one": "🔥 {{city}} में {{count}} चैलेंज",
+    "mainUnranked_other": "🔥 {{city}} में {{count}} चैलेंज",
+    "mainRanked_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
+    "mainRanked_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
+    "mainTop_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
+    "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1"
   }
 }

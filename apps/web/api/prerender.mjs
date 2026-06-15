@@ -1123,10 +1123,12 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
   const venueCount     = venueList.length
   const challengeCount = challengeList.length
 
+  // Challenges lead - they're the hero of the product, so they head the
+  // intro line and the body sections below; events/venues follow.
   const introBits = []
+  if (challengeCount > 0) introBits.push(challengeCount === 1 ? T(locale, 'city.introChallengesOne') : T(locale, 'city.introChallengesMany', { count: challengeCount }))
   if (eventCount     > 0) introBits.push(eventCount     === 1 ? T(locale, 'city.introEventsOne')     : T(locale, 'city.introEventsMany',     { count: eventCount }))
   if (venueCount     > 0) introBits.push(venueCount     === 1 ? T(locale, 'city.introVenuesOne')     : T(locale, 'city.introVenuesMany',     { count: venueCount }))
-  if (challengeCount > 0) introBits.push(challengeCount === 1 ? T(locale, 'city.introChallengesOne') : T(locale, 'city.introChallengesMany', { count: challengeCount }))
   const introSuffix = introBits.length > 0
     ? T(locale, 'city.introSuffix', { bits: introBits.join(', ') })
     : T(locale, 'city.introEmpty')
@@ -1203,8 +1205,9 @@ function composeCityBody(payload, upcomingEvents, venues, locale = 'en', challen
     `<h1>${htmlEscape(cityH1(city, timeframe, locale))}</h1>`,
     `<p class="ssr-intro">${intro}</p>`,
     signalsBlock,
-    eventsSection,
+    // Challenges first - the hero. Events, categories, venues follow.
     challengesSection,
+    eventsSection,
     categoriesSection,
     venuesSection,
     evergreen,

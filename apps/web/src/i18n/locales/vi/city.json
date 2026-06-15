@@ -256,15 +256,18 @@
     "empty": "Chưa có ai đến"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
-    "mainUnranked": "🔥 {{count}} thử thách ở {{city}}",
-    "mainTop": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
     "mainEmpty": "🌱 chưa có thử thách nào ở {{city}}",
     "subRanked": "Chạm để nhận thử thách tiếp theo →",
     "subUnranked": "Nhận thử thách đầu tiên để bắt đầu leo hạng →",
     "subTop": "Bảo vệ ngôi đầu →",
     "subEmpty": "Tạo thử thách đầu tiên cho du khách nhận →",
     "nearby": "{{count}} gần đây",
-    "recent": "{{count}} vừa đến"
+    "recent": "{{count}} vừa đến",
+    "mainUnranked_one": "🔥 {{count}} thử thách ở {{city}}",
+    "mainUnranked_other": "🔥 {{count}} thử thách ở {{city}}",
+    "mainRanked_one": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
+    "mainRanked_other": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
+    "mainTop_one": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
+    "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}"
   }
 }

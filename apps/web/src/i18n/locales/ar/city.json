@@ -278,15 +278,27 @@
     "empty": "لا توجد وصول بعد"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
-    "mainUnranked": "🔥 {{count}} تحديات في {{city}}",
-    "mainTop": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainEmpty": "🌱 لا تحديات بعد في {{city}}",
     "subRanked": "اضغط لقبول التحدي التالي →",
     "subUnranked": "اقبل أول تحدٍّ لتبدأ الصعود →",
     "subTop": "دافع عن لقبك →",
     "subEmpty": "أنشئ الأول ليقبله المسافرون →",
     "nearby": "{{count}} قريبون",
-    "recent": "{{count}} وصلوا حديثًا"
+    "recent": "{{count}} وصلوا حديثًا",
+    "mainUnranked_one": "🔥 {{count}} تحدٍّ في {{city}}",
+    "mainUnranked_other": "🔥 {{count}} تحديات في {{city}}",
+    "mainUnranked_two": "🔥 {{count}} تحديات في {{city}}",
+    "mainUnranked_few": "🔥 {{count}} تحديات في {{city}}",
+    "mainUnranked_many": "🔥 {{count}} تحديات في {{city}}",
+    "mainRanked_one": "🔥 {{count}} تحدٍّ · 🏆 #{{rank}} في {{city}}",
+    "mainRanked_other": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
+    "mainRanked_two": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
+    "mainRanked_few": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
+    "mainRanked_many": "🔥 {{count}} تحديات · 🏆 #{{rank}} في {{city}}",
+    "mainTop_one": "🔥 {{count}} تحدٍّ · 🏆 #1 في {{city}}",
+    "mainTop_other": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
+    "mainTop_two": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
+    "mainTop_few": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
+    "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}"
   }
 }

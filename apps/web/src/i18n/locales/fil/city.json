@@ -262,15 +262,18 @@
     "empty": "Wala pang bagong dating"
   },
   "cityHero": {
-    "mainRanked": "🔥 {{count}} challenges · 🏆 #{{rank}} sa {{city}}",
-    "mainUnranked": "🔥 {{count}} challenges sa {{city}}",
-    "mainTop": "🔥 {{count}} challenges · 🏆 #1 sa {{city}}",
     "mainEmpty": "🌱 wala pang challenge sa {{city}}",
     "subRanked": "I-tap para tanggapin ang susunod mong challenge →",
     "subUnranked": "Tanggapin ang unang challenge para umakyat →",
     "subTop": "Ipagtanggol ang titulo mo →",
     "subEmpty": "Gumawa ng una para sa mga manlalakbay →",
     "nearby": "{{count}} malapit",
-    "recent": "{{count}} kakarating"
+    "recent": "{{count}} kakarating",
+    "mainUnranked_one": "🔥 {{count}} challenge sa {{city}}",
+    "mainUnranked_other": "🔥 {{count}} challenges sa {{city}}",
+    "mainRanked_one": "🔥 {{count}} challenge · 🏆 #{{rank}} sa {{city}}",
+    "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} sa {{city}}",
+    "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 sa {{city}}",
+    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 sa {{city}}"
   }
 }
