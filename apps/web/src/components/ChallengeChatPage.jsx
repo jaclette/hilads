@@ -4,8 +4,8 @@
  * Leaner than TopicChatPage by design: challenges are open (no members-only
  * gate, no join-request flow), and v1 web parity focuses on what a crawler-
  * arriving user can actually act on: see the challenge, accept it, chat about
- * it, validate if owner. Edit/delete, mentions, image messages, reactions,
- * reply - all deferred to mobile or a follow-up commit if needed.
+ * it, validate if owner. Chat has reactions, replies, and @mentions (the
+ * 'challenge' mention context resolves to taker / challenger / talkers).
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -24,6 +24,8 @@ import {
 } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
+import useMentions from '../hooks/useMentions'
+import { splitContentByMentions } from '../lib/mentions'
 import LinkPreviewCard from './LinkPreviewCard'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
@@ -196,6 +198,17 @@ export default function ChallengeChatPage({
   const feedRef   = useRef(null)
   const bottomRef = useRef(null) // PR28 - scrollIntoView target at the feed's tail
   const knownIds  = useRef(new Set())
+  // @mention autocomplete - same hook the city chat uses. The 'challenge'
+  // context resolves mentionable users to the taker, the challenger, and
+  // anyone who has talked in this channel (backend MentionService).
+  const composerInputRef = useRef(null)
+  const mentions = useMentions({
+    context:   'challenge',
+    channelId: id,
+    value:     composer,
+    setValue:  setComposer,
+    inputRef:  composerInputRef,
+  })
   // Collapse the badges / pipeline / participants block when the chat is
   // scrolled OR the composer is focused - mirrors the event channel header
   // collapse so the conversation gets vertical space when it matters.
@@ -598,18 +611,20 @@ export default function ChallengeChatPage({
     setSending(true)
     const localId = `local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
     const reply   = replyingTo // capture before async write
+    const built   = mentions.buildAndReset(content) // resolves @names → mention refs
     const optimistic = {
       id: localId, channelId: id,
       userId: account?.id ?? null, guestId: senderId,
       nickname: senderNickname,
       content, createdAt: Date.now() / 1000, status: 'sending',
       replyTo: reply ? { id: reply.id, nickname: reply.nickname, content: reply.content, type: reply.type ?? 'text' } : undefined,
+      mentions: built.length ? built : undefined,
     }
     setMessages(prev => [...prev, optimistic])
     setComposer('')
     setReplyingTo(null)
     try {
-      const sent = await sendChallengeMessage(id, senderId, senderNickname, content, reply?.id ?? null)
+      const sent = await sendChallengeMessage(id, senderId, senderNickname, content, reply?.id ?? null, built.length ? built : undefined)
       setMessages(prev => prev.map(m => m.id === localId ? sent : m))
       knownIds.current.add(sent.id)
     } catch {
@@ -1412,9 +1427,14 @@ export default function ChallengeChatPage({
                         ) : (
                           <>
                             {/* PR31 - linkify URLs (matches TopicChatPage / city
-                                chat) and render a LinkPreviewCard for the first
-                                link in the message. */}
-                            <span className="msg-text">{linkifyText(m.content ?? '', `c-${m.id ?? idx}-`)}</span>
+                                chat) + render @mentions as styled, clickable
+                                spans (→ profile). Mirrors App.jsx
+                                renderMessageContent. */}
+                            <span className="msg-text">{splitContentByMentions(m.content ?? '', m.mentions).map((seg, i) => {
+                              if (seg.type === 'text') return <span key={i}>{linkifyText(seg.text, `c-${m.id ?? idx}-${i}-`)}</span>
+                              if (seg.guestId) return <span key={i} className="msg-mention msg-mention--guest">👻 @{seg.username}</span>
+                              return <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); onOpenProfile?.(seg.userId, seg.username) }}>@{seg.username}</span>
+                            })}</span>
                             {(() => {
                               const u = extractFirstUrl(m.content)
                               return u ? <LinkPreviewCard url={u} /> : null
@@ -1497,8 +1517,9 @@ export default function ChallengeChatPage({
           )}
 
           <MessageComposer
+            inputRef={composerInputRef}
             value={composer}
-            onChange={e => setComposer(e.target.value)}
+            onChange={e => mentions.onValueChange(e.target.value)}
             onSubmit={handleSendMessage}
             onFocus={() => { collapseHeader(true); if (!account?.id) onNeedAuth?.('comment_challenge') }}
             onBlur={() => collapseHeader(false)}
@@ -1506,6 +1527,8 @@ export default function ChallengeChatPage({
             sending={sending}
             placeholder={t('composer.placeholderChallenge', { ns: 'common' })}
             showEmojiButton={false}
+            mentionSuggestions={mentions.suggestions}
+            onMentionSelect={mentions.selectMention}
           />
       </>
       )}
