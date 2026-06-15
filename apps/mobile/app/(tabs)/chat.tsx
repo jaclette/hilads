@@ -991,7 +991,7 @@ export default function ChatTab() {
             accessibilityRole="button"
             accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
           >
-            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🔴 {t('cityHero.nearby', { count: onlineCount ?? 0 })}</Text>
+            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}</Text>
           </TouchableOpacity>
           {/* Hi now = spontaneous hangouts (topics). */}
           <TouchableOpacity

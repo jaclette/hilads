@@ -4374,7 +4374,7 @@ export default function App() {
                 onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
                 aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
               >
-                🔴 {t('cityHero.nearby', { count: onlineCount ?? 0 })}
+                🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}
               </button>
               <button
                 type="button"
