@@ -7728,13 +7728,12 @@ $router->add('GET', '/api/v1/channels/{channelId}/challenges/validated', functio
 
 // POST /api/v1/channels/{channelId}/challenges
 // GET /api/v1/challenges/inspiration?excludeChannelId={id}
-// Read-only "idea book" for the zero-challenge empty state: up to 3 open
-// public challenges from the most-active OTHER city, shown purely as
-// inspiration. NOT takeable - the client renders these in an inert card
-// whose only action routes back to LOCAL creation. Guest-readable; returns
-// only title/type/creator (no challenge id), so nothing here can open or
-// take the remote challenge. Bounded (LIMIT 3) + fully indexed. Empty
-// payload -> the client renders nothing.
+// "Idea book" for the zero-challenge empty state: up to 3 open public
+// challenges from the most-active OTHER city. Each card opens the real
+// challenge (id returned) and shows a from->to flag pair for international
+// ones; the card's button instead routes to LOCAL creation. Guest-readable;
+// returns id/title/type/mode/country/target_country/creator. Bounded
+// (LIMIT 3) + fully indexed. Empty payload -> the client renders nothing.
 $router->add('GET', '/api/v1/challenges/inspiration', function () {
     $exclude = filter_var($_GET['excludeChannelId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     $excludeCityId = $exclude === false ? '' : 'city_' . $exclude;

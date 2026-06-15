@@ -1,25 +1,21 @@
 import { useTranslation } from 'react-i18next'
 import AvatarWithFlag from './AvatarWithFlag'
+import { countryToFlag } from '../lib/countryFlag'
 
 /**
- * INERT example card for the zero-challenge empty state. Web mirror of the
- * mobile ExampleChallengeCard. Reads like a real challenge card (type badge,
- * title, creator) but is deliberately NOT takeable:
- *
- *   - The card body is a plain <div>, NOT a button/link. No onClick, no
- *     challenge id, no route to the remote challenge's channel.
- *   - The ONLY interactive element is the bottom button, which routes the
- *     user to LOCAL challenge creation (onCreate) - never to the example's
- *     own city or channel.
- *
- * The backend never sends a challenge id here (title/type/creator only), so
- * there is structurally nothing to open or accept. The other city is a
- * recipe book, never a destination.
+ * Example challenge card for the zero-challenge inspiration block. Web mirror of
+ * the mobile ExampleChallengeCard. Shows a real open challenge from the
+ * most-active other city. The card BODY (title + creator) opens that challenge
+ * (onOpen); the bottom button instead routes to LOCAL creation (onCreate).
+ * International challenges show a "from -> to" flag pair.
  */
-export default function ExampleChallengeCard({ example, sourceCity, currentCity, onCreate }) {
+export default function ExampleChallengeCard({ example, sourceCity, currentCity, onOpen, onCreate }) {
   const { t } = useTranslation('challenge')
   const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[example.challenge_type] ?? '🔥'
   const name     = example.creator_display_name || example.creator_username || '?'
+  const isIntl   = example.mode === 'international'
+  const fromFlag = countryToFlag(example.country)
+  const toFlag   = countryToFlag(example.target_country) || '🌍'
 
   return (
     <div className="example-challenge-card">
@@ -27,25 +23,30 @@ export default function ExampleChallengeCard({ example, sourceCity, currentCity,
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${example.challenge_type}`)}
         </span>
+        {isIntl && fromFlag && (
+          <span className="challenge-badge challenge-badge--international">{fromFlag} → {toFlag}</span>
+        )}
       </div>
 
-      <div className="ecc-title-row">
-        <span className="ecc-title-emoji">{typeIcon}</span>
-        <span className="ecc-title">{example.title}</span>
-      </div>
+      {/* Title + creator - clicking opens the real challenge. */}
+      <button type="button" className="ecc-open" onClick={onOpen}>
+        <div className="ecc-title-row">
+          <span className="ecc-title-emoji">{typeIcon}</span>
+          <span className="ecc-title">{example.title}</span>
+        </div>
+        <div className="ecc-by-row">
+          <AvatarWithFlag
+            userId={null}
+            displayName={name}
+            photoUrl={example.creator_thumb_avatar_url ?? null}
+            countryCode={null}
+            size={24}
+          />
+          <span className="ecc-by-text">{t('inspiration.by', { name, city: sourceCity })}</span>
+        </div>
+      </button>
 
-      <div className="ecc-by-row">
-        <AvatarWithFlag
-          userId={null}
-          displayName={name}
-          photoUrl={example.creator_thumb_avatar_url ?? null}
-          countryCode={null}
-          size={24}
-        />
-        <span className="ecc-by-text">{t('inspiration.by', { name, city: sourceCity })}</span>
-      </div>
-
-      {/* The ONLY action: create YOUR OWN challenge locally. */}
+      {/* Create YOUR OWN challenge locally - distinct action from opening. */}
       <button type="button" className="ecc-create-btn" onClick={onCreate}>
         {t('inspiration.createYours', { city: currentCity })}
       </button>

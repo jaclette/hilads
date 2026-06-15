@@ -7887,6 +7887,24 @@ img.pub-profile-avatar {
 .ecc-create-btn:hover  { background: rgba(255, 122, 60, 0.24); }
 .ecc-create-btn:active { transform: scale(0.98); }
 
+/* Tappable body of an example challenge card - opens the real challenge.
+   Button reset so it reads as card content, not a button. */
+.ecc-open {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ecc-open:hover .ecc-title { color: #FF7A3C; }
+
 /* Inert example hangout/event card (events empty state) - mirrors the
    challenge example card; blue type badge to read as "hangout/event". */
 .example-event-card {

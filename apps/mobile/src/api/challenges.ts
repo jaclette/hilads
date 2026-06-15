@@ -53,8 +53,12 @@ export async function fetchValidatedChallenges(
 /** One inert example for the zero-challenge empty state. No challenge id by
  *  design - these are read-only inspiration, never takeable. */
 export interface InspirationExample {
+  id:                       string;
   title:                    string;
   challenge_type:           ChallengeType;
+  mode:                     'local' | 'international';
+  country:                  string | null;   // origin (the inspiration city)
+  target_country:           string | null;   // only on international challenges
   creator_username:         string | null;
   creator_display_name:     string | null;
   creator_thumb_avatar_url: string | null;

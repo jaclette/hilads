@@ -27,6 +27,7 @@ export type AnalyticsEvent =
   | 'challenge_opened'
   | 'challenge_created'
   | 'challenge_inspiration_create'
+  | 'challenge_inspiration_open'
   | 'challenge_accepted'
   | 'challenge_validated'
   | 'challenge_unvalidated'

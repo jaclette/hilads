@@ -5445,10 +5445,11 @@ export default function App() {
                     <p className="challenge-inspiration-sub">{t('inspiration.sub', { ns: 'challenge' })}</p>
                     {challengeInspiration.map((ex, i) => (
                       <ExampleChallengeCard
-                        key={`${ex.title}-${i}`}
+                        key={`${ex.id}-${i}`}
                         example={ex}
                         sourceCity={challengeInspirationCity ?? ''}
                         currentCity={city ? localizeCityName(city) : ''}
+                        onOpen={() => { fetchChallengeById(ex.id).then(d => { if (d?.challenge) { setShowChallengesDrawer(false); setActiveChallenge(d.challenge) } }).catch(() => {}) }}
                         onCreate={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
                       />
                     ))}

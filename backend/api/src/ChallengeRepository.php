@@ -428,7 +428,7 @@ class ChallengeRepository
         //    inert example card renders. JOIN users (not LEFT): created_by is
         //    NOT NULL per the candidate filter, so the creator always exists.
         $sample = $pdo->prepare("
-            SELECT cc.title, cc.challenge_type,
+            SELECT cc.channel_id AS id, cc.title, cc.challenge_type, cc.mode, cc.target_city_id,
                    u.username AS creator_username,
                    u.display_name AS creator_display_name,
                    COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url
@@ -446,9 +446,18 @@ class ChallengeRepository
         $rows = $sample->fetchAll();
         if (empty($rows)) return $empty;
 
+        // Origin country = the inspiration city (same for every row). target
+        // country only set on international challenges (target_city_id non-null),
+        // which the card renders as a "from -> to" flag pair. id lets the card
+        // open the real challenge.
+        $originCountry = self::countryForCityId($cityId);
         $examples = array_map(static fn(array $r): array => [
+            'id'                       => $r['id'],
             'title'                    => $r['title'],
             'challenge_type'           => $r['challenge_type'],
+            'mode'                     => $r['mode'] ?? 'local',
+            'country'                  => $originCountry,
+            'target_country'           => self::countryForCityId($r['target_city_id']),
             'creator_username'         => $r['creator_username'],
             'creator_display_name'     => $r['creator_display_name'],
             'creator_thumb_avatar_url' => $r['creator_thumb_avatar_url'],

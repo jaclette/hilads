@@ -4,21 +4,14 @@ import type { ChallengeType } from '@/types';
 import type { InspirationExample } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
+import { countryToFlag } from '@/lib/countryFlag';
 
 /**
- * INERT example card for the zero-challenge empty state. Looks like a real
- * challenge card (type badge, title, creator) so it reads as a genuine
- * example, but it is deliberately NOT takeable:
- *
- *   - The card body is a plain <View>, NOT a TouchableOpacity. There is no
- *     onPress, no challenge id, no route to the remote challenge's channel.
- *   - The ONLY interactive element is the bottom button, which routes the
- *     user to LOCAL challenge creation (onCreate) - never to the example's
- *     own city or channel.
- *
- * It receives only title / type / creator (see InspirationExample) - the
- * backend never sends a challenge id here, so there is structurally nothing
- * to open or accept. Saigon is a recipe book, never a destination.
+ * Example challenge card for the zero-challenge inspiration block. Shows a real
+ * open challenge from the most-active other city. The card BODY is tappable and
+ * opens that challenge (onOpen); the bottom button instead routes to LOCAL
+ * challenge creation (onCreate). International challenges show a "from -> to"
+ * flag pair so the cross-city ones read clearly.
  */
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
@@ -32,31 +25,42 @@ export function ExampleChallengeCard({
   example,
   sourceCity,
   currentCity,
+  onOpen,
   onCreate,
 }: {
   example:     InspirationExample;
   /** City the example is FROM - shown small, inside the attribution line. */
   sourceCity:  string;
-  /** Caller's OWN city - the only place the button sends them. */
+  /** Caller's OWN city - where the create button sends them. */
   currentCity: string;
-  /** Routes to LOCAL challenge creation. */
+  /** Tap the card body - open the real challenge. */
+  onOpen:      () => void;
+  /** Tap the button - create YOUR OWN challenge locally. */
   onCreate:    () => void;
 }) {
   const { t } = useTranslation('challenge');
   const typeIcon = TYPE_ICONS[example.challenge_type] ?? '🔥';
   const name     = example.creator_display_name || example.creator_username || '?';
+  const isIntl   = example.mode === 'international';
+  const fromFlag = countryToFlag(example.country ?? null);
+  const toFlag   = countryToFlag(example.target_country ?? null) || '🌍';
 
   return (
     <View style={styles.card}>
-      {/* Type badge - same look as the real card, no status/available pill
-          (those imply takeability). */}
+      {/* Type badge + (international) flag pair. */}
       <View style={styles.kindRow}>
         <View style={styles.kindBadge}>
           <Text style={styles.kindBadgeText}>{t(`typeBadge.${example.challenge_type}`).toUpperCase()}</Text>
         </View>
+        {isIntl && fromFlag ? (
+          <View style={styles.intlPill}>
+            <Text style={styles.intlPillText} numberOfLines={1}>{fromFlag} → {toFlag}</Text>
+          </View>
+        ) : null}
       </View>
 
-      {/* Title - static (no marquee; this is a quiet inspiration card). */}
+      {/* Title + creator - tapping opens the real challenge. */}
+      <TouchableOpacity activeOpacity={0.7} onPress={onOpen} accessibilityRole="button">
       <View style={styles.titleRow}>
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
         <Text style={styles.title} numberOfLines={2}>{example.title}</Text>
@@ -76,8 +80,9 @@ export function ExampleChallengeCard({
           {t('inspiration.by', { name, city: sourceCity })}
         </Text>
       </View>
+      </TouchableOpacity>
 
-      {/* The ONLY action: create YOUR OWN challenge locally. */}
+      {/* Create YOUR OWN challenge locally - distinct action from opening. */}
       <TouchableOpacity
         style={styles.createBtn}
         activeOpacity={0.85}
@@ -101,7 +106,16 @@ const styles = StyleSheet.create({
     width:           '100%',
   },
 
-  kindRow: { flexDirection: 'row', alignItems: 'center' },
+  kindRow: { flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' },
+  intlPill: {
+    backgroundColor:   'rgba(56,189,248,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(56,189,248,0.36)',
+  },
+  intlPillText: { fontSize: 10, fontWeight: '700', color: '#38bdf8', letterSpacing: 0.3 },
   kindBadge: {
     backgroundColor:   'rgba(255,122,60,0.14)',
     borderRadius:      Radius.full,

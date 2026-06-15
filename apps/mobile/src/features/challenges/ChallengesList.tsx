@@ -236,10 +236,14 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
                     <Text style={styles.inspirationSub}>{t('inspiration.sub')}</Text>
                     {inspiration.map((ex, i) => (
                       <ExampleChallengeCard
-                        key={`${ex.title}-${i}`}
+                        key={`${ex.id}-${i}`}
                         example={ex}
                         sourceCity={inspirationCity ?? ''}
                         currentCity={currentCityName}
+                        onOpen={() => {
+                          track('challenge_inspiration_open', { source: 'empty_state' });
+                          router.push(`/challenge/${ex.id}` as never);
+                        }}
                         onCreate={() => {
                           track('challenge_inspiration_create', { source: 'empty_state' });
                           router.push('/challenge/create' as never);
