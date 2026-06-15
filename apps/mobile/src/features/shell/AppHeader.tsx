@@ -24,7 +24,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { HiladsIcon } from '@/components/HiladsIcon';
+import { BrandLockup } from '@/components/BrandLockup';
 import { Colors } from '@/constants';
 
 interface Props {
@@ -80,11 +80,11 @@ export function AppHeader({ rightExtra }: Props) {
         )}
       </View>
 
-      {/* Center: logo + tagline to its right (mirrors web persistent header) */}
+      {/* Center: "Hilads" lockup + tagline to its right (mirrors web header).
+          The lockup turns the bare "Hi" mark into the readable brand NAME;
+          the tagline stays untouched beside it. */}
       <View style={styles.topCenter}>
-        <View style={styles.iconGlow}>
-          <HiladsIcon size={36} />
-        </View>
+        <BrandLockup iconSize={36} glow />
         <Text style={styles.tagline}>{'Become local.\nAnywhere.'}</Text>
       </View>
 
