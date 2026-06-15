@@ -23,11 +23,15 @@ export function ExampleEventCard({
   example,
   sourceCity,
   currentCity,
+  onOpen,
   onCreate,
 }: {
   example:     EventInspirationExample;
   sourceCity:  string;
   currentCity: string;
+  /** Tap the card body - open the real event/hangout. */
+  onOpen:      () => void;
+  /** Tap the button - create YOUR OWN locally. */
   onCreate:    () => void;
 }) {
   const { t } = useTranslation('now');
@@ -44,24 +48,24 @@ export function ExampleEventCard({
         </View>
       </View>
 
-      <Text style={styles.title} numberOfLines={2}>{example.title}</Text>
+      {/* Title + host - tapping opens the real event/hangout. */}
+      <TouchableOpacity activeOpacity={0.7} onPress={onOpen} accessibilityRole="button">
+        <Text style={styles.title} numberOfLines={2}>{example.title}</Text>
+        <View style={styles.byRow}>
+          <AvatarWithFlag
+            userId={null}
+            displayName={name}
+            photoUrl={example.host_avatar ?? null}
+            countryCode={null}
+            size={24}
+          />
+          <Text style={styles.byText} numberOfLines={1}>
+            {t('inspiration.by', { name, city: sourceCity })}
+          </Text>
+        </View>
+      </TouchableOpacity>
 
-      {/* Host + source city. The city appears ONLY here, small - framing
-          stays "an idea from a real local", not "go to that city". */}
-      <View style={styles.byRow}>
-        <AvatarWithFlag
-          userId={null}
-          displayName={name}
-          photoUrl={example.host_avatar ?? null}
-          countryCode={null}
-          size={24}
-        />
-        <Text style={styles.byText} numberOfLines={1}>
-          {t('inspiration.by', { name, city: sourceCity })}
-        </Text>
-      </View>
-
-      {/* The ONLY action: open YOUR OWN hangout/event locally. */}
+      {/* Create YOUR OWN locally - distinct action from opening. */}
       <TouchableOpacity
         style={styles.createBtn}
         activeOpacity={0.85}
@@ -97,7 +101,7 @@ const styles = StyleSheet.create({
 
   title: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22, textAlign: 'left' },
 
-  byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
   byText: { flex: 1, fontSize: 12, fontWeight: '600', color: Colors.muted },
 
   createBtn: {

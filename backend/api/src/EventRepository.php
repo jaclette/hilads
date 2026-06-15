@@ -1404,8 +1404,8 @@ class EventRepository
         //    registered creator via JOIN users so display_name exists). Avatar
         //    may be null for guest-hosted events.
         $sample = $pdo->prepare("
-            SELECT kind, title, host_name, host_avatar FROM (
-                SELECT 'event' AS kind, ce.title AS title,
+            SELECT id, kind, title, host_name, host_avatar FROM (
+                SELECT ce.channel_id AS id, 'event' AS kind, ce.title AS title,
                        ce.host_nickname AS host_name,
                        COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS host_avatar,
                        ce.created_at AS created_at
@@ -1419,7 +1419,7 @@ class EventRepository
                   AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
                   AND ce.host_nickname IS NOT NULL
                 UNION ALL
-                SELECT 'hangout' AS kind, ct.title AS title,
+                SELECT ct.channel_id AS id, 'hangout' AS kind, ct.title AS title,
                        u.display_name AS host_name,
                        COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS host_avatar,
                        ct.created_at AS created_at
@@ -1444,6 +1444,7 @@ class EventRepository
         }
 
         $examples = array_map(static fn(array $r): array => [
+            'id'          => $r['id'],
             'kind'        => $r['kind'],
             'title'       => $r['title'],
             'host_name'   => $r['host_name'],

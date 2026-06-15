@@ -5279,10 +5279,17 @@ export default function App() {
                         <p className="challenge-inspiration-sub">{t('inspiration.sub')}</p>
                         {eventInspiration.map((ex, i) => (
                           <ExampleEventCard
-                            key={`${ex.title}-${i}`}
+                            key={`${ex.id}-${i}`}
                             example={ex}
                             sourceCity={eventInspirationCity ?? ''}
                             currentCity={city ? localizeCityName(city) : ''}
+                            onOpen={() => {
+                              if (ex.kind === 'hangout') {
+                                fetchTopicById(ex.id).then(d => { if (d?.topic) { setShowEventDrawer(false); openHangout(d.topic) } }).catch(() => {})
+                              } else {
+                                fetchEventById(ex.id).then(d => { if (d?.event) { setShowEventDrawer(false); handleSelectEvent(d.event) } }).catch(() => {})
+                              }
+                            }}
                             onCreate={openCreate}
                           />
                         ))}

@@ -23,6 +23,7 @@ export async function fetchCityEvents(channelId: string, guestId?: string): Prom
 /** One inert example for the events empty state. No id by design - read-only
  *  inspiration, never joinable. */
 export interface EventInspirationExample {
+  id:          string;
   kind:        'event' | 'hangout';
   title:       string;
   host_name:   string | null;

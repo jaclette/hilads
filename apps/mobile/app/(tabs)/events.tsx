@@ -683,10 +683,11 @@ export default function NowScreen() {
               <Text style={styles.inspirationSub}>{t('inspiration.sub')}</Text>
               {eventInspiration.map((ex, i) => (
                 <ExampleEventCard
-                  key={`${ex.title}-${i}`}
+                  key={`${ex.id}-${i}`}
                   example={ex}
                   sourceCity={eventInspirationCity ?? ''}
                   currentCity={localizeCityName(city?.name) ?? (city?.name ?? '')}
+                  onOpen={() => router.push(`/${ex.kind === 'hangout' ? 'topic' : 'event'}/${ex.id}` as never)}
                   onCreate={() => router.push('/event/create' as never)}
                 />
               ))}
