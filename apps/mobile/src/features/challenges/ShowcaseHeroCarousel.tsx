@@ -24,7 +24,9 @@ const W      = Dimensions.get('window').width - Spacing.md * 2;
  * pauses while the user swipes. Tap a slide → the same preview sheet as the
  * full showcase. Hidden entirely when there are no success stories yet.
  */
-export function ShowcaseHeroCarousel() {
+const HOWTO_ID = '__howto__';
+
+export function ShowcaseHeroCarousel({ onHowItWorks }: { onHowItWorks: () => void }) {
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account } = useApp();
@@ -43,18 +45,23 @@ export function ShowcaseHeroCarousel() {
     return () => { alive = false; };
   }, []);
 
+  // Slides = success challenges + a trailing How-it-works slide (always present,
+  // even with zero successes, so newcomers always have an explainer).
+  const slides: ShowcaseItem[] = [...items, { id: HOWTO_ID } as ShowcaseItem];
+  const total = slides.length;
+
   // Auto-advance. Skipped while a finger is down (pausedRef) or with <2 slides.
   useEffect(() => {
-    if (items.length < 2) return;
+    if (total < 2) return;
     const id = setInterval(() => {
       if (pausedRef.current) return;
-      const next = (indexRef.current + 1) % items.length;
+      const next = (indexRef.current + 1) % total;
       listRef.current?.scrollToIndex({ index: next, animated: true });
       indexRef.current = next;
       setIndex(next);
     }, EVERY);
     return () => clearInterval(id);
-  }, [items.length]);
+  }, [total]);
 
   const onScrollEnd = useCallback((e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const i = Math.round(e.nativeEvent.contentOffset.x / W);
@@ -74,20 +81,20 @@ export function ShowcaseHeroCarousel() {
     router.push({ pathname: '/challenge/create', params: { title: it.title, type: it.challenge_type } } as never);
   };
 
-  if (items.length === 0) return null;
-
   return (
     <View style={styles.wrap}>
-      <View style={styles.head}>
-        <Text style={styles.headTitle}>✨ {t('showcase.cta')}</Text>
-        <TouchableOpacity onPress={() => router.push('/challenge/showcase' as never)} hitSlop={8}>
-          <Text style={styles.seeAll}>{t('seeAll')} ›</Text>
-        </TouchableOpacity>
-      </View>
+      {items.length > 0 && (
+        <View style={styles.head}>
+          <Text style={styles.headTitle}>✨ {t('showcase.cta')}</Text>
+          <TouchableOpacity onPress={() => router.push('/challenge/showcase' as never)} hitSlop={8}>
+            <Text style={styles.seeAll}>{t('seeAll')} ›</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <FlatList
         ref={listRef}
-        data={items}
+        data={slides}
         keyExtractor={(it) => it.id}
         horizontal
         pagingEnabled
@@ -96,12 +103,16 @@ export function ShowcaseHeroCarousel() {
         onScrollBeginDrag={() => { pausedRef.current = true; }}
         onScrollEndDrag={() => { pausedRef.current = false; }}
         onMomentumScrollEnd={onScrollEnd}
-        renderItem={({ item }) => <Slide item={item} onOpen={() => setPreview(item)} />}
+        renderItem={({ item }) =>
+          item.id === HOWTO_ID
+            ? <HowItWorksSlide onOpen={onHowItWorks} />
+            : <Slide item={item} onOpen={() => setPreview(item)} />
+        }
       />
 
-      {items.length > 1 && (
+      {total > 1 && (
         <View style={styles.dots}>
-          {items.map((it, i) => (
+          {slides.map((it, i) => (
             <View key={it.id} style={[styles.dot, i === index && styles.dotActive]} />
           ))}
         </View>
@@ -114,6 +125,18 @@ export function ShowcaseHeroCarousel() {
         onAvatar={openProfile}
       />
     </View>
+  );
+}
+
+function HowItWorksSlide({ onOpen }: { onOpen: () => void }) {
+  const { t } = useTranslation('challenge');
+  return (
+    <TouchableOpacity style={[styles.slide, styles.howto]} activeOpacity={0.9} onPress={onOpen}>
+      <Text style={styles.howtoEmoji}>💡</Text>
+      <Text style={styles.howtoTitle}>{t('howItWorks')}</Text>
+      <Text style={styles.howtoSub} numberOfLines={3}>{t('tabIntro')}</Text>
+      <Text style={styles.howtoCta}>{t('howItWorks')} →</Text>
+    </TouchableOpacity>
   );
 }
 
@@ -159,6 +182,11 @@ const styles = StyleSheet.create({
   seeAll: { fontSize: FontSizes.sm, fontWeight: '700', color: '#60a5fa' },
 
   slide: { width: W, height: 168, borderRadius: 16, overflow: 'hidden', backgroundColor: Colors.bg2 },
+  howto: { justifyContent: 'center', alignItems: 'flex-start', padding: 16, gap: 5, backgroundColor: 'rgba(96,165,250,0.12)', borderWidth: 1, borderColor: 'rgba(96,165,250,0.28)' },
+  howtoEmoji: { fontSize: 26 },
+  howtoTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
+  howtoSub:   { fontSize: 12.5, lineHeight: 17, color: Colors.muted, maxWidth: '92%' },
+  howtoCta:   { marginTop: 2, fontSize: 13, fontWeight: '800', color: '#60a5fa' },
   slideImg: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
   slideOverlay: { flex: 1, justifyContent: 'space-between', padding: 12, backgroundColor: 'rgba(0,0,0,0.34)' },
   slideOverlayFlat: { backgroundColor: 'rgba(255,201,60,0.06)' },

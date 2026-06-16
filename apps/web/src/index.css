@@ -1155,6 +1155,17 @@ html, body, #root {
 .showcase-hero-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 3px; line-height: 1.25; }
 .showcase-hero-meta { font-size: 12px; font-weight: 600; color: rgba(255, 255, 255, 0.82); }
 
+/* Trailing "How it works" slide - folds the old intro block into the carousel. */
+.showcase-hero-slide--howto { background: linear-gradient(135deg, rgba(96,165,250,0.16), rgba(255,201,60,0.10)); }
+.showcase-hero-howto {
+  height: 100%; padding: 16px;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px;
+}
+.showcase-hero-howto-emoji { font-size: 26px; }
+.showcase-hero-howto-title { font-size: 17px; font-weight: 800; color: var(--text, #f4f4f5); }
+.showcase-hero-howto-sub   { font-size: 12.5px; line-height: 1.4; color: var(--muted, #9a9aa3); max-width: 90%; }
+.showcase-hero-howto-cta   { margin-top: 4px; font-size: 13px; font-weight: 800; color: #60a5fa; }
+
 .showcase-hero-dots { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px; }
 .showcase-hero-dot { width: 6px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.2); transition: width 0.2s, background 0.2s; }
 .showcase-hero-dot--on { width: 18px; background: #FFC93C; }
@@ -13590,32 +13601,6 @@ body.has-app-promo-banner .page-header {
 }
 
 /* ── Challenge tab: context line + Most Local podium teaser ─────────────────── */
-.challenge-tab-intro {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 4px 12px 12px;
-}
-.challenge-tab-intro-text {
-  flex: 1;
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--muted);
-}
-.challenge-tab-intro-link {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  padding: 0;
-  color: #60a5fa;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
 .most-local-card {
   margin: 0 12px 14px;
   padding: 14px;

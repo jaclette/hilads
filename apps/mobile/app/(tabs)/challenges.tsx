@@ -36,17 +36,8 @@ export default function ChallengesTab() {
         </View>
       </View>
 
-      {/* Context line + How it works → reuses the challenge-intro carousel. */}
-      <View style={styles.intro}>
-        <Text style={styles.introText}>{t('tabIntro')}</Text>
-        <TouchableOpacity
-          onPress={() => setShowChallengeIntro(true)}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text style={styles.introLink}>{t('howItWorks')} →</Text>
-        </TouchableOpacity>
-      </View>
+      {/* (The intro tagline + "How it works" link were folded into the hero
+          carousel's trailing "How it works" slide to save vertical space.) */}
 
       {/* My challenges - prominent entry to the creator/taker list. Members
           only (guests can't be a creator or taker). */}
@@ -72,7 +63,7 @@ export default function ChallengesTab() {
         channelId={city?.channelId ?? null}
         headerExtra={
           <>
-            <ShowcaseHeroCarousel />
+            <ShowcaseHeroCarousel onHowItWorks={() => setShowChallengeIntro(true)} />
             <MostLocalCard
               channelId={city?.channelId ?? null}
               onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
@@ -105,18 +96,6 @@ const styles = StyleSheet.create({
   headerCenter: { flex: 1, alignItems: 'center' },
   headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
   headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
-
-  intro: {
-    flexDirection:     'row',
-    alignItems:        'flex-start',
-    justifyContent:    'space-between',
-    gap:               12,
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.sm,
-    paddingBottom:     Spacing.md,
-  },
-  introText: { flex: 1, fontSize: 13, lineHeight: 18, color: Colors.muted },
-  introLink: { fontSize: 13, fontWeight: '600', color: '#60a5fa' },
 
   myChallengesCta: {
     flexDirection:     'row',

@@ -5474,19 +5474,15 @@ export default function App() {
             <span className="page-title">🔥 {t('noun', { ns: 'challenge' })}</span>
           </div>
           <div className="page-body" ref={challengesBodyRef}>
-            {/* Context line + How it works → reuses the challenge-intro carousel. */}
-            <div className="challenge-tab-intro">
-              <p className="challenge-tab-intro-text">{t('tabIntro', { ns: 'challenge' })}</p>
-              <button type="button" className="challenge-tab-intro-link" onClick={() => setShowChallengeIntro(true)}>
-                {t('howItWorks', { ns: 'challenge' })} →
-              </button>
-            </div>
             {/* Hero carousel of recent success challenges - auto-rotating
-                discovery, global proof-first. Hidden when there are none. */}
+                discovery, global proof-first - with a trailing "How it works"
+                slide (the old intro block folded into the carousel to save space;
+                the explainer slide is always present, even with no successes). */}
             <ShowcaseHero
               onTry={(item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
               onOpenProfile={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
               onSeeAll={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
+              onHowItWorks={() => setShowChallengeIntro(true)}
             />
             {/* "How to earn points" helper - the challenges browser had no
                 scoring affordance (only the channel did). Labeled pill. */}

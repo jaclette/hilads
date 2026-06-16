@@ -40,19 +40,36 @@ function Slide({ item, onOpen }) {
   )
 }
 
+function HowItWorksSlide({ onOpen }) {
+  const { t } = useTranslation('challenge')
+  return (
+    <button type="button" className="showcase-hero-slide showcase-hero-slide--howto" onClick={onOpen}>
+      <div className="showcase-hero-howto">
+        <div className="showcase-hero-howto-emoji">💡</div>
+        <div className="showcase-hero-howto-title">{t('howItWorks')}</div>
+        <div className="showcase-hero-howto-sub">{t('tabIntro')}</div>
+        <div className="showcase-hero-howto-cta">{t('howItWorks')} →</div>
+      </div>
+    </button>
+  )
+}
+
 /**
- * Hero carousel of recent success challenges at the top of the Challenges tab.
- * Global, proof-first (matches the showcase feed). Auto-advances every 3s,
- * pauses while the user swipes. Tap a slide → the same preview as the full
- * showcase. Hidden entirely when there are no success stories yet.
+ * Hero carousel at the top of the Challenges tab. Recent success challenges
+ * (global, proof-first) followed by a "How it works" slide that is ALWAYS
+ * present - even in a city with no success stories yet, so newcomers always
+ * have an explainer entry point. Auto-advances every 3s, pauses on swipe.
  */
-export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll }) {
+export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWorks }) {
   const { t } = useTranslation('challenge')
   const [items,   setItems]   = useState([])
   const [index,   setIndex]   = useState(0)
   const [preview, setPreview] = useState(null)
   const trackRef = useRef(null)
   const paused   = useRef(false)
+
+  // +1 for the trailing How-it-works slide.
+  const total = items.length + 1
 
   useEffect(() => {
     let alive = true
@@ -61,16 +78,16 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll }) {
   }, [])
 
   useEffect(() => {
-    if (items.length < 2) return
+    if (total < 2) return
     const id = setInterval(() => {
       const track = trackRef.current
       if (!track || paused.current) return
       const w = track.clientWidth
-      const next = (Math.round(track.scrollLeft / w) + 1) % items.length
+      const next = (Math.round(track.scrollLeft / w) + 1) % total
       track.scrollTo({ left: next * w, behavior: 'smooth' })
     }, EVERY)
     return () => clearInterval(id)
-  }, [items.length])
+  }, [total])
 
   const onScroll = () => {
     const track = trackRef.current
@@ -78,14 +95,14 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll }) {
     setIndex(Math.round(track.scrollLeft / track.clientWidth))
   }
 
-  if (items.length === 0) return null
-
   return (
     <div className="showcase-hero">
-      <div className="showcase-hero-head">
-        <span className="showcase-hero-head-title">✨ {t('showcase.cta')}</span>
-        <button type="button" className="showcase-hero-seeall" onClick={onSeeAll}>{t('seeAll')} ›</button>
-      </div>
+      {items.length > 0 && (
+        <div className="showcase-hero-head">
+          <span className="showcase-hero-head-title">✨ {t('showcase.cta')}</span>
+          <button type="button" className="showcase-hero-seeall" onClick={onSeeAll}>{t('seeAll')} ›</button>
+        </div>
+      )}
 
       <div
         className="showcase-hero-track"
@@ -96,11 +113,14 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll }) {
         onPointerLeave={() => { paused.current = false }}
       >
         {items.map(it => <Slide key={it.id} item={it} onOpen={() => setPreview(it)} />)}
+        <HowItWorksSlide key="__howto__" onOpen={onHowItWorks} />
       </div>
 
-      {items.length > 1 && (
+      {total > 1 && (
         <div className="showcase-hero-dots">
-          {items.map((it, i) => <span key={it.id} className={`showcase-hero-dot${i === index ? ' showcase-hero-dot--on' : ''}`} />)}
+          {Array.from({ length: total }).map((_, i) => (
+            <span key={i} className={`showcase-hero-dot${i === index ? ' showcase-hero-dot--on' : ''}`} />
+          ))}
         </div>
       )}
 
