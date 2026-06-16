@@ -52,12 +52,12 @@ admin_nav('/admin/challenges');
         FROM channel_challenges cc
         JOIN channels c   ON c.id = cc.channel_id
         LEFT JOIN users u ON u.id = cc.created_by
-        WHERE cc.city_id = :cid
+        WHERE (cc.city_id = :cid OR (cc.mode = 'international' AND cc.target_city_id = :cid2))
           AND cc.created_at >= :ds::timestamptz AND cc.created_at < :de::timestamptz
         ORDER BY cc.created_at DESC
         LIMIT 300
     ");
-    $stmt->execute([':cid' => $city, ':ds' => $ds, ':de' => $de]);
+    $stmt->execute([':cid' => $city, ':cid2' => $city, ':ds' => $ds, ':de' => $de]);
     $items = $stmt->fetchAll();
     $backHref = '/admin/challenges?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . urlencode($view);
     ?>
@@ -146,21 +146,29 @@ admin_nav('/admin/challenges');
     $cityParam   = 'city';
     $noun        = 'challenges';
     $actionLabel = 'View challenges';
+    // Each challenge counts for its origin city AND (for international) its
+    // target city - so HCMC → Manaus is +1 HCMC and +1 Manaus. unnest expands
+    // each row into 1 (local) or 2 (international) city ids; the JOIN drops the
+    // NULL second element for local rows.
     $sumSql = "
-        SELECT cc.city_id AS id, p.name AS name, COUNT(*) AS cnt, MAX(cc.created_at) AS last_at
+        SELECT cid AS id, p.name AS name, COUNT(*) AS cnt, MAX(cc.created_at) AS last_at
         FROM channel_challenges cc
-        JOIN channels p ON p.id = cc.city_id
+        CROSS JOIN LATERAL unnest(ARRAY[cc.city_id,
+               CASE WHEN cc.mode = 'international' THEN cc.target_city_id END]) AS cid
+        JOIN channels p ON p.id = cid AND p.type = 'city'
         WHERE cc.created_at >= :ds::timestamptz AND cc.created_at < :de::timestamptz
-        GROUP BY cc.city_id, p.name
+        GROUP BY cid, p.name
         ORDER BY cnt DESC, p.name ASC
     ";
     $dailySql = "
-        SELECT cc.city_id AS id, p.name AS name,
+        SELECT cid AS id, p.name AS name,
                (cc.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day, COUNT(*) AS cnt
         FROM channel_challenges cc
-        JOIN channels p ON p.id = cc.city_id
+        CROSS JOIN LATERAL unnest(ARRAY[cc.city_id,
+               CASE WHEN cc.mode = 'international' THEN cc.target_city_id END]) AS cid
+        JOIN channels p ON p.id = cid AND p.type = 'city'
         WHERE cc.created_at >= :ds::timestamptz AND cc.created_at < :de::timestamptz
-        GROUP BY cc.city_id, p.name, day
+        GROUP BY cid, p.name, day
     ";
     include __DIR__ . '/_city_activity.php';
     ?>
