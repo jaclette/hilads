@@ -35,7 +35,7 @@ import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
-import { ChallengeProofBlock, type ChallengeProofBlockHandle } from '@/features/challenge/ChallengeProofBlock';
+import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
 import { ProofReviewModal } from '@/features/challenge/ProofReviewModal';
 import { ChallengeNotificationPill } from '@/features/challenge/ChallengeNotificationPill';
 import { ChallengeChannelMembersStrip } from '@/features/challenge/ChallengeChannelMembersStrip';
@@ -377,11 +377,6 @@ export default function ChallengeChatScreen() {
   // International proof-spec popin - tapping the pipeline's "Waiting for
   // the proof" pill opens this read-only sheet.
   const [proofSpecOpen, setProofSpecOpen] = useState(false);
-  // Imperative handle into ChallengeProofBlock so the pipeline's "Submit
-  // your proof →" sub-CTA can trigger the photo picker + GPS + upload
-  // flow directly. Replaces the standalone big button that used to live
-  // inside the proof block.
-  const proofRef = useRef<ChallengeProofBlockHandle>(null);
   // PR62 - creator-side "Review the proof" modal. Opens from the pipeline
   // sub-CTA on intl when phase='proof_submitted'. Shows the photo big +
   // Approve / Reject buttons; reject swaps the same sheet into a reason
@@ -1136,12 +1131,13 @@ export default function ChallengeChatScreen() {
                 && myAcceptance && !myAcceptance.proposed_starts_at && myAcceptance.phase === 'accepted') {
               return () => setPickerOpen(true);
             }
-            if (usesPhotoProof && myAcceptance && !isOwner) {
-              // Acceptor with an active acceptance - tapping the pipeline's
-              // "Submit your proof →" sub-CTA fires the photo picker + GPS
-              // + upload via the ChallengeProofBlock's imperative handle.
-              return () => proofRef.current?.submit();
-            }
+            // NOTE: the acceptor's "Submit your proof" action is NOT wired to
+            // the pipeline tap anymore - the whole-timeline TouchableOpacity made
+            // it feel like you were pressing the entire step row, and the
+            // imperative submit could silently no-op. It's now a DEDICATED button
+            // inside ChallengeProofBlock below. The pipeline stays a pure status
+            // indicator for the acceptor at the proof step (falls through to the
+            // requirements popin if the creator set any, else non-interactive).
             // Creator + photo-proof + acceptance is at proof_submitted ⇒ open
             // the modal review sheet. This is the "Review the proof"
             // sub-CTA path; it surfaces the photo and Approve / Reject in
@@ -1172,7 +1168,6 @@ export default function ChallengeChatScreen() {
             challenge wrapped. */}
         {usesPhotoProof && effectiveActiveAcceptance && (
           <ChallengeProofBlock
-            ref={proofRef}
             acceptanceId={effectiveActiveAcceptance.id}
             iAmCreator={isOwner}
             iAmAcceptor={!isOwner}

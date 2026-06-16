@@ -99,9 +99,11 @@ function derive(
         active: 'proof',
         done: new Set<Step>(['accept']),
         rejected: false,
-        subCtaKey: iAmCreator
-          ? 'pipeline.subcta.waitingForProof'
-          : 'pipeline.subcta.submitProof',
+        // Acceptor's submit action is a DEDICATED button in ChallengeProofBlock
+        // (not the timeline tap), so suppress the pipeline sub-CTA for them -
+        // otherwise "Submit your proof" appears twice and the timeline looks
+        // like the button. Creator still gets the passive "waiting" hint.
+        subCtaKey: iAmCreator ? 'pipeline.subcta.waitingForProof' : '',
       };
     }
     if (phase === 'proof_submitted') {
