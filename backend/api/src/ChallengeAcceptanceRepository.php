@@ -233,6 +233,24 @@ class ChallengeAcceptanceRepository
     }
 
     /**
+     * True once the challenge has been SUCCESSFULLY completed - an acceptance
+     * reached the terminal 'approved' phase (local: both rated; international:
+     * proof approved). A completed challenge is one-shot: it does NOT reopen
+     * for new takers. Pure phase check (no ghost-grace) so a manual
+     * validate/unvalidate archive toggle can't bypass it.
+     */
+    public static function hasApprovedAcceptance(string $challengeId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM challenge_acceptances ca
+            WHERE ca.challenge_id = :id AND ca.phase = 'approved'
+            LIMIT 1
+        ");
+        $stmt->execute(['id' => $challengeId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /**
      * The id of the single currently-active acceptance on this challenge,
      * or null if none is active. Used to stamp new messages with the
      * current run's acceptance_id and to filter the challenge chat read

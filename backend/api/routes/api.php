@@ -9249,6 +9249,17 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     // International challenges share the same 1:1 lock at the data layer
     // (one open acceptance at a time) - but the lock releases on proof
     // verdict instead of meetup completion. Same semantics, different flow.
+    // One-shot rule: a SUCCESSFULLY completed challenge (an acceptance reached
+    // 'approved') is closed for good - it never reopens for new takers. Checked
+    // before the in-progress gate since "completed" is the more terminal state.
+    // Bail/cancel/restart/rejected leave no 'approved' row, so they still reopen.
+    if (ChallengeAcceptanceRepository::hasApprovedAcceptance($challengeId)) {
+        Response::json([
+            'error' => 'This challenge is done - it has already been completed',
+            'code'  => 'completed',
+        ], 403);
+    }
+
     if (ChallengeAcceptanceRepository::hasActiveAcceptance($challengeId)) {
         Response::json([
             'error' => "Someone's already on this one - check back when it's done",

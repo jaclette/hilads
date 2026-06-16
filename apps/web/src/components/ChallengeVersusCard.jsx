@@ -40,7 +40,9 @@ export default function ChallengeVersusCard({
 
   const typeIcon         = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[c.challenge_type] ?? '🔥'
   const audienceLabel    = c.audience === 'locals' ? t('forLocals') : t('forExplorers')
-  const isValidated      = c.status === 'validated'
+  // closed = completed (one-shot, no re-take) OR manually validated/archived;
+  // both show the done badge instead of "available".
+  const isValidated      = c.status === 'validated' || !!c.closed
   const isInternational  = (c.mode ?? 'local') === 'international'
   const hasTaker         = !!c.acceptor_user_id
 

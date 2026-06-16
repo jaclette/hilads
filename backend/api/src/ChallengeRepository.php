@@ -90,6 +90,14 @@ class ChallengeRepository
                 WHERE ca.challenge_id = c.id
                   AND " . \ChallengeAcceptanceRepository::IS_IN_PROGRESS_SQL . "
             )                                                       AS is_in_progress,
+            -- closed: the challenge was SUCCESSFULLY completed (an acceptance
+            -- reached the terminal 'approved' phase). A completed challenge is
+            -- one-shot - it does NOT reopen for new takers (see /accept gate).
+            -- Distinct from status='validated' (a reversible manual archive).
+            EXISTS (
+                SELECT 1 FROM challenge_acceptances cax
+                WHERE cax.challenge_id = c.id AND cax.phase = 'approved'
+            )                                                       AS is_completed,
             -- Versus-layout: the active taker's identity for the right-hand
             -- avatar slot. LATERAL pulls the most-recent non-rejected
             -- acceptance per challenge (1 row max via LIMIT 1). All three
@@ -199,6 +207,9 @@ class ChallengeRepository
             // Defaults to false on rows that pre-date the column (eg. cached
             // formats) - safe because the route still rechecks at /accept.
             'is_in_progress'       => isset($row['is_in_progress']) ? (bool) $row['is_in_progress'] : false,
+            // closed: successfully completed (an approved acceptance exists) →
+            // one-shot, no new take-ons. Clients hide Accept + show completed.
+            'closed'               => isset($row['is_completed']) ? (bool) $row['is_completed'] : false,
             // International mode shape. 'local' is the default for every row
             // that pre-dates the migration. target_city_id is null for local
             // and for "anywhere" international rows; proof_requirements only

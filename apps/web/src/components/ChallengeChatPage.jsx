@@ -271,6 +271,9 @@ export default function ChallengeChatPage({
             }
           : null)
   const isValidated = challenge?.status === 'validated'
+  // closed = successfully completed (one-shot, no re-take). Distinct from the
+  // reversible 'validated' archive toggle - a completed challenge stays closed.
+  const isClosed = !!challenge?.closed
   const isParticipant = !!(
     (account?.id    && participants.some(p => p.id === account.id)) ||
     (guest?.guestId && participants.some(p => p.id === guest.guestId))
@@ -1114,7 +1117,9 @@ export default function ChallengeChatPage({
                "Currently being taken by X"
             C) no acceptor + non-owner + not validated → full-width Accept CTA. */}
       {(() => {
-        if (isValidated && !isOwner) {
+        // A completed challenge (isClosed) is permanently closed to new takers,
+        // same passive state as the manual 'validated' archive.
+        if ((isValidated || isClosed) && !isOwner) {
           return (
             <div className="challenge-participants-row">
               <span className="challenge-cta-passive">{t('cta.closed')}</span>
@@ -1140,7 +1145,7 @@ export default function ChallengeChatPage({
         // "otherParticipants.length === 0" guard which kept a terminal user
         // (whose row is still in participants) locked on "Mission
         // accomplished" - the bug the user reported.
-        if (!isOwner && !isValidated && !challenge.is_in_progress) {
+        if (!isOwner && !isValidated && !isClosed && !challenge.is_in_progress) {
           return (
             <div className="challenge-participants-row">
               <button

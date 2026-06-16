@@ -73,7 +73,9 @@ export function ChallengeVersusCard({
 }: ChallengeVersusCardProps) {
   const { t } = useTranslation('challenge');
   const typeIcon         = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
-  const isValidated      = challenge.status === 'validated';
+  // closed = completed (one-shot) OR manually validated/archived; both show the
+  // done badge instead of "available".
+  const isValidated      = challenge.status === 'validated' || challenge.closed === true;
   const isInProgress     = !isValidated && challenge.is_in_progress === true;
   const isInternational  = (challenge.mode ?? 'local') === 'international';
   const hasTaker         = !!challenge.acceptor_user_id;

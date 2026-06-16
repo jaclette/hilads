@@ -153,6 +153,10 @@
       "in_progress": {
         "title": "Quelqu'un est déjà dessus",
         "body": "Un autre voyageur est en train de le relever. Reviens quand ils auront fini - le défi se libère."
+      },
+      "completed": {
+        "title": "Défi déjà terminé",
+        "body": "Ce défi a été accompli - il est fermé aux nouvelles prises."
       }
     }
   },

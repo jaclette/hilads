@@ -161,7 +161,7 @@ export interface ChallengeThreadSummary {
 /** Backend error code shape on accept-failure 403s. */
 // `cap_reached` retired with the 1:1 model - still listed for back-compat
 // in case an older API build returns it. `in_progress` is the new code.
-export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress';
+export type AcceptFailureCode = 'not_creator' | 'mode_required' | 'mode_mismatch' | 'cap_reached' | 'in_progress' | 'completed';
 
 /** Leaderboard scope/period selectors mirrored from GET /api/v1/leaderboard.
  *  'cities' ranks cities themselves (sum of their members' points), not users. */
@@ -272,6 +272,10 @@ export interface Challenge {
    *  now. Drives the Available / In progress / Validated pill and gates the
    *  Accept (+) button. Backend computes via EXISTS over challenge_acceptances. */
   is_in_progress?:       boolean;
+  /** One-shot rule: true once the challenge has been SUCCESSFULLY completed
+   *  (an acceptance reached 'approved'). A completed challenge is closed for
+   *  good - no new take-ons. Distinct from the reversible 'validated' archive. */
+  closed?:               boolean;
   /** Privacy layer (web parity). 'public' default; 'friends' / 'private'
    *  hide the row from sitemap + city feed for non-entitled viewers. */
   visibility?:           'public' | 'friends' | 'private';

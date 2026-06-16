@@ -898,6 +898,9 @@ export default function ChallengeChatScreen() {
   };
   const typeIcon = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
   const isValidated = challenge.status === 'validated';
+  // closed = successfully completed (one-shot, no re-take). Treated like the
+  // 'validated' archive for the passive "closed" state + Accept gating.
+  const isClosed = !!challenge.closed;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -1252,7 +1255,9 @@ export default function ChallengeChatScreen() {
           covers the "who's in" panel for everyone. Three passive states +
           the Accept CTA remain. */}
       {(() => {
-        if (isValidated && !isOwner) {
+        // A completed challenge (isClosed) is permanently closed to new takers,
+        // same passive state as the manual 'validated' archive.
+        if ((isValidated || isClosed) && !isOwner) {
           return (
             <View style={styles.participantsRow}>
               <Text style={styles.participantsEmpty}>{t('cta.closed')}</Text>
@@ -1287,7 +1292,7 @@ export default function ChallengeChatScreen() {
         // (and previously surfaced as a half-clipped orange pill stuck under
         // the members strip while the screen was waiting on the creator's
         // response). Guard on the local truth instead.
-        if (!isOwner && !isValidated && !challenge?.is_in_progress && !activeAcceptance) {
+        if (!isOwner && !isValidated && !isClosed && !challenge?.is_in_progress && !activeAcceptance) {
           return (
             <View style={styles.participantsRow}>
               <TouchableOpacity

@@ -164,6 +164,10 @@
       "in_progress": {
         "title": "Someone's on this one",
         "body": "Another traveler is taking it on right now. Check back when they wrap up - the challenge frees up."
+      },
+      "completed": {
+        "title": "Challenge already done",
+        "body": "This challenge has been completed - it's closed to new take-ons."
       }
     }
   },
