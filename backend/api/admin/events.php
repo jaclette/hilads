@@ -10,10 +10,34 @@ $page    = max(1, (int)($_GET['page'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 $search  = trim($_GET['q'] ?? '');
 $filter  = $_GET['filter'] ?? 'all';   // all | active | expired | deleted | recurring | one-shot
+$city    = trim($_GET['city'] ?? '');
+
+// Per-city diagram + city drill-in range (UTC).
+$today  = gmdate('Y-m-d');
+$dvalid = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
+$from   = $dvalid($_GET['from'] ?? '') ?: $today;
+$to     = $dvalid($_GET['to']   ?? '') ?: $from;
+if ($to < $from) { $to = $from; }
+if ((strtotime($to) - strtotime($from)) / 86400 > 92) { $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d'); }
+$view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
+$ds = $from . ' 00:00:00+00';
+$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d H:i:s') . '+00';
+$rangeLabel = $from === $to ? $from : "$from → $to";
+$PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
+// Default view (no search/filter/city) → the per-city diagram; otherwise the list.
+$isDefault = ($search === '' && $filter === 'all' && $city === '');
 
 // Build WHERE clauses
 $where  = ['c.type = \'event\''];
 $params = [];
+
+// City drill-in (from the diagram): events created in this city, in the range.
+if ($city !== '') {
+    $where[]         = 'c.parent_id = :city AND c.created_at >= :ds::timestamptz AND c.created_at < :de::timestamptz';
+    $params[':city'] = $city;
+    $params[':ds']   = $ds;
+    $params[':de']   = $de;
+}
 
 // Search
 if ($search !== '') {
@@ -119,10 +143,37 @@ admin_nav('/admin/events');
             <?php endforeach; ?>
         </select>
         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-        <?php if ($search !== '' || $filter !== 'all'): ?>
+        <?php if ($search !== '' || $filter !== 'all' || $city !== ''): ?>
             <a href="/admin/events" class="btn btn-secondary btn-sm">Clear</a>
         <?php endif; ?>
     </form>
+
+    <?php if ($isDefault):
+        // Per-city "events created" diagram (range + Accumulation/Per-day).
+        $pageBase    = '/admin/events';
+        $cityParam   = 'city';
+        $noun        = 'events';
+        $actionLabel = 'View events';
+        $sumSql = "
+            SELECT c.parent_id AS id, p.name AS name, COUNT(*) AS cnt, MAX(c.created_at) AS last_at
+            FROM channel_events ce
+            JOIN channels c ON c.id = ce.channel_id
+            JOIN channels p ON p.id = c.parent_id AND p.type = 'city'
+            WHERE c.created_at >= :ds::timestamptz AND c.created_at < :de::timestamptz
+            GROUP BY c.parent_id, p.name
+            ORDER BY cnt DESC, p.name ASC
+        ";
+        $dailySql = "
+            SELECT c.parent_id AS id, p.name AS name,
+                   (c.created_at AT TIME ZONE 'UTC')::date AS day, COUNT(*) AS cnt
+            FROM channel_events ce
+            JOIN channels c ON c.id = ce.channel_id
+            JOIN channels p ON p.id = c.parent_id AND p.type = 'city'
+            WHERE c.created_at >= :ds::timestamptz AND c.created_at < :de::timestamptz
+            GROUP BY c.parent_id, p.name, day
+        ";
+        include __DIR__ . '/_city_activity.php';
+    else: ?>
 
     <div class="table-wrapper">
         <table>
@@ -237,19 +288,21 @@ admin_nav('/admin/events');
         </table>
     </div>
 
-    <?php if ($pages > 1): ?>
+    <?php if ($pages > 1):
+        $pqs = 'q=' . urlencode($search) . '&filter=' . urlencode($filter) . '&city=' . urlencode($city) . '&from=' . urlencode($from) . '&to=' . urlencode($to); ?>
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="?q=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&page=<?= $page - 1 ?>">← Prev</a>
+                <a href="?<?= $pqs ?>&page=<?= $page - 1 ?>">← Prev</a>
                 <span class="sep">|</span>
             <?php endif; ?>
             <span>Page <span class="current"><?= $page ?></span> of <?= $pages ?></span>
             <?php if ($page < $pages): ?>
                 <span class="sep">|</span>
-                <a href="?q=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&page=<?= $page + 1 ?>">Next →</a>
+                <a href="?<?= $pqs ?>&page=<?= $page + 1 ?>">Next →</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
+    <?php endif; /* end $isDefault list branch */ ?>
 </div>
 <?php
 admin_foot();
