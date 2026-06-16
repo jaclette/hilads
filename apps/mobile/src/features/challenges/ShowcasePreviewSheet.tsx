@@ -82,7 +82,7 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
             />
             {item.acceptor_display_name ? (
               <PersonRow
-                label={t('takerLabel')}
+                label={t('card.takerLabel')}
                 name={item.acceptor_display_name}
                 avatar={item.acceptor_thumb_avatar_url}
                 country={item.acceptor_country}

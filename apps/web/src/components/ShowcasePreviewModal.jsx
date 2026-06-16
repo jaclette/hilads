@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 
@@ -38,7 +39,9 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
   const toFlag   = countryToFlag(item.target_country)
   const hasProof = item.proof_media_url && item.proof_media_type === 'image'
 
-  return (
+  // Portal to <body> - rendered inside .full-page (a z-index:200 stacking
+  // context) the sheet's bottom would hide behind the .bottom-nav (z-300).
+  return createPortal((
     <div className="showcase-preview-backdrop" onClick={onClose}>
       <div className="showcase-preview" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="showcase-preview-close" onClick={onClose} aria-label="Close">✕</button>
@@ -66,7 +69,7 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
             />
             {item.acceptor_display_name && (
               <Person
-                label={t('takerLabel')}
+                label={t('card.takerLabel')}
                 name={item.acceptor_display_name}
                 avatar={item.acceptor_thumb_avatar_url}
                 country={item.acceptor_country}
@@ -89,5 +92,5 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
         </button>
       </div>
     </div>
-  )
+  ), document.body)
 }
