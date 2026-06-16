@@ -1,21 +1,41 @@
 import { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 import { fetchLeaderboard } from '@/api/leaderboard';
+import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { avatarColor } from '@/lib/avatarColors';
 import type { LeaderboardEntry } from '@/types';
 import { Colors, Spacing } from '@/constants';
 
-function Slot({ entry, first }: { entry: LeaderboardEntry; first?: boolean }) {
+function Slot({
+  entry,
+  first,
+  onPress,
+}: {
+  entry:   LeaderboardEntry;
+  first?:  boolean;
+  onPress: (userId: string | null) => void;
+}) {
   const name = entry.displayName ?? '?';
   return (
     <View style={styles.slot}>
       {first && <Text style={styles.crown}>👑</Text>}
-      <View style={[styles.avatar, first && styles.avatarFirst, { backgroundColor: avatarColor(entry.user_id ?? name) }]}>
-        {entry.thumbAvatarUrl
-          ? <Image source={{ uri: entry.thumbAvatarUrl }} style={styles.avatarImg} />
-          : <Text style={[styles.avatarLetter, first && styles.avatarLetterFirst]}>{name[0].toUpperCase()}</Text>}
-      </View>
+      <TouchableOpacity
+        activeOpacity={0.75}
+        onPress={() => onPress(entry.user_id ?? null)}
+        disabled={!entry.user_id}
+        hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
+        accessibilityRole="button"
+        accessibilityLabel={name}
+      >
+        <View style={[styles.avatar, first && styles.avatarFirst, { backgroundColor: avatarColor(entry.user_id ?? name) }]}>
+          {entry.thumbAvatarUrl
+            ? <Image source={{ uri: entry.thumbAvatarUrl }} style={styles.avatarImg} />
+            : <Text style={[styles.avatarLetter, first && styles.avatarLetterFirst]}>{name[0].toUpperCase()}</Text>}
+        </View>
+      </TouchableOpacity>
       <Text style={[styles.meta, first && styles.metaFirst]} numberOfLines={1}>
         <Text style={styles.metaRank}>{entry.rank}</Text> · {name}
       </Text>
@@ -30,7 +50,19 @@ function Slot({ entry, first }: { entry: LeaderboardEntry; first?: boolean }) {
  */
 export function MostLocalCard({ channelId, onSeeAll }: { channelId: number | string | null; onSeeAll: () => void }) {
   const { t } = useTranslation('challenge');
+  const router = useRouter();
+  const { account } = useApp();
   const [entries, setEntries] = useState<LeaderboardEntry[] | null>(null); // null = loading
+
+  // Tap a podium avatar → that user's profile. Self → the Me tab (known +
+  // editable); others → the registered-user profile behind canAccessProfile
+  // so guests hit the auth gate instead of a 404. Mirrors leaderboard.tsx.
+  const openProfile = (userId: string | null) => {
+    if (!userId) return;
+    if (userId === account?.id) { router.push('/(tabs)/me'); return; }
+    if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+    router.push({ pathname: '/user/[id]', params: { id: userId } });
+  };
 
   useEffect(() => {
     let alive = true;
@@ -82,9 +114,9 @@ export function MostLocalCard({ channelId, onSeeAll }: { channelId: number | str
         </View>
       ) : (
         <View style={styles.podium}>
-          {second ? <Slot entry={second} /> : <View style={styles.slot} />}
-          {first  ? <Slot entry={first} first /> : <View style={styles.slot} />}
-          {third  ? <Slot entry={third} /> : <View style={styles.slot} />}
+          {second ? <Slot entry={second} onPress={openProfile} /> : <View style={styles.slot} />}
+          {first  ? <Slot entry={first} first onPress={openProfile} /> : <View style={styles.slot} />}
+          {third  ? <Slot entry={third} onPress={openProfile} /> : <View style={styles.slot} />}
         </View>
       )}
     </View>
