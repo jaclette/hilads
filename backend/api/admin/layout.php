@@ -248,6 +248,7 @@ function admin_nav(string $current = ''): void
             '/admin/events'  => 'Events',
             '/admin/topics'  => 'Hangouts',
             '/admin/messages'=> 'Messages',
+            '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',
             '/admin/email'   => 'Email',
             '/admin/push'    => 'Push',
