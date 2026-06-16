@@ -133,7 +133,7 @@ admin_nav('/admin/messages');
                     <th style="width:140px">When</th>
                     <th style="width:200px">Sender</th>
                     <th>Message</th>
-                    <th style="width:90px">Actions</th>
+                    <th style="width:180px">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -166,22 +166,32 @@ admin_nav('/admin/messages');
                         <?php endif; ?>
                     </td>
                     <td>
-                        <?php if (!$isDeleted): ?>
-                            <form method="POST" action="/admin/messages/<?= urlencode($msg['id']) ?>/delete"
-                                  onsubmit="return confirm('Delete this message? It will be replaced by a tombstone and cannot be undone.')">
-                                <?= csrf_input() ?>
-                                <input type="hidden" name="channel" value="<?= htmlspecialchars($channel, ENT_QUOTES) ?>">
-                                <input type="hidden" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>">
-                                <input type="hidden" name="type" value="<?= htmlspecialchars($typeF, ENT_QUOTES) ?>">
-                                <input type="hidden" name="from" value="<?= htmlspecialchars($rangeExplicit ? $from : '', ENT_QUOTES) ?>">
-                                <input type="hidden" name="to" value="<?= htmlspecialchars($rangeExplicit ? $to : '', ENT_QUOTES) ?>">
-                                <input type="hidden" name="view" value="<?= htmlspecialchars($view, ENT_QUOTES) ?>">
-                                <input type="hidden" name="page" value="<?= $page ?>">
-                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        <?php
+                        // Shared context inputs (CSRF + where-to-return) for both
+                        // the soft and hard delete forms on this row.
+                        $ctx = csrf_input()
+                            . '<input type="hidden" name="channel" value="' . htmlspecialchars($channel, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="q" value="' . htmlspecialchars($search, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="type" value="' . htmlspecialchars($typeF, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="from" value="' . htmlspecialchars($rangeExplicit ? $from : '', ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="to" value="' . htmlspecialchars($rangeExplicit ? $to : '', ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="view" value="' . htmlspecialchars($view, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="page" value="' . (int) $page . '">';
+                        ?>
+                        <div class="td-actions">
+                            <?php if (!$isDeleted): ?>
+                                <form method="POST" action="/admin/messages/<?= urlencode($msg['id']) ?>/delete"
+                                      onsubmit="return confirm('Soft-delete this message? It becomes a tombstone (the row is kept for context).')">
+                                    <?= $ctx ?>
+                                    <button type="submit" class="btn btn-secondary btn-sm">Delete</button>
+                                </form>
+                            <?php endif; ?>
+                            <form method="POST" action="/admin/messages/<?= urlencode($msg['id']) ?>/hard-delete"
+                                  onsubmit="return confirm('PERMANENTLY delete this message and any reactions on it? This removes the row entirely and cannot be undone.')">
+                                <?= $ctx ?>
+                                <button type="submit" class="btn btn-danger btn-sm">Hard delete</button>
                             </form>
-                        <?php else: ?>
-                            <span style="color:#444;font-size:11px">deleted</span>
-                        <?php endif; ?>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; endif; ?>
