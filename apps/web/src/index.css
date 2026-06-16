@@ -5259,6 +5259,7 @@ html, body, #root {
 .pub-profile-avatar {
   width: 72px !important;
   height: 72px !important;
+  border-radius: 50%;
   font-size: 1.9rem !important;
   object-fit: cover;
   border: 2px solid var(--accent);
