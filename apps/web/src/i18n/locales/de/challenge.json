@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "Meine Challenges" },
+  "showcase": {
+    "cta": "Erfolgreiche Challenges",
+    "title": "✨ Erfolgreiche Challenges",
+    "allCities": "Alle Städte",
+    "clearCity": "Zurücksetzen",
+    "localTag": "Lokal",
+    "by": "von {{name}}",
+    "loadMore": "Mehr laden",
+    "empty": {
+      "title": "Noch keine Erfolge",
+      "body": "Abgeschlossene, top bewertete Challenges erscheinen hier. Mach du die erste!"
+    }
+  },
+  "myChallenges": {
+    "cta": "Meine Challenges"
+  },
   "tabIntro": "Challenges zwischen Einheimischen und Entdeckern in einer Stadt - und stadtübergreifend.",
   "howItWorks": "So funktioniert's",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Bewerte dein Treffen mit {{name}}",
-      "titleUrgent": "{{name}} hat bewertet - du bist dran"
+      "title": "Bewerte diese Challenge - wie lief’s?",
+      "titleUrgent": "Du bist dran, diese Challenge zu bewerten"
     },
     "sheet": {
-      "title": "Wie war’s mit {{name}}?",
+      "title": "Wie lief die Challenge?",
       "starsAria": "{{n}} Stern",
-      "commentPlaceholder": "Was ist dir aufgefallen? (optional)",
+      "commentPlaceholder": "Hinterlasse eine Notiz zur Challenge (optional)",
       "submit": "Bewertung senden",
-      "later": "Später"
+      "later": "Später",
+      "subtitle": "Bewerte die Challenge, nicht die Person."
     },
     "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
   },

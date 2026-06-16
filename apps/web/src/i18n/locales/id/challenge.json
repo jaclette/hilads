@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "Tantangan saya" },
+  "showcase": {
+    "cta": "Tantangan sukses",
+    "title": "✨ Tantangan sukses",
+    "allCities": "Semua kota",
+    "clearCity": "Hapus",
+    "localTag": "Lokal",
+    "by": "oleh {{name}}",
+    "loadMore": "Muat lebih banyak",
+    "empty": {
+      "title": "Belum ada kisah sukses",
+      "body": "Tantangan yang selesai dan berperingkat tinggi muncul di sini. Jadilah yang pertama!"
+    }
+  },
+  "myChallenges": {
+    "cta": "Tantangan saya"
+  },
   "tabIntro": "Tantangan antara warga lokal dan penjelajah dalam satu kota - dan lintas kota.",
   "howItWorks": "Cara kerjanya",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Beri rating pertemuanmu sama {{name}}",
-      "titleUrgent": "{{name}} sudah ngerating - giliranmu"
+      "title": "Nilai tantangan ini - bagaimana hasilnya?",
+      "titleUrgent": "Giliranmu menilai tantangan ini"
     },
     "sheet": {
-      "title": "Gimana sama {{name}}?",
+      "title": "Bagaimana tantangannya?",
       "starsAria": "{{n}} bintang",
-      "commentPlaceholder": "Apa yang berkesan? (opsional)",
+      "commentPlaceholder": "Tinggalkan catatan tentang tantangan ini (opsional)",
       "submit": "Kirim rating",
-      "later": "Nanti aja"
+      "later": "Nanti aja",
+      "subtitle": "Nilai tantangannya, bukan orangnya."
     },
     "errSubmit": "Gagal kirim rating. Coba lagi."
   },

@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "Thử thách thành công",
+    "title": "✨ Thử thách thành công",
+    "allCities": "Tất cả thành phố",
+    "clearCity": "Xóa",
+    "localTag": "Trong thành phố",
+    "by": "bởi {{name}}",
+    "loadMore": "Tải thêm",
+    "empty": {
+      "title": "Chưa có câu chuyện thành công",
+      "body": "Những thử thách đã hoàn thành và được đánh giá cao sẽ xuất hiện ở đây. Hãy là người đầu tiên!"
+    }
+  },
   "myChallenges": {
     "cta": "Thử thách của tôi",
     "title": "Thử thách của tôi",
@@ -470,15 +483,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Đánh giá buổi gặp với {{name}}",
-      "titleUrgent": "{{name}} đã đánh giá - đến lượt bạn"
+      "title": "Đánh giá thử thách này - mọi thứ thế nào?",
+      "titleUrgent": "Đến lượt bạn đánh giá thử thách này"
     },
     "sheet": {
-      "title": "Buổi gặp với {{name}} thế nào?",
+      "title": "Thử thách diễn ra thế nào?",
       "starsAria": "{{n}} sao",
-      "commentPlaceholder": "Điều gì ấn tượng nhất? (tuỳ chọn)",
+      "commentPlaceholder": "Để lại ghi chú về thử thách (tùy chọn)",
       "submit": "Gửi đánh giá",
-      "later": "Để sau"
+      "later": "Để sau",
+      "subtitle": "Đánh giá thử thách, không phải con người."
     },
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
   },

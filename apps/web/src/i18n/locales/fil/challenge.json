@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "Mga challenge ko" },
+  "showcase": {
+    "cta": "Mga matagumpay na challenge",
+    "title": "✨ Mga matagumpay na challenge",
+    "allCities": "Lahat ng lungsod",
+    "clearCity": "I-clear",
+    "localTag": "Lokal",
+    "by": "ni {{name}}",
+    "loadMore": "Mag-load pa",
+    "empty": {
+      "title": "Wala pang success story",
+      "body": "Lumalabas dito ang mga natapos at mataas ang rating na challenge. Maging una kang gumawa!"
+    }
+  },
+  "myChallenges": {
+    "cta": "Mga challenge ko"
+  },
   "tabIntro": "Mga challenge sa pagitan ng mga local at explorer sa loob ng isang siyudad - at across cities.",
   "howItWorks": "Paano ito gumagana",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "I-rate ang meet-up mo kay {{name}}",
-      "titleUrgent": "Nag-rate na si {{name}} - ikaw na"
+      "title": "I-rate ang challenge na ito - kumusta?",
+      "titleUrgent": "Ikaw na ang mag-rate sa challenge na ito"
     },
     "sheet": {
-      "title": "Kumusta kay {{name}}?",
+      "title": "Kumusta ang challenge?",
       "starsAria": "{{n}} star",
-      "commentPlaceholder": "Anong na-stand out? (optional)",
+      "commentPlaceholder": "Mag-iwan ng note tungkol sa challenge (opsyonal)",
       "submit": "I-submit ang rating",
-      "later": "Mamaya na"
+      "later": "Mamaya na",
+      "subtitle": "I-rate ang challenge, hindi ang tao."
     },
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   },

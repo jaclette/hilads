@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "我的挑戰" },
+  "showcase": {
+    "cta": "成功的挑戰",
+    "title": "✨ 成功的挑戰",
+    "allCities": "所有城市",
+    "clearCity": "清除",
+    "localTag": "本地",
+    "by": "由 {{name}}",
+    "loadMore": "載入更多",
+    "empty": {
+      "title": "還沒有成功故事",
+      "body": "已完成且高評分的挑戰會顯示在這裡。來當第一個吧！"
+    }
+  },
+  "myChallenges": {
+    "cta": "我的挑戰"
+  },
   "tabIntro": "本地人與探索者在城市內的挑戰 - 也跨越城市。",
   "howItWorks": "玩法介紹",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "為與{{name}}的見面評分",
-      "titleUrgent": "{{name}}已評分 - 輪到你了"
+      "title": "為這個挑戰評分 - 感覺如何？",
+      "titleUrgent": "輪到你為這個挑戰評分了"
     },
     "sheet": {
-      "title": "和{{name}}的見面怎麼樣？",
+      "title": "這個挑戰怎麼樣？",
       "starsAria": "{{n}}星",
-      "commentPlaceholder": "什麼讓你印象深刻？（可選）",
+      "commentPlaceholder": "留下對這個挑戰的評價（可選）",
       "submit": "送出評分",
-      "later": "稍後"
+      "later": "稍後",
+      "subtitle": "評價挑戰本身，而不是某個人。"
     },
     "errSubmit": "評分送出失敗，請重試。"
   },

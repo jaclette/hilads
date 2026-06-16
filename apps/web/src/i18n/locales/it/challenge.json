@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "Le mie sfide" },
+  "showcase": {
+    "cta": "Sfide riuscite",
+    "title": "✨ Sfide riuscite",
+    "allCities": "Tutte le città",
+    "clearCity": "Rimuovi",
+    "localTag": "Locale",
+    "by": "di {{name}}",
+    "loadMore": "Carica altro",
+    "empty": {
+      "title": "Ancora nessun successo",
+      "body": "Le sfide completate e più apprezzate appaiono qui. Sii il primo a realizzarne una!"
+    }
+  },
+  "myChallenges": {
+    "cta": "Le mie sfide"
+  },
   "tabIntro": "Sfide tra locali ed esploratori in una città - e tra città diverse.",
   "howItWorks": "Come funziona",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Valuta il tuo incontro con {{name}}",
-      "titleUrgent": "{{name}} ha valutato - tocca a te"
+      "title": "Valuta questa sfida - com’è andata?",
+      "titleUrgent": "Tocca a te valutare questa sfida"
     },
     "sheet": {
-      "title": "Com’è andata con {{name}}?",
+      "title": "Com’è andata la sfida?",
       "starsAria": "{{n}} stella",
-      "commentPlaceholder": "Cosa ti ha colpito? (facoltativo)",
+      "commentPlaceholder": "Lascia una nota sulla sfida (facoltativo)",
       "submit": "Invia valutazione",
-      "later": "Più tardi"
+      "later": "Più tardi",
+      "subtitle": "Valuta la sfida, non la persona."
     },
     "errSubmit": "Impossibile inviare la valutazione. Riprova."
   },

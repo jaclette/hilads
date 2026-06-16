@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "成功した挑戦",
+    "title": "✨ 成功した挑戦",
+    "allCities": "すべての都市",
+    "clearCity": "クリア",
+    "localTag": "ローカル",
+    "by": "{{name}}さん",
+    "loadMore": "もっと見る",
+    "empty": {
+      "title": "まだ成功事例がありません",
+      "body": "完了して高評価の挑戦がここに表示されます。最初の一人になろう！"
+    }
+  },
   "myChallenges": {
     "cta": "自分の挑戦",
     "title": "自分の挑戦",
@@ -470,15 +483,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "{{name}}さんとの集まりを評価しよう",
-      "titleUrgent": "{{name}}さんは評価済み - あなたの番"
+      "title": "この挑戦を評価しよう - どうだった？",
+      "titleUrgent": "あなたがこの挑戦を評価する番です"
     },
     "sheet": {
-      "title": "{{name}}さんとはどうでしたか？",
+      "title": "挑戦はどうだった？",
       "starsAria": "{{n}}つ星",
-      "commentPlaceholder": "印象に残ったことは？（任意）",
+      "commentPlaceholder": "挑戦についてのメモを残そう（任意）",
       "submit": "評価を送信",
-      "later": "あとで"
+      "later": "あとで",
+      "subtitle": "人ではなく、挑戦を評価しよう。"
     },
     "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
   },

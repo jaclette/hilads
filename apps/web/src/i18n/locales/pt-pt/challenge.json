@@ -1,5 +1,20 @@
 {
-  "myChallenges": { "cta": "Os meus desafios" },
+  "showcase": {
+    "cta": "Desafios bem-sucedidos",
+    "title": "✨ Desafios bem-sucedidos",
+    "allCities": "Todas as cidades",
+    "clearCity": "Limpar",
+    "localTag": "Local",
+    "by": "por {{name}}",
+    "loadMore": "Carregar mais",
+    "empty": {
+      "title": "Ainda não há histórias de sucesso",
+      "body": "Os desafios concluídos e bem avaliados aparecem aqui. Sê o primeiro a realizar um!"
+    }
+  },
+  "myChallenges": {
+    "cta": "Os meus desafios"
+  },
   "tabIntro": "Desafios entre locais e exploradores dentro de uma cidade - e entre cidades.",
   "howItWorks": "Como funciona",
   "mostLocal": "Most Local",
@@ -447,15 +462,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Avalia o teu encontro com {{name}}",
-      "titleUrgent": "{{name}} avaliou - é a tua vez"
+      "title": "Avalia este desafio - como correu?",
+      "titleUrgent": "É a tua vez de avaliar este desafio"
     },
     "sheet": {
-      "title": "Como foi com {{name}}?",
+      "title": "Como correu o desafio?",
       "starsAria": "{{n}} estrela",
-      "commentPlaceholder": "O que te marcou? (opcional)",
+      "commentPlaceholder": "Deixa uma nota sobre o desafio (opcional)",
       "submit": "Enviar avaliação",
-      "later": "Agora não"
+      "later": "Agora não",
+      "subtitle": "Avalia o desafio, não a pessoa."
     },
     "errSubmit": "Não foi possível enviar a tua avaliação. Tenta de novo."
   },

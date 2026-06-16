@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "Desafios de sucesso",
+    "title": "✨ Desafios de sucesso",
+    "allCities": "Todas as cidades",
+    "clearCity": "Limpar",
+    "localTag": "Local",
+    "by": "por {{name}}",
+    "loadMore": "Carregar mais",
+    "empty": {
+      "title": "Ainda não há histórias de sucesso",
+      "body": "Desafios concluídos e bem avaliados aparecem aqui. Seja o primeiro a realizar um!"
+    }
+  },
   "myChallenges": {
     "cta": "Meus desafios",
     "title": "Meus desafios",
@@ -470,15 +483,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Avalie seu encontro com {{name}}",
-      "titleUrgent": "{{name}} já avaliou - sua vez"
+      "title": "Avalie este desafio - como foi?",
+      "titleUrgent": "É a sua vez de avaliar este desafio"
     },
     "sheet": {
-      "title": "Como foi com {{name}}?",
+      "title": "Como foi o desafio?",
       "starsAria": "{{n}} estrela",
-      "commentPlaceholder": "O que se destacou? (opcional)",
+      "commentPlaceholder": "Deixe uma nota sobre o desafio (opcional)",
       "submit": "Enviar avaliação",
-      "later": "Agora não"
+      "later": "Agora não",
+      "subtitle": "Avalie o desafio, não a pessoa."
     },
     "errSubmit": "Não foi possível enviar sua avaliação. Tente de novo."
   },

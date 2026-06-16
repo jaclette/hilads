@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "Retos exitosos",
+    "title": "✨ Retos exitosos",
+    "allCities": "Todas las ciudades",
+    "clearCity": "Quitar",
+    "localTag": "Local",
+    "by": "por {{name}}",
+    "loadMore": "Cargar más",
+    "empty": {
+      "title": "Aún no hay éxitos",
+      "body": "Los retos completados y mejor valorados aparecen aquí. ¡Sé el primero en lograr uno!"
+    }
+  },
   "myChallenges": {
     "cta": "Mis retos",
     "title": "Mis retos",
@@ -470,15 +483,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Valora tu encuentro con {{name}}",
-      "titleUrgent": "{{name}} ya valoró - te toca"
+      "title": "Valora este reto - ¿qué tal fue?",
+      "titleUrgent": "Te toca valorar este reto"
     },
     "sheet": {
-      "title": "¿Cómo te fue con {{name}}?",
+      "title": "¿Qué tal fue el reto?",
       "starsAria": "{{n}} estrella",
-      "commentPlaceholder": "¿Qué destacó? (opcional)",
+      "commentPlaceholder": "Deja una nota sobre el reto (opcional)",
       "submit": "Enviar valoración",
-      "later": "Ahora no"
+      "later": "Ahora no",
+      "subtitle": "Valora el reto, no a la persona."
     },
     "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
   },

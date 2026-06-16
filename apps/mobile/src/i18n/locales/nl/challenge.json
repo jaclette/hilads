@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "Geslaagde challenges",
+    "title": "✨ Geslaagde challenges",
+    "allCities": "Alle steden",
+    "clearCity": "Wissen",
+    "localTag": "Lokaal",
+    "by": "door {{name}}",
+    "loadMore": "Meer laden",
+    "empty": {
+      "title": "Nog geen successen",
+      "body": "Voltooide, hoog gewaardeerde challenges verschijnen hier. Wees de eerste!"
+    }
+  },
   "myChallenges": {
     "cta": "Mijn challenges",
     "title": "Mijn challenges",
@@ -470,15 +483,16 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Beoordeel je ontmoeting met {{name}}",
-      "titleUrgent": "{{name}} heeft beoordeeld - jij bent"
+      "title": "Beoordeel deze challenge - hoe ging het?",
+      "titleUrgent": "Jij bent aan de beurt om deze challenge te beoordelen"
     },
     "sheet": {
-      "title": "Hoe was het met {{name}}?",
+      "title": "Hoe ging de challenge?",
       "starsAria": "{{n}} ster",
-      "commentPlaceholder": "Wat viel je op? (optioneel)",
+      "commentPlaceholder": "Laat een notitie achter over de challenge (optioneel)",
       "submit": "Beoordeling versturen",
-      "later": "Niet nu"
+      "later": "Niet nu",
+      "subtitle": "Beoordeel de challenge, niet de persoon."
     },
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   },
