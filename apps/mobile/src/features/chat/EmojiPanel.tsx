@@ -41,6 +41,10 @@ export function EmojiPanel({ onSelect }: Props) {
       style={styles.panel}
       keyboardShouldPersistTaps="always"
       showsVerticalScrollIndicator={false}
+      // Stop the drag-past-the-last-emoji into empty space: no iOS rubber-band
+      // bounce, no Android overscroll stretch/glow. Content ends at the grid.
+      bounces={false}
+      overScrollMode="never"
     >
       <View style={styles.grid}>
         {EMOJIS.map((emoji) => (
