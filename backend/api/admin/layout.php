@@ -247,6 +247,7 @@ function admin_nav(string $current = ''): void
             '/admin/users'   => 'Users',
             '/admin/events'  => 'Events',
             '/admin/topics'  => 'Hangouts',
+            '/admin/challenges' => 'Challenges',
             '/admin/messages'=> 'Messages',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',

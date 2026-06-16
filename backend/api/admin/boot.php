@@ -125,6 +125,13 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/arrivals') {
     require __DIR__ . '/arrivals.php';
 
+} elseif ($uri === '/admin/challenges') {
+    require __DIR__ . '/challenges.php';
+
+} elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/delete$#', $uri, $m) && $method === 'POST') {
+    $challengeId = $m[1];
+    require __DIR__ . '/challenge_delete.php';
+
 } elseif ($uri === '/admin/reports') {
     require __DIR__ . '/reports.php';
 
