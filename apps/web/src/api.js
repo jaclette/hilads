@@ -1497,6 +1497,20 @@ export async function fetchUserChallenges(userId) {
   return res.json() // { challenges }
 }
 
+// Public "Success challenges" showcase - completed, well-rated challenges
+// (global, or ?cityId). Guest-readable. { items, hasMore }.
+export async function fetchChallengeShowcase({ cityId, limit = 30, before } = {}) {
+  const q = new URLSearchParams()
+  if (cityId) q.set('cityId', String(cityId))
+  if (limit)  q.set('limit', String(limit))
+  if (before) q.set('before', String(before))
+  try {
+    const res = await fetch(`${BASE}/challenges/showcase?${q.toString()}`, { credentials: 'include' })
+    if (!res.ok) return { items: [], hasMore: false }
+    return res.json()
+  } catch { return { items: [], hasMore: false } }
+}
+
 export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch my events')

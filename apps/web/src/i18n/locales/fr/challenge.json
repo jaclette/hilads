@@ -1,4 +1,17 @@
 {
+  "showcase": {
+    "cta": "Défis réussis",
+    "title": "✨ Défis réussis",
+    "allCities": "Toutes les villes",
+    "clearCity": "Effacer",
+    "localTag": "Local",
+    "by": "par {{name}}",
+    "loadMore": "Voir plus",
+    "empty": {
+      "title": "Pas encore de réussites",
+      "body": "Les défis réussis et bien notés apparaîtront ici. Sois le premier à en réaliser un !"
+    }
+  },
   "myChallenges": { "cta": "Mes défis" },
   "tabIntro": "Des défis entre locaux et explorateurs dans une ville - et inter-villes.",
   "howItWorks": "Comment ça marche",

@@ -53,6 +53,7 @@ import MostLocalCard from './components/MostLocalCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import PastArchiveScreen from './components/PastArchiveScreen'
+import SuccessfulChallengesScreen from './components/SuccessfulChallengesScreen'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
@@ -940,6 +941,7 @@ export default function App() {
   const [showEventDrawer, setShowEventDrawer] = useState(false)
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPastArchive, setShowPastArchive] = useState(false)
+  const [showSuccessfulChallenges, setShowSuccessfulChallenges] = useState(false)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [showArrivalsSheet, setShowArrivalsSheet] = useState(false)
   const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
@@ -5458,6 +5460,14 @@ export default function App() {
                 🏆 {t('myChallenges.cta', { ns: 'challenge' })} →
               </button>
             )}
+            {/* Success challenges - public showcase, shown to EVERYONE (discovery). */}
+            <button
+              type="button"
+              className="challenge-successful-cta"
+              onClick={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
+            >
+              ✨ {t('showcase.cta', { ns: 'challenge' })} →
+            </button>
             {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
             <MostLocalCard
               channelId={channelId}
@@ -5597,6 +5607,22 @@ export default function App() {
           onSelectEvent={(event) => { setShowPastArchive(false); handleSelectEvent(event) }}
           onSelectTopic={(topic) => { setShowPastArchive(false); setActiveTopic(topic) }}
           onSelectChallenge={(challenge) => { setShowPastArchive(false); setActiveChallenge(challenge) }}
+        />
+      )}
+
+      {showSuccessfulChallenges && (
+        <SuccessfulChallengesScreen
+          onBack={() => setShowSuccessfulChallenges(false)}
+          onOpenChallenge={(id) => {
+            fetchChallengeById(id).then(data => {
+              if (!data) return
+              const { challenge, cityName, country, timezone } = data
+              setCity(cityName); setCityCountry(country); setCityTimezone(timezone)
+              setShowSuccessfulChallenges(false)
+              setActiveChallenge(challenge)
+            }).catch(() => {})
+          }}
+          onOpenProfile={(uid) => { setShowSuccessfulChallenges(false); openProfile(uid, '') }}
         />
       )}
 
