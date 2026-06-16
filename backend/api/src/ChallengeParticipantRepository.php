@@ -183,15 +183,28 @@ class ChallengeParticipantRepository
         if (!in_array($preference, self::ALLOWED_NOTIFICATION_PREFERENCES, true)) {
             $preference = 'milestones';
         }
-        // UPSERT, not UPDATE: the creator and active acceptors are *implicit*
-        // participants (isParticipant passes them via channel_challenges /
-        // challenge_acceptances) and may have no challenge_participants row yet.
-        // A bare UPDATE hit 0 rows for them → the toggle 403'd → the client's
-        // optimistic flip reverted ("notifications pill won't switch"). The
-        // route guards on isParticipant first, so this only materializes a row
-        // for someone who already belongs in the channel. Same (channel_id,
-        // guest_id) key + guest_id=user_id convention as join().
-        $stmt = Database::pdo()->prepare("
+        $pdo = Database::pdo();
+        // Write keyed on user_id - the SAME key getNotificationPreference reads
+        // on. This matters because participant rows are NOT consistently keyed:
+        // join()/this method use guest_id = user_id, but addParticipant() (the
+        // creator's row at challenge creation, and channel joins) uses the real
+        // guest_id with user_id alongside. The old UPSERT on (channel_id,
+        // guest_id=user_id) missed that row and inserted a DUPLICATE; the read
+        // (WHERE user_id) then returned the stale row, so the toggle "never
+        // persisted". Updating by user_id lands on the existing row(s) - and
+        // updating all of them heals any duplicate left by the old path.
+        $upd = $pdo->prepare("
+            UPDATE challenge_participants
+               SET notification_preference = :pref
+             WHERE channel_id = :cid AND user_id = :uid
+        ");
+        $upd->execute(['cid' => $challengeId, 'uid' => $userId, 'pref' => $preference]);
+        if ($upd->rowCount() > 0) {
+            return true;
+        }
+        // No row yet (implicit creator/acceptor who never materialized one) -
+        // create one keyed (channel_id, guest_id=user_id), matching join().
+        $ins = $pdo->prepare("
             INSERT INTO challenge_participants (channel_id, guest_id, user_id, joined_at, notification_preference)
             VALUES (:cid, :uid, :uid, now(), :pref)
             ON CONFLICT (channel_id, guest_id) DO UPDATE SET
@@ -199,8 +212,8 @@ class ChallengeParticipantRepository
                 user_id = COALESCE(EXCLUDED.user_id, challenge_participants.user_id)
             RETURNING channel_id
         ");
-        $stmt->execute(['cid' => $challengeId, 'uid' => $userId, 'pref' => $preference]);
-        return $stmt->fetchColumn() !== false;
+        $ins->execute(['cid' => $challengeId, 'uid' => $userId, 'pref' => $preference]);
+        return $ins->fetchColumn() !== false;
     }
 
     public static function getNotificationPreference(string $challengeId, string $userId): string
