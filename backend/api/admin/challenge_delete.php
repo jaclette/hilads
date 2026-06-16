@@ -42,6 +42,10 @@ if ($row['status'] === 'deleted') {
 $pdo->prepare("UPDATE channels SET status = 'deleted', updated_at = now() WHERE id = :id")
     ->execute([':id' => $challengeId]);
 
+// Remove the persisted city-feed pill(s) (origin + target city for
+// international) so the "X challenges the locals: …" entry doesn't dangle.
+MessageRepository::deleteFeedAnnouncementsFor('challenge', $challengeId);
+
 error_log('[admin] challenge deleted: ' . $challengeId . ' (' . ($row['title'] ?? '') . ')');
 flash_set('success', 'Challenge "' . ($row['title'] ?? '') . '" deleted.');
 admin_redirect($back);

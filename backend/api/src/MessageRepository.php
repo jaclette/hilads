@@ -651,6 +651,20 @@ class MessageRepository
         ];
     }
 
+    /**
+     * Remove the persisted city-feed announcement pill(s) for a deleted entity
+     * (event / topic / challenge). All pills for one entity share
+     * event=<entityId> - an international challenge has one row per city
+     * (origin + target), so a single DELETE clears them all. Called when the
+     * entity itself is deleted so the feed entry doesn't dangle.
+     * $type is the feed message type: 'event' | 'topic' | 'challenge'.
+     */
+    public static function deleteFeedAnnouncementsFor(string $type, string $entityId): void
+    {
+        Database::pdo()->prepare("DELETE FROM messages WHERE type = :type AND event = :id")
+            ->execute(['type' => $type, 'id' => $entityId]);
+    }
+
     public static function add(
         int|string $channelId,
         string $guestId,

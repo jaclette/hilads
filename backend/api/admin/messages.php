@@ -84,20 +84,25 @@ admin_nav('/admin/messages');
     $page    = max(1, (int)($_GET['page'] ?? 1));
     $offset  = ($page - 1) * $perPage;
 
+    // Include the persisted activity-feed rows (event / topic / challenge
+    // creation pills) alongside chat text/image so they can be moderated +
+    // hard-deleted here too - e.g. duplicate "X challenges the locals: …" pills.
+    $MOD_TYPES = "('text', 'image', 'event', 'topic', 'challenge')";
+
     $cntStmt = $pdo->prepare("
         SELECT COUNT(*) FROM messages
-        WHERE channel_id = :cid AND type IN ('text', 'image')$dateFilter
+        WHERE channel_id = :cid AND type IN $MOD_TYPES$dateFilter
     ");
     $cntStmt->execute([':cid' => $channel] + $dateBinds);
     $total = (int) $cntStmt->fetchColumn();
     $pages = (int) ceil($total / $perPage);
 
     $mStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id, content, image_url,
+        SELECT id, type, event, nickname, user_id, guest_id, content, image_url,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts,
                deleted_at
         FROM messages
-        WHERE channel_id = :cid AND type IN ('text', 'image')$dateFilter
+        WHERE channel_id = :cid AND type IN $MOD_TYPES$dateFilter
         ORDER BY created_at DESC
         LIMIT :lim OFFSET :off
     ");
@@ -157,6 +162,15 @@ admin_nav('/admin/messages');
                         <?php if ($isDeleted): ?>
                             <span style="color:#555;font-style:italic">— deleted —</span>
                         <?php else: ?>
+                            <?php
+                            // Activity-feed rows (event/topic/challenge creation
+                            // pills) carry the entity title in `content`; flag
+                            // them so they're distinguishable from chat text.
+                            if (isset($TYPE_LABELS[$msg['type']])):
+                                $fb = $TYPE_BADGE[$msg['type']];
+                            ?>
+                                <span class="badge" style="background:<?= $fb ?>22;color:<?= $fb ?>;border:1px solid <?= $fb ?>55;margin-right:6px"><?= htmlspecialchars($TYPE_LABELS[$msg['type']], ENT_QUOTES) ?> feed</span>
+                            <?php endif; ?>
                             <?php if (!empty($msg['content'])): ?>
                                 <span style="color:#ddd;white-space:pre-wrap"><?= htmlspecialchars($msg['content'], ENT_QUOTES) ?></span>
                             <?php endif; ?>

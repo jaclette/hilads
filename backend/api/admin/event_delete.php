@@ -53,4 +53,7 @@ if ($mode === 'series') {
     flash_set('success', 'Hi plan "' . $event['title'] . '" deleted.');
 }
 
+// Remove the persisted city-feed "New event: …" pill so it doesn't dangle.
+MessageRepository::deleteFeedAnnouncementsFor('event', $eventId);
+
 admin_redirect('/admin/events');

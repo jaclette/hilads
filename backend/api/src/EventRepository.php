@@ -913,6 +913,10 @@ class EventRepository
         $pdo->prepare("UPDATE channels       SET status = 'deleted', updated_at = now() WHERE id = :id")->execute(['id' => $eventId]);
         $pdo->prepare("UPDATE channel_events SET expires_at = now()                      WHERE channel_id = :id")->execute(['id' => $eventId]);
 
+        // Remove the persisted city-feed "New event: …" pill so it doesn't
+        // dangle after the event is gone.
+        \MessageRepository::deleteFeedAnnouncementsFor('event', $eventId);
+
         return true;
     }
 

@@ -29,6 +29,9 @@ if ($topic['status'] === 'deleted') {
 
 TopicRepository::adminDelete($topicId);
 
+// Remove the persisted city-feed hangout pill so it doesn't dangle.
+MessageRepository::deleteFeedAnnouncementsFor('topic', $topicId);
+
 error_log('[admin] topic deleted: ' . $topicId . ' (' . $topic['title'] . ')');
 flash_set('success', 'Hi now "' . $topic['title'] . '" deleted.');
 
