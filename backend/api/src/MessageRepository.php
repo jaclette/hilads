@@ -69,6 +69,34 @@ class MessageRepository
             ];
         }
 
+        // Topic / challenge announcements mirror 'event' - the `event` column
+        // holds the entity (hangout/challenge) channel id, content the title.
+        // Challenge mode/audience/flags are reconstructed client-side from the
+        // loaded city-challenge list (not stored on the row).
+        if ($row['type'] === 'topic') {
+            return [
+                'id'        => $row['id'],
+                'channelId' => $channelId,
+                'type'      => 'topic',
+                'topicId'   => $row['event'],
+                'content'   => $row['content'],
+                'nickname'  => $row['nickname'] ?? '',
+                'createdAt' => $createdAt,
+            ];
+        }
+
+        if ($row['type'] === 'challenge') {
+            return [
+                'id'          => $row['id'],
+                'channelId'   => $channelId,
+                'type'        => 'challenge',
+                'challengeId' => $row['event'],
+                'content'     => $row['content'],
+                'nickname'    => $row['nickname'] ?? '',
+                'createdAt'   => $createdAt,
+            ];
+        }
+
         $deletedAt = !empty($row['deleted_at']) ? (int) $row['deleted_at'] : null;
         $editedAt  = !empty($row['edited_at'])  ? (int) $row['edited_at']  : null;
 
@@ -568,6 +596,58 @@ class MessageRepository
             'content'   => $title,
             'nickname'  => $nickname,
             'createdAt' => time(),
+        ];
+    }
+
+    /**
+     * Stores a hangout ("Hi now") announcement feed item in the city channel.
+     * type='topic', event column = topic channel ID, content = title. The
+     * topic pill never shows a nickname, so it defaults to ''.
+     */
+    public static function addTopicAnnouncement(int|string $channelId, string $topicId, string $title, string $guestId, string $nickname = ''): array
+    {
+        $id = bin2hex(random_bytes(8));
+
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, event, guest_id, nickname, content)
+            VALUES (?, ?, 'topic', ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $topicId, $guestId, $nickname, $title]);
+
+        return [
+            'id'        => $id,
+            'channelId' => $channelId,
+            'type'      => 'topic',
+            'topicId'   => $topicId,
+            'content'   => $title,
+            'nickname'  => $nickname,
+            'createdAt' => time(),
+        ];
+    }
+
+    /**
+     * Stores a challenge announcement feed item in a city channel. type=
+     * 'challenge', event column = challenge channel ID, content = title. For
+     * international challenges this is called once per city (origin + target).
+     * mode/audience/flags are NOT stored - clients reconstruct them from the
+     * loaded city-challenge list by challengeId.
+     */
+    public static function addChallengeAnnouncement(int|string $channelId, string $challengeId, string $title, string $guestId, string $nickname): array
+    {
+        $id = bin2hex(random_bytes(8));
+
+        Database::pdo()->prepare("
+            INSERT INTO messages (id, channel_id, type, event, guest_id, nickname, content)
+            VALUES (?, ?, 'challenge', ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $challengeId, $guestId, $nickname, $title]);
+
+        return [
+            'id'          => $id,
+            'channelId'   => $channelId,
+            'type'        => 'challenge',
+            'challengeId' => $challengeId,
+            'content'     => $title,
+            'nickname'    => $nickname,
+            'createdAt'   => time(),
         ];
     }
 

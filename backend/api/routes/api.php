@@ -4530,6 +4530,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
         error_log("[event-create] ws broadcast failed (non-fatal): " . $e->getMessage());
     }
 
+    // Persist a permanent "new event" feed pill in the city chat (so it shows
+    // on scroll-back, not just live) + broadcast it as a message. Non-fatal.
+    try {
+        $feedMsg = MessageRepository::addEventAnnouncement((int) $channelId, $event['id'], $title, $guestId, $nickname);
+        broadcastMessageToWs((int) $channelId, $feedMsg);
+    } catch (\Throwable $e) {
+        error_log("[event-create] feed message failed (non-fatal): " . $e->getMessage());
+    }
+
     // Notify registered users currently online in this city (non-fatal side effect).
     try {
         $cityChannelId = "city_{$channelId}";
@@ -6808,6 +6817,15 @@ $router->add('POST', '/api/v1/channels/{channelId}/topics', function (array $par
             error_log('[topics] ws broadcast failed (non-fatal): ' . $e->getMessage());
         }
 
+        // Persist a permanent "new hangout" feed pill in the city chat. The
+        // topic pill carries no nickname. Non-fatal.
+        try {
+            $feedMsg = MessageRepository::addTopicAnnouncement((int) $channelId, $topic['id'], $topic['title'] ?? $title, $guestId, '');
+            broadcastMessageToWs((int) $channelId, $feedMsg);
+        } catch (\Throwable $e) {
+            error_log('[topics] feed message failed (non-fatal): ' . $e->getMessage());
+        }
+
         Response::json($topic, 201);
     } catch (\Throwable $e) {
         error_log('[topics] POST create failed ch=' . $channelId . ': ' . $e->getMessage());
@@ -7990,6 +8008,34 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             }
         } catch (\Throwable $e) {
             error_log('[challenges] ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
+        // Persist a permanent "new challenge" feed pill in the city chat (so it
+        // shows on scroll-back, not just live). International challenges get one
+        // row in EACH city (origin + target). The DB row stays minimal; the live
+        // broadcast is enriched with mode/audience/flags so connected clients
+        // pick the right variant without a refetch (reload reconstructs them
+        // from the city-challenge list). Non-fatal.
+        try {
+            $annNick    = $nickname ?? 'Someone';
+            $annEnrich  = [
+                'challengeMode'          => $challenge['mode'] ?? $mode,
+                'audience'               => $challenge['audience'] ?? $audience,
+                'challengeCountry'       => $challenge['country'] ?? null,
+                'challengeTargetCountry' => $challenge['target_country'] ?? null,
+            ];
+            $feedMsg = MessageRepository::addChallengeAnnouncement((int) $channelId, $challenge['id'], $title, $guestId, $annNick);
+            broadcastMessageToWs((int) $channelId, array_merge($feedMsg, $annEnrich));
+
+            if ($mode === 'international' && $targetCityId !== null) {
+                $targetChannelInt = (int) str_replace('city_', '', $targetCityId);
+                if ($targetChannelInt > 0) {
+                    $feedMsgT = MessageRepository::addChallengeAnnouncement($targetChannelInt, $challenge['id'], $title, $guestId, $annNick);
+                    broadcastMessageToWs($targetChannelInt, array_merge($feedMsgT, $annEnrich));
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[challenges] feed message failed (non-fatal): ' . $e->getMessage());
         }
 
         // ── Score-celebration nudge to the creator ─────────────────────────

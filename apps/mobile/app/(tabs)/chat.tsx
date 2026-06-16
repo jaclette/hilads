@@ -402,6 +402,13 @@ export default function ChatTab() {
   const seenChallengeIds = useRef(new Set<string>());
   const seenValidatedIds = useRef(new Set<string>());
   const [challengeCount, setChallengeCount] = useState(0);
+  // challengeId → {mode, audience, flags} used to hydrate PERSISTED challenge
+  // feed pills on reload (the stored message row carries only id+title). Live
+  // broadcasts already inline these fields, so this only matters on history.
+  const [challengeMeta, setChallengeMeta] = useState<Record<string, {
+    mode?: 'local' | 'international'; audience?: 'locals' | 'explorers';
+    country?: string | null; target_country?: string | null;
+  }>>({});
 
   useEffect(() => {
     if (!channelId) return;
@@ -414,6 +421,11 @@ export default function ChatTab() {
       // Remember the ids already counted so a racing `new_challenge` WS event
       // for one of them can't double-count.
       chs.forEach(c => seenChallengeIds.current.add(c.id));
+      setChallengeMeta(prev => {
+        const next = { ...prev };
+        chs.forEach(c => { next[c.id] = { mode: c.mode, audience: c.audience, country: c.country, target_country: c.target_country }; });
+        return next;
+      });
     }).catch(() => {});
 
     // WS: new challenge created → bump the hero count (deduped against the
@@ -422,6 +434,14 @@ export default function ChatTab() {
       if (String(data.channelId) !== String(channelId)) return;
       const ch = data.challenge as Record<string, unknown> | undefined;
       const id = (ch?.id ?? '') as string;
+      if (ch && id) {
+        setChallengeMeta(prev => ({ ...prev, [id]: {
+          mode: ch.mode as 'local' | 'international' | undefined,
+          audience: ch.audience as 'locals' | 'explorers' | undefined,
+          country: (ch.country ?? null) as string | null,
+          target_country: (ch.target_country ?? null) as string | null,
+        } }));
+      }
       if (!id || seenChallengeIds.current.has(id)) return;
       seenChallengeIds.current.add(id);
       setChallengeCount(c => c + 1);
@@ -687,12 +707,26 @@ export default function ChatTab() {
   //   index 0 = bottom of screen (newest message, near input)
   //   high index = top of screen (oldest, user scrolls up)
   const allMessages = useMemo<Message[]>(() => {
-    const chat = messages.filter(m =>
-      !(m.type === 'system' && (m.event === 'weather' || m.event === 'join'))
-    );
+    const chat = messages
+      .filter(m => !(m.type === 'system' && (m.event === 'weather' || m.event === 'join')))
+      // Persisted challenge pills carry only id+title; hydrate mode/audience/
+      // flags from the loaded city-challenge list so reload renders the right
+      // variant (international vs local). Live messages already inline these.
+      .map(m => {
+        if (m.type !== 'challenge' || !m.challengeId) return m;
+        const meta = challengeMeta[m.challengeId];
+        if (!meta) return m;
+        return {
+          ...m,
+          challengeMode:          m.challengeMode          ?? meta.mode,
+          audience:               m.audience               ?? meta.audience,
+          challengeCountry:       m.challengeCountry        ?? meta.country,
+          challengeTargetCountry: m.challengeTargetCountry  ?? meta.target_country,
+        };
+      });
     return [...chat, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
-  }, [messages, promptItems]);
+  }, [messages, promptItems, challengeMeta]);
 
   // Counts that feed the persistent activity pills. Pulled from the
   // same state arrays we used to inject pills into the feed - we keep
@@ -846,10 +880,10 @@ export default function ChatTab() {
         isHighlighted={highlightedMsgId === item.id}
         onReact={handleReact}
         autoDismiss={
-          item.type === 'event'
-          || item.type === 'topic'
-          || item.type === 'challenge'
-          || item.type === 'challenge_validated'
+          // event/topic/challenge are now PERMANENT city-chat feed entries
+          // (persisted messages) - they must not fade. Only the live-only
+          // celebration + nudge cards still auto-dismiss.
+          item.type === 'challenge_validated'
           || item.type === 'prompt'
           || item.type === 'activity'
         }
