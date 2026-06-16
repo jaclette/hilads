@@ -27,8 +27,8 @@ $search  = trim($_GET['q'] ?? '');
 $typeF   = $_GET['type'] ?? 'all';
 $channel = trim($_GET['channel'] ?? '');
 
-// ── Date range (UTC). Back-compat: legacy ?date= → from=to=date. ────────────
-$today  = gmdate('Y-m-d');
+// ── Date range (UTC+7). Back-compat: legacy ?date= → from=to=date. ────────────
+$today  = date('Y-m-d');
 $valid  = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
 $legacy = $valid($_GET['date'] ?? '');
 $fromRaw = $valid($_GET['from'] ?? '');
@@ -41,9 +41,9 @@ if ((strtotime($to) - strtotime($from)) / 86400 > 92) {
     $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d');
 }
 $view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
-$ds = $from . ' 00:00:00+00';
-$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('UTC')))
-          ->modify('+1 day')->format('Y-m-d H:i:s') . '+00';
+$ds = $from . ' 00:00:00+07:00';
+$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('Asia/Ho_Chi_Minh')))
+          ->modify('+1 day')->format('Y-m-d H:i:s') . '+07:00';
 $rangeLabel = $from === $to ? $from : "$from → $to";
 
 $PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899',
@@ -323,7 +323,7 @@ admin_nav('/admin/messages');
     if ($view === 'daily'):
         $stmt = $pdo->prepare("
             SELECT c.id, c.name,
-                   (m.created_at AT TIME ZONE 'UTC')::date AS day,
+                   (m.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day,
                    COUNT(m.id) AS cnt
             FROM channels c
             JOIN messages m ON m.channel_id = c.id
@@ -350,7 +350,7 @@ admin_nav('/admin/messages');
         $maxDayTotal = $dayTotals ? max($dayTotals) : 0;
         $grandTotal  = array_sum($cityTotals);
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php if (empty($cityTotals)): ?>
             <p class="no-results" style="padding:30px 0">No city messages in this range.</p>
@@ -383,7 +383,7 @@ admin_nav('/admin/messages');
         $i = 0;
         foreach ($cities as $r) { $barColors[$r['id']] = $PALETTE[$i % count($PALETTE)]; $i++; }
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalMsgs) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalMsgs) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php
         $chartLink = static fn(string $id): string =>

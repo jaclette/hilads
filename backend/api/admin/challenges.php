@@ -8,8 +8,8 @@ $pdo = Database::pdo();
 
 $TYPE_ICON = ['food' => '🍜', 'place' => '📍', 'culture' => '🎭', 'help' => '🤝'];
 
-// ── Date range (UTC) ────────────────────────────────────────────────────────
-$today  = gmdate('Y-m-d');
+// ── Date range (UTC+7) ────────────────────────────────────────────────────────
+$today  = date('Y-m-d');
 $valid  = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
 $city   = trim($_GET['city'] ?? '');
 $from   = $valid($_GET['from'] ?? '') ?: $today;
@@ -19,9 +19,9 @@ if ((strtotime($to) - strtotime($from)) / 86400 > 92) {
     $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d');
 }
 $view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
-$ds = $from . ' 00:00:00+00';
-$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('UTC')))
-          ->modify('+1 day')->format('Y-m-d H:i:s') . '+00';
+$ds = $from . ' 00:00:00+07:00';
+$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('Asia/Ho_Chi_Minh')))
+          ->modify('+1 day')->format('Y-m-d H:i:s') . '+07:00';
 $rangeLabel = $from === $to ? $from : "$from → $to";
 $PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899',
             '#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
@@ -156,7 +156,7 @@ admin_nav('/admin/challenges');
     ";
     $dailySql = "
         SELECT cc.city_id AS id, p.name AS name,
-               (cc.created_at AT TIME ZONE 'UTC')::date AS day, COUNT(*) AS cnt
+               (cc.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day, COUNT(*) AS cnt
         FROM channel_challenges cc
         JOIN channels p ON p.id = cc.city_id
         WHERE cc.created_at >= :ds::timestamptz AND cc.created_at < :de::timestamptz

@@ -12,16 +12,16 @@ $search  = trim($_GET['q'] ?? '');
 $filter  = $_GET['filter'] ?? 'all';   // all | active | expired
 $city    = trim($_GET['city'] ?? '');
 
-// Per-city diagram + city drill-in range (UTC).
-$today  = gmdate('Y-m-d');
+// Per-city diagram + city drill-in range (UTC+7).
+$today  = date('Y-m-d');
 $dvalid = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
 $from   = $dvalid($_GET['from'] ?? '') ?: $today;
 $to     = $dvalid($_GET['to']   ?? '') ?: $from;
 if ($to < $from) { $to = $from; }
 if ((strtotime($to) - strtotime($from)) / 86400 > 92) { $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d'); }
 $view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
-$ds = $from . ' 00:00:00+00';
-$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d H:i:s') . '+00';
+$ds = $from . ' 00:00:00+07:00';
+$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('Asia/Ho_Chi_Minh')))->modify('+1 day')->format('Y-m-d H:i:s') . '+07:00';
 $rangeLabel = $from === $to ? $from : "$from → $to";
 $PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
 $isDefault = ($search === '' && $filter === 'all' && $city === '');
@@ -143,7 +143,7 @@ admin_nav('/admin/topics');
         ";
         $dailySql = "
             SELECT ct.city_id AS id, p.name AS name,
-                   (ct.created_at AT TIME ZONE 'UTC')::date AS day, COUNT(*) AS cnt
+                   (ct.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day, COUNT(*) AS cnt
             FROM channel_topics ct
             JOIN channels p ON p.id = ct.city_id AND p.type = 'city'
             WHERE ct.created_at >= :ds::timestamptz AND ct.created_at < :de::timestamptz

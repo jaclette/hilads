@@ -67,7 +67,7 @@ $cityLink = static fn(string $id): string =>
     $maxDayTotal = $dayTotals ? max($dayTotals) : 0;
     $grandTotal  = array_sum($cityTotals);
     ?>
-    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> <?= $noun ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> <?= $noun ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
     <?php if (empty($cityTotals)): ?>
         <p class="no-results" style="padding:30px 0">No <?= $noun ?> in this range.</p>
@@ -88,7 +88,7 @@ $cityLink = static fn(string $id): string =>
     $i = 0;
     foreach ($cities as $r) { $barColors[$r['id']] = $PALETTE[$i % count($PALETTE)]; $i++; }
     ?>
-    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalCnt) ?> <?= $noun ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalCnt) ?> <?= $noun ?> · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
     <?php
     $chartLink = static fn(string $id): string => $cityLink($id);

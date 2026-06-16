@@ -20,6 +20,10 @@ require_once __DIR__ . '/csrf.php';
 require_once __DIR__ . '/flash.php';
 require_once __DIR__ . '/layout.php';
 
+// Ops timezone: all admin timestamps (When / Created / Last) and the per-day
+// activity buckets render in Saigon time, not UTC.
+date_default_timezone_set('Asia/Ho_Chi_Minh');
+
 $uri    = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 

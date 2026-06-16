@@ -14,15 +14,15 @@ $city    = trim($_GET['city'] ?? '');
 
 // Per-city "new users" diagram + city drill-in range. users.created_at is an
 // INTEGER epoch (not timestamptz), so bounds are epoch ints.
-$today  = gmdate('Y-m-d');
+$today  = date('Y-m-d');
 $dvalid = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
 $from   = $dvalid($_GET['from'] ?? '') ?: $today;
 $to     = $dvalid($_GET['to']   ?? '') ?: $from;
 if ($to < $from) { $to = $from; }
 if ((strtotime($to) - strtotime($from)) / 86400 > 92) { $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d'); }
 $view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
-$ds = strtotime($from . ' 00:00:00 UTC');             // epoch, inclusive
-$de = strtotime($to   . ' 00:00:00 UTC') + 86400;     // epoch, to + 1 day
+$ds = strtotime($from . ' 00:00:00');             // epoch, inclusive
+$de = strtotime($to   . ' 00:00:00') + 86400;     // epoch, to + 1 day
 $rangeLabel = $from === $to ? $from : "$from → $to";
 $PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
 
@@ -157,7 +157,7 @@ admin_nav('/admin/users');
         ";
         $dailySql = "
             SELECT u.current_city_id AS id, p.name AS name,
-                   (to_timestamp(u.created_at) AT TIME ZONE 'UTC')::date AS day, COUNT(*) AS cnt
+                   (to_timestamp(u.created_at) AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day, COUNT(*) AS cnt
             FROM users u
             JOIN channels p ON p.id = u.current_city_id AND p.type = 'city'
             WHERE u.created_at >= :ds AND u.created_at < :de AND u.deleted_at IS NULL AND u.is_fake = false

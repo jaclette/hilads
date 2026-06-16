@@ -13,7 +13,7 @@ $channel = trim($_GET['channel'] ?? '');
 
 // ── Date range ──────────────────────────────────────────────────────────────
 // Back-compat: a legacy ?date= maps to from=to=date.
-$today = gmdate('Y-m-d');
+$today = date('Y-m-d');
 $valid = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
 $legacy = $valid($_GET['date'] ?? '');
 $from = $valid($_GET['from'] ?? '') ?: ($legacy ?: $today);
@@ -26,9 +26,9 @@ if ((strtotime($to) - strtotime($from)) / 86400 > 92) {
 $view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
 
 // UTC bounds for [from, to] inclusive.
-$ds = $from . ' 00:00:00+00';
-$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('UTC')))
-          ->modify('+1 day')->format('Y-m-d H:i:s') . '+00';
+$ds = $from . ' 00:00:00+07:00';
+$de = (new DateTime($to . ' 00:00:00', new DateTimeZone('Asia/Ho_Chi_Minh')))
+          ->modify('+1 day')->format('Y-m-d H:i:s') . '+07:00';
 $rangeLabel = $from === $to ? $from : "$from → $to";
 
 // Per-city colour palette (stable within the page; assigned by total desc).
@@ -191,7 +191,7 @@ admin_nav('/admin/arrivals');
         // Per-(city, UTC-day) counts pivoted in PHP.
         $stmt = $pdo->prepare("
             SELECT c.id, c.name,
-                   (m.created_at AT TIME ZONE 'UTC')::date AS day,
+                   (m.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day,
                    COUNT(m.id) AS cnt
             FROM channels c
             JOIN messages m ON m.channel_id = c.id
@@ -218,7 +218,7 @@ admin_nav('/admin/arrivals');
         $maxDayTotal = $dayTotals ? max($dayTotals) : 0;
         $grandTotal  = array_sum($cityTotals);
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cityTotals) ?> cities · <?= number_format($grandTotal) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php if (empty($cityTotals)): ?>
             <p class="no-results" style="padding:30px 0">No arrivals in this range.</p>
@@ -253,7 +253,7 @@ admin_nav('/admin/arrivals');
         $i = 0;
         foreach ($cities as $r) { $barColors[$r['id']] = $PALETTE[$i % count($PALETTE)]; $i++; }
         ?>
-        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalArr) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC)</p>
+        <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($cities) ?> cities · <?= number_format($totalArr) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
 
         <?php
         $chartLink = static fn(string $id): string =>
