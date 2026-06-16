@@ -206,45 +206,13 @@ admin_nav('/admin/arrivals');
 
         <?php if (empty($cityTotals)): ?>
             <p class="no-results" style="padding:30px 0">No arrivals in this range.</p>
-        <?php else: ?>
-            <!-- Legend -->
-            <div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px">
-                <?php foreach ($cityColor as $cid => $col): ?>
-                    <a href="/admin/arrivals?channel=<?= urlencode($cid) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>"
-                       style="display:flex;align-items:center;gap:6px;text-decoration:none;font-size:13px;color:#ddd">
-                        <span style="width:12px;height:12px;border-radius:3px;background:<?= $col ?>;display:inline-block"></span>
-                        <?= htmlspecialchars($cityName[$cid] ?? '?', ENT_QUOTES) ?>
-                        <span style="color:#666">(<?= number_format((int) $cityTotals[$cid]) ?>)</span>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- Stacked bar per day -->
-            <div style="background:#161310;border:1px solid #2a2a2a;border-radius:12px;padding:14px 18px">
-                <?php
-                $cursor = new DateTime($from);
-                $end    = new DateTime($to);
-                while ($cursor <= $end):
-                    $day      = $cursor->format('Y-m-d');
-                    $dayTotal = $dayTotals[$day] ?? 0;
-                    ?>
-                    <div style="display:flex;align-items:center;gap:12px;padding:5px 0">
-                        <span style="width:90px;flex-shrink:0;color:#aaa;font-size:12px;white-space:nowrap"><?= $cursor->format('D M d') ?></span>
-                        <span style="flex:1;height:18px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden;display:flex">
-                            <?php foreach ($cityColor as $cid => $col):
-                                $cnt = $daily[$day][$cid] ?? 0;
-                                if ($cnt <= 0) continue;
-                                $w = $maxDayTotal > 0 ? ($cnt / $maxDayTotal * 100) : 0;
-                                ?>
-                                <span title="<?= htmlspecialchars(($cityName[$cid] ?? '?') . ': ' . $cnt, ENT_QUOTES) ?>"
-                                      style="height:100%;width:<?= $w ?>%;background:<?= $col ?>"></span>
-                            <?php endforeach; ?>
-                        </span>
-                        <span style="width:46px;text-align:right;color:#fff;font-weight:700;font-size:13px"><?= number_format($dayTotal) ?></span>
-                    </div>
-                    <?php $cursor->modify('+1 day'); endwhile; ?>
-            </div>
-        <?php endif; ?>
+        <?php else:
+            $legendHref = static fn(string $id): string =>
+                '/admin/arrivals?channel=' . urlencode($id) . '&from=' . urlencode($from) . '&to=' . urlencode($to);
+            $segHref = static fn(string $id, string $day): string =>
+                '/admin/arrivals?channel=' . urlencode($id) . '&from=' . urlencode($day) . '&to=' . urlencode($day);
+            include __DIR__ . '/_daily_stacked_chart.php';
+        endif; ?>
 
     <?php else:
         // Accumulation: sum per city over the whole range.
