@@ -1114,6 +1114,8 @@ html, body, #root {
 .showcase-proof { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
 .showcase-text { flex: 1; min-width: 0; }
 .showcase-title { font-size: 15px; font-weight: 700; color: var(--text, #f4f4f5); margin-bottom: 6px; line-height: 1.3; }
+.showcase-city { font-size: 12px; font-weight: 600; color: var(--muted, #9a9aa3); margin-bottom: 6px; }
+.showcase-city--preview { font-size: 13px; margin: -8px 0 14px; }
 .showcase-by {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 13px; color: var(--muted, #9a9aa3); cursor: pointer;

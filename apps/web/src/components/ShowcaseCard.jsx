@@ -17,6 +17,9 @@ export default function ShowcaseCard({ item, onOpen, onAvatar }) {
   const toFlag      = countryToFlag(item.target_country)
   const creatorName = item.creator_display_name ?? '?'
   const hasProof    = item.proof_media_url && item.proof_media_type === 'image'
+  const cityLabel   = intl
+    ? [item.city_name, item.target_city_name].filter(Boolean).join(' → ')
+    : item.city_name
 
   return (
     <button type="button" className="showcase-card" onClick={onOpen}>
@@ -31,6 +34,7 @@ export default function ShowcaseCard({ item, onOpen, onAvatar }) {
         {hasProof && <img className="showcase-proof" src={item.proof_media_url} alt="" />}
         <div className="showcase-text">
           <div className="showcase-title">{icon} {item.title}</div>
+          {cityLabel && <div className="showcase-city">📍 {cityLabel}</div>}
           <span
             className="showcase-by"
             onClick={item.created_by && onAvatar ? (e) => { e.stopPropagation(); onAvatar(item.created_by) } : undefined}

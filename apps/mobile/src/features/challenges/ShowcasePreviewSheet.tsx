@@ -51,6 +51,9 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
   const fromFlag = countryToFlag(item.country);
   const toFlag   = countryToFlag(item.target_country);
   const hasProof = item.proof_media_url && item.proof_media_type === 'image';
+  const cityLabel = intl
+    ? [item.city_name, item.target_city_name].filter(Boolean).join(' → ')
+    : item.city_name;
 
   return (
     <Modal visible transparent animationType="slide" onRequestClose={onClose}>
@@ -70,6 +73,7 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
           </View>
 
           <Text style={styles.title}>{icon} {item.title}</Text>
+          {cityLabel ? <Text style={styles.city}>📍 {cityLabel}</Text> : null}
 
           <View style={styles.people}>
             <PersonRow
@@ -131,6 +135,7 @@ const styles = StyleSheet.create({
   stars: { fontSize: 14, fontWeight: '800', color: '#FFC93C' },
 
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, marginBottom: 14, lineHeight: 24 },
+  city:  { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.muted, marginTop: -8, marginBottom: 14 },
 
   people: { gap: 8, marginBottom: 14 },
   person: {

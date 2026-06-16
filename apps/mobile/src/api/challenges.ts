@@ -23,6 +23,7 @@ export interface ShowcaseItem {
   creator_display_name:       string | null;
   creator_thumb_avatar_url:   string | null;
   country:                    string | null;   // origin ISO-2
+  city_name:                  string | null;   // origin city
   target_country:             string | null;
   target_city_name:           string | null;
   acceptor_user_id:           string | null;

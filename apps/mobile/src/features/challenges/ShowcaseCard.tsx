@@ -27,6 +27,9 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
   const creatorName = item.creator_display_name ?? '?';
   const hasProof    = !!item.proof_media_url && item.proof_media_type === 'image';
   const tapAvatar   = item.created_by && onAvatar ? () => onAvatar(item.created_by!) : undefined;
+  const cityLabel   = intl
+    ? [item.city_name, item.target_city_name].filter(Boolean).join(' → ')
+    : item.city_name;
 
   return (
     <TouchableOpacity style={styles.card} onPress={onOpen} activeOpacity={0.85}>
@@ -52,6 +55,7 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
         )}
         <View style={styles.bodyText}>
           <Text style={styles.title} numberOfLines={2}>{icon} {item.title}</Text>
+          {cityLabel ? <Text style={styles.city} numberOfLines={1}>📍 {cityLabel}</Text> : null}
 
           <TouchableOpacity
             style={styles.byRow}
@@ -104,6 +108,7 @@ const styles = StyleSheet.create({
   proof:    { width: 72, height: 72, borderRadius: 10, backgroundColor: Colors.bg },
   bodyText: { flex: 1, gap: 6 },
   title:    { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text },
+  city:     { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
 
   byRow:        { flexDirection: 'row', alignItems: 'center', gap: 6 },
   avatar:       { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },

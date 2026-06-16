@@ -612,6 +612,7 @@ class ChallengeRepository
                 'creator_display_name'      => $r['creator_display_name'],
                 'creator_thumb_avatar_url'  => $r['creator_thumb_avatar_url'],
                 'country'                   => self::countryForCityId($r['city_id']),
+                'city_name'                 => self::cityNameForCityId($r['city_id']),
                 'target_country'            => $r['target_city_id'] ? self::countryForCityId($r['target_city_id']) : null,
                 'target_city_name'          => $r['target_city_id'] ? self::cityNameForCityId($r['target_city_id']) : null,
                 'acceptor_user_id'          => $r['acceptor_user_id'],

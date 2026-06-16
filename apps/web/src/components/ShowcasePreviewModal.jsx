@@ -38,6 +38,9 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
   const fromFlag = countryToFlag(item.country)
   const toFlag   = countryToFlag(item.target_country)
   const hasProof = item.proof_media_url && item.proof_media_type === 'image'
+  const cityLabel = intl
+    ? [item.city_name, item.target_city_name].filter(Boolean).join(' → ')
+    : item.city_name
 
   // Portal to <body> - rendered inside .full-page (a z-index:200 stacking
   // context) the sheet's bottom would hide behind the .bottom-nav (z-300).
@@ -57,6 +60,7 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
           </div>
 
           <div className="showcase-preview-title">{icon} {item.title}</div>
+          {cityLabel && <div className="showcase-city showcase-city--preview">📍 {cityLabel}</div>}
 
           <div className="showcase-people">
             <Person
