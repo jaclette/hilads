@@ -273,6 +273,20 @@
       "body": "Threads are 1:1 conversations between you and the challenger. You need an account to start one."
     }
   },
+  "myChallenges": {
+    "cta": "My challenges",
+    "title": "My challenges",
+    "create": "Create a challenge",
+    "filter": { "all": "All", "created": "Created", "taken": "Taken" },
+    "empty": {
+      "title": "No challenges yet",
+      "body": "Challenges you create or take on show up here."
+    },
+    "guestGate": {
+      "title": "Sign in to see your challenges",
+      "body": "Create an account to launch challenges and take on others'."
+    }
+  },
   "ratePrompts": {
     "banner": {
       "title": "Rate your meet-up with {{name}}",

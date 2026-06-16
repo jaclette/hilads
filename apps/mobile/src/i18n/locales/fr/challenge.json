@@ -170,6 +170,20 @@
       "body": "Les fils sont des conversations privées entre toi et le challenger. Il te faut un compte pour en démarrer un."
     }
   },
+  "myChallenges": {
+    "cta": "Mes défis",
+    "title": "Mes défis",
+    "create": "Créer un défi",
+    "filter": { "all": "Tous", "created": "Créés", "taken": "Relevés" },
+    "empty": {
+      "title": "Aucun défi pour l'instant",
+      "body": "Les défis que tu crées ou que tu relèves apparaissent ici."
+    },
+    "guestGate": {
+      "title": "Connecte-toi pour voir tes défis",
+      "body": "Crée un compte pour lancer des défis et relever ceux des autres."
+    }
+  },
   "schedule": {
     "proposeCta": "Proposer une date 📅",
     "counterCta": "Contre-proposer",

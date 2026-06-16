@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { ChallengesList } from '@/features/challenges/ChallengesList';
@@ -18,7 +19,7 @@ import { Colors, FontSizes, Spacing } from '@/constants';
  */
 export default function ChallengesTab() {
   const { t } = useTranslation('challenge');
-  const { city } = useApp();
+  const { city, account } = useApp();
   const router = useRouter();
   const [showChallengeIntro, setShowChallengeIntro] = useState(false);
 
@@ -45,6 +46,21 @@ export default function ChallengesTab() {
           <Text style={styles.introLink}>{t('howItWorks')} →</Text>
         </TouchableOpacity>
       </View>
+
+      {/* My challenges - prominent entry to the creator/taker list. Members
+          only (guests can't be a creator or taker). */}
+      {account && (
+        <TouchableOpacity
+          style={styles.myChallengesCta}
+          onPress={() => router.push('/challenge/mine' as never)}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={t('myChallenges.cta')}
+        >
+          <Text style={styles.myChallengesText}>🏆 {t('myChallenges.cta')}</Text>
+          <Ionicons name="chevron-forward" size={18} color="#FF7A3C" />
+        </TouchableOpacity>
+      )}
 
       {/* Most Local + filters scroll with the feed (headerExtra) - only the
           app header + title + intro line above stay sticky. */}
@@ -94,4 +110,19 @@ const styles = StyleSheet.create({
   },
   introText: { flex: 1, fontSize: 13, lineHeight: 18, color: Colors.muted },
   introLink: { fontSize: 13, fontWeight: '600', color: '#60a5fa' },
+
+  myChallengesCta: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               6,
+    marginHorizontal:  Spacing.md,
+    marginBottom:      Spacing.md,
+    paddingVertical:   12,
+    borderRadius:      14,
+    backgroundColor:   'rgba(255,122,60,0.12)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.5)',
+  },
+  myChallengesText: { fontSize: FontSizes.md, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.2 },
 });
