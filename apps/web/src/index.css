@@ -1049,26 +1049,6 @@ html, body, #root {
 }
 .challenge-my-cta:hover { background: rgba(255, 122, 60, 0.18); }
 
-/* Success-challenges CTA - gold twin of the My-challenges CTA (discovery). */
-.challenge-successful-cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  margin: 0 0 14px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: rgba(255, 201, 60, 0.10);
-  border: 1px solid rgba(255, 201, 60, 0.42);
-  color: #FFC93C;
-  font-size: 15px;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  cursor: pointer;
-}
-.challenge-successful-cta:hover { background: rgba(255, 201, 60, 0.16); }
-
 /* ── Success challenges showcase ──────────────────────────────────────────── */
 /* Title sits left of the back button (not absolutely centered like .page-title)
    so the full "✨ Success challenges" never truncates. */

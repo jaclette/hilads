@@ -5505,14 +5505,8 @@ export default function App() {
                 🏆 {t('myChallenges.cta', { ns: 'challenge' })} →
               </button>
             )}
-            {/* Success challenges - public showcase, shown to EVERYONE (discovery). */}
-            <button
-              type="button"
-              className="challenge-successful-cta"
-              onClick={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
-            >
-              ✨ {t('showcase.cta', { ns: 'challenge' })} →
-            </button>
+            {/* (The standalone "Success challenges" button was removed - the hero
+                carousel above already has a "See all ›" link to the showcase.) */}
             {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
             <MostLocalCard
               channelId={channelId}
