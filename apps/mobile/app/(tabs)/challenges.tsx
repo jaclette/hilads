@@ -8,6 +8,7 @@ import { useApp } from '@/context/AppContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { ChallengesList } from '@/features/challenges/ChallengesList';
 import { MostLocalCard } from '@/features/challenges/MostLocalCard';
+import { ShowcaseHeroCarousel } from '@/features/challenges/ShowcaseHeroCarousel';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeCityName } from '@/i18n/cityName';
 import { Colors, FontSizes, Spacing } from '@/constants';
@@ -79,10 +80,13 @@ export default function ChallengesTab() {
       <ChallengesList
         channelId={city?.channelId ?? null}
         headerExtra={
-          <MostLocalCard
-            channelId={city?.channelId ?? null}
-            onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
-          />
+          <>
+            <ShowcaseHeroCarousel />
+            <MostLocalCard
+              channelId={city?.channelId ?? null}
+              onSeeAll={() => router.push('/leaderboard?scope=city' as never)}
+            />
+          </>
         }
       />
 

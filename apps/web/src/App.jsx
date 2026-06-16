@@ -54,6 +54,7 @@ import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import PastArchiveScreen from './components/PastArchiveScreen'
 import SuccessfulChallengesScreen from './components/SuccessfulChallengesScreen'
+import ShowcaseHero from './components/ShowcaseHero'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
@@ -1246,6 +1247,13 @@ export default function App() {
     // Guests can still browse, accept and chat in challenge channels;
     // creation requires an account so we have a verified owner for
     // validate/edit/delete and a target for participant notifications.
+    if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
+    setShowCreateChallenge(true)
+  }
+  // "Try this challenge" from the showcase - seed a fresh challenge from a
+  // success story's title + type (registered-only; create overlays in place).
+  const tryShowcaseChallenge = (item) => {
+    setCreateChallengePrefill({ title: item.title, challenge_type: item.challenge_type })
     if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
     setShowCreateChallenge(true)
   }
@@ -5444,6 +5452,13 @@ export default function App() {
                 {t('howItWorks', { ns: 'challenge' })} →
               </button>
             </div>
+            {/* Hero carousel of recent success challenges - auto-rotating
+                discovery, global proof-first. Hidden when there are none. */}
+            <ShowcaseHero
+              onTry={(item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
+              onOpenProfile={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
+              onSeeAll={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
+            />
             {/* "How to earn points" helper - the challenges browser had no
                 scoring affordance (only the channel did). Labeled pill. */}
             <div className="challenge-tab-scoring">
@@ -5614,14 +5629,7 @@ export default function App() {
       {showSuccessfulChallenges && (
         <SuccessfulChallengesScreen
           onBack={() => setShowSuccessfulChallenges(false)}
-          onTry={(item) => {
-            // "Try this challenge" - start a fresh challenge seeded from this
-            // success story's title + type (creation is registered-only).
-            setCreateChallengePrefill({ title: item.title, challenge_type: item.challenge_type })
-            setShowSuccessfulChallenges(false)
-            if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
-            setShowCreateChallenge(true)
-          }}
+          onTry={(item) => { setShowSuccessfulChallenges(false); tryShowcaseChallenge(item) }}
           onOpenProfile={(uid) => { setShowSuccessfulChallenges(false); openProfile(uid, '') }}
         />
       )}
