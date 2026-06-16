@@ -114,23 +114,23 @@ $events = $stmt->fetchAll();
 
 $now = time();
 
-admin_head('Events');
+admin_head('Hi plan');
 admin_nav('/admin/events');
 ?>
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Events <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
-        <a href="/admin/events/create" class="btn btn-primary btn-sm">+ Create event</a>
+        <h1 class="page-title" style="margin-bottom:0">Hi plan <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <a href="/admin/events/create" class="btn btn-primary btn-sm">+ Create Hi plan</a>
     </div>
 
     <?= flash_html() ?>
 
     <form method="GET" action="/admin/events" class="toolbar">
-        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, event ID or creator ID…">
+        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, ID or creator ID…">
         <select name="filter">
             <?php
             $filters = [
-                'all'      => 'All events',
+                'all'      => 'All Hi plan',
                 'active'   => 'Active',
                 'expired'  => 'Expired',
                 'deleted'  => 'Deleted',
@@ -152,8 +152,8 @@ admin_nav('/admin/events');
         // Per-city "events created" diagram (range + Accumulation/Per-day).
         $pageBase    = '/admin/events';
         $cityParam   = 'city';
-        $noun        = 'events';
-        $actionLabel = 'View events';
+        $noun        = 'Hi plan';
+        $actionLabel = 'View Hi plan';
         $sumSql = "
             SELECT c.parent_id AS id, p.name AS name, COUNT(*) AS cnt, MAX(c.created_at) AS last_at
             FROM channel_events ce
@@ -194,7 +194,7 @@ admin_nav('/admin/events');
             </thead>
             <tbody>
                 <?php if (empty($events)): ?>
-                    <tr><td colspan="11" class="no-results">No events found.</td></tr>
+                    <tr><td colspan="11" class="no-results">No Hi plan found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($events as $ev): ?>
                         <?php

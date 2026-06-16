@@ -20,12 +20,12 @@ $stmt->execute([':id' => $eventId]);
 $event = $stmt->fetch();
 
 if (!$event) {
-    flash_set('error', 'Event not found.');
+    flash_set('error', 'Hi plan not found.');
     admin_redirect('/admin/events');
 }
 
 if ($event['status'] === 'deleted') {
-    flash_set('error', 'Event is already deleted.');
+    flash_set('error', 'Hi plan is already deleted.');
     admin_redirect('/admin/events');
 }
 
@@ -50,7 +50,7 @@ if ($mode === 'series') {
     ")->execute([':id' => $eventId]);
 
     error_log('[admin] event deleted: ' . $eventId . ' (' . $event['title'] . ')');
-    flash_set('success', 'Event "' . $event['title'] . '" deleted.');
+    flash_set('success', 'Hi plan "' . $event['title'] . '" deleted.');
 }
 
 admin_redirect('/admin/events');

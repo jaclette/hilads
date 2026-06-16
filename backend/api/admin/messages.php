@@ -12,8 +12,8 @@ $pdo = Database::pdo();
 // "city_<n>", the rest = hex), so one query spans them all.
 $TYPE_LABELS = [
     'city'      => 'City',
-    'event'     => 'Event',
-    'topic'     => 'Hangout',
+    'event'     => 'Hi plan',
+    'topic'     => 'Hi now',
     'challenge' => 'Challenge',
 ];
 $TYPE_BADGE = [
@@ -239,7 +239,7 @@ admin_nav('/admin/messages');
     $rows = $stmt->fetchAll();
     ?>
     <h1 class="page-title">Messages <span style="color:#555;font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a city, event, hangout or challenge by name, open it, and remove any message.</p>
+    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a city, Hi plan, Hi now or challenge by name, open it, and remove any message.</p>
 
     <?= flash_html() ?>
 

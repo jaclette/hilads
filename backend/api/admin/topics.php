@@ -100,22 +100,22 @@ $topics = $stmt->fetchAll();
 
 $now = time();
 
-admin_head('Hangouts');
+admin_head('Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <h1 class="page-title" style="margin-bottom:0">Hangouts <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
-        <a href="/admin/topics/create" class="btn btn-primary btn-sm">+ Create hangout</a>
+        <h1 class="page-title" style="margin-bottom:0">Hi now <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> total</span></h1>
+        <a href="/admin/topics/create" class="btn btn-primary btn-sm">+ Create Hi now</a>
     </div>
 
     <?= flash_html() ?>
 
     <form method="GET" action="/admin/topics" class="toolbar">
-        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, hangout ID or creator ID…">
+        <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by title, ID or creator ID…">
         <select name="filter">
             <?php
-            $filters = ['all' => 'All hangouts', 'active' => 'Active', 'expired' => 'Expired'];
+            $filters = ['all' => 'All Hi now', 'active' => 'Active', 'expired' => 'Expired'];
             foreach ($filters as $val => $label):
             ?>
                 <option value="<?= $val ?>" <?= $filter === $val ? 'selected' : '' ?>><?= $label ?></option>
@@ -131,8 +131,8 @@ admin_nav('/admin/topics');
         // Per-city "hangouts created" diagram (range + Accumulation/Per-day).
         $pageBase    = '/admin/topics';
         $cityParam   = 'city';
-        $noun        = 'hangouts';
-        $actionLabel = 'View hangouts';
+        $noun        = 'Hi now';
+        $actionLabel = 'View Hi now';
         $sumSql = "
             SELECT ct.city_id AS id, p.name AS name, COUNT(*) AS cnt, MAX(ct.created_at) AS last_at
             FROM channel_topics ct
@@ -170,7 +170,7 @@ admin_nav('/admin/topics');
             </thead>
             <tbody>
                 <?php if (empty($topics)): ?>
-                    <tr><td colspan="10" class="no-results">No hangouts found.</td></tr>
+                    <tr><td colspan="10" class="no-results">No Hi now found.</td></tr>
                 <?php else: ?>
                     <?php foreach ($topics as $t): ?>
                         <?php
@@ -225,7 +225,7 @@ admin_nav('/admin/topics');
                                        class="btn btn-secondary btn-sm<?= $isDeleted ? '" style="opacity:.45' : '' ?>">Edit</a>
                                     <?php if (!$isDeleted): ?>
                                         <form method="POST" action="/admin/topics/<?= urlencode($t['channel_id']) ?>/delete"
-                                              onsubmit="return confirm('Delete hangout «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nThis will remove the hangout and all its messages. Cannot be undone.')">
+                                              onsubmit="return confirm('Delete Hi now «<?= htmlspecialchars(addslashes($t['title']), ENT_QUOTES) ?>»?\n\nThis will remove the Hi now and all its messages. Cannot be undone.')">
                                             <?= csrf_input() ?>
                                             <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                         </form>

@@ -51,11 +51,11 @@ admin_nav('/admin');
         </div>
         <div class="stat-card">
             <div class="stat-value"><?= number_format($activeEvents) ?></div>
-            <div class="stat-label">Active Events</div>
+            <div class="stat-label">Active Hi plan</div>
         </div>
         <div class="stat-card">
             <div class="stat-value"><?= number_format($totalEvents) ?></div>
-            <div class="stat-label">Total Events</div>
+            <div class="stat-label">Total Hi plan</div>
         </div>
         <div class="stat-card">
             <div class="stat-value"><?= number_format($totalMessages) ?></div>

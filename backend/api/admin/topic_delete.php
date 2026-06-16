@@ -18,18 +18,18 @@ $stmt->execute([':id' => $topicId]);
 $topic = $stmt->fetch();
 
 if (!$topic) {
-    flash_set('error', 'Hangout not found.');
+    flash_set('error', 'Hi now not found.');
     admin_redirect('/admin/topics');
 }
 
 if ($topic['status'] === 'deleted') {
-    flash_set('error', 'Hangout is already deleted.');
+    flash_set('error', 'Hi now is already deleted.');
     admin_redirect('/admin/topics');
 }
 
 TopicRepository::adminDelete($topicId);
 
 error_log('[admin] topic deleted: ' . $topicId . ' (' . $topic['title'] . ')');
-flash_set('success', 'Hangout "' . $topic['title'] . '" deleted.');
+flash_set('success', 'Hi now "' . $topic['title'] . '" deleted.');
 
 admin_redirect('/admin/topics');

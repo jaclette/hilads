@@ -4,7 +4,7 @@
 declare(strict_types=1);
 ?>
 <form method="GET" action="/admin/messages" class="toolbar">
-    <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by city / event / hangout / challenge name or channel ID…">
+    <input type="text" name="q" value="<?= htmlspecialchars($search, ENT_QUOTES) ?>" placeholder="Search by city / Hi plan / Hi now / challenge name or channel ID…">
     <select name="type">
         <?php
         $opts = ['all' => 'All channels'] + $TYPE_LABELS;

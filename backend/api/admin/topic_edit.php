@@ -27,7 +27,7 @@ $stmt->execute([':id' => $topicId]);
 $topic = $stmt->fetch();
 
 if (!$topic) {
-    flash_set('error', 'Hangout not found.');
+    flash_set('error', 'Hi now not found.');
     admin_redirect('/admin/topics');
 }
 
@@ -84,7 +84,7 @@ if ($method === 'POST') {
     if (empty($errors)) {
         TopicRepository::adminUpdate($topicId, $title, $description, $category, $newExpiresAt);
         error_log('[admin] topic updated: ' . $topicId . ' → "' . $title . '"');
-        flash_set('success', 'Hangout updated successfully.');
+        flash_set('success', 'Hi now updated successfully.');
         admin_redirect('/admin/topics');
     }
 }
@@ -98,7 +98,7 @@ $CATEGORY_LABELS = [
     'meetup'  => '👋 Meetup',
 ];
 
-admin_head('Edit Hangout');
+admin_head('Edit Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
@@ -106,7 +106,7 @@ admin_nav('/admin/topics');
         <a href="/admin/topics" class="btn btn-secondary btn-sm">← Hangouts</a>
     </div>
 
-    <h1 class="page-title">Edit Hangout</h1>
+    <h1 class="page-title">Edit Hi now</h1>
 
     <?php if ($topic['status'] === 'deleted'): ?>
         <div class="warning-box">This hangout is deleted. Editing will not restore it in the app feed.</div>

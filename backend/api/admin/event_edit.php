@@ -40,9 +40,9 @@ $event = $stmt->fetch();
 
 if (!$event) {
     http_response_code(404);
-    admin_head('Event Not Found');
+    admin_head('Hi plan Not Found');
     admin_nav('/admin/events');
-    echo '<div class="admin-main"><p style="color:#666">Event not found.</p>';
+    echo '<div class="admin-main"><p style="color:#666">Hi plan not found.</p>';
     echo '<p style="margin-top:12px"><a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a></p></div>';
     admin_foot();
     exit;
@@ -216,7 +216,7 @@ if ($method === 'POST') {
             UPDATE channels SET name = :name, status = :status, updated_at = now() WHERE id = :id
         ")->execute([':name' => $newTitle, ':status' => $newStatus, ':id' => $eventId]);
 
-        flash_set('success', 'Event updated successfully.');
+        flash_set('success', 'Hi plan updated successfully.');
         admin_redirect('/admin/events/' . urlencode($eventId) . '/edit');
     }
 }
@@ -229,7 +229,7 @@ function fmt_dt(?string $ts): string
     return $t ? date('Y-m-d\TH:i', $t) : '';
 }
 
-admin_head('Edit Event');
+admin_head('Edit Hi plan');
 admin_nav('/admin/events');
 ?>
 <div class="admin-main">
@@ -237,7 +237,7 @@ admin_nav('/admin/events');
         <a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a>
     </div>
 
-    <h1 class="page-title">Edit Event</h1>
+    <h1 class="page-title">Edit Hi plan</h1>
 
     <?= flash_html() ?>
 
@@ -259,7 +259,7 @@ admin_nav('/admin/events');
     <!-- Read-only metadata -->
     <div class="form-card" style="margin-bottom:16px">
         <div class="info-section">
-            <h3>Event Info</h3>
+            <h3>Hi plan Info</h3>
             <div class="info-grid">
                 <div class="info-label">ID</div>
                 <div class="info-value"><?= htmlspecialchars($event['channel_id'], ENT_QUOTES) ?></div>

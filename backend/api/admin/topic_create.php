@@ -62,7 +62,7 @@ if ($method === 'POST') {
                 $ttlHours
             );
             error_log('[admin] topic created: "' . $title . '" (' . $topicId . ') in city ' . $cityId);
-            flash_set('success', 'Hangout "' . $title . '" created successfully.');
+            flash_set('success', 'Hi now "' . $title . '" created successfully.');
             admin_redirect('/admin/topics');
         } catch (\Throwable $e) {
             error_log('[admin] topic create failed: ' . $e->getMessage());
@@ -80,7 +80,7 @@ $CATEGORY_LABELS = [
     'meetup'  => '👋 Meetup',
 ];
 
-admin_head('Create Hangout');
+admin_head('Create Hi now');
 admin_nav('/admin/topics');
 ?>
 <div class="admin-main">
@@ -88,7 +88,7 @@ admin_nav('/admin/topics');
         <a href="/admin/topics" class="btn btn-secondary btn-sm">← Hangouts</a>
     </div>
 
-    <h1 class="page-title">Create Hangout</h1>
+    <h1 class="page-title">Create Hi now</h1>
 
     <?= flash_html() ?>
 
@@ -196,11 +196,11 @@ admin_nav('/admin/topics');
                 }
                 ?>
             </select>
-            <div class="hint">Select a city member as the hangout creator, or leave blank.</div>
+            <div class="hint">Select a city member as the Hi now creator, or leave blank.</div>
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create hangout</button>
+            <button type="submit" class="btn btn-primary">Create Hi now</button>
             <a href="/admin/topics" class="btn btn-secondary">Cancel</a>
         </div>
     </form>

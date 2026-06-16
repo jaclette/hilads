@@ -76,7 +76,7 @@ if ($method === 'POST') {
                 $creatorUser['guest_id'] ?? null
             );
             error_log('[admin] one-shot event created: "' . $title . '" in city ' . $cityId);
-            flash_set('success', 'Event "' . $title . '" created successfully.');
+            flash_set('success', 'Hi plan "' . $title . '" created successfully.');
             admin_redirect('/admin/events');
         }
 
@@ -131,7 +131,7 @@ if ($method === 'POST') {
 
 $defaultStartsOn = date('Y-m-d');
 
-admin_head('Create Event');
+admin_head('Create Hi plan');
 admin_nav('/admin/events');
 ?>
 <style>
@@ -154,7 +154,7 @@ admin_nav('/admin/events');
         <a href="/admin/events" class="btn btn-secondary btn-sm">← Events</a>
     </div>
 
-    <h1 class="page-title">Create Event</h1>
+    <h1 class="page-title">Create Hi plan</h1>
 
     <?= flash_html() ?>
 
@@ -171,7 +171,7 @@ admin_nav('/admin/events');
 
         <!-- Kind toggle -->
         <div class="form-group">
-            <label>Event kind</label>
+            <label>Hi plan kind</label>
             <div class="kind-toggle">
                 <label>
                     <input type="radio" name="kind" value="one-shot" <?= ($post['kind'] ?? 'one-shot') === 'one-shot' ? 'checked' : '' ?> onchange="setKind('one-shot')">
@@ -341,7 +341,7 @@ admin_nav('/admin/events');
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Create event</button>
+            <button type="submit" class="btn btn-primary">Create Hi plan</button>
             <a href="/admin/events" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
