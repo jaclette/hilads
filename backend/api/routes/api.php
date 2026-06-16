@@ -10214,8 +10214,15 @@ function gateProofSubmit(string $acceptanceId): array
     if ($challenge === null) {
         Response::json(['error' => 'Challenge not found'], 404);
     }
-    if (($challenge['mode'] ?? 'local') !== 'international') {
-        Response::json(['error' => 'Proof submission is only for international challenges', 'code' => 'wrong_mode'], 403);
+    // Proof submission applies to every PHOTO-PROOF challenge, not just
+    // international ones: a local challenge created with validation_method=
+    // 'photo_proof' uses the same accept → proof → verdict flow. Mirrors the
+    // client's `usesPhotoProof` gate. (A local 'meet' challenge has no proof
+    // step, so it's still rejected here.)
+    $usesPhotoProof = ($challenge['mode'] ?? 'local') === 'international'
+        || ($challenge['validation_method'] ?? 'meet') === 'photo_proof';
+    if (!$usesPhotoProof) {
+        Response::json(['error' => 'This challenge does not use photo proof', 'code' => 'wrong_mode'], 403);
     }
     if (in_array($acceptance['phase'] ?? '', ['approved', 'rejected'], true)) {
         Response::json(['error' => 'This take-on is closed', 'code' => 'terminal'], 403);
