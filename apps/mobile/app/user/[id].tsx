@@ -386,6 +386,12 @@ export default function PublicProfileScreen() {
   const initial = name[0].toUpperCase();
   const bg     = avatarBg(name);
   const isSelf = account?.id === id;
+  // First badge that carries microcopy → a single sub-line under the meta row
+  // (mirrors My Profile's vibe sub-line), instead of one caption per badge.
+  const heroBadgeWithCopy = user?.badges?.find(b => BADGE_MICROCOPY[b]) ?? null;
+  const heroMicrocopy = heroBadgeWithCopy
+    ? t(`microcopy.${heroBadgeWithCopy}`, { defaultValue: BADGE_MICROCOPY[heroBadgeWithCopy] })
+    : null;
 
   // Legend = user has ambassador picks
   const hasPicks = !!(
@@ -439,8 +445,9 @@ export default function PublicProfileScreen() {
           {/* Identity section */}
           <View style={styles.identitySection}>
 
-            {/* Hero: avatar + name + badges + city */}
-            <View style={styles.hero}>
+            {/* Identity row: avatar left + name / badges / city right.
+                Mirrors My Profile (me.tsx) so the two screens align. */}
+            <View style={styles.identityRow}>
               {user.avatarUrl ? (
                 <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
                   <Image source={{ uri: user.thumbAvatarUrl ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
@@ -450,39 +457,39 @@ export default function PublicProfileScreen() {
                   <Text style={styles.avatarInitial}>{initial}</Text>
                 </View>
               )}
-              <Text style={styles.displayName}>{name}</Text>
-              {user.badges.map(badgeKey => {
-                const meta = BADGE_META[badgeKey as keyof typeof BADGE_META];
-                if (!meta) return null;
-                return (
-                  <View key={badgeKey} style={styles.badgeBlock}>
-                    <View style={[styles.memberBadge, profileBadgeBg(badgeKey)]}>
-                      <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })}</Text>
-                    </View>
-                    {BADGE_MICROCOPY[badgeKey] ? (
-                      <Text style={styles.badgeMicrocopy}>{t(`microcopy.${badgeKey}`, { defaultValue: BADGE_MICROCOPY[badgeKey] })}</Text>
-                    ) : null}
-                  </View>
-                );
-              })}
-              {city ? (
-                <View style={styles.cityPill}>
-                  <Text style={styles.cityPillText}>
-                    {cityFlag(city.country)}{cityFlag(city.country) ? ' ' : ''}{city.name}
-                  </Text>
-                </View>
-              ) : null}
 
-              {/* Monthly rank - this user's rank in THEIR own current city +
-                  worldwide. Distinct from the viewer's city above. Renders
-                  nothing when the user has no current city + no monthly
-                  score. */}
-              <ProfileRankRow
-                rank={user.monthlyRank ?? null}
-                cityName={user.currentCity ?? null}
-                cityCountry={user.currentCityCountry ?? null}
-              />
+              <View style={styles.identityInfo}>
+                <Text style={styles.displayName} numberOfLines={1}>{name}</Text>
+                <View style={styles.identityMetaRow}>
+                  {user.badges.map(badgeKey => {
+                    const meta = BADGE_META[badgeKey as keyof typeof BADGE_META];
+                    if (!meta) return null;
+                    return (
+                      <View key={badgeKey} style={[styles.memberBadge, profileBadgeBg(badgeKey)]}>
+                        <Text style={[styles.memberBadgeText, profileBadgeColor(badgeKey)]}>{t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })}</Text>
+                      </View>
+                    );
+                  })}
+                  {city ? (
+                    <Text style={styles.identityMetaCity} numberOfLines={1}>
+                      {cityFlag(city.country)}{cityFlag(city.country) ? ' ' : ''}{city.name}
+                    </Text>
+                  ) : null}
+                </View>
+                {heroMicrocopy ? (
+                  <Text style={styles.badgeMicrocopy}>{heroMicrocopy}</Text>
+                ) : null}
+              </View>
             </View>
+
+            {/* Monthly rank - full-width banner below the identity row (same
+                ProfileRankRow + placement as My Profile). Renders nothing when
+                the user has no current city + no monthly score. */}
+            <ProfileRankRow
+              rank={user.monthlyRank ?? null}
+              cityName={user.currentCity ?? null}
+              cityCountry={user.currentCityCountry ?? null}
+            />
 
             {/* About me */}
             {user.aboutMe ? (
@@ -920,7 +927,7 @@ export default function PublicProfileScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const AVATAR_SIZE = 80;
+const AVATAR_SIZE = 72;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
@@ -991,22 +998,37 @@ const styles = StyleSheet.create({
     backgroundColor:   Colors.bg,
   },
 
-  // ── Hero ──────────────────────────────────────────────────────────────────
-  hero: {
-    alignItems: 'center',
-    gap:        8,
+  // ── Hero: avatar left + identity column right (mirrors My Profile) ─────────
+  identityRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    gap:           Spacing.md,
+  },
+  identityInfo: { flex: 1, gap: 5 },
+  identityMetaRow: {
+    flexDirection: 'row',
+    alignItems:    'center',
+    flexWrap:      'wrap',
+    gap:           6,
+  },
+  identityMetaCity: {
+    fontSize:   FontSizes.sm,
+    color:      Colors.muted,
+    fontWeight: '500',
   },
   avatar: {
     width:        AVATAR_SIZE,
     height:       AVATAR_SIZE,
     borderRadius: AVATAR_SIZE / 2,
+    borderWidth:  2,
+    borderColor:  Colors.accent,
   },
   avatarFallback: {
     alignItems:     'center',
     justifyContent: 'center',
   },
   avatarInitial: {
-    fontSize:   32,
+    fontSize:   30,
     fontWeight: '800',
     color:      '#fff',
   },
@@ -1015,7 +1037,6 @@ const styles = StyleSheet.create({
     fontWeight:    '800',
     color:         Colors.text,
     letterSpacing: -0.5,
-    textAlign:     'center',
   },
   badgeBlock: {
     alignItems: 'center',
@@ -1033,9 +1054,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
   badgeMicrocopy: {
-    fontSize:  FontSizes.xs,
-    color:     Colors.muted,
-    textAlign: 'center',
+    fontSize: FontSizes.xs,
+    color:    Colors.muted,
   },
   cityPill: {
     flexDirection:     'row',
