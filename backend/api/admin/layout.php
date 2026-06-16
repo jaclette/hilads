@@ -251,6 +251,7 @@ function admin_nav(string $current = ''): void
             '/admin/messages'=> 'Messages',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',
+            '/admin/bans'    => 'Bans',
             '/admin/email'   => 'Email',
             '/admin/push'    => 'Push',
         ];

@@ -102,4 +102,53 @@ class BanRepository
 
         return ['ips' => count($ips), 'days' => $days];
     }
+
+    /**
+     * Ban a single IP address directly (admin "block by IP"). $days = 0 means a
+     * permanent ban (expires_at NULL). Throws on DB error so the admin sees it.
+     */
+    public static function banIp(string $ip, ?string $reason, ?string $createdBy, int $days = 0): void
+    {
+        $ip = trim($ip);
+        if ($ip === '' || $ip === 'unknown') {
+            throw new \RuntimeException('Empty IP.');
+        }
+        $expires = $days > 0 ? gmdate('c', time() + $days * 86400) : null;
+        Database::pdo()->prepare(
+            "INSERT INTO bans (ip_address, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
+        )->execute([$ip, $reason, $createdBy, $expires]);
+    }
+
+    /** Ban a guest_id directly (without the message-IP fan-out). */
+    public static function banGuestId(string $guestId, ?string $reason, ?string $createdBy, int $days = 0): void
+    {
+        $guestId = trim($guestId);
+        if ($guestId === '') {
+            throw new \RuntimeException('Empty guest id.');
+        }
+        $expires = $days > 0 ? gmdate('c', time() + $days * 86400) : null;
+        Database::pdo()->prepare(
+            "INSERT INTO bans (guest_id, reason, created_by, expires_at) VALUES (?, ?, ?, ?)"
+        )->execute([$guestId, $reason, $createdBy, $expires]);
+    }
+
+    /** Active (non-expired) bans, newest first. */
+    public static function listActive(int $limit = 500): array
+    {
+        $stmt = Database::pdo()->prepare(
+            "SELECT id, guest_id, ip_address, reason, created_by, created_at, expires_at
+               FROM bans
+              WHERE expires_at IS NULL OR expires_at > now()
+              ORDER BY created_at DESC
+              LIMIT ?"
+        );
+        $stmt->execute([$limit]);
+        return $stmt->fetchAll();
+    }
+
+    /** Lift a ban by row id. */
+    public static function unban(int $id): void
+    {
+        Database::pdo()->prepare("DELETE FROM bans WHERE id = ?")->execute([$id]);
+    }
 }

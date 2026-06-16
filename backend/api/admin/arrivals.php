@@ -105,10 +105,10 @@ admin_nav('/admin/arrivals');
     ?>
     <div class="table-wrapper">
         <table>
-            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th></tr></thead>
+            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:90px">Actions</th></tr></thead>
             <tbody>
             <?php if (empty($arrivals)): ?>
-                <tr><td colspan="3" class="no-results">No arrivals in this range.</td></tr>
+                <tr><td colspan="4" class="no-results">No arrivals in this range.</td></tr>
             <?php else: foreach ($arrivals as $a):
                 $who = $a['nickname'] ?: '(no name)';
                 if ($a['user_id'] !== null) {
@@ -135,6 +135,21 @@ admin_nav('/admin/arrivals');
                             <span style="color:#888;font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
                         <?php else: ?>
                             <span style="color:#444">-</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php if ($a['guest_id'] !== null): ?>
+                            <form method="POST" action="/admin/bans/add"
+                                  onsubmit="return confirm('Block guest «<?= htmlspecialchars(addslashes($who), ENT_QUOTES) ?>» and the IP(s) they arrived/posted from?')">
+                                <?= csrf_input() ?>
+                                <input type="hidden" name="target" value="guest_fanout">
+                                <input type="hidden" name="value" value="<?= htmlspecialchars($a['guest_id'], ENT_QUOTES) ?>">
+                                <input type="hidden" name="reason" value="arrival ban">
+                                <input type="hidden" name="days" value="0">
+                                <button type="submit" class="btn btn-danger btn-sm">Ban</button>
+                            </form>
+                        <?php else: ?>
+                            <span style="color:#444;font-size:11px">-</span>
                         <?php endif; ?>
                     </td>
                 </tr>

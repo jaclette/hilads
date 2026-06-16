@@ -129,6 +129,16 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/arrivals') {
     require __DIR__ . '/arrivals.php';
 
+} elseif ($uri === '/admin/bans') {
+    require __DIR__ . '/bans.php';
+
+} elseif ($uri === '/admin/bans/add' && $method === 'POST') {
+    require __DIR__ . '/ban_add.php';
+
+} elseif (preg_match('#^/admin/bans/(\d+)/unban$#', $uri, $m) && $method === 'POST') {
+    $banId = (int) $m[1];
+    require __DIR__ . '/ban_unban.php';
+
 } elseif ($uri === '/admin/challenges') {
     require __DIR__ . '/challenges.php';
 
