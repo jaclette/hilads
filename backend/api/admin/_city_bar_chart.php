@@ -3,10 +3,13 @@
 // Expects in scope:
 //   $cities    - rows with id, name, cnt (ordered desc)
 //   $chartLink - fn(string $id): string  → href for a city's drill-in
+//   $barColors - OPTIONAL [id => '#hex'] per-city colours; falls back to the
+//                brand orange gradient when a city has no entry.
 declare(strict_types=1);
 
 if (empty($cities)) { return; }
 
+$barColors = $barColors ?? [];
 $maxCnt = 0;
 foreach ($cities as $r) { $maxCnt = max($maxCnt, (int) $r['cnt']); }
 ?>
@@ -20,8 +23,9 @@ foreach ($cities as $r) { $maxCnt = max($maxCnt, (int) $r['cnt']); }
            style="display:flex;align-items:center;gap:12px;padding:5px 0;text-decoration:none"
            onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
             <span style="width:150px;flex-shrink:0;color:#ddd;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></span>
+            <?php $fill = $barColors[$c['id']] ?? 'linear-gradient(90deg,#FF7A3C,#C24A38)'; ?>
             <span style="flex:1;height:18px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden">
-                <span style="display:block;height:100%;width:<?= $pct ?>%;background:linear-gradient(90deg,#FF7A3C,#C24A38);border-radius:5px"></span>
+                <span style="display:block;height:100%;width:<?= $pct ?>%;background:<?= $fill ?>;border-radius:5px"></span>
             </span>
             <span style="width:46px;text-align:right;color:#fff;font-weight:700;font-size:13px"><?= number_format($cnt) ?></span>
         </a>

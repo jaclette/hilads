@@ -17,12 +17,16 @@ $row = $stmt->fetch();
 $channel = $_POST['channel'] ?? ($row['channel_id'] ?? '');
 $q       = $_POST['q'] ?? '';
 $type    = $_POST['type'] ?? 'all';
-$date    = $_POST['date'] ?? '';
+$from    = $_POST['from'] ?? '';
+$to      = $_POST['to'] ?? '';
+$view    = $_POST['view'] ?? 'sum';
 $page    = $_POST['page'] ?? '1';
 $back    = '/admin/messages?channel=' . urlencode((string) $channel)
          . '&q=' . urlencode((string) $q)
          . '&type=' . urlencode((string) $type)
-         . '&date=' . urlencode((string) $date)
+         . '&from=' . urlencode((string) $from)
+         . '&to=' . urlencode((string) $to)
+         . '&view=' . urlencode((string) $view)
          . '&page=' . urlencode((string) $page);
 
 if (!$row) {
