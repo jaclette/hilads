@@ -1070,6 +1070,19 @@ html, body, #root {
 .challenge-successful-cta:hover { background: rgba(255, 201, 60, 0.16); }
 
 /* ── Success challenges showcase ──────────────────────────────────────────── */
+/* Title sits left of the back button (not absolutely centered like .page-title)
+   so the full "✨ Success challenges" never truncates. */
+.showcase-header { gap: 12px; }
+.showcase-page-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .showcase-body-scroll { padding: 12px 14px 32px; }
 
 .showcase-filter { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }

@@ -45,10 +45,9 @@ export default function SuccessfulChallengesScreen({ onBack, onOpenChallenge, on
 
   return (
     <div className="full-page full-page--tab">
-      <div className="page-header">
+      <div className="page-header showcase-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{t('showcase.title')}</span>
-        <span style={{ width: 40 }} />
+        <span className="showcase-page-title">{t('showcase.title')}</span>
       </div>
 
       <div className="page-body showcase-body-scroll">

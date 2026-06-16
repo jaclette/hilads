@@ -593,7 +593,9 @@ class ChallengeRepository
                 ORDER BY p.submitted_at DESC LIMIT 1
             ) pr ON true
             WHERE cc.visibility = 'public'$cityClause$beforeClause
-            ORDER BY r.completed_at DESC
+            -- Showcase prioritises challenges that have photo proof (more
+            -- compelling for discovery), then most-recently completed.
+            ORDER BY (pr.media_url IS NOT NULL) DESC, r.completed_at DESC
             LIMIT $limit
         ";
         $stmt = Database::pdo()->prepare($sql);
