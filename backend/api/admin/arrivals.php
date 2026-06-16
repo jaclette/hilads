@@ -189,6 +189,12 @@ admin_nav('/admin/arrivals');
         </span>
     </div>
 
+    <?php
+    $chartLink = static fn(string $id): string =>
+        '/admin/arrivals?channel=' . urlencode($id) . '&date=' . urlencode($activityDate);
+    include __DIR__ . '/_city_bar_chart.php';
+    ?>
+
     <div class="table-wrapper">
         <table>
             <thead>
