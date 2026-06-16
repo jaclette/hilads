@@ -24,7 +24,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  ActivityIndicator, Alert, Modal, TextInput, Pressable,
+  ActivityIndicator, Alert, Modal, TextInput, Pressable, Platform,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ import {
   type ChallengeProof,
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
+import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 type Props = {
@@ -61,6 +62,7 @@ export function ChallengeProofBlock({
   const [busy,        setBusy]        = useState<'submit' | 'approve' | 'reject' | null>(null);
   const [rejectOpen,  setRejectOpen]  = useState(false);
   const [rejectReason, setRejectReason] = useState('');
+  const [androidCamera, setAndroidCamera] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -88,18 +90,37 @@ export function ChallengeProofBlock({
   const isFinal = latest?.status === 'rejected' && attemptsLeft === 0;
 
   // ── Acceptor: submit a proof ──────────────────────────────────────────────
+  // Shared tail: upload the captured photo → submit the proof → refresh. Both
+  // the iOS picker path and the Android in-app camera path funnel through here.
+  const submitWithUri = useCallback(async (uri: string, mimeType: string | null) => {
+    setBusy('submit');
+    try {
+      const { url } = await uploadFile(uri, mimeType);
+      await submitProof(acceptanceId, { mediaUrl: url, mediaType: 'image' });
+      await load();
+    } catch (e) {
+      Alert.alert(t('intl.proof.submitFailTitle'), e instanceof Error ? e.message : t('intl.proof.submitFailBody'));
+    } finally {
+      setBusy(null);
+    }
+  }, [acceptanceId, load, t]);
+
   const handleSubmit = useCallback(async () => {
     if (busy) return;
 
-    // The ENTIRE flow (camera permission + capture + upload + submit) is wrapped
-    // so a failure anywhere surfaces as an alert instead of a silent no-op - the
-    // camera calls used to sit outside the try, so any throw there (denied perm,
-    // camera unavailable, picker error) vanished into an unhandled rejection and
-    // the button "did nothing".
+    // Android: expo-image-picker's launchCameraAsync() HANGS on Android 14 +
+    // singleTask MainActivity (the ActivityResultLauncher callback is never
+    // delivered across task boundaries) - the call never resolves, so the
+    // button "did nothing". Use the same in-app expo-camera modal the chat
+    // composer uses. Still a live camera capture (PR55 anti-cheat intact).
+    if (Platform.OS === 'android') {
+      setAndroidCamera(true);
+      return;
+    }
+
+    // iOS: launchCameraAsync works. Wrap the whole flow so a denied permission
+    // / camera-unavailable / picker error surfaces as an alert, never silence.
     try {
-      // 1. CAMERA permission + live capture. PR55 - proof MUST be an
-      //    instant photo (no gallery picker): a stock food photo from the
-      //    library would break the "I was here right now" contract.
       const cam = await ImagePicker.requestCameraPermissionsAsync();
       if (cam.status !== 'granted') {
         Alert.alert(t('intl.proof.permPhotoTitle'), t('intl.proof.permPhotoBody'));
@@ -108,24 +129,15 @@ export function ChallengeProofBlock({
       const pick = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         quality:    0.85,
-        // Rear camera - proofs are about the place / dish, not a selfie.
-        cameraType: ImagePicker.CameraType.back,
+        cameraType: ImagePicker.CameraType.back,  // place/dish, not a selfie
         allowsEditing: false,
       });
       if (pick.canceled || !pick.assets?.[0]) return;
-      const asset = pick.assets[0];
-
-      // 2. Upload media → 3. Submit
-      setBusy('submit');
-      const { url } = await uploadFile(asset.uri, asset.mimeType ?? null);
-      await submitProof(acceptanceId, { mediaUrl: url, mediaType: 'image' });
-      await load();
+      await submitWithUri(pick.assets[0].uri, pick.assets[0].mimeType ?? null);
     } catch (e) {
       Alert.alert(t('intl.proof.submitFailTitle'), e instanceof Error ? e.message : t('intl.proof.submitFailBody'));
-    } finally {
-      setBusy(null);
     }
-  }, [busy, acceptanceId, load, t]);
+  }, [busy, submitWithUri, t]);
 
   // ── Creator: approve / reject ─────────────────────────────────────────────
   const handleApprove = useCallback(async () => {
@@ -294,6 +306,15 @@ export function ChallengeProofBlock({
             </Text>
           )}
       </TouchableOpacity>
+
+      {/* Android in-app camera (bypasses the hanging launchCameraAsync). */}
+      {Platform.OS === 'android' && (
+        <AndroidCameraCapture
+          visible={androidCamera}
+          onCapture={(uri) => { setAndroidCamera(false); submitWithUri(uri, 'image/jpeg'); }}
+          onClose={() => setAndroidCamera(false)}
+        />
+      )}
     </View>
   );
 }
