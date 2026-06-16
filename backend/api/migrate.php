@@ -1042,6 +1042,10 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_bans_ip_address ON bans (ip_address) W
 // ban can also block the IPs that guest posted from. Nullable, additive.
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS ip_address TEXT", 'messages.ip_address');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_guest_recent ON messages (guest_id, created_at DESC) WHERE guest_id IS NOT NULL", 'idx_messages_guest_recent');
+// messages.country: ISO-2 origin country from Cloudflare's CF-IPCountry header
+// (free, no API). Stamped on arrival (join) events + city messages so the BO
+// can show where a guest is connecting from. Nullable, additive.
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS country TEXT", 'messages.country');
 
 // ── Backfill usernames for legacy users ─────────────────────────────────────
 // Every registered user needs a unique @-handle (mentions reference it). New

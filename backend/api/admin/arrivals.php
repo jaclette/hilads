@@ -67,7 +67,7 @@ admin_nav('/admin/arrivals');
     $pages = (int) ceil($total / $perPage);
 
     $aStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id,
+        SELECT id, nickname, user_id, guest_id, country,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts
         FROM messages
         WHERE channel_id = :cid AND type = 'system' AND event = 'join'
@@ -95,12 +95,20 @@ admin_nav('/admin/arrivals');
     </div>
     <div class="td-mono" style="color:#555;margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
 
+    <?php
+    // ISO-2 → flag emoji (regional-indicator pair). Empty when missing/invalid.
+    $isoFlag = static function (?string $cc): string {
+        if (!$cc || !preg_match('/^[A-Za-z]{2}$/', $cc)) return '';
+        $cc = strtoupper($cc);
+        return mb_chr(127397 + ord($cc[0])) . mb_chr(127397 + ord($cc[1]));
+    };
+    ?>
     <div class="table-wrapper">
         <table>
-            <thead><tr><th style="width:160px">When</th><th>Who arrived</th></tr></thead>
+            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th></tr></thead>
             <tbody>
             <?php if (empty($arrivals)): ?>
-                <tr><td colspan="2" class="no-results">No arrivals in this range.</td></tr>
+                <tr><td colspan="3" class="no-results">No arrivals in this range.</td></tr>
             <?php else: foreach ($arrivals as $a):
                 $who = $a['nickname'] ?: '(no name)';
                 if ($a['user_id'] !== null) {
@@ -119,6 +127,14 @@ admin_nav('/admin/arrivals');
                             <a href="<?= $profile ?>" style="color:#ddd;margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></a>
                         <?php else: ?>
                             <span style="color:#ccc;margin-left:4px"><?= htmlspecialchars($who, ENT_QUOTES) ?></span>
+                        <?php endif; ?>
+                    </td>
+                    <td style="white-space:nowrap">
+                        <?php if (!empty($a['country'])): ?>
+                            <span style="font-size:15px"><?= $isoFlag($a['country']) ?></span>
+                            <span style="color:#888;font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
+                        <?php else: ?>
+                            <span style="color:#444">-</span>
                         <?php endif; ?>
                     </td>
                 </tr>

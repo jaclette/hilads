@@ -5945,8 +5945,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     // never lose the message, so this is swallowed on error.
     if (!empty($message['id']) && $clientIp !== 'unknown') {
         try {
-            Database::pdo()->prepare("UPDATE messages SET ip_address = ? WHERE id = ?")
-                ->execute([$clientIp, $message['id']]);
+            // Also stamp the Cloudflare origin country (free header) so the BO
+            // can show where a guest is connecting from.
+            Database::pdo()->prepare("UPDATE messages SET ip_address = ?, country = ? WHERE id = ?")
+                ->execute([$clientIp, Request::country(), $message['id']]);
         } catch (\Throwable $e) {
             error_log('[bans] ip stamp skipped: ' . $e->getMessage());
         }

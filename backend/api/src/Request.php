@@ -27,6 +27,22 @@ class Request
     }
 
     /**
+     * ISO-2 origin country from Cloudflare's CF-IPCountry header (free, no API
+     * call). Returns null when absent or a non-country sentinel (XX = unknown,
+     * T1 = Tor). Uppercased + validated to two letters.
+     */
+    public static function country(): ?string
+    {
+        $cc = $_SERVER['HTTP_CF_IPCOUNTRY'] ?? null;
+        if (!is_string($cc)) return null;
+        $cc = strtoupper(trim($cc));
+        if (!preg_match('/^[A-Z]{2}$/', $cc) || in_array($cc, ['XX', 'T1'], true)) {
+            return null;
+        }
+        return $cc;
+    }
+
+    /**
      * Crawler / link-previewer User-Agent match. The web SPA also skips React
      * hydration for these UAs (apps/web/src/main.jsx), so this is defense in
      * depth - short-circuits any backend write that might slip through.

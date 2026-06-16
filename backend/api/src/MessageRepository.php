@@ -522,13 +522,13 @@ class MessageRepository
         ];
     }
 
-    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null): array
+    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null, ?string $country = null): array
     {
         $id = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname)
-            VALUES (?, ?, 'system', 'join', ?, ?, ?)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname]);
+            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country)
+            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country]);
 
         // Return the id so the live WS broadcast carries it too - matches the
         // fetched (format()) shape so reverse-scroll pagination + dedup line up.
