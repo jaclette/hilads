@@ -6506,11 +6506,11 @@ export default function App() {
           nickname={activeNickname}
           account={account}
           onBack={() => {
-            // Back lands on the Now feed (where the user usually arrives
-            // from anyway), not the city chat - matches the mental model
-            // "I was browsing challenges, take me back to browsing".
+            // Back returns to the Challenges browser the user came from -
+            // "I was browsing challenges, take me back to browsing" (was
+            // wrongly opening the Now/events drawer).
             setActiveChallenge(null)
-            setShowEventDrawer(true)
+            setShowChallengesDrawer(true)
           }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
