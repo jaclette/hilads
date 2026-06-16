@@ -15,6 +15,10 @@
 //   $dailySql   SELECT id,name,day,cnt      (named :ds,:de) GROUP BY ...
 declare(strict_types=1);
 
+// $chartOnly: when set, render only the chart (no per-city table) - used when
+// the host page already shows a detail list below (e.g. Users).
+$chartOnly = $chartOnly ?? false;
+
 $cityLink = static fn(string $id): string =>
     $pageBase . '?' . $cityParam . '=' . urlencode($id) . '&from=' . urlencode($from) . '&to=' . urlencode($to);
 ?>
@@ -91,6 +95,7 @@ $cityLink = static fn(string $id): string =>
     include __DIR__ . '/_city_bar_chart.php';
     ?>
 
+    <?php if (!$chartOnly): ?>
     <div class="table-wrapper">
         <table>
             <thead>
@@ -100,7 +105,9 @@ $cityLink = static fn(string $id): string =>
             <?php if (empty($cities)): ?>
                 <tr><td colspan="4" class="no-results">No city had <?= $noun ?> in this range.</td></tr>
             <?php else: foreach ($cities as $c):
-                $lastTs = $c['last_at'] ? strtotime($c['last_at']) : 0;
+                // last_at is a tstz string for most tables, but an epoch int for
+                // users.created_at - handle both.
+                $lastTs = $c['last_at'] ? (is_numeric($c['last_at']) ? (int) $c['last_at'] : strtotime($c['last_at'])) : 0;
                 ?>
                 <tr>
                     <td>
@@ -115,4 +122,5 @@ $cityLink = static fn(string $id): string =>
             </tbody>
         </table>
     </div>
+    <?php endif; /* !$chartOnly */ ?>
 <?php endif; ?>

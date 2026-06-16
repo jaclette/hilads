@@ -10,6 +10,21 @@ $page    = max(1, (int)($_GET['page'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 $search  = trim($_GET['q'] ?? '');
 $filter  = $_GET['filter'] ?? 'active';  // all | active | fake | deleted
+$city    = trim($_GET['city'] ?? '');
+
+// Per-city "new users" diagram + city drill-in range. users.created_at is an
+// INTEGER epoch (not timestamptz), so bounds are epoch ints.
+$today  = gmdate('Y-m-d');
+$dvalid = static fn($d): string => preg_match('/^\d{4}-\d{2}-\d{2}$/', (string) $d) ? (string) $d : '';
+$from   = $dvalid($_GET['from'] ?? '') ?: $today;
+$to     = $dvalid($_GET['to']   ?? '') ?: $from;
+if ($to < $from) { $to = $from; }
+if ((strtotime($to) - strtotime($from)) / 86400 > 92) { $to = (new DateTime($from))->modify('+92 days')->format('Y-m-d'); }
+$view = (($_GET['view'] ?? '') === 'daily') ? 'daily' : 'sum';
+$ds = strtotime($from . ' 00:00:00 UTC');             // epoch, inclusive
+$de = strtotime($to   . ' 00:00:00 UTC') + 86400;     // epoch, to + 1 day
+$rangeLabel = $from === $to ? $from : "$from → $to";
+$PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899','#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
 
 // ── Build WHERE clause ────────────────────────────────────────────────────────
 
@@ -21,6 +36,14 @@ if ($search !== '') {
     $params[':s1'] = '%' . $search . '%';
     $params[':s2'] = '%' . $search . '%';
     $params[':s3'] = $search;
+}
+
+// City drill-in (from the diagram): users in this city, registered in the range.
+if ($city !== '') {
+    $where[]         = 'u.current_city_id = :city AND u.created_at >= :ds AND u.created_at < :de';
+    $params[':city'] = $city;
+    $params[':ds']   = $ds;
+    $params[':de']   = $de;
 }
 
 switch ($filter) {
@@ -110,10 +133,41 @@ admin_nav('/admin/users');
             <?php endforeach; ?>
         </select>
         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-        <?php if ($search !== '' || $filter !== 'active'): ?>
+        <?php if ($search !== '' || $filter !== 'active' || $city !== ''): ?>
             <a href="/admin/users" class="btn btn-secondary btn-sm">Clear</a>
         <?php endif; ?>
     </form>
+
+    <?php if ($search === ''):
+        // Per-city "new users" diagram (real, non-deleted registrations by
+        // current_city_id). Chart-only - the user list below is the detail.
+        // Click a bar/legend → the list filtered to that city + range.
+        $pageBase    = '/admin/users';
+        $cityParam   = 'city';
+        $noun        = 'users';
+        $actionLabel = 'View users';
+        $chartOnly   = true;
+        $sumSql = "
+            SELECT u.current_city_id AS id, p.name AS name, COUNT(*) AS cnt, MAX(u.created_at) AS last_at
+            FROM users u
+            JOIN channels p ON p.id = u.current_city_id AND p.type = 'city'
+            WHERE u.created_at >= :ds AND u.created_at < :de AND u.deleted_at IS NULL AND u.is_fake = false
+            GROUP BY u.current_city_id, p.name
+            ORDER BY cnt DESC, p.name ASC
+        ";
+        $dailySql = "
+            SELECT u.current_city_id AS id, p.name AS name,
+                   (to_timestamp(u.created_at) AT TIME ZONE 'UTC')::date AS day, COUNT(*) AS cnt
+            FROM users u
+            JOIN channels p ON p.id = u.current_city_id AND p.type = 'city'
+            WHERE u.created_at >= :ds AND u.created_at < :de AND u.deleted_at IS NULL AND u.is_fake = false
+            GROUP BY u.current_city_id, p.name, day
+        ";
+        include __DIR__ . '/_city_activity.php';
+        if ($city !== '') {
+            echo '<p style="color:#888;font-size:13px;margin:16px 0 4px">Users in this city, registered ' . htmlspecialchars($rangeLabel, ENT_QUOTES) . ':</p>';
+        }
+    endif; ?>
 
     <div class="table-wrapper">
         <table>
@@ -198,16 +252,17 @@ admin_nav('/admin/users');
         </table>
     </div>
 
-    <?php if ($pages > 1): ?>
+    <?php if ($pages > 1):
+        $pqs = 'q=' . urlencode($search) . '&filter=' . urlencode($filter) . '&city=' . urlencode($city) . '&from=' . urlencode($from) . '&to=' . urlencode($to); ?>
         <div class="pagination">
             <?php if ($page > 1): ?>
-                <a href="?q=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&page=<?= $page - 1 ?>">← Prev</a>
+                <a href="?<?= $pqs ?>&page=<?= $page - 1 ?>">← Prev</a>
                 <span class="sep">|</span>
             <?php endif; ?>
             <span>Page <span class="current"><?= $page ?></span> of <?= $pages ?></span>
             <?php if ($page < $pages): ?>
                 <span class="sep">|</span>
-                <a href="?q=<?= urlencode($search) ?>&filter=<?= urlencode($filter) ?>&page=<?= $page + 1 ?>">Next →</a>
+                <a href="?<?= $pqs ?>&page=<?= $page + 1 ?>">Next →</a>
             <?php endif; ?>
         </div>
     <?php endif; ?>
