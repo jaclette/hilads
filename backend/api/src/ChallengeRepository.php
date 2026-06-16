@@ -522,6 +522,111 @@ class ChallengeRepository
     }
 
     /**
+     * Public "Success challenges" showcase - completed, well-rated challenges
+     * for discovery. GLOBAL by default; pass $cityId ('city_N') to filter to a
+     * city (origin OR target). PUBLIC visibility only (it's a public, guest-
+     * readable surface). A challenge qualifies when it has been rated by BOTH
+     * parties (visible_ratings → revealed) with an AVERAGE of >= $minStars.
+     * Returns a lean showcase DTO per card: title, creator + country, mode,
+     * avg stars, a comment preview (the longest visible note), and the approved
+     * photo proof (international only). Cursor-paginated by completion time.
+     */
+    public static function getShowcase(?string $cityId, int $limit = 30, ?int $before = null, float $minStars = 3.0): array
+    {
+        $limit    = max(1, min(50, $limit));
+        $minStars = max(1.0, min(5.0, $minStars));
+        $minStarsSql = number_format($minStars, 2, '.', '');
+
+        $params      = [];
+        $cityClause  = '';
+        if ($cityId !== null && $cityId !== '' && preg_match('/^city_\d+$/', $cityId)) {
+            $cityClause      = ' AND (cc.city_id = :city OR cc.target_city_id = :city)';
+            $params['city']  = $cityId;
+        }
+        $beforeClause = '';
+        if ($before !== null) {
+            $beforeClause     = ' AND r.completed_at < to_timestamp(:before)';
+            $params['before'] = $before;
+        }
+
+        // r = both-rated ratings per challenge (the trigger only flips
+        // phase='approved' once both parties rate, so an entry here is a
+        // completed challenge). avg + count + the longest non-empty comment.
+        $sql = "
+            SELECT c.id AS channel_id, cc.title, cc.challenge_type, cc.mode,
+                   cc.city_id, cc.target_city_id, cc.created_by,
+                   u.display_name AS creator_display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url,
+                   ac.acceptor_user_id,
+                   au.display_name AS acceptor_display_name,
+                   COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
+                   au.current_city_id AS acceptor_city_id,
+                   r.avg_stars, r.rating_count, r.comment,
+                   EXTRACT(EPOCH FROM r.completed_at)::INTEGER AS completed_ts,
+                   pr.media_url AS proof_media_url, pr.media_type AS proof_media_type
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id AND c.status = 'active'
+            LEFT JOIN users u ON u.id = cc.created_by
+            JOIN (
+                SELECT vr.challenge_id,
+                       AVG(vr.stars)        AS avg_stars,
+                       COUNT(*)             AS rating_count,
+                       MAX(vr.created_at)   AS completed_at,
+                       (SELECT v2.comment FROM visible_ratings v2
+                         WHERE v2.challenge_id = vr.challenge_id AND COALESCE(v2.comment, '') <> ''
+                         ORDER BY length(v2.comment) DESC LIMIT 1) AS comment
+                FROM visible_ratings vr
+                GROUP BY vr.challenge_id
+                HAVING AVG(vr.stars) >= $minStarsSql
+            ) r ON r.challenge_id = cc.channel_id
+            LEFT JOIN LATERAL (
+                SELECT a.id AS acceptance_id, a.acceptor_user_id
+                FROM challenge_acceptances a
+                WHERE a.challenge_id = cc.channel_id AND a.phase = 'approved'
+                ORDER BY a.approved_at DESC NULLS LAST LIMIT 1
+            ) ac ON true
+            LEFT JOIN users au ON au.id = ac.acceptor_user_id
+            LEFT JOIN LATERAL (
+                SELECT p.media_url, p.media_type
+                FROM challenge_proofs p
+                WHERE p.acceptance_id = ac.acceptance_id AND p.status = 'approved'
+                ORDER BY p.submitted_at DESC LIMIT 1
+            ) pr ON true
+            WHERE cc.visibility = 'public'$cityClause$beforeClause
+            ORDER BY r.completed_at DESC
+            LIMIT $limit
+        ";
+        $stmt = Database::pdo()->prepare($sql);
+        $stmt->execute($params);
+        $rows = $stmt->fetchAll();
+
+        return array_map(static function (array $r): array {
+            return [
+                'id'                        => $r['channel_id'],
+                'title'                     => $r['title'],
+                'challenge_type'            => $r['challenge_type'],
+                'mode'                      => $r['mode'] ?? 'local',
+                'created_by'                => $r['created_by'],
+                'creator_display_name'      => $r['creator_display_name'],
+                'creator_thumb_avatar_url'  => $r['creator_thumb_avatar_url'],
+                'country'                   => self::countryForCityId($r['city_id']),
+                'target_country'            => $r['target_city_id'] ? self::countryForCityId($r['target_city_id']) : null,
+                'target_city_name'          => $r['target_city_id'] ? self::cityNameForCityId($r['target_city_id']) : null,
+                'acceptor_user_id'          => $r['acceptor_user_id'],
+                'acceptor_display_name'     => $r['acceptor_display_name'],
+                'acceptor_thumb_avatar_url' => $r['acceptor_thumb_avatar_url'],
+                'acceptor_country'          => $r['acceptor_city_id'] ? self::countryForCityId($r['acceptor_city_id']) : null,
+                'avg_stars'                 => round((float) $r['avg_stars'], 1),
+                'rating_count'              => (int) $r['rating_count'],
+                'comment'                   => $r['comment'],
+                'proof_media_url'           => $r['proof_media_url'],
+                'proof_media_type'          => $r['proof_media_type'],
+                'completed_at'              => (int) $r['completed_ts'],
+            ];
+        }, $rows);
+    }
+
+    /**
      * Single-challenge detail. When $viewerUserId is provided, the visibility
      * clause hides friends/private rows the viewer can't see - caller treats
      * a null return as 404 (same as deleted/never-existed). Default null

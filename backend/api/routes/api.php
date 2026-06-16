@@ -7794,6 +7794,26 @@ $router->add('GET', '/api/v1/challenges/inspiration', function () {
     }
 });
 
+// GET /api/v1/challenges/showcase?cityId=&limit=&before=&minStars=3
+// Public "Success challenges" showcase: a GLOBAL (or ?cityId=N) feed of
+// completed, well-rated (avg stars >= minStars, both parties rated) PUBLIC
+// challenges - the discovery surface for a new app. Guest-readable. Cursor
+// paginated by completion time via `before` (epoch of the last item).
+$router->add('GET', '/api/v1/challenges/showcase', function () {
+    $cityIdRaw = filter_var($_GET['cityId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    $cityId    = $cityIdRaw === false ? null : 'city_' . $cityIdRaw;
+    $limit     = isset($_GET['limit'])    ? (int) $_GET['limit']      : 30;
+    $before    = isset($_GET['before'])   ? (int) $_GET['before']     : null;
+    $minStars  = isset($_GET['minStars']) ? (float) $_GET['minStars'] : 3.0;
+    try {
+        $items = ChallengeRepository::getShowcase($cityId, $limit, $before, $minStars);
+        Response::json(['items' => $items, 'hasMore' => count($items) >= max(1, min(50, $limit))]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] GET showcase failed: ' . $e->getMessage());
+        Response::json(['items' => [], 'hasMore' => false], 200);
+    }
+});
+
 // Create a new challenge. Requires a registered account - guests may browse,
 // accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so
