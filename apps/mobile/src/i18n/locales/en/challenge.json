@@ -289,13 +289,14 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Rate your meet-up with {{name}}",
-      "titleUrgent": "{{name}} rated - your turn"
+      "title": "Rate this challenge - how did it go?",
+      "titleUrgent": "Your turn to rate this challenge"
     },
     "sheet": {
-      "title": "How was it with {{name}}?",
+      "title": "How did the challenge go?",
+      "subtitle": "Rate the challenge, not the person.",
       "starsAria": "{{n}} star",
-      "commentPlaceholder": "What stood out? (optional)",
+      "commentPlaceholder": "Leave a note about the challenge (optional)",
       "submit": "Submit rating",
       "later": "Not now"
     },

@@ -466,13 +466,14 @@
   },
   "ratePrompts": {
     "banner": {
-      "title": "Note ta rencontre avec {{name}}",
-      "titleUrgent": "{{name}} a noté - à toi"
+      "title": "Note ce défi - ça s’est passé comment ?",
+      "titleUrgent": "À toi de noter ce défi"
     },
     "sheet": {
-      "title": "Ça s’est passé comment avec {{name}} ?",
+      "title": "Ça s’est passé comment, ce défi ?",
+      "subtitle": "Note le défi, pas la personne.",
       "starsAria": "{{n}} étoile",
-      "commentPlaceholder": "Qu’est-ce qui t’a marqué ? (facultatif)",
+      "commentPlaceholder": "Laisse un mot sur le défi (facultatif)",
       "submit": "Envoyer la note",
       "later": "Plus tard"
     },

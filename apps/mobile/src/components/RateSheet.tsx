@@ -85,28 +85,18 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
           <View style={styles.handle} />
 
           <View style={styles.headerRow}>
-            <View style={[styles.avatar, { backgroundColor: avatarColor(cp.id) }]}>
-              {cp.thumbAvatarUrl ? (
-                <Image
-                  source={{ uri: cp.thumbAvatarUrl }}
-                  style={StyleSheet.absoluteFill}
-                  cachePolicy="memory-disk"
-                  contentFit="cover"
-                  transition={120}
-                />
-              ) : (
-                <Text style={styles.avatarLetter}>{(cp.displayName?.[0] ?? '?').toUpperCase()}</Text>
-              )}
+            {/* Rate the CHALLENGE, not the person - a star, not an avatar. */}
+            <View style={[styles.avatar, styles.avatarStar]}>
+              <Text style={styles.avatarStarText}>⭐</Text>
             </View>
             <View style={styles.headerTextWrap}>
-              <Text style={styles.title}>
-                {t('ratePrompts.sheet.title', { name: cp.displayName })}
-              </Text>
-              <Text style={styles.subtitle} numberOfLines={1}>
+              <Text style={styles.title}>{t('ratePrompts.sheet.title')}</Text>
+              <Text style={styles.subtitle} numberOfLines={2}>
                 {prompt.challenge_title}
               </Text>
             </View>
           </View>
+          <Text style={styles.hint}>{t('ratePrompts.sheet.subtitle')}</Text>
 
           <View style={styles.starsRow}>
             {[1, 2, 3, 4, 5].map(n => (
@@ -182,9 +172,12 @@ const styles = StyleSheet.create({
   headerRow:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
   avatar:        { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarLetter:  { color: '#fff', fontWeight: '700', fontSize: 18 },
+  avatarStar:    { backgroundColor: 'rgba(255,201,60,0.16)' },
+  avatarStarText:{ fontSize: 24 },
   headerTextWrap:{ flex: 1, minWidth: 0 },
   title:         { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
   subtitle:      { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+  hint:          { fontSize: FontSizes.xs, color: Colors.muted2, marginBottom: Spacing.sm },
 
   starsRow:      { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm },
   starTap:       { padding: 4 },

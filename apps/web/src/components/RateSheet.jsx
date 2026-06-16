@@ -86,21 +86,16 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
           background: 'rgba(255,255,255,0.2)',
         }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        {/* Rate the CHALLENGE, not the person - a star, not an avatar. */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
           <span style={{
             width: 48, height: 48, borderRadius: 24,
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-            background: `linear-gradient(135deg, ${c1}, ${c2})`,
-            color: '#fff', fontWeight: 700, fontSize: 18,
-            overflow: 'hidden', flexShrink: 0,
-          }}>
-            {cp.thumbAvatarUrl
-              ? <img src={cp.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              : (cp.displayName ?? '?')[0].toUpperCase()}
-          </span>
+            background: 'rgba(255,201,60,0.16)', fontSize: 24, flexShrink: 0,
+          }}>⭐</span>
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 17, fontWeight: 800, color: 'var(--text, #fff)', letterSpacing: -0.3 }}>
-              {t('ratePrompts.sheet.title', { name: cp.displayName })}
+              {t('ratePrompts.sheet.title')}
             </div>
             <div style={{
               fontSize: 13, color: 'var(--muted, #b3b3b3)', marginTop: 2,
@@ -109,6 +104,9 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
               {prompt.challenge_title}
             </div>
           </div>
+        </div>
+        <div style={{ fontSize: 12, color: 'var(--muted2, #888)', marginBottom: 12 }}>
+          {t('ratePrompts.sheet.subtitle')}
         </div>
 
         <div style={{
