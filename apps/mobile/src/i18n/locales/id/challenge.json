@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Tantangan saya",
+    "title": "Tantangan saya",
+    "create": "Buat tantangan",
+    "filter": {
+      "all": "Semua",
+      "created": "Dibuat",
+      "taken": "Diterima"
+    },
+    "empty": {
+      "title": "Belum ada tantangan",
+      "body": "Tantangan yang kamu buat atau terima akan muncul di sini."
+    },
+    "guestGate": {
+      "title": "Masuk untuk melihat tantanganmu",
+      "body": "Buat akun untuk memulai tantangan dan menerima tantangan orang lain."
+    }
+  },
   "tabIntro": "Tantangan antara warga lokal dan penjelajah dalam satu kota - dan lintas kota.",
   "howItWorks": "Cara kerjanya",
   "mostLocal": "Most Local",

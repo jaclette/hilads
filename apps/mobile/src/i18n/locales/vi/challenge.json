@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Thử thách của tôi",
+    "title": "Thử thách của tôi",
+    "create": "Tạo thử thách",
+    "filter": {
+      "all": "Tất cả",
+      "created": "Đã tạo",
+      "taken": "Đã nhận"
+    },
+    "empty": {
+      "title": "Chưa có thử thách nào",
+      "body": "Thử thách bạn tạo hoặc nhận sẽ xuất hiện ở đây."
+    },
+    "guestGate": {
+      "title": "Đăng nhập để xem thử thách của bạn",
+      "body": "Tạo tài khoản để khởi tạo thử thách và nhận thử thách của người khác."
+    }
+  },
   "tabIntro": "Thử thách giữa người địa phương và người khám phá trong một thành phố - và xuyên thành phố.",
   "howItWorks": "Cách hoạt động",
   "mostLocal": "Most Local",

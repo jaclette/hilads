@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Os meus desafios",
+    "title": "Os meus desafios",
+    "create": "Criar um desafio",
+    "filter": {
+      "all": "Todos",
+      "created": "Criados",
+      "taken": "Aceites"
+    },
+    "empty": {
+      "title": "Ainda sem desafios",
+      "body": "Os desafios que crias ou aceitas aparecem aqui."
+    },
+    "guestGate": {
+      "title": "Inicia sessão para ver os teus desafios",
+      "body": "Cria uma conta para lançar desafios e aceitar os dos outros."
+    }
+  },
   "tabIntro": "Desafios entre locais e exploradores dentro de uma cidade - e entre cidades.",
   "howItWorks": "Como funciona",
   "mostLocal": "Most Local",

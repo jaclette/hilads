@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Mijn challenges",
+    "title": "Mijn challenges",
+    "create": "Een challenge maken",
+    "filter": {
+      "all": "Alle",
+      "created": "Gemaakt",
+      "taken": "Aangenomen"
+    },
+    "empty": {
+      "title": "Nog geen challenges",
+      "body": "Challenges die je maakt of aanneemt verschijnen hier."
+    },
+    "guestGate": {
+      "title": "Log in om je challenges te zien",
+      "body": "Maak een account om challenges te starten en die van anderen aan te nemen."
+    }
+  },
   "tabIntro": "Challenges tussen locals en ontdekkers binnen een stad - en tussen steden.",
   "howItWorks": "Hoe het werkt",
   "mostLocal": "Most Local",

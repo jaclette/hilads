@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Mis retos",
+    "title": "Mis retos",
+    "create": "Crear un reto",
+    "filter": {
+      "all": "Todos",
+      "created": "Creados",
+      "taken": "Aceptados"
+    },
+    "empty": {
+      "title": "Aún no tienes retos",
+      "body": "Los retos que crees o aceptes aparecerán aquí."
+    },
+    "guestGate": {
+      "title": "Inicia sesión para ver tus retos",
+      "body": "Crea una cuenta para lanzar retos y aceptar los de otros."
+    }
+  },
   "tabIntro": "Retos entre locales y exploradores dentro de una ciudad - y entre ciudades.",
   "howItWorks": "Cómo funciona",
   "mostLocal": "Most Local",

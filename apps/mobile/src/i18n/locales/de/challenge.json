@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Meine Challenges",
+    "title": "Meine Challenges",
+    "create": "Challenge erstellen",
+    "filter": {
+      "all": "Alle",
+      "created": "Erstellt",
+      "taken": "Angenommen"
+    },
+    "empty": {
+      "title": "Noch keine Challenges",
+      "body": "Challenges, die du erstellst oder annimmst, erscheinen hier."
+    },
+    "guestGate": {
+      "title": "Melde dich an, um deine Challenges zu sehen",
+      "body": "Erstelle ein Konto, um Challenges zu starten und die anderer anzunehmen."
+    }
+  },
   "tabIntro": "Challenges zwischen Einheimischen und Entdeckern in einer Stadt - und stadtübergreifend.",
   "howItWorks": "So funktioniert's",
   "mostLocal": "Most Local",

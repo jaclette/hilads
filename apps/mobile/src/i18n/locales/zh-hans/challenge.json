@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "我的挑战",
+    "title": "我的挑战",
+    "create": "创建挑战",
+    "filter": {
+      "all": "全部",
+      "created": "我发起的",
+      "taken": "我接受的"
+    },
+    "empty": {
+      "title": "还没有挑战",
+      "body": "你发起或接受的挑战会显示在这里。"
+    },
+    "guestGate": {
+      "title": "登录后查看你的挑战",
+      "body": "创建账号即可发起挑战并接受他人的挑战。"
+    }
+  },
   "tabIntro": "本地人与探索者在城市内的挑战 - 也跨越城市。",
   "howItWorks": "玩法介绍",
   "mostLocal": "Most Local",

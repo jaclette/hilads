@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Mga challenge ko",
+    "title": "Mga challenge ko",
+    "create": "Gumawa ng challenge",
+    "filter": {
+      "all": "Lahat",
+      "created": "Ginawa",
+      "taken": "Tinanggap"
+    },
+    "empty": {
+      "title": "Wala pang challenge",
+      "body": "Lalabas dito ang mga challenge na ginawa o tinanggap mo."
+    },
+    "guestGate": {
+      "title": "Mag-sign in para makita ang iyong mga challenge",
+      "body": "Gumawa ng account para maglunsad ng challenge at tumanggap ng sa iba."
+    }
+  },
   "tabIntro": "Mga challenge sa pagitan ng mga local at explorer sa loob ng isang siyudad - at across cities.",
   "howItWorks": "Paano ito gumagana",
   "mostLocal": "Most Local",

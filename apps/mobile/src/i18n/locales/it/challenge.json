@@ -1,4 +1,22 @@
 {
+  "myChallenges": {
+    "cta": "Le mie sfide",
+    "title": "Le mie sfide",
+    "create": "Crea una sfida",
+    "filter": {
+      "all": "Tutte",
+      "created": "Create",
+      "taken": "Accettate"
+    },
+    "empty": {
+      "title": "Ancora nessuna sfida",
+      "body": "Le sfide che crei o accetti compaiono qui."
+    },
+    "guestGate": {
+      "title": "Accedi per vedere le tue sfide",
+      "body": "Crea un account per lanciare sfide e accettare quelle degli altri."
+    }
+  },
   "tabIntro": "Sfide tra locali ed esploratori in una città - e tra città diverse.",
   "howItWorks": "Come funziona",
   "mostLocal": "Most Local",
