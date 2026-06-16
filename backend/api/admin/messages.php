@@ -288,11 +288,11 @@ admin_nav('/admin/messages');
     <form method="GET" action="/admin/messages" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
         <span style="color:#888;font-size:13px;font-weight:600">From</span>
         <input type="date" name="from" value="<?= htmlspecialchars($from, ENT_QUOTES) ?>" max="<?= $today ?>"
-               onchange="this.form.submit()"
+               onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
                style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
         <span style="color:#888;font-size:13px;font-weight:600">to</span>
         <input type="date" name="to" value="<?= htmlspecialchars($to, ENT_QUOTES) ?>" max="<?= $today ?>"
-               onchange="this.form.submit()"
+               onchange="this.form.submit()" onclick="if(this.showPicker)this.showPicker()"
                style="background:#1a1a1a;border:1px solid #333;color:#eee;border-radius:6px;padding:6px 8px;font-size:13px">
         <input type="hidden" name="view" value="<?= htmlspecialchars($view, ENT_QUOTES) ?>">
         <a href="/admin/messages?from=<?= $today ?>&to=<?= $today ?>&view=<?= htmlspecialchars($view, ENT_QUOTES) ?>" class="btn btn-secondary btn-sm">Today</a>
