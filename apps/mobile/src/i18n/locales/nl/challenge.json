@@ -10,7 +10,9 @@
     "empty": {
       "title": "Nog geen successen",
       "body": "Voltooide, hoog gewaardeerde challenges verschijnen hier. Wees de eerste!"
-    }
+    },
+    "tryCta": "Probeer deze challenge",
+    "note": "Wat ze zeiden"
   },
   "myChallenges": {
     "cta": "Mijn challenges",

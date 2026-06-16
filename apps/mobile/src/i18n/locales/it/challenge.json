@@ -10,7 +10,9 @@
     "empty": {
       "title": "Ancora nessun successo",
       "body": "Le sfide completate e più apprezzate appaiono qui. Sii il primo a realizzarne una!"
-    }
+    },
+    "tryCta": "Prova questa sfida",
+    "note": "Cosa hanno detto"
   },
   "myChallenges": {
     "cta": "Le mie sfide",

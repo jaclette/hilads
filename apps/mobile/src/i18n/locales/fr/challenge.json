@@ -9,7 +9,9 @@
     "empty": {
       "title": "Pas encore de réussites",
       "body": "Les défis réussis et bien notés apparaîtront ici. Sois le premier à en réaliser un !"
-    }
+    },
+    "tryCta": "Tenter ce défi",
+    "note": "Ce qu’ils en ont dit"
   },
   "tabIntro": "Des défis entre locaux et explorateurs dans une ville - et inter-villes.",
   "howItWorks": "Comment ça marche",
@@ -186,7 +188,11 @@
     "cta": "Mes défis",
     "title": "Mes défis",
     "create": "Créer un défi",
-    "filter": { "all": "Tous", "created": "Créés", "taken": "Relevés" },
+    "filter": {
+      "all": "Tous",
+      "created": "Créés",
+      "taken": "Relevés"
+    },
     "empty": {
       "title": "Aucun défi pour l'instant",
       "body": "Les défis que tu crées ou que tu relèves apparaissent ici."

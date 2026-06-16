@@ -104,7 +104,7 @@ function MarqueePlaceholderInput({ placeholder, value, onChange, ...rest }) {
   )
 }
 
-export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, onCreated, onUpdated, onBack, onPublicOptinDismissed }) {
+export default function CreateChallengePage({ channelId, guest, account, editChallenge = null, prefill = null, onCreated, onUpdated, onBack, onPublicOptinDismissed }) {
   const { t } = useTranslation('city')
   const isEdit = !!editChallenge
 
@@ -115,8 +115,10 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   // the historical IRL flow + carries the +50 bonus.
   const [validationMethod, setValidationMethod] = useState(editChallenge?.validation_method ?? 'meet')
   const [audience,        setAudience]        = useState(editChallenge?.audience         ?? 'locals')
-  const [type,            setType]            = useState(editChallenge?.challenge_type   ?? 'food')
-  const [title,           setTitle]           = useState(editChallenge?.title            ?? '')
+  // prefill seeds a fresh challenge from a "Success challenges" story
+  // (title + type only); editChallenge always wins when present.
+  const [type,            setType]            = useState(editChallenge?.challenge_type   ?? prefill?.challenge_type ?? 'food')
+  const [title,           setTitle]           = useState(editChallenge?.title            ?? prefill?.title          ?? '')
   const [returnClause,    setReturnClause]    = useState(editChallenge?.return_clause    ?? '')
   // International-only state. Channel id for target city is stored as a
   // string ('city_<int>' minus the prefix once we ship the picker UI, but

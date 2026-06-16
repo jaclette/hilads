@@ -9,7 +9,9 @@
     "empty": {
       "title": "No success stories yet",
       "body": "Completed, highly-rated challenges show up here. Be the first to make one happen!"
-    }
+    },
+    "tryCta": "Try this challenge",
+    "note": "What they said"
   },
   "tabIntro": "Challenges between locals and explorers within a city - and across cities.",
   "howItWorks": "How it works",
@@ -289,7 +291,11 @@
     "cta": "My challenges",
     "title": "My challenges",
     "create": "Create a challenge",
-    "filter": { "all": "All", "created": "Created", "taken": "Taken" },
+    "filter": {
+      "all": "All",
+      "created": "Created",
+      "taken": "Taken"
+    },
     "empty": {
       "title": "No challenges yet",
       "body": "Challenges you create or take on show up here."

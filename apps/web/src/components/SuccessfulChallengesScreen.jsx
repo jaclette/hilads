@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import BackButton from './BackButton'
 import ShowcaseCard from './ShowcaseCard'
+import ShowcasePreviewModal from './ShowcasePreviewModal'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { fetchChallengeShowcase } from '../api'
 
@@ -12,9 +13,10 @@ const PAGE = 30
  * well-rated challenges for discovery - global by default with an optional city
  * filter. Open to guests. Mirrors the mobile app/challenge/showcase screen.
  */
-export default function SuccessfulChallengesScreen({ onBack, onOpenChallenge, onOpenProfile }) {
+export default function SuccessfulChallengesScreen({ onBack, onTry, onOpenProfile }) {
   const { t } = useTranslation('challenge')
 
+  const [preview,     setPreview]     = useState(null)
   const [items,       setItems]       = useState([])
   const [loading,     setLoading]     = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -80,7 +82,7 @@ export default function SuccessfulChallengesScreen({ onBack, onOpenChallenge, on
               <ShowcaseCard
                 key={it.id}
                 item={it}
-                onOpen={() => onOpenChallenge(it.id)}
+                onOpen={() => setPreview(it)}
                 onAvatar={onOpenProfile}
               />
             ))}
@@ -92,6 +94,13 @@ export default function SuccessfulChallengesScreen({ onBack, onOpenChallenge, on
           </>
         )}
       </div>
+
+      <ShowcasePreviewModal
+        item={preview}
+        onClose={() => setPreview(null)}
+        onTry={(it) => { setPreview(null); onTry(it) }}
+        onAvatar={onOpenProfile}
+      />
 
       <LeaderboardCityPickerModal
         visible={pickerOpen}

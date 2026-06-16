@@ -10,7 +10,9 @@
     "empty": {
       "title": "Noch keine Erfolge",
       "body": "Abgeschlossene, top bewertete Challenges erscheinen hier. Mach du die erste!"
-    }
+    },
+    "tryCta": "Diese Challenge versuchen",
+    "note": "Das sagen sie"
   },
   "myChallenges": {
     "cta": "Meine Challenges"

@@ -942,6 +942,7 @@ export default function App() {
   const [showUpcomingEvents, setShowUpcomingEvents] = useState(false)
   const [showPastArchive, setShowPastArchive] = useState(false)
   const [showSuccessfulChallenges, setShowSuccessfulChallenges] = useState(false)
+  const [createChallengePrefill, setCreateChallengePrefill] = useState(null)
   const [showPeopleDrawer, setShowPeopleDrawer] = useState(false)
   const [showArrivalsSheet, setShowArrivalsSheet] = useState(false)
   const [legends,      setLegends]      = useState([])  // city ambassadors (Local legends section)
@@ -5613,14 +5614,13 @@ export default function App() {
       {showSuccessfulChallenges && (
         <SuccessfulChallengesScreen
           onBack={() => setShowSuccessfulChallenges(false)}
-          onOpenChallenge={(id) => {
-            fetchChallengeById(id).then(data => {
-              if (!data) return
-              const { challenge, cityName, country, timezone } = data
-              setCity(cityName); setCityCountry(country); setCityTimezone(timezone)
-              setShowSuccessfulChallenges(false)
-              setActiveChallenge(challenge)
-            }).catch(() => {})
+          onTry={(item) => {
+            // "Try this challenge" - start a fresh challenge seeded from this
+            // success story's title + type (creation is registered-only).
+            setCreateChallengePrefill({ title: item.title, challenge_type: item.challenge_type })
+            setShowSuccessfulChallenges(false)
+            if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
+            setShowCreateChallenge(true)
           }}
           onOpenProfile={(uid) => { setShowSuccessfulChallenges(false); openProfile(uid, '') }}
         />
@@ -6401,6 +6401,7 @@ export default function App() {
           guest={guest}
           account={account}
           editChallenge={editChallengeObj}
+          prefill={createChallengePrefill}
           onPublicOptinDismissed={() => {
             // Optimistically flip the local account state so the user
             // doesn't see the modal again this session even before their
@@ -6409,13 +6410,14 @@ export default function App() {
           }}
           onCreated={(ch) => {
             setShowCreateChallenge(false)
+            setCreateChallengePrefill(null)
             setActiveChallenge(ch)
             // Fire the post-create "seed it" modal so the creator is nudged
             // to invite city members or share externally right away.
             setPostCreateChallenge(ch)
           }}
           onUpdated={(ch) => { setEditChallengeObj(null); setActiveChallenge(ch) }}
-          onBack={() => { setShowCreateChallenge(false); setEditChallengeObj(null) }}
+          onBack={() => { setShowCreateChallenge(false); setEditChallengeObj(null); setCreateChallengePrefill(null) }}
         />
       )}
 

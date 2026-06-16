@@ -10,7 +10,9 @@
     "empty": {
       "title": "Belum ada kisah sukses",
       "body": "Tantangan yang selesai dan berperingkat tinggi muncul di sini. Jadilah yang pertama!"
-    }
+    },
+    "tryCta": "Coba tantangan ini",
+    "note": "Kata mereka"
   },
   "myChallenges": {
     "cta": "Tantangan saya",

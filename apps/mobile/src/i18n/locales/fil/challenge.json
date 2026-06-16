@@ -10,7 +10,9 @@
     "empty": {
       "title": "Wala pang success story",
       "body": "Lumalabas dito ang mga natapos at mataas ang rating na challenge. Maging una kang gumawa!"
-    }
+    },
+    "tryCta": "Subukan ang challenge na ito",
+    "note": "Ang sabi nila"
   },
   "myChallenges": {
     "cta": "Mga challenge ko",

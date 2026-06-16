@@ -10,7 +10,9 @@
     "empty": {
       "title": "Ainda não há histórias de sucesso",
       "body": "Os desafios concluídos e bem avaliados aparecem aqui. Sê o primeiro a realizar um!"
-    }
+    },
+    "tryCta": "Experimenta este desafio",
+    "note": "O que disseram"
   },
   "myChallenges": {
     "cta": "Os meus desafios"

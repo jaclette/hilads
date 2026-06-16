@@ -10,6 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { fetchChallengeShowcase, type ShowcaseItem } from '@/api/challenges';
 import { ShowcaseCard } from '@/features/challenges/ShowcaseCard';
+import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -32,6 +33,7 @@ export default function ShowcaseScreen() {
   const [cityId,     setCityId]     = useState<number | null>(null);
   const [cityName,   setCityName]   = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [preview,    setPreview]    = useState<ShowcaseItem | null>(null);
 
   const load = useCallback(async () => {
     const res = await fetchChallengeShowcase({ cityId, limit: PAGE });
@@ -60,6 +62,14 @@ export default function ShowcaseScreen() {
     if (userId === account?.id) { router.push('/(tabs)/me'); return; }
     if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
     router.push({ pathname: '/user/[id]', params: { id: userId } });
+  };
+
+  // "Try this challenge" - seed a fresh challenge from this success story's
+  // title + type. Creation is registered-only, so guests hit the auth gate.
+  const tryChallenge = (it: ShowcaseItem) => {
+    setPreview(null);
+    if (!account) { router.push('/auth-gate'); return; }
+    router.push({ pathname: '/challenge/create', params: { title: it.title, type: it.challenge_type } } as never);
   };
 
   return (
@@ -111,7 +121,7 @@ export default function ShowcaseScreen() {
           renderItem={({ item }) => (
             <ShowcaseCard
               item={item}
-              onOpen={() => router.push(`/challenge/${item.id}` as never)}
+              onOpen={() => setPreview(item)}
               onAvatar={openProfile}
             />
           )}
@@ -122,6 +132,13 @@ export default function ShowcaseScreen() {
           ) : null}
         />
       )}
+
+      <ShowcasePreviewSheet
+        item={preview}
+        onClose={() => setPreview(null)}
+        onTry={tryChallenge}
+        onAvatar={openProfile}
+      />
 
       <LeaderboardCityPickerSheet
         visible={pickerOpen}

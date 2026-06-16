@@ -10,9 +10,13 @@
     "empty": {
       "title": "No success stories yet",
       "body": "Completed, highly-rated challenges show up here. Be the first to make one happen!"
-    }
+    },
+    "tryCta": "Try this challenge",
+    "note": "What they said"
   },
-  "myChallenges": { "cta": "My challenges" },
+  "myChallenges": {
+    "cta": "My challenges"
+  },
   "tabIntro": "Challenges between locals and explorers within a city - and across cities.",
   "howItWorks": "How it works",
   "mostLocal": "Most Local",
