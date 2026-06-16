@@ -1,4 +1,16 @@
 {
+  "showcase": {
+    "cta": "Success challenges",
+    "title": "✨ Success challenges",
+    "allCities": "All cities",
+    "clearCity": "Clear",
+    "localTag": "Local",
+    "by": "by {{name}}",
+    "empty": {
+      "title": "No success stories yet",
+      "body": "Completed, highly-rated challenges show up here. Be the first to make one happen!"
+    }
+  },
   "tabIntro": "Challenges between locals and explorers within a city - and across cities.",
   "howItWorks": "How it works",
   "mostLocal": "Most Local",

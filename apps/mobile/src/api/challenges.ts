@@ -13,6 +13,48 @@ import type {
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
 
+/** A card in the public "Success challenges" showcase. */
+export interface ShowcaseItem {
+  id:                         string;
+  title:                      string;
+  challenge_type:             ChallengeType;
+  mode:                       'local' | 'international';
+  created_by:                 string | null;
+  creator_display_name:       string | null;
+  creator_thumb_avatar_url:   string | null;
+  country:                    string | null;   // origin ISO-2
+  target_country:             string | null;
+  target_city_name:           string | null;
+  acceptor_user_id:           string | null;
+  acceptor_display_name:      string | null;
+  acceptor_thumb_avatar_url:  string | null;
+  acceptor_country:           string | null;
+  avg_stars:                  number;
+  rating_count:               number;
+  comment:                    string | null;   // appreciation preview
+  proof_media_url:            string | null;
+  proof_media_type:           string | null;
+  completed_at:               number;
+}
+
+/** Public showcase of completed, well-rated challenges (global or a city). */
+export async function fetchChallengeShowcase(
+  opts: { cityId?: number | null; limit?: number; before?: number | null } = {},
+): Promise<{ items: ShowcaseItem[]; hasMore: boolean }> {
+  const params: Record<string, number> = {};
+  if (opts.cityId) params.cityId = opts.cityId;
+  if (opts.limit)  params.limit  = opts.limit;
+  if (opts.before) params.before = opts.before;
+  try {
+    const data = await api.get<{ items: ShowcaseItem[]; hasMore: boolean }>(
+      '/challenges/showcase', { params },
+    );
+    return { items: data.items ?? [], hasMore: !!data.hasMore };
+  } catch {
+    return { items: [], hasMore: false };
+  }
+}
+
 /** Active (status='open') challenges for a city. NOW feed reads the top 5. */
 export async function fetchCityChallenges(
   channelId: string,

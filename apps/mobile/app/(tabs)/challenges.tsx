@@ -62,6 +62,18 @@ export default function ChallengesTab() {
         </TouchableOpacity>
       )}
 
+      {/* Success challenges - public showcase, shown to EVERYONE (discovery). */}
+      <TouchableOpacity
+        style={styles.successCta}
+        onPress={() => router.push('/challenge/showcase' as never)}
+        activeOpacity={0.85}
+        accessibilityRole="button"
+        accessibilityLabel={t('showcase.cta')}
+      >
+        <Text style={styles.successText}>✨ {t('showcase.cta')}</Text>
+        <Ionicons name="chevron-forward" size={18} color="#FFC93C" />
+      </TouchableOpacity>
+
       {/* Most Local + filters scroll with the feed (headerExtra) - only the
           app header + title + intro line above stay sticky. */}
       <ChallengesList
@@ -125,4 +137,19 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(255,122,60,0.5)',
   },
   myChallengesText: { fontSize: FontSizes.md, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.2 },
+
+  successCta: {
+    flexDirection:     'row',
+    alignItems:        'center',
+    justifyContent:    'center',
+    gap:               6,
+    marginHorizontal:  Spacing.md,
+    marginBottom:      Spacing.md,
+    paddingVertical:   12,
+    borderRadius:      14,
+    backgroundColor:   'rgba(255,201,60,0.10)',
+    borderWidth:       1,
+    borderColor:       'rgba(255,201,60,0.42)',
+  },
+  successText: { fontSize: FontSizes.md, fontWeight: '800', color: '#FFC93C', letterSpacing: 0.2 },
 });
