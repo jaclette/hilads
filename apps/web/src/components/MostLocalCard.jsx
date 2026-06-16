@@ -13,15 +13,27 @@ function avatarColors(name = '') {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-function PodiumSlot({ entry, first }) {
+function PodiumSlot({ entry, first, onAvatarClick }) {
   const name = entry.displayName ?? '?'
   const [c1, c2] = avatarColors(entry.user_id ?? name)
+  const avatar = (
+    <span className="mlp-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+      {entry.thumbAvatarUrl ? <img src={entry.thumbAvatarUrl} alt="" /> : name[0].toUpperCase()}
+    </span>
+  )
   return (
     <div className={`mlp-slot${first ? ' mlp-slot--first' : ''}`}>
       {first && <span className="mlp-crown" aria-hidden="true">👑</span>}
-      <span className="mlp-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-        {entry.thumbAvatarUrl ? <img src={entry.thumbAvatarUrl} alt="" /> : name[0].toUpperCase()}
-      </span>
+      {onAvatarClick && entry.user_id ? (
+        <button
+          type="button"
+          onClick={() => onAvatarClick(entry.user_id)}
+          aria-label={name}
+          style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', lineHeight: 0 }}
+        >
+          {avatar}
+        </button>
+      ) : avatar}
       <span className="mlp-meta"><strong>{entry.rank}</strong> · {name}</span>
     </div>
   )
@@ -32,7 +44,7 @@ function PodiumSlot({ entry, first }) {
  * Reuses fetchLeaderboard (no new query). Rank 1 centered + crowned; 2 left,
  * 3 right. Hidden when nobody is ranked yet; degrades cleanly with < 3.
  */
-export default function MostLocalCard({ channelId, onSeeAll }) {
+export default function MostLocalCard({ channelId, onSeeAll, onAvatarClick }) {
   const { t } = useTranslation('challenge')
   const [entries, setEntries] = useState(null) // null = loading, [] = loaded/empty
 
@@ -78,9 +90,9 @@ export default function MostLocalCard({ channelId, onSeeAll }) {
         </div>
       ) : (
         <div className="most-local-podium">
-          {second ? <PodiumSlot entry={second} /> : <div className="mlp-slot" aria-hidden="true" />}
-          {first  ? <PodiumSlot entry={first} first /> : <div className="mlp-slot mlp-slot--first" aria-hidden="true" />}
-          {third  ? <PodiumSlot entry={third} /> : <div className="mlp-slot" aria-hidden="true" />}
+          {second ? <PodiumSlot entry={second} onAvatarClick={onAvatarClick} /> : <div className="mlp-slot" aria-hidden="true" />}
+          {first  ? <PodiumSlot entry={first} first onAvatarClick={onAvatarClick} /> : <div className="mlp-slot mlp-slot--first" aria-hidden="true" />}
+          {third  ? <PodiumSlot entry={third} onAvatarClick={onAvatarClick} /> : <div className="mlp-slot" aria-hidden="true" />}
         </div>
       )}
     </div>

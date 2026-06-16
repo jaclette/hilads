@@ -5446,10 +5446,23 @@ export default function App() {
             <div className="challenge-tab-scoring">
               <ScoringInfoButton labeled />
             </div>
+            {/* My challenges - prominent entry to the creator/taker list
+                (members only). Opens the user's profile on its challenges tab,
+                which lists every challenge they created or took on. */}
+            {account && (
+              <button
+                type="button"
+                className="challenge-my-cta"
+                onClick={() => { setShowChallengesDrawer(false); openProfile(account.id, '') }}
+              >
+                🏆 {t('myChallenges.cta', { ns: 'challenge' })} →
+              </button>
+            )}
             {/* Most Local podium teaser - top 3 city leaderboard (reuses fetchLeaderboard). */}
             <MostLocalCard
               channelId={channelId}
               onSeeAll={() => { setLeaderboardScope('city'); setShowLeaderboard(true) }}
+              onAvatarClick={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
             />
             {cityChallenges.length === 0 ? (
               <div className="events-empty-state">

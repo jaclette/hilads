@@ -298,6 +298,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
   const name     = user?.displayName ?? '?'
   const [c1, c2] = avatarColors(name)
+  // First badge that carries microcopy → one sub-line under the meta row.
+  const heroMicroKey = (user?.badges ?? []).find(k => BADGE_MICROCOPY[k]) ?? null
   const vibe     = user?.vibe && VIBE_META[user.vibe] ? user.vibe : null
   const mode     = user?.mode && MODE_META[user.mode] ? user.mode : null
   const now      = Date.now() / 1000
@@ -342,36 +344,41 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
 
             {/* Hero: avatar + name + badge + city */}
             <div className="pub-profile-hero">
-              {user.avatarUrl
-                ? <img
-                    className="pub-profile-avatar"
-                    src={user.thumbAvatarUrl ?? user.avatarUrl}
-                    alt={name}
-                    onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
-                  />
-                : <span
-                    className="pub-profile-avatar pub-profile-avatar--initials"
-                    style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                  >
-                    {name[0].toUpperCase()}
-                  </span>
-              }
-              <h2 className="pub-profile-name">{name}</h2>
-              {(user.badges ?? []).map(k => (
-                <div key={k} className="pub-profile-badge-block">
-                  <span className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
-                  {BADGE_MICROCOPY[k] && <span className="pub-profile-badge-micro">{t(`badgeMicro.${k}`)}</span>}
+              {/* Identity row: avatar left + name / badges / city right.
+                  Mirrors the mobile profile so the two stay aligned. */}
+              <div className="pub-profile-identity-row">
+                {user.avatarUrl
+                  ? <img
+                      className="pub-profile-avatar"
+                      src={user.thumbAvatarUrl ?? user.avatarUrl}
+                      alt={name}
+                      onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
+                    />
+                  : <span
+                      className="pub-profile-avatar pub-profile-avatar--initials"
+                      style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                    >
+                      {name[0].toUpperCase()}
+                    </span>
+                }
+                <div className="pub-profile-identity-info">
+                  <h2 className="pub-profile-name">{name}</h2>
+                  <div className="pub-profile-meta-row">
+                    {(user.badges ?? []).map(k => (
+                      <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
+                    ))}
+                    {cityName && (
+                      <span className="pub-profile-meta-city">{cityFlag(cityCountry)} {localizeCityName(cityName)}</span>
+                    )}
+                  </div>
+                  {heroMicroKey && (
+                    <span className="pub-profile-badge-micro">{t(`badgeMicro.${heroMicroKey}`)}</span>
+                  )}
                 </div>
-              ))}
-              {cityName && (
-                <div className="pub-profile-city">
-                  <span>{cityFlag(cityCountry)} {localizeCityName(cityName)}</span>
-                </div>
-              )}
+              </div>
 
-              {/* Monthly rank - this user's rank in THEIR own current
-                  city + worldwide. Distinct from the viewer-city pill
-                  above. */}
+              {/* Monthly rank - full-width banner below the identity row
+                  (this user's rank in THEIR own current city + worldwide). */}
               <ProfileRankRow
                 rank={user.monthlyRank ?? null}
                 cityName={user.currentCity ?? null}
