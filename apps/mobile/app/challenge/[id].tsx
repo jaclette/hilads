@@ -860,7 +860,13 @@ export default function ChallengeChatScreen() {
   // no-op onScroll keeps the prop wired in case we want to re-introduce
   // a debounced behavior later.
   const onChatScroll = useCallback(() => {}, []);
-  const collapsibleMaxHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [320, 0] });
+  // Expanded cap = the MEASURED natural height of the collapsible header, so it
+  // never clips whichever flow renders. The old fixed 320 clipped the members
+  // strip once the photo-proof "Waiting for the verdict" card was added. Starts
+  // generous (so nothing clips on the first frame) and settles to the real
+  // height after the first onLayout pass.
+  const [headerContentHeight, setHeaderContentHeight] = useState(600);
+  const collapsibleMaxHeight = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [headerContentHeight, 0] });
   const collapsibleOpacity   = headerCollapse.interpolate({ inputRange: [0, 1], outputRange: [1, 0] });
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -940,6 +946,13 @@ export default function ChallengeChatScreen() {
           composer is focused. Mirrors the event channel collapse so the
           conversation gets vertical space when it matters. */}
       <Animated.View style={{ maxHeight: collapsibleMaxHeight, opacity: collapsibleOpacity, overflow: 'hidden' }}>
+      {/* Inner measuring wrapper: reports the content's natural height (the
+          maxHeight clamp above only clips visually, the child still lays out
+          full height) so collapsibleMaxHeight can fit every flow. */}
+      <View onLayout={(e) => {
+        const h = Math.ceil(e.nativeEvent.layout.height);
+        if (h > 0 && h !== headerContentHeight) setHeaderContentHeight(h);
+      }}>
       {/* Hero - type badge + audience pill + status pill (3rd on the same row
           to save vertical space). The status pill is THE source of truth for
           the challenge's state and is visible to EVERYONE. Owner taps it to
@@ -1309,6 +1322,7 @@ export default function ChallengeChatScreen() {
         }
         return null;
       })()}
+      </View>{/* /measuring wrapper */}
       </Animated.View>
 
       {/* Owner re-invite CTA - parity with the web ChallengeChatPage. Visible
