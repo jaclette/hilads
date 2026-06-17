@@ -45,13 +45,22 @@ admin_nav('/admin/challenges');
     }
 
     $stmt = $pdo->prepare("
-        SELECT cc.channel_id, cc.title, cc.challenge_type, cc.mode, cc.status,
+        SELECT cc.channel_id, cc.title, cc.challenge_type, cc.mode, cc.status, cc.validation_method,
                cc.created_by, cc.guest_id, c.status AS channel_status,
                u.display_name AS creator_name,
-               EXTRACT(EPOCH FROM cc.created_at)::INTEGER AS created_ts
+               EXTRACT(EPOCH FROM cc.created_at)::INTEGER AS created_ts,
+               pr.media_url AS proof_media_url, pr.media_type AS proof_media_type, pr.proof_status
         FROM channel_challenges cc
         JOIN channels c   ON c.id = cc.channel_id
         LEFT JOIN users u ON u.id = cc.created_by
+        -- Latest photo proof across the challenge's acceptances (any status).
+        LEFT JOIN LATERAL (
+            SELECT p.media_url, p.media_type, p.status AS proof_status
+            FROM challenge_proofs p
+            JOIN challenge_acceptances a ON a.id = p.acceptance_id
+            WHERE a.challenge_id = cc.channel_id
+            ORDER BY p.submitted_at DESC LIMIT 1
+        ) pr ON true
         WHERE (cc.city_id = :cid OR (cc.mode = 'international' AND cc.target_city_id = :cid2))
           AND cc.created_at >= :ds::timestamptz AND cc.created_at < :de::timestamptz
         ORDER BY cc.created_at DESC
@@ -82,12 +91,13 @@ admin_nav('/admin/challenges');
                     <th style="width:110px">Type</th>
                     <th style="width:160px">Creator</th>
                     <th style="width:100px">Status</th>
+                    <th style="width:230px">Photo proof</th>
                     <th style="width:200px">Actions</th>
                 </tr>
             </thead>
             <tbody>
             <?php if (empty($items)): ?>
-                <tr><td colspan="6" class="no-results">No challenges in this range.</td></tr>
+                <tr><td colspan="7" class="no-results">No challenges in this range.</td></tr>
             <?php else: foreach ($items as $it):
                 $deleted = $it['channel_status'] === 'deleted';
                 $icon    = $TYPE_ICON[$it['challenge_type']] ?? '🔥';
@@ -109,6 +119,46 @@ admin_nav('/admin/challenges');
                             <span class="badge" style="background:#22c55e22;color:#4ade80;border:1px solid #22c55e33">✓ Validated</span>
                         <?php else: ?>
                             <span class="badge badge-active">Open</span>
+                        <?php endif; ?>
+                    </td>
+                    <td>
+                        <?php
+                        // Photo-proof challenges: international, or local with
+                        // validation_method='photo_proof'. View / replace / delete
+                        // the current proof image. Meet-only challenges show "-".
+                        $usesProof = ($it['validation_method'] ?? 'meet') === 'photo_proof'
+                                  || ($it['mode'] ?? 'local') === 'international';
+                        $proofCtx  = csrf_input()
+                            . '<input type="hidden" name="city" value="' . htmlspecialchars($city, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="from" value="' . htmlspecialchars($from, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="to" value="' . htmlspecialchars($to, ENT_QUOTES) . '">'
+                            . '<input type="hidden" name="view" value="' . htmlspecialchars($view, ENT_QUOTES) . '">';
+                        ?>
+                        <?php if (!$usesProof): ?>
+                            <span style="color:#555">—</span>
+                        <?php elseif (empty($it['proof_media_url'])): ?>
+                            <span style="color:#888;font-size:12px">No proof yet</span>
+                        <?php else: ?>
+                            <div style="display:flex;gap:8px;align-items:flex-start">
+                                <a href="<?= htmlspecialchars($it['proof_media_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" title="Open full size">
+                                    <img src="<?= htmlspecialchars($it['proof_media_url'], ENT_QUOTES) ?>" alt="proof"
+                                         style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid #2a2a2a;display:block">
+                                </a>
+                                <div class="td-actions" style="flex-direction:column;gap:6px">
+                                    <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/replace"
+                                          enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:3px">
+                                        <?= $proofCtx ?>
+                                        <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" required
+                                               style="font-size:11px;max-width:150px;color:#aaa">
+                                        <button type="submit" class="btn btn-secondary btn-sm">Replace</button>
+                                    </form>
+                                    <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/delete"
+                                          onsubmit="return confirm('Delete this photo proof permanently? This cannot be undone.')">
+                                        <?= $proofCtx ?>
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete proof</button>
+                                    </form>
+                                </div>
+                            </div>
                         <?php endif; ?>
                     </td>
                     <td>
