@@ -306,12 +306,16 @@ class ChallengeRepository
                 SELECT cc.city_id        AS surface_city_id FROM channel_challenges cc
                 JOIN channels c ON c.id = cc.channel_id
                 WHERE c.status = 'active' AND cc.status = 'open' AND cc.visibility = 'public'
+                  AND NOT EXISTS (SELECT 1 FROM challenge_acceptances ca_done
+                                  WHERE ca_done.challenge_id = cc.channel_id AND ca_done.phase = 'approved')
                 UNION ALL
                 SELECT cc.target_city_id AS surface_city_id FROM channel_challenges cc
                 JOIN channels c ON c.id = cc.channel_id
                 WHERE c.status = 'active' AND cc.status = 'open' AND cc.visibility = 'public'
                   AND cc.target_city_id IS NOT NULL
                   AND cc.target_city_id <> cc.city_id
+                  AND NOT EXISTS (SELECT 1 FROM challenge_acceptances ca_done
+                                  WHERE ca_done.challenge_id = cc.channel_id AND ca_done.phase = 'approved')
             )
             SELECT surface_city_id AS city_id, COUNT(*) AS challenge_count
             FROM all_active
@@ -360,9 +364,15 @@ class ChallengeRepository
         $stmt = $pdo->prepare(self::SELECT . "
             WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id)
               AND c.status   = 'active'
-              AND (
-                cc.status = 'open'
-                OR (cc.status = 'validated' AND cc.validated_at > now() - interval '1 day')
+              -- Active feed = still-open challenges that haven't been finished.
+              -- A challenge leaves the feed the moment it's validated OR
+              -- completed (an acceptance reached 'approved') - one-shot, no
+              -- lingering grace window. Finished ones live in the past-archive
+              -- (getValidatedByCity) / Success showcase instead.
+              AND cc.status = 'open'
+              AND NOT EXISTS (
+                  SELECT 1 FROM challenge_acceptances ca_done
+                  WHERE ca_done.challenge_id = c.id AND ca_done.phase = 'approved'
               )
               AND $visClause
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
@@ -500,7 +510,9 @@ class ChallengeRepository
         $visClause = self::visibilityWhereClause($viewerUserId);
         if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
 
-        $where  = "(cc.city_id = :city_id OR cc.target_city_id = :city_id) AND c.status = 'active' AND cc.status = 'validated' AND cc.validated_at <= now() - interval '1 day' AND $visClause";
+        // No grace delay: a validated challenge appears in the past archive
+        // immediately (it left the active feed the moment it was validated).
+        $where  = "(cc.city_id = :city_id OR cc.target_city_id = :city_id) AND c.status = 'active' AND cc.status = 'validated' AND $visClause";
         if ($beforeTs !== null) {
             $where             .= " AND cc.validated_at < to_timestamp(:before)";
             $params['before']   = $beforeTs;
