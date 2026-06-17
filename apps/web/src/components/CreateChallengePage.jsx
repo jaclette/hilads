@@ -300,25 +300,9 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
             </p>
           </div>
 
-          {/* Audience (Local only) - 2 pills filling the row */}
-          {mode === 'local' && (
-            <div className="cef-section">
-              <p className="cef-label">{t('create.challengeAudience')}</p>
-              <div className="cef-audience-row">
-                {AUDIENCES.map(a => (
-                  <button
-                    key={a.value}
-                    type="button"
-                    className={`cef-audience-btn${audience === a.value ? ' selected' : ''}`}
-                    onClick={() => setAudience(a.value)}
-                  >
-                    <span className="cef-audience-emoji" aria-hidden="true">{a.icon}</span>
-                    <span>{a.value === 'locals' ? t('create.challengeAudLocals') : t('create.challengeAudExplorers')}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* "Who's it for?" (Locals / Travelers) removed - the audience idea was
+              dropped (mobile already removed it). audience stays 'locals' by
+              default so the API enum is still satisfied. */}
 
           {/* Validation method (Local only). Meet is celebrated with the
               +50 bonus chip below; Photo is the lower-friction
