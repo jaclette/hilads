@@ -1145,10 +1145,6 @@ class ChallengeRepository
         Database::pdo()->prepare("UPDATE channels SET status = 'deleted', updated_at = now() WHERE id = :id")
             ->execute(['id' => $challengeId]);
 
-        // Also remove the persisted city-feed pill(s) so the "X challenges the
-        // locals: …" entry doesn't dangle after the challenge is gone.
-        \MessageRepository::deleteFeedAnnouncementsFor('challenge', $challengeId);
-
         return true;
     }
 

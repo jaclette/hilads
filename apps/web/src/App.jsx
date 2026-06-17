@@ -658,26 +658,6 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
     console.warn('[feed] unhandled system message - skipping:', m)
     return null
   }
-  // Persisted creation feed pills (events/hangouts/challenges) - permanent
-  // city-chat entries that reuse the existing feed-prompt render blocks. The
-  // challenge row is minimal; mode/flags are reconstructed at render time from
-  // the loaded city-challenge list (live broadcasts carry them inline).
-  if (m.type === 'event') {
-    return { type: 'event', id: m.id, eventId: m.eventId, title: m.content, nickname: m.nickname, createdAt: m.createdAt }
-  }
-  if (m.type === 'topic') {
-    return { type: 'topic', id: m.id, topicId: m.topicId, title: m.content, createdAt: m.createdAt }
-  }
-  if (m.type === 'challenge') {
-    return {
-      type: 'challenge', id: m.id, challengeId: m.challengeId, title: m.content, nickname: m.nickname,
-      mode:          m.challengeMode          ?? m.mode,
-      audience:      m.audience,
-      country:       m.challengeCountry        ?? m.country,
-      targetCountry: m.challengeTargetCountry  ?? m.targetCountry,
-      createdAt: m.createdAt,
-    }
-  }
   return { type: 'message', staggerDelay, ...m }
 }
 
@@ -4563,22 +4543,16 @@ export default function App() {
             // the ChallengeChatPage via setActiveChallenge.
             if (item.type === 'challenge') {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)
-              // Reload path: the persisted message carries only id/title/nickname,
-              // so fall back to the looked-up challenge for mode/audience/flags.
-              const mode          = item.mode          ?? challenge?.mode
-              const audience      = item.audience      ?? challenge?.audience
-              const country       = item.country       ?? challenge?.country
-              const targetCountry = item.targetCountry ?? challenge?.target_country
-              const isIntl    = mode === 'international'
+              const isIntl    = item.mode === 'international'
               const textKey   = isIntl
                 ? 'feedNew.challengeInternational'
-                : audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
+                : item.audience === 'explorers' ? 'feedNew.challengeExplorers' : 'feedNew.challengeLocals'
               // PR19 - origin → target flag pair for the international
               // banner. Falls back to 🌍 when target country is null
               // ("anywhere"). Local rows ignore these - i18next no-ops
               // missing tokens.
-              const fromFlag = isIntl ? (countryToFlag(country) || '🌐') : ''
-              const toFlag   = isIntl ? (countryToFlag(targetCountry) || '🌍') : ''
+              const fromFlag = isIntl ? (countryToFlag(item.country) || '🌐') : ''
+              const toFlag   = isIntl ? (countryToFlag(item.targetCountry) || '🌍') : ''
               // (Commit 1) Status sub-pill removed with max_participants.
               // Commit 2 brings it back with 1:1 semantics.
               return (
@@ -4622,18 +4596,15 @@ export default function App() {
 
             if (item.type === 'topic') {
               const topic = topics.find(tp => tp.id === item.topicId)
-              // Persisted pill can outlive the hangout's 8h TTL - fall back to
-              // the stored title so it never blanks; non-tappable once expired.
-              const title = topic?.title ?? item.title
-              if (!title) return null
-              const mc = topic?.message_count ?? 0
+              if (!topic) return null
+              const mc = topic.message_count ?? 0
               const repliesText = mc > 0 ? ` · ${t('feedNew.replies', { count: mc })}` : ''
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--topic${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
-                  <span className="feed-prompt-text">🗣️ {title}{repliesText}</span>
+                  <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
-                    onClick={() => topic && openHangout(topic)}
+                    onClick={() => openHangout(topic)}
                   >{t('feedNew.join')}</button>
                 </div>
               )

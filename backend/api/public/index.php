@@ -59,9 +59,6 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/EventRedirectRepository.php';
     require_once __DIR__ . '/../src/Geocoder.php';
     require_once __DIR__ . '/../src/TopicRepository.php';
-    // Admin delete pages call MessageRepository::deleteFeedAnnouncementsFor()
-    // to clear the city-feed pill when an event/hangout/challenge is deleted.
-    require_once __DIR__ . '/../src/MessageRepository.php';
     // Order matters: ChallengeAcceptanceRepository defines IS_ACTIVE_SQL,
     // which ChallengeRepository's SELECT const references at class-load time.
     require_once __DIR__ . '/../src/ChallengeAcceptanceRepository.php';

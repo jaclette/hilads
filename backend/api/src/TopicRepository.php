@@ -594,10 +594,6 @@ class TopicRepository
         $pdo->prepare("UPDATE channels      SET status = 'deleted', updated_at = now() WHERE id = :id")->execute(['id' => $topicId]);
         $pdo->prepare("UPDATE channel_topics SET expires_at = now()                     WHERE channel_id = :id")->execute(['id' => $topicId]);
 
-        // Remove the persisted city-feed hangout pill so it doesn't dangle
-        // after the hangout is gone.
-        \MessageRepository::deleteFeedAnnouncementsFor('topic', $topicId);
-
         return true;
     }
 
