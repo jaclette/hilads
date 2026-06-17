@@ -32,7 +32,9 @@ export interface ShowcaseItem {
   acceptor_country:           string | null;
   avg_stars:                  number;
   rating_count:               number;
-  comment:                    string | null;   // appreciation preview
+  comment:                    string | null;   // appreciation preview (longest)
+  creator_comment:            string | null;   // challenger's own note
+  acceptor_comment:           string | null;   // taker's own note
   proof_media_url:            string | null;
   proof_media_type:           string | null;
   completed_at:               number;

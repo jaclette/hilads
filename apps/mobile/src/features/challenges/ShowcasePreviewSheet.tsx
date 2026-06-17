@@ -96,10 +96,24 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
             ) : null}
           </View>
 
-          {item.comment ? (
+          {(item.creator_comment || item.acceptor_comment || item.comment) ? (
             <View style={styles.noteBox}>
               <Text style={styles.noteLabel}>{t('showcase.note')}</Text>
-              <Text style={styles.noteText}>“{item.comment}”</Text>
+              {item.creator_comment ? (
+                <View style={styles.noteQuote}>
+                  <Text style={styles.noteWho}>{item.creator_display_name ?? t('challengerTag')}</Text>
+                  <Text style={styles.noteText}>“{item.creator_comment}”</Text>
+                </View>
+              ) : null}
+              {item.acceptor_comment ? (
+                <View style={[styles.noteQuote, item.creator_comment ? styles.noteQuoteDivider : null]}>
+                  <Text style={styles.noteWho}>{item.acceptor_display_name ?? t('card.takerLabel')}</Text>
+                  <Text style={styles.noteText}>“{item.acceptor_comment}”</Text>
+                </View>
+              ) : null}
+              {!item.creator_comment && !item.acceptor_comment && item.comment ? (
+                <Text style={styles.noteText}>“{item.comment}”</Text>
+              ) : null}
             </View>
           ) : null}
         </ScrollView>
@@ -153,7 +167,10 @@ const styles = StyleSheet.create({
     padding: 12, borderRadius: 12, marginBottom: 8,
     backgroundColor: 'rgba(255,201,60,0.07)', borderWidth: 1, borderColor: 'rgba(255,201,60,0.18)',
   },
-  noteLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: '#FFC93C', marginBottom: 4 },
+  noteLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: '#FFC93C', marginBottom: 6 },
+  noteQuote: { gap: 1 },
+  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.08)' },
+  noteWho: { fontSize: 12, fontWeight: '700', color: Colors.text },
   noteText: { fontSize: 14, lineHeight: 20, color: Colors.text, fontStyle: 'italic' },
 
   tryBtn: {

@@ -585,6 +585,14 @@ class ChallengeRepository
                    COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
                    au.current_city_id AS acceptor_city_id,
                    r.avg_stars, r.rating_count, r.comment,
+                   -- Each side's own note, so the preview can attribute them by
+                   -- name (challenger said X, taker said Y).
+                   (SELECT vc.comment FROM visible_ratings vc
+                      WHERE vc.challenge_id = cc.channel_id AND vc.rater_id = cc.created_by
+                        AND COALESCE(vc.comment, '') <> '' LIMIT 1) AS creator_comment,
+                   (SELECT va.comment FROM visible_ratings va
+                      WHERE va.challenge_id = cc.channel_id AND va.rater_id = ac.acceptor_user_id
+                        AND COALESCE(va.comment, '') <> '' LIMIT 1) AS acceptor_comment,
                    EXTRACT(EPOCH FROM r.completed_at)::INTEGER AS completed_ts,
                    pr.media_url AS proof_media_url, pr.media_type AS proof_media_type
             FROM channel_challenges cc
@@ -645,6 +653,8 @@ class ChallengeRepository
                 'avg_stars'                 => round((float) $r['avg_stars'], 1),
                 'rating_count'              => (int) $r['rating_count'],
                 'comment'                   => $r['comment'],
+                'creator_comment'           => $r['creator_comment'],
+                'acceptor_comment'          => $r['acceptor_comment'],
                 'proof_media_url'           => $r['proof_media_url'],
                 'proof_media_type'          => $r['proof_media_type'],
                 'completed_at'              => (int) $r['completed_ts'],
