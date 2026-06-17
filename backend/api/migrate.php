@@ -742,6 +742,12 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS profile
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS topic_reply_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.topic_reply_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS new_topic_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.new_topic_push');
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS admin_announcement_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.admin_announcement_push');
+// new_challenge_push was only ever added by the on-demand api.php migration
+// block - never in migrate.php. If that block hasn't run, the column is missing
+// and EVERY preference upsert 500s (the INSERT lists all defaults() columns),
+// which makes the notification toggles flip back. Provision it here so a plain
+// migrate.php run fixes it.
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS new_challenge_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.new_challenge_push');
 
 // mobile_push_tokens
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'mobile_push_tokens.last_used_at');

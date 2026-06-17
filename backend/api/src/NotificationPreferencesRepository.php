@@ -79,26 +79,26 @@ class NotificationPreferencesRepository
         // Column names come from defaults() (hardcoded), so interpolation is safe.
         $present = array_intersect_key($prefs, $defaults);
 
-        // New rows need a complete row → defaults overlaid with any present values.
-        $full = $defaults;
-        foreach ($present as $k => $v) $full[$k] = (bool) $v;
-
-        $cols   = array_keys($defaults);
-        $params = [$userId];
-        foreach ($cols as $c) $params[] = $b($full[$c]);
-
-        $insertCols   = 'user_id, ' . implode(', ', $cols);
-        $placeholders = implode(', ', array_fill(0, count($cols) + 1, '?'));
-
-        if (!empty($present)) {
-            $updateSet = implode(', ', array_map(static fn($k) => "$k = EXCLUDED.$k", array_keys($present)));
-            $conflict  = "ON CONFLICT (user_id) DO UPDATE SET $updateSet";
-        } else {
-            $conflict  = "ON CONFLICT (user_id) DO NOTHING";
+        // Nothing valid to change → just return current state.
+        if (empty($present)) {
+            return self::get($userId);
         }
 
+        // Only reference the columns actually being toggled. A brand-new row gets
+        // DB-level DEFAULTs for every absent column, so we never list the full
+        // column set - which means one column missing in production (e.g. a pref
+        // added to defaults() but not yet migrated) can't 500 EVERY toggle; only
+        // a toggle of that specific missing column would fail.
+        $presentCols = array_keys($present);
+        $params      = [$userId];
+        foreach ($presentCols as $c) $params[] = $b((bool) $present[$c]);
+
+        $insertCols   = 'user_id, ' . implode(', ', $presentCols);
+        $placeholders = implode(', ', array_fill(0, count($presentCols) + 1, '?'));
+        $updateSet    = implode(', ', array_map(static fn($k) => "$k = EXCLUDED.$k", $presentCols));
+
         Database::pdo()
-            ->prepare("INSERT INTO notification_preferences ($insertCols) VALUES ($placeholders) $conflict")
+            ->prepare("INSERT INTO notification_preferences ($insertCols) VALUES ($placeholders) ON CONFLICT (user_id) DO UPDATE SET $updateSet")
             ->execute($params);
 
         // Return the actual stored state (not the request echo).
