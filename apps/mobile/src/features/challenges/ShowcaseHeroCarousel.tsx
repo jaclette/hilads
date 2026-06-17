@@ -14,7 +14,7 @@ import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet
 import { Colors, FontSizes, Spacing } from '@/constants';
 
 const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' };
-const MAX   = 6;
+const MAX   = 3;  // 3 success slides + 1 trailing How-it-works slide
 const EVERY = 3000;
 const W      = Dimensions.get('window').width - Spacing.md * 2;
 
