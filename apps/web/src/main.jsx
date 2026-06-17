@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import * as Sentry from '@sentry/react'
 import './index.css'
 import App from './App'
+import OpenInAppBanner from './components/OpenInAppBanner'
 import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
 import posthog from 'posthog-js'
@@ -59,7 +60,10 @@ async function bootstrap() {
     document.documentElement.dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
 
     createRoot(document.getElementById('root')).render(
-        <App />,
+        <>
+            <App />
+            <OpenInAppBanner />
+        </>,
     )
 }
 
