@@ -615,6 +615,13 @@ function handleBroadcastRequest(req, res) {
         broadcastChallengeUnvalidated(channelId, challenge)
         res.writeHead(200); res.end('ok')
 
+      } else if (req.method === 'POST' && req.url === '/broadcast/challenge-updated') {
+        const { channelId, challenge } = JSON.parse(body)
+        const room = rooms.get(channelId)
+        console.log(`[internal] broadcast challenge-updated channelId=${channelId} challengeId=${challenge?.id} roomSize=${room ? room.size : 0}`)
+        broadcastChallengeUpdated(channelId, challenge)
+        res.writeHead(200); res.end('ok')
+
       } else if (req.method === 'POST' && req.url === '/broadcast/reaction') {
         const { channelId, messageId, reactions } = JSON.parse(body)
         console.log(`[internal] broadcast reaction channelId=${JSON.stringify(channelId)} msgId=${messageId}`)
@@ -805,6 +812,19 @@ function broadcastChallengeUnvalidated(channelId, challenge) {
     if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
   console.log(`[WS][emit] event=challenge_unvalidated target=city:${channelId} recipients=${recipients}/${room.size}`)
+}
+
+// Challenge edited (validation_method / title / type / …). Clients viewing the
+// challenge refresh fields + swap the pipeline live.
+function broadcastChallengeUpdated(channelId, challenge) {
+  const room = rooms.get(channelId)
+  if (!room) return
+  const msg = JSON.stringify({ event: 'challenge_updated', channelId, challenge })
+  let recipients = 0
+  for (const session of room.values()) {
+    if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
+  }
+  console.log(`[WS][emit] event=challenge_updated target=city:${channelId} recipients=${recipients}/${room.size}`)
 }
 
 // ── Message broadcast ───────────────────────────────────────────────────────────

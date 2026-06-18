@@ -232,6 +232,9 @@ export async function updateChallenge(
     // null = don't change. 'public' | 'friends' only at input; the mutual
     // privacy flow is the only path to 'private'.
     visibility:          intl.visibility ?? null,
+    // null = don't change. Local rows can flip meet ⇄ photo_proof (swaps the
+    // pipeline); the server forces 'photo_proof' on International.
+    validationMethod:    intl.validationMethod ?? null,
   });
 }
 

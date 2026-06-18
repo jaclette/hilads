@@ -557,7 +557,10 @@ export default function ChallengeChatScreen() {
     };
     const offV = socket.on('challenge_validated',   onUpdate);
     const offU = socket.on('challenge_unvalidated', onUpdate);
-    return () => { offV(); offU(); };
+    // Owner edited the challenge (e.g. validation_method meet ⇄ photo_proof,
+    // which swaps the whole pipeline) - refresh the row live, no reload needed.
+    const offE = socket.on('challenge_updated',     onUpdate);
+    return () => { offV(); offU(); offE(); };
   }, [id]);
 
   // PR2 - refresh acceptance state when someone takes on or cancels this

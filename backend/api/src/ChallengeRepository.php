@@ -980,7 +980,8 @@ class ChallengeRepository
         ?string $returnClause = null,
         ?string $targetCityId = null,
         ?string $proofRequirements = null,
-        ?string $visibility = null
+        ?string $visibility = null,
+        ?string $validationMethod = null
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
@@ -1033,6 +1034,16 @@ class ChallengeRepository
             // unrecognised value → silently keep current (already validated upstream too)
         }
 
+        // Validation method - editable on LOCAL rows (meet ⇄ photo_proof), which
+        // swaps the whole pipeline (Date/Meet vs Proof/Verdict). International is
+        // always photo_proof, so force it there. null = don't change.
+        $nextValidation = null;
+        if ($currentMode === 'international') {
+            $nextValidation = 'photo_proof';
+        } elseif ($validationMethod !== null && in_array($validationMethod, ['meet', 'photo_proof'], true)) {
+            $nextValidation = $validationMethod;
+        }
+
         $pdo->prepare("
             UPDATE channel_challenges
             SET title              = :t,
@@ -1042,6 +1053,7 @@ class ChallengeRepository
                 target_city_id     = :tci,
                 proof_requirements = :pr,
                 visibility         = :viz,
+                validation_method  = COALESCE(:vm, validation_method),
                 updated_at         = now()
             WHERE channel_id = :id
         ")->execute([
@@ -1052,6 +1064,7 @@ class ChallengeRepository
             'tci' => $targetCityId,
             'pr'  => $proofRequirements,
             'viz' => $nextVisibility,
+            'vm'  => $nextValidation,
             'id'  => $challengeId,
         ]);
 

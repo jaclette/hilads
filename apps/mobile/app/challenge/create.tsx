@@ -142,6 +142,7 @@ export default function CreateChallengeScreen() {
           targetCityChannelId: targetChannelIdForSubmit,
           proofRequirements:   trimmedProofRequirements,
           visibility:          visibilityForSubmit,
+          validationMethod:    mode === 'local' ? validationMethod : null,
         });
         router.back();
       } catch (err) {

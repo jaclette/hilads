@@ -307,6 +307,14 @@ function broadcastChallengeUnvalidatedToWs(int $channelId, array $challenge): vo
     postToWs('/broadcast/challenge-unvalidated', ['channelId' => $channelId, 'challenge' => $challenge]);
 }
 
+// Challenge edited (e.g. validation_method meet ⇄ photo_proof, title, type).
+// Clients viewing the challenge swap the pipeline / refresh fields live.
+function broadcastChallengeUpdatedToWs(int $channelId, array $challenge): void
+{
+    error_log("[ws-broadcast] → challenge-updated channelId={$channelId} challengeId=" . ($challenge['id'] ?? 'null'));
+    postToWs('/broadcast/challenge-updated', ['channelId' => $channelId, 'challenge' => $challenge]);
+}
+
 /**
  * PR2 - challenge take-on lifecycle. Both events use the generic /broadcast/user-event
  * route on the WS server, which fans out to a single user's connected sessions.
@@ -8173,6 +8181,13 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
     // and 'friends' accepted; 'private' is reachable only via the mutual
     // privacy_requests flow. The repo also forces 'public' on International.
     $visibilityRaw      = $body['visibility']          ?? null;
+    // Validation method - optional on edit (LOCAL rows: meet ⇄ photo_proof,
+    // which swaps the pipeline). null = don't change; the repo forces
+    // 'photo_proof' on International.
+    $validationMethod   = $body['validationMethod']    ?? null;
+    if ($validationMethod !== null && !in_array($validationMethod, ['meet', 'photo_proof'], true)) {
+        Response::json(['error' => "validationMethod must be 'meet' or 'photo_proof'"], 400);
+    }
 
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
@@ -8245,9 +8260,23 @@ $router->add('PUT', '/api/v1/challenges/{challengeId}', function (array $params)
         $targetCityId,
         $proofRequirements,
         $visibilityRaw,
+        $validationMethod,
     );
     if ($updated === null) {
         Response::json(['error' => 'Challenge not found or you are not the creator'], 403);
+    }
+
+    // Live-update anyone viewing the challenge (the detail page swaps the
+    // pipeline when validation_method changes meet ⇄ photo_proof) without a
+    // refetch. Non-fatal. Broadcast to the origin city's room (same target as
+    // the validate broadcast); the detail page listens on 'challenge_updated'.
+    try {
+        $cityIntId = (int) substr($updated['city_id'] ?? '', 5);
+        if ($cityIntId > 0) {
+            broadcastChallengeUpdatedToWs($cityIntId, $updated);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] ws update broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
     Response::json($updated);
