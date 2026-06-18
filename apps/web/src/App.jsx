@@ -2760,6 +2760,14 @@ export default function App() {
         setCelebrationRefetchKey(k => k + 1)
       })
 
+      // Take-on accepted - phase → 'accepted' awarded +5/+5 to challenger +
+      // taker. The server broadcasts challenge_accepted to BOTH parties
+      // (international/invited accept, and the creator's approve-takeon for
+      // local), so the recipient sees the "+5 points!" popin without a reload.
+      socket.on('challenge_accepted', () => {
+        setCelebrationRefetchKey(k => k + 1)
+      })
+
       // Date approved - the date_locked trigger awarded +5/+5 to both
       // parties. Same refetch + popin pattern as mutual rating so the
       // recipient (proposer who just heard "approved" via WS, or the

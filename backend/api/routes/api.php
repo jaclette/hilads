@@ -9279,23 +9279,32 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json(['error' => 'Failed to accept challenge'], 500);
     }
 
-    // Live push to the creator so their threads list updates without polling.
+    // Live push to BOTH parties. The creator's threads list updates; and when
+    // the take-on is auto-approved (international / invited → phase='accepted',
+    // which fires the +5/+5 score trigger inline) the taker is pushed too so
+    // their pipeline advances AND the score-celebration gate pops on both sides.
+    // (Plain local take-ons land in 'pending' - no score yet, no taker push;
+    // the celebration fires later at approve-takeon.)
     try {
+        $acceptedPayload = [
+            'acceptance' => $acceptance,
+            'challenge'  => [
+                'id'             => $challenge['id'],
+                'title'          => $challenge['title'],
+                'challenge_type' => $challenge['challenge_type'],
+                'mode'           => $challenge['mode'] ?? 'local',
+            ],
+            'acceptor' => [
+                'id'             => $userId,
+                'displayName'    => $authUser['display_name'] ?? null,
+                'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+            ],
+        ];
         if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], [
-                'acceptance' => $acceptance,
-                'challenge'  => [
-                    'id'             => $challenge['id'],
-                    'title'          => $challenge['title'],
-                    'challenge_type' => $challenge['challenge_type'],
-                    'mode'           => $challenge['mode'] ?? 'local',
-                ],
-                'acceptor' => [
-                    'id'             => $userId,
-                    'displayName'    => $authUser['display_name'] ?? null,
-                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
-                ],
-            ]);
+            broadcastChallengeAcceptedToWs($challenge['created_by'], $acceptedPayload);
+        }
+        if ($autoApproved) {
+            broadcastChallengeAcceptedToWs($userId, $acceptedPayload);
         }
     } catch (\Throwable $e) {
         error_log('[challenges] ws accept broadcast failed (non-fatal): ' . $e->getMessage());
@@ -9435,6 +9444,25 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
         }
     } catch (\Throwable $e) {
         error_log('[challenges] approve-takeon WS broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Match confirmed: phase pending → 'accepted' fired the +5/+5 score trigger.
+    // Broadcast challenge_accepted to BOTH the creator (who approved via HTTP)
+    // and the acceptor so the score-celebration gate pops on both sides live,
+    // and both pipelines advance. (challenge_takeon_reviewed above already
+    // updates the acceptor's UI; this adds the creator + the celebration.)
+    try {
+        $acceptedPayload = [
+            'acceptance'  => $updated,
+            'challengeId' => $acceptance['challenge_id'],
+            'challenge'   => ['id' => $acceptance['challenge_id']],
+        ];
+        broadcastChallengeAcceptedToWs($authUser['id'], $acceptedPayload);
+        if (!empty($acceptance['acceptor_user_id'])) {
+            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], $acceptedPayload);
+        }
+    } catch (\Throwable $e) {
+        error_log('[challenges] approve-takeon accepted broadcast failed (non-fatal): ' . $e->getMessage());
     }
 
     // Push to the acceptor - their take-on is now active.
@@ -11773,23 +11801,27 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         Response::json(['error' => 'Failed to take on'], 500);
     }
 
-    // Broadcast + push to the creator (same as POST /challenges/:id/accept).
+    // Broadcast to BOTH parties (phase is always 'accepted' here → +5/+5 fired
+    // inline). The creator's threads list updates; the taker's pipeline advances
+    // and the score-celebration gate pops - on both sides, live via WS.
     try {
+        $acceptedPayload = [
+            'acceptance' => $acceptance,
+            'challenge'  => [
+                'id'             => $challenge['id'],
+                'title'          => $challenge['title'],
+                'challenge_type' => $challenge['challenge_type'],
+            ],
+            'acceptor' => [
+                'id'             => $userId,
+                'displayName'    => $authUser['display_name'] ?? null,
+                'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+            ],
+        ];
         if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], [
-                'acceptance' => $acceptance,
-                'challenge'  => [
-                    'id'             => $challenge['id'],
-                    'title'          => $challenge['title'],
-                    'challenge_type' => $challenge['challenge_type'],
-                ],
-                'acceptor' => [
-                    'id'             => $userId,
-                    'displayName'    => $authUser['display_name'] ?? null,
-                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
-                ],
-            ]);
+            broadcastChallengeAcceptedToWs($challenge['created_by'], $acceptedPayload);
         }
+        broadcastChallengeAcceptedToWs($userId, $acceptedPayload);
     } catch (\Throwable $e) {
         error_log('[invite-accept] ws broadcast failed (non-fatal): ' . $e->getMessage());
     }

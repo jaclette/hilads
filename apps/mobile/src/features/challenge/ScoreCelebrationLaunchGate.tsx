@@ -71,6 +71,11 @@ export function ScoreCelebrationLaunchGate() {
     };
     const offRating = socket.on('mutual_rating_complete',  trigger);
     const offDate   = socket.on('challenge_date_approved', trigger);
+    // Take-on accepted: phase → 'accepted' fired +5/+5 to challenger + taker.
+    // Broadcast to BOTH parties (international/invited accept, and the creator's
+    // approve-takeon for local), so the "+5 points!" popin lands on whichever
+    // side earned it without a reload.
+    const offAccept = socket.on('challenge_accepted',      trigger);
     // International debrief: photo approval = the verdict. The proof_verdict
     // trigger fires +30/+40 score events on phase = 'approved', and the
     // backend broadcasts challenge_proof_approved to both creator and
@@ -80,7 +85,7 @@ export function ScoreCelebrationLaunchGate() {
     // The backend pings the creator's room so the "+10 points!" modal pops
     // right after they launch a challenge (self-gates if the daily cap hit).
     const offCreate = socket.on('challenge_created_self', trigger);
-    return () => { offRating(); offDate(); offProof(); offCreate(); };
+    return () => { offRating(); offDate(); offAccept(); offProof(); offCreate(); };
   }, [account?.id]);
 
   // Shared cleanup - ack + close. Used by both the CTA path and the
