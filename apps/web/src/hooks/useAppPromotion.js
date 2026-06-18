@@ -26,22 +26,17 @@ function safeTrack(event, props) {
  * `shouldShowBanner` stays false and nothing renders.
  */
 export default function useAppPromotion() {
-  // Defer detection to a useEffect so SSR / first paint never depends on
-  // navigator.* (the codebase is currently SPA-only, but this is a cheap
-  // future-proof and matches the pattern in useBeforeInstallPrompt).
-  const [ready,   setReady]   = useState(false)
-  const [os,      setOs]      = useState('other')
-  const [inApp,   setInApp]   = useState(false)
-  const [bannerDismissedUntil,       setBannerDismissedUntil]       = useState(0)
-  const [interstitialDismissedUntil, setInterstitialDismissedUntil] = useState(0)
-
-  useEffect(() => {
-    setOs(detectOs())
-    setInApp(isInNativeApp())
-    setBannerDismissedUntil(readUntil(BANNER_KEY))
-    setInterstitialDismissedUntil(readUntil(INTERSTITIAL_KEY))
-    setReady(true)
-  }, [])
+  // Detect SYNCHRONOUSLY on first render. The app mounts via createRoot (a full
+  // client render, not hydration), so navigator.* is available immediately and
+  // the typeof guards in the helpers keep these safe even server-side. The old
+  // useEffect-deferred version left shouldShowBanner=false on the FIRST PAINT of
+  // every load and only flipped true a tick later - on a deep-link's heavy async
+  // boot that window varied, so the banner showed on some loads and not others
+  // ("sometimes yes, sometimes no") in the same browser.
+  const [os]    = useState(detectOs)
+  const [inApp] = useState(isInNativeApp)
+  const [bannerDismissedUntil,       setBannerDismissedUntil]       = useState(() => readUntil(BANNER_KEY))
+  const [interstitialDismissedUntil, setInterstitialDismissedUntil] = useState(() => readUntil(INTERSTITIAL_KEY))
 
   // Resolve the per-OS store URL. Today only Android is enabled; flipping the
   // ios.enabled flag is enough to turn this on for iOS later.
@@ -52,7 +47,7 @@ export default function useAppPromotion() {
   }, [os])
 
   const now = Date.now()
-  const baseEligible = ready && !inApp && !!storeUrl
+  const baseEligible = !inApp && !!storeUrl
 
   const shouldShowBanner = baseEligible
     && appPromotion.banner

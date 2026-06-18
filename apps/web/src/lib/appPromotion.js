@@ -55,7 +55,11 @@ export function isInNativeApp() {
   if (window.ReactNativeWebView) return true
   if (typeof navigator !== 'undefined' && /HiladsApp\//.test(navigator.userAgent)) return true
   if (window.matchMedia?.('(display-mode: standalone)').matches) return true
-  if (typeof document !== 'undefined' && document.referrer.startsWith('android-app://')) return true
+  // Only the Hilads TWA (launched from the Play Store), NOT any Android app that
+  // merely opens the link in a webview/Custom Tab (e.g. Zalo) - those also set
+  // an android-app:// referrer, and the old broad check hid the install banner
+  // for anyone arriving from another app (a "sometimes no" trigger).
+  if (typeof document !== 'undefined' && document.referrer.startsWith('android-app://com.hilads.app')) return true
   return false
 }
 
