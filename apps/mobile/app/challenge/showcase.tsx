@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, RefreshControl,
 } from 'react-native';
@@ -14,7 +14,7 @@ import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-const PAGE = 30;
+const PAGE = 5;
 
 /**
  * Public "Success challenges" showcase - completed, well-rated challenges for
@@ -35,6 +35,11 @@ export default function ShowcaseScreen() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [preview,    setPreview]    = useState<ShowcaseItem | null>(null);
 
+  // Synchronous re-entrancy guard. FlatList can fire onEndReached several times
+  // before the loadingMore state flips, so a state-only check would let 2-3
+  // duplicate page fetches slip through. The ref blocks them on the same tick.
+  const loadingMoreRef = useRef(false);
+
   const load = useCallback(async () => {
     const res = await fetchChallengeShowcase({ cityId, limit: PAGE });
     setItems(res.items);
@@ -49,14 +54,19 @@ export default function ShowcaseScreen() {
   const onRefresh = () => { setRefreshing(true); load(); };
 
   const loadMore = useCallback(async () => {
-    if (loadingMore || !hasMore || items.length === 0) return;
+    if (loadingMoreRef.current || !hasMore || items.length === 0) return;
+    loadingMoreRef.current = true;
     setLoadingMore(true);
-    const before = items[items.length - 1]?.completed_at;
-    const res = await fetchChallengeShowcase({ cityId, limit: PAGE, before });
-    setItems(prev => [...prev, ...res.items]);
-    setHasMore(res.hasMore);
-    setLoadingMore(false);
-  }, [cityId, hasMore, items, loadingMore]);
+    try {
+      const before = items[items.length - 1]?.completed_at;
+      const res = await fetchChallengeShowcase({ cityId, limit: PAGE, before });
+      setItems(prev => [...prev, ...res.items]);
+      setHasMore(res.hasMore);
+    } finally {
+      setLoadingMore(false);
+      loadingMoreRef.current = false;
+    }
+  }, [cityId, hasMore, items]);
 
   const openProfile = (userId: string) => {
     if (userId === account?.id) { router.push('/(tabs)/me'); return; }

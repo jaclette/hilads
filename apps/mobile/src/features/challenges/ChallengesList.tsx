@@ -36,6 +36,12 @@ const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
   { key: 'international', emoji: '🌐' },
 ];
 
+// Progressive reveal: render PAGE rows, +PAGE each time the user scrolls to the
+// end. The full (filtered) list already lives in memory, so this fires ZERO
+// extra network calls - it just windows the FlatList so the screen isn't a
+// 200-row dump and stays light.
+const PAGE = 5;
+
 /**
  * The full challenges browser - open/validated tabs, mode + type filters,
  * pagination-free list (server caps at 200/100), and a create CTA. Extracted
@@ -113,6 +119,14 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
     [dataRaw, typeFilter, modeFilter],
   );
 
+  // How many of `data` to actually render. Resets to the first page whenever the
+  // visible set changes (tab / filter / city) so we never reveal a stale window.
+  const [visibleCount, setVisibleCount] = useState(PAGE);
+  useEffect(() => { setVisibleCount(PAGE); }, [tab, typeFilter, modeFilter, channelId]);
+
+  const visibleData = useMemo(() => data.slice(0, visibleCount), [data, visibleCount]);
+  const hasMoreLocal = visibleCount < data.length;
+
   if (!channelId) {
     return <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>;
   }
@@ -189,9 +203,18 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   return (
     <View style={styles.root}>
       <FlatList
-        data={data}
+        data={visibleData}
         keyExtractor={c => c.id}
         ListHeaderComponent={listHeader}
+        onEndReachedThreshold={0.4}
+        onEndReached={() => {
+          // Reveal one more page. Math.min clamps so repeated end-reached fires
+          // (FlatList emits a few) can't overshoot the real list length.
+          if (hasMoreLocal) setVisibleCount(v => Math.min(v + PAGE, data.length));
+        }}
+        ListFooterComponent={hasMoreLocal ? (
+          <View style={styles.footer}><ActivityIndicator size="small" color={Colors.muted} /></View>
+        ) : null}
         renderItem={({ item }) => (
           <View style={styles.cardWrap}>
             <ChallengeVersusCard
@@ -334,6 +357,7 @@ const styles = StyleSheet.create({
   typeChipTextActive: { color: '#FF7A3C' },
 
   listContent: { paddingBottom: Spacing.xl * 2 },
+  footer:      { paddingVertical: Spacing.md },
   cardWrap:    { paddingHorizontal: Spacing.md, marginBottom: Spacing.sm },
   center: { justifyContent: 'center', alignItems: 'center', paddingVertical: Spacing.xl },
   empty:  { justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
