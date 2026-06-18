@@ -111,6 +111,8 @@
   "openSettings": "Mở cài đặt",
   "composer": {
     "placeholderDefault": "Gửi một tin nhắn…",
+    "endedEvent": "Sự kiện này đã kết thúc",
+    "closedChallenge": "Thử thách này đã đóng",
     "attach": "Thêm tệp đính kèm",
     "sendPhotoTitle": "Gửi ảnh",
     "takePhoto": "Chụp ảnh",

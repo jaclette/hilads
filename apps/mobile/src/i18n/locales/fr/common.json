@@ -111,6 +111,8 @@
   "openSettings": "Ouvrir les réglages",
   "composer": {
     "placeholderDefault": "Écris un message…",
+    "endedEvent": "Cet évènement est terminé",
+    "closedChallenge": "Ce défi est terminé",
     "attach": "Ajouter une pièce jointe",
     "sendPhotoTitle": "Envoyer une photo",
     "takePhoto": "Prendre une photo",

@@ -48,6 +48,7 @@ import { ChallengePostCreateSheet } from '@/components/ChallengePostCreateSheet'
 import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { ComposerEndedNotice } from '@/features/chat/ComposerEndedNotice';
 import { avatarColor } from '@/lib/avatarColors';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { shareLink } from '@/lib/shareLink';
@@ -1560,35 +1561,39 @@ export default function ChallengeChatScreen() {
               />
             )}
 
-            <ChatInput
-              sending={sending}
-              placeholder={i18n.t('composer.placeholderChallenge', { ns: 'common' })}
-              mentionContext="challenge"
-              mentionChannelId={id}
-              onFocus={() => collapseTo(1)}
-              onBlur={() => collapseTo(0)}
-              dismissOnSend
-              onSendText={(text, mentions) => {
-                const reply = replyingToRef.current;
-                setReplyingTo(null);
-                sendText(text, reply, mentions);
-              }}
-              onSendImage={sendImage}
-              replyingTo={replyingTo}
-              onCancelReply={() => setReplyingTo(null)}
-              editing={editingMsg}
-              onSubmitEdit={async (text) => {
-                if (!editingMsg) return;
-                const idToEdit = editingMsg.id;
-                setEditingMsg(null);
-                try { await editMessage(idToEdit, text); }
-                catch (e) {
-                  console.warn('[challenge] edit failed:', e);
-                  Alert.alert(i18n.t('editFailed', { ns: 'chat' }));
-                }
-              }}
-              onCancelEdit={() => setEditingMsg(null)}
-            />
+            {(isValidated || isClosed) ? (
+              <ComposerEndedNotice text={i18n.t('composer.closedChallenge', { ns: 'common' })} />
+            ) : (
+              <ChatInput
+                sending={sending}
+                placeholder={i18n.t('composer.placeholderChallenge', { ns: 'common' })}
+                mentionContext="challenge"
+                mentionChannelId={id}
+                onFocus={() => collapseTo(1)}
+                onBlur={() => collapseTo(0)}
+                dismissOnSend
+                onSendText={(text, mentions) => {
+                  const reply = replyingToRef.current;
+                  setReplyingTo(null);
+                  sendText(text, reply, mentions);
+                }}
+                onSendImage={sendImage}
+                replyingTo={replyingTo}
+                onCancelReply={() => setReplyingTo(null)}
+                editing={editingMsg}
+                onSubmitEdit={async (text) => {
+                  if (!editingMsg) return;
+                  const idToEdit = editingMsg.id;
+                  setEditingMsg(null);
+                  try { await editMessage(idToEdit, text); }
+                  catch (e) {
+                    console.warn('[challenge] edit failed:', e);
+                    Alert.alert(i18n.t('editFailed', { ns: 'chat' }));
+                  }
+                }}
+                onCancelEdit={() => setEditingMsg(null)}
+              />
+            )}
           </>
         ) : (
           /* Non-chat surface. Branches (in priority order):

@@ -17,6 +17,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, toggleEventReaction } from '@/api/events';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
+import { ComposerEndedNotice } from '@/features/chat/ComposerEndedNotice';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
@@ -570,29 +571,33 @@ export default function EventDetailScreen() {
             }
           />
 
-          <ChatInput
-            sending={sending}
-            mentionContext="event"
-            mentionChannelId={id}
-            onSendText={(text, mentions) => {
-              const reply = replyingToRef.current;
-              setReplyingTo(null);
-              sendText(text, reply, mentions);
-            }}
-            onSendImage={sendImage}
-            placeholder={t('composer.placeholderEvent', { ns: 'common' })}
-            replyingTo={replyingTo}
-            onCancelReply={() => setReplyingTo(null)}
-            editing={editingMsg}
-            onSubmitEdit={async (text) => {
-              if (!editingMsg) return;
-              const idToEdit = editingMsg.id;
-              setEditingMsg(null);
-              try { await editMessage(idToEdit, text); }
-              catch (e) { console.warn('[event] edit failed:', e); Alert.alert(i18n.t('editFailed', { ns: 'chat' })); }
-            }}
-            onCancelEdit={() => setEditingMsg(null)}
-          />
+          {event?.is_past ? (
+            <ComposerEndedNotice text={t('composer.endedEvent', { ns: 'common' })} />
+          ) : (
+            <ChatInput
+              sending={sending}
+              mentionContext="event"
+              mentionChannelId={id}
+              onSendText={(text, mentions) => {
+                const reply = replyingToRef.current;
+                setReplyingTo(null);
+                sendText(text, reply, mentions);
+              }}
+              onSendImage={sendImage}
+              placeholder={t('composer.placeholderEvent', { ns: 'common' })}
+              replyingTo={replyingTo}
+              onCancelReply={() => setReplyingTo(null)}
+              editing={editingMsg}
+              onSubmitEdit={async (text) => {
+                if (!editingMsg) return;
+                const idToEdit = editingMsg.id;
+                setEditingMsg(null);
+                try { await editMessage(idToEdit, text); }
+                catch (e) { console.warn('[event] edit failed:', e); Alert.alert(i18n.t('editFailed', { ns: 'chat' })); }
+              }}
+              onCancelEdit={() => setEditingMsg(null)}
+            />
+          )}
         </KeyboardAvoidingView>
       )}
       <MessageActionSheet

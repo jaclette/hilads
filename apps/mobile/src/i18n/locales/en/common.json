@@ -112,6 +112,8 @@
   "openSettings": "Open Settings",
   "composer": {
     "placeholderDefault": "Drop a message…",
+    "endedEvent": "This event has ended",
+    "closedChallenge": "This challenge is closed",
     "attach": "Add attachment",
     "sendPhotoTitle": "Send a photo",
     "takePhoto": "Take Photo",
