@@ -113,7 +113,7 @@ if ($origin !== null && in_array($origin, $allowedOrigins, true)) {
     header('Access-Control-Allow-Credentials: true');
 }
 
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, X-Platform');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 if ($method === 'OPTIONS') {
