@@ -9253,8 +9253,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     enforceRateLimit('challenge_accept', 20, 3600, $userId);
 
     // International challenges auto-approve the take-on (no IRL filter step).
-    // Local stays gated at 'pending' so the creator can vet the meet-up.
-    $initialPhase = $isInternational ? 'accepted' : 'pending';
+    // A personally-invited user also lands directly as the taker - the
+    // invitation is the creator's pre-selection, so there's nothing left to
+    // vet. Everyone else stays gated at 'pending' for the creator to review.
+    $invited      = ChallengeInvitationRepository::existsFor($challengeId, $userId);
+    $autoApproved = $isInternational || $invited;
+    $initialPhase = $autoApproved ? 'accepted' : 'pending';
 
     try {
         $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
@@ -9296,10 +9300,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     try {
         if (!empty($challenge['created_by'])) {
             $acceptorName = $authUser['display_name'] ?? 'Someone';
-            $title = $isInternational ? "🌐 Challenge accepted" : "🤝 New take-on request";
+            $title = $autoApproved ? "🤝 Challenge accepted" : "🤝 New take-on request";
             $body  = $isInternational
                 ? "{$acceptorName} accepted \"{$challenge['title']}\". Wait for the proof."
-                : "{$acceptorName} wants to take on \"{$challenge['title']}\"";
+                : ($invited
+                    ? "{$acceptorName} accepted your challenge \"{$challenge['title']}\""
+                    : "{$acceptorName} wants to take on \"{$challenge['title']}\"");
             NotificationRepository::create(
                 $challenge['created_by'],
                 'challenge_takeon_request',
@@ -9324,14 +9330,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         'challenge_id'  => $challengeId,
         'acceptance_id' => $acceptance['id'],
         'mode'          => $challenge['mode'] ?? 'local',
-        'auto_approved' => $isInternational,
+        'auto_approved' => $autoApproved,
     ]);
 
-    // International acceptances land in phase='accepted' which fires
-    // the +5 challenger trigger inline. Local rows insert in 'pending'
-    // - no score yet, no recalc needed here (approve-takeon path handles
-    // it). The challenger is the only user whose score moved.
-    if ($isInternational && !empty($challenge['created_by'])) {
+    // Auto-approved acceptances (international OR invited) land in
+    // phase='accepted', which fires the +5 challenger trigger inline. Plain
+    // local take-ons insert in 'pending' - no score yet (approve-takeon
+    // handles it). The challenger is the only user whose score moved.
+    if ($autoApproved && !empty($challenge['created_by'])) {
         MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
     }
 
@@ -11742,8 +11748,11 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         ], 403);
     }
 
-    // International invitations auto-approve at take-on; Local stays gated.
-    $initialPhase = $isInternational ? 'accepted' : 'pending';
+    // A personal invitation IS the creator's pre-selection of this taker, so
+    // accepting it lands them directly as the taker - no second approval step -
+    // for BOTH local and international. (Previously only international
+    // auto-approved; local invitees were dropped into 'pending'/a request.)
+    $initialPhase = 'accepted';
 
     try {
         $acceptance = ChallengeAcceptanceRepository::create($challengeId, $userId, $initialPhase);
@@ -11778,8 +11787,8 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
             NotificationRepository::create(
                 $challenge['created_by'],
                 'challenge_takeon_request',
-                "🤝 New take-on request",
-                "{$acceptorName} wants to take on \"{$challenge['title']}\"",
+                "🤝 Challenge accepted",
+                "{$acceptorName} accepted your challenge \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challengeId,
                     'acceptanceId'   => $acceptance['id'],
@@ -11794,10 +11803,9 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
         error_log('[invite-accept] takeon-request push failed: ' . $e->getMessage());
     }
 
-    // International invitations auto-accept → +5 challenger fires.
-    // Local invitations land in 'pending' - no score yet (see
-    // approve-takeon for that hook). Mirrors POST /challenges/:id/accept.
-    if ($isInternational && !empty($challenge['created_by'])) {
+    // The acceptance is always 'accepted' now, so the +5 challenger trigger
+    // fired inline for both modes - recalc the challenger's rank.
+    if (!empty($challenge['created_by'])) {
         MonthlyRankService::recalcAfterScoreChange($challenge['created_by']);
     }
 

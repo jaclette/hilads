@@ -110,6 +110,23 @@ class ChallengeInvitationRepository
         return self::findById($id);
     }
 
+    /**
+     * True when this user has a personal invitation to the challenge (ANY
+     * status). The invitation is the creator's explicit pre-selection of the
+     * taker, so the accept path uses it to skip the pending-review gate and
+     * land the invitee straight in as the taker.
+     */
+    public static function existsFor(string $challengeId, string $inviteeUserId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM challenge_invitations
+            WHERE challenge_id = ? AND invitee_user_id = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$challengeId, $inviteeUserId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
     /** All invitees already invited to a given challenge (for de-dup on resend). */
     public static function inviteeIdsForChallenge(string $challengeId): array
     {
