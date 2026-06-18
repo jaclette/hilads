@@ -40,6 +40,11 @@ final class PushBroadcastService
     {
         switch ($type) {
             case 'all':
+            // 'all_installs' = every registered user (this query) PLUS every guest
+            // device token (handled separately via guestTokens()/dispatchGuestTokens()
+            // because guests have no users row). The registered half is identical to
+            // 'all', so it shares this branch.
+            case 'all_installs':
                 $stmt = Database::pdo()->prepare("
                     SELECT u.id
                     FROM users u
@@ -99,7 +104,56 @@ final class PushBroadcastService
         // Reuse resolveAudience and count - keeps the filter logic in one place.
         // O(N) on user count which is fine: this runs once per "Confirm send"
         // tap and the result is shown to the admin before the actual send.
-        return count(self::resolveAudience($type, $filter));
+        $count = count(self::resolveAudience($type, $filter));
+        // 'all_installs' also reaches guest devices, which resolveAudience can't
+        // return (they have no userId). Add their token count for the estimate.
+        if ($type === 'all_installs') {
+            $count += count(self::guestTokens());
+        }
+        return $count;
+    }
+
+    /**
+     * Distinct Expo tokens for unregistered guest devices (no user_id). These are
+     * pushed directly (native only) - guests have no bell, no prefs, no web push.
+     */
+    public static function guestTokens(): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT token
+            FROM mobile_push_tokens
+            WHERE user_id IS NULL AND guest_id IS NOT NULL
+        ");
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * Native-push the broadcast to every guest device token and bump the
+     * push_broadcasts delivered counter by however many were queued. Called
+     * after the registered-user dispatch for an 'all_installs' send. Returns the
+     * number of guest devices reached.
+     */
+    public static function dispatchGuestTokens(
+        int     $broadcastId,
+        string  $title,
+        string  $body,
+        ?string $deepLink
+    ): int {
+        $tokens = self::guestTokens();
+        if (empty($tokens)) return 0;
+
+        $sent = MobilePushService::sendToTokens($tokens, $title, $body, [
+            'broadcastId' => $broadcastId,
+            'deepLink'    => $deepLink ?? '',
+        ]);
+
+        if ($sent > 0) {
+            Database::pdo()
+                ->prepare("UPDATE push_broadcasts SET delivered_count = delivered_count + ? WHERE id = ?")
+                ->execute([$sent, $broadcastId]);
+        }
+        return $sent;
     }
 
     /**

@@ -23,10 +23,11 @@ import { API_URL } from '@/constants';
 console.log('[push-reg] ── MODULE LOADED ─────────────────────────────────────');
 
 export function usePushRegistration(): void {
-  const { account } = useApp();
+  const { account, identity } = useApp();
 
-  // Prevent re-registering for the same user within one app session.
-  // Uses user ID so a logout→login of a different account re-registers.
+  // Prevent re-registering for the same identity within one app session.
+  // Keyed by account id (so a logout→login of a different account re-registers)
+  // or, for guests, the guest device id (so unregistered installs register too).
   const lastRegisteredFor = useRef<string | null>(null);
 
   // ── Mount proof - fires exactly once when this hook is first rendered ───────
@@ -47,28 +48,35 @@ export function usePushRegistration(): void {
     console.log('[push-reg] authToken present =',
       getAuthToken() !== null ? `yes (${getAuthToken()!.length} chars)` : 'NO');
 
-    if (!account) {
-      console.log('[push-reg] no account - skipping push registration');
+    const guestId = identity?.guestId ?? null;
+    // Registration key: the account when signed in (so a different login
+    // re-registers), else the guest device. Guests register on app open so the
+    // BO can broadcast to unregistered installs ("all app installs").
+    const key = account?.id ? `user:${account.id}` : (guestId ? `guest:${guestId}` : null);
+
+    if (!key) {
+      console.log('[push-reg] no account and no guest id yet - skipping push registration');
       return;
     }
 
-    if (lastRegisteredFor.current === account.id) {
-      console.log('[push-reg] guard: already registered for this user this session - skipping');
+    if (lastRegisteredFor.current === key) {
+      console.log('[push-reg] guard: already registered for this identity this session - skipping');
       return;
     }
 
-    console.log('[push-reg] NEW account detected - starting push registration for', account.id);
+    console.log('[push-reg] NEW identity detected - starting push registration for', key);
 
-    // NOTE: we set the guard ONLY after success so that a failed attempt is
-    // retried on the next account change (e.g. logout → login with same user).
-    requestAndRegisterPush()
+    // Always pass guestId so the token row carries the device's guest session
+    // (alongside user_id when signed in). NOTE: guard is set ONLY after success
+    // so a failed attempt retries on the next trigger.
+    requestAndRegisterPush(guestId)
       .then(() => {
-        console.log('[push-reg] SUCCESS - marking session as registered for', account.id);
-        lastRegisteredFor.current = account.id;
+        console.log('[push-reg] SUCCESS - marking session as registered for', key);
+        lastRegisteredFor.current = key;
       })
       .catch(err => {
         console.warn('[push-reg] registration failed - will NOT mark session; will retry on next trigger:', String(err));
         // intentionally NOT setting lastRegisteredFor so the next trigger retries
       });
-  }, [account?.id]);
+  }, [account?.id, identity?.guestId]);
 }

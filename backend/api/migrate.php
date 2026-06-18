@@ -752,6 +752,15 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS new_cha
 // mobile_push_tokens
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'mobile_push_tokens.last_used_at');
 
+// Guest device tokens: a push token can belong to a registered user OR an
+// unregistered guest device. user_id becomes nullable; guest_id holds the
+// device's guest session when there's no account. Lets the BO broadcast to
+// "all app installs incl. guests". When a guest later registers, the same token
+// re-subscribes with user_id set (claimed). Additive + backfill-free.
+run($pdo, "ALTER TABLE mobile_push_tokens ALTER COLUMN user_id DROP NOT NULL", 'mobile_push_tokens.user_id nullable');
+run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS guest_id TEXT", 'mobile_push_tokens.guest_id');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_mobile_push_tokens_guest ON mobile_push_tokens (guest_id) WHERE guest_id IS NOT NULL", 'idx_mobile_push_tokens_guest');
+
 // ══════════════════════════════════════════════════════════════════════════════
 // DATA FIXES - idempotent, run once
 // ══════════════════════════════════════════════════════════════════════════════

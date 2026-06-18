@@ -6622,20 +6622,31 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     $rawCookie = $_COOKIE['hilads_token'] ?? '(none)';
     error_log("[push-subscribe] request received - cookie present: " . ($rawCookie !== '(none)' ? 'yes (' . strlen($rawCookie) . ' chars)' : 'NO'));
 
-    $user  = AuthService::requireAuth();
+    // Optional auth: registered users authenticate via cookie/bearer; guests
+    // send their guestId in the body. A device token belongs to whichever is
+    // present (a logged-in user sends both → the row carries user_id + guest_id).
+    $user  = AuthService::currentUser();
     $body  = Request::json();
 
     $token    = trim((string) ($body['token']    ?? ''));
     $platform = trim((string) ($body['platform'] ?? 'unknown'));
     $locale   = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
+    $guestId  = trim((string) ($body['guestId']  ?? ''));
+    $userId   = $user['id'] ?? null;
 
-    error_log("[push-subscribe] user={$user['id']} platform=$platform token=$token locale=$locale");
+    if ($userId === null && $guestId === '') {
+        error_log("[push-subscribe] REJECTED - no user and no guestId");
+        Response::json(['error' => 'Auth or guestId required'], 401);
+    }
+
+    error_log("[push-subscribe] user=" . ($userId ?? 'guest') . " guest=" . ($guestId ?: '-') . " platform=$platform token=$token locale=$locale");
 
     // Remember the device language so notifications (push + bell) are localized.
-    if (in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
+    // Registered users only - guests have no users row to store locale on.
+    if ($userId !== null && in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
         try {
             Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
-                ->execute([$locale, $user['id']]);
+                ->execute([$locale, $userId]);
         } catch (\Throwable $e) {
             error_log("[push-subscribe] locale update failed: " . $e->getMessage());
         }
@@ -6651,19 +6662,20 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     try {
         $stmt = Database::pdo()->prepare("
-            INSERT INTO mobile_push_tokens (user_id, token, platform)
-            VALUES (?, ?, ?)
+            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform)
+            VALUES (?, ?, ?, ?)
             ON CONFLICT (token) DO UPDATE
                SET user_id      = EXCLUDED.user_id,
+                   guest_id     = EXCLUDED.guest_id,
                    platform     = EXCLUDED.platform,
                    last_used_at = now()
             RETURNING id
         ");
-        $stmt->execute([$user['id'], $token, $platform]);
+        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-        error_log("[push-subscribe] upsert success for user={$user['id']} row_id=" . ($row['id'] ?? '?'));
+        error_log("[push-subscribe] upsert success for " . ($userId ?? 'guest:' . $guestId) . " row_id=" . ($row['id'] ?? '?'));
     } catch (\Throwable $e) {
-        error_log("[push-subscribe] DB ERROR for user={$user['id']}: " . $e->getMessage());
+        error_log("[push-subscribe] DB ERROR for " . ($userId ?? 'guest:' . $guestId) . ": " . $e->getMessage());
         Response::json(['error' => 'Failed to store push token: ' . $e->getMessage()], 500);
     }
 

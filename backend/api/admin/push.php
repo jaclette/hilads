@@ -70,6 +70,8 @@ function admin_push_parse_audience(): array
     switch ($type) {
         case 'all':
             return ['all', []];
+        case 'all_installs':
+            return ['all_installs', []];
         case 'city':
             $channelId = (int) ($_POST['city_channel_id'] ?? 0);
             if ($channelId <= 0) admin_die('City audience requires a valid channelId.');
@@ -179,26 +181,36 @@ if ($method === 'POST') {
                     }
                 } else {
                     [$audienceType, $audienceFilter] = admin_push_parse_audience();
-                    $userIds = PushBroadcastService::resolveAudience($audienceType, $audienceFilter);
-                    if (empty($userIds)) {
-                        $flashError = 'Audience resolved to 0 users - nothing to send.';
+                    $userIds       = PushBroadcastService::resolveAudience($audienceType, $audienceFilter);
+                    // 'all_installs' also reaches unregistered guest devices, which
+                    // resolveAudience can't return (no userId). They're pushed
+                    // natively after the registered dispatch.
+                    $includeGuests = ($audienceType === 'all_installs');
+                    $guestCount    = $includeGuests ? count(PushBroadcastService::guestTokens()) : 0;
+                    if (empty($userIds) && $guestCount === 0) {
+                        $flashError = 'Audience resolved to 0 recipients - nothing to send.';
                     } else {
                         $broadcastId = PushBroadcastService::recordBroadcast(
                             admin_push_username(), admin_push_remote_ip(),
                             $title, $body, $audienceType, $audienceFilter, $deepLink,
-                            count($userIds),
+                            count($userIds) + $guestCount,
                         );
 
                         // Defer the dispatch loop until after the response flushes
                         // so the admin doesn't sit on a hanging request while we
                         // POST 50k pushes one by one. The history table reflects
                         // sending → sent as the loop runs.
-                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink): void {
+                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink, $includeGuests): void {
                             if (function_exists('fastcgi_finish_request')) {
                                 fastcgi_finish_request();
                             }
                             try {
                                 PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink);
+                                // Guest devices: native-only push after the registered
+                                // dispatch sets status='sent'; this bumps delivered_count.
+                                if ($includeGuests) {
+                                    PushBroadcastService::dispatchGuestTokens($broadcastId, $title, $body, $deepLink);
+                                }
                             } catch (\Throwable $e) {
                                 error_log('[admin/push] dispatch crashed for broadcast=' . $broadcastId . ' err=' . $e->getMessage());
                                 PushBroadcastService::markFailed($broadcastId);
@@ -267,6 +279,11 @@ admin_nav('/admin/push');
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0">
                         <input type="radio" name="audience_type" value="all" <?= $savedAudience === 'all' ? 'checked' : '' ?>>
                         All registered users
+                    </label>
+                    <label style="font-weight:normal;text-transform:none;letter-spacing:0">
+                        <input type="radio" name="audience_type" value="all_installs" <?= $savedAudience === 'all_installs' ? 'checked' : '' ?>>
+                        All app installs (incl. guests)
+                        <span style="color:#666;font-size:11px;display:block;margin-left:22px">Registered users + unregistered guest devices. Guests get a native push only (no in-app inbox).</span>
                     </label>
                     <label style="font-weight:normal;text-transform:none;letter-spacing:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                         <input type="radio" name="audience_type" value="city" <?= $savedAudience === 'city' ? 'checked' : '' ?>>
@@ -343,11 +360,12 @@ admin_nav('/admin/push');
             <?php foreach ($recent as $r): ?>
                 <?php
                     $audienceText = match ($r['audience_type']) {
-                        'all'   => 'All',
-                        'city'  => 'City #' . (json_decode($r['audience_filter'], true)['channelId'] ?? '?'),
-                        'user'  => 'User',
-                        'test'  => 'Test (self)',
-                        default => $r['audience_type'],
+                        'all'          => 'All',
+                        'all_installs' => 'All installs (+guests)',
+                        'city'         => 'City #' . (json_decode($r['audience_filter'], true)['channelId'] ?? '?'),
+                        'user'         => 'User',
+                        'test'         => 'Test (self)',
+                        default        => $r['audience_type'],
                     };
                     $statusColor = match ($r['status']) {
                         'sending' => '#fbbf24',

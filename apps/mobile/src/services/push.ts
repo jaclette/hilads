@@ -111,9 +111,11 @@ export async function hasBeenAsked(): Promise<boolean> {
 /**
  * Request push permission and register this device.
  * Safe to call multiple times - no-ops if already registered.
- * Call after the user has a registered account (not for guests).
+ * Pass `guestId` so the token is stored against the guest device too (a
+ * logged-in user passes both → the row carries user_id + guest_id). Guests
+ * (no account) register with guestId alone so the BO can reach them.
  */
-export async function requestAndRegisterPush(): Promise<string | null> {
+export async function requestAndRegisterPush(guestId?: string | null): Promise<string | null> {
   console.log('[push-mobile] ── requestAndRegisterPush ────────────────────');
   console.log('[push-mobile] isDevice =', Device.isDevice, '| platform =', Platform.OS);
   console.log('[push-mobile] API_URL =', API_URL);
@@ -206,7 +208,7 @@ export async function requestAndRegisterPush(): Promise<string | null> {
 
   // ── Register with backend ────────────────────────────────────────────────────
   try {
-    await registerTokenWithBackend(token);
+    await registerTokenWithBackend(token, guestId);
   } catch (err) {
     console.error('[push-mobile] registerTokenWithBackend FAILED:', String(err));
     // Token obtained but not registered - caller can retry later.
@@ -236,10 +238,12 @@ export async function unregisterPushToken(): Promise<void> {
 // Uses raw fetch (not api.post) so every step is logged explicitly.
 // This bypasses the api wrapper to make network failures impossible to miss.
 
-async function registerTokenWithBackend(token: string): Promise<void> {
+async function registerTokenWithBackend(token: string, guestId?: string | null): Promise<void> {
   const authToken = getAuthToken();
   const fullUrl   = `${API_URL}/push/mobile-token`;
-  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language });
+  // guestId lets the backend store the token for an unregistered device (and is
+  // harmless for logged-in users - it just records which guest session backs them).
+  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined });
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

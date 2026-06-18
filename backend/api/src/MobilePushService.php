@@ -215,6 +215,44 @@ class MobilePushService
     }
 
     /**
+     * Send directly to a list of raw Expo tokens, bypassing the per-user
+     * pref/cooldown/bell machinery. Used for guest-device broadcasts (admin
+     * announcements to "all app installs") where the recipient has no users
+     * row, no notification_preferences, and no bell history - just a device.
+     * Returns the number of tokens queued.
+     */
+    public static function sendToTokens(
+        array   $tokens,
+        string  $title,
+        ?string $body,
+        array   $data = []
+    ): int {
+        $tokens = array_values(array_unique(array_filter(
+            $tokens,
+            static fn($t) => is_string($t) && str_starts_with($t, 'ExponentPushToken[')
+        )));
+        if (empty($tokens)) return 0;
+
+        foreach ($tokens as $token) {
+            $message = array_filter([
+                'to'        => $token,
+                'title'     => $title,
+                'body'      => $body ?? '',
+                'data'      => array_merge($data, ['type' => 'admin_announcement']),
+                'sound'     => 'default',
+                'channelId' => 'default',
+            ], static fn($v) => $v !== null);
+            self::$queue[] = ['message' => $message, 'token' => $token];
+        }
+        if (!self::$flushRegistered) {
+            self::$flushRegistered = true;
+            register_shutdown_function([self::class, 'flush']);
+        }
+        error_log('[push-send] queued admin_announcement for ' . count($tokens) . ' guest device(s)');
+        return count($tokens);
+    }
+
+    /**
      * Flush all queued Expo messages in batches of EXPO_BATCH_SIZE. Registered
      * once per request (incl. when send() is itself called from a shutdown
      * function - newly-registered shutdown fns still run). Expo returns receipts
