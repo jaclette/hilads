@@ -126,7 +126,7 @@ export async function joinChannel(channelId, sessionId, guestId, nickname, previ
   if (previousChannelId) body.previousChannelId = previousChannelId
   const res = await fetch(`${BASE}/channels/${channelId}/join`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' },
     credentials: 'include',
     body: JSON.stringify(body),
   })
@@ -141,7 +141,7 @@ export async function bootstrapChannel(channelId, sessionId, guestId, nickname, 
   // Web fetches badges via fetchMessageBadges after first render.
   const res = await fetch(`${BASE}/channels/${channelId}/bootstrap?lean=1`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-Platform': 'web' },
     credentials: 'include',
     body: JSON.stringify(body),
   })

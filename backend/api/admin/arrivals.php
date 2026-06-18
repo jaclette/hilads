@@ -67,7 +67,7 @@ admin_nav('/admin/arrivals');
     $pages = (int) ceil($total / $perPage);
 
     $aStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id, country,
+        SELECT id, nickname, user_id, guest_id, country, platform,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts
         FROM messages
         WHERE channel_id = :cid AND type = 'system' AND event = 'join'
@@ -105,11 +105,21 @@ admin_nav('/admin/arrivals');
     ?>
     <div class="table-wrapper">
         <table>
-            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:90px">Actions</th></tr></thead>
+            <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
             <tbody>
             <?php if (empty($arrivals)): ?>
-                <tr><td colspan="4" class="no-results">No arrivals in this range.</td></tr>
-            <?php else: foreach ($arrivals as $a):
+                <tr><td colspan="5" class="no-results">No arrivals in this range.</td></tr>
+            <?php else:
+                // Platform → label + emoji. Unknown/legacy rows (pre-capture) show "—".
+                $platformBadge = static function (?string $p): string {
+                    return match ($p) {
+                        'ios'     => '<span style="color:#ddd;font-size:12px">🍎 iOS</span>',
+                        'android' => '<span style="color:#ddd;font-size:12px">🤖 Android</span>',
+                        'web'     => '<span style="color:#ddd;font-size:12px">🌐 Web</span>',
+                        default   => '<span style="color:#444">—</span>',
+                    };
+                };
+                foreach ($arrivals as $a):
                 $who = $a['nickname'] ?: '(no name)';
                 if ($a['user_id'] !== null) {
                     $idBadge = '<span class="badge badge-registered" title="' . htmlspecialchars($a['user_id'], ENT_QUOTES) . '">Reg.</span>';
@@ -137,6 +147,7 @@ admin_nav('/admin/arrivals');
                             <span style="color:#444">-</span>
                         <?php endif; ?>
                     </td>
+                    <td style="white-space:nowrap"><?= $platformBadge($a['platform'] ?? null) ?></td>
                     <td>
                         <?php if ($a['guest_id'] !== null): ?>
                             <form method="POST" action="/admin/bans/add"

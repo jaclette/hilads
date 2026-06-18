@@ -43,6 +43,18 @@ class Request
     }
 
     /**
+     * Client platform from the X-Platform header that the web + mobile apps
+     * send on each request: 'web' | 'ios' | 'android'. Anything else (or a
+     * missing header, e.g. an old client / crawler) → 'unknown'. Used to stamp
+     * arrivals so the BO can tell where a session came from.
+     */
+    public static function platform(): string
+    {
+        $p = strtolower(trim((string) ($_SERVER['HTTP_X_PLATFORM'] ?? '')));
+        return in_array($p, ['web', 'ios', 'android'], true) ? $p : 'unknown';
+    }
+
+    /**
      * Crawler / link-previewer User-Agent match. The web SPA also skips React
      * hydration for these UAs (apps/web/src/main.jsx), so this is defense in
      * depth - short-circuits any backend write that might slip through.

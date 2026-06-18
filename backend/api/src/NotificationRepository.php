@@ -637,7 +637,7 @@ class NotificationRepository
             // Origin country from Cloudflare's CF-IPCountry header (free) so the
             // BO can show where an arriving guest is connecting from.
             $country = Request::country();
-            $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId, $country, Request::ip());
+            $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId, $country, Request::ip(), Request::platform());
             // Broadcast over WS so clients already in the city see the line live.
             // Without this the join row is only written to the DB and appears for
             // others on their NEXT fetch (app restart) - chat messages broadcast,

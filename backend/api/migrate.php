@@ -1053,6 +1053,12 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_messages_guest_recent ON messages (gue
 // can show where a guest is connecting from. Nullable, additive.
 run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS country TEXT", 'messages.country');
 
+// messages.platform: client platform ('web' | 'ios' | 'android' | 'unknown')
+// from the X-Platform header, stamped on arrival (join) events so the BO can
+// tell whether a session came from the website or a native app. Nullable,
+// additive - rows written before this ships stay NULL (shown as "—").
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS platform TEXT", 'messages.platform');
+
 // ── Backfill usernames for legacy users ─────────────────────────────────────
 // Every registered user needs a unique @-handle (mentions reference it). New
 // signups always provide one; this fills rows created before usernames existed.

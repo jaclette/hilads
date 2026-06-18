@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { API_URL } from '@/constants';
 
 // ── Token store ───────────────────────────────────────────────────────────────
@@ -46,6 +47,9 @@ async function request<T = unknown>(
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    // Lets the backend stamp arrivals with the originating platform (BO column).
+    // Platform.OS is 'ios' | 'android' on native; harmless elsewhere.
+    'X-Platform': Platform.OS,
     ...(extraHeaders as Record<string, string>),
   };
 

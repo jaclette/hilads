@@ -522,16 +522,16 @@ class MessageRepository
         ];
     }
 
-    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null, ?string $country = null, ?string $ip = null): array
+    public static function addJoinEvent(int $channelId, string $guestId, string $nickname, ?string $userId = null, ?string $country = null, ?string $ip = null, string $platform = 'unknown'): array
     {
         $id = bin2hex(random_bytes(8));
         // Stamp the arriver's IP too (alongside country) so a guest ban can
         // also block the IP a guest arrived from, even if they never posted.
         $ip = ($ip !== null && $ip !== '' && $ip !== 'unknown') ? $ip : null;
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address)
-            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?)
-        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip]);
+            INSERT INTO messages (id, channel_id, type, event, guest_id, user_id, nickname, country, ip_address, platform)
+            VALUES (?, ?, 'system', 'join', ?, ?, ?, ?, ?, ?)
+        ")->execute([$id, self::dbKey($channelId), $guestId, $userId, $nickname, $country, $ip, $platform]);
 
         // Return the id so the live WS broadcast carries it too - matches the
         // fetched (format()) shape so reverse-scroll pagination + dedup line up.
