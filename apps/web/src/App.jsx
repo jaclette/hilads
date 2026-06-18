@@ -5975,7 +5975,7 @@ export default function App() {
               ...prev,
               dms: prev.dms.map(d => d.id === dm.id ? { ...d, has_unread: false } : d),
             } : prev)
-            setActiveDm({ conversation: dm, otherUser: { display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })
+            setActiveDm({ conversation: dm, otherUser: { id: dm.other_user_id, display_name: dm.other_display_name, profile_photo_url: dm.other_photo_url } })
           }}
           onOpenEvent={(ev) => {
             setShowConversations(false)
@@ -5991,13 +5991,14 @@ export default function App() {
         />
       )}
 
-      {showConversations && activeDm && (
+      {showConversations && activeDm && !viewingProfile && (
         <DirectMessageScreen
           conversation={activeDm.conversation}
           otherUser={activeDm.otherUser}
           account={account}
           socket={socketRef.current}
           onBack={() => setActiveDm(null)}
+          onOpenProfile={(uid, nick) => openProfile(uid, nick)}
         />
       )}
 

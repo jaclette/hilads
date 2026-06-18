@@ -970,14 +970,24 @@ export default function DMThreadScreen() {
           <Feather name="chevron-left" size={26} color={Colors.text} />
         </TouchableOpacity>
 
-        <View style={[styles.headerAvatar, { backgroundColor: color + '22', borderColor: color + '55' }]}>
-          <Text style={[styles.headerAvatarText, { color }]}>{initial}</Text>
-        </View>
+        {/* Tap the avatar + name to open the other user's profile. */}
+        <TouchableOpacity
+          style={styles.headerTap}
+          activeOpacity={0.7}
+          onPress={handleViewProfile}
+          disabled={!otherUserId}
+          accessibilityRole="button"
+          accessibilityLabel={t('viewProfile')}
+        >
+          <View style={[styles.headerAvatar, { backgroundColor: color + '22', borderColor: color + '55' }]}>
+            <Text style={[styles.headerAvatarText, { color }]}>{initial}</Text>
+          </View>
 
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
-          <Text style={styles.headerSub}>{t('directMessage')}</Text>
-        </View>
+          <View style={styles.headerInfo}>
+            <Text style={styles.headerName} numberOfLines={1}>{displayName}</Text>
+            <Text style={styles.headerSub}>{t('directMessage')}</Text>
+          </View>
+        </TouchableOpacity>
 
         {/* … menu - Apple G1.2 requires Block + Report visible from chat thread */}
         <TouchableOpacity
@@ -1153,6 +1163,7 @@ const styles = StyleSheet.create({
     flexShrink:     0,
   },
   headerAvatarText: { fontWeight: '800', fontSize: FontSizes.md },
+  headerTap:  { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 },
   headerInfo: { flex: 1, gap: 1 },
   headerName: {
     fontSize:      FontSizes.md,

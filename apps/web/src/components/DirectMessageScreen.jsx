@@ -78,7 +78,7 @@ function formatDateLabel(ts) {
   return d.toLocaleDateString(i18n.language, opts)
 }
 
-export default function DirectMessageScreen({ conversation, otherUser, account, socket, onBack }) {
+export default function DirectMessageScreen({ conversation, otherUser, account, socket, onBack, onOpenProfile }) {
   const { t } = useTranslation('dm')
   const [messages, setMessages]       = useState([])
   const [input, setInput]             = useState('')
@@ -370,7 +370,13 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
       {/* Header */}
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <div className="dm-header-identity">
+        {/* Tap the avatar + name to open the other user's profile. */}
+        <button
+          type="button"
+          className="dm-header-identity dm-header-identity--link"
+          disabled={!otherUser?.id}
+          onClick={() => otherUser?.id && onOpenProfile?.(otherUser.id, otherName)}
+        >
           {otherUser?.profile_photo_url
             ? <img className="online-avatar dm-header-avatar" src={otherUser.profile_photo_url} alt={otherName} />
             : <span className="online-avatar dm-header-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
@@ -378,7 +384,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
               </span>
           }
           <span className="dm-header-name">{otherName}</span>
-        </div>
+        </button>
       </div>
 
       {/* Messages */}

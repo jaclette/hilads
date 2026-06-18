@@ -10109,6 +10109,21 @@ img.pub-profile-avatar {
   min-width: 0;
 }
 
+/* Clickable header (→ open the other user's profile). Resets button chrome. */
+.dm-header-identity--link {
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.dm-header-identity--link:disabled { cursor: default; }
+.dm-header-identity--link:not(:disabled):hover .dm-header-name {
+  text-decoration: underline;
+}
+
 .dm-header-avatar {
   width: 34px;
   height: 34px;
