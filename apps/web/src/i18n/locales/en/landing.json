@@ -1,6 +1,7 @@
 {
   "hero": {
-    "sub": "You're not just visiting. You're becoming local.\nEvery challenge, every meet, every spot - earn your place in this city."
+    "sub": "You're not just visiting. You're becoming local.\nEvery challenge, every meet, every spot - earn your place in this city.",
+    "orPreview": "Or take a look in your browser — no install"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} person hanging out right now",
@@ -86,7 +87,7 @@
   "download": {
     "eyebrow": "Mobile apps",
     "title": "Your city in your pocket.",
-    "sub": "Native apps coming soon."
+    "sub": "Get the full experience: push notifications, faster, made for your city."
   },
   "repeat": {
     "eyebrow": "Jump in",

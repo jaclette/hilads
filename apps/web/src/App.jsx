@@ -2096,9 +2096,14 @@ export default function App() {
     // Parallel - challenges aren't part of /now (separate axis); fetch them
     // alongside so the landing card surfaces the new primary entity. Best-
     // effort; any failure just leaves previewChallenges empty.
-    fetchCityChallenges(previewChannelId, 3).then(chs => {
+    fetchCityChallenges(previewChannelId, 8).then(chs => {
       if (controller.signal.aborted) return
-      const list = Array.isArray(chs) ? chs : []
+      // Landing preview shows only LOCAL challenges (origin = this city).
+      // getByCity also mirrors in international challenges that merely TARGET
+      // this city, surfacing foreign-themed titles (e.g. Paris challenges on
+      // the HCMC page) - incoherent and publicly indexed. Filter them out;
+      // fetch a few extra so we still have up to 3 after filtering.
+      const list = (Array.isArray(chs) ? chs : []).filter(c => (c.mode ?? 'local') === 'local')
       setPreviewChallengeCount(list.length)
       setPreviewChallenges(list.slice(0, 3))
     }).catch(() => {})

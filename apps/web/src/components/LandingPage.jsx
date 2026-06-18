@@ -43,7 +43,7 @@ const HOW_META = [
 // across surfaces.
 const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
 
-function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewChallengeCount = 0, previewChallenges = [], previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false }) {
+function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewChallengeCount = 0, previewChallenges = [], previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false, variant = 'primary' }) {
   const { t } = useTranslation('landing')
   const noGeo = geoState === 'denied' || geoState === 'error'
   const [c1, c2] = avatarColors(nickname || 'A')
@@ -178,7 +178,7 @@ function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJo
                 placeholder={t('join.namePlaceholder')}
               />
             </div>
-            <button type="submit" className="ob-btn">
+            <button type="submit" className={`ob-btn${variant === 'secondary' ? ' ob-btn--secondary' : ''}`}>
               {city ? t('join.joinCity', { city }) : t('join.joinChat')}
             </button>
           </>
@@ -440,7 +440,19 @@ export default function LandingPage({
           {nl2br(t('hero.sub'))}
         </p>
 
-        <div ref={heroJoinRef} className="lp-hero-join">
+        {/* PRIMARY CTA - download the native app. Promoted above the web-app
+            entry: warm bio-link traffic has already seen the native experience
+            in the promo video, and the web app lacks push (poor retention). */}
+        <div className="lp-hero-stores lp-hero-stores--primary">
+          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
+          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
+        </div>
+
+        {/* SECONDARY - take a look in the browser without installing. Demoted:
+            the web app stays available (good for cold SEO traffic) but is no
+            longer the dominant action. */}
+        <p className="lp-hero-preview-label">{t('hero.orPreview')}</p>
+        <div ref={heroJoinRef} className="lp-hero-join lp-hero-join--secondary">
           <JoinCard
             city={city}
             cityCountry={cityCountry}
@@ -460,13 +472,8 @@ export default function LandingPage({
             retryGeo={retryGeo}
             onSignUp={handleSignUp}
             onSignIn={handleSignIn}
-            autoFocus
+            variant="secondary"
           />
-        </div>
-
-        <div className="lp-hero-stores">
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
-          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
         </div>
 
         <div className="lp-scroll-hint" aria-hidden="true">↓</div>

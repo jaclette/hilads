@@ -1,6 +1,7 @@
 {
   "hero": {
-    "sub": "Bạn không chỉ ghé qua. Bạn đang trở thành người địa phương.\nMỗi challenge, mỗi cuộc gặp, mỗi địa điểm - kiếm cho mình một chỗ đứng trong thành phố này."
+    "sub": "Bạn không chỉ ghé qua. Bạn đang trở thành người địa phương.\nMỗi challenge, mỗi cuộc gặp, mỗi địa điểm - kiếm cho mình một chỗ đứng trong thành phố này.",
+    "orPreview": "Hoặc xem thử trên trình duyệt — không cần cài đặt"
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",
@@ -84,7 +85,7 @@
   "download": {
     "eyebrow": "Ứng dụng di động",
     "title": "Thành phố của bạn trong túi.",
-    "sub": "Ứng dụng gốc sắp ra mắt."
+    "sub": "Trải nghiệm đầy đủ: thông báo đẩy, nhanh hơn, dành cho thành phố của bạn."
   },
   "repeat": {
     "eyebrow": "Tham gia",

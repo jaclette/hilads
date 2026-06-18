@@ -1,6 +1,7 @@
 {
   "hero": {
-    "sub": "Tu ne fais pas que passer. Tu deviens local.\nChaque challenge, chaque rencontre, chaque spot - gagne ta place dans cette ville."
+    "sub": "Tu ne fais pas que passer. Tu deviens local.\nChaque challenge, chaque rencontre, chaque spot - gagne ta place dans cette ville.",
+    "orPreview": "Ou jeter un œil dans le navigateur — sans installer"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} personne dans le coin en ce moment",
@@ -86,7 +87,7 @@
   "download": {
     "eyebrow": "Applis mobiles",
     "title": "Ta ville dans ta poche.",
-    "sub": "Applis natives bientôt disponibles."
+    "sub": "L'expérience complète : notifications push, plus rapide, pensée pour ta ville."
   },
   "repeat": {
     "eyebrow": "Lance-toi",

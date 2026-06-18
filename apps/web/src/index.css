@@ -496,6 +496,22 @@ html, body, #root {
   box-shadow: 0 2px 10px rgba(194, 74, 56, 0.2);
 }
 
+/* Demoted variant - the web-app "Join" action is now secondary to the store
+   download. Outline, not the dominant orange gradient. */
+.ob-btn--secondary {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  box-shadow: none;
+  padding: 12px;
+}
+.ob-btn--secondary:hover {
+  background: rgba(194, 74, 56, 0.1);
+  box-shadow: none;
+  transform: none;
+}
+.ob-btn--secondary:active { box-shadow: none; }
+
 .ob-hint {
   text-align: center;
   font-size: 0.72rem;
@@ -10674,6 +10690,34 @@ img.dm-header-avatar {
   justify-content: center;
   margin-top: 4px;
 }
+
+/* PRIMARY hero CTA - download badges promoted above the web-app entry.
+   Bigger, full-width-ish, more padding so they read as the main action. */
+.lp-hero-stores--primary {
+  width: 100%;
+  max-width: 380px;
+  margin: 8px auto 0;
+}
+.lp-hero-stores--primary .lp-store-btn {
+  flex: 1 1 0;
+  justify-content: center;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.lp-hero-stores--primary .lp-store-btn:hover { border-color: rgba(255, 255, 255, 0.32); }
+.lp-hero-stores--primary .lp-store-icon { font-size: 1.5rem; }
+
+/* SECONDARY web-app entry - framing label + demoted card. */
+.lp-hero-preview-label {
+  margin: 22px 0 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+}
+.lp-hero-join--secondary { opacity: 0.94; }
 
 /* Down arrow hint */
 .lp-scroll-hint {
