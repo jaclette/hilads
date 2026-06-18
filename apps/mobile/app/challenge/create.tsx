@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator, Modal, FlatList, Pressable,
+  StyleSheet, ActivityIndicator, Modal, FlatList, Pressable, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -91,6 +91,9 @@ export default function CreateChallengeScreen() {
   // International-only state. targetCity null = "anywhere".
   const [targetCity,        setTargetCity]        = useState<{ channelId: string; name: string; country: string } | null>(null);
   const [cityPickerOpen,    setCityPickerOpen]    = useState(false);
+  // "Anywhere in the world" isn't supported yet, so an international challenge
+  // must target a specific city. Set when the user tries to submit without one.
+  const [cityError,         setCityError]         = useState(false);
   const [proofRequirements, setProofRequirements] = useState<string>(typeof params.proofRequirements === 'string' ? params.proofRequirements : '');
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
@@ -198,6 +201,13 @@ export default function CreateChallengeScreen() {
 
   async function handleSubmit() {
     if (!title.trim() || submitting) return;
+    // International challenges must target a specific city - "Anywhere in the
+    // world" isn't supported yet. Block + warn instead of silently submitting.
+    if (mode === 'international' && !targetCity) {
+      setCityError(true);
+      Alert.alert(t('intl.targetCityRequiredTitle'), t('intl.targetCityRequired'));
+      return;
+    }
     const wantsPublic = (mode === 'international') || visibility === 'public';
     if (!editId && wantsPublic && !hasSeenPublicOptin) {
       pendingSubmitRef.current = performSubmit;
@@ -326,7 +336,7 @@ export default function CreateChallengeScreen() {
           <>
             <Text style={styles.sectionLabel}>{t('intl.targetCityLabel')}</Text>
             <TouchableOpacity
-              style={styles.cityPickerBtn}
+              style={[styles.cityPickerBtn, cityError && styles.cityPickerBtnError]}
               activeOpacity={0.75}
               onPress={() => setCityPickerOpen(true)}
             >
@@ -337,7 +347,9 @@ export default function CreateChallengeScreen() {
               </Text>
               <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
             </TouchableOpacity>
-            <Text style={styles.sectionHint}>{t('intl.targetCityHint')}</Text>
+            <Text style={[styles.sectionHint, cityError && styles.sectionHintError]}>
+              {cityError ? t('intl.targetCityRequired') : t('intl.targetCityHint')}
+            </Text>
           </>
         )}
 
@@ -503,7 +515,7 @@ export default function CreateChallengeScreen() {
         currentCityChannelId={city?.channelId ?? null}
         selected={targetCity}
         onClose={() => setCityPickerOpen(false)}
-        onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false); }}
+        onSelect={(c) => { setTargetCity(c); if (c) setCityError(false); setCityPickerOpen(false); }}
       />
 
       {/* First-time public opt-in modal - shown once per user (server
@@ -832,6 +844,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
     lineHeight: 16,
   },
+  sectionHintError: { color: '#FF6B5C', fontWeight: '600' },
   cityPickerBtn: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -843,6 +856,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 4,
   },
+  cityPickerBtnError: { borderColor: '#FF6B5C' },
   cityPickerText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
 
   cityModalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },

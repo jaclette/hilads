@@ -385,7 +385,9 @@
   "intl": {
     "targetCityLabel": "Ville cible",
     "targetCityAnywhere": "🌍 N'importe où dans le monde",
-    "targetCityHint": "Laisse « N'importe où » pour toucher tout le monde, ou choisis une ville pour cibler.",
+    "targetCityHint": "Choisis une ville cible — « N'importe où » n'est pas encore disponible.",
+    "targetCityRequired": "« N'importe où » n'est pas encore disponible — choisis une ville cible pour continuer.",
+    "targetCityRequiredTitle": "Choisis une ville cible",
     "proofRequirementsLabel": "Que doit montrer la photo ?",
     "proofRequirementsPlaceholder": "ex. Le plat à la lumière du jour, avec toi dans le cadre",
     "proofRequirementsHint": "La preuve est une photo 📸. Le participant voit ça avant d’envoyer - sois précis.",

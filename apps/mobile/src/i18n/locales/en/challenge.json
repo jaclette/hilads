@@ -545,7 +545,9 @@
   "intl": {
     "targetCityLabel": "Target city",
     "targetCityAnywhere": "🌍 Anywhere in the world",
-    "targetCityHint": "Leave as Anywhere to reach travelers everywhere, or pick a city for a focused fan-out.",
+    "targetCityHint": "Pick a target city — \"Anywhere in the world\" isn't available yet.",
+    "targetCityRequired": "\"Anywhere in the world\" isn't available yet — pick a target city to continue.",
+    "targetCityRequiredTitle": "Choose a target city",
     "proofRequirementsLabel": "What should the photo show?",
     "proofRequirementsPlaceholder": "e.g. The dish in daylight, with you in frame",
     "proofRequirementsHint": "The proof is a photo 📸. The acceptor sees this before submitting - be specific.",

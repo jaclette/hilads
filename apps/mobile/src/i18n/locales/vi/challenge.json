@@ -382,7 +382,9 @@
   "intl": {
     "targetCityLabel": "Thành phố đích",
     "targetCityAnywhere": "🌍 Bất kỳ đâu trên thế giới",
-    "targetCityHint": "Để \"Bất kỳ đâu\" để gửi đến mọi nơi, hoặc chọn một thành phố.",
+    "targetCityHint": "Chọn một thành phố — \"Bất kỳ đâu\" chưa khả dụng.",
+    "targetCityRequired": "\"Bất kỳ đâu\" chưa khả dụng — hãy chọn một thành phố để tiếp tục.",
+    "targetCityRequiredTitle": "Chọn thành phố mục tiêu",
     "proofRequirementsLabel": "Ảnh cần thể hiện gì?",
     "proofRequirementsPlaceholder": "vd. Món ăn dưới ánh sáng ban ngày, có bạn trong khung hình",
     "proofRequirementsHint": "Bằng chứng là một bức ảnh 📸. Người tham gia sẽ thấy phần này trước khi gửi - hãy ghi rõ.",
