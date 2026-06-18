@@ -1184,6 +1184,9 @@ html, body, #root {
   overflow-x: auto; scroll-snap-type: x mandatory;
   scrollbar-width: none; -webkit-overflow-scrolling: touch;
   border-radius: 16px;
+  /* Don't let the browser keep the (last) How-it-works slide anchored in view
+     when the async success slides are prepended - it should start at slide 1. */
+  overflow-anchor: none;
 }
 .showcase-hero-track::-webkit-scrollbar { display: none; }
 

@@ -77,6 +77,18 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWo
     return () => { alive = false }
   }, [])
 
+  // The success slides arrive async and render BEFORE the always-present
+  // How-it-works slide. While items were loading, How-it-works was the only
+  // (visible) slide; the browser's scroll anchoring then keeps it in view as
+  // the success slides are prepended - landing the carousel on the LAST slide.
+  // Snap back to the first slide the moment the success slides populate.
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track || items.length === 0) return
+    track.scrollTo({ left: 0, behavior: 'auto' })
+    setIndex(0)
+  }, [items.length])
+
   useEffect(() => {
     if (total < 2) return
     const id = setInterval(() => {
