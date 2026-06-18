@@ -16,7 +16,7 @@ $STATUSES     = ['open', 'validated'];
 $stmt = $pdo->prepare("
     SELECT cc.channel_id, cc.title, cc.challenge_type, cc.audience, cc.mode,
            cc.validation_method, cc.return_clause, cc.proof_requirements,
-           cc.visibility, cc.status, cc.city_id, cc.created_by, cc.guest_id,
+           cc.visibility, cc.status, cc.city_id, cc.target_city_id, cc.created_by, cc.guest_id,
            c.status AS channel_status, cy.name AS city_name
     FROM channel_challenges cc
     JOIN channels c ON c.id = cc.channel_id
@@ -38,6 +38,13 @@ if (!$ch) {
 $isIntl = ($ch['mode'] ?? 'local') === 'international';
 $errors = [];
 
+// City pickers: origin (always) + target (international only). Stored as
+// 'city_<int>' channel ids; the form works in the bare int id.
+$cities    = CityRepository::all();
+$cityIds   = array_map('intval', array_column($cities, 'id'));
+$curOrigin = (int) str_replace('city_', '', (string) ($ch['city_id'] ?? ''));
+$curTarget = $ch['target_city_id'] ? (int) str_replace('city_', '', (string) $ch['target_city_id']) : 0;
+
 if ($method === 'POST') {
     csrf_verify();
 
@@ -50,11 +57,20 @@ if ($method === 'POST') {
     $newVisibility = $isIntl ? 'public'      : ($_POST['visibility'] ?? $ch['visibility'] ?? 'public');
     $newStatus     = $_POST['status'] ?? $ch['status'] ?? 'open';
 
+    // Cities. Origin always editable; target only on international rows (local
+    // has none → forced null). Empty target = "Anywhere".
+    $newOrigin    = (int) ($_POST['origin_city'] ?? 0);
+    $newTargetRaw = trim((string) ($_POST['target_city'] ?? ''));
+    $newTarget    = $newTargetRaw === '' ? 0 : (int) $newTargetRaw;
+    if (!$isIntl) $newTarget = 0;
+
     if ($newTitle === '')                                   $errors[] = 'Title is required.';
     if (!in_array($newType, $TYPES, true))                 $errors[] = 'Invalid type.';
     if (!in_array($newValidation, $VALIDATIONS, true))     $errors[] = 'Invalid validation method.';
     if (!in_array($newVisibility, $VISIBILITIES, true))    $errors[] = 'Invalid visibility.';
     if (!in_array($newStatus, $STATUSES, true))            $errors[] = 'Invalid status.';
+    if (!in_array($newOrigin, $cityIds, true))             $errors[] = 'Invalid origin city.';
+    if ($newTarget !== 0 && !in_array($newTarget, $cityIds, true)) $errors[] = 'Invalid target city.';
 
     if (empty($errors)) {
         $pdo->prepare("
@@ -66,23 +82,29 @@ if ($method === 'POST') {
                 proof_requirements = :pr,
                 visibility         = :viz,
                 status             = :st,
+                city_id            = :city,
+                target_city_id     = :target_city,
                 validated_at       = CASE WHEN :st2 = 'validated' THEN COALESCE(validated_at, now()) ELSE validated_at END,
                 updated_at         = now()
             WHERE channel_id = :id
         ")->execute([
-            't'   => $newTitle,
-            'tp'  => $newType,
-            'vm'  => $newValidation,
-            'rc'  => $newReturn !== '' ? $newReturn : null,
-            'pr'  => $isIntl && $newProofReq !== '' ? $newProofReq : null,
-            'viz' => $newVisibility,
-            'st'  => $newStatus,
-            'st2' => $newStatus,
-            'id'  => $challengeId,
+            't'           => $newTitle,
+            'tp'          => $newType,
+            'vm'          => $newValidation,
+            'rc'          => $newReturn !== '' ? $newReturn : null,
+            'pr'          => $isIntl && $newProofReq !== '' ? $newProofReq : null,
+            'viz'         => $newVisibility,
+            'st'          => $newStatus,
+            'st2'         => $newStatus,
+            'city'        => 'city_' . $newOrigin,
+            'target_city' => $newTarget !== 0 ? ('city_' . $newTarget) : null,
+            'id'          => $challengeId,
         ]);
-        // Keep the channel name in sync with the title (used as display name).
-        $pdo->prepare("UPDATE channels SET name = :n, updated_at = now() WHERE id = :id")
-            ->execute([':n' => $newTitle, ':id' => $challengeId]);
+        // Keep the channel name + parent city in sync (the challenge channel's
+        // parent_id is its origin city; getByCity surfaces off cc.city_id but
+        // the structural parent should match what the admin just picked).
+        $pdo->prepare("UPDATE channels SET name = :n, parent_id = :pid, updated_at = now() WHERE id = :id")
+            ->execute([':n' => $newTitle, ':pid' => 'city_' . $newOrigin, ':id' => $challengeId]);
 
         error_log('[admin] challenge edited: ' . $challengeId);
         flash_set('success', 'Challenge updated. (The app reflects the change on its next load.)');
@@ -139,6 +161,31 @@ $backHref = '/admin/challenges?city=' . urlencode($ch['city_id'] ?? '');
                 <?php endforeach; ?>
             </select>
         </div>
+
+        <div class="form-group">
+            <label for="origin_city">Origin city</label>
+            <select id="origin_city" name="origin_city">
+                <?php $selOrigin = (int) ($_POST['origin_city'] ?? $curOrigin); foreach ($cities as $c): ?>
+                    <option value="<?= (int) $c['id'] ?>"<?= (int) $c['id'] === $selOrigin ? ' selected' : '' ?>>
+                        <?= htmlspecialchars($c['name'] . ' · ' . $c['country'], ENT_QUOTES) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+
+        <?php if ($isIntl): ?>
+        <div class="form-group">
+            <label for="target_city">Target city</label>
+            <select id="target_city" name="target_city">
+                <option value="">🌍 Anywhere in the world (not supported yet — pick a city)</option>
+                <?php $selTarget = isset($_POST['target_city']) ? (int) $_POST['target_city'] : $curTarget; foreach ($cities as $c): ?>
+                    <option value="<?= (int) $c['id'] ?>"<?= (int) $c['id'] === $selTarget ? ' selected' : '' ?>>
+                        <?= htmlspecialchars($c['name'] . ' · ' . $c['country'], ENT_QUOTES) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <?php endif; ?>
 
         <div class="form-group">
             <label for="validation_method">Validation method<?= $isIntl ? ' (locked to Photo proof on International)' : '' ?></label>
