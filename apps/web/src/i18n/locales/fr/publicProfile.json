@@ -46,6 +46,7 @@
   },
   "host": "Hôte",
   "live": "EN DIRECT",
+  "past": "Passé",
   "empty": {
     "hangouts": "Pas encore de sortie",
     "events": "Pas encore d'événement",

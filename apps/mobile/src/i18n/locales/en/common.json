@@ -158,6 +158,7 @@
     "chill": "Chill"
   },
   "live": "LIVE",
+  "past": "PAST",
   "activeNow": "● Active now",
   "replies_one": "💬 {{count}} reply",
   "replies_other": "💬 {{count}} replies",

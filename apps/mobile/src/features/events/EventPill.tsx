@@ -59,6 +59,11 @@ export function EventPill({ event, onPress }: Props) {
               <Text style={styles.liveBadgeText}>{t('live')}</Text>
             </View>
           )}
+          {!isLive && event.is_past && (
+            <View style={styles.pastBadge}>
+              <Text style={styles.pastBadgeText}>{t('past')}</Text>
+            </View>
+          )}
           <Text style={styles.eventTime}>{formatEventTime(event.starts_at)}</Text>
           {event.location ? (
             <Text style={styles.eventLocation} numberOfLines={1}>· {event.location}</Text>
@@ -109,6 +114,18 @@ const styles = StyleSheet.create({
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
     color:         Colors.green,
+    letterSpacing: 0.4,
+  },
+  pastBadge: {
+    backgroundColor:   'rgba(255,255,255,0.07)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 6,
+    paddingVertical:   2,
+  },
+  pastBadgeText: {
+    fontSize:      FontSizes.xs,
+    fontWeight:    '700',
+    color:         Colors.muted,
     letterSpacing: 0.4,
   },
 });

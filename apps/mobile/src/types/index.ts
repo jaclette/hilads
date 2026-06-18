@@ -61,6 +61,8 @@ export interface HiladsEvent {
   participant_count?: number;
   participants_preview?: ParticipantPreview[];
   is_participating?: boolean;
+  is_past?: boolean;                    // event's end time has passed (profile "Past" pill)
+  next_occurrence_date?: string | null; // recurring series: synthesized next date (YYYY-MM-DD)
   city_name?: string;
   city_channel_id?: string;
 }

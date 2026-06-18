@@ -540,6 +540,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                           <div className="pub-profile-event-info">
                             <span className="pub-profile-event-title">{ev.title}</span>
                             {isLive && <span className="pub-profile-event-live">{t('live')}</span>}
+                            {!isLive && ev.is_past && <span className="pub-profile-event-past">{t('past')}</span>}
                           </div>
                         </div>
                       )

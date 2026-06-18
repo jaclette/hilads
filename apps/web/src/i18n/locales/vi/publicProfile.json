@@ -46,6 +46,7 @@
   },
   "host": "Chủ",
   "live": "TRỰC TIẾP",
+  "past": "Đã qua",
   "empty": {
     "hangouts": "Chưa có tụ tập",
     "events": "Chưa có sự kiện",

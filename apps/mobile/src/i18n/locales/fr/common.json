@@ -157,6 +157,7 @@
     "chill": "Détente"
   },
   "live": "EN DIRECT",
+  "past": "PASSÉ",
   "activeNow": "● Actif maintenant",
   "replies_one": "💬 {{count}} réponse",
   "replies_other": "💬 {{count}} réponses",

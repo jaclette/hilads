@@ -737,11 +737,18 @@ class EventRepository
      */
     public static function getPublicByUserId(string $userId): array
     {
+        // Profile "Hi plan" tab: every event this user hosts or joined, INCLUDING
+        // past ones (rendered with a "Past" pill client-side) so an active host's
+        // track record stays visible. Canonical recurring rows (series_id NOT NULL)
+        // are kept regardless of their stored anchor date - formatSingle() projects
+        // them to their next occurrence. occurrence_date IS NULL excludes any legacy
+        // materialized instances. No expires_at filter here (that's what used to
+        // hide finished one-shots and past-anchored series).
         $stmt = Database::pdo()->prepare(self::SELECT . "
-            WHERE c.type         = 'event'
-              AND c.status       = 'active'
-              AND ce.source_type = 'hilads'
-              AND ce.expires_at  > now()
+            WHERE c.type          = 'event'
+              AND c.status        = 'active'
+              AND ce.source_type  = 'hilads'
+              AND ce.occurrence_date IS NULL
               AND (ce.created_by = :user_id
                    OR EXISTS (
                        SELECT 1 FROM event_participants ep
@@ -761,6 +768,19 @@ class EventRepository
             }
             $result[] = self::formatSingle($row);
         }
+
+        // Upcoming first (soonest → latest), then past (most recent → oldest).
+        // formatSingle() already bumped recurring rows to their next occurrence,
+        // so is_past / starts_at reflect the displayed instance, not the anchor.
+        usort($result, function ($a, $b) {
+            $ap = !empty($a['is_past']) ? 1 : 0;
+            $bp = !empty($b['is_past']) ? 1 : 0;
+            if ($ap !== $bp) return $ap - $bp;                 // upcoming block before past block
+            return $ap === 0
+                ? $a['starts_at'] <=> $b['starts_at']          // upcoming: ascending
+                : $b['starts_at'] <=> $a['starts_at'];         // past: descending
+        });
+
         return $result;
     }
 

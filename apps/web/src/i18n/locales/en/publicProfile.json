@@ -46,6 +46,7 @@
   },
   "host": "Host",
   "live": "LIVE",
+  "past": "Past",
   "empty": {
     "hangouts": "No hangouts yet",
     "events": "No events yet",
