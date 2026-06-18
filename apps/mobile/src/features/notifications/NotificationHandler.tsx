@@ -254,6 +254,13 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
+    case 'challenge_proof_submitted':
+      // Creator tapped "new proof to review" → open the challenge AND auto-open
+      // the ProofReviewModal (reviewProof=1), so they land straight on the photo
+      // review instead of having to find the pipeline CTA.
+      if (data.challengeId) return `/challenge/${data.challengeId}?reviewProof=1`;
+      return null;
+
     case 'rating_received':
       // FIRST rating from the counterparty just landed. The
       // RatePromptLaunchGate, mounted globally, refetches its prompts on

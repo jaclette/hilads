@@ -586,7 +586,9 @@ export default function ChallengeChatPage({
     const off6 = socket.on('challenge_verdict_approved',     onChange)
     const off7 = socket.on('challenge_verdict_rejected',     onChange)
     const off8 = socket.on('challenge_takeon_reviewed',      onChange)
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8() }
+    // Photo proof submitted → creator's pipeline flips to proof_submitted live.
+    const off9 = socket.on('challenge_proof_submitted',      onChange)
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9() }
   }, [socket, loadMyAcceptance])
 
   // PR30 - auto-scroll on every messages.length change. behavior:'instant'

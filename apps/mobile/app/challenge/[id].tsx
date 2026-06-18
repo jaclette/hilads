@@ -71,7 +71,7 @@ export default function ChallengeChatScreen() {
   // Tab-bar height when our screen is nested under (tabs); 0 otherwise so
   // routes opened from elsewhere don't get phantom dead space at the bottom.
   const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
-  const { id, postCreate } = useLocalSearchParams<{ id: string; postCreate?: string }>();
+  const { id, postCreate, reviewProof } = useLocalSearchParams<{ id: string; postCreate?: string; reviewProof?: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -386,6 +386,23 @@ export default function ChallengeChatScreen() {
   // listener; the local screen also nudges loadMyAcceptance() on close.
   const [proofReviewOpen, setProofReviewOpen] = useState(false);
 
+  // Proof-review deep-link: a "📸 new proof to review" push routes here with
+  // ?reviewProof=1. Once the creator's acceptance has loaded at proof_submitted,
+  // auto-open the ProofReviewModal so the tap lands straight on the photo. The
+  // param is stripped after so a back-nav / refresh doesn't re-open it.
+  const reviewProofFiredRef = useRef(false);
+  useEffect(() => {
+    if (reviewProof === '1'
+        && !reviewProofFiredRef.current
+        && usesPhotoProof
+        && isOwner
+        && effectiveActiveAcceptance?.phase === 'proof_submitted') {
+      reviewProofFiredRef.current = true;
+      setProofReviewOpen(true);
+      router.setParams({ reviewProof: undefined } as never);
+    }
+  }, [reviewProof, usesPhotoProof, isOwner, effectiveActiveAcceptance?.phase, router]);
+
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here - that's the mutual go-private flow. International
   // rows are forced Public; the pill renders read-only for them.
@@ -594,7 +611,10 @@ export default function ChallengeChatScreen() {
     const off7 = socket.on('challenge_acceptor_left',     onReset);
     // Creator restarted → the removed taker's screen resets (their take-on is gone).
     const off8 = socket.on('challenge_restarted',         onReset);
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); };
+    // Photo proof submitted → creator's pipeline flips to proof_submitted live
+    // and the "Review the proof" CTA appears without a reload.
+    const off9 = socket.on('challenge_proof_submitted',   onChange);
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); };
   }, [loadMyAcceptance, loadChallenge, loadParticipants]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────

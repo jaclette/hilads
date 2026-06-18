@@ -397,6 +397,24 @@ function broadcastChallengeProofVerdictToWs(string $targetUserId, string $verdic
     ]);
 }
 
+/**
+ * Photo proof submitted. Emits the correctly-named `challenge_proof_submitted`
+ * event (the old code reused broadcastChallengeAcceptedToWs, which hardcodes
+ * 'challenge_accepted' - so the creator's pipeline updated under the wrong
+ * name AND, post score-celebration wiring, that wrong name now false-triggers
+ * the celebration gate). Clients subscribe to this to refresh the pipeline and
+ * surface the "Review the proof" affordance live.
+ */
+function broadcastChallengeProofSubmittedToWs(string $targetUserId, array $payload): void
+{
+    error_log("[ws-broadcast] → challenge_proof_submitted target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
+    postToWs('/broadcast/user-event', [
+        'userId'  => $targetUserId,
+        'event'   => 'challenge_proof_submitted',
+        'payload' => $payload,
+    ]);
+}
+
 function broadcastChallengeAcceptanceCancelledToWs(string $targetUserId, array $payload): void
 {
     error_log("[ws-broadcast] → challenge-acceptance-cancelled target=user:{$targetUserId} acceptanceId=" . ($payload['acceptanceId'] ?? 'null'));
@@ -10395,19 +10413,15 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
     // cares that the acceptance state changed); no new client wiring
     // beyond keeping the existing listener live.
     try {
+        $proofPayload = [
+            'challengeId'  => $challenge['id'],
+            'acceptanceId' => $acceptanceId,
+        ];
         if (!empty($challenge['created_by'])) {
-            broadcastChallengeAcceptedToWs($challenge['created_by'], [
-                'event'        => 'challenge_proof_submitted',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-            ]);
+            broadcastChallengeProofSubmittedToWs($challenge['created_by'], $proofPayload);
         }
         if (!empty($acceptance['acceptor_user_id'])) {
-            broadcastChallengeAcceptedToWs($acceptance['acceptor_user_id'], [
-                'event'        => 'challenge_proof_submitted',
-                'challengeId'  => $challenge['id'],
-                'acceptanceId' => $acceptanceId,
-            ]);
+            broadcastChallengeProofSubmittedToWs($acceptance['acceptor_user_id'], $proofPayload);
         }
     } catch (\Throwable $e) {
         error_log('[proof] ws broadcast failed (non-fatal): ' . $e->getMessage());
