@@ -839,10 +839,19 @@ export default function ChallengeChatPage({
           <span className="topic-chat-header-title">{challenge.title}</span>
           {challenge.creator_display_name && (
             <span className="challenge-header-creator">
-              {challenge.creator_thumb_avatar_url
-                ? <img src={challenge.creator_thumb_avatar_url} alt="" className="challenge-header-creator-avatar" />
-                : null}
-              <span>{t('byCreator', { name: challenge.creator_display_name })}</span>
+              {/* Tap the creator (avatar + "by name") to open their profile.
+                  Registered creators only (created_by); openProfile gates guests. */}
+              <button
+                type="button"
+                className="challenge-header-creator-link"
+                disabled={!challenge.created_by}
+                onClick={() => challenge.created_by && onOpenProfile?.(challenge.created_by, challenge.creator_username || challenge.creator_display_name)}
+              >
+                {challenge.creator_thumb_avatar_url
+                  ? <img src={challenge.creator_thumb_avatar_url} alt="" className="challenge-header-creator-avatar" />
+                  : null}
+                <span>{t('byCreator', { name: challenge.creator_display_name })}</span>
+              </button>
               {/* Notifications pill - joined participants only. Lives next
                   to the creator name at the very top so subscription state
                   is visible without scrolling past the meta row. */}

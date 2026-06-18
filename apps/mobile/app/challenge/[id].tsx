@@ -921,17 +921,32 @@ export default function ChallengeChatScreen() {
           <Text style={styles.navTitle} numberOfLines={2}>{challenge.title}</Text>
           {challenge.creator_display_name ? (
             <View style={styles.navCreatorRow}>
-              {challenge.creator_thumb_avatar_url ? (
-                <Image
-                  source={{ uri: challenge.creator_thumb_avatar_url }}
-                  style={styles.navCreatorAvatar}
-                  cachePolicy="memory-disk"
-                  contentFit="cover"
-                />
-              ) : null}
-              <Text style={styles.navCreatorText} numberOfLines={1}>
-                {t('byCreator', { name: challenge.creator_display_name })}
-              </Text>
+              {/* Tap the creator (avatar + "by name") to open their profile.
+                  Only when there's a registered creator (created_by); guest
+                  creators have no profile. Guests/ghosts hit the auth-gate. */}
+              <TouchableOpacity
+                style={styles.navCreatorTap}
+                activeOpacity={0.7}
+                disabled={!challenge.created_by}
+                onPress={() => {
+                  const uid = challenge.created_by;
+                  if (!uid) return;
+                  if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                  router.push({ pathname: '/user/[id]', params: { id: uid } });
+                }}
+              >
+                {challenge.creator_thumb_avatar_url ? (
+                  <Image
+                    source={{ uri: challenge.creator_thumb_avatar_url }}
+                    style={styles.navCreatorAvatar}
+                    cachePolicy="memory-disk"
+                    contentFit="cover"
+                  />
+                ) : null}
+                <Text style={styles.navCreatorText} numberOfLines={1}>
+                  {t('byCreator', { name: challenge.creator_display_name })}
+                </Text>
+              </TouchableOpacity>
               {/* Notifications pill - joined participants only. Lives next
                   to the creator name at the very top so subscription state
                   is visible without scrolling past the meta row. */}
@@ -2087,6 +2102,7 @@ const styles = StyleSheet.create({
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
   navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, flexShrink: 1, textAlign: 'center' },
   navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
+  navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
   navCreatorText:   { fontSize: 11, fontWeight: '600', color: Colors.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
