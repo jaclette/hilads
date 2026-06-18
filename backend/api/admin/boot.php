@@ -154,6 +154,10 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $challengeId = $m[1];
     require __DIR__ . '/challenge_proof_delete.php';
 
+} elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/edit$#', $uri, $m)) {
+    $challengeId = $m[1];
+    require __DIR__ . '/challenge_edit.php';
+
 } elseif ($uri === '/admin/reports') {
     require __DIR__ . '/reports.php';
 

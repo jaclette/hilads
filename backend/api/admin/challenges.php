@@ -163,6 +163,9 @@ admin_nav('/admin/challenges');
                     </td>
                     <td>
                         <div class="td-actions">
+                            <?php if (!$deleted): ?>
+                                <a href="/admin/challenges/<?= urlencode($it['channel_id']) ?>/edit" class="btn btn-secondary btn-sm">Edit</a>
+                            <?php endif; ?>
                             <a href="/admin/messages?channel=<?= urlencode($it['channel_id']) ?>" class="btn btn-secondary btn-sm">Messages</a>
                             <?php if (!$deleted): ?>
                                 <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/delete"
