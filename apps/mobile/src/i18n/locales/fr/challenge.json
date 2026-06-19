@@ -629,5 +629,35 @@
     "validateSub": "Coche tous ceux qui sont venus. Chacun gagne la récompense.",
     "validateConfirm": "Valider {{count}} présent(s)",
     "noParticipants": "Personne n'a encore rejoint."
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Ressens la ville, là",
+      "body": "Les challenges sont de petits défis réels entre gens d'une ville — et entre villes."
+    },
+    "slide2": {
+      "title": "Cadre un challenge",
+      "body": "Définis un rendez-vous (date + lieu) ou un concours photo avec une deadline. C'est toi l'hôte."
+    },
+    "slide3": {
+      "title": "Chacun rejoint",
+      "body": "Pas de demande, pas d'attente — qui veut, rejoint. Tu gagnes +2 tout de suite."
+    },
+    "slide4": {
+      "title": "Fais-le arriver",
+      "body": "Tout le monde se retrouve à ton rendez-vous — ou envoie sa meilleure photo avant la deadline."
+    },
+    "slide5": {
+      "title": "Tu valides",
+      "body": "Ensuite tu confirmes qui était présent, ou choisis la photo gagnante. C'est là que tombent les gros points."
+    },
+    "slide6": {
+      "title": "Entre villes",
+      "body": "Les concours photo marchent à distance — défie une autre ville d'envoyer son meilleur cliché."
+    },
+    "slide7": {
+      "title": "Grimpe le classement",
+      "body": "Viens et gagne pour monter. Les étincelles d'inscription restent petites : c'est l'action qui compte."
+    }
   }
 }

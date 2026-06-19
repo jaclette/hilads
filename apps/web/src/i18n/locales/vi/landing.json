@@ -58,12 +58,12 @@
         "desc": "Người địa phương. Bạn rành thành phố.\nDu khách. Bạn muốn sống nó."
       },
       {
-        "title": "Tung hoặc nhận một thử thách",
-        "desc": "Ai cũng có thể tung thử thách ăn uống, địa điểm, văn hoá hoặc giúp đỡ - cho người địa phương hoặc cho du khách. Bên kia nhận lấy."
+        "title": "Khởi động hoặc tham gia thử thách",
+        "desc": "Ai cũng có thể tạo một buổi gặp — ngày + địa điểm — hoặc một cuộc thi ảnh có hạn chót. Mở cho cả nhóm, không phải 1-đối-1."
       },
       {
-        "title": "Gặp nhau trực tiếp",
-        "desc": "Nhắn trong thread riêng, chốt ngày, và làm cho nó xảy ra.\nHết kiểu khách du lịch rồi."
+        "title": "Cùng có mặt",
+        "desc": "Mọi người tham gia gặp trực tiếp — hoặc gửi ảnh đẹp nhất trước hạn. Người tổ chức xác nhận ai đến, hoặc chọn người thắng."
       }
     ]
   },
@@ -77,11 +77,11 @@
     "title": "Không phải một mạng xã hội khác.\nMột lý do để gặp nhau trực tiếp.",
     "rules": [
       "Không người theo dõi. Không bảng tin. Không thuật toán.",
-      "Người địa phương và du khách thách nhau. Bên kia nhận lấy.",
+      "Tụ họp một nhóm quanh buổi gặp thật, hoặc tổ chức thi ảnh. Ai có mặt — hoặc thắng — đều xứng đáng.",
       "Người thật. Nơi thật. Ngay bây giờ."
     ]
   },
-  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi người địa phương và du khách thách nhau khám phá thành phố theo cách thật. Nhận thử thách ăn uống, địa điểm hoặc văn hoá ở Paris, nhận một thử thách ở Barcelona, hoặc tung của bạn ở Lisbon - Hilads biến mỗi chuyến đi thành một cuộc gặp trực tiếp. Không cần tài khoản. Cứ đến.",
+  "seo": "Hilads là ứng dụng xã hội thời gian thực nơi mọi người tụ họp quanh các thử thách thực tế — buổi gặp nhóm tại thời gian và địa điểm đã định, và các cuộc thi ảnh giữa các thành phố. Tham gia thử thách ở Paris, tổ chức buổi gặp ở Barcelona, hoặc khởi động cuộc thi ảnh từ Lisbon. Không cần tài khoản. Chỉ cần có mặt.",
   "download": {
     "eyebrow": "Ứng dụng di động",
     "title": "Thành phố của bạn trong túi.",

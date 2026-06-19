@@ -663,5 +663,35 @@
     "noParticipants": "Nobody has joined yet.",
     "join": "Join",
     "joinedCount": "{{count}} joined"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Feel the city, now",
+      "body": "Challenges are little real-world dares between people in a city — and across cities."
+    },
+    "slide2": {
+      "title": "Frame a challenge",
+      "body": "Set a meet (a date + a place) or a photo contest with a deadline. You're the host."
+    },
+    "slide3": {
+      "title": "Anyone just joins",
+      "body": "No asking, no waiting — whoever's in joins. You get +2 right away."
+    },
+    "slide4": {
+      "title": "Make it happen",
+      "body": "Everyone shows up together at your meet — or submits their best photo before the deadline."
+    },
+    "slide5": {
+      "title": "You validate",
+      "body": "Afterwards you confirm who was present, or pick the winning photo. That's where the big points land."
+    },
+    "slide6": {
+      "title": "Across cities",
+      "body": "Photo contests work at a distance — challenge a whole other city to send their best shot."
+    },
+    "slide7": {
+      "title": "Climb Most Local",
+      "body": "Show up and win to rise on the board. Join-sparks stay small, so it's always about really doing it."
+    }
   }
 }

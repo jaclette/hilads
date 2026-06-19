@@ -60,12 +60,12 @@
         "desc": "Local. Tu connais la ville.\nVoyageur. Tu veux la vivre."
       },
       {
-        "title": "Lance ou relève un défi",
-        "desc": "N'importe qui peut lancer un défi bouffe, lieu, culture ou aide - pour les locaux ou pour les voyageurs. L'autre camp relève le défi."
+        "title": "Lance ou rejoins un challenge",
+        "desc": "N'importe qui lance un rendez-vous — une date + un lieu — ou un concours photo avec une deadline. Ouvert à tout un groupe, pas en 1-à-1."
       },
       {
-        "title": "Rencontrez-vous en personne",
-        "desc": "Discutez dans un thread privé, fixez la date, et faites-le.\nFini le mode touriste."
+        "title": "Retrouvez-vous",
+        "desc": "Tous ceux qui rejoignent se voient en personne — ou envoient leur meilleure photo avant la deadline. L'hôte valide les présents, ou choisit le gagnant."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Pas un réseau social de plus.\nUne raison de se rencontrer en personne.",
     "rules": [
       "Pas d'abonnés. Pas de fil. Pas d'algorithmes.",
-      "Locaux et voyageurs se défient. L'autre camp relève le défi.",
+      "Réunis un groupe autour d'un vrai rendez-vous, ou lance un concours photo. Qui vient — ou gagne — le mérite.",
       "De vraies personnes. De vrais lieux. Maintenant."
     ]
   },
-  "seo": "Hilads est une app sociale en temps réel où locaux et voyageurs se défient pour découvrir la ville pour de vrai. Relève un défi bouffe, lieu ou culture à Paris, accepte-en un à Barcelone, ou lance le tien à Lisbonne - Hilads transforme chaque voyage en rencontre en personne. Sans compte. Juste viens.",
+  "seo": "Hilads est une app sociale en temps réel où les gens se réunissent autour de défis réels — des rendez-vous de groupe à une date et un lieu, et des concours photo entre villes. Rejoins un challenge à Paris, organise un rendez-vous à Barcelone, ou lance un concours photo depuis Lisbonne. Pas de compte. Viens, c'est tout.",
   "download": {
     "eyebrow": "Applis mobiles",
     "title": "Ta ville dans ta poche.",

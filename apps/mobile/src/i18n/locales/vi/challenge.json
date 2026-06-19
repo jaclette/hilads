@@ -624,5 +624,35 @@
     "validateSub": "Đánh dấu những người đã đến. Mỗi người nhận thưởng.",
     "validateConfirm": "Xác nhận {{count}} có mặt",
     "noParticipants": "Chưa có ai tham gia."
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Cảm nhận thành phố, ngay",
+      "body": "Thử thách là những lời mời thực tế giữa mọi người trong một thành phố — và giữa các thành phố."
+    },
+    "slide2": {
+      "title": "Tạo khung thử thách",
+      "body": "Đặt một buổi gặp (ngày + địa điểm) hoặc một cuộc thi ảnh có hạn chót. Bạn là người tổ chức."
+    },
+    "slide3": {
+      "title": "Ai cũng có thể tham gia",
+      "body": "Không cần xin, không chờ — ai muốn thì tham gia. Bạn được +2 ngay."
+    },
+    "slide4": {
+      "title": "Biến nó thành hiện thực",
+      "body": "Mọi người cùng có mặt tại buổi gặp — hoặc gửi ảnh đẹp nhất trước hạn."
+    },
+    "slide5": {
+      "title": "Bạn xác nhận",
+      "body": "Sau đó bạn xác nhận ai có mặt, hoặc chọn ảnh thắng. Điểm lớn nằm ở đó."
+    },
+    "slide6": {
+      "title": "Giữa các thành phố",
+      "body": "Cuộc thi ảnh hoạt động từ xa — thách cả một thành phố khác gửi ảnh đẹp nhất."
+    },
+    "slide7": {
+      "title": "Leo bảng xếp hạng",
+      "body": "Có mặt và chiến thắng để thăng hạng. Điểm tham gia nhỏ, nên quan trọng là thực sự làm."
+    }
   }
 }
