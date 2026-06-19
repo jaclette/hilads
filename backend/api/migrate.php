@@ -2232,23 +2232,28 @@ run($pdo, "
 run($pdo, "
     CREATE OR REPLACE FUNCTION on_challenge_proof_verdict() RETURNS TRIGGER AS \$\$
     DECLARE
-        challenger_id  TEXT;
-        origin_city    TEXT;
-        challenge_mode TEXT;
-        taker_city     TEXT;
-        pts_debrief_c  INT;
-        pts_debrief_t  INT;
-        current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+        challenger_id    TEXT;
+        origin_city      TEXT;
+        challenge_mode   TEXT;
+        challenge_format TEXT;
+        taker_city       TEXT;
+        pts_debrief_c    INT;
+        pts_debrief_t    INT;
+        current_month    TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
     BEGIN
         -- Only fire on the transition INTO 'approved'. A row already at
         -- 'approved' that gets touched (re-approval is impossible today but
         -- the guard is cheap) shouldn't re-credit.
         IF NEW.phase <> 'approved' OR OLD.phase = 'approved' THEN RETURN NEW; END IF;
 
-        SELECT cc.created_by, cc.city_id, cc.mode
-        INTO challenger_id, origin_city, challenge_mode
+        SELECT cc.created_by, cc.city_id, cc.mode, cc.challenge_format
+        INTO challenger_id, origin_city, challenge_mode, challenge_format
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
+
+        -- Group photo-proof scores via submission + winner (pick-winner),
+        -- NOT the legacy debrief. Skip group rows here.
+        IF challenge_format = 'group' THEN RETURN NEW; END IF;
 
         -- LOCAL flow earns debrief from the mutual-rating trigger; double-
         -- firing here would create a duplicate row that the ON CONFLICT would
@@ -2281,6 +2286,60 @@ run($pdo, "
     AFTER UPDATE OF phase ON challenge_acceptances
     FOR EACH ROW EXECUTE FUNCTION on_challenge_proof_verdict()
 ", 'trg_chacc_intl_debrief');
+
+// ── PHOTO-PROOF GROUP — P2: participation reward at submission ────────────────
+// A real photo submitted to a GROUP photo-proof challenge credits the submitter
+// +5 'submission', ONCE per (user, challenge) - re-submitting a better photo
+// before the deadline never re-pays. Group-only; legacy photo-proof keeps its
+// debrief-on-verdict path. International credits the submitter's own city board.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_submission_award() RETURNS TRIGGER AS \$\$
+    DECLARE
+        chal_id       TEXT;
+        v_format      TEXT;
+        v_method      TEXT;
+        v_mode        TEXT;
+        origin_city   TEXT;
+        submitter     TEXT;
+        sub_city      TEXT;
+        pts           INT;
+        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        SELECT ca.challenge_id, cc.challenge_format, cc.validation_method, cc.mode, cc.city_id, ca.acceptor_user_id
+        INTO chal_id, v_format, v_method, v_mode, origin_city, submitter
+        FROM challenge_acceptances ca
+        JOIN channel_challenges cc ON cc.channel_id = ca.challenge_id
+        WHERE ca.id = NEW.acceptance_id;
+
+        IF v_format IS DISTINCT FROM 'group' THEN RETURN NEW; END IF;
+        IF v_mode <> 'international' AND v_method <> 'photo_proof' THEN RETURN NEW; END IF;
+        IF submitter IS NULL THEN RETURN NEW; END IF;
+
+        SELECT points INTO pts FROM score_rules WHERE kind = 'submission' AND role = 'taker';
+        IF pts IS NULL THEN RETURN NEW; END IF;
+
+        IF v_mode = 'international' THEN
+            SELECT u.current_city_id INTO sub_city FROM users u WHERE u.id = submitter;
+            sub_city := COALESCE(sub_city, origin_city);
+        ELSE
+            sub_city := origin_city;
+        END IF;
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+        VALUES (encode(gen_random_bytes(8), 'hex'),
+                submitter, chal_id, 'taker', 'submission',
+                pts, sub_city, current_month, NULL)
+        ON CONFLICT DO NOTHING;
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_submission_award');
+run($pdo, "DROP TRIGGER IF EXISTS trg_chproof_submission ON challenge_proofs", 'drop trg_chproof_submission');
+run($pdo, "
+    CREATE TRIGGER trg_chproof_submission
+    AFTER INSERT ON challenge_proofs
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_submission_award()
+", 'trg_chproof_submission');
 
 // ── Backfill: re-attribute international-challenge taker points to the
 // taker's own city ──────────────────────────────────────────────────────────

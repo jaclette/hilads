@@ -798,6 +798,44 @@ function normalizeUnixTimestamp(mixed $value): ?int
     return $timestamp > 0 ? $timestamp : null;
 }
 
+// ── Internal cron endpoint (Phase P3) ─────────────────────────────────────────
+// Hit on a schedule by an external trigger (Render cron / uptime monitor):
+//   GET /internal/run-cron?key=MIGRATION_KEY
+// Idempotent + bounded. Today it auto-closes GROUP photo-proof contests 48h past
+// their deadline (meet_at) that the challenger never resolved. Participation
+// points were already credited at submission, so this only flips status →
+// 'validated' (drops them out of the active feed); the challenger can still
+// pick-winner later to release the +40 bonus. NOT for group MEET (those are
+// closed by the challenger's presence validation).
+$router->add('GET', '/internal/run-cron', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    if (!hash_equals($expectedKey, (string) ($_GET['key'] ?? ''))) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    try {
+        $stmt = Database::pdo()->prepare("
+            UPDATE channel_challenges
+            SET status = 'validated', validated_at = COALESCE(validated_at, now()), updated_at = now()
+            WHERE challenge_format   = 'group'
+              AND validation_method  = 'photo_proof'
+              AND status             = 'open'
+              AND meet_at IS NOT NULL
+              AND meet_at < now() - interval '48 hours'
+            RETURNING channel_id
+        ");
+        $stmt->execute();
+        $closed = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        error_log('[cron] auto-closed ' . count($closed) . ' photo-proof contest(s)');
+        Response::json(['ok' => true, 'photo_proof_auto_closed' => count($closed)]);
+    } catch (\Throwable $e) {
+        error_log('[cron] run-cron failed: ' . $e->getMessage());
+        Response::json(['error' => 'cron failed'], 500);
+    }
+});
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY - disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
@@ -9306,6 +9344,87 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
         'present_count' => count($presentNow),
         'present_ids'   => $presentNow,
     ]);
+});
+
+// POST /api/v1/challenges/{challengeId}/pick-winner  (Phase P3, GROUP photo-proof)
+// The challenger designates the best photo. Body: { winnerUserId }. The winner
+// earns +40; the challenge is marked validated. One winner per challenge. Works
+// even after the auto-close cron (the challenger can release the bonus late).
+$router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Only the challenger can pick the winner', 'code' => 'not_creator'], 403);
+    }
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        Response::json(['error' => 'Not a group challenge', 'code' => 'not_group'], 422);
+    }
+    $isPhoto = ($challenge['validation_method'] ?? 'meet') === 'photo_proof' || ($challenge['mode'] ?? 'local') === 'international';
+    if (!$isPhoto) {
+        Response::json(['error' => 'Not a photo-proof challenge', 'code' => 'not_photo'], 422);
+    }
+
+    $body         = Request::json();
+    $winnerUserId = is_array($body) ? ($body['winnerUserId'] ?? '') : '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $winnerUserId)) {
+        Response::json(['error' => 'Invalid winnerUserId'], 400);
+    }
+
+    $pdo = Database::pdo();
+    // One winner per challenge.
+    $already = $pdo->prepare("SELECT 1 FROM score_events WHERE challenge_id = ? AND kind = 'winner' LIMIT 1");
+    $already->execute([$challengeId]);
+    if ($already->fetchColumn()) {
+        Response::json(['error' => 'A winner has already been picked', 'code' => 'winner_exists'], 409);
+    }
+    // Winner must have submitted a real photo.
+    $accStmt = $pdo->prepare("
+        SELECT ca.id FROM challenge_acceptances ca
+        WHERE ca.challenge_id = ? AND ca.acceptor_user_id = ?
+          AND EXISTS (SELECT 1 FROM challenge_proofs p WHERE p.acceptance_id = ca.id)
+        ORDER BY ca.created_at DESC LIMIT 1");
+    $accStmt->execute([$challengeId, $winnerUserId]);
+    $winnerAcc = $accStmt->fetchColumn();
+    if (!$winnerAcc) {
+        Response::json(['error' => 'That participant has no submission', 'code' => 'no_submission'], 400);
+    }
+
+    // Award the +40 winner bonus (international → winner's own city board).
+    $pts = (int) ($pdo->query("SELECT points FROM score_rules WHERE kind='winner' AND role='taker'")->fetchColumn() ?: 0);
+    if ($pts > 0) {
+        $city = $challenge['city_id'] ?? null;
+        if (($challenge['mode'] ?? 'local') === 'international') {
+            $cs = $pdo->prepare("SELECT current_city_id FROM users WHERE id = ?");
+            $cs->execute([$winnerUserId]);
+            $city = $cs->fetchColumn() ?: ($challenge['city_id'] ?? null);
+        }
+        $pdo->prepare("
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+            VALUES (encode(gen_random_bytes(8),'hex'), ?, ?, 'taker', 'winner', ?, ?, ?, ?)
+            ON CONFLICT DO NOTHING
+        ")->execute([$winnerUserId, $challengeId, $pts, $city, gmdate('Y-m'), $winnerAcc]);
+    }
+    $pdo->prepare("UPDATE channel_challenges SET status='validated', validated_at=COALESCE(validated_at,now()), updated_at=now() WHERE channel_id = ?")
+        ->execute([$challengeId]);
+
+    try { MonthlyRankService::recalcAfterScoreChange($winnerUserId); } catch (\Throwable $e) {}
+    try { broadcastChallengeAcceptedToWs($winnerUserId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
+    try {
+        broadcastChallengeValidatedToWs((int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5), $challenge);
+    } catch (\Throwable $e) {
+        error_log('[challenges] pick-winner validated broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json(['ok' => true, 'winnerUserId' => $winnerUserId]);
 });
 
 $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array $params) {
