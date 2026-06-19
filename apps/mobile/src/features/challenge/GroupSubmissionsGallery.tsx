@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Pressable,
+  View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, Modal, Pressable, ScrollView,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +34,7 @@ export function GroupSubmissionsGallery({
   const [subs,     setSubs]     = useState<GroupSubmission[]>([]);
   const [winnerId, setWinnerId] = useState<string | null>(null);
   const [loading,  setLoading]  = useState(true);
+  const [open,     setOpen]     = useState(false);
   const [picking,  setPicking]  = useState<string | null>(null);
   const [preview,  setPreview]  = useState<GroupSubmission | null>(null);
 
@@ -87,13 +88,33 @@ export function GroupSubmissionsGallery({
   const canPick = isChallenger && !winnerId && !isValidated;
 
   return (
-    <View style={styles.wrap}>
-      <Text style={styles.header}>
-        📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
-        {canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
-      </Text>
+    <>
+      {/* Single CTA - opens the gallery modal (keeps the channel compact). */}
+      <TouchableOpacity style={styles.cta} activeOpacity={0.85} onPress={() => setOpen(true)}>
+        <View style={styles.ctaThumbs}>
+          {subs.slice(0, 3).map((s, i) => (
+            <Image key={s.id} source={{ uri: s.media_url }} style={[styles.ctaThumb, i > 0 && { marginLeft: -10 }]} contentFit="cover" cachePolicy="memory-disk" />
+          ))}
+        </View>
+        <Text style={styles.ctaLabel} numberOfLines={1}>
+          📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
+          {!winnerId && canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
+        </Text>
+        <Text style={styles.ctaChev}>›</Text>
+      </TouchableOpacity>
 
-      <View style={styles.grid}>
+      {/* Grid modal - every submission + who. */}
+      <Modal visible={open} transparent animationType="slide" onRequestClose={() => setOpen(false)}>
+        <Pressable style={styles.modalBackdrop} onPress={() => setOpen(false)} />
+        <View style={styles.modalSheet}>
+          <View style={styles.modalHead}>
+            <Text style={styles.modalTitle}>📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}</Text>
+            <TouchableOpacity onPress={() => setOpen(false)} hitSlop={10}>
+              <Text style={styles.modalClose}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          {canPick ? <Text style={styles.modalHint}>{t('group.winnerSub', { defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</Text> : null}
+          <ScrollView contentContainerStyle={styles.grid}>
         {subs.map((s) => {
           const isWin = winnerId === s.user_id;
           return (
@@ -127,7 +148,9 @@ export function GroupSubmissionsGallery({
             </View>
           );
         })}
-      </View>
+          </ScrollView>
+        </View>
+      </Modal>
 
       {/* Fullscreen preview - tap to compare, tap again to dismiss. */}
       <Modal visible={!!preview} transparent animationType="fade" onRequestClose={() => setPreview(null)}>
@@ -149,16 +172,39 @@ export function GroupSubmissionsGallery({
           ) : null}
         </Pressable>
       </Modal>
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   loading: { padding: Spacing.md, alignItems: 'center' },
-  wrap:    { marginHorizontal: Spacing.md, marginTop: Spacing.sm, gap: Spacing.sm },
-  header:  { fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
 
-  grid:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  // CTA row (collapsed) - thumbs + "{n} photos" + chevron.
+  cta: {
+    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
+    marginHorizontal: Spacing.md, marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md, paddingVertical: 8,
+    borderRadius: Radius.md, backgroundColor: Colors.bg3,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+  },
+  ctaThumbs: { flexDirection: 'row' },
+  ctaThumb:  { width: 32, height: 32, borderRadius: 8, borderWidth: 2, borderColor: Colors.bg3 },
+  ctaLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
+  ctaChev:   { fontSize: 20, color: Colors.muted },
+
+  // Grid modal (bottom sheet).
+  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' },
+  modalSheet: {
+    position: 'absolute', left: 0, right: 0, bottom: 0,
+    backgroundColor: Colors.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    paddingHorizontal: Spacing.md, paddingTop: 12, paddingBottom: 28, maxHeight: '85%',
+  },
+  modalHead:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
+  modalClose: { fontSize: 18, color: Colors.muted, paddingHorizontal: 4 },
+  modalHint:  { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 4, marginBottom: 8 },
+
+  grid:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingTop: Spacing.sm },
   tile: {
     width: '47.5%',
     backgroundColor: Colors.bg3,

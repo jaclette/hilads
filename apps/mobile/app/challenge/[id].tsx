@@ -996,7 +996,11 @@ export default function ChallengeChatScreen() {
     : null;
   // The viewer's own group membership (joined / present), if any.
   const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null;
-  const iAmJoined = myGroupPhase === 'joined' || myGroupPhase === 'present';
+  // Trust the participants list (every non-rejected acceptor) as well as the
+  // phase - /me/acceptances doesn't always surface a group 'joined' row, which
+  // left the join CTA showing for people who'd already joined.
+  const iAmJoined = !isOwner && (myGroupPhase === 'joined' || myGroupPhase === 'present'
+    || (!!account?.id && participants.some(p => p.id === account.id)));
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

@@ -13163,10 +13163,45 @@ body.has-app-promo-banner .page-header {
   white-space: nowrap;
 }
 
-/* ── Group photo-proof submissions gallery (everyone sees every photo) ── */
-.gsg-wrap { margin: 12px; display: flex; flex-direction: column; gap: 10px; }
-.gsg-header { font-size: 0.86rem; font-weight: 800; color: var(--text, #f3eee9); }
-.gsg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+/* ── Group photo-proof submissions gallery (one CTA → modal) ── */
+.gsg-cta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - 24px);
+  margin: 10px 12px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  background: var(--bg2, #1a1614);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+.gsg-cta:hover { border-color: rgba(255, 122, 60, 0.4); }
+.gsg-cta-thumbs { display: inline-flex; flex-shrink: 0; }
+.gsg-cta-thumb {
+  width: 34px; height: 34px; border-radius: 8px; object-fit: cover;
+  border: 2px solid var(--bg2, #1a1614); margin-left: -10px;
+}
+.gsg-cta-thumb:first-child { margin-left: 0; }
+.gsg-cta-label { flex: 1; min-width: 0; font-size: 0.86rem; font-weight: 800; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gsg-cta-chev { flex-shrink: 0; font-size: 1.2rem; color: var(--muted, #9a9088); }
+
+.gsg-modal-backdrop {
+  position: fixed; inset: 0; z-index: 9050;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.gsg-modal {
+  background: var(--bg, #111); width: 100%; max-width: 560px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 16px 16px 28px; max-height: 85vh; overflow-y: auto;
+}
+.gsg-modal-head { display: flex; align-items: center; justify-content: space-between; }
+.gsg-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--text, #f3eee9); }
+.gsg-modal-close { background: none; border: 0; color: var(--muted, #9a9088); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
+.gsg-modal-hint { margin: 4px 0 12px; font-size: 0.84rem; color: var(--muted, #9a9088); }
+.gsg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 10px; }
 .gsg-tile {
   background: var(--bg3, #1a1614);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -13189,7 +13224,7 @@ body.has-app-promo-banner .page-header {
   color: #fff; font-size: 0.66rem; font-weight: 700;
 }
 .gsg-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.gsg-name { font-size: 0.76rem; font-weight: 700; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gsg-name { flex: 1; min-width: 0; font-size: 0.76rem; font-weight: 700; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gsg-pick-btn {
   margin: 0 8px 8px; padding: 8px; width: calc(100% - 16px);
   border-radius: 999px; cursor: pointer;

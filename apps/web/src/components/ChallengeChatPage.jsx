@@ -301,11 +301,16 @@ export default function ChallengeChatPage({
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null
   const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null
-  const iAmJoined = myGroupPhase === 'joined' || myGroupPhase === 'present'
   const isParticipant = !!(
     (account?.id    && participants.some(p => p.id === account.id)) ||
     (guest?.guestId && participants.some(p => p.id === guest.guestId))
   )
+  // Joined the group? Trust the participants list (getParticipants = every
+  // non-rejected acceptor) as well as the phase, because /me/acceptances doesn't
+  // always surface a group 'joined' row - which left the join CTA showing for
+  // people who'd already joined (and submitted).
+  const iAmJoined = !isOwner && (myGroupPhase === 'joined' || myGroupPhase === 'present'
+    || (!!account?.id && participants.some(p => p.id === account.id)))
 
   // Public channels are open to anyone - guests included. The chat surface
   // renders inline regardless of iAmParticipant; the participation gate
@@ -1757,9 +1762,10 @@ export default function ChallengeChatPage({
         </div>
       )}
 
-      {/* "Message creator" - DM shortcut for the active taker. Private
-          coordination is opt-in; the public channel above handles the rest. */}
-      {iAmParticipant && !isOwner && myAcceptance && account?.id && challenge.created_by && (
+      {/* "Message creator" - DM shortcut for the active taker (legacy 1-1 only).
+          Group challenges are many-to-one with no private coordination, so the
+          DM shortcut is hidden there (especially a photo contest). */}
+      {!isGroup && iAmParticipant && !isOwner && myAcceptance && account?.id && challenge.created_by && (
         <button
           type="button"
           className="challenge-dm-creator"
