@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { mediaDownloadUrl } from '../api'
 
 /**
  * Shared photo lightbox - used by the channel/event/topic feed (App.jsx) and
@@ -42,7 +43,9 @@ export default function Lightbox({ url, onClose }) {
     if (busy) return
     setBusy('download')
     try {
-      const res = await fetch(url, { mode: 'cors' })
+      // Fetch via the same-origin API proxy - the R2 host has no CORS headers,
+      // so fetching the image URL directly is blocked by the browser.
+      const res = await fetch(mediaDownloadUrl(url, filenameFromUrl(url)), { credentials: 'include' })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
       const blob = await res.blob()
       const objectUrl = URL.createObjectURL(blob)
@@ -73,7 +76,7 @@ export default function Lightbox({ url, onClose }) {
       let sharedFile = false
       if (navigator.canShare && navigator.share) {
         try {
-          const res = await fetch(url, { mode: 'cors' })
+          const res = await fetch(mediaDownloadUrl(url, filename), { credentials: 'include' })
           const blob = await res.blob()
           const file = new File([blob], filename, { type: blob.type || 'image/jpeg' })
           if (navigator.canShare({ files: [file] })) {

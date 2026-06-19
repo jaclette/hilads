@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  fetchProofs, submitProof, approveProof, rejectProof,
+  fetchProofs, submitProof, approveProof, rejectProof, uploadImage,
 } from '../api'
 
 /**
@@ -67,15 +67,10 @@ export default function ChallengeProofBlock({
     setBusy('submit')
 
     try {
-      const form = new FormData()
-      form.append('file', file)
-      const uploadRes = await fetch('/api/v1/uploads', {
-        method: 'POST',
-        credentials: 'include',
-        body: form,
-      })
-      if (!uploadRes.ok) throw new Error('upload failed')
-      const { url } = await uploadRes.json()
+      // Use the shared helper - it posts to ${BASE}/uploads (the API host).
+      // The old inline fetch used a relative '/api/v1/uploads', which hit the
+      // web origin (Vercel) instead of the API → 405 Method Not Allowed.
+      const { url } = await uploadImage(file)
 
       await submitProof(acceptanceId, {
         mediaUrl:  url,

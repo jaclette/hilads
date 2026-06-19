@@ -224,6 +224,15 @@ export async function sendMessage(channelId, sessionId, guestId, nickname, conte
   return res.json()
 }
 
+// Same-origin proxy URL for downloading an R2 image. The R2 public host has no
+// CORS headers, so the browser can't fetch the image cross-origin from the web
+// app; this routes through the API (which streams it as an attachment).
+export function mediaDownloadUrl(url, name) {
+  const q = new URLSearchParams({ url })
+  if (name) q.set('name', name)
+  return `${BASE}/media/download?${q.toString()}`
+}
+
 export async function uploadImage(file) {
   const form = new FormData()
   form.append('file', file)

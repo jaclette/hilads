@@ -3906,6 +3906,51 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
     }
 });
 
+// GET /api/v1/media/download?url=<R2 url>&name=<filename>
+// Same-origin download proxy. The R2 public dev host (pub-*.r2.dev) sends no
+// CORS headers, so a browser `fetch()` of the image from hilads.live is blocked
+// - which broke the lightbox "Download". This streams the object server-side
+// (no browser CORS) with Content-Disposition: attachment so the browser saves
+// it. SSRF-guarded: the url MUST start with our R2_PUBLIC_URL base.
+$router->add('GET', '/api/v1/media/download', function () {
+    $url  = $_GET['url']  ?? '';
+    $name = $_GET['name'] ?? '';
+    $base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/') . '/';
+    if ($base === '/' || !is_string($url) || strncmp($url, $base, strlen($base)) !== 0) {
+        Response::json(['error' => 'Invalid url'], 400);
+    }
+    // Sanitise the download filename; fall back to the URL's basename.
+    $name = preg_replace('/[^A-Za-z0-9._-]/', '_', (string) $name);
+    if ($name === '' || $name === null) {
+        $name = preg_replace('/[^A-Za-z0-9._-]/', '_', basename(parse_url($url, PHP_URL_PATH) ?: '')) ?: 'photo.jpg';
+    }
+
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_FOLLOWLOCATION => false,
+        CURLOPT_TIMEOUT        => 20,
+        CURLOPT_FAILONERROR    => true,
+    ]);
+    $data  = curl_exec($ch);
+    $ctype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE) ?: 'application/octet-stream';
+    $code  = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    if ($data === false || $code >= 400) {
+        Response::json(['error' => 'Could not fetch the file'], 502);
+    }
+    if (strlen($data) > 25 * 1024 * 1024) {
+        Response::json(['error' => 'File too large'], 413);
+    }
+
+    header('Content-Type: ' . $ctype);
+    header('Content-Disposition: attachment; filename="' . $name . '"');
+    header('Content-Length: ' . strlen($data));
+    header('Cache-Control: private, max-age=0');
+    echo $data;
+    exit;
+});
+
 // Avatar thumbnail generation lives in ImageProcessor - same code path
 // used by /admin/thumbs/backfill so the upload and backfill flows can
 // never drift apart.
