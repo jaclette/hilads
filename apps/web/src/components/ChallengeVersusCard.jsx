@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import AttendeeAvatars from './AttendeeAvatars'
 import AvatarWithFlag from './AvatarWithFlag'
 import OpenChallengeSlot from './OpenChallengeSlot'
 import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
+import { fetchChallengeParticipants } from '../api'
+import { avatarColors } from '../lib/avatarColors'
 import { Marquee } from './Marquee'
 
 /**
@@ -76,6 +79,8 @@ export default function ChallengeVersusCard({
   }
 
   const acceptPill = (e) => { e.stopPropagation(); if (onAcceptClick) onAcceptClick() }
+  // "Who joined" peek - opened by tapping the participant avatar stack.
+  const [peek, setPeek] = useState(null)  // null | { loading, users }
 
   // ── GROUP CARD ──────────────────────────────────────────────────────────────
   // One challenger → a group. No "vs" duel. Mirrors the native ChallengeVersusCard
@@ -96,7 +101,16 @@ export default function ChallengeVersusCard({
       !isGroupPhoto && meetSummary ? meetSummary : null,
     ].filter(Boolean).join('  ·  ')
 
+    const openPeek = (e) => {
+      e.stopPropagation()
+      setPeek({ loading: true, users: c.participants_preview ?? [] })
+      fetchChallengeParticipants(c.id)
+        .then((r) => setPeek({ loading: false, users: r.participants || [] }))
+        .catch(() => setPeek((p) => ({ loading: false, users: p?.users ?? [] })))
+    }
+
     return (
+      <>
       <button
         type="button"
         className={`city-row event-row-card challenge-row-card challenge-card-group${zeroParticipants && !isValidated ? ' challenge-card-group--accent' : ''}`}
@@ -174,7 +188,7 @@ export default function ChallengeVersusCard({
             </>
           ) : (
             <>
-              <span className="challenge-group-stackwrap">
+              <span className="challenge-group-stackwrap challenge-group-stackwrap--tappable" role="button" tabIndex={0} onClick={openPeek}>
                 <AttendeeAvatars preview={(c.participants_preview ?? []).slice(0, 4)} total={participantCount} />
                 {(!isGroupPhoto || submissionCount >= 1) && (
                   <span className="challenge-group-count">
@@ -193,6 +207,46 @@ export default function ChallengeVersusCard({
           )}
         </div>
       </button>
+
+      {/* "Who joined" peek - read-only list of everyone in the group. */}
+      {peek && (
+        <div className="gmp-backdrop" onClick={() => setPeek(null)}>
+          <div className="gmp-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="gmp-head">
+              <span className="gmp-title">👥 {t('card.whoJoined', { count: participantCount, defaultValue: 'Who joined ({{count}})' })}</span>
+              <button type="button" className="gmp-close" onClick={() => setPeek(null)} aria-label="Close">✕</button>
+            </div>
+            {peek.loading && peek.users.length === 0 ? (
+              <p className="gmp-empty">…</p>
+            ) : peek.users.length === 0 ? (
+              <p className="gmp-empty">{t('group.noParticipants', { defaultValue: 'Nobody has joined yet.' })}</p>
+            ) : (
+              <div className="gmp-list">
+                {peek.users.map((u) => {
+                  const [a1, a2] = avatarColors(u.id)
+                  // Card preview is camelCase; /participants is snake_case.
+                  const name  = u.displayName ?? u.display_name ?? '?'
+                  const photo = u.thumbAvatarUrl || u.avatarUrl || u.profile_thumb_photo_url || u.profile_photo_url
+                  return (
+                    <button
+                      key={u.id}
+                      type="button"
+                      className="gmp-row"
+                      onClick={() => { setPeek(null); onAvatarClick?.(u.id) }}
+                    >
+                      <span className="gmp-avatar" style={{ background: `linear-gradient(135deg, ${a1}, ${a2})` }}>
+                        {photo ? <img src={photo} alt="" /> : (name?.[0] ?? '?').toUpperCase()}
+                      </span>
+                      <span className="gmp-name">{name}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      </>
     )
   }
 

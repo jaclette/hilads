@@ -79,7 +79,8 @@
     "beFirst": "⚡ Sois le premier · +2",
     "daysLeft": "{{count}}j restants",
     "lastDay": "Dernier jour",
-    "joinGroup": "Rejoindre le groupe"
+    "joinGroup": "Rejoindre le groupe",
+    "whoJoined": "Qui a rejoint ({{count}})"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",

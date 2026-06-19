@@ -13,8 +13,20 @@ import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { fetchChallengeParticipants } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import type { Challenge, UserDTO } from '@/types';
+import type { Challenge } from '@/types';
 import { Colors, FontSizes, Spacing } from '@/constants';
+
+// The card preview is camelCase ({displayName, thumbAvatarUrl}); the
+// /participants endpoint is snake_case ({display_name, profile_photo_url}).
+// Normalise both so names + avatars always render.
+type Member = { id: string; name: string; photo: string | null };
+function toMember(u: Record<string, unknown>): Member {
+  return {
+    id:    String(u.id ?? ''),
+    name:  String(u.displayName ?? u.display_name ?? '?'),
+    photo: (u.thumbAvatarUrl ?? u.avatarUrl ?? u.profile_thumb_photo_url ?? u.profile_photo_url ?? null) as string | null,
+  };
+}
 
 export function ChallengeMembersPeek({
   challenge, onClose, onSelect,
@@ -24,7 +36,7 @@ export function ChallengeMembersPeek({
   onSelect:  (userId: string) => void;
 }) {
   const { t } = useTranslation('challenge');
-  const [users,   setUsers]   = useState<UserDTO[]>([]);
+  const [users,   setUsers]   = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,9 +44,9 @@ export function ChallengeMembersPeek({
     let alive = true;
     setLoading(true);
     // Seed from the card's preview so something shows instantly, then refresh.
-    setUsers(challenge.participants_preview as unknown as UserDTO[] ?? []);
+    setUsers((challenge.participants_preview ?? []).map((u) => toMember(u as unknown as Record<string, unknown>)));
     fetchChallengeParticipants(challenge.id)
-      .then((r) => { if (alive) setUsers(r.participants); })
+      .then((r) => { if (alive) setUsers((r.participants ?? []).map((u) => toMember(u as unknown as Record<string, unknown>))); })
       .catch(() => {})
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
@@ -61,11 +73,11 @@ export function ChallengeMembersPeek({
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.row} activeOpacity={0.7} onPress={() => onSelect(item.id)}>
                 <View style={[styles.avatar, { backgroundColor: avatarColor(item.id) }]}>
-                  {item.thumbAvatarUrl || item.avatarUrl
-                    ? <Image source={{ uri: item.thumbAvatarUrl ?? item.avatarUrl ?? undefined }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />
-                    : <Text style={styles.avatarLetter}>{(item.displayName[0] ?? '?').toUpperCase()}</Text>}
+                  {item.photo
+                    ? <Image source={{ uri: item.photo }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />
+                    : <Text style={styles.avatarLetter}>{(item.name[0] ?? '?').toUpperCase()}</Text>}
                 </View>
-                <Text style={styles.name} numberOfLines={1}>{item.displayName}</Text>
+                <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />

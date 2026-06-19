@@ -13128,6 +13128,35 @@ body.has-app-promo-banner .page-header {
   gap: 8px;
   min-width: 0;
 }
+.challenge-group-stackwrap--tappable { cursor: pointer; border: 0; background: none; padding: 0; }
+
+/* "Who joined" peek (tap the avatar stack) */
+.gmp-backdrop {
+  position: fixed; inset: 0; z-index: 9060;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.gmp-sheet {
+  background: var(--bg, #111); width: 100%; max-width: 480px;
+  border-top-left-radius: 20px; border-top-right-radius: 20px;
+  padding: 14px 16px 28px; max-height: 70vh; overflow-y: auto;
+}
+.gmp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.gmp-title { font-size: 1.05rem; font-weight: 800; color: var(--text, #f3eee9); }
+.gmp-close { background: none; border: 0; color: var(--muted, #9a9088); font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
+.gmp-empty { color: var(--muted, #9a9088); text-align: center; padding: 20px 0; }
+.gmp-list { display: flex; flex-direction: column; }
+.gmp-row {
+  display: flex; align-items: center; gap: 12px; padding: 8px 0;
+  background: none; border: 0; cursor: pointer; text-align: left; width: 100%;
+}
+.gmp-avatar {
+  width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.9rem;
+}
+.gmp-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.gmp-name { font-size: 0.95rem; font-weight: 600; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .challenge-group-count {
   font-size: 0.8rem;
   font-weight: 700;
