@@ -13068,6 +13068,16 @@ body.has-app-promo-banner .page-header {
 }
 
 /* ── Group challenge card (one challenger → a group; no 1-v-1 duel) ── */
+/* The group badge row carries an extra deadline pill, so it can outgrow the
+   card width. Allow it to wrap (the base .er-badges clips with overflow:hidden +
+   nowrap, which cut the status dot off the right edge). */
+.challenge-card-group .er-badges {
+  flex-wrap: wrap;
+  overflow: visible;
+  white-space: normal;
+  row-gap: 6px;
+}
+.challenge-card-group .er-badges > * { flex-shrink: 0; }
 .challenge-card-group--accent {
   border-color: rgba(255, 170, 60, 0.55) !important;
   background: rgba(255, 150, 40, 0.05);

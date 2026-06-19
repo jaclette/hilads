@@ -161,11 +161,13 @@ export default function ChallengeVersusCard({
           </div>
         </div>
 
-        {/* Bottom = the GROUP dimension. */}
+        {/* Bottom = the GROUP dimension. Lead with action; the left side only
+            carries a count once there's something real to count - never
+            "0 photos" / "no one joined" (those read as dead). */}
         <div className="challenge-group-bottom">
           {zeroParticipants ? (
             <>
-              <span className="challenge-group-empty">{t('card.noOneJoined', { defaultValue: 'No one has joined yet' })}</span>
+              <span style={{ flex: 1 }} />
               <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--first" onClick={acceptPill}>
                 {t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })}
               </span>
@@ -174,16 +176,18 @@ export default function ChallengeVersusCard({
             <>
               <span className="challenge-group-stackwrap">
                 <AttendeeAvatars preview={(c.participants_preview ?? []).slice(0, 4)} total={participantCount} />
-                <span className="challenge-group-count">
-                  {isGroupPhoto
-                    ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
-                    : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
-                </span>
+                {(!isGroupPhoto || submissionCount >= 1) && (
+                  <span className="challenge-group-count">
+                    {isGroupPhoto
+                      ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
+                      : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
+                  </span>
+                )}
               </span>
               {/* Join CTA - group challenges stay open, so always invite more
                   people in (meet AND photo). */}
               <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
-                {t('group.join', { defaultValue: 'Join' })} ⚡
+                {t('card.joinGroup', { defaultValue: 'Join the group' })} ⚡
               </span>
             </>
           )}

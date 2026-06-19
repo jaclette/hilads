@@ -184,13 +184,14 @@ export function ChallengeVersusCard({
           </View>
         </View>
 
-        {/* Bottom = the GROUP dimension. */}
+        {/* Bottom = the GROUP dimension. Lead with action; the left side only
+            carries a count once there's something real to count - never
+            "0 photos" / "no one joined" (those read as dead). */}
         <View style={styles.groupBottomRow}>
           {zeroParticipants ? (
+            // Nobody's in yet → just the action, no empty-state text.
             <>
-              <Text style={styles.groupEmptyText} numberOfLines={2}>
-                {t('card.noOneJoined', { defaultValue: 'No one has joined yet' })}
-              </Text>
+              <View style={{ flex: 1 }} />
               <TouchableOpacity style={styles.beFirstPill} activeOpacity={0.85} onPress={onAcceptPress}>
                 <Text style={styles.beFirstPillText}>
                   {t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })}
@@ -207,16 +208,20 @@ export function ChallengeVersusCard({
                   borderColor={Colors.bg2}
                   onPress={onAvatarsPress}
                 />
-                <Text style={styles.groupCountText} numberOfLines={1}>
-                  {isGroupPhoto
-                    ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
-                    : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
-                </Text>
+                {/* Photo: only show the count once ≥1 photo is in (never
+                    "0 photos"). Meet: always the joined count. */}
+                {(!isGroupPhoto || submissionCount >= 1) ? (
+                  <Text style={styles.groupCountText} numberOfLines={1}>
+                    {isGroupPhoto
+                      ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
+                      : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
+                  </Text>
+                ) : null}
               </View>
               {/* Join CTA - group challenges stay open, so always invite more
                   people in (meet AND photo). Tapping opens the challenge. */}
               <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
-                <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
+                <Text style={styles.joinPillText}>{t('card.joinGroup', { defaultValue: 'Join the group' })} ⚡</Text>
               </TouchableOpacity>
             </>
           )}
