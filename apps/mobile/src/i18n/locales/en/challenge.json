@@ -77,7 +77,8 @@
     "beFirst": "⚡ Be the first · +2",
     "daysLeft": "{{count}}d left",
     "lastDay": "Expires soon",
-    "joinGroup": "Join the group"
+    "joinGroup": "Join the group",
+    "whoJoined": "Who joined ({{count}})"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",

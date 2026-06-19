@@ -10,6 +10,8 @@ import {
   type InspirationExample,
 } from '@/api/challenges';
 import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
+import { ChallengeMembersPeek } from '@/features/challenge/ChallengeMembersPeek';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { ExampleChallengeCard } from '@/components/ExampleChallengeCard';
 import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
@@ -52,11 +54,19 @@ const PAGE = 5;
 export function ChallengesList({ channelId, headerExtra }: { channelId: string | null; headerExtra?: ReactNode }) {
   const router = useRouter();
   const { t } = useTranslation('challenge');
-  const { city } = useApp();
+  const { city, account } = useApp();
   const currentCityName = localizeCityName(city?.name ?? '') || (city?.name ?? '');
 
   const [tab,        setTab]        = useState<Tab>('open');
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all');
+  // Tapping a card's avatar stack opens a read-only "who joined" peek.
+  const [membersFor, setMembersFor] = useState<Challenge | null>(null);
+
+  const openProfile = useCallback((userId: string) => {
+    if (userId === account?.id) { router.push('/(tabs)/me' as never); return; }
+    if (!canAccessProfile(account)) { router.push('/auth-gate' as never); return; }
+    router.push({ pathname: '/user/[id]', params: { id: userId } } as never);
+  }, [account, router]);
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
   const [openList,   setOpenList]   = useState<Challenge[]>([]);
   const [pastList,   setPastList]   = useState<Challenge[]>([]);
@@ -228,6 +238,8 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
                 track('challenge_opened', { challengeId: item.id, source: 'challenges_tab_open_slot' });
                 router.push(`/challenge/${item.id}` as never);
               }}
+              onAvatarsPress={() => setMembersFor(item)}
+              onAvatarPress={openProfile}
             />
           </View>
         )}
@@ -293,6 +305,13 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
       >
         <Text style={styles.createCtaText}>{t('createCta')}</Text>
       </TouchableOpacity>
+
+      {/* "Who joined" peek - opened by tapping a card's avatar stack. */}
+      <ChallengeMembersPeek
+        challenge={membersFor}
+        onClose={() => setMembersFor(null)}
+        onSelect={(userId) => { setMembersFor(null); openProfile(userId); }}
+      />
     </View>
   );
 }

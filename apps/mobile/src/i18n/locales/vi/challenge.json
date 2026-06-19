@@ -96,7 +96,8 @@
     "beFirst": "⚡ Là người đầu tiên · +2",
     "daysLeft": "Còn {{count}} ngày",
     "lastDay": "Sắp hết hạn",
-    "joinGroup": "Tham gia nhóm"
+    "joinGroup": "Tham gia nhóm",
+    "whoJoined": "Ai đã tham gia ({{count}})"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
