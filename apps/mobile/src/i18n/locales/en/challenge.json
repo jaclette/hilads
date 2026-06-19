@@ -69,8 +69,14 @@
     "takeIt": "Take it on",
     "takerLabel": "Taker",
     "rankBadge": "Rank {{rank}}",
-    "photoBadge": "Photo",
-    "joinedCount": "{{count}} joined"
+    "photoBadge": "Photo proof",
+    "joinedCount": "{{count}} joined",
+    "meetBadge": "Meet",
+    "photosCount": "{{count}} photos",
+    "noOneJoined": "No one has joined yet",
+    "beFirst": "⚡ Be the first · +2",
+    "daysLeft": "{{count}}d left",
+    "lastDay": "Expires soon"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",

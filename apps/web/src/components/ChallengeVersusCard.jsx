@@ -75,6 +75,120 @@ export default function ChallengeVersusCard({
     if (onAvatarClick && userId) onAvatarClick(userId)
   }
 
+  const acceptPill = (e) => { e.stopPropagation(); if (onAcceptClick) onAcceptClick() }
+
+  // ── GROUP CARD ──────────────────────────────────────────────────────────────
+  // One challenger → a group. No "vs" duel. Mirrors the native ChallengeVersusCard
+  // group branch: resolution badge + challenger-alone header + a group bottom row
+  // (avatar stack + count, then join CTA for meet / deadline countdown for photo).
+  if (isGroup) {
+    const isGroupPhoto     = (c.validation_method ?? 'meet') === 'photo_proof' || isInternational
+    const participantCount = c.participant_count ?? 0
+    const zeroParticipants = participantCount === 0
+    const deadlineDaysLeft = (isGroupPhoto && c.meet_at)
+      ? Math.ceil((c.meet_at * 1000 - Date.now()) / 86_400_000)
+      : null
+    const groupLocation = c.venue || c.target_city_name || null
+    const groupSubtitle = [
+      c.creator_display_name ? t('byCreator', { name: c.creator_display_name }) : null,
+      groupLocation,
+      !isGroupPhoto && meetSummary ? meetSummary : null,
+    ].filter(Boolean).join('  ·  ')
+
+    return (
+      <button
+        type="button"
+        className={`city-row event-row-card challenge-row-card challenge-card-group${zeroParticipants && !isValidated ? ' challenge-card-group--accent' : ''}`}
+        style={{ cursor: 'pointer', textAlign: 'left' }}
+        onClick={onClick}
+      >
+        {/* Top: resolution badge, category, then status (pushed right). */}
+        <div className="er-badges">
+          <span className={`challenge-badge ${isGroupPhoto ? 'challenge-badge--photo' : 'challenge-badge--meet'}`}>
+            {isGroupPhoto
+              ? `📸 ${t('card.photoBadge', { defaultValue: 'Photo proof' })}`
+              : `📍 ${t('card.meetBadge', { defaultValue: 'Meet' })}`}
+          </span>
+          <span className="challenge-badge challenge-badge--kind">{t(`typeBadge.${c.challenge_type}`)}</span>
+          {isValidated ? (
+            <span className="challenge-badge challenge-badge--validated" style={{ marginLeft: 'auto' }}>
+              ✓ {t('validatedBadge')}
+            </span>
+          ) : (
+            <span className="challenge-badge challenge-badge--available" style={{ marginLeft: 'auto' }}>
+              🟢 {t('card.available')}
+            </span>
+          )}
+        </div>
+
+        {/* Challenger alone + title + subtitle. No facing avatar. */}
+        <div className="challenge-group-header">
+          <span className="challenge-versus-avatar-stack challenge-group-host">
+            {onAvatarClick && c.created_by ? (
+              <button
+                type="button"
+                className="challenge-versus-avatar-btn"
+                onClick={handleAvatarClick(c.created_by)}
+                aria-label={c.creator_display_name ?? ''}
+              >
+                <AvatarWithFlag userId={c.created_by} displayName={c.creator_display_name ?? '?'} photoUrl={c.creator_thumb_avatar_url} countryCode={challengerCountry} />
+              </button>
+            ) : (
+              <AvatarWithFlag userId={c.created_by} displayName={c.creator_display_name ?? '?'} photoUrl={c.creator_thumb_avatar_url} countryCode={challengerCountry} />
+            )}
+            {challengerRank != null && (
+              <span className="challenge-versus-rank-anchor">
+                <RankBadge rank={challengerRank} ariaLabel={t('card.rankBadge', { rank: challengerRank, defaultValue: `Rank ${challengerRank}` })} />
+              </span>
+            )}
+          </span>
+          <div className="challenge-group-headtext">
+            <span className="er-title">
+              <span className="er-title-emoji">{typeIcon}</span>
+              <Marquee text={c.title} className="er-title-marquee" fadeColor="#161210" />
+            </span>
+            {groupSubtitle ? <span className="challenge-group-subtitle">{groupSubtitle}</span> : null}
+          </div>
+        </div>
+
+        {/* Bottom = the GROUP dimension. */}
+        <div className="challenge-group-bottom">
+          {zeroParticipants ? (
+            <>
+              <span className="challenge-group-empty">{t('card.noOneJoined', { defaultValue: 'No one has joined yet' })}</span>
+              <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--first" onClick={acceptPill}>
+                {t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })}
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="challenge-group-stackwrap">
+                <AttendeeAvatars preview={(c.participants_preview ?? []).slice(0, 4)} total={participantCount} />
+                <span className="challenge-group-count">
+                  {isGroupPhoto
+                    ? `📸 ${t('card.photosCount', { count: participantCount, defaultValue: '{{count}} photos' })}`
+                    : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
+                </span>
+              </span>
+              {isGroupPhoto && deadlineDaysLeft != null ? (
+                <span className="challenge-group-deadline">
+                  {deadlineDaysLeft >= 2
+                    ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
+                    : t('card.lastDay', { defaultValue: 'Expires soon' })}
+                </span>
+              ) : (
+                <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
+                  {t('group.join', { defaultValue: 'Join' })} ⚡
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      </button>
+    )
+  }
+
+  // ── LEGACY CARD (1-to-1 duel) - unchanged; drains as legacy challenges end ──
   return (
     <button
       type="button"
@@ -115,10 +229,6 @@ export default function ChallengeVersusCard({
         {isValidated ? (
           <span className="challenge-badge challenge-badge--validated">
             ✓ {t('validatedBadge')}
-          </span>
-        ) : isGroup ? (
-          <span className="challenge-badge challenge-badge--available">
-            👥 {t('card.joinedCount', { count: c.participant_count ?? 0, defaultValue: '{{count}} joined' })}
           </span>
         ) : c.is_in_progress ? (
           // --in-progress (amber) instead of --status (brand orange).
@@ -176,24 +286,7 @@ export default function ChallengeVersusCard({
           {isValidated ? '🏆' : '⚡'}
         </span>
 
-        {isGroup ? (
-          // Group: the right side is the CROWD, not one opponent. A cluster of
-          // joined people (host stays on the left). No joiners yet → a "+" that
-          // invites the first one in.
-          (c.participant_count ?? 0) > 0 ? (
-            <span className="challenge-versus-avatar-stack challenge-versus-crowd">
-              <AttendeeAvatars
-                preview={c.participants_preview ?? []}
-                total={c.participant_count ?? 0}
-              />
-            </span>
-          ) : (
-            <OpenChallengeSlot
-              ariaLabel={t('group.join', { defaultValue: 'Join' })}
-              onClick={onAcceptClick ? (e) => { e.stopPropagation(); onAcceptClick() } : undefined}
-            />
-          )
-        ) : hasTaker ? (
+        {hasTaker ? (
           // key on the acceptor_user_id so React unmounts + remounts when
           // a different taker lands (e.g. a fresh acceptance over WS),
           // retriggering the .challenge-versus-taker-enter animation.
@@ -234,13 +327,6 @@ export default function ChallengeVersusCard({
         )}
       </div>
 
-      {/* Group meet summary - date + place under the versus row. */}
-      {isGroup && (meetSummary || c.venue) ? (
-        <div style={{ fontSize: 12, fontWeight: 600, color: '#FF7A3C', marginTop: 8, textAlign: 'center' }}>
-          {meetSummary ? `📅 ${meetSummary}` : ''}{meetSummary && c.venue ? '  ·  ' : ''}{c.venue ? `📍 ${c.venue}` : ''}
-        </div>
-      ) : null}
-
       {/* Title + type chip. Long titles auto-scroll left through the
           same Marquee primitive the weather pill uses - short titles
           render static with the usual CSS ellipsis fallback. */}
@@ -255,14 +341,11 @@ export default function ChallengeVersusCard({
       {c.creator_display_name && (
         <span className="er-host">{t('byCreator', { name: c.creator_display_name })}</span>
       )}
-      {/* Bottom attendee row - legacy cards only. Group cards show the joined
-          crowd in the versus row's right slot instead (no duplicate). */}
-      {!isGroup && (
-        <AttendeeAvatars
-          preview={c.participants_preview ?? []}
-          total={c.participant_count ?? 0}
-        />
-      )}
+      {/* Bottom attendee row - spectators who joined a legacy challenge. */}
+      <AttendeeAvatars
+        preview={c.participants_preview ?? []}
+        total={c.participant_count ?? 0}
+      />
     </button>
   )
 }

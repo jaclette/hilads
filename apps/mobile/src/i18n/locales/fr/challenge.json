@@ -69,8 +69,14 @@
     "takeIt": "Je le relève",
     "takerLabel": "Preneur",
     "rankBadge": "Rang {{rank}}",
-    "photoBadge": "Photo",
-    "joinedCount": "{{count}} inscrits"
+    "photoBadge": "Photo proof",
+    "joinedCount": "{{count}} inscrits",
+    "meetBadge": "Meet",
+    "photosCount": "{{count}} photos",
+    "noOneJoined": "Personne n'a encore rejoint",
+    "beFirst": "⚡ Sois le premier · +2",
+    "daysLeft": "{{count}}j restants",
+    "lastDay": "Dernier jour"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",

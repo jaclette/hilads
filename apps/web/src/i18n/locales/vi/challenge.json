@@ -72,7 +72,13 @@
     "takeIt": "Nhận thử thách",
     "takerLabel": "Người nhận",
     "rankBadge": "Hạng {{rank}}",
-    "photoBadge": "Ảnh"
+    "photoBadge": "Photo proof",
+    "meetBadge": "Meet",
+    "photosCount": "{{count}} ảnh",
+    "noOneJoined": "Chưa ai tham gia",
+    "beFirst": "⚡ Là người đầu tiên · +2",
+    "daysLeft": "Còn {{count}} ngày",
+    "lastDay": "Sắp hết hạn"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",

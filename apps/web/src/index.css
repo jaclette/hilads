@@ -13052,17 +13052,91 @@ body.has-app-promo-banner .page-header {
   display:  inline-block;
 }
 
-/* Group card: the joined crowd sits in the versus row's right slot. Scale the
-   attendee avatars up so the cluster balances the large challenger avatar on
-   the left (the bottom attendee row is suppressed for group cards). */
-.challenge-versus-crowd .attendee-avatars { gap: 0; }
-.challenge-versus-crowd .attendee-avatar {
-  width: 44px;
-  height: 44px;
-  font-size: 1rem;
-  border-width: 3px;
+/* ── Group challenge card (one challenger → a group; no 1-v-1 duel) ── */
+.challenge-card-group--accent {
+  border-color: rgba(255, 170, 60, 0.55) !important;
+  background: rgba(255, 150, 40, 0.05);
 }
-.challenge-versus-crowd .attendee-avatar:not(:first-child) { margin-left: -14px; }
+.challenge-badge--meet {
+  background: rgba(255, 122, 60, 0.14);
+  border: 1px solid rgba(255, 122, 60, 0.32);
+  color: #ff7a3c;
+}
+.challenge-badge--kind {
+  background: rgba(255, 122, 60, 0.1);
+  border: 1px solid rgba(255, 122, 60, 0.28);
+  color: #ff7a3c;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.62rem;
+}
+.challenge-group-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.challenge-group-headtext {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.challenge-group-subtitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted, #9a9088);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.challenge-group-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 2px;
+}
+.challenge-group-stackwrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.challenge-group-count {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text, #f3eee9);
+  white-space: nowrap;
+}
+.challenge-group-empty {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted, #9a9088);
+}
+.challenge-group-pill {
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.challenge-group-pill--join  { background: #ff7a3c; color: #fff; }
+.challenge-group-pill--first { background: #ffaa3c; color: #1a1206; }
+.challenge-group-deadline {
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
 
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge detail - large type emoji in the header, creator/participants

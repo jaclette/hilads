@@ -86,11 +86,148 @@ export function ChallengeVersusCard({
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null;
 
+  // ── Group card derivations (group rows only; legacy keeps the duel) ─────────
+  // Resolution type: MEET (in-person, has a date+place) vs PHOTO-PROOF (a
+  // contest; meet_at doubles as the submission deadline). International is
+  // inherently photo-proof.
+  const isGroupPhoto   = isGroup && ((challenge.validation_method ?? 'meet') === 'photo_proof' || isInternational);
+  const participantCount = challenge.participant_count ?? 0;
+  const zeroParticipants = participantCount === 0;
+  // Photo-proof deadline countdown (whole days left from meet_at). Null when no
+  // deadline is set yet - we never fabricate one.
+  const deadlineDaysLeft = (isGroupPhoto && challenge.meet_at)
+    ? Math.ceil((challenge.meet_at * 1000 - Date.now()) / 86_400_000)
+    : null;
+  // Subtitle: "by {challenger} · {location} · {date}" (date for meet only).
+  const groupLocation = challenge.venue || challenge.target_city_name || null;
+  const groupSubtitle = [
+    challenge.creator_display_name ? t('byCreator', { name: challenge.creator_display_name }) : null,
+    groupLocation,
+    !isGroupPhoto && meetSummary ? meetSummary : null,
+  ].filter(Boolean).join('  ·  ');
+
   const audienceLabel: Record<ChallengeAudience, string> = {
     locals:    t('forLocals'),
     explorers: t('forExplorers'),
   };
 
+  // ── GROUP CARD ──────────────────────────────────────────────────────────────
+  // One challenger → a group. No "vs" duel. Resolution badge + challenger-alone
+  // header + a group bottom row (avatar stack + count, then a join CTA for meet
+  // or a deadline countdown for photo-proof). Zero-participant rows accent the
+  // border and lead with a "be the first" action instead of an empty stack.
+  if (isGroup) {
+    return (
+      <TouchableOpacity
+        style={[styles.card, zeroParticipants && !isValidated && styles.cardAccent]}
+        activeOpacity={0.75}
+        onPress={onPress}
+      >
+        {/* Top row - resolution badge, category, then status (pushed right). */}
+        <View style={styles.kindRow}>
+          <View style={isGroupPhoto ? styles.resPhotoBadge : styles.resMeetBadge}>
+            <Text style={isGroupPhoto ? styles.resPhotoBadgeText : styles.resMeetBadgeText}>
+              {isGroupPhoto
+                ? `📸 ${t('card.photoBadge', { defaultValue: 'Photo proof' })}`
+                : `📍 ${t('card.meetBadge', { defaultValue: 'Meet' })}`}
+            </Text>
+          </View>
+          <View style={styles.kindBadge}>
+            <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
+          </View>
+          <View style={{ flex: 1 }} />
+          {isValidated ? (
+            <View style={styles.validatedBadge}>
+              <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
+            </View>
+          ) : (
+            <View style={styles.availablePill}>
+              <Text style={styles.availablePillText}>🟢 {t('card.available')}</Text>
+            </View>
+          )}
+        </View>
+
+        {/* Challenger alone + title + subtitle. No facing avatar. */}
+        <View style={styles.groupHeader}>
+          <ChallengerAvatar
+            challenge={challenge}
+            isInternational={isInternational}
+            onAvatarPress={onAvatarPress}
+            size={52}
+          />
+          <View style={styles.groupHeaderText}>
+            <View style={styles.titleRow}>
+              <Text style={styles.titleEmoji}>{typeIcon}</Text>
+              <MarqueeText
+                text={challenge.title}
+                textStyle={styles.title}
+                style={styles.titleMarquee}
+                fadeColor={Colors.bg2}
+                active={animated}
+              />
+            </View>
+            {groupSubtitle ? (
+              <Text style={styles.groupSubtitle} numberOfLines={1}>{groupSubtitle}</Text>
+            ) : null}
+          </View>
+        </View>
+
+        {/* Bottom = the GROUP dimension. */}
+        <View style={styles.groupBottomRow}>
+          {zeroParticipants ? (
+            <>
+              <Text style={styles.groupEmptyText} numberOfLines={2}>
+                {t('card.noOneJoined', { defaultValue: 'No one has joined yet' })}
+              </Text>
+              <TouchableOpacity style={styles.beFirstPill} activeOpacity={0.85} onPress={onAcceptPress}>
+                <Text style={styles.beFirstPillText}>
+                  {t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })}
+                </Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <View style={styles.groupStackWrap}>
+                <AttendeeAvatars
+                  preview={(challenge.participants_preview ?? []).slice(0, 4)}
+                  total={participantCount}
+                  size={34}
+                  borderColor={Colors.bg2}
+                  onPress={onAvatarsPress}
+                />
+                <Text style={styles.groupCountText} numberOfLines={1}>
+                  {isGroupPhoto
+                    ? `📸 ${t('card.photosCount', { count: participantCount, defaultValue: '{{count}} photos' })}`
+                    : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
+                </Text>
+              </View>
+              {isGroupPhoto ? (
+                deadlineDaysLeft != null ? (
+                  <View style={styles.deadlinePill}>
+                    <Text style={styles.deadlinePillText}>
+                      {deadlineDaysLeft >= 2
+                        ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
+                        : t('card.lastDay', { defaultValue: 'Expires soon' })}
+                    </Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
+                    <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
+                  </TouchableOpacity>
+                )
+              ) : (
+                <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
+                  <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  }
+
+  // ── LEGACY CARD (1-to-1 duel) - unchanged; drains as legacy challenges end ──
   return (
     <TouchableOpacity style={styles.card} activeOpacity={0.75} onPress={onPress}>
       {/* Top row - kind badge + audience/intl pill + status badge. Unchanged
@@ -127,10 +264,6 @@ export function ChallengeVersusCard({
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
           </View>
-        ) : isGroup ? (
-          <View style={styles.availablePill}>
-            <Text style={styles.availablePillText}>👥 {t('card.joinedCount', { count: challenge.participant_count ?? 0, defaultValue: '{{count}} joined' })}</Text>
-          </View>
         ) : isInProgress ? (
           <View style={styles.statusPill}>
             <Text style={styles.statusPillText}>⏳ {t('card.inProgress')}</Text>
@@ -157,27 +290,7 @@ export function ChallengeVersusCard({
           <Text style={styles.versusGlyph}>{isValidated ? '🏆' : '⚡'}</Text>
         </View>
 
-        {isGroup ? (
-          // Group: the right side is the CROWD, not one opponent. Show a cluster
-          // of joined people's avatars (host stays on the left). No joiners yet →
-          // a pulsing "+" inviting the first one in.
-          (challenge.participant_count ?? 0) > 0 ? (
-            <AttendeeAvatars
-              preview={(challenge.participants_preview ?? []).slice(0, 4)}
-              total={challenge.participant_count ?? 0}
-              size={46}
-              borderColor={Colors.bg2}
-              onPress={onAvatarsPress}
-            />
-          ) : (
-            <OpenChallengeSlot
-              size={AVATAR_SIZE}
-              animated={animated}
-              onPress={onAcceptPress}
-              accessibilityLabel={t('group.join', { defaultValue: 'Join' })}
-            />
-          )
-        ) : showOpenSlot ? (
+        {showOpenSlot ? (
           <OpenChallengeSlot
             size={AVATAR_SIZE}
             animated={animated}
@@ -192,13 +305,6 @@ export function ChallengeVersusCard({
           />
         )}
       </View>
-
-      {/* Group meet summary - date + place, shown under the versus row. */}
-      {isGroup && (meetSummary || challenge.venue) ? (
-        <Text style={styles.groupMeet} numberOfLines={1}>
-          {meetSummary ? `📅 ${meetSummary}` : ''}{meetSummary && challenge.venue ? '  ·  ' : ''}{challenge.venue ? `📍 ${challenge.venue}` : ''}
-        </Text>
-      ) : null}
 
       {/* Title row - type emoji + title. Long titles auto-scroll left
           (same MarqueeText primitive the weather pill uses); short
@@ -241,11 +347,13 @@ export function ChallengeVersusCard({
 // in the main render block.
 
 function ChallengerAvatar({
-  challenge, isInternational, onAvatarPress,
+  challenge, isInternational, onAvatarPress, size = AVATAR_SIZE,
 }: {
   challenge:       Challenge;
   isInternational: boolean;
   onAvatarPress?:  (userId: string) => void;
+  /** Override the avatar diameter (group cards use a smaller challenger). */
+  size?:           number;
 }) {
   const country = isInternational ? (challenge.country ?? null) : null;
   const userId  = challenge.created_by ?? null;
@@ -260,7 +368,7 @@ function ChallengerAvatar({
         displayName={challenge.creator_display_name ?? '?'}
         photoUrl={challenge.creator_thumb_avatar_url ?? null}
         countryCode={country}
-        size={AVATAR_SIZE}
+        size={size}
       />
     </AvatarBadgeStack>
   );
@@ -392,6 +500,80 @@ const styles = StyleSheet.create({
     padding:         Spacing.md,
     gap:             10,
   },
+  // Zero-participant group card - accent the border to lead with action
+  // (mirrors the dead-city empty-state philosophy: a cold card invites, it
+  // doesn't sit empty).
+  cardAccent: {
+    borderColor:     'rgba(255,170,60,0.55)',
+    backgroundColor: 'rgba(255,150,40,0.05)',
+  },
+
+  // ── Group card ──
+  // Resolution badges (top row). Meet = warm pin; Photo proof = cool camera.
+  resMeetBadge: {
+    backgroundColor:   'rgba(255,122,60,0.14)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.32)',
+  },
+  resMeetBadgeText:  { fontSize: 10, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
+  resPhotoBadge: {
+    backgroundColor:   'rgba(96,165,250,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(96,165,250,0.32)',
+  },
+  resPhotoBadgeText: { fontSize: 10, fontWeight: '800', color: '#60a5fa', letterSpacing: 0.3 },
+
+  // Challenger-alone header (avatar + title + subtitle).
+  groupHeader:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  groupHeaderText: { flex: 1, gap: 3, justifyContent: 'center' },
+  groupSubtitle:   { fontSize: 12, fontWeight: '600', color: Colors.muted },
+
+  // Bottom group row: stack + count on the left, CTA / countdown on the right.
+  groupBottomRow: {
+    flexDirection:    'row',
+    alignItems:       'center',
+    justifyContent:   'space-between',
+    gap:              Spacing.sm,
+    marginTop:        2,
+  },
+  groupStackWrap:  { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
+  groupCountText:  { fontSize: 13, fontWeight: '700', color: Colors.text },
+  groupEmptyText:  { flex: 1, fontSize: 13, fontWeight: '600', color: Colors.muted },
+
+  // Join CTA (meet, or photo with no deadline) - filled orange.
+  joinPill: {
+    backgroundColor:   '#FF7A3C',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 16,
+    paddingVertical:   8,
+  },
+  joinPillText:    { fontSize: 13, fontWeight: '800', color: Colors.white },
+
+  // "Be the first · +2" - amber-filled, the cold-start hook.
+  beFirstPill: {
+    backgroundColor:   '#FFAA3C',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 14,
+    paddingVertical:   8,
+  },
+  beFirstPillText: { fontSize: 13, fontWeight: '800', color: '#1a1206' },
+
+  // Photo-proof deadline countdown - amber outline (reads as time, not action).
+  deadlinePill: {
+    backgroundColor:   'rgba(251,191,36,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 12,
+    paddingVertical:   7,
+    borderWidth:       1,
+    borderColor:       'rgba(251,191,36,0.45)',
+  },
+  deadlinePillText: { fontSize: 12, fontWeight: '800', color: '#fbbf24', letterSpacing: 0.2 },
 
   kindRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
 
@@ -503,7 +685,6 @@ const styles = StyleSheet.create({
   titleMarquee: { flex: 1, height: 22 },
   title:        { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22 },
 
-  groupMeet:    { fontSize: 12, fontWeight: '600', color: '#FF7A3C', marginTop: 8, textAlign: 'center' },
 
   byCreator: {
     fontSize:   12,
