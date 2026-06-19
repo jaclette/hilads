@@ -278,7 +278,16 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
+    case 'challenge_takeon_request':
+    case 'challenge_group_join':
+      // Someone took on / joined the creator's challenge → open it.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
     default:
+      // Any other challenge_* notification that carries a challengeId still
+      // opens the challenge rather than dead-ending.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
   }
 }

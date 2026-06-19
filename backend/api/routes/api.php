@@ -9582,17 +9582,16 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
             error_log('[challenges] group join ws broadcast failed (non-fatal): ' . $e->getMessage());
         }
 
-        // Notify the creator someone joined (bell row + push). Reuse the take-on
-        // type so the client routes the tap to the challenge and renders the bell
-        // row exactly as it already does; the EN copy below is used verbatim (the
-        // i18n override only kicks in for non-EN, rendering the generic take-on
-        // wording for now). Skipped if the joiner IS the creator.
+        // Notify the creator someone joined (bell row + push). Dedicated
+        // challenge_group_join type → localized for every supported locale via
+        // NotificationI18n; EN uses the verbatim copy below. Skipped if the
+        // joiner IS the creator.
         try {
             if (!empty($challenge['created_by']) && $challenge['created_by'] !== $userId) {
                 $acceptorName = $authUser['display_name'] ?? 'Someone';
                 NotificationRepository::create(
                     $challenge['created_by'],
-                    'challenge_takeon_request',
+                    'challenge_group_join',
                     '🙌 New joiner',
                     "{$acceptorName} joined your challenge \"{$challenge['title']}\"",
                     [

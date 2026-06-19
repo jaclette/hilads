@@ -327,6 +327,28 @@ final class NotificationI18n
             'ru'      => ["🤝 Новая заявка",                                "{name} хочет принять «{title}»"],
             'ar'      => ["🤝 طلب جديد",                                   "{name} يريد قبول \"{title}\""],
         ],
+        // Group join - fires to the CREATOR when a user JOINS their group
+        // challenge (no approval; many can join). Body references the title.
+        'challenge_group_join' => [
+            'fr'      => ["🙌 Nouveau participant",   "{name} a rejoint ton défi « {title} »"],
+            'vi'      => ["🙌 Có người tham gia",      "{name} đã tham gia thử thách \"{title}\""],
+            'es'      => ["🙌 Nuevo participante",     "{name} se unió a tu reto \"{title}\""],
+            'it'      => ["🙌 Nuovo partecipante",     "{name} si è unito alla tua sfida \"{title}\""],
+            'pt-br'   => ["🙌 Novo participante",      "{name} entrou no seu desafio \"{title}\""],
+            'pt-pt'   => ["🙌 Novo participante",      "{name} juntou-se ao teu desafio \"{title}\""],
+            'de'      => ["🙌 Neuer Teilnehmer",       "{name} ist deiner Challenge \"{title}\" beigetreten"],
+            'nl'      => ["🙌 Nieuwe deelnemer",       "{name} doet mee aan je challenge \"{title}\""],
+            'zh-hans' => ["🙌 新参与者",                "{name} 加入了你的挑战\"{title}\""],
+            'zh-hant' => ["🙌 新參與者",                "{name} 加入了你的挑戰「{title}」"],
+            'ja'      => ["🙌 新しい参加者",            "{name} があなたの「{title}」に参加しました"],
+            'ko'      => ["🙌 새 참가자",               "{name} 님이 \"{title}\" 챌린지에 참여했어요"],
+            'fil'     => ["🙌 Bagong sumali",          "Sumali si {name} sa challenge mong \"{title}\""],
+            'th'      => ["🙌 มีผู้เข้าร่วมใหม่",          "{name} เข้าร่วมชาเลนจ์ \"{title}\" ของคุณ"],
+            'id'      => ["🙌 Peserta baru",           "{name} bergabung ke tantanganmu \"{title}\""],
+            'hi'      => ["🙌 नया प्रतिभागी",            "{name} आपके चैलेंज \"{title}\" में शामिल हुए"],
+            'ru'      => ["🙌 Новый участник",          "{name} присоединился к твоему челленджу «{title}»"],
+            'ar'      => ["🙌 مشارك جديد",              "{name} انضم إلى تحديك \"{title}\""],
+        ],
         // Take-on approved - fires to the ACCEPTOR when the creator
         // accepts their request. Time to plan the meet-up.
         'challenge_takeon_approved' => [
@@ -794,6 +816,7 @@ final class NotificationI18n
             'join_request'             => 'requesterName',
             'challenge_invitation'     => 'inviterName',
             'challenge_takeon_request',
+            'challenge_group_join',
             'challenge_acceptor_left',
             'challenge_proof_submitted' => 'acceptorName',
             'challenge_takeon_approved',
