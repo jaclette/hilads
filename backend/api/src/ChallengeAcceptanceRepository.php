@@ -562,6 +562,52 @@ class ChallengeAcceptanceRepository
         }
     }
 
+    /**
+     * GROUP challenges: the challenger validates who was present at the meet.
+     * Every active 'joined' taker becomes 'present' (in $presentUserIds) or
+     * 'absent' (the rest). The phase→'present' transition fires the presence
+     * reward trigger (+40 taker, +5/head + 10 base challenger). Idempotent: a
+     * re-validate only transitions rows still at 'joined'; already-present rows
+     * stay put (no double reward). Returns the user_ids now marked present.
+     */
+    public static function validatePresence(string $challengeId, array $presentUserIds): array
+    {
+        $pdo     = Database::pdo();
+        $present = array_values(array_unique(array_filter(
+            $presentUserIds,
+            static fn($x) => is_string($x) && $x !== ''
+        )));
+
+        if (empty($present)) {
+            // Nobody present → every joined taker is absent.
+            $pdo->prepare("
+                UPDATE challenge_acceptances SET phase = 'absent', updated_at = now()
+                WHERE challenge_id = :cid AND phase = 'joined'
+            ")->execute(['cid' => $challengeId]);
+            return [];
+        }
+
+        $in = implode(',', array_fill(0, count($present), '?'));
+        // Present: joined takers in the list. (Only 'joined' rows move, so a
+        // re-validate can't re-fire the reward for already-present takers.)
+        $pdo->prepare("
+            UPDATE challenge_acceptances SET phase = 'present', updated_at = now()
+            WHERE challenge_id = ? AND phase = 'joined' AND acceptor_user_id IN ($in)
+        ")->execute(array_merge([$challengeId], $present));
+        // Absent: the remaining joined takers.
+        $pdo->prepare("
+            UPDATE challenge_acceptances SET phase = 'absent', updated_at = now()
+            WHERE challenge_id = ? AND phase = 'joined' AND acceptor_user_id NOT IN ($in)
+        ")->execute(array_merge([$challengeId], $present));
+
+        $q = $pdo->prepare("
+            SELECT DISTINCT acceptor_user_id FROM challenge_acceptances
+            WHERE challenge_id = ? AND phase = 'present' AND acceptor_user_id IS NOT NULL
+        ");
+        $q->execute([$challengeId]);
+        return $q->fetchAll(\PDO::FETCH_COLUMN);
+    }
+
     // ── PR5: pending take-on review (creator approve / reject) ───────────────
 
     /**

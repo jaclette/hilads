@@ -1586,7 +1586,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1610,7 +1610,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -1664,6 +1664,98 @@ run($pdo, "
     AFTER INSERT ON challenge_acceptances
     FOR EACH ROW EXECUTE FUNCTION on_challenge_join_award()
 ", 'trg_chacc_join_award');
+
+// ── GROUP CHALLENGE — Phase 3: presence validation rewards ───────────────────
+// After the group meet, the challenger validates who was present. Each validated
+// taker earns the BIG reward (+40); the challenger earns a base (+10) PLUS a
+// per-head bump (+5 each), so their reward grows with the number of validated
+// participants. Real merit (showing up) carries the big points - the +2 join
+// spark stays small so farming joins is never worth it.
+//
+// NOTE (accepted risk, deferred): the challenger both validates alone AND earns
+// per head, so at scale they're incentivised to inflate the present list. Fine
+// for the current small/trusting base; harden later with cross-confirmation
+// (taker taps "I was there" + challenger agrees). Structural, not a surprise.
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES
+        ('present',           'taker',      40),
+        ('present_host',      'challenger',  5),
+        ('present_host_base', 'challenger', 10)
+    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points", 'score_rules present/host');
+
+// Challenger's +10 base is once per challenge (first validated head triggers it).
+// acceptance_id is NULL on the base row, so the per-ROUND unique can't dedupe it -
+// this dedicated index does.
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_hostbase_per_challenge
+            ON score_events (challenge_id) WHERE kind = 'present_host_base'", 'uq_score_events_hostbase');
+
+// Trigger: award presence rewards when a group taker is validated (phase →
+// 'present'). Per validated head: taker +40, challenger +5 (tied to THIS taker's
+// acceptance for idempotency - re-validate never doubles, new heads add). Plus a
+// once-per-challenge challenger +10 base. Group-only; legacy uses mutual rating.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_presence_validated() RETURNS TRIGGER AS \$\$
+    DECLARE
+        v_format      TEXT;
+        origin_city   TEXT;
+        challenger    TEXT;
+        pts_taker     INT;
+        pts_host      INT;
+        pts_base      INT;
+        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        -- Fire only on the transition INTO 'present'.
+        IF NEW.phase <> 'present' OR OLD.phase = 'present' THEN RETURN NEW; END IF;
+
+        SELECT cc.challenge_format, cc.city_id, cc.created_by
+        INTO v_format, origin_city, challenger
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        IF v_format IS DISTINCT FROM 'group' THEN RETURN NEW; END IF;
+        IF NEW.acceptor_user_id IS NULL OR challenger IS NULL THEN RETURN NEW; END IF;
+
+        -- Taker's BIG reward for validated presence.
+        SELECT points INTO pts_taker FROM score_rules WHERE kind = 'present' AND role = 'taker';
+        IF pts_taker IS NOT NULL THEN
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+            VALUES (encode(gen_random_bytes(8), 'hex'),
+                    NEW.acceptor_user_id, NEW.challenge_id, 'taker', 'present',
+                    pts_taker, origin_city, current_month, NEW.id)
+            ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+        END IF;
+
+        -- Challenger: +5 for THIS validated head, keyed on the taker's
+        -- acceptance so it's idempotent per head and scales with the group.
+        SELECT points INTO pts_host FROM score_rules WHERE kind = 'present_host' AND role = 'challenger';
+        IF pts_host IS NOT NULL THEN
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+            VALUES (encode(gen_random_bytes(8), 'hex'),
+                    challenger, NEW.challenge_id, 'challenger', 'present_host',
+                    pts_host, origin_city, current_month, NEW.id)
+            ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING;
+        END IF;
+
+        -- Challenger: +10 base, ONCE per challenge (deduped by the partial
+        -- unique above; ON CONFLICT with no target catches it).
+        SELECT points INTO pts_base FROM score_rules WHERE kind = 'present_host_base' AND role = 'challenger';
+        IF pts_base IS NOT NULL THEN
+            INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+            VALUES (encode(gen_random_bytes(8), 'hex'),
+                    challenger, NEW.challenge_id, 'challenger', 'present_host_base',
+                    pts_base, origin_city, current_month, NULL)
+            ON CONFLICT DO NOTHING;
+        END IF;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_presence_validated');
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_presence ON challenge_acceptances", 'drop trg_chacc_presence');
+run($pdo, "
+    CREATE TRIGGER trg_chacc_presence
+    AFTER UPDATE OF phase ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_presence_validated()
+", 'trg_chacc_presence');
 
 // Per-round scoring. The original UNIQUE (user_id, challenge_id, role, kind)
 // made each kind single-shot PER CHALLENGE, which silently dropped points

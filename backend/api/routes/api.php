@@ -9182,6 +9182,84 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/ratings/of-me', function (
 //   - mode_required     : your users.mode is null - set it before accepting
 //   - mode_mismatch     : you're a local but the challenge is for travelers (or vice-versa)
 //   - cap_reached       : challenge already at max_participants
+// POST /api/v1/challenges/{challengeId}/validate-presence  (Phase 3, GROUP only)
+// The challenger validates who showed up at the group meet. Body:
+//   { presentUserIds: [userId, ...] }
+// Each joined taker → 'present' (in the list) or 'absent'. Present takers earn
+// +40; the challenger earns +10 base + 5 per validated head (DB trigger fires on
+// the phase→'present' transition). The challenge is then marked validated and
+// leaves the active feed. One-shot (refused once already validated).
+$router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Only the challenger can validate presence', 'code' => 'not_creator'], 403);
+    }
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        Response::json(['error' => 'Not a group challenge', 'code' => 'not_group'], 422);
+    }
+    if (($challenge['status'] ?? 'open') !== 'open') {
+        Response::json(['error' => 'This challenge has already been validated', 'code' => 'already_validated'], 409);
+    }
+
+    $body       = Request::json();
+    $presentIds = is_array($body) ? ($body['presentUserIds'] ?? []) : [];
+    if (!is_array($presentIds)) {
+        Response::json(['error' => 'presentUserIds must be an array'], 400);
+    }
+
+    try {
+        $presentNow = ChallengeAcceptanceRepository::validatePresence($challengeId, $presentIds);
+    } catch (\Throwable $e) {
+        error_log('[challenges] validate-presence failed ch=' . $challengeId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to validate presence'], 500);
+    }
+
+    // Mark the challenge done → leaves the active feed into the past archive.
+    try {
+        Database::pdo()->prepare("
+            UPDATE channel_challenges
+            SET status = 'validated', validated_at = COALESCE(validated_at, now()), updated_at = now()
+            WHERE channel_id = ?
+        ")->execute([$challengeId]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] validate-presence mark-validated failed (non-fatal): ' . $e->getMessage());
+    }
+
+    // Rewards fired inline (trigger). Recalc ranks for the challenger + every
+    // validated taker, and ping each one's score-celebration gate (it already
+    // refetches on challenge_accepted → the +40 / +host popin lands live).
+    foreach (array_merge([$userId], $presentNow) as $uid) {
+        if (empty($uid)) continue;
+        try { MonthlyRankService::recalcAfterScoreChange($uid); } catch (\Throwable $e) {}
+        try {
+            broadcastChallengeAcceptedToWs($uid, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]);
+        } catch (\Throwable $e) {}
+    }
+    // Feed/state: tell the city the challenge is validated (drops to archive).
+    try {
+        $cityChannelId = (int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5);
+        broadcastChallengeValidatedToWs($cityChannelId, $challenge);
+    } catch (\Throwable $e) {
+        error_log('[challenges] validate-presence validated broadcast failed (non-fatal): ' . $e->getMessage());
+    }
+
+    Response::json([
+        'ok'            => true,
+        'present_count' => count($presentNow),
+        'present_ids'   => $presentNow,
+    ]);
+});
+
 $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
