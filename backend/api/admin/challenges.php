@@ -46,9 +46,11 @@ admin_nav('/admin/challenges');
 
     $stmt = $pdo->prepare("
         SELECT cc.channel_id, cc.title, cc.challenge_type, cc.mode, cc.status, cc.validation_method,
-               cc.created_by, cc.guest_id, c.status AS channel_status,
+               cc.challenge_format, cc.created_by, cc.guest_id, c.status AS channel_status,
                u.display_name AS creator_name,
                EXTRACT(EPOCH FROM cc.created_at)::INTEGER AS created_ts,
+               (SELECT COUNT(DISTINCT a2.acceptor_user_id) FROM challenge_acceptances a2
+                  WHERE a2.challenge_id = cc.channel_id AND a2.phase <> 'rejected') AS participant_count,
                pr.media_url AS proof_media_url, pr.media_type AS proof_media_type, pr.proof_status
         FROM channel_challenges cc
         JOIN channels c   ON c.id = cc.channel_id
@@ -68,6 +70,40 @@ admin_nav('/admin/challenges');
     ");
     $stmt->execute([':cid' => $city, ':cid2' => $city, ':ds' => $ds, ':de' => $de]);
     $items = $stmt->fetchAll();
+
+    // GROUP photo-proof contests have MANY submissions (one per participant). The
+    // single-proof LATERAL above only surfaces the latest, so for those rows we
+    // batch-load every submission + the winner so the moderator can see/delete
+    // each photo. Legacy 1-1 rows keep the single-proof view.
+    $groupSubs   = [];   // channel_id => [ {proof_id, media_url, status, user_id, display_name}, ... ]
+    $groupWinner = [];   // channel_id => winner user_id
+    $groupPhotoIds = [];
+    foreach ($items as $it) {
+        $isPhoto = ($it['validation_method'] ?? 'meet') === 'photo_proof' || ($it['mode'] ?? 'local') === 'international';
+        if (($it['challenge_format'] ?? 'legacy') === 'group' && $isPhoto) {
+            $groupPhotoIds[] = $it['channel_id'];
+        }
+    }
+    if ($groupPhotoIds) {
+        $in = implode(',', array_fill(0, count($groupPhotoIds), '?'));
+        $sq = $pdo->prepare("
+            SELECT DISTINCT ON (a.challenge_id, a.acceptor_user_id)
+                   a.challenge_id, p.id AS proof_id, p.media_url, p.media_type, p.status,
+                   a.acceptor_user_id AS user_id, u.display_name
+            FROM challenge_proofs p
+            JOIN challenge_acceptances a ON a.id = p.acceptance_id
+            LEFT JOIN users u ON u.id = a.acceptor_user_id
+            WHERE a.challenge_id IN ($in)
+            ORDER BY a.challenge_id, a.acceptor_user_id, p.submitted_at DESC
+        ");
+        $sq->execute($groupPhotoIds);
+        foreach ($sq->fetchAll() as $r) { $groupSubs[$r['challenge_id']][] = $r; }
+
+        $wq = $pdo->prepare("SELECT challenge_id, user_id FROM score_events WHERE challenge_id IN ($in) AND kind = 'winner'");
+        $wq->execute($groupPhotoIds);
+        foreach ($wq->fetchAll() as $r) { $groupWinner[$r['challenge_id']] = $r['user_id']; }
+    }
+
     $backHref = '/admin/challenges?from=' . urlencode($from) . '&to=' . urlencode($to) . '&view=' . urlencode($view);
     ?>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
@@ -103,12 +139,22 @@ admin_nav('/admin/challenges');
                 $icon    = $TYPE_ICON[$it['challenge_type']] ?? '🔥';
                 $intl    = ($it['mode'] ?? 'local') === 'international';
                 $creator = $it['creator_name'] ?: ($it['guest_id'] ? 'Guest' : '-');
+                $isGroup   = ($it['challenge_format'] ?? 'legacy') === 'group';
+                $usesProof = ($it['validation_method'] ?? 'meet') === 'photo_proof' || $intl;
+                $pcount    = (int) ($it['participant_count'] ?? 0);
                 ?>
                 <tr<?= $deleted ? ' style="opacity:0.45"' : '' ?>>
                     <td style="color:#888;white-space:nowrap"><?= date('M d, H:i', (int) $it['created_ts']) ?></td>
                     <td class="td-clip" title="<?= htmlspecialchars($it['title'], ENT_QUOTES) ?>">
                         <?= $icon ?> <strong><?= htmlspecialchars($it['title'], ENT_QUOTES) ?></strong>
                         <?php if ($intl): ?><span class="badge" style="background:#38bdf822;color:#38bdf8;border:1px solid #38bdf855;margin-left:4px">🌐</span><?php endif; ?>
+                        <?php if ($isGroup): ?>
+                            <span class="badge" style="background:#a78bfa22;color:#a78bfa;border:1px solid #a78bfa55;margin-left:4px">GROUP</span>
+                            <span class="badge" style="background:#ffffff11;color:#aaa;border:1px solid #ffffff22;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?></span>
+                            <span class="badge" style="background:#ffffff11;color:#aaa;border:1px solid #ffffff22;margin-left:4px">👥 <?= $pcount ?></span>
+                        <?php else: ?>
+                            <span class="badge" style="background:#ffffff0d;color:#777;border:1px solid #ffffff14;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?> · 1-1</span>
+                        <?php endif; ?>
                     </td>
                     <td style="color:#888"><?= htmlspecialchars($it['challenge_type'] ?? '-', ENT_QUOTES) ?></td>
                     <td class="td-clip"><?= htmlspecialchars($creator, ENT_QUOTES) ?></td>
@@ -123,19 +169,44 @@ admin_nav('/admin/challenges');
                     </td>
                     <td>
                         <?php
-                        // Photo-proof challenges: international, or local with
-                        // validation_method='photo_proof'. View / replace / delete
-                        // the current proof image. Meet-only challenges show "-".
-                        $usesProof = ($it['validation_method'] ?? 'meet') === 'photo_proof'
-                                  || ($it['mode'] ?? 'local') === 'international';
+                        // Photo-proof challenges (international, or local photo_proof)
+                        // surface the proof image(s). Meet-only challenges show "-".
+                        // GROUP photo-proof = the whole submission gallery; legacy =
+                        // the single current proof. ($usesProof computed at row top.)
                         $proofCtx  = csrf_input()
                             . '<input type="hidden" name="city" value="' . htmlspecialchars($city, ENT_QUOTES) . '">'
                             . '<input type="hidden" name="from" value="' . htmlspecialchars($from, ENT_QUOTES) . '">'
                             . '<input type="hidden" name="to" value="' . htmlspecialchars($to, ENT_QUOTES) . '">'
                             . '<input type="hidden" name="view" value="' . htmlspecialchars($view, ENT_QUOTES) . '">';
+                        $subs = $groupSubs[$it['channel_id']] ?? [];
+                        $winnerUid = $groupWinner[$it['channel_id']] ?? null;
                         ?>
                         <?php if (!$usesProof): ?>
                             <span style="color:#555">—</span>
+                        <?php elseif ($isGroup): ?>
+                            <?php if (empty($subs)): ?>
+                                <span style="color:#888;font-size:12px">No photos yet</span>
+                            <?php else: ?>
+                                <div style="display:flex;flex-wrap:wrap;gap:8px;max-width:340px">
+                                <?php foreach ($subs as $s):
+                                    $isWin = $winnerUid !== null && $s['user_id'] === $winnerUid; ?>
+                                    <div style="width:78px;<?= $isWin ? 'outline:2px solid #FFC93C;border-radius:6px;outline-offset:1px' : '' ?>">
+                                        <a href="<?= htmlspecialchars($s['media_url'], ENT_QUOTES) ?>" target="_blank" rel="noopener" title="Open full size">
+                                            <img src="<?= htmlspecialchars($s['media_url'], ENT_QUOTES) ?>" alt="submission"
+                                                 style="width:78px;height:78px;object-fit:cover;border-radius:6px;border:1px solid #2a2a2a;display:block">
+                                        </a>
+                                        <div style="font-size:10px;color:#aaa;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:78px">
+                                            <?= $isWin ? '👑 ' : '' ?><?= htmlspecialchars($s['display_name'] ?? '?', ENT_QUOTES) ?>
+                                        </div>
+                                        <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/proof/<?= urlencode($s['proof_id']) ?>/delete"
+                                              onsubmit="return confirm('Delete this photo submission permanently? This cannot be undone.')" style="margin-top:2px">
+                                            <?= $proofCtx ?>
+                                            <button type="submit" class="btn btn-danger btn-sm" style="font-size:10px;padding:2px 6px;width:100%">Delete</button>
+                                        </form>
+                                    </div>
+                                <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
                         <?php elseif (empty($it['proof_media_url'])): ?>
                             <span style="color:#888;font-size:12px">No proof yet</span>
                         <?php else: ?>

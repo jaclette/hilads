@@ -150,6 +150,12 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $challengeId = $m[1];
     require __DIR__ . '/challenge_proof_replace.php';
 
+} elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/proof/([a-f0-9]+)/delete$#', $uri, $m) && $method === 'POST') {
+    // Per-photo delete for a GROUP photo-proof contest (one submission of many).
+    $challengeId = $m[1];
+    $proofId     = $m[2];
+    require __DIR__ . '/challenge_proof_delete_one.php';
+
 } elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/proof/delete$#', $uri, $m) && $method === 'POST') {
     $challengeId = $m[1];
     require __DIR__ . '/challenge_proof_delete.php';
