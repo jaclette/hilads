@@ -44,7 +44,11 @@ export default function ChallengeVersusCard({
   // both show the done badge instead of "available".
   const isValidated      = c.status === 'validated' || !!c.closed
   const isInternational  = (c.mode ?? 'local') === 'international'
+  const isGroup          = (c.challenge_format ?? 'legacy') === 'group'
   const hasTaker         = !!c.acceptor_user_id
+  const meetSummary = (isGroup && c.meet_at)
+    ? new Date(c.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null
 
   // Country codes only flow into the avatar flag overlays when the
   // challenge is international (per spec: local cards stay flag-free
@@ -112,6 +116,10 @@ export default function ChallengeVersusCard({
           <span className="challenge-badge challenge-badge--validated">
             ✓ {t('validatedBadge')}
           </span>
+        ) : isGroup ? (
+          <span className="challenge-badge challenge-badge--available">
+            👥 {t('card.joinedCount', { count: c.participant_count ?? 0, defaultValue: '{{count}} joined' })}
+          </span>
         ) : c.is_in_progress ? (
           // --in-progress (amber) instead of --status (brand orange).
           // The shared --status class is reused by interactive owner
@@ -168,7 +176,13 @@ export default function ChallengeVersusCard({
           {isValidated ? '🏆' : '⚡'}
         </span>
 
-        {hasTaker ? (
+        {isGroup ? (
+          // Group: no 1-v-1 taker - tap the "+" to open the challenge and join.
+          <OpenChallengeSlot
+            ariaLabel={t('group.join', { defaultValue: 'Join' })}
+            onClick={onAcceptClick ? (e) => { e.stopPropagation(); onAcceptClick() } : undefined}
+          />
+        ) : hasTaker ? (
           // key on the acceptor_user_id so React unmounts + remounts when
           // a different taker lands (e.g. a fresh acceptance over WS),
           // retriggering the .challenge-versus-taker-enter animation.
@@ -208,6 +222,13 @@ export default function ChallengeVersusCard({
           />
         )}
       </div>
+
+      {/* Group meet summary - date + place under the versus row. */}
+      {isGroup && (meetSummary || c.venue) ? (
+        <div style={{ fontSize: 12, fontWeight: 600, color: '#FF7A3C', marginTop: 8, textAlign: 'center' }}>
+          {meetSummary ? `📅 ${meetSummary}` : ''}{meetSummary && c.venue ? '  ·  ' : ''}{c.venue ? `📍 ${c.venue}` : ''}
+        </div>
+      ) : null}
 
       {/* Title + type chip. Long titles auto-scroll left through the
           same Marquee primitive the weather pill uses - short titles

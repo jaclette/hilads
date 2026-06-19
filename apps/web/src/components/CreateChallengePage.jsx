@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createChallenge, updateChallenge, fetchChannels, dismissPublicOptin } from '../api'
+import DatePickerModal from './DatePickerModal'
 import BackButton from './BackButton'
 
 // max_participants retired (1:1 model). Constants removed; the stepper UI
@@ -140,6 +141,16 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   const [submitting, setSubmitting] = useState(false)
   const [error,      setError]      = useState(null)
 
+  // Group meet (Phase 4): a LOCAL MEET challenge is a GROUP challenge - the
+  // creator sets one meet date + place at creation (DatePickerModal returns
+  // startsAt + endsAt + venue). Required to submit. Create-path only for now.
+  const [meetAt,         setMeetAt]         = useState(null)
+  const [meetEndsAt,     setMeetEndsAt]     = useState(null)
+  const [meetVenue,      setMeetVenue]      = useState(null)
+  const [meetPickerOpen, setMeetPickerOpen] = useState(false)
+  const [meetError,      setMeetError]      = useState(false)
+  const isGroup = !isEdit && mode === 'local' && validationMethod === 'meet'
+
   // Visibility selector. International rows are always public - the toggle
   // is rendered but locked, with a tooltip explaining why. Private isn't
   // settable at input time (route enforces it; the mutual privacy flow is
@@ -204,6 +215,8 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           // Local-only choice; server forces 'photo_proof' for international.
           validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForApi,
+          // Local MEET → group challenge with the meet date + place.
+          ...(isGroup ? { format: 'group', meetAt, meetEndsAt, venue: meetVenue } : {}),
         })
         onCreated?.(challenge)
       }
@@ -223,6 +236,13 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   async function handleSubmit(e) {
     e.preventDefault()
     if (!title.trim() || submitting) return
+
+    // Group (local meet) requires a meet date + place set at creation.
+    if (isGroup && (!meetAt || !meetVenue)) {
+      setMeetError(true)
+      setError(t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date and a place for the meet.' }))
+      return
+    }
 
     // Public + first-time → show the opt-in modal and stash a continuation.
     // Friends + edit-flow + already-seen all bypass the modal.
@@ -333,6 +353,35 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                     points: MEET_BONUS_POINTS,
                     defaultValue: `🏆 Meet bonus: +${MEET_BONUS_POINTS} pts on top of the base reward`,
                   })}
+                </div>
+              )}
+
+              {/* Group meet: one date + place, set at creation. Required. */}
+              {isGroup && (
+                <div style={{ marginTop: 12 }}>
+                  <p className="cef-label">{t('group.meetLabel', { ns: 'challenge', defaultValue: 'When & where' })}</p>
+                  <button
+                    type="button"
+                    onClick={() => setMeetPickerOpen(true)}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
+                      padding: '12px 14px', borderRadius: 12, background: 'var(--bg2, #1a1614)',
+                      border: `1px solid ${meetError ? '#FF6B5C' : 'var(--border, #2a2422)'}`,
+                      color: 'var(--text, #eee)', fontSize: 14, cursor: 'pointer', textAlign: 'left', gap: 8,
+                    }}
+                  >
+                    <span>
+                      {meetAt && meetVenue
+                        ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}  ·  📍 ${meetVenue}`
+                        : t('group.meetCta', { ns: 'challenge', defaultValue: 'Set the meet date + place' })}
+                    </span>
+                    <span aria-hidden style={{ opacity: 0.6 }}>›</span>
+                  </button>
+                  <p className="cef-hint" style={meetError ? { color: '#FF6B5C' } : undefined}>
+                    {meetError
+                      ? t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date and a place for the meet.' })
+                      : t('group.meetHint', { ns: 'challenge', defaultValue: 'Everyone who joins meets here together. You validate who showed up afterwards.' })}
+                  </p>
                 </div>
               )}
             </div>
@@ -515,6 +564,23 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           selected={targetCity}
           onClose={() => setCityPickerOpen(false)}
           onSelect={(c) => { setTargetCity(c); setCityPickerOpen(false) }}
+        />
+      )}
+
+      {/* Group meet date + place (reuses the schedule picker). */}
+      {meetPickerOpen && (
+        <DatePickerModal
+          submitLabel={t('group.meetSet', { ns: 'challenge', defaultValue: 'Set the meet' })}
+          initialStartsAt={meetAt}
+          initialVenue={meetVenue}
+          onClose={() => setMeetPickerOpen(false)}
+          onSubmit={(startsAt, endsAt, venue) => {
+            setMeetAt(startsAt)
+            setMeetEndsAt(endsAt)
+            setMeetVenue(venue && venue.trim() ? venue.trim() : null)
+            setMeetError(false)
+            setMeetPickerOpen(false)
+          }}
         />
       )}
 

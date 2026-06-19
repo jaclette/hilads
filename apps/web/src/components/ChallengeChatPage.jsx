@@ -15,7 +15,7 @@ import {
   fetchChallengeById,
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
-  acceptChallenge, fetchMyAcceptances, AcceptChallengeError,
+  acceptChallenge, fetchMyAcceptances, AcceptChallengeError, validatePresence,
   fetchChallengeMessages, sendChallengeMessage, proposeDate, toggleChallengeReaction,
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
@@ -88,6 +88,13 @@ function formatTime(ts) {
   return new Date(ms).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
+// Shared style for the group-challenge primary button (join / validate).
+const GROUP_BTN_STYLE = {
+  width: '100%', padding: '14px', borderRadius: 14, textAlign: 'center',
+  background: 'rgba(255,122,60,0.16)', border: '1px solid rgba(255,122,60,0.45)',
+  color: '#FF7A3C', fontSize: 15, fontWeight: 800, cursor: 'pointer',
+}
+
 export default function ChallengeChatPage({
   challenge: initialChallenge,
   guest,
@@ -124,6 +131,11 @@ export default function ChallengeChatPage({
   // PR62 - Creator's "Review the proof" modal. Opens from the pipeline
   // sub-CTA on intl when phase='proof_submitted'.
   const [proofReviewOpen, setProofReviewOpen] = useState(false)
+  // Group-challenge UI state (Phase 4).
+  const [joining,      setJoining]      = useState(false)
+  const [validateOpen, setValidateOpen] = useState(false)
+  const [validating,   setValidating]   = useState(false)
+  const [presentChecked, setPresentChecked] = useState({})
   // Visibility picker - Public / Friends / Private dropdown opened from
   // the inline pill. "Private" maps to closed_to_new_joins=true (the
   // mutual go-private vote backend isn't surfaced here).
@@ -274,6 +286,13 @@ export default function ChallengeChatPage({
   // closed = successfully completed (one-shot, no re-take). Distinct from the
   // reversible 'validated' archive toggle - a completed challenge stays closed.
   const isClosed = !!challenge?.closed
+  // Group challenge (Phase 4): join → meet → challenger validates presence.
+  const isGroup = (challenge?.challenge_format ?? 'legacy') === 'group'
+  const meetSummary = (isGroup && challenge?.meet_at)
+    ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null
+  const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null
+  const iAmJoined = myGroupPhase === 'joined' || myGroupPhase === 'present'
   const isParticipant = !!(
     (account?.id    && participants.some(p => p.id === account.id)) ||
     (guest?.guestId && participants.some(p => p.id === guest.guestId))
@@ -378,6 +397,43 @@ export default function ChallengeChatPage({
   }, [id, account?.id])
 
   useEffect(() => { loadMyAcceptance() }, [loadMyAcceptance])
+
+  // ── Group challenge (Phase 4): join + validate presence ─────────────────────
+  // Joining reuses /accept (the backend branches on challenge_format → group
+  // join + the +2 spark, no approval, multiple takers).
+  const handleGroupJoin = useCallback(async () => {
+    if (joining) return
+    if (!account?.id) { onNeedAuth?.(); return }
+    setJoining(true)
+    try {
+      await acceptChallenge(id)
+      await loadChallenge()
+      loadMyAcceptance()
+      loadParticipants()
+    } catch (e) {
+      window.alert(e?.code === 'closed_to_new_joins'
+        ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' })
+        : t('group.joinFailed', { ns: 'challenge', defaultValue: 'Could not join — try again.' }))
+    } finally {
+      setJoining(false)
+    }
+  }, [joining, account?.id, id, t, loadChallenge, loadMyAcceptance, loadParticipants, onNeedAuth])
+
+  const handleValidatePresence = useCallback(async () => {
+    if (validating) return
+    const presentIds = participants.filter(p => presentChecked[p.id] !== false).map(p => p.id)
+    setValidating(true)
+    try {
+      await validatePresence(id, presentIds)
+      setValidateOpen(false)
+      await loadChallenge()
+      loadParticipants()
+    } catch (e) {
+      window.alert(t('group.validateFailed', { ns: 'challenge', defaultValue: 'Could not validate — try again.' }))
+    } finally {
+      setValidating(false)
+    }
+  }, [validating, participants, presentChecked, id, t, loadChallenge, loadParticipants])
 
   // Participation probe. Resolves to true for creator + active acceptor
   // implicitly (server-side); for everyone else it's the join-row check.
@@ -1000,10 +1056,31 @@ export default function ChallengeChatPage({
         <ScoringInfoButton />
       </div>
 
-      {/* Lifecycle pipeline (replaces the old "in progress / accomplished"
-          status pill). 4 dots, current step highlighted by the viewer's own
-          acceptance phase. Educational for visitors / creator-without-an-
-          acceptance. Tap navigates to the thread where the real actions are. */}
+      {/* ── GROUP CHALLENGE (Phase 4): meet info + join / validate ── */}
+      {isGroup && (
+        <div style={{ padding: '4px 12px 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {(meetSummary || challenge.venue) ? (
+            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 14, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {meetSummary ? <div style={{ fontWeight: 600 }}>📅 {meetSummary}</div> : null}
+              {challenge.venue ? <div style={{ fontWeight: 600 }}>📍 {challenge.venue}</div> : null}
+            </div>
+          ) : null}
+          {isValidated ? (
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>✓ {t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}</div>
+          ) : isOwner ? (
+            <button type="button" style={GROUP_BTN_STYLE} onClick={() => setValidateOpen(true)}>✓ {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}</button>
+          ) : iAmJoined ? (
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>✓ {t('group.youreIn', { ns: 'challenge', defaultValue: "You're in — see you there!" })}</div>
+          ) : (
+            <button type="button" style={{ ...GROUP_BTN_STYLE, opacity: (challenge.closed_to_new_joins || joining) ? 0.6 : 1 }} disabled={!!challenge.closed_to_new_joins || joining} onClick={handleGroupJoin}>
+              {challenge.closed_to_new_joins ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' }) : `＋ ${t('group.joinCta', { ns: 'challenge', defaultValue: 'Join this meet (+2 pts)' })}`}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Lifecycle pipeline (legacy rows only - group uses the block above). */}
+      {!isGroup && (
       <ChallengePipeline
         // Creator has no acceptance of their own - drive the timeline off the
         // active taker's phase so it reflects real progress (e.g. an accepted
@@ -1038,6 +1115,7 @@ export default function ChallengeChatPage({
           return undefined
         })()}
       />
+      )}
 
       {/* Photo-proof submission + verdict surface. Renders for every
           challenge that uses the photo flow (international + local
@@ -1127,7 +1205,7 @@ export default function ChallengeChatPage({
             B) acceptor exists + viewer is neither creator nor taker → passive
                "Currently being taken by X"
             C) no acceptor + non-owner + not validated → full-width Accept CTA. */}
-      {(() => {
+      {!isGroup && (() => {
         // A completed challenge (isClosed) is permanently closed to new takers,
         // same passive state as the manual 'validated' archive.
         if ((isValidated || isClosed) && !isOwner) {
@@ -1737,6 +1815,35 @@ export default function ChallengeChatPage({
           acceptanceId={effectiveActiveAcceptance.id}
           onVerdict={() => { loadMyAcceptance(); loadChallenge() }}
         />
+      )}
+
+      {/* Group presence validation (challenger-only). */}
+      {isGroup && validateOpen && (
+        <div onClick={() => setValidateOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px 28px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>{t('group.validateTitle', { ns: 'challenge', defaultValue: 'Who showed up?' })}</h3>
+            <p style={{ margin: '0 0 12px', color: 'var(--muted,#999)', fontSize: 14 }}>{t('group.validateSub', { ns: 'challenge', defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}</p>
+            {participants.length === 0 ? (
+              <p style={{ color: 'var(--muted,#999)', textAlign: 'center', padding: '20px 0' }}>{t('group.noParticipants', { ns: 'challenge', defaultValue: 'Nobody has joined yet.' })}</p>
+            ) : participants.map(p => {
+              const on = presentChecked[p.id] !== false
+              return (
+                <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', cursor: 'pointer' }}>
+                  <input type="checkbox" checked={on} onChange={() => setPresentChecked(prev => ({ ...prev, [p.id]: !on }))} />
+                  <span style={{ fontWeight: 600 }}>{p.displayName}</span>
+                </label>
+              )
+            })}
+            <button
+              type="button"
+              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || participants.length === 0) ? 0.5 : 1 }}
+              disabled={validating || participants.length === 0}
+              onClick={handleValidatePresence}
+            >
+              {validating ? '…' : t('group.validateConfirm', { ns: 'challenge', count: participants.filter(p => presentChecked[p.id] !== false).length, defaultValue: 'Validate {{count}} present' })}
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Proof-spec popin - tap on the "Waiting for the proof" pipeline pill

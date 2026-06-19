@@ -645,6 +645,14 @@ export async function createChallenge(channelId, guestId, nickname, title, chall
       // 'public' | 'friends' only at create-time. Server forces 'public'
       // on International rows regardless of what we send.
       visibility:          intl.visibility ?? 'public',
+      // Group model: a local MEET challenge with format='group' carries a meet
+      // date + location set at creation.
+      format:              intl.format     ?? 'legacy',
+      meetAt:              intl.meetAt      ?? null,
+      meetEndsAt:          intl.meetEndsAt  ?? null,
+      venue:               intl.venue       ?? null,
+      venueLat:            intl.venueLat    ?? null,
+      venueLng:            intl.venueLng    ?? null,
     }),
   })
   if (!res.ok) {
@@ -684,6 +692,22 @@ export async function validateChallenge(challengeId, guestId) {
     throw new Error(data.error || 'Failed to validate challenge')
   }
   return res.json() // updated challenge object
+}
+
+// GROUP challenges: the challenger validates who was present at the meet.
+// presentUserIds = the joined takers who showed up. Returns the count + ids.
+export async function validatePresence(challengeId, presentUserIds) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/validate-presence`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ presentUserIds }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to validate presence')
+  }
+  return res.json() // { ok, present_count, present_ids }
 }
 
 export async function unvalidateChallenge(challengeId, guestId) {

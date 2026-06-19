@@ -572,5 +572,25 @@
   "welcomeGuest": {
     "title": "👋 Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
     "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây →"
+  },
+  "group": {
+    "meetLabel": "Khi nào & ở đâu",
+    "meetCta": "Chọn ngày + địa điểm gặp",
+    "meetHint": "Mọi người tham gia sẽ gặp nhau ở đây. Sau đó bạn xác nhận ai đã có mặt.",
+    "meetRequired": "Hãy chọn ngày và địa điểm gặp.",
+    "meetSet": "Đặt buổi gặp",
+    "done": "Buổi gặp đã xong.",
+    "validateCta": "Xác nhận ai đã đến",
+    "youreIn": "Bạn đã tham gia — hẹn gặp!",
+    "joinCta": "Tham gia (+2 điểm)",
+    "closed": "Đã đóng đăng ký",
+    "joinFailed": "Không thể tham gia — thử lại.",
+    "validateFailed": "Không thể xác nhận — thử lại.",
+    "validateTitle": "Ai đã đến?",
+    "validateSub": "Đánh dấu những người đã đến. Mỗi người nhận thưởng.",
+    "validateConfirm": "Xác nhận {{count}} có mặt",
+    "noParticipants": "Chưa có ai tham gia.",
+    "join": "Tham gia",
+    "joinedCount": "{{count}} đã tham gia"
   }
 }
