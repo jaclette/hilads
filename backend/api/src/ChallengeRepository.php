@@ -56,6 +56,7 @@ class ChallengeRepository
             -- local rows (and for 'anywhere' international); proof_requirements
             -- only set on international.
             cc.mode,
+            cc.challenge_format,
             cc.target_city_id,
             cc.proof_requirements,
             -- Validation method (Meet vs Photo). International is locked to
@@ -215,6 +216,9 @@ class ChallengeRepository
             // and for "anywhere" international rows; proof_requirements only
             // populated on international.
             'mode'                 => $row['mode']               ?? 'local',
+            // Group-challenge model flag: 'legacy' (1-to-1 accept→date→rate) vs
+            // 'group' (join→meet→validate). Drives which flow + UI the clients use.
+            'challenge_format'     => $row['challenge_format']   ?? 'legacy',
             // 'meet' default keeps every pre-PR row on the historical IRL
             // flow. International rows are forced to 'photo_proof' by the
             // migrate backfill + the create/update routes.
@@ -378,7 +382,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
+                     cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -523,7 +527,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
+                     cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -682,7 +686,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
+                     cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,
@@ -718,7 +722,7 @@ class ChallengeRepository
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
                      cc.title, cc.challenge_type, cc.audience, cc.status,
                      cc.max_participants, cc.return_clause,
-                     cc.mode, cc.target_city_id, cc.proof_requirements, cc.validation_method,
+                     cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
                      cc.validated_at, cc.created_at,

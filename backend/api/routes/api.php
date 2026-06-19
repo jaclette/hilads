@@ -9204,6 +9204,62 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         Response::json(['error' => "You created this challenge - you can't accept it", 'code' => 'not_creator'], 403);
     }
 
+    // ── GROUP CHALLENGE JOIN (Phase 2) ────────────────────────────────────────
+    // Group challenges have NO request-to-join, NO approval, and NO 1:1 lock:
+    // anyone who can see it (visibility already enforced by findById above) just
+    // joins and becomes a taker. Multiple takers coexist. The +2 join spark is
+    // credited by the on_challenge_join_award DB trigger - immediate, once per
+    // (user, challenge), never re-credited on rejoin. Legacy challenges fall
+    // through to the existing accept→approve→date→rate flow untouched.
+    if (($challenge['challenge_format'] ?? 'legacy') === 'group') {
+        if (!empty($challenge['closed_to_new_joins'])) {
+            Response::json(['error' => 'This challenge is closed to new joins.', 'code' => 'closed_to_new_joins'], 403);
+        }
+        enforceRateLimit('challenge_join', 30, 3600, $userId);
+
+        try {
+            $acceptance = ChallengeAcceptanceRepository::joinGroup($challengeId, $userId);
+        } catch (\Throwable $e) {
+            error_log('[challenges] group join failed ch=' . $challengeId . ' uid=' . $userId . ': ' . $e->getMessage());
+            Response::json(['error' => 'Failed to join challenge'], 500);
+        }
+
+        // Live update both sides via WS: the creator's participant list grows,
+        // and the joiner's screen + the +2 score-celebration gate refresh
+        // without a reload (both clients listen to challenge_accepted).
+        try {
+            $payload = [
+                'acceptance' => $acceptance,
+                'challenge'  => [
+                    'id'             => $challenge['id'],
+                    'title'          => $challenge['title'],
+                    'challenge_type' => $challenge['challenge_type'],
+                    'mode'           => $challenge['mode'] ?? 'local',
+                ],
+                'acceptor' => [
+                    'id'             => $userId,
+                    'displayName'    => $authUser['display_name'] ?? null,
+                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                ],
+            ];
+            if (!empty($challenge['created_by'])) {
+                broadcastChallengeAcceptedToWs($challenge['created_by'], $payload);
+            }
+            broadcastChallengeAcceptedToWs($userId, $payload);
+        } catch (\Throwable $e) {
+            error_log('[challenges] group join ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
+        // The +2 join trigger fired inline → recalc the joiner's rank.
+        try {
+            MonthlyRankService::recalcAfterScoreChange($userId);
+        } catch (\Throwable $e) {
+            error_log('[challenges] group join rank recalc failed (non-fatal): ' . $e->getMessage());
+        }
+
+        Response::json(['acceptance' => $acceptance, 'challengeId' => $challengeId, 'joined' => true], 201);
+    }
+
     // Idempotency: already actively accepted? Return the existing row (201
     // would be misleading; 200 = "you're already in, here's your acceptance").
     // Active-only on purpose - a terminal row from a prior round (the user

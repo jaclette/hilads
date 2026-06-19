@@ -1586,7 +1586,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1610,8 +1610,60 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join'))
 ", 'score_events add new kind check');
+
+// ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
+// Group challenges have no request/approval and no 1:1 lock - joining = becoming
+// a taker, credited a SMALL +2 the instant they join. Idempotent forever per
+// (user, challenge): the partial unique below means a leave+rejoin never
+// re-credits. acceptance_id is intentionally NULL on join rows (the spark is
+// per-challenge, not per take-on round), so the per-ROUND unique can't dedupe it
+// - this dedicated index does.
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('join', 'taker', 2)
+            ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points", 'score_rule join/taker=2');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_join_per_user
+            ON score_events (user_id, challenge_id) WHERE kind = 'join'", 'uq_score_events_join_per_user');
+
+// Trigger: award the +2 join spark when a registered user joins a GROUP
+// challenge (a challenge_acceptances row is inserted). Group-only - legacy
+// challenges keep the accepted/+5 path. ON CONFLICT DO NOTHING dedupes against
+// uq_score_events_join_per_user so rejoin never re-credits.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_challenge_join_award() RETURNS TRIGGER AS \$\$
+    DECLARE
+        v_format      TEXT;
+        origin_city   TEXT;
+        pts           INT;
+        current_month TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
+    BEGIN
+        SELECT cc.challenge_format, cc.city_id
+        INTO v_format, origin_city
+        FROM channel_challenges cc
+        WHERE cc.channel_id = NEW.challenge_id;
+
+        IF v_format IS DISTINCT FROM 'group' THEN RETURN NEW; END IF;
+        IF NEW.acceptor_user_id IS NULL THEN RETURN NEW; END IF;
+
+        SELECT points INTO pts FROM score_rules WHERE kind = 'join' AND role = 'taker';
+        IF pts IS NULL THEN RETURN NEW; END IF;
+
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+        VALUES (encode(gen_random_bytes(8), 'hex'),
+                NEW.acceptor_user_id, NEW.challenge_id, 'taker', 'join',
+                pts, origin_city, current_month, NULL)
+        ON CONFLICT DO NOTHING;
+
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_challenge_join_award');
+run($pdo, "DROP TRIGGER IF EXISTS trg_chacc_join_award ON challenge_acceptances", 'drop trg_chacc_join_award');
+run($pdo, "
+    CREATE TRIGGER trg_chacc_join_award
+    AFTER INSERT ON challenge_acceptances
+    FOR EACH ROW EXECUTE FUNCTION on_challenge_join_award()
+", 'trg_chacc_join_award');
 
 // Per-round scoring. The original UNIQUE (user_id, challenge_id, role, kind)
 // made each kind single-shot PER CHALLENGE, which silently dropped points
@@ -1700,10 +1752,11 @@ run($pdo, "
 run($pdo, "
     CREATE OR REPLACE FUNCTION on_challenge_acceptance_score() RETURNS TRIGGER AS \$\$
     DECLARE
-        challenger_id  TEXT;
-        origin_city    TEXT;
-        challenge_mode TEXT;
-        taker_city     TEXT;
+        challenger_id    TEXT;
+        origin_city      TEXT;
+        challenge_mode   TEXT;
+        challenge_format TEXT;
+        taker_city       TEXT;
         pts_c          INT;
         pts_t          INT;
         current_month  TEXT := to_char(now() AT TIME ZONE 'UTC', 'YYYY-MM');
@@ -1713,12 +1766,16 @@ run($pdo, "
         -- rows obviously don't earn anything either.
         IF NEW.phase IN ('pending', 'rejected') THEN RETURN NEW; END IF;
 
-        SELECT cc.created_by, cc.city_id, cc.mode
-        INTO challenger_id, origin_city, challenge_mode
+        SELECT cc.created_by, cc.city_id, cc.mode, cc.challenge_format
+        INTO challenger_id, origin_city, challenge_mode, challenge_format
         FROM channel_challenges cc
         WHERE cc.channel_id = NEW.challenge_id;
 
         IF challenger_id IS NULL THEN RETURN NEW; END IF;
+        -- Group challenges DON'T use the legacy accepted/+5 path: joining
+        -- credits the +2 join spark (on_challenge_join_award) and the big
+        -- reward lands at validated presence (Phase 3). Skip them here.
+        IF challenge_format = 'group' THEN RETURN NEW; END IF;
 
         -- Challenger gets the take-on-accepted reward.
         SELECT points INTO pts_c FROM score_rules WHERE kind = 'accepted' AND role = 'challenger';

@@ -27,6 +27,10 @@ declare(strict_types=1);
 class ChallengeAcceptanceRepository
 {
     public const ALLOWED_PHASES = ['accepted', 'scheduled', 'debrief', 'approved', 'rejected'];
+    // Group-model phases (Phase 2+): a group taker JOINS (no approval) and is
+    // later validated PRESENT or ABSENT by the challenger (Phase 3). 'joined' is
+    // an active phase; 'present'/'absent' are terminal for the group flow.
+    public const GROUP_PHASES   = ['joined', 'present', 'absent'];
 
     // PR4 - derived `effective_phase` reflects when the debrief panel unlocks.
     // `scheduled` flips to `debrief` once the meetup's end time is past. Both
@@ -521,6 +525,41 @@ class ChallengeAcceptanceRepository
             'phase' => $initialPhase,
         ]);
         return self::findById($accId);
+    }
+
+    /**
+     * GROUP challenges: a user JOINS and becomes a taker directly - no approval,
+     * no 1:1 lock, multiple takers coexist. Phase 'joined'. Idempotent: if the
+     * user already has an active acceptance on this challenge, return it (the
+     * partial unique uq_chacc_active_per_user backs this against races). The +2
+     * join spark is credited by the on_challenge_join_award DB trigger on INSERT,
+     * once per (user, challenge) forever.
+     */
+    public static function joinGroup(string $challengeId, string $acceptorUserId): array
+    {
+        $existing = self::findActiveByUser($challengeId, $acceptorUserId);
+        if ($existing !== null) return $existing;
+
+        $accId = bin2hex(random_bytes(8));
+        try {
+            Database::pdo()->prepare("
+                INSERT INTO challenge_acceptances
+                    (id, challenge_id, acceptor_user_id, thread_channel_id, phase, created_at, updated_at)
+                VALUES
+                    (:id, :cid, :uid, NULL, 'joined', now(), now())
+            ")->execute([
+                'id'  => $accId,
+                'cid' => $challengeId,
+                'uid' => $acceptorUserId,
+            ]);
+            return self::findById($accId);
+        } catch (\PDOException $e) {
+            // Race: a concurrent join created the active row first (partial
+            // unique violation). Return whatever active row now exists.
+            $row = self::findActiveByUser($challengeId, $acceptorUserId);
+            if ($row !== null) return $row;
+            throw $e;
+        }
     }
 
     // ── PR5: pending take-on review (creator approve / reject) ───────────────
