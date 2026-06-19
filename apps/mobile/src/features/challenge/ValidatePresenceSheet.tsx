@@ -1,9 +1,13 @@
 /**
- * ValidatePresenceSheet - the challenger validates who showed up at a GROUP
- * challenge meet. A checkbox list of the joined takers (all checked by default -
- * most people come; the creator unchecks no-shows). Confirming sends the present
- * ids up to the parent, which calls validatePresence(). Present takers earn the
- * big reward; the challenger earns a base + per-head.
+ * ValidatePresenceSheet - the challenger resolves a GROUP challenge.
+ *
+ *   mode='presence' (MEET): a checkbox list of joined takers, all checked by
+ *     default (most people come; the creator unchecks no-shows). Confirm sends
+ *     every present id → validatePresence(). Present takers earn the big reward.
+ *
+ *   mode='winner' (PHOTO-PROOF): a single-select radio list, none checked by
+ *     default. Confirm sends the one winner id → pickWinner(). The winner earns
+ *     the +40 bonus. The backend rejects a pick with no submission.
  */
 
 import { useEffect, useState } from 'react';
@@ -21,33 +25,45 @@ interface Props {
   visible:      boolean;
   participants: UserDTO[];
   submitting?:  boolean;
+  /** 'presence' (meet, multi-select) | 'winner' (photo-proof, single-select). */
+  mode?:        'presence' | 'winner';
   onClose:      () => void;
-  onConfirm:    (presentIds: string[]) => void;
+  onConfirm:    (selectedIds: string[]) => void;
 }
 
-export function ValidatePresenceSheet({ visible, participants, submitting, onClose, onConfirm }: Props) {
+export function ValidatePresenceSheet({ visible, participants, submitting, mode = 'presence', onClose, onConfirm }: Props) {
   const { t } = useTranslation('challenge');
-  // All checked by default - the creator unchecks anyone who didn't show.
+  const isWinner = mode === 'winner';
+  // Presence: all checked by default (uncheck no-shows). Winner: none checked.
   const [checked, setChecked] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (visible) {
       const init: Record<string, boolean> = {};
-      participants.forEach(p => { init[p.id] = true; });
+      if (!isWinner) participants.forEach(p => { init[p.id] = true; });
       setChecked(init);
     }
-  }, [visible, participants]);
+  }, [visible, participants, isWinner]);
 
-  const presentIds = participants.filter(p => checked[p.id]).map(p => p.id);
+  const toggle = (id: string) =>
+    setChecked(prev => (isWinner ? { [id]: !prev[id] } : { ...prev, [id]: !prev[id] }));
+
+  const selectedIds = participants.filter(p => checked[p.id]).map(p => p.id);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View style={styles.sheet}>
         <View style={styles.handle} />
-        <Text style={styles.title}>{t('group.validateTitle', { defaultValue: 'Who showed up?' })}</Text>
+        <Text style={styles.title}>
+          {isWinner
+            ? t('group.winnerTitle', { defaultValue: 'Pick the winner' })
+            : t('group.validateTitle', { defaultValue: 'Who showed up?' })}
+        </Text>
         <Text style={styles.sub}>
-          {t('group.validateSub', { defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}
+          {isWinner
+            ? t('group.winnerSub', { defaultValue: 'Choose the best photo. The winner earns the big reward.' })
+            : t('group.validateSub', { defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}
         </Text>
 
         {participants.length === 0 ? (
@@ -63,7 +79,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, onClo
                 <TouchableOpacity
                   style={styles.row}
                   activeOpacity={0.7}
-                  onPress={() => setChecked(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                  onPress={() => toggle(item.id)}
                 >
                   <View style={[styles.avatar, { backgroundColor: avatarColor(item.id) }]}>
                     {item.thumbAvatarUrl || item.avatarUrl
@@ -71,7 +87,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, onClo
                       : <Text style={styles.avatarLetter}>{(item.displayName[0] ?? '?').toUpperCase()}</Text>}
                   </View>
                   <Text style={styles.name} numberOfLines={1}>{item.displayName}</Text>
-                  <View style={[styles.check, on && styles.checkOn]}>
+                  <View style={[isWinner ? styles.radio : styles.check, on && (isWinner ? styles.radioOn : styles.checkOn)]}>
                     {on ? <Ionicons name="checkmark" size={16} color="#fff" /> : null}
                   </View>
                 </TouchableOpacity>
@@ -81,14 +97,18 @@ export function ValidatePresenceSheet({ visible, participants, submitting, onClo
         )}
 
         <TouchableOpacity
-          style={[styles.confirmBtn, (submitting || participants.length === 0) && { opacity: 0.5 }]}
+          style={[styles.confirmBtn, (submitting || selectedIds.length === 0 || (isWinner && selectedIds.length !== 1)) && { opacity: 0.5 }]}
           activeOpacity={0.85}
-          disabled={submitting || participants.length === 0}
-          onPress={() => onConfirm(presentIds)}
+          disabled={submitting || selectedIds.length === 0 || (isWinner && selectedIds.length !== 1)}
+          onPress={() => onConfirm(selectedIds)}
         >
           {submitting
             ? <ActivityIndicator color="#fff" />
-            : <Text style={styles.confirmText}>{t('group.validateConfirm', { count: presentIds.length, defaultValue: 'Validate {{count}} present' })}</Text>}
+            : <Text style={styles.confirmText}>
+                {isWinner
+                  ? t('group.winnerConfirm', { defaultValue: 'Crown the winner' })
+                  : t('group.validateConfirm', { count: selectedIds.length, defaultValue: 'Validate {{count}} present' })}
+              </Text>}
         </TouchableOpacity>
       </View>
     </Modal>
@@ -113,6 +133,8 @@ const styles = StyleSheet.create({
   name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
   check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' },
   checkOn: { backgroundColor: '#3DDC84', borderColor: '#3DDC84' },
+  radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' },
+  radioOn: { backgroundColor: '#FFC93C', borderColor: '#FFC93C' },
   confirmBtn: {
     marginTop: 14, paddingVertical: 14, borderRadius: 14, alignItems: 'center',
     backgroundColor: 'rgba(255,122,60,0.16)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)',

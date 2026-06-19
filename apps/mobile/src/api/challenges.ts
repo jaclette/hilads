@@ -232,6 +232,16 @@ export async function validatePresence(
   return api.post(`/challenges/${challengeId}/validate-presence`, { presentUserIds });
 }
 
+/** Challenger designates the winning photo of a GROUP photo-proof contest.
+ *  The winner earns the +40 bonus and the challenge is marked validated. The
+ *  backend rejects a pick whose user has no submission. */
+export async function pickWinner(
+  challengeId: string,
+  winnerUserId: string,
+): Promise<{ ok: boolean; winnerUserId: string }> {
+  return api.post(`/challenges/${challengeId}/pick-winner`, { winnerUserId });
+}
+
 /** Owner-only edit of a challenge's title / type / audience / return clause.
  *  Status is not editable here - use validateChallenge(). max_participants
  *  is no longer accepted (1:1 model). Mode is also not editable - delete +

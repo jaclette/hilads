@@ -660,7 +660,24 @@
     "validateTitle": "Who showed up?",
     "validateSub": "Tick everyone who came to the meet. They each earn the reward.",
     "validateConfirm": "Validate {{count}} present",
-    "noParticipants": "Nobody has joined yet."
+    "noParticipants": "Nobody has joined yet.",
+    "deadlineLabel": "Submission deadline",
+    "deadline24h": "24h",
+    "deadline3d": "3 days",
+    "deadline1w": "1 week",
+    "deadlineHint": "Everyone who joins submits a photo before the deadline. You pick the winner afterwards.",
+    "deadlineRequiredTitle": "Pick a deadline",
+    "deadlineRequired": "Choose how long the contest runs.",
+    "deadlinePrefix": "Submit by",
+    "contestDone": "This contest is done.",
+    "youreInPhoto": "You're in — submit your photo below.",
+    "pickWinnerCta": "Pick the winner",
+    "joinContestCta": "Join the contest (+2 pts)",
+    "winnerTitle": "Pick the winner",
+    "winnerSub": "Choose the best photo. The winner earns the big reward.",
+    "winnerConfirm": "Crown the winner",
+    "winnerNoSubmission": "That person hasn't submitted a photo.",
+    "winnerFailed": "Could not pick the winner — try again."
   },
   "challengeIntro": {
     "slide1": {

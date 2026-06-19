@@ -628,7 +628,24 @@
     "validateTitle": "Qui était là ?",
     "validateSub": "Coche tous ceux qui sont venus. Chacun gagne la récompense.",
     "validateConfirm": "Valider {{count}} présent(s)",
-    "noParticipants": "Personne n'a encore rejoint."
+    "noParticipants": "Personne n'a encore rejoint.",
+    "deadlineLabel": "Date limite",
+    "deadline24h": "24h",
+    "deadline3d": "3 jours",
+    "deadline1w": "1 semaine",
+    "deadlineHint": "Tous ceux qui rejoignent envoient une photo avant la date limite. Tu choisis le gagnant ensuite.",
+    "deadlineRequiredTitle": "Choisis une date limite",
+    "deadlineRequired": "Choisis la durée du concours.",
+    "deadlinePrefix": "Avant le",
+    "contestDone": "Ce concours est terminé.",
+    "youreInPhoto": "Tu es dans la partie — envoie ta photo ci-dessous.",
+    "pickWinnerCta": "Choisir le gagnant",
+    "joinContestCta": "Rejoindre le concours (+2 pts)",
+    "winnerTitle": "Choisis le gagnant",
+    "winnerSub": "Choisis la meilleure photo. Le gagnant remporte la grosse récompense.",
+    "winnerConfirm": "Couronner le gagnant",
+    "winnerNoSubmission": "Cette personne n'a pas envoyé de photo.",
+    "winnerFailed": "Impossible de choisir le gagnant — réessaie."
   },
   "challengeIntro": {
     "slide1": {

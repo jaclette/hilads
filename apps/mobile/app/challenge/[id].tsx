@@ -23,7 +23,7 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge, validatePresence,
+  abandonAcceptance, restartChallenge, validatePresence, pickWinner,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
@@ -389,6 +389,7 @@ export default function ChallengeChatScreen() {
   // Group-challenge UI state (Phase 4).
   const [joining,      setJoining]      = useState(false);
   const [validateOpen, setValidateOpen] = useState(false);
+  const [winnerOpen,   setWinnerOpen]   = useState(false);
   const [validating,   setValidating]   = useState(false);
 
   // Proof-review deep-link: a "📸 new proof to review" push routes here with
@@ -549,6 +550,25 @@ export default function ChallengeChatScreen() {
       loadParticipants();
     } catch (e) {
       Alert.alert(t('group.validateFailed', { defaultValue: 'Could not validate - try again.' }));
+    } finally {
+      setValidating(false);
+    }
+  }, [validating, id, t, loadChallenge, loadParticipants]);
+
+  const handlePickWinner = useCallback(async (ids: string[]) => {
+    const winnerId = ids[0];
+    if (validating || !winnerId) return;
+    setValidating(true);
+    try {
+      await pickWinner(id, winnerId);
+      setWinnerOpen(false);
+      await loadChallenge();
+      loadParticipants();
+    } catch (e) {
+      const msg = (e as { code?: string })?.code === 'no_submission'
+        ? t('group.winnerNoSubmission', { defaultValue: 'That person has not submitted a photo.' })
+        : t('group.winnerFailed', { defaultValue: 'Could not pick the winner - try again.' });
+      Alert.alert(msg);
     } finally {
       setValidating(false);
     }
@@ -977,6 +997,11 @@ export default function ChallengeChatScreen() {
   // Group challenge (Phase 4): join → meet → challenger validates presence.
   // Replaces the legacy accept→date→rate pipeline for these rows.
   const isGroup = (challenge.challenge_format ?? 'legacy') === 'group';
+  // Two flavours of group: MEET (one shared meet, challenger validates presence)
+  // and PHOTO-PROOF (everyone submits a photo before the deadline, challenger
+  // picks the winner). meet_at is the meet date for meet, the deadline for photo.
+  const isGroupPhoto = isGroup && ((challenge.validation_method ?? 'meet') === 'photo_proof' || (challenge.mode ?? 'local') === 'international');
+  const isGroupMeet  = isGroup && !isGroupPhoto;
   const meetSummary = isGroup && challenge.meet_at
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null;
@@ -1214,24 +1239,48 @@ export default function ChallengeChatScreen() {
           <ScoringInfoButton />
         </View>
 
-        {/* ── GROUP CHALLENGE (Phase 4): meet info + join / validate ──
-            Replaces the legacy accept→date→rate pipeline for group rows. */}
+        {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
+            Replaces the legacy accept→date→rate pipeline for group rows.
+            MEET → date + place + "validate who showed up".
+            PHOTO-PROOF → submission deadline + "pick the winner"; joined
+            takers submit via the ChallengeProofBlock rendered below. */}
         {isGroup && (
           <View style={styles.groupBlock}>
             {(meetSummary || challenge.venue) ? (
               <View style={styles.groupMeetCard}>
-                {meetSummary ? <Text style={styles.groupMeetLine}>📅 {meetSummary}</Text> : null}
-                {challenge.venue ? <Text style={styles.groupMeetLine}>📍 {challenge.venue}</Text> : null}
+                {meetSummary
+                  ? <Text style={styles.groupMeetLine}>
+                      {isGroupPhoto ? '⏳ ' : '📅 '}
+                      {isGroupPhoto ? t('group.deadlinePrefix', { defaultValue: 'Submit by' }) + ' ' : ''}{meetSummary}
+                    </Text>
+                  : null}
+                {isGroupMeet && challenge.venue ? <Text style={styles.groupMeetLine}>📍 {challenge.venue}</Text> : null}
               </View>
             ) : null}
             {isValidated ? (
-              <Text style={styles.groupStateText}>✓ {t('group.done', { defaultValue: 'This meet is done.' })}</Text>
+              <Text style={styles.groupStateText}>
+                ✓ {isGroupPhoto
+                  ? t('group.contestDone', { defaultValue: 'This contest is done.' })
+                  : t('group.done', { defaultValue: 'This meet is done.' })}
+              </Text>
             ) : isOwner ? (
-              <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>
-                <Text style={styles.groupPrimaryBtnText}>✓ {t('group.validateCta', { defaultValue: 'Validate who showed up' })}</Text>
+              <TouchableOpacity
+                style={styles.groupPrimaryBtn}
+                activeOpacity={0.85}
+                onPress={() => (isGroupPhoto ? setWinnerOpen(true) : setValidateOpen(true))}
+              >
+                <Text style={styles.groupPrimaryBtnText}>
+                  {isGroupPhoto
+                    ? `🏆 ${t('group.pickWinnerCta', { defaultValue: 'Pick the winner' })}`
+                    : `✓ ${t('group.validateCta', { defaultValue: 'Validate who showed up' })}`}
+                </Text>
               </TouchableOpacity>
             ) : iAmJoined ? (
-              <Text style={styles.groupStateText}>✓ {t('group.youreIn', { defaultValue: "You're in — see you there!" })}</Text>
+              <Text style={styles.groupStateText}>
+                ✓ {isGroupPhoto
+                  ? t('group.youreInPhoto', { defaultValue: "You're in — submit your photo below." })
+                  : t('group.youreIn', { defaultValue: "You're in — see you there!" })}
+              </Text>
             ) : (
               <TouchableOpacity
                 style={[styles.groupPrimaryBtn, (challenge.closed_to_new_joins || joining) && { opacity: 0.6 }]}
@@ -1242,11 +1291,27 @@ export default function ChallengeChatScreen() {
                 <Text style={styles.groupPrimaryBtnText}>
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
-                    : `＋ ${t('group.joinCta', { defaultValue: 'Join this meet (+2 pts)' })}`}
+                    : `＋ ${isGroupPhoto
+                        ? t('group.joinContestCta', { defaultValue: 'Join the contest (+2 pts)' })
+                        : t('group.joinCta', { defaultValue: 'Join this meet (+2 pts)' })}`}
                 </Text>
               </TouchableOpacity>
             )}
           </View>
+        )}
+
+        {/* Photo-proof GROUP: the joined taker submits a photo (and sees their
+            "waiting" state) via the same proof block the legacy flow uses, keyed
+            on their own group acceptance. Hidden for the challenger (they pick a
+            winner above) and for non-participants. */}
+        {isGroupPhoto && iAmJoined && !isOwner && myAcceptance && !isValidated && (
+          <ChallengeProofBlock
+            acceptanceId={myAcceptance.id}
+            iAmCreator={false}
+            iAmAcceptor={true}
+            proofRequirements={challenge.proof_requirements ?? null}
+            acceptancePhase={myAcceptance.phase}
+          />
         )}
 
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
@@ -1311,8 +1376,10 @@ export default function ChallengeChatScreen() {
             passively). Uses activeAcceptance so a terminal approved
             acceptance no longer keeps the "🎉 Challenge accomplished"
             banner permanently locked on the detail page after the
-            challenge wrapped. */}
-        {usesPhotoProof && effectiveActiveAcceptance && (
+            challenge wrapped. Group photo-proof has its OWN submit block above
+            (keyed on the group acceptance), so the legacy block is gated off
+            for group to avoid a double submit surface. */}
+        {!isGroup && usesPhotoProof && effectiveActiveAcceptance && (
           <ChallengeProofBlock
             acceptanceId={effectiveActiveAcceptance.id}
             iAmCreator={isOwner}
@@ -1956,14 +2023,27 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Group presence validation (challenger-only). */}
-      {isGroup && (
+      {/* Group MEET presence validation (challenger-only, multi-select). */}
+      {isGroupMeet && (
         <ValidatePresenceSheet
           visible={validateOpen}
           participants={participants}
           submitting={validating}
+          mode="presence"
           onClose={() => setValidateOpen(false)}
           onConfirm={handleValidatePresence}
+        />
+      )}
+
+      {/* Group PHOTO-PROOF winner pick (challenger-only, single-select). */}
+      {isGroupPhoto && (
+        <ValidatePresenceSheet
+          visible={winnerOpen}
+          participants={participants}
+          submitting={validating}
+          mode="winner"
+          onClose={() => setWinnerOpen(false)}
+          onConfirm={handlePickWinner}
         />
       )}
 

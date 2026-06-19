@@ -128,10 +128,15 @@ export default function CreateChallengeScreen() {
     if (mode === 'international' && visibility !== 'public') setVisibility('public');
   }, [mode, visibility]);
 
-  // Local MEET challenges are GROUP challenges (one shared meet at a set date +
-  // place). Edit keeps the legacy path for now, so group-create UI shows only on
-  // the create path.
-  const isGroup = !editId && mode === 'local' && validationMethod === 'meet';
+  // GROUP challenges (create path only - edit keeps the legacy path for now):
+  //   - MEET group: local + meet → one shared meet at a set date + place.
+  //   - PHOTO-PROOF group: photo_proof (local or international) → a contest with
+  //     a submission DEADLINE; everyone submits, the challenger picks the winner.
+  const isGroupMeet  = !editId && mode === 'local' && validationMethod === 'meet';
+  const isGroupPhoto = !editId && (validationMethod === 'photo_proof' || mode === 'international');
+  const isGroup      = isGroupMeet || isGroupPhoto;
+  // Submission deadline presets for photo-proof group (hours from now).
+  const [deadlineHours, setDeadlineHours] = useState<number | null>(null);
 
   // Re-template the return clause whenever the type changes, UNLESS the user
   // has already edited it manually (we don't want to clobber a custom phrase).
@@ -198,12 +203,12 @@ export default function CreateChallengeScreen() {
           // for the lifetime of the challenge - same rule as mode).
           validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForSubmit,
-          // Local MEET → group challenge with the meet date + place.
+          // Group: meet → date + place; photo-proof → submission deadline.
           ...(isGroup ? {
             format:     'group' as const,
-            meetAt,
-            meetEndsAt,
-            venue:      meetVenue,
+            meetAt:     isGroupMeet ? meetAt : Math.floor(Date.now() / 1000) + ((deadlineHours ?? 0) * 3600),
+            meetEndsAt: isGroupMeet ? meetEndsAt : null,
+            venue:      isGroupMeet ? meetVenue : null,
           } : {}),
         },
       );
@@ -230,10 +235,14 @@ export default function CreateChallengeScreen() {
       Alert.alert(t('intl.targetCityRequiredTitle'), t('intl.targetCityRequired'));
       return;
     }
-    // Group (local meet) requires a meet date + place set at creation.
-    if (isGroup && (!meetAt || !meetVenue)) {
+    // Group meet requires a date + place; photo-proof group requires a deadline.
+    if (isGroupMeet && (!meetAt || !meetVenue)) {
       setMeetError(true);
       Alert.alert(t('group.meetRequiredTitle'), t('group.meetRequired'));
+      return;
+    }
+    if (isGroupPhoto && !deadlineHours) {
+      Alert.alert(t('group.deadlineRequiredTitle', { defaultValue: 'Pick a deadline' }), t('group.deadlineRequired', { defaultValue: 'Choose how long the contest runs.' }));
       return;
     }
     const wantsPublic = (mode === 'international') || visibility === 'public';
@@ -356,7 +365,7 @@ export default function CreateChallengeScreen() {
             )}
 
             {/* Group meet: one date + place, set at creation. Required. */}
-            {isGroup && (
+            {isGroupMeet && (
               <View style={{ marginTop: Spacing.md }}>
                 <Text style={styles.sectionLabel}>{t('group.meetLabel', { defaultValue: 'When & where' })}</Text>
                 <TouchableOpacity
@@ -403,6 +412,39 @@ export default function CreateChallengeScreen() {
               {cityError ? t('intl.targetCityRequired') : t('intl.targetCityHint')}
             </Text>
           </>
+        )}
+
+        {/* Photo-proof group: a submission DEADLINE (one notion - reuses the
+            meet_at column). Everyone submits before it, then the challenger
+            picks the winner. Presets keep it one tap. */}
+        {isGroupPhoto && (
+          <View style={{ marginBottom: Spacing.md }}>
+            <Text style={styles.sectionLabel}>{t('group.deadlineLabel', { defaultValue: 'Submission deadline' })}</Text>
+            <View style={styles.deadlineRow}>
+              {[
+                { h: 24,  labelKey: 'group.deadline24h', dv: '24h' },
+                { h: 72,  labelKey: 'group.deadline3d',  dv: '3 days' },
+                { h: 168, labelKey: 'group.deadline1w',  dv: '1 week' },
+              ].map((opt) => {
+                const active = deadlineHours === opt.h;
+                return (
+                  <TouchableOpacity
+                    key={opt.h}
+                    style={[styles.deadlineChip, active && styles.deadlineChipActive]}
+                    activeOpacity={0.8}
+                    onPress={() => setDeadlineHours(opt.h)}
+                  >
+                    <Text style={[styles.deadlineChipText, active && styles.deadlineChipTextActive]}>
+                      {t(opt.labelKey, { defaultValue: opt.dv })}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <Text style={styles.sectionHint}>
+              {t('group.deadlineHint', { defaultValue: 'Everyone who joins submits a photo before the deadline. You pick the winner afterwards.' })}
+            </Text>
+          </View>
         )}
 
         {/* Visibility - Public default; Friends opt-in. Locked to Public
@@ -915,6 +957,26 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   sectionHintError: { color: '#FF6B5C', fontWeight: '600' },
+  deadlineRow: {
+    flexDirection: 'row',
+    gap:           Spacing.sm,
+    marginTop:     6,
+  },
+  deadlineChip: {
+    flex:            1,
+    alignItems:      'center',
+    paddingVertical: 12,
+    borderRadius:    Radius.md,
+    borderWidth:     1,
+    borderColor:     Colors.border,
+    backgroundColor: Colors.bg2,
+  },
+  deadlineChipActive: {
+    borderColor:     '#FF7A3C',
+    backgroundColor: 'rgba(255,122,60,0.12)',
+  },
+  deadlineChipText:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  deadlineChipTextActive: { color: '#FF7A3C' },
   cityPickerBtn: {
     flexDirection:     'row',
     alignItems:        'center',

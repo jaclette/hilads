@@ -599,7 +599,24 @@
     "validateConfirm": "Xác nhận {{count}} có mặt",
     "noParticipants": "Chưa có ai tham gia.",
     "join": "Tham gia",
-    "joinedCount": "{{count}} đã tham gia"
+    "joinedCount": "{{count}} đã tham gia",
+    "deadlineLabel": "Hạn nộp",
+    "deadline24h": "24h",
+    "deadline3d": "3 ngày",
+    "deadline1w": "1 tuần",
+    "deadlineHint": "Ai tham gia cũng gửi một ảnh trước hạn. Bạn chọn người thắng sau đó.",
+    "deadlineRequiredTitle": "Chọn hạn nộp",
+    "deadlineRequired": "Chọn thời lượng cuộc thi.",
+    "deadlinePrefix": "Nộp trước",
+    "contestDone": "Cuộc thi đã kết thúc.",
+    "youreInPhoto": "Bạn đã tham gia — gửi ảnh của bạn bên dưới.",
+    "pickWinnerCta": "Chọn người thắng",
+    "joinContestCta": "Tham gia cuộc thi (+2 điểm)",
+    "winnerTitle": "Chọn người thắng",
+    "winnerSub": "Chọn ảnh đẹp nhất. Người thắng nhận phần thưởng lớn.",
+    "winnerConfirm": "Vinh danh người thắng",
+    "winnerNoSubmission": "Người đó chưa gửi ảnh.",
+    "winnerFailed": "Không thể chọn người thắng — thử lại."
   },
   "challengeIntro": {
     "slide1": {
