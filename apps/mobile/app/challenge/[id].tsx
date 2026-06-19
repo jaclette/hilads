@@ -23,8 +23,9 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge,
+  abandonAcceptance, restartChallenge, validatePresence,
 } from '@/api/challenges';
+import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -385,6 +386,10 @@ export default function ChallengeChatScreen() {
   // pipeline + chat refresh elsewhere via the existing acceptance
   // listener; the local screen also nudges loadMyAcceptance() on close.
   const [proofReviewOpen, setProofReviewOpen] = useState(false);
+  // Group-challenge UI state (Phase 4).
+  const [joining,      setJoining]      = useState(false);
+  const [validateOpen, setValidateOpen] = useState(false);
+  const [validating,   setValidating]   = useState(false);
 
   // Proof-review deep-link: a "📸 new proof to review" push routes here with
   // ?reviewProof=1. Once the creator's acceptance has loaded at proof_submitted,
@@ -505,6 +510,49 @@ export default function ChallengeChatScreen() {
       // user cancelled or share failed - no-op
     }
   }, [challenge, t]);
+
+  // ── Group challenge (Phase 4): join + validate presence ─────────────────────
+  // Joining a group challenge reuses /accept (the backend branches on
+  // challenge_format and does a no-approval group join + the +2 spark).
+  const handleGroupJoin = useCallback(async () => {
+    if (joining) return;
+    if (!account?.id) {
+      const returnTo = encodeURIComponent(`/challenge/${id}`);
+      router.push(`/auth-gate?reason=join_challenge&returnTo=${returnTo}` as never);
+      return;
+    }
+    setJoining(true);
+    try {
+      await acceptChallenge(id);
+      await loadChallenge();
+      loadMyAcceptance();
+      loadParticipants();
+    } catch (e) {
+      const code = e instanceof AcceptChallengeError ? (e.code as string) : 'unknown';
+      Alert.alert(
+        code === 'closed_to_new_joins'
+          ? t('group.closed', { defaultValue: 'Closed to new joins' })
+          : t('group.joinFailed', { defaultValue: 'Could not join - try again.' }),
+      );
+    } finally {
+      setJoining(false);
+    }
+  }, [joining, account?.id, id, router, t, loadChallenge, loadMyAcceptance, loadParticipants]);
+
+  const handleValidatePresence = useCallback(async (presentIds: string[]) => {
+    if (validating) return;
+    setValidating(true);
+    try {
+      await validatePresence(id, presentIds);
+      setValidateOpen(false);
+      await loadChallenge();
+      loadParticipants();
+    } catch (e) {
+      Alert.alert(t('group.validateFailed', { defaultValue: 'Could not validate - try again.' }));
+    } finally {
+      setValidating(false);
+    }
+  }, [validating, id, t, loadChallenge, loadParticipants]);
 
   /**
    * PR2 - take-on flow.
@@ -926,6 +974,15 @@ export default function ChallengeChatScreen() {
   // closed = successfully completed (one-shot, no re-take). Treated like the
   // 'validated' archive for the passive "closed" state + Accept gating.
   const isClosed = !!challenge.closed;
+  // Group challenge (Phase 4): join → meet → challenger validates presence.
+  // Replaces the legacy accept→date→rate pipeline for these rows.
+  const isGroup = (challenge.challenge_format ?? 'legacy') === 'group';
+  const meetSummary = isGroup && challenge.meet_at
+    ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null;
+  // The viewer's own group membership (joined / present), if any.
+  const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null;
+  const iAmJoined = myGroupPhase === 'joined' || myGroupPhase === 'present';
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -1157,6 +1214,41 @@ export default function ChallengeChatScreen() {
           <ScoringInfoButton />
         </View>
 
+        {/* ── GROUP CHALLENGE (Phase 4): meet info + join / validate ──
+            Replaces the legacy accept→date→rate pipeline for group rows. */}
+        {isGroup && (
+          <View style={styles.groupBlock}>
+            {(meetSummary || challenge.venue) ? (
+              <View style={styles.groupMeetCard}>
+                {meetSummary ? <Text style={styles.groupMeetLine}>📅 {meetSummary}</Text> : null}
+                {challenge.venue ? <Text style={styles.groupMeetLine}>📍 {challenge.venue}</Text> : null}
+              </View>
+            ) : null}
+            {isValidated ? (
+              <Text style={styles.groupStateText}>✓ {t('group.done', { defaultValue: 'This meet is done.' })}</Text>
+            ) : isOwner ? (
+              <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>
+                <Text style={styles.groupPrimaryBtnText}>✓ {t('group.validateCta', { defaultValue: 'Validate who showed up' })}</Text>
+              </TouchableOpacity>
+            ) : iAmJoined ? (
+              <Text style={styles.groupStateText}>✓ {t('group.youreIn', { defaultValue: "You're in — see you there!" })}</Text>
+            ) : (
+              <TouchableOpacity
+                style={[styles.groupPrimaryBtn, (challenge.closed_to_new_joins || joining) && { opacity: 0.6 }]}
+                activeOpacity={0.85}
+                disabled={!!challenge.closed_to_new_joins || joining}
+                onPress={handleGroupJoin}
+              >
+                <Text style={styles.groupPrimaryBtnText}>
+                  {challenge.closed_to_new_joins
+                    ? t('group.closed', { defaultValue: 'Closed to new joins' })
+                    : `＋ ${t('group.joinCta', { defaultValue: 'Join this meet (+2 pts)' })}`}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
         {/* Lifecycle pipeline (replaces the old binary "in progress / done" pill).
             Visualises all 4 steps + highlights the viewer's current one.
             Tap behaviour depends on state:
@@ -1165,6 +1257,7 @@ export default function ChallengeChatScreen() {
                 surface; the bottom ScheduleBlock empty state is hidden)
               - otherwise → no-op (informational). The thread chat is right
                 below this, no navigation needed. */}
+        {!isGroup && (
         <ChallengePipeline
           // Creator has no acceptance of their own - effectiveActiveAcceptance
           // falls back to the taker's snapshot so the timeline reflects real
@@ -1208,6 +1301,7 @@ export default function ChallengeChatScreen() {
             return undefined;
           })()}
         />
+        )}
 
         {/* Photo-proof submission + verdict block. Renders for every
             challenge that uses the photo flow (international + local
@@ -1300,8 +1394,8 @@ export default function ChallengeChatScreen() {
       {/* Lifecycle-state row (was "Participants · N" + accept-pill row).
           Legacy avatar strip dropped - the channel-members strip above
           covers the "who's in" panel for everyone. Three passive states +
-          the Accept CTA remain. */}
-      {(() => {
+          the Accept CTA remain. Group rows use the group block above instead. */}
+      {!isGroup && (() => {
         // A completed challenge (isClosed) is permanently closed to new takers,
         // same passive state as the manual 'validated' archive.
         if ((isValidated || isClosed) && !isOwner) {
@@ -1862,6 +1956,17 @@ export default function ChallengeChatScreen() {
         />
       )}
 
+      {/* Group presence validation (challenger-only). */}
+      {isGroup && (
+        <ValidatePresenceSheet
+          visible={validateOpen}
+          participants={participants}
+          submitting={validating}
+          onClose={() => setValidateOpen(false)}
+          onConfirm={handleValidatePresence}
+        />
+      )}
+
       {/* Proof-spec popin - read-only sheet showing what the creator asked
           for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
       {challenge?.proof_requirements && (
@@ -2213,6 +2318,20 @@ const styles = StyleSheet.create({
     paddingTop:        Spacing.sm,
     paddingBottom:     Spacing.xs,
   },
+
+  // Group challenge block (meet info + join / validate).
+  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 10 },
+  groupMeetCard:  {
+    backgroundColor: Colors.bg2, borderRadius: 14, borderWidth: 1, borderColor: Colors.border,
+    paddingHorizontal: Spacing.md, paddingVertical: 12, gap: 4,
+  },
+  groupMeetLine:  { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  groupStateText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 8 },
+  groupPrimaryBtn: {
+    paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+    backgroundColor: 'rgba(255,122,60,0.16)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)',
+  },
+  groupPrimaryBtnText: { color: '#FF7A3C', fontSize: 15, fontWeight: '800' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into

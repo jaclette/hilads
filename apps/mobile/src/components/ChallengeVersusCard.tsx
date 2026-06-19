@@ -78,8 +78,13 @@ export function ChallengeVersusCard({
   const isValidated      = challenge.status === 'validated' || challenge.closed === true;
   const isInProgress     = !isValidated && challenge.is_in_progress === true;
   const isInternational  = (challenge.mode ?? 'local') === 'international';
+  const isGroup          = (challenge.challenge_format ?? 'legacy') === 'group';
   const hasTaker         = !!challenge.acceptor_user_id;
   const showOpenSlot     = !hasTaker; // states 1 + 3
+  // Group meet summary for the card (date + place).
+  const meetSummary = isGroup && challenge.meet_at
+    ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null;
 
   const audienceLabel: Record<ChallengeAudience, string> = {
     locals:    t('forLocals'),
@@ -122,6 +127,10 @@ export function ChallengeVersusCard({
           <View style={styles.validatedBadge}>
             <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
           </View>
+        ) : isGroup ? (
+          <View style={styles.availablePill}>
+            <Text style={styles.availablePillText}>👥 {t('card.joinedCount', { count: challenge.participant_count ?? 0, defaultValue: '{{count}} joined' })}</Text>
+          </View>
         ) : isInProgress ? (
           <View style={styles.statusPill}>
             <Text style={styles.statusPillText}>⏳ {t('card.inProgress')}</Text>
@@ -148,7 +157,15 @@ export function ChallengeVersusCard({
           <Text style={styles.versusGlyph}>{isValidated ? '🏆' : '⚡'}</Text>
         </View>
 
-        {showOpenSlot ? (
+        {isGroup ? (
+          // Group: no 1-v-1 taker - tap the "+" to open the challenge and join.
+          <OpenChallengeSlot
+            size={AVATAR_SIZE}
+            animated={animated}
+            onPress={onAcceptPress}
+            accessibilityLabel={t('group.join', { defaultValue: 'Join' })}
+          />
+        ) : showOpenSlot ? (
           <OpenChallengeSlot
             size={AVATAR_SIZE}
             animated={animated}
@@ -163,6 +180,13 @@ export function ChallengeVersusCard({
           />
         )}
       </View>
+
+      {/* Group meet summary - date + place, shown under the versus row. */}
+      {isGroup && (meetSummary || challenge.venue) ? (
+        <Text style={styles.groupMeet} numberOfLines={1}>
+          {meetSummary ? `📅 ${meetSummary}` : ''}{meetSummary && challenge.venue ? '  ·  ' : ''}{challenge.venue ? `📍 ${challenge.venue}` : ''}
+        </Text>
+      ) : null}
 
       {/* Title row - type emoji + title. Long titles auto-scroll left
           (same MarqueeText primitive the weather pill uses); short
@@ -466,6 +490,8 @@ const styles = StyleSheet.create({
   // emoji or the card padding.
   titleMarquee: { flex: 1, height: 22 },
   title:        { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22 },
+
+  groupMeet:    { fontSize: 12, fontWeight: '600', color: '#FF7A3C', marginTop: 8, textAlign: 'center' },
 
   byCreator: {
     fontSize:   12,

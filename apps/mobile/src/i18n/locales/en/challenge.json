@@ -69,7 +69,8 @@
     "takeIt": "Take it on",
     "takerLabel": "Taker",
     "rankBadge": "Rank {{rank}}",
-    "photoBadge": "Photo"
+    "photoBadge": "Photo",
+    "joinedCount": "{{count}} joined"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",
@@ -639,6 +640,18 @@
     "meetHint": "Everyone who joins meets here together. You validate who showed up afterwards.",
     "meetRequired": "Pick a date and a place for the meet.",
     "meetRequiredTitle": "Set the meet",
-    "meetSet": "Set the meet"
+    "meetSet": "Set the meet",
+    "join": "Join",
+    "done": "This meet is done.",
+    "validateCta": "Validate who showed up",
+    "youreIn": "You're in — see you there!",
+    "joinCta": "Join this meet (+2 pts)",
+    "closed": "Closed to new joins",
+    "joinFailed": "Could not join — try again.",
+    "validateFailed": "Could not validate — try again.",
+    "validateTitle": "Who showed up?",
+    "validateSub": "Tick everyone who came to the meet. They each earn the reward.",
+    "validateConfirm": "Validate {{count}} present",
+    "noParticipants": "Nobody has joined yet."
   }
 }

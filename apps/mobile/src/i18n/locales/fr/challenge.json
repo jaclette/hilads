@@ -69,7 +69,8 @@
     "takeIt": "Je le relève",
     "takerLabel": "Preneur",
     "rankBadge": "Rang {{rank}}",
-    "photoBadge": "Photo"
+    "photoBadge": "Photo",
+    "joinedCount": "{{count}} inscrits"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
@@ -607,6 +608,18 @@
     "meetHint": "Tous ceux qui rejoignent se retrouvent ici ensemble. Tu valides qui était présent après.",
     "meetRequired": "Choisis une date et un lieu pour le rendez-vous.",
     "meetRequiredTitle": "Définir le rendez-vous",
-    "meetSet": "Définir le rendez-vous"
+    "meetSet": "Définir le rendez-vous",
+    "join": "Rejoindre",
+    "done": "Ce rendez-vous est terminé.",
+    "validateCta": "Valide qui était présent",
+    "youreIn": "Tu es inscrit — à bientôt !",
+    "joinCta": "Rejoindre (+2 pts)",
+    "closed": "Fermé aux nouvelles inscriptions",
+    "joinFailed": "Impossible de rejoindre — réessaie.",
+    "validateFailed": "Validation impossible — réessaie.",
+    "validateTitle": "Qui était là ?",
+    "validateSub": "Coche tous ceux qui sont venus. Chacun gagne la récompense.",
+    "validateConfirm": "Valider {{count}} présent(s)",
+    "noParticipants": "Personne n'a encore rejoint."
   }
 }
