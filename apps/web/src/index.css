@@ -1417,6 +1417,21 @@ html, body, #root {
   color: var(--muted-2, #888);
 }
 
+.scoring-info-examples-btn {
+  margin-top: 16px;
+  width: 100%;
+  padding: 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  background: rgba(255, 122, 60, 0.14);
+  border: 1px solid rgba(255, 122, 60, 0.45);
+  color: #ff7a3c;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+.scoring-info-examples-btn:hover  { background: rgba(255, 122, 60, 0.2); }
+.scoring-info-examples-btn:active { transform: scale(0.98); }
+
 /* ── New mobile header - 3-section redesign ──────────────── */
 
 /* Shown only on mobile; desktop uses header-desktop-layout */

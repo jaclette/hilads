@@ -5471,7 +5471,7 @@ export default function App() {
             {/* "How to earn points" helper - the challenges browser had no
                 scoring affordance (only the channel did). Labeled pill. */}
             <div className="challenge-tab-scoring">
-              <ScoringInfoButton labeled />
+              <ScoringInfoButton labeled onSeeExamples={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }} />
             </div>
             {/* My challenges - prominent entry to the creator/taker list
                 (members only). Opens the user's profile on its challenges tab,

@@ -571,7 +571,8 @@
       "host": "Organiser un rendez-vous — base + par personne présente",
       "submit": "Soumettre une photo à un concours",
       "win": "Gagner le concours photo"
-    }
+    },
+    "seeExamples": "Voir 3 vrais exemples"
   },
   "scoreCelebration": {
     "unit": "points",

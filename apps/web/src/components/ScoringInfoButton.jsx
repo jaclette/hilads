@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next'
  * mobile pass shipped these keys for all 18 non-en locales - they live
  * in the same JSON file on web.
  */
-export default function ScoringInfoButton({ size = 22, className = '', labeled = false }) {
+export default function ScoringInfoButton({ size = 22, className = '', labeled = false, onSeeExamples }) {
   const { t } = useTranslation('challenge')
   const [open, setOpen] = useState(false)
 
@@ -51,12 +51,12 @@ export default function ScoringInfoButton({ size = 22, className = '', labeled =
         </button>
       )}
 
-      {open && <ScoringInfoModal onClose={() => setOpen(false)} t={t} />}
+      {open && <ScoringInfoModal onClose={() => setOpen(false)} t={t} onSeeExamples={onSeeExamples} />}
     </>
   )
 }
 
-function ScoringInfoModal({ onClose, t }) {
+function ScoringInfoModal({ onClose, t, onSeeExamples }) {
   // Group-model "ways to earn" (mirrors score_rules in migrate.php).
   const ways = [
     { icon: '🙌', labelKey: 'scoringInfo.ways.join',    points: '+2'  },
@@ -106,6 +106,18 @@ function ScoringInfoModal({ onClose, t }) {
           ))}
 
           <p className="scoring-info-footnote">{t('scoringInfo.footnote')}</p>
+
+          {/* See real examples - opens the Success Challenges showcase so the
+              user can see real completed challenges, not just rules. */}
+          {onSeeExamples && (
+            <button
+              type="button"
+              className="scoring-info-examples-btn"
+              onClick={() => { onClose(); onSeeExamples() }}
+            >
+              ✨ {t('scoringInfo.seeExamples', { defaultValue: 'See 3 real examples' })} →
+            </button>
+          )}
         </div>
       </div>
     </div>

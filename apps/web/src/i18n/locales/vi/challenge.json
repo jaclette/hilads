@@ -544,7 +544,8 @@
       "host": "Tổ chức buổi gặp — cơ bản + mỗi người có mặt",
       "submit": "Gửi ảnh dự thi",
       "win": "Thắng cuộc thi ảnh"
-    }
+    },
+    "seeExamples": "Xem 3 ví dụ thực tế"
   },
   "scoreCelebration": {
     "unit": "điểm",

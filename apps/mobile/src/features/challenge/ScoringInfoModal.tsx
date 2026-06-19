@@ -1,6 +1,7 @@
 import {
-  Modal, View, Text, Pressable, ScrollView, StyleSheet,
+  Modal, View, Text, Pressable, ScrollView, StyleSheet, TouchableOpacity,
 } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -24,6 +25,7 @@ export function ScoringInfoModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation('challenge');
+  const router = useRouter();
 
   // Group-model "ways to earn". Numbers mirror score_rules in migrate.php:
   // join +2, challenge_created +10, present +40 (+ host base 10 / 5 per head),
@@ -79,6 +81,18 @@ export function ScoringInfoModal({
           ))}
 
           <Text style={styles.footnote}>{t('scoringInfo.footnote')}</Text>
+
+          {/* See real examples - links to the Success Challenges showcase so the
+              user can see 3 completed challenges instead of just reading rules. */}
+          <TouchableOpacity
+            style={styles.examplesBtn}
+            activeOpacity={0.85}
+            onPress={() => { onClose(); router.push('/challenge/showcase' as never); }}
+          >
+            <Text style={styles.examplesBtnText}>
+              ✨ {t('scoringInfo.seeExamples', { defaultValue: 'See 3 real examples' })} →
+            </Text>
+          </TouchableOpacity>
         </ScrollView>
       </View>
     </Modal>
@@ -169,4 +183,15 @@ const styles = StyleSheet.create({
   totalValue: { width: 88, fontSize: FontSizes.md, fontWeight: '800', color: '#FFC93C', textAlign: 'right' },
 
   footnote: { marginTop: Spacing.sm, fontSize: FontSizes.xs, color: Colors.muted2, fontStyle: 'italic' },
+
+  examplesBtn: {
+    marginTop:       Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius:    Radius.full,
+    alignItems:      'center',
+    backgroundColor: 'rgba(255,122,60,0.14)',
+    borderWidth:     1,
+    borderColor:     'rgba(255,122,60,0.45)',
+  },
+  examplesBtnText: { fontSize: FontSizes.md, fontWeight: '800', color: '#FF7A3C' },
 });

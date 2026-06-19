@@ -286,7 +286,8 @@
       "host": "Host a meet — base + per person who shows up",
       "submit": "Submit a photo to a contest",
       "win": "Win the photo contest"
-    }
+    },
+    "seeExamples": "See 3 real examples"
   },
   "leaderboard": {
     "title": "🏆 Most Local",
