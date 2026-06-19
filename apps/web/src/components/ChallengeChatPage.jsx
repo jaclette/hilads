@@ -15,7 +15,7 @@ import {
   fetchChallengeById,
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
-  acceptChallenge, fetchMyAcceptances, AcceptChallengeError, validatePresence,
+  acceptChallenge, fetchMyAcceptances, AcceptChallengeError, validatePresence, pickWinner,
   fetchChallengeMessages, sendChallengeMessage, proposeDate, toggleChallengeReaction,
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
@@ -136,6 +136,9 @@ export default function ChallengeChatPage({
   const [validateOpen, setValidateOpen] = useState(false)
   const [validating,   setValidating]   = useState(false)
   const [presentChecked, setPresentChecked] = useState({})
+  // Photo-proof group: single-select winner pick.
+  const [winnerOpen, setWinnerOpen] = useState(false)
+  const [winnerPick, setWinnerPick] = useState(null)
   // Visibility picker - Public / Friends / Private dropdown opened from
   // the inline pill. "Private" maps to closed_to_new_joins=true (the
   // mutual go-private vote backend isn't surfaced here).
@@ -288,6 +291,10 @@ export default function ChallengeChatPage({
   const isClosed = !!challenge?.closed
   // Group challenge (Phase 4): join → meet → challenger validates presence.
   const isGroup = (challenge?.challenge_format ?? 'legacy') === 'group'
+  // MEET (validate presence) vs PHOTO-PROOF (submit + pick winner). meet_at is
+  // the meet date for meet, the submission deadline for photo.
+  const isGroupPhoto = isGroup && ((challenge?.validation_method ?? 'meet') === 'photo_proof' || (challenge?.mode ?? 'local') === 'international')
+  const isGroupMeet  = isGroup && !isGroupPhoto
   const meetSummary = (isGroup && challenge?.meet_at)
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null
@@ -434,6 +441,24 @@ export default function ChallengeChatPage({
       setValidating(false)
     }
   }, [validating, participants, presentChecked, id, t, loadChallenge, loadParticipants])
+
+  const handlePickWinner = useCallback(async () => {
+    if (validating || !winnerPick) return
+    setValidating(true)
+    try {
+      await pickWinner(id, winnerPick)
+      setWinnerOpen(false)
+      await loadChallenge()
+      loadParticipants()
+    } catch (e) {
+      const msg = e?.code === 'no_submission'
+        ? t('group.winnerNoSubmission', { ns: 'challenge', defaultValue: "That person hasn't submitted a photo." })
+        : t('group.winnerFailed', { ns: 'challenge', defaultValue: 'Could not pick the winner — try again.' })
+      window.alert(msg)
+    } finally {
+      setValidating(false)
+    }
+  }, [validating, winnerPick, id, t, loadChallenge, loadParticipants])
 
   // Participation probe. Resolves to true for creator + active acceptor
   // implicitly (server-side); for everyone else it's the join-row check.
@@ -1056,27 +1081,63 @@ export default function ChallengeChatPage({
         <ScoringInfoButton />
       </div>
 
-      {/* ── GROUP CHALLENGE (Phase 4): meet info + join / validate ── */}
+      {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
+          MEET → date + place + "validate who showed up".
+          PHOTO-PROOF → submission deadline + "pick the winner"; joined takers
+          submit via the ChallengeProofBlock rendered below. */}
       {isGroup && (
         <div style={{ padding: '4px 12px 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
           {(meetSummary || challenge.venue) ? (
             <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 14, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {meetSummary ? <div style={{ fontWeight: 600 }}>📅 {meetSummary}</div> : null}
-              {challenge.venue ? <div style={{ fontWeight: 600 }}>📍 {challenge.venue}</div> : null}
+              {meetSummary
+                ? <div style={{ fontWeight: 600 }}>
+                    {isGroupPhoto ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ` : '📅 '}{meetSummary}
+                  </div>
+                : null}
+              {isGroupMeet && challenge.venue ? <div style={{ fontWeight: 600 }}>📍 {challenge.venue}</div> : null}
             </div>
           ) : null}
           {isValidated ? (
-            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>✓ {t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}</div>
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
+              ✓ {isGroupPhoto
+                ? t('group.contestDone', { ns: 'challenge', defaultValue: 'This contest is done.' })
+                : t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}
+            </div>
           ) : isOwner ? (
-            <button type="button" style={GROUP_BTN_STYLE} onClick={() => setValidateOpen(true)}>✓ {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}</button>
+            <button type="button" style={GROUP_BTN_STYLE} onClick={() => (isGroupPhoto ? setWinnerOpen(true) : setValidateOpen(true))}>
+              {isGroupPhoto
+                ? `🏆 ${t('group.pickWinnerCta', { ns: 'challenge', defaultValue: 'Pick the winner' })}`
+                : `✓ ${t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}`}
+            </button>
           ) : iAmJoined ? (
-            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>✓ {t('group.youreIn', { ns: 'challenge', defaultValue: "You're in — see you there!" })}</div>
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
+              ✓ {isGroupPhoto
+                ? t('group.youreInPhoto', { ns: 'challenge', defaultValue: "You're in — submit your photo below." })
+                : t('group.youreIn', { ns: 'challenge', defaultValue: "You're in — see you there!" })}
+            </div>
           ) : (
             <button type="button" style={{ ...GROUP_BTN_STYLE, opacity: (challenge.closed_to_new_joins || joining) ? 0.6 : 1 }} disabled={!!challenge.closed_to_new_joins || joining} onClick={handleGroupJoin}>
-              {challenge.closed_to_new_joins ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' }) : `＋ ${t('group.joinCta', { ns: 'challenge', defaultValue: 'Join this meet (+2 pts)' })}`}
+              {challenge.closed_to_new_joins
+                ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' })
+                : `＋ ${isGroupPhoto
+                    ? t('group.joinContestCta', { ns: 'challenge', defaultValue: 'Join the contest (+2 pts)' })
+                    : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join this meet (+2 pts)' })}`}
             </button>
           )}
         </div>
+      )}
+
+      {/* Photo-proof GROUP: the joined taker submits a photo via the same proof
+          block the legacy flow uses, keyed on their own group acceptance. Hidden
+          for the challenger (they pick a winner above) and non-participants. */}
+      {isGroupPhoto && iAmJoined && !isOwner && myAcceptance && !isValidated && (
+        <ChallengeProofBlock
+          acceptanceId={myAcceptance.id}
+          iAmCreator={false}
+          iAmAcceptor={true}
+          proofRequirements={challenge.proof_requirements ?? null}
+          acceptancePhase={myAcceptance.phase}
+        />
       )}
 
       {/* Lifecycle pipeline (legacy rows only - group uses the block above). */}
@@ -1125,8 +1186,10 @@ export default function ChallengeChatPage({
           passively). Uses activeAcceptance instead of myAcceptance so
           a terminal approved acceptance no longer keeps the
           "🎉 Challenge accomplished" banner permanently locked on the
-          detail page after the challenge wrapped. */}
-      {usesPhotoProof && effectiveActiveAcceptance && (
+          detail page after the challenge wrapped. Group photo-proof has its
+          OWN submit block above (keyed on the group acceptance), so the legacy
+          block is gated off for group to avoid a double submit surface. */}
+      {!isGroup && usesPhotoProof && effectiveActiveAcceptance && (
         <ChallengeProofBlock
           acceptanceId={effectiveActiveAcceptance.id}
           iAmCreator={isOwner}
@@ -1841,6 +1904,32 @@ export default function ChallengeChatPage({
               onClick={handleValidatePresence}
             >
               {validating ? '…' : t('group.validateConfirm', { ns: 'challenge', count: participants.filter(p => presentChecked[p.id] !== false).length, defaultValue: 'Validate {{count}} present' })}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Group PHOTO-PROOF winner pick (challenger-only, single-select). */}
+      {isGroupPhoto && winnerOpen && (
+        <div onClick={() => setWinnerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px 28px', maxHeight: '80vh', overflowY: 'auto' }}>
+            <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>{t('group.winnerTitle', { ns: 'challenge', defaultValue: 'Pick the winner' })}</h3>
+            <p style={{ margin: '0 0 12px', color: 'var(--muted,#999)', fontSize: 14 }}>{t('group.winnerSub', { ns: 'challenge', defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</p>
+            {participants.length === 0 ? (
+              <p style={{ color: 'var(--muted,#999)', textAlign: 'center', padding: '20px 0' }}>{t('group.noParticipants', { ns: 'challenge', defaultValue: 'Nobody has joined yet.' })}</p>
+            ) : participants.map(p => (
+              <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', cursor: 'pointer' }}>
+                <input type="radio" name="winner-pick" checked={winnerPick === p.id} onChange={() => setWinnerPick(p.id)} />
+                <span style={{ fontWeight: 600 }}>{p.displayName}</span>
+              </label>
+            ))}
+            <button
+              type="button"
+              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || !winnerPick) ? 0.5 : 1 }}
+              disabled={validating || !winnerPick}
+              onClick={handlePickWinner}
+            >
+              {validating ? '…' : `🏆 ${t('group.winnerConfirm', { ns: 'challenge', defaultValue: 'Crown the winner' })}`}
             </button>
           </div>
         </div>

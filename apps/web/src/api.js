@@ -710,6 +710,25 @@ export async function validatePresence(challengeId, presentUserIds) {
   return res.json() // { ok, present_count, present_ids }
 }
 
+// Challenger designates the winning photo of a GROUP photo-proof contest. The
+// winner earns the +40 bonus and the challenge is marked validated. The backend
+// rejects a pick whose user has no submission (error code 'no_submission').
+export async function pickWinner(challengeId, winnerUserId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/pick-winner`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ winnerUserId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err = new Error(data.error || 'Failed to pick winner')
+    err.code = data.code
+    throw err
+  }
+  return res.json() // { ok, winnerUserId }
+}
+
 export async function unvalidateChallenge(challengeId, guestId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/unvalidate`, {
     method: 'POST',

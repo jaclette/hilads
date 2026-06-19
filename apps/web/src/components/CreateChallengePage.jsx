@@ -149,7 +149,13 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
   const [meetVenue,      setMeetVenue]      = useState(null)
   const [meetPickerOpen, setMeetPickerOpen] = useState(false)
   const [meetError,      setMeetError]      = useState(false)
-  const isGroup = !isEdit && mode === 'local' && validationMethod === 'meet'
+  // Photo-proof group (P4): photo_proof (local) + international challenges are
+  // GROUP with a submission DEADLINE (preset hours; reuses meet_at). Meet group
+  // keeps the date+place picker.
+  const [deadlineHours,  setDeadlineHours]  = useState(null)
+  const isGroupMeet  = !isEdit && mode === 'local' && validationMethod === 'meet'
+  const isGroupPhoto = !isEdit && (validationMethod === 'photo_proof' || mode === 'international')
+  const isGroup = isGroupMeet || isGroupPhoto
 
   // Visibility selector. International rows are always public - the toggle
   // is rendered but locked, with a tooltip explaining why. Private isn't
@@ -215,8 +221,13 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           // Local-only choice; server forces 'photo_proof' for international.
           validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForApi,
-          // Local MEET → group challenge with the meet date + place.
-          ...(isGroup ? { format: 'group', meetAt, meetEndsAt, venue: meetVenue } : {}),
+          // Group: meet → date + place; photo-proof → submission deadline.
+          ...(isGroup ? {
+            format:     'group',
+            meetAt:     isGroupMeet ? meetAt : Math.floor(Date.now() / 1000) + ((deadlineHours ?? 0) * 3600),
+            meetEndsAt: isGroupMeet ? meetEndsAt : null,
+            venue:      isGroupMeet ? meetVenue : null,
+          } : {}),
         })
         onCreated?.(challenge)
       }
@@ -237,10 +248,14 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
     e.preventDefault()
     if (!title.trim() || submitting) return
 
-    // Group (local meet) requires a meet date + place set at creation.
-    if (isGroup && (!meetAt || !meetVenue)) {
+    // Group meet requires a date + place; photo-proof group requires a deadline.
+    if (isGroupMeet && (!meetAt || !meetVenue)) {
       setMeetError(true)
       setError(t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date and a place for the meet.' }))
+      return
+    }
+    if (isGroupPhoto && !deadlineHours) {
+      setError(t('group.deadlineRequired', { ns: 'challenge', defaultValue: 'Choose how long the contest runs.' }))
       return
     }
 
@@ -357,7 +372,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
               )}
 
               {/* Group meet: one date + place, set at creation. Required. */}
-              {isGroup && (
+              {isGroupMeet && (
                 <div style={{ marginTop: 12 }}>
                   <p className="cef-label">{t('group.meetLabel', { ns: 'challenge', defaultValue: 'When & where' })}</p>
                   <button
@@ -444,6 +459,35 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
               autoFocus
             />
           </div>
+
+          {/* Photo-proof group: a submission DEADLINE (reuses meet_at). Shown
+              for both local-photo and international. Presets keep it one tap. */}
+          {isGroupPhoto && (
+            <div className="cef-section">
+              <p className="cef-label">{t('group.deadlineLabel', { ns: 'challenge', defaultValue: 'Submission deadline' })}</p>
+              <div className="cef-segmented" role="radiogroup">
+                {[
+                  { h: 24,  k: 'group.deadline24h', dv: '24h' },
+                  { h: 72,  k: 'group.deadline3d',  dv: '3 days' },
+                  { h: 168, k: 'group.deadline1w',  dv: '1 week' },
+                ].map(opt => (
+                  <button
+                    key={opt.h}
+                    type="button"
+                    role="radio"
+                    aria-checked={deadlineHours === opt.h}
+                    className={`cef-segment ${deadlineHours === opt.h ? 'cef-segment--active' : ''}`}
+                    onClick={() => setDeadlineHours(opt.h)}
+                  >
+                    <span>{t(opt.k, { ns: 'challenge', defaultValue: opt.dv })}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="cef-hint">
+                {t('group.deadlineHint', { ns: 'challenge', defaultValue: 'Everyone who joins submits a photo before the deadline. You pick the winner afterwards.' })}
+              </p>
+            </div>
+          )}
 
           {/* Visibility - two-state pill (Public / Friends). Locked to
               Public when mode=international with a tooltip explaining why.
