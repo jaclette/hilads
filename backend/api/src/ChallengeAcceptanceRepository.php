@@ -17,12 +17,10 @@ declare(strict_types=1);
  *   approved   → creator marked the challenge accomplished post-debrief
  *   rejected   → creator marked it not done
  *
- * Cap enforcement: the caller checks countByChallenge() < max_participants
- * BEFORE create(). Race against the cap is bounded by Postgres' UNIQUE on
- * (challenge_id, acceptor_user_id) - a duplicate accept always fails - but
- * two distinct users hitting the +1th slot simultaneously could over-fill
- * by one. Acceptable for the current scale; revisit with FOR UPDATE if it
- * becomes a real issue.
+ * Concurrency: Postgres' UNIQUE on (challenge_id, acceptor_user_id) makes a
+ * duplicate accept by the same user always fail. The legacy max_participants
+ * cap is gone (1:1 for legacy, unbounded joins for group), so there's no
+ * slot-race to guard anymore.
  */
 class ChallengeAcceptanceRepository
 {
@@ -135,21 +133,6 @@ class ChallengeAcceptanceRepository
         ");
         $stmt->execute(['id' => $challengeId]);
         return array_map(static fn($r) => self::format($r), $stmt->fetchAll());
-    }
-
-    /**
-     * Count of NON-rejected acceptances. Used by the historical cap check.
-     * Kept for back-compat callers; the 1:1 model uses hasActiveAcceptance()
-     * below.
-     */
-    public static function countByChallenge(string $challengeId): int
-    {
-        $stmt = Database::pdo()->prepare("
-            SELECT COUNT(*) FROM challenge_acceptances
-            WHERE challenge_id = :id AND phase != 'rejected'
-        ");
-        $stmt->execute(['id' => $challengeId]);
-        return (int) $stmt->fetchColumn();
     }
 
     /**
@@ -632,8 +615,8 @@ class ChallengeAcceptanceRepository
     /**
      * Creator rejects a pending take-on request. Flips phase='pending' →
      * 'rejected', closing the thread without unlocking the chat. Mirrors
-     * approveTakeOn(); slot reopens because rejected rows don't count
-     * against the cap (countByChallenge excludes them).
+     * approveTakeOn(); the challenge frees back to available because
+     * hasActiveAcceptance() ignores rejected rows.
      */
     public static function rejectTakeOn(string $acceptanceId): ?array
     {
