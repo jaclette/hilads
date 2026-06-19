@@ -9346,6 +9346,36 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
     ]);
 });
 
+// GET /api/v1/challenges/{challengeId}/submissions  (GROUP photo-proof)
+// Every submitter's latest photo + who they are, plus the winner (if picked).
+// Readable by anyone who can see the challenge - this is the in-channel gallery
+// (everyone sees the photos) AND the challenger's winner picker.
+$router->add('GET', '/api/v1/challenges/{challengeId}/submissions', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser  = AuthService::requireAuth();
+    // Visibility-checked: friends/private rows the viewer can't see → 404.
+    $challenge = ChallengeRepository::findById($challengeId, $authUser['id']);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    $isPhoto = ($challenge['validation_method'] ?? 'meet') === 'photo_proof' || ($challenge['mode'] ?? 'local') === 'international';
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group' || !$isPhoto) {
+        Response::json(['submissions' => [], 'winnerUserId' => null]);
+        return;
+    }
+    $pdo = Database::pdo();
+    $w   = $pdo->prepare("SELECT user_id FROM score_events WHERE challenge_id = ? AND kind = 'winner' LIMIT 1");
+    $w->execute([$challengeId]);
+    $winnerUserId = $w->fetchColumn() ?: null;
+    Response::json([
+        'submissions'  => ChallengeProofRepository::listGroupSubmissions($challengeId),
+        'winnerUserId' => $winnerUserId,
+    ]);
+});
+
 // POST /api/v1/challenges/{challengeId}/pick-winner  (Phase P3, GROUP photo-proof)
 // The challenger designates the best photo. Body: { winnerUserId }. The winner
 // earns +40; the challenge is marked validated. One winner per challenge. Works
@@ -9415,6 +9445,18 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
     }
     $pdo->prepare("UPDATE channel_challenges SET status='validated', validated_at=COALESCE(validated_at,now()), updated_at=now() WHERE channel_id = ?")
         ->execute([$challengeId]);
+
+    // Mark the winner's latest photo as the challenger-approved proof. This is
+    // the same invariant the success showcase reads (status='approved'), so the
+    // winning photo is the one that surfaces. The proof-verdict trigger early-
+    // returns for group, so this fires no legacy scoring.
+    $pdo->prepare("
+        UPDATE challenge_proofs SET status = 'approved', reviewed_at = now()
+        WHERE id = (
+            SELECT id FROM challenge_proofs
+            WHERE acceptance_id = ? ORDER BY submitted_at DESC LIMIT 1
+        )
+    ")->execute([$winnerAcc]);
 
     try { MonthlyRankService::recalcAfterScoreChange($winnerUserId); } catch (\Throwable $e) {}
     try { broadcastChallengeAcceptedToWs($winnerUserId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}

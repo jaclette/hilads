@@ -242,6 +242,26 @@ export async function pickWinner(
   return api.post(`/challenges/${challengeId}/pick-winner`, { winnerUserId });
 }
 
+/** One submitter's photo in a GROUP photo-proof contest gallery. */
+export interface GroupSubmission {
+  id:           string;
+  user_id:      string;
+  display_name: string;
+  avatar_url:   string | null;
+  media_url:    string;
+  media_type:   string;
+  status:       string;
+  submitted_at: number;
+}
+
+/** Every submitter's photo for a GROUP photo-proof challenge + the winner (if
+ *  picked). Powers the in-channel submissions gallery and the winner picker. */
+export async function fetchGroupSubmissions(
+  challengeId: string,
+): Promise<{ submissions: GroupSubmission[]; winnerUserId: string | null }> {
+  return api.get(`/challenges/${challengeId}/submissions`);
+}
+
 /** Owner-only edit of a challenge's title / type / audience / return clause.
  *  Status is not editable here - use validateChallenge(). max_participants
  *  is no longer accepted (1:1 model). Mode is also not editable - delete +

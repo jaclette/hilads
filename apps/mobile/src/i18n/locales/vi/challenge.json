@@ -646,7 +646,14 @@
     "winnerSub": "Chọn ảnh đẹp nhất. Người thắng nhận phần thưởng lớn.",
     "winnerConfirm": "Vinh danh người thắng",
     "winnerNoSubmission": "Người đó chưa gửi ảnh.",
-    "winnerFailed": "Không thể chọn người thắng — thử lại."
+    "winnerFailed": "Không thể chọn người thắng — thử lại.",
+    "submissionsHeader": "{{count}} ảnh",
+    "tapToPick": "chọn ảnh đẹp nhất",
+    "winnerTag": "Người thắng",
+    "pickThis": "Chọn",
+    "winnerConfirmTitle": "Vinh danh người thắng?",
+    "winnerConfirmBody": "{{name}} nhận phần thưởng lớn.",
+    "pickHint": "Chọn người thắng từ các ảnh bên dưới."
   },
   "challengeIntro": {
     "slide1": {

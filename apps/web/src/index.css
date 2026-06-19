@@ -13138,6 +13138,52 @@ body.has-app-promo-banner .page-header {
   white-space: nowrap;
 }
 
+/* ── Group photo-proof submissions gallery (everyone sees every photo) ── */
+.gsg-wrap { margin: 12px; display: flex; flex-direction: column; gap: 10px; }
+.gsg-header { font-size: 0.86rem; font-weight: 800; color: var(--text, #f3eee9); }
+.gsg-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.gsg-tile {
+  background: var(--bg3, #1a1614);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.gsg-tile--win { border: 2px solid #ffc93c; }
+.gsg-photo-btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; position: relative; }
+.gsg-photo { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: #000; }
+.gsg-win-badge {
+  position: absolute; top: 6px; left: 6px;
+  background: rgba(255, 201, 60, 0.95); color: #1a1206;
+  font-size: 0.7rem; font-weight: 800; border-radius: 999px; padding: 2px 8px;
+}
+.gsg-picking { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.45); color: #fff; font-size: 1.4rem; }
+.gsg-footer { display: flex; align-items: center; gap: 6px; padding: 8px; }
+.gsg-avatar {
+  width: 22px; height: 22px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.66rem; font-weight: 700;
+}
+.gsg-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.gsg-name { font-size: 0.76rem; font-weight: 700; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gsg-pick-btn {
+  margin: 0 8px 8px; padding: 8px; width: calc(100% - 16px);
+  border-radius: 999px; cursor: pointer;
+  background: rgba(255, 201, 60, 0.14); border: 1px solid rgba(255, 201, 60, 0.45);
+  color: #ffc93c; font-size: 0.76rem; font-weight: 800;
+}
+.gsg-pick-btn:disabled { opacity: 0.5; cursor: default; }
+.gsg-preview-backdrop {
+  position: fixed; inset: 0; z-index: 9100;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+.gsg-preview-img { max-width: 92%; max-height: 70%; object-fit: contain; border-radius: 8px; }
+.gsg-preview-name { color: #fff; font-weight: 800; font-size: 1rem; }
+.gsg-preview-pick {
+  padding: 12px 22px; border-radius: 999px; border: 0; cursor: pointer;
+  background: #ffc93c; color: #1a1206; font-weight: 800; font-size: 1rem;
+}
+
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge detail - large type emoji in the header, creator/participants
    split, with brand-orange Challenger pill. Built on top of the

@@ -729,6 +729,19 @@ export async function pickWinner(challengeId, winnerUserId) {
   return res.json() // { ok, winnerUserId }
 }
 
+// Every submitter's photo for a GROUP photo-proof challenge + the winner (if
+// picked). Powers the in-channel submissions gallery and the winner picker.
+export async function fetchGroupSubmissions(challengeId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/submissions`, {
+    credentials: 'include',
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to load submissions')
+  }
+  return res.json() // { submissions: [...], winnerUserId }
+}
+
 export async function unvalidateChallenge(challengeId, guestId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/unvalidate`, {
     method: 'POST',

@@ -651,7 +651,14 @@
     "winnerSub": "Choisis la meilleure photo. Le gagnant remporte la grosse récompense.",
     "winnerConfirm": "Couronner le gagnant",
     "winnerNoSubmission": "Cette personne n'a pas envoyé de photo.",
-    "winnerFailed": "Impossible de choisir le gagnant — réessaie."
+    "winnerFailed": "Impossible de choisir le gagnant — réessaie.",
+    "submissionsHeader": "{{count}} photos",
+    "tapToPick": "choisis la meilleure",
+    "winnerTag": "Gagnant",
+    "pickThis": "Choisir",
+    "winnerConfirmTitle": "Couronner le gagnant ?",
+    "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
+    "pickHint": "Choisis le gagnant parmi les photos ci-dessous."
   },
   "challengeIntro": {
     "slide1": {

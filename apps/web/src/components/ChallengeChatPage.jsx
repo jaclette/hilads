@@ -15,7 +15,7 @@ import {
   fetchChallengeById,
   fetchChallengeParticipants, validateChallenge,
   unvalidateChallenge, deleteChallenge,
-  acceptChallenge, fetchMyAcceptances, AcceptChallengeError, validatePresence, pickWinner,
+  acceptChallenge, fetchMyAcceptances, AcceptChallengeError, validatePresence,
   fetchChallengeMessages, sendChallengeMessage, proposeDate, toggleChallengeReaction,
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
@@ -32,6 +32,7 @@ import BackButton from './BackButton'
 import ChallengePipeline from './ChallengePipeline'
 import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
+import GroupSubmissionsGallery from './GroupSubmissionsGallery'
 import ProofReviewModal from './ProofReviewModal'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
@@ -136,9 +137,10 @@ export default function ChallengeChatPage({
   const [validateOpen, setValidateOpen] = useState(false)
   const [validating,   setValidating]   = useState(false)
   const [presentChecked, setPresentChecked] = useState({})
-  // Photo-proof group: single-select winner pick.
-  const [winnerOpen, setWinnerOpen] = useState(false)
-  const [winnerPick, setWinnerPick] = useState(null)
+  // Photo-proof group: the winner is picked from the submissions gallery.
+  // galleryTick bumps on proof-submitted / validated WS events so the gallery
+  // re-fetches when a new photo (or the winner) lands.
+  const [galleryTick, setGalleryTick] = useState(0)
   // Visibility picker - Public / Friends / Private dropdown opened from
   // the inline pill. "Private" maps to closed_to_new_joins=true (the
   // mutual go-private vote backend isn't surfaced here).
@@ -442,23 +444,6 @@ export default function ChallengeChatPage({
     }
   }, [validating, participants, presentChecked, id, t, loadChallenge, loadParticipants])
 
-  const handlePickWinner = useCallback(async () => {
-    if (validating || !winnerPick) return
-    setValidating(true)
-    try {
-      await pickWinner(id, winnerPick)
-      setWinnerOpen(false)
-      await loadChallenge()
-      loadParticipants()
-    } catch (e) {
-      const msg = e?.code === 'no_submission'
-        ? t('group.winnerNoSubmission', { ns: 'challenge', defaultValue: "That person hasn't submitted a photo." })
-        : t('group.winnerFailed', { ns: 'challenge', defaultValue: 'Could not pick the winner — try again.' })
-      window.alert(msg)
-    } finally {
-      setValidating(false)
-    }
-  }, [validating, winnerPick, id, t, loadChallenge, loadParticipants])
 
   // Participation probe. Resolves to true for creator + active acceptor
   // implicitly (server-side); for everyone else it's the join-row check.
@@ -668,8 +653,11 @@ export default function ChallengeChatPage({
     const off7 = socket.on('challenge_verdict_rejected',     onChange)
     const off8 = socket.on('challenge_takeon_reviewed',      onChange)
     // Photo proof submitted → creator's pipeline flips to proof_submitted live.
-    const off9 = socket.on('challenge_proof_submitted',      onChange)
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9() }
+    // Also bumps the group submissions gallery so a new photo (or the picked
+    // winner, via challenge_validated above) appears for everyone live.
+    const off9  = socket.on('challenge_proof_submitted',     () => { onChange(); setGalleryTick((x) => x + 1) })
+    const off10 = socket.on('challenge_validated',           () => setGalleryTick((x) => x + 1))
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); off10() }
   }, [socket, loadMyAcceptance])
 
   // PR30 - auto-scroll on every messages.length change. behavior:'instant'
@@ -1104,11 +1092,17 @@ export default function ChallengeChatPage({
                 : t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}
             </div>
           ) : isOwner ? (
-            <button type="button" style={GROUP_BTN_STYLE} onClick={() => (isGroupPhoto ? setWinnerOpen(true) : setValidateOpen(true))}>
-              {isGroupPhoto
-                ? `🏆 ${t('group.pickWinnerCta', { ns: 'challenge', defaultValue: 'Pick the winner' })}`
-                : `✓ ${t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}`}
-            </button>
+            // MEET: open the presence sheet. PHOTO: the winner is picked
+            // directly from the submissions gallery below - just a hint here.
+            isGroupPhoto ? (
+              <div style={{ textAlign: 'center', fontWeight: 700, color: '#FFC93C', padding: '8px 0' }}>
+                🏆 {t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}
+              </div>
+            ) : (
+              <button type="button" style={GROUP_BTN_STYLE} onClick={() => setValidateOpen(true)}>
+                ✓ {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}
+              </button>
+            )
           ) : iAmJoined ? (
             <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
               ✓ {isGroupPhoto
@@ -1137,6 +1131,18 @@ export default function ChallengeChatPage({
           iAmAcceptor={true}
           proofRequirements={challenge.proof_requirements ?? null}
           acceptancePhase={myAcceptance.phase}
+        />
+      )}
+
+      {/* Photo-proof GROUP submissions gallery - everyone sees every photo + who
+          submitted it; the challenger picks the winner straight from here. */}
+      {isGroupPhoto && (
+        <GroupSubmissionsGallery
+          challengeId={id}
+          isChallenger={isOwner}
+          isValidated={isValidated}
+          refreshKey={galleryTick}
+          onChanged={() => { loadChallenge(); loadParticipants() }}
         />
       )}
 
@@ -1904,32 +1910,6 @@ export default function ChallengeChatPage({
               onClick={handleValidatePresence}
             >
               {validating ? '…' : t('group.validateConfirm', { ns: 'challenge', count: participants.filter(p => presentChecked[p.id] !== false).length, defaultValue: 'Validate {{count}} present' })}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Group PHOTO-PROOF winner pick (challenger-only, single-select). */}
-      {isGroupPhoto && winnerOpen && (
-        <div onClick={() => setWinnerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px 28px', maxHeight: '80vh', overflowY: 'auto' }}>
-            <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>{t('group.winnerTitle', { ns: 'challenge', defaultValue: 'Pick the winner' })}</h3>
-            <p style={{ margin: '0 0 12px', color: 'var(--muted,#999)', fontSize: 14 }}>{t('group.winnerSub', { ns: 'challenge', defaultValue: 'Choose the best photo. The winner earns the big reward.' })}</p>
-            {participants.length === 0 ? (
-              <p style={{ color: 'var(--muted,#999)', textAlign: 'center', padding: '20px 0' }}>{t('group.noParticipants', { ns: 'challenge', defaultValue: 'Nobody has joined yet.' })}</p>
-            ) : participants.map(p => (
-              <label key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '8px 0', cursor: 'pointer' }}>
-                <input type="radio" name="winner-pick" checked={winnerPick === p.id} onChange={() => setWinnerPick(p.id)} />
-                <span style={{ fontWeight: 600 }}>{p.displayName}</span>
-              </label>
-            ))}
-            <button
-              type="button"
-              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || !winnerPick) ? 0.5 : 1 }}
-              disabled={validating || !winnerPick}
-              onClick={handlePickWinner}
-            >
-              {validating ? '…' : `🏆 ${t('group.winnerConfirm', { ns: 'challenge', defaultValue: 'Crown the winner' })}`}
             </button>
           </div>
         </div>

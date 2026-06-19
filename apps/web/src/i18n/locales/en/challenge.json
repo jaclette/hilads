@@ -685,7 +685,14 @@
     "winnerSub": "Choose the best photo. The winner earns the big reward.",
     "winnerConfirm": "Crown the winner",
     "winnerNoSubmission": "That person hasn't submitted a photo.",
-    "winnerFailed": "Could not pick the winner — try again."
+    "winnerFailed": "Could not pick the winner — try again.",
+    "submissionsHeader": "{{count}} photos",
+    "tapToPick": "pick the best one",
+    "winnerTag": "Winner",
+    "pickThis": "Pick winner",
+    "winnerConfirmTitle": "Crown the winner?",
+    "winnerConfirmBody": "{{name}} wins the big reward.",
+    "pickHint": "Pick the winner from the photos below."
   },
   "challengeIntro": {
     "slide1": {

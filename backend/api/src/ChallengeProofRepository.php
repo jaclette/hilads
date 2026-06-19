@@ -91,6 +91,46 @@ final class ChallengeProofRepository
         return array_map([self::class, 'normalise'], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
+    /**
+     * All photo-proof submissions for a GROUP challenge - one row per submitter
+     * (their latest proof), with submitter identity. Powers the in-channel
+     * submissions gallery (everyone sees the photos + who) and the challenger's
+     * winner picker. Ordered oldest-first (submission order).
+     */
+    public static function listGroupSubmissions(string $challengeId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT DISTINCT ON (a.acceptor_user_id)
+                   p.id, p.media_url, p.media_type, p.status,
+                   EXTRACT(EPOCH FROM p.submitted_at)::INT AS submitted_ts,
+                   a.acceptor_user_id AS user_id,
+                   u.display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS avatar_url
+            FROM challenge_proofs p
+            JOIN challenge_acceptances a ON a.id = p.acceptance_id
+            LEFT JOIN users u ON u.id = a.acceptor_user_id
+            WHERE a.challenge_id = ?
+            ORDER BY a.acceptor_user_id, p.submitted_at DESC
+        ");
+        $stmt->execute([$challengeId]);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        // DISTINCT ON forces user_id ordering; re-sort by submission time so the
+        // gallery reads in the order photos arrived.
+        usort($rows, static fn(array $x, array $y): int => ((int) ($x['submitted_ts'] ?? 0)) <=> ((int) ($y['submitted_ts'] ?? 0)));
+        return array_map(static function (array $r): array {
+            return [
+                'id'           => $r['id'],
+                'user_id'      => $r['user_id'],
+                'display_name' => $r['display_name'] ?? '?',
+                'avatar_url'   => $r['avatar_url'],
+                'media_url'    => $r['media_url'],
+                'media_type'   => $r['media_type'],
+                'status'       => $r['status'],
+                'submitted_at' => (int) ($r['submitted_ts'] ?? 0),
+            ];
+        }, $rows);
+    }
+
     /** Count of submissions for the 3-attempt gate. */
     public static function attemptCountByAcceptance(string $acceptanceId): int
     {

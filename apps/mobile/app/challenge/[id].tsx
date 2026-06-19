@@ -23,9 +23,10 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge, validatePresence, pickWinner,
+  abandonAcceptance, restartChallenge, validatePresence,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
+import { GroupSubmissionsGallery } from '@/features/challenge/GroupSubmissionsGallery';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
@@ -389,7 +390,9 @@ export default function ChallengeChatScreen() {
   // Group-challenge UI state (Phase 4).
   const [joining,      setJoining]      = useState(false);
   const [validateOpen, setValidateOpen] = useState(false);
-  const [winnerOpen,   setWinnerOpen]   = useState(false);
+  // Bumped on proof-submitted / validated WS events so the group submissions
+  // gallery re-fetches when someone else's photo (or the winner) lands.
+  const [galleryTick,  setGalleryTick]  = useState(0);
   const [validating,   setValidating]   = useState(false);
 
   // Proof-review deep-link: a "📸 new proof to review" push routes here with
@@ -555,25 +558,6 @@ export default function ChallengeChatScreen() {
     }
   }, [validating, id, t, loadChallenge, loadParticipants]);
 
-  const handlePickWinner = useCallback(async (ids: string[]) => {
-    const winnerId = ids[0];
-    if (validating || !winnerId) return;
-    setValidating(true);
-    try {
-      await pickWinner(id, winnerId);
-      setWinnerOpen(false);
-      await loadChallenge();
-      loadParticipants();
-    } catch (e) {
-      const msg = (e as { code?: string })?.code === 'no_submission'
-        ? t('group.winnerNoSubmission', { defaultValue: 'That person has not submitted a photo.' })
-        : t('group.winnerFailed', { defaultValue: 'Could not pick the winner - try again.' });
-      Alert.alert(msg);
-    } finally {
-      setValidating(false);
-    }
-  }, [validating, id, t, loadChallenge, loadParticipants]);
-
   /**
    * PR2 - take-on flow.
    *
@@ -680,9 +664,14 @@ export default function ChallengeChatScreen() {
     // Creator restarted → the removed taker's screen resets (their take-on is gone).
     const off8 = socket.on('challenge_restarted',         onReset);
     // Photo proof submitted → creator's pipeline flips to proof_submitted live
-    // and the "Review the proof" CTA appears without a reload.
-    const off9 = socket.on('challenge_proof_submitted',   onChange);
-    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); };
+    // and the "Review the proof" CTA appears without a reload. Also bumps the
+    // group submissions gallery so a new photo appears for everyone live.
+    const onProof = () => { onChange(); setGalleryTick(x => x + 1); };
+    const off9  = socket.on('challenge_proof_submitted',   onProof);
+    // Winner picked broadcasts 'challenge_validated' → refresh the gallery's
+    // crown highlight too.
+    const off10 = socket.on('challenge_validated',         () => setGalleryTick(x => x + 1));
+    return () => { off1(); off2(); off3(); off4(); off5(); off6(); off7(); off8(); off9(); off10(); };
   }, [loadMyAcceptance, loadChallenge, loadParticipants]);
 
   // ── Unified challenge channel chat ───────────────────────────────────────
@@ -1264,17 +1253,19 @@ export default function ChallengeChatScreen() {
                   : t('group.done', { defaultValue: 'This meet is done.' })}
               </Text>
             ) : isOwner ? (
-              <TouchableOpacity
-                style={styles.groupPrimaryBtn}
-                activeOpacity={0.85}
-                onPress={() => (isGroupPhoto ? setWinnerOpen(true) : setValidateOpen(true))}
-              >
-                <Text style={styles.groupPrimaryBtnText}>
-                  {isGroupPhoto
-                    ? `🏆 ${t('group.pickWinnerCta', { defaultValue: 'Pick the winner' })}`
-                    : `✓ ${t('group.validateCta', { defaultValue: 'Validate who showed up' })}`}
+              // MEET: open the presence sheet. PHOTO: the winner is picked
+              // directly from the submissions gallery below - just a hint here.
+              isGroupPhoto ? (
+                <Text style={styles.groupStateText}>
+                  🏆 {t('group.pickHint', { defaultValue: 'Pick the winner from the photos below.' })}
                 </Text>
-              </TouchableOpacity>
+              ) : (
+                <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>
+                  <Text style={styles.groupPrimaryBtnText}>
+                    ✓ {t('group.validateCta', { defaultValue: 'Validate who showed up' })}
+                  </Text>
+                </TouchableOpacity>
+              )
             ) : iAmJoined ? (
               <Text style={styles.groupStateText}>
                 ✓ {isGroupPhoto
@@ -1311,6 +1302,19 @@ export default function ChallengeChatScreen() {
             iAmAcceptor={true}
             proofRequirements={challenge.proof_requirements ?? null}
             acceptancePhase={myAcceptance.phase}
+          />
+        )}
+
+        {/* Photo-proof GROUP submissions gallery - EVERYONE sees every photo +
+            who submitted it. The challenger picks the winner straight from here;
+            once picked, the winning tile is crowned for all viewers. */}
+        {isGroupPhoto && (
+          <GroupSubmissionsGallery
+            challengeId={id}
+            isChallenger={isOwner}
+            isValidated={isValidated}
+            refreshKey={galleryTick}
+            onChanged={() => { loadChallenge(); loadParticipants(); }}
           />
         )}
 
@@ -2035,17 +2039,6 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Group PHOTO-PROOF winner pick (challenger-only, single-select). */}
-      {isGroupPhoto && (
-        <ValidatePresenceSheet
-          visible={winnerOpen}
-          participants={participants}
-          submitting={validating}
-          mode="winner"
-          onClose={() => setWinnerOpen(false)}
-          onConfirm={handlePickWinner}
-        />
-      )}
 
       {/* Proof-spec popin - read-only sheet showing what the creator asked
           for. Opened by tapping the pipeline's "Waiting for the proof" pill. */}
