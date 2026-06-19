@@ -1430,6 +1430,30 @@ run($pdo, "DROP TABLE IF EXISTS challenge_comments CASCADE", 'drop challenge_com
 run($pdo, "ALTER TABLE challenge_participants ADD COLUMN IF NOT EXISTS notification_preference TEXT NOT NULL DEFAULT 'milestones'", 'challenge_participants.notification_preference');
 run($pdo, "ALTER TABLE channel_challenges     ADD COLUMN IF NOT EXISTS closed_to_new_joins     BOOLEAN NOT NULL DEFAULT FALSE",      'channel_challenges.closed_to_new_joins');
 
+// ── GROUP CHALLENGE MODEL — Phase 1: data model only (additive, no behaviour) ──
+// Migrating challenges from 1-to-1 to GROUP. The challenge_acceptances table
+// already supports MULTIPLE takers (one active row per user); the only 1-to-1
+// restriction is the hasActiveAcceptance app gate in /accept, untouched here and
+// removed in Phase 2. `visibility` (public/friends/private) already exists. So
+// this phase only adds the new challenge-level fields. NOTHING reads them yet -
+// the app behaves exactly as before. All columns are nullable except the format
+// flag (defaults so existing rows stay on the current flow).
+//   - challenge_format: 'legacy' = current accept→date→mutual-rate flow;
+//     'group' = new join→meet→challenger-validates flow. Existing + newly-created
+//     rows default to 'legacy' until Phase 4 wires group creation. A Phase 5
+//     force-migration converts remaining 'legacy' rows to group-of-one.
+//   - meet_at / meet_ends_at: the single group meet's date/time, set at creation
+//     (editable until the meet happens). NULL on legacy rows.
+//   - venue / venue_lat / venue_lng: the meet location set at creation. NULL on
+//     legacy rows.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS challenge_format TEXT NOT NULL DEFAULT 'legacy'", 'channel_challenges.challenge_format');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS meet_at          TIMESTAMPTZ",      'channel_challenges.meet_at');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS meet_ends_at     TIMESTAMPTZ",      'channel_challenges.meet_ends_at');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue            TEXT",             'channel_challenges.venue');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue_lat        DOUBLE PRECISION", 'channel_challenges.venue_lat');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue_lng        DOUBLE PRECISION", 'channel_challenges.venue_lng');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_format ON channel_challenges (challenge_format)", 'idx_channel_challenges_format');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS challenge_kicks (
         challenge_id      TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
