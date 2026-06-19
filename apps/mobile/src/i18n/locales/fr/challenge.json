@@ -600,5 +600,13 @@
   "welcomeGuest": {
     "title": "👋 Bienvenue ! Discute librement, pas besoin d'inscription.",
     "cta": "Tu veux relever ce défi ? Inscription en 3 secondes →"
+  },
+  "group": {
+    "meetLabel": "Quand & où",
+    "meetCta": "Choisis la date + le lieu du rendez-vous",
+    "meetHint": "Tous ceux qui rejoignent se retrouvent ici ensemble. Tu valides qui était présent après.",
+    "meetRequired": "Choisis une date et un lieu pour le rendez-vous.",
+    "meetRequiredTitle": "Définir le rendez-vous",
+    "meetSet": "Définir le rendez-vous"
   }
 }

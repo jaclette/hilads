@@ -11,6 +11,7 @@ import { useApp } from '@/context/AppContext';
 import { createChallenge, updateChallenge, dismissPublicOptin } from '@/api/challenges';
 import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
+import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import type { ChallengeType, ChallengeAudience, City } from '@/types';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -98,6 +99,15 @@ export default function CreateChallengeScreen() {
   const [submitting, setSubmitting] = useState(false);
   const [error,    setError]    = useState<string | null>(null);
 
+  // Group meet (Phase 4): a LOCAL MEET challenge is a GROUP challenge - the
+  // creator sets ONE meet date + place at creation (reuses DatePickerModal,
+  // which returns startsAt + endsAt + venue). Required to submit.
+  const [meetAt,         setMeetAt]         = useState<number | null>(null);
+  const [meetEndsAt,     setMeetEndsAt]     = useState<number | null>(null);
+  const [meetVenue,      setMeetVenue]      = useState<string | null>(null);
+  const [meetPickerOpen, setMeetPickerOpen] = useState(false);
+  const [meetError,      setMeetError]      = useState(false);
+
   // Visibility - 'public' default; 'friends' opt-in. Private isn't settable
   // here (server enforces); the mutual privacy flow is the only path.
   type Visibility = 'public' | 'friends';
@@ -117,6 +127,11 @@ export default function CreateChallengeScreen() {
   useEffect(() => {
     if (mode === 'international' && visibility !== 'public') setVisibility('public');
   }, [mode, visibility]);
+
+  // Local MEET challenges are GROUP challenges (one shared meet at a set date +
+  // place). Edit keeps the legacy path for now, so group-create UI shows only on
+  // the create path.
+  const isGroup = !editId && mode === 'local' && validationMethod === 'meet';
 
   // Re-template the return clause whenever the type changes, UNLESS the user
   // has already edited it manually (we don't want to clobber a custom phrase).
@@ -183,6 +198,13 @@ export default function CreateChallengeScreen() {
           // for the lifetime of the challenge - same rule as mode).
           validationMethod:    mode === 'local' ? validationMethod : null,
           visibility:          visibilityForSubmit,
+          // Local MEET → group challenge with the meet date + place.
+          ...(isGroup ? {
+            format:     'group' as const,
+            meetAt,
+            meetEndsAt,
+            venue:      meetVenue,
+          } : {}),
         },
       );
       // Land the creator on the freshly-created challenge so they can share
@@ -206,6 +228,12 @@ export default function CreateChallengeScreen() {
     if (mode === 'international' && !targetCity) {
       setCityError(true);
       Alert.alert(t('intl.targetCityRequiredTitle'), t('intl.targetCityRequired'));
+      return;
+    }
+    // Group (local meet) requires a meet date + place set at creation.
+    if (isGroup && (!meetAt || !meetVenue)) {
+      setMeetError(true);
+      Alert.alert(t('group.meetRequiredTitle'), t('group.meetRequired'));
       return;
     }
     const wantsPublic = (mode === 'international') || visibility === 'public';
@@ -323,6 +351,30 @@ export default function CreateChallengeScreen() {
                     points: MEET_BONUS_POINTS,
                     defaultValue: `🏆 Meet bonus: +${MEET_BONUS_POINTS} pts on top of the base reward`,
                   })}
+                </Text>
+              </View>
+            )}
+
+            {/* Group meet: one date + place, set at creation. Required. */}
+            {isGroup && (
+              <View style={{ marginTop: Spacing.md }}>
+                <Text style={styles.sectionLabel}>{t('group.meetLabel', { defaultValue: 'When & where' })}</Text>
+                <TouchableOpacity
+                  style={[styles.cityPickerBtn, meetError && styles.cityPickerBtnError]}
+                  activeOpacity={0.75}
+                  onPress={() => setMeetPickerOpen(true)}
+                >
+                  <Text style={styles.cityPickerText} numberOfLines={2}>
+                    {meetAt && meetVenue
+                      ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}  ·  📍 ${meetVenue}`
+                      : t('group.meetCta', { defaultValue: 'Set the meet date + place' })}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                </TouchableOpacity>
+                <Text style={[styles.sectionHint, meetError && styles.sectionHintError]}>
+                  {meetError
+                    ? t('group.meetRequired', { defaultValue: 'Pick a date and a place for the meet.' })
+                    : t('group.meetHint', { defaultValue: 'Everyone who joins meets here together. You validate who showed up afterwards.' })}
                 </Text>
               </View>
             )}
@@ -527,6 +579,24 @@ export default function CreateChallengeScreen() {
         onConfirm={handleOptinConfirm}
         onSwitchToFriends={handleOptinSwitchToFriends}
         onClose={() => { setOptinOpen(false); pendingSubmitRef.current = null; }}
+      />
+
+      {/* Group meet date + place (reuses the schedule picker - it returns
+          startsAt + endsAt + venue in one shot). */}
+      <DatePickerModal
+        visible={meetPickerOpen}
+        onClose={() => setMeetPickerOpen(false)}
+        submitLabel={t('group.meetSet', { defaultValue: 'Set the meet' })}
+        initialStartsAt={meetAt}
+        initialEndsAt={meetEndsAt}
+        initialVenue={meetVenue}
+        onSubmit={(startsAt, endsAt, venue) => {
+          setMeetAt(startsAt);
+          setMeetEndsAt(endsAt);
+          setMeetVenue(venue && venue.trim() ? venue.trim() : null);
+          setMeetError(false);
+          setMeetPickerOpen(false);
+        }}
       />
     </SafeAreaView>
   );

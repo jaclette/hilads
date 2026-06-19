@@ -595,5 +595,13 @@
   "welcomeGuest": {
     "title": "👋 Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
     "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây →"
+  },
+  "group": {
+    "meetLabel": "Khi nào & ở đâu",
+    "meetCta": "Chọn ngày + địa điểm gặp",
+    "meetHint": "Mọi người tham gia sẽ gặp nhau ở đây. Sau đó bạn xác nhận ai đã có mặt.",
+    "meetRequired": "Hãy chọn ngày và địa điểm gặp.",
+    "meetRequiredTitle": "Đặt buổi gặp",
+    "meetSet": "Đặt buổi gặp"
   }
 }
