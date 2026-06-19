@@ -25,27 +25,17 @@ export function ScoringInfoModal({
 }) {
   const { t } = useTranslation('challenge');
 
-  // Step rows in pipeline order. Numbers mirror score_rules in migrate.php
-  // (PR12). null = no scoring at that step. The "Meet up" pipeline step is
-  // omitted from this table because it never awards points - keep the
-  // pipeline visual but skip the noise here.
-  const steps: Array<{
-    icon:        string;
-    labelKey:    string;
-    challenger:  number | null;
-    taker:       number | null;
-    highlight?:  boolean;
-  }> = [
-    // Creation reward (+2 challenger) - credited instantly at creation,
-    // capped at the first 3/day. Sits above the per-run steps; the total
-    // below is the per-challenge-run total and intentionally excludes it.
-    { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
-    { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: 5    },
-    { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
-    // Meet bonus - the biggest reward, only when you actually meet up in
-    // person (validation = Meet). Highlighted because it's the whole point.
-    { icon: '🤝', labelKey: 'scoringInfo.steps.meet',     challenger: 50, taker: 50, highlight: true },
-    { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
+  // Group-model "ways to earn". Numbers mirror score_rules in migrate.php:
+  // join +2, challenge_created +10, present +40 (+ host base 10 / 5 per head),
+  // submission +5, winner +40. The small sparks (join) stay tiny so farming is
+  // never worth it; the big points live behind a real act (showing up / winning).
+  const ways: Array<{ icon: string; labelKey: string; points: string; highlight?: boolean }> = [
+    { icon: '🙌', labelKey: 'scoringInfo.ways.join',    points: '+2'  },
+    { icon: '🎯', labelKey: 'scoringInfo.ways.create',  points: '+10' },
+    { icon: '✅', labelKey: 'scoringInfo.ways.present', points: '+40', highlight: true },
+    { icon: '👑', labelKey: 'scoringInfo.ways.host',    points: '+10 · +5' },
+    { icon: '📸', labelKey: 'scoringInfo.ways.submit',  points: '+5'  },
+    { icon: '🏆', labelKey: 'scoringInfo.ways.win',     points: '+40', highlight: true },
   ];
 
   return (
@@ -80,49 +70,13 @@ export function ScoringInfoModal({
           <Text style={styles.sectionHeading}>{t('scoringInfo.pointsHeading')}</Text>
           <Text style={styles.intro}>{t('scoringInfo.intro')}</Text>
 
-          <View style={styles.headerRow}>
-            <Text style={styles.headerStep}>{t('scoringInfo.colStep')}</Text>
-            {/* PR60 - FR "CHALLENGER" overflowed the 64px column and wrapped
-                on top of the "PRENEUR" header. numberOfLines={1} +
-                adjustsFontSizeToFit keeps long locale strings on a single
-                line (DE/NL/PT also benefit) without forcing every locale
-                to compromise its base size. */}
-            <Text
-              style={styles.headerCol}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
-            >
-              {t('badge.challenger')}
-            </Text>
-            <Text
-              style={styles.headerCol}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.7}
-            >
-              {t('badge.taker')}
-            </Text>
-          </View>
-
-          {steps.map((s) => (
-            <View key={s.labelKey} style={[styles.row, s.highlight && styles.rowHighlight]}>
-              <Text style={styles.rowIcon}>{s.icon}</Text>
-              <Text style={[styles.rowLabel, s.highlight && styles.rowLabelHighlight]} numberOfLines={1}>{t(s.labelKey)}</Text>
-              <Text style={[styles.rowPoints, s.highlight && styles.rowPointsHighlight, s.challenger === null && styles.rowPointsMuted]}>
-                {s.challenger === null ? t('scoringInfo.noPoints') : `+${s.challenger}`}
-              </Text>
-              <Text style={[styles.rowPoints, s.highlight && styles.rowPointsHighlight, s.taker === null && styles.rowPointsMuted]}>
-                {s.taker === null ? t('scoringInfo.noPoints') : `+${s.taker}`}
-              </Text>
+          {ways.map((w) => (
+            <View key={w.labelKey} style={[styles.row, w.highlight && styles.rowHighlight]}>
+              <Text style={styles.rowIcon}>{w.icon}</Text>
+              <Text style={[styles.rowLabel, w.highlight && styles.rowLabelHighlight]} numberOfLines={2}>{t(w.labelKey)}</Text>
+              <Text style={[styles.rowPoints, w.highlight && styles.rowPointsHighlight]}>{w.points}</Text>
             </View>
           ))}
-
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>{t('scoringInfo.totalLabel')}</Text>
-            <Text style={styles.totalValue}>90</Text>
-            <Text style={styles.totalValue}>100</Text>
-          </View>
 
           <Text style={styles.footnote}>{t('scoringInfo.footnote')}</Text>
         </ScrollView>

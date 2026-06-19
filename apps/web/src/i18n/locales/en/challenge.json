@@ -251,7 +251,7 @@
     "aria": "How points work",
     "helpLabel": "🏆 How to earn points",
     "title": "🏆 How challenges work",
-    "intro": "Each challenge earns points for both sides - they roll up into your city + world leaderboards.",
+    "intro": "Small sparks for joining; the big points for really showing up or winning. Farming joins is never worth it.",
     "colStep": "Step",
     "steps": {
       "created": "Challenge created",
@@ -262,17 +262,25 @@
     },
     "noPoints": "-",
     "totalLabel": "Total per challenge",
-    "footnote": "Creation points (+10) land instantly. Everything else is awarded only when both parties rate the meet-up.",
+    "footnote": "Numbers can change as we tune the game.",
     "types": {
-      "heading": "🎯 Two ways to play",
-      "local": "🏙️ Local - in your city. Meet up in person to make it count.",
-      "international": "🌍 International - across cities. Snap an instant photo as proof."
+      "heading": "Two kinds of challenge",
+      "local": "🏙️ Meet — gather a group in person at a set time + place. Everyone who shows up earns big.",
+      "international": "🌍 Photo contest — everyone submits a photo before the deadline; the challenger picks the winner."
     },
     "lifecycle": {
-      "heading": "🔁 One run at a time",
-      "body": "When the taker wraps up, the chat resets - challenge stays, ready for the next adventurer."
+      "heading": "How it resolves",
+      "body": "The challenger frames it, people join, and the challenger validates at the end — who was present, or which photo won."
     },
-    "pointsHeading": "💯 How you earn points"
+    "pointsHeading": "💯 How you earn points",
+    "ways": {
+      "join": "Join a meet or contest",
+      "create": "Create a challenge",
+      "present": "Show up — validated present",
+      "host": "Host a meet — base + per person who shows up",
+      "submit": "Submit a photo to a contest",
+      "win": "Win the photo contest"
+    }
   },
   "leaderboard": {
     "title": "🏆 Most Local",

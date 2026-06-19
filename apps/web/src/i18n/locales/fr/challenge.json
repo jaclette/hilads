@@ -513,7 +513,7 @@
     "aria": "Comment marchent les points",
     "helpLabel": "🏆 Comment gagner des points",
     "title": "🏆 Comment marchent les défis",
-    "intro": "Chaque défi rapporte des points aux deux côtés - ils alimentent ton classement de ville et mondial.",
+    "intro": "De petites étincelles pour rejoindre ; les gros points pour vraiment venir ou gagner. Farmer les inscriptions ne sert à rien.",
     "colStep": "Étape",
     "steps": {
       "created": "Défi créé",
@@ -524,17 +524,25 @@
     },
     "noPoints": "-",
     "totalLabel": "Total par défi",
-    "footnote": "Les points de création (+10) sont attribués instantanément. Le reste n’est attribué qu’après la double notation.",
+    "footnote": "Les chiffres peuvent évoluer.",
     "types": {
-      "heading": "🎯 Deux façons de jouer",
-      "local": "🏙️ Local - dans ta ville. Tu te retrouves en vrai pour valider.",
-      "international": "🌍 International - entre villes. Une photo instantanée comme preuve."
+      "heading": "Deux types de challenge",
+      "local": "🏙️ Rendez-vous — réunis un groupe en personne à une date + un lieu. Tous les présents gagnent gros.",
+      "international": "🌍 Concours photo — chacun envoie une photo avant la deadline ; le créateur choisit le gagnant."
     },
     "lifecycle": {
-      "heading": "🔁 Un défi à la fois",
-      "body": "Quand le preneur a fini, le chat se vide - le défi reste, prêt pour le prochain aventurier."
+      "heading": "Comment ça se résout",
+      "body": "Le créateur cadre, les gens rejoignent, et le créateur valide à la fin — qui était présent, ou quelle photo a gagné."
     },
-    "pointsHeading": "💯 Comment gagner des points"
+    "pointsHeading": "💯 Comment gagner des points",
+    "ways": {
+      "join": "Rejoindre un rendez-vous ou un concours",
+      "create": "Créer un challenge",
+      "present": "Être présent — validé sur place",
+      "host": "Organiser un rendez-vous — base + par personne présente",
+      "submit": "Soumettre une photo à un concours",
+      "win": "Gagner le concours photo"
+    }
   },
   "scoreCelebration": {
     "unit": "points",

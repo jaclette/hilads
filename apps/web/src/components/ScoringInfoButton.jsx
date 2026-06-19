@@ -57,17 +57,14 @@ export default function ScoringInfoButton({ size = 22, className = '', labeled =
 }
 
 function ScoringInfoModal({ onClose, t }) {
-  const steps = [
-    // Creation reward (+2 challenger) - credited instantly at creation,
-    // capped at the first 3/day. Sits above the per-run steps; the total
-    // below is the per-challenge-run total and intentionally excludes it.
-    { icon: '🎯', labelKey: 'scoringInfo.steps.created',  challenger: 10, taker: null },
-    { icon: '🤝', labelKey: 'scoringInfo.steps.accepted', challenger: 5,  taker: 5    },
-    { icon: '📅', labelKey: 'scoringInfo.steps.date',     challenger: 5,  taker: 5    },
-    // Meet bonus - the biggest reward, only when you actually meet up in
-    // person (validation = Meet). Highlighted because it's the whole point.
-    { icon: '🤝', labelKey: 'scoringInfo.steps.meet',     challenger: 50, taker: 50, highlight: true },
-    { icon: '⭐', labelKey: 'scoringInfo.steps.rate',     challenger: 30, taker: 40   },
+  // Group-model "ways to earn" (mirrors score_rules in migrate.php).
+  const ways = [
+    { icon: '🙌', labelKey: 'scoringInfo.ways.join',    points: '+2'  },
+    { icon: '🎯', labelKey: 'scoringInfo.ways.create',  points: '+10' },
+    { icon: '✅', labelKey: 'scoringInfo.ways.present', points: '+40', highlight: true },
+    { icon: '👑', labelKey: 'scoringInfo.ways.host',    points: '+10 · +5' },
+    { icon: '📸', labelKey: 'scoringInfo.ways.submit',  points: '+5'  },
+    { icon: '🏆', labelKey: 'scoringInfo.ways.win',     points: '+40', highlight: true },
   ]
 
   return (
@@ -100,30 +97,13 @@ function ScoringInfoModal({ onClose, t }) {
           <h3 className="scoring-info-section-heading">{t('scoringInfo.pointsHeading')}</h3>
           <p className="scoring-info-intro">{t('scoringInfo.intro')}</p>
 
-          <div className="scoring-info-header-row">
-            <span className="scoring-info-col-step">{t('scoringInfo.colStep')}</span>
-            <span className="scoring-info-col">{t('badge.challenger')}</span>
-            <span className="scoring-info-col">{t('badge.taker')}</span>
-          </div>
-
-          {steps.map((s) => (
-            <div key={s.labelKey} className={`scoring-info-row${s.highlight ? ' scoring-info-row--highlight' : ''}`}>
-              <span className="scoring-info-icon">{s.icon}</span>
-              <span className="scoring-info-label">{t(s.labelKey)}</span>
-              <span className={`scoring-info-points${s.challenger === null ? ' scoring-info-points--muted' : ''}`}>
-                {s.challenger === null ? t('scoringInfo.noPoints') : `+${s.challenger}`}
-              </span>
-              <span className={`scoring-info-points${s.taker === null ? ' scoring-info-points--muted' : ''}`}>
-                {s.taker === null ? t('scoringInfo.noPoints') : `+${s.taker}`}
-              </span>
+          {ways.map((w) => (
+            <div key={w.labelKey} className={`scoring-info-row${w.highlight ? ' scoring-info-row--highlight' : ''}`}>
+              <span className="scoring-info-icon">{w.icon}</span>
+              <span className="scoring-info-label">{t(w.labelKey)}</span>
+              <span className="scoring-info-points">{w.points}</span>
             </div>
           ))}
-
-          <div className="scoring-info-total-row">
-            <span className="scoring-info-total-label">{t('scoringInfo.totalLabel')}</span>
-            <span className="scoring-info-total-value">90</span>
-            <span className="scoring-info-total-value">100</span>
-          </div>
 
           <p className="scoring-info-footnote">{t('scoringInfo.footnote')}</p>
         </div>

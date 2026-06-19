@@ -509,7 +509,7 @@
     "aria": "Cách tính điểm",
     "helpLabel": "🏆 Cách kiếm điểm",
     "title": "🏆 Thử thách hoạt động thế nào",
-    "intro": "Mỗi thử thách mang điểm cho cả hai bên - cộng dồn vào bảng xếp hạng thành phố và toàn cầu.",
+    "intro": "Điểm nhỏ khi tham gia; điểm lớn khi thực sự có mặt hoặc chiến thắng. Farm điểm tham gia là vô ích.",
     "colStep": "Bước",
     "steps": {
       "created": "Đã tạo thử thách",
@@ -520,17 +520,25 @@
     },
     "noPoints": "-",
     "totalLabel": "Tổng mỗi thử thách",
-    "footnote": "Điểm tạo (+10) được trao ngay. Phần còn lại chỉ được trao khi cả hai cùng đánh giá buổi gặp.",
+    "footnote": "Các con số có thể thay đổi.",
     "types": {
-      "heading": "🎯 Hai cách chơi",
-      "local": "🏙️ Local - trong thành phố của bạn. Gặp nhau trực tiếp mới tính.",
-      "international": "🌍 International - giữa các thành phố. Một ảnh chụp ngay làm bằng chứng."
+      "heading": "Hai loại thử thách",
+      "local": "🏙️ Gặp mặt — tụ họp trực tiếp tại thời gian + địa điểm đã định. Ai có mặt đều được điểm lớn.",
+      "international": "🌍 Thi ảnh — mọi người gửi ảnh trước hạn; người tạo chọn người thắng."
     },
     "lifecycle": {
-      "heading": "🔁 Một lượt một người",
-      "body": "Khi người nhận xong, chat sẽ làm mới - thử thách vẫn còn, sẵn sàng cho người tiếp theo."
+      "heading": "Cách kết thúc",
+      "body": "Người tạo đặt khung, mọi người tham gia, và người tạo xác nhận ở cuối — ai có mặt, hoặc ảnh nào thắng."
     },
-    "pointsHeading": "💯 Cách kiếm điểm"
+    "pointsHeading": "💯 Cách kiếm điểm",
+    "ways": {
+      "join": "Tham gia buổi gặp hoặc cuộc thi",
+      "create": "Tạo thử thách",
+      "present": "Có mặt — được xác nhận",
+      "host": "Tổ chức buổi gặp — cơ bản + mỗi người có mặt",
+      "submit": "Gửi ảnh dự thi",
+      "win": "Thắng cuộc thi ảnh"
+    }
   },
   "scoreCelebration": {
     "unit": "điểm",
