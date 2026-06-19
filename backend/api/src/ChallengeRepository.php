@@ -68,6 +68,15 @@ class ChallengeRepository
             -- surfaces at the route layer.
             cc.visibility,
             cc.closed_to_new_joins,
+            -- Group model (Phase 1+): the single group meet's date/time +
+            -- location, set at creation. NULL on legacy rows.
+            cc.meet_at,
+            cc.meet_ends_at,
+            cc.venue,
+            cc.venue_lat,
+            cc.venue_lng,
+            EXTRACT(EPOCH FROM cc.meet_at)::BIGINT      AS meet_at_ts,
+            EXTRACT(EPOCH FROM cc.meet_ends_at)::BIGINT AS meet_ends_at_ts,
             -- Creator's display info - surfaced on cards + detail header so
             -- the user sees who owns a challenge. LEFT JOIN: pure-guest
             -- challenges (created_by IS NULL) fall back to cc.guest_id /
@@ -219,6 +228,12 @@ class ChallengeRepository
             // Group-challenge model flag: 'legacy' (1-to-1 accept→date→rate) vs
             // 'group' (join→meet→validate). Drives which flow + UI the clients use.
             'challenge_format'     => $row['challenge_format']   ?? 'legacy',
+            // Group meet date/time (unix) + location. NULL on legacy rows.
+            'meet_at'              => isset($row['meet_at_ts'])      ? (int) $row['meet_at_ts']      : null,
+            'meet_ends_at'         => isset($row['meet_ends_at_ts']) ? (int) $row['meet_ends_at_ts'] : null,
+            'venue'                => $row['venue']     ?? null,
+            'venue_lat'            => isset($row['venue_lat']) ? (float) $row['venue_lat'] : null,
+            'venue_lng'            => isset($row['venue_lng']) ? (float) $row['venue_lng'] : null,
             // 'meet' default keeps every pre-PR row on the historical IRL
             // flow. International rows are forced to 'photo_proof' by the
             // migrate backfill + the create/update routes.
@@ -385,6 +400,7 @@ class ChallengeRepository
                      cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
+                     cc.meet_at, cc.meet_ends_at, cc.venue, cc.venue_lat, cc.venue_lng,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
@@ -530,6 +546,7 @@ class ChallengeRepository
                      cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
+                     cc.meet_at, cc.meet_ends_at, cc.venue, cc.venue_lat, cc.venue_lng,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
@@ -689,6 +706,7 @@ class ChallengeRepository
                      cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
+                     cc.meet_at, cc.meet_ends_at, cc.venue, cc.venue_lat, cc.venue_lng,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
@@ -725,6 +743,7 @@ class ChallengeRepository
                      cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
                      cc.visibility,
             cc.closed_to_new_joins,
+                     cc.meet_at, cc.meet_ends_at, cc.venue, cc.venue_lat, cc.venue_lng,
                      cc.validated_at, cc.created_at,
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
@@ -862,7 +881,8 @@ class ChallengeRepository
         ?string $targetCityId = null,
         ?string $proofRequirements = null,
         string $visibility = 'public',
-        string $validationMethod = 'meet'
+        string $validationMethod = 'meet',
+        ?array $group = null
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
@@ -899,6 +919,22 @@ class ChallengeRepository
             $visibility = 'public';
         }
 
+        // Group model: a LOCAL MEET challenge created with a meet date becomes a
+        // 'group' challenge (date + location set at creation, multiple joiners,
+        // challenger validates presence). Everything else stays 'legacy' for now
+        // (international + the photo-proof group track land later).
+        $format     = 'legacy';
+        $meetAt     = null; $meetEndsAt = null; $venue = null; $venueLat = null; $venueLng = null;
+        if (is_array($group) && ($group['format'] ?? null) === 'group'
+            && $mode === 'local' && $validationMethod === 'meet') {
+            $format     = 'group';
+            $meetAt     = isset($group['meet_at'])      ? (int) $group['meet_at']      : null;
+            $meetEndsAt = isset($group['meet_ends_at']) ? (int) $group['meet_ends_at'] : null;
+            $venue      = isset($group['venue'])     ? (trim((string) $group['venue']) ?: null) : null;
+            $venueLat   = isset($group['venue_lat']) && $group['venue_lat'] !== null ? (float) $group['venue_lat'] : null;
+            $venueLng   = isset($group['venue_lng']) && $group['venue_lng'] !== null ? (float) $group['venue_lng'] : null;
+        }
+
         $pdo = Database::pdo();
         $id  = bin2hex(random_bytes(8));
 
@@ -920,10 +956,12 @@ class ChallengeRepository
         $pdo->prepare("
             INSERT INTO channel_challenges
                 (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause,
-                 mode, target_city_id, proof_requirements, validation_method, visibility)
+                 mode, target_city_id, proof_requirements, validation_method, visibility,
+                 challenge_format, meet_at, meet_ends_at, venue, venue_lat, venue_lng)
             VALUES
                 (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause,
-                 :mode, :target_city_id, :proof_requirements, :validation_method, :visibility)
+                 :mode, :target_city_id, :proof_requirements, :validation_method, :visibility,
+                 :format, to_timestamp(:meet_at), to_timestamp(:meet_ends_at), :venue, :venue_lat, :venue_lng)
         ")->execute([
             'channel_id'         => $id,
             'city_id'            => $cityId,
@@ -938,6 +976,12 @@ class ChallengeRepository
             'proof_requirements' => $proofRequirements,
             'validation_method'  => $validationMethod,
             'visibility'         => $visibility,
+            'format'             => $format,
+            'meet_at'            => $meetAt,
+            'meet_ends_at'       => $meetEndsAt,
+            'venue'              => $venue,
+            'venue_lat'          => $venueLat,
+            'venue_lng'          => $venueLng,
         ]);
 
         // Auto-join the creator (guests included).

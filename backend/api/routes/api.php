@@ -7892,6 +7892,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     // 'friends' accepted at create-time; 'private' is reachable only via
     // the mutual privacy_requests flow (PR #4) post-acceptance.
     $visibility         = $body['visibility']          ?? 'public';
+    // Group model (Phase 4): a local MEET challenge created with `format:'group'`
+    // carries a meet date + location set at creation. Parsed/validated below.
+    $format             = $body['format']     ?? 'legacy';
+    $meetAt             = $body['meetAt']      ?? null;   // unix seconds
+    $meetEndsAt         = $body['meetEndsAt']  ?? null;   // unix seconds (optional)
+    $venue              = $body['venue']       ?? null;
+    $venueLat           = $body['venueLat']    ?? null;
+    $venueLng           = $body['venueLng']    ?? null;
 
     enforceRateLimit('challenge_create', 5, 3600, (string) $channelId);
 
@@ -7944,6 +7952,34 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     }
     if ($proofRequirements !== null) {
         $proofRequirements = mb_substr(trim(strip_tags((string) $proofRequirements)), 0, 300);
+    }
+
+    // Group challenge validation: only local MEET challenges can be 'group',
+    // and they MUST carry a meet date + location (set at creation per the
+    // model). Built into $groupOpts and handed to create(); legacy create
+    // (format omitted / 'legacy') passes null and behaves exactly as before.
+    $groupOpts = null;
+    if ($format === 'group') {
+        if ($mode !== 'local' || $validationMethod !== 'meet') {
+            Response::json(['error' => 'Group challenges are local meet challenges only', 'code' => 'group_invalid'], 400);
+        }
+        $meetAtInt = filter_var($meetAt, FILTER_VALIDATE_INT);
+        if ($meetAtInt === false || $meetAtInt < 946684800) { // sanity: after year 2000
+            Response::json(['error' => 'meetAt (unix seconds) is required for a group challenge', 'code' => 'meet_at_required'], 400);
+        }
+        $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
+        if ($venueStr === '') {
+            Response::json(['error' => 'venue (location) is required for a group challenge', 'code' => 'venue_required'], 400);
+        }
+        $meetEndsInt = filter_var($meetEndsAt, FILTER_VALIDATE_INT);
+        $groupOpts = [
+            'format'       => 'group',
+            'meet_at'      => $meetAtInt,
+            'meet_ends_at' => $meetEndsInt !== false ? $meetEndsInt : null,
+            'venue'        => $venueStr,
+            'venue_lat'    => is_numeric($venueLat) ? (float) $venueLat : null,
+            'venue_lng'    => is_numeric($venueLng) ? (float) $venueLng : null,
+        ];
     }
 
     // Moderation gate - title + return clause + proof requirements all run
@@ -8002,6 +8038,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             $proofRequirements,
             $visibility,
             $validationMethod,
+            $groupOpts,
         );
 
         try {
