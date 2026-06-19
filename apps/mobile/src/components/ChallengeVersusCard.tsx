@@ -158,13 +158,25 @@ export function ChallengeVersusCard({
         </View>
 
         {isGroup ? (
-          // Group: no 1-v-1 taker - tap the "+" to open the challenge and join.
-          <OpenChallengeSlot
-            size={AVATAR_SIZE}
-            animated={animated}
-            onPress={onAcceptPress}
-            accessibilityLabel={t('group.join', { defaultValue: 'Join' })}
-          />
+          // Group: the right side is the CROWD, not one opponent. Show a cluster
+          // of joined people's avatars (host stays on the left). No joiners yet →
+          // a pulsing "+" inviting the first one in.
+          (challenge.participant_count ?? 0) > 0 ? (
+            <AttendeeAvatars
+              preview={(challenge.participants_preview ?? []).slice(0, 4)}
+              total={challenge.participant_count ?? 0}
+              size={46}
+              borderColor={Colors.bg2}
+              onPress={onAvatarsPress}
+            />
+          ) : (
+            <OpenChallengeSlot
+              size={AVATAR_SIZE}
+              animated={animated}
+              onPress={onAcceptPress}
+              accessibilityLabel={t('group.join', { defaultValue: 'Join' })}
+            />
+          )
         ) : showOpenSlot ? (
           <OpenChallengeSlot
             size={AVATAR_SIZE}

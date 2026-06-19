@@ -13052,6 +13052,18 @@ body.has-app-promo-banner .page-header {
   display:  inline-block;
 }
 
+/* Group card: the joined crowd sits in the versus row's right slot. Scale the
+   attendee avatars up so the cluster balances the large challenger avatar on
+   the left (the bottom attendee row is suppressed for group cards). */
+.challenge-versus-crowd .attendee-avatars { gap: 0; }
+.challenge-versus-crowd .attendee-avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 1rem;
+  border-width: 3px;
+}
+.challenge-versus-crowd .attendee-avatar:not(:first-child) { margin-left: -14px; }
+
 /* ─────────────────────────────────────────────────────────────────────────
    Challenge detail - large type emoji in the header, creator/participants
    split, with brand-orange Challenger pill. Built on top of the

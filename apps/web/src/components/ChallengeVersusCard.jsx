@@ -177,11 +177,22 @@ export default function ChallengeVersusCard({
         </span>
 
         {isGroup ? (
-          // Group: no 1-v-1 taker - tap the "+" to open the challenge and join.
-          <OpenChallengeSlot
-            ariaLabel={t('group.join', { defaultValue: 'Join' })}
-            onClick={onAcceptClick ? (e) => { e.stopPropagation(); onAcceptClick() } : undefined}
-          />
+          // Group: the right side is the CROWD, not one opponent. A cluster of
+          // joined people (host stays on the left). No joiners yet → a "+" that
+          // invites the first one in.
+          (c.participant_count ?? 0) > 0 ? (
+            <span className="challenge-versus-avatar-stack challenge-versus-crowd">
+              <AttendeeAvatars
+                preview={c.participants_preview ?? []}
+                total={c.participant_count ?? 0}
+              />
+            </span>
+          ) : (
+            <OpenChallengeSlot
+              ariaLabel={t('group.join', { defaultValue: 'Join' })}
+              onClick={onAcceptClick ? (e) => { e.stopPropagation(); onAcceptClick() } : undefined}
+            />
+          )
         ) : hasTaker ? (
           // key on the acceptor_user_id so React unmounts + remounts when
           // a different taker lands (e.g. a fresh acceptance over WS),
@@ -244,10 +255,14 @@ export default function ChallengeVersusCard({
       {c.creator_display_name && (
         <span className="er-host">{t('byCreator', { name: c.creator_display_name })}</span>
       )}
-      <AttendeeAvatars
-        preview={c.participants_preview ?? []}
-        total={c.participant_count ?? 0}
-      />
+      {/* Bottom attendee row - legacy cards only. Group cards show the joined
+          crowd in the versus row's right slot instead (no duplicate). */}
+      {!isGroup && (
+        <AttendeeAvatars
+          preview={c.participants_preview ?? []}
+          total={c.participant_count ?? 0}
+        />
+      )}
     </button>
   )
 }
