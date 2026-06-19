@@ -93,7 +93,9 @@ export interface Topic {
 export type ChallengeType     = 'food' | 'place' | 'culture' | 'help';
 export type ChallengeAudience = 'locals' | 'explorers';
 export type ChallengeStatus   = 'open' | 'validated';
-export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected' | 'proof_submitted';
+export type ChallengeAcceptancePhase = 'pending' | 'accepted' | 'scheduled' | 'debrief' | 'approved' | 'rejected' | 'proof_submitted'
+  // Group model (Phase 2+): join → validated present / absent.
+  | 'joined' | 'present' | 'absent';
 
 /** One challenge_acceptances row - the per-relationship thread (PR2). */
 export interface ChallengeAcceptance {
@@ -278,6 +280,15 @@ export interface Challenge {
    *  (an acceptance reached 'approved'). A completed challenge is closed for
    *  good - no new take-ons. Distinct from the reversible 'validated' archive. */
   closed?:               boolean;
+  /** Group model (Phase 1+): 'legacy' (1-to-1 accept→date→rate) vs 'group'
+   *  (join→meet→validate). Drives which flow + UI the clients render. */
+  challenge_format?:     'legacy' | 'group';
+  /** Group meet date/time (unix) + location, set at creation. Null on legacy. */
+  meet_at?:              number | null;
+  meet_ends_at?:         number | null;
+  venue?:                string | null;
+  venue_lat?:            number | null;
+  venue_lng?:            number | null;
   /** Privacy layer (web parity). 'public' default; 'friends' / 'private'
    *  hide the row from sitemap + city feed for non-entitled viewers. */
   visibility?:           'public' | 'friends' | 'private';

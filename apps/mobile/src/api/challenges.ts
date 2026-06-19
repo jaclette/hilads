@@ -180,6 +180,14 @@ export interface InternationalChallengeFields {
    *  pick. Default 'meet' preserves the historical IRL flow. */
   validationMethod?:     'meet' | 'photo_proof' | null;
   visibility?:           'public' | 'friends' | null;
+  // Group model (Phase 4): a local MEET challenge created with format='group'
+  // carries a meet date + location set at creation.
+  format?:               'legacy' | 'group';
+  meetAt?:               number | null;   // unix seconds
+  meetEndsAt?:           number | null;   // unix seconds (optional)
+  venue?:                string | null;
+  venueLat?:             number | null;
+  venueLng?:             number | null;
 }
 
 export async function createChallenge(
@@ -204,7 +212,24 @@ export async function createChallenge(
     proofRequirements:   intl.proofRequirements ?? null,
     validationMethod:    intl.validationMethod ?? null,
     visibility:          intl.visibility ?? 'public',
+    format:              intl.format ?? 'legacy',
+    meetAt:              intl.meetAt ?? null,
+    meetEndsAt:          intl.meetEndsAt ?? null,
+    venue:               intl.venue ?? null,
+    venueLat:            intl.venueLat ?? null,
+    venueLng:            intl.venueLng ?? null,
   });
+}
+
+/** GROUP challenges: the challenger validates who was present at the meet.
+ *  Returns the count + ids now marked present. Present takers earn the big
+ *  reward; the challenger earns a base + per-head. One-shot (the challenge is
+ *  marked validated). */
+export async function validatePresence(
+  challengeId: string,
+  presentUserIds: string[],
+): Promise<{ ok: boolean; present_count: number; present_ids: string[] }> {
+  return api.post(`/challenges/${challengeId}/validate-presence`, { presentUserIds });
 }
 
 /** Owner-only edit of a challenge's title / type / audience / return clause.
