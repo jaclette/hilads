@@ -286,6 +286,7 @@ class ChallengeRepository
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
+            'submission_count'     => 0,
         ];
     }
 
@@ -1405,6 +1406,30 @@ class ChallengeRepository
     }
 
     /**
+     * Distinct submitters per challenge - i.e. how many people actually uploaded
+     * a photo (NOT how many joined). Powers the "{n} photos" count on group
+     * photo-proof cards, which must reflect real submissions, not joins.
+     */
+    public static function submissionCountBatch(array $challengeIds): array
+    {
+        if (empty($challengeIds)) return [];
+        $in   = implode(',', array_fill(0, count($challengeIds), '?'));
+        $stmt = Database::pdo()->prepare("
+            SELECT a.challenge_id, COUNT(DISTINCT a.acceptor_user_id) AS cnt
+            FROM challenge_proofs p
+            JOIN challenge_acceptances a ON a.id = p.acceptance_id
+            WHERE a.challenge_id IN ($in)
+            GROUP BY a.challenge_id
+        ");
+        $stmt->execute(array_values($challengeIds));
+        $map = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $r) {
+            $map[$r['challenge_id']] = (int) $r['cnt'];
+        }
+        return $map;
+    }
+
+    /**
      * Full acceptor list for the members modal - canonical UserDTOs in
      * accept-order. PR2+ acceptors are always registered users (the new
      * /accept flow requires a session), so no guest branch here.
@@ -1460,9 +1485,11 @@ class ChallengeRepository
         $ids      = array_map(static fn(array $c): string => $c['id'], $challenges);
         $previews = self::participantPreviewBatch($ids, 5);
         $counts   = self::participantCountBatch($ids);
+        $subCounts = self::submissionCountBatch($ids);
         foreach ($challenges as &$c) {
             $c['participants_preview'] = $previews[$c['id']] ?? [];
             $c['participant_count']    = $counts[$c['id']]   ?? 0;
+            $c['submission_count']     = $subCounts[$c['id']] ?? 0;
         }
         return $challenges;
     }

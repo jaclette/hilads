@@ -336,6 +336,8 @@ export interface Challenge {
   created_at:            number;           // unix timestamp
   participants_preview:  ParticipantPreview[];
   participant_count:     number;
+  /** Distinct people who actually submitted a photo (group photo-proof). */
+  submission_count?:     number;
 }
 
 /** Item in the /now mixed feed - either an event or a topic. */

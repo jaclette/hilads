@@ -92,6 +92,7 @@ export function ChallengeVersusCard({
   // inherently photo-proof.
   const isGroupPhoto   = isGroup && ((challenge.validation_method ?? 'meet') === 'photo_proof' || isInternational);
   const participantCount = challenge.participant_count ?? 0;
+  const submissionCount  = challenge.submission_count ?? 0;
   const zeroParticipants = participantCount === 0;
   // Photo-proof deadline countdown (whole days left from meet_at). Null when no
   // deadline is set yet - we never fabricate one.
@@ -136,6 +137,17 @@ export function ChallengeVersusCard({
             <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
           </View>
           <View style={{ flex: 1 }} />
+          {/* Photo-proof deadline lives up here with the status so the bottom
+              row can carry the Join CTA. */}
+          {!isValidated && isGroupPhoto && deadlineDaysLeft != null ? (
+            <View style={styles.deadlinePill}>
+              <Text style={styles.deadlinePillText}>
+                ⏳ {deadlineDaysLeft >= 2
+                  ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
+                  : t('card.lastDay', { defaultValue: 'Expires soon' })}
+              </Text>
+            </View>
+          ) : null}
           {isValidated ? (
             <View style={styles.validatedBadge}>
               <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
@@ -197,29 +209,15 @@ export function ChallengeVersusCard({
                 />
                 <Text style={styles.groupCountText} numberOfLines={1}>
                   {isGroupPhoto
-                    ? `📸 ${t('card.photosCount', { count: participantCount, defaultValue: '{{count}} photos' })}`
+                    ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
                     : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
                 </Text>
               </View>
-              {isGroupPhoto ? (
-                deadlineDaysLeft != null ? (
-                  <View style={styles.deadlinePill}>
-                    <Text style={styles.deadlinePillText}>
-                      {deadlineDaysLeft >= 2
-                        ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
-                        : t('card.lastDay', { defaultValue: 'Expires soon' })}
-                    </Text>
-                  </View>
-                ) : (
-                  <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
-                    <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
-                  </TouchableOpacity>
-                )
-              ) : (
-                <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
-                  <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
-                </TouchableOpacity>
-              )}
+              {/* Join CTA - group challenges stay open, so always invite more
+                  people in (meet AND photo). Tapping opens the challenge. */}
+              <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
+                <Text style={styles.joinPillText}>{t('group.join', { defaultValue: 'Join' })} ⚡</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>

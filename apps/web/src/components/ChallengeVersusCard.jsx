@@ -84,6 +84,7 @@ export default function ChallengeVersusCard({
   if (isGroup) {
     const isGroupPhoto     = (c.validation_method ?? 'meet') === 'photo_proof' || isInternational
     const participantCount = c.participant_count ?? 0
+    const submissionCount  = c.submission_count ?? 0
     const zeroParticipants = participantCount === 0
     const deadlineDaysLeft = (isGroupPhoto && c.meet_at)
       ? Math.ceil((c.meet_at * 1000 - Date.now()) / 86_400_000)
@@ -110,12 +111,21 @@ export default function ChallengeVersusCard({
               : `📍 ${t('card.meetBadge', { defaultValue: 'Meet' })}`}
           </span>
           <span className="challenge-badge challenge-badge--kind">{t(`typeBadge.${c.challenge_type}`)}</span>
+          {/* Photo-proof deadline lives up here with the status so the bottom
+              row can carry the Join CTA. */}
+          {!isValidated && isGroupPhoto && deadlineDaysLeft != null && (
+            <span className="challenge-badge challenge-group-deadline" style={{ marginLeft: 'auto' }}>
+              ⏳ {deadlineDaysLeft >= 2
+                ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
+                : t('card.lastDay', { defaultValue: 'Expires soon' })}
+            </span>
+          )}
           {isValidated ? (
-            <span className="challenge-badge challenge-badge--validated" style={{ marginLeft: 'auto' }}>
+            <span className="challenge-badge challenge-badge--validated" style={(!isGroupPhoto || deadlineDaysLeft == null) ? { marginLeft: 'auto' } : undefined}>
               ✓ {t('validatedBadge')}
             </span>
           ) : (
-            <span className="challenge-badge challenge-badge--available" style={{ marginLeft: 'auto' }}>
+            <span className="challenge-badge challenge-badge--available" style={(!isGroupPhoto || deadlineDaysLeft == null) ? { marginLeft: 'auto' } : undefined}>
               🟢 {t('card.available')}
             </span>
           )}
@@ -166,21 +176,15 @@ export default function ChallengeVersusCard({
                 <AttendeeAvatars preview={(c.participants_preview ?? []).slice(0, 4)} total={participantCount} />
                 <span className="challenge-group-count">
                   {isGroupPhoto
-                    ? `📸 ${t('card.photosCount', { count: participantCount, defaultValue: '{{count}} photos' })}`
+                    ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
                     : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
                 </span>
               </span>
-              {isGroupPhoto && deadlineDaysLeft != null ? (
-                <span className="challenge-group-deadline">
-                  {deadlineDaysLeft >= 2
-                    ? t('card.daysLeft', { count: deadlineDaysLeft, defaultValue: '{{count}}d left' })
-                    : t('card.lastDay', { defaultValue: 'Expires soon' })}
-                </span>
-              ) : (
-                <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
-                  {t('group.join', { defaultValue: 'Join' })} ⚡
-                </span>
-              )}
+              {/* Join CTA - group challenges stay open, so always invite more
+                  people in (meet AND photo). */}
+              <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
+                {t('group.join', { defaultValue: 'Join' })} ⚡
+              </span>
             </>
           )}
         </div>
