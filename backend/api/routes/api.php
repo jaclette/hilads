@@ -7960,16 +7960,27 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     // (format omitted / 'legacy') passes null and behaves exactly as before.
     $groupOpts = null;
     if ($format === 'group') {
-        if ($mode !== 'local' || $validationMethod !== 'meet') {
-            Response::json(['error' => 'Group challenges are local meet challenges only', 'code' => 'group_invalid'], 400);
+        // MEET group = local + meet (needs a meet date + venue). PHOTO-PROOF
+        // group = photo_proof (local or international); meet_at is the submission
+        // DEADLINE and there's no venue (it's at a distance).
+        $isGroupMeet  = $mode === 'local' && $validationMethod === 'meet';
+        $isGroupPhoto = $validationMethod === 'photo_proof';
+        if (!$isGroupMeet && !$isGroupPhoto) {
+            Response::json(['error' => 'Group challenges must be a local meet or a photo-proof contest', 'code' => 'group_invalid'], 400);
         }
         $meetAtInt = filter_var($meetAt, FILTER_VALIDATE_INT);
         if ($meetAtInt === false || $meetAtInt < 946684800) { // sanity: after year 2000
-            Response::json(['error' => 'meetAt (unix seconds) is required for a group challenge', 'code' => 'meet_at_required'], 400);
+            Response::json([
+                'error' => $isGroupPhoto ? 'A submission deadline is required' : 'meetAt (unix seconds) is required for a group challenge',
+                'code'  => 'meet_at_required',
+            ], 400);
         }
-        $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
-        if ($venueStr === '') {
-            Response::json(['error' => 'venue (location) is required for a group challenge', 'code' => 'venue_required'], 400);
+        $venueStr = null;
+        if ($isGroupMeet) {
+            $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
+            if ($venueStr === '') {
+                Response::json(['error' => 'venue (location) is required for a group meet', 'code' => 'venue_required'], 400);
+            }
         }
         $meetEndsInt = filter_var($meetEndsAt, FILTER_VALIDATE_INT);
         $groupOpts = [
@@ -7977,8 +7988,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
             'meet_at'      => $meetAtInt,
             'meet_ends_at' => $meetEndsInt !== false ? $meetEndsInt : null,
             'venue'        => $venueStr,
-            'venue_lat'    => is_numeric($venueLat) ? (float) $venueLat : null,
-            'venue_lng'    => is_numeric($venueLng) ? (float) $venueLng : null,
+            'venue_lat'    => ($isGroupMeet && is_numeric($venueLat)) ? (float) $venueLat : null,
+            'venue_lng'    => ($isGroupMeet && is_numeric($venueLng)) ? (float) $venueLng : null,
         ];
     }
 

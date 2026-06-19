@@ -1586,7 +1586,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1610,7 +1610,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -1687,6 +1687,27 @@ run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES
 // this dedicated index does.
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_hostbase_per_challenge
             ON score_events (challenge_id) WHERE kind = 'present_host_base'", 'uq_score_events_hostbase');
+
+// ── PHOTO-PROOF GROUP — P1: scoring rules (data model only, dormant) ──────────
+// The competitive at-a-distance mode (the international flow). Each participant
+// submits a photo before the deadline (= meet_at). Then:
+//   - 'submission' (+5): credited at SUBMISSION (a real photo), once per (user,
+//     challenge) - so it can't be farmed by joiners who never submit.
+//   - 'winner' (+40): the challenger picks the best photo; the winner earns the
+//     big reward. Late participation is never penalised (the resolution delay
+//     starts at the deadline, not first upload). Auto-distribution of the
+//     'submission' points after a post-deadline delay (even with no designated
+//     winner) is a later behaviour phase + a background job.
+// Rules are added now (additive, no trigger fires them yet) so the behaviour
+// phases can wire them. The +2 join spark still applies at join.
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES
+        ('submission', 'taker', 5),
+        ('winner',     'taker', 40)
+    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points", 'score_rules submission/winner');
+// 'submission' is once per (user, challenge) - a participant who re-submits a
+// better photo before the deadline isn't paid twice for participating.
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_submission_per_user
+            ON score_events (user_id, challenge_id) WHERE kind = 'submission'", 'uq_score_events_submission_per_user');
 
 // Trigger: award presence rewards when a group taker is validated (phase →
 // 'present'). Per validated head: taker +40, challenger +5 (tied to THIS taker's

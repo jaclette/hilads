@@ -925,14 +925,21 @@ class ChallengeRepository
         // (international + the photo-proof group track land later).
         $format     = 'legacy';
         $meetAt     = null; $meetEndsAt = null; $venue = null; $venueLat = null; $venueLng = null;
-        if (is_array($group) && ($group['format'] ?? null) === 'group'
-            && $mode === 'local' && $validationMethod === 'meet') {
+        $wantsGroup = is_array($group) && ($group['format'] ?? null) === 'group';
+        // MEET group: local + meet → date + place. PHOTO-PROOF group: photo_proof
+        // (local or international) → meet_at doubles as the submission DEADLINE,
+        // no venue (it's at a distance).
+        $isGroupMeet  = $wantsGroup && $mode === 'local' && $validationMethod === 'meet';
+        $isGroupPhoto = $wantsGroup && $validationMethod === 'photo_proof';
+        if ($isGroupMeet || $isGroupPhoto) {
             $format     = 'group';
             $meetAt     = isset($group['meet_at'])      ? (int) $group['meet_at']      : null;
             $meetEndsAt = isset($group['meet_ends_at']) ? (int) $group['meet_ends_at'] : null;
-            $venue      = isset($group['venue'])     ? (trim((string) $group['venue']) ?: null) : null;
-            $venueLat   = isset($group['venue_lat']) && $group['venue_lat'] !== null ? (float) $group['venue_lat'] : null;
-            $venueLng   = isset($group['venue_lng']) && $group['venue_lng'] !== null ? (float) $group['venue_lng'] : null;
+            if ($isGroupMeet) {
+                $venue    = isset($group['venue'])     ? (trim((string) $group['venue']) ?: null) : null;
+                $venueLat = isset($group['venue_lat']) && $group['venue_lat'] !== null ? (float) $group['venue_lat'] : null;
+                $venueLng = isset($group['venue_lng']) && $group['venue_lng'] !== null ? (float) $group['venue_lng'] : null;
+            }
         }
 
         $pdo = Database::pdo();
