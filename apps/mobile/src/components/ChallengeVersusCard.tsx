@@ -533,8 +533,12 @@ const styles = StyleSheet.create({
   resPhotoBadgeText: { fontSize: 10, fontWeight: '800', color: '#60a5fa', letterSpacing: 0.3 },
 
   // Challenger-alone header (avatar + title + subtitle).
+  // minWidth:0 lets the text column shrink below its content so the title's
+  // MarqueeText measures the BOUNDED width and scrolls (without it the flex
+  // child expands to the title's natural width → marquee thinks it fits →
+  // static ellipsis "..." that never reveals the end).
   groupHeader:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  groupHeaderText: { flex: 1, gap: 3, justifyContent: 'center' },
+  groupHeaderText: { flex: 1, minWidth: 0, gap: 3, justifyContent: 'center' },
   groupSubtitle:   { fontSize: 12, fontWeight: '600', color: Colors.muted },
 
   // Bottom group row: stack + count on the left, CTA / countdown on the right.
