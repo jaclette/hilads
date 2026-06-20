@@ -7145,6 +7145,40 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
     Response::json($message, 201);
 });
 
+// POST /api/v1/topics/{topicId}/messages/{messageId}/reactions
+// Toggle an emoji reaction on a Hi-now (topic) message. Mirrors the city-channel
+// reaction; broadcasts to the topic's own WS room (the raw 16-hex topicId, which
+// is what useMessages matches reactionUpdate on for topics).
+$router->add('POST', '/api/v1/topics/{topicId}/messages/{messageId}/reactions', function (array $params) {
+    $topicId   = $params['topicId'] ?? '';
+    $messageId = $params['messageId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $topicId)) {
+        Response::json(['error' => 'Invalid topicId'], 400);
+    }
+    if (empty($messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body    = Request::json();
+    $emoji   = trim((string) ($body['emoji'] ?? ''));
+    $guestId = $body['guestId'] ?? null;
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId or auth token required'], 400);
+    }
+
+    $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
+    broadcastReactionToWs($topicId, $messageId, $result['reactions']);
+
+    Response::json(['reactions' => $result['reactions']]);
+});
+
 // ── Hangout join-requests (request-to-join) ──────────────────────────────────
 // Members only (guests are routed to signup client-side). A request notifies
 // every participant + drops an Accept/Reject feed item; ANY participant can

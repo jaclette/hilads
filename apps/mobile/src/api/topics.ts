@@ -129,11 +129,28 @@ export async function sendTopicMessage(
   guestId: string,
   nickname: string,
   content: string,
+  replyToMessageId?: string | null,
   mentions?: import('./mentions').MentionInput[],
 ): Promise<Message> {
   const body: Record<string, unknown> = { guestId, nickname, content };
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
   if (mentions && mentions.length) body.mentions = mentions;
   return api.post<Message>(`/topics/${topicId}/messages`, body);
+}
+
+/** Toggle an emoji reaction on a Hi-now (topic) message. Mirrors
+ *  toggleChannelReaction. Returns the updated reaction list. */
+export async function toggleTopicReaction(
+  topicId: string,
+  messageId: string,
+  emoji: string,
+  guestId: string,
+): Promise<import('@/types').Reaction[]> {
+  const res = await api.post<{ reactions: import('@/types').Reaction[] }>(
+    `/topics/${topicId}/messages/${messageId}/reactions`,
+    { emoji, guestId },
+  );
+  return res.reactions ?? [];
 }
 
 export async function sendTopicImageMessage(

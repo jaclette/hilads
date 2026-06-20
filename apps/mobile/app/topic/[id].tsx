@@ -12,9 +12,10 @@ import { socket } from '@/lib/socket';
 import { shareLink } from '@/lib/shareLink';
 import {
   fetchTopicById, fetchTopicMessages,
-  sendTopicMessage, sendTopicImageMessage, markTopicRead,
+  sendTopicMessage, sendTopicImageMessage, markTopicRead, toggleTopicReaction,
   resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants,
 } from '@/api/topics';
+import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { MembersSheet } from '@/components/MembersSheet';
 import { useMessages } from '@/hooks/useMessages';
@@ -143,9 +144,9 @@ export default function TopicChatScreen() {
   }, [id, loadParticipants]);
 
   const postTextFn = useCallback(
-    (content: string, _replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
+    (content: string, replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> => {
       if (!identity) return Promise.reject(new Error('Not ready'));
-      return sendTopicMessage(id, identity.guestId, nickname, content, mentions);
+      return sendTopicMessage(id, identity.guestId, nickname, content, replyToId ?? null, mentions);
     },
     [id, identity, nickname],
   );
@@ -158,12 +159,44 @@ export default function TopicChatScreen() {
     [id, identity, nickname],
   );
 
-  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload, editMessage, deleteMessage } = useMessages({
+  const { messages, loading: msgsLoading, loadingOlder, hasMore, sending, error: msgError, clearError, sendText, sendImage, loadOlder, reload, editMessage, deleteMessage, setMessageReactions } = useMessages({
     channelId: id,
     loadFn,
     postTextFn,
     postImageFn,
   });
+
+  // Reply + reaction wiring - same interaction layer as city / event / challenge
+  // chats (ChatMessage + ChatInput + MessageActionSheet). Topics had these stubbed.
+  const [replyingTo, setReplyingTo] = useState<import('@/types').ReplyRef | null>(null);
+  const replyingToRef = useRef<import('@/types').ReplyRef | null>(null);
+  replyingToRef.current = replyingTo;
+
+  const handleSendText = useCallback((text: string, mentions?: import('@/types').MentionRef[]) => {
+    const reply = replyingToRef.current;
+    setReplyingTo(null);
+    sendText(text, reply, mentions);
+  }, [sendText]);
+
+  const handleReply = useCallback((msg: Message) => {
+    if (!msg.id || msg.id.startsWith('local-')) return;
+    setReplyingTo({ id: msg.id, nickname: msg.nickname ?? '', content: msg.content ?? '', type: msg.type });
+  }, []);
+
+  const handleReact = useCallback(async (msg: Message, emoji: string) => {
+    if (!msg.id || msg.id.startsWith('local-') || !identity) return;
+    const type = EMOJI_TO_TYPE[emoji];
+    if (type) {
+      reactionEmitter.emit(msg.id, type);
+      socket.sendReaction(type, msg.id, id, account?.id ?? null);
+    }
+    try {
+      const reactions = await toggleTopicReaction(id, msg.id, emoji, identity.guestId);
+      setMessageReactions(msg.id, reactions);
+    } catch (e) {
+      console.warn('[topic] reaction failed:', e);
+    }
+  }, [id, identity, account, setMessageReactions]);
 
   // Join the WS topic room while the screen is focused so new messages arrive
   // via the newMessage event (handled by useMessages). Leave on blur so the
@@ -366,6 +399,7 @@ export default function TopicChatScreen() {
                 isGrouped={isGrouped}
                 showTime={showTime}
                 dateLabel={dateLabel}
+                onReact={handleReact}
                 onLongPress={(msg) => {
                   if (!msg.id || msg.id.startsWith('local-')) return;
                   setActionSheetMsg(msg);
@@ -410,7 +444,9 @@ export default function TopicChatScreen() {
           sending={sending}
           mentionContext="topic"
           mentionChannelId={id}
-          onSendText={(text, mentions) => sendText(text, null, mentions)}
+          replyingTo={replyingTo}
+          onCancelReply={() => setReplyingTo(null)}
+          onSendText={(text, mentions) => handleSendText(text, mentions)}
           onSendImage={sendImage}
           placeholder={t('composer.placeholderHangout', { ns: 'common' })}
           editing={editingMsg}
@@ -428,7 +464,10 @@ export default function TopicChatScreen() {
       <MessageActionSheet
         visible={actionSheetMsg !== null}
         reactions={actionSheetMsg?.reactions ?? []}
-        onReact={() => {}}  /* Topic has no reactions yet - emoji strip is harmless visual no-op. */
+        onReact={emoji => { if (actionSheetMsg) handleReact(actionSheetMsg, emoji); }}
+        onReply={actionSheetMsg && actionSheetMsg.id && !actionSheetMsg.id.startsWith('local-')
+          ? () => { const m = actionSheetMsg; setActionSheetMsg(null); if (m) handleReply(m); }
+          : undefined}
         onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;
