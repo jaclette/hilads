@@ -22,7 +22,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export function GroupSubmissionsGallery({
-  challengeId, isChallenger, isValidated, refreshKey, onChanged, onCount,
+  challengeId, isChallenger, isValidated, refreshKey, onChanged, onCount, openSignal,
 }: {
   challengeId:  string;
   isChallenger: boolean;
@@ -31,6 +31,8 @@ export function GroupSubmissionsGallery({
   onChanged?:   () => void;
   /** Reports the current submission count (for the owner's hint copy). */
   onCount?:     (n: number) => void;
+  /** Bump to open the gallery modal programmatically (e.g. proof-submitted push). */
+  openSignal?:  number;
 }) {
   const { t } = useTranslation('challenge');
   const [subs,     setSubs]     = useState<GroupSubmission[]>([]);
@@ -54,6 +56,9 @@ export function GroupSubmissionsGallery({
   }, [challengeId, onCount]);
 
   useEffect(() => { load(); }, [load, refreshKey]);
+
+  // Open the modal on demand (e.g. the challenger tapped a "new photo" push).
+  useEffect(() => { if (openSignal && openSignal > 0) setOpen(true); }, [openSignal]);
 
   const handlePick = useCallback((s: GroupSubmission) => {
     Alert.alert(

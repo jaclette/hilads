@@ -395,24 +395,11 @@ export default function ChallengeChatScreen() {
   const [galleryTick,  setGalleryTick]  = useState(0);
   // How many photos have been submitted - drives the owner's hint copy.
   const [submissionCount, setSubmissionCount] = useState(0);
+  // Bumped to open the submissions gallery (e.g. proof-submitted push deep-link).
+  const [gallerySignal, setGallerySignal] = useState(0);
   const [validating,   setValidating]   = useState(false);
 
-  // Proof-review deep-link: a "📸 new proof to review" push routes here with
-  // ?reviewProof=1. Once the creator's acceptance has loaded at proof_submitted,
-  // auto-open the ProofReviewModal so the tap lands straight on the photo. The
-  // param is stripped after so a back-nav / refresh doesn't re-open it.
   const reviewProofFiredRef = useRef(false);
-  useEffect(() => {
-    if (reviewProof === '1'
-        && !reviewProofFiredRef.current
-        && usesPhotoProof
-        && isOwner
-        && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-      reviewProofFiredRef.current = true;
-      setProofReviewOpen(true);
-      router.setParams({ reviewProof: undefined } as never);
-    }
-  }, [reviewProof, usesPhotoProof, isOwner, effectiveActiveAcceptance?.phase, router]);
 
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here - that's the mutual go-private flow. International
@@ -993,6 +980,25 @@ export default function ChallengeChatScreen() {
   // picks the winner). meet_at is the meet date for meet, the deadline for photo.
   const isGroupPhoto = isGroup && ((challenge.validation_method ?? 'meet') === 'photo_proof' || (challenge.mode ?? 'local') === 'international');
   const isGroupMeet  = isGroup && !isGroupPhoto;
+
+  // Proof-review deep-link: a "📸 new proof" push routes here with ?reviewProof=1.
+  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Legacy
+  // 1-1 → the old ProofReviewModal once the proof has landed. Param is stripped
+  // after so a back-nav / refresh doesn't re-open it.
+  useEffect(() => {
+    if (reviewProof !== '1' || reviewProofFiredRef.current || !isOwner) return;
+    if (isGroupPhoto) {
+      reviewProofFiredRef.current = true;
+      setGallerySignal(s => s + 1);
+      router.setParams({ reviewProof: undefined } as never);
+      return;
+    }
+    if (usesPhotoProof && effectiveActiveAcceptance?.phase === 'proof_submitted') {
+      reviewProofFiredRef.current = true;
+      setProofReviewOpen(true);
+      router.setParams({ reviewProof: undefined } as never);
+    }
+  }, [reviewProof, isGroupPhoto, usesPhotoProof, isOwner, effectiveActiveAcceptance?.phase, router]);
   const meetSummary = isGroup && challenge.meet_at
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null;
@@ -1330,6 +1336,7 @@ export default function ChallengeChatScreen() {
             refreshKey={galleryTick}
             onChanged={() => { loadChallenge(); loadParticipants(); }}
             onCount={setSubmissionCount}
+            openSignal={gallerySignal}
           />
         )}
 
