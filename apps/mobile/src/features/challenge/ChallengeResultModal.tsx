@@ -57,7 +57,8 @@ export function ChallengeResultModal({
 
   if (!reveal) return null;
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal } = reveal;
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal,
+          challengeTitle, rankCity, rankGlobal, rankTopN, cityName } = reveal;
   const isPhoto = format === 'photo';
   const showPhoto = isPhoto && !!winnerPhotoUrl;
   // Running total climbs in sync with the points count-up (start → final).
@@ -116,6 +117,9 @@ export function ChallengeResultModal({
             )}
 
             <Text style={styles.title}>{emoji} {title}</Text>
+            {challengeTitle ? (
+              <Text style={styles.challengeName} numberOfLines={2}>📌 {challengeTitle}</Text>
+            ) : null}
             {body ? <Text style={styles.body}>{body}</Text> : null}
 
             {showPoints ? (
@@ -144,6 +148,28 @@ export function ChallengeResultModal({
                     {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
                   </Animated.Text>
                 ) : null}
+              </View>
+            ) : null}
+
+            {/* Current ranking - same lens as the +points celebration popin. */}
+            {rankTopN != null ? (
+              <View style={styles.rankBlock}>
+                <View style={styles.rankRow}>
+                  <Text style={styles.rankFlag}>📍</Text>
+                  <Text style={styles.rankLabel} numberOfLines={1}>
+                    {rankCity != null
+                      ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
+                      : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
+                  </Text>
+                </View>
+                <View style={styles.rankRow}>
+                  <Text style={styles.rankFlag}>🌐</Text>
+                  <Text style={styles.rankLabel} numberOfLines={1}>
+                    {rankGlobal != null
+                      ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
+                      : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
+                  </Text>
+                </View>
               </View>
             ) : null}
 
@@ -177,6 +203,12 @@ const styles = StyleSheet.create({
   bigEmoji: { fontSize: 64, marginTop: Spacing.sm },
   title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center', letterSpacing: -0.3, marginTop: Spacing.sm },
   body:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  challengeName: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, textAlign: 'center', marginTop: 2 },
+
+  rankBlock: { alignSelf: 'stretch', marginTop: Spacing.md, gap: 8 },
+  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
+  rankFlag:  { fontSize: FontSizes.md },
+  rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },

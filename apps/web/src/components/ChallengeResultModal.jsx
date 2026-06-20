@@ -29,7 +29,8 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
 
   if (!reveal || !visible) return null
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal } = reveal
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal,
+          challengeTitle, rankCity, rankGlobal, rankTopN, cityName } = reveal
   const finalTotal = myTotal ?? 0
   const displayTotal = Math.max(0, finalTotal - myPoints) + displayPoints
   const isPhoto = format === 'photo'
@@ -78,6 +79,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
         )}
 
         <div className="crm-title">{emoji} {title}</div>
+        {challengeTitle ? <div className="crm-challenge-name">📌 {challengeTitle}</div> : null}
         {body ? <div className="crm-body">{body}</div> : null}
 
         {showPoints ? (
@@ -96,6 +98,27 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
                 {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
               </div>
             ) : null}
+          </div>
+        ) : null}
+
+        {rankTopN != null ? (
+          <div className="crm-rank-block">
+            <div className="crm-rank-row">
+              <span className="crm-rank-flag">📍</span>
+              <span className="crm-rank-label">
+                {rankCity != null
+                  ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
+                  : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
+              </span>
+            </div>
+            <div className="crm-rank-row">
+              <span className="crm-rank-flag">🌐</span>
+              <span className="crm-rank-label">
+                {rankGlobal != null
+                  ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
+                  : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
+              </span>
+            </div>
           </div>
         ) : null}
 

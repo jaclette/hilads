@@ -9457,7 +9457,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
                 'winnerUserId'     => null, 'winnerName' => null, 'winnerPhotoUrl' => null,
                 'participantCount' => $presentCount,
                 'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $presentCount],
-            ]);
+            ], false); // host = actor → modal directly, no push
         } catch (\Throwable $e) {}
     } catch (\Throwable $e) {
         error_log('[challenges] validate-presence reveal fan-out failed (non-fatal): ' . $e->getMessage());
@@ -9654,7 +9654,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
             'winnerPhotoUrl'   => $winnerPhoto,
             'participantCount' => $submitterCount,
             'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $submitterCount],
-        ]);
+        ], false); // host = actor → modal directly, no push
     } catch (\Throwable $e) { error_log('[challenges] pick-winner host reveal failed (non-fatal): ' . $e->getMessage()); }
 
     try { MonthlyRankService::recalcAfterScoreChange($winnerUserId); } catch (\Throwable $e) {}
@@ -11696,11 +11696,12 @@ $router->add('GET', '/api/v1/me/challenge-reveals', function () {
         LIMIT 20
     ");
     $stmt->execute([$callerId]);
+    $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     // The caller's CURRENT total (fresh - the score trigger already cached it),
     // so the reveal modal can climb the running total like the +points popin.
     // Prefer the in-month total when present, else alltime.
-    $meStmt = Database::pdo()->prepare("SELECT score_month, score_month_ref, score_alltime FROM users WHERE id = ?");
+    $meStmt = Database::pdo()->prepare("SELECT score_month, score_month_ref, score_alltime, current_city_id FROM users WHERE id = ?");
     $meStmt->execute([$callerId]);
     $me = $meStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
     $monthRef = gmdate('Y-m');
@@ -11708,12 +11709,44 @@ $router->add('GET', '/api/v1/me/challenge-reveals', function () {
         ? (int) $me['score_month']
         : (int) ($me['score_alltime'] ?? 0);
 
-    $reveals = array_map(static function (array $row) use ($myTotal): array {
+    // Caller's CURRENT city + world rank (same compact shape the score popin
+    // uses) so the reveal modal can show the rank rows too. Computed live.
+    $ranks    = MonthlyRankService::ranksForUser($callerId);
+    $cityName = null;
+    $cityId   = $me['current_city_id'] ?? null;
+    if ($cityId !== null && preg_match('/^city_(\d+)$/', (string) $cityId, $cm)) {
+        $cityRow  = CityRepository::findById((int) $cm[1]);
+        $cityName = $cityRow['name'] ?? null;
+    }
+
+    // Challenge titles, batched - the reveal modal names which challenge it was.
+    $titles = [];
+    $ids = [];
+    foreach ($rows as $row) {
+        $d = json_decode($row['data'] ?: '{}', true) ?: [];
+        if (!empty($d['challengeId'])) $ids[] = $d['challengeId'];
+    }
+    $ids = array_values(array_unique($ids));
+    if (!empty($ids)) {
+        $in = implode(',', array_fill(0, count($ids), '?'));
+        $tStmt = Database::pdo()->prepare("SELECT channel_id, title FROM channel_challenges WHERE channel_id IN ($in)");
+        $tStmt->execute($ids);
+        foreach ($tStmt->fetchAll(\PDO::FETCH_ASSOC) as $tr) {
+            $titles[$tr['channel_id']] = $tr['title'] ?? null;
+        }
+    }
+
+    $reveals = array_map(static function (array $row) use ($myTotal, $ranks, $cityName, $titles): array {
         $data = json_decode($row['data'] ?: '{}', true) ?: [];
-        $data['id']      = $row['id'];   // notification id - used by the client to mark-read
-        $data['myTotal'] = $myTotal;     // caller's current total (for the climbing animation)
+        $data['id']             = $row['id'];   // notification id - used by the client to mark-read
+        $data['myTotal']        = $myTotal;     // caller's current total (for the climbing animation)
+        $data['challengeTitle'] = $titles[$data['challengeId'] ?? ''] ?? null;
+        $data['rankCity']       = $ranks['city']   ?? null;
+        $data['rankGlobal']     = $ranks['global'] ?? null;
+        $data['rankTopN']       = $ranks['top_n']  ?? null;
+        $data['cityName']       = $cityName;
         return $data;
-    }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+    }, $rows);
 
     Response::json(['reveals' => $reveals]);
 });

@@ -11,13 +11,14 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data = []
+        array   $data = [],
+        bool    $push = true
     ): array {
         // Skip if recipient has disabled this notification type
         if (!self::isEnabledForUser($userId, $type)) {
             return [];
         }
-        return self::createUnchecked($userId, $type, $title, $body, $data);
+        return self::createUnchecked($userId, $type, $title, $body, $data, null, $push);
     }
 
     /**
@@ -31,7 +32,8 @@ class NotificationRepository
         string  $title,
         ?string $body,
         array   $data = [],
-        ?string $locale = null
+        ?string $locale = null,
+        bool    $push = true
     ): array {
         // Crawler / bot accounts: drop EVERYTHING they would trigger as an actor
         // - no bell row written, no web push, no native push. Recipients of
@@ -65,11 +67,17 @@ class NotificationRepository
         $stmt->execute([$userId, $type, $title, $body, json_encode($data)]);
         $notif = self::normalise($stmt->fetch(\PDO::FETCH_ASSOC));
 
-        // Web push (browser VAPID) - fire-and-forget
-        PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data), $data);
+        // Push is suppressed for the actor's own reveal (e.g. the challenger who
+        // just validated): they get the celebration modal directly via the WS
+        // ping + reveal refetch, so a push would be redundant/confusing. The bell
+        // row above is still written (the reveal gate reads it, ack on close).
+        if ($push) {
+            // Web push (browser VAPID) - fire-and-forget
+            PushService::send($userId, $type, $title, $body, self::pushUrl($type, $data), self::pushTag($type, $data), $data);
 
-        // Native push (iOS/Android via Expo) - fire-and-forget
-        MobilePushService::send($userId, $type, $title, $body, $data);
+            // Native push (iOS/Android via Expo) - fire-and-forget
+            MobilePushService::send($userId, $type, $title, $body, $data);
+        }
 
         return $notif;
     }
@@ -549,18 +557,20 @@ class NotificationRepository
         string $challengeId,
         string $format,
         string $challengerName,
-        array  $data
+        array  $data,
+        bool   $push = true
     ): void {
         $type  = $format === 'meet' ? 'challenge_group_result_meet' : 'challenge_group_result_photo';
         $title = $format === 'meet'
             ? "🎉 {$challengerName} validated the meet"
             : "🏆 {$challengerName} chose the winning photo";
         $body  = $format === 'meet' ? 'Tap to see how it went' : 'Tap to see who won';
+        // $push=false for the actor (host) - they get the modal directly, no push.
         self::create($userId, $type, $title, $body, array_merge($data, [
             'challengeId'    => $challengeId,
             'challengerName' => $challengerName,
             'name'           => $challengerName,   // {name} fallback for NotificationI18n
-        ]));
+        ]), $push);
     }
 
     /**

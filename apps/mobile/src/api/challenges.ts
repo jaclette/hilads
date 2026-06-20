@@ -523,6 +523,13 @@ export interface ChallengeReveal {
   hostBreakdown?:   { base: number; perHead: number; heads: number } | null;
   /** The viewer's current total score - lets the modal climb the running total. */
   myTotal?:         number;
+  /** Which challenge this reveal is for (shown under the headline). */
+  challengeTitle?:  string | null;
+  /** Viewer's current city / world rank + the bounded top-N (rank rows). */
+  rankCity?:        number | null;
+  rankGlobal?:      number | null;
+  rankTopN?:        number | null;
+  cityName?:        string | null;
 }
 
 /** Unread group-result reveals for the caller. */
