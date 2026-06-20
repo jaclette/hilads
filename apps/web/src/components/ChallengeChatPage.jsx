@@ -1136,6 +1136,7 @@ export default function ChallengeChatPage({
           iAmAcceptor={true}
           proofRequirements={challenge.proof_requirements ?? null}
           acceptancePhase={myAcceptance.phase}
+          compact
         />
       )}
 

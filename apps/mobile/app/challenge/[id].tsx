@@ -1306,6 +1306,7 @@ export default function ChallengeChatScreen() {
             iAmAcceptor={true}
             proofRequirements={challenge.proof_requirements ?? null}
             acceptancePhase={myAcceptance.phase}
+            compact
           />
         )}
 

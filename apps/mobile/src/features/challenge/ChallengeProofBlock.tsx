@@ -49,10 +49,13 @@ type Props = {
    *  callers continue to work, but the WS-triggered refresh won't
    *  fire unless they pass this. */
   acceptancePhase?: string;
+  /** Tighter card/button - used in the group photo-proof channel where the
+   *  submit block sits above the chat and must not push it off-screen. */
+  compact?: boolean;
 };
 
 export function ChallengeProofBlock({
-  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase,
+  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase, compact = false,
 }: Props) {
   const { t } = useTranslation('challenge');
   const [proofs,      setProofs]      = useState<ChallengeProof[]>([]);
@@ -285,7 +288,7 @@ export function ChallengeProofBlock({
   const canSubmit = !latest || canRetry;  // fresh OR a non-final rejection
   if (!canSubmit) return null;
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, compact && styles.cardCompact]}>
       {lastRejected ? (
         <Text style={styles.reasonLine} numberOfLines={3}>
           {t('intl.proof.lastReason', { reason: lastRejected.rejection_reason ?? '' })}
@@ -293,7 +296,7 @@ export function ChallengeProofBlock({
       ) : null}
 
       <TouchableOpacity
-        style={[styles.submitBtn, busy === 'submit' && { opacity: 0.6 }]}
+        style={[styles.submitBtn, compact && styles.submitBtnCompact, busy === 'submit' && { opacity: 0.6 }]}
         onPress={handleSubmit}
         disabled={busy === 'submit'}
         activeOpacity={0.85}
@@ -301,7 +304,7 @@ export function ChallengeProofBlock({
         {busy === 'submit'
           ? <ActivityIndicator color={Colors.white} />
           : (
-            <Text style={styles.submitBtnText}>
+            <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
               📸 {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
             </Text>
           )}
@@ -356,6 +359,10 @@ const styles = StyleSheet.create({
     marginTop:       Spacing.xs,
   },
   submitBtnText: { color: Colors.white, fontWeight: '800', fontSize: FontSizes.md },
+  // Compact variant - group photo channel, keeps the chat visible below.
+  cardCompact:      { marginVertical: Spacing.xs, paddingVertical: Spacing.sm },
+  submitBtnCompact: { paddingVertical: Spacing.sm, marginTop: 0 },
+  submitBtnTextCompact: { fontSize: FontSizes.sm },
 
   terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, textAlign: 'center', paddingVertical: 4 },
   reasonLine:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 18 },

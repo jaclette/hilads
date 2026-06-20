@@ -14204,6 +14204,9 @@ body.has-app-promo-banner .page-header {
   flex-direction: column;
   gap: 8px;
 }
+/* Compact - group photo channel, keeps the chat visible below the submit CTA. */
+.proof-block--compact { margin: 2px 12px 8px; padding: 6px 8px; gap: 4px; background: transparent; border: 0; }
+.proof-submit-btn--compact { padding: 9px 14px; font-size: 13px; }
 .proof-block--loading {
   text-align: center;
   color: var(--muted);

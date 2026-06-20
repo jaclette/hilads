@@ -19,7 +19,7 @@ import {
  * Media upload uses the existing /uploads POST (same as chat images).
  */
 export default function ChallengeProofBlock({
-  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase,
+  acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase, compact = false,
 }) {
   const { t } = useTranslation('challenge')
   const [proofs,      setProofs]      = useState([])
@@ -210,12 +210,12 @@ export default function ChallengeProofBlock({
   const lastRejected = latest?.status === 'rejected' ? latest : null
   if (!iAmAcceptor && !lastRejected) return null
   return (
-    <div className="proof-block">
+    <div className={`proof-block${compact ? ' proof-block--compact' : ''}`}>
       {lastRejected ? (
         <span className="proof-reason">{t('intl.proof.lastReason', { reason: lastRejected.rejection_reason ?? '' })}</span>
       ) : null}
       {iAmAcceptor && (
-        <label className={`proof-submit-btn${busy ? ' is-busy' : ''}`}>
+        <label className={`proof-submit-btn${compact ? ' proof-submit-btn--compact' : ''}${busy ? ' is-busy' : ''}`}>
           {busy === 'submit' ? '…' : (lastRejected
             ? t('intl.proof.tryAgainCta', { count: attemptsLeft })
             : t('intl.proof.submitCta'))}
