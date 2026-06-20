@@ -1245,12 +1245,13 @@ export default function ChallengeChatScreen() {
         </View>
         </View>
 
-        {/* Scoring info - small (i) button right-aligned just above the
-            pipeline. Same affordance as on the NOW Challenges section
-            header. Opens the points-per-step breakdown sheet. */}
-        <View style={styles.scoringInfoRow}>
-          <ScoringInfoButton />
-        </View>
+        {/* Scoring info - small (i) button. For GROUP rows it lives inline in
+            the deadline/meet card (below); legacy rows keep it here. */}
+        {!isGroup && (
+          <View style={styles.scoringInfoRow}>
+            <ScoringInfoButton />
+          </View>
+        )}
 
         {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
             Replaces the legacy accept→date→rate pipeline for group rows.
@@ -1266,6 +1267,7 @@ export default function ChallengeChatScreen() {
                     ? `⏳ ${t('group.deadlinePrefix', { defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
                     : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
                 </Text>
+                <ScoringInfoButton size={20} />
               </View>
             ) : null}
             {isValidated ? (
@@ -1275,15 +1277,9 @@ export default function ChallengeChatScreen() {
                   : t('group.done', { defaultValue: 'This meet is done.' })}
               </Text>
             ) : isOwner ? (
-              // MEET: open the presence sheet. PHOTO: the winner is picked
-              // directly from the submissions gallery below - just a hint here.
-              isGroupPhoto ? (
-                <Text style={styles.groupStateText}>
-                  {submissionCount > 0
-                    ? `🏆 ${t('group.pickHint', { defaultValue: 'Pick the winner from the photos below.' })}`
-                    : `📸 ${t('group.awaitingPhotos', { defaultValue: 'No photos yet — the contest is heating up 🔥' })}`}
-                </Text>
-              ) : !meetStarted ? (
+              // MEET: open the presence sheet. PHOTO: the winner is picked from
+              // the "N photos · pick the best one" card below (no extra hint).
+              isGroupPhoto ? null : !meetStarted ? (
                 // Before the meet's start time there's nothing to validate yet.
                 <Text style={styles.groupStateText}>
                   ⏳ {t('group.validateAfter', { time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
@@ -2425,10 +2421,11 @@ const styles = StyleSheet.create({
   // Group challenge block (meet info + join / validate).
   groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
   groupMeetCard:  {
-    backgroundColor: Colors.bg2, borderRadius: 12, borderWidth: 1, borderColor: Colors.border,
-    paddingHorizontal: Spacing.md, paddingVertical: 8,
+    flexDirection: 'row', alignItems: 'center', gap: 8,
+    backgroundColor: Colors.bg2, borderRadius: 10, borderWidth: 1, borderColor: Colors.border,
+    paddingHorizontal: Spacing.md, paddingVertical: 6,
   },
-  groupMeetLine:  { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: Colors.muted },
   groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 4 },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style

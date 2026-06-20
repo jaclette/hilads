@@ -1093,11 +1093,13 @@ export default function ChallengeChatPage({
         )}
       </div>
 
-      {/* Scoring info (i) button - right-aligned thin row above the pipeline.
-          Same affordance as on the NOW Challenges section header. */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 12px 4px' }}>
-        <ScoringInfoButton />
-      </div>
+      {/* Scoring info (i) button. GROUP rows inline it in the deadline card
+          below; legacy rows keep it here. */}
+      {!isGroup && (
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 12px 4px' }}>
+          <ScoringInfoButton />
+        </div>
+      )}
 
       {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
           MEET → date + place + "validate who showed up".
@@ -1106,10 +1108,13 @@ export default function ChallengeChatPage({
       {isGroup && (
         <div style={{ padding: '2px 12px 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
           {(meetSummary || challenge.venue) ? (
-            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 12, padding: '8px 14px', fontSize: '0.86rem', fontWeight: 600 }}>
-              {isGroupPhoto
-                ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
-                : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
+            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 10, padding: '6px 14px', fontSize: '0.78rem', fontWeight: 600, color: 'var(--muted,#9a9088)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ flex: 1 }}>
+                {isGroupPhoto
+                  ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
+                  : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
+              </span>
+              <ScoringInfoButton />
             </div>
           ) : null}
           {isValidated ? (
@@ -1119,15 +1124,9 @@ export default function ChallengeChatPage({
                 : t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}
             </div>
           ) : isOwner ? (
-            // MEET: open the presence sheet. PHOTO: the winner is picked
-            // directly from the submissions gallery below - just a hint here.
-            isGroupPhoto ? (
-              <div style={{ textAlign: 'center', fontWeight: 700, color: submissionCount > 0 ? '#FFC93C' : 'var(--muted,#9a9088)', padding: '8px 0', fontSize: submissionCount > 0 ? undefined : '0.86rem' }}>
-                {submissionCount > 0
-                  ? `🏆 ${t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}`
-                  : `📸 ${t('group.awaitingPhotos', { ns: 'challenge', defaultValue: 'No photos yet — the contest is heating up 🔥' })}`}
-              </div>
-            ) : !meetStarted ? (
+            // MEET: open the presence sheet. PHOTO: the winner is picked from the
+            // "N photos · pick the best one" card below (no extra hint).
+            isGroupPhoto ? null : !meetStarted ? (
               <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: '8px 0', fontSize: '0.86rem' }}>
                 ⏳ {t('group.validateAfter', { ns: 'challenge', time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
               </div>
