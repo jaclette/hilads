@@ -141,6 +141,7 @@ export default function ChallengeChatPage({
   const [validateOpen, setValidateOpen] = useState(false)
   const [validating,   setValidating]   = useState(false)
   const [presentChecked, setPresentChecked] = useState({})
+  const [presentRating, setPresentRating] = useState(0)   // challenger's meet rating (required)
   // Photo-proof group: the winner is picked from the submissions gallery.
   // galleryTick bumps on proof-submitted / validated WS events so the gallery
   // re-fetches when a new photo (or the winner) lands.
@@ -447,9 +448,10 @@ export default function ChallengeChatPage({
   const handleValidatePresence = useCallback(async () => {
     if (validating) return
     const presentIds = participants.filter(p => presentChecked[p.id] !== false).map(p => p.id)
+    if (presentRating <= 0) return   // rating is required
     setValidating(true)
     try {
-      await validatePresence(id, presentIds)
+      await validatePresence(id, presentIds, presentRating)
       setValidateOpen(false)
       await loadChallenge()
       loadParticipants()
@@ -458,7 +460,7 @@ export default function ChallengeChatPage({
     } finally {
       setValidating(false)
     }
-  }, [validating, participants, presentChecked, id, t, loadChallenge, loadParticipants])
+  }, [validating, participants, presentChecked, presentRating, id, t, loadChallenge, loadParticipants])
 
 
   // Participation probe. Resolves to true for creator + active acceptor
@@ -1112,7 +1114,7 @@ export default function ChallengeChatPage({
                 🏆 {t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}
               </div>
             ) : (
-              <button type="button" style={GROUP_BTN_STYLE} onClick={() => setValidateOpen(true)}>
+              <button type="button" style={GROUP_BTN_STYLE} onClick={() => { setPresentRating(0); setValidateOpen(true) }}>
                 {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}  →
               </button>
             )
@@ -1831,10 +1833,29 @@ export default function ChallengeChatPage({
                 </label>
               )
             })}
+            {/* Meet rating - required before validating. */}
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text,#f3ede4)' }}>{t('group.rateMeet', { ns: 'challenge', defaultValue: 'How was the meet?' })}</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <span
+                    key={n}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setPresentRating(n)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setPresentRating(n) } }}
+                    style={{ fontSize: 30, lineHeight: 1, cursor: 'pointer', color: n <= presentRating ? '#FFC93C' : 'var(--border,#444)' }}
+                  >
+                    {n <= presentRating ? '★' : '☆'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
             <button
               type="button"
-              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || participants.length === 0) ? 0.5 : 1 }}
-              disabled={validating || participants.length === 0}
+              style={{ ...GROUP_BTN_STYLE, marginTop: 14, opacity: (validating || participants.length === 0 || presentRating <= 0) ? 0.5 : 1 }}
+              disabled={validating || participants.length === 0 || presentRating <= 0}
               onClick={handleValidatePresence}
             >
               {validating ? '…' : t('group.validateConfirm', { ns: 'challenge', count: participants.filter(p => presentChecked[p.id] !== false).length, defaultValue: 'Validate {{count}} present' })}

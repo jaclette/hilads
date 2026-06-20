@@ -543,11 +543,11 @@ export default function ChallengeChatScreen() {
     }
   }, [joining, account?.id, id, router, t, loadChallenge, loadMyAcceptance, loadParticipants]);
 
-  const handleValidatePresence = useCallback(async (presentIds: string[]) => {
+  const handleValidatePresence = useCallback(async (presentIds: string[], rating: number | null) => {
     if (validating) return;
     setValidating(true);
     try {
-      await validatePresence(id, presentIds);
+      await validatePresence(id, presentIds, rating);
       setValidateOpen(false);
       await loadChallenge();
       loadParticipants();

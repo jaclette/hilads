@@ -668,6 +668,7 @@
     "validateFailed": "Could not validate — try again.",
     "validateTitle": "Who showed up?",
     "validateSub": "Tick everyone who came to the meet. They each earn the reward.",
+      "rateMeet": "How was the meet?",
     "validateConfirm": "Validate {{count}} present",
     "noParticipants": "Nobody has joined yet.",
     "join": "Join",

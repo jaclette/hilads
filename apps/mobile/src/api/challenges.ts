@@ -228,8 +228,12 @@ export async function createChallenge(
 export async function validatePresence(
   challengeId: string,
   presentUserIds: string[],
+  rating?: number | null,
 ): Promise<{ ok: boolean; present_count: number; present_ids: string[] }> {
-  return api.post(`/challenges/${challengeId}/validate-presence`, { presentUserIds });
+  return api.post(`/challenges/${challengeId}/validate-presence`, {
+    presentUserIds,
+    ...(rating ? { rating } : {}),
+  });
 }
 
 /** Challenger designates the winning photo of a GROUP photo-proof contest.

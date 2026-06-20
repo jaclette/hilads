@@ -9382,6 +9382,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
     if (!is_array($presentIds)) {
         Response::json(['error' => 'presentUserIds must be an array'], 400);
     }
+    // Optional 1-5 star rating of the meet (new clients require it; the live
+    // old build sends none → null, so this stays backward-compatible).
+    $rating = filter_var(
+        is_array($body) ? ($body['rating'] ?? null) : null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1, 'max_range' => 5]],
+    );
+    $hostRating = $rating === false ? null : $rating;
 
     try {
         $presentNow = ChallengeAcceptanceRepository::validatePresence($challengeId, $presentIds);
@@ -9394,9 +9402,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
     try {
         Database::pdo()->prepare("
             UPDATE channel_challenges
-            SET status = 'validated', validated_at = COALESCE(validated_at, now()), updated_at = now()
+            SET status = 'validated', validated_at = COALESCE(validated_at, now()),
+                host_rating = COALESCE(?, host_rating), updated_at = now()
             WHERE channel_id = ?
-        ")->execute([$challengeId]);
+        ")->execute([$hostRating, $challengeId]);
     } catch (\Throwable $e) {
         error_log('[challenges] validate-presence mark-validated failed (non-fatal): ' . $e->getMessage());
     }
@@ -9458,6 +9467,10 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
                 'participantCount' => $presentCount,
                 'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $presentCount],
             ], false); // host = actor → modal directly, no push
+            // Re-ping the host AFTER their reveal row exists so the gate's
+            // refetch finds it and pops the modal immediately (the first-loop
+            // ping above raced ahead of this insert).
+            try { broadcastChallengeAcceptedToWs($userId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
         } catch (\Throwable $e) {}
     } catch (\Throwable $e) {
         error_log('[challenges] validate-presence reveal fan-out failed (non-fatal): ' . $e->getMessage());
@@ -9655,6 +9668,9 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
             'participantCount' => $submitterCount,
             'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $submitterCount],
         ], false); // host = actor → modal directly, no push
+        // Re-ping the host AFTER their reveal row exists so the gate's refetch
+        // pops the modal immediately (no push fallback for the actor).
+        try { broadcastChallengeAcceptedToWs($userId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
     } catch (\Throwable $e) { error_log('[challenges] pick-winner host reveal failed (non-fatal): ' . $e->getMessage()); }
 
     try { MonthlyRankService::recalcAfterScoreChange($winnerUserId); } catch (\Throwable $e) {}

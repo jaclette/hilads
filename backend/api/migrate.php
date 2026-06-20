@@ -1452,6 +1452,10 @@ run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS meet_ends_at 
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue            TEXT",             'channel_challenges.venue');
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue_lat        DOUBLE PRECISION", 'channel_challenges.venue_lat');
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue_lng        DOUBLE PRECISION", 'channel_challenges.venue_lng');
+// GROUP meet: the challenger's 1-5 star rating of how the meet went, captured
+// in the validate-presence sheet. Drives the showcase star for group meets
+// (replaces the fabricated 5.0). Nullable - older group rows have none.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS host_rating      SMALLINT CHECK (host_rating BETWEEN 1 AND 5)", 'channel_challenges.host_rating');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_format ON channel_challenges (challenge_format)", 'idx_channel_challenges_format');
 
 run($pdo, "

@@ -28,7 +28,8 @@ interface Props {
   /** 'presence' (meet, multi-select) | 'winner' (photo-proof, single-select). */
   mode?:        'presence' | 'winner';
   onClose:      () => void;
-  onConfirm:    (selectedIds: string[]) => void;
+  /** rating is the challenger's 1-5 star of the meet (presence mode only). */
+  onConfirm:    (selectedIds: string[], rating: number | null) => void;
 }
 
 export function ValidatePresenceSheet({ visible, participants, submitting, mode = 'presence', onClose, onConfirm }: Props) {
@@ -36,12 +37,15 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
   const isWinner = mode === 'winner';
   // Presence: all checked by default (uncheck no-shows). Winner: none checked.
   const [checked, setChecked] = useState<Record<string, boolean>>({});
+  // Meet rating (presence mode) - required before validating.
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     if (visible) {
       const init: Record<string, boolean> = {};
       if (!isWinner) participants.forEach(p => { init[p.id] = true; });
       setChecked(init);
+      setRating(0);
     }
   }, [visible, participants, isWinner]);
 
@@ -49,6 +53,8 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
     setChecked(prev => (isWinner ? { [id]: !prev[id] } : { ...prev, [id]: !prev[id] }));
 
   const selectedIds = participants.filter(p => checked[p.id]).map(p => p.id);
+  // Presence mode requires a rating; winner mode never rates.
+  const ratingOk    = isWinner || rating > 0;
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -96,11 +102,29 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
           />
         )}
 
+        {/* Meet rating - required before validating (presence mode only). */}
+        {!isWinner ? (
+          <View style={styles.rateBlock}>
+            <Text style={styles.rateLabel}>{t('group.rateMeet', { defaultValue: 'How was the meet?' })}</Text>
+            <View style={styles.stars}>
+              {[1, 2, 3, 4, 5].map(n => (
+                <TouchableOpacity key={n} onPress={() => setRating(n)} activeOpacity={0.7} hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}>
+                  <Ionicons
+                    name={n <= rating ? 'star' : 'star-outline'}
+                    size={32}
+                    color={n <= rating ? '#FFC93C' : Colors.border}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        ) : null}
+
         <TouchableOpacity
-          style={[styles.confirmBtn, (submitting || selectedIds.length === 0 || (isWinner && selectedIds.length !== 1)) && { opacity: 0.5 }]}
+          style={[styles.confirmBtn, (submitting || selectedIds.length === 0 || !ratingOk || (isWinner && selectedIds.length !== 1)) && { opacity: 0.5 }]}
           activeOpacity={0.85}
-          disabled={submitting || selectedIds.length === 0 || (isWinner && selectedIds.length !== 1)}
-          onPress={() => onConfirm(selectedIds)}
+          disabled={submitting || selectedIds.length === 0 || !ratingOk || (isWinner && selectedIds.length !== 1)}
+          onPress={() => onConfirm(selectedIds, isWinner ? null : rating)}
         >
           {submitting
             ? <ActivityIndicator color="#fff" />
@@ -135,9 +159,13 @@ const styles = StyleSheet.create({
   checkOn: { backgroundColor: '#3DDC84', borderColor: '#3DDC84' },
   radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' },
   radioOn: { backgroundColor: '#FFC93C', borderColor: '#FFC93C' },
+  rateBlock: { marginTop: 14, alignItems: 'center', gap: 8 },
+  rateLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  stars:     { flexDirection: 'row', gap: 8 },
   confirmBtn: {
+    // Solid fill - reads as a primary action, not an already-done state.
     marginTop: 14, paddingVertical: 14, borderRadius: 14, alignItems: 'center',
-    backgroundColor: 'rgba(255,122,60,0.16)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)',
+    backgroundColor: '#FF7A3C',
   },
-  confirmText: { color: '#FF7A3C', fontSize: 15, fontWeight: '800' },
+  confirmText: { color: '#fff', fontSize: 15, fontWeight: '800' },
 });

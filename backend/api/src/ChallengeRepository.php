@@ -712,6 +712,51 @@ class ChallengeRepository
         $gstmt->execute($params);
         $rows = array_merge($rows, $gstmt->fetchAll());
 
+        // GROUP meet challenges have no winner proof; they're surfaced here when
+        // the challenger left a host_rating (>= minStars) and the channel has at
+        // least one shared photo to use as the card image. The rating is the
+        // real star (no fabricated 5.0). The "acceptor" slot shows one present
+        // taker so the card still reads as a two-person success.
+        $meetSql = "
+            SELECT c.id AS channel_id, cc.title, cc.challenge_type, cc.mode,
+                   cc.city_id, cc.target_city_id, cc.created_by,
+                   u.display_name AS creator_display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url,
+                   pt.user_id AS acceptor_user_id,
+                   au.display_name AS acceptor_display_name,
+                   COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
+                   au.current_city_id AS acceptor_city_id,
+                   cc.host_rating::numeric AS avg_stars, 1 AS rating_count, NULL AS comment,
+                   NULL AS creator_comment, NULL AS acceptor_comment,
+                   EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
+                   img.image_url AS proof_media_url, 'image' AS proof_media_type
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id AND c.status = 'active'
+            LEFT JOIN users u ON u.id = cc.created_by
+            JOIN LATERAL (
+                SELECT m.image_url FROM messages m
+                WHERE m.channel_id = cc.channel_id AND m.type = 'image' AND m.image_url IS NOT NULL
+                ORDER BY m.created_at DESC LIMIT 1
+            ) img ON true
+            LEFT JOIN LATERAL (
+                SELECT a.acceptor_user_id AS user_id FROM challenge_acceptances a
+                WHERE a.challenge_id = cc.channel_id AND a.phase = 'present'
+                ORDER BY a.updated_at DESC LIMIT 1
+            ) pt ON true
+            LEFT JOIN users au ON au.id = pt.user_id
+            WHERE cc.visibility = 'public'
+              AND cc.challenge_format  = 'group'
+              AND cc.validation_method = 'meet'
+              AND cc.status            = 'validated'
+              AND cc.host_rating IS NOT NULL
+              AND cc.host_rating >= $minStarsSql$cityClause$groupBefore
+            ORDER BY cc.validated_at DESC
+            LIMIT $limit
+        ";
+        $mstmt = Database::pdo()->prepare($meetSql);
+        $mstmt->execute($params);
+        $rows = array_merge($rows, $mstmt->fetchAll());
+
         $mapped = array_map(static function (array $r): array {
             return [
                 'id'                        => $r['channel_id'],

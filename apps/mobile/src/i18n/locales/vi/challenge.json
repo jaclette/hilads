@@ -631,6 +631,7 @@
     "validateFailed": "Không thể xác nhận — thử lại.",
     "validateTitle": "Ai đã đến?",
     "validateSub": "Đánh dấu những người đã đến. Mỗi người nhận thưởng.",
+      "rateMeet": "Buổi gặp thế nào?",
     "validateConfirm": "Xác nhận {{count}} có mặt",
     "noParticipants": "Chưa có ai tham gia.",
     "deadlineLabel": "Hạn nộp",

@@ -706,12 +706,12 @@ export async function validateChallenge(challengeId, guestId) {
 
 // GROUP challenges: the challenger validates who was present at the meet.
 // presentUserIds = the joined takers who showed up. Returns the count + ids.
-export async function validatePresence(challengeId, presentUserIds) {
+export async function validatePresence(challengeId, presentUserIds, rating) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/validate-presence`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({ presentUserIds }),
+    body: JSON.stringify({ presentUserIds, ...(rating ? { rating } : {}) }),
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))

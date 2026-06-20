@@ -636,6 +636,7 @@
     "validateFailed": "Validation impossible — réessaie.",
     "validateTitle": "Qui était là ?",
     "validateSub": "Coche tous ceux qui sont venus. Chacun gagne la récompense.",
+      "rateMeet": "Comment s'est passé le rendez-vous ?",
     "validateConfirm": "Valider {{count}} présent(s)",
     "noParticipants": "Personne n'a encore rejoint.",
     "deadlineLabel": "Date limite",
