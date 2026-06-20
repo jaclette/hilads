@@ -10,6 +10,7 @@ import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
 import useMentions from '../hooks/useMentions'
 import { splitContentByMentions } from '../lib/mentions'
+import { ReactionPills, ReplyPreview, MessageActionBubble } from './MessageActions'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
 import { formatExpiresIn } from '../expiry'
@@ -313,6 +314,14 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   function handleFeedScroll() {
     const container = feedRef.current
     if (container && container.scrollTop < 200 && !loadingOlderRef.current && hasMore) loadOlder()
+  }
+
+  async function reactTopicMsg(msgId, emoji) {
+    if (!guest?.guestId || !msgId) return
+    try {
+      const data = await toggleTopicReaction(topic.id, msgId, emoji, guest.guestId)
+      setMessages(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
+    } catch { /* silent */ }
   }
 
   async function handleSend(e) {
@@ -647,26 +656,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                       </>
                   }
                 </div>
-                {item.reactions && item.reactions.length > 0 && (
-                  <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
-                    {item.reactions.map(r => (
-                      <button
-                        key={r.emoji}
-                        className={`reaction-pill${r.self ? ' self' : ''}`}
-                        onClick={async (e) => {
-                          e.stopPropagation()
-                          if (!guest?.guestId || !item.id) return
-                          try {
-                            const data = await toggleTopicReaction(topic.id, item.id, r.emoji, guest.guestId)
-                            setMessages(prev => prev.map(x => x.id === item.id ? { ...x, reactions: data.reactions } : x))
-                          } catch { /* silent */ }
-                        }}
-                      >
-                        {r.emoji}{r.count > 1 && <span className="reaction-count">{r.count}</span>}
-                      </button>
-                    ))}
-                  </div>
-                )}
+                <ReactionPills reactions={item.reactions} isMine={isMine} onToggle={emoji => reactTopicMsg(item.id, emoji)} />
               </div>
               {showTime && (
                 <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(item.createdAt)}</span>
@@ -706,65 +696,19 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         />
       )}
 
-      {/* Reply preview */}
-      {replyingTo && (
-        <div className="reply-preview">
-          <div className="reply-preview-body">
-            <span className="reply-preview-name">{replyingTo.nickname}</span>
-            <span className="reply-preview-text">
-              {replyingTo.type === 'image' ? t('reply.photo') : (replyingTo.content || '-')}
-            </span>
-          </div>
-          <button type="button" className="reply-preview-close" onClick={() => setReplyingTo(null)} aria-label="Cancel reply">✕</button>
-        </div>
-      )}
+      <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />
 
-      {/* Message action overlay - emoji strip + Reply + Copy (mirrors the city/
-          challenge chat). */}
-      {actionBubble && (
-        <div className="action-bubble-overlay" onClick={() => setActionBubble(null)}>
-          <div
-            className="action-bubble"
-            style={{ top: Math.max(8, actionBubble.y - 64), left: actionBubble.isMine ? 'auto' : actionBubble.x, right: actionBubble.isMine ? 16 : 'auto' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="action-bubble-emojis">
-              {['❤️', '👍', '😂', '😮', '🔥'].map(emoji => {
-                const selfReacted = (actionBubble.msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
-                return (
-                  <button
-                    key={emoji}
-                    className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
-                    onClick={async () => {
-                      const msgId = actionBubble.msg.id
-                      setActionBubble(null)
-                      if (!msgId || !guest?.guestId) return
-                      try {
-                        const data = await toggleTopicReaction(topic.id, msgId, emoji, guest.guestId)
-                        setMessages(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
-                      } catch { /* silent */ }
-                    }}
-                  >{emoji}</button>
-                )
-              })}
-            </div>
-            <button
-              className="action-bubble-btn"
-              onClick={() => {
-                setReplyingTo({ id: actionBubble.msg.id, nickname: actionBubble.msg.nickname, content: actionBubble.msg.content ?? '', type: actionBubble.msg.type ?? 'text' })
-                setActionBubble(null)
-                inputRef.current?.focus()
-              }}
-            >↩ {t('reply.action', { defaultValue: 'Reply' })}</button>
-            {actionBubble.msg.content && (
-              <button
-                className="action-bubble-btn"
-                onClick={() => { navigator.clipboard?.writeText(actionBubble.msg.content).catch(() => {}); setActionBubble(null) }}
-              >📋 {t('reply.copy', { defaultValue: 'Copy' })}</button>
-            )}
-          </div>
-        </div>
-      )}
+      <MessageActionBubble
+        bubble={actionBubble}
+        onClose={() => setActionBubble(null)}
+        onReact={emoji => { if (actionBubble) reactTopicMsg(actionBubble.msg.id, emoji) }}
+        onReply={() => {
+          const m = actionBubble?.msg
+          if (!m) return
+          setReplyingTo({ id: m.id, nickname: m.nickname, content: m.content ?? '', type: m.type ?? 'text' })
+          inputRef.current?.focus()
+        }}
+      />
 
       {/* Input */}
       <MessageComposer

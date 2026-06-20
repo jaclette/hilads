@@ -33,6 +33,7 @@ import ChallengePipeline from './ChallengePipeline'
 import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import GroupSubmissionsGallery from './GroupSubmissionsGallery'
+import { ReactionPills, ReplyPreview, MessageActionBubble } from './MessageActions'
 import ProofReviewModal from './ProofReviewModal'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
@@ -212,6 +213,13 @@ export default function ChallengeChatPage({
   // same long-press / tap-to-react UX as every other surface.
   const [actionBubble, setActionBubble] = useState(null) // { msg, x, y, isMine }
   const [replyingTo,   setReplyingTo]   = useState(null) // { id, nickname, content, type }
+  const reactChallengeMsg = async (msgId, emoji) => {
+    if (!account?.id || !msgId) return
+    try {
+      const data = await toggleChallengeReaction(id, msgId, emoji, account.id)
+      setMessages(prev => prev.map(x => x.id === msgId ? { ...x, reactions: data.reactions } : x))
+    } catch { /* silent */ }
+  }
   const feedRef   = useRef(null)
   const bottomRef = useRef(null) // PR28 - scrollIntoView target at the feed's tail
   const knownIds  = useRef(new Set())
@@ -1612,29 +1620,7 @@ export default function ChallengeChatPage({
                         )}
                       </div>
                     </div>
-                    {/* PR33 - reaction pills below the bubble; clicking a
-                        pill toggles the caller's own reaction (self-react
-                        is removed) or adds it (otherwise). */}
-                    {m.reactions && m.reactions.length > 0 && (
-                      <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
-                        {m.reactions.map(r => (
-                          <button
-                            key={r.emoji}
-                            className={`reaction-pill${r.self ? ' self' : ''}`}
-                            onClick={async (e) => {
-                              e.stopPropagation()
-                              if (!account?.id || !m.id) return
-                              try {
-                                const data = await toggleChallengeReaction(id, m.id, r.emoji, account.id)
-                                setMessages(prev => prev.map(x => x.id === m.id ? { ...x, reactions: data.reactions } : x))
-                              } catch { /* silent */ }
-                            }}
-                          >
-                            {r.emoji}{r.count > 1 && <span className="reaction-count">{r.count}</span>}
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                    <ReactionPills reactions={m.reactions} isMine={isMine} onToggle={emoji => reactChallengeMsg(m.id, emoji)} />
                     <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(m.createdAt)}</span>
                   </div>
                 )
@@ -1665,25 +1651,7 @@ export default function ChallengeChatPage({
             />
           )}
 
-          {/* PR33 - replying-to chip above the composer. Uses the
-              existing .reply-preview tokens from city chat for style
-              parity. */}
-          {replyingTo && (
-            <div className="reply-preview">
-              <div className="reply-preview-body">
-                <span className="reply-preview-name">{replyingTo.nickname}</span>
-                <span className="reply-preview-text">
-                  {replyingTo.type === 'image' ? '📷 Photo' : (replyingTo.content || '-')}
-                </span>
-              </div>
-              <button
-                type="button"
-                className="reply-preview-close"
-                onClick={() => setReplyingTo(null)}
-                aria-label="Cancel reply"
-              >✕</button>
-            </div>
-          )}
+          <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />
 
           <MessageComposer
             inputRef={composerInputRef}
@@ -1705,63 +1673,16 @@ export default function ChallengeChatPage({
       {/* PR33 - message action overlay. Tap a bubble → opens here with
           emoji strip + Reply + Copy. Mirrors the city chat actionBubble
           (App.jsx ~line 4611) - same positional math, same emoji set. */}
-      {actionBubble && (
-        <div className="action-bubble-overlay" onClick={() => setActionBubble(null)}>
-          <div
-            className="action-bubble"
-            style={{
-              top:   Math.max(8, actionBubble.y - 64),
-              left:  actionBubble.isMine ? 'auto' : actionBubble.x,
-              right: actionBubble.isMine ? 16 : 'auto',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="action-bubble-emojis">
-              {['❤️', '👍', '😂', '😮', '🔥'].map(emoji => {
-                const selfReacted = (actionBubble.msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
-                return (
-                  <button
-                    key={emoji}
-                    className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
-                    onClick={async () => {
-                      const msgId = actionBubble.msg.id
-                      if (!msgId || !account?.id) { setActionBubble(null); return }
-                      try {
-                        const data = await toggleChallengeReaction(id, msgId, emoji, account.id)
-                        setMessages(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
-                      } catch { /* silent */ }
-                      setActionBubble(null)
-                    }}
-                  >
-                    {emoji}
-                  </button>
-                )
-              })}
-            </div>
-            <button
-              className="action-bubble-btn"
-              onClick={() => {
-                setReplyingTo({
-                  id:       actionBubble.msg.id,
-                  nickname: actionBubble.msg.nickname,
-                  content:  actionBubble.msg.content ?? '',
-                  type:     actionBubble.msg.type ?? 'text',
-                })
-                setActionBubble(null)
-              }}
-            >↩ Reply</button>
-            {actionBubble.msg.content && (
-              <button
-                className="action-bubble-btn"
-                onClick={() => {
-                  navigator.clipboard?.writeText(actionBubble.msg.content).catch(() => {})
-                  setActionBubble(null)
-                }}
-              >📋 Copy</button>
-            )}
-          </div>
-        </div>
-      )}
+      <MessageActionBubble
+        bubble={actionBubble}
+        onClose={() => setActionBubble(null)}
+        onReact={emoji => { if (actionBubble) reactChallengeMsg(actionBubble.msg.id, emoji) }}
+        onReply={() => {
+          const m = actionBubble?.msg
+          if (!m) return
+          setReplyingTo({ id: m.id, nickname: m.nickname, content: m.content ?? '', type: m.type ?? 'text' })
+        }}
+      />
 
       {/* "Message creator" - DM shortcut for the active taker (legacy 1-1 only).
           Group challenges are many-to-one with no private coordination, so the

@@ -37,6 +37,7 @@ import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
+import { ReactionPills, ReplyPreview, MessageActionBubble } from './components/MessageActions'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
@@ -1929,6 +1930,19 @@ export default function App() {
   }
   // Keep ref current so the socket listener (closed over on mount) always calls the latest version
   triggerReactionBurstRef.current = triggerReactionBurst
+
+  // City-channel reaction toggle (shared by the reaction pills + action bubble).
+  // Includes the local burst animation + the WS sendReaction the other surfaces
+  // don't need.
+  const reactChannelMsg = async (msgId, emoji) => {
+    if (!msgId) return
+    triggerReactionBurst(emoji, msgId)
+    socketRef.current?.sendReaction(EMOJI_TO_TYPE[emoji] ?? emoji, msgId, channelId, accountRef.current?.id ?? null)
+    try {
+      const data = await toggleChannelReaction(channelId, msgId, emoji, guest?.guestId)
+      setFeed(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
+    } catch { /* silent */ }
+  }
 
   // Attach scroll listener to the messages container.
   // - Tracks isNearBottomRef: true when within 150 px of the bottom, false otherwise.
@@ -4769,27 +4783,7 @@ export default function App() {
                       </div>
                     )}
                   </div>
-                  {item.reactions && item.reactions.length > 0 && (
-                    <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
-                      {item.reactions.map(r => (
-                        <button
-                          key={r.emoji}
-                          className={`reaction-pill${r.self ? ' self' : ''}`}
-                          onClick={async (e) => {
-                            e.stopPropagation()
-                            triggerReactionBurst(r.emoji, item.id)
-                            socketRef.current?.sendReaction(EMOJI_TO_TYPE[r.emoji] ?? r.emoji, item.id, channelId, accountRef.current?.id ?? null)
-                            try {
-                              const data = await toggleChannelReaction(channelId, item.id, r.emoji, guest?.guestId)
-                              setFeed(prev => prev.map(m => m.id === item.id ? { ...m, reactions: data.reactions } : m))
-                            } catch {}
-                          }}
-                        >
-                          {r.emoji}{r.count > 1 && <span className="reaction-count">{r.count}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  <ReactionPills reactions={item.reactions} isMine={isMine} onToggle={emoji => reactChannelMsg(item.id, emoji)} />
                   {showTime && item.createdAt && (
                     <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatMsgTime(item.createdAt)}</span>
                   )}
@@ -4808,101 +4802,29 @@ export default function App() {
           </div>
         )}
 
-        {actionBubble && (
-          <div className="action-bubble-overlay" onClick={() => setActionBubble(null)}>
-            <div
-              className="action-bubble"
-              style={{
-                top:   Math.max(8, actionBubble.y - 64),
-                left:  actionBubble.isMine ? 'auto' : actionBubble.x,
-                right: actionBubble.isMine ? 16 : 'auto',
+        {(() => {
+          const ab = actionBubble
+          const canEdit = !!(ab?.isMine && ab.msg.content && !ab.msg.content.startsWith('📍') && (ab.msg.type ?? 'text') === 'text')
+          return (
+            <MessageActionBubble
+              bubble={ab}
+              onClose={() => setActionBubble(null)}
+              onReact={emoji => { if (ab) reactChannelMsg(ab.msg.id, emoji) }}
+              onReply={() => {
+                if (!ab) return
+                setReplyingTo({ id: ab.msg.id, nickname: ab.msg.nickname, content: ab.msg.content ?? '', type: ab.msg.type ?? 'text' })
+                chatInputRef.current?.focus()
               }}
-              onClick={e => e.stopPropagation()}
-            >
-              {/* Emoji reaction strip */}
-              <div className="action-bubble-emojis">
-                {['❤️', '👍', '😂', '😮', '🔥'].map(emoji => {
-                  const selfReacted = (actionBubble.msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
-                  return (
-                    <button
-                      key={emoji}
-                      className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
-                      onClick={async () => {
-                        const msgId = actionBubble.msg.id
-                        triggerReactionBurst(emoji, msgId)
-                        socketRef.current?.sendReaction(EMOJI_TO_TYPE[emoji] ?? emoji, msgId, channelId, accountRef.current?.id ?? null)
-                        try {
-                          const data = await toggleChannelReaction(channelId, msgId, emoji, guest?.guestId)
-                          setFeed(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
-                        } catch {}
-                        setActionBubble(null)
-                      }}
-                    >
-                      {emoji}
-                    </button>
-                  )
-                })}
-              </div>
-              <button
-                className="action-bubble-btn"
-                onClick={() => {
-                  setReplyingTo({
-                    id:       actionBubble.msg.id,
-                    nickname: actionBubble.msg.nickname,
-                    content:  actionBubble.msg.content ?? '',
-                    type:     actionBubble.msg.type ?? 'text',
-                  })
-                  setActionBubble(null)
-                  chatInputRef.current?.focus()
-                }}
-              >
-                {t('actionReply', { ns: 'chat', defaultValue: '↩ Reply' })}
-              </button>
-              {actionBubble.msg.content && (
-                <button
-                  className="action-bubble-btn"
-                  onClick={() => {
-                    const text = actionBubble.msg.content ?? ''
-                    if (navigator.clipboard?.writeText) {
-                      navigator.clipboard.writeText(text).catch(() => {})
-                    }
-                    setActionBubble(null)
-                  }}
-                >
-                  {t('actionCopy', { ns: 'chat', defaultValue: '📋 Copy' })}
-                </button>
-              )}
-              {/* Edit + Delete are visible only when the viewer owns the bubble.
-                  Edit is text-only - image and location messages don't expose it. */}
-              {actionBubble.isMine && actionBubble.msg.content && !actionBubble.msg.content.startsWith('📍') && (actionBubble.msg.type ?? 'text') === 'text' && (
-                <button
-                  className="action-bubble-btn"
-                  onClick={() => {
-                    setReplyingTo(null)
-                    setEditingMsg({ id: actionBubble.msg.id, content: actionBubble.msg.content ?? '', surface: 'channel' })
-                    setInput(actionBubble.msg.content ?? '')
-                    setActionBubble(null)
-                    chatInputRef.current?.focus()
-                  }}
-                >
-                  {t('actionEdit', { ns: 'chat', defaultValue: '✏️ Edit' })}
-                </button>
-              )}
-              {actionBubble.isMine && (
-                <button
-                  className="action-bubble-btn action-bubble-btn--danger"
-                  onClick={() => {
-                    const msg = actionBubble.msg
-                    setActionBubble(null)
-                    deleteMessageAction(msg, 'channel')
-                  }}
-                >
-                  {t('actionDelete', { ns: 'chat', defaultValue: '🗑️ Delete' })}
-                </button>
-              )}
-            </div>
-          </div>
-        )}
+              onEdit={canEdit ? () => {
+                setReplyingTo(null)
+                setEditingMsg({ id: ab.msg.id, content: ab.msg.content ?? '', surface: 'channel' })
+                setInput(ab.msg.content ?? '')
+                chatInputRef.current?.focus()
+              } : undefined}
+              onDelete={ab?.isMine ? () => deleteMessageAction(ab.msg, 'channel') : undefined}
+            />
+          )
+        })()}
 
         {showInstallBanner && installBannerUsesBottomNav && (
           <div className="chat-install-slot">
@@ -4944,17 +4866,7 @@ export default function App() {
           />
         )}
 
-        {replyingTo && !editingMsg && (
-          <div className="reply-preview">
-            <div className="reply-preview-body">
-              <span className="reply-preview-name">{replyingTo.nickname}</span>
-              <span className="reply-preview-text">
-                {replyingTo.type === 'image' ? t('replyPreview.photo') : replyingTo.content}
-              </span>
-            </div>
-            <button className="reply-preview-close" type="button" onClick={() => setReplyingTo(null)}>✕</button>
-          </div>
-        )}
+        {!editingMsg && <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />}
 
         {editingMsg && (
           <div className="edit-preview">
