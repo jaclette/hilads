@@ -401,6 +401,29 @@ export default function ChallengeChatScreen() {
 
   const reviewProofFiredRef = useRef(false);
 
+  // Proof-review deep-link: a "📸 new proof" push routes here with ?reviewProof=1.
+  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Legacy
+  // 1-1 → the old ProofReviewModal once the proof has landed. Param is stripped
+  // after so a back-nav / refresh doesn't re-open it. MUST stay in the hooks
+  // section (before the loading early-return) - computing the group-photo flag
+  // inline avoids a rules-of-hooks violation.
+  useEffect(() => {
+    if (reviewProof !== '1' || reviewProofFiredRef.current || !isOwner || !challenge) return;
+    const groupPhoto = (challenge.challenge_format ?? 'legacy') === 'group'
+      && ((challenge.validation_method ?? 'meet') === 'photo_proof' || (challenge.mode ?? 'local') === 'international');
+    if (groupPhoto) {
+      reviewProofFiredRef.current = true;
+      setGallerySignal(s => s + 1);
+      router.setParams({ reviewProof: undefined } as never);
+      return;
+    }
+    if (usesPhotoProof && effectiveActiveAcceptance?.phase === 'proof_submitted') {
+      reviewProofFiredRef.current = true;
+      setProofReviewOpen(true);
+      router.setParams({ reviewProof: undefined } as never);
+    }
+  }, [reviewProof, isOwner, challenge, usesPhotoProof, effectiveActiveAcceptance?.phase, router]);
+
   // Creator-only visibility flip (Public ↔ Friends). Private isn't
   // reachable here - that's the mutual go-private flow. International
   // rows are forced Public; the pill renders read-only for them.
@@ -990,25 +1013,6 @@ export default function ChallengeChatScreen() {
   // picks the winner). meet_at is the meet date for meet, the deadline for photo.
   const isGroupPhoto = isGroup && ((challenge.validation_method ?? 'meet') === 'photo_proof' || (challenge.mode ?? 'local') === 'international');
   const isGroupMeet  = isGroup && !isGroupPhoto;
-
-  // Proof-review deep-link: a "📸 new proof" push routes here with ?reviewProof=1.
-  // GROUP photo-proof → open the submissions gallery (pick-the-winner). Legacy
-  // 1-1 → the old ProofReviewModal once the proof has landed. Param is stripped
-  // after so a back-nav / refresh doesn't re-open it.
-  useEffect(() => {
-    if (reviewProof !== '1' || reviewProofFiredRef.current || !isOwner) return;
-    if (isGroupPhoto) {
-      reviewProofFiredRef.current = true;
-      setGallerySignal(s => s + 1);
-      router.setParams({ reviewProof: undefined } as never);
-      return;
-    }
-    if (usesPhotoProof && effectiveActiveAcceptance?.phase === 'proof_submitted') {
-      reviewProofFiredRef.current = true;
-      setProofReviewOpen(true);
-      router.setParams({ reviewProof: undefined } as never);
-    }
-  }, [reviewProof, isGroupPhoto, usesPhotoProof, isOwner, effectiveActiveAcceptance?.phase, router]);
   const meetSummary = isGroup && challenge.meet_at
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null;
