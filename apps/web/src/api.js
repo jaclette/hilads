@@ -233,9 +233,42 @@ export function mediaDownloadUrl(url, name) {
   return `${BASE}/media/download?${q.toString()}`
 }
 
+// Downscale + re-compress a photo in the browser before upload so chat images
+// aren't multi-MB originals (a phone photo is easily 3-5 MB; the feed loaded the
+// full thing). Caps the longest side at 1600px and re-encodes to JPEG q0.82,
+// which takes a typical photo to ~200-400 KB with no visible loss. Safe: any
+// failure (HEIC the browser can't decode, tiny images, etc.) returns the
+// original file untouched.
+async function downscaleImage(file, maxDim = 1600, quality = 0.82) {
+  try {
+    if (!file || !file.type?.startsWith('image/') || file.type === 'image/gif') return file
+    // Already small enough → not worth re-encoding.
+    if (file.size < 350 * 1024) return file
+    const bitmap = await createImageBitmap(file).catch(() => null)
+    if (!bitmap) return file
+    const { width, height } = bitmap
+    const scale = Math.min(1, maxDim / Math.max(width, height))
+    const w = Math.round(width * scale)
+    const h = Math.round(height * scale)
+    const canvas = document.createElement('canvas')
+    canvas.width = w
+    canvas.height = h
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(bitmap, 0, 0, w, h)
+    bitmap.close?.()
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality))
+    if (!blob || blob.size >= file.size) return file // no win → keep original
+    const name = (file.name || 'photo').replace(/\.[^.]+$/, '') + '.jpg'
+    return new File([blob], name, { type: 'image/jpeg' })
+  } catch {
+    return file
+  }
+}
+
 export async function uploadImage(file) {
+  const toSend = await downscaleImage(file)
   const form = new FormData()
-  form.append('file', file)
+  form.append('file', toSend)
   // No Content-Type header - browser sets it automatically with the multipart boundary
   const res = await fetch(`${BASE}/uploads`, {
     method: 'POST',
