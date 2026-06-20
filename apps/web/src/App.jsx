@@ -1749,7 +1749,8 @@ export default function App() {
             // Auto-rejoin if the user has a saved city - skip the landing page entirely
             const saved = loadIdentity()
             if (saved?.channelId) {
-              handleJoin(null)
+              setRehydrating(false) // clear BEFORE rejoin - else a later logout
+              handleJoin(null)      // (status→onboarding) gets stuck on the spinner
               return
             }
           } else {
@@ -5987,6 +5988,7 @@ export default function App() {
             unregisterPush().catch(() => {})
             authLogout().catch(() => {})
             localStorage.removeItem(AUTH_FLAG_KEY) // next boot is guest - skip authMe()
+            setRehydrating(false)  // never leave the boot spinner armed post-logout
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
             // Reset geolocation so the next join triggers a fresh city resolution
@@ -6012,6 +6014,7 @@ export default function App() {
             socketRef.current = null
             unregisterPush().catch(() => {})
             localStorage.removeItem(AUTH_FLAG_KEY)
+            setRehydrating(false)
             setAccount(null)
             clearIdentity()
             setShowConversations(false)
