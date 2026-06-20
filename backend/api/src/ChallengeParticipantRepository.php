@@ -235,17 +235,33 @@ class ChallengeParticipantRepository
     public static function listForChannel(string $challengeId, int $limit = 100): array
     {
         $limit = max(1, min(500, $limit));
+        // "Who's in this challenge" = explicit channel-joiners UNION everyone
+        // with a non-rejected acceptance (submitters / takers). A submitter
+        // can have an acceptance row WITHOUT a challenge_participants row, so a
+        // join-table-only query under-counts the group - it showed "2 in the
+        // channel" on a contest the list card (which counts acceptances) shows
+        // 3 people in. Union both, keep the earliest timestamp per user for
+        // stable ordering. The detail strip dedups the creator/taker on top.
         $stmt = Database::pdo()->prepare("
             SELECT u.id, u.display_name, u.username,
                    u.profile_thumb_photo_url, u.profile_photo_url,
-                   EXTRACT(EPOCH FROM cp.joined_at)::INTEGER AS joined_at
-            FROM challenge_participants cp
-            JOIN users u ON u.id = cp.user_id AND u.deleted_at IS NULL
-            WHERE cp.channel_id = ?
-            ORDER BY cp.joined_at ASC
+                   MIN(j.joined_at) AS joined_at
+            FROM (
+                SELECT user_id, EXTRACT(EPOCH FROM joined_at)::INTEGER AS joined_at
+                  FROM challenge_participants
+                  WHERE channel_id = ? AND user_id IS NOT NULL
+                UNION ALL
+                SELECT acceptor_user_id AS user_id, EXTRACT(EPOCH FROM created_at)::INTEGER AS joined_at
+                  FROM challenge_acceptances
+                  WHERE challenge_id = ? AND phase != 'rejected' AND acceptor_user_id IS NOT NULL
+            ) j
+            JOIN users u ON u.id = j.user_id AND u.deleted_at IS NULL
+            GROUP BY u.id, u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url
+            ORDER BY joined_at ASC
             LIMIT $limit
         ");
-        $stmt->execute([$challengeId]);
+        $stmt->execute([$challengeId, $challengeId]);
         return array_map(static fn(array $r): array => [
             'id'             => $r['id'],
             'displayName'    => $r['display_name'] ?? null,
@@ -260,11 +276,21 @@ class ChallengeParticipantRepository
 
     public static function countForChannel(string $challengeId): int
     {
+        // Same population as listForChannel: joiners UNION non-rejected
+        // acceptors, deduped per user. Keeps the detail strip / join-count in
+        // sync with the list card's participant count.
         $stmt = Database::pdo()->prepare("
-            SELECT COUNT(*) FROM challenge_participants
-            WHERE channel_id = ? AND user_id IS NOT NULL
+            SELECT COUNT(*) FROM (
+                SELECT user_id
+                  FROM challenge_participants
+                  WHERE channel_id = ? AND user_id IS NOT NULL
+                UNION
+                SELECT acceptor_user_id
+                  FROM challenge_acceptances
+                  WHERE challenge_id = ? AND phase != 'rejected' AND acceptor_user_id IS NOT NULL
+            ) t
         ");
-        $stmt->execute([$challengeId]);
+        $stmt->execute([$challengeId, $challengeId]);
         return (int) $stmt->fetchColumn();
     }
 
