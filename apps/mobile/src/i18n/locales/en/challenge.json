@@ -653,9 +653,9 @@
   },
   "group": {
     "meetLabel": "When & where",
-    "meetCta": "Set the meet date + place",
+    "meetCta": "Set the meet date",
     "meetHint": "Everyone who joins meets here together. You validate who showed up afterwards.",
-    "meetRequired": "Pick a date and a place for the meet.",
+    "meetRequired": "Pick a date for the meet.",
     "meetRequiredTitle": "Set the meet",
     "meetSet": "Set the meet",
     "join": "Join",

@@ -235,8 +235,8 @@ export default function CreateChallengeScreen() {
       Alert.alert(t('intl.targetCityRequiredTitle'), t('intl.targetCityRequired'));
       return;
     }
-    // Group meet requires a date + place; photo-proof group requires a deadline.
-    if (isGroupMeet && (!meetAt || !meetVenue)) {
+    // Group meet requires a date (place is optional); photo-proof group requires a deadline.
+    if (isGroupMeet && !meetAt) {
       setMeetError(true);
       Alert.alert(t('group.meetRequiredTitle'), t('group.meetRequired'));
       return;
@@ -374,15 +374,15 @@ export default function CreateChallengeScreen() {
                   onPress={() => setMeetPickerOpen(true)}
                 >
                   <Text style={styles.cityPickerText} numberOfLines={2}>
-                    {meetAt && meetVenue
-                      ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}  ·  📍 ${meetVenue}`
-                      : t('group.meetCta', { defaultValue: 'Set the meet date + place' })}
+                    {meetAt
+                      ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}${meetVenue ? `  ·  📍 ${meetVenue}` : ''}`
+                      : t('group.meetCta', { defaultValue: 'Set the meet date' })}
                   </Text>
                   <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
                 </TouchableOpacity>
                 <Text style={[styles.sectionHint, meetError && styles.sectionHintError]}>
                   {meetError
-                    ? t('group.meetRequired', { defaultValue: 'Pick a date and a place for the meet.' })
+                    ? t('group.meetRequired', { defaultValue: 'Pick a date for the meet.' })
                     : t('group.meetHint', { defaultValue: 'Everyone who joins meets here together. You validate who showed up afterwards.' })}
                 </Text>
               </View>

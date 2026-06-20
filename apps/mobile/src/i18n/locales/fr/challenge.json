@@ -621,9 +621,9 @@
   },
   "group": {
     "meetLabel": "Quand & où",
-    "meetCta": "Choisis la date + le lieu du rendez-vous",
+    "meetCta": "Choisis la date du rendez-vous",
     "meetHint": "Tous ceux qui rejoignent se retrouvent ici ensemble. Tu valides qui était présent après.",
-    "meetRequired": "Choisis une date et un lieu pour le rendez-vous.",
+    "meetRequired": "Choisis une date pour le rendez-vous.",
     "meetRequiredTitle": "Définir le rendez-vous",
     "meetSet": "Définir le rendez-vous",
     "join": "Rejoindre",

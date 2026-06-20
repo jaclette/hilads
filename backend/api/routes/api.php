@@ -8077,7 +8077,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
     // (format omitted / 'legacy') passes null and behaves exactly as before.
     $groupOpts = null;
     if ($format === 'group') {
-        // MEET group = local + meet (needs a meet date + venue). PHOTO-PROOF
+        // MEET group = local + meet (needs a meet date; venue optional). PHOTO-PROOF
         // group = photo_proof (local or international); meet_at is the submission
         // DEADLINE and there's no venue (it's at a distance).
         $isGroupMeet  = $mode === 'local' && $validationMethod === 'meet';
@@ -8094,10 +8094,11 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
         }
         $venueStr = null;
         if ($isGroupMeet) {
+            // Venue is OPTIONAL for a group meet - the creator can set just a
+            // date and leave the exact place loose (pinned later in chat).
+            // Normalize empty → null rather than rejecting the create.
             $venueStr = is_string($venue) ? mb_substr(trim(strip_tags($venue)), 0, 160) : '';
-            if ($venueStr === '') {
-                Response::json(['error' => 'venue (location) is required for a group meet', 'code' => 'venue_required'], 400);
-            }
+            if ($venueStr === '') $venueStr = null;
         }
         $meetEndsInt = filter_var($meetEndsAt, FILTER_VALIDATE_INT);
         $groupOpts = [
