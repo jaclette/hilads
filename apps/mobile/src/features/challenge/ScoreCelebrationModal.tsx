@@ -160,6 +160,12 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
     ? data.total_month
     : (data.total_alltime ?? 0);
 
+  // The running total climbs in sync with the "+X" count-up: it starts at the
+  // score BEFORE this gain (total - delta) and ends at the final total. As
+  // displayPoints animates 0 → data.points, displayTotal animates start → final.
+  const startTotal   = Math.max(0, totalPoints - data.points);
+  const displayTotal = startTotal + displayPoints;
+
   const cityRankCopy = cityRank !== null
     ? t('scoreCelebration.rank.city',   { rank: cityRank,  city: data.city_name ?? '' })
     : t('scoreCelebration.rank.cityBeyond', { topN });
@@ -220,7 +226,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               context, not the celebration itself. */}
           {totalPoints > 0 && (
             <Text style={styles.total}>
-              {t('scoreCelebration.total', { total: totalPoints })}
+              {t('scoreCelebration.total', { total: displayTotal })}
             </Text>
           )}
 
