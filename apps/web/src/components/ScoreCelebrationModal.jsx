@@ -128,7 +128,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
         </div>
 
         {totalPoints > 0 && (
-          <div className="score-celebration-total">
+          <div className={`score-celebration-total${data.points > 0 && displayPoints >= data.points ? ' is-lit' : ''}`}>
             {t('scoreCelebration.total', { total: displayTotal })}
           </div>
         )}

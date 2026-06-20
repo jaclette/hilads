@@ -73,6 +73,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
   const points   = useRef(new Animated.Value(0)).current;
   const row1     = useRef(new Animated.Value(0)).current;
   const row2     = useRef(new Animated.Value(0)).current;
+  const glow     = useRef(new Animated.Value(0)).current; // total illuminate (0→1)
+  const pop      = useRef(new Animated.Value(0)).current; // total scale pop
   const [displayPoints, setDisplayPoints] = useState(0);
 
   // Listen on the points driver and update the rendered integer. Animated
@@ -95,6 +97,8 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
     points.setValue(0);
     row1.setValue(0);
     row2.setValue(0);
+    glow.setValue(0);
+    pop.setValue(0);
 
     Animated.parallel([
       Animated.timing(backdrop, {
@@ -121,6 +125,14 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
           // count-up reads <Text> from displayPoints - JS driver required
           useNativeDriver: false,
         }),
+        // Illuminate the total once the count-up lands: glow gold + a scale pop.
+        Animated.parallel([
+          Animated.timing(glow, { toValue: 1, duration: 300, easing: Easing.out(Easing.quad), useNativeDriver: false }),
+          Animated.sequence([
+            Animated.spring(pop, { toValue: 1, friction: 3, tension: 170, useNativeDriver: false }),
+            Animated.spring(pop, { toValue: 0, friction: 5, tension: 120, useNativeDriver: false }),
+          ]),
+        ]),
       ]),
       Animated.sequence([
         Animated.delay(320),
@@ -225,9 +237,19 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               the "+X" headline still dominates emotionally; this is
               context, not the celebration itself. */}
           {totalPoints > 0 && (
-            <Text style={styles.total}>
+            <Animated.Text
+              style={[
+                styles.total,
+                {
+                  color: glow.interpolate({ inputRange: [0, 1], outputRange: [Colors.muted, '#FFC93C'] }),
+                  textShadowColor: '#FFC93C',
+                  textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
+                  transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
+                },
+              ]}
+            >
               {t('scoreCelebration.total', { total: displayTotal })}
-            </Text>
+            </Animated.Text>
           )}
 
           <Text style={styles.subtitle}>

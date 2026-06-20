@@ -21,6 +21,8 @@ export function ChallengeResultModal({
   // Count-up driver for the points + running total (hooks before any early
   // return so the rules-of-hooks order stays stable).
   const pointsAnim = useRef(new Animated.Value(0)).current;
+  const glow       = useRef(new Animated.Value(0)).current; // total illuminate
+  const pop        = useRef(new Animated.Value(0)).current; // total scale pop
   const [displayPoints, setDisplayPoints] = useState(0);
   const targetPoints = reveal?.myPoints ?? 0;
 
@@ -30,8 +32,10 @@ export function ChallengeResultModal({
   }, [pointsAnim]);
 
   useEffect(() => {
-    if (!visible || !reveal) { pointsAnim.setValue(0); setDisplayPoints(0); return; }
+    if (!visible || !reveal) { pointsAnim.setValue(0); setDisplayPoints(0); glow.setValue(0); pop.setValue(0); return; }
     pointsAnim.setValue(0);
+    glow.setValue(0);
+    pop.setValue(0);
     Animated.sequence([
       Animated.delay(250),
       Animated.timing(pointsAnim, {
@@ -40,8 +44,16 @@ export function ChallengeResultModal({
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,   // count-up reads into <Text>
       }),
+      // Illuminate the total once the count-up lands.
+      Animated.parallel([
+        Animated.timing(glow, { toValue: 1, duration: 300, easing: Easing.out(Easing.quad), useNativeDriver: false }),
+        Animated.sequence([
+          Animated.spring(pop, { toValue: 1, friction: 3, tension: 170, useNativeDriver: false }),
+          Animated.spring(pop, { toValue: 0, friction: 5, tension: 120, useNativeDriver: false }),
+        ]),
+      ]),
     ]).start();
-  }, [visible, reveal, targetPoints, pointsAnim]);
+  }, [visible, reveal, targetPoints, pointsAnim, glow, pop]);
 
   if (!reveal) return null;
 
@@ -118,9 +130,19 @@ export function ChallengeResultModal({
                   </Text>
                 ) : null}
                 {finalTotal > 0 ? (
-                  <Text style={styles.total}>
+                  <Animated.Text
+                    style={[
+                      styles.total,
+                      {
+                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [Colors.muted, GOLD] }),
+                        textShadowColor: GOLD,
+                        textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
+                        transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
+                      },
+                    ]}
+                  >
                     {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
-                  </Text>
+                  </Animated.Text>
                 ) : null}
               </View>
             ) : null}

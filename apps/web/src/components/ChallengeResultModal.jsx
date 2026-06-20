@@ -92,7 +92,9 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
               </div>
             ) : null}
             {finalTotal > 0 ? (
-              <div className="crm-total">{t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}</div>
+              <div className={`crm-total${targetPoints > 0 && displayPoints >= targetPoints ? ' is-lit' : ''}`}>
+                {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
+              </div>
             ) : null}
           </div>
         ) : null}

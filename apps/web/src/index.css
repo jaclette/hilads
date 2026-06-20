@@ -13226,6 +13226,18 @@ body.has-app-promo-banner .page-header {
 .crm-points { font-size: 2.8rem; font-weight: 900; color: #ffc93c; letter-spacing: -1px; }
 .crm-breakdown { font-size: 0.86rem; font-weight: 700; color: var(--muted-2, #888); margin-top: 2px; }
 .crm-total { font-size: 0.86rem; font-weight: 700; color: var(--muted, #9a9088); margin-top: 4px; }
+
+/* Illuminate the running total once the count-up lands on the final score. */
+@keyframes total-illuminate {
+  0%   { transform: scale(1);    text-shadow: none; }
+  45%  { transform: scale(1.18); text-shadow: 0 0 14px rgba(255, 201, 60, 0.95); }
+  100% { transform: scale(1);    text-shadow: 0 0 7px rgba(255, 201, 60, 0.55); }
+}
+.score-celebration-total.is-lit,
+.crm-total.is-lit {
+  color: #ffc93c;
+  animation: total-illuminate 600ms ease-out forwards;
+}
 .crm-cta {
   margin-top: 14px; align-self: stretch;
   padding: 13px; border-radius: 999px; border: 0; cursor: pointer;
