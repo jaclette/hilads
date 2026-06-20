@@ -1288,7 +1288,7 @@ export default function ChallengeChatScreen() {
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
                     : `＋ ${isGroupPhoto
                         ? t('group.joinContestCta', { defaultValue: 'Join the contest (+2 pts)' })
-                        : t('group.joinCta', { defaultValue: 'Join this meet (+2 pts)' })}`}
+                        : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}`}
                 </Text>
               </TouchableOpacity>
             )}

@@ -221,7 +221,7 @@ export function ChallengeVersusCard({
               {/* Join CTA - group challenges stay open, so always invite more
                   people in (meet AND photo). Tapping opens the challenge. */}
               <TouchableOpacity style={styles.joinPill} activeOpacity={0.85} onPress={onAcceptPress}>
-                <Text style={styles.joinPillText}>{t('card.joinGroup', { defaultValue: 'Join the group' })} ⚡</Text>
+                <Text style={styles.joinPillText}>{t('card.joinGroup', { defaultValue: 'Join the challenge' })} ⚡</Text>
               </TouchableOpacity>
             </>
           )}

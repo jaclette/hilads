@@ -1128,7 +1128,7 @@ export default function ChallengeChatPage({
                 ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' })
                 : `＋ ${isGroupPhoto
                     ? t('group.joinContestCta', { ns: 'challenge', defaultValue: 'Join the contest (+2 pts)' })
-                    : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join this meet (+2 pts)' })}`}
+                    : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })}`}
             </button>
           )}
         </div>

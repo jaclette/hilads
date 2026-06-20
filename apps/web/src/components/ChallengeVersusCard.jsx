@@ -201,7 +201,7 @@ export default function ChallengeVersusCard({
               {/* Join CTA - group challenges stay open, so always invite more
                   people in (meet AND photo). */}
               <span role="button" tabIndex={0} className="challenge-group-pill challenge-group-pill--join" onClick={acceptPill}>
-                {t('card.joinGroup', { defaultValue: 'Join the group' })} ⚡
+                {t('card.joinGroup', { defaultValue: 'Join the challenge' })} ⚡
               </span>
             </>
           )}

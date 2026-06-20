@@ -79,7 +79,7 @@
     "beFirst": "⚡ Sois le premier · +2",
     "daysLeft": "{{count}}j restants",
     "lastDay": "Dernier jour",
-    "joinGroup": "Rejoindre le groupe",
+    "joinGroup": "Rejoindre le défi",
     "whoJoined": "Qui a rejoint ({{count}})"
   },
   "statusInProgress": "Défi en cours",
@@ -605,7 +605,7 @@
     "done": "Ce rendez-vous est terminé.",
     "validateCta": "Valide qui était présent",
     "youreIn": "Tu es inscrit — à bientôt !",
-    "joinCta": "Rejoindre (+2 pts)",
+    "joinCta": "Rejoindre le défi (+2 pts)",
     "closed": "Fermé aux nouvelles inscriptions",
     "joinFailed": "Impossible de rejoindre — réessaie.",
     "validateFailed": "Validation impossible — réessaie.",

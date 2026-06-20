@@ -77,7 +77,7 @@
     "beFirst": "⚡ Be the first · +2",
     "daysLeft": "{{count}}d left",
     "lastDay": "Expires soon",
-    "joinGroup": "Join the group",
+    "joinGroup": "Join the challenge",
     "whoJoined": "Who joined ({{count}})"
   },
   "statusInProgress": "Challenge in progress",
@@ -662,7 +662,7 @@
     "done": "This meet is done.",
     "validateCta": "Validate who showed up",
     "youreIn": "You're in — see you there!",
-    "joinCta": "Join this meet (+2 pts)",
+    "joinCta": "Join the challenge (+2 pts)",
     "closed": "Closed to new joins",
     "joinFailed": "Could not join — try again.",
     "validateFailed": "Could not validate — try again.",

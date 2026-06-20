@@ -96,7 +96,7 @@
     "beFirst": "⚡ Là người đầu tiên · +2",
     "daysLeft": "Còn {{count}} ngày",
     "lastDay": "Sắp hết hạn",
-    "joinGroup": "Tham gia nhóm",
+    "joinGroup": "Tham gia thử thách",
     "whoJoined": "Ai đã tham gia ({{count}})"
   },
   "statusInProgress": "Thử thách đang diễn ra",
@@ -625,7 +625,7 @@
     "done": "Buổi gặp đã xong.",
     "validateCta": "Xác nhận ai đã đến",
     "youreIn": "Bạn đã tham gia — hẹn gặp!",
-    "joinCta": "Tham gia (+2 điểm)",
+    "joinCta": "Tham gia thử thách (+2 điểm)",
     "closed": "Đã đóng đăng ký",
     "joinFailed": "Không thể tham gia — thử lại.",
     "validateFailed": "Không thể xác nhận — thử lại.",
