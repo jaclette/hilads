@@ -9376,6 +9376,16 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
     if (($challenge['status'] ?? 'open') !== 'open') {
         Response::json(['error' => 'This challenge has already been validated', 'code' => 'already_validated'], 409);
     }
+    // The challenger can only validate (and rate) AFTER the meet's start time -
+    // before that the meet hasn't happened, so there's nothing to validate.
+    $meetAt = isset($challenge['meet_at']) ? (int) $challenge['meet_at'] : 0;
+    if ($meetAt > 0 && time() < $meetAt) {
+        Response::json([
+            'error' => 'You can validate once the meet has started.',
+            'code'  => 'meet_not_started',
+            'meetAt' => $meetAt,
+        ], 422);
+    }
 
     $body       = Request::json();
     $presentIds = is_array($body) ? ($body['presentUserIds'] ?? []) : [];

@@ -994,6 +994,8 @@ export default function ChallengeChatScreen() {
   const meetSummary = isGroup && challenge.meet_at
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null;
+  // The challenger can only validate presence AFTER the meet's start time.
+  const meetStarted = !challenge.meet_at || (Date.now() / 1000) >= challenge.meet_at;
   // The viewer's own group membership (joined / present), if any.
   const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null;
   // Trust the participants list (every non-rejected acceptor) as well as the
@@ -1260,6 +1262,11 @@ export default function ChallengeChatScreen() {
               isGroupPhoto ? (
                 <Text style={styles.groupStateText}>
                   🏆 {t('group.pickHint', { defaultValue: 'Pick the winner from the photos below.' })}
+                </Text>
+              ) : !meetStarted ? (
+                // Before the meet's start time there's nothing to validate yet.
+                <Text style={styles.groupStateText}>
+                  ⏳ {t('group.validateAfter', { time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
                 </Text>
               ) : (
                 <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>

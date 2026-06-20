@@ -624,6 +624,7 @@
     "join": "Tham gia",
     "done": "Buổi gặp đã xong.",
     "validateCta": "Xác nhận ai đã đến",
+      "validateAfter": "Bạn có thể xác nhận sau buổi gặp · {{time}}",
     "youreIn": "Bạn đã tham gia — hẹn gặp!",
     "joinCta": "Tham gia thử thách (+2 điểm)",
     "closed": "Đã đóng đăng ký",

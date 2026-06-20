@@ -661,6 +661,7 @@
     "join": "Join",
     "done": "This meet is done.",
     "validateCta": "Validate who showed up",
+      "validateAfter": "You can validate after the meet · {{time}}",
     "youreIn": "You're in — see you there!",
     "joinCta": "Join the challenge (+2 pts)",
     "closed": "Closed to new joins",

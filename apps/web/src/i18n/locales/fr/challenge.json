@@ -604,6 +604,7 @@
     "meetSet": "Définir le rendez-vous",
     "done": "Ce rendez-vous est terminé.",
     "validateCta": "Valide qui était présent",
+      "validateAfter": "Tu pourras valider après le rendez-vous · {{time}}",
     "youreIn": "Tu es inscrit — à bientôt !",
     "joinCta": "Rejoindre le défi (+2 pts)",
     "closed": "Fermé aux nouvelles inscriptions",

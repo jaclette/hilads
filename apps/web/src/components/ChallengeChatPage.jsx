@@ -312,6 +312,8 @@ export default function ChallengeChatPage({
   const meetSummary = (isGroup && challenge?.meet_at)
     ? new Date(challenge.meet_at * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
     : null
+  // The challenger can only validate presence after the meet's start time.
+  const meetStarted = !challenge?.meet_at || (Date.now() / 1000) >= challenge.meet_at
   const myGroupPhase = (myAcceptance && !myAcceptance.i_am_creator) ? myAcceptance.phase : null
   const isParticipant = !!(
     (account?.id    && participants.some(p => p.id === account.id)) ||
@@ -1120,6 +1122,10 @@ export default function ChallengeChatPage({
             isGroupPhoto ? (
               <div style={{ textAlign: 'center', fontWeight: 700, color: '#FFC93C', padding: '8px 0' }}>
                 🏆 {t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}
+              </div>
+            ) : !meetStarted ? (
+              <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: '8px 0', fontSize: '0.86rem' }}>
+                ⏳ {t('group.validateAfter', { ns: 'challenge', time: meetSummary ?? '', defaultValue: `You can validate after the meet · ${meetSummary ?? ''}` })}
               </div>
             ) : (
               <button type="button" style={GROUP_BTN_STYLE} onClick={() => { setPresentRating(0); setValidateOpen(true) }}>
