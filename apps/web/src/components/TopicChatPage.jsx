@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { badgeLabel } from '../badgeMeta'
-import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants } from '../api'
+import { fetchTopicMessages, sendTopicMessage, sendTopicImageMessage, markTopicRead, uploadImage, resolveHangoutJoinRequest, requestToJoinHangout, deleteTopic, fetchHangoutParticipants, toggleTopicReaction } from '../api'
 import AttendeeAvatars from './AttendeeAvatars'
 import BackButton from './BackButton'
 import ShareActionSheet from './ShareActionSheet'
@@ -135,6 +135,9 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   const fileInputRef = useRef(null)
   const msgRefsMap   = useRef(new Map())
   const [highlightedMsgId, setHighlightedMsgId] = useState(null)
+  // React + reply (same interaction layer as the city / challenge chats).
+  const [actionBubble, setActionBubble] = useState(null) // { msg, x, y, isMine }
+  const [replyingTo,   setReplyingTo]   = useState(null)  // { id, nickname, content, type }
 
   // ── Reverse-infinite-scroll (older history) ──
   const [hasMore,      setHasMore]      = useState(false)
@@ -235,8 +238,14 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       knownIdsRef.current.add(key)
       setMessages(prev => [...prev, msg].sort((a, b) => toMs(a.createdAt) - toMs(b.createdAt)))
     })
+    // Reactions land live so other users' taps reflect without a refetch.
+    const offReact = socket.on('reactionUpdate', ({ channelId: ch, messageId, reactions }) => {
+      if (String(ch) !== String(topic.id)) return
+      setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
+    })
     return () => {
       off()
+      offReact()
       socket.leaveTopic(topic.id, sessionId)
     }
   }, [topic.id, socket, sessionId, gated])
@@ -312,6 +321,8 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     if (!text || !guest || sending) return
 
     const built = mentions.buildAndReset(text)
+    const reply = replyingTo
+    setReplyingTo(null)
     const localId = `local-${Date.now()}`
     const optimistic = {
       id:        localId,
@@ -321,6 +332,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       content:   text,
       createdAt: Date.now() / 1000,
       mentions:  built.length ? built : undefined,
+      replyTo:   reply ? { id: reply.id, nickname: reply.nickname, content: reply.content, type: reply.type } : undefined,
       _local:    true,
     }
 
@@ -330,7 +342,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
     setError(null)
 
     try {
-      const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text, built.length ? built : null)
+      const data = await sendTopicMessage(topic.id, guest.guestId, nickname, text, built.length ? built : null, reply?.id ?? null)
       const msg = data.message ?? data
       knownIdsRef.current.add(msg.id)
       // Dedup the WS echo race: if our own broadcast already arrived (real id
@@ -605,7 +617,14 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                 className={`msg-bubble-wrap ${isMine ? 'mine' : ''} ${isGrouped && !isMine ? 'grouped' : ''}`}
                 style={item.status === 'failed' ? { opacity: 0.5 } : item.status === 'sending' ? { opacity: 0.7 } : undefined}
               >
-                <div className="msg-content">
+                <div
+                  className="msg-content"
+                  onClick={(e) => {
+                    if (!item.id || String(item.id).startsWith('local-') || item.type === 'system' || item.type === 'join_request') return
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    setActionBubble({ msg: item, x: rect.left, y: rect.top, isMine })
+                  }}
+                >
                   {item.replyTo && (
                     <div
                       className={`msg-reply-quote${item.replyTo.id ? ' msg-reply-quote--tappable' : ''}`}
@@ -628,6 +647,26 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                       </>
                   }
                 </div>
+                {item.reactions && item.reactions.length > 0 && (
+                  <div className={`reaction-pills${isMine ? ' mine' : ''}`}>
+                    {item.reactions.map(r => (
+                      <button
+                        key={r.emoji}
+                        className={`reaction-pill${r.self ? ' self' : ''}`}
+                        onClick={async (e) => {
+                          e.stopPropagation()
+                          if (!guest?.guestId || !item.id) return
+                          try {
+                            const data = await toggleTopicReaction(topic.id, item.id, r.emoji, guest.guestId)
+                            setMessages(prev => prev.map(x => x.id === item.id ? { ...x, reactions: data.reactions } : x))
+                          } catch { /* silent */ }
+                        }}
+                      >
+                        {r.emoji}{r.count > 1 && <span className="reaction-count">{r.count}</span>}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
               {showTime && (
                 <span className={`msg-time${isMine ? ' msg-time--mine' : ''}`}>{formatTime(item.createdAt)}</span>
@@ -665,6 +704,66 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           onClose={() => setShowShareSheet(false)}
           spotLoading={spotLoading}
         />
+      )}
+
+      {/* Reply preview */}
+      {replyingTo && (
+        <div className="reply-preview">
+          <div className="reply-preview-body">
+            <span className="reply-preview-name">{replyingTo.nickname}</span>
+            <span className="reply-preview-text">
+              {replyingTo.type === 'image' ? t('reply.photo') : (replyingTo.content || '-')}
+            </span>
+          </div>
+          <button type="button" className="reply-preview-close" onClick={() => setReplyingTo(null)} aria-label="Cancel reply">✕</button>
+        </div>
+      )}
+
+      {/* Message action overlay - emoji strip + Reply + Copy (mirrors the city/
+          challenge chat). */}
+      {actionBubble && (
+        <div className="action-bubble-overlay" onClick={() => setActionBubble(null)}>
+          <div
+            className="action-bubble"
+            style={{ top: Math.max(8, actionBubble.y - 64), left: actionBubble.isMine ? 'auto' : actionBubble.x, right: actionBubble.isMine ? 16 : 'auto' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="action-bubble-emojis">
+              {['❤️', '👍', '😂', '😮', '🔥'].map(emoji => {
+                const selfReacted = (actionBubble.msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
+                return (
+                  <button
+                    key={emoji}
+                    className={`action-bubble-emoji${selfReacted ? ' active' : ''}`}
+                    onClick={async () => {
+                      const msgId = actionBubble.msg.id
+                      setActionBubble(null)
+                      if (!msgId || !guest?.guestId) return
+                      try {
+                        const data = await toggleTopicReaction(topic.id, msgId, emoji, guest.guestId)
+                        setMessages(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
+                      } catch { /* silent */ }
+                    }}
+                  >{emoji}</button>
+                )
+              })}
+            </div>
+            <button
+              className="action-bubble-btn"
+              onClick={() => {
+                setReplyingTo({ id: actionBubble.msg.id, nickname: actionBubble.msg.nickname, content: actionBubble.msg.content ?? '', type: actionBubble.msg.type ?? 'text' })
+                setActionBubble(null)
+                inputRef.current?.focus()
+              }}
+            >↩ {t('reply.action', { defaultValue: 'Reply' })}</button>
+            {actionBubble.msg.content && (
+              <button
+                className="action-bubble-btn"
+                onClick={() => { navigator.clipboard?.writeText(actionBubble.msg.content).catch(() => {}); setActionBubble(null) }}
+              >📋 {t('reply.copy', { defaultValue: 'Copy' })}</button>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Input */}
