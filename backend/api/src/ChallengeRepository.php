@@ -384,15 +384,24 @@ class ChallengeRepository
         $stmt = $pdo->prepare(self::SELECT . "
             WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id)
               AND c.status   = 'active'
-              -- Active feed = still-open challenges that haven't been finished.
-              -- A challenge leaves the feed the moment it's validated OR
-              -- completed (an acceptance reached 'approved') - one-shot, no
-              -- lingering grace window. Finished ones live in the past-archive
-              -- (getValidatedByCity) / Success showcase instead.
-              AND cc.status = 'open'
-              AND NOT EXISTS (
-                  SELECT 1 FROM challenge_acceptances ca_done
-                  WHERE ca_done.challenge_id = c.id AND ca_done.phase = 'approved'
+              -- Active feed = still-open challenges PLUS a 24h grace window for
+              -- ones that were just validated / completed, so the city keeps
+              -- seeing the done card for a day before it drops to the past
+              -- archive (getValidatedByCity) / Success showcase.
+              AND (
+                  (cc.status = 'open' AND NOT EXISTS (
+                      SELECT 1 FROM challenge_acceptances ca_done
+                      WHERE ca_done.challenge_id = c.id AND ca_done.phase = 'approved'
+                  ))
+                  -- Group / manually validated: stays for 24h after validated_at.
+                  OR (cc.validated_at IS NOT NULL AND cc.validated_at > now() - interval '24 hours')
+                  -- Legacy 1-1 completed (acceptance approved, status still open):
+                  -- stays for 24h after the approval.
+                  OR EXISTS (
+                      SELECT 1 FROM challenge_acceptances ca_grace
+                      WHERE ca_grace.challenge_id = c.id AND ca_grace.phase = 'approved'
+                        AND ca_grace.approved_at > now() - interval '24 hours'
+                  )
               )
               AND $visClause
             GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
