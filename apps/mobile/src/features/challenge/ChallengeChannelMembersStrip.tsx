@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Image } from 'expo-image';
+import { socket } from '@/lib/socket';
 import { fetchChannelParticipants, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -38,6 +39,22 @@ export function ChallengeChannelMembersStrip({
   }, [challenge?.id]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Live: reload when someone joins / leaves this challenge so the "X in the
+  // channel" strip grows without an app restart. The server pings the creator's
+  // user-room with challenge_accepted on every group join.
+  useEffect(() => {
+    if (!challenge?.id) return;
+    const onChange = (data: Record<string, unknown>) => {
+      const payload = data.payload as { challenge?: { id?: string }; challengeId?: string } | undefined;
+      const evtId = payload?.challenge?.id ?? payload?.challengeId;
+      if (evtId === challenge.id) void load();
+    };
+    const offA = socket.on('challenge_accepted',             onChange);
+    const offC = socket.on('challenge_acceptance_cancelled', onChange);
+    const offL = socket.on('challenge_acceptor_left',        onChange);
+    return () => { offA(); offC(); offL(); };
+  }, [challenge?.id, load]);
 
   // Preview: Challenger first, Taker second, then joined participants.
   // 5-avatar preview to match the events / city-roster pattern.

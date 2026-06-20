@@ -639,12 +639,12 @@ export default function ChallengeChatScreen() {
     const onAcceptanceChange = (data: Record<string, unknown>) => {
       const payload = data.payload as { challenge?: { id?: string }; challengeId?: string } | undefined;
       const eventChallengeId = payload?.challenge?.id ?? payload?.challengeId;
-      if (eventChallengeId === id) loadMyAcceptance();
+      if (eventChallengeId === id) { loadMyAcceptance(); loadParticipants(); }
     };
     const offA = socket.on('challenge_accepted',              onAcceptanceChange);
     const offC = socket.on('challenge_acceptance_cancelled',  onAcceptanceChange);
     return () => { offA(); offC(); };
-  }, [id, loadMyAcceptance]);
+  }, [id, loadMyAcceptance, loadParticipants]);
 
   // PR3/4/5 - refresh on date/verdict/take-on-review pushes. Schedule block
   // + pipeline + locked-state branches all read off myAcceptance, so a

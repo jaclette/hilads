@@ -395,8 +395,16 @@ export default function ChallengeChatPage({
     }
     const offValidated   = socket.on('challenge_validated',   onStatusFlip)
     const offUnvalidated = socket.on('challenge_unvalidated', onStatusFlip)
-    return () => { offValidated(); offUnvalidated() }
-  }, [id, socket])
+    // Live participant list: reload when someone joins/leaves this challenge so
+    // the member list grows without a reload (server pings on every group join).
+    const onMembers = (data) => {
+      const evtId = data?.challenge?.id ?? data?.challengeId ?? data?.payload?.challenge?.id
+      if (evtId === id) loadParticipants()
+    }
+    const offAccepted  = socket.on('challenge_accepted',             onMembers)
+    const offCancelled = socket.on('challenge_acceptance_cancelled', onMembers)
+    return () => { offValidated(); offUnvalidated(); offAccepted(); offCancelled() }
+  }, [id, socket, loadParticipants])
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
