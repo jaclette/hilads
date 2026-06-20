@@ -236,6 +236,19 @@ export async function validatePresence(
   });
 }
 
+/** Challenger rates the challenge (stars + optional note). Used by the photo-proof
+ *  reveal modal, where there's no validate sheet to capture the rating. */
+export async function submitHostRating(
+  challengeId: string,
+  stars: number,
+  comment?: string | null,
+): Promise<{ ok: boolean }> {
+  return api.post(`/challenges/${challengeId}/host-rating`, {
+    stars,
+    ...(comment && comment.trim() ? { comment: comment.trim() } : {}),
+  });
+}
+
 /** Challenger designates the winning photo of a GROUP photo-proof contest.
  *  The winner earns the +40 bonus and the challenge is marked validated. The
  *  backend rejects a pick whose user has no submission. */

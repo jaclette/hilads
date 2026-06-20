@@ -661,7 +661,7 @@
     "join": "Join",
     "done": "This meet is done.",
     "validateCta": "Validate who showed up",
-      "validateAfter": "You can validate after the meet · {{time}}",
+    "validateAfter": "You can validate after the meet · {{time}}",
     "youreIn": "You're in — see you there!",
     "joinCta": "Join the challenge (+2 pts)",
     "closed": "Closed to new joins",
@@ -669,7 +669,7 @@
     "validateFailed": "Could not validate — try again.",
     "validateTitle": "Who showed up?",
     "validateSub": "Tick everyone who came to the meet. They each earn the reward.",
-      "rateMeet": "How was the meet?",
+    "rateMeet": "How was the meet?",
     "validateConfirm": "Validate {{count}} present",
     "noParticipants": "Nobody has joined yet.",
     "deadlineLabel": "Submission deadline",
@@ -752,6 +752,9 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Nice!",
-    "total": "You now have {{total}} points"
+    "total": "You now have {{total}} points",
+    "rateTitle": "Rate this challenge",
+    "notePlaceholder": "Add a note (optional)",
+    "saveRating": "Save rating"
   }
 }

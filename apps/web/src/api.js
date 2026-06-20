@@ -753,6 +753,22 @@ export async function validatePresence(challengeId, presentUserIds, rating) {
   return res.json() // { ok, present_count, present_ids }
 }
 
+// Challenger rates the challenge (stars + optional note) - used by the
+// photo-proof reveal modal, which has no validate sheet to capture it.
+export async function submitHostRating(challengeId, stars, comment) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/host-rating`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ stars, ...(comment && comment.trim() ? { comment: comment.trim() } : {}) }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || 'Failed to save rating')
+  }
+  return res.json() // { ok }
+}
+
 // Challenger designates the winning photo of a GROUP photo-proof contest. The
 // winner earns the +40 bonus and the challenge is marked validated. The backend
 // rejects a pick whose user has no submission (error code 'no_submission').

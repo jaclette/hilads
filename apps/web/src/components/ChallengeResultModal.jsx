@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { submitHostRating } from '../api'
 
 /**
  * GROUP challenge result reveal modal (web). Role-specific, never-negative copy
@@ -9,8 +10,13 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
   const { t } = useTranslation('challenge')
   const [displayPoints, setDisplayPoints] = useState(0)
   const [revealedHeads, setRevealedHeads] = useState(0)
+  const [hostStars, setHostStars] = useState(0)
+  const [hostNote, setHostNote] = useState('')
+  const [savingRating, setSavingRating] = useState(false)
   const rafRef = useRef(null)
   const targetPoints = reveal?.myPoints ?? 0
+
+  useEffect(() => { if (!visible) { setHostStars(0); setHostNote(''); setSavingRating(false) } }, [visible])
 
   // Host breakdown: reveal one 🙋 at a time, +points ticking up with each.
   const hb        = reveal?.hostBreakdown ?? null
@@ -81,6 +87,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
   }
 
   const showPoints = myRole !== 'absent'
+  const showHostRating = myRole === 'host' && isPhoto  // photo host rates here (no validate sheet)
 
   return (
     <div className="crm-backdrop" onClick={onClose}>
@@ -159,8 +166,49 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
           </div>
         ) : null}
 
-        <button type="button" className="crm-cta" onClick={onClose}>
-          {t('result.cta', { defaultValue: 'Nice!' })}
+        {showHostRating ? (
+          <div className="crm-rate-block">
+            <div className="crm-rate-title">{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</div>
+            <div className="crm-rate-stars">
+              {[1, 2, 3, 4, 5].map(n => (
+                <span
+                  key={n}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setHostStars(n)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setHostStars(n) } }}
+                  style={{ fontSize: 28, lineHeight: 1, cursor: 'pointer', color: n <= hostStars ? '#FFC93C' : 'var(--border,#444)' }}
+                >
+                  {n <= hostStars ? '★' : '☆'}
+                </span>
+              ))}
+            </div>
+            <textarea
+              className="crm-rate-note"
+              placeholder={t('result.notePlaceholder', { defaultValue: 'Add a note (optional)' })}
+              value={hostNote}
+              onChange={(e) => setHostNote(e.target.value)}
+              maxLength={500}
+              rows={2}
+            />
+          </div>
+        ) : null}
+
+        <button
+          type="button"
+          className="crm-cta"
+          disabled={savingRating || (showHostRating && hostStars === 0)}
+          style={{ opacity: (savingRating || (showHostRating && hostStars === 0)) ? 0.5 : 1 }}
+          onClick={async () => {
+            if (showHostRating && hostStars > 0) {
+              setSavingRating(true)
+              try { await submitHostRating(reveal.challengeId, hostStars, hostNote) } catch { /* non-fatal */ }
+              setSavingRating(false)
+            }
+            onClose()
+          }}
+        >
+          {savingRating ? '…' : (showHostRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' }))}
         </button>
       </div>
     </div>

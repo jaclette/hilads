@@ -1456,6 +1456,9 @@ run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS venue_lng    
 // in the validate-presence sheet. Drives the showcase star for group meets
 // (replaces the fabricated 5.0). Nullable - older group rows have none.
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS host_rating      SMALLINT CHECK (host_rating BETWEEN 1 AND 5)", 'channel_challenges.host_rating');
+// Optional note the challenger leaves alongside host_rating (meet: validate
+// sheet; photo: the reveal modal). Surfaces as the showcase comment.
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS host_comment     TEXT", 'channel_challenges.host_comment');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_format ON channel_challenges (challenge_format)", 'idx_channel_challenges_format');
 
 run($pdo, "

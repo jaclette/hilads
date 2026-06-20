@@ -678,10 +678,13 @@ class ChallengeRepository
                    au.display_name AS acceptor_display_name,
                    COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
                    au.current_city_id AS acceptor_city_id,
-                   -- 5.0 (a won contest = top success), NOT null: the live mobile
-                   -- build does avg_stars.toFixed(1) with no null guard and would
-                   -- crash. rating_count=0 lets newer clients hide the star pill.
-                   5.0::numeric AS avg_stars, 0 AS rating_count, NULL AS comment,
+                   -- Real host rating when the challenger left one (photo reveal
+                   -- modal); else 5.0 fallback (a won contest = top success), NOT
+                   -- null - the live mobile build does avg_stars.toFixed(1) with
+                   -- no null guard and would crash.
+                   COALESCE(cc.host_rating::numeric, 5.0) AS avg_stars,
+                   CASE WHEN cc.host_rating IS NOT NULL THEN 1 ELSE 0 END AS rating_count,
+                   cc.host_comment AS comment,
                    NULL AS creator_comment, NULL AS acceptor_comment,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
                    pr.media_url AS proof_media_url, pr.media_type AS proof_media_type
@@ -726,7 +729,7 @@ class ChallengeRepository
                    au.display_name AS acceptor_display_name,
                    COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
                    au.current_city_id AS acceptor_city_id,
-                   cc.host_rating::numeric AS avg_stars, 1 AS rating_count, NULL AS comment,
+                   cc.host_rating::numeric AS avg_stars, 1 AS rating_count, cc.host_comment AS comment,
                    NULL AS creator_comment, NULL AS acceptor_comment,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
                    img.image_url AS proof_media_url, 'image' AS proof_media_type

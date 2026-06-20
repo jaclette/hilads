@@ -1,9 +1,10 @@
-import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, TextInput, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
-import type { ChallengeReveal } from '@/api/challenges';
+import { submitHostRating, type ChallengeReveal } from '@/api/challenges';
 
 /**
  * GROUP challenge result reveal modal. Role-specific, never-negative copy +
@@ -63,6 +64,14 @@ export function ChallengeResultModal({
   const headCount = (reveal?.myRole === 'host' && hb && hb.heads > 0) ? hb.heads : 0;
   const staggered = headCount > 0 && headCount <= 8;
   const [revealedHeads, setRevealedHeads] = useState(0);
+  // Photo-proof host rating (stars + note) - captured in this modal since the
+  // photo flow has no validate sheet.
+  const [hostStars, setHostStars] = useState(0);
+  const [hostNote,  setHostNote]  = useState('');
+  const [savingRating, setSavingRating] = useState(false);
+  useEffect(() => {
+    if (!visible) { setHostStars(0); setHostNote(''); setSavingRating(false); }
+  }, [visible]);
   useEffect(() => {
     if (!visible || !reveal || headCount === 0) { setRevealedHeads(0); return; }
     if (!staggered) { setRevealedHeads(headCount); return; }
@@ -115,6 +124,8 @@ export function ChallengeResultModal({
   }
 
   const showPoints = myRole !== 'absent';
+  // Photo host rates here (no validate sheet in the photo flow).
+  const showHostRating = myRole === 'host' && isPhoto;
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -215,8 +226,44 @@ export function ChallengeResultModal({
               </View>
             ) : null}
 
-            <TouchableOpacity style={styles.cta} activeOpacity={0.85} onPress={onClose}>
-              <Text style={styles.ctaText}>{t('result.cta', { defaultValue: 'Nice!' })}</Text>
+            {showHostRating ? (
+              <View style={styles.rateBlock}>
+                <Text style={styles.rateTitle}>{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</Text>
+                <View style={styles.rateStars}>
+                  {[1, 2, 3, 4, 5].map(n => (
+                    <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
+                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? GOLD : Colors.border} />
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <TextInput
+                  style={styles.noteInput}
+                  placeholder={t('result.notePlaceholder', { defaultValue: 'Add a note (optional)' })}
+                  placeholderTextColor={Colors.muted}
+                  value={hostNote}
+                  onChangeText={setHostNote}
+                  multiline
+                  maxLength={500}
+                />
+              </View>
+            ) : null}
+
+            <TouchableOpacity
+              style={[styles.cta, (savingRating || (showHostRating && hostStars === 0)) && { opacity: 0.5 }]}
+              activeOpacity={0.85}
+              disabled={savingRating || (showHostRating && hostStars === 0)}
+              onPress={async () => {
+                if (showHostRating && hostStars > 0) {
+                  setSavingRating(true);
+                  try { await submitHostRating(reveal.challengeId, hostStars, hostNote); } catch { /* non-fatal */ }
+                  setSavingRating(false);
+                }
+                onClose();
+              }}
+            >
+              {savingRating
+                ? <ActivityIndicator color="#1a1206" />
+                : <Text style={styles.ctaText}>{showHostRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
             </TouchableOpacity>
           </ScrollView>
         </View>
@@ -261,6 +308,15 @@ const styles = StyleSheet.create({
   rankFlag:  { fontSize: FontSizes.md },
   rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
   rankChevron: { fontSize: FontSizes.lg, color: Colors.muted, fontWeight: '700' },
+
+  rateBlock: { alignSelf: 'stretch', alignItems: 'center', gap: 8, marginTop: Spacing.md },
+  rateTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  rateStars: { flexDirection: 'row', gap: 8 },
+  noteInput: {
+    alignSelf: 'stretch', minHeight: 44, maxHeight: 100, borderRadius: Radius.md,
+    backgroundColor: 'rgba(255,255,255,0.06)', color: Colors.text,
+    paddingHorizontal: 12, paddingVertical: 10, fontSize: FontSizes.sm, textAlignVertical: 'top',
+  },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },

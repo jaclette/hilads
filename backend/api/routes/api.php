@@ -9505,6 +9505,64 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
     ]);
 });
 
+// POST /api/v1/challenges/{challengeId}/host-rating  (GROUP, challenger-only)
+// The challenger rates how the challenge went (1-5 stars + optional note). For
+// MEET this is captured in the validate sheet; for PHOTO-PROOF there's no sheet,
+// so the reveal modal posts here after the winner is picked. Idempotent - a
+// re-post just updates. Drives the showcase star + comment.
+$router->add('POST', '/api/v1/challenges/{challengeId}/host-rating', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
+    if ($challenge === null) {
+        Response::json(['error' => 'Challenge not found'], 404);
+    }
+    if (($challenge['created_by'] ?? null) !== $userId) {
+        Response::json(['error' => 'Only the challenger can rate', 'code' => 'not_creator'], 403);
+    }
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        Response::json(['error' => 'Not a group challenge', 'code' => 'not_group'], 422);
+    }
+
+    $body  = Request::json();
+    $stars = filter_var(
+        is_array($body) ? ($body['stars'] ?? null) : null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1, 'max_range' => 5]],
+    );
+    if ($stars === false) {
+        Response::json(['error' => 'stars must be an integer between 1 and 5'], 400);
+    }
+    $comment = is_array($body) && isset($body['comment']) && is_string($body['comment'])
+        ? mb_substr(trim(strip_tags($body['comment'])), 0, 500) : null;
+    if ($comment === '') $comment = null;
+    if ($comment !== null) {
+        $modHit = ModerationService::checkBundle(['comment' => $comment]);
+        if ($modHit !== null) {
+            error_log("[moderation] host-rating blocked ch={$challengeId} reason={$modHit['reason']}");
+            Response::json(['error' => 'Your note was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked', 'field' => 'comment'], 422);
+        }
+    }
+
+    try {
+        Database::pdo()->prepare("
+            UPDATE channel_challenges
+            SET host_rating = ?, host_comment = COALESCE(?, host_comment), updated_at = now()
+            WHERE channel_id = ?
+        ")->execute([$stars, $comment, $challengeId]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] host-rating failed ch=' . $challengeId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to save rating'], 500);
+    }
+
+    Response::json(['ok' => true]);
+});
+
 // GET /api/v1/challenges/{challengeId}/submissions  (GROUP photo-proof)
 // Every submitter's latest photo + who they are, plus the winner (if picked).
 // Readable by anyone who can see the challenge - this is the in-channel gallery

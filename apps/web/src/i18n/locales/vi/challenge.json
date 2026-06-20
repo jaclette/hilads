@@ -598,7 +598,7 @@
     "meetSet": "Đặt buổi gặp",
     "done": "Buổi gặp đã xong.",
     "validateCta": "Xác nhận ai đã đến",
-      "validateAfter": "Bạn có thể xác nhận sau buổi gặp · {{time}}",
+    "validateAfter": "Bạn có thể xác nhận sau buổi gặp · {{time}}",
     "youreIn": "Bạn đã tham gia — hẹn gặp!",
     "joinCta": "Tham gia thử thách (+2 điểm)",
     "closed": "Đã đóng đăng ký",
@@ -606,7 +606,7 @@
     "validateFailed": "Không thể xác nhận — thử lại.",
     "validateTitle": "Ai đã đến?",
     "validateSub": "Đánh dấu những người đã đến. Mỗi người nhận thưởng.",
-      "rateMeet": "Buổi gặp thế nào?",
+    "rateMeet": "Buổi gặp thế nào?",
     "validateConfirm": "Xác nhận {{count}} có mặt",
     "noParticipants": "Chưa có ai tham gia.",
     "join": "Tham gia",
@@ -691,6 +691,9 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Tuyệt!",
-    "total": "Bạn hiện có {{total}} điểm"
+    "total": "Bạn hiện có {{total}} điểm",
+    "rateTitle": "Đánh giá thử thách này",
+    "notePlaceholder": "Thêm ghi chú (tùy chọn)",
+    "saveRating": "Lưu đánh giá"
   }
 }

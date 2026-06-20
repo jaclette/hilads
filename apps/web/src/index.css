@@ -13233,6 +13233,10 @@ body.has-app-promo-banner .page-header {
 .crm-rank-chevron { font-size: 1.1rem; font-weight: 700; color: var(--muted, #9a9088); }
 .crm-rank-row--tappable { cursor: pointer; transition: background 0.12s; }
 .crm-rank-row--tappable:hover { background: rgba(255,255,255,0.09); }
+.crm-rate-block { align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; }
+.crm-rate-title { font-size: 0.86rem; font-weight: 700; color: var(--text, #f3ede4); }
+.crm-rate-stars { display: flex; gap: 8px; }
+.crm-rate-note { align-self: stretch; min-height: 44px; max-height: 110px; resize: vertical; border-radius: 12px; background: rgba(255,255,255,0.06); border: none; color: var(--text, #f3ede4); padding: 10px 12px; font-size: 0.86rem; font-family: inherit; }
 .crm-points-block { display: flex; flex-direction: column; align-items: center; margin-top: 4px; }
 .crm-points { font-size: 2.8rem; font-weight: 900; color: #ffc93c; letter-spacing: -1px; }
 .crm-breakdown { font-size: 0.86rem; font-weight: 700; color: var(--muted-2, #888); margin-top: 2px; }

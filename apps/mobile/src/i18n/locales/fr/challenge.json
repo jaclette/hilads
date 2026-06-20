@@ -629,7 +629,7 @@
     "join": "Rejoindre",
     "done": "Ce rendez-vous est terminé.",
     "validateCta": "Valide qui était présent",
-      "validateAfter": "Tu pourras valider après le rendez-vous · {{time}}",
+    "validateAfter": "Tu pourras valider après le rendez-vous · {{time}}",
     "youreIn": "Tu es inscrit — à bientôt !",
     "joinCta": "Rejoindre le défi (+2 pts)",
     "closed": "Fermé aux nouvelles inscriptions",
@@ -637,7 +637,7 @@
     "validateFailed": "Validation impossible — réessaie.",
     "validateTitle": "Qui était là ?",
     "validateSub": "Coche tous ceux qui sont venus. Chacun gagne la récompense.",
-      "rateMeet": "Comment s'est passé le rendez-vous ?",
+    "rateMeet": "Comment s'est passé le rendez-vous ?",
     "validateConfirm": "Valider {{count}} présent(s)",
     "noParticipants": "Personne n'a encore rejoint.",
     "deadlineLabel": "Date limite",
@@ -720,6 +720,9 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Super !",
-    "total": "Tu as maintenant {{total}} points"
+    "total": "Tu as maintenant {{total}} points",
+    "rateTitle": "Note ce défi",
+    "notePlaceholder": "Ajoute une note (facultatif)",
+    "saveRating": "Enregistrer la note"
   }
 }
