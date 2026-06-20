@@ -159,7 +159,7 @@ function Slide({ item, onOpen }: { item: ShowcaseItem; onOpen: () => void }) {
           <View style={[styles.pill, intl ? styles.pillIntl : styles.pillLocal]}>
             <Text style={styles.pillText}>{intl ? `${fromFlag || '🌐'} → ${toFlag || '🌍'}` : `${fromFlag || '📍'} ${t('showcase.localTag')}`}</Text>
           </View>
-          {item.avg_stars != null ? (
+          {(item.rating_count ?? 0) > 0 && item.avg_stars != null ? (
             <View style={styles.starPill}>
               <Ionicons name="star" size={11} color="#FFC93C" />
               <Text style={styles.starText}>{item.avg_stars.toFixed(1)}</Text>

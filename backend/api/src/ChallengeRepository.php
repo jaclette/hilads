@@ -678,7 +678,10 @@ class ChallengeRepository
                    au.display_name AS acceptor_display_name,
                    COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
                    au.current_city_id AS acceptor_city_id,
-                   NULL::numeric AS avg_stars, 0 AS rating_count, NULL AS comment,
+                   -- 5.0 (a won contest = top success), NOT null: the live mobile
+                   -- build does avg_stars.toFixed(1) with no null guard and would
+                   -- crash. rating_count=0 lets newer clients hide the star pill.
+                   5.0::numeric AS avg_stars, 0 AS rating_count, NULL AS comment,
                    NULL AS creator_comment, NULL AS acceptor_comment,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
                    pr.media_url AS proof_media_url, pr.media_type AS proof_media_type

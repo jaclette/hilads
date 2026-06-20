@@ -27,7 +27,7 @@ export default function ShowcaseCard({ item, onOpen, onAvatar }) {
         {intl
           ? <span className="showcase-mode showcase-mode--intl">{(fromFlag || '🌐')} → {(toFlag || '🌍')}</span>
           : <span className="showcase-mode showcase-mode--local">{(fromFlag || '📍')} {t('showcase.localTag')}</span>}
-        {item.avg_stars != null && <span className="showcase-stars">★ {item.avg_stars.toFixed(1)}</span>}
+        {(item.rating_count ?? 0) > 0 && item.avg_stars != null && <span className="showcase-stars">★ {item.avg_stars.toFixed(1)}</span>}
       </div>
 
       <div className="showcase-body">

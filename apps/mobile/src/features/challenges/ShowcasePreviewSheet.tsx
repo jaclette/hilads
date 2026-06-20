@@ -69,7 +69,7 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
                 {intl ? `${fromFlag || '🌐'} → ${toFlag || '🌍'}` : `${fromFlag || '📍'} ${t('showcase.localTag')}`}
               </Text>
             </View>
-            {item.avg_stars != null ? <Text style={styles.stars}>★ {item.avg_stars.toFixed(1)}</Text> : null}
+            {(item.rating_count ?? 0) > 0 && item.avg_stars != null ? <Text style={styles.stars}>★ {item.avg_stars.toFixed(1)}</Text> : null}
           </View>
 
           <Text style={styles.title}>{icon} {item.title}</Text>

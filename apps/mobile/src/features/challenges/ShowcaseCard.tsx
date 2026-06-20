@@ -43,7 +43,7 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
             <Text style={styles.modeBadgeTextLocal}>{(fromFlag || '📍')} {t('showcase.localTag', { defaultValue: 'Local' })}</Text>
           </View>
         )}
-        {item.avg_stars != null ? (
+        {(item.rating_count ?? 0) > 0 && item.avg_stars != null ? (
           <View style={styles.starsBadge}>
             <Ionicons name="star" size={12} color="#FFC93C" />
             <Text style={styles.starsText}>{item.avg_stars.toFixed(1)}</Text>

@@ -27,7 +27,7 @@ function Slide({ item, onOpen }) {
           <span className={`showcase-hero-pill ${intl ? 'showcase-hero-pill--intl' : 'showcase-hero-pill--local'}`}>
             {intl ? `${fromFlag || '🌐'} → ${toFlag || '🌍'}` : `${fromFlag || '📍'} ${t('showcase.localTag')}`}
           </span>
-          {item.avg_stars != null && <span className="showcase-hero-star">★ {item.avg_stars.toFixed(1)}</span>}
+          {(item.rating_count ?? 0) > 0 && item.avg_stars != null && <span className="showcase-hero-star">★ {item.avg_stars.toFixed(1)}</span>}
         </div>
         <div>
           <div className="showcase-hero-title">{icon} {item.title}</div>
