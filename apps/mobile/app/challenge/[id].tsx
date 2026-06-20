@@ -393,6 +393,8 @@ export default function ChallengeChatScreen() {
   // Bumped on proof-submitted / validated WS events so the group submissions
   // gallery re-fetches when someone else's photo (or the winner) lands.
   const [galleryTick,  setGalleryTick]  = useState(0);
+  // How many photos have been submitted - drives the owner's hint copy.
+  const [submissionCount, setSubmissionCount] = useState(0);
   const [validating,   setValidating]   = useState(false);
 
   // Proof-review deep-link: a "📸 new proof to review" push routes here with
@@ -1261,7 +1263,9 @@ export default function ChallengeChatScreen() {
               // directly from the submissions gallery below - just a hint here.
               isGroupPhoto ? (
                 <Text style={styles.groupStateText}>
-                  🏆 {t('group.pickHint', { defaultValue: 'Pick the winner from the photos below.' })}
+                  {submissionCount > 0
+                    ? `🏆 ${t('group.pickHint', { defaultValue: 'Pick the winner from the photos below.' })}`
+                    : `📸 ${t('group.awaitingPhotos', { defaultValue: 'No photos yet — the contest is heating up 🔥' })}`}
                 </Text>
               ) : !meetStarted ? (
                 // Before the meet's start time there's nothing to validate yet.
@@ -1292,7 +1296,7 @@ export default function ChallengeChatScreen() {
                   {challenge.closed_to_new_joins
                     ? t('group.closed', { defaultValue: 'Closed to new joins' })
                     : `＋ ${isGroupPhoto
-                        ? t('group.joinContestCta', { defaultValue: 'Join the contest (+2 pts)' })
+                        ? t('group.joinContestCta', { defaultValue: 'Join the challenge (+2 pts)' })
                         : t('group.joinCta', { defaultValue: 'Join the challenge (+2 pts)' })}`}
                 </Text>
               </TouchableOpacity>
@@ -1325,6 +1329,7 @@ export default function ChallengeChatScreen() {
             isValidated={isValidated}
             refreshKey={galleryTick}
             onChanged={() => { loadChallenge(); loadParticipants(); }}
+            onCount={setSubmissionCount}
           />
         )}
 

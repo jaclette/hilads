@@ -685,7 +685,7 @@
     "contestDone": "This contest is done.",
     "youreInPhoto": "You're in — submit your photo below.",
     "pickWinnerCta": "Pick the winner",
-    "joinContestCta": "Join the contest (+2 pts)",
+    "joinContestCta": "Join the challenge (+2 pts)",
     "winnerTitle": "Pick the winner",
     "winnerSub": "Choose the best photo. The winner earns the big reward.",
     "winnerConfirm": "Crown the winner",
@@ -697,7 +697,8 @@
     "pickThis": "Pick winner",
     "winnerConfirmTitle": "Crown the winner?",
     "winnerConfirmBody": "{{name}} wins the big reward.",
-    "pickHint": "Pick the winner from the photos below."
+    "pickHint": "Pick the winner from the photos below.",
+    "awaitingPhotos": "No photos yet — the contest is heating up 🔥"
   },
   "challengeIntro": {
     "slide1": {

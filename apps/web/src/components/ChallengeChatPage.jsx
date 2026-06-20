@@ -143,6 +143,7 @@ export default function ChallengeChatPage({
   const [validating,   setValidating]   = useState(false)
   const [presentChecked, setPresentChecked] = useState({})
   const [presentRating, setPresentRating] = useState(0)   // challenger's meet rating (required)
+  const [submissionCount, setSubmissionCount] = useState(0) // photos submitted - drives the hint copy
   // Photo-proof group: the winner is picked from the submissions gallery.
   // galleryTick bumps on proof-submitted / validated WS events so the gallery
   // re-fetches when a new photo (or the winner) lands.
@@ -1121,8 +1122,10 @@ export default function ChallengeChatPage({
             // MEET: open the presence sheet. PHOTO: the winner is picked
             // directly from the submissions gallery below - just a hint here.
             isGroupPhoto ? (
-              <div style={{ textAlign: 'center', fontWeight: 700, color: '#FFC93C', padding: '8px 0' }}>
-                🏆 {t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}
+              <div style={{ textAlign: 'center', fontWeight: 700, color: submissionCount > 0 ? '#FFC93C' : 'var(--muted,#9a9088)', padding: '8px 0', fontSize: submissionCount > 0 ? undefined : '0.86rem' }}>
+                {submissionCount > 0
+                  ? `🏆 ${t('group.pickHint', { ns: 'challenge', defaultValue: 'Pick the winner from the photos below.' })}`
+                  : `📸 ${t('group.awaitingPhotos', { ns: 'challenge', defaultValue: 'No photos yet — the contest is heating up 🔥' })}`}
               </div>
             ) : !meetStarted ? (
               <div style={{ textAlign: 'center', fontWeight: 700, color: 'var(--muted,#9a9088)', padding: '8px 0', fontSize: '0.86rem' }}>
@@ -1144,7 +1147,7 @@ export default function ChallengeChatPage({
               {challenge.closed_to_new_joins
                 ? t('group.closed', { ns: 'challenge', defaultValue: 'Closed to new joins' })
                 : `＋ ${isGroupPhoto
-                    ? t('group.joinContestCta', { ns: 'challenge', defaultValue: 'Join the contest (+2 pts)' })
+                    ? t('group.joinContestCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })
                     : t('group.joinCta', { ns: 'challenge', defaultValue: 'Join the challenge (+2 pts)' })}`}
             </button>
           )}
@@ -1174,6 +1177,7 @@ export default function ChallengeChatPage({
           isValidated={isValidated}
           refreshKey={galleryTick}
           onChanged={() => { loadChallenge(); loadParticipants() }}
+          onCount={setSubmissionCount}
         />
       )}
 

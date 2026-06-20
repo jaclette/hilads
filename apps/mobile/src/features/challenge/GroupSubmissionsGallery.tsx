@@ -22,13 +22,15 @@ import { avatarColor } from '@/lib/avatarColors';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 export function GroupSubmissionsGallery({
-  challengeId, isChallenger, isValidated, refreshKey, onChanged,
+  challengeId, isChallenger, isValidated, refreshKey, onChanged, onCount,
 }: {
   challengeId:  string;
   isChallenger: boolean;
   isValidated:  boolean;
   refreshKey?:  number;
   onChanged?:   () => void;
+  /** Reports the current submission count (for the owner's hint copy). */
+  onCount?:     (n: number) => void;
 }) {
   const { t } = useTranslation('challenge');
   const [subs,     setSubs]     = useState<GroupSubmission[]>([]);
@@ -43,12 +45,13 @@ export function GroupSubmissionsGallery({
       const r = await fetchGroupSubmissions(challengeId);
       setSubs(r.submissions);
       setWinnerId(r.winnerUserId);
+      onCount?.(r.submissions.length);
     } catch {
       // soft-fail - the gallery just stays empty/last-known
     } finally {
       setLoading(false);
     }
-  }, [challengeId]);
+  }, [challengeId, onCount]);
 
   useEffect(() => { load(); }, [load, refreshKey]);
 

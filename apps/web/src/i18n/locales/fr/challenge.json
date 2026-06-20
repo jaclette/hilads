@@ -628,7 +628,7 @@
     "contestDone": "Ce concours est terminé.",
     "youreInPhoto": "Tu es dans la partie — envoie ta photo ci-dessous.",
     "pickWinnerCta": "Choisir le gagnant",
-    "joinContestCta": "Rejoindre le concours (+2 pts)",
+    "joinContestCta": "Rejoindre le défi (+2 pts)",
     "winnerTitle": "Choisis le gagnant",
     "winnerSub": "Choisis la meilleure photo. Le gagnant remporte la grosse récompense.",
     "winnerConfirm": "Couronner le gagnant",
@@ -640,7 +640,8 @@
     "pickThis": "Choisir",
     "winnerConfirmTitle": "Couronner le gagnant ?",
     "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
-    "pickHint": "Choisis le gagnant parmi les photos ci-dessous."
+    "pickHint": "Choisis le gagnant parmi les photos ci-dessous.",
+    "awaitingPhotos": "Pas encore de photos — le concours chauffe 🔥"
   },
   "challengeIntro": {
     "slide1": {

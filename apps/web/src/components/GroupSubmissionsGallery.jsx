@@ -12,7 +12,7 @@ import { avatarColors } from '../lib/avatarColors'
  * One CTA + modal (not an inline grid) so the chat page stays compact and the
  * submitter names never get clipped by the surrounding layout.
  */
-export default function GroupSubmissionsGallery({ challengeId, isChallenger, isValidated, refreshKey, onChanged }) {
+export default function GroupSubmissionsGallery({ challengeId, isChallenger, isValidated, refreshKey, onChanged, onCount }) {
   const { t } = useTranslation('challenge')
   const [subs, setSubs]       = useState([])
   const [winnerId, setWinner] = useState(null)
@@ -26,12 +26,13 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
       const r = await fetchGroupSubmissions(challengeId)
       setSubs(r.submissions || [])
       setWinner(r.winnerUserId || null)
+      onCount?.((r.submissions || []).length)
     } catch {
       /* soft-fail */
     } finally {
       setLoading(false)
     }
-  }, [challengeId])
+  }, [challengeId, onCount])
 
   useEffect(() => { load() }, [load, refreshKey])
 
