@@ -1090,19 +1090,16 @@ export default function ChallengeChatPage({
           PHOTO-PROOF → submission deadline + "pick the winner"; joined takers
           submit via the ChallengeProofBlock rendered below. */}
       {isGroup && (
-        <div style={{ padding: '4px 12px 8px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div style={{ padding: '2px 12px 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
           {(meetSummary || challenge.venue) ? (
-            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 14, padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-              {meetSummary
-                ? <div style={{ fontWeight: 600 }}>
-                    {isGroupPhoto ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ` : '📅 '}{meetSummary}
-                  </div>
-                : null}
-              {isGroupMeet && challenge.venue ? <div style={{ fontWeight: 600 }}>📍 {challenge.venue}</div> : null}
+            <div style={{ background: 'var(--bg2,#1a1614)', border: '1px solid var(--border,#2a2422)', borderRadius: 12, padding: '8px 14px', fontSize: '0.86rem', fontWeight: 600 }}>
+              {isGroupPhoto
+                ? `⏳ ${t('group.deadlinePrefix', { ns: 'challenge', defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
+                : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
             </div>
           ) : null}
           {isValidated ? (
-            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '8px 0' }}>
+            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '4px 0', fontSize: '0.86rem' }}>
               ✓ {isGroupPhoto
                 ? t('group.contestDone', { ns: 'challenge', defaultValue: 'This contest is done.' })
                 : t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}

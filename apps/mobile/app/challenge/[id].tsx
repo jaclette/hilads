@@ -1241,13 +1241,11 @@ export default function ChallengeChatScreen() {
           <View style={styles.groupBlock}>
             {(meetSummary || challenge.venue) ? (
               <View style={styles.groupMeetCard}>
-                {meetSummary
-                  ? <Text style={styles.groupMeetLine}>
-                      {isGroupPhoto ? '⏳ ' : '📅 '}
-                      {isGroupPhoto ? t('group.deadlinePrefix', { defaultValue: 'Submit by' }) + ' ' : ''}{meetSummary}
-                    </Text>
-                  : null}
-                {isGroupMeet && challenge.venue ? <Text style={styles.groupMeetLine}>📍 {challenge.venue}</Text> : null}
+                <Text style={styles.groupMeetLine} numberOfLines={2}>
+                  {isGroupPhoto
+                    ? `⏳ ${t('group.deadlinePrefix', { defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
+                    : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
+                </Text>
               </View>
             ) : null}
             {isValidated ? (
@@ -2398,13 +2396,13 @@ const styles = StyleSheet.create({
   },
 
   // Group challenge block (meet info + join / validate).
-  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 10 },
+  groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
   groupMeetCard:  {
-    backgroundColor: Colors.bg2, borderRadius: 14, borderWidth: 1, borderColor: Colors.border,
-    paddingHorizontal: Spacing.md, paddingVertical: 12, gap: 4,
+    backgroundColor: Colors.bg2, borderRadius: 12, borderWidth: 1, borderColor: Colors.border,
+    paddingHorizontal: Spacing.md, paddingVertical: 8,
   },
-  groupMeetLine:  { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  groupStateText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 8 },
+  groupMeetLine:  { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 4 },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
