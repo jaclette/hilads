@@ -593,5 +593,31 @@
   "welcomeGuest": {
     "title": "👋 환영해요! 가입 없이 자유롭게 채팅하세요.",
     "cta": "이 챌린지에 도전하고 싶나요? 3초면 가입 →"
+  },
+  "result": {
+    "winner": {
+      "title": "우승했어요!",
+      "body": "당신의 사진이 콘테스트에서 우승했어요."
+    },
+    "loser": {
+      "title": "{{name}} 님이 우승",
+      "body": "멋진 사진이에요! 참여로 {{points}} 획득 — 다음엔 더 잘할 수 있어요 💪"
+    },
+    "present": {
+      "title": "참석했어요!",
+      "body": "모임 참석이 확인됐어요."
+    },
+    "absent": {
+      "title": "이번엔 놓쳤어요",
+      "body": "다음 모임엔 꼭 와요 — 자리 비워둘게요."
+    },
+    "host": {
+      "titlePhoto": "{{name}} 님이 콘테스트에서 우승했어요!",
+      "titleMeet": "모임이 끝났어요!",
+      "body": "호스트해 줘서 고마워요.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "좋아요!",
+    "total": "이제 {{total}} 포인트예요"
   }
 }

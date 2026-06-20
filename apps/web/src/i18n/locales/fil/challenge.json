@@ -572,5 +572,31 @@
   "welcomeGuest": {
     "title": "👋 Welcome! Mag-chat ka nang malaya, walang sign-up.",
     "cta": "Gusto kunin ang hamon na ito? Mag-sign up sa 3 segundo →"
+  },
+  "result": {
+    "winner": {
+      "title": "Nanalo ka!",
+      "body": "Nanalo ang photo mo sa contest."
+    },
+    "loser": {
+      "title": "Nanalo si {{name}}",
+      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod 💪"
+    },
+    "present": {
+      "title": "Dumalo ka!",
+      "body": "Na-validate na present ka sa meet."
+    },
+    "absent": {
+      "title": "Na-miss mo 'to",
+      "body": "Samahan mo 'yung susunod na meet — naghihintay ang puwesto mo."
+    },
+    "host": {
+      "titlePhoto": "Nanalo si {{name}} sa contest mo!",
+      "titleMeet": "Tapos na ang meet mo!",
+      "body": "Salamat sa pag-host.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Galing!",
+    "total": "Mayroon ka nang {{total}} points"
   }
 }

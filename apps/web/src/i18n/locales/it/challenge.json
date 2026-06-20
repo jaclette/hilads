@@ -572,5 +572,31 @@
   "welcomeGuest": {
     "title": "👋 Benvenuto! Chatta liberamente, senza iscrizione.",
     "cta": "Vuoi accettare questa sfida? Iscriviti in 3 secondi →"
+  },
+  "result": {
+    "winner": {
+      "title": "Hai vinto!",
+      "body": "La tua foto ha vinto il contest."
+    },
+    "loser": {
+      "title": "{{name}} ha vinto",
+      "body": "Bello scatto! Hai guadagnato {{points}} per aver partecipato — riprova la prossima volta 💪"
+    },
+    "present": {
+      "title": "C'eri!",
+      "body": "Presenza confermata all'incontro."
+    },
+    "absent": {
+      "title": "Te lo sei perso",
+      "body": "Non perderti il prossimo incontro — il tuo posto ti aspetta."
+    },
+    "host": {
+      "titlePhoto": "{{name}} ha vinto il tuo contest!",
+      "titleMeet": "Il tuo incontro è finito!",
+      "body": "Grazie per aver organizzato.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Forte!",
+    "total": "Ora hai {{total}} punti"
   }
 }

@@ -593,5 +593,31 @@
   "welcomeGuest": {
     "title": "👋 歡迎！無需註冊即可暢聊。",
     "cta": "想接下這個挑戰？3秒註冊 →"
+  },
+  "result": {
+    "winner": {
+      "title": "你贏了！",
+      "body": "你的照片贏得了比賽。"
+    },
+    "loser": {
+      "title": "{{name}} 贏了",
+      "body": "拍得不錯！參與就得 {{points}} — 下次再來挑戰 💪"
+    },
+    "present": {
+      "title": "你來了！",
+      "body": "已確認到場參加。"
+    },
+    "absent": {
+      "title": "這次錯過了",
+      "body": "下次聚會一定要來 — 你的位置留著。"
+    },
+    "host": {
+      "titlePhoto": "{{name}} 贏得了你的比賽！",
+      "titleMeet": "你的聚會結束了！",
+      "body": "感謝你的籌辦。",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "讚！",
+    "total": "你現在有 {{total}} 分"
   }
 }

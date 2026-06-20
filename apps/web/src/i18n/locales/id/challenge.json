@@ -572,5 +572,31 @@
   "welcomeGuest": {
     "title": "👋 Selamat datang! Ngobrol bebas tanpa daftar.",
     "cta": "Mau ambil tantangan ini? Daftar dalam 3 detik →"
+  },
+  "result": {
+    "winner": {
+      "title": "Kamu menang!",
+      "body": "Fotomu memenangkan kontes."
+    },
+    "loser": {
+      "title": "{{name}} menang",
+      "body": "Foto bagus! Kamu dapat {{points}} karena ikut — coba lagi lain kali 💪"
+    },
+    "present": {
+      "title": "Kamu datang!",
+      "body": "Kehadiran di meet sudah dikonfirmasi."
+    },
+    "absent": {
+      "title": "Kamu melewatkan yang ini",
+      "body": "Jangan lewatkan meet berikutnya — tempatmu menunggu."
+    },
+    "host": {
+      "titlePhoto": "{{name}} memenangkan kontesmu!",
+      "titleMeet": "Meet-mu selesai!",
+      "body": "Terima kasih sudah jadi host.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Mantap!",
+    "total": "Sekarang kamu punya {{total}} poin"
   }
 }

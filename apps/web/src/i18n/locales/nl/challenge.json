@@ -572,5 +572,31 @@
   "welcomeGuest": {
     "title": "👋 Welkom! Praat vrij mee, geen account nodig.",
     "cta": "Wil je deze challenge accepteren? Account in 3 seconden →"
+  },
+  "result": {
+    "winner": {
+      "title": "Je hebt gewonnen!",
+      "body": "Jouw foto won de wedstrijd."
+    },
+    "loser": {
+      "title": "{{name}} won",
+      "body": "Mooie foto! Je verdiende {{points}} voor je deelname — volgende keer beter 💪"
+    },
+    "present": {
+      "title": "Je was erbij!",
+      "body": "Aanwezigheid bevestigd bij de meet."
+    },
+    "absent": {
+      "title": "Deze heb je gemist",
+      "body": "Wees erbij bij de volgende meet — je plek wacht."
+    },
+    "host": {
+      "titlePhoto": "{{name}} won jouw wedstrijd!",
+      "titleMeet": "Je meet is afgelopen!",
+      "body": "Bedankt voor het organiseren.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Mooi!",
+    "total": "Je hebt nu {{total}} punten"
   }
 }

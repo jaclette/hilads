@@ -593,5 +593,31 @@
   "welcomeGuest": {
     "title": "👋 Willkommen! Schreib einfach mit, ohne Anmeldung.",
     "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden →"
+  },
+  "result": {
+    "winner": {
+      "title": "Du hast gewonnen!",
+      "body": "Dein Foto hat den Wettbewerb gewonnen."
+    },
+    "loser": {
+      "title": "{{name}} hat gewonnen",
+      "body": "Schönes Foto! Du hast {{points}} fürs Mitmachen bekommen — nächstes Mal klappt's 💪"
+    },
+    "present": {
+      "title": "Du warst dabei!",
+      "body": "Beim Treffen als anwesend bestätigt."
+    },
+    "absent": {
+      "title": "Das hast du verpasst",
+      "body": "Sei beim nächsten Treffen dabei — dein Platz wartet."
+    },
+    "host": {
+      "titlePhoto": "{{name}} hat deinen Wettbewerb gewonnen!",
+      "titleMeet": "Dein Treffen ist beendet!",
+      "body": "Danke fürs Hosten.",
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
+    },
+    "cta": "Super!",
+    "total": "Du hast jetzt {{total}} Punkte"
   }
 }
