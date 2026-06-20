@@ -369,8 +369,9 @@ export async function resolveHangoutJoinRequest(topicId, requestId, action) {
   return { status: data.status ?? (res.ok ? action : 'error'), resolvedByName: data.resolvedByName }
 }
 
-export async function sendTopicMessage(topicId, guestId, nickname, content, mentions = null) {
+export async function sendTopicMessage(topicId, guestId, nickname, content, mentions = null, replyToMessageId = null) {
   const body = { guestId, nickname, content }
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   if (mentions && mentions.length) body.mentions = mentions
   const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages`, {
     method: 'POST',
@@ -1818,6 +1819,19 @@ export async function toggleChannelReaction(channelId, messageId, emoji, guestId
   })
   if (!res.ok) throw new Error('Failed to toggle reaction')
   return res.json() // { reactions: [{emoji, count, self}] }
+}
+
+// Toggle a reaction on a Hi-now (topic) message. Same shape / allowed emojis as
+// channels; broadcasts to the topic's WS room.
+export async function toggleTopicReaction(topicId, messageId, emoji, guestId) {
+  const res = await fetch(`${BASE}/topics/${encodeURIComponent(topicId)}/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji, guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle reaction')
+  return res.json() // { reactions: [...] }
 }
 
 // PR33 - toggle a reaction on a challenge-channel message. Same shape /
