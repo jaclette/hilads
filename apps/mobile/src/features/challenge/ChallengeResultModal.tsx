@@ -56,9 +56,27 @@ export function ChallengeResultModal({
     ]).start();
   }, [visible, reveal, targetPoints, pointsAnim, glow, pop]);
 
+  // Host breakdown: reveal one 🙋 at a time, the running +points ticking up
+  // with each, so the host *sees* "each person who showed up = points". Only
+  // staggers for a sane head count; big groups show at once.
+  const hb        = reveal?.hostBreakdown ?? null;
+  const headCount = (reveal?.myRole === 'host' && hb && hb.heads > 0) ? hb.heads : 0;
+  const staggered = headCount > 0 && headCount <= 8;
+  const [revealedHeads, setRevealedHeads] = useState(0);
+  useEffect(() => {
+    if (!visible || !reveal || headCount === 0) { setRevealedHeads(0); return; }
+    if (!staggered) { setRevealedHeads(headCount); return; }
+    setRevealedHeads(0);
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    for (let i = 1; i <= headCount; i++) {
+      timers.push(setTimeout(() => setRevealedHeads(i), 350 + i * 450));
+    }
+    return () => { timers.forEach(clearTimeout); };
+  }, [visible, reveal, headCount, staggered]);
+
   if (!reveal) return null;
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal,
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, myTotal,
           challengeTitle, rankCity, rankGlobal, rankTopN, cityName } = reveal;
   const isPhoto = format === 'photo';
   const showPhoto = isPhoto && !!winnerPhotoUrl;
@@ -126,21 +144,25 @@ export function ChallengeResultModal({
             {showPoints ? (
               <View style={styles.pointsBlock}>
                 <Text style={styles.points}>+{displayPoints}</Text>
-                {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (() => {
-                  const { base, perHead, heads } = hostBreakdown;
-                  const headTotal = perHead * heads;
-                  // A person emoji per attendee (capped) → reads as a game, not a
-                  // ledger: 🙋🙋🙋 = +15. Beyond the cap fall back to 🙋 ×N.
-                  const people = heads <= 6 ? '🙋'.repeat(heads) : `🙋 ×${heads}`;
-                  return (
-                    <Text style={styles.breakdown}>
-                      {t('result.host.breakdown', {
-                        base, people, headTotal,
-                        defaultValue: `${people} = +${headTotal}   🏠 +${base}`,
-                      })}
-                    </Text>
-                  );
-                })() : null}
+                {headCount > 0 && hb ? (
+                  <View style={styles.breakdownRow}>
+                    {staggered ? (
+                      <>
+                        {Array.from({ length: revealedHeads }).map((_, i) => (
+                          <PopEmoji key={i} char="🙋" />
+                        ))}
+                        <Text style={styles.breakdown}> = +{hb.perHead * revealedHeads}</Text>
+                        {revealedHeads >= headCount ? (
+                          <Text style={styles.breakdown}>   🏠 +{hb.base}</Text>
+                        ) : null}
+                      </>
+                    ) : (
+                      <Text style={styles.breakdown}>
+                        {`🙋 ×${headCount} = +${hb.perHead * headCount}   🏠 +${hb.base}`}
+                      </Text>
+                    )}
+                  </View>
+                ) : null}
                 {finalTotal > 0 ? (
                   <Animated.Text
                     style={[
@@ -203,6 +225,15 @@ export function ChallengeResultModal({
   );
 }
 
+/** A person emoji that pops in (scale spring) on mount - one per attendee. */
+function PopEmoji({ char }: { char: string }) {
+  const s = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.spring(s, { toValue: 1, friction: 4, tension: 170, useNativeDriver: true }).start();
+  }, [s]);
+  return <Animated.Text style={[styles.breakdown, { transform: [{ scale: s }] }]}>{char}</Animated.Text>;
+}
+
 const GOLD = '#FFC93C';
 
 const styles = StyleSheet.create({
@@ -234,6 +265,7 @@ const styles = StyleSheet.create({
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
   breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted2, marginTop: 2 },
+  breakdownRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 },
   total:     { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted, marginTop: 4 },
 
   cta: {

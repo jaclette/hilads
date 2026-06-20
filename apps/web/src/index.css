@@ -13223,6 +13223,9 @@ body.has-app-promo-banner .page-header {
 .crm-title { font-size: 1.2rem; font-weight: 800; color: var(--text, #f3eee9); text-align: center; letter-spacing: -0.3px; margin-top: 6px; }
 .crm-body { font-size: 0.9rem; color: var(--muted, #9a9088); text-align: center; line-height: 1.4; }
 .crm-challenge-name { font-size: 0.86rem; font-weight: 700; color: var(--text, #f3ede4); text-align: center; margin-top: 2px; }
+.crm-breakdown-row { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+@keyframes crm-pop-in { 0% { transform: scale(0); } 70% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.crm-pop-emoji { display: inline-block; animation: crm-pop-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
 .crm-rank-block { align-self: stretch; display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
 .crm-rank-row { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 12px; }
 .crm-rank-flag { font-size: 1rem; }

@@ -8,8 +8,24 @@ import { useTranslation } from 'react-i18next'
 export default function ChallengeResultModal({ reveal, visible, onClose, onOpenLeaderboard }) {
   const { t } = useTranslation('challenge')
   const [displayPoints, setDisplayPoints] = useState(0)
+  const [revealedHeads, setRevealedHeads] = useState(0)
   const rafRef = useRef(null)
   const targetPoints = reveal?.myPoints ?? 0
+
+  // Host breakdown: reveal one 🙋 at a time, +points ticking up with each.
+  const hb        = reveal?.hostBreakdown ?? null
+  const headCount = (reveal?.myRole === 'host' && hb && hb.heads > 0) ? hb.heads : 0
+  const staggered = headCount > 0 && headCount <= 8
+  useEffect(() => {
+    if (!visible || !reveal || headCount === 0) { setRevealedHeads(0); return }
+    if (!staggered) { setRevealedHeads(headCount); return }
+    setRevealedHeads(0)
+    const timers = []
+    for (let i = 1; i <= headCount; i++) {
+      timers.push(setTimeout(() => setRevealedHeads(i), 350 + i * 450))
+    }
+    return () => timers.forEach(clearTimeout)
+  }, [visible, reveal, headCount, staggered])
 
   // Count-up for the points + running total (out-cubic, matches the native modal).
   useEffect(() => {
@@ -29,7 +45,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
 
   if (!reveal || !visible) return null
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal,
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, myTotal,
           challengeTitle, rankCity, rankGlobal, rankTopN, cityName } = reveal
   const finalTotal = myTotal ?? 0
   const displayTotal = Math.max(0, finalTotal - myPoints) + displayPoints
@@ -85,20 +101,21 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
         {showPoints ? (
           <div className="crm-points-block">
             <div className="crm-points">+{displayPoints}</div>
-            {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (() => {
-              const { base, perHead, heads } = hostBreakdown
-              const headTotal = perHead * heads
-              // A person emoji per attendee (capped) → reads as a game: 🙋🙋🙋 = +15.
-              const people = heads <= 6 ? '🙋'.repeat(heads) : `🙋 ×${heads}`
-              return (
-                <div className="crm-breakdown">
-                  {t('result.host.breakdown', {
-                    base, people, headTotal,
-                    defaultValue: `${people} = +${headTotal}   🏠 +${base}`,
-                  })}
-                </div>
-              )
-            })() : null}
+            {headCount > 0 && hb ? (
+              <div className="crm-breakdown crm-breakdown-row">
+                {staggered ? (
+                  <>
+                    {Array.from({ length: revealedHeads }).map((_, i) => (
+                      <span key={i} className="crm-pop-emoji">🙋</span>
+                    ))}
+                    <span> = +{hb.perHead * revealedHeads}</span>
+                    {revealedHeads >= headCount ? <span>&nbsp;&nbsp;&nbsp;🏠 +{hb.base}</span> : null}
+                  </>
+                ) : (
+                  <span>{`🙋 ×${headCount} = +${hb.perHead * headCount}   🏠 +${hb.base}`}</span>
+                )}
+              </div>
+            ) : null}
             {finalTotal > 0 ? (
               <div className={`crm-total${targetPoints > 0 && displayPoints >= targetPoints ? ' is-lit' : ''}`}>
                 {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
