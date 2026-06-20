@@ -615,6 +615,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
       {meetPickerOpen && (
         <DatePickerModal
           submitLabel={t('group.meetSet', { ns: 'challenge', defaultValue: 'Set the meet' })}
+          requireEndTime={false}
           initialStartsAt={meetAt}
           initialVenue={meetVenue}
           onClose={() => setMeetPickerOpen(false)}

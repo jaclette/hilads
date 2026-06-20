@@ -25,6 +25,8 @@ export default function DatePickerModal({
   submitLabel,
   initialStartsAt,
   initialVenue,
+  // When false, no end time is derived (only the start counts - group create).
+  requireEndTime = true,
 }) {
   const { t } = useTranslation('challenge')
   // Chip selections - fast path for the common case (within the next
@@ -103,7 +105,7 @@ export default function DatePickerModal({
     }
     d.setHours(h, mn, 0, 0)
     const startsAt = Math.floor(d.getTime() / 1000)
-    onSubmit(startsAt, startsAt + 2 * 3600, venue.trim() || null)
+    onSubmit(startsAt, requireEndTime ? startsAt + 2 * 3600 : null, venue.trim() || null)
   }
 
   // Portal to document.body so we escape the .full-page (z-index 200)

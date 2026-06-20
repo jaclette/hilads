@@ -629,6 +629,7 @@ export default function CreateChallengeScreen() {
         visible={meetPickerOpen}
         onClose={() => setMeetPickerOpen(false)}
         submitLabel={t('group.meetSet', { defaultValue: 'Set the meet' })}
+        requireEndTime={false}
         initialStartsAt={meetAt}
         initialEndsAt={meetEndsAt}
         initialVenue={meetVenue}

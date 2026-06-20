@@ -38,6 +38,9 @@ export interface DatePickerProps {
   initialStartsAt?: number | null;
   initialEndsAt?:   number | null;
   initialVenue?:    string | null;
+  /** When false, the END TIME section is hidden and not required (only the start
+   *  matters - used by group-challenge creation). Defaults to true. */
+  requireEndTime?:  boolean;
 }
 
 export function DatePickerModal({
@@ -48,6 +51,7 @@ export function DatePickerModal({
   initialStartsAt,
   initialEndsAt,
   initialVenue,
+  requireEndTime = true,
 }: DatePickerProps) {
   const { t } = useTranslation('challenge');
   const insets = useSafeAreaInsets();
@@ -167,8 +171,9 @@ export function DatePickerModal({
 
   const canSubmit = (dayOffset !== null || customDate !== null)
                  && startMinutes !== null
-                 && endMinutes   !== null
-                 && endIsAfterStart;
+                 // End time only gates submission when required; otherwise the
+                 // start alone is enough (group challenges).
+                 && (!requireEndTime || (endMinutes !== null && endIsAfterStart));
 
   function handleDateChange(_: DateTimePickerEvent, picked?: Date) {
     // iOS keeps the spinner open until manually dismissed; Android auto-
@@ -211,16 +216,17 @@ export function DatePickerModal({
     const start = new Date(d);
     start.setHours(startH, startM, 0, 0);
     const startsAt = Math.floor(start.getTime() / 1000);
-    // Resolve end time - same calendar day as start (canSubmit asserted end > start).
-    // No more +1h / +2h auto-default: the proposer ALWAYS sets end explicitly.
-    // The rating window opens at proposed_ends_at, so the proposer effectively
-    // controls when rating becomes available.
-    const endTotal = endMinutes!;
-    const endH = Math.floor(endTotal / 60);
-    const endM = endTotal % 60;
-    const end = new Date(d);
-    end.setHours(endH, endM, 0, 0);
-    const endsAt = Math.floor(end.getTime() / 1000);
+    // Resolve end time when one was picked (same calendar day as start). When
+    // the end is not required and none was set, pass null - only the start
+    // counts for group challenges.
+    let endsAt: number | null = null;
+    if (endMinutes !== null) {
+      const endH = Math.floor(endMinutes / 60);
+      const endM = endMinutes % 60;
+      const end = new Date(d);
+      end.setHours(endH, endM, 0, 0);
+      endsAt = Math.floor(end.getTime() / 1000);
+    }
     onSubmit(startsAt, endsAt, venue.trim() || null);
   }
 
@@ -363,9 +369,10 @@ export function DatePickerModal({
               </View>
             )}
 
-            {/* END TIME - required, no default. The rating window opens at
-                this moment (proposed_ends_at), so the proposer effectively
-                controls when rating becomes available. */}
+            {/* END TIME - shown only when required (legacy propose-date). The
+                rating window opens at proposed_ends_at. Group challenges hide
+                this entirely (only the start counts). */}
+            {requireEndTime && (<>
             <Text style={styles.sectionLabel}>{t('schedule.picker.endTimeLabel')}</Text>
             <View style={styles.pillsGrid}>
               {TIME_PRESETS.map(p => {
@@ -427,6 +434,7 @@ export function DatePickerModal({
                 )}
               </View>
             )}
+            </>)}
 
             <Text style={styles.sectionLabel}>{t('schedule.picker.whereLabel')}</Text>
             <TextInput
