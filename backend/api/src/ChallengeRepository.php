@@ -664,7 +664,52 @@ class ChallengeRepository
         $stmt->execute($params);
         $rows = $stmt->fetchAll();
 
-        return array_map(static function (array $r): array {
+        // GROUP photo-proof winners resolve via pick-winner (no mutual rating),
+        // so they never hit the visible_ratings JOIN above and were missing from
+        // the showcase. Pull them separately - the winner's approved proof is the
+        // photo, the winner is the "acceptor", no star rating. Then merge + sort.
+        $groupBefore = ($before !== null) ? ' AND cc.validated_at < to_timestamp(:before)' : '';
+        $groupSql = "
+            SELECT c.id AS channel_id, cc.title, cc.challenge_type, cc.mode,
+                   cc.city_id, cc.target_city_id, cc.created_by,
+                   u.display_name AS creator_display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url,
+                   w.user_id AS acceptor_user_id,
+                   au.display_name AS acceptor_display_name,
+                   COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
+                   au.current_city_id AS acceptor_city_id,
+                   NULL::numeric AS avg_stars, 0 AS rating_count, NULL AS comment,
+                   NULL AS creator_comment, NULL AS acceptor_comment,
+                   EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
+                   pr.media_url AS proof_media_url, pr.media_type AS proof_media_type
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id AND c.status = 'active'
+            LEFT JOIN users u ON u.id = cc.created_by
+            JOIN LATERAL (
+                SELECT se.user_id, se.acceptance_id
+                FROM score_events se
+                WHERE se.challenge_id = cc.channel_id AND se.kind = 'winner'
+                ORDER BY se.created_at DESC LIMIT 1
+            ) w ON true
+            LEFT JOIN users au ON au.id = w.user_id
+            LEFT JOIN LATERAL (
+                SELECT p.media_url, p.media_type
+                FROM challenge_proofs p
+                WHERE p.acceptance_id = w.acceptance_id AND p.status = 'approved'
+                ORDER BY p.submitted_at DESC LIMIT 1
+            ) pr ON true
+            WHERE cc.visibility = 'public'
+              AND cc.challenge_format = 'group'
+              AND cc.status = 'validated'
+              AND pr.media_url IS NOT NULL$cityClause$groupBefore
+            ORDER BY cc.validated_at DESC
+            LIMIT $limit
+        ";
+        $gstmt = Database::pdo()->prepare($groupSql);
+        $gstmt->execute($params);
+        $rows = array_merge($rows, $gstmt->fetchAll());
+
+        $mapped = array_map(static function (array $r): array {
             return [
                 'id'                        => $r['channel_id'],
                 'title'                     => $r['title'],
@@ -681,7 +726,8 @@ class ChallengeRepository
                 'acceptor_display_name'     => $r['acceptor_display_name'],
                 'acceptor_thumb_avatar_url' => $r['acceptor_thumb_avatar_url'],
                 'acceptor_country'          => $r['acceptor_city_id'] ? self::countryForCityId($r['acceptor_city_id']) : null,
-                'avg_stars'                 => round((float) $r['avg_stars'], 1),
+                // null for group winners (no star rating) - the card hides the pill.
+                'avg_stars'                 => $r['avg_stars'] !== null ? round((float) $r['avg_stars'], 1) : null,
                 'rating_count'              => (int) $r['rating_count'],
                 'comment'                   => $r['comment'],
                 'creator_comment'           => $r['creator_comment'],
@@ -691,6 +737,15 @@ class ChallengeRepository
                 'completed_at'              => (int) $r['completed_ts'],
             ];
         }, $rows);
+
+        // Same order as the legacy query: photo-proof first, then most recent.
+        usort($mapped, static function (array $a, array $b): int {
+            $ap = $a['proof_media_url'] ? 1 : 0;
+            $bp = $b['proof_media_url'] ? 1 : 0;
+            if ($ap !== $bp) return $bp <=> $ap;
+            return $b['completed_at'] <=> $a['completed_at'];
+        });
+        return array_slice($mapped, 0, $limit);
     }
 
     /**

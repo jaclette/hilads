@@ -30,7 +30,7 @@ export interface ShowcaseItem {
   acceptor_display_name:      string | null;
   acceptor_thumb_avatar_url:  string | null;
   acceptor_country:           string | null;
-  avg_stars:                  number;
+  avg_stars:                  number | null;   // null for group winners (no star rating)
   rating_count:               number;
   comment:                    string | null;   // appreciation preview (longest)
   creator_comment:            string | null;   // challenger's own note
