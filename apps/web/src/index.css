@@ -13307,10 +13307,11 @@ body.has-app-promo-banner .page-header {
 .gsg-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .gsg-name { flex: 1; min-width: 0; font-size: 0.76rem; font-weight: 700; color: var(--text, #f3eee9); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gsg-pick-btn {
-  margin: 0 8px 8px; padding: 8px; width: calc(100% - 16px);
+  margin: 0 8px 8px; padding: 9px; width: calc(100% - 16px);
   border-radius: 999px; cursor: pointer;
-  background: rgba(255, 201, 60, 0.14); border: 1px solid rgba(255, 201, 60, 0.45);
-  color: #ffc93c; font-size: 0.76rem; font-weight: 800;
+  /* Solid fill so it reads as "tap to crown", not a passive label. */
+  background: #ffc93c; border: none;
+  color: #1a1206; font-size: 0.76rem; font-weight: 800;
 }
 .gsg-pick-btn:disabled { opacity: 0.5; cursor: default; }
 .gsg-preview-backdrop {

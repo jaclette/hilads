@@ -1266,7 +1266,7 @@ export default function ChallengeChatScreen() {
               ) : (
                 <TouchableOpacity style={styles.groupPrimaryBtn} activeOpacity={0.85} onPress={() => setValidateOpen(true)}>
                   <Text style={styles.groupPrimaryBtnText}>
-                    ✓ {t('group.validateCta', { defaultValue: 'Validate who showed up' })}
+                    {t('group.validateCta', { defaultValue: 'Validate who showed up' })}  →
                   </Text>
                 </TouchableOpacity>
               )
@@ -2406,10 +2406,14 @@ const styles = StyleSheet.create({
   groupMeetLine:  { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
   groupStateText: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 8 },
   groupPrimaryBtn: {
+    // Solid fill = unmistakably tappable. The old translucent/outlined style
+    // read as an already-done state ("✓ validated") rather than a CTA.
     paddingVertical: 14, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,122,60,0.16)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)',
+    backgroundColor: '#FF7A3C',
+    shadowColor: '#FF7A3C', shadowOpacity: 0.35, shadowRadius: 10, shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
-  groupPrimaryBtnText: { color: '#FF7A3C', fontSize: 15, fontWeight: '800' },
+  groupPrimaryBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
 
   // Visibility pill tints - applied to BOTH the TouchableOpacity (for
   // background + borderColor) and the inner Text (for color). Split into

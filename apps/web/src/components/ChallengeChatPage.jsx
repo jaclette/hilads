@@ -91,10 +91,13 @@ function formatTime(ts) {
 }
 
 // Shared style for the group-challenge primary button (join / validate).
+// Solid fill = unmistakably tappable. The old translucent/outlined style read
+// as an already-done state ("✓ validated") rather than a primary CTA.
 const GROUP_BTN_STYLE = {
   width: '100%', padding: '14px', borderRadius: 14, textAlign: 'center',
-  background: 'rgba(255,122,60,0.16)', border: '1px solid rgba(255,122,60,0.45)',
-  color: '#FF7A3C', fontSize: 15, fontWeight: 800, cursor: 'pointer',
+  background: '#FF7A3C', border: 'none',
+  boxShadow: '0 3px 12px rgba(255,122,60,0.35)',
+  color: '#fff', fontSize: 15, fontWeight: 800, cursor: 'pointer',
 }
 
 export default function ChallengeChatPage({
@@ -1113,7 +1116,7 @@ export default function ChallengeChatPage({
               </div>
             ) : (
               <button type="button" style={GROUP_BTN_STYLE} onClick={() => setValidateOpen(true)}>
-                ✓ {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}
+                {t('group.validateCta', { ns: 'challenge', defaultValue: 'Validate who showed up' })}  →
               </button>
             )
           ) : iAmJoined ? (

@@ -230,10 +230,12 @@ const styles = StyleSheet.create({
   name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: Colors.text },
 
   pickBtn: {
-    margin: 8, marginTop: 0, paddingVertical: 8, borderRadius: Radius.full, alignItems: 'center',
-    backgroundColor: 'rgba(255,201,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,201,60,0.45)',
+    // Solid fill (matches the fullscreen previewPick) so the challenger reads
+    // it as "tap to crown", not a passive/already-picked label.
+    margin: 8, marginTop: 0, paddingVertical: 9, borderRadius: Radius.full, alignItems: 'center',
+    backgroundColor: '#FFC93C',
   },
-  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: '#FFC93C' },
+  pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: '#1a1206' },
 
   previewBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
   previewImg:  { width: '92%', height: '70%' },
