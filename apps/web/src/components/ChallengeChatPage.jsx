@@ -1827,7 +1827,7 @@ export default function ChallengeChatPage({
       {/* Group presence validation (challenger-only). */}
       {isGroup && validateOpen && (
         <div onClick={() => setValidateOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', zIndex: 9000, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px 28px', maxHeight: '80vh', overflowY: 'auto' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: 'var(--bg,#111)', width: '100%', maxWidth: 480, borderTopLeftRadius: 20, borderTopRightRadius: 20, padding: '18px 18px calc(96px + env(safe-area-inset-bottom))', maxHeight: '85vh', overflowY: 'auto' }}>
             <h3 style={{ margin: '0 0 4px', fontSize: 18 }}>{t('group.validateTitle', { ns: 'challenge', defaultValue: 'Who showed up?' })}</h3>
             <p style={{ margin: '0 0 12px', color: 'var(--muted,#999)', fontSize: 14 }}>{t('group.validateSub', { ns: 'challenge', defaultValue: 'Tick everyone who came to the meet. They each earn the reward.' })}</p>
             {participants.length === 0 ? (
