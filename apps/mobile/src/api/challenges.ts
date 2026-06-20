@@ -521,6 +521,8 @@ export interface ChallengeReveal {
   challengerName?:  string | null;
   participantCount?: number;
   hostBreakdown?:   { base: number; perHead: number; heads: number } | null;
+  /** The viewer's current total score - lets the modal climb the running total. */
+  myTotal?:         number;
 }
 
 /** Unread group-result reveals for the caller. */

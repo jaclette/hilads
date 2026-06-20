@@ -13225,6 +13225,7 @@ body.has-app-promo-banner .page-header {
 .crm-points-block { display: flex; flex-direction: column; align-items: center; margin-top: 4px; }
 .crm-points { font-size: 2.8rem; font-weight: 900; color: #ffc93c; letter-spacing: -1px; }
 .crm-breakdown { font-size: 0.86rem; font-weight: 700; color: var(--muted-2, #888); margin-top: 2px; }
+.crm-total { font-size: 0.86rem; font-weight: 700; color: var(--muted, #9a9088); margin-top: 4px; }
 .crm-cta {
   margin-top: 14px; align-self: stretch;
   padding: 13px; border-radius: 999px; border: 0; cursor: pointer;

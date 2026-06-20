@@ -1,4 +1,5 @@
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
@@ -16,11 +17,40 @@ export function ChallengeResultModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation('challenge');
+
+  // Count-up driver for the points + running total (hooks before any early
+  // return so the rules-of-hooks order stays stable).
+  const pointsAnim = useRef(new Animated.Value(0)).current;
+  const [displayPoints, setDisplayPoints] = useState(0);
+  const targetPoints = reveal?.myPoints ?? 0;
+
+  useEffect(() => {
+    const sub = pointsAnim.addListener(({ value }) => setDisplayPoints(Math.round(value)));
+    return () => pointsAnim.removeListener(sub);
+  }, [pointsAnim]);
+
+  useEffect(() => {
+    if (!visible || !reveal) { pointsAnim.setValue(0); setDisplayPoints(0); return; }
+    pointsAnim.setValue(0);
+    Animated.sequence([
+      Animated.delay(250),
+      Animated.timing(pointsAnim, {
+        toValue: targetPoints,
+        duration: Math.min(1100, 250 + targetPoints * 22),
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,   // count-up reads into <Text>
+      }),
+    ]).start();
+  }, [visible, reveal, targetPoints, pointsAnim]);
+
   if (!reveal) return null;
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown } = reveal;
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal } = reveal;
   const isPhoto = format === 'photo';
   const showPhoto = isPhoto && !!winnerPhotoUrl;
+  // Running total climbs in sync with the points count-up (start → final).
+  const finalTotal   = myTotal ?? 0;
+  const displayTotal = Math.max(0, finalTotal - myPoints) + displayPoints;
 
   // Headline + body per role (all non-negative).
   let emoji = '🎉';
@@ -78,13 +108,18 @@ export function ChallengeResultModal({
 
             {showPoints ? (
               <View style={styles.pointsBlock}>
-                <Text style={styles.points}>+{myPoints}</Text>
+                <Text style={styles.points}>+{displayPoints}</Text>
                 {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (
                   <Text style={styles.breakdown}>
                     {t('result.host.breakdown', {
                       base: hostBreakdown.base, perHead: hostBreakdown.perHead, heads: hostBreakdown.heads,
                       defaultValue: `+${hostBreakdown.base} base · +${hostBreakdown.perHead} ×${hostBreakdown.heads}`,
                     })}
+                  </Text>
+                ) : null}
+                {finalTotal > 0 ? (
+                  <Text style={styles.total}>
+                    {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}
                   </Text>
                 ) : null}
               </View>
@@ -124,6 +159,7 @@ const styles = StyleSheet.create({
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
   breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted2, marginTop: 2 },
+  total:     { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted, marginTop: 4 },
 
   cta: {
     marginTop: Spacing.md, alignSelf: 'stretch',

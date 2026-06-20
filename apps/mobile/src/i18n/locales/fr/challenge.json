@@ -716,6 +716,7 @@
       "body": "Merci d'avoir organisé.",
       "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
     },
-    "cta": "Super !"
+    "cta": "Super !",
+    "total": "Tu as maintenant {{total}} points"
   }
 }

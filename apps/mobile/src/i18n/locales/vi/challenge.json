@@ -711,6 +711,7 @@
       "body": "Cảm ơn bạn đã tổ chức.",
       "breakdown": "+{{base}} cơ bản · +{{perHead}} ×{{heads}}"
     },
-    "cta": "Tuyệt!"
+    "cta": "Tuyệt!",
+    "total": "Bạn hiện có {{total}} điểm"
   }
 }

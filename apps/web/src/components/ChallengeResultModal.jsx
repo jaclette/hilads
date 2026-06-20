@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 /**
@@ -6,9 +7,31 @@ import { useTranslation } from 'react-i18next'
  */
 export default function ChallengeResultModal({ reveal, visible, onClose }) {
   const { t } = useTranslation('challenge')
+  const [displayPoints, setDisplayPoints] = useState(0)
+  const rafRef = useRef(null)
+  const targetPoints = reveal?.myPoints ?? 0
+
+  // Count-up for the points + running total (out-cubic, matches the native modal).
+  useEffect(() => {
+    if (!visible || !reveal) { setDisplayPoints(0); return }
+    const target = targetPoints
+    const duration = Math.min(1100, 250 + target * 22)
+    const startedAt = performance.now() + 250
+    const tick = (now) => {
+      const t2 = Math.max(0, Math.min(1, (now - startedAt) / duration))
+      const eased = 1 - Math.pow(1 - t2, 3)
+      setDisplayPoints(Math.round(target * eased))
+      if (now < startedAt + duration) rafRef.current = requestAnimationFrame(tick)
+    }
+    rafRef.current = requestAnimationFrame(tick)
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+  }, [visible, reveal, targetPoints])
+
   if (!reveal || !visible) return null
 
-  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown } = reveal
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown, myTotal } = reveal
+  const finalTotal = myTotal ?? 0
+  const displayTotal = Math.max(0, finalTotal - myPoints) + displayPoints
   const isPhoto = format === 'photo'
   const showPhoto = isPhoto && !!winnerPhotoUrl
 
@@ -59,7 +82,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
 
         {showPoints ? (
           <div className="crm-points-block">
-            <div className="crm-points">+{myPoints}</div>
+            <div className="crm-points">+{displayPoints}</div>
             {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (
               <div className="crm-breakdown">
                 {t('result.host.breakdown', {
@@ -67,6 +90,9 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
                   defaultValue: `+${hostBreakdown.base} base · +${hostBreakdown.perHead} ×${hostBreakdown.heads}`,
                 })}
               </div>
+            ) : null}
+            {finalTotal > 0 ? (
+              <div className="crm-total">{t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}</div>
             ) : null}
           </div>
         ) : null}

@@ -11696,9 +11696,21 @@ $router->add('GET', '/api/v1/me/challenge-reveals', function () {
     ");
     $stmt->execute([$callerId]);
 
-    $reveals = array_map(static function (array $row): array {
+    // The caller's CURRENT total (fresh - the score trigger already cached it),
+    // so the reveal modal can climb the running total like the +points popin.
+    // Prefer the in-month total when present, else alltime.
+    $meStmt = Database::pdo()->prepare("SELECT score_month, score_month_ref, score_alltime FROM users WHERE id = ?");
+    $meStmt->execute([$callerId]);
+    $me = $meStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+    $monthRef = gmdate('Y-m');
+    $myTotal  = (($me['score_month_ref'] ?? null) === $monthRef && (int) ($me['score_month'] ?? 0) > 0)
+        ? (int) $me['score_month']
+        : (int) ($me['score_alltime'] ?? 0);
+
+    $reveals = array_map(static function (array $row) use ($myTotal): array {
         $data = json_decode($row['data'] ?: '{}', true) ?: [];
-        $data['id'] = $row['id'];   // notification id - used by the client to mark-read
+        $data['id']      = $row['id'];   // notification id - used by the client to mark-read
+        $data['myTotal'] = $myTotal;     // caller's current total (for the climbing animation)
         return $data;
     }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
 

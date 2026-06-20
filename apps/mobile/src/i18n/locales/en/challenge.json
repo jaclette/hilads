@@ -748,6 +748,7 @@
       "body": "Thanks for hosting.",
       "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
     },
-    "cta": "Nice!"
+    "cta": "Nice!",
+    "total": "You now have {{total}} points"
   }
 }
