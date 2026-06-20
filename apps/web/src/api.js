@@ -977,6 +977,20 @@ export async function fetchScoreCelebration() {
   }
 }
 
+// Pending GROUP challenge result reveals (winning photo / present / absent + the
+// viewer's points). Each item's `id` is the notification id - ack with
+// markNotificationsRead([id]).
+export async function fetchChallengeReveals() {
+  try {
+    const res = await fetch(`${BASE}/me/challenge-reveals`, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json().catch(() => ({}))
+    return data.reveals ?? []
+  } catch {
+    return []
+  }
+}
+
 /**
  * Ack the celebration so the same delta is never shown twice. seen_until is
  * the ISO timestamp returned by the GET above. Fire-and-forget - failure is

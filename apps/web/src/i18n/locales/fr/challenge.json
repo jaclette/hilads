@@ -669,5 +669,30 @@
       "title": "Grimpe le classement",
       "body": "Viens et gagne pour monter. Les étincelles d'inscription restent petites : c'est l'action qui compte."
     }
+  },
+  "result": {
+    "winner": {
+      "title": "Tu as gagné !",
+      "body": "Ta photo a remporté le concours."
+    },
+    "loser": {
+      "title": "{{name}} a gagné",
+      "body": "Belle photo ! Tu as gagné {{points}} pour avoir participé — retente ta chance la prochaine fois 💪"
+    },
+    "present": {
+      "title": "Tu étais là !",
+      "body": "Présence validée au rendez-vous."
+    },
+    "absent": {
+      "title": "Tu as raté celui-ci",
+      "body": "Rejoins le prochain rendez-vous — ta place t'attend."
+    },
+    "host": {
+      "titlePhoto": "{{name}} a gagné ton concours !",
+      "titleMeet": "Ton rendez-vous est terminé !",
+      "body": "Merci d'avoir organisé.",
+      "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
+    },
+    "cta": "Super !"
   }
 }

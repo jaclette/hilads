@@ -13200,6 +13200,37 @@ body.has-app-promo-banner .page-header {
   white-space: nowrap;
 }
 
+/* ── Group challenge result reveal modal ── */
+.crm-backdrop {
+  position: fixed; inset: 0; z-index: 9200;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+.crm-card {
+  width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto;
+  background: var(--bg2, #1a1614); border-radius: 18px;
+  border: 1px solid rgba(255, 201, 60, 0.3);
+  padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.crm-photo-wrap { position: relative; width: 100%; border-radius: 12px; overflow: hidden; background: #000; }
+.crm-photo { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+.crm-photo-caption {
+  position: absolute; left: 8px; bottom: 8px;
+  background: rgba(255, 201, 60, 0.95); color: #1a1206;
+  font-size: 0.86rem; font-weight: 800; border-radius: 999px; padding: 3px 10px;
+}
+.crm-big-emoji { font-size: 64px; margin-top: 6px; }
+.crm-title { font-size: 1.2rem; font-weight: 800; color: var(--text, #f3eee9); text-align: center; letter-spacing: -0.3px; margin-top: 6px; }
+.crm-body { font-size: 0.9rem; color: var(--muted, #9a9088); text-align: center; line-height: 1.4; }
+.crm-points-block { display: flex; flex-direction: column; align-items: center; margin-top: 4px; }
+.crm-points { font-size: 2.8rem; font-weight: 900; color: #ffc93c; letter-spacing: -1px; }
+.crm-breakdown { font-size: 0.86rem; font-weight: 700; color: var(--muted-2, #888); margin-top: 2px; }
+.crm-cta {
+  margin-top: 14px; align-self: stretch;
+  padding: 13px; border-radius: 999px; border: 0; cursor: pointer;
+  background: #ffc93c; color: #1a1206; font-size: 0.95rem; font-weight: 800;
+}
+
 /* ── Group photo-proof submissions gallery (one CTA → modal) ── */
 .gsg-cta {
   display: flex;

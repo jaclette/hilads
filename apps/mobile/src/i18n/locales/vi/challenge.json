@@ -687,5 +687,30 @@
       "title": "Leo bảng xếp hạng",
       "body": "Có mặt và chiến thắng để thăng hạng. Điểm tham gia nhỏ, nên quan trọng là thực sự làm."
     }
+  },
+  "result": {
+    "winner": {
+      "title": "Bạn đã thắng!",
+      "body": "Ảnh của bạn đã thắng cuộc thi."
+    },
+    "loser": {
+      "title": "{{name}} đã thắng",
+      "body": "Ảnh đẹp đấy! Bạn nhận {{points}} vì đã tham gia — thử lại lần sau nhé 💪"
+    },
+    "present": {
+      "title": "Bạn đã có mặt!",
+      "body": "Đã xác nhận có mặt tại buổi gặp."
+    },
+    "absent": {
+      "title": "Bạn lỡ lần này rồi",
+      "body": "Tham gia buổi gặp tới — chỗ của bạn vẫn còn đó."
+    },
+    "host": {
+      "titlePhoto": "{{name}} đã thắng cuộc thi của bạn!",
+      "titleMeet": "Buổi gặp của bạn đã xong!",
+      "body": "Cảm ơn bạn đã tổ chức.",
+      "breakdown": "+{{base}} cơ bản · +{{perHead}} ×{{heads}}"
+    },
+    "cta": "Tuyệt!"
   }
 }

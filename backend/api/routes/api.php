@@ -9376,6 +9376,58 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
             broadcastChallengeAcceptedToWs($uid, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]);
         } catch (\Throwable $e) {}
     }
+
+    // ── Reveal fan-out: a notification (push + bell + modal data) to present +
+    // absent takers + the host. Present/host were WS-pinged above; absentees get
+    // their ping here so their reveal gate refetches live. ──
+    try {
+        $pdoR         = Database::pdo();
+        $basePts      = (int) ($pdoR->query("SELECT points FROM score_rules WHERE kind='present_host_base' AND role='challenger'")->fetchColumn() ?: 10);
+        $perHead      = (int) ($pdoR->query("SELECT points FROM score_rules WHERE kind='present_host' AND role='challenger'")->fetchColumn() ?: 5);
+        $presentPts   = (int) ($pdoR->query("SELECT points FROM score_rules WHERE kind='present' AND role='taker'")->fetchColumn() ?: 40);
+        $presentCount = count($presentNow);
+        $hostPoints   = $basePts + $perHead * $presentCount;
+        $challengerName = $authUser['display_name'] ?? 'The challenger';
+
+        $allStmt = $pdoR->prepare("
+            SELECT DISTINCT acceptor_user_id AS user_id FROM challenge_acceptances
+            WHERE challenge_id = ? AND acceptor_user_id IS NOT NULL AND phase <> 'rejected'
+        ");
+        $allStmt->execute([$challengeId]);
+        $allTakers  = $allStmt->fetchAll(\PDO::FETCH_COLUMN);
+        $presentSet = array_flip($presentNow);
+
+        foreach ($allTakers as $tid) {
+            $isPresent = isset($presentSet[$tid]);
+            try {
+                NotificationRepository::notifyGroupResult($tid, $challengeId, 'meet', $challengerName, [
+                    'format'           => 'meet',
+                    'myRole'           => $isPresent ? 'present' : 'absent',
+                    'myPoints'         => $isPresent ? $presentPts : 0,
+                    'winnerUserId'     => null,
+                    'winnerName'       => null,
+                    'winnerPhotoUrl'   => null,
+                    'participantCount' => $presentCount,
+                ]);
+            } catch (\Throwable $e) {}
+            if (!$isPresent) {
+                try { broadcastChallengeAcceptedToWs($tid, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
+            }
+        }
+        try {
+            NotificationRepository::notifyGroupResult($userId, $challengeId, 'meet', $challengerName, [
+                'format'           => 'meet',
+                'myRole'           => 'host',
+                'myPoints'         => $hostPoints,
+                'winnerUserId'     => null, 'winnerName' => null, 'winnerPhotoUrl' => null,
+                'participantCount' => $presentCount,
+                'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $presentCount],
+            ]);
+        } catch (\Throwable $e) {}
+    } catch (\Throwable $e) {
+        error_log('[challenges] validate-presence reveal fan-out failed (non-fatal): ' . $e->getMessage());
+    }
+
     // Feed/state: tell the city the challenge is validated (drops to archive).
     try {
         $cityChannelId = (int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5);
@@ -9503,8 +9555,76 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
         )
     ")->execute([$winnerAcc]);
 
+    // ── Challenger (host) reward: +10 base once + +5 per submitter ──────────────
+    // Mirrors the meet host. base reuses present_host_base (deduped per challenge);
+    // photo_host is keyed on each submitter's acceptance_id (one per entrant).
+    $basePts = (int) ($pdo->query("SELECT points FROM score_rules WHERE kind='present_host_base' AND role='challenger'")->fetchColumn() ?: 10);
+    $perHead = (int) ($pdo->query("SELECT points FROM score_rules WHERE kind='photo_host' AND role='challenger'")->fetchColumn() ?: 5);
+    $subStmt = $pdo->prepare("
+        SELECT a.id AS acceptance_id, a.acceptor_user_id AS user_id
+        FROM challenge_acceptances a
+        WHERE a.challenge_id = ?
+          AND EXISTS (SELECT 1 FROM challenge_proofs p WHERE p.acceptance_id = a.id)
+    ");
+    $subStmt->execute([$challengeId]);
+    $submitters     = $subStmt->fetchAll(\PDO::FETCH_ASSOC);
+    $submitterCount = count($submitters);
+    $hostCity       = $challenge['city_id'] ?? null;
+    $pdo->prepare("
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+        VALUES (encode(gen_random_bytes(8),'hex'), ?, ?, 'challenger', 'present_host_base', ?, ?, ?, NULL)
+        ON CONFLICT DO NOTHING
+    ")->execute([$userId, $challengeId, $basePts, $hostCity, gmdate('Y-m')]);
+    $phStmt = $pdo->prepare("
+        INSERT INTO score_events (id, user_id, challenge_id, role, kind, points, city_id, month_ref, acceptance_id)
+        VALUES (encode(gen_random_bytes(8),'hex'), ?, ?, 'challenger', 'photo_host', ?, ?, ?, ?)
+        ON CONFLICT (user_id, challenge_id, role, kind, acceptance_id) DO NOTHING
+    ");
+    foreach ($submitters as $s) {
+        $phStmt->execute([$userId, $challengeId, $perHead, $hostCity, gmdate('Y-m'), $s['acceptance_id']]);
+    }
+    $hostPoints = $basePts + $perHead * $submitterCount;
+
+    // ── Reveal fan-out: a notification (push + bell + modal data) to every
+    // submitter (winner + losers) and the host. Winner-concealing title/body;
+    // role-specific data. Plus a per-user WS ping so each gate refetches live. ──
+    $subsFull   = ChallengeProofRepository::listGroupSubmissions($challengeId);
+    $winnerName = null; $winnerPhoto = null;
+    foreach ($subsFull as $row) {
+        if (($row['user_id'] ?? null) === $winnerUserId) { $winnerName = $row['display_name'] ?? null; $winnerPhoto = $row['media_url'] ?? null; break; }
+    }
+    $challengerName = $authUser['display_name'] ?? 'The challenger';
+    foreach ($submitters as $s) {
+        $isWin = $s['user_id'] === $winnerUserId;
+        try {
+            NotificationRepository::notifyGroupResult($s['user_id'], $challengeId, 'photo', $challengerName, [
+                'format'           => 'photo',
+                'myRole'           => $isWin ? 'winner' : 'loser',
+                'myPoints'         => $isWin ? $pts : 5,   // loser keeps their submission +5
+                'winnerUserId'     => $winnerUserId,
+                'winnerName'       => $winnerName,
+                'winnerPhotoUrl'   => $winnerPhoto,
+                'participantCount' => $submitterCount,
+            ]);
+        } catch (\Throwable $e) { error_log('[challenges] pick-winner reveal notify failed (non-fatal): ' . $e->getMessage()); }
+        try { broadcastChallengeAcceptedToWs($s['user_id'], ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
+    }
+    try {
+        NotificationRepository::notifyGroupResult($userId, $challengeId, 'photo', $challengerName, [
+            'format'           => 'photo',
+            'myRole'           => 'host',
+            'myPoints'         => $hostPoints,
+            'winnerUserId'     => $winnerUserId,
+            'winnerName'       => $winnerName,
+            'winnerPhotoUrl'   => $winnerPhoto,
+            'participantCount' => $submitterCount,
+            'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $submitterCount],
+        ]);
+    } catch (\Throwable $e) { error_log('[challenges] pick-winner host reveal failed (non-fatal): ' . $e->getMessage()); }
+
     try { MonthlyRankService::recalcAfterScoreChange($winnerUserId); } catch (\Throwable $e) {}
-    try { broadcastChallengeAcceptedToWs($winnerUserId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
+    try { MonthlyRankService::recalcAfterScoreChange($userId); } catch (\Throwable $e) {}
+    try { broadcastChallengeAcceptedToWs($userId, ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
     try {
         broadcastChallengeValidatedToWs((int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5), $challenge);
     } catch (\Throwable $e) {
@@ -11284,6 +11404,10 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         FROM score_events
         WHERE user_id = :uid
           AND created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+          -- GROUP-result kinds are celebrated by the ChallengeResultModal (the
+          -- winning-photo reveal), NOT this generic +points popin - excluding
+          -- them here avoids a double modal. The +2 'join' spark is NOT excluded.
+          AND kind NOT IN ('winner','present','present_host','present_host_base','photo_host','submission')
     ");
     $aggStmt->execute(['uid' => $callerId, 'wm' => $watermark]);
     $agg          = $aggStmt->fetch(\PDO::FETCH_ASSOC) ?: [];
@@ -11307,6 +11431,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         FROM score_events
         WHERE user_id = :uid
           AND created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+          AND kind NOT IN ('winner','present','present_host','present_host_base','photo_host','submission')
         GROUP BY kind
         ORDER BY pts DESC, MAX(created_at) DESC
         LIMIT 1
@@ -11438,6 +11563,7 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
         LEFT JOIN channel_challenges cc ON cc.channel_id = se.challenge_id
         WHERE se.user_id = :uid
           AND se.created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
+          AND se.kind NOT IN ('winner','present','present_host','present_host_base','photo_host','submission')
         ORDER BY se.created_at DESC
         LIMIT :lim
     ");
@@ -11514,6 +11640,35 @@ $router->add('POST', '/api/v1/me/score-celebration/seen', function () {
     $stmt->execute(['su' => $seenUntil, 'uid' => $callerId]);
 
     Response::json(['ok' => true]);
+});
+
+// GET /api/v1/me/challenge-reveals
+// Pending GROUP challenge result reveals for the caller - the UNREAD
+// challenge_group_result_* notifications, returning each row's id + data. The
+// client surfaces a role-specific reveal modal (winning photo / present /
+// absent + the caller's points) and acks via POST /notifications/mark-read.
+$router->add('GET', '/api/v1/me/challenge-reveals', function () {
+    $authUser = AuthService::requireAuth();
+    $callerId = $authUser['id'];
+
+    $stmt = Database::pdo()->prepare("
+        SELECT id, data::text AS data
+        FROM notifications
+        WHERE user_id = ?
+          AND type IN ('challenge_group_result_photo', 'challenge_group_result_meet')
+          AND is_read = FALSE
+        ORDER BY created_at DESC
+        LIMIT 20
+    ");
+    $stmt->execute([$callerId]);
+
+    $reveals = array_map(static function (array $row): array {
+        $data = json_decode($row['data'] ?: '{}', true) ?: [];
+        $data['id'] = $row['id'];   // notification id - used by the client to mark-read
+        return $data;
+    }, $stmt->fetchAll(\PDO::FETCH_ASSOC));
+
+    Response::json(['reveals' => $reveals]);
 });
 
 // GET /api/v1/me/rate-prompts

@@ -273,6 +273,13 @@ class NotificationRepository
             // challenge chat just like an event message lands in the
             // event chat.
             'challenge_message'               => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            // Group result reveal (winner picked / presence validated) - tap
+            // opens the challenge; the ChallengeResultLaunchGate surfaces the
+            // role-specific reveal modal off the unread notification's data.
+            'challenge_group_result_photo',
+            'challenge_group_result_meet'     => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            'challenge_group_join'            => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
+            'challenge_takeon_request'        => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/notifications',
             default                           => '/',
         };
     }
@@ -306,6 +313,9 @@ class NotificationRepository
             // collapses into one push group on the device (mirrors how
             // dm_message / event_message tag by their channel).
             'challenge_message'       => 'chmsg-'        . ($data['challengeId'] ?? 'c'),
+            'challenge_group_result_photo',
+            'challenge_group_result_meet' => 'chresult-' . ($data['challengeId'] ?? 'c'),
+            'challenge_group_join'    => 'chjoin-'       . ($data['challengeId'] ?? 'c'),
             default                   => 'hilads-' . $type,
         };
     }
@@ -525,6 +535,32 @@ class NotificationRepository
                 self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
             }
         }
+    }
+
+    /**
+     * One "group result reveal" notification to a single participant: push +
+     * bell + the data the reveal modal reads. The title/body CONCEAL the outcome
+     * ("tap to see"); the winner and the recipient's OWN role/points live in
+     * $data for the modal. Always enabled (typeToColumn default → null). Caller
+     * loops every participant with role-specific $data. $format = 'photo'|'meet'.
+     */
+    public static function notifyGroupResult(
+        string $userId,
+        string $challengeId,
+        string $format,
+        string $challengerName,
+        array  $data
+    ): void {
+        $type  = $format === 'meet' ? 'challenge_group_result_meet' : 'challenge_group_result_photo';
+        $title = $format === 'meet'
+            ? "🎉 {$challengerName} validated the meet"
+            : "🏆 {$challengerName} chose the winning photo";
+        $body  = $format === 'meet' ? 'Tap to see how it went' : 'Tap to see who won';
+        self::create($userId, $type, $title, $body, array_merge($data, [
+            'challengeId'    => $challengeId,
+            'challengerName' => $challengerName,
+            'name'           => $challengerName,   // {name} fallback for NotificationI18n
+        ]));
     }
 
     /**

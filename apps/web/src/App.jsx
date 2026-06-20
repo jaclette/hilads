@@ -36,6 +36,7 @@ import ThreadsListPage    from './components/ThreadsListPage'
 import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
+import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
@@ -1113,6 +1114,7 @@ export default function App() {
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
   const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 - bumps on WS mutual_rating_complete
+  const [challengeResultRefetchKey, setChallengeResultRefetchKey] = useState(0) // bumps on WS challenge_validated → group result reveal
   const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank - drives the 🏆 chip in renderCityHero
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
@@ -2676,6 +2678,10 @@ export default function App() {
       // original creation pill - both are timeline-worthy events. Dedup by
       // id since the same validation arrives once per session.
       socket.on('challenge_validated', ({ channelId, challenge }) => {
+        // A group challenge just resolved → refetch the viewer's pending result
+        // reveals (winner/loser/present/absent/host). Done before the active-
+        // channel guard so it fires for any city-room member who got the event.
+        setChallengeResultRefetchKey(k => k + 1)
         if (String(channelId) !== String(activeChannelRef.current)) return
         if (!challenge?.id) return
         const id = `challenge-validated-${challenge.id}`
@@ -6644,6 +6650,10 @@ export default function App() {
           unacknowledged score_events. Lands first so the celebratory moment
           isn't blocked by the rate-sheet; the rate gate's effect is keyed
           independently so it follows on the same screen. */}
+      <ChallengeResultLaunchGate
+        account={account}
+        refetchKey={challengeResultRefetchKey}
+      />
       <ScoreCelebrationLaunchGate
         account={account}
         refetchKey={celebrationRefetchKey}

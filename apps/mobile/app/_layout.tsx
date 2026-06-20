@@ -8,6 +8,7 @@ import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
 import { ScoreCelebrationLaunchGate } from '@/features/challenge/ScoreCelebrationLaunchGate';
+import { ChallengeResultLaunchGate } from '@/features/challenge/ChallengeResultLaunchGate';
 import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
@@ -215,6 +216,12 @@ function RootLayoutInner() {
         username={account?.username ?? account?.display_name ?? ''}
         onClose={() => setShowAccountWelcome(false)}
       />
+
+      {/* GROUP challenge result reveal (winning photo / present / absent + the
+          viewer's points). Above the +points gate: a group resolve shows the
+          rich reveal, and the generic +points popin is suppressed for those
+          score kinds server-side, so they never both fire. */}
+      <ChallengeResultLaunchGate />
 
       {/* PR17 - "+X points!" popin once per cold start when the user has
           unacknowledged score_events. Sits above RatePromptLaunchGate so

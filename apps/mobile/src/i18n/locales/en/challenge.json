@@ -724,5 +724,30 @@
       "title": "Climb Most Local",
       "body": "Show up and win to rise on the board. Join-sparks stay small, so it's always about really doing it."
     }
+  },
+  "result": {
+    "winner": {
+      "title": "You won!",
+      "body": "Your photo took the contest."
+    },
+    "loser": {
+      "title": "{{name}} won",
+      "body": "Nice shot! You earned {{points}} for joining — take another shot next time 💪"
+    },
+    "present": {
+      "title": "You showed up!",
+      "body": "Validated present at the meet."
+    },
+    "absent": {
+      "title": "You missed this one",
+      "body": "Catch the next meet — your spot is waiting."
+    },
+    "host": {
+      "titlePhoto": "{{name}} won your contest!",
+      "titleMeet": "Your meet is done!",
+      "body": "Thanks for hosting.",
+      "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
+    },
+    "cta": "Nice!"
   }
 }

@@ -1,0 +1,134 @@
+import { Modal, Pressable, ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
+import { useTranslation } from 'react-i18next';
+import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import type { ChallengeReveal } from '@/api/challenges';
+
+/**
+ * GROUP challenge result reveal modal. Role-specific, never-negative copy +
+ * (photo contests) the winning photo. Driven by ChallengeResultLaunchGate.
+ */
+export function ChallengeResultModal({
+  reveal, visible, onClose,
+}: {
+  reveal:  ChallengeReveal | null;
+  visible: boolean;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation('challenge');
+  if (!reveal) return null;
+
+  const { myRole, myPoints, winnerName, winnerPhotoUrl, format, hostBreakdown } = reveal;
+  const isPhoto = format === 'photo';
+  const showPhoto = isPhoto && !!winnerPhotoUrl;
+
+  // Headline + body per role (all non-negative).
+  let emoji = '🎉';
+  let title = '';
+  let body  = '';
+  switch (myRole) {
+    case 'winner':
+      emoji = '👑'; title = t('result.winner.title', { defaultValue: 'You won!' });
+      body = t('result.winner.body', { defaultValue: 'Your photo took the contest.' });
+      break;
+    case 'loser':
+      emoji = '📸'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` });
+      body = t('result.loser.body', { points: `+${myPoints}`, defaultValue: `Nice shot! You earned +${myPoints} for joining — take another shot next time 💪` });
+      break;
+    case 'present':
+      emoji = '✅'; title = t('result.present.title', { defaultValue: 'You showed up!' });
+      body = t('result.present.body', { defaultValue: 'Validated present at the meet.' });
+      break;
+    case 'absent':
+      emoji = '👋'; title = t('result.absent.title', { defaultValue: 'You missed this one' });
+      body = t('result.absent.body', { defaultValue: 'Catch the next meet — your spot is waiting.' });
+      break;
+    case 'host':
+      emoji = '🏆';
+      title = isPhoto
+        ? t('result.host.titlePhoto', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won your contest!` })
+        : t('result.host.titleMeet', { defaultValue: 'Your meet is done!' });
+      body = t('result.host.body', { defaultValue: 'Thanks for hosting.' });
+      break;
+  }
+
+  const showPoints = myRole !== 'absent';
+
+  return (
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.backdrop} onPress={onClose} />
+      <View style={styles.wrap} pointerEvents="box-none">
+        <View style={styles.card}>
+          <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+            {showPhoto ? (
+              <View style={styles.photoWrap}>
+                <Image source={{ uri: winnerPhotoUrl! }} style={styles.photo} contentFit="cover" cachePolicy="memory-disk" />
+                {winnerName ? (
+                  <View style={styles.photoCaption}>
+                    <Text style={styles.photoCaptionText}>👑 {winnerName}</Text>
+                  </View>
+                ) : null}
+              </View>
+            ) : (
+              <Text style={styles.bigEmoji}>{emoji}</Text>
+            )}
+
+            <Text style={styles.title}>{emoji} {title}</Text>
+            {body ? <Text style={styles.body}>{body}</Text> : null}
+
+            {showPoints ? (
+              <View style={styles.pointsBlock}>
+                <Text style={styles.points}>+{myPoints}</Text>
+                {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (
+                  <Text style={styles.breakdown}>
+                    {t('result.host.breakdown', {
+                      base: hostBreakdown.base, perHead: hostBreakdown.perHead, heads: hostBreakdown.heads,
+                      defaultValue: `+${hostBreakdown.base} base · +${hostBreakdown.perHead} ×${hostBreakdown.heads}`,
+                    })}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+
+            <TouchableOpacity style={styles.cta} activeOpacity={0.85} onPress={onClose}>
+              <Text style={styles.ctaText}>{t('result.cta', { defaultValue: 'Nice!' })}</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const GOLD = '#FFC93C';
+
+const styles = StyleSheet.create({
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.7)' },
+  wrap:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
+  card: {
+    width: '100%', maxWidth: 420, maxHeight: '88%',
+    backgroundColor: Colors.bg2, borderRadius: Radius.lg,
+    borderWidth: 1, borderColor: 'rgba(255,201,60,0.30)', overflow: 'hidden',
+  },
+  scroll: { padding: Spacing.lg, alignItems: 'center', gap: Spacing.sm },
+
+  photoWrap: { width: '100%', borderRadius: Radius.md, overflow: 'hidden', backgroundColor: '#000' },
+  photo:     { width: '100%', aspectRatio: 1 },
+  photoCaption: { position: 'absolute', left: 8, bottom: 8, backgroundColor: 'rgba(255,201,60,0.95)', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3 },
+  photoCaptionText: { fontSize: FontSizes.sm, fontWeight: '800', color: '#1a1206' },
+
+  bigEmoji: { fontSize: 64, marginTop: Spacing.sm },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center', letterSpacing: -0.3, marginTop: Spacing.sm },
+  body:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+
+  pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
+  points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
+  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted2, marginTop: 2 },
+
+  cta: {
+    marginTop: Spacing.md, alignSelf: 'stretch',
+    paddingVertical: Spacing.md, borderRadius: Radius.full, alignItems: 'center',
+    backgroundColor: GOLD,
+  },
+  ctaText: { fontSize: FontSizes.md, fontWeight: '800', color: '#1a1206' },
+});

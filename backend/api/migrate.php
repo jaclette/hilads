@@ -1586,7 +1586,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1610,7 +1610,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -1702,8 +1702,12 @@ run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_hostbase_per_challe
 // phases can wire them. The +2 join spark still applies at join.
 run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES
         ('submission', 'taker', 5),
-        ('winner',     'taker', 40)
-    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points", 'score_rules submission/winner');
+        ('winner',     'taker', 40),
+        -- Photo-contest HOST reward, mirrors the meet host: +10 base (reuses
+        -- present_host_base) + +5 per submitter ('photo_host', keyed per the
+        -- submitter's acceptance_id so the challenger earns once per entrant).
+        ('photo_host', 'challenger', 5)
+    ON CONFLICT (kind, role) DO UPDATE SET points = EXCLUDED.points", 'score_rules submission/winner/photo_host');
 // 'submission' is once per (user, challenge) - a participant who re-submits a
 // better photo before the deadline isn't paid twice for participating.
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_submission_per_user

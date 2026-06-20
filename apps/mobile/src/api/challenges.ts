@@ -506,6 +506,34 @@ export interface ScoreCelebration {
   city_rank_month?:   number | null;
 }
 
+/** A pending GROUP challenge result reveal for the viewer (one per resolved
+ *  challenge they participated in, until acked). `id` is the notification id —
+ *  ack with markNotificationsRead([id]). */
+export interface ChallengeReveal {
+  id:               number;
+  challengeId:      string;
+  format:           'photo' | 'meet';
+  myRole:           'winner' | 'loser' | 'present' | 'absent' | 'host';
+  myPoints:         number;
+  winnerUserId?:    string | null;
+  winnerName?:      string | null;
+  winnerPhotoUrl?:  string | null;
+  challengerName?:  string | null;
+  participantCount?: number;
+  hostBreakdown?:   { base: number; perHead: number; heads: number } | null;
+}
+
+/** Unread group-result reveals for the caller. */
+export async function fetchChallengeReveals(): Promise<ChallengeReveal[]> {
+  try {
+    const r = await api.get<{ reveals: ChallengeReveal[] }>('/me/challenge-reveals');
+    return r.reveals ?? [];
+  } catch (err) {
+    console.warn('[fetchChallengeReveals] failed:', err);
+    return [];
+  }
+}
+
 /** Pending celebration delta. Returns { points: 0 } when nothing to show. */
 export async function fetchScoreCelebration(): Promise<ScoreCelebration> {
   try {
