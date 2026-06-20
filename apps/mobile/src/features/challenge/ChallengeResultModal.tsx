@@ -41,7 +41,7 @@ export function ChallengeResultModal({
       Animated.delay(250),
       Animated.timing(pointsAnim, {
         toValue: targetPoints,
-        duration: Math.min(1100, 250 + targetPoints * 22),
+        duration: Math.min(2400, 600 + targetPoints * 55),
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,   // count-up reads into <Text>
       }),

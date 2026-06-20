@@ -15,7 +15,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
   useEffect(() => {
     if (!visible || !reveal) { setDisplayPoints(0); return }
     const target = targetPoints
-    const duration = Math.min(1100, 250 + target * 22)
+    const duration = Math.min(2400, 600 + target * 55)
     const startedAt = performance.now() + 250
     const tick = (now) => {
       const t2 = Math.max(0, Math.min(1, (now - startedAt) / duration))

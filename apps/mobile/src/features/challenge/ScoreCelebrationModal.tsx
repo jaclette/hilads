@@ -120,7 +120,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
         Animated.delay(180),
         Animated.timing(points, {
           toValue: data.points,
-          duration: Math.min(900, 200 + data.points * 24),
+          duration: Math.min(2400, 600 + data.points * 55),
           easing: Easing.out(Easing.cubic),
           // count-up reads <Text> from displayPoints - JS driver required
           useNativeDriver: false,

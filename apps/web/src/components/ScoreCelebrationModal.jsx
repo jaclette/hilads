@@ -62,7 +62,7 @@ export default function ScoreCelebrationModal({ data, visible, onClose, onOpenLe
       return
     }
     const target   = data.points
-    const duration = Math.min(900, 200 + target * 24)
+    const duration = Math.min(2400, 600 + target * 55)
     const startedAt = performance.now()
     const tick = (now) => {
       const t = Math.min(1, (now - startedAt) / duration)
