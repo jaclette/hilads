@@ -888,6 +888,16 @@ export default function ChallengeChatScreen() {
     participants,
   ]);
 
+  // Everyone who took the challenge - the legacy 1-1 active taker PLUS every
+  // GROUP acceptor (participants = the acceptor list). Drives the chat role pill
+  // so a group taker reads "Taker", not "Spectator".
+  const takerIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (activeTaker?.id) ids.add(activeTaker.id);
+    for (const p of participants) if (p?.id) ids.add(p.id);
+    return ids;
+  }, [activeTaker?.id, participants]);
+
   // 1:1 gate - `inProgress` is true when the challenge has a non-terminal
   // acceptance owned by someone else. Visitors don't see the Accept button
   // (and see the in-progress locked state); the owner / current taker are
@@ -1700,19 +1710,17 @@ export default function ChallengeChatScreen() {
                 const isGrouped = !!olderMsg && olderMsg.guestId === item.guestId && olderMsg.type !== 'system' && item.type !== 'system';
                 const showTime = item.type !== 'system' && (!newerMsg || newerMsg.guestId !== item.guestId || newerMsg.type === 'system');
                 const dateLabel = !isSameDay(item.createdAt, olderMsg?.createdAt) ? formatDateLabel(item.createdAt) : undefined;
-                // PR9 - challenger / taker pill next to the nickname (web parity).
-                // Heuristic matches ChallengeChatPage.jsx: first non-creator
-                // channel participant = active taker.
-                // PR23 - anyone else with a userId who posts in the channel
-                // is a Spectator (channel joiner without an active acceptance).
-                // Anonymous posters (no userId) get no badge.
+                // Challenger / taker pill next to the nickname. The creator is
+                // the challenger; anyone who took the challenge (the legacy 1-1
+                // active taker OR any GROUP acceptor) is a taker; everyone else
+                // who posts with a userId is a spectator. Anonymous → no badge.
                 const senderId = item.userId ?? null;
                 const roleBadge: 'challenger' | 'taker' | 'spectator' | null =
                     !senderId
                       ? null
                       : (challenge.created_by && senderId === challenge.created_by)
                           ? 'challenger'
-                          : (activeTaker?.id && senderId === activeTaker.id)
+                          : takerIds.has(senderId)
                               ? 'taker'
                               : 'spectator';
                 return (

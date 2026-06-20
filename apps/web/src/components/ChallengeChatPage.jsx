@@ -1560,18 +1560,19 @@ export default function ChallengeChatPage({
               </div>
             )}
             {(() => {
-              // Active-taker user id - 1:1 model means at most one entry
-              // in otherParticipants. The badge falls off retroactively if
-              // the row transitions to rejected/closed (the API filter
-              // already excludes non-active acceptances from the preview).
-              const takerUserId     = activeTaker?.id ?? null
+              // Everyone who took the challenge: the legacy 1-1 active taker
+              // PLUS every GROUP acceptor (participants = the acceptor list), so
+              // a group taker reads "Taker", not "Spectator".
+              const takerIds = new Set()
+              if (activeTaker?.id) takerIds.add(activeTaker.id)
+              for (const p of participants) { const pid = p?.id ?? p?.userId; if (pid) takerIds.add(pid) }
               const creatorUserId   = challenge.created_by ?? null
               const renderRoleBadge = (senderId) => {
                 if (!senderId) return null
                 if (senderId === creatorUserId) {
                   return <span className="challenge-role-badge challenge-role-badge--challenger">{t('badge.challenger')}</span>
                 }
-                if (senderId === takerUserId) {
+                if (takerIds.has(senderId)) {
                   return <span className="challenge-role-badge challenge-role-badge--taker">{t('badge.taker')}</span>
                 }
                 // PR23 - Spectator: registered users who joined the channel
