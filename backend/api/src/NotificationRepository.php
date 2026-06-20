@@ -564,12 +564,17 @@ class NotificationRepository
         $title = $format === 'meet'
             ? "🎉 {$challengerName} validated the meet"
             : "🏆 {$challengerName} chose the winning photo";
-        $body  = $format === 'meet' ? 'Tap to see how it went' : 'Tap to see who won';
+        // Lead the body with the challenge name so the recipient knows WHICH
+        // challenge resolved (was missing - just said "Tap to see who won").
+        $ctitle = isset($data['challengeTitle']) ? trim((string) $data['challengeTitle']) : '';
+        $tail   = $format === 'meet' ? 'Tap to see how it went' : 'Tap to see who won';
+        $body   = $ctitle !== '' ? "{$ctitle} · {$tail}" : $tail;
         // $push=false for the actor (host) - they get the modal directly, no push.
         self::create($userId, $type, $title, $body, array_merge($data, [
             'challengeId'    => $challengeId,
             'challengerName' => $challengerName,
             'name'           => $challengerName,   // {name} fallback for NotificationI18n
+            'title'          => $ctitle,           // {title} for NotificationI18n bodies
         ]), $push);
     }
 

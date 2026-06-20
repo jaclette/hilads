@@ -9466,6 +9466,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
                     'winnerName'       => null,
                     'winnerPhotoUrl'   => null,
                     'participantCount' => $presentCount,
+                    'challengeTitle'   => $challenge['title'] ?? '',
                 ]);
             } catch (\Throwable $e) {}
             if (!$isPresent) {
@@ -9479,6 +9480,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate-presence', funct
                 'myPoints'         => $hostPoints,
                 'winnerUserId'     => null, 'winnerName' => null, 'winnerPhotoUrl' => null,
                 'participantCount' => $presentCount,
+                'challengeTitle'   => $challenge['title'] ?? '',
                 'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $presentCount],
             ], false); // host = actor → modal directly, no push
             // Re-ping the host AFTER their reveal row exists so the gate's
@@ -9725,6 +9727,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
                 'winnerName'       => $winnerName,
                 'winnerPhotoUrl'   => $winnerPhoto,
                 'participantCount' => $submitterCount,
+                'challengeTitle'   => $challenge['title'] ?? '',
             ]);
         } catch (\Throwable $e) { error_log('[challenges] pick-winner reveal notify failed (non-fatal): ' . $e->getMessage()); }
         try { broadcastChallengeAcceptedToWs($s['user_id'], ['challengeId' => $challengeId, 'challenge' => ['id' => $challengeId]]); } catch (\Throwable $e) {}
@@ -9738,6 +9741,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
             'winnerName'       => $winnerName,
             'winnerPhotoUrl'   => $winnerPhoto,
             'participantCount' => $submitterCount,
+            'challengeTitle'   => $challenge['title'] ?? '',
             'hostBreakdown'    => ['base' => $basePts, 'perHead' => $perHead, 'heads' => $submitterCount],
         ], false); // host = actor → modal directly, no push
         // Re-ping the host AFTER their reveal row exists so the gate's refetch
