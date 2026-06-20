@@ -85,14 +85,20 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
         {showPoints ? (
           <div className="crm-points-block">
             <div className="crm-points">+{displayPoints}</div>
-            {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (
-              <div className="crm-breakdown">
-                {t('result.host.breakdown', {
-                  base: hostBreakdown.base, perHead: hostBreakdown.perHead, heads: hostBreakdown.heads,
-                  defaultValue: `+${hostBreakdown.base} base · +${hostBreakdown.perHead} ×${hostBreakdown.heads}`,
-                })}
-              </div>
-            ) : null}
+            {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (() => {
+              const { base, perHead, heads } = hostBreakdown
+              const headTotal = perHead * heads
+              // A person emoji per attendee (capped) → reads as a game: 🙋🙋🙋 = +15.
+              const people = heads <= 6 ? '🙋'.repeat(heads) : `🙋 ×${heads}`
+              return (
+                <div className="crm-breakdown">
+                  {t('result.host.breakdown', {
+                    base, people, headTotal,
+                    defaultValue: `${people} = +${headTotal}   🏠 +${base}`,
+                  })}
+                </div>
+              )
+            })() : null}
             {finalTotal > 0 ? (
               <div className={`crm-total${targetPoints > 0 && displayPoints >= targetPoints ? ' is-lit' : ''}`}>
                 {t('result.total', { total: displayTotal, defaultValue: `You now have ${displayTotal} points` })}

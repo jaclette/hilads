@@ -715,7 +715,7 @@
       "titlePhoto": "{{name}} a gagné ton concours !",
       "titleMeet": "Ton rendez-vous est terminé !",
       "body": "Merci d'avoir organisé.",
-      "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Super !",
     "total": "Tu as maintenant {{total}} points"

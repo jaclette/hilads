@@ -126,14 +126,21 @@ export function ChallengeResultModal({
             {showPoints ? (
               <View style={styles.pointsBlock}>
                 <Text style={styles.points}>+{displayPoints}</Text>
-                {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (
-                  <Text style={styles.breakdown}>
-                    {t('result.host.breakdown', {
-                      base: hostBreakdown.base, perHead: hostBreakdown.perHead, heads: hostBreakdown.heads,
-                      defaultValue: `+${hostBreakdown.base} base · +${hostBreakdown.perHead} ×${hostBreakdown.heads}`,
-                    })}
-                  </Text>
-                ) : null}
+                {myRole === 'host' && hostBreakdown && hostBreakdown.heads > 0 ? (() => {
+                  const { base, perHead, heads } = hostBreakdown;
+                  const headTotal = perHead * heads;
+                  // A person emoji per attendee (capped) → reads as a game, not a
+                  // ledger: 🙋🙋🙋 = +15. Beyond the cap fall back to 🙋 ×N.
+                  const people = heads <= 6 ? '🙋'.repeat(heads) : `🙋 ×${heads}`;
+                  return (
+                    <Text style={styles.breakdown}>
+                      {t('result.host.breakdown', {
+                        base, people, headTotal,
+                        defaultValue: `${people} = +${headTotal}   🏠 +${base}`,
+                      })}
+                    </Text>
+                  );
+                })() : null}
                 {finalTotal > 0 ? (
                   <Animated.Text
                     style={[

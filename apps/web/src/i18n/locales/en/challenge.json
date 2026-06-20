@@ -749,7 +749,7 @@
       "titlePhoto": "{{name}} won your contest!",
       "titleMeet": "Your meet is done!",
       "body": "Thanks for hosting.",
-      "breakdown": "+{{base}} base · +{{perHead}} ×{{heads}}"
+      "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Nice!",
     "total": "You now have {{total}} points"
