@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
+import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { fetchChallengeReveals, type ChallengeReveal } from '@/api/challenges';
@@ -64,11 +65,21 @@ export function ChallengeResultLaunchGate() {
     setQueue((prev) => prev.slice(1));
   }, [current]);
 
+  // Tap a rank row → ack + close, then open the leaderboard ("most locals")
+  // pre-scoped to that lens (city default / world via the query param).
+  const handleOpenLeaderboard = useCallback((scope: 'city' | 'world') => {
+    handleClose();
+    router.push(scope === 'world'
+      ? { pathname: '/leaderboard', params: { scope: 'world' } }
+      : { pathname: '/leaderboard' });
+  }, [handleClose]);
+
   return (
     <ChallengeResultModal
       reveal={current}
       visible={current !== null}
       onClose={handleClose}
+      onOpenLeaderboard={handleOpenLeaderboard}
     />
   );
 }

@@ -10,7 +10,7 @@ import ChallengeResultModal from './ChallengeResultModal'
  * city-room `challenge_validated` WS event; cold load is the fallback. Acks via
  * mark-read so a reveal never re-shows.
  */
-export default function ChallengeResultLaunchGate({ account, refetchKey = 0 }) {
+export default function ChallengeResultLaunchGate({ account, refetchKey = 0, onOpenLeaderboard }) {
   const [queue, setQueue] = useState([])
   const current = queue[0] ?? null
   const loading = useRef(false)
@@ -39,5 +39,18 @@ export default function ChallengeResultLaunchGate({ account, refetchKey = 0 }) {
     setQueue((prev) => prev.slice(1))
   }, [current])
 
-  return <ChallengeResultModal reveal={current} visible={current !== null} onClose={handleClose} />
+  // Tap a rank row → ack + close, then open the leaderboard scoped to that lens.
+  const handleOpenLeaderboard = useCallback((scope) => {
+    handleClose()
+    onOpenLeaderboard?.(scope)
+  }, [handleClose, onOpenLeaderboard])
+
+  return (
+    <ChallengeResultModal
+      reveal={current}
+      visible={current !== null}
+      onClose={handleClose}
+      onOpenLeaderboard={onOpenLeaderboard ? handleOpenLeaderboard : undefined}
+    />
+  )
 }

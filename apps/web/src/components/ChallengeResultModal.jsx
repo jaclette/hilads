@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
  * GROUP challenge result reveal modal (web). Role-specific, never-negative copy
  * + (photo contests) the winning photo. Web mirror of ChallengeResultModal.tsx.
  */
-export default function ChallengeResultModal({ reveal, visible, onClose }) {
+export default function ChallengeResultModal({ reveal, visible, onClose, onOpenLeaderboard }) {
   const { t } = useTranslation('challenge')
   const [displayPoints, setDisplayPoints] = useState(0)
   const rafRef = useRef(null)
@@ -103,21 +103,35 @@ export default function ChallengeResultModal({ reveal, visible, onClose }) {
 
         {rankTopN != null ? (
           <div className="crm-rank-block">
-            <div className="crm-rank-row">
+            <div
+              className={`crm-rank-row${onOpenLeaderboard ? ' crm-rank-row--tappable' : ''}`}
+              role={onOpenLeaderboard ? 'button' : undefined}
+              tabIndex={onOpenLeaderboard ? 0 : undefined}
+              onClick={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
+              onKeyDown={onOpenLeaderboard ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('city') } } : undefined}
+            >
               <span className="crm-rank-flag">📍</span>
               <span className="crm-rank-label">
                 {rankCity != null
                   ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
                   : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
               </span>
+              {onOpenLeaderboard ? <span className="crm-rank-chevron">›</span> : null}
             </div>
-            <div className="crm-rank-row">
+            <div
+              className={`crm-rank-row${onOpenLeaderboard ? ' crm-rank-row--tappable' : ''}`}
+              role={onOpenLeaderboard ? 'button' : undefined}
+              tabIndex={onOpenLeaderboard ? 0 : undefined}
+              onClick={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
+              onKeyDown={onOpenLeaderboard ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpenLeaderboard('world') } } : undefined}
+            >
               <span className="crm-rank-flag">🌐</span>
               <span className="crm-rank-label">
                 {rankGlobal != null
                   ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
                   : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
               </span>
+              {onOpenLeaderboard ? <span className="crm-rank-chevron">›</span> : null}
             </div>
           </div>
         ) : null}

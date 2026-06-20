@@ -13227,6 +13227,9 @@ body.has-app-promo-banner .page-header {
 .crm-rank-row { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 10px 12px; }
 .crm-rank-flag { font-size: 1rem; }
 .crm-rank-label { flex: 1; font-size: 0.86rem; font-weight: 600; color: var(--text, #f3ede4); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.crm-rank-chevron { font-size: 1.1rem; font-weight: 700; color: var(--muted, #9a9088); }
+.crm-rank-row--tappable { cursor: pointer; transition: background 0.12s; }
+.crm-rank-row--tappable:hover { background: rgba(255,255,255,0.09); }
 .crm-points-block { display: flex; flex-direction: column; align-items: center; margin-top: 4px; }
 .crm-points { font-size: 2.8rem; font-weight: 900; color: #ffc93c; letter-spacing: -1px; }
 .crm-breakdown { font-size: 0.86rem; font-weight: 700; color: var(--muted-2, #888); margin-top: 2px; }

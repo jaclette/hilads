@@ -6565,6 +6565,11 @@ export default function App() {
       <ChallengeResultLaunchGate
         account={account}
         refetchKey={challengeResultRefetchKey}
+        onOpenLeaderboard={(scope) => {
+          // Rank-row tap on the result reveal → leaderboard, scoped to that lens.
+          setLeaderboardScope(scope === 'world' ? 'world' : 'city')
+          setShowLeaderboard(true)
+        }}
       />
       <ScoreCelebrationLaunchGate
         account={account}

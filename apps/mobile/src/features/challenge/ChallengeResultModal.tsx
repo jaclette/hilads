@@ -10,11 +10,12 @@ import type { ChallengeReveal } from '@/api/challenges';
  * (photo contests) the winning photo. Driven by ChallengeResultLaunchGate.
  */
 export function ChallengeResultModal({
-  reveal, visible, onClose,
+  reveal, visible, onClose, onOpenLeaderboard,
 }: {
   reveal:  ChallengeReveal | null;
   visible: boolean;
   onClose: () => void;
+  onOpenLeaderboard?: (scope: 'city' | 'world') => void;
 }) {
   const { t } = useTranslation('challenge');
 
@@ -154,22 +155,34 @@ export function ChallengeResultModal({
             {/* Current ranking - same lens as the +points celebration popin. */}
             {rankTopN != null ? (
               <View style={styles.rankBlock}>
-                <View style={styles.rankRow}>
+                <TouchableOpacity
+                  style={styles.rankRow}
+                  activeOpacity={onOpenLeaderboard ? 0.7 : 1}
+                  disabled={!onOpenLeaderboard}
+                  onPress={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
+                >
                   <Text style={styles.rankFlag}>📍</Text>
                   <Text style={styles.rankLabel} numberOfLines={1}>
                     {rankCity != null
                       ? t('scoreCelebration.rank.city',       { rank: rankCity, city: cityName ?? '' })
                       : t('scoreCelebration.rank.cityBeyond', { topN: rankTopN })}
                   </Text>
-                </View>
-                <View style={styles.rankRow}>
+                  {onOpenLeaderboard ? <Text style={styles.rankChevron}>›</Text> : null}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.rankRow}
+                  activeOpacity={onOpenLeaderboard ? 0.7 : 1}
+                  disabled={!onOpenLeaderboard}
+                  onPress={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
+                >
                   <Text style={styles.rankFlag}>🌐</Text>
                   <Text style={styles.rankLabel} numberOfLines={1}>
                     {rankGlobal != null
                       ? t('scoreCelebration.rank.world',       { rank: rankGlobal })
                       : t('scoreCelebration.rank.worldBeyond', { topN: rankTopN })}
                   </Text>
-                </View>
+                  {onOpenLeaderboard ? <Text style={styles.rankChevron}>›</Text> : null}
+                </TouchableOpacity>
               </View>
             ) : null}
 
@@ -209,6 +222,7 @@ const styles = StyleSheet.create({
   rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
   rankFlag:  { fontSize: FontSizes.md },
   rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+  rankChevron: { fontSize: FontSizes.lg, color: Colors.muted, fontWeight: '700' },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
