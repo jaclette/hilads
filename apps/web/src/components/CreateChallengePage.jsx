@@ -255,7 +255,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
       return
     }
     if (isGroupPhoto && !deadlineHours) {
-      setError(t('group.deadlineRequired', { ns: 'challenge', defaultValue: 'Choose how long the contest runs.' }))
+      setError(t('group.deadlineRequired', { ns: 'challenge', defaultValue: 'Choose how long the challenge runs.' }))
       return
     }
 

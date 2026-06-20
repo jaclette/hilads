@@ -576,7 +576,7 @@
   "result": {
     "winner": {
       "title": "Hai vinto!",
-      "body": "La tua foto ha vinto il contest."
+      "body": "La tua foto ha vinto la sfida."
     },
     "loser": {
       "title": "{{name}} ha vinto",
@@ -591,7 +591,7 @@
       "body": "Non perderti il prossimo incontro — il tuo posto ti aspetta."
     },
     "host": {
-      "titlePhoto": "{{name}} ha vinto il tuo contest!",
+      "titlePhoto": "{{name}} ha vinto la tua sfida!",
       "titleMeet": "Il tuo incontro è finito!",
       "body": "Grazie per aver organizzato.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

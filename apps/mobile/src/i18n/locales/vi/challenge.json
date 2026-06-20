@@ -564,12 +564,12 @@
     },
     "pointsHeading": "💯 Cách kiếm điểm",
     "ways": {
-      "join": "Tham gia buổi gặp hoặc cuộc thi",
+      "join": "Tham gia buổi gặp hoặc thử thách",
       "create": "Tạo thử thách",
       "present": "Có mặt — được xác nhận",
       "host": "Tổ chức buổi gặp — cơ bản + mỗi người có mặt",
       "submit": "Gửi ảnh dự thi",
-      "win": "Thắng cuộc thi ảnh"
+      "win": "Thắng thử thách ảnh"
     },
     "seeExamples": "Xem 3 ví dụ thực tế"
   },
@@ -641,9 +641,9 @@
     "deadline1w": "1 tuần",
     "deadlineHint": "Ai tham gia cũng gửi một ảnh trước hạn. Bạn chọn người thắng sau đó.",
     "deadlineRequiredTitle": "Chọn hạn nộp",
-    "deadlineRequired": "Chọn thời lượng cuộc thi.",
+    "deadlineRequired": "Chọn thời lượng thử thách.",
     "deadlinePrefix": "Nộp trước",
-    "contestDone": "Cuộc thi đã kết thúc.",
+    "contestDone": "Thử thách đã kết thúc.",
     "youreInPhoto": "Bạn đã tham gia — gửi ảnh của bạn bên dưới.",
     "pickWinnerCta": "Chọn người thắng",
     "joinContestCta": "Tham gia thử thách (+2 điểm)",
@@ -659,7 +659,7 @@
     "winnerConfirmTitle": "Vinh danh người thắng?",
     "winnerConfirmBody": "{{name}} nhận phần thưởng lớn.",
     "pickHint": "Chọn người thắng từ các ảnh bên dưới.",
-    "awaitingPhotos": "Chưa có ảnh nào — cuộc thi đang nóng lên 🔥"
+    "awaitingPhotos": "Chưa có ảnh nào — thử thách đang nóng lên 🔥"
   },
   "challengeIntro": {
     "slide1": {
@@ -668,7 +668,7 @@
     },
     "slide2": {
       "title": "Tạo khung thử thách",
-      "body": "Đặt một buổi gặp (ngày + địa điểm) hoặc một cuộc thi ảnh có hạn chót. Bạn là người tổ chức."
+      "body": "Đặt một buổi gặp (ngày + địa điểm) hoặc một thử thách ảnh có hạn chót. Bạn là người tổ chức."
     },
     "slide3": {
       "title": "Ai cũng có thể tham gia",
@@ -684,7 +684,7 @@
     },
     "slide6": {
       "title": "Giữa các thành phố",
-      "body": "Cuộc thi ảnh hoạt động từ xa — thách cả một thành phố khác gửi ảnh đẹp nhất."
+      "body": "Thử thách ảnh hoạt động từ xa — thách cả một thành phố khác gửi ảnh đẹp nhất."
     },
     "slide7": {
       "title": "Leo bảng xếp hạng",
@@ -694,7 +694,7 @@
   "result": {
     "winner": {
       "title": "Bạn đã thắng!",
-      "body": "Ảnh của bạn đã thắng cuộc thi."
+      "body": "Ảnh của bạn đã thắng thử thách."
     },
     "loser": {
       "title": "{{name}} đã thắng",
@@ -709,7 +709,7 @@
       "body": "Tham gia buổi gặp tới — chỗ của bạn vẫn còn đó."
     },
     "host": {
-      "titlePhoto": "{{name}} đã thắng cuộc thi của bạn!",
+      "titlePhoto": "{{name}} đã thắng thử thách của bạn!",
       "titleMeet": "Buổi gặp của bạn đã xong!",
       "body": "Cảm ơn bạn đã tổ chức.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

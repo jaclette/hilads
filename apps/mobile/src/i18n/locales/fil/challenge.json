@@ -597,7 +597,7 @@
   "result": {
     "winner": {
       "title": "Nanalo ka!",
-      "body": "Nanalo ang photo mo sa contest."
+      "body": "Nanalo ang photo mo sa challenge."
     },
     "loser": {
       "title": "Nanalo si {{name}}",
@@ -612,7 +612,7 @@
       "body": "Samahan mo 'yung susunod na meet — naghihintay ang puwesto mo."
     },
     "host": {
-      "titlePhoto": "Nanalo si {{name}} sa contest mo!",
+      "titlePhoto": "Nanalo si {{name}} sa challenge mo!",
       "titleMeet": "Tapos na ang meet mo!",
       "body": "Salamat sa pag-host.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

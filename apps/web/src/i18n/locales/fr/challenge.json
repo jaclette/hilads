@@ -536,7 +536,7 @@
     "types": {
       "heading": "Deux types de challenge",
       "local": "🏙️ Rendez-vous — réunis un groupe en personne à une date + un lieu. Tous les présents gagnent gros.",
-      "international": "🌍 Concours photo — chacun envoie une photo avant la deadline ; le créateur choisit le gagnant."
+      "international": "🌍 Défi photo — chacun envoie une photo avant la deadline ; le créateur choisit le gagnant."
     },
     "lifecycle": {
       "heading": "Comment ça se résout",
@@ -544,12 +544,12 @@
     },
     "pointsHeading": "💯 Comment gagner des points",
     "ways": {
-      "join": "Rejoindre un rendez-vous ou un concours",
+      "join": "Rejoindre un rendez-vous ou un défi",
       "create": "Créer un challenge",
       "present": "Être présent — validé sur place",
       "host": "Organiser un rendez-vous — base + par personne présente",
-      "submit": "Soumettre une photo à un concours",
-      "win": "Gagner le concours photo"
+      "submit": "Soumettre une photo à un défi",
+      "win": "Gagner le défi photo"
     },
     "seeExamples": "Voir 3 vrais exemples"
   },
@@ -623,9 +623,9 @@
     "deadline1w": "1 semaine",
     "deadlineHint": "Tous ceux qui rejoignent envoient une photo avant la date limite. Tu choisis le gagnant ensuite.",
     "deadlineRequiredTitle": "Choisis une date limite",
-    "deadlineRequired": "Choisis la durée du concours.",
+    "deadlineRequired": "Choisis la durée du défi.",
     "deadlinePrefix": "Avant le",
-    "contestDone": "Ce concours est terminé.",
+    "contestDone": "Ce défi est terminé.",
     "youreInPhoto": "Tu es dans la partie — envoie ta photo ci-dessous.",
     "pickWinnerCta": "Choisir le gagnant",
     "joinContestCta": "Rejoindre le défi (+2 pts)",
@@ -641,7 +641,7 @@
     "winnerConfirmTitle": "Couronner le gagnant ?",
     "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
     "pickHint": "Choisis le gagnant parmi les photos ci-dessous.",
-    "awaitingPhotos": "Pas encore de photos — le concours chauffe 🔥"
+    "awaitingPhotos": "Pas encore de photos — le défi chauffe 🔥"
   },
   "challengeIntro": {
     "slide1": {
@@ -650,7 +650,7 @@
     },
     "slide2": {
       "title": "Cadre un challenge",
-      "body": "Définis un rendez-vous (date + lieu) ou un concours photo avec une deadline. C'est toi l'hôte."
+      "body": "Définis un rendez-vous (date + lieu) ou un défi photo avec une deadline. C'est toi l'hôte."
     },
     "slide3": {
       "title": "Chacun rejoint",
@@ -666,7 +666,7 @@
     },
     "slide6": {
       "title": "Entre villes",
-      "body": "Les concours photo marchent à distance — défie une autre ville d'envoyer son meilleur cliché."
+      "body": "Les défi photo marchent à distance — défie une autre ville d'envoyer son meilleur cliché."
     },
     "slide7": {
       "title": "Grimpe le classement",
@@ -676,7 +676,7 @@
   "result": {
     "winner": {
       "title": "Tu as gagné !",
-      "body": "Ta photo a remporté le concours."
+      "body": "Ta photo a remporté le défi."
     },
     "loser": {
       "title": "{{name}} a gagné",
@@ -691,7 +691,7 @@
       "body": "Rejoins le prochain rendez-vous — ta place t'attend."
     },
     "host": {
-      "titlePhoto": "{{name}} a gagné ton concours !",
+      "titlePhoto": "{{name}} a gagné ton défi !",
       "titleMeet": "Ton rendez-vous est terminé !",
       "body": "Merci d'avoir organisé.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

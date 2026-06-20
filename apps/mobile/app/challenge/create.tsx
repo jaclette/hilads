@@ -242,7 +242,7 @@ export default function CreateChallengeScreen() {
       return;
     }
     if (isGroupPhoto && !deadlineHours) {
-      Alert.alert(t('group.deadlineRequiredTitle', { defaultValue: 'Pick a deadline' }), t('group.deadlineRequired', { defaultValue: 'Choose how long the contest runs.' }));
+      Alert.alert(t('group.deadlineRequiredTitle', { defaultValue: 'Pick a deadline' }), t('group.deadlineRequired', { defaultValue: 'Choose how long the challenge runs.' }));
       return;
     }
     const wantsPublic = (mode === 'international') || visibility === 'public';

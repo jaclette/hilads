@@ -62,7 +62,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
   switch (myRole) {
     case 'winner':
       emoji = '👑'; title = t('result.winner.title', { defaultValue: 'You won!' })
-      body = t('result.winner.body', { defaultValue: 'Your photo took the contest.' })
+      body = t('result.winner.body', { defaultValue: 'Your photo took the challenge.' })
       break
     case 'loser':
       emoji = '📸'; title = t('result.loser.title', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won` })
@@ -79,7 +79,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
     case 'host':
       emoji = '🏆'
       title = isPhoto
-        ? t('result.host.titlePhoto', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won your contest!` })
+        ? t('result.host.titlePhoto', { name: winnerName ?? '', defaultValue: `${winnerName ?? 'Someone'} won your challenge!` })
         : t('result.host.titleMeet', { defaultValue: 'Your meet is done!' })
       body = t('result.host.body', { defaultValue: 'Thanks for hosting.' })
       break

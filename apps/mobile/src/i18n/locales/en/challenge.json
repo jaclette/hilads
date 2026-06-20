@@ -206,7 +206,7 @@
     "types": {
       "heading": "Two kinds of challenge",
       "local": "🏙️ Meet — gather a group in person at a set time + place. Everyone who shows up earns big.",
-      "international": "🌍 Photo contest — everyone submits a photo before the deadline; the challenger picks the winner."
+      "international": "🌍 Photo challenge — everyone submits a photo before the deadline; the challenger picks the winner."
     },
     "lifecycle": {
       "heading": "How it resolves",
@@ -214,12 +214,12 @@
     },
     "pointsHeading": "💯 How you earn points",
     "ways": {
-      "join": "Join a meet or contest",
+      "join": "Join a meet or challenge",
       "create": "Create a challenge",
       "present": "Show up — validated present",
       "host": "Host a meet — base + per person who shows up",
-      "submit": "Submit a photo to a contest",
-      "win": "Win the photo contest"
+      "submit": "Submit a photo to a challenge",
+      "win": "Win the photo challenge"
     },
     "seeExamples": "See 3 real examples"
   },
@@ -678,9 +678,9 @@
     "deadline1w": "1 week",
     "deadlineHint": "Everyone who joins submits a photo before the deadline. You pick the winner afterwards.",
     "deadlineRequiredTitle": "Pick a deadline",
-    "deadlineRequired": "Choose how long the contest runs.",
+    "deadlineRequired": "Choose how long the challenge runs.",
     "deadlinePrefix": "Submit by",
-    "contestDone": "This contest is done.",
+    "contestDone": "This challenge is done.",
     "youreInPhoto": "You're in — submit your photo below.",
     "pickWinnerCta": "Pick the winner",
     "joinContestCta": "Join the challenge (+2 pts)",
@@ -696,7 +696,7 @@
     "winnerConfirmTitle": "Crown the winner?",
     "winnerConfirmBody": "{{name}} wins the big reward.",
     "pickHint": "Pick the winner from the photos below.",
-    "awaitingPhotos": "No photos yet — the contest is heating up 🔥"
+    "awaitingPhotos": "No photos yet — the challenge is heating up 🔥"
   },
   "challengeIntro": {
     "slide1": {
@@ -705,7 +705,7 @@
     },
     "slide2": {
       "title": "Frame a challenge",
-      "body": "Set a meet (a date + a place) or a photo contest with a deadline. You're the host."
+      "body": "Set a meet (a date + a place) or a photo challenge with a deadline. You're the host."
     },
     "slide3": {
       "title": "Anyone just joins",
@@ -721,7 +721,7 @@
     },
     "slide6": {
       "title": "Across cities",
-      "body": "Photo contests work at a distance — challenge a whole other city to send their best shot."
+      "body": "Photo challenges work at a distance — challenge a whole other city to send their best shot."
     },
     "slide7": {
       "title": "Climb Most Local",
@@ -731,7 +731,7 @@
   "result": {
     "winner": {
       "title": "You won!",
-      "body": "Your photo took the contest."
+      "body": "Your photo took the challenge."
     },
     "loser": {
       "title": "{{name}} won",
@@ -746,7 +746,7 @@
       "body": "Catch the next meet — your spot is waiting."
     },
     "host": {
-      "titlePhoto": "{{name}} won your contest!",
+      "titlePhoto": "{{name}} won your challenge!",
       "titleMeet": "Your meet is done!",
       "body": "Thanks for hosting.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
