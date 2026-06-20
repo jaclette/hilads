@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { badgeLabel } from '../badgeMeta'
@@ -646,7 +647,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     </div>
                   )}
                   {item.type === 'image' && item.imageUrl
-                    ? <img src={item.imageUrl} alt="" className="msg-image" style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }} />
+                    ? <ThumbImg src={item.imageUrl} alt="" className="msg-image" style={{ maxWidth: '100%', borderRadius: 10, display: 'block' }} />
                     : <>
                         <span className="msg-text">{renderMessageContent(item)}</span>
                         {(() => {

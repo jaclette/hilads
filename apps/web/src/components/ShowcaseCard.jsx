@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import ThumbImg from './ThumbImg'
 import { countryToFlag } from '../lib/countryFlag'
 
 const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
@@ -31,7 +32,7 @@ export default function ShowcaseCard({ item, onOpen, onAvatar }) {
       </div>
 
       <div className="showcase-body">
-        {hasProof && <img className="showcase-proof" src={item.proof_media_url} alt="" />}
+        {hasProof && <ThumbImg className="showcase-proof" src={item.proof_media_url} alt="" />}
         <div className="showcase-text">
           <div className="showcase-title">{icon} {item.title}</div>
           {cityLabel && <div className="showcase-city">📍 {cityLabel}</div>}

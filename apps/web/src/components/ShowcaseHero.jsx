@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 import { fetchChallengeShowcase } from '../api'
@@ -21,7 +22,7 @@ function Slide({ item, onOpen }) {
 
   return (
     <button type="button" className="showcase-hero-slide" onClick={onOpen}>
-      {hasProof && <img className="showcase-hero-img" src={item.proof_media_url} alt="" />}
+      {hasProof && <ThumbImg className="showcase-hero-img" src={item.proof_media_url} alt="" />}
       <div className={`showcase-hero-overlay${hasProof ? '' : ' showcase-hero-overlay--flat'}`}>
         <div className="showcase-hero-top">
           <span className={`showcase-hero-pill ${intl ? 'showcase-hero-pill--intl' : 'showcase-hero-pill--local'}`}>

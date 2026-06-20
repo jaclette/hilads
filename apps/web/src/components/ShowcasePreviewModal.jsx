@@ -1,4 +1,5 @@
 import { createPortal } from 'react-dom'
+import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 
@@ -50,7 +51,7 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
         <button type="button" className="showcase-preview-close" onClick={onClose} aria-label="Close">✕</button>
 
         <div className="showcase-preview-scroll">
-          {hasProof && <img className="showcase-preview-proof" src={item.proof_media_url} alt="" />}
+          {hasProof && <ThumbImg className="showcase-preview-proof" src={item.proof_media_url} alt="" />}
 
           <div className="showcase-badges">
             {intl

@@ -3,6 +3,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { countryToFlag } from '@/lib/countryFlag';
+import { ThumbImage } from '@/components/ThumbImage';
 import type { ShowcaseItem } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
@@ -61,7 +62,7 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          {hasProof ? <Image source={{ uri: item.proof_media_url! }} style={styles.proof} resizeMode="cover" /> : null}
+          {hasProof ? <ThumbImage uri={item.proof_media_url!} style={styles.proof} /> : null}
 
           <View style={styles.badges}>
             <View style={[styles.modePill, intl ? styles.modeIntl : styles.modeLocal]}>

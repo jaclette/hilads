@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { countryToFlag } from '@/lib/countryFlag';
+import { ThumbImage } from '@/components/ThumbImage';
 import { fetchChallengeShowcase, type ShowcaseItem } from '@/api/challenges';
 import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet';
 import { Colors, FontSizes, Spacing } from '@/constants';
@@ -153,7 +154,7 @@ function Slide({ item, onOpen }: { item: ShowcaseItem; onOpen: () => void }) {
 
   return (
     <TouchableOpacity style={styles.slide} activeOpacity={0.9} onPress={onOpen}>
-      {hasProof ? <Image source={{ uri: item.proof_media_url! }} style={styles.slideImg} resizeMode="cover" /> : null}
+      {hasProof ? <ThumbImage uri={item.proof_media_url!} style={styles.slideImg} /> : null}
       <View style={[styles.slideOverlay, !hasProof && styles.slideOverlayFlat]}>
         <View style={styles.slideTop}>
           <View style={[styles.pill, intl ? styles.pillIntl : styles.pillLocal]}>

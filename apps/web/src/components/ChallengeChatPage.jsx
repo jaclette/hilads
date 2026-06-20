@@ -9,6 +9,7 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import {
@@ -1611,7 +1612,7 @@ export default function ChallengeChatPage({
                       )}
                       <div className="msg-content">
                         {m.type === 'image' && m.imageUrl ? (
-                          <img
+                          <ThumbImg
                             src={m.imageUrl}
                             alt=""
                             className="msg-image"

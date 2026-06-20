@@ -17,11 +17,12 @@
  * bubble via asymmetric corner radii on `imageStyle`.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   View, Image, TouchableOpacity, ActivityIndicator, Text, StyleSheet,
   type ImageStyle, type StyleProp,
 } from 'react-native';
+import { thumbUrl } from '@/lib/imageThumb';
 
 interface Props {
   uri: string | undefined | null;
@@ -37,6 +38,11 @@ interface Props {
 
 export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, imageStyle, surface = 'msg' }: Props) {
   const [loadFailed, setLoadFailed] = useState(false);
+  // Display the lightweight thumbnail; the caller's onPress still opens the full
+  // image. Fall back to the full URL if the thumb is missing (pre-deterministic
+  // uploads), and only then show the unavailable state.
+  const [src, setSrc] = useState<string>(() => thumbUrl(uri) ?? uri ?? '');
+  useEffect(() => { setSrc(thumbUrl(uri) ?? uri ?? ''); setLoadFailed(false); }, [uri]);
 
   if (!uri) {
     console.warn(`[${surface}-image] missing uri - image message cannot render`);
@@ -55,11 +61,13 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
       disabled={disabled && !onLongPress}
     >
       <Image
-        source={{ uri }}
+        source={{ uri: src }}
         style={imageStyle}
         resizeMode="cover"
         onError={(e) => {
           const reason = e?.nativeEvent?.error ?? 'unknown';
+          // Thumb missing (legacy upload) → retry with the full image once.
+          if (src !== uri) { setSrc(uri); return; }
           console.warn(`[${surface}-image] load error - uri=${uri} reason=${reason}`);
           setLoadFailed(true);
         }}

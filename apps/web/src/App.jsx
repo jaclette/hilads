@@ -37,6 +37,7 @@ import LeaderboardPage    from './components/LeaderboardPage'
 import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
+import ThumbImg from './components/ThumbImg'
 import { ReactionPills, ReplyPreview, MessageActionBubble } from './components/MessageActions'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
@@ -4721,7 +4722,7 @@ export default function App() {
                         <span className="msg-text">{t('messageDeleted', { ns: 'chat', defaultValue: 'Message deleted' })}</span>
                       </div>
                     ) : item.type === 'image' ? (
-                      <img
+                      <ThumbImg
                         src={item.imageUrl}
                         className="msg-image"
                         alt="shared image"

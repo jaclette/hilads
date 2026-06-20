@@ -2,6 +2,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { countryToFlag } from '@/lib/countryFlag';
+import { ThumbImage } from '@/components/ThumbImage';
 import { avatarColor } from '@/lib/avatarColors';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { ShowcaseItem } from '@/api/challenges';
@@ -53,7 +54,7 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
 
       <View style={styles.body}>
         {hasProof && (
-          <Image source={{ uri: item.proof_media_url! }} style={styles.proof} resizeMode="cover" />
+          <ThumbImage uri={item.proof_media_url!} style={styles.proof} />
         )}
         <View style={styles.bodyText}>
           <Text style={styles.title} numberOfLines={2}>{icon} {item.title}</Text>

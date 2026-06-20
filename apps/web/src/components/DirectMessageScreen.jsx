@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage, editDmMessage, deleteDmMessage } from '../api'
@@ -421,7 +422,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                       <span className="msg-text">{i18n.t('messageDeleted', { ns: 'chat', defaultValue: 'Message deleted' })}</span>
                     </div>
                   : msg.type === 'image'
-                  ? <img
+                  ? <ThumbImg
                       src={msg.image_url}
                       className="dm-image"
                       alt="shared image"

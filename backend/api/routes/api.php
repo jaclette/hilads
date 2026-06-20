@@ -4018,7 +4018,11 @@ $router->add('POST', '/api/v1/uploads', function () {
     $thumbTmp = ImageProcessor::generateAvatarThumbnail($file['tmp_name'], $mimeType);
     if ($thumbTmp !== null) {
         try {
-            $thumbFilename = 'thumb_' . bin2hex(random_bytes(8)) . '.jpg';
+            // Name the thumb DETERMINISTICALLY from the full file's base
+            // (thumb_<32hex>.jpg) so any client can derive the thumb URL from the
+            // image URL - no need to store it per message. Older thumbs used a
+            // random name; clients fall back to the full image on a 404.
+            $thumbFilename = 'thumb_' . pathinfo($filename, PATHINFO_FILENAME) . '.jpg';
             $thumbUrl      = R2Uploader::put($thumbTmp, $thumbFilename, 'image/jpeg');
         } catch (RuntimeException) {
             // Thumbnail upload failed - not fatal; caller uses full URL as fallback
