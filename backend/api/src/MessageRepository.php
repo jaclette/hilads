@@ -422,9 +422,15 @@ class MessageRepository
         // getByChannel: index scan on (channel_id, created_at DESC), then
         // tighten on challenge_acceptance_id (or its IS NULL form). The
         // partial index from migrate.php speeds the non-null branch.
-        $acceptanceClause = $acceptanceId === null
-            ? 'AND challenge_acceptance_id IS NULL'
-            : 'AND challenge_acceptance_id = :acc';
+        // '*' = ALL lanes (GROUP challenges: every taker's submission shares one
+        // channel, so we never filter by acceptance). null = only NULL-stamped
+        // (legacy, no active run). Otherwise the single active acceptance lane.
+        $acceptanceClause = $acceptanceId === '*'
+            ? ''
+            : ($acceptanceId === null
+                ? 'AND challenge_acceptance_id IS NULL'
+                : 'AND challenge_acceptance_id = :acc');
+        $bindAcc = $acceptanceId !== null && $acceptanceId !== '*';
 
         if ($beforeId !== null) {
             $sql = "
@@ -453,7 +459,7 @@ class MessageRepository
             $stmt->bindValue(':chan',   $dbChan);
             $stmt->bindValue(':before', $beforeId);
             $stmt->bindValue(':lim',    $fetch, \PDO::PARAM_INT);
-            if ($acceptanceId !== null) $stmt->bindValue(':acc', $acceptanceId);
+            if ($bindAcc) $stmt->bindValue(':acc', $acceptanceId);
             $stmt->execute();
         } else {
             $sql = "
@@ -480,7 +486,7 @@ class MessageRepository
             $stmt = Database::pdo()->prepare($sql);
             $stmt->bindValue(':chan', $dbChan);
             $stmt->bindValue(':lim',  $fetch, \PDO::PARAM_INT);
-            if ($acceptanceId !== null) $stmt->bindValue(':acc', $acceptanceId);
+            if ($bindAcc) $stmt->bindValue(':acc', $acceptanceId);
             $stmt->execute();
         }
 

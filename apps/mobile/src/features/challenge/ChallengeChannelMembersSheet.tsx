@@ -49,6 +49,9 @@ export function ChallengeChannelMembersSheet({
   const canKick = isCreator || isActiveTaker;
   const creatorUserId = challenge?.created_by ?? null;
   const takerUserId   = activeTaker?.id ?? null;
+  // In a GROUP challenge everyone who joined is a taker (multiple coexist);
+  // legacy 1-1 keeps a single active taker, the rest are spectators.
+  const isGroup       = (challenge?.challenge_format ?? 'legacy') === 'group';
 
   const load = useCallback(async () => {
     if (!visible || !challenge?.id) return;
@@ -107,7 +110,7 @@ export function ChallengeChannelMembersSheet({
       id:             m.id,
       displayName:    m.displayName ?? '-',
       thumbAvatarUrl: m.thumbAvatarUrl,
-      role:           'participant',
+      role:           isGroup ? 'taker' : 'participant',
     });
   }
 

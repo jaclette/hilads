@@ -40,6 +40,8 @@ export default function ChallengeChannelMembers({
 
   const creatorUserId = challenge?.created_by ?? null
   const takerUserId   = activeTaker?.id ?? null
+  // GROUP: every joined member is a taker (multiple coexist); legacy keeps one.
+  const isGroup       = (challenge?.challenge_format ?? 'legacy') === 'group'
   const isCreator     = currentUserId !== null && currentUserId === creatorUserId
   const isActiveTaker = currentUserId !== null && currentUserId === takerUserId
   const canKick       = isCreator || isActiveTaker
@@ -94,7 +96,7 @@ export default function ChallengeChannelMembers({
   }
   for (const m of members) {
     if (m.id === creatorUserId || m.id === takerUserId) continue
-    rows.push({ ...m, role: 'participant' })
+    rows.push({ ...m, role: isGroup ? 'taker' : 'participant' })
   }
 
   // Bar preview avatars - first 5 in role order (challenger, taker, then

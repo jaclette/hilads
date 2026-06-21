@@ -12732,10 +12732,12 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
 
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
-        // Each acceptance run gets its own chat lane - read only messages
-        // stamped with the currently-active acceptance, or only NULL-stamped
-        // messages when no run is in progress (pre/between-acceptance state).
-        $activeAcceptanceId = ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
+        // Legacy 1-1: each acceptance run is its own chat lane - read only the
+        // active acceptance's messages (or NULL-stamped between runs). GROUP
+        // challenges share ONE channel where every taker's submission must be
+        // visible, so we read ALL lanes ('*').
+        $isGroupChannel     = ($challenge['challenge_format'] ?? 'legacy') === 'group';
+        $activeAcceptanceId = $isGroupChannel ? '*' : ChallengeAcceptanceRepository::findActiveAcceptanceId($challengeId);
         $res = MessageRepository::getByChallengeChannel($challengeId, $activeAcceptanceId, $beforeId ?: null, $limit);
 
         // PR58 - enrich each text/image message with the sender's
