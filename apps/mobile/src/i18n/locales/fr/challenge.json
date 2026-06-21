@@ -78,7 +78,9 @@
     "daysLeft": "{{count}}j restants",
     "lastDay": "Dernier jour",
     "joinGroup": "Rejoindre le défi",
-    "whoJoined": "Qui a rejoint ({{count}})"
+    "whoJoined": "Qui a rejoint ({{count}})",
+    "ended": "Terminé",
+    "awaitingResults": "Résultats en attente"
   },
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",

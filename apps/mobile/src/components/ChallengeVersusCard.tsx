@@ -99,6 +99,12 @@ export function ChallengeVersusCard({
   const deadlineDaysLeft = (isGroupPhoto && challenge.meet_at)
     ? Math.ceil((challenge.meet_at * 1000 - Date.now()) / 86_400_000)
     : null;
+  // The meet date (meet) / submission deadline (photo) has passed but the
+  // challenger hasn't resolved it yet. NOT "available" anymore - you can't join
+  // a finished meet or submit past the deadline - so the card reads "ended /
+  // awaiting results" instead of the green Available pill + Join CTA.
+  const isEnded = isGroup && !isValidated
+    && challenge.meet_at != null && (challenge.meet_at * 1000) < Date.now();
   // Subtitle: "by {challenger} · {location} · {date}" (date for meet only).
   const groupLocation = challenge.venue || challenge.target_city_name || null;
   const groupSubtitle = [
@@ -139,7 +145,7 @@ export function ChallengeVersusCard({
           <View style={{ flex: 1 }} />
           {/* Photo-proof deadline lives up here with the status so the bottom
               row can carry the Join CTA. */}
-          {!isValidated && isGroupPhoto && deadlineDaysLeft != null ? (
+          {!isValidated && !isEnded && isGroupPhoto && deadlineDaysLeft != null ? (
             <View style={styles.deadlinePill}>
               <Text style={styles.deadlinePillText}>
                 ⏳ {deadlineDaysLeft >= 2
@@ -151,6 +157,10 @@ export function ChallengeVersusCard({
           {isValidated ? (
             <View style={styles.validatedBadge}>
               <Text style={styles.validatedBadgeText}>✓ {t('validatedBadge')}</Text>
+            </View>
+          ) : isEnded ? (
+            <View style={styles.endedPill}>
+              <Text style={styles.endedPillText}>⌛ {t('card.ended', { defaultValue: 'Ended' })}</Text>
             </View>
           ) : (
             <View style={styles.availablePill}>
@@ -188,7 +198,33 @@ export function ChallengeVersusCard({
             carries a count once there's something real to count - never
             "0 photos" / "no one joined" (those read as dead). */}
         <View style={styles.groupBottomRow}>
-          {zeroParticipants ? (
+          {isEnded ? (
+            // Date / deadline passed: show who's in (if anyone) but never a
+            // "Join" CTA - you can't join a finished meet or submit late.
+            <>
+              {participantCount > 0 ? (
+                <View style={styles.groupStackWrap}>
+                  <AttendeeAvatars
+                    preview={(challenge.participants_preview ?? []).slice(0, 4)}
+                    total={participantCount}
+                    size={34}
+                    borderColor={Colors.bg2}
+                    onPress={onAvatarsPress}
+                  />
+                  {(!isGroupPhoto || submissionCount >= 1) ? (
+                    <Text style={styles.groupCountText} numberOfLines={1}>
+                      {isGroupPhoto
+                        ? `📸 ${t('card.photosCount', { count: submissionCount, defaultValue: '{{count}} photos' })}`
+                        : t('card.joinedCount', { count: participantCount, defaultValue: '{{count}} joined' })}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : <View style={{ flex: 1 }} />}
+              <View style={styles.endedPill}>
+                <Text style={styles.endedPillText}>⌛ {t('card.awaitingResults', { defaultValue: 'Awaiting results' })}</Text>
+              </View>
+            </>
+          ) : zeroParticipants ? (
             // Nobody's in yet → just the action, no empty-state text.
             <>
               <View style={{ flex: 1 }} />
@@ -661,6 +697,18 @@ const styles = StyleSheet.create({
     borderColor:       'rgba(34,197,94,0.25)',
   },
   availablePillText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
+
+  // Neutral "ended / awaiting results" pill - the meet date or submission
+  // deadline passed but the challenger hasn't resolved it. Greyed, never green.
+  endedPill: {
+    backgroundColor:   'rgba(148,163,184,0.12)',
+    borderRadius:      Radius.full,
+    paddingHorizontal: 8,
+    paddingVertical:   2,
+    borderWidth:       1,
+    borderColor:       'rgba(148,163,184,0.28)',
+  },
+  endedPillText: { fontSize: 10, fontWeight: '700', color: '#cbd5e1', letterSpacing: 0.3 },
 
   // Versus row - fixed height = avatar diameter + ~10px breathing room so
   // the card height doesn't jump when the right side flips between the

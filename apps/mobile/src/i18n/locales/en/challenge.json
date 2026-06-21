@@ -78,7 +78,9 @@
     "daysLeft": "{{count}}d left",
     "lastDay": "Expires soon",
     "joinGroup": "Join the challenge",
-    "whoJoined": "Who joined ({{count}})"
+    "whoJoined": "Who joined ({{count}})",
+    "ended": "Ended",
+    "awaitingResults": "Awaiting results"
   },
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",

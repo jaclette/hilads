@@ -12686,6 +12686,12 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(34, 197, 94, 0.25);
   color: #4ade80;
 }
+/* "⌛ Ended" - neutral grey: the date/deadline passed, not yet resolved. */
+.challenge-badge--ended {
+  background: rgba(148, 163, 184, 0.12);
+  border-color: rgba(148, 163, 184, 0.28);
+  color: #cbd5e1;
+}
 /* "⏳ In progress" - amber tint matches the native mobile pill. There IS
    an earlier .challenge-badge--in-progress definition further up the file
    (line ~4376), but the generic .challenge-badge baseline defined right
@@ -13187,6 +13193,8 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-group-pill--join  { background: #ff7a3c; color: #fff; }
 .challenge-group-pill--first { background: #ffaa3c; color: #1a1206; }
+/* Non-actionable "awaiting results" state (date/deadline passed). */
+.challenge-group-pill--ended { background: rgba(148,163,184,0.14); color: #cbd5e1; cursor: default; }
 .challenge-group-deadline {
   border-radius: 999px;
   padding: 7px 12px;

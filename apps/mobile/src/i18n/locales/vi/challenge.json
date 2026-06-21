@@ -97,7 +97,9 @@
     "daysLeft": "Còn {{count}} ngày",
     "lastDay": "Sắp hết hạn",
     "joinGroup": "Tham gia thử thách",
-    "whoJoined": "Ai đã tham gia ({{count}})"
+    "whoJoined": "Ai đã tham gia ({{count}})",
+    "ended": "Đã kết thúc",
+    "awaitingResults": "Đang chờ kết quả"
   },
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
