@@ -82,12 +82,12 @@ export function ScoringInfoModal({
 
           <Text style={styles.footnote}>{t('scoringInfo.footnote')}</Text>
 
-          {/* See real examples - links to the Success Challenges showcase so the
-              user can see 3 completed challenges instead of just reading rules. */}
+          {/* See real examples - opens 3 resolved challenges WITH a who-earned-
+              what point breakdown (teaches the scoring, not just a showcase). */}
           <TouchableOpacity
             style={styles.examplesBtn}
             activeOpacity={0.85}
-            onPress={() => { onClose(); router.push('/challenge/showcase' as never); }}
+            onPress={() => { onClose(); router.push('/challenge/examples' as never); }}
           >
             <Text style={styles.examplesBtnText}>
               ✨ {t('scoringInfo.seeExamples', { defaultValue: 'See 3 real examples' })} →

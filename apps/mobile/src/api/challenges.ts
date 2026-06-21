@@ -58,6 +58,32 @@ export async function fetchChallengeShowcase(
   }
 }
 
+export interface ChallengeExampleLine {
+  kind:   'created' | 'winner' | 'present' | 'submission' | 'host';
+  name?:  string;
+  count?: number;
+  points: number;
+  per?:   boolean;
+}
+export interface ChallengeExample {
+  id:          string;
+  title:       string;
+  type:        string;
+  format:      'photo' | 'meet';
+  creatorName: string;
+  lines:       ChallengeExampleLine[];
+}
+
+/** 3 real resolved challenges + a who-earned-what point breakdown. */
+export async function fetchChallengeExamples(): Promise<ChallengeExample[]> {
+  try {
+    const data = await api.get<{ examples: ChallengeExample[] }>('/challenges/examples');
+    return data.examples ?? [];
+  } catch {
+    return [];
+  }
+}
+
 /** Active (status='open') challenges for a city. NOW feed reads the top 5. */
 export async function fetchCityChallenges(
   channelId: string,

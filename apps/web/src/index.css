@@ -13233,6 +13233,22 @@ body.has-app-promo-banner .page-header {
 .crm-rank-chevron { font-size: 1.1rem; font-weight: 700; color: var(--muted, #9a9088); }
 .crm-rank-row--tappable { cursor: pointer; transition: background 0.12s; }
 .crm-rank-row--tappable:hover { background: rgba(255,255,255,0.09); }
+.point-examples-panel { max-width: 460px; width: 100%; }
+.point-examples-head { display: flex; align-items: center; justify-content: space-between; }
+.point-examples-close { background: none; border: none; color: var(--muted, #9a9088); font-size: 1.1rem; cursor: pointer; }
+.point-examples-intro { font-size: 0.86rem; color: var(--muted, #9a9088); margin: 4px 0 12px; }
+.point-examples-empty, .point-examples-loading { color: var(--muted, #9a9088); text-align: center; padding: 16px 0; }
+.point-examples-list { display: flex; flex-direction: column; gap: 12px; max-height: 70vh; overflow-y: auto; }
+.point-example-card { background: var(--bg2, #1a1614); border: 1px solid var(--border, #2a2422); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+.point-example-cardhead { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.point-example-fmt { align-self: flex-start; border-radius: 999px; padding: 2px 8px; font-size: 0.66rem; font-weight: 800; }
+.point-example-fmt--meet  { background: rgba(96,165,250,0.14); color: #60a5fa; }
+.point-example-fmt--photo { background: rgba(255,201,60,0.14); color: #FFC93C; }
+.point-example-title { font-size: 0.95rem; font-weight: 800; color: var(--text, #f3ede4); }
+.point-example-line { display: flex; align-items: center; gap: 8px; }
+.point-example-line-icon { font-size: 1rem; }
+.point-example-line-label { flex: 1; font-size: 0.86rem; font-weight: 600; color: var(--text, #f3ede4); }
+.point-example-line-points { font-size: 0.86rem; font-weight: 800; color: #FF7A3C; }
 .crm-rate-block { align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 14px; }
 .crm-rate-title { font-size: 0.86rem; font-weight: 700; color: var(--text, #f3ede4); }
 .crm-rate-stars { display: flex; gap: 8px; }

@@ -706,5 +706,18 @@
   "status": {
     "live": "En cours",
     "done": "Terminé"
+  },
+  "pointExamples": {
+    "title": "3 exemples réels",
+    "intro": "Comment de vrais défis ont rapporté — qui a gagné quoi.",
+    "empty": "Pas encore d'exemples — sois le premier à lancer un défi !",
+    "each": "chacun",
+    "line": {
+      "created": "{{name}} l'a créé",
+      "winner": "{{name}} a gagné",
+      "present": "{{count}} sont venus",
+      "submission": "{{count}} ont envoyé une photo",
+      "host": "{{name}} a organisé"
+    }
   }
 }

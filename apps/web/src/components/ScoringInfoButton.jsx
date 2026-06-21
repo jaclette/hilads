@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import ChallengeExamplesModal from './ChallengeExamplesModal'
 
 /**
  * Web parity for the mobile ScoringInfoButton. Small round (i) button +
@@ -15,9 +16,10 @@ import { useTranslation } from 'react-i18next'
  * mobile pass shipped these keys for all 18 non-en locales - they live
  * in the same JSON file on web.
  */
-export default function ScoringInfoButton({ size = 22, className = '', labeled = false, onSeeExamples }) {
+export default function ScoringInfoButton({ size = 22, className = '', labeled = false }) {
   const { t } = useTranslation('challenge')
   const [open, setOpen] = useState(false)
+  const [examplesOpen, setExamplesOpen] = useState(false)
 
   return (
     <>
@@ -51,7 +53,8 @@ export default function ScoringInfoButton({ size = 22, className = '', labeled =
         </button>
       )}
 
-      {open && <ScoringInfoModal onClose={() => setOpen(false)} t={t} onSeeExamples={onSeeExamples} />}
+      {open && <ScoringInfoModal onClose={() => setOpen(false)} t={t} onSeeExamples={() => { setOpen(false); setExamplesOpen(true) }} />}
+      {examplesOpen && <ChallengeExamplesModal onClose={() => setExamplesOpen(false)} />}
     </>
   )
 }

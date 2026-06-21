@@ -8038,6 +8038,17 @@ $router->add('GET', '/api/v1/challenges/showcase', function () {
     }
 });
 
+// GET /api/v1/challenges/examples - 3 real resolved challenges with a who-earned-
+// what point breakdown, for the "See 3 real examples" teaching surface. Public.
+$router->add('GET', '/api/v1/challenges/examples', function () {
+    try {
+        Response::json(['examples' => ChallengeRepository::getExamples(3)]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] GET examples failed: ' . $e->getMessage());
+        Response::json(['examples' => []], 200);
+    }
+});
+
 // Create a new challenge. Requires a registered account - guests may browse,
 // accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so

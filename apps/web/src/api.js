@@ -1640,6 +1640,15 @@ export async function fetchChallengeShowcase({ cityId, limit = 30, before } = {}
   } catch { return { items: [], hasMore: false } }
 }
 
+// 3 real resolved challenges + a who-earned-what point breakdown.
+export async function fetchChallengeExamples() {
+  try {
+    const res = await fetch(`${BASE}/challenges/examples`, { credentials: 'include' })
+    if (!res.ok) return []
+    return (await res.json()).examples ?? []
+  } catch { return [] }
+}
+
 export async function fetchMyEvents(guestId) {
   const res = await fetch(`${BASE}/users/me/events?guestId=${encodeURIComponent(guestId)}`, { credentials: 'include' })
   if (!res.ok) throw new Error('Failed to fetch my events')

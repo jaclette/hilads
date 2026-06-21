@@ -813,6 +813,85 @@ class ChallengeRepository
     }
 
     /**
+     * Real, recently-resolved GROUP challenges with a human-readable point
+     * breakdown - the "See 3 real examples" teaching surface. For each challenge
+     * we aggregate score_events into structured lines (who earned what) the
+     * client localizes + renders. Public, anonymous-readable.
+     */
+    public static function getExamples(int $limit = 3): array
+    {
+        $limit = max(1, min(5, $limit));
+        $pdo   = Database::pdo();
+
+        // Recent validated PUBLIC group challenges that actually credited points.
+        $stmt = $pdo->prepare("
+            SELECT cc.channel_id, cc.title, cc.challenge_type, cc.validation_method, cc.mode,
+                   cc.created_by, u.display_name AS creator_name
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id AND c.status = 'active'
+            LEFT JOIN users u ON u.id = cc.created_by
+            WHERE cc.visibility = 'public'
+              AND cc.challenge_format = 'group'
+              AND cc.status = 'validated'
+              AND EXISTS (SELECT 1 FROM score_events se WHERE se.challenge_id = cc.channel_id)
+            ORDER BY cc.validated_at DESC
+            LIMIT " . $limit);
+        $stmt->execute();
+        $challenges = $stmt->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+
+        $out = [];
+        foreach ($challenges as $ch) {
+            $cid     = $ch['channel_id'];
+            $creator = $ch['creator_name'] ?? 'The challenger';
+            $isPhoto = ($ch['validation_method'] ?? 'meet') === 'photo_proof' || ($ch['mode'] ?? 'local') === 'international';
+
+            $ev = $pdo->prepare("
+                SELECT se.kind, se.points, se.user_id, u.display_name
+                FROM score_events se
+                LEFT JOIN users u ON u.id = se.user_id
+                WHERE se.challenge_id = ?
+            ");
+            $ev->execute([$cid]);
+            $events = $ev->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+
+            $winnerName = null; $winnerPts = 0;
+            $presentUsers = []; $presentPts = 0;
+            $submitUsers = [];  $submitPts = 0;
+            $createdPts = 0;
+            $hostPts = 0;
+            foreach ($events as $e) {
+                $k = $e['kind']; $p = (int) $e['points'];
+                if ($k === 'winner')           { $winnerName = $e['display_name']; $winnerPts = $p; }
+                elseif ($k === 'present')      { $presentUsers[$e['user_id']] = true; $presentPts = $p ?: $presentPts; }
+                elseif ($k === 'submission')   { $submitUsers[$e['user_id']] = true; $submitPts = $p ?: $submitPts; }
+                elseif ($k === 'challenge_created') { $createdPts += $p; }
+                elseif (in_array($k, ['present_host_base', 'present_host', 'photo_host'], true)) { $hostPts += $p; }
+            }
+
+            // Structured lines (client maps kind → localized label + icon).
+            $lines = [];
+            if ($createdPts > 0) $lines[] = ['kind' => 'created', 'name' => $creator, 'points' => $createdPts];
+            if ($isPhoto) {
+                if (count($submitUsers) > 0) $lines[] = ['kind' => 'submission', 'count' => count($submitUsers), 'points' => $submitPts ?: 5, 'per' => true];
+                if ($winnerName !== null)    $lines[] = ['kind' => 'winner', 'name' => $winnerName, 'points' => $winnerPts ?: 40];
+            } else {
+                if (count($presentUsers) > 0) $lines[] = ['kind' => 'present', 'count' => count($presentUsers), 'points' => $presentPts ?: 40, 'per' => true];
+            }
+            if ($hostPts > 0) $lines[] = ['kind' => 'host', 'name' => $creator, 'points' => $hostPts];
+
+            $out[] = [
+                'id'          => $cid,
+                'title'       => $ch['title'],
+                'type'        => $ch['challenge_type'],
+                'format'      => $isPhoto ? 'photo' : 'meet',
+                'creatorName' => $creator,
+                'lines'       => $lines,
+            ];
+        }
+        return $out;
+    }
+
+    /**
      * Single-challenge detail. When $viewerUserId is provided, the visibility
      * clause hides friends/private rows the viewer can't see - caller treats
      * a null return as 404 (same as deleted/never-existed). Default null

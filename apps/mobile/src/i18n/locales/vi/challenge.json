@@ -724,5 +724,18 @@
   "status": {
     "live": "Đang diễn ra",
     "done": "Đã xong"
+  },
+  "pointExamples": {
+    "title": "3 ví dụ thực tế",
+    "intro": "Cách các thử thách thực tế chia điểm — ai được gì.",
+    "empty": "Chưa có ví dụ nào — hãy là người đầu tiên tạo thử thách!",
+    "each": "mỗi người",
+    "line": {
+      "created": "{{name}} đã tạo",
+      "winner": "{{name}} đã thắng",
+      "present": "{{count}} người đã đến",
+      "submission": "{{count}} người đã gửi ảnh",
+      "host": "{{name}} đã tổ chức"
+    }
   }
 }

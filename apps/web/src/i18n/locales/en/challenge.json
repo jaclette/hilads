@@ -763,5 +763,18 @@
   "status": {
     "live": "Live",
     "done": "Done"
+  },
+  "pointExamples": {
+    "title": "3 real examples",
+    "intro": "How real challenges paid out — who earned what.",
+    "empty": "No examples yet — be the first to run a challenge!",
+    "each": "each",
+    "line": {
+      "created": "{{name}} created it",
+      "winner": "{{name}} won",
+      "present": "{{count}} showed up",
+      "submission": "{{count}} submitted a photo",
+      "host": "{{name}} hosted"
+    }
   }
 }
