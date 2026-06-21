@@ -55,7 +55,7 @@
     "food": "Comida",
     "place": "Sítio",
     "culture": "Cultura",
-    "help": "Ajuda"
+    "help": "Maluco"
   },
   "titleLabel": "O teu desafio",
   "titlePlaceholder": "ex. Leva-me ao teu café favorito",
@@ -112,7 +112,7 @@
     "food": "Desafio comida",
     "place": "Desafio sítio",
     "culture": "Desafio cultura",
-    "help": "Desafio ajuda"
+    "help": "Desafio maluco"
   },
   "challengerTag": "Desafiante",
   "participantsLabel": "Participantes",

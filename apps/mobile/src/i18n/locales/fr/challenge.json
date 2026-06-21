@@ -36,7 +36,7 @@
     "food": "Bouffe",
     "place": "Lieu",
     "culture": "Culture",
-    "help": "Aide"
+    "help": "Délire"
   },
   "titleLabel": "Ton défi",
   "titlePlaceholder": "ex. Emmène-moi dans ton spot café préféré",
@@ -49,7 +49,7 @@
     "food": "...et viens me la faire goûter 🍜",
     "place": "...et emmène-moi y faire un tour 🗺️",
     "culture": "...et on se retrouve pour en parler 🎭",
-    "help": "...et on se retrouve pour le faire ensemble 🙏"
+    "help": "...et on fait un truc de fou ensemble 🤪"
   },
   "createCta": "Lancer le défi 🔥",
   "saveChanges": "Enregistrer",
@@ -102,7 +102,7 @@
     "food": "Défi bouffe",
     "place": "Défi lieu",
     "culture": "Défi culture",
-    "help": "Défi aide"
+    "help": "Défi délire"
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Participants",

@@ -28,7 +28,7 @@ const TYPE_FILTERS: { key: TypeFilter; emoji: string }[] = [
   { key: 'food',    emoji: '🍜' },
   { key: 'place',   emoji: '📍' },
   { key: 'culture', emoji: '🎭' },
-  { key: 'help',    emoji: '🤝' },
+  { key: 'help',    emoji: '🤪' },
 ];
 
 type ModeFilter = 'all' | 'local' | 'international';

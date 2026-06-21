@@ -55,7 +55,7 @@
     "food": "Ăn uống",
     "place": "Địa điểm",
     "culture": "Văn hóa",
-    "help": "Giúp đỡ"
+    "help": "Điên rồ"
   },
   "titleLabel": "Thử thách của bạn",
   "titlePlaceholder": "vd. Đưa tôi đến quán cà phê yêu thích của bạn",
@@ -68,7 +68,7 @@
     "food": "...rồi tới chia sẻ với tớ 🍜",
     "place": "...rồi tự cậu dẫn tớ đi 🗺️",
     "culture": "...rồi gặp nhau để kể tớ nghe 🎭",
-    "help": "...rồi gặp nhau để tớ giúp trực tiếp 🙏"
+    "help": "...và cùng làm điều điên rồ nào 🤪"
   },
   "createCta": "Tạo thử thách 🔥",
   "saveChanges": "Lưu thay đổi",
@@ -121,7 +121,7 @@
     "food": "Thử thách ăn uống",
     "place": "Thử thách địa điểm",
     "culture": "Thử thách văn hóa",
-    "help": "Thử thách giúp đỡ"
+    "help": "Thử thách điên rồ"
   },
   "challengerTag": "Người tạo",
   "participantsLabel": "Người tham gia",

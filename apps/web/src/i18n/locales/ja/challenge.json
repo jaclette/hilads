@@ -39,7 +39,7 @@
     "food": "食",
     "place": "場所",
     "culture": "文化",
-    "help": "ヘルプ"
+    "help": "クレイジー"
   },
   "titleLabel": "あなたのチャレンジ",
   "titlePlaceholder": "例:お気に入りのカフェに連れて行って",
@@ -96,7 +96,7 @@
     "food": "食チャレンジ",
     "place": "場所チャレンジ",
     "culture": "文化チャレンジ",
-    "help": "ヘルプチャレンジ"
+    "help": "クレイジーチャレンジ"
   },
   "challengerTag": "発起人",
   "participantsLabel": "参加者",

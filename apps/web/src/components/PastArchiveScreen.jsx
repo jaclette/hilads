@@ -109,7 +109,7 @@ function RangeModal({ tz, initial, onApply, onClose }) {
 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 export default function PastArchiveScreen({ channelId, timezone, cityName, onBack, onSelectEvent, onSelectTopic, onSelectChallenge }) {
   const { t } = useTranslation('archive')

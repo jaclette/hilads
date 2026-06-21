@@ -41,7 +41,7 @@ const HOW_META = [
 // Type-emoji map for challenge rows in the preview card. Mirrors the
 // detail-screen / NOW-screen mapping so the brand glyph stays consistent
 // across surfaces.
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 function JoinCard({ city, cityCountry, geoState, nickname, setNickname, handleJoin, previewLiveCount, previewEventCount = 0, previewTopicCount = 0, previewChallengeCount = 0, previewChallenges = [], previewTopics = [], previewEvents = [], previewTimezone = 'UTC', onOpenCityPicker, retryGeo, onSignUp, onSignIn, autoFocus = false, variant = 'primary' }) {
   const { t } = useTranslation('landing')

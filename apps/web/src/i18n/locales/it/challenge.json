@@ -39,7 +39,7 @@
     "food": "Cibo",
     "place": "Posto",
     "culture": "Cultura",
-    "help": "Aiuto"
+    "help": "Pazzia"
   },
   "titleLabel": "La tua sfida",
   "titlePlaceholder": "es. Portami al tuo caffè preferito",
@@ -96,7 +96,7 @@
     "food": "Sfida cibo",
     "place": "Sfida posto",
     "culture": "Sfida cultura",
-    "help": "Sfida aiuto"
+    "help": "Sfida pazza"
   },
   "challengerTag": "Sfidante",
   "participantsLabel": "Partecipanti",

@@ -39,7 +39,7 @@
     "food": "음식",
     "place": "장소",
     "culture": "문화",
-    "help": "도움"
+    "help": "크레이지"
   },
   "titleLabel": "당신의 챌린지",
   "titlePlaceholder": "예: 가장 좋아하는 카페로 데려가 주세요",
@@ -96,7 +96,7 @@
     "food": "음식 챌린지",
     "place": "장소 챌린지",
     "culture": "문화 챌린지",
-    "help": "도움 챌린지"
+    "help": "크레이지 챌린지"
   },
   "challengerTag": "챌린저",
   "participantsLabel": "참가자",

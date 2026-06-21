@@ -11,7 +11,7 @@ import { countryToFlag } from '../lib/countryFlag'
  */
 export default function ExampleChallengeCard({ example, sourceCity, currentCity, onOpen, onCreate }) {
   const { t } = useTranslation('challenge')
-  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }[example.challenge_type] ?? '🔥'
+  const typeIcon = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[example.challenge_type] ?? '🔥'
   const name     = example.creator_display_name || example.creator_username || '?'
   const isIntl   = example.mode === 'international'
   const fromFlag = countryToFlag(example.country)

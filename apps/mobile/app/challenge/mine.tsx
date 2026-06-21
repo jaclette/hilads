@@ -19,7 +19,7 @@ import type { ChallengeType } from '@/types';
  */
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
-  food: '🍜', place: '📍', culture: '🎭', help: '🤝',
+  food: '🍜', place: '📍', culture: '🎭', help: '🤪',
 };
 
 type Filter = 'all' | 'created' | 'taken';

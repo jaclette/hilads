@@ -5,7 +5,7 @@ import { countryToFlag } from '../lib/countryFlag'
 import { fetchChallengeShowcase } from '../api'
 import ShowcasePreviewModal from './ShowcasePreviewModal'
 
-const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 const MAX = 3 // 3 success slides + 1 trailing How-it-works slide
 const EVERY = 3000
 

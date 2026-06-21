@@ -3,7 +3,7 @@ import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 
-const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 function Person({ label, name, avatar, country, userId, onAvatar }) {
   const flag = countryToFlag(country)

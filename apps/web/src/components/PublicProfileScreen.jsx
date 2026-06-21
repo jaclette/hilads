@@ -57,7 +57,7 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 // ── Component ─────────────────────────────────────────────────────────────────
 
 // Type emoji for challenge cards - mirrors the rest of the app.
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge }) {
   const { t } = useTranslation('publicProfile')

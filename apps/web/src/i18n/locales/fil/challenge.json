@@ -39,7 +39,7 @@
     "food": "Pagkain",
     "place": "Lugar",
     "culture": "Kultura",
-    "help": "Tulong"
+    "help": "Baliw"
   },
   "titleLabel": "Iyong challenge",
   "titlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
@@ -96,7 +96,7 @@
     "food": "Pagkain challenge",
     "place": "Lugar challenge",
     "culture": "Kultura challenge",
-    "help": "Tulong challenge"
+    "help": "Baliw na challenge"
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Mga kalahok",

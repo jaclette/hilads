@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import ThumbImg from './ThumbImg'
 import { countryToFlag } from '../lib/countryFlag'
 
-const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const TYPE_ICON = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 /**
  * One card in the public "Success challenges" showcase (web twin of the mobile

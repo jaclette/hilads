@@ -69,7 +69,7 @@ function buildChallengeUrl(challenge) {
   return `${window.location.origin}${lp}/challenge/${challengeSlug(challenge)}`
 }
 
-const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],

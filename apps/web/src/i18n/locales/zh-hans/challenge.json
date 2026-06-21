@@ -39,7 +39,7 @@
     "food": "美食",
     "place": "地点",
     "culture": "文化",
-    "help": "帮助"
+    "help": "疯狂"
   },
   "titleLabel": "你的挑战",
   "titlePlaceholder": "例如,带我去你最喜欢的咖啡馆",
@@ -96,7 +96,7 @@
     "food": "美食挑战",
     "place": "地点挑战",
     "culture": "文化挑战",
-    "help": "帮助挑战"
+    "help": "疯狂挑战"
   },
   "challengerTag": "发起人",
   "participantsLabel": "参与者",

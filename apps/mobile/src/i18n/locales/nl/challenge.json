@@ -55,7 +55,7 @@
     "food": "Eten",
     "place": "Plek",
     "culture": "Cultuur",
-    "help": "Hulp"
+    "help": "Gek"
   },
   "titleLabel": "Jouw challenge",
   "titlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
@@ -112,7 +112,7 @@
     "food": "Eten challenge",
     "place": "Plek challenge",
     "culture": "Cultuur challenge",
-    "help": "Hulp challenge"
+    "help": "Gekke challenge"
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Deelnemers",

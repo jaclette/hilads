@@ -63,7 +63,7 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
   food:    '🍜',
   place:   '📍',
   culture: '🎭',
-  help:    '🤝',
+  help:    '🤪',
 };
 
 export default function ChallengeChatScreen() {

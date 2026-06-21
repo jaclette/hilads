@@ -39,7 +39,7 @@
     "food": "Essen",
     "place": "Ort",
     "culture": "Kultur",
-    "help": "Hilfe"
+    "help": "Verrückt"
   },
   "titleLabel": "Deine Challenge",
   "titlePlaceholder": "z. B. Bring mich zu deinem Lieblings-Café",
@@ -96,7 +96,7 @@
     "food": "Food Challenge",
     "place": "Ort Challenge",
     "culture": "Kultur Challenge",
-    "help": "Hilfe Challenge"
+    "help": "Verrückte Challenge"
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Teilnehmer",

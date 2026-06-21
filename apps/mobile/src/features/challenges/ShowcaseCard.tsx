@@ -7,7 +7,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 import type { ShowcaseItem } from '@/api/challenges';
 
-const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' };
+const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
 
 /**
  * One card in the public "Success challenges" showcase: title, by-whom +

@@ -13,7 +13,7 @@ import RateSheet from './RateSheet'
  * routes to the challenge channel where the inline thread chat lives.
  */
 
-const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],

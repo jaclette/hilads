@@ -89,7 +89,7 @@ const HANGOUT_ICONS: Record<string, string> = {
 };
 
 const CHALLENGE_ICONS: Record<string, string> = {
-  food: '🍜', place: '📍', culture: '🎭', help: '🤝',
+  food: '🍜', place: '📍', culture: '🎭', help: '🤪',
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

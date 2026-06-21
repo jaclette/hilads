@@ -36,7 +36,7 @@
     "food": "Food",
     "place": "Place",
     "culture": "Culture",
-    "help": "Help"
+    "help": "Crazy"
   },
   "titleLabel": "Your challenge",
   "titlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
@@ -49,7 +49,7 @@
     "food": "...and come share it with me 🍜",
     "place": "...and take me there yourself 🗺️",
     "culture": "...and we meet up to talk about it 🎭",
-    "help": "...and we meet up so I can help in person 🙏"
+    "help": "...and let's do something wild together 🤪"
   },
   "createCta": "Launch challenge 🔥",
   "saveChanges": "Save changes",
@@ -102,7 +102,7 @@
     "food": "Food challenge",
     "place": "Place challenge",
     "culture": "Culture challenge",
-    "help": "Help challenge"
+    "help": "Crazy challenge"
   },
   "challengerTag": "Challenger",
   "participantsLabel": "Participants",

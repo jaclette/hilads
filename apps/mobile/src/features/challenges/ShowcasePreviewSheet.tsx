@@ -7,7 +7,7 @@ import { ThumbImage } from '@/components/ThumbImage';
 import type { ShowcaseItem } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
-const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' };
+const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
 
 function PersonRow({ label, name, avatar, country, userId, onAvatar }: {
   label: string;

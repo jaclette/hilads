@@ -5477,7 +5477,7 @@ export default function App() {
                     { key: 'food',    emoji: '🍜' },
                     { key: 'place',   emoji: '📍' },
                     { key: 'culture', emoji: '🎭' },
-                    { key: 'help',    emoji: '🤝' },
+                    { key: 'help',    emoji: '🤪' },
                   ].map(({ key, emoji }) => (
                     <button
                       key={key}

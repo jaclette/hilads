@@ -55,7 +55,7 @@
     "food": "Comida",
     "place": "Lugar",
     "culture": "Cultura",
-    "help": "Ayuda"
+    "help": "Locura"
   },
   "titleLabel": "Tu reto",
   "titlePlaceholder": "ej. Llévame a tu café favorito",
@@ -112,7 +112,7 @@
     "food": "Reto comida",
     "place": "Reto lugar",
     "culture": "Reto cultura",
-    "help": "Reto ayuda"
+    "help": "Reto loco"
   },
   "challengerTag": "Retador",
   "participantsLabel": "Participantes",

@@ -23,7 +23,7 @@ const TYPES     = [
   { value: 'food',    icon: '🍜' },
   { value: 'place',   icon: '📍' },
   { value: 'culture', icon: '🎭' },
-  { value: 'help',    icon: '🤝' },
+  { value: 'help',    icon: '🤪' },
 ]
 const AUDIENCES = [
   // 'explorers' is kept as the technical key (DB value, API enum). The

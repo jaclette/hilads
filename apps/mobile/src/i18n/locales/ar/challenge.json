@@ -55,7 +55,7 @@
     "food": "طعام",
     "place": "مكان",
     "culture": "ثقافة",
-    "help": "مساعدة"
+    "help": "جنون"
   },
   "titleLabel": "تحديك",
   "titlePlaceholder": "مثال: خذني إلى مقهاك المفضل",
@@ -112,7 +112,7 @@
     "food": "تحدي طعام",
     "place": "تحدي مكان",
     "culture": "تحدي ثقافة",
-    "help": "تحدي مساعدة"
+    "help": "تحدٍ جنوني"
   },
   "challengerTag": "المُتحدي",
   "participantsLabel": "المشاركون",

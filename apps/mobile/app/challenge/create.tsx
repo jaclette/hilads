@@ -19,7 +19,7 @@ const TYPES: { value: ChallengeType; icon: string }[] = [
   { value: 'food',    icon: '🍜' },
   { value: 'place',   icon: '📍' },
   { value: 'culture', icon: '🎭' },
-  { value: 'help',    icon: '🤝' },
+  { value: 'help',    icon: '🤪' },
 ];
 
 const AUDIENCES: ChallengeAudience[] = ['locals', 'explorers'];

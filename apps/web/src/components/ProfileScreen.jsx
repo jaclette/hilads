@@ -49,7 +49,7 @@ const INTERESTS = [
 // - challenges are the primary entity now.
 const PROFILE_TABS = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes']
 
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤝' }
+const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 const AMBASSADOR_PICKS = [
   { key: 'restaurant', emoji: '🍜', maxLen: 200 },
