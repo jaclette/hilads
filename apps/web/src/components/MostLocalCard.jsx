@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
@@ -18,7 +19,7 @@ function PodiumSlot({ entry, first, onAvatarClick }) {
   const [c1, c2] = avatarColors(entry.user_id ?? name)
   const avatar = (
     <span className="mlp-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-      {entry.thumbAvatarUrl ? <img src={entry.thumbAvatarUrl} alt="" /> : name[0].toUpperCase()}
+      {entry.thumbAvatarUrl ? <img src={thumbUrl(entry.thumbAvatarUrl)} alt="" /> : name[0].toUpperCase()}
     </span>
   )
   return (

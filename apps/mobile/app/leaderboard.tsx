@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, RefreshControl,
@@ -460,7 +461,7 @@ function Row({
       <View style={[styles.avatar, { backgroundColor: avatarColor(entry.user_id ?? entry.displayName ?? '?') }]}>
         {entry.thumbAvatarUrl ? (
           <Image
-            source={{ uri: entry.thumbAvatarUrl }}
+            source={{ uri: thumbUrl(entry.thumbAvatarUrl) ?? undefined }}
             style={StyleSheet.absoluteFill}
             cachePolicy="memory-disk"
             contentFit="cover"

@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
@@ -281,7 +282,7 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
         style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
       >
         {entry.thumbAvatarUrl
-          ? <img src={entry.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img src={thumbUrl(entry.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : (entry.displayName ?? '?')[0].toUpperCase()}
       </span>
       <span className="leaderboard-name-block">

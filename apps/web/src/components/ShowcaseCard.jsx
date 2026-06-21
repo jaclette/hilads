@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useTranslation } from 'react-i18next'
 import ThumbImg from './ThumbImg'
 import { countryToFlag } from '../lib/countryFlag'
@@ -41,7 +42,7 @@ export default function ShowcaseCard({ item, onOpen, onAvatar }) {
             onClick={item.created_by && onAvatar ? (e) => { e.stopPropagation(); onAvatar(item.created_by) } : undefined}
           >
             {item.creator_thumb_avatar_url
-              ? <img className="showcase-avatar" src={item.creator_thumb_avatar_url} alt="" />
+              ? <img className="showcase-avatar" src={thumbUrl(item.creator_thumb_avatar_url)} alt="" />
               : <span className="showcase-avatar showcase-avatar--fallback">{creatorName[0]?.toUpperCase() ?? '?'}</span>}
             {t('showcase.by', { name: creatorName })}{fromFlag ? ` ${fromFlag}` : ''}
           </span>

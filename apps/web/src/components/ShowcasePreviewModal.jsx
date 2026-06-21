@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { createPortal } from 'react-dom'
 import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
@@ -67,7 +68,7 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
             <Person
               label={t('challengerTag')}
               name={item.creator_display_name}
-              avatar={item.creator_thumb_avatar_url}
+              avatar={thumbUrl(item.creator_thumb_avatar_url)}
               country={item.country}
               userId={item.created_by}
               onAvatar={onAvatar}

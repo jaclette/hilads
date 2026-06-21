@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -67,7 +68,7 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
             activeOpacity={0.7}
           >
             {item.creator_thumb_avatar_url ? (
-              <Image source={{ uri: item.creator_thumb_avatar_url }} style={styles.avatar} />
+              <Image source={{ uri: thumbUrl(item.creator_thumb_avatar_url) ?? undefined }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, { backgroundColor: avatarColor(item.created_by ?? creatorName) }]}>
                 <Text style={styles.avatarLetter}>{creatorName[0]?.toUpperCase() ?? '?'}</Text>
