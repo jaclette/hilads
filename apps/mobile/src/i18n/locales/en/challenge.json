@@ -214,10 +214,10 @@
     },
     "pointsHeading": "💯 How you earn points",
     "ways": {
-      "join": "Join a meet or challenge",
+      "join": "Join a challenge",
       "create": "Create a challenge",
       "present": "Show up — validated present",
-      "host": "Host a meet — base + per person who shows up",
+      "host": "Host a meet",
       "submit": "Submit a photo to a challenge",
       "win": "Win the photo challenge"
     },

@@ -567,10 +567,10 @@
     },
     "pointsHeading": "💯 Comment gagner des points",
     "ways": {
-      "join": "Rejoindre un rendez-vous ou un défi",
+      "join": "Rejoindre un défi",
       "create": "Créer un challenge",
       "present": "Être présent — validé sur place",
-      "host": "Organiser un rendez-vous — base + par personne présente",
+      "host": "Organise un rendez-vous",
       "submit": "Soumettre une photo à un défi",
       "win": "Gagner le défi photo"
     },

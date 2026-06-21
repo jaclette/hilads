@@ -62,7 +62,7 @@ function ScoringInfoModal({ onClose, t, onSeeExamples }) {
     { icon: '🙌', labelKey: 'scoringInfo.ways.join',    points: '+2'  },
     { icon: '🎯', labelKey: 'scoringInfo.ways.create',  points: '+10' },
     { icon: '✅', labelKey: 'scoringInfo.ways.present', points: '+40', highlight: true },
-    { icon: '👑', labelKey: 'scoringInfo.ways.host',    points: '+10 · +5' },
+    { icon: '👑', labelKey: 'scoringInfo.ways.host',    points: '+10 · 🙋 +5' },
     { icon: '📸', labelKey: 'scoringInfo.ways.submit',  points: '+5'  },
     { icon: '🏆', labelKey: 'scoringInfo.ways.win',     points: '+40', highlight: true },
   ]
