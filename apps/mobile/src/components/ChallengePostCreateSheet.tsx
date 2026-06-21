@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet,
@@ -269,7 +270,7 @@ function PickerView({
               >
                 <View style={[styles.avatar, { backgroundColor: avatarColor(m.id) }]}>
                   {avatar ? (
-                    <Image source={{ uri: avatar }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+                    <Image source={{ uri: thumbUrl(avatar) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
                   ) : (
                     <Text style={styles.avatarText}>{(m.displayName?.[0] ?? '?').toUpperCase()}</Text>
                   )}

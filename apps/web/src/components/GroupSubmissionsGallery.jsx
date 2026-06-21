@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchGroupSubmissions, pickWinner } from '../api'
@@ -99,7 +100,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
                     </button>
                     <div className="gsg-footer">
                       <span className="gsg-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                        {s.avatar_url ? <img src={s.avatar_url} alt="" /> : (s.display_name?.[0] ?? '?').toUpperCase()}
+                        {s.avatar_url ? <img src={thumbUrl(s.avatar_url)} alt="" /> : (s.display_name?.[0] ?? '?').toUpperCase()}
                       </span>
                       <span className="gsg-name">{s.display_name}</span>
                     </div>

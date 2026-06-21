@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import {
   Modal, View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Pressable,
 } from 'react-native';
@@ -23,7 +24,7 @@ function PersonRow({ label, name, avatar, country, userId, onAvatar }: {
   return (
     <TouchableOpacity style={styles.person} onPress={tap} disabled={!tap} activeOpacity={0.75}>
       {avatar
-        ? <Image source={{ uri: avatar }} style={styles.personAvatar} />
+        ? <Image source={{ uri: thumbUrl(avatar) }} style={styles.personAvatar} />
         : <View style={[styles.personAvatar, styles.personAvatarFallback]}><Text style={styles.personInitial}>{initial}</Text></View>}
       <View style={{ flex: 1 }}>
         <Text style={styles.personLabel}>{label}</Text>

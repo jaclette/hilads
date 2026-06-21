@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Here screen - two sections:
  *   1. Here now    - people live in this city right now (from AppContext, realtime)
@@ -93,7 +94,7 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={onPress ? 0.7 : 1} disabled={!onPress}>
       <View style={styles.avatarWrap}>
         {user.profilePhotoUrl ? (
-          <Image source={{ uri: user.profileThumbPhotoUrl ?? user.profilePhotoUrl }} style={styles.avatar} />
+          <Image source={{ uri: thumbUrl(user.profileThumbPhotoUrl ?? user.profilePhotoUrl) }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
             <Text style={[styles.avatarText, { color }]}>{initials}</Text>
@@ -136,7 +137,7 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
       {member.avatarUrl ? (
-        <Image source={{ uri: member.thumbAvatarUrl ?? member.avatarUrl }} style={styles.avatar} />
+        <Image source={{ uri: thumbUrl(member.thumbAvatarUrl ?? member.avatarUrl) }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatar, { backgroundColor: color + '28', borderColor: color + '50' }]}>
           <Text style={[styles.avatarText, { color }]}>{initials}</Text>
@@ -396,7 +397,7 @@ export default function HereScreen() {
                   activeOpacity={0.7}
                 >
                   {m.avatarUrl ? (
-                    <Image source={{ uri: m.thumbAvatarUrl ?? m.avatarUrl }} style={[styles.avatar, styles.legendAvatar]} />
+                    <Image source={{ uri: thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl) }} style={[styles.avatar, styles.legendAvatar]} />
                   ) : (
                     <View style={[styles.avatar, styles.legendAvatar, { backgroundColor: color + '28', borderColor: 'rgba(255,193,7,0.35)' }]}>
                       <Text style={[styles.avatarText, { color }]}>{initials}</Text>

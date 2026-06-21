@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchCityMembers, inviteToChallenge } from '../api'
@@ -230,7 +231,7 @@ function PickerView({ challenge, cityChannelId, cityName, currentUserId, t, onDo
                 onClick={() => toggle(m.id)}
               >
                 {m.avatarUrl || m.thumbAvatarUrl
-                  ? <img src={m.thumbAvatarUrl || m.avatarUrl} alt="" className="cpcm-avatar" />
+                  ? <img src={thumbUrl(m.thumbAvatarUrl || m.avatarUrl)} alt="" className="cpcm-avatar" />
                   : <span className="cpcm-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                       {(m.displayName ?? '?')[0].toUpperCase()}
                     </span>}

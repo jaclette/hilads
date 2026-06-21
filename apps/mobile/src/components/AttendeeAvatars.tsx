@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import type { ParticipantPreview } from '@/types';
@@ -43,7 +44,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
         >
           {p.thumbAvatarUrl ? (
             <Image
-              source={{ uri: p.thumbAvatarUrl }}
+              source={{ uri: thumbUrl(p.thumbAvatarUrl) }}
               style={StyleSheet.absoluteFill}
               cachePolicy="memory-disk"
               contentFit="cover"

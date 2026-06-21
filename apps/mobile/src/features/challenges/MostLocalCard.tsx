@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +33,7 @@ function Slot({
       >
         <View style={[styles.avatar, first && styles.avatarFirst, { backgroundColor: avatarColor(entry.user_id ?? name) }]}>
           {entry.thumbAvatarUrl
-            ? <Image source={{ uri: entry.thumbAvatarUrl }} style={styles.avatarImg} />
+            ? <Image source={{ uri: thumbUrl(entry.thumbAvatarUrl) }} style={styles.avatarImg} />
             : <Text style={[styles.avatarLetter, first && styles.avatarLetterFirst]}>{name[0].toUpperCase()}</Text>}
         </View>
       </TouchableOpacity>

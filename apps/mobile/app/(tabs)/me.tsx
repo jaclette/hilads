@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Me / My Profile screen
  *
@@ -464,7 +465,7 @@ export default function MeScreen() {
                 disabled={photoUploading}
               >
                 {photoSrc ? (
-                  <Image source={{ uri: photoSrc }} style={styles.avatarSm} resizeMode="cover" />
+                  <Image source={{ uri: thumbUrl(photoSrc) }} style={styles.avatarSm} resizeMode="cover" />
                 ) : (
                   <View style={[styles.avatarSmFallback, { backgroundColor: avatarBgColor }]}>
                     <Text style={styles.avatarSmInitials}>{initials}</Text>
@@ -1000,7 +1001,7 @@ export default function MeScreen() {
                     activeOpacity={0.7}
                   >
                     {f.avatarUrl ? (
-                      <Image source={{ uri: f.thumbAvatarUrl ?? f.avatarUrl }} style={styles.friendAvatar} />
+                      <Image source={{ uri: thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl) }} style={styles.friendAvatar} />
                     ) : (
                       <View style={[styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                         <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
@@ -1048,7 +1049,7 @@ export default function MeScreen() {
                       {(idx > 0 || myVibeCount > 0) && <View style={styles.divider} />}
                       <View style={styles.receivedVibeRow}>
                         {v.authorPhoto ? (
-                          <Image source={{ uri: v.authorPhoto }} style={styles.receivedVibeAvatar} resizeMode="cover" />
+                          <Image source={{ uri: thumbUrl(v.authorPhoto) }} style={styles.receivedVibeAvatar} resizeMode="cover" />
                         ) : (
                           <View style={[styles.receivedVibeAvatar, styles.receivedVibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
                             <Text style={styles.receivedVibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>

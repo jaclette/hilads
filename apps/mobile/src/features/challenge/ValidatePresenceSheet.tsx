@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * ValidatePresenceSheet - the challenger resolves a GROUP challenge.
  *
@@ -89,7 +90,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
                 >
                   <View style={[styles.avatar, { backgroundColor: avatarColor(item.id) }]}>
                     {item.thumbAvatarUrl || item.avatarUrl
-                      ? <Image source={{ uri: item.thumbAvatarUrl ?? item.avatarUrl ?? undefined }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+                      ? <Image source={{ uri: thumbUrl(item.thumbAvatarUrl ?? item.avatarUrl ?? undefined) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
                       : <Text style={styles.avatarLetter}>{(item.displayName[0] ?? '?').toUpperCase()}</Text>}
                   </View>
                   <Text style={styles.name} numberOfLines={1}>{item.displayName}</Text>

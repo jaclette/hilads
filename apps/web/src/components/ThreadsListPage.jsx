@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchMyAcceptances, fetchRatePrompts } from '../api'
@@ -124,7 +125,7 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
                       overflow: 'hidden', flexShrink: 0,
                     }}>
                       {cp.thumbAvatarUrl
-                        ? <img src={cp.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ? <img src={thumbUrl(cp.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         : (cp.displayName ?? '?')[0].toUpperCase()}
                     </span>
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -187,7 +188,7 @@ function RatePromptBanner({ prompt, extraCount, onClick, t }) {
         overflow: 'hidden', flexShrink: 0,
       }}>
         {cp.thumbAvatarUrl
-          ? <img src={cp.thumbAvatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ? <img src={thumbUrl(cp.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           : (cp.displayName ?? '?')[0].toUpperCase()}
       </span>
       <div style={{ flex: 1, minWidth: 0 }}>

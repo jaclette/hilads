@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 /**
  * ChallengeChatPage - interactive web detail screen for /challenge/{slug}-{id}.
  *
@@ -949,7 +950,7 @@ export default function ChallengeChatPage({
                 onClick={() => challenge.created_by && onOpenProfile?.(challenge.created_by, challenge.creator_username || challenge.creator_display_name)}
               >
                 {challenge.creator_thumb_avatar_url
-                  ? <img src={challenge.creator_thumb_avatar_url} alt="" className="challenge-header-creator-avatar" />
+                  ? <img src={thumbUrl(challenge.creator_thumb_avatar_url)} alt="" className="challenge-header-creator-avatar" />
                   : null}
                 <span>{t('byCreator', { name: challenge.creator_display_name })}</span>
               </button>
@@ -1297,7 +1298,7 @@ export default function ChallengeChatPage({
             style={{ background: `linear-gradient(135deg, ${avatarColors(creator.displayName)[0]}, ${avatarColors(creator.displayName)[1]})` }}
           >
             {creator.thumbAvatarUrl || creator.avatarUrl
-              ? <img src={creator.thumbAvatarUrl ?? creator.avatarUrl} alt="" className="challenge-creator-avatar-img" />
+              ? <img src={thumbUrl(creator.thumbAvatarUrl ?? creator.avatarUrl)} alt="" className="challenge-creator-avatar-img" />
               : (creator.displayName ?? '?')[0].toUpperCase()}
           </span>
           <div className="challenge-creator-info">

@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useEffect, useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -107,7 +108,7 @@ export function ChallengeChannelMembersStrip({
             style={[styles.avatar, { marginLeft: i === 0 ? 0 : -8, backgroundColor: avatarColor(p.id) }]}
           >
             {p.thumbAvatarUrl ? (
-              <Image source={{ uri: p.thumbAvatarUrl }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+              <Image source={{ uri: thumbUrl(p.thumbAvatarUrl) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
             ) : (
               <Text style={styles.avatarText}>{(p.displayName?.[0] ?? '?').toUpperCase()}</Text>
             )}

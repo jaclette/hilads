@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect, useRef } from 'react'
 import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
@@ -379,7 +380,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
           onClick={() => otherUser?.id && onOpenProfile?.(otherUser.id, otherName)}
         >
           {otherUser?.profile_photo_url
-            ? <img className="online-avatar dm-header-avatar" src={otherUser.profile_photo_url} alt={otherName} />
+            ? <img className="online-avatar dm-header-avatar" src={thumbUrl(otherUser.profile_photo_url)} alt={otherName} />
             : <span className="online-avatar dm-header-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                 {otherName[0].toUpperCase()}
               </span>

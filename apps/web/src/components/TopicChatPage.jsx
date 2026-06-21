@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
@@ -751,7 +752,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                     onClick={isRegistered ? () => { setShowMembers(false); onViewProfile?.(p.id, p.displayName) } : undefined}
                   >
                     {p.avatarUrl
-                      ? <img src={p.thumbAvatarUrl ?? p.avatarUrl} className="online-avatar" alt="" />
+                      ? <img src={thumbUrl(p.thumbAvatarUrl ?? p.avatarUrl)} className="online-avatar" alt="" />
                       : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>{(p.displayName ?? '?')[0].toUpperCase()}</span>}
                     <div className="people-drawer-content">
                       <span className="people-drawer-name">{p.displayName}</span>

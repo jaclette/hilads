@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
@@ -1056,7 +1057,7 @@ export default function ChallengeChatScreen() {
               >
                 {challenge.creator_thumb_avatar_url ? (
                   <Image
-                    source={{ uri: challenge.creator_thumb_avatar_url }}
+                    source={{ uri: thumbUrl(challenge.creator_thumb_avatar_url) }}
                     style={styles.navCreatorAvatar}
                     cachePolicy="memory-disk"
                     contentFit="cover"
@@ -1476,7 +1477,7 @@ export default function ChallengeChatScreen() {
             <View style={[styles.challengerAvatar, { backgroundColor: avatarColor(creator.id) }]}>
               {creator.thumbAvatarUrl || creator.avatarUrl ? (
                 <Image
-                  source={{ uri: creator.thumbAvatarUrl ?? creator.avatarUrl ?? undefined }}
+                  source={{ uri: thumbUrl(creator.thumbAvatarUrl ?? creator.avatarUrl ?? undefined) }}
                   style={StyleSheet.absoluteFill}
                   cachePolicy="memory-disk"
                   contentFit="cover"

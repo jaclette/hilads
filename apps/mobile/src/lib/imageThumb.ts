@@ -7,8 +7,8 @@ import { API_URL } from '@/constants';
  * (avatars, external URLs) are returned unchanged. Callers should still fall back
  * to the full URL on error (the proxy 302s to the original if it can't resize).
  */
-export function thumbUrl(url?: string | null): string | null {
-  if (!url) return url ?? null;
+export function thumbUrl(url?: string | null): string | undefined {
+  if (!url) return undefined;
   const m = url.match(/\/([a-f0-9]{32}\.(?:jpe?g|png|webp))$/i);
   return m ? `${API_URL}/img-thumb?f=${m[1].toLowerCase()}` : url;
 }

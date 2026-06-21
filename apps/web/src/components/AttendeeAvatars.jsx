@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { avatarColors } from '../lib/avatarColors'
 
 const MAX_SHOWN = 5
@@ -32,7 +33,7 @@ export default function AttendeeAvatars({ preview = [], total = 0, onClick }) {
             style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
           >
             {p.thumbAvatarUrl
-              ? <img className="attendee-avatar-img" src={p.thumbAvatarUrl} alt="" loading="lazy" />
+              ? <img className="attendee-avatar-img" src={thumbUrl(p.thumbAvatarUrl)} alt="" loading="lazy" />
               : (p.displayName?.[0] ?? '?').toUpperCase()}
           </span>
         )

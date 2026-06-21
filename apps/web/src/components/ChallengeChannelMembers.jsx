@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchChannelParticipants, kickChallengeParticipant } from '../api'
@@ -155,7 +156,7 @@ export default function ChallengeChannelMembers({
                       : undefined}
                   >
                     {r.thumbAvatarUrl
-                      ? <img className="online-avatar" src={r.thumbAvatarUrl} alt={r.displayName ?? ''} style={{ objectFit: 'cover' }} />
+                      ? <img className="online-avatar" src={thumbUrl(r.thumbAvatarUrl)} alt={r.displayName ?? ''} style={{ objectFit: 'cover' }} />
                       : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                           {(r.displayName ?? '?')[0].toUpperCase()}
                         </span>

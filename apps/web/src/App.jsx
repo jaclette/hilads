@@ -1,3 +1,4 @@
+import { thumbUrl } from './lib/imageThumb'
 import { useState, useEffect, useLayoutEffect, useRef, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
@@ -5614,7 +5615,7 @@ export default function App() {
               onClick={(!user.isMe && (tappable || !account)) ? handleTap : undefined}
             >
               {user.avatarUrl
-                ? <img className="online-avatar" src={user.thumbAvatarUrl ?? user.avatarUrl} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
+                ? <img className="online-avatar" src={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)} alt={user.nickname} style={{ objectFit: 'cover' }} data-me={user.isMe ? 'true' : undefined} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }} data-me={user.isMe ? 'true' : undefined}>
                     {(user.nickname ?? '?')[0].toUpperCase()}
                   </span>
@@ -5668,7 +5669,7 @@ export default function App() {
               onClick={() => openProfile(m.id, m.displayName)}
             >
               {m.avatarUrl
-                ? <img className="online-avatar" src={m.thumbAvatarUrl ?? m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                ? <img className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
                 : <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                     {(m.displayName ?? '?')[0].toUpperCase()}
                   </span>
@@ -5759,7 +5760,7 @@ export default function App() {
                         onClick={() => openProfile(m.id, m.displayName)}
                       >
                         {m.avatarUrl
-                          ? <img className="online-avatar" src={m.thumbAvatarUrl ?? m.avatarUrl} alt={m.displayName} style={{ objectFit: 'cover' }} />
+                          ? <img className="online-avatar" src={thumbUrl(m.thumbAvatarUrl ?? m.avatarUrl)} alt={m.displayName} style={{ objectFit: 'cover' }} />
                           : <span className="online-avatar online-avatar--legend" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                               {(m.displayName ?? '?')[0].toUpperCase()}
                             </span>
@@ -6241,7 +6242,7 @@ export default function App() {
                       onClick={isRegistered ? () => { setShowGoingModal(false); openProfile(p.id, p.displayName) } : undefined}
                     >
                       {p.avatarUrl ? (
-                        <img src={p.thumbAvatarUrl ?? p.avatarUrl} className="online-avatar" alt="" />
+                        <img src={thumbUrl(p.thumbAvatarUrl ?? p.avatarUrl)} className="online-avatar" alt="" />
                       ) : (
                         <span className="online-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
                           {(p.displayName ?? '?')[0].toUpperCase()}

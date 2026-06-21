@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useEffect, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, RefreshControl,
@@ -145,7 +146,7 @@ export default function ThreadsListScreen() {
                 <View style={[styles.avatar, { backgroundColor: avatarColor(cp.id) }]}>
                   {cp.thumbAvatarUrl ? (
                     <Image
-                      source={{ uri: cp.thumbAvatarUrl }}
+                      source={{ uri: thumbUrl(cp.thumbAvatarUrl) }}
                       style={StyleSheet.absoluteFill}
                       cachePolicy="memory-disk"
                       contentFit="cover"
@@ -200,7 +201,7 @@ function RatePromptBanner({
       <View style={[styles.bannerAvatar, { backgroundColor: avatarColor(cp.id) }]}>
         {cp.thumbAvatarUrl ? (
           <Image
-            source={{ uri: cp.thumbAvatarUrl }}
+            source={{ uri: thumbUrl(cp.thumbAvatarUrl) }}
             style={StyleSheet.absoluteFill}
             cachePolicy="memory-disk"
             contentFit="cover"

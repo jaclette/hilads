@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Colors } from '@/constants';
@@ -61,7 +62,7 @@ export function AvatarWithFlag({
     <View style={[styles.wrap, { width: size, height: size }]}>
       {photoUrl ? (
         <Image
-          source={{ uri: photoUrl }}
+          source={{ uri: thumbUrl(photoUrl) }}
           style={[styles.avatar, { width: size, height: size, borderRadius: size / 2 }]}
           cachePolicy="memory-disk"
           contentFit="cover"

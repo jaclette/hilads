@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Public profile screen - /user/[id]
  *
@@ -450,7 +451,7 @@ export default function PublicProfileScreen() {
             <View style={styles.identityRow}>
               {user.avatarUrl ? (
                 <TouchableOpacity activeOpacity={0.85} onPress={() => setShowAvatarLightbox(true)}>
-                  <Image source={{ uri: user.thumbAvatarUrl ?? user.avatarUrl }} style={styles.avatar} resizeMode="cover" />
+                  <Image source={{ uri: thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl) }} style={styles.avatar} resizeMode="cover" />
                 </TouchableOpacity>
               ) : (
                 <View style={[styles.avatar, styles.avatarFallback, { backgroundColor: bg }]}>
@@ -674,7 +675,7 @@ export default function PublicProfileScreen() {
                       activeOpacity={0.7}
                     >
                       {f.avatarUrl ? (
-                        <Image source={{ uri: f.thumbAvatarUrl ?? f.avatarUrl }} style={styles.friendAvatar} resizeMode="cover" />
+                        <Image source={{ uri: thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl) }} style={styles.friendAvatar} resizeMode="cover" />
                       ) : (
                         <View style={[styles.friendAvatar, styles.friendAvatarFallback, { backgroundColor: avatarBg(f.displayName) }]}>
                           <Text style={styles.friendAvatarInitial}>{f.displayName[0]?.toUpperCase()}</Text>
@@ -760,7 +761,7 @@ export default function PublicProfileScreen() {
                     {vibes.map(v => (
                       <View key={v.id} style={styles.vibeRow}>
                         {v.authorPhoto ? (
-                          <Image source={{ uri: v.authorPhoto }} style={styles.vibeAvatar} resizeMode="cover" />
+                          <Image source={{ uri: thumbUrl(v.authorPhoto) }} style={styles.vibeAvatar} resizeMode="cover" />
                         ) : (
                           <View style={[styles.vibeAvatar, styles.vibeAvatarFallback, { backgroundColor: avatarBg(v.authorName) }]}>
                             <Text style={styles.vibeAvatarInitial}>{(v.authorName || '?')[0].toUpperCase()}</Text>

@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useEffect, useState } from 'react';
 import {
   Modal, View, Text, ScrollView, TouchableOpacity,
@@ -144,7 +145,7 @@ export function ChallengeChannelMembersSheet({
                     <View style={[styles.avatar, { backgroundColor: avatarColor(r.id) }]}>
                       {r.thumbAvatarUrl ? (
                         <Image
-                          source={{ uri: r.thumbAvatarUrl }}
+                          source={{ uri: thumbUrl(r.thumbAvatarUrl) }}
                           style={StyleSheet.absoluteFill}
                           cachePolicy="memory-disk"
                           contentFit="cover"

@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import type { UserDTO, BadgeKey } from '@/types';
@@ -52,7 +53,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, onCl
                 >
                   <View style={[styles.avatar, { backgroundColor: avatarColor(p.id) }]}>
                     {avatar ? (
-                      <Image source={{ uri: avatar }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+                      <Image source={{ uri: thumbUrl(avatar) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
                     ) : (
                       <Text style={styles.avatarText}>{(p.displayName?.[0] ?? '?').toUpperCase()}</Text>
                     )}

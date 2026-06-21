@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * GroupSubmissionsGallery - the in-channel photo wall for a GROUP photo-proof
  * contest. EVERYONE who can see the challenge sees every submitter's photo +
@@ -142,7 +143,7 @@ export function GroupSubmissionsGallery({
               <View style={styles.tileFooter}>
                 <View style={[styles.avatar, { backgroundColor: avatarColor(s.user_id) }]}>
                   {s.avatar_url
-                    ? <Image source={{ uri: s.avatar_url }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />
+                    ? <Image source={{ uri: thumbUrl(s.avatar_url) }} style={StyleSheet.absoluteFill} contentFit="cover" cachePolicy="memory-disk" />
                     : <Text style={styles.avatarLetter}>{(s.display_name[0] ?? '?').toUpperCase()}</Text>}
                 </View>
                 <Text style={styles.name} numberOfLines={1}>{s.display_name}</Text>

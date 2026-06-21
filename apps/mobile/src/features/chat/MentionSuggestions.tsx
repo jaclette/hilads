@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Colors, FontSizes } from '@/constants';
@@ -23,7 +24,7 @@ export function MentionSuggestions({
           <TouchableOpacity key={key} style={styles.row} onPress={() => onSelect(s)} activeOpacity={0.6}>
             <View style={[styles.avatar, { backgroundColor: avatarColor(key) }]}>
               {s.avatarUrl
-                ? <Image source={{ uri: s.thumbAvatarUrl ?? s.avatarUrl }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+                ? <Image source={{ uri: thumbUrl(s.thumbAvatarUrl ?? s.avatarUrl) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
                 : <Text style={styles.letter}>{(s.displayName[0] ?? '?').toUpperCase()}</Text>}
             </View>
             <View style={styles.body}>

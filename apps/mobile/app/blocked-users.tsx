@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Blocked Users settings screen - Settings → Blocked users.
  *
@@ -93,7 +94,7 @@ export default function BlockedUsersScreen() {
     return (
       <View style={styles.row}>
         {photo ? (
-          <Image source={{ uri: photo }} style={styles.avatar} />
+          <Image source={{ uri: thumbUrl(photo) }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatarFallback, { backgroundColor: avatarBg(name) }]}>
             <Text style={styles.avatarInitial}>{initial}</Text>

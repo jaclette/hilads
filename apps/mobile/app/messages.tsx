@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Messages screen - Direct Messages + Event Chats with filter pills.
  *
@@ -62,7 +63,7 @@ function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void })
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
       {convo.other_photo_url ? (
-        <Image source={{ uri: convo.other_photo_url }} style={styles.avatar} />
+        <Image source={{ uri: thumbUrl(convo.other_photo_url) }} style={styles.avatar} />
       ) : (
         <View style={[styles.avatarCircle, { backgroundColor: color + '28', borderColor: color + '50' }]}>
           <Text style={[styles.avatarInitial, { color }]}>{initial}</Text>

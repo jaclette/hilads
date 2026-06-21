@@ -1,3 +1,4 @@
+import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
@@ -350,7 +351,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                 {user.avatarUrl
                   ? <img
                       className="pub-profile-avatar"
-                      src={user.thumbAvatarUrl ?? user.avatarUrl}
+                      src={thumbUrl(user.thumbAvatarUrl ?? user.avatarUrl)}
                       alt={name}
                       onClick={() => onOpenLightbox && onOpenLightbox(user.avatarUrl)}
                     />
@@ -564,7 +565,7 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                           style={{ cursor: onViewProfile ? 'pointer' : 'default' }}
                         >
                           {f.avatarUrl
-                            ? <img className="pub-profile-friend-avatar" src={f.thumbAvatarUrl ?? f.avatarUrl} alt={f.displayName} />
+                            ? <img className="pub-profile-friend-avatar" src={thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl)} alt={f.displayName} />
                             : <span
                                 className="pub-profile-friend-avatar pub-profile-friend-avatar--initials"
                                 style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}

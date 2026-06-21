@@ -1,3 +1,4 @@
+import { thumbUrl } from '@/lib/imageThumb';
 /**
  * Friend Requests inbox - Incoming + Sent tabs.
  *
@@ -46,7 +47,7 @@ export default function FriendRequestsScreen() {
     return (
       <TouchableOpacity style={styles.row} activeOpacity={0.85} onPress={() => handleOpenProfile(item)}>
         {photo ? (
-          <Image source={{ uri: photo }} style={styles.avatar} />
+          <Image source={{ uri: thumbUrl(photo) }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, { backgroundColor: avatarBg(name), alignItems: 'center', justifyContent: 'center' }]}>
             <Text style={styles.avatarInitial}>{initial}</Text>
