@@ -538,7 +538,8 @@
       "body": "Sois le premier à relever un défi et marquer des points."
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
-    "neutral": "🏆 Les plus locaux"
+    "neutral": "🏆 Les plus locaux",
+    "titleCity": "🏆 Le plus {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Comment marchent les points",

@@ -14,6 +14,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
+import { cityDemonym } from '@/lib/cityDemonym';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
 import type {
@@ -109,10 +110,17 @@ export default function LeaderboardScreen() {
     router.push({ pathname: '/user/[id]', params: { id: userId } });
   }, [router, account]);
 
+  // City-specific title: "Most Saigonese" for HCMC, etc. Falls back to the
+  // generic "Most Local" for the cities/world scopes or unmapped cities.
+  const demonym = scope === 'city' ? cityDemonym(effectiveCityName) : null;
+  const headerTitle = demonym
+    ? t('leaderboard.titleCity', { demonym, defaultValue: `🏆 Most ${demonym}` })
+    : t('leaderboard.title');
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Header
-        title={t('leaderboard.title')}
+        title={headerTitle}
         onBack={() => router.back()}
         t={t}
       />

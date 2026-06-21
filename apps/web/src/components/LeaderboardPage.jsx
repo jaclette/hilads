@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
 import { localizeCityName } from '../i18n/cityName'
+import { cityDemonym } from '../lib/cityDemonym'
 import { countryToFlag } from '../lib/countryFlag'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
@@ -85,7 +86,12 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
     <div className="full-page leaderboard-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">{t('leaderboard.title')}</span>
+        <span className="page-title">{(() => {
+          const demonym = scope === 'city' ? cityDemonym(effectiveCityName) : null
+          return demonym
+            ? t('leaderboard.titleCity', { demonym, defaultValue: `🏆 Most ${demonym}` })
+            : t('leaderboard.title')
+        })()}</span>
       </div>
 
       <div className="leaderboard-selectors">

@@ -372,7 +372,8 @@
       "searchPlaceholder": "Search cities…",
       "empty": "No cities match."
     },
-    "neutral": "🏆 Most Local"
+    "neutral": "🏆 Most Local",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "schedule": {
     "proposeCta": "Propose a date 📅",

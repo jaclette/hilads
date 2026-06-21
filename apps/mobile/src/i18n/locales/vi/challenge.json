@@ -535,7 +535,8 @@
       "body": "Hãy là người đầu tiên nhận thử thách và kiếm điểm."
     },
     "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại.",
-    "neutral": "🏆 Người dân địa phương nhất"
+    "neutral": "🏆 Người dân địa phương nhất",
+    "titleCity": "🏆 {{demonym}} nhất"
   },
   "scoringInfo": {
     "aria": "Cách tính điểm",

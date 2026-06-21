@@ -317,7 +317,8 @@
       "body": "Be the first to take a challenge and earn points."
     },
     "errLoad": "Couldn't load the leaderboard. Pull to retry.",
-    "neutral": "🏆 Most Local"
+    "neutral": "🏆 Most Local",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "schedule": {
     "proposeCta": "Propose a date 📅",
