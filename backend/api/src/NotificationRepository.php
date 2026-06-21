@@ -415,7 +415,8 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data
+        array   $data,
+        array   $excludeUserIds = []
     ): void {
         // CAST(? AS text) tells Postgres the type of the nullable param so it
         // can resolve $2 even when the value is NULL (avoids "indeterminate datatype").
@@ -427,6 +428,7 @@ class NotificationRepository
         ");
         $stmt->execute([$eventId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
         if (empty($userIds)) return;
 
         // Batch-load preferences + locales - 1 query each regardless of count
@@ -462,7 +464,8 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data
+        array   $data,
+        array   $excludeUserIds = []
     ): void {
         // One round-trip: list every distinct user_id in any of the three
         // roles whose challenge_participants.notification_preference is not
@@ -493,6 +496,7 @@ class NotificationRepository
             $excludeUserId, $excludeUserId,
         ]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
         if (empty($userIds)) return;
 
         // batchIsEnabled is a no-op for 'challenge_message' (no typeToColumn
@@ -522,7 +526,8 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data
+        array   $data,
+        array   $excludeUserIds = []
     ): void {
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT acceptor_user_id AS user_id
@@ -534,6 +539,7 @@ class NotificationRepository
         ");
         $stmt->execute([$challengeId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
         if (empty($userIds)) return;
 
         $enabled = self::batchIsEnabled($userIds, $type);
@@ -778,7 +784,8 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data
+        array   $data,
+        array   $excludeUserIds = []
     ): void {
         // city_join targets city *members* (current_city_id), not just whoever is
         // online this minute - a user wants "someone arrived in my city" for the
@@ -832,6 +839,7 @@ class NotificationRepository
         }
         $stmt->execute([$cityChannelId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
         if (empty($userIds)) return;
 
         // Batch-load preferences + locales - 1 query each regardless of recipient count
@@ -868,7 +876,8 @@ class NotificationRepository
         string  $type,
         string  $title,
         ?string $body,
-        array   $data
+        array   $data,
+        array   $excludeUserIds = []
     ): void {
         $stmt = Database::pdo()->prepare("
             SELECT user_id FROM topic_subscriptions
@@ -877,6 +886,7 @@ class NotificationRepository
         ");
         $stmt->execute([$topicId, $excludeUserId, $excludeUserId]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+        if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
         if (empty($userIds)) return;
 
         // Batch-load preferences + locales - 1 query each regardless of subscriber count

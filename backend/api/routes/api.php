@@ -737,6 +737,23 @@ function notifyMentions(array $mentions, ?string $senderUserId, string $title, ?
 }
 
 /**
+ * Distinct mentioned user IDs from a sanitized mentions array. Passed to the
+ * channel-message fan-out as an exclude list so a mentioned participant gets
+ * ONLY the higher-signal mention push, not also the generic channel push
+ * (which carries the same body text → reads as a duplicate).
+ */
+function mentionUserIds(?array $mentions): array
+{
+    if (empty($mentions)) return [];
+    $ids = [];
+    foreach ($mentions as $m) {
+        $uid = $m['userId'] ?? null;
+        if (is_string($uid) && $uid !== '') $ids[$uid] = true;
+    }
+    return array_keys($ids);
+}
+
+/**
  * Block-filter helper: returns the bidirectional block ID set for a viewer,
  * formatted for fast lookup. Wraps BlockRepository::getBidirectional so route
  * handlers don't need to know about the repo.
@@ -5862,7 +5879,8 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
             'event_message',
             $nickname . ' in ' . $eventTitle,
             $bodyPreview,
-            ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname, 'senderUserId' => $senderUserId]
+            ['eventId' => $eventId, 'eventTitle' => $eventTitle, 'senderName' => $nickname, 'senderUserId' => $senderUserId],
+            mentionUserIds($mentions ?? [])
         );
         // @mention notifications - higher-signal than the participant ping above.
         if (!empty($mentions ?? [])) {
@@ -6200,7 +6218,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             'channel_message',
             $nickname . ' in the city chat',
             $msgPreview,
-            ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId]
+            ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId],
+            mentionUserIds($mentions ?? [])
         );
         if (!empty($mentions ?? [])) {
             notifyMentions(
@@ -7249,7 +7268,8 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
                 'topicTitle'   => $topicTitle,
                 'senderName'   => $nickname,
                 'senderUserId' => $senderUserId,
-            ]
+            ],
+            mentionUserIds($mentions ?? [])
         );
         if (!empty($mentions ?? [])) {
             notifyMentions(
@@ -13083,6 +13103,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
                 'senderUserId'   => $senderUserId,
                 'messageId'      => $message['id'] ?? null,
             ],
+            mentionUserIds($mentions ?? []),
         );
         // @mention notifications - higher-signal than the participant ping above.
         if (!empty($mentions ?? [])) {
