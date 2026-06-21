@@ -720,5 +720,11 @@
       "submission": "{{count}} ont envoyé une photo",
       "host": "{{name}} a organisé"
     }
+  },
+  "titlePh": {
+    "food": "ex. Trouve-moi le meilleur pho 🍜",
+    "place": "ex. Emmène-moi dans ton coin secret préféré 📍",
+    "culture": "ex. Montre-moi un truc que seuls les locaux connaissent 🎭",
+    "help": "ex. Mets-moi au défi de faire un truc de fou 🤪"
   }
 }

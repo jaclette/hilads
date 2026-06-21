@@ -775,5 +775,11 @@
       "submission": "{{count}} submitted a photo",
       "host": "{{name}} hosted"
     }
+  },
+  "titlePh": {
+    "food": "e.g. Find me the best bowl of pho 🍜",
+    "place": "e.g. Take me to your favorite hidden spot 📍",
+    "culture": "e.g. Show me something only locals know 🎭",
+    "help": "e.g. Dare me to try something wild 🤪"
   }
 }

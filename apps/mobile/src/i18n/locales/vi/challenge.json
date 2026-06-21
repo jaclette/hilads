@@ -738,5 +738,11 @@
       "submission": "{{count}} người đã gửi ảnh",
       "host": "{{name}} đã tổ chức"
     }
+  },
+  "titlePh": {
+    "food": "VD: Tìm cho tôi tô phở ngon nhất 🍜",
+    "place": "VD: Dẫn tôi đến nơi bí mật yêu thích của bạn 📍",
+    "culture": "VD: Cho tôi xem điều chỉ dân địa phương biết 🎭",
+    "help": "VD: Thách tôi làm điều gì đó điên rồ 🤪"
   }
 }

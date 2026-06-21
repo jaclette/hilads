@@ -452,7 +452,7 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
           <div className="cef-section">
             <label className="cef-label">{t('create.challengeTitleLabel')}</label>
             <MarqueePlaceholderInput
-              placeholder={t('create.challengeTitlePlaceholder')}
+              placeholder={t(`titlePh.${type}`, { ns: 'challenge', defaultValue: t('create.challengeTitlePlaceholder') })}
               value={title}
               onChange={e => setTitle(e.target.value)}
               maxLength={100}

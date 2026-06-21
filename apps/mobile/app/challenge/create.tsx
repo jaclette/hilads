@@ -503,15 +503,16 @@ export default function CreateChallengeScreen() {
         {/* Title - short, single field, primary input */}
         <Text style={styles.sectionLabel}>{t('titleLabel')}</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, styles.inputMultiline]}
           value={title}
-          onChangeText={setTitle}
-          placeholder={t('titlePlaceholder')}
+          // Multiline so a long title wraps + stays fully visible; strip newlines
+          // so the title itself never contains hard line breaks.
+          onChangeText={(v) => setTitle(v.replace(/\n/g, ' '))}
+          placeholder={t(`titlePh.${type}`, { defaultValue: t('titlePlaceholder') })}
           placeholderTextColor={Colors.muted2}
           maxLength={100}
           autoFocus
-          returnKeyType="next"
-          blurOnSubmit={false}
+          multiline
         />
 
         {/* Return clause (Local only) - the "...and come tell me about it
