@@ -40,7 +40,11 @@ export default function SuccessfulChallengesScreen({ onBack, onTry, onOpenProfil
     setLoadingMore(true)
     const before = items[items.length - 1]?.completed_at
     const res = await fetchChallengeShowcase({ cityId, limit: PAGE, before })
-    setItems(prev => [...prev, ...(res.items ?? [])])
+    // Dedup by id - the photo-first sort can overlap the completed_at cursor.
+    setItems(prev => {
+      const seen = new Set(prev.map(i => i.id))
+      return [...prev, ...(res.items ?? []).filter(i => !seen.has(i.id))]
+    })
     setHasMore(!!res.hasMore)
     setLoadingMore(false)
   }

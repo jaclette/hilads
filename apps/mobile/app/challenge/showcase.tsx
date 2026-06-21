@@ -60,7 +60,12 @@ export default function ShowcaseScreen() {
     try {
       const before = items[items.length - 1]?.completed_at;
       const res = await fetchChallengeShowcase({ cityId, limit: PAGE, before });
-      setItems(prev => [...prev, ...res.items]);
+      // Dedup by id: the sort (photo-first, then completed_at) can overlap the
+      // completed_at cursor, so a page may re-return an already-shown card.
+      setItems(prev => {
+        const seen = new Set(prev.map(i => i.id));
+        return [...prev, ...res.items.filter(i => !seen.has(i.id))];
+      });
       setHasMore(res.hasMore);
     } finally {
       setLoadingMore(false);

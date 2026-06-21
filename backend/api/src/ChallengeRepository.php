@@ -760,6 +760,19 @@ class ChallengeRepository
         $mstmt->execute($params);
         $rows = array_merge($rows, $mstmt->fetchAll());
 
+        // De-dupe by challenge: a single challenge can match more than one branch
+        // (e.g. an international group challenge with BOTH mutual ratings AND a
+        // winner proof), which surfaced the same card twice. Keep the first match
+        // - branches are merged legacy → photo → meet, and legacy carries the
+        // richest data (real ratings + both-side comments).
+        $seenChallenge = [];
+        $rows = array_values(array_filter($rows, static function (array $r) use (&$seenChallenge): bool {
+            $cid = $r['channel_id'] ?? null;
+            if ($cid === null || isset($seenChallenge[$cid])) return false;
+            $seenChallenge[$cid] = true;
+            return true;
+        }));
+
         $mapped = array_map(static function (array $r): array {
             return [
                 'id'                        => $r['channel_id'],
