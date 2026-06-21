@@ -4099,6 +4099,59 @@ $router->add('POST', '/api/v1/uploads', function () {
     Response::json(['url' => $url, 'thumbUrl' => $thumbUrl], 201);
 });
 
+// GET /api/v1/img-thumb?f=<32hex>.<ext>
+// On-the-fly thumbnail proxy: returns a ≤400px JPEG for an uploaded image so
+// feeds never load the full original. Works for EVERY image (existing + new) -
+// no backfill, no deterministic-name dependency. Lazily generates the thumb the
+// FIRST time and caches it on R2 (thumb_<base>.jpg); subsequent misses stream
+// that. Immutable cache headers so browsers/expo cache it after one fetch.
+$router->add('GET', '/api/v1/img-thumb', function () {
+    $f = (string) ($_GET['f'] ?? '');
+    if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $f, $m)) {
+        Response::json(['error' => 'Invalid image'], 400);
+    }
+    $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
+    if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
+
+    $thumbName = 'thumb_' . $m[1] . '.jpg';
+    $thumbUrl  = $r2Base . '/' . $thumbName;
+    $origUrl   = $r2Base . '/' . $f;
+
+    $emit = static function (string $bytes): void {
+        header('Content-Type: image/jpeg');
+        header('Cache-Control: public, max-age=31536000, immutable');
+        header('Content-Length: ' . strlen($bytes));
+        echo $bytes;
+        exit;
+    };
+
+    // Already cached on R2? Stream it (small).
+    $cached = @file_get_contents($thumbUrl);
+    if ($cached !== false && $cached !== '') { $emit($cached); }
+
+    // First time: fetch original, resize, cache on R2, then stream.
+    try {
+        $orig = @file_get_contents($origUrl);
+        if ($orig === false || $orig === '') {
+            // Original gone - 302 to it so the client's onError fallback still shows something.
+            header('Location: ' . $origUrl, true, 302); exit;
+        }
+        $srcTmp = tempnam(sys_get_temp_dir(), 'thmb');
+        file_put_contents($srcTmp, $orig);
+        $mime  = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
+        $thumbTmp = ImageProcessor::generateAvatarThumbnail($srcTmp, $mime);
+        @unlink($srcTmp);
+        if ($thumbTmp === null) { header('Location: ' . $origUrl, true, 302); exit; }
+        $bytes = file_get_contents($thumbTmp);
+        try { R2Uploader::put($thumbTmp, $thumbName, 'image/jpeg'); } catch (\Throwable $e) {}
+        @unlink($thumbTmp);
+        $emit($bytes);
+    } catch (\Throwable $e) {
+        error_log('[img-thumb] ' . $f . ': ' . $e->getMessage());
+        header('Location: ' . $origUrl, true, 302); exit;
+    }
+});
+
 // ── Local legends - city ambassadors with their picks ────────────────────────
 // GET /api/v1/channels/{channelId}/ambassadors
 // Public endpoint. Returns up to 10 ambassadors for this city, most recently

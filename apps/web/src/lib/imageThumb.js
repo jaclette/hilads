@@ -1,10 +1,11 @@
-// Derive the thumbnail URL for an uploaded image. Uploads are `<32hex>.<ext>`
-// and the backend writes a matching `thumb_<32hex>.jpg` (≤400px) alongside, so
-// the thumb is derivable - no per-message storage. Non-uploads (avatars,
-// external URLs) are returned unchanged. Thumbs from before deterministic
-// naming won't exist at the derived path → callers fall back to the full URL.
+const BASE = (import.meta.env.VITE_API_URL ?? '') + '/api/v1'
+
+// Thumbnail URL for an uploaded image, via the backend resize proxy
+// (`/img-thumb?f=…`). Works for EVERY uploaded image - the proxy lazily generates
+// + caches a ≤400px JPEG, so feeds never load the full original. Non-uploads
+// return unchanged; callers fall back to the full URL on error.
 export function thumbUrl(url) {
   if (!url) return url
-  const m = url.match(/^(.*\/)([a-f0-9]{32})\.(?:jpe?g|png|webp)$/i)
-  return m ? `${m[1]}thumb_${m[2]}.jpg` : url
+  const m = String(url).match(/\/([a-f0-9]{32}\.(?:jpe?g|png|webp))$/i)
+  return m ? `${BASE}/img-thumb?f=${m[1].toLowerCase()}` : url
 }
