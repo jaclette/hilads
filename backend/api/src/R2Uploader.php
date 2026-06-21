@@ -52,4 +52,35 @@ class R2Uploader
 
         return rtrim(getenv('R2_PUBLIC_URL'), '/') . '/' . $filename;
     }
+
+    /**
+     * Rewrite an uploaded-image URL to point at the on-the-fly thumbnail proxy
+     * (`/api/v1/img-thumb?f=…`) so feeds never serve the full original. This is
+     * the server-side mirror of the client `thumbUrl()` helper - applying it at
+     * the API boundary means EVERY client (web + native, any deploy) gets the
+     * ≤400px JPEG, and a newly-added avatar render site can't regress.
+     *
+     * Only rewrites URLs whose basename is our deterministic `<32hex>.<ext>`
+     * upload name (the only form the proxy accepts). Already-small pre-generated
+     * `thumb_<base>.jpg` names, external avatars, and nulls pass through
+     * unchanged. Returns null/'' unchanged so "no photo → initial" still works.
+     */
+    public static function thumbProxy(?string $url): ?string
+    {
+        if ($url === null || $url === '') {
+            return $url;
+        }
+        $base = basename((string) (parse_url($url, PHP_URL_PATH) ?? $url));
+        if (!preg_match('/^[a-f0-9]{32}\.(jpe?g|png|webp)$/i', $base)) {
+            return $url;
+        }
+        // The JSON is served from the same host that exposes the proxy route, so
+        // derive the absolute base from the current request; fall back to the
+        // public API host for non-HTTP contexts (cron/CLI).
+        $host = $_SERVER['HTTP_HOST'] ?? '';
+        $apiBase = $host !== ''
+            ? 'https://' . $host
+            : rtrim(getenv('API_PUBLIC_URL') ?: 'https://api.hilads.live', '/');
+        return $apiBase . '/api/v1/img-thumb?f=' . strtolower($base);
+    }
 }

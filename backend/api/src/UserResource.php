@@ -48,7 +48,7 @@ final class UserResource
             'username'      => $user['username'] ?? null,
             'displayName'   => $user['display_name'],
             'avatarUrl'     => $fullUrl,
-            'thumbAvatarUrl'=> $thumbUrl ?? $fullUrl,  // null only when no photo at all
+            'thumbAvatarUrl'=> R2Uploader::thumbProxy($thumbUrl ?? $fullUrl),  // null only when no photo at all
             'badges'        => $badges,
             'vibe'          => $user['vibe'] ?? null,
             'mode'          => $user['mode'] ?? null,

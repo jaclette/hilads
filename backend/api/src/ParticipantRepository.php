@@ -162,7 +162,7 @@ class ParticipantRepository
             $out[$r['channel_id']][] = [
                 'id'             => $r['id'],
                 'displayName'    => $name,
-                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'],
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($r['thumb_url'] ?? $r['full_url']),
             ];
         }
         return $out;

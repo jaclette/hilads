@@ -122,7 +122,7 @@ final class ChallengeProofRepository
                 'id'           => $r['id'],
                 'user_id'      => $r['user_id'],
                 'display_name' => $r['display_name'] ?? '?',
-                'avatar_url'   => $r['avatar_url'],
+                'avatar_url'   => R2Uploader::thumbProxy($r['avatar_url']),
                 'media_url'    => $r['media_url'],
                 'media_type'   => $r['media_type'],
                 'status'       => $r['status'],

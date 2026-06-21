@@ -386,7 +386,7 @@ class TopicRepository
         return array_map(static fn(array $r): array => [
             'id'             => $r['id'],
             'displayName'    => $r['display_name'] ?? 'Member',
-            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+            'thumbAvatarUrl' => R2Uploader::thumbProxy($r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null),
         ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
@@ -423,7 +423,7 @@ class TopicRepository
             $map[$r['topic_id']][] = [
                 'id'             => $r['id'],
                 'displayName'    => $r['display_name'] ?? 'Member',
-                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'] ?? null,
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($r['thumb_url'] ?? $r['full_url'] ?? null),
             ];
         }
         return $map;

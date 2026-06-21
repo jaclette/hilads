@@ -258,7 +258,7 @@ class ChallengeRepository
             // Cards + the detail header render "by {creator_display_name}".
             'creator_display_name'     => $row['creator_display_name']     ?? null,
             'creator_username'         => $row['creator_username']         ?? null,
-            'creator_thumb_avatar_url' => $row['creator_thumb_avatar_url'] ?? null,
+            'creator_thumb_avatar_url' => R2Uploader::thumbProxy($row['creator_thumb_avatar_url'] ?? null),
             // Versus-layout: the active taker's identity. Powers the
             // right-hand avatar on the card (and the same on detail).
             // Populated via the LATERAL acceptance join in SELECT above;
@@ -270,7 +270,7 @@ class ChallengeRepository
             'acceptor_phase'           => $row['acceptor_phase']           ?? null,
             'acceptor_acceptance_id'   => $row['acceptor_acceptance_id']   ?? null,
             'acceptor_display_name'    => $row['acceptor_display_name']    ?? null,
-            'acceptor_thumb_avatar_url'=> $row['acceptor_thumb_avatar_url']?? null,
+            'acceptor_thumb_avatar_url'=> R2Uploader::thumbProxy($row['acceptor_thumb_avatar_url']?? null),
             'acceptor_country'         => self::countryForCityId($row['acceptor_current_city_id'] ?? null),
             // Monthly rank badges (Top 10 + podium for Top 3). Staleness
             // guard: only expose the rank when the user's score_month_ref
@@ -515,7 +515,7 @@ class ChallengeRepository
             'target_country'           => self::countryForCityId($r['target_city_id']),
             'creator_username'         => $r['creator_username'],
             'creator_display_name'     => $r['creator_display_name'],
-            'creator_thumb_avatar_url' => $r['creator_thumb_avatar_url'],
+            'creator_thumb_avatar_url' => R2Uploader::thumbProxy($r['creator_thumb_avatar_url']),
         ], $rows);
 
         return [
@@ -781,14 +781,14 @@ class ChallengeRepository
                 'mode'                      => $r['mode'] ?? 'local',
                 'created_by'                => $r['created_by'],
                 'creator_display_name'      => $r['creator_display_name'],
-                'creator_thumb_avatar_url'  => $r['creator_thumb_avatar_url'],
+                'creator_thumb_avatar_url'  => R2Uploader::thumbProxy($r['creator_thumb_avatar_url']),
                 'country'                   => self::countryForCityId($r['city_id']),
                 'city_name'                 => self::cityNameForCityId($r['city_id']),
                 'target_country'            => $r['target_city_id'] ? self::countryForCityId($r['target_city_id']) : null,
                 'target_city_name'          => $r['target_city_id'] ? self::cityNameForCityId($r['target_city_id']) : null,
                 'acceptor_user_id'          => $r['acceptor_user_id'],
                 'acceptor_display_name'     => $r['acceptor_display_name'],
-                'acceptor_thumb_avatar_url' => $r['acceptor_thumb_avatar_url'],
+                'acceptor_thumb_avatar_url' => R2Uploader::thumbProxy($r['acceptor_thumb_avatar_url']),
                 'acceptor_country'          => $r['acceptor_city_id'] ? self::countryForCityId($r['acceptor_city_id']) : null,
                 // null for group winners (no star rating) - the card hides the pill.
                 'avg_stars'                 => $r['avg_stars'] !== null ? round((float) $r['avg_stars'], 1) : null,
@@ -1553,7 +1553,7 @@ class ChallengeRepository
         return array_map(static fn(array $r): array => [
             'id'             => $r['id'],
             'displayName'    => $r['display_name'] ?? 'Member',
-            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+            'thumbAvatarUrl' => R2Uploader::thumbProxy($r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null),
         ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
 
@@ -1587,7 +1587,7 @@ class ChallengeRepository
             $map[$r['challenge_id']][] = [
                 'id'             => $r['id'],
                 'displayName'    => $r['display_name'] ?? 'Member',
-                'thumbAvatarUrl' => $r['thumb_url'] ?? $r['full_url'] ?? null,
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($r['thumb_url'] ?? $r['full_url'] ?? null),
             ];
         }
         return $map;

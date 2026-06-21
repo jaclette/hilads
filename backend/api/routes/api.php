@@ -9947,7 +9947,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                 'acceptor' => [
                     'id'             => $userId,
                     'displayName'    => $authUser['display_name'] ?? null,
-                    'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                    'thumbAvatarUrl' => R2Uploader::thumbProxy($authUser['profile_thumb_photo_url'] ?? null),
                 ],
             ];
             if (!empty($challenge['created_by'])) {
@@ -10104,7 +10104,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
             'acceptor' => [
                 'id'             => $userId,
                 'displayName'    => $authUser['display_name'] ?? null,
-                'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($authUser['profile_thumb_photo_url'] ?? null),
             ],
         ];
         if (!empty($challenge['created_by'])) {
@@ -12064,7 +12064,7 @@ $router->add('GET', '/api/v1/me/rate-prompts', function () {
             'counterparty'    => [
                 'id'             => $isChallenger ? $r['acceptor_user_id']        : $r['creator_user_id'],
                 'displayName'    => $isChallenger ? $r['acceptor_display_name']   : $r['creator_display_name'],
-                'thumbAvatarUrl' => $isChallenger ? $r['acceptor_thumb']          : $r['creator_thumb'],
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($isChallenger ? $r['acceptor_thumb']          : $r['creator_thumb']),
             ],
             'meetup_ended_at' => isset($r['meetup_ended_at']) ? (int) $r['meetup_ended_at'] : null,
             'other_rated'     => (bool) $r['other_rated'],
@@ -12463,7 +12463,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 'rank'           => $offset + $i + 1,
                 'user_id'        => $r['id'],
                 'displayName'    => $r['display_name'],
-                'thumbAvatarUrl' => $r['profile_thumb_photo_url'],
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($r['profile_thumb_photo_url']),
                 'points'         => (int) $r['points'],
                 // PR13: city + country for world-scope rendering. Null when the
                 // user has no current_city_id set yet (rare). UI only renders
@@ -12698,7 +12698,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
             'acceptor' => [
                 'id'             => $userId,
                 'displayName'    => $authUser['display_name'] ?? null,
-                'thumbAvatarUrl' => $authUser['profile_thumb_photo_url'] ?? null,
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($authUser['profile_thumb_photo_url'] ?? null),
             ],
         ];
         if (!empty($challenge['created_by'])) {

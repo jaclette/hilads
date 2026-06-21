@@ -269,7 +269,7 @@ class ChallengeParticipantRepository
             // Falls back to the full-size photo when no thumbnail exists -
             // matches participantPreview / city-roster behaviour so legacy
             // users without a thumb still get an avatar.
-            'thumbAvatarUrl' => $r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null,
+            'thumbAvatarUrl' => R2Uploader::thumbProxy($r['profile_thumb_photo_url'] ?? $r['profile_photo_url'] ?? null),
             'joinedAt'       => (int) $r['joined_at'],
         ], $stmt->fetchAll(\PDO::FETCH_ASSOC));
     }
