@@ -13316,7 +13316,9 @@ body.has-app-promo-banner .page-header {
 .gsg-modal {
   background: var(--bg, #111); width: 100%; max-width: 560px;
   border-top-left-radius: 20px; border-top-right-radius: 20px;
-  padding: 16px 16px 28px; max-height: 85vh; overflow-y: auto;
+  /* Extra bottom padding so the last tile / Pick button clears the fixed
+     bottom nav (the sheet docks flush to the viewport edge). */
+  padding: 16px 16px calc(96px + env(safe-area-inset-bottom)); max-height: 88vh; overflow-y: auto;
 }
 .gsg-modal-head { display: flex; align-items: center; justify-content: space-between; }
 .gsg-modal-title { font-size: 1.05rem; font-weight: 800; color: var(--text, #f3eee9); }
