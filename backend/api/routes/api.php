@@ -836,6 +836,71 @@ $router->add('GET', '/internal/run-cron', function () {
     }
 });
 
+// GET /internal/backfill-thumbs?key=…&limit=25&offset=0
+// One-time/idempotent backfill: existing uploads have a randomly-named thumb the
+// client can't derive, so chat / showcase feeds load the full original. This
+// generates a DETERMINISTIC thumb (thumb_<base>.jpg) for each existing image so
+// the client's derived thumb URL resolves. Walk the list with offset; safe to
+// re-run (skips images whose thumb already exists).
+$router->add('GET', '/internal/backfill-thumbs', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) { Response::json(['error' => 'Not found'], 404); }
+    if (!hash_equals($expectedKey, (string) ($_GET['key'] ?? ''))) { Response::json(['error' => 'Forbidden'], 403); }
+
+    $limit  = max(1, min(100, (int) ($_GET['limit'] ?? 25)));
+    $offset = max(0, (int) ($_GET['offset'] ?? 0));
+    $r2Base = rtrim(getenv('R2_PUBLIC_URL') ?: '', '/');
+    if ($r2Base === '') { Response::json(['error' => 'R2 not configured'], 500); }
+
+    // Distinct uploaded images across chat messages + challenge proofs.
+    $stmt = Database::pdo()->prepare("
+        SELECT url FROM (
+            SELECT image_url AS url FROM messages         WHERE type = 'image' AND image_url IS NOT NULL
+            UNION
+            SELECT media_url AS url FROM challenge_proofs  WHERE media_url IS NOT NULL
+        ) t
+        WHERE url LIKE ? || '/%'
+        ORDER BY url
+        LIMIT ? OFFSET ?
+    ");
+    $stmt->execute([$r2Base, $limit, $offset]);
+    $urls = $stmt->fetchAll(\PDO::FETCH_COLUMN) ?: [];
+
+    $created = 0; $skipped = 0; $failed = 0;
+    foreach ($urls as $url) {
+        $file = basename(parse_url($url, PHP_URL_PATH) ?? '');
+        if (!preg_match('/^([a-f0-9]{32})\.(jpe?g|png|webp)$/i', $file, $m)) { $skipped++; continue; }
+        $thumbName = 'thumb_' . $m[1] . '.jpg';
+        $thumbUrl  = $r2Base . '/' . $thumbName;
+        // Already generated? HEAD the public URL.
+        $h = @get_headers($thumbUrl, true);
+        if ($h !== false && is_array($h) && strpos((string) ($h[0] ?? ''), '200') !== false) { $skipped++; continue; }
+        try {
+            $bytes = @file_get_contents($url);
+            if ($bytes === false || $bytes === '') { $failed++; continue; }
+            $srcTmp = tempnam(sys_get_temp_dir(), 'bf_src');
+            file_put_contents($srcTmp, $bytes);
+            $mime = (new finfo(FILEINFO_MIME_TYPE))->file($srcTmp) ?: 'image/jpeg';
+            $thumbTmp = ImageProcessor::generateAvatarThumbnail($srcTmp, $mime);
+            @unlink($srcTmp);
+            if ($thumbTmp === null) { $failed++; continue; }
+            R2Uploader::put($thumbTmp, $thumbName, 'image/jpeg');
+            @unlink($thumbTmp);
+            $created++;
+        } catch (\Throwable $e) {
+            error_log('[backfill-thumbs] ' . $url . ': ' . $e->getMessage());
+            $failed++;
+        }
+    }
+
+    Response::json([
+        'ok' => true, 'offset' => $offset, 'scanned' => count($urls),
+        'created' => $created, 'skipped' => $skipped, 'failed' => $failed,
+        'nextOffset' => $offset + count($urls),
+        'done' => count($urls) < $limit,
+    ]);
+});
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY - disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
