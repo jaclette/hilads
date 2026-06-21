@@ -7,18 +7,28 @@ use Minishlink\WebPush\Subscription;
 
 class PushService
 {
-    /** Map notification type → notification_preferences column. null = never push. */
+    /**
+     * Map notification type → notification_preferences column.
+     * null = the type has NO opt-out preference → it is ALWAYS-ON (still pushed).
+     * (Mirrors MobilePushService: a null column must NOT silently drop the push -
+     * that previously killed web push for challenge_group_result_*, proof
+     * approvals, new_challenge, friend requests, etc.)
+     */
     private static function prefColumn(string $type): ?string
     {
         return match ($type) {
-            'dm_message'    => 'dm_push',
-            'event_message' => 'event_message_push',
-            'event_join'    => 'event_join_push',
-            'new_event'     => 'new_event_push',
-            'mention'       => 'mention_push',
-            'vibe_received' => 'vibe_received_push',
-            'profile_view'  => 'profile_view_push',
-            default         => null,
+            'dm_message'      => 'dm_push',
+            'event_message'   => 'event_message_push',
+            'event_join'      => 'event_join_push',
+            'new_event'       => 'new_event_push',
+            'mention'         => 'mention_push',
+            'channel_message' => 'channel_message_push',
+            'city_join'       => 'city_join_push',
+            'vibe_received'   => 'vibe_received_push',
+            'profile_view'    => 'profile_view_push',
+            'topic_message'   => 'topic_reply_push',
+            'new_topic'       => 'new_topic_push',
+            default           => null,
         };
     }
 
@@ -46,25 +56,31 @@ class PushService
             return; // Web push not configured - skip silently
         }
 
+        // null prefColumn = always-on type (no opt-out, e.g. challenge result
+        // reveals, proof approvals) → skip the pref check and push. Only gate when
+        // the type actually has an opt-out column.
         $prefColumn = self::prefColumn($type);
-        if ($prefColumn === null) {
-            return; // Unknown type - no push
-        }
+        if ($prefColumn !== null) {
+            // Check user preference (row may not exist for new users - fall back to coded defaults)
+            try {
+                $prefStmt = Database::pdo()->prepare(
+                    "SELECT $prefColumn FROM notification_preferences WHERE user_id = ?"
+                );
+                $prefStmt->execute([$userId]);
+                $prefRow = $prefStmt->fetch(\PDO::FETCH_ASSOC);
 
-        // Check user preference (row may not exist for new users - fall back to coded defaults)
-        try {
-            $prefStmt = Database::pdo()->prepare(
-                "SELECT $prefColumn FROM notification_preferences WHERE user_id = ?"
-            );
-            $prefStmt->execute([$userId]);
-            $prefRow = $prefStmt->fetch(\PDO::FETCH_ASSOC);
+                $defaults = [
+                    'dm_push' => true, 'event_message_push' => true, 'event_join_push' => true,
+                    'new_event_push' => true, 'mention_push' => true, 'channel_message_push' => true,
+                    'city_join_push' => true, 'vibe_received_push' => true, 'profile_view_push' => true,
+                    'topic_reply_push' => true, 'new_topic_push' => true,
+                ];
+                $enabled  = $prefRow ? (bool) ($prefRow[$prefColumn] ?? $defaults[$prefColumn] ?? true) : ($defaults[$prefColumn] ?? true);
 
-            $defaults = ['dm_push' => true, 'event_message_push' => true, 'new_event_push' => true, 'mention_push' => true, 'vibe_received_push' => true, 'profile_view_push' => true];
-            $enabled  = $prefRow ? (bool) ($prefRow[$prefColumn] ?? $defaults[$prefColumn] ?? true) : ($defaults[$prefColumn] ?? false);
-
-            if (!$enabled) return;
-        } catch (\Throwable) {
-            return;
+                if (!$enabled) return;
+            } catch (\Throwable) {
+                return;
+            }
         }
 
         // Load subscriptions, then exclude any endpoint shared with the sender.
