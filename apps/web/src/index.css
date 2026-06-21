@@ -13269,11 +13269,20 @@ body.has-app-promo-banner .page-header {
   padding: 8px 12px;
   border-radius: 14px;
   cursor: pointer;
-  background: var(--bg2, #1a1614);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Gold border + tint so the photos card stands out as the thing to tap. */
+  background: rgba(255, 201, 60, 0.08);
+  border: 1px solid rgba(255, 201, 60, 0.55);
   text-align: left;
 }
-.gsg-cta:hover { border-color: rgba(255, 122, 60, 0.4); }
+.gsg-cta:hover { border-color: rgba(255, 201, 60, 0.85); }
+.challenge-status-pill {
+  display: inline-flex; align-items: center;
+  border-radius: 999px; padding: 2px 8px;
+  font-size: 0.62rem; font-weight: 800; letter-spacing: 0.5px;
+  border: 1px solid;
+}
+.challenge-status-pill--done { background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.34); color: #22c55e; }
+.challenge-status-pill--live { background: rgba(255,201,60,0.14); border-color: rgba(255,201,60,0.34); color: #FFC93C; }
 .gsg-cta-thumbs { display: inline-flex; flex-shrink: 0; }
 .gsg-cta-thumb {
   width: 34px; height: 34px; border-radius: 8px; object-fit: cover;

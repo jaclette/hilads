@@ -659,7 +659,8 @@
     "winnerConfirmTitle": "Vinh danh người thắng?",
     "winnerConfirmBody": "{{name}} nhận phần thưởng lớn.",
     "pickHint": "Chọn người thắng từ các ảnh bên dưới.",
-    "awaitingPhotos": "Chưa có ảnh nào — thử thách đang nóng lên 🔥"
+    "awaitingPhotos": "Chưa có ảnh nào — thử thách đang nóng lên 🔥",
+    "checkPhotos": "Xem {{count}} ảnh"
   },
   "challengeIntro": {
     "slide1": {
@@ -719,5 +720,9 @@
     "rateTitle": "Đánh giá thử thách này",
     "notePlaceholder": "Thêm ghi chú (tùy chọn)",
     "saveRating": "Lưu đánh giá"
+  },
+  "status": {
+    "live": "Đang diễn ra",
+    "done": "Đã xong"
   }
 }

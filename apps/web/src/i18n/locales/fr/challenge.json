@@ -641,7 +641,8 @@
     "winnerConfirmTitle": "Couronner le gagnant ?",
     "winnerConfirmBody": "{{name}} remporte la grosse récompense.",
     "pickHint": "Choisis le gagnant parmi les photos ci-dessous.",
-    "awaitingPhotos": "Pas encore de photos — le défi chauffe 🔥"
+    "awaitingPhotos": "Pas encore de photos — le défi chauffe 🔥",
+    "checkPhotos": "Découvre les {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {
@@ -701,5 +702,9 @@
     "rateTitle": "Note ce défi",
     "notePlaceholder": "Ajoute une note (facultatif)",
     "saveRating": "Enregistrer la note"
+  },
+  "status": {
+    "live": "En cours",
+    "done": "Terminé"
   }
 }

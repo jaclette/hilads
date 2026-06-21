@@ -598,5 +598,9 @@
     },
     "cta": "Forte!",
     "total": "Ora hai {{total}} punti"
+  },
+  "status": {
+    "live": "In corso",
+    "done": "Fatto"
   }
 }

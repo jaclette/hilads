@@ -69,7 +69,7 @@ export default function GroupSubmissionsGallery({ challengeId, isChallenger, isV
           ))}
         </span>
         <span className="gsg-cta-label">
-          📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
+          👀 {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
           {winnerId ? '' : canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
         </span>
         <span className="gsg-cta-chev" aria-hidden>›</span>

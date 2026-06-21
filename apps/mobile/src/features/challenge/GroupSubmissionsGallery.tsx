@@ -105,7 +105,7 @@ export function GroupSubmissionsGallery({
           ))}
         </View>
         <Text style={styles.ctaLabel} numberOfLines={1}>
-          📸 {t('group.submissionsHeader', { count: subs.length, defaultValue: '{{count}} photos' })}
+          👀 {t('group.checkPhotos', { count: subs.length, defaultValue: 'Check out the {{count}} photos' })}
           {!winnerId && canPick ? `  ·  ${t('group.tapToPick', { defaultValue: 'pick the best one' })}` : ''}
         </Text>
         <Text style={styles.ctaChev}>›</Text>
@@ -189,11 +189,12 @@ const styles = StyleSheet.create({
 
   // CTA row (collapsed) - thumbs + "{n} photos" + chevron.
   cta: {
+    // Gold border + tint so the photos card stands out as the thing to tap.
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     marginHorizontal: Spacing.md, marginTop: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: 8,
-    borderRadius: Radius.md, backgroundColor: Colors.bg3,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+    borderRadius: Radius.md, backgroundColor: 'rgba(255,201,60,0.08)',
+    borderWidth: 1, borderColor: 'rgba(255,201,60,0.55)',
   },
   ctaThumbs: { flexDirection: 'row' },
   ctaThumb:  { width: 32, height: 32, borderRadius: 8, borderWidth: 2, borderColor: Colors.bg3 },

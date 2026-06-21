@@ -619,5 +619,9 @@
     },
     "cta": "Galing!",
     "total": "Mayroon ka nang {{total}} points"
+  },
+  "status": {
+    "live": "Live",
+    "done": "Tapos"
   }
 }

@@ -598,5 +598,9 @@
     },
     "cta": "Mooi!",
     "total": "Je hebt nu {{total}} punten"
+  },
+  "status": {
+    "live": "Live",
+    "done": "Klaar"
   }
 }

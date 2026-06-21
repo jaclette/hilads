@@ -985,6 +985,12 @@ export default function ChallengeChatPage({
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
+        {/* Status pill - state at a glance (replaces the big done line below). */}
+        <span className={`challenge-status-pill ${(isValidated || challenge.closed) ? 'challenge-status-pill--done' : 'challenge-status-pill--live'}`}>
+          {(isValidated || challenge.closed)
+            ? `✓ ${t('status.done', { ns: 'challenge', defaultValue: 'Done' })}`
+            : `🟢 ${t('status.live', { ns: 'challenge', defaultValue: 'Live' })}`}
+        </span>
         {(challenge.mode ?? 'local') === 'international' ? (() => {
           // Origin → target flag rendering. Falls back to "🌍" for the
           // target when "anywhere" (no target_city_id) or unknown.
@@ -1117,13 +1123,7 @@ export default function ChallengeChatPage({
               <ScoringInfoButton />
             </div>
           ) : null}
-          {isValidated ? (
-            <div style={{ textAlign: 'center', fontWeight: 700, color: '#3DDC84', padding: '4px 0', fontSize: '0.86rem' }}>
-              ✓ {isGroupPhoto
-                ? t('group.contestDone', { ns: 'challenge', defaultValue: 'This contest is done.' })
-                : t('group.done', { ns: 'challenge', defaultValue: 'This meet is done.' })}
-            </div>
-          ) : isOwner ? (
+          {isValidated ? null /* status now shown as a pill in the header */ : isOwner ? (
             // MEET: open the presence sheet. PHOTO: the winner is picked from the
             // "N photos · pick the best one" card below (no extra hint).
             isGroupPhoto ? null : !meetStarted ? (
@@ -1164,6 +1164,17 @@ export default function ChallengeChatPage({
           proofRequirements={challenge.proof_requirements ?? null}
           acceptancePhase={myAcceptance.phase}
           compact
+        />
+      )}
+
+      {/* GROUP: members strip sits ABOVE the submissions gallery. */}
+      {isGroup && iAmParticipant === true && (
+        <ChallengeChannelMembers
+          challenge={challenge}
+          activeTaker={activeTaker}
+          currentUserId={account?.id ?? null}
+          onMembersChanged={() => { loadParticipants() }}
+          onSelect={onOpenProfile}
         />
       )}
 
@@ -1239,10 +1250,8 @@ export default function ChallengeChatPage({
         />
       )}
 
-      {/* Members strip - moved up here, right under the pipeline / proof
-          block. Was at the bottom of the page; participants kept
-          missing it. Tap opens the full list modal. */}
-      {iAmParticipant === true && (
+      {/* Members strip (legacy/non-group) - group renders it above the gallery. */}
+      {!isGroup && iAmParticipant === true && (
         <ChallengeChannelMembers
           challenge={challenge}
           activeTaker={activeTaker}

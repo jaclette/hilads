@@ -698,7 +698,8 @@
     "winnerConfirmTitle": "Crown the winner?",
     "winnerConfirmBody": "{{name}} wins the big reward.",
     "pickHint": "Pick the winner from the photos below.",
-    "awaitingPhotos": "No photos yet — the challenge is heating up 🔥"
+    "awaitingPhotos": "No photos yet — the challenge is heating up 🔥",
+    "checkPhotos": "Check out the {{count}} photos"
   },
   "challengeIntro": {
     "slide1": {
@@ -758,5 +759,9 @@
     "rateTitle": "Rate this challenge",
     "notePlaceholder": "Add a note (optional)",
     "saveRating": "Save rating"
+  },
+  "status": {
+    "live": "Live",
+    "done": "Done"
   }
 }

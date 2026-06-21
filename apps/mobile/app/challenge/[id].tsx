@@ -1100,6 +1100,15 @@ export default function ChallengeChatScreen() {
           <View style={styles.kindBadge}>
             <Text style={styles.kindBadgeText}>{t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}</Text>
           </View>
+          {/* Status pill - the challenge's state at a glance (replaces the big
+              "This contest is done" line below, saving vertical space). */}
+          <View style={[styles.statusPill, (isValidated || isClosed) ? styles.statusPillDone : styles.statusPillLive]}>
+            <Text style={[styles.statusPillText, (isValidated || isClosed) ? styles.statusPillTextDone : styles.statusPillTextLive]}>
+              {(isValidated || isClosed)
+                ? `✓ ${t('status.done', { defaultValue: 'Done' })}`
+                : `🟢 ${t('status.live', { defaultValue: 'Live' })}`}
+            </Text>
+          </View>
           {/* Audience / mode pill - Local rows get the audience target
               (locals vs travelers); International rows swap it for a 🌐
               chip since audience doesn't apply (no IRL meetup). */}
@@ -1274,13 +1283,7 @@ export default function ChallengeChatScreen() {
                 <ScoringInfoButton size={20} />
               </View>
             ) : null}
-            {isValidated ? (
-              <Text style={styles.groupStateText}>
-                ✓ {isGroupPhoto
-                  ? t('group.contestDone', { defaultValue: 'This contest is done.' })
-                  : t('group.done', { defaultValue: 'This meet is done.' })}
-              </Text>
-            ) : isOwner ? (
+            {isValidated ? null /* status now shown as a pill in the header */ : isOwner ? (
               // MEET: open the presence sheet. PHOTO: the winner is picked from
               // the "N photos · pick the best one" card below (no extra hint).
               isGroupPhoto ? null : !meetStarted ? (
@@ -1332,6 +1335,16 @@ export default function ChallengeChatScreen() {
             proofRequirements={challenge.proof_requirements ?? null}
             acceptancePhase={myAcceptance.phase}
             compact
+          />
+        )}
+
+        {/* GROUP: members strip sits ABOVE the submissions gallery (the photos
+            card reads as the call-to-action, with the roster as context). */}
+        {isGroup && iAmParticipant === true && (
+          <ChallengeChannelMembersStrip
+            challenge={challenge}
+            activeTaker={activeTaker}
+            onOpen={() => setMembersOpen(true)}
           />
         )}
 
@@ -1425,9 +1438,9 @@ export default function ChallengeChatScreen() {
           />
         )}
 
-        {/* Channel members strip - mounted directly under the pipeline /
-            proof block. Tap opens the full members sheet. */}
-        {iAmParticipant === true && (
+        {/* Channel members strip (legacy/non-group) - under the pipeline /
+            proof block. Group renders it above the gallery instead. */}
+        {!isGroup && iAmParticipant === true && (
           <ChallengeChannelMembersStrip
             challenge={challenge}
             activeTaker={activeTaker}
@@ -2354,6 +2367,13 @@ const styles = StyleSheet.create({
     borderWidth:       1, borderColor: 'rgba(255,122,60,0.30)',
   },
   kindBadgeText: { fontSize: 10, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.5 },
+
+  statusPill:          { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
+  statusPillDone:      { backgroundColor: 'rgba(34,197,94,0.14)',  borderColor: 'rgba(34,197,94,0.34)' },
+  statusPillLive:      { backgroundColor: 'rgba(255,201,60,0.14)', borderColor: 'rgba(255,201,60,0.34)' },
+  statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
+  statusPillTextDone:  { color: '#22c55e' },
+  statusPillTextLive:  { color: '#FFC93C' },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
   // orange brand + green validated, the other pills on the same row).

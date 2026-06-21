@@ -598,5 +598,9 @@
     },
     "cta": "Boa!",
     "total": "Agora tens {{total}} pontos"
+  },
+  "status": {
+    "live": "Ao vivo",
+    "done": "Concluído"
   }
 }

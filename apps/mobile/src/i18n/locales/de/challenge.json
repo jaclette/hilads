@@ -619,5 +619,9 @@
     },
     "cta": "Super!",
     "total": "Du hast jetzt {{total}} Punkte"
+  },
+  "status": {
+    "live": "Live",
+    "done": "Fertig"
   }
 }

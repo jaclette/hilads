@@ -598,5 +598,9 @@
     },
     "cta": "Mantap!",
     "total": "Sekarang kamu punya {{total}} poin"
+  },
+  "status": {
+    "live": "Berlangsung",
+    "done": "Selesai"
   }
 }
