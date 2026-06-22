@@ -511,7 +511,6 @@ export default function CreateChallengeScreen() {
           placeholder={t(`titlePh.${type}`, { defaultValue: t('titlePlaceholder') })}
           placeholderTextColor={Colors.muted2}
           maxLength={100}
-          autoFocus
           multiline
         />
 
