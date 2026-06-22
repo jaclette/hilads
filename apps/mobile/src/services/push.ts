@@ -89,6 +89,12 @@ export async function setupNotificationCategories(): Promise<void> {
       { identifier: 'accept', buttonTitle: i18n.t('invitation.accept', { ns: 'challenge', defaultValue: 'Accept' }), options: { opensAppToForeground: true } },
       { identifier: 'ignore', buttonTitle: i18n.t('invitation.ignore', { ns: 'challenge', defaultValue: 'Ignore' }), options: { opensAppToForeground: false, isDestructive: true } },
     ]);
+
+    // New-challenge offer (cross-city target / your-city new): take it on
+    // straight from the push. Opens the app + lands on the challenge.
+    await Notifications.setNotificationCategoryAsync('challenge_offer', [
+      { identifier: 'accept', buttonTitle: i18n.t('invitation.acceptChallenge', { ns: 'challenge', defaultValue: 'Accept the challenge' }), options: { opensAppToForeground: true } },
+    ]);
     console.log('[push-mobile] notification categories registered');
   } catch (e) {
     console.warn('[push-mobile] setNotificationCategoryAsync failed:', String(e));

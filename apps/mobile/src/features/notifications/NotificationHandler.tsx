@@ -17,7 +17,7 @@ import { useApp } from '@/context/AppContext';
 import { setupNotificationChannel, setupNotificationCategories } from '@/services/push';
 import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests';
 import { resolveHangoutJoinRequest } from '@/api/topics';
-import { acceptInvitation, ignoreInvitation } from '@/api/challenges';
+import { acceptInvitation, ignoreInvitation, acceptChallenge } from '@/api/challenges';
 import { track } from '@/services/analytics';
 
 // ── Cold-start notification - resolved at module load ─────────────────────────
@@ -152,6 +152,16 @@ function handleNotificationAction(data: NotifData, action: string): string | nul
     return action === 'accept' ? `/topic/${data.topicId}` : null;
   }
 
+  // New-challenge offer (cross-city target / your-city new). Accept takes it
+  // on server-side, then deep-links to the challenge so the user lands on it.
+  if (action === 'accept'
+      && (data.type === 'challenge_international_target' || data.type === 'new_challenge')
+      && data.challengeId) {
+    acceptChallenge(data.challengeId)
+      .catch(err => console.warn('[push-action] challenge accept failed:', String(err)));
+    return `/challenge/${data.challengeId}`;
+  }
+
   // Personal challenge invitation. Accept runs the take-on path server-side
   // and we deep-link to the challenge so the invitee sees their pending review.
   // Ignore is silent.
@@ -243,6 +253,13 @@ function resolveRoute(data: NotifData): string | null {
       // Tap on the body (no action button) → open the challenge page; user can
       // take it on there with the standard CTA. Action buttons (Accept / Ignore)
       // are handled separately in handleNotificationAction.
+      if (data.challengeId) return `/challenge/${data.challengeId}`;
+      return null;
+
+    case 'challenge_international_target':
+    case 'new_challenge':
+      // Tap on the body → open the challenge. The "Accept the challenge" action
+      // button is handled separately in handleNotificationAction (auto-accept).
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 

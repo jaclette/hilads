@@ -364,7 +364,8 @@
   },
   "invitation": {
     "accept": "Chấp nhận",
-    "ignore": "Bỏ qua"
+    "ignore": "Bỏ qua",
+    "acceptChallenge": "Nhận thử thách"
   },
   "byCreator": "của {{name}}",
   "inspiration": {

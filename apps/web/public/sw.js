@@ -15,7 +15,7 @@ self.addEventListener('push', (e) => {
     tag:      d.tag   || 'hilads',
     renotify: false,    // replace instead of stacking same-tag notifications
     // Carry the IDs the action handler needs to call the API on Accept/Decline.
-    data: { url: d.url || '/', type: d.type, requestId: d.requestId, topicId: d.topicId },
+    data: { url: d.url || '/', type: d.type, requestId: d.requestId, topicId: d.topicId, challengeId: d.challengeId },
   }
   // Accept/Decline buttons for actionable requests (browser support permitting).
   if (Array.isArray(d.actions) && d.actions.length) options.actions = d.actions
@@ -28,6 +28,15 @@ self.addEventListener('notificationclick', (e) => {
 
   const data   = e.notification.data || {}
   const action = e.action
+
+  // "Accept the challenge" on a new-challenge offer → take it on, then open
+  // the challenge so the user lands on it.
+  if (action === 'accept'
+      && (data.type === 'challenge_international_target' || data.type === 'new_challenge')
+      && data.challengeId) {
+    e.waitUntil(acceptChallengeAndOpen(data))
+    return
+  }
 
   // Accept / Decline directly from the notification - no need to open the app.
   if (action === 'accept' || action === 'decline') {
@@ -76,4 +85,29 @@ async function handleAction(data, action) {
 
   const cs = await clients.matchAll({ type: 'window', includeUncontrolled: true })
   cs.forEach((c) => c.postMessage({ type: 'notification-action', action, data }))
+}
+
+// Take on a new challenge from its push, then focus/open the challenge page.
+// Best-effort accept (cookie auth, same as the app); the user still lands on
+// the challenge and can take it on manually if the call didn't go through.
+async function acceptChallengeAndOpen(data) {
+  try {
+    await fetch(`${API_BASE}/challenges/${data.challengeId}/accept`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    })
+  } catch (_) { /* best-effort */ }
+
+  const url    = data.url || `/challenge/${data.challengeId}`
+  const origin = self.location.origin
+  const cs = await clients.matchAll({ type: 'window', includeUncontrolled: true })
+  const existing = cs.find((c) => c.url.startsWith(origin))
+  if (existing) {
+    existing.focus()
+    existing.postMessage({ type: 'navigate', url })
+    return
+  }
+  return clients.openWindow(url)
 }

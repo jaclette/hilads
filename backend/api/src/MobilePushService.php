@@ -171,6 +171,10 @@ class MobilePushService
                 'join_request'            => 'join_request',
                 'new_event'               => 'new_event',
                 'challenge_invitation'    => 'challenge_invitation',
+                // A brand-new challenge you can take on straight from the push
+                // ("Accept the challenge"). Cross-city target + your-city new.
+                'challenge_international_target',
+                'new_challenge'           => 'challenge_offer',
                 default                   => null,
             };
 

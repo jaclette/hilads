@@ -367,7 +367,8 @@
   },
   "invitation": {
     "accept": "Accepter",
-    "ignore": "Ignorer"
+    "ignore": "Ignorer",
+    "acceptChallenge": "Relever le défi"
   },
   "byCreator": "par {{name}}",
   "inspiration": {

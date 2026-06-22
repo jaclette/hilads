@@ -509,7 +509,8 @@
   },
   "invitation": {
     "accept": "Accept",
-    "ignore": "Ignore"
+    "ignore": "Ignore",
+    "acceptChallenge": "Accept the challenge"
   },
   "locked": {
     "visitor": {

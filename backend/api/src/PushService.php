@@ -129,6 +129,10 @@ class PushService
                     ['action' => 'accept',  'title' => 'Accept'],
                     ['action' => 'decline', 'title' => 'Decline'],
                 ],
+                // Take on a brand-new challenge straight from the push.
+                'challenge_international_target', 'new_challenge' => [
+                    ['action' => 'accept', 'title' => 'Accept the challenge'],
+                ],
                 default => [],
             };
 
@@ -138,9 +142,10 @@ class PushService
                 'url'       => $url,
                 'tag'       => $tag,
                 'type'      => $type,
-                'actions'   => $actions,
-                'requestId' => $data['requestId'] ?? null,
-                'topicId'   => $data['topicId']   ?? null,
+                'actions'     => $actions,
+                'requestId'   => $data['requestId']   ?? null,
+                'topicId'     => $data['topicId']     ?? null,
+                'challengeId' => $data['challengeId'] ?? null,
             ]);
 
             // Index subscriptions by endpoint for cleanup
