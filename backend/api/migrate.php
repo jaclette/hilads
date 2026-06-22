@@ -1232,6 +1232,11 @@ run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_v
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL", 'challenge_acceptances.proposed_by_user_id');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS proposed_at         TIMESTAMPTZ", 'challenge_acceptances.proposed_at');
 run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS date_approved_at    TIMESTAMPTZ", 'challenge_acceptances.date_approved_at');
+// The TAKER's own rating + note for the challenge - mirror of the challenger's
+// host_rating/host_comment, but per-acceptance so each taker rates their own
+// take. Surfaced in the success showcase attributed to the taker.
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS taker_rating  SMALLINT CHECK (taker_rating BETWEEN 1 AND 5)", 'challenge_acceptances.taker_rating');
+run($pdo, "ALTER TABLE challenge_acceptances ADD COLUMN IF NOT EXISTS taker_comment TEXT", 'challenge_acceptances.taker_comment');
 
 // ── Challenge invitations ─────────────────────────────────────────────────────
 // After publishing, the creator can hand-pick city members and ping them.

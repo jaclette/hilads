@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Colors, FontSizes, Radius, Spacing } from '@/constants';
-import { submitHostRating, type ChallengeReveal } from '@/api/challenges';
+import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
 
 /**
  * GROUP challenge result reveal modal. Role-specific, never-negative copy +
@@ -126,6 +126,10 @@ export function ChallengeResultModal({
   const showPoints = myRole !== 'absent';
   // Photo host rates here (no validate sheet in the photo flow).
   const showHostRating = myRole === 'host' && isPhoto;
+  // The taker rates the challenge too, from their own reveal modal - same UI
+  // as the host. Only participants who actually took part (not no-shows).
+  const showTakerRating = myRole === 'winner' || myRole === 'loser' || myRole === 'present';
+  const showRating = showHostRating || showTakerRating;
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -226,7 +230,7 @@ export function ChallengeResultModal({
               </View>
             ) : null}
 
-            {showHostRating ? (
+            {showRating ? (
               <View style={styles.rateBlock}>
                 <Text style={styles.rateTitle}>{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</Text>
                 <View style={styles.rateStars}>
@@ -249,13 +253,16 @@ export function ChallengeResultModal({
             ) : null}
 
             <TouchableOpacity
-              style={[styles.cta, (savingRating || (showHostRating && hostStars === 0)) && { opacity: 0.5 }]}
+              style={[styles.cta, (savingRating || (showRating && hostStars === 0)) && { opacity: 0.5 }]}
               activeOpacity={0.85}
-              disabled={savingRating || (showHostRating && hostStars === 0)}
+              disabled={savingRating || (showRating && hostStars === 0)}
               onPress={async () => {
-                if (showHostRating && hostStars > 0) {
+                if (showRating && hostStars > 0) {
                   setSavingRating(true);
-                  try { await submitHostRating(reveal.challengeId, hostStars, hostNote); } catch { /* non-fatal */ }
+                  try {
+                    if (showHostRating) await submitHostRating(reveal.challengeId, hostStars, hostNote);
+                    else await submitTakerRating(reveal.challengeId, hostStars, hostNote);
+                  } catch { /* non-fatal */ }
                   setSavingRating(false);
                 }
                 onClose();
@@ -263,7 +270,7 @@ export function ChallengeResultModal({
             >
               {savingRating
                 ? <ActivityIndicator color="#1a1206" />
-                : <Text style={styles.ctaText}>{showHostRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
+                : <Text style={styles.ctaText}>{showRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' })}</Text>}
             </TouchableOpacity>
           </ScrollView>
         </View>

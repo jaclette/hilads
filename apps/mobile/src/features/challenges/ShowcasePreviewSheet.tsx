@@ -103,18 +103,22 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
               <Text style={styles.noteLabel}>{t('showcase.note')}</Text>
               {item.creator_comment ? (
                 <View style={styles.noteQuote}>
-                  <Text style={styles.noteWho}>{item.creator_display_name ?? t('challengerTag')}</Text>
+                  <Text style={styles.noteWho}>{item.creator_display_name ?? t('challengerTag')} <Text style={styles.noteRole}>· {t('challengerTag')}</Text></Text>
                   <Text style={styles.noteText}>“{item.creator_comment}”</Text>
                 </View>
               ) : null}
               {item.acceptor_comment ? (
                 <View style={[styles.noteQuote, item.creator_comment ? styles.noteQuoteDivider : null]}>
-                  <Text style={styles.noteWho}>{item.acceptor_display_name ?? t('card.takerLabel')}</Text>
+                  <Text style={styles.noteWho}>{item.acceptor_display_name ?? t('card.takerLabel')} <Text style={styles.noteRole}>· {t('card.takerLabel')}</Text></Text>
                   <Text style={styles.noteText}>“{item.acceptor_comment}”</Text>
                 </View>
               ) : null}
+              {/* Legacy single comment: attribute to the challenger (host note). */}
               {!item.creator_comment && !item.acceptor_comment && item.comment ? (
-                <Text style={styles.noteText}>“{item.comment}”</Text>
+                <View style={styles.noteQuote}>
+                  <Text style={styles.noteWho}>{item.creator_display_name ?? t('challengerTag')} <Text style={styles.noteRole}>· {t('challengerTag')}</Text></Text>
+                  <Text style={styles.noteText}>“{item.comment}”</Text>
+                </View>
               ) : null}
             </View>
           ) : null}
@@ -173,6 +177,7 @@ const styles = StyleSheet.create({
   noteQuote: { gap: 1 },
   noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.08)' },
   noteWho: { fontSize: 12, fontWeight: '700', color: Colors.text },
+  noteRole: { fontSize: 10, fontWeight: '600', color: Colors.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   noteText: { fontSize: 14, lineHeight: 20, color: Colors.text, fontStyle: 'italic' },
 
   tryBtn: {

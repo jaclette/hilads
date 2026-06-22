@@ -90,20 +90,29 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
               <div className="showcase-note-label">{t('showcase.note')}</div>
               {item.creator_comment && (
                 <div className="showcase-note-quote">
-                  <span className="showcase-note-who">{item.creator_display_name ?? t('challengerTag')}</span>
+                  <span className="showcase-note-who">
+                    {(item.creator_display_name ?? t('challengerTag'))} <span className="showcase-note-role">· {t('challengerTag')}</span>
+                  </span>
                   <span className="showcase-note-text">“{item.creator_comment}”</span>
                 </div>
               )}
               {item.acceptor_comment && (
                 <div className="showcase-note-quote">
-                  <span className="showcase-note-who">{item.acceptor_display_name ?? t('card.takerLabel')}</span>
+                  <span className="showcase-note-who">
+                    {(item.acceptor_display_name ?? t('card.takerLabel'))} <span className="showcase-note-role">· {t('card.takerLabel')}</span>
+                  </span>
                   <span className="showcase-note-text">“{item.acceptor_comment}”</span>
                 </div>
               )}
-              {/* Fallback to the single longest comment if neither side is
-                  attributable (legacy rows). */}
+              {/* Fallback (legacy rows with only a single unattributed comment):
+                  attribute to the challenger - host_comment is always theirs. */}
               {!item.creator_comment && !item.acceptor_comment && item.comment && (
-                <div className="showcase-note-text">“{item.comment}”</div>
+                <div className="showcase-note-quote">
+                  <span className="showcase-note-who">
+                    {(item.creator_display_name ?? t('challengerTag'))} <span className="showcase-note-role">· {t('challengerTag')}</span>
+                  </span>
+                  <span className="showcase-note-text">“{item.comment}”</span>
+                </div>
               )}
             </div>
           )}

@@ -9714,6 +9714,64 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/host-rating', function (a
     Response::json(['ok' => true]);
 });
 
+// POST /api/v1/challenges/{challengeId}/taker-rating  (taker-only)
+// Mirror of host-rating from the TAKER's side: the taker rates the challenge
+// (1-5 stars + optional note) from the celebration/reveal modal. Stored on the
+// caller's own acceptance row so each taker rates their own take. Idempotent.
+$router->add('POST', '/api/v1/challenges/{challengeId}/taker-rating', function (array $params) {
+    $challengeId = $params['challengeId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+        Response::json(['error' => 'Invalid challengeId'], 400);
+    }
+    $authUser = AuthService::requireAuth();
+    $userId   = $authUser['id'];
+
+    // Caller's most recent non-rejected acceptance for this challenge.
+    $accStmt = Database::pdo()->prepare("
+        SELECT id FROM challenge_acceptances
+        WHERE challenge_id = ? AND acceptor_user_id = ? AND phase <> 'rejected'
+        ORDER BY created_at DESC LIMIT 1
+    ");
+    $accStmt->execute([$challengeId, $userId]);
+    $acceptanceId = $accStmt->fetchColumn();
+    if (!$acceptanceId) {
+        Response::json(['error' => 'You are not a taker of this challenge', 'code' => 'not_taker'], 403);
+    }
+
+    $body  = Request::json();
+    $stars = filter_var(
+        is_array($body) ? ($body['stars'] ?? null) : null,
+        FILTER_VALIDATE_INT,
+        ['options' => ['min_range' => 1, 'max_range' => 5]],
+    );
+    if ($stars === false) {
+        Response::json(['error' => 'stars must be an integer between 1 and 5'], 400);
+    }
+    $comment = is_array($body) && isset($body['comment']) && is_string($body['comment'])
+        ? mb_substr(trim(strip_tags($body['comment'])), 0, 500) : null;
+    if ($comment === '') $comment = null;
+    if ($comment !== null) {
+        $modHit = ModerationService::checkBundle(['comment' => $comment]);
+        if ($modHit !== null) {
+            error_log("[moderation] taker-rating blocked ch={$challengeId} reason={$modHit['reason']}");
+            Response::json(['error' => 'Your note was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked', 'field' => 'comment'], 422);
+        }
+    }
+
+    try {
+        Database::pdo()->prepare("
+            UPDATE challenge_acceptances
+            SET taker_rating = ?, taker_comment = COALESCE(?, taker_comment), updated_at = now()
+            WHERE id = ?
+        ")->execute([$stars, $comment, $acceptanceId]);
+    } catch (\Throwable $e) {
+        error_log('[challenges] taker-rating failed ch=' . $challengeId . ': ' . $e->getMessage());
+        Response::json(['error' => 'Failed to save rating'], 500);
+    }
+
+    Response::json(['ok' => true]);
+});
+
 // GET /api/v1/challenges/{challengeId}/submissions  (GROUP photo-proof)
 // Every submitter's latest photo + who they are, plus the winner (if picked).
 // Readable by anyone who can see the challenge - this is the in-channel gallery

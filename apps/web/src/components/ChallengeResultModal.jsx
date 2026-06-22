@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { submitHostRating } from '../api'
+import { submitHostRating, submitTakerRating } from '../api'
 
 /**
  * GROUP challenge result reveal modal (web). Role-specific, never-negative copy
@@ -88,6 +88,9 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
 
   const showPoints = myRole !== 'absent'
   const showHostRating = myRole === 'host' && isPhoto  // photo host rates here (no validate sheet)
+  // The taker rates the challenge too, from their own reveal modal (same UI).
+  const showTakerRating = myRole === 'winner' || myRole === 'loser' || myRole === 'present'
+  const showRating = showHostRating || showTakerRating
 
   return (
     <div className="crm-backdrop" onClick={onClose}>
@@ -166,7 +169,7 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
           </div>
         ) : null}
 
-        {showHostRating ? (
+        {showRating ? (
           <div className="crm-rate-block">
             <div className="crm-rate-title">{t('result.rateTitle', { defaultValue: 'Rate this challenge' })}</div>
             <div className="crm-rate-stars">
@@ -197,18 +200,21 @@ export default function ChallengeResultModal({ reveal, visible, onClose, onOpenL
         <button
           type="button"
           className="crm-cta"
-          disabled={savingRating || (showHostRating && hostStars === 0)}
-          style={{ opacity: (savingRating || (showHostRating && hostStars === 0)) ? 0.5 : 1 }}
+          disabled={savingRating || (showRating && hostStars === 0)}
+          style={{ opacity: (savingRating || (showRating && hostStars === 0)) ? 0.5 : 1 }}
           onClick={async () => {
-            if (showHostRating && hostStars > 0) {
+            if (showRating && hostStars > 0) {
               setSavingRating(true)
-              try { await submitHostRating(reveal.challengeId, hostStars, hostNote) } catch { /* non-fatal */ }
+              try {
+                if (showHostRating) await submitHostRating(reveal.challengeId, hostStars, hostNote)
+                else await submitTakerRating(reveal.challengeId, hostStars, hostNote)
+              } catch { /* non-fatal */ }
               setSavingRating(false)
             }
             onClose()
           }}
         >
-          {savingRating ? '…' : (showHostRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' }))}
+          {savingRating ? '…' : (showRating ? t('result.saveRating', { defaultValue: 'Save rating' }) : t('result.cta', { defaultValue: 'Nice!' }))}
         </button>
       </div>
     </div>

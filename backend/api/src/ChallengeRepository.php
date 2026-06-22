@@ -685,7 +685,8 @@ class ChallengeRepository
                    COALESCE(cc.host_rating::numeric, 5.0) AS avg_stars,
                    CASE WHEN cc.host_rating IS NOT NULL THEN 1 ELSE 0 END AS rating_count,
                    cc.host_comment AS comment,
-                   NULL AS creator_comment, NULL AS acceptor_comment,
+                   -- Attribute: challenger's host note + the winner's own taker note.
+                   cc.host_comment AS creator_comment, wa.taker_comment AS acceptor_comment,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
                    pr.media_url AS proof_media_url, pr.media_type AS proof_media_type
             FROM channel_challenges cc
@@ -698,6 +699,7 @@ class ChallengeRepository
                 ORDER BY se.created_at DESC LIMIT 1
             ) w ON true
             LEFT JOIN users au ON au.id = w.user_id
+            LEFT JOIN challenge_acceptances wa ON wa.id = w.acceptance_id
             LEFT JOIN LATERAL (
                 SELECT p.media_url, p.media_type
                 FROM challenge_proofs p
@@ -730,7 +732,8 @@ class ChallengeRepository
                    COALESCE(au.profile_thumb_photo_url, au.profile_photo_url) AS acceptor_thumb_avatar_url,
                    au.current_city_id AS acceptor_city_id,
                    cc.host_rating::numeric AS avg_stars, 1 AS rating_count, cc.host_comment AS comment,
-                   NULL AS creator_comment, NULL AS acceptor_comment,
+                   -- Attribute: challenger's host note + the present taker's own note.
+                   cc.host_comment AS creator_comment, pt.taker_comment AS acceptor_comment,
                    EXTRACT(EPOCH FROM cc.validated_at)::INTEGER AS completed_ts,
                    img.image_url AS proof_media_url, 'image' AS proof_media_type
             FROM channel_challenges cc
@@ -742,7 +745,7 @@ class ChallengeRepository
                 ORDER BY m.created_at DESC LIMIT 1
             ) img ON true
             LEFT JOIN LATERAL (
-                SELECT a.acceptor_user_id AS user_id FROM challenge_acceptances a
+                SELECT a.acceptor_user_id AS user_id, a.taker_comment FROM challenge_acceptances a
                 WHERE a.challenge_id = cc.channel_id AND a.phase = 'present'
                 ORDER BY a.updated_at DESC LIMIT 1
             ) pt ON true

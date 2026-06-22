@@ -275,6 +275,19 @@ export async function submitHostRating(
   });
 }
 
+/** Taker's own rating + note for the challenge (from the reveal modal). Mirrors
+ *  submitHostRating but stored on the caller's acceptance. */
+export async function submitTakerRating(
+  challengeId: string,
+  stars: number,
+  comment?: string | null,
+): Promise<{ ok: boolean }> {
+  return api.post(`/challenges/${challengeId}/taker-rating`, {
+    stars,
+    ...(comment && comment.trim() ? { comment: comment.trim() } : {}),
+  });
+}
+
 /** Challenger designates the winning photo of a GROUP photo-proof contest.
  *  The winner earns the +40 bonus and the challenge is marked validated. The
  *  backend rejects a pick whose user has no submission. */
