@@ -11360,6 +11360,24 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
         WHERE id = ?
     ")->execute([$acceptanceId]);
 
+    // A 1-1 (non-group) challenge is DONE once its proof is approved - the
+    // single taker succeeded. Flip the challenge to 'validated' so the list
+    // card stops showing "Available" + a deadline countdown and reads as a
+    // success. Group challenges validate via pick-winner instead (multiple
+    // takers, one winner), so don't auto-close those here.
+    if (($challenge['challenge_format'] ?? 'legacy') !== 'group') {
+        try {
+            Database::pdo()->prepare("
+                UPDATE channel_challenges
+                SET status = 'validated', validated_at = COALESCE(validated_at, now()), updated_at = now()
+                WHERE channel_id = ? AND status = 'open'
+            ")->execute([$challenge['id']]);
+            broadcastChallengeValidatedToWs((int) substr((string) ($challenge['city_id'] ?? 'city_0'), 5), $challenge);
+        } catch (\Throwable $e) {
+            error_log('[proof] approve auto-validate failed (non-fatal): ' . $e->getMessage());
+        }
+    }
+
     // Push to the acceptor - they nailed it.
     try {
         if (!empty($acceptance['acceptor_user_id'])) {
