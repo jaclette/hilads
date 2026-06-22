@@ -1466,23 +1466,32 @@ run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS host_rating  
 run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS host_comment     TEXT", 'channel_challenges.host_comment');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_channel_challenges_format ON channel_challenges (challenge_format)", 'idx_channel_challenges_format');
 
-// One-time backfill: non-group (1-1) challenges whose proof was already
-// approved but that were never flipped to 'validated' (the approve route used
-// to update only the acceptance). They were stuck reading "Available" + a
-// deadline countdown despite being over. Idempotent - the status='open' guard
-// means re-runs are a no-op.
+// One-time backfill: challenges that were resolved but never flipped to
+// 'validated', so they were stuck reading "Available" + a deadline countdown
+// despite being over. Two stuck shapes:
+//   1. 1-1 (non-group): an approved proof = the taker succeeded (the approve
+//      route used to update only the acceptance, not the challenge).
+//   2. GROUP photo: a winner was already picked (a 'winner' score_event
+//      exists) but on an older pick-winner that didn't set status. pick-winner
+//      now refuses to re-run once a winner exists, so they can't self-heal.
+// Idempotent - the status='open' guard means re-runs are a no-op.
 run($pdo, "
     UPDATE channel_challenges cc
     SET status = 'validated',
         validated_at = COALESCE(cc.validated_at, now()),
         updated_at   = now()
     WHERE cc.status = 'open'
-      AND COALESCE(cc.challenge_format, 'legacy') <> 'group'
-      AND EXISTS (
-          SELECT 1 FROM challenge_acceptances ca
-          WHERE ca.challenge_id = cc.channel_id AND ca.phase = 'approved'
+      AND (
+          EXISTS (
+              SELECT 1 FROM challenge_acceptances ca
+              WHERE ca.challenge_id = cc.channel_id AND ca.phase = 'approved'
+          )
+          OR EXISTS (
+              SELECT 1 FROM score_events se
+              WHERE se.challenge_id = cc.channel_id AND se.kind = 'winner'
+          )
       )
-", 'backfill: validate 1-1 challenges with an approved proof');
+", 'backfill: validate resolved challenges (approved proof OR picked winner)');
 
 run($pdo, "
     CREATE TABLE IF NOT EXISTS challenge_kicks (

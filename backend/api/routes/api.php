@@ -9840,6 +9840,12 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
     $already = $pdo->prepare("SELECT 1 FROM score_events WHERE challenge_id = ? AND kind = 'winner' LIMIT 1");
     $already->execute([$challengeId]);
     if ($already->fetchColumn()) {
+        // Self-heal: an older pick that didn't flip status left the challenge
+        // stuck at 'open' (winner crowned but card still reads "Available").
+        // Re-assert validated here so a repeat tap fixes it.
+        try {
+            $pdo->prepare("UPDATE channel_challenges SET status='validated', validated_at=COALESCE(validated_at,now()), updated_at=now() WHERE channel_id = ? AND status = 'open'")->execute([$challengeId]);
+        } catch (\Throwable $e) {}
         Response::json(['error' => 'A winner has already been picked', 'code' => 'winner_exists'], 409);
     }
     // Winner must have submitted a real photo.
