@@ -6361,8 +6361,15 @@ export default function App() {
       {postCreateChallenge && (
         <ChallengePostCreateModal
           challenge={postCreateChallenge}
-          cityChannelId={channelId}
-          cityName={city}
+          // International with a target city: invite people in the TARGET city
+          // (where we want a taker), not the origin we created from. Local and
+          // "anywhere" intl (no target_city_id) fall through to the origin.
+          cityChannelId={postCreateChallenge.target_city_id
+            ? String(postCreateChallenge.target_city_id).replace(/^city_/, '')
+            : channelId}
+          cityName={postCreateChallenge.target_city_id
+            ? (postCreateChallenge.target_city_name ?? city)
+            : city}
           currentUserId={account?.id ?? null}
           onClose={() => setPostCreateChallenge(null)}
           onShare={async () => {
