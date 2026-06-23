@@ -213,6 +213,11 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   return (
     <View style={styles.root}>
       <FlatList
+        // flex:1 so the list fills the column - otherwise a short/empty list
+        // (e.g. no Open challenges) collapses to content height and the create
+        // CTA below floats up under the filters instead of pinning to the
+        // bottom (iOS especially). With flex:1 the CTA stays at the bottom.
+        style={styles.list}
         data={visibleData}
         keyExtractor={c => c.id}
         ListHeaderComponent={listHeader}
@@ -375,6 +380,7 @@ const styles = StyleSheet.create({
   typeChipText:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
   typeChipTextActive: { color: '#FF7A3C' },
 
+  list: { flex: 1 },
   listContent: { paddingBottom: Spacing.xl * 2 },
   footer:      { paddingVertical: Spacing.md },
   cardWrap:    { paddingHorizontal: Spacing.md, marginBottom: Spacing.sm },
