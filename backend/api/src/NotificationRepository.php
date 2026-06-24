@@ -805,12 +805,52 @@ class NotificationRepository
                        // whoever is online this minute.
                        || $type === 'city_here';
 
+        $cap = self::CITY_PUSH_FANOUT_CAP;
+        if ($type === 'city_here') {
+            // @here = EVERYONE in the city: active members (current_city_id) UNION
+            // whoever is present in the channel right now. The union matters -
+            // a traveller chatting here whose current_city_id points to their
+            // home city is "here" too and must get tagged, but wouldn't match
+            // the members-only query.
+            $stmt = Database::pdo()->prepare("
+                SELECT m.id FROM (
+                    SELECT u.id, u.current_city_last_confirmed_at AS srt
+                    FROM users u
+                    WHERE u.current_city_id = :cc
+                      AND u.current_city_last_confirmed_at > now() - interval '30 days'
+                      AND u.deleted_at IS NULL
+                    UNION
+                    SELECT u.id, now() AS srt
+                    FROM presence p
+                    JOIN users u ON (u.id = p.user_id OR u.guest_id = p.guest_id)
+                    WHERE p.channel_id = :cc
+                      AND p.last_seen_at > now() - interval '3 minutes'
+                      AND u.deleted_at IS NULL
+                ) m
+                WHERE (CAST(:ex AS text) IS NULL OR m.id::text != CAST(:ex AS text))
+                GROUP BY m.id
+                ORDER BY MAX(m.srt) DESC NULLS LAST
+                LIMIT {$cap}
+            ");
+            $stmt->execute([':cc' => $cityChannelId, ':ex' => $excludeUserId]);
+            $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
+            if (empty($userIds)) return;
+            $enabled = self::batchIsEnabled($userIds, $type);
+            $locales = self::batchLocale($userIds);
+            foreach ($userIds as $uid) {
+                if (!($enabled[$uid] ?? true)) continue;
+                $rlKey = "notif:{$type}:{$uid}:{$cityChannelId}";
+                if (!RateLimiter::allow($rlKey, 1, 600)) continue;
+                self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
+            }
+            return;
+        }
         if ($useCurrentCity) {
             // current_city_last_confirmed_at TTL: 30 days. Users who haven't
             // had a positive location signal in that window are excluded so
             // we don't push to dormant accounts whose city is just remembered
             // from an old visit.
-            $cap = self::CITY_PUSH_FANOUT_CAP;
             $stmt = Database::pdo()->prepare("
                 SELECT u.id FROM users u
                 WHERE u.current_city_id = ?
