@@ -92,9 +92,10 @@ class NotificationRepository
             'new_challenge'                                             => 'new_challenge_push',
             'mention'                                                   => 'mention_push',
             'channel_message'                                           => 'channel_message_push',
-            // @here broadcast - gated by the same city-chat push toggle, so
-            // muting city chat also mutes being @here'd.
-            'city_here'                                                 => 'channel_message_push',
+            // @here is a "mention everyone" - gate it by mention_push (default
+            // ON), NOT channel_message_push (default OFF, so it reached almost
+            // nobody). Muting @mentions also mutes being @here'd.
+            'city_here'                                                 => 'mention_push',
             'city_join'                                                 => 'city_join_push',
             // friend_request_received + friend_request_accepted are the new
             // request-flow types; friend_added is kept as a legacy alias so

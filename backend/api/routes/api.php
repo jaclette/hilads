@@ -6217,7 +6217,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
         // online-only ping. Guests can't @here (anti-spam); the city_here type
         // is capped + per-recipient cooldowned in the push services.
         $isHere = $msgSenderUserId !== null && preg_match('/(^|[^\w@])@here\b/i', (string) ($content ?? ''));
-        error_log('[@here-detect] sender=' . ($msgSenderUserId ?? 'null') . ' isHere=' . ($isHere ? '1' : '0') . ' content=' . substr((string) ($content ?? ''), 0, 60));
         if ($isHere) {
             NotificationRepository::notifyCityOnlineUsers(
                 $msgCityChannelId,
