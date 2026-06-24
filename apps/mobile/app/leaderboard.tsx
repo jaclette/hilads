@@ -297,7 +297,7 @@ function Selectors({
     <View style={styles.selectorsWrap}>
       <View style={styles.segWrap}>
         <TouchableOpacity
-          style={[styles.segItem, !cityActive && undefined]}
+          style={[styles.segItem, styles.segItemCity]}
           onPress={() => (cityActive && onCityTap ? onCityTap() : onScope('city'))}
           activeOpacity={0.8}
           accessibilityRole="button"
@@ -311,12 +311,17 @@ function Selectors({
               style={StyleSheet.absoluteFill}
             />
           )}
+          {/* Flag + chevron never shrink; the city NAME truncates so a long
+              name (e.g. "Ho Chi Minh City") can't push them out of view. */}
           <View style={styles.cityLabelRow}>
+            {cityFlag ? (
+              <Text style={[styles.segText, cityActive && styles.segTextActiveGradient]}>{cityFlag} </Text>
+            ) : null}
             <Text
-              style={[styles.segText, cityActive && styles.segTextActiveGradient]}
+              style={[styles.segText, cityActive && styles.segTextActiveGradient, styles.cityName]}
               numberOfLines={1}
             >
-              {cityFlag ? `${cityFlag} ` : ''}{cityLabel}
+              {cityLabel}
             </Text>
             {cityActive && (
               <Ionicons name="chevron-down" size={14} color={Colors.white} style={{ marginLeft: 4 }} />
@@ -559,18 +564,25 @@ const styles = StyleSheet.create({
   segItem: {
     flex: 1,
     paddingVertical: 8,
+    paddingHorizontal: 6,
     borderRadius: Radius.full,
     overflow: 'hidden',
     alignItems: 'center', justifyContent: 'center',
   },
+  // The city segment carries the longest content (flag + city name + chevron),
+  // so give it more room than the fixed-label Cities / World segments.
+  segItemCity: { flex: 1.9 },
   segItemActiveFlat: { backgroundColor: 'rgba(255,255,255,0.10)' },
   segText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
-  // City segment label + chevron, centered as a row (active state only).
+  // City segment: flag + name + chevron in a row. maxWidth caps the row to the
+  // segment so the shrinkable name truncates instead of clipping flag/chevron.
   cityLabelRow: {
     flexDirection: 'row',
     alignItems:    'center',
     justifyContent:'center',
+    maxWidth:      '100%',
   },
+  cityName: { flexShrink: 1 },
   segTextActiveFlat:    { color: Colors.text },
   segTextActiveGradient:{ color: Colors.white, fontWeight: '800' },
 
