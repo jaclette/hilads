@@ -812,12 +812,16 @@ class NotificationRepository
             // a traveller chatting here whose current_city_id points to their
             // home city is "here" too and must get tagged, but wouldn't match
             // the members-only query.
+            // No location-confirmation TTL here (unlike the arrival fan-out):
+            // @here is a deliberate, rate-limited, capped tag, so reach EVERY
+            // member of the city - even one whose location wasn't re-confirmed
+            // recently - plus whoever is present right now. Ordered by recency
+            // so the cap keeps the most-active members.
             $stmt = Database::pdo()->prepare("
                 SELECT m.id FROM (
                     SELECT u.id, u.current_city_last_confirmed_at AS srt
                     FROM users u
                     WHERE u.current_city_id = :cc
-                      AND u.current_city_last_confirmed_at > now() - interval '30 days'
                       AND u.deleted_at IS NULL
                     UNION
                     SELECT u.id, now() AS srt
@@ -835,6 +839,7 @@ class NotificationRepository
             $stmt->execute([':cc' => $cityChannelId, ':ex' => $excludeUserId]);
             $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
             if (!empty($excludeUserIds)) $userIds = array_values(array_diff($userIds, $excludeUserIds));
+            error_log('[@here] city=' . $cityChannelId . ' sender=' . ($excludeUserId ?? 'null') . ' recipients=' . count($userIds));
             if (empty($userIds)) return;
             $enabled = self::batchIsEnabled($userIds, $type);
             $locales = self::batchLocale($userIds);
