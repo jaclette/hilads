@@ -67,7 +67,7 @@ admin_nav('/admin/arrivals');
     $pages = (int) ceil($total / $perPage);
 
     $aStmt = $pdo->prepare("
-        SELECT id, nickname, user_id, guest_id, country, platform,
+        SELECT id, nickname, user_id, guest_id, country, platform, ip_address,
                EXTRACT(EPOCH FROM created_at)::INTEGER AS created_ts
         FROM messages
         WHERE channel_id = :cid AND type = 'system' AND event = 'join'
@@ -143,8 +143,11 @@ admin_nav('/admin/arrivals');
                         <?php if (!empty($a['country'])): ?>
                             <span style="font-size:15px"><?= $isoFlag($a['country']) ?></span>
                             <span style="color:#888;font-size:12px"><?= htmlspecialchars(strtoupper($a['country']), ENT_QUOTES) ?></span>
-                        <?php else: ?>
+                        <?php elseif (empty($a['ip_address'])): ?>
                             <span style="color:#444">-</span>
+                        <?php endif; ?>
+                        <?php if (!empty($a['ip_address'])): ?>
+                            <div class="td-mono" style="color:#9ca3af;font-size:11px;margin-top:2px"><?= htmlspecialchars($a['ip_address'], ENT_QUOTES) ?></div>
                         <?php endif; ?>
                     </td>
                     <td style="white-space:nowrap"><?= $platformBadge($a['platform'] ?? null) ?></td>
