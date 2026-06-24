@@ -6212,15 +6212,32 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     try {
         $msgCityChannelId = "city_{$channelId}";
         $msgPreview       = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
-        NotificationRepository::notifyCityOnlineUsers(
-            $msgCityChannelId,
-            $msgSenderUserId,
-            'channel_message',
-            $nickname . ' in the city chat',
-            $msgPreview,
-            ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId],
-            mentionUserIds($mentions ?? [])
-        );
+        // @here: a registered member tags the whole city. Fan out to every
+        // active city MEMBER (not just whoever's online), instead of the normal
+        // online-only ping. Guests can't @here (anti-spam); the city_here type
+        // is capped + per-recipient cooldowned in the push services.
+        $isHere = $msgSenderUserId !== null && preg_match('/(^|[^\w@])@here\b/i', (string) ($content ?? ''));
+        if ($isHere) {
+            NotificationRepository::notifyCityOnlineUsers(
+                $msgCityChannelId,
+                $msgSenderUserId,
+                'city_here',
+                '📢 ' . $nickname . ' tagged everyone',
+                $msgPreview,
+                ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId],
+                mentionUserIds($mentions ?? [])
+            );
+        } else {
+            NotificationRepository::notifyCityOnlineUsers(
+                $msgCityChannelId,
+                $msgSenderUserId,
+                'channel_message',
+                $nickname . ' in the city chat',
+                $msgPreview,
+                ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId],
+                mentionUserIds($mentions ?? [])
+            );
+        }
         if (!empty($mentions ?? [])) {
             notifyMentions(
                 $mentions,
@@ -7444,7 +7461,21 @@ $router->add('GET', '/api/v1/channels/{channelId}/mention-suggestions', function
     $channelId = $params['channelId'] ?? '';
     if (!ctype_digit((string) $channelId)) Response::json(['error' => 'Invalid channelId'], 400);
     $viewer = AuthService::currentUser();
-    Response::json(['suggestions' => MentionService::suggest('city', 'city_' . $channelId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
+    $suggestions = MentionService::suggest('city', 'city_' . $channelId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null);
+    // @here - tag everyone in the city. Registered members only (guests can't
+    // mass-ping). Surfaces when the query is empty or a prefix of "here". The
+    // client inserts plain "@here" text; the message route detects it and fans
+    // out a push to every active city member.
+    $q = strtolower(trim((string) ($_GET['q'] ?? '')));
+    if (!empty($viewer['id']) && ($q === '' || str_starts_with('here', $q))) {
+        array_unshift($suggestions, [
+            'isHere'      => true,
+            'username'    => 'here',
+            'displayName' => 'Everyone in the city',
+            'avatarUrl'   => null,
+        ]);
+    }
+    Response::json(['suggestions' => $suggestions]);
 });
 
 $router->add('GET', '/api/v1/events/{eventId}/mention-suggestions', function (array $params) {

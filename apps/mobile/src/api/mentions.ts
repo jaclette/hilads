@@ -5,6 +5,7 @@ export interface MentionSuggestion {
   userId?:        string;   // member suggestion
   guestId?:       string;   // online-guest suggestion (live-only)
   isGuest?:       boolean;
+  isHere?:        boolean;  // the "@here" broadcast option (city only)
   username:       string;
   displayName:    string;
   avatarUrl:      string | null;

@@ -44,6 +44,7 @@ class MobilePushService
             'new_event'       => 'new_event_push',
             'mention'         => 'mention_push',
             'channel_message' => 'channel_message_push',
+            'city_here'       => 'channel_message_push',
             'city_join'       => 'city_join_push',
             'vibe_received'   => 'vibe_received_push',
             'profile_view'    => 'profile_view_push',
@@ -60,6 +61,7 @@ class MobilePushService
             'dm_message'      => 5,     // 5s - one push per conversation (same sender) per recipient
             'event_message'   => 5,     // 5s - one push per event (any sender) per recipient
             'channel_message' => 5,     // 5s - one push per city channel (any sender) per recipient
+            'city_here'       => 600,   // 10 min - @here can't be spammed at recipients
             'event_join'      => 300,   // 5 min - avoid bursts when many people join
             'new_event'       => 3600,  // 1 hour - city events should not spam
             'city_join'       => 5,     // 5s - different-arriver floor; same-arriver 1h gate is upstream (NotificationRepository)
@@ -77,6 +79,7 @@ class MobilePushService
             'event_join'                   => $data['eventId'] ?? '',
             'new_event',
             'channel_message',
+            'city_here',
             'city_join'                    => $data['channelId'] ?? '',
             // Friend-request types dedupe per pair so a sender can't burst
             // pushes by tapping Add → cancel → Add → cancel.

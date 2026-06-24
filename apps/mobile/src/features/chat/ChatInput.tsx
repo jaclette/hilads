@@ -210,11 +210,16 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
     const next   = before + '@' + s.username + ' ' + after;
     setText(next);
     textRef.current = next;
-    setSelectedMentions(prev => {
-      const key = s.userId || s.guestId;
-      if (prev.some(m => (m.userId || m.guestId) === key)) return prev;
-      return [...prev, s.userId ? { userId: s.userId, username: s.username } : { guestId: s.guestId!, username: s.username }];
-    });
+    // "@here" is a plain-text broadcast token, not a per-user mention - the
+    // backend detects it from the message content and fans out to the city. So
+    // insert the text but DON'T add a structured mention (it has no userId).
+    if (!s.isHere) {
+      setSelectedMentions(prev => {
+        const key = s.userId || s.guestId;
+        if (prev.some(m => (m.userId || m.guestId) === key)) return prev;
+        return [...prev, s.userId ? { userId: s.userId, username: s.username } : { guestId: s.guestId!, username: s.username }];
+      });
+    }
     setMentionQuery(null);
     setSuggestions([]);
   }

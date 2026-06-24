@@ -22,14 +22,16 @@ export function MentionSuggestions({
           const key = s.userId ?? s.guestId ?? s.username;
           return (
           <TouchableOpacity key={key} style={styles.row} onPress={() => onSelect(s)} activeOpacity={0.6}>
-            <View style={[styles.avatar, { backgroundColor: avatarColor(key) }]}>
-              {s.avatarUrl
-                ? <Image source={{ uri: thumbUrl(s.thumbAvatarUrl ?? s.avatarUrl) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
-                : <Text style={styles.letter}>{(s.displayName[0] ?? '?').toUpperCase()}</Text>}
+            <View style={[styles.avatar, { backgroundColor: s.isHere ? 'rgba(255,122,60,0.18)' : avatarColor(key) }]}>
+              {s.isHere
+                ? <Text style={styles.letter}>📢</Text>
+                : s.avatarUrl
+                  ? <Image source={{ uri: thumbUrl(s.thumbAvatarUrl ?? s.avatarUrl) }} style={StyleSheet.absoluteFill} cachePolicy="memory-disk" contentFit="cover" />
+                  : <Text style={styles.letter}>{(s.displayName[0] ?? '?').toUpperCase()}</Text>}
             </View>
             <View style={styles.body}>
               <Text style={styles.username}>@{s.username}</Text>
-              <Text style={styles.name} numberOfLines={1}>{s.isGuest ? '👻 Guest · online' : s.displayName}</Text>
+              <Text style={styles.name} numberOfLines={1}>{s.isHere ? s.displayName : s.isGuest ? '👻 Guest · online' : s.displayName}</Text>
             </View>
           </TouchableOpacity>
         ); })}

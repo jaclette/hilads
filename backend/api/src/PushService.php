@@ -23,6 +23,7 @@ class PushService
             'new_event'       => 'new_event_push',
             'mention'         => 'mention_push',
             'channel_message' => 'channel_message_push',
+            'city_here'       => 'channel_message_push',
             'city_join'       => 'city_join_push',
             'vibe_received'   => 'vibe_received_push',
             'profile_view'    => 'profile_view_push',

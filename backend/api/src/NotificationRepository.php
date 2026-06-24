@@ -92,6 +92,9 @@ class NotificationRepository
             'new_challenge'                                             => 'new_challenge_push',
             'mention'                                                   => 'mention_push',
             'channel_message'                                           => 'channel_message_push',
+            // @here broadcast - gated by the same city-chat push toggle, so
+            // muting city chat also mutes being @here'd.
+            'city_here'                                                 => 'channel_message_push',
             'city_join'                                                 => 'city_join_push',
             // friend_request_received + friend_request_accepted are the new
             // request-flow types; friend_added is kept as a legacy alias so
@@ -797,7 +800,10 @@ class NotificationRepository
         $useCurrentCity = $type === 'new_event'
                        || $type === 'new_challenge'
                        || $type === 'city_join'
-                       || $type === 'challenge_international_target';
+                       || $type === 'challenge_international_target'
+                       // @here: tag every active member of the city, not just
+                       // whoever is online this minute.
+                       || $type === 'city_here';
 
         if ($useCurrentCity) {
             // current_city_last_confirmed_at TTL: 30 days. Users who haven't
