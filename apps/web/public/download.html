@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download Hilads</title>
+  <meta name="description" content="Download Hilads - the real-time city social app. Open it on the App Store or Google Play." />
+  <meta name="theme-color" content="#0f0d0b" />
+  <link rel="canonical" href="https://hilads.live/download" />
+  <meta property="og:title" content="Download Hilads" />
+  <meta property="og:description" content="Become local. Anywhere. Get Hilads on iOS and Android." />
+  <meta property="og:url" content="https://hilads.live/download" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:      #0f0d0b;
+      --surface: #1a1612;
+      --border:  rgba(255,255,255,0.08);
+      --text:    #f0ece6;
+      --muted:   #a09486;
+      --accent:  #FF7A3C;
+      --accent2: #D85A30;
+    }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100dvh;
+      display: flex; align-items: center; justify-content: center;
+      padding: 32px 20px;
+      text-align: center;
+    }
+    .card { width: 100%; max-width: 400px; }
+
+    /* "Hi" brand square + wordmark, matching the app lockup. */
+    .brand { display: inline-flex; align-items: center; gap: 12px; margin-bottom: 28px; }
+    .brand-mark {
+      width: 56px; height: 56px; border-radius: 15px;
+      background: linear-gradient(150deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 26px; color: #fff; letter-spacing: -0.5px;
+      box-shadow: 0 8px 28px rgba(255,122,60,0.35);
+    }
+    .brand-name { font-size: 30px; font-weight: 800; letter-spacing: -0.6px; }
+
+    h1 { font-size: 24px; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+    .tagline { color: var(--muted); font-size: 15px; margin-bottom: 28px; }
+    .status { color: var(--accent); font-size: 14px; font-weight: 600; min-height: 20px; margin-bottom: 18px; }
+
+    .stores { display: flex; flex-direction: column; gap: 12px; }
+    .store {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 18px;
+      text-decoration: none; color: var(--text);
+      transition: border-color .15s ease, transform .1s ease;
+    }
+    .store:hover { border-color: rgba(255,122,60,0.45); }
+    .store:active { transform: scale(0.985); }
+    .store-ico { width: 30px; height: 30px; flex: 0 0 30px; }
+    .store-txt { text-align: left; line-height: 1.25; }
+    .store-top { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .store-bot { font-size: 17px; font-weight: 700; }
+
+    .foot { margin-top: 26px; font-size: 13px; color: var(--muted); }
+    .foot a { color: var(--accent); text-decoration: none; }
+    .foot a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <span class="brand-mark">Hi</span>
+      <span class="brand-name">Hilads</span>
+    </div>
+
+    <h1>Download Hilads</h1>
+    <p class="tagline">Become local. Anywhere.</p>
+
+    <p class="status" id="status"></p>
+
+    <div class="stores">
+      <a class="store" id="ios" href="https://apps.apple.com/app/id6768905591">
+        <svg class="store-ico" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.36 12.78c.02 2.3 2.02 3.06 2.04 3.07-.02.05-.32 1.1-1.06 2.18-.64.94-1.3 1.87-2.35 1.89-1.02.02-1.35-.6-2.52-.6-1.17 0-1.54.58-2.5.62-1 .04-1.78-1.01-2.42-1.94-1.32-1.9-2.33-5.39-.97-7.74.67-1.17 1.88-1.91 3.19-1.93.99-.02 1.92.66 2.52.66.6 0 1.74-.82 2.93-.7.5.02 1.9.2 2.79 1.52-.07.05-1.67.98-1.65 2.92zM14.6 6.6c.53-.64.89-1.53.79-2.42-.76.03-1.69.51-2.24 1.15-.49.56-.92 1.47-.8 2.33.85.07 1.71-.43 2.25-1.06z"/></svg>
+        <span class="store-txt">
+          <span class="store-top">Download on the</span>
+          <span class="store-bot">App Store</span>
+        </span>
+      </a>
+      <a class="store" id="android" href="https://play.google.com/store/apps/details?id=com.hilads.app">
+        <svg class="store-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="#00D7FE" d="M3.6 2.3 13 11.7l-2.6 2.6L3.1 3.2c.1-.4.3-.7.5-.9z"/><path fill="#FFCE00" d="M16.7 8.5 19.9 10.3c.8.5.8 1.6 0 2.1l-3.2 1.8-2.9-2.9 2.9-2.8z"/><path fill="#00F076" d="M3.6 2.3c.3-.3.8-.4 1.3-.1l11.1 6.3-2.9 2.8L3.6 2.3z"/><path fill="#FF3946" d="M13.1 11.9 16 14.8 5 21c-.5.3-1 .2-1.4-.1l9.5-9z"/></svg>
+        <span class="store-txt">
+          <span class="store-top">Get it on</span>
+          <span class="store-bot">Google Play</span>
+        </span>
+      </a>
+    </div>
+
+    <p class="foot"><a href="https://hilads.live/">← Open Hilads in your browser</a></p>
+  </main>
+
+  <script>
+    (function () {
+      var IOS_URL = 'https://apps.apple.com/app/id6768905591';
+      var PLAY_URL = 'https://play.google.com/store/apps/details?id=com.hilads.app';
+      var ua = navigator.userAgent || '';
+
+      function detectOs() {
+        if (/iPad|iPhone|iPod/.test(ua)) return 'ios';
+        // iPad in "Request Desktop Site" mode reports MacIntel.
+        if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) return 'ios';
+        if (/Android/i.test(ua)) return 'android';
+        return 'other';
+      }
+
+      var os = detectOs();
+      var status = document.getElementById('status');
+      // Re-order so the matching store sits first on mobile.
+      if (os === 'android') {
+        var a = document.getElementById('android');
+        a.parentNode.insertBefore(a, a.parentNode.firstChild);
+      }
+
+      if (os === 'ios' || os === 'android') {
+        var url = os === 'ios' ? IOS_URL : PLAY_URL;
+        status.textContent = 'Taking you to the ' + (os === 'ios' ? 'App Store' : 'Google Play') + '…';
+        // Redirect on the next tick so the branded page paints first; the
+        // store buttons stay as a manual fallback if the redirect is blocked.
+        setTimeout(function () { window.location.replace(url); }, 600);
+      } else {
+        status.textContent = 'Choose your platform';
+      }
+    })();
+  </script>
+</body>
+</html>
