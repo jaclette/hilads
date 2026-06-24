@@ -16,6 +16,18 @@
       "permanent": false
     },
     {
+      "source": "/download",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*(iPhone|iPad|iPod).*" }],
+      "destination": "https://apps.apple.com/app/id6768905591",
+      "permanent": false
+    },
+    {
+      "source": "/download",
+      "has": [{ "type": "header", "key": "user-agent", "value": ".*Android.*" }],
+      "destination": "https://play.google.com/store/apps/details?id=com.hilads.app",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "hilads.vercel.app" }],
       "destination": "https://hilads.live/$1",
