@@ -8,6 +8,34 @@
     <meta name="description" content="Locals challenge travelers, travelers challenge locals - take one on in any city and meet up to prove it. Plus live events, hangouts and city chat. No sign-up." />
     <meta name="theme-color" content="#161210" />
 
+    <!-- Homepage → app store auto-redirect (mobile only). Runs before paint so
+         there's no flash. STRICTLY guarded:
+         - homepage only (deep links /city, /event, /challenge, /app keep working)
+         - crawlers excluded (Googlebot-Mobile's UA contains "Android"! - the SSR
+           home below must stay indexable)
+         - the app shell excluded (TWA / standalone PWA / RN webview) so we never
+           loop a user who's already in the installed app
+         Desktop falls through untouched and renders the landing. -->
+    <script>
+      (function () {
+        try {
+          var loc = window.location;
+          if (/[?&]web=1(?:&|$)/.test(loc.search)) return;         // escape hatch: ?web=1 stays on web
+          var p = loc.pathname.replace(/^\/(?:fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)(?:\/|$)/, '/');
+          if (p !== '/') return;                                   // homepage only
+          var ua = navigator.userAgent || '';
+          if (/bot|crawl|spider|slurp|mediapartners|facebookexternalhit|whatsapp|telegram|preview|lighthouse|headless/i.test(ua)) return; // never crawlers
+          if (window.ReactNativeWebView) return;                  // RN webview
+          if (/HiladsApp\//.test(ua)) return;                     // custom app UA
+          if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return; // installed PWA
+          if (document.referrer && document.referrer.indexOf('android-app://com.hilads.app') === 0) return; // Play Store TWA
+          var isIos = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+          if (isIos) { loc.replace('https://apps.apple.com/app/id6768905591'); return; }
+          if (/Android/i.test(ua)) { loc.replace('https://play.google.com/store/apps/details?id=com.hilads.app'); return; }
+        } catch (e) { /* never block the page on a detection error */ }
+      })();
+    </script>
+
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
