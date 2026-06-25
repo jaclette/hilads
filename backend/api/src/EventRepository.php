@@ -152,7 +152,11 @@ class EventRepository
             // this to render the "Past event" view (badge, disabled RSVP). Note
             // soft-deleted events also have expires_at in the past, but the
             // route distinguishes them via event_status before reaching here.
-            'is_past'          => isset($row['expires_at']) && (int) $row['expires_at'] < time(),
+            // Recurring events (series_id) are never "past" - they recur, so the
+            // detail screen must keep chat + RSVP active even when the canonical
+            // anchor's expires_at is behind us. Only one-off events go past.
+            'is_past'          => empty($row['series_id'])
+                                    && isset($row['expires_at']) && (int) $row['expires_at'] < time(),
             // 'scheduled' | 'deleted'. SELECT_CITY has no channels join → no
             // channel_status column → default 'scheduled' (those are listing
             // queries that never surface deleted rows anyway).
@@ -652,7 +656,13 @@ class EventRepository
     {
         $stmt = Database::pdo()->prepare(self::SELECT . "
             WHERE c.id        = :id
-              AND ce.expires_at > now()
+              AND c.status    <> 'deleted'
+              -- Recurring events (series_id) never truly 'expire' - they keep
+              -- recurring even though the canonical row's expires_at can sit in
+              -- the past. Without this they 404'd from join + message (both use
+              -- findById), so a recurring Hi plan couldn't be joined or texted.
+              -- Soft-deleted rows are still excluded via c.status above.
+              AND (ce.expires_at > now() OR ce.series_id IS NOT NULL)
         ");
         $stmt->execute(['id' => $eventId]);
         $row = $stmt->fetch();
