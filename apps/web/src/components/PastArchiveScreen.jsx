@@ -115,7 +115,6 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
   const { t } = useTranslation('archive')
   const tz = timezone || 'UTC'
 
-  const [type, setType]   = useState('both')          // both | hangouts | pulses
   const [range, setRange] = useState({ key: 'recent' }) // key: recent | 7 | 14 | custom
   const [items, setItems] = useState([])
   const [cursor, setCursor]   = useState(null)
@@ -129,27 +128,29 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
     const reqId = ++reqIdRef.current
     setStatus('loading')
     const { items: list, nextCursor } = await fetchPastArchive(channelId, {
-      type, limit: PAGE, from: range.from, to: range.to,
+      // Hi Local "What happened" = past EVENTS only; challenges have their own
+      // history on the Challenge screen (Open / Validated tabs).
+      type: 'hangouts', limit: PAGE, from: range.from, to: range.to,
     })
     if (reqId !== reqIdRef.current) return
     setItems(list)
     setCursor(nextCursor)
     setStatus('ok')
-  }, [channelId, type, range.from, range.to])
+  }, [channelId, range.from, range.to])
 
   const loadMore = useCallback(async () => {
     if (!channelId || loadingMore || cursor == null) return
     setLoadingMore(true)
     const reqId = reqIdRef.current
     const { items: more, nextCursor } = await fetchPastArchive(channelId, {
-      type, limit: PAGE, before: cursor, from: range.from, to: range.to,
+      type: 'hangouts', limit: PAGE, before: cursor, from: range.from, to: range.to,
     })
     if (reqId === reqIdRef.current) {
       setItems(prev => [...prev, ...more])
       setCursor(nextCursor)
     }
     setLoadingMore(false)
-  }, [channelId, type, range.from, range.to, cursor, loadingMore])
+  }, [channelId, range.from, range.to, cursor, loadingMore])
 
   useEffect(() => { load() }, [load])
 
@@ -245,16 +246,6 @@ export default function PastArchiveScreen({ channelId, timezone, cityName, onBac
         <BackButton onClick={onBack} />
         <span className="page-title">{t('title')}</span>
         <span style={{ width: 40 }} />
-      </div>
-
-      {/* Type filter */}
-      <div className="archive-filter-bar">
-        {/* Hangouts (Sorties/pulses) are ephemeral - excluded from the past archive. */}
-        {[['both', 'all'], ['challenges', 'challenges'], ['hangouts', 'events']].map(([k, lk]) => (
-          <button key={k} type="button"
-            className={`archive-pill${type === k ? ' active' : ''}`}
-            onClick={() => setType(k)}>{t(`filters.${lk}`)}</button>
-        ))}
       </div>
 
       {/* Date range chips */}
