@@ -289,7 +289,10 @@ export default function PastArchiveScreen() {
           <TouchableOpacity
             key={c.key}
             style={[styles.rangeChip, range.key === c.key && styles.rangeChipActive]}
-            onPress={() => setRange({ key: c.key })}
+            // '7' / '14' must compute from/to (applyPreset) - setting the key
+            // alone left from/to undefined, so the query was unfiltered and
+            // showed everything. 'recent' is the default unbounded view.
+            onPress={() => (c.key === '7' || c.key === '14') ? applyPreset(c.key) : setRange({ key: c.key })}
             activeOpacity={0.75}
           >
             <Text style={[styles.rangeChipText, range.key === c.key && styles.rangeChipTextActive]}>{c.label}</Text>
