@@ -41,7 +41,6 @@ function prettyRange(from: string, to: string): string {
 type RangeKey  = 'recent' | '7' | '14' | 'custom';
 type Range     = { key: RangeKey; from?: string; to?: string };
 // Hangouts (Sorties/pulses) are ephemeral and excluded from the past archive.
-type FilterType = 'both' | 'hangouts' | 'challenges';
 
 const PAGE = 12;
 
@@ -173,7 +172,6 @@ export default function PastArchiveScreen() {
   const tz       = decodeURIComponent(timezone ?? 'UTC');
   const cityName = decodeURIComponent(city ?? '');
 
-  const [type,       setType]       = useState<FilterType>('both');
   const [range,      setRange]      = useState<Range>({ key: 'recent' });
   const [items,      setItems]      = useState<FeedItem[]>([]);
   const [cursor,     setCursor]     = useState<number | null>(null);
@@ -193,7 +191,9 @@ export default function PastArchiveScreen() {
     setError(null);
     try {
       const { items: list, nextCursor } = await fetchPastArchive(channelId, {
-        type,
+        // Hi Local "What happened" = past EVENTS only. Validated challenges have
+        // their own history on the Challenge screen (Open / Validated tabs).
+        type:  'hangouts',
         limit: PAGE,
         from:  range.from,
         to:    range.to,
@@ -206,7 +206,7 @@ export default function PastArchiveScreen() {
     } finally {
       if (reqId === reqIdRef.current) { setLoading(false); setRefreshing(false); }
     }
-  }, [channelId, type, range.from, range.to]);
+  }, [channelId, range.from, range.to]);
 
   const loadMore = useCallback(async () => {
     if (!channelId || loadingMore || loading || cursor == null) return;
@@ -214,7 +214,7 @@ export default function PastArchiveScreen() {
     const reqId = reqIdRef.current;
     try {
       const { items: more, nextCursor } = await fetchPastArchive(channelId, {
-        type,
+        type:   'hangouts',
         limit:  PAGE,
         before: cursor,
         from:   range.from,
@@ -228,7 +228,7 @@ export default function PastArchiveScreen() {
     } finally {
       if (reqId === reqIdRef.current) setLoadingMore(false);
     }
-  }, [channelId, type, range.from, range.to, cursor, loadingMore, loading]);
+  }, [channelId, range.from, range.to, cursor, loadingMore, loading]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -263,24 +263,6 @@ export default function PastArchiveScreen() {
           {!!cityName && <Text style={styles.headerSub}>{localizeCityName(cityName)}</Text>}
         </View>
         <View style={styles.headerSpacer} />
-      </View>
-
-      {/* Type filter */}
-      <View style={styles.filterBar}>
-        {(['both', 'challenges', 'hangouts'] as const).map(f => (
-          <TouchableOpacity
-            key={f}
-            style={[styles.filterPill, type === f && styles.filterPillActive]}
-            onPress={() => setType(f)}
-            activeOpacity={0.75}
-          >
-            <Text style={[styles.filterPillText, type === f && styles.filterPillTextActive]}>
-              {f === 'both'       ? t('filterAll')
-                : f === 'hangouts' ? '🎉 Events'
-                :                    t('filterChallenges')}
-            </Text>
-          </TouchableOpacity>
-        ))}
       </View>
 
       {/* Date range chips */}
