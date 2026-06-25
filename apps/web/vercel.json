@@ -16,15 +16,20 @@
       "permanent": false
     },
     {
-      "source": "/download",
+      "source": "/app",
       "has": [{ "type": "header", "key": "user-agent", "value": ".*(iPhone|iPad|iPod).*" }],
       "destination": "https://apps.apple.com/app/id6768905591",
       "permanent": false
     },
     {
-      "source": "/download",
+      "source": "/app",
       "has": [{ "type": "header", "key": "user-agent", "value": ".*Android.*" }],
       "destination": "https://play.google.com/store/apps/details?id=com.hilads.app",
+      "permanent": false
+    },
+    {
+      "source": "/download",
+      "destination": "/app",
       "permanent": false
     },
     {
@@ -75,7 +80,7 @@
     { "source": "/terms",                "destination": "/terms.html" },
     { "source": "/support",              "destination": "/support.html" },
     { "source": "/child-safety",         "destination": "/child-safety.html" },
-    { "source": "/download",             "destination": "/download.html" },
+    { "source": "/app",                  "destination": "/app.html" },
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
