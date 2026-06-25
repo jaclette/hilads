@@ -5455,13 +5455,18 @@ $router->add('POST', '/internal/cleanup', function () {
 
     // 2. Expired event channels - delete the channel (CASCADE removes messages +
     //    event_participants). The 1-hour buffer prevents cutting off active viewers.
-    //    Recurring occurrences from past days are included automatically.
+    //    NEVER delete RECURRING events: they're stored as ONE canonical row
+    //    (series_id set, occurrence_date NULL) whose expires_at sits in the past,
+    //    so deleting it would wipe the entire ongoing series - its chat, RSVPs,
+    //    and the ability to join/message between occurrences. Only one-off events
+    //    (series_id IS NULL) are cleaned up.
     $stmt = $pdo->query("
         DELETE FROM channels
         WHERE type = 'event'
           AND id IN (
               SELECT channel_id FROM channel_events
               WHERE expires_at < now() - INTERVAL '1 hour'
+                AND series_id IS NULL
           )
     ");
     $eventChannelsDeleted = $stmt->rowCount();
