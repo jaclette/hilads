@@ -712,10 +712,17 @@ export default function ChatTab() {
 
   const scrollToMessage = useCallback((id: string) => {
     const idx = allMessages.findIndex(m => m.id === id);
-    if (idx === -1) return;
-    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    if (idx < 0 || idx >= allMessages.length) return;
+    // Highlight first so the parent flashes even if the scroll can't run.
     setHighlightedMsgId(id);
     setTimeout(() => setHighlightedMsgId(null), 1500);
+    // scrollToIndex can THROW synchronously (the "scrollToIndex out of range"
+    // invariant) - and that's NOT caught by onScrollToIndexFailed, so in a
+    // release build it crashes the whole app. Wrap it. Off-screen-but-valid
+    // targets still resolve via onScrollToIndexFailed (a no-op).
+    try {
+      flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    } catch { /* not measured / transient out-of-range - highlight already applied */ }
   }, [allMessages]);
 
   const handleMessageLongPress = useCallback((msg: Message) => {

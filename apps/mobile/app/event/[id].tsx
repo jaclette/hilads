@@ -171,10 +171,14 @@ export default function EventDetailScreen() {
 
   function scrollToMessage(id: string) {
     const idx = feed.findIndex(m => m.id === id);
-    if (idx === -1) return;
-    flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    if (idx < 0) return;
     setHighlightedMsgId(id);
     setTimeout(() => setHighlightedMsgId(null), 1500);
+    // scrollToIndex can throw synchronously (out-of-range invariant) - NOT
+    // caught by onScrollToIndexFailed, so it crashes a release build. Wrap it.
+    try {
+      flatListRef.current?.scrollToIndex({ index: idx, animated: true, viewPosition: 0.5 });
+    } catch { /* not measured / transient - highlight already applied */ }
   }
 
   const {
