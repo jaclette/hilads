@@ -131,6 +131,10 @@ export default function NowScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('now');
+  // Measured height of the sticky bottom CTA bar (Hi now / Hi plan / See
+  // what's coming + archive link). The list reserves exactly this much so the
+  // last event never hides behind it. Sensible default until first layout.
+  const [bottomBarH, setBottomBarH] = useState(170);
   const { city, identity, account, booting, blockedSet } = useApp();
   const userMode = account?.mode ?? identity?.mode ?? null;
 
@@ -807,7 +811,7 @@ export default function NowScreen() {
               />
             );
           }}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, { paddingBottom: bottomBarH + Spacing.sm }]}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={Colors.accent} />
           }
@@ -817,7 +821,10 @@ export default function NowScreen() {
       {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous hangout)
           + "Hi later" (planned event). "See what's coming" below. */}
       {city && (
-        <View style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}>
+        <View
+          style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}
+          onLayout={(e) => setBottomBarH(e.nativeEvent.layout.height)}
+        >
           {/* Line 1: Hi now, full width, alone. */}
           <TouchableOpacity
             style={[styles.hilocalCta, styles.hilocalCtaNow]}
