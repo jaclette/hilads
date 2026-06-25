@@ -402,19 +402,25 @@ export default function ChatTab() {
   const seenChallengeIds = useRef(new Set<string>());
   const seenValidatedIds = useRef(new Set<string>());
   const [challengeCount, setChallengeCount] = useState(0);
+  // False until THIS city's count has been fetched. Gates the hero's empty
+  // ("be the first") state so switching cities can't flash it while the new
+  // count is still loading (count is reset to 0 on every city change).
+  const [challengeCountLoaded, setChallengeCountLoaded] = useState(false);
 
   useEffect(() => {
     if (!channelId) return;
     seenChallengeIds.current.clear();
     seenValidatedIds.current.clear();
     setChallengeCount(0);
+    setChallengeCountLoaded(false);
 
     fetchCityChallenges(channelId).then(chs => {
       setChallengeCount(chs.length);
+      setChallengeCountLoaded(true);
       // Remember the ids already counted so a racing `new_challenge` WS event
       // for one of them can't double-count.
       chs.forEach(c => seenChallengeIds.current.add(c.id));
-    }).catch(() => {});
+    }).catch(() => { setChallengeCountLoaded(true); });
 
     // WS: new challenge created → bump the hero count (deduped against the
     // initial fetch + repeat events).
@@ -887,7 +893,12 @@ export default function ChatTab() {
   const cityShort = cityShortName(city.name);
   let heroMain: string;
   let heroSub:  string;
-  if (challengeCount === 0) {
+  if (!challengeCountLoaded) {
+    // Loading the new city's count - show a neutral line, NEVER the empty
+    // "be the first" state (which would flash on every city switch).
+    heroMain = t('cityHero.mainLoading', { city: cityShort, defaultValue: `🔥 Challenges in ${cityShort}` });
+    heroSub  = t('cityHero.subLoading', { defaultValue: ' ' });
+  } else if (challengeCount === 0) {
     heroMain = t('cityHero.mainEmpty', { city: cityShort });
     heroSub  = t('cityHero.subEmpty');
   } else if (myCityRank === null) {

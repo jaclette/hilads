@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
     "mainRanked_other": "🔥 {{count}} thử thách · 🏆 #{{rank}} ở {{city}}",
     "mainTop_one": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
-    "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}"
+    "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
+    "mainLoading": "🔥 Thử thách ở {{city}}",
+    "subLoading": " "
   }
 }

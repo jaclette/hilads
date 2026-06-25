@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{count}} challenge · 🏆 #{{rank}} in {{city}}",
     "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
     "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 in {{city}}",
-    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}"
+    "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}",
+    "mainLoading": "🔥 Challenges in {{city}}",
+    "subLoading": " "
   }
 }
