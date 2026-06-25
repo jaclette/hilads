@@ -684,39 +684,46 @@ class EventRepository
     public static function getByUser(string $guestId, ?string $userId): array
     {
         // Named params cannot repeat in PDO - use part_guest_id for the EXISTS clause.
+        //
+        // Matches the public-profile query (getPublicByUserId) so a user sees the
+        // SAME events on their own ME screen as everyone sees on their profile:
+        //   - NO expires_at filter: past hosted/joined plans show too (a history).
+        //   - participation matched by user_id AND guest_id: after a logout/login
+        //     the guest_id changes, so a guest_id-only check would lose every
+        //     event the user is tied to by user_id (the bug this fixes).
         if ($userId !== null) {
             $stmt = Database::pdo()->prepare(self::SELECT . "
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
                   AND ce.occurrence_date IS NULL
-                  AND ce.expires_at  > now()
-                  AND (ce.guest_id = :guest_id OR ce.created_by = :user_id
+                  AND (ce.created_by = :user_id OR ce.guest_id = :guest_id
                        OR EXISTS (
                            SELECT 1 FROM event_participants ep
-                           WHERE ep.channel_id = c.id AND ep.guest_id = :part_guest_id
+                           WHERE ep.channel_id = c.id
+                             AND (ep.user_id = :ep_user_id OR ep.guest_id = :part_guest_id)
                        ))
-                ORDER BY ce.starts_at ASC
+                ORDER BY (ce.expires_at > now()) DESC, ce.starts_at ASC
             ");
-            $stmt->execute(['guest_id' => $guestId, 'user_id' => $userId, 'part_guest_id' => $guestId]);
+            $stmt->execute(['guest_id' => $guestId, 'user_id' => $userId, 'ep_user_id' => $userId, 'part_guest_id' => $guestId]);
         } else {
             $stmt = Database::pdo()->prepare(self::SELECT . "
                 WHERE c.type         = 'event'
                   AND c.status       = 'active'
                   AND ce.source_type = 'hilads'
                   AND ce.occurrence_date IS NULL
-                  AND ce.expires_at  > now()
                   AND (ce.guest_id = :guest_id OR EXISTS (
                       SELECT 1 FROM event_participants ep
                       WHERE ep.channel_id = c.id AND ep.guest_id = :part_guest_id
                   ))
-                ORDER BY ce.starts_at ASC
+                ORDER BY (ce.expires_at > now()) DESC, ce.starts_at ASC
             ");
             $stmt->execute(['guest_id' => $guestId, 'part_guest_id' => $guestId]);
         }
 
-        // Deduplicate recurring series: rows are sorted by starts_at ASC so the first
-        // occurrence seen per series_id is the nearest upcoming (or currently live) one.
+        // Deduplicate recurring series: upcoming rows are ordered first (then by
+        // starts_at ASC), so the first occurrence seen per series_id is the
+        // nearest upcoming (or currently live) one.
         $seenSeries = [];
         $result     = [];
         foreach ($stmt->fetchAll() as $row) {
