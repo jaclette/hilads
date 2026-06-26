@@ -911,8 +911,19 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         isGrouped ? styles.rowGrouped : styles.rowFirst,
         animStyle,
         isSending && styles.rowSending,
-        { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
       ]}>
+        {/* Highlight flash lives on its OWN node (JS-driven backgroundColor).
+            It must NOT share a view with the entry animation above, which uses
+            useNativeDriver: true - mixing a native-driven node with a JS-driven
+            backgroundColor on the SAME node crashes ("animated node moved to
+            native earlier"). Absolute overlay behind the content, taps pass through. */}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: highlightAnim.interpolate({ inputRange: [0, 0.28], outputRange: ['transparent', 'rgba(255,122,60,0.18)'] }) },
+          ]}
+        />
 
         {/* ── Avatar + author - web: .msg-meta ── */}
         {!isMine && !isGrouped && (
