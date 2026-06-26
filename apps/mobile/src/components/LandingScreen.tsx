@@ -232,7 +232,11 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
       });
       track('clicked_join_city', { city: city?.name ?? null });
       track('landing_joined', { hasCity: !!city, cityId: city?.channelId });
+      // City resolved → straight into its chat. No city yet (location still
+      // resolving, denied, or the user tapped before it landed) → send them to
+      // the city picker, NOT the empty "Now" tab.
       if (city) router.replace('/(tabs)/chat');
+      else router.replace('/switch-city' as never);
       setJoined(true);
     } catch {
       setError(t('joinError'));
