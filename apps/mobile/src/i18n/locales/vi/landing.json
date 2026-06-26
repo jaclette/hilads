@@ -19,5 +19,6 @@
   "createAccount": "Tạo tài khoản",
   "logIn": "Đăng nhập",
   "authHint": "Giữ tên · mở khóa hồ sơ · thêm bạn bè",
-  "joinError": "Không thể kết nối. Kiểm tra kết nối và thử lại."
+  "joinError": "Không thể kết nối. Kiểm tra kết nối và thử lại.",
+  "conceptSub": "🔥 Dân địa phương thách đấu du khách, và ngược lại — gặp nhau để chứng minh."
 }

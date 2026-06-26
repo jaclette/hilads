@@ -21,5 +21,6 @@
   "createAccount": "Criar conta",
   "logIn": "Iniciar sessão",
   "authHint": "Guarda o teu nome · desbloqueia perfis · adiciona amigos",
-  "joinError": "Não foi possível ligar. Verifica a tua ligação e tenta novamente."
+  "joinError": "Não foi possível ligar. Verifica a tua ligação e tenta novamente.",
+  "conceptSub": "🔥 Locais desafiam viajantes e vice-versa — encontram-se para provar."
 }

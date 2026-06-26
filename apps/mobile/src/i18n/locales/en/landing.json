@@ -21,5 +21,6 @@
   "createAccount": "Create account",
   "logIn": "Log in",
   "authHint": "Save your name · unlock profiles · add friends",
-  "joinError": "Could not connect. Check your connection and try again."
+  "joinError": "Could not connect. Check your connection and try again.",
+  "conceptSub": "🔥 Locals challenge travelers, travelers challenge locals — meet up to prove it."
 }

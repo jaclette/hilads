@@ -21,5 +21,6 @@
   "createAccount": "Créer un compte",
   "logIn": "Se connecter",
   "authHint": "Garde ton nom · débloque les profils · ajoute des amis",
-  "joinError": "Connexion impossible. Vérifie ta connexion et réessaie."
+  "joinError": "Connexion impossible. Vérifie ta connexion et réessaie.",
+  "conceptSub": "🔥 Les locaux défient les voyageurs, et vice-versa — on se retrouve pour le prouver."
 }

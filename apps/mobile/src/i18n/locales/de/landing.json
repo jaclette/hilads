@@ -21,5 +21,6 @@
   "createAccount": "Konto erstellen",
   "logIn": "Anmelden",
   "authHint": "Sichere deinen Namen · schalte Profile frei · füge Freunde hinzu",
-  "joinError": "Verbindung fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut."
+  "joinError": "Verbindung fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+  "conceptSub": "🔥 Locals fordern Reisende heraus und umgekehrt — trefft euch, um es zu beweisen."
 }

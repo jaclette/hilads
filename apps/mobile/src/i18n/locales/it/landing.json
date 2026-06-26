@@ -21,5 +21,6 @@
   "createAccount": "Crea un account",
   "logIn": "Accedi",
   "authHint": "Conserva il tuo nome · sblocca i profili · aggiungi amici",
-  "joinError": "Impossibile connettersi. Controlla la connessione e riprova."
+  "joinError": "Impossibile connettersi. Controlla la connessione e riprova.",
+  "conceptSub": "🔥 I local sfidano i viaggiatori e viceversa — ci si trova per dimostrarlo."
 }

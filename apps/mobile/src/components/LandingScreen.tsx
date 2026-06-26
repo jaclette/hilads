@@ -349,6 +349,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                     </Text>
                   </View>
                   <Text style={styles.geoHeadline}>{t('pickCity')}</Text>
+                  <Text style={styles.conceptSub}>{t('conceptSub')}</Text>
                 </>
               ) : geoState === 'resolving' ? (
                 <>
@@ -672,6 +673,17 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     lineHeight:    30,
     marginTop:     4,
+  },
+  // One-line pitch under the hero so a first-timer understands the concept
+  // (challenges between locals & travelers) before picking a city.
+  conceptSub: {
+    fontSize:          14,
+    fontWeight:        '600',
+    color:             Colors.muted,
+    textAlign:         'center',
+    lineHeight:        20,
+    marginTop:         10,
+    paddingHorizontal: 12,
   },
 
   // ── ob-form ───────────────────────────────────────────────────────────────────
