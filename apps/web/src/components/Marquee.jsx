@@ -5,13 +5,13 @@
  *   - Overflow-gated: a hidden measuring copy reports the text's natural width;
  *     if it fits the clip window it renders static (with ellipsis when the
  *     caller's container would clip), so short tips never scroll.
- *   - SINGLE-COPY scroll with snap-back. ONE text element translates from 0 to
- *     -(textW - clipW + LEAD), holds at the end so the trailing words are
- *     fully readable, then snaps invisibly back to the start. NO duplicate
- *     copy and NO seamless loop - the duplicate-copy mechanism (previous
- *     impl) made both copies of the text visible mid-scroll on narrow
- *     clips, which read as a constant flash. The snap-back is hidden by
- *     the edge fade.
+ *   - SINGLE-COPY ping-pong. ONE text element translates from 0 to
+ *     -(textW - clipW + LEAD) to reveal the end, holds, then scrolls smoothly
+ *     back to 0 to reveal the start, holds, repeat. NO duplicate copy and NO
+ *     seamless loop - the duplicate-copy mechanism (older impl) made both
+ *     copies visible mid-scroll on narrow clips, which read as a constant
+ *     flash. The smooth reverse replaces the old snap-back, which read as the
+ *     marquee "stopping" before it jumped back to the start.
  *   - Re-measures on resize (ResizeObserver) and whenever `text` changes.
  *   - prefers-reduced-motion: never animates - static + ellipsis + title tooltip.
  *
@@ -32,13 +32,12 @@ const LEAD = 12            // px past the end so the last glyph fully clears the
 // the cycle), so a 15% buffer just blocks real overflows like the weather
 // pill from scrolling at all. 2% catches jitter without false negatives.
 const OVERFLOW_FACTOR = 1.02
-// Per-iteration phase percentages: hold-at-start (0→18%), scroll (18→78%),
-// hold-at-end (78→100%). The two dwell stretches let the eye actually read
-// the start and end of the text; the snap from 100% back to 0% happens
-// while the start is held so the reset is invisible-ish (the very first
-// frame after snap shows the start position again).
-const SCROLL_PCT_START = 18
-const SCROLL_PCT_END   = 78
+// Ping-pong: ONE copy scrolls left to reveal the end, holds, then scrolls
+// back to reveal the start, holds, repeat (see the @keyframes). Each scroll
+// leg is SCROLL_LEG_PCT of the cycle; the rest is split across the two dwell
+// holds. Smooth in both directions - no snap-back. The duration is derived so
+// the px/sec speed stays constant regardless of title length.
+const SCROLL_LEG_PCT = 30
 
 export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
   const clipRef = useRef(null)
@@ -73,9 +72,10 @@ export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
   // the right edge of the clip, then add LEAD so the fade doesn't clip the
   // last glyph.
   const distance = Math.max(0, textW - clipW + LEAD)
-  // Total iteration = scroll time / scroll-portion.
+  // Total iteration = one-leg scroll time / leg-portion. (Two scroll legs per
+  // cycle, but each leg covers the same distance in the same SCROLL_LEG_PCT.)
   const scrollDuration = distance / SPEED
-  const duration = scrollDuration / ((SCROLL_PCT_END - SCROLL_PCT_START) / 100)
+  const duration = scrollDuration / (SCROLL_LEG_PCT / 100)
 
   return (
     <span

@@ -11,9 +11,9 @@
  *   - Overflow detection: a hidden, unconstrained copy reports the text's
  *     natural width; the container's onLayout reports the available width.
  *     Re-measures on layout / font-scale / text changes.
- *   - Loop: two copies separated by `gap`; translateX 0 → -(textWidth + gap)
- *     at ~`speed` px/s, then Animated.loop resets (invisible - copy 2 sits
- *     exactly where copy 1 began).
+ *   - Loop: ONE copy ping-pongs. translateX 0 → -(textWidth - clipWidth + LEAD)
+ *     at ~`speed` px/s (reveal the end), holds, then back to 0 (reveal the
+ *     start), holds, repeat. Smooth in both directions - no snap, no duplicate.
  *   - Native driver only (UI thread). No Reanimated dependency.
  *   - Pauses when `active` is false (tab blurred / app backgrounded).
  *   - `reduceMotion`: never animates - renders static + ellipsis (the caller
@@ -59,10 +59,9 @@ const EPSILON = 1;
 // so a 15% buffer just blocks real overflows like the weather pill from
 // scrolling at all. 2% catches measurement jitter without false negatives.
 const OVERFLOW_FACTOR = 1.02;
-// Ms held at the end of each loop iteration before snapping invisibly back
-// to the start. The snap is hidden by the duplicate copy mechanism, but
-// the eye still needs a still moment per cycle or the continuous scroll
-// reads as flicker.
+// Ms held at each end of the ping-pong (fully-scrolled and back-at-start)
+// so the eye gets a still moment to read the start and the end of the title
+// before the direction reverses.
 const END_HOLD_MS = 1500;
 // Px past the right edge so the last glyph fully clears the right fade.
 const LEAD = 12;
@@ -99,12 +98,14 @@ export function MarqueeText({
   // New text → drop the stale measurement so we don't marquee on the wrong width.
   useEffect(() => { setTextW(0); }, [text]);
 
-  // Single-copy snap-back. Each iteration: hold at the start (initialDelay),
-  // scroll one copy left so its end clears the right fade, hold at the end
-  // (END_HOLD_MS), then Animated.loop resets translateX to 0 - that reset
-  // is the snap, mostly masked by the right-edge fade + the next hold.
-  // The previous seamless-loop variant kept both text copies on track at
-  // once, which was visible on narrow clips and read as a flash.
+  // Single-copy PING-PONG. After an initial hold so the user can read the
+  // start, each loop iteration: scroll one copy left until its end clears the
+  // right fade, hold at the end (END_HOLD_MS), scroll smoothly back to the
+  // start, hold there (END_HOLD_MS), repeat. The smooth reverse replaces the
+  // old snap-back-to-0 reset, which read as the marquee "stopping" and
+  // restarting; ping-pong keeps the motion continuous in both directions so
+  // the whole title stays readable. Still ONE copy (no duplicate), so it
+  // never flashes like the seamless-loop variant did on narrow clips.
   useEffect(() => {
     translateX.setValue(0);
     if (!shouldMarquee || !active) return;
@@ -112,18 +113,25 @@ export function MarqueeText({
     const distance = Math.max(0, textW - containerW + LEAD);
     const duration = (distance / speed) * 1000;
 
-    const starter = Animated.loop(
-      Animated.sequence([
-        Animated.delay(initialDelay),
-        Animated.timing(translateX, {
-          toValue:         -distance,
-          duration,
-          easing:          Easing.linear,
-          useNativeDriver: true,
-        }),
-        Animated.delay(END_HOLD_MS),
-      ]),
-    );
+    const leg = (toValue: number) =>
+      Animated.timing(translateX, {
+        toValue,
+        duration,
+        easing:          Easing.linear,
+        useNativeDriver: true,
+      });
+
+    const starter = Animated.sequence([
+      Animated.delay(initialDelay),
+      Animated.loop(
+        Animated.sequence([
+          leg(-distance),            // scroll left → reveal the end
+          Animated.delay(END_HOLD_MS),
+          leg(0),                    // scroll right → back to the start
+          Animated.delay(END_HOLD_MS),
+        ]),
+      ),
+    ]);
     starter.start();
     return () => {
       starter.stop();

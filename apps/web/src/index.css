@@ -1718,14 +1718,14 @@ html, body, #root {
 .marquee-fade--right { right: 0; background: linear-gradient(to left,  var(--marquee-fade, #1a1a1a), transparent); }
 
 @keyframes marquee-scroll {
-  /* Single-copy snap-back: hold-at-start (0 → 18 %), scroll (18 → 78 %),
-     hold-at-end (78 → 100 %). The duplicate-copy seamless-loop variant
-     made BOTH copies visible during the scroll on narrow clips, which
-     read as a flash; with one copy and a snap-back the user sees a
-     clean scroll, a still moment at the end, then a reset back to
-     the start (mostly hidden by the right-edge fade + initial hold). */
-  0%, 18%   { transform: translateX(0); }
-  78%, 100% { transform: translateX(calc(-1 * var(--marquee-distance))); }
+  /* Single-copy ping-pong: hold-at-start (0 → 12 %), scroll left to reveal
+     the end (12 → 42 %), hold-at-end (42 → 58 %), scroll smoothly back to the
+     start (58 → 88 %), hold-at-start (88 → 100 %), repeat. Each scroll leg is
+     30 % of the cycle (SCROLL_LEG_PCT in Marquee.jsx). The smooth reverse
+     replaces the old snap-back-to-0, which read as the marquee stopping. */
+  0%, 12%   { transform: translateX(0); }
+  42%, 58%  { transform: translateX(calc(-1 * var(--marquee-distance))); }
+  88%, 100% { transform: translateX(0); }
 }
 
 /* Belt-and-suspenders: the component already renders static under reduced
