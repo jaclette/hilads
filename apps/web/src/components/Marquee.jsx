@@ -82,7 +82,13 @@ export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
       ref={clipRef}
       className={`marquee ${className}`.trim()}
       title={overflows ? text : undefined}
-      style={{ '--marquee-fade': fadeColor, '--marquee-fade-w': `${FADE_WIDTH}px` }}
+      style={{
+        '--marquee-fade': fadeColor,
+        '--marquee-fade-w': `${FADE_WIDTH}px`,
+        // Exposed on the container (not just the track) so the edge-fade
+        // overlays can run their opacity keyframes on the same timeline.
+        '--marquee-duration': `${duration}s`,
+      }}
     >
       {/* Hidden, unconstrained copy → reports the natural text width. */}
       <span ref={measureRef} className="marquee-measure" aria-hidden="true">{text}</span>

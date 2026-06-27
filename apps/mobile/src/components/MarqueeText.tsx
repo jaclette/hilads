@@ -38,7 +38,8 @@ interface MarqueeTextProps {
   gap?:           number;
   /** Scroll speed in px/sec (duration is derived so speed stays constant). */
   speed?:         number;
-  /** Ms to wait before the first scroll so the user can read the start. */
+  /** Ms to wait before the first scroll so the user can read the start.
+   *  Kept short so a parked card reads as "about to move", not "cut off". */
   initialDelay?:  number;
   /** Px width of each edge fade overlay. */
   fadeWidth?:     number;
@@ -65,6 +66,10 @@ const OVERFLOW_FACTOR = 1.02;
 const END_HOLD_MS = 1500;
 // Px past the right edge so the last glyph fully clears the right fade.
 const LEAD = 12;
+// Px of travel over which an edge fade fades in/out. Each fade is tied to the
+// scroll position so it never covers readable text while parked at an end
+// (e.g. the first glyph at the start, the last glyph at the full-scroll end).
+const FADE_REVEAL = 10;
 
 export function MarqueeText({
   text,
@@ -73,7 +78,7 @@ export function MarqueeText({
   fadeColor,
   gap = 40,
   speed = 25,
-  initialDelay = 3000,
+  initialDelay = 1400,
   fadeWidth = 14,
   active = true,
   reduceMotion = false,
@@ -85,6 +90,22 @@ export function MarqueeText({
 
   const overflows     = textW > 0 && containerW > 0 && textW > containerW * OVERFLOW_FACTOR;
   const shouldMarquee = overflows && !reduceMotion;
+  const distance      = Math.max(0, textW - containerW + LEAD);
+
+  // Fades follow the scroll so they never dim readable text at rest. Left fade
+  // is off at the start (translateX 0) - nothing has scrolled off the left, so
+  // the first glyph must be fully visible - and fades in once we move left.
+  // Right fade is the mirror: off at the fully-scrolled end, on otherwise.
+  const leftFadeOpacity  = translateX.interpolate({
+    inputRange:  [-FADE_REVEAL, 0],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+  const rightFadeOpacity = translateX.interpolate({
+    inputRange:  [-distance, -distance + FADE_REVEAL],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   const onContainerLayout = (e: LayoutChangeEvent) => {
     const w = e.nativeEvent.layout.width;
@@ -160,20 +181,28 @@ export function MarqueeText({
             <Text style={[textStyle, styles.noShrink]} numberOfLines={1}>{text}</Text>
           </Animated.View>
 
-          <LinearGradient
-            colors={[fadeColor, transparent]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={[styles.fade, styles.fadeLeft, { width: fadeWidth }]}
+          <Animated.View
+            style={[styles.fade, styles.fadeLeft, { width: fadeWidth, opacity: leftFadeOpacity }]}
             pointerEvents="none"
-          />
-          <LinearGradient
-            colors={[transparent, fadeColor]}
-            start={{ x: 0, y: 0.5 }}
-            end={{ x: 1, y: 0.5 }}
-            style={[styles.fade, styles.fadeRight, { width: fadeWidth }]}
+          >
+            <LinearGradient
+              colors={[fadeColor, transparent]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+          <Animated.View
+            style={[styles.fade, styles.fadeRight, { width: fadeWidth, opacity: rightFadeOpacity }]}
             pointerEvents="none"
-          />
+          >
+            <LinearGradient
+              colors={[transparent, fadeColor]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
         </>
       ) : (
         <Text

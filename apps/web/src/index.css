@@ -1716,6 +1716,11 @@ html, body, #root {
 }
 .marquee-fade--left  { left: 0;  background: linear-gradient(to right, var(--marquee-fade, #1a1a1a), transparent); }
 .marquee-fade--right { right: 0; background: linear-gradient(to left,  var(--marquee-fade, #1a1a1a), transparent); }
+/* Fades follow the scroll so they never dim readable text parked at an end:
+   left fade is off while the title sits at the start (first glyph fully
+   visible), right fade is off while it sits fully scrolled at the end. */
+.marquee-track--animate ~ .marquee-fade--left  { animation: marquee-fade-left  var(--marquee-duration) linear infinite; }
+.marquee-track--animate ~ .marquee-fade--right { animation: marquee-fade-right var(--marquee-duration) linear infinite; }
 
 @keyframes marquee-scroll {
   /* Single-copy ping-pong: hold-at-start (0 → 12 %), scroll left to reveal
@@ -1726,6 +1731,19 @@ html, body, #root {
   0%, 12%   { transform: translateX(0); }
   42%, 58%  { transform: translateX(calc(-1 * var(--marquee-distance))); }
   88%, 100% { transform: translateX(0); }
+}
+
+/* Left fade: off at the start (0 % / 100 %), on while scrolled away. */
+@keyframes marquee-fade-left {
+  0%, 12%   { opacity: 0; }
+  22%, 78%  { opacity: 1; }
+  88%, 100% { opacity: 0; }
+}
+/* Right fade: on at the start, off while parked at the fully-scrolled end. */
+@keyframes marquee-fade-right {
+  0%, 32%   { opacity: 1; }
+  42%, 58%  { opacity: 0; }
+  68%, 100% { opacity: 1; }
 }
 
 /* Belt-and-suspenders: the component already renders static under reduced
