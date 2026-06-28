@@ -25,13 +25,12 @@ const SPEED = 25           // px/sec - duration is derived so speed stays consta
 const FADE_WIDTH = 14      // px edge fade (native: fadeWidth)
 const EPSILON = 1          // px - measurement noise threshold for re-renders
 const LEAD = 12            // px past the end so the last glyph fully clears the right fade
-// Tiny jitter buffer so 1-2 px measurement noise doesn't toggle marquee
-// on/off across re-renders. Previously 1.15 (15%) to suppress the OLD
-// seamless-duplicate flash - but the single-copy snap-back mechanism now
-// in use handles small overflows gracefully (long start/end holds dominate
-// the cycle), so a 15% buffer just blocks real overflows like the weather
-// pill from scrolling at all. 2% catches jitter without false negatives.
-const OVERFLOW_FACTOR = 1.02
+// Marquee when the text is wider than the clip by more than this many px.
+// MUST be an absolute px buffer, not a ratio: a ratio (e.g. 1.02 = 2 %) leaves
+// a dead zone where a title overflows by a few px - so it gets a hard ellipsis
+// - yet stays under the ratio and never scrolls. A flat 2 px still absorbs
+// 1 px measurement jitter without ever blocking a real overflow.
+const OVERFLOW_BUFFER_PX = 2
 // Ping-pong: ONE copy scrolls left to reveal the end, holds, then scrolls
 // back to reveal the start, holds, repeat (see the @keyframes). Each scroll
 // leg is SCROLL_LEG_PCT of the cycle; the rest is split across the two dwell
@@ -65,7 +64,7 @@ export function Marquee({ text, className = '', fadeColor = '#1a1a1a' }) {
     return () => ro.disconnect()
   }, [text])
 
-  const overflows = textW > 0 && clipW > 0 && textW > clipW * OVERFLOW_FACTOR
+  const overflows = textW > 0 && clipW > 0 && textW > clipW + OVERFLOW_BUFFER_PX
   const animate = overflows && !reduceMotion
   // Distance = how far we need to push the single copy so its end clears the
   // right edge. Subtract clipW so the right edge of the text rests exactly at

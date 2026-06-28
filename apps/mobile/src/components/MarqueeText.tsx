@@ -52,14 +52,14 @@ interface MarqueeTextProps {
 }
 
 const EPSILON = 1;
-// Tiny jitter buffer so 1-2 px measurement noise doesn't toggle marquee
-// on/off across re-renders. Previously 1.15 (15%) to suppress a flashing
-// loop on the challenge-intro banner under the OLD seamless-duplicate
-// mechanism - but the single-copy snap-back mechanism (current) handles
-// small overflows gracefully (long start/end holds dominate the cycle),
-// so a 15% buffer just blocks real overflows like the weather pill from
-// scrolling at all. 2% catches measurement jitter without false negatives.
-const OVERFLOW_FACTOR = 1.02;
+// Marquee when the text is wider than the container by more than this many px.
+// MUST be an absolute px buffer, not a ratio: a ratio (e.g. 1.02 = 2 %) creates
+// a dead zone where a title overflows by a few px - so RN ellipsizes it with a
+// hard "..." - yet stays under the ratio so it never scrolls. Short titles that
+// only just overflow (e.g. "visit the district furthest from ...") landed
+// exactly there and sat stuck on "...". A flat 2 px still absorbs 1 px
+// measurement jitter without ever blocking a real overflow.
+const OVERFLOW_BUFFER_PX = 2;
 // Ms held at each end of the ping-pong (fully-scrolled and back-at-start)
 // so the eye gets a still moment to read the start and the end of the title
 // before the direction reverses.
@@ -88,7 +88,7 @@ export function MarqueeText({
   const [containerW, setContainerW] = useState(0);
   const [textW, setTextW] = useState(0);
 
-  const overflows     = textW > 0 && containerW > 0 && textW > containerW * OVERFLOW_FACTOR;
+  const overflows     = textW > 0 && containerW > 0 && textW > containerW + OVERFLOW_BUFFER_PX;
   const shouldMarquee = overflows && !reduceMotion;
   const distance      = Math.max(0, textW - containerW + LEAD);
 
