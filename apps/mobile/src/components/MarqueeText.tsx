@@ -164,8 +164,14 @@ export function MarqueeText({
 
   return (
     <View style={[styles.container, style]} onLayout={onContainerLayout}>
-      {/* Hidden measuring copy - absolute + unconstrained → reports natural width. */}
+      {/* Hidden measuring copy - absolute + unconstrained → reports natural width.
+          Keyed on text AND container width so it remounts (and re-fires
+          onLayout) once the real container width is known. Without this, a
+          recycled FlatList row can measure before layout settles, report a
+          short width, decide "it fits", and render the static ellipsis branch
+          forever - the lone card stuck on "...". */}
       <Text
+        key={`${text}|${Math.round(containerW)}`}
         style={[textStyle, styles.measure]}
         numberOfLines={1}
         onLayout={onMeasureText}
