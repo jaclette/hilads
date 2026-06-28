@@ -248,10 +248,11 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
     e.preventDefault()
     if (!title.trim() || submitting) return
 
-    // Group meet requires a date + place; photo-proof group requires a deadline.
-    if (isGroupMeet && (!meetAt || !meetVenue)) {
+    // Group meet requires a date; the place is OPTIONAL (the picker labels it
+    // so). Photo-proof group requires a deadline.
+    if (isGroupMeet && !meetAt) {
       setMeetError(true)
-      setError(t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date and a place for the meet.' }))
+      setError(t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date for the meet.' }))
       return
     }
     if (isGroupPhoto && !deadlineHours) {
@@ -386,15 +387,15 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
                     }}
                   >
                     <span>
-                      {meetAt && meetVenue
-                        ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}  ·  📍 ${meetVenue}`
-                        : t('group.meetCta', { ns: 'challenge', defaultValue: 'Set the meet date + place' })}
+                      {meetAt
+                        ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}${meetVenue ? `  ·  📍 ${meetVenue}` : ''}`
+                        : t('group.meetCta', { ns: 'challenge', defaultValue: 'Set the meet date' })}
                     </span>
                     <span aria-hidden style={{ opacity: 0.6 }}>›</span>
                   </button>
                   <p className="cef-hint" style={meetError ? { color: '#FF6B5C' } : undefined}>
                     {meetError
-                      ? t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date and a place for the meet.' })
+                      ? t('group.meetRequired', { ns: 'challenge', defaultValue: 'Pick a date for the meet.' })
                       : t('group.meetHint', { ns: 'challenge', defaultValue: 'Everyone who joins meets here together. You validate who showed up afterwards.' })}
                   </p>
                 </div>
