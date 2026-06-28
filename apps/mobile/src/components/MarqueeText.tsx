@@ -175,9 +175,13 @@ export function MarqueeText({
 
       {shouldMarquee ? (
         <>
-          {/* Single copy - no duplicate, no inter-copy gap. The animation
-              scrolls this one Text left, holds, then snaps back. */}
-          <Animated.View style={[styles.row, { transform: [{ translateX }] }]}>
+          {/* Single copy that ping-pongs. The row is pinned to the full
+              measured text width so the inner Text has room to lay out in
+              full - without it, numberOfLines={1} truncates the Text to the
+              (bounded) container width and adds an ellipsis BEFORE it scrolls,
+              so sliding it left only shifts an already-cut string and the end
+              never reveals. */}
+          <Animated.View style={[styles.row, { width: textW, transform: [{ translateX }] }]}>
             <Text style={[textStyle, styles.noShrink]} numberOfLines={1}>{text}</Text>
           </Animated.View>
 
