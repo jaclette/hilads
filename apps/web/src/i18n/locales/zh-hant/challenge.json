@@ -602,5 +602,9 @@
   "status": {
     "live": "進行中",
     "done": "已完成"
+  },
+  "group": {
+    "meetCta": "選擇見面日期",
+    "meetRequired": "請選擇見面日期。"
   }
 }

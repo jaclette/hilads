@@ -602,5 +602,9 @@
   "status": {
     "live": "進行中",
     "done": "完了"
+  },
+  "group": {
+    "meetCta": "会う日を選ぶ",
+    "meetRequired": "会う日を選んでください。"
   }
 }

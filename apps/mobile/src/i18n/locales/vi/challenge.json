@@ -620,9 +620,9 @@
   },
   "group": {
     "meetLabel": "Khi nào & ở đâu",
-    "meetCta": "Chọn ngày + địa điểm gặp",
+    "meetCta": "Chọn ngày gặp",
     "meetHint": "Mọi người tham gia sẽ gặp nhau ở đây. Sau đó bạn xác nhận ai đã có mặt.",
-    "meetRequired": "Hãy chọn ngày và địa điểm gặp.",
+    "meetRequired": "Hãy chọn ngày gặp.",
     "meetRequiredTitle": "Đặt buổi gặp",
     "meetSet": "Đặt buổi gặp",
     "join": "Tham gia",

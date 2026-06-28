@@ -623,5 +623,9 @@
   "status": {
     "live": "Live",
     "done": "Klaar"
+  },
+  "group": {
+    "meetCta": "Kies de datum van de meetup",
+    "meetRequired": "Kies een datum voor de meetup."
   }
 }

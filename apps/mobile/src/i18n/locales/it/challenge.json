@@ -623,5 +623,9 @@
   "status": {
     "live": "In corso",
     "done": "Fatto"
+  },
+  "group": {
+    "meetCta": "Scegli la data dell'incontro",
+    "meetRequired": "Scegli una data per l'incontro."
   }
 }

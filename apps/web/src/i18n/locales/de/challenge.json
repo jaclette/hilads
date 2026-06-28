@@ -602,5 +602,9 @@
   "status": {
     "live": "Live",
     "done": "Fertig"
+  },
+  "group": {
+    "meetCta": "Datum fürs Treffen wählen",
+    "meetRequired": "Wähle ein Datum fürs Treffen."
   }
 }

@@ -602,5 +602,9 @@
   "status": {
     "live": "Live",
     "done": "Tapos"
+  },
+  "group": {
+    "meetCta": "Piliin ang petsa ng meetup",
+    "meetRequired": "Pumili ng petsa para sa meetup."
   }
 }

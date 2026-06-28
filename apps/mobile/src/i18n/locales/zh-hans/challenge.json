@@ -623,5 +623,9 @@
   "status": {
     "live": "进行中",
     "done": "已完成"
+  },
+  "group": {
+    "meetCta": "选择见面日期",
+    "meetRequired": "请选择见面日期。"
   }
 }
