@@ -272,11 +272,14 @@ export default function CreateChallengeScreen() {
 
   // Guest gate - challenge creation requires a registered account (mirrors
   // event + hangout creation). Guests can still browse / accept / chat in
-  // challenge channels; only authoring is locked.
-  if (!account) {
-    router.replace('/auth-gate?reason=create_challenge');
-    return null;
-  }
+  // challenge channels; only authoring is locked. The redirect must run in an
+  // effect, not during render: calling router.replace() inline updates the
+  // navigator while this component renders, which React flags ("Cannot update
+  // a component while rendering a different component").
+  useEffect(() => {
+    if (!account) router.replace('/auth-gate?reason=create_challenge');
+  }, [account, router]);
+  if (!account) return null;
 
   return (
     <SafeAreaView style={styles.container}>
