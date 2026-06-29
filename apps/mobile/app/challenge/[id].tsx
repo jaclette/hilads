@@ -55,6 +55,7 @@ import { ComposerEndedNotice } from '@/features/chat/ComposerEndedNotice';
 import { avatarColor } from '@/lib/avatarColors';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { shareLink } from '@/lib/shareLink';
+import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
@@ -1597,6 +1598,15 @@ export default function ChallengeChatScreen() {
             {t('postCreate.ctaInvite', { city: inviteCityName ?? t('postCreate.thisCity') })}
           </Text>
         </TouchableOpacity>
+      )}
+
+      {/* Share-to-my-city: owner OR the active taker can drop the challenge
+          deeplink into their own city feed in one tap. */}
+      {challenge && (isOwner || !!activeAcceptance) && (
+        <ShareToCityPill
+          url={buildChallengeUrl(challenge)}
+          style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
+        />
       )}
 
       {/* Inline thread chat (was previously a separate /thread/[id] screen).

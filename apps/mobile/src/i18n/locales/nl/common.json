@@ -193,5 +193,6 @@
     "expiresInMin": "Verloopt over {{count}} min",
     "expiresInHourMin": "Verloopt over {{hours}} u {{mins}} min",
     "expiresInHour": "Verloopt over {{count}} u"
-  }
+  },
+  "shareToCity": "Deel in mijn stad"
 }

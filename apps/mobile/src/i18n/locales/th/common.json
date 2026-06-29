@@ -193,5 +193,6 @@
     "expiresInMin": "หมดอายุใน {{count}} นาที",
     "expiresInHourMin": "หมดอายุใน {{hours}} ชม. {{mins}} นาที",
     "expiresInHour": "หมดอายุใน {{count}} ชม."
-  }
+  },
+  "shareToCity": "แชร์ไปยังเมืองของฉัน"
 }

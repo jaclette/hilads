@@ -196,5 +196,7 @@
     "expiresInMin": "Expire dans {{count}} min",
     "expiresInHourMin": "Expire dans {{hours}} h {{mins}} min",
     "expiresInHour": "Expire dans {{count}} h"
-  }
+  },
+  "shareToCity": "Partager dans ma ville",
+  "shareToCityError": "Impossible de partager dans ta ville. Réessaie."
 }

@@ -193,5 +193,6 @@
     "expiresInMin": "Caduca en {{count}} min",
     "expiresInHourMin": "Caduca en {{hours}} h {{mins}} min",
     "expiresInHour": "Caduca en {{count}} h"
-  }
+  },
+  "shareToCity": "Compartir en mi ciudad"
 }

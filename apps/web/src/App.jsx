@@ -3146,6 +3146,19 @@ export default function App() {
     dismissFullPageOverlays()
   }
 
+  // Share-to-my-city: post the entity's deeplink (only the URL - the city feed
+  // renders the link-preview card) into the user's current city channel, then
+  // jump to the city feed so they see it land. Used by the owner of a
+  // topic/event/challenge and by a challenge taker.
+  async function shareToMyCity(url) {
+    const cid = activeChannelRef.current
+    if (!cid || !url || !guest?.guestId) return
+    try {
+      await sendMessage(cid, sessionIdRef.current, guest.guestId, activeNickname, url)
+    } catch { /* best-effort - still navigate so the user can retry from the feed */ }
+    goToCityChannel()
+  }
+
   // Bottom-tab handlers for CHALLENGES / EVENTS / HERE / ME - each clears every
   // other top-level flag before setting its own. Without this, tapping e.g.
   // EVENTS then CHALLENGES leaves both drawer flags true and closing the top
@@ -4218,6 +4231,9 @@ export default function App() {
         onSelectTopic={topic => openHangout(topic)}
         activeTopicId={activeTopic?.id}
         onCreateClick={() => setShowCreateChooser(true)}
+        account={account}
+        guest={guest}
+        onShareToCity={shareToMyCity}
       />
 
       <div className="screen chat">
@@ -6460,6 +6476,7 @@ export default function App() {
           onBack={() => setActiveTopic(null)}
           onEdit={(t) => { setActiveTopic(null); setEditTopic(t) }}
           onDeleted={() => setActiveTopic(null)}
+          onShareToCity={shareToMyCity}
           socket={socketRef.current}
           sessionId={PAGE_SESSION_ID}
           onViewProfile={openProfile}
@@ -6484,6 +6501,7 @@ export default function App() {
           }}
           onEdit={(ch) => { setActiveChallenge(null); setEditChallengeObj(ch) }}
           onDeleted={() => setActiveChallenge(null)}
+          onShareToCity={shareToMyCity}
           onOpenChallengeIntro={() => setShowChallengeIntro(true)}
           onNeedAuth={(reason) => {
             // KEEP activeChallenge set so the challenge view stays mounted

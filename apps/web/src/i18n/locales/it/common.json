@@ -158,5 +158,6 @@
     "expiresInHourMin": "Scade tra {{hours}} h {{mins}} min",
     "expiresInHour": "Scade tra {{hours}} h"
   },
-  "filterChallenges": "🔥 Sfide"
+  "filterChallenges": "🔥 Sfide",
+  "shareToCity": "Condividi nella mia città"
 }

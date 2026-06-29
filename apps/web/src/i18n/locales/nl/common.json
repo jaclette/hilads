@@ -158,5 +158,6 @@
     "expiresInHourMin": "Verloopt over {{hours}} u {{mins}} min",
     "expiresInHour": "Verloopt over {{hours}} u"
   },
-  "filterChallenges": "🔥 Challenges"
+  "filterChallenges": "🔥 Challenges",
+  "shareToCity": "Deel in mijn stad"
 }

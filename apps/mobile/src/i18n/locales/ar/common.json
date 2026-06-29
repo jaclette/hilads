@@ -197,5 +197,6 @@
     "expiresInMin": "ينتهي خلال {{count}} د",
     "expiresInHourMin": "ينتهي خلال {{hours}} س {{mins}} د",
     "expiresInHour": "ينتهي خلال {{count}} س"
-  }
+  },
+  "shareToCity": "شارك في مدينتي"
 }

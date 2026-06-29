@@ -1,5 +1,6 @@
+import { useTranslation } from 'react-i18next'
 import { EVENT_ICONS } from '../cityMeta'
-import { getEventStatus, getTimeLabel, getEventLocation } from '../eventUtils'
+import { getEventStatus, getTimeLabel, getEventLocation, eventSlug } from '../eventUtils'
 import AttendeeAvatars from './AttendeeAvatars'
 
 function isToday(unixTs, timezone) {
@@ -23,8 +24,15 @@ function filterAndSort(events, tz) {
 
 const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 
-export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick }) {
+export default function EventsSidebar({ events, cityEvents, topics, activeEventId, activeTopicId, cityTimezone, eventPresence, eventParticipants, onSelectEvent, onSelectTopic, onCreateClick, account, guest, onShareToCity }) {
+  const { t } = useTranslation('common')
   const tz = cityTimezone || 'UTC'
+
+  // True when the viewer hosts this event (registered user OR the guest layer).
+  const ownsEvent = (event) => !!(
+    (account?.id && event.created_by === account.id) ||
+    (guest?.guestId && event.guest_id && event.guest_id === guest.guestId)
+  )
   const hiladsEvents = filterAndSort(events, tz)
   // City events: don't filter by today - TM events are upcoming (backend already prunes expired ones)
   const publicEvents = (cityEvents || []).sort((a, b) => a.starts_at - b.starts_at)
@@ -56,6 +64,19 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
           preview={event.participants_preview ?? []}
           total={eventParticipants?.[event.id] || event.participant_count || 0}
         />
+        {/* Owner-only: drop this event's deeplink into the city feed. span (not
+            a button) so it's valid markup nested inside the row button. */}
+        {onShareToCity && ownsEvent(event) && (
+          <span
+            role="button"
+            tabIndex={0}
+            className="share-to-city-pill share-to-city-pill--row"
+            onClick={(e) => { e.stopPropagation(); onShareToCity(`${window.location.origin}/event/${eventSlug(event)}`) }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onShareToCity(`${window.location.origin}/event/${eventSlug(event)}`) } }}
+          >
+            📣 {t('shareToCity', { defaultValue: 'Share in my city' })}
+          </span>
+        )}
       </button>
     )
   }

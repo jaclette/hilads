@@ -14007,6 +14007,33 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-owner-invite-cta:hover { background: rgba(56, 189, 248, 0.16); }
 
+/* Share-to-my-city pill - orange "spread the word" action on topic/challenge
+   pages and (compact variant) on event rows. */
+.share-to-city-pill {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 122, 60, 0.5);
+  background: rgba(255, 122, 60, 0.14);
+  color: #FF7A3C;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.share-to-city-pill:hover { background: rgba(255, 122, 60, 0.22); }
+/* Compact variant inside the event row (sits under the avatars). */
+.share-to-city-pill--row {
+  margin-top: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  align-self: flex-start;
+}
+
 /* ── Challenges filter - type sub-chips + see-all + load-more ─────────────
    Sit at the top of the Challenges filter strip. Compact pills so they
    don't compete with the challenge cards. Active state is brand orange to

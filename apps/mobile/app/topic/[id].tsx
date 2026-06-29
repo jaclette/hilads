@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { shareLink } from '@/lib/shareLink';
+import { ShareToCityPill } from '@/components/ShareToCityPill';
 import {
   fetchTopicById, fetchTopicMessages,
   sendTopicMessage, sendTopicImageMessage, markTopicRead, toggleTopicReaction,
@@ -320,6 +321,9 @@ export default function TopicChatScreen() {
                   <Text style={[styles.ownerBtnText, { color: Colors.red }]}>{t('delete')}</Text>
                 </TouchableOpacity>
               </View>
+            )}
+            {isOwner && (
+              <ShareToCityPill url={`https://hilads.live/t/${id}`} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
             )}
           </View>
         ) : null

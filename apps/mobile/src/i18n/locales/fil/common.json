@@ -193,5 +193,6 @@
     "expiresInMin": "Mag-e-expire sa {{count}}m",
     "expiresInHourMin": "Mag-e-expire sa {{hours}}h {{mins}}m",
     "expiresInHour": "Mag-e-expire sa {{count}}h"
-  }
+  },
+  "shareToCity": "Ibahagi sa aking lungsod"
 }

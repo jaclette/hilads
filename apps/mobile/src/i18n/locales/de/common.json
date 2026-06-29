@@ -193,5 +193,6 @@
     "expiresInMin": "Läuft in {{count}} Min. ab",
     "expiresInHourMin": "Läuft in {{hours}} Std. {{mins}} Min. ab",
     "expiresInHour": "Läuft in {{count}} Std. ab"
-  }
+  },
+  "shareToCity": "In meiner Stadt teilen"
 }

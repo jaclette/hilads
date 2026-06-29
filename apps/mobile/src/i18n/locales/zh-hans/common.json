@@ -193,5 +193,6 @@
     "expiresInMin": "{{count}} 分钟后到期",
     "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
     "expiresInHour": "{{count}} 小时后到期"
-  }
+  },
+  "shareToCity": "分享到我的城市"
 }

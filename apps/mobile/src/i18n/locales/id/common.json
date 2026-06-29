@@ -193,5 +193,6 @@
     "expiresInMin": "Berakhir dalam {{count}}m",
     "expiresInHourMin": "Berakhir dalam {{hours}}j {{mins}}m",
     "expiresInHour": "Berakhir dalam {{count}}j"
-  }
+  },
+  "shareToCity": "Bagikan ke kotaku"
 }

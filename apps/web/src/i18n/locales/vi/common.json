@@ -158,5 +158,6 @@
     "expiresInHourMin": "Hết hạn sau {{hours}} h {{mins}} phút",
     "expiresInHour": "Hết hạn sau {{hours}} h"
   },
-  "filterChallenges": "🔥 Thử thách"
+  "filterChallenges": "🔥 Thử thách",
+  "shareToCity": "Chia sẻ lên thành phố của tôi"
 }

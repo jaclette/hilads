@@ -193,5 +193,6 @@
     "expiresInMin": "あと{{count}}分で期限切れ",
     "expiresInHourMin": "あと{{hours}}時間{{mins}}分で期限切れ",
     "expiresInHour": "あと{{count}}時間で期限切れ"
-  }
+  },
+  "shareToCity": "自分の街でシェア"
 }

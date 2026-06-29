@@ -26,6 +26,7 @@ import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
 import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
+import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { BADGE_META } from '@/types';
@@ -421,6 +422,10 @@ export default function EventDetailScreen() {
               </TouchableOpacity>
             )}
           </View>
+
+          {isOwner && (
+            <ShareToCityPill url={buildEventUrl(event)} style={{ marginTop: 10, alignSelf: 'flex-start' }} />
+          )}
 
           {/* Secondary lines - collapse on scroll. maxHeight + opacity drive the
               transition; native driver is off because we're animating layout. */}

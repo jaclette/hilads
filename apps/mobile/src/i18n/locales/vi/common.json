@@ -195,5 +195,7 @@
     "expiresInMin": "Hết hạn sau {{count}} phút",
     "expiresInHourMin": "Hết hạn sau {{hours}} giờ {{mins}} phút",
     "expiresInHour": "Hết hạn sau {{count}} giờ"
-  }
+  },
+  "shareToCity": "Chia sẻ lên thành phố của tôi",
+  "shareToCityError": "Không thể chia sẻ lên thành phố. Thử lại."
 }

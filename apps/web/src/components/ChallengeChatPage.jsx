@@ -110,6 +110,7 @@ export default function ChallengeChatPage({
   onBack,
   onEdit,
   onDeleted,
+  onShareToCity, // host posts the challenge deeplink into the user's city feed
   onNeedAuth,    // host routes guest to sign-up gate
   onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
   onSendDm,        // host opens a 1:1 DM with the given userId
@@ -1279,6 +1280,20 @@ export default function ChallengeChatPage({
           >
             <span aria-hidden="true">⚡</span>
             <span>{t('postCreate.ctaInvite', { city: cityNameForInvite ?? t('postCreate.thisCity') })}</span>
+          </button>
+        </div>
+      )}
+
+      {/* Share-to-my-city: owner OR the active taker can drop the challenge
+          deeplink into their own city feed in one tap. */}
+      {(isOwner || !!activeAcceptance) && onShareToCity && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 16px 8px' }}>
+          <button
+            type="button"
+            className="share-to-city-pill"
+            onClick={() => onShareToCity(buildChallengeUrl(challenge))}
+          >
+            📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
           </button>
         </div>
       )}

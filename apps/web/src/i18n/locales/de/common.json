@@ -158,5 +158,6 @@
     "expiresInHourMin": "Läuft in {{hours}} Std. {{mins}} Min. ab",
     "expiresInHour": "Läuft in {{hours}} Std. ab"
   },
-  "filterChallenges": "🔥 Challenges"
+  "filterChallenges": "🔥 Challenges",
+  "shareToCity": "In meiner Stadt teilen"
 }

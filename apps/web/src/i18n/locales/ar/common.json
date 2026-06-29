@@ -158,5 +158,6 @@
     "expiresInHourMin": "ينتهي خلال {{hours}} س {{mins}} د",
     "expiresInHour": "ينتهي خلال {{hours}} س"
   },
-  "filterChallenges": "🔥 التحديات"
+  "filterChallenges": "🔥 التحديات",
+  "shareToCity": "شارك في مدينتي"
 }

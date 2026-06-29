@@ -158,5 +158,6 @@
     "expiresInHourMin": "{{hours}} 小時 {{mins}} 分鐘後到期",
     "expiresInHour": "{{hours}} 小時後到期"
   },
-  "filterChallenges": "🔥 挑戰"
+  "filterChallenges": "🔥 挑戰",
+  "shareToCity": "分享到我的城市"
 }

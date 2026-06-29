@@ -95,7 +95,7 @@ async function shareTopic(title, topicId) {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function TopicChatPage({ topic, guest, nickname, account, onBack, onEdit, onDeleted, socket, sessionId, onViewProfile }) {
+export default function TopicChatPage({ topic, guest, nickname, account, onBack, onEdit, onDeleted, onShareToCity, socket, sessionId, onViewProfile }) {
   const { t } = useTranslation('hangout')
   const isOwner = !!(account?.id && topic.created_by && account.id === topic.created_by)
 
@@ -525,6 +525,16 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
           <button className="topic-owner-btn" onClick={() => onEdit?.(topic)}>{t('owner.edit')}</button>
           <button className="topic-owner-btn topic-owner-btn--danger" onClick={handleDeleteTopic}>{t('owner.delete')}</button>
         </div>
+      )}
+
+      {/* Share this hangout into the user's current city feed (owner only). */}
+      {isOwner && onShareToCity && (
+        <button
+          className="share-to-city-pill"
+          onClick={() => onShareToCity(`${window.location.origin}/t/${topic.id}`)}
+        >
+          📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
+        </button>
       )}
 
       {gated ? (

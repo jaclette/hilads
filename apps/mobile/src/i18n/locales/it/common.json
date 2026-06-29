@@ -193,5 +193,6 @@
     "expiresInMin": "Scade tra {{count}} min",
     "expiresInHourMin": "Scade tra {{hours}} h {{mins}} min",
     "expiresInHour": "Scade tra {{count}} h"
-  }
+  },
+  "shareToCity": "Condividi nella mia città"
 }

@@ -158,5 +158,6 @@
     "expiresInHourMin": "Caduca en {{hours}} h {{mins}} min",
     "expiresInHour": "Caduca en {{hours}} h"
   },
-  "filterChallenges": "🔥 Retos"
+  "filterChallenges": "🔥 Retos",
+  "shareToCity": "Compartir en mi ciudad"
 }

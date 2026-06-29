@@ -158,5 +158,6 @@
     "expiresInHourMin": "{{hours}} घंटे {{mins}} मिनट में समाप्त",
     "expiresInHour": "{{hours}} घंटे में समाप्त"
   },
-  "filterChallenges": "🔥 चैलेंजेस"
+  "filterChallenges": "🔥 चैलेंजेस",
+  "shareToCity": "मेरे शहर में शेयर करें"
 }

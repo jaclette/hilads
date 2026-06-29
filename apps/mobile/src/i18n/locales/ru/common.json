@@ -195,5 +195,6 @@
     "expiresInMin": "Истекает через {{count}} мин",
     "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
     "expiresInHour": "Истекает через {{count}} ч"
-  }
+  },
+  "shareToCity": "Поделиться в моём городе"
 }

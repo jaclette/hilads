@@ -193,5 +193,6 @@
     "expiresInMin": "{{count}}분 후 만료",
     "expiresInHourMin": "{{hours}}시간 {{mins}}분 후 만료",
     "expiresInHour": "{{count}}시간 후 만료"
-  }
+  },
+  "shareToCity": "내 도시에 공유"
 }

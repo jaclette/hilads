@@ -158,5 +158,6 @@
     "expiresInHourMin": "Berakhir dalam {{hours}} jam {{mins}} mnt",
     "expiresInHour": "Berakhir dalam {{hours}} jam"
   },
-  "filterChallenges": "🔥 Tantangan"
+  "filterChallenges": "🔥 Tantangan",
+  "shareToCity": "Bagikan ke kotaku"
 }

@@ -158,5 +158,6 @@
     "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
     "expiresInHour": "Истекает через {{hours}} ч"
   },
-  "filterChallenges": "🔥 Вызовы"
+  "filterChallenges": "🔥 Вызовы",
+  "shareToCity": "Поделиться в моём городе"
 }

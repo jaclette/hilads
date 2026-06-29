@@ -193,5 +193,6 @@
     "expiresInMin": "{{count}} मिनट में समाप्त",
     "expiresInHourMin": "{{hours}} घं {{mins}} मि में समाप्त",
     "expiresInHour": "{{count}} घंटे में समाप्त"
-  }
+  },
+  "shareToCity": "मेरे शहर में शेयर करें"
 }
