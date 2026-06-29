@@ -265,6 +265,8 @@ export default function ChallengeChatPage({
   // target is specified. Used by the badge row so "anywhere" Intl doesn't
   // mis-label the origin city as the target.
   const [targetCityNameOnly,     setTargetCityNameOnly]     = useState(null)
+  // Origin city name - used by the share-to-city label for intl challenges.
+  const [originCityName,         setOriginCityName]         = useState(null)
 
   // `id` was moved up - it has to be declared before the useEffect
   // that depends on it (see the "Cannot access 'ke' before
@@ -360,6 +362,7 @@ export default function ChallengeChatPage({
     // TARGET city (where we want the taker to be), NOT the origin. Local
     // and "anywhere" intl fall through to the origin city.
     const ch              = data?.challenge
+    setOriginCityName(data?.cityName ?? null)
     const targetCityIdRaw = ch?.target_city_id
     if (targetCityIdRaw) {
       setCityChannelIdForInvite(String(targetCityIdRaw).replace(/^city_/, ''))
@@ -1291,7 +1294,13 @@ export default function ChallengeChatPage({
           <button
             type="button"
             className="share-to-city-pill"
-            onClick={() => onShareToCity(`⚡ Challenge: ${challenge.title}\n${buildChallengeUrl(challenge)}`)}
+            onClick={() => {
+              const isIntl = (challenge.mode ?? 'local') === 'international'
+              const from = [countryToFlag(challenge.country), originCityName].filter(Boolean).join(' ')
+              const to   = [countryToFlag(challenge.target_country) || '🌍', targetCityNameOnly].filter(Boolean).join(' ')
+              const label = isIntl ? `🌍 International Challenge ${from} → ${to}` : '⚡ Challenge'
+              onShareToCity(`${label}: ${challenge.title}\n${buildChallengeUrl(challenge)}`)
+            }}
           >
             📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
           </button>

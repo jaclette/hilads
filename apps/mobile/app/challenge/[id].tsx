@@ -1601,15 +1601,24 @@ export default function ChallengeChatScreen() {
       )}
 
       {/* Share-to-my-city: owner OR the taker (any phase) can drop the
-          challenge deeplink into their own city feed in one tap. */}
-      {challenge && (isOwner || !!myAcceptance) && (
-        <ShareToCityPill
-          url={buildChallengeUrl(challenge)}
-          title={challenge.title}
-          label="⚡ Challenge"
-          style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
-        />
-      )}
+          challenge deeplink into their own city feed in one tap. International
+          challenges carry both cities so the feed reads who's challenging whom. */}
+      {challenge && (isOwner || !!myAcceptance) && (() => {
+        const isIntl = (challenge.mode ?? 'local') === 'international';
+        const from = [countryToFlag(challenge.country ?? null), challengeCityName].filter(Boolean).join(' ');
+        const to   = [countryToFlag(challenge.target_country ?? null) || '🌍', challengeTargetCityName].filter(Boolean).join(' ');
+        const shareLabel = isIntl
+          ? `🌍 International Challenge ${from} → ${to}`
+          : '⚡ Challenge';
+        return (
+          <ShareToCityPill
+            url={buildChallengeUrl(challenge)}
+            title={challenge.title}
+            label={shareLabel}
+            style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
+          />
+        );
+      })()}
 
       {/* Inline thread chat (was previously a separate /thread/[id] screen).
           Mounts only when the viewer has an active acceptance for this
