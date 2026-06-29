@@ -1,6 +1,6 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useState } from 'react';
 import { Tabs, useFocusEffect } from 'expo-router';
-import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform } from 'react-native';
+import { View, Pressable, StyleSheet, BackHandler, ToastAndroid, Platform, Keyboard } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -122,6 +122,20 @@ function NavIconParty({ color, size = 30 }: { color: string; size?: number }) {
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+
+  // Hide the bar while the keyboard is up so typing in chat gets a focused,
+  // full-height conversation (the bar otherwise floats just above the
+  // keyboard, eating vertical space). Android needs keyboardDidShow/Hide;
+  // iOS fires the smoother will* events.
+  const [keyboardUp, setKeyboardUp] = useState(false);
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const onShow = Keyboard.addListener(showEvt, () => setKeyboardUp(true));
+    const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
+    return () => { onShow.remove(); onHide.remove(); };
+  }, []);
+  if (keyboardUp) return null;
 
   // Scale + flame-glow pulse on the NOW icon was removed: the city chat's
   // ephemeral activity cards (which fired pulseNow on dismissal) are

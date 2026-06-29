@@ -13,7 +13,7 @@
 import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
-  StyleSheet, KeyboardAvoidingView,
+  StyleSheet, KeyboardAvoidingView, Keyboard, Platform,
   TouchableOpacity, Animated, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -406,6 +406,18 @@ export default function ChatTab() {
   // ("be the first") state so switching cities can't flash it while the new
   // count is still loading (count is reset to 0 on every city change).
   const [challengeCountLoaded, setChallengeCountLoaded] = useState(false);
+
+  // While the keyboard is up, collapse the top chrome (header + city row +
+  // challenges hero + secondary pills) so the conversation gets full height -
+  // only the feed and the composer remain. iOS gets the smoother will* events.
+  const [keyboardUp, setKeyboardUp] = useState(false);
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const onShow = Keyboard.addListener(showEvt, () => setKeyboardUp(true));
+    const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
+    return () => { onShow.remove(); onHide.remove(); };
+  }, []);
 
   useEffect(() => {
     if (!channelId) return;
@@ -922,7 +934,9 @@ export default function ChatTab() {
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: 0 }]} edges={['top']}>
 
-      {/* ── Header - 3-section redesign ── */}
+      {/* ── Header - 3-section redesign. Hidden while typing so the
+          conversation + composer get the full screen. ── */}
+      {!keyboardUp && (
       <View style={styles.header}>
 
         {/* ── Section 1: App header - persistent across all 4 tabs ── */}
@@ -1034,6 +1048,7 @@ export default function ChatTab() {
         </View>
 
       </View>
+      )}
 
       {/* Error banner */}
       {error && (
