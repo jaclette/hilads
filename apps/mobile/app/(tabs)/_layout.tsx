@@ -123,12 +123,12 @@ function NavIconParty({ color, size = 30 }: { color: string; size?: number }) {
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
-  // Slide the bar down out of view while the keyboard is up so typing in chat
-  // gets a focused conversation. We TRANSLATE (not unmount) on purpose:
-  // returning null forces a navigator relayout mid keyboard-animation, which on
-  // Android knocked the IME into a broken floating state. Keeping it mounted at
-  // a fixed height and just moving it off-screen leaves the IME untouched.
-  // Android needs keyboardDidShow/Hide; iOS fires the smoother will* events.
+  // Hide the bar entirely while the keyboard is up so typing in chat gets a
+  // focused, gap-free conversation. We UNMOUNT (return null) rather than just
+  // translate it: the tab bar otherwise keeps reserving its height as the
+  // scene's bottom inset, leaving a dark gap between the composer and the
+  // keyboard. Android needs keyboardDidShow/Hide; iOS fires the smoother
+  // will* events.
   const [keyboardUp, setKeyboardUp] = useState(false);
   useEffect(() => {
     const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
@@ -137,6 +137,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
     const onHide = Keyboard.addListener(hideEvt, () => setKeyboardUp(false));
     return () => { onShow.remove(); onHide.remove(); };
   }, []);
+  if (keyboardUp) return null;
 
   // Scale + flame-glow pulse on the NOW icon was removed: the city chat's
   // ephemeral activity cards (which fired pulseNow on dismissal) are
@@ -144,17 +145,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   // "activity counter" pill inside the chat now carries that signal.
 
   return (
-    <View
-      pointerEvents={keyboardUp ? 'none' : 'auto'}
-      style={[
-        styles.container,
-        { paddingBottom: Math.max(10, insets.bottom) },
-        // Move it off-screen via transform only - this does NOT change the
-        // measured layout height, so react-navigation never reflows the scene
-        // and the IME stays docked.
-        keyboardUp && { opacity: 0, transform: [{ translateY: 160 }] },
-      ]}
-    >
+    <View style={[styles.container, { paddingBottom: Math.max(10, insets.bottom) }]}>
       {TABS.map(tab => {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = state.index === routeIndex;
