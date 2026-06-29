@@ -323,7 +323,7 @@ export default function TopicChatScreen() {
               </View>
             )}
             {isOwner && (
-              <ShareToCityPill url={`https://hilads.live/t/${id}`} style={{ marginTop: 8, alignSelf: 'flex-start' }} />
+              <ShareToCityPill url={`https://hilads.live/t/${id}`} title={topic.title} label="🗣️ Hi now" style={{ marginTop: 8, alignSelf: 'flex-start' }} />
             )}
           </View>
         ) : null

@@ -531,7 +531,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
       {isOwner && onShareToCity && (
         <button
           className="share-to-city-pill"
-          onClick={() => onShareToCity(`${window.location.origin}/t/${topic.id}`)}
+          onClick={() => onShareToCity(`🗣️ Hi now: ${topic.title}\n${window.location.origin}/t/${topic.id}`)}
         >
           📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
         </button>

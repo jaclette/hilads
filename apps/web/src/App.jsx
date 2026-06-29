@@ -3150,11 +3150,18 @@ export default function App() {
   // renders the link-preview card) into the user's current city channel, then
   // jump to the city feed so they see it land. Used by the owner of a
   // topic/event/challenge and by a challenge taker.
-  async function shareToMyCity(url) {
+  async function shareToMyCity(content) {
     const cid = activeChannelRef.current
-    if (!cid || !url || !guest?.guestId) return
+    if (!cid || !content || !guest?.guestId) return
     try {
-      await sendMessage(cid, sessionIdRef.current, guest.guestId, activeNickname, url)
+      const msg = await sendMessage(cid, sessionIdRef.current, guest.guestId, activeNickname, content)
+      // Append to the (city) feed so the link card shows immediately - the WS
+      // echo may not reach us since the socket was in the other room. knownIds
+      // guards against a later duplicate from the echo.
+      if (msg?.id) {
+        knownIdsRef.current.add(msg.id)
+        setFeed(prev => prev.some(f => f.id === msg.id) ? prev : [...prev, { type: 'message', ...msg }])
+      }
     } catch { /* best-effort - still navigate so the user can retry from the feed */ }
     goToCityChannel()
   }

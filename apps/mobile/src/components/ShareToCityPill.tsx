@@ -12,27 +12,34 @@ import { useShareToCity } from '@/lib/useShareToCity';
 
 interface Props {
   url: string;
+  /** Entity title, posted after the label above the link for context. */
+  title?: string;
+  /** Type prefix incl. emoji, e.g. "⚡ Challenge" / "🗣️ Hi now" / "🎉 Hi plan". */
+  label?: string;
   style?: object;
 }
 
-export function ShareToCityPill({ url, style }: Props) {
+export function ShareToCityPill({ url, title, label, style }: Props) {
   const { t } = useTranslation('common');
   const { canShare, sharing, shareToCity } = useShareToCity();
   if (!canShare) return null;
 
-  const label = t('shareToCity', { defaultValue: 'Share in my city' });
+  const btnLabel = t('shareToCity', { defaultValue: 'Share in my city' });
+  // "⚡ Challenge: My title\nhttps://..." - the city feed renders the URL card.
+  const head = [label?.trim(), title?.trim()].filter(Boolean).join(': ');
+  const message = head ? `${head}\n${url}` : url;
   return (
     <TouchableOpacity
       style={[styles.pill, style]}
-      onPress={() => shareToCity(url)}
+      onPress={() => shareToCity(message)}
       activeOpacity={0.8}
       disabled={sharing}
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel={btnLabel}
     >
       {sharing
         ? <ActivityIndicator size="small" color={Colors.accent} />
-        : <Text style={styles.text} numberOfLines={1}>📣 {label}</Text>}
+        : <Text style={styles.text} numberOfLines={1}>📣 {btnLabel}</Text>}
     </TouchableOpacity>
   );
 }

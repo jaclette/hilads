@@ -1291,7 +1291,7 @@ export default function ChallengeChatPage({
           <button
             type="button"
             className="share-to-city-pill"
-            onClick={() => onShareToCity(buildChallengeUrl(challenge))}
+            onClick={() => onShareToCity(`⚡ Challenge: ${challenge.title}\n${buildChallengeUrl(challenge)}`)}
           >
             📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
           </button>

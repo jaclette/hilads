@@ -1600,11 +1600,13 @@ export default function ChallengeChatScreen() {
         </TouchableOpacity>
       )}
 
-      {/* Share-to-my-city: owner OR the active taker can drop the challenge
-          deeplink into their own city feed in one tap. */}
-      {challenge && (isOwner || !!activeAcceptance) && (
+      {/* Share-to-my-city: owner OR the taker (any phase) can drop the
+          challenge deeplink into their own city feed in one tap. */}
+      {challenge && (isOwner || !!myAcceptance) && (
         <ShareToCityPill
           url={buildChallengeUrl(challenge)}
+          title={challenge.title}
+          label="⚡ Challenge"
           style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
         />
       )}

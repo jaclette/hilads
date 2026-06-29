@@ -17,7 +17,8 @@ import {
   TouchableOpacity, Animated, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
+import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
@@ -483,13 +484,19 @@ export default function ChatTab() {
   // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
   const chatBootstrap = bootstrapData?.channelId === channelId ? bootstrapData : undefined;
 
-  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage } = useMessages({
+  const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage, reload } = useMessages({
     channelId,
     loadFn,
     postTextFn,
     postImageFn,
     initialData: chatBootstrap ? { messages: chatBootstrap.messages, hasMore: chatBootstrap.hasMore } : undefined,
   });
+
+  // After a "share to my city" from another screen, the message was posted
+  // out-of-band so this already-mounted tab never saw it - reload on focus.
+  useFocusEffect(
+    useCallback(() => { if (consumeCityFeedRefresh()) reload(); }, [reload]),
+  );
 
   // ── System feed prompts + ambient activity messages ────────────────────────
   // Mirrors web App.jsx schedulePrompts() + scheduleActivity().

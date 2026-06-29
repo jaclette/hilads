@@ -15,6 +15,7 @@ import { router } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
 import { sendMessage } from '@/api/channels';
+import { requestCityFeedRefresh } from '@/lib/cityFeedRefresh';
 import { useTranslation } from 'react-i18next';
 
 export function useShareToCity() {
@@ -31,7 +32,9 @@ export function useShareToCity() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     try {
       await sendMessage(city.channelId, sessionId ?? '', identity.guestId, nickname, url);
-      // Jump to the city feed so the freshly posted link card is visible.
+      // Tell the (already-mounted) city tab to reload on focus so the freshly
+      // posted link card is visible without a manual refresh, then jump there.
+      requestCityFeedRefresh();
       router.replace('/(tabs)/chat');
     } catch {
       Alert.alert(t('shareToCityError', { defaultValue: 'Could not share to your city. Try again.' }));

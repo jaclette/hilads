@@ -424,7 +424,7 @@ export default function EventDetailScreen() {
           </View>
 
           {isOwner && (
-            <ShareToCityPill url={buildEventUrl(event)} style={{ marginTop: 10, alignSelf: 'flex-start' }} />
+            <ShareToCityPill url={buildEventUrl(event)} title={event.title} label="🎉 Hi plan" style={{ marginTop: 10, alignSelf: 'flex-start' }} />
           )}
 
           {/* Secondary lines - collapse on scroll. maxHeight + opacity drive the

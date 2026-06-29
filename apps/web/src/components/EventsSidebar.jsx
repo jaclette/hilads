@@ -71,8 +71,8 @@ export default function EventsSidebar({ events, cityEvents, topics, activeEventI
             role="button"
             tabIndex={0}
             className="share-to-city-pill share-to-city-pill--row"
-            onClick={(e) => { e.stopPropagation(); onShareToCity(`${window.location.origin}/event/${eventSlug(event)}`) }}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onShareToCity(`${window.location.origin}/event/${eventSlug(event)}`) } }}
+            onClick={(e) => { e.stopPropagation(); onShareToCity(`🎉 Hi plan: ${event.title}\n${window.location.origin}/event/${eventSlug(event)}`) }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); onShareToCity(`🎉 Hi plan: ${event.title}\n${window.location.origin}/event/${eventSlug(event)}`) } }}
           >
             📣 {t('shareToCity', { defaultValue: 'Share in my city' })}
           </span>
