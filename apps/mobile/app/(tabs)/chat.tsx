@@ -1150,6 +1150,9 @@ export default function ChatTab() {
           sending={sending}
           mentionContext="city"
           mentionChannelId={channelId}
+          // Drop the keyboard on send so the collapsed header + tab bar
+          // re-appear (keyboardDidHide resets the focus-mode state).
+          dismissOnSend
           onSendText={handleSendText}
           onSendImage={sendImage}
           placeholder={i18n.t('composer.placeholderCity', { ns: 'common' })}
