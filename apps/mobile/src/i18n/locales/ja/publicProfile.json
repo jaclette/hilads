@@ -64,9 +64,9 @@
   "alreadyReportedBody": "{{date}}にこのユーザーを報告しました。あなたの報告は確認中です。",
   "blockUser": "ユーザーをブロック",
   "blocking": "ブロック中…",
-  "ghostName": "ゴースト",
+  "ghostName": "Ghost",
   "visiting": "{{city}}に訪問中",
-  "ghostNote": "ゴーストとして漂っています 👻",
+  "ghostNote": "Ghostとして漂っています 👻",
   "tabChallenges": "チャレンジ",
   "noChallenges": "まだチャレンジはありません"
 }

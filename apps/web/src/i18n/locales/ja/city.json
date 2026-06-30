@@ -95,7 +95,7 @@
     "emptyTitle": "まだ何も起きていません",
     "emptyLocalSub": "{{city}}を盛り上げましょう。お気に入りの場所で定期イベントを始めましょう。",
     "emptySub": "{{city}}で最初に何かを起こしましょう",
-    "noEvents": "今のところLocal Eventsはありません",
+    "noEvents": "今のところローカルイベントはありません",
     "noHangouts": "まだ集まりはありません",
     "noEventsSub": "{{city}}で最初の一つを作りましょう",
     "noHangoutsSub": "集まりを始めて街を盛り上げましょう",

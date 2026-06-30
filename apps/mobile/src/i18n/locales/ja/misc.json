@@ -16,7 +16,7 @@
   "blocked": {
     "title": "ブロックしたユーザー",
     "thisUser": "このユーザー",
-    "ghostName": "ゴースト",
+    "ghostName": "Ghost",
     "guest": "ゲスト",
     "unblock": "ブロック解除",
     "unblockTitle": "{{name}}のブロックを解除しますか？",
