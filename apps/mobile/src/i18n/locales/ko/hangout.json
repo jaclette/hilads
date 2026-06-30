@@ -46,5 +46,6 @@
   "gatedRequest": "대화를 보고 채팅하려면 참여를 요청하세요.",
   "requestToJoin": "참여 요청",
   "emptyReplies": "아직 답글이 없어요. 뭔가 말해보세요! 💬",
-  "inThisHangout": "이 모임에"
+  "inThisHangout": "이 모임에",
+  "geoHint": "📍 위치를 켜고 지금 주변에 누가 있는지 확인하세요 — 근처 사람들도 당신의 Hi를 볼 수 있어요 👀🔥"
 }

@@ -46,5 +46,6 @@
   "gatedRequest": "Demande à rejoindre pour voir la conversation et discuter.",
   "requestToJoin": "Demander à rejoindre",
   "emptyReplies": "Pas encore de réponses. Dis quelque chose ! 💬",
-  "inThisHangout": "dans cette sortie"
+  "inThisHangout": "dans cette sortie",
+  "geoHint": "📍 Active ta localisation pour voir qui est dans le coin maintenant — et que les gens autour repèrent ton Hi 👀🔥"
 }

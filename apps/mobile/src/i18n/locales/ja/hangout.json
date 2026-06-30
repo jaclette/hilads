@@ -46,5 +46,6 @@
   "gatedRequest": "会話を見てチャットするには参加をリクエストしてください。",
   "requestToJoin": "参加をリクエスト",
   "emptyReplies": "まだ返信はありません。何か言ってみよう！ 💬",
-  "inThisHangout": "この集まりに"
+  "inThisHangout": "この集まりに",
+  "geoHint": "📍 位置情報をオンにして、今近くにいる人をチェック — 周りの人にもあなたの Hi が届く 👀🔥"
 }

@@ -46,5 +46,6 @@
   "gatedRequest": "Minta gabung untuk melihat percakapan dan chat.",
   "requestToJoin": "Minta gabung",
   "emptyReplies": "Belum ada balasan. Bilang sesuatu! 💬",
-  "inThisHangout": "di nongkrong ini"
+  "inThisHangout": "di nongkrong ini",
+  "geoHint": "📍 Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu 👀🔥"
 }

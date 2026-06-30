@@ -46,5 +46,6 @@
   "gatedRequest": "請求加入，以查看對話並聊天。",
   "requestToJoin": "請求加入",
   "emptyReplies": "還沒有回覆。說點什麼吧！ 💬",
-  "inThisHangout": "在這個聚會裡"
+  "inThisHangout": "在這個聚會裡",
+  "geoHint": "📍 打開定位，看看現在誰在附近——也讓周圍的人發現你的 Hi 👀🔥"
 }

@@ -46,5 +46,6 @@
   "gatedRequest": "Request to join to see the conversation and chat.",
   "requestToJoin": "Request to join",
   "emptyReplies": "No replies yet. Say something! 💬",
-  "inThisHangout": "in this hangout"
+  "inThisHangout": "in this hangout",
+  "geoHint": "📍 Turn on location to see who’s around right now — and let nearby people catch your Hi 👀🔥"
 }

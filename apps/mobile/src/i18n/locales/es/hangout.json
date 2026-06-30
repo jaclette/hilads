@@ -46,5 +46,6 @@
   "gatedRequest": "Pide unirte para ver la conversación y participar.",
   "requestToJoin": "Pedir unirse",
   "emptyReplies": "Aún no hay respuestas. ¡Di algo! 💬",
-  "inThisHangout": "en esta quedada"
+  "inThisHangout": "en esta quedada",
+  "geoHint": "📍 Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi 👀🔥"
 }

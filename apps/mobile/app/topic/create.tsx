@@ -145,6 +145,15 @@ export default function CreateTopicScreen() {
         {/* Expiry note */}
         {!editId ? <Text style={styles.expiryNote}>{t('expiry')}</Text> : null}
 
+        {/* Geo explainer - why turning on location matters (fun + motivating). */}
+        {!editId ? (
+          <View style={styles.geoHint}>
+            <Text style={styles.geoHintText}>
+              {t('geoHint', { defaultValue: '📍 Turn on location to see who’s around right now — and let nearby people catch your Hi 👀🔥' })}
+            </Text>
+          </View>
+        ) : null}
+
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {/* Submit */}
@@ -251,6 +260,22 @@ const styles = StyleSheet.create({
     color:     Colors.muted2,
     textAlign: 'center',
     marginTop: Spacing.xs,
+  },
+  geoHint: {
+    marginTop:         Spacing.lg,
+    paddingVertical:   12,
+    paddingHorizontal: 14,
+    borderRadius:      14,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.35)',
+    backgroundColor:   'rgba(255,122,60,0.08)',
+  },
+  geoHintText: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '600',
+    color:      Colors.accent,
+    textAlign:  'center',
+    lineHeight: 19,
   },
 
   errorText: {

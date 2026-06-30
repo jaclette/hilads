@@ -46,5 +46,6 @@
   "gatedRequest": "Bitte um Teilnahme, um die Unterhaltung zu sehen und mitzuschreiben.",
   "requestToJoin": "Um Teilnahme bitten",
   "emptyReplies": "Noch keine Antworten. Sag was! 💬",
-  "inThisHangout": "in diesem Treffen"
+  "inThisHangout": "in diesem Treffen",
+  "geoHint": "📍 Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi 👀🔥"
 }
