@@ -1,7 +1,7 @@
 {
   "filterAll": "Todo",
   "filterDms": "Mensajes privados",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "Chats de eventos",
   "markAllRead": "Marcar todo como leído",
   "upgradeTitle": "Los mensajes son para miembros",
   "upgradeSub": "Crea una cuenta gratis para enviar mensajes privados y mantenerte conectado.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "Crea un evento o únete a uno para hablar con los participantes.",
   "emptyDmsSub": "Conecta con la gente que conoces en la ciudad.",
   "sectionDms": "MENSAJES PRIVADOS",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "CHATS DE EVENTOS",
   "eventChatFallback": "Chat de evento",
   "goingCount": "{{count}} van",
   "prefTitle": "PREFERENCIAS DE NOTIFICACIÓN",

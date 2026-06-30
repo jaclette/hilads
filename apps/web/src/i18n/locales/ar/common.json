@@ -6,7 +6,7 @@
     "eventDesc": "انضم إلى {{title}} على Hilads - Local Event يحدث الآن. شاهد من سيأتي وتحدث في الدردشة الحية."
   },
   "nowTitle": "الآن",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 فعاليات محلية",
   "filterHangouts": "🗣️ لقاءات",
   "publicEventsSection": "🎫 فعاليات عامة",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "ثلاث طرق لتعيش المدينة",
       "itemChallenges": "🤝 Challenges - تحدَّ أو اقبل التحدي لاكتشاف أماكن خفيّة، تذوّق الطعام الحقيقي، مشاركة الثقافة، أو تقديم المساعدة.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - قابل شخصًا بشكل عفوي",
+      "itemEvents": "🎉 Hi plan - حدّد وقتًا للقاء"
     },
     "slide3": {
       "title": "اكسب مكانك في المدينة",

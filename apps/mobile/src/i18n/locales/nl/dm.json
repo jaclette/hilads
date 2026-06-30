@@ -1,7 +1,7 @@
 {
   "filterAll": "Alles",
   "filterDms": "Privéberichten",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "Evenementchats",
   "markAllRead": "Alles als gelezen markeren",
   "upgradeTitle": "Berichten zijn voor leden",
   "upgradeSub": "Maak een gratis account om privéberichten te versturen en verbonden te blijven.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "Maak een evenement of doe mee om met de deelnemers te praten.",
   "emptyDmsSub": "Maak contact met mensen die je in de stad ontmoet.",
   "sectionDms": "PRIVÉBERICHTEN",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "EVENEMENTCHATS",
   "eventChatFallback": "Evenementchat",
   "goingCount": "{{count}} gaan",
   "prefTitle": "MELDINGSVOORKEUREN",

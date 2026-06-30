@@ -1,8 +1,8 @@
 {
   "nowTitle": "Сейчас",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Местные события",
   "filterHangouts": "🗣️ Тусовки",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 Публичные события",
   "accountWelcome": {
     "title": "Поздравляем, {{username}}! 🎉",
     "subtitle": "Ваш аккаунт готов - вот что вы можете сделать прямо сейчас 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Три способа жить городом",
       "itemChallenges": "🤝 Challenges - бросай или принимай вызов: найди скрытые места, попробуй настоящую еду, поделись культурой или помоги.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - познакомься с кем-то спонтанно",
+      "itemEvents": "🎉 Hi plan - запланируй момент для встречи"
     },
     "slide3": {
       "title": "Заслужи своё место в городе",
@@ -140,7 +140,7 @@
       "desc": "Ты знаешь этот город"
     },
     "exploring": {
-      "label": "Exploring",
+      "label": "Путешествую",
       "desc": "Ты его открываешь"
     }
   },

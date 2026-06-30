@@ -6,7 +6,7 @@
     "eventDesc": "Заходи в {{title}} на Hilads - Local Event, который идёт прямо сейчас. Смотри кто будет и общайся в живом чате."
   },
   "nowTitle": "Сейчас",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Местные события",
   "filterHangouts": "🗣️ Тусовки",
   "publicEventsSection": "🎫 Публичные события",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Три способа жить городом",
       "itemChallenges": "🤝 Challenges - бросай или принимай вызов: найди скрытые места, попробуй настоящую еду, поделись культурой или помоги.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - познакомься с кем-то спонтанно",
+      "itemEvents": "🎉 Hi plan - запланируй момент для встречи"
     },
     "slide3": {
       "title": "Заслужи своё место в городе",

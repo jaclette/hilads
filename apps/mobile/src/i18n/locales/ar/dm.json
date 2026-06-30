@@ -1,7 +1,7 @@
 {
   "filterAll": "الكل",
   "filterDms": "الرسائل المباشرة",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "دردشات الفعاليات",
   "markAllRead": "تحديد الكل كمقروء",
   "upgradeTitle": "الرسائل للأعضاء",
   "upgradeSub": "أنشئ حسابًا مجانيًا لإرسال رسائل مباشرة والبقاء على تواصل.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "أنشئ فعالية أو انضم إلى واحدة للدردشة مع الحاضرين.",
   "emptyDmsSub": "تواصل مع الأشخاص الذين تقابلهم في المدينة.",
   "sectionDms": "الرسائل المباشرة",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "دردشات الفعاليات",
   "eventChatFallback": "محادثة الفعالية",
   "goingCount": "{{count}} ذاهبون",
   "prefTitle": "تفضيلات الإشعارات",

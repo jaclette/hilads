@@ -1,8 +1,8 @@
 {
   "nowTitle": "Agora",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Eventos locais",
   "filterHangouts": "🗣️ Convívios",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
     "title": "Parabéns, {{username}}! 🎉",
     "subtitle": "A tua conta está pronta - vê o que podes fazer agora 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Três formas de viver a cidade",
       "itemChallenges": "🤝 Challenges - desafia ou deixa-te desafiar para descobrir sítios escondidos, provar comida a sério, partilhar cultura ou dar uma mão.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - conhece alguém de forma espontânea",
+      "itemEvents": "🎉 Hi plan - planeia um momento para se verem"
     },
     "slide3": {
       "title": "Conquista o teu lugar na cidade",

@@ -6,7 +6,7 @@
     "eventDesc": "Sluit aan bij {{title}} op Hilads - een Local Event dat nu plaatsvindt. Zie wie er komt en chat live."
   },
   "nowTitle": "Nu",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Lokale evenementen",
   "filterHangouts": "🗣️ Meetups",
   "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Drie manieren om de stad te beleven",
       "itemChallenges": "🤝 Challenges - daag uit of laat je uitdagen om verborgen plekken te ontdekken, echte gerechten te proeven, cultuur te delen of te helpen.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - ontmoet iemand spontaan",
+      "itemEvents": "🎉 Hi plan - plan een moment om af te spreken"
     },
     "slide3": {
       "title": "Verdien je plek in de stad",

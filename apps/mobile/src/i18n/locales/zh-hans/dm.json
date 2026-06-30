@@ -1,7 +1,7 @@
 {
   "filterAll": "全部",
   "filterDms": "私信",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "活动聊天",
   "markAllRead": "全部标为已读",
   "upgradeTitle": "消息功能仅限会员",
   "upgradeSub": "创建一个免费账户即可发送私信，保持联系。",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "创建或加入一个活动，和参加的人聊天。",
   "emptyDmsSub": "和你在城市里遇到的人建立联系。",
   "sectionDms": "私信",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "活动聊天",
   "eventChatFallback": "活动聊天",
   "goingCount": "{{count}} 人参加",
   "prefTitle": "通知偏好",

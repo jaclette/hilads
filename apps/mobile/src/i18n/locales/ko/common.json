@@ -1,8 +1,8 @@
 {
   "nowTitle": "지금",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 로컬 이벤트",
   "filterHangouts": "🗣️ 모임",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 공개 이벤트",
   "accountWelcome": {
     "title": "축하해요, {{username}}님! 🎉",
     "subtitle": "계정이 준비됐어요 - 지금 할 수 있는 것들을 확인해 보세요 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "도시를 사는 세 가지 방법",
       "itemChallenges": "🤝 Challenges - 숨은 장소를 발견하거나, 진짜 음식을 맛보거나, 문화를 나누거나, 도움을 줘요. 도전하고 도전받아요.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - 즉흥적으로 누군가를 만나기",
+      "itemEvents": "🎉 Hi plan - 만날 시간을 정하기"
     },
     "slide3": {
       "title": "도시에서 당신의 자리를 만드세요",

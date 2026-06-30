@@ -6,7 +6,7 @@
     "eventDesc": "Komm zu {{title}} auf Hilads - ein Local Event, das gerade läuft. Sieh wer kommt und chatte live."
   },
   "nowTitle": "Jetzt",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Lokale Events",
   "filterHangouts": "🗣️ Treffen",
   "publicEventsSection": "🎫 Öffentliche Events",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Drei Wege, die Stadt zu erleben",
       "itemChallenges": "🤝 Challenges - fordere oder werde gefordert, versteckte Spots zu entdecken, echtes Essen zu probieren, Kultur zu teilen oder zu helfen.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - triff jemanden spontan",
+      "itemEvents": "🎉 Hi plan - plane einen Moment zum Treffen"
     },
     "slide3": {
       "title": "Verdien dir deinen Platz in der Stadt",
@@ -108,7 +108,7 @@
       "label": "Local"
     },
     "exploring": {
-      "label": "Exploring"
+      "label": "Entdecken"
     }
   },
   "composer": {

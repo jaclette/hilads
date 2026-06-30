@@ -6,7 +6,7 @@
     "eventDesc": "เข้าร่วม {{title}} ใน Hilads - Local Event ที่กำลังเกิดขึ้น ดูว่าใครจะไปและแชทสด"
   },
   "nowTitle": "ตอนนี้",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 อีเวนต์ในพื้นที่",
   "filterHangouts": "🗣️ นัดเจอ",
   "publicEventsSection": "🎫 กิจกรรมสาธารณะ",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "สามวิธีในการใช้ชีวิตในเมือง",
       "itemChallenges": "🤝 Challenges - ท้าทายหรือถูกท้าทายเพื่อค้นพบสถานที่ลับ ลิ้มรสอาหารจริง แบ่งปันวัฒนธรรม หรือช่วยเหลือ",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - เจอใครสักคนแบบไม่ได้นัด",
+      "itemEvents": "🎉 Hi plan - วางแผนเวลานัดเจอ"
     },
     "slide3": {
       "title": "สร้างที่ของคุณในเมือง",

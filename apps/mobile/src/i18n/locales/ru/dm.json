@@ -1,7 +1,7 @@
 {
   "filterAll": "Все",
   "filterDms": "Личные сообщения",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "Чаты событий",
   "markAllRead": "Отметить всё прочитанным",
   "upgradeTitle": "Сообщения доступны участникам",
   "upgradeSub": "Создай бесплатный аккаунт, чтобы отправлять личные сообщения и оставаться на связи.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "Создай событие или присоединись к нему, чтобы общаться с участниками.",
   "emptyDmsSub": "Знакомься с людьми, которых встречаешь в городе.",
   "sectionDms": "ЛИЧНЫЕ СООБЩЕНИЯ",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "ЧАТЫ СОБЫТИЙ",
   "eventChatFallback": "Чат события",
   "goingCount": "{{count}} идут",
   "prefTitle": "НАСТРОЙКИ УВЕДОМЛЕНИЙ",

@@ -1,7 +1,7 @@
 {
   "filterAll": "Semua",
   "filterDms": "Pesan Langsung",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "Chat acara",
   "markAllRead": "Tandai semua sudah dibaca",
   "upgradeTitle": "Pesan untuk anggota",
   "upgradeSub": "Buat akun gratis untuk mengirim pesan langsung dan tetap terhubung.",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "Buat acara atau gabung ke salah satunya untuk ngobrol dengan yang ikut.",
   "emptyDmsSub": "Terhubung dengan orang yang kamu temui di kota.",
   "sectionDms": "PESAN LANGSUNG",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "CHAT ACARA",
   "eventChatFallback": "Chat acara",
   "goingCount": "{{count}} ikut",
   "prefTitle": "PREFERENSI NOTIFIKASI",

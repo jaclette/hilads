@@ -6,7 +6,7 @@
     "eventDesc": "{{title}}にHiladsで参加 - 今行われているLocal Event。誰が参加するか見て、ライブチャットで話そう。"
   },
   "nowTitle": "今",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 ローカルイベント",
   "filterHangouts": "🗣️ 集まり",
   "publicEventsSection": "🎫 公開イベント",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "街を生きる、3つの方法",
       "itemChallenges": "🤝 Challenges - 隠れたスポットを発見、本物の料理を味わう、文化を分かち合う、手助けする。挑む側にも、挑まれる側にも。",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - 気軽に誰かと出会う",
+      "itemEvents": "🎉 Hi plan - 会う時間を決める"
     },
     "slide3": {
       "title": "街での居場所を手に入れよう",

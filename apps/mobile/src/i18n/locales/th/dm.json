@@ -1,7 +1,7 @@
 {
   "filterAll": "ทั้งหมด",
   "filterDms": "ข้อความส่วนตัว",
-  "filterEvents": "Local Event Chats",
+  "filterEvents": "แชตอีเวนต์",
   "markAllRead": "ทำเครื่องหมายอ่านทั้งหมด",
   "upgradeTitle": "ข้อความมีไว้สำหรับสมาชิก",
   "upgradeSub": "สร้างบัญชีฟรีเพื่อส่งข้อความส่วนตัวและติดต่อกันต่อไป",
@@ -10,7 +10,7 @@
   "emptyEventsSub": "สร้างกิจกรรมหรือเข้าร่วมเพื่อพูดคุยกับคนที่จะไป",
   "emptyDmsSub": "เชื่อมต่อกับคนที่คุณเจอในเมือง",
   "sectionDms": "ข้อความส่วนตัว",
-  "sectionEvents": "LOCAL EVENT CHATS",
+  "sectionEvents": "แชตอีเวนต์",
   "eventChatFallback": "แชทกิจกรรม",
   "goingCount": "{{count}} คนจะไป",
   "prefTitle": "การตั้งค่าการแจ้งเตือน",

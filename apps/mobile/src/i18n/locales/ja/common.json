@@ -1,8 +1,8 @@
 {
   "nowTitle": "今",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 ローカルイベント",
   "filterHangouts": "🗣️ 集まり",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 公開イベント",
   "accountWelcome": {
     "title": "おめでとう、{{username}}さん！🎉",
     "subtitle": "アカウントの準備ができました--今すぐできることはこちら 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "街を生きる、3つの方法",
       "itemChallenges": "🤝 Challenges - 隠れたスポットを発見、本物の料理を味わう、文化を分かち合う、手助けする。挑む側にも、挑まれる側にも。",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - 気軽に誰かと出会う",
+      "itemEvents": "🎉 Hi plan - 会う時間を決める"
     },
     "slide3": {
       "title": "街での居場所を手に入れよう",
@@ -140,7 +140,7 @@
       "desc": "この街を知っている"
     },
     "exploring": {
-      "label": "Exploring",
+      "label": "探索中",
       "desc": "この街を探検中"
     }
   },

@@ -6,7 +6,7 @@
     "eventDesc": "Gabung {{title}} di Hilads - Local Event yang sedang berlangsung. Lihat siapa yang datang dan ngobrol langsung."
   },
   "nowTitle": "Sekarang",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Acara lokal",
   "filterHangouts": "🗣️ Nongkrong",
   "publicEventsSection": "🎫 Acara publik",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Tiga cara menghidupi kota",
       "itemChallenges": "🤝 Challenges - tantang atau ditantang buat menemukan tempat tersembunyi, mencicipi makanan asli, berbagi budaya, atau bantu.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - temui seseorang secara spontan",
+      "itemEvents": "🎉 Hi plan - rencanakan waktu untuk bertemu"
     },
     "slide3": {
       "title": "Raih tempatmu di kota",
@@ -108,7 +108,7 @@
       "label": "Local"
     },
     "exploring": {
-      "label": "Exploring"
+      "label": "Menjelajah"
     }
   },
   "composer": {

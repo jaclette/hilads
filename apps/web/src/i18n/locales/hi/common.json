@@ -6,7 +6,7 @@
     "eventDesc": "Hilads पर {{title}} में जुड़िए - एक Local Event जो अभी हो रहा है। देखिए कौन आ रहा है और लाइव चैट कीजिए।"
   },
   "nowTitle": "अभी",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 लोकल इवेंट",
   "filterHangouts": "🗣️ मुलाक़ात",
   "publicEventsSection": "🎫 सार्वजनिक इवेंट",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "शहर को जीने के तीन तरीके",
       "itemChallenges": "🤝 Challenges - चुनौती दीजिए या लीजिए - छुपी जगहें खोजिए, असली खाना चखिए, संस्कृति बाँटिए, या मदद कीजिए।",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - किसी से अचानक मिलो",
+      "itemEvents": "🎉 Hi plan - मिलने का एक पल तय करो"
     },
     "slide3": {
       "title": "शहर में अपनी जगह कमाइए",
@@ -108,7 +108,7 @@
       "label": "Local"
     },
     "exploring": {
-      "label": "Exploring"
+      "label": "खोज रहे"
     }
   },
   "composer": {

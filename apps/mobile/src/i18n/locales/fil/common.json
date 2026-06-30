@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Tatlong paraan para mabuhay sa city",
       "itemChallenges": "🤝 Challenges - mag-dare o tanggapin ang dare para makahanap ng hidden spots, tikman ang real food, i-share ang culture, o tumulong.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - makilala ang isang tao agad-agad",
+      "itemEvents": "🎉 Hi plan - magplano ng oras para magkita"
     },
     "slide3": {
       "title": "Kitain ang puwesto mo sa city",
@@ -140,7 +140,7 @@
       "desc": "Kabisado mo ang lungsod na ito"
     },
     "exploring": {
-      "label": "Exploring",
+      "label": "Nag-eexplore",
       "desc": "Nadiskubre mo pa lang ito"
     }
   },

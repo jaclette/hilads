@@ -1,8 +1,8 @@
 {
   "nowTitle": "现在",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 本地活动",
   "filterHangouts": "🗣️ 聚会",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 公开活动",
   "accountWelcome": {
     "title": "恭喜你，{{username}}！🎉",
     "subtitle": "你的账号已就绪--现在你可以这样玩 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "体验城市的三种方式",
       "itemChallenges": "🤝 Challenges - 发起或接受挑战，发现隐藏地点、品尝真味、分享文化、伸出援手。",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - 随性认识某个人",
+      "itemEvents": "🎉 Hi plan - 计划一次见面"
     },
     "slide3": {
       "title": "在城市里赢得你的位置",
