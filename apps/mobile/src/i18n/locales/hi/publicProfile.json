@@ -64,9 +64,9 @@
   "alreadyReportedBody": "आपने इस यूज़र की रिपोर्ट {{date}} को की थी। आपकी रिपोर्ट की समीक्षा हो रही है।",
   "blockUser": "यूज़र को ब्लॉक करें",
   "blocking": "ब्लॉक किया जा रहा है…",
-  "ghostName": "भूत",
+  "ghostName": "Ghost",
   "visiting": "{{city}} घूमने आए हैं",
-  "ghostNote": "भूत बनकर इधर-उधर घूम रहे हैं 👻",
+  "ghostNote": "Ghost बनकर इधर-उधर घूम रहे हैं 👻",
   "tabChallenges": "चैलेंजेस",
   "noChallenges": "अभी कोई चैलेंज नहीं"
 }

@@ -16,7 +16,7 @@
   "blocked": {
     "title": "ब्लॉक किए गए यूज़र्स",
     "thisUser": "यह यूज़र",
-    "ghostName": "भूत",
+    "ghostName": "Ghost",
     "guest": "गेस्ट",
     "unblock": "अनब्लॉक करें",
     "unblockTitle": "{{name}} को अनब्लॉक करें?",

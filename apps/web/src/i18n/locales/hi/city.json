@@ -31,14 +31,14 @@
       "sub": "एक मुलाक़ात शुरू करने, अपना नाम सेव करने और लोगों को साथ लाने के लिए साइन अप करें।"
     },
     "create_challenge": {
-      "pageTitle": "चुनौती लॉन्च करो",
-      "title": "भूत देख सकते हैं, चुनौती नहीं दे सकते।",
-      "sub": "साइन अप करो ताकि लोकल्स या यात्रियों को चुनौती दे सको और उसे मान्यता दे सको।"
+      "pageTitle": "चैलेंज लॉन्च करें",
+      "title": "Ghosts देख सकते हैं, चैलेंज नहीं दे सकते।",
+      "sub": "साइन अप करें ताकि लोकल्स या यात्रियों को चैलेंज दे सकें और उसे मान्यता दे सकें।"
     },
     "accept_challenge": {
       "pageTitle": "चैलेंज लें",
       "title": "इस चैलेंज को लेने के लिए साइन अप करें",
-      "sub": "3 सेकंड। चैलेंज पर सीधे वापस आ जाओगे।"
+      "sub": "3 सेकंड। चैलेंज पर सीधे वापस आ जाएंगे।"
     }
   },
   "welcome": {
@@ -107,8 +107,8 @@
     "laterTag": "Plan",
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
-    "sayHi": "{{name}} को नमस्ते कहो",
-    "sayHiGeneric": "नमस्ते कहो 👋",
+    "sayHi": "{{name}} को नमस्ते कहें",
+    "sayHiGeneric": "नमस्ते कहें 👋",
     "hostWaiting": "पहले नमस्ते का इंतज़ार 👋"
   },
   "header": {
@@ -172,8 +172,8 @@
     "challengeTypePlace": "जगह",
     "challengeTypeCulture": "कल्चर",
     "challengeTypeHelp": "पागलपन",
-    "challengeTitleLabel": "तुम्हारा चैलेंज",
-    "challengeTitlePlaceholder": "जैसे, मुझे अपनी पसंदीदा कॉफ़ी जगह ले चलो",
+    "challengeTitleLabel": "आपका चैलेंज",
+    "challengeTitlePlaceholder": "जैसे, मुझे अपनी पसंदीदा कॉफ़ी जगह ले चलें",
     "challengeCta": "चैलेंज लॉन्च करें 🔥",
     "challengeErrStart": "चैलेंज लॉन्च नहीं हो सका"
   },
@@ -243,11 +243,11 @@
     "join": "शामिल हों",
     "replies_one": "{{count}} जवाब",
     "replies_other": "{{count}} जवाब",
-    "challengeLocals": "🔥 {{name}} ने स्थानीयों को चुनौती दी: {{title}}",
-    "challengeExplorers": "🔥 {{name}} ने यात्रियों को चुनौती दी: {{title}}",
+    "challengeLocals": "🔥 {{name}} ने लोकल्स को चैलेंज दिया: {{title}}",
+    "challengeExplorers": "🔥 {{name}} ने यात्रियों को चैलेंज दिया: {{title}}",
     "challengeCta": "देखें →",
-    "challengeValidated": "🏆 चुनौती पूरी! {{name}} ने \"{{title}}\" को मान्य किया।",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} अंतरराष्ट्रीय challenge: {{title}}"
+    "challengeValidated": "🏆 चैलेंज पूरा! {{name}} ने \"{{title}}\" को मान्य किया।",
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} अंतरराष्ट्रीय चैलेंज: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 फ़ोटो"
