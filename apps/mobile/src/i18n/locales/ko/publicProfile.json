@@ -64,9 +64,9 @@
   "alreadyReportedBody": "이 사용자를 {{date}}에 신고했어요. 신고가 검토 중이에요.",
   "blockUser": "사용자 차단",
   "blocking": "차단하는 중…",
-  "ghostName": "유령",
+  "ghostName": "Ghost",
   "visiting": "{{city}} 방문 중",
-  "ghostNote": "유령으로 떠도는 중 👻",
+  "ghostNote": "Ghost로 떠도는 중 👻",
   "tabChallenges": "챌린지",
   "noChallenges": "아직 챌린지가 없어요"
 }
