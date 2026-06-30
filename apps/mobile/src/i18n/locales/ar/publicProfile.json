@@ -68,9 +68,9 @@
   "alreadyReportedBody": "لقد أبلغت عن هذا المستخدم في {{date}}. تتم مراجعة بلاغك.",
   "blockUser": "حظر المستخدم",
   "blocking": "جارٍ الحظر…",
-  "ghostName": "شبح",
+  "ghostName": "Ghost",
   "visiting": "يزور {{city}}",
-  "ghostNote": "يتجوّل هنا كشبح 👻",
+  "ghostNote": "يتجوّل هنا كـ Ghost 👻",
   "tabChallenges": "التحديات",
   "noChallenges": "لا توجد تحديات بعد"
 }

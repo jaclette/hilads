@@ -16,7 +16,7 @@
   "blocked": {
     "title": "المستخدمون المحظورون",
     "thisUser": "هذا المستخدم",
-    "ghostName": "شبح",
+    "ghostName": "Ghost",
     "guest": "ضيف",
     "unblock": "إلغاء الحظر",
     "unblockTitle": "إلغاء حظر {{name}}؟",
