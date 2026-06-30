@@ -32,7 +32,7 @@
     },
     "create_challenge": {
       "pageTitle": "Luncurkan tantangan",
-      "title": "Hantu boleh lihat, tapi tak bisa menantang.",
+      "title": "Ghost boleh lihat, tapi tak bisa menantang.",
       "sub": "Daftar untuk meluncurkan tantangan ke warga lokal atau pelancong dan memvalidasinya."
     },
     "accept_challenge": {
@@ -247,7 +247,7 @@
     "challengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
     "challengeCta": "Lihat →",
     "challengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internasional: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Tantangan internasional: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Foto"

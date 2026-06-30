@@ -64,9 +64,9 @@
   "alreadyReportedBody": "Kamu melaporkan pengguna ini pada {{date}}. Laporanmu sedang ditinjau.",
   "blockUser": "Blokir pengguna",
   "blocking": "Memblokir…",
-  "ghostName": "Hantu",
+  "ghostName": "Ghost",
   "visiting": "Berkunjung ke {{city}}",
-  "ghostNote": "Melayang-layang sebagai hantu 👻",
+  "ghostNote": "Melayang-layang sebagai Ghost 👻",
   "tabChallenges": "Tantangan",
   "noChallenges": "Belum ada tantangan"
 }

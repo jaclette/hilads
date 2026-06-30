@@ -17,7 +17,7 @@
   "myChallenges": {
     "cta": "Tantangan saya"
   },
-  "tabIntro": "Tantangan antara warga lokal dan penjelajah dalam satu kota - dan lintas kota.",
+  "tabIntro": "Tantangan antara warga lokal dan pelancong dalam satu kota - dan lintas kota.",
   "howItWorks": "Cara kerjanya",
   "mostLocal": "Most Local",
   "seeAll": "Lihat semua",
@@ -30,7 +30,7 @@
   "editTitle": "Edit tantangan",
   "audience": "Untuk siapa?",
   "aud": {
-    "locals": "Local",
+    "locals": "Lokal",
     "explorers": "Pelancong",
     "members": "Anggota"
   },
@@ -44,7 +44,7 @@
   "titleLabel": "Tantanganmu",
   "titlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
   "maxParticipantsLabel": {
-    "locals": "Berapa local maks?",
+    "locals": "Berapa lokal maks?",
     "explorers": "Berapa pelancong maks?"
   },
   "returnClauseLabel": "Lalu?",
@@ -52,7 +52,7 @@
     "food": "...dan ajak aku merasakannya bareng 🍜",
     "place": "...dan kamu sendiri yang antar aku ke sana 🗺️",
     "culture": "...dan kita ketemuan buat ngobrolin 🎭",
-    "help": "...dan kita ketemuan biar aku bisa bantu langsung 🙏"
+    "help": "...dan ayo lakukan sesuatu yang gila bareng 🤪"
   },
   "createCta": "Luncurkan tantangan 🔥",
   "saveChanges": "Simpan perubahan",
@@ -87,7 +87,7 @@
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
   "openBadge": "Terbuka",
-  "forLocals": "🏠 Untuk local",
+  "forLocals": "🏠 Untuk lokal",
   "forExplorers": "🧳 Untuk pelancong",
   "validation": {
     "label": "Validasinya gimana?",
@@ -149,23 +149,23 @@
         "body": "Ada yang salah. Coba lagi."
       },
       "not_creator": {
-        "title": "Ini challenge kamu sendiri",
-        "body": "Kamu yang buat challenge ini - tunggu orang lain menerimanya."
+        "title": "Ini tantangan kamu sendiri",
+        "body": "Kamu yang buat tantangan ini - tunggu orang lain menerimanya."
       },
       "mode_required": {
-        "title": "Pilih local atau traveler dulu",
-        "body": "Atur mode kamu di profil sebelum menerima challenge."
+        "title": "Pilih lokal atau pelancong dulu",
+        "body": "Atur mode kamu di profil sebelum menerima tantangan."
       },
       "mode_mismatch": {
-        "title": "Challenge ini bukan untuk kamu",
+        "title": "Tantangan ini bukan untuk kamu",
         "body": "Ganti mode kamu di profil kalau mau menerimanya."
       },
       "cap_reached": {
-        "title": "Challenge penuh"
+        "title": "Tantangan penuh"
       },
       "in_progress": {
         "title": "Ada yang lagi ngambil",
-        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai - challenge-nya bakal kosong lagi."
+        "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai - tantangannya bakal kosong lagi."
       },
       "completed": {
         "title": "Tantangan sudah selesai",
@@ -175,30 +175,30 @@
   },
   "thread": {
     "notFound": "Thread tidak ditemukan",
-    "empty": "Sapa dulu 👋 dan rencanain kapan ketemu.",
+    "empty": "Jadi yang pertama ngomong.",
     "emptyIntl": "Sapa dulu 👋 - kalau berhasil kirim 📸 ya.",
     "cancel": {
-      "creatorTitle": "Batalkan take-on ini?",
-      "acceptorTitle": "Mundur dari challenge ini?",
+      "creatorTitle": "Batalkan ambil tantangan ini?",
+      "acceptorTitle": "Mundur dari tantangan ini?",
       "body": "Thread dan chat akan dihapus. Kamu bisa terima lagi nanti kalau berubah pikiran.",
       "confirm": "Batalkan",
       "failed": "Gagal membatalkan. Coba lagi."
     },
     "cancelledByOther": {
       "title": "Thread dibatalkan",
-      "body": "Orang lain membatalkan take-on ini."
+      "body": "Orang lain membatalkan pengambilan ini."
     }
   },
   "threads": {
-    "title": "Thread challenge saya",
+    "title": "Thread tantangan saya",
     "noMessagesYet": "Belum ada pesan",
     "empty": {
       "title": "Tidak ada thread aktif",
-      "body": "Saat kamu menerima challenge atau seseorang menerima challengemu, percakapannya muncul di sini."
+      "body": "Saat kamu menerima tantangan atau seseorang menerima tantanganmu, percakapannya muncul di sini."
     },
     "guestGate": {
       "title": "Masuk untuk melihat thread",
-      "body": "Thread adalah percakapan 1:1 antara kamu dan challenger. Kamu butuh akun untuk memulainya."
+      "body": "Thread adalah percakapan 1:1 antara kamu dan penantang. Kamu butuh akun untuk memulainya."
     }
   },
   "schedule": {
@@ -305,8 +305,8 @@
     },
     "acceptor": {
       "waitingTitle": "Menunggu jawaban",
-      "waitingBody": "{{name}} bakal terima atau tolak take-on kamu. Kamu dapat notif begitu dia memutuskan.",
-      "rejectedTitle": "Take-on ditolak",
+      "waitingBody": "{{name}} akan menerima atau menolak permintaanmu. Kamu dapat notif begitu diputuskan.",
+      "rejectedTitle": "Permintaan ditolak",
       "rejectedBody": "{{name}} menolak yang ini. Kamu masih bisa ambil tantangan lain."
     }
   },
@@ -365,7 +365,7 @@
     "all": "Semua",
     "empty": "Tidak ada di kategori ini sekarang."
   },
-  "seeAllChallenges": "Lihat semua challenge →",
+  "seeAllChallenges": "Lihat semua tantangan →",
   "mode": {
     "label": "Mode",
     "local": "Lokal",
@@ -376,7 +376,7 @@
   "intl": {
     "targetCityLabel": "Kota target",
     "targetCityAnywhere": "🌍 Di mana saja di dunia",
-    "targetCityHint": "Biarkan \"Di mana saja\" untuk menjangkau pelancong di mana pun, atau pilih satu kota.",
+    "targetCityHint": "Pilih kota target — \"Di mana saja\" belum tersedia.",
     "proofRequirementsLabel": "Foto harus menunjukkan apa?",
     "proofRequirementsPlaceholder": "misal: Hidangan di bawah cahaya siang, kamu di dalam frame",
     "proofRequirementsHint": "Buktinya adalah foto 📸. Peserta melihat ini sebelum mengirim - tulis sespesifik mungkin.",
@@ -535,11 +535,11 @@
     "errSubmit": "Gagal kirim rating. Coba lagi."
   },
   "leaderboard": {
-    "title": "🏆 Paling lokal",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top challengers"
+      "neutral": "🏆 Penantang teratas"
     },
     "scope": {
       "city": "My city",
@@ -553,40 +553,40 @@
     "points": "{{points}} poin",
     "me": {
       "ranked": "Kamu · #{{rank}} · {{points}} poin",
-      "unranked": "Terima challenge buat masuk papan"
+      "unranked": "Terima tantangan buat masuk papan"
     },
     "empty": {
       "title": "Belum ada di papan",
-      "body": "Jadi yang pertama menerima challenge dan dapat poin."
+      "body": "Jadi yang pertama menerima tantangan dan dapat poin."
     },
     "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi.",
-    "neutral": "🏆 Paling lokal",
+    "neutral": "🏆 Most Local",
     "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",
     "helpLabel": "🏆 Cara dapat poin",
-    "title": "🏆 Cara kerja challenge",
-    "intro": "Tiap challenge memberi poin ke kedua belah pihak - masuk ke papan peringkat kota dan dunia.",
+    "title": "🏆 Cara kerja tantangan",
+    "intro": "Gabung cuma dapat poin kecil; poin besar buat yang beneran datang atau menang. Cuma numpuk gabung nggak ada gunanya.",
     "colStep": "Langkah",
     "steps": {
       "created": "Tantangan dibuat",
-      "accepted": "Challenge diterima",
+      "accepted": "Tantangan diterima",
       "date": "Tanggal fix",
       "meet": "Bertemu",
       "rate": "Keduanya menilai"
     },
     "noPoints": "-",
-    "totalLabel": "Total per challenge",
-    "footnote": "Poin pembuatan (+10) langsung masuk. Sisanya hanya diberikan saat kedua pihak menilai pertemuan.",
+    "totalLabel": "Total per tantangan",
+    "footnote": "Angka bisa berubah seiring kami nyetel gamenya.",
     "types": {
-      "heading": "🎯 Dua cara main",
-      "local": "🏙️ Lokal - di kotamu. Ketemu langsung biar sah.",
-      "international": "🌍 Internasional - antar kota. Foto instan jadi bukti."
+      "heading": "Dua jenis tantangan",
+      "local": "🏙️ Ketemuan — kumpulin grup buat ketemu langsung di waktu & tempat yang udah ditentuin. Semua yang datang dapat poin besar.",
+      "international": "🌍 Tantangan foto — semua kirim foto sebelum tenggat; penantang pilih pemenang."
     },
     "lifecycle": {
-      "heading": "🔁 Satu per satu",
-      "body": "Ketika yang mengambil selesai, chat di-reset - challenge tetap ada, siap untuk petualang berikutnya."
+      "heading": "🔁 Cara penyelesaiannya",
+      "body": "Penantang yang nentuin, orang-orang gabung, dan di akhir penantang yang validasi — siapa yang datang, atau foto mana yang menang."
     },
     "pointsHeading": "💯 Cara dapat poin",
     "ways": {
@@ -602,7 +602,7 @@
   "scoreCelebration": {
     "unit": "poin",
     "subtitle": {
-      "accepted": "Challenge-mu diterima 🤝",
+      "accepted": "Tantanganmu diterima 🤝",
       "date_locked": "Janji terkunci - ayo 🗓️",
       "meetup": "Misi selesai 🎉",
       "debrief": "Misi selesai 🎉",
@@ -633,7 +633,7 @@
       "challenge_created": "Tantangan dibuat"
     },
     "event": {
-      "deletedChallenge": "Challenge dihapus",
+      "deletedChallenge": "Tantangan dihapus",
       "andMore": "dan {{count}} lainnya"
     },
     "total": "Total: {{total}} poin"
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "Kamu menang!",
-      "body": "Fotomu memenangkan kontes."
+      "body": "Fotomu memenangkan tantangan."
     },
     "loser": {
       "title": "{{name}} menang",
@@ -660,7 +660,7 @@
       "body": "Jangan lewatkan meet berikutnya — tempatmu menunggu."
     },
     "host": {
-      "titlePhoto": "{{name}} memenangkan kontesmu!",
+      "titlePhoto": "{{name}} memenangkan tantanganmu!",
       "titleMeet": "Meet-mu selesai!",
       "body": "Terima kasih sudah jadi host.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

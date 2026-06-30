@@ -16,7 +16,7 @@
   "blocked": {
     "title": "Pengguna yang diblokir",
     "thisUser": "pengguna ini",
-    "ghostName": "Hantu",
+    "ghostName": "Ghost",
     "guest": "Tamu",
     "unblock": "Buka blokir",
     "unblockTitle": "Buka blokir {{name}}?",
