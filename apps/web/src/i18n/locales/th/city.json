@@ -32,13 +32,13 @@
     },
     "create_challenge": {
       "pageTitle": "เปิดชาเลนจ์",
-      "title": "ผีดูได้ แต่ท้าไม่ได้",
+      "title": "Ghost ดูได้ แต่สร้างชาเลนจ์ไม่ได้",
       "sub": "สมัครเพื่อเปิดชาเลนจ์ให้คนท้องถิ่นหรือนักเดินทาง และยืนยันมัน"
     },
     "accept_challenge": {
-      "pageTitle": "รับความท้าทาย",
-      "title": "สมัครเพื่อรับความท้าทายนี้",
-      "sub": "3 วินาที กลับมาที่ความท้าทายทันที"
+      "pageTitle": "รับชาเลนจ์",
+      "title": "สมัครเพื่อรับชาเลนจ์นี้",
+      "sub": "3 วินาที กลับมาที่ชาเลนจ์ทันที"
     }
   },
   "welcome": {
@@ -166,7 +166,7 @@
     "challengePageTitle": "สร้างชาเลนจ์",
     "challengeAudience": "สำหรับใคร?",
     "challengeAudLocals": "คนท้องถิ่น",
-    "challengeAudExplorers": "นักสำรวจ",
+    "challengeAudExplorers": "นักเดินทาง",
     "challengeType": "ประเภท",
     "challengeTypeFood": "อาหาร",
     "challengeTypePlace": "สถานที่",

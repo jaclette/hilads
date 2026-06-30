@@ -64,9 +64,9 @@
   "alreadyReportedBody": "คุณรายงานผู้ใช้รายนี้เมื่อ {{date}} รายงานของคุณกำลังอยู่ระหว่างการตรวจสอบ",
   "blockUser": "บล็อกผู้ใช้",
   "blocking": "กำลังบล็อก…",
-  "ghostName": "ผี",
+  "ghostName": "Ghost",
   "visiting": "กำลังมาเยือน {{city}}",
-  "ghostNote": "ล่องลอยไปมาเป็นผี 👻",
+  "ghostNote": "ล่องลอยไปมาเป็น Ghost 👻",
   "tabChallenges": "ชาเลนจ์",
   "noChallenges": "ยังไม่มีชาเลนจ์"
 }
