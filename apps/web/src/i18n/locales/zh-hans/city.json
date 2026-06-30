@@ -32,7 +32,7 @@
     },
     "create_challenge": {
       "pageTitle": "发起挑战",
-      "title": "幽灵能浏览，但不能发起挑战。",
+      "title": "Ghost 可以浏览，但不能发起挑战。",
       "sub": "注册以向本地人或旅行者发起挑战，并验证它。"
     },
     "accept_challenge": {
@@ -128,7 +128,7 @@
     "filterBadge": "徽章",
     "filterVibe": "Vibe",
     "filterMode": "模式",
-    "you": "(你)",
+    "you": "（你）",
     "hereNow": "此刻在这里",
     "noMatchLive": "目前没有人符合这些筛选条件。",
     "legends": "Hilads 传奇",
@@ -164,7 +164,7 @@
     "challengeTitle": "发起挑战",
     "challengeSub": "本地人和旅行者 - 通过一个挑战连接",
     "challengePageTitle": "发起挑战",
-    "challengeAudience": "给谁?",
+    "challengeAudience": "给谁？",
     "challengeAudLocals": "本地人",
     "challengeAudExplorers": "旅行者",
     "challengeType": "类型",
@@ -173,7 +173,7 @@
     "challengeTypeCulture": "文化",
     "challengeTypeHelp": "疯狂",
     "challengeTitleLabel": "你的挑战",
-    "challengeTitlePlaceholder": "例如,带我去你最喜欢的咖啡馆",
+    "challengeTitlePlaceholder": "例如，带我去你最喜欢的咖啡馆",
     "challengeCta": "发起挑战 🔥",
     "challengeErrStart": "无法发起挑战"
   },

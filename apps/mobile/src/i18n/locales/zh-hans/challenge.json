@@ -42,9 +42,9 @@
     "sub": "成为第一个上榜的人 - 发起并完成一个挑战"
   },
   "createTitle": "发起挑战",
-  "allTitle": "全部 Challenges",
+  "allTitle": "全部挑战",
   "editTitle": "编辑挑战",
-  "audience": "给谁?",
+  "audience": "给谁？",
   "aud": {
     "locals": "本地人",
     "explorers": "旅行者",
@@ -58,23 +58,23 @@
     "help": "疯狂"
   },
   "titleLabel": "你的挑战",
-  "titlePlaceholder": "例如,带我去你最喜欢的咖啡馆",
+  "titlePlaceholder": "例如，带我去你最喜欢的咖啡馆",
   "maxParticipantsLabel": {
-    "locals": "最多多少本地人?",
-    "explorers": "最多多少旅行者?"
+    "locals": "最多多少本地人？",
+    "explorers": "最多多少旅行者？"
   },
-  "returnClauseLabel": "然后呢?",
+  "returnClauseLabel": "然后呢？",
   "returnClauseTemplates": {
     "food": "……然后过来跟我一起分享 🍜",
     "place": "……然后你亲自带我去 🗺️",
     "culture": "……然后我们见面聊聊 🎭",
-    "help": "……然后我们见面让我当面帮你 🙏"
+    "help": "……然后我们一起做点疯狂的事 🤪"
   },
   "createCta": "发起挑战 🔥",
   "saveChanges": "保存修改",
   "errSave": "保存失败",
   "errStart": "无法发起挑战",
-  "deleteTitle": "删除挑战?",
+  "deleteTitle": "删除挑战？",
   "deleteBody": "挑战将对所有人删除。无法撤销。",
   "deleteConfirm": "删除",
   "acceptCta": "接受挑战",
@@ -86,7 +86,7 @@
     "available": "可接受",
     "inProgress": "进行中",
     "takeIt": "我接受",
-    "takerLabel": "接战者",
+    "takerLabel": "接受者",
     "rankBadge": "第 {{rank}} 名",
     "photoBadge": "照片",
     "joinedCount": "{{count}} 人已加入",
@@ -175,7 +175,7 @@
       },
       "mode_mismatch": {
         "title": "这个挑战不适合你",
-        "body": "想接受的话,在个人资料里切换你的模式。"
+        "body": "想接受的话，在个人资料里切换你的模式。"
       },
       "cap_reached": {
         "title": "挑战已满"
@@ -192,18 +192,18 @@
   },
   "thread": {
     "notFound": "找不到会话",
-    "empty": "打声招呼 👋,约一下见面时间。",
+    "empty": "第一个说点什么吧。",
     "emptyIntl": "打个招呼 👋 - 搞定后丢张 📸 上来。",
     "cancel": {
-      "creatorTitle": "取消这次take-on?",
-      "acceptorTitle": "放弃这个挑战?",
-      "body": "会话和聊天将被删除。如果改主意了,以后可以重新接受。",
+      "creatorTitle": "取消这次参与？",
+      "acceptorTitle": "放弃这个挑战？",
+      "body": "会话和聊天将被删除。如果改主意了，以后可以重新接受。",
       "confirm": "取消",
       "failed": "无法取消。请再试一次。"
     },
     "cancelledByOther": {
       "title": "会话已取消",
-      "body": "对方取消了这次take-on。"
+      "body": "对方取消了这次参与。"
     }
   },
   "threads": {
@@ -211,7 +211,7 @@
     "noMessagesYet": "还没有消息",
     "empty": {
       "title": "没有进行中的会话",
-      "body": "当你接受挑战或别人接受你的挑战时,对话会出现在这里。"
+      "body": "当你接受挑战或别人接受你的挑战时，对话会出现在这里。"
     },
     "guestGate": {
       "title": "登录后查看会话",
@@ -229,14 +229,14 @@
       "title": "见面已安排"
     },
     "withdraw": {
-      "title": "撤回提议?",
+      "title": "撤回提议？",
       "body": "你提议的日期将被清除，对方会收到通知。",
       "confirm": "撤回"
     },
     "today": "今天",
     "tomorrow": "明天",
     "picker": {
-      "title": "什么时候见面?",
+      "title": "什么时候见面？",
       "whenLabel": "什么时候",
       "timeLabel": "开始时间",
       "whereLabel": "在哪里（可选）",
@@ -254,8 +254,8 @@
   },
   "debrief": {
     "creatorPrompt": {
-      "title": "怎么样?",
-      "body": "{{name}}做到了吗?"
+      "title": "怎么样？",
+      "body": "{{name}}做到了吗？"
     },
     "acceptorWaiting": {
       "title": "等待结果",
@@ -269,12 +269,12 @@
     },
     "confirm": {
       "approve": {
-        "title": "标记为完成?",
+        "title": "标记为完成？",
         "body": "这是最终决定，之后不能更改。",
         "confirm": "标记为完成"
       },
       "reject": {
-        "title": "不作判定就关闭?",
+        "title": "不作判定就关闭？",
         "body": "如果见面没真的发生，用这个。这是最终决定。",
         "confirm": "关闭"
       }
@@ -333,16 +333,16 @@
   },
   "locked": {
     "visitor": {
-      "title": "接受挑战,解锁聊天",
-      "body": "你一旦接受,你们就会有一个私密会话来约线下见面。"
+      "title": "接受挑战，解锁聊天",
+      "body": "你一旦接受，你们就会有一个私密会话来约线下见面。"
     },
     "creator": {
       "title": "等人来接挑战",
-      "body": "有旅行者接下挑战后,你们就在这里聊,约线下见面。"
+      "body": "有旅行者接下挑战后，你们就在这里聊，约线下见面。"
     },
     "full": {
       "title": "挑战已满",
-      "body": "名额已满,有人退出再来看看。"
+      "body": "名额已满，有人退出再来看看。"
     },
     "inProgress": {
       "title": "现在有人在接",
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "目标城市",
     "targetCityAnywhere": "🌍 世界任何地方",
-    "targetCityHint": "保留\"任何地方\"可触达全球旅行者，或选择一个城市定向。",
+    "targetCityHint": "选择一个目标城市——“世界任何地方”暂未开放。",
     "proofRequirementsLabel": "照片要拍到什么？",
     "proofRequirementsPlaceholder": "例如：日光下的菜肴，本人入镜",
     "proofRequirementsHint": "证据是一张照片 📸。参与者提交前会看到这里 - 写得具体些。",
@@ -436,7 +436,7 @@
       "submitFailBody": "检查网络后重试。",
       "reviewFailTitle": "判定未保存"
     },
-    "targetCityRequired": "“全球任意地点”暂未开放 — 请选择一个目标城市以继续。",
+    "targetCityRequired": "“世界任何地方”暂未开放——请选择一个目标城市以继续。",
     "targetCityRequiredTitle": "选择目标城市"
   },
   "modeFilter": {
@@ -531,7 +531,7 @@
     "errSubmit": "评分提交失败，请重试。"
   },
   "leaderboard": {
-    "title": "🏆 最本地",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "成为第一个接受挑战并获得分数的人。"
     },
     "errLoad": "加载排行榜失败，下拉重试。",
-    "neutral": "🏆 最本地",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "搜索城市…",
       "empty": "没有匹配的城市。"
@@ -567,7 +567,7 @@
     "aria": "积分如何获得",
     "helpLabel": "🏆 如何赚取积分",
     "title": "🏆 挑战如何运作",
-    "intro": "每个挑战都会给双方加分 -- 计入你的城市和全球排行榜。",
+    "intro": "加入只得一点小分；真正到场或获胜才有大分。光刷加入毫无意义。",
     "colStep": "步骤",
     "steps": {
       "created": "已创建挑战",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "每个挑战合计",
-    "footnote": "创建积分（+10）立即到账。其余积分只有在双方都评价见面后才发放。",
+    "footnote": "随着我们调整玩法，分数可能会变化。",
     "types": {
-      "heading": "🎯 两种玩法",
-      "local": "🏙️ 本地 - 在同城。线下见面才算数。",
-      "international": "🌍 国际 - 跨城市。一张即时照片作证明。"
+      "heading": "两种挑战",
+      "local": "🏙️ 见面 — 在约定的时间和地点线下组队集合。所有到场的人都能拿大分。",
+      "international": "🌍 照片挑战 — 所有人在截止前提交照片；由发起人选出获胜者。"
     },
     "lifecycle": {
-      "heading": "🔁 一次只来一位",
-      "body": "挑战者完成后,聊天会重置--挑战仍在,等待下一位冒险者。"
+      "heading": "🔁 如何收尾",
+      "body": "发起人设定挑战，大家加入，最后由发起人确认 —— 谁到场了，或哪张照片获胜。"
     },
     "pointsHeading": "💯 如何赚取积分",
     "ways": {
@@ -636,7 +636,7 @@
       "deletedChallenge": "已删除的挑战",
       "andMore": "另外 {{count}} 项"
     },
-    "total": "总分: {{total}} 分"
+    "total": "总分： {{total}} 分"
   },
   "welcomeGuest": {
     "title": "👋 欢迎！无需注册即可畅聊。",
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "你赢了！",
-      "body": "你的照片赢得了比赛。"
+      "body": "你的照片赢得了挑战。"
     },
     "loser": {
       "title": "{{name}} 赢了",
@@ -660,7 +660,7 @@
       "body": "下次聚会一定要来 — 你的位置留着。"
     },
     "host": {
-      "titlePhoto": "{{name}} 赢得了你的比赛！",
+      "titlePhoto": "{{name}} 赢得了你的挑战！",
       "titleMeet": "你的聚会结束了！",
       "body": "感谢你的组织。",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

@@ -64,9 +64,9 @@
   "alreadyReportedBody": "你已于 {{date}} 举报此用户。你的举报正在审核中。",
   "blockUser": "屏蔽用户",
   "blocking": "屏蔽中…",
-  "ghostName": "幽灵",
+  "ghostName": "Ghost",
   "visiting": "正在到访 {{city}}",
-  "ghostNote": "以幽灵身份四处漂浮 👻",
+  "ghostNote": "以 Ghost 身份四处漂浮 👻",
   "tabChallenges": "挑战",
   "noChallenges": "暂无挑战"
 }

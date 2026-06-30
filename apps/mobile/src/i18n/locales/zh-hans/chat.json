@@ -2,7 +2,7 @@
   "changeCity": "切换城市",
   "shareCity": "分享城市",
   "shareTitle": "{{city}} 此刻正在发生的事",
-  "shareMessage": "在 Hilads 上看看今晚 {{city}} 有谁在附近。实时的城市动态，无需注册。",
+  "shareMessage": "在 Hilads 上看看此刻 {{city}} 有谁在附近。实时的城市动态，无需注册。",
   "currentWeather": "当前天气：{{label}}",
   "weatherAlert": "天气",
   "online": "附近 {{count}} 人",

@@ -16,7 +16,7 @@
   "blocked": {
     "title": "屏蔽的用户",
     "thisUser": "此用户",
-    "ghostName": "幽灵",
+    "ghostName": "Ghost",
     "guest": "访客",
     "unblock": "取消屏蔽",
     "unblockTitle": "取消屏蔽 {{name}}？",
