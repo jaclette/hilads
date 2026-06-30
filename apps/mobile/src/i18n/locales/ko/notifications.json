@@ -25,6 +25,8 @@
     "newTopicLabel": "내 도시의 새 모임",
     "newTopicSub": "누군가 내 도시에서 새 모임을 시작할 때",
     "announceLabel": "Hilads 공지",
-    "announceSub": "팀의 가끔 전하는 소식"
+    "announceSub": "팀의 가끔 전하는 소식",
+    "newChallengeLabel": "내 도시의 새 챌린지",
+    "newChallengeSub": "누군가 내 도시에서 챌린지를 시작할 때"
   }
 }

@@ -102,7 +102,14 @@
     "filterAll": "全部",
     "seeComing": "看看即将发生什么 🔮",
     "seeHappened": "看看发生过什么",
-    "createNew": "创建"
+    "createNew": "创建",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "向 {{name}} 打招呼",
+    "sayHiGeneric": "打个招呼 👋",
+    "hostWaiting": "等待第一声招呼 👋"
   },
   "header": {
     "online": "附近 {{count}} 人",

@@ -129,7 +129,9 @@
     "placeholderCity": "和你的城市打个招呼 👋",
     "placeholderHangout": "告诉大家你来了 🙌",
     "placeholderEvent": "和参加的人聊聊 🎉",
-    "placeholderChallenge": "为他们加油，或分享你的小贴士 🔥"
+    "placeholderChallenge": "为他们加油，或分享你的小贴士 🔥",
+    "endedEvent": "此活动已结束",
+    "closedChallenge": "此挑战已关闭"
   },
   "modeHeading": "模式",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "{{hours}} 小时 {{mins}} 分钟后到期",
     "expiresInHour": "{{count}} 小时后到期"
   },
-  "shareToCity": "分享到我的城市"
+  "shareToCity": "分享到我的城市",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "已结束",
+  "sayHi": "向 {{name}} 打招呼",
+  "hostWaiting": "等待第一声招呼 👋",
+  "shareToCityError": "无法分享到你的城市，请重试。"
 }

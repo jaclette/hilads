@@ -25,6 +25,8 @@
     "newTopicLabel": "你的城市有新聚會",
     "newTopicSub": "當有人在你的城市發起新的聚會時",
     "announceLabel": "Hilads 的公告",
-    "announceSub": "團隊不定期發布的最新消息"
+    "announceSub": "團隊不定期發布的最新消息",
+    "newChallengeLabel": "你所在城市的新挑戰",
+    "newChallengeSub": "當有人在你所在城市發起挑戰時"
   }
 }

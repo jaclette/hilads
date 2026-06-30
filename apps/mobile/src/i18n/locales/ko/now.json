@@ -48,5 +48,9 @@
   "noChallengesCity": "{{city}}에서 첫 번째로 만들어 보세요",
   "noChallengesGeneric": "첫 번째로 챌린지를 만들어 보세요.",
   "hiNowHint": "지금 모이기",
-  "hiLaterHint": "약속 잡기"
+  "hiLaterHint": "약속 잡기",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

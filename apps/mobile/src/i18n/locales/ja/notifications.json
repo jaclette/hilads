@@ -25,6 +25,8 @@
     "newTopicLabel": "あなたの街の新しい集まり",
     "newTopicSub": "誰かがあなたの街で新しい集まりを始めたとき",
     "announceLabel": "Hilads からのお知らせ",
-    "announceSub": "チームからの不定期の最新情報"
+    "announceSub": "チームからの不定期の最新情報",
+    "newChallengeLabel": "あなたの街の新しいチャレンジ",
+    "newChallengeSub": "誰かがあなたの街でチャレンジを始めたとき"
   }
 }

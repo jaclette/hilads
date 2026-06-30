@@ -25,6 +25,8 @@
     "newTopicLabel": "你所在城市的新聚会",
     "newTopicSub": "当有人在你所在城市发起新的聚会时",
     "announceLabel": "来自 Hilads 的公告",
-    "announceSub": "团队偶尔发布的动态"
+    "announceSub": "团队偶尔发布的动态",
+    "newChallengeLabel": "你所在城市的新挑战",
+    "newChallengeSub": "当有人在你所在城市发起挑战时"
   }
 }

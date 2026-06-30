@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
     "mainRanked_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
     "mainTop_one": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
-    "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名"
+    "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
+    "mainLoading": "🔥 {{city}} 的挑战",
+    "subLoading": " "
   }
 }

@@ -129,7 +129,9 @@
     "placeholderCity": "도시에 인사해요 👋",
     "placeholderHangout": "참여한다고 알려요 🙌",
     "placeholderEvent": "참가자들과 이야기해요 🎉",
-    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥"
+    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥",
+    "endedEvent": "이 이벤트는 종료되었어요",
+    "closedChallenge": "이 챌린지는 종료되었어요"
   },
   "modeHeading": "모드",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "{{hours}}시간 {{mins}}분 후 만료",
     "expiresInHour": "{{count}}시간 후 만료"
   },
-  "shareToCity": "내 도시에 공유"
+  "shareToCity": "내 도시에 공유",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "지난",
+  "sayHi": "{{name}}님에게 인사하기",
+  "hostWaiting": "첫 인사를 기다리는 중 👋",
+  "shareToCityError": "도시에 공유하지 못했어요. 다시 시도해 주세요."
 }

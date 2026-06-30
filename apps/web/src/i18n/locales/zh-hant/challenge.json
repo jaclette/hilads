@@ -72,7 +72,17 @@
     "takeIt": "我接受",
     "takerLabel": "接戰者",
     "rankBadge": "第 {{rank}} 名",
-    "photoBadge": "照片"
+    "photoBadge": "照片",
+    "meetBadge": "見面",
+    "photosCount": "{{count}} 張相片",
+    "noOneJoined": "還沒有人加入",
+    "beFirst": "⚡ 搶先加入 · +2",
+    "daysLeft": "還剩 {{count}} 天",
+    "lastDay": "即將到期",
+    "joinGroup": "加入挑戰",
+    "whoJoined": "誰加入了（{{count}}）",
+    "ended": "已結束",
+    "awaitingResults": "等待結果"
   },
   "statusInProgress": "挑戰進行中",
   "statusAccomplished": "挑戰搞定",
@@ -156,6 +166,10 @@
       "in_progress": {
         "title": "已經有人在接了",
         "body": "另一位旅人正在接這個挑戰。等他完成後再回來 - 挑戰會重新開放。"
+      },
+      "completed": {
+        "title": "挑戰已完成",
+        "body": "此挑戰已完成，不再接受新的參與。"
       }
     }
   },
@@ -452,11 +466,54 @@
       "public": "🌍 公開",
       "friends": "👯 朋友",
       "private": "🔒 私密"
+    },
+    "label": "誰可以看到？",
+    "public": "🌍 公開",
+    "friends": "👯 好友",
+    "publicHint": "城市裡的任何人都能看到並接受。",
+    "friendsHint": "只有你的好友和你邀請的人能看到。",
+    "intlLocked": "國際挑戰一律公開。",
+    "moderationBlocked": "你的文字被標記了，請重新表達。",
+    "optin": {
+      "title": "注意 — 這是公開的",
+      "body": "公開挑戰會出現在城市動態和公開網頁上。你的名字和挑戰內容將對任何人可見，包括非會員和搜尋引擎。如果想更私密，可以在下方切換為好友。",
+      "cta": "明白，公開發布",
+      "switchToFriends": "改為好友",
+      "dontShowAgain": "不再顯示"
     }
   },
   "privacy": {
     "closedCloseCta": "停止新成員加入",
-    "closedReopenCta": "重新開放加入"
+    "closedReopenCta": "重新開放加入",
+    "panelTitle": "隱私",
+    "currentPublic": "這個挑戰是公開的，任何人都能看到。",
+    "currentFriends": "這個挑戰只與好友分享。",
+    "currentPrivate": "這個挑戰是私密的，只有你們兩人能看到。",
+    "intlNote": "國際挑戰一律公開。",
+    "goPrivateCta": "設為私密（雙方都需同意）",
+    "myVoteAgreed": "你已投贊成 — 等待對方。",
+    "myVoteDenied": "你拒絕了。點下方可改變主意。",
+    "otherVoteAgreed": "對方投了贊成 — 輪到你決定。",
+    "otherVoteDenied": "對方拒絕了。",
+    "voteAgreedCta": "同意 — 設為私密",
+    "voteDeniedCta": "拒絕",
+    "withdrawCta": "撤回我的投票",
+    "needCounterparty": "有人接受這個挑戰後即可使用。",
+    "errVote": "無法儲存你的投票，請重試。",
+    "errSave": "無法儲存，請重試。",
+    "notifTitle": "此挑戰的通知",
+    "notif": {
+      "milestones": "里程碑",
+      "all": "每則訊息",
+      "off": "關閉"
+    },
+    "notifHint": {
+      "milestones": "參與者接受、提交證明、最終確認。",
+      "all": "頻道裡每則新訊息都通知我。",
+      "off": "保持安靜 — 我自己看頻道。"
+    },
+    "closedTitle": "停止接受新成員",
+    "closedBody": "現有參與者保留。加入按鈕將停止接納新人，直到你重新開放。"
   },
   "details": {
     "collapseAria": "隱藏頻道詳情",
@@ -503,7 +560,8 @@
       "body": "成為第一個接受挑戰並獲得分數的人。"
     },
     "errLoad": "載入排行榜失敗，下拉重試。",
-    "neutral": "🏆 最在地"
+    "neutral": "🏆 最在地",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "積分如何獲得",
@@ -530,7 +588,16 @@
       "heading": "🔁 一次只來一位",
       "body": "挑戰者完成後,聊天會重置--挑戰仍在,等待下一位冒險者。"
     },
-    "pointsHeading": "💯 如何賺取積分"
+    "pointsHeading": "💯 如何賺取積分",
+    "ways": {
+      "join": "加入挑戰",
+      "create": "發起挑戰",
+      "present": "到場 — 已驗證出席",
+      "host": "舉辦一次見面",
+      "submit": "向挑戰提交相片",
+      "win": "贏得相片挑戰"
+    },
+    "seeExamples": "查看 3 個真實範例"
   },
   "scoreCelebration": {
     "unit": "積分",
@@ -541,7 +608,8 @@
       "debrief": "任務完成 🎉",
       "ghost": "下次再來 👻",
       "default": "你正在榜上攀升 🚀",
-      "meet_bonus": "見面獎勵解鎖 🤝"
+      "meet_bonus": "見面獎勵解鎖 🤝",
+      "challenge_created": "你發起了一個挑戰 🎯"
     },
     "rank": {
       "city": "{{city}} 第 {{rank}} 名",
@@ -561,7 +629,8 @@
       "debrief": "雙方評價",
       "ghost": "放鴿子",
       "default": "獲得",
-      "meet_bonus": "見面獎勵"
+      "meet_bonus": "見面獎勵",
+      "challenge_created": "已建立挑戰"
     },
     "event": {
       "deletedChallenge": "已刪除的挑戰",
@@ -597,7 +666,10 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "讚！",
-    "total": "你現在有 {{total}} 分"
+    "total": "你現在有 {{total}} 分",
+    "rateTitle": "為這個挑戰評分",
+    "notePlaceholder": "新增備註（選填）",
+    "saveRating": "儲存評分"
   },
   "status": {
     "live": "進行中",
@@ -605,6 +677,113 @@
   },
   "group": {
     "meetCta": "選擇見面日期",
-    "meetRequired": "請選擇見面日期。"
+    "meetRequired": "請選擇見面日期。",
+    "meetLabel": "時間和地點",
+    "meetHint": "所有加入的人都在這裡一起見面。之後由你確認誰到場了。",
+    "meetSet": "設定見面",
+    "done": "這次見面已結束。",
+    "validateCta": "確認誰到場了",
+    "validateAfter": "見面後你可以確認 · {{time}}",
+    "youreIn": "你已加入 — 到時見！",
+    "joinCta": "加入挑戰（+2 分）",
+    "closed": "已停止接受新成員",
+    "joinFailed": "加入失敗，請重試。",
+    "validateFailed": "確認失敗，請重試。",
+    "validateTitle": "誰到場了？",
+    "validateSub": "勾選所有來見面的人。每人都獲得獎勵。",
+    "rateMeet": "這次見面怎麼樣？",
+    "validateConfirm": "確認 {{count}} 人到場",
+    "noParticipants": "還沒有人加入。",
+    "join": "加入",
+    "joinedCount": "{{count}} 人已加入",
+    "deadlineLabel": "提交截止時間",
+    "deadline24h": "24h",
+    "deadline3d": "3 天",
+    "deadline1w": "1 週",
+    "deadlineHint": "所有加入的人在截止前提交一張相片。之後由你選出獲勝者。",
+    "deadlineRequiredTitle": "選擇截止時間",
+    "deadlineRequired": "選擇挑戰持續多久。",
+    "deadlinePrefix": "截止於",
+    "contestDone": "這個挑戰已結束。",
+    "youreInPhoto": "你已加入 — 在下方提交你的相片。",
+    "pickWinnerCta": "選出獲勝者",
+    "joinContestCta": "加入挑戰（+2 分）",
+    "winnerTitle": "選出獲勝者",
+    "winnerSub": "選出最佳相片。獲勝者贏得大獎勵。",
+    "winnerConfirm": "為獲勝者加冕",
+    "winnerNoSubmission": "該使用者尚未提交相片。",
+    "winnerFailed": "無法選出獲勝者，請重試。",
+    "submissionsHeader": "{{count}} 張相片",
+    "tapToPick": "選出最佳",
+    "winnerTag": "獲勝者",
+    "pickThis": "選擇",
+    "winnerConfirmTitle": "為獲勝者加冕？",
+    "winnerConfirmBody": "{{name}} 贏得大獎勵。",
+    "pickHint": "從下方相片中選出獲勝者。",
+    "awaitingPhotos": "還沒有相片 — 挑戰正在升溫 🔥",
+    "checkPhotos": "查看這 {{count}} 張相片"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 離開",
+    "confirmTitle": "離開這個挑戰？",
+    "confirmBody": "進度將歸零，挑戰將重新向他人開放。此操作無法復原。",
+    "confirmCta": "離開",
+    "failed": "離開失敗，請重試。"
+  },
+  "restart": {
+    "cta": "重新開始挑戰",
+    "confirmTitle": "重新開始挑戰？",
+    "confirmBody": "這會移除目前的參與者、清空聊天，並將挑戰從零重新開放。此操作無法復原。",
+    "confirmCta": "重新開始",
+    "failed": "重新開始失敗，請重試。"
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "此刻，感受這座城市",
+      "body": "挑戰是城市裡人與人之間、以及城市之間的小小現實約戰。"
+    },
+    "slide2": {
+      "title": "設定一個挑戰",
+      "body": "設定一次見面（時間 + 地點），或一個有截止時間的相片挑戰。你就是主辦人。"
+    },
+    "slide3": {
+      "title": "誰都能直接加入",
+      "body": "不用申請，不用等待 — 想來就加入。立刻獲得 +2。"
+    },
+    "slide4": {
+      "title": "讓它發生",
+      "body": "大家一起到你的見面現場 — 或在截止前提交最佳相片。"
+    },
+    "slide5": {
+      "title": "由你確認",
+      "body": "之後你確認誰到場了，或選出獲勝相片。大分就在這裡。"
+    },
+    "slide6": {
+      "title": "跨城市",
+      "body": "相片挑戰可以遠端進行 — 向另一座城市發起挑戰，讓他們交出最佳作品。"
+    },
+    "slide7": {
+      "title": "衝上 Most Local",
+      "body": "到場並取勝才能在榜上攀升。加入只給一點點火花，關鍵是真正去做。"
+    }
+  },
+  "pointExamples": {
+    "title": "3 個真實範例",
+    "intro": "真實挑戰是怎麼發分的 — 誰得了多少。",
+    "empty": "還沒有範例 — 搶先發起一個挑戰吧！",
+    "each": "每人",
+    "line": {
+      "created": "{{name}} 發起了",
+      "winner": "{{name}} 獲勝",
+      "present": "{{count}} 人到場",
+      "submission": "{{count}} 人提交了相片",
+      "host": "{{name}} 主辦"
+    }
+  },
+  "titlePh": {
+    "food": "例如：幫我找到最好吃的一碗河粉 🍜",
+    "place": "例如：帶我去你最愛的私藏角落 📍",
+    "culture": "例如：給我看只有在地人才知道的東西 🎭",
+    "help": "例如：挑戰我做件瘋狂的事 🤪"
   }
 }

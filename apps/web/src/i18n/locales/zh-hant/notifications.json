@@ -1,7 +1,10 @@
 {
   "title": "通知",
   "markAllRead": "全部標示為已讀",
-  "empty": { "title": "全部看完了", "sub": "通知會顯示在這裡" },
+  "empty": {
+    "title": "全部看完了",
+    "sub": "通知會顯示在這裡"
+  },
   "loading": "載入中…",
   "seeAll": "查看所有通知 →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "個人資料瀏覽 👀",
     "profileViewDesc": "當有人查看你的個人資料時",
     "announcementName": "來自 Hilads 的公告",
-    "announcementDesc": "團隊不定期的最新消息"
+    "announcementDesc": "團隊不定期的最新消息",
+    "newChallengeName": "你所在城市的新挑戰",
+    "newChallengeDesc": "當有人在你所在城市發起挑戰時"
   }
 }

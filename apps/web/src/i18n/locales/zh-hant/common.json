@@ -159,5 +159,6 @@
     "expiresInHour": "{{hours}} 小時後到期"
   },
   "filterChallenges": "🔥 挑戰",
-  "shareToCity": "分享到我的城市"
+  "shareToCity": "分享到我的城市",
+  "hiLocalTitle": "👋 Hi Local"
 }

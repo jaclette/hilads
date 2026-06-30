@@ -102,7 +102,14 @@
     "filterAll": "すべて",
     "seeComing": "これからの予定を見る 🔮",
     "seeHappened": "これまでの出来事を見る",
-    "createNew": "新規作成"
+    "createNew": "新規作成",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "{{name}}に挨拶しよう",
+    "sayHiGeneric": "挨拶しよう 👋",
+    "hostWaiting": "最初の挨拶を待っています 👋"
   },
   "header": {
     "online": "近くに{{count}}人",

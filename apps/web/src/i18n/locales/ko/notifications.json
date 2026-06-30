@@ -1,7 +1,10 @@
 {
   "title": "알림",
   "markAllRead": "모두 읽음으로 표시",
-  "empty": { "title": "모두 확인했어요", "sub": "알림이 여기에 표시돼요" },
+  "empty": {
+    "title": "모두 확인했어요",
+    "sub": "알림이 여기에 표시돼요"
+  },
   "loading": "불러오는 중…",
   "seeAll": "모든 알림 보기 →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "프로필 방문 👀",
     "profileViewDesc": "누군가 내 프로필을 볼 때",
     "announcementName": "Hilads 소식",
-    "announcementDesc": "팀에서 가끔 전하는 업데이트"
+    "announcementDesc": "팀에서 가끔 전하는 업데이트",
+    "newChallengeName": "내 도시의 새 챌린지",
+    "newChallengeDesc": "누군가 내 도시에서 챌린지를 시작할 때"
   }
 }

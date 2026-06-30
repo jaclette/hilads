@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #{{rank}}",
     "mainRanked_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #{{rank}}",
     "mainTop_one": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1",
-    "mainTop_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1"
+    "mainTop_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1",
+    "mainLoading": "🔥 {{city}}의 챌린지",
+    "subLoading": " "
   }
 }

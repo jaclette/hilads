@@ -159,5 +159,6 @@
     "expiresInHour": "あと{{hours}}時間で期限切れ"
   },
   "filterChallenges": "🔥 挑戦",
-  "shareToCity": "自分の街でシェア"
+  "shareToCity": "自分の街でシェア",
+  "hiLocalTitle": "👋 Hi Local"
 }

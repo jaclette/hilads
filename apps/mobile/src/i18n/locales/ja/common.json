@@ -129,7 +129,9 @@
     "placeholderCity": "街にあいさつしよう 👋",
     "placeholderHangout": "参加するって伝えよう 🙌",
     "placeholderEvent": "参加者と話そう 🎉",
-    "placeholderChallenge": "応援したり、コツを共有しよう 🔥"
+    "placeholderChallenge": "応援したり、コツを共有しよう 🔥",
+    "endedEvent": "このイベントは終了しました",
+    "closedChallenge": "このチャレンジは終了しました"
   },
   "modeHeading": "モード",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "あと{{hours}}時間{{mins}}分で期限切れ",
     "expiresInHour": "あと{{count}}時間で期限切れ"
   },
-  "shareToCity": "自分の街でシェア"
+  "shareToCity": "自分の街でシェア",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "過去",
+  "sayHi": "{{name}}に挨拶しよう",
+  "hostWaiting": "最初の挨拶を待っています 👋",
+  "shareToCityError": "街に共有できませんでした。もう一度お試しください。"
 }

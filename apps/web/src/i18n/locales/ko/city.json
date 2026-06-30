@@ -102,7 +102,14 @@
     "filterAll": "전체",
     "seeComing": "다가오는 일정 보기 🔮",
     "seeHappened": "지난 활동 보기",
-    "createNew": "만들기"
+    "createNew": "만들기",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "{{name}}님에게 인사하기",
+    "sayHiGeneric": "인사하기 👋",
+    "hostWaiting": "첫 인사를 기다리는 중 👋"
   },
   "header": {
     "online": "근처 {{count}}명",

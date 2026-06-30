@@ -159,5 +159,6 @@
     "expiresInHour": "{{hours}}시간 후 만료"
   },
   "filterChallenges": "🔥 챌린지",
-  "shareToCity": "내 도시에 공유"
+  "shareToCity": "내 도시에 공유",
+  "hiLocalTitle": "👋 Hi Local"
 }

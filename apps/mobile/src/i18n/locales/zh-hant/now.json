@@ -48,5 +48,9 @@
   "noChallengesCity": "在 {{city}} 第一個發起一個吧",
   "noChallengesGeneric": "第一個發起一個挑戰吧。",
   "hiNowHint": "現在一起玩",
-  "hiLaterHint": "計劃活動"
+  "hiLaterHint": "計劃活動",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }
