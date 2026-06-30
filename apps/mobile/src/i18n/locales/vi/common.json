@@ -23,17 +23,17 @@
     },
     "slide2": {
       "title": "Ba cách sống thành phố",
-      "itemChallenges": "🤝 Challenges - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
+      "itemChallenges": "🤝 Thử thách - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
       "itemHangouts": "🗣️ Hi now - gặp ai đó một cách ngẫu hứng",
       "itemEvents": "🎉 Hi plan - lên lịch một buổi gặp"
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
-      "body": "Mỗi challenge bạn hoàn thành, mỗi cuộc gặp, mỗi địa điểm bạn khám phá đều cộng điểm cho bạn. Điểm phản ánh bạn đã trở thành người địa phương ở {{city}} đến mức nào. Lên đỉnh bảng Thổ địa và kiếm chỗ đứng giữa những người làm cho thành phố sống động."
+      "body": "Mỗi thử thách bạn hoàn thành, mỗi cuộc gặp, mỗi địa điểm bạn khám phá đều cộng điểm cho bạn. Điểm phản ánh bạn đã trở thành người địa phương ở {{city}} đến mức nào. Lên đỉnh bảng Thổ địa và kiếm chỗ đứng giữa những người làm cho thành phố sống động."
     },
     "slide4": {
       "title": "Sẵn sàng bắt đầu?",
-      "ctaChallenge": "📍 Nhận challenge đầu tiên ở {{city}}",
+      "ctaChallenge": "📍 Nhận thử thách đầu tiên ở {{city}}",
       "ctaMostLocal": "🤝 Khám phá Thổ địa của {{city}}",
       "ctaLookAround": "👀 Cứ ngó qua đã",
       "ctaHiNow": "🗣️ Hi now",
@@ -56,22 +56,22 @@
     },
     "slide4": {
       "title": "Gặp mặt hay gửi ảnh?",
-      "body": "Gặp trực tiếp hay gửi ảnh từ xa - tuỳ bạn. Kiểu nào thì pipeline cũng theo dõi từng bước."
+      "body": "Gặp trực tiếp hay gửi ảnh từ xa - tuỳ bạn. Kiểu nào thì mọi bước đều được ghi lại."
     },
     "slide5": {
       "title": "Hoàn tất thử thách",
-      "body": "Sau khi gặp (hoặc khi ảnh được duyệt), đánh dấu hoàn thành. Thành phố của bạn, sống thật - mỗi lần một challenge."
+      "body": "Sau khi gặp (hoặc khi ảnh được duyệt), đánh dấu hoàn thành. Thành phố của bạn, sống thật - mỗi lần một thử thách."
     },
     "next": "Tiếp",
     "done": "Hiểu rồi!",
     "skip": "Bỏ qua ✕",
     "slide6": {
       "title": "Vượt khỏi thành phố",
-      "body": "Thách bất cứ ai, ở bất cứ đâu. Người đó gửi chứng minh - ảnh có gắn vị trí - và bạn duyệt từ xa. Cùng luồng ảnh đó cũng dùng được cho local. Local hay global, mọi challenge đều tính."
+      "body": "Thách bất cứ ai, ở bất cứ đâu. Người đó gửi chứng minh - ảnh có gắn vị trí - và bạn duyệt từ xa. Cùng luồng ảnh đó cũng dùng được cho địa phương. Địa phương hay toàn cầu, mọi thử thách đều tính."
     },
     "slide7": {
       "title": "Trở thành Thổ địa",
-      "body": "Mỗi challenge đều có điểm - cả thành phố lẫn toàn cầu. Gặp mặt trực tiếp được thêm +50 thưởng. Người địa phương hay du khách, điều quan trọng là bạn xây dựng gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
+      "body": "Mỗi thử thách đều có điểm - cả thành phố lẫn toàn cầu. Gặp mặt trực tiếp được thêm +50 thưởng. Người địa phương hay du khách, điều quan trọng là bạn xây dựng gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
     },
     "createCta": "🔥 Tạo thử thách"
   },

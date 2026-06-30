@@ -175,10 +175,10 @@
   },
   "thread": {
     "notFound": "Không tìm thấy thread",
-    "empty": "Chào hỏi 👋 và lên kế hoạch gặp nhau.",
+    "empty": "Hãy là người đầu tiên nói gì đó.",
     "emptyIntl": "Chào nhé 👋 - xong rồi thì gửi 📸 nhé.",
     "cancel": {
-      "creatorTitle": "Huỷ take-on này?",
+      "creatorTitle": "Huỷ tham gia này?",
       "acceptorTitle": "Bỏ challenge này?",
       "body": "Thread và chat sẽ bị xoá. Bạn có thể nhận lại sau nếu đổi ý.",
       "confirm": "Huỷ",
@@ -186,7 +186,7 @@
     },
     "cancelledByOther": {
       "title": "Thread đã huỷ",
-      "body": "Người kia đã huỷ take-on này."
+      "body": "Người kia đã huỷ tham gia này."
     }
   },
   "threads": {
