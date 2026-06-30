@@ -32,7 +32,7 @@
     },
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
-      "title": "Fantasmas olham, mas não desafiam.",
+      "title": "Fantasmas podem dar uma olhada, mas não podem desafiar.",
       "sub": "Cadastre-se para lançar um desafio para locais ou viajantes e validá-lo."
     },
     "accept_challenge": {
@@ -247,7 +247,7 @@
     "challengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\".",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Desafio internacional: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Foto"

@@ -42,7 +42,7 @@
     "sub": "Seja o primeiro no ranking - lance e conclua um desafio"
   },
   "createTitle": "Criar um desafio",
-  "allTitle": "Todos os Challenges",
+  "allTitle": "Todos os desafios",
   "editTitle": "Editar desafio",
   "audience": "Para quem?",
   "aud": {
@@ -68,7 +68,7 @@
     "food": "...e vem dividir comigo 🍜",
     "place": "...e me leva você mesmo 🗺️",
     "culture": "...e a gente se encontra pra conversar sobre isso 🎭",
-    "help": "...e a gente se encontra pra eu te ajudar pessoalmente 🙏"
+    "help": "...e a gente faz algo maluco junto 🤪"
   },
   "createCta": "Lançar desafio 🔥",
   "saveChanges": "Salvar alterações",
@@ -86,7 +86,7 @@
     "available": "Disponível",
     "inProgress": "Em andamento",
     "takeIt": "Eu topo",
-    "takerLabel": "Tomador",
+    "takerLabel": "Desafiado",
     "rankBadge": "Posição {{rank}}",
     "photoBadge": "Foto",
     "joinedCount": "{{count}} inscritos",
@@ -192,10 +192,10 @@
   },
   "thread": {
     "notFound": "Thread não encontrado",
-    "empty": "Diga oi 👋 e combinem quando se encontrar.",
+    "empty": "Seja o primeiro a dizer algo.",
     "emptyIntl": "Manda um oi 👋 - joga uma 📸 quando conseguir.",
     "cancel": {
-      "creatorTitle": "Cancelar esse take-on?",
+      "creatorTitle": "Cancelar essa participação?",
       "acceptorTitle": "Desistir desse desafio?",
       "body": "O thread e o chat serão excluídos. Você pode aceitar de novo depois se mudar de ideia.",
       "confirm": "Cancelar",
@@ -203,7 +203,7 @@
     },
     "cancelledByOther": {
       "title": "Thread cancelado",
-      "body": "A outra pessoa cancelou esse take-on."
+      "body": "A outra pessoa cancelou essa participação."
     }
   },
   "threads": {
@@ -351,7 +351,7 @@
   },
   "postCreate": {
     "title": "Seu desafio está no ar",
-    "subtitle": "Agora semeie - faça alguém aceitar nas próximas horas.",
+    "subtitle": "Agora espalhe — faça alguém aceitar na próxima hora.",
     "thisCity": "esta cidade",
     "ctaInvite": "Mande pra alguém em {{city}}",
     "ctaInviteSub": "Escolha alguns {{audience}} - a gente pinga.",
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "Cidade-alvo",
     "targetCityAnywhere": "🌍 Qualquer lugar do mundo",
-    "targetCityHint": "Deixe em \"Qualquer lugar\" pra alcançar viajantes em qualquer lugar, ou escolha uma cidade.",
+    "targetCityHint": "Escolha uma cidade-alvo — «Qualquer lugar do mundo» ainda não está disponível.",
     "proofRequirementsLabel": "O que a foto deve mostrar?",
     "proofRequirementsPlaceholder": "ex. O prato à luz do dia, com você no enquadramento",
     "proofRequirementsHint": "A prova é uma foto 📸. O participante vê isso antes de enviar - seja específico.",
@@ -436,7 +436,7 @@
       "submitFailBody": "Verifique a conexão e tente de novo.",
       "reviewFailTitle": "Não foi possível salvar o veredicto"
     },
-    "targetCityRequired": "«Em qualquer lugar do mundo» ainda não está disponível — escolha uma cidade-alvo para continuar.",
+    "targetCityRequired": "«Qualquer lugar do mundo» ainda não está disponível — escolha uma cidade-alvo para continuar.",
     "targetCityRequiredTitle": "Escolha uma cidade-alvo"
   },
   "modeFilter": {
@@ -446,8 +446,8 @@
   "chatPlaceholder": "Diga algo no canal…",
   "messageCreator": "Mande mensagem privada para {{name}}",
   "badge": {
-    "challenger": "Desafiador",
-    "taker": "Aceitante",
+    "challenger": "Desafiante",
+    "taker": "Desafiado",
     "spectator": "Espectador"
   },
   "cta": {
@@ -531,7 +531,7 @@
     "errSubmit": "Não foi possível enviar sua avaliação. Tente de novo."
   },
   "leaderboard": {
-    "title": "🏆 Os mais locais",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "Seja o primeiro a aceitar um desafio e ganhar pontos."
     },
     "errLoad": "Não foi possível carregar o ranking. Puxe para tentar de novo.",
-    "neutral": "🏆 Os mais locais",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "Buscar cidades…",
       "empty": "Nenhuma cidade corresponde."
@@ -567,7 +567,7 @@
     "aria": "Como funcionam os pontos",
     "helpLabel": "🏆 Como ganhar pontos",
     "title": "🏆 Como funcionam os desafios",
-    "intro": "Cada desafio dá pontos para os dois lados - vão pro seu ranking da cidade e mundial.",
+    "intro": "Faíscas pequenas por entrar; os pontos grandes por aparecer de verdade ou vencer. Acumular entradas nunca compensa.",
     "colStep": "Etapa",
     "steps": {
       "created": "Desafio criado",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "Total por desafio",
-    "footnote": "Os pontos de criação (+10) caem na hora. O resto só é dado quando os dois avaliam o encontro.",
+    "footnote": "Os números podem mudar conforme a gente ajusta o jogo.",
     "types": {
-      "heading": "🎯 Dois jeitos de jogar",
-      "local": "🏙️ Local - na sua cidade. Encontro presencial pra valer.",
-      "international": "🌍 Internacional - entre cidades. Foto instantânea como prova."
+      "heading": "Dois tipos de desafio",
+      "local": "🏙️ Encontro — junte um grupo pessoalmente em uma data e lugar marcados. Quem aparece ganha muito.",
+      "international": "🌍 Desafio de fotos — todo mundo envia uma foto antes do prazo; o desafiante escolhe o vencedor."
     },
     "lifecycle": {
-      "heading": "🔁 Um desafio por vez",
-      "body": "Quando o tomador termina, o chat reseta - o desafio fica, pronto pro próximo aventureiro."
+      "heading": "🔁 Como é resolvido",
+      "body": "O desafiante monta o desafio, as pessoas entram e, no final, o desafiante valida — quem apareceu ou qual foto venceu."
     },
     "pointsHeading": "💯 Como ganhar pontos",
     "ways": {
@@ -602,7 +602,7 @@
   "scoreCelebration": {
     "unit": "pontos",
     "subtitle": {
-      "accepted": "Seu challenge foi aceito 🤝",
+      "accepted": "Seu desafio foi aceito 🤝",
       "date_locked": "Encontro confirmado - bora 🗓️",
       "meetup": "Missão cumprida 🎉",
       "debrief": "Missão cumprida 🎉",
@@ -627,13 +627,13 @@
       "date_locked": "Encontro marcado",
       "meetup": "Se encontraram",
       "debrief": "Ambos avaliaram",
-      "ghost": "Ghosted",
+      "ghost": "Ghostado",
       "default": "Ganhos",
       "meet_bonus": "Bônus de encontro",
       "challenge_created": "Desafio criado"
     },
     "event": {
-      "deletedChallenge": "Challenge removido",
+      "deletedChallenge": "Desafio removido",
       "andMore": "e mais {{count}}"
     },
     "total": "Total: {{total}} pts"
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "Você venceu!",
-      "body": "Sua foto venceu o concurso."
+      "body": "Sua foto venceu o desafio."
     },
     "loser": {
       "title": "{{name}} venceu",
@@ -660,7 +660,7 @@
       "body": "Não perca o próximo encontro — seu lugar está esperando."
     },
     "host": {
-      "titlePhoto": "{{name}} venceu seu concurso!",
+      "titlePhoto": "{{name}} venceu seu desafio!",
       "titleMeet": "Seu encontro terminou!",
       "body": "Obrigado por organizar.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
