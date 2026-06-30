@@ -1,7 +1,7 @@
 {
   "meta": {
     "cityTitle": "Стань местным в {{city}} - Hilads",
-    "cityDesc": "Стань местным в {{city}}: бросай challenge, иди на meetup, заходи в hangout, открывай Local Events. Живой чат с теми, кто онлайн.",
+    "cityDesc": "Стань местным в {{city}}: бросай челлендж, иди на meetup, заходи в hangout, открывай Local Events. Живой чат с теми, кто онлайн.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Заходи в {{title}} на Hilads - Local Event, который идёт прямо сейчас. Смотри кто будет и общайся в живом чате."
   },

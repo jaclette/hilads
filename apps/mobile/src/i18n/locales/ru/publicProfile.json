@@ -66,9 +66,9 @@
   "alreadyReportedBody": "Ты пожаловался на этого пользователя {{date}}. Твоя жалоба на рассмотрении.",
   "blockUser": "Заблокировать пользователя",
   "blocking": "Блокировка…",
-  "ghostName": "Призрак",
+  "ghostName": "Ghost",
   "visiting": "В гостях в {{city}}",
-  "ghostNote": "Летает здесь как призрак 👻",
+  "ghostNote": "Летает здесь как Ghost 👻",
   "tabChallenges": "Челленджи",
   "noChallenges": "Пока нет челленджей"
 }
