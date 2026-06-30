@@ -16,7 +16,7 @@
   "blocked": {
     "title": "Mga naka-block na user",
     "thisUser": "ang user na ito",
-    "ghostName": "Multo",
+    "ghostName": "Ghost",
     "guest": "Guest",
     "unblock": "I-unblock",
     "unblockTitle": "I-unblock si {{name}}?",

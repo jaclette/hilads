@@ -32,13 +32,13 @@
     },
     "create_challenge": {
       "pageTitle": "Mag-launch ng challenge",
-      "title": "Pwede tumingin ang ghosts, pero hindi makakahamon.",
-      "sub": "Mag-sign up para mag-launch ng challenge sa mga lokal o biyahero at i-validate ito."
+      "title": "Pwede tumingin ang Ghost, pero hindi makaka-challenge.",
+      "sub": "Mag-sign up para mag-launch ng challenge sa mga local o biyahero at i-validate ito."
     },
     "accept_challenge": {
-      "pageTitle": "Tanggapin ang hamon",
-      "title": "Mag-sign up para kunin ang hamon na ito",
-      "sub": "3 segundo lang. Babalik ka kaagad sa hamon."
+      "pageTitle": "Tanggapin ang challenge",
+      "title": "Mag-sign up para kunin ang challenge na ito",
+      "sub": "3 segundo lang. Babalik ka kaagad sa challenge."
     }
   },
   "welcome": {
@@ -243,8 +243,8 @@
     "join": "Sumali",
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",
-    "challengeLocals": "🔥 Hinahamon ni {{name}} ang mga lokal: {{title}}",
-    "challengeExplorers": "🔥 Hinahamon ni {{name}} ang mga biyahero: {{title}}",
+    "challengeLocals": "🔥 Nag-challenge si {{name}} sa mga local: {{title}}",
+    "challengeExplorers": "🔥 Nag-challenge si {{name}} sa mga biyahero: {{title}}",
     "challengeCta": "Tingnan →",
     "challengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} International na challenge: {{title}}"
@@ -273,7 +273,7 @@
     "subRanked": "I-tap para tanggapin ang susunod mong challenge →",
     "subUnranked": "Tanggapin ang unang challenge para umakyat →",
     "subTop": "Ipagtanggol ang titulo mo →",
-    "subEmpty": "Gumawa ng una para sa mga manlalakbay →",
+    "subEmpty": "Gumawa ng una para sa mga biyahero →",
     "nearby": "{{count}} malapit",
     "recent": "{{count}} kakarating",
     "mainUnranked_one": "🔥 {{count}} challenge sa {{city}}",

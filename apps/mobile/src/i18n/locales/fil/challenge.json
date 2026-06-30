@@ -32,7 +32,7 @@
       "body": "Gumawa ng account para maglunsad ng challenge at tumanggap ng sa iba."
     }
   },
-  "tabIntro": "Mga challenge sa pagitan ng mga local at explorer sa loob ng isang siyudad - at across cities.",
+  "tabIntro": "Mga challenge sa pagitan ng mga local at biyahero sa loob ng isang siyudad - at across cities.",
   "howItWorks": "Paano ito gumagana",
   "mostLocal": "Most Local",
   "seeAll": "Tingnan lahat",
@@ -68,7 +68,7 @@
     "food": "...tapos puntahan mo ako para i-share 🍜",
     "place": "...tapos ikaw mismo magsama sa akin 🗺️",
     "culture": "...tapos magkita tayo para pag-usapan 🎭",
-    "help": "...tapos magkita tayo para tulungan kita in person 🙏"
+    "help": "...tapos gumawa tayo ng kahit anong baliw na bagay 🤪"
   },
   "createCta": "Ilunsad ang challenge 🔥",
   "saveChanges": "I-save ang mga pagbabago",
@@ -170,7 +170,7 @@
         "body": "Ikaw ang gumawa ng challenge na ito - hintayin mo ibang tao na tanggapin."
       },
       "mode_required": {
-        "title": "Pumili muna ng local o traveler",
+        "title": "Pumili muna ng local o biyahero",
         "body": "I-set ang mode mo sa profile bago tumanggap ng challenges."
       },
       "mode_mismatch": {
@@ -192,10 +192,10 @@
   },
   "thread": {
     "notFound": "Hindi mahanap ang thread",
-    "empty": "Mag-hi 👋 at mag-plan kung kailan kayo magkita.",
+    "empty": "Ikaw ang maunang magsalita.",
     "emptyIntl": "Mag-hi 👋 - kapag nakuha mo, padala ka ng 📸.",
     "cancel": {
-      "creatorTitle": "I-cancel ang take-on na ito?",
+      "creatorTitle": "Kanselahin ang pagsali na ito?",
       "acceptorTitle": "I-drop ang challenge na ito?",
       "body": "Mabubura ang thread at chat. Pwede mong tanggapin ulit later kung magbago ang isip mo.",
       "confirm": "I-cancel",
@@ -203,7 +203,7 @@
     },
     "cancelledByOther": {
       "title": "Na-cancel ang thread",
-      "body": "Kinansela ng kabilang tao ang take-on na ito."
+      "body": "Kinansela ng kabilang tao ang pagsali na ito."
     }
   },
   "threads": {
@@ -326,8 +326,8 @@
     },
     "acceptor": {
       "waitingTitle": "Hinihintay ang sagot",
-      "waitingBody": "Tatanggapin o ire-reject ni {{name}} ang take-on mo. Ma-notify ka pag nag-decide na sila.",
-      "rejectedTitle": "Na-reject ang take-on",
+      "waitingBody": "Tatanggapin o tatanggihan ni {{name}} ang request mo. May push ka pag may desisyon na.",
+      "rejectedTitle": "Tinanggihan ang request",
       "rejectedBody": "Na-reject ni {{name}} 'to. Pwede ka pa rin pumili ng ibang challenge."
     }
   },
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "Target na lungsod",
     "targetCityAnywhere": "🌍 Kahit saan sa mundo",
-    "targetCityHint": "Iwanan sa \"Kahit saan\" para umabot kahit saan, o pumili ng isang lungsod.",
+    "targetCityHint": "Pumili ng target city — hindi pa available ang \"Kahit saan sa mundo\".",
     "proofRequirementsLabel": "Ano ang dapat ipakita sa larawan?",
     "proofRequirementsPlaceholder": "hal. Ang pagkain sa liwanag ng araw, ikaw nasa frame",
     "proofRequirementsHint": "Ang patunay ay isang larawan 📸. Nakikita ito ng kalahok bago magpasa - maging tiyak.",
@@ -465,7 +465,7 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Pribado ang hamon na ito",
+      "title": "🔒 Pribado ang challenge na ito",
       "body": "Tanging ang gumawa at tumanggap lang ang makakakita ng usapan."
     }
   },
@@ -531,7 +531,7 @@
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   },
   "leaderboard": {
-    "title": "🏆 Pinaka-local",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "Maging una sa pag-take ng challenge at makakuha ng points."
     },
     "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
-    "neutral": "🏆 Pinaka-local",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "Maghanap ng mga lungsod…",
       "empty": "Walang tumutugmang lungsod."
@@ -567,26 +567,26 @@
     "aria": "Paano gumagana ang points",
     "helpLabel": "🏆 Paano kumita ng points",
     "title": "🏆 Paano gumagana ang challenges",
-    "intro": "Bawat challenge ay nagbibigay ng points sa parehong panig - pumupunta sa city + world leaderboards mo.",
+    "intro": "Maliliit na points lang sa pag-join; ang malalaking points ay para sa totoong pagpunta o panalo. Walang kwenta ang puro join lang.",
     "colStep": "Hakbang",
     "steps": {
       "created": "Nagawa ang challenge",
-      "accepted": "Take-on accepted",
+      "accepted": "Tinanggap ang challenge",
       "date": "May date na",
       "meet": "Meet-up",
       "rate": "Both nag-rate"
     },
     "noPoints": "-",
     "totalLabel": "Total kada challenge",
-    "footnote": "Ang creation points (+10) ay agad na dumarating. Ang iba ay ibinibigay lang kapag pareho nang nag-rate sa meet-up.",
+    "footnote": "Pwedeng magbago ang mga numero habang ina-adjust namin ang laro.",
     "types": {
-      "heading": "🎯 Dalawang paraan ng paglalaro",
-      "local": "🏙️ Local - sa iyong city. Magkita nang personal para mabilang.",
-      "international": "🌍 International - sa pagitan ng mga city. Instant photo ang patunay."
+      "heading": "Dalawang uri ng challenge",
+      "local": "🏙️ Meet — tipunin ang grupo nang personal sa takdang oras + lugar. Lahat ng pumunta, malaki ang points.",
+      "international": "🌍 Photo challenge — lahat magsu-submit ng photo bago ang deadline; ang challenger ang pipili ng panalo."
     },
     "lifecycle": {
-      "heading": "🔁 Isa lang sa isang pagkakataon",
-      "body": "Kapag tapos na ang taker, magre-reset ang chat - nandyan pa rin ang challenge, handa para sa susunod."
+      "heading": "🔁 Paano natatapos",
+      "body": "Ang challenger ang nagtatakda, sasali ang mga tao, at sa dulo ang challenger ang magva-validate — kung sino ang pumunta, o aling photo ang nanalo."
     },
     "pointsHeading": "💯 Paano kumita ng points",
     "ways": {
@@ -640,7 +640,7 @@
   },
   "welcomeGuest": {
     "title": "👋 Welcome! Mag-chat ka nang malaya, walang sign-up.",
-    "cta": "Gusto kunin ang hamon na ito? Mag-sign up sa 3 segundo →"
+    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo →"
   },
   "result": {
     "winner": {
@@ -740,7 +740,7 @@
   "challengeIntro": {
     "slide1": {
       "title": "Damhin ang lungsod, ngayon",
-      "body": "Ang mga challenge ay maliliit na totoong hamon sa pagitan ng mga tao sa isang lungsod — at sa pagitan ng mga lungsod."
+      "body": "Maliliit na totoong challenge sa pagitan ng mga tao sa isang lungsod — at sa pagitan ng mga lungsod."
     },
     "slide2": {
       "title": "Mag-set up ng challenge",
@@ -760,7 +760,7 @@
     },
     "slide6": {
       "title": "Sa pagitan ng mga lungsod",
-      "body": "Gumagana ang mga photo challenge kahit malayo — hamunin ang buong ibang lungsod na magpadala ng pinakamagandang kuha."
+      "body": "Gumagana ang mga photo challenge kahit malayo — i-challenge ang buong ibang lungsod na magpadala ng pinakamagandang kuha."
     },
     "slide7": {
       "title": "Umakyat sa Most Local",
@@ -784,6 +784,6 @@
     "food": "hal. Hanapan mo ako ng pinakamasarap na pho 🍜",
     "place": "hal. Dalhin mo ako sa paborito mong sikretong lugar 📍",
     "culture": "hal. Ipakita mo sa akin ang alam lang ng mga local 🎭",
-    "help": "hal. Hamunin mo akong gumawa ng kakaiba 🤪"
+    "help": "hal. I-challenge mo akong gumawa ng kakaiba 🤪"
   }
 }

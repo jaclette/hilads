@@ -31,23 +31,23 @@
   },
   "local": {
     "badge": "🌍 Local",
-    "title": "Maging ang lokal na nagpapakilos sa siyudad",
-    "tagline": "Alam mo ang mga spot. Hamunin ang mga lokal o biyahero na hanapin ang mga ito.",
+    "title": "Maging ang local na nagpapakilos sa siyudad",
+    "tagline": "Alam mo ang mga spot. I-challenge ang mga local o biyahero na hanapin ang mga ito.",
     "bullets": [
-      "Hamunin ang mga lokal o biyahero - pagkain, lugar, kultura o tulong",
+      "I-challenge ang mga local o biyahero - pagkain, lugar, kultura o tulong",
       "Dalhin ang mga tao sa mga spot na mahal mo",
-      "Maging ang lokal na natatandaan ng mga tao"
+      "Maging ang local na natatandaan ng mga tao"
     ],
     "cta": "Pakilusin ang siyudad mo"
   },
   "exploring": {
     "badge": "🧭 Nag-e-explore",
-    "title": "Tanggapin ang mga lokal na challenge kahit saan",
-    "tagline": "Saan ka man dumating, tanggapin ang mga in-launch ng mga lokal.",
+    "title": "Tanggapin ang mga local na challenge kahit saan",
+    "tagline": "Saan ka man dumating, tanggapin ang mga in-launch ng mga local.",
     "bullets": [
-      "Tanggapin ang mga challenge ng mga lokal",
+      "Tanggapin ang mga challenge ng mga local",
       "Hanapin ang totoong mga spot, rekomendado ng nakatira doon",
-      "Maranasan ang siyudad bilang lokal, hindi turista"
+      "Maranasan ang siyudad bilang local, hindi turista"
     ],
     "cta": "Tingnan ang mga challenge"
   },
@@ -97,7 +97,7 @@
   "international": {
     "badge": "Cross-city",
     "tagline": "Magpadala ng challenge sa ibang lungsod. Tumanggap ng video bilang proof.",
-    "sub": "Kapag tahimik ang lungsod mo, hindi tahimik ang mundo. Hamunin kahit sino kahit saan - magpapadala sila ng proof, ikaw ang magvavalidate mula sa malayo.",
+    "sub": "Kapag tahimik ang lungsod mo, hindi tahimik ang mundo. I-challenge kahit sino kahit saan - magpapadala sila ng proof, ikaw ang magvavalidate mula sa malayo.",
     "bullets": [
       "Targetin ang isang partikular na lungsod, o buksan para sa kahit sino kahit saan.",
       "Litrato na may geotag - proof na nangyari.",

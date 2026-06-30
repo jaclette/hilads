@@ -64,9 +64,9 @@
   "alreadyReportedBody": "Na-report mo ang user na ito noong {{date}}. Sinusuri na ang iyong report.",
   "blockUser": "I-block ang user",
   "blocking": "Bina-block…",
-  "ghostName": "Multo",
+  "ghostName": "Ghost",
   "visiting": "Bumibisita sa {{city}}",
-  "ghostNote": "Lumulutang dito bilang multo 👻",
+  "ghostNote": "Lumulutang dito bilang Ghost 👻",
   "tabChallenges": "Mga Challenge",
   "noChallenges": "Walang challenge pa"
 }
