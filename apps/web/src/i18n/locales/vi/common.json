@@ -6,7 +6,7 @@
     "eventDesc": "Tham gia {{title}} trên Hilads - một Local Event đang diễn ra. Xem ai đến và chat trực tiếp."
   },
   "nowTitle": "Bây giờ",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Sự kiện địa phương",
   "filterHangouts": "🗣️ Tụ tập",
   "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
@@ -30,8 +30,8 @@
     "slide2": {
       "title": "Ba cách sống thành phố",
       "itemChallenges": "🤝 Challenges - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - gặp ai đó một cách ngẫu hứng",
+      "itemEvents": "🎉 Hi plan - lên lịch một buổi gặp"
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
@@ -159,5 +159,6 @@
     "expiresInHour": "Hết hạn sau {{hours}} h"
   },
   "filterChallenges": "🔥 Thử thách",
-  "shareToCity": "Chia sẻ lên thành phố của tôi"
+  "shareToCity": "Chia sẻ lên thành phố của tôi",
+  "hiLocalTitle": "👋 Hi Local"
 }

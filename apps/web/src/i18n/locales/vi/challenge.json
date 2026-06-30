@@ -17,7 +17,7 @@
   "myChallenges": {
     "cta": "Thử thách của tôi"
   },
-  "tabIntro": "Thử thách giữa người địa phương và người khám phá trong một thành phố - và xuyên thành phố.",
+  "tabIntro": "Thử thách giữa người địa phương và du khách trong một thành phố - và giữa các thành phố.",
   "howItWorks": "Cách hoạt động",
   "mostLocal": "Most Local",
   "seeAll": "Xem tất cả",
@@ -72,8 +72,8 @@
     "takeIt": "Nhận thử thách",
     "takerLabel": "Người nhận",
     "rankBadge": "Hạng {{rank}}",
-    "photoBadge": "Photo proof",
-    "meetBadge": "Meet",
+    "photoBadge": "Ảnh chứng minh",
+    "meetBadge": "Gặp mặt",
     "photosCount": "{{count}} ảnh",
     "noOneJoined": "Chưa ai tham gia",
     "beFirst": "⚡ Là người đầu tiên · +2",
@@ -108,7 +108,7 @@
     "culture": "Thử thách văn hóa",
     "help": "Thử thách điên rồ"
   },
-  "challengerTag": "Người tạo",
+  "challengerTag": "Challenger",
   "participantsLabel": "Người tham gia",
   "editBtn": "Chỉnh sửa",
   "deleteBtn": "Xóa",
@@ -166,6 +166,10 @@
       "in_progress": {
         "title": "Có người đang nhận rồi",
         "body": "Một du khách khác đang nhận thử thách này. Quay lại khi họ xong nhé - thử thách sẽ mở lại."
+      },
+      "completed": {
+        "title": "Thử thách đã hoàn thành",
+        "body": "Thử thách này đã hoàn thành - không nhận thêm người mới."
       }
     }
   },
@@ -462,11 +466,54 @@
       "public": "🌍 Công khai",
       "friends": "👯 Bạn bè",
       "private": "🔒 Riêng tư"
+    },
+    "label": "Ai xem được?",
+    "public": "🌍 Công khai",
+    "friends": "👯 Bạn bè",
+    "publicHint": "Bất kỳ ai trong thành phố đều thấy và nhận được.",
+    "friendsHint": "Chỉ bạn bè và người bạn mời mới thấy được.",
+    "intlLocked": "Thử thách quốc tế luôn công khai.",
+    "moderationBlocked": "Nội dung của bạn bị gắn cờ - vui lòng viết lại.",
+    "optin": {
+      "title": "Lưu ý - cái này công khai",
+      "body": "Thử thách công khai xuất hiện trên feed thành phố và trên web công khai. Tên và nội dung thử thách của bạn sẽ hiển thị với bất kỳ ai - kể cả người ngoài và công cụ tìm kiếm. Bạn có thể chuyển sang Bạn bè bên dưới nếu muốn giữ kín hơn.",
+      "cta": "Hiểu rồi, đăng công khai",
+      "switchToFriends": "Chuyển sang Bạn bè",
+      "dontShowAgain": "Đừng hiện lại"
     }
   },
   "privacy": {
     "closedCloseCta": "Đóng nhận thành viên mới",
-    "closedReopenCta": "Mở lại nhận thành viên"
+    "closedReopenCta": "Mở lại nhận thành viên",
+    "panelTitle": "Quyền riêng tư",
+    "closedTitle": "Đóng nhận thành viên mới",
+    "closedBody": "Người đang tham gia vẫn ở lại. Nút Tham gia ngừng nhận người mới cho đến khi bạn mở lại.",
+    "currentPublic": "Thử thách này đang công khai - ai cũng thấy được.",
+    "currentFriends": "Thử thách này chỉ chia sẻ với bạn bè.",
+    "currentPrivate": "Thử thách này riêng tư - chỉ hai bạn thấy được.",
+    "intlNote": "Thử thách quốc tế luôn công khai.",
+    "goPrivateCta": "Chuyển sang riêng tư (cả hai phải đồng ý)",
+    "needCounterparty": "Khả dụng khi có người nhận thử thách này.",
+    "myVoteAgreed": "Bạn đã đồng ý - đang chờ người kia.",
+    "myVoteDenied": "Bạn đã từ chối. Chạm bên dưới để đổi ý.",
+    "otherVoteAgreed": "Họ đã đồng ý - đến lượt bạn quyết định.",
+    "otherVoteDenied": "Họ đã từ chối.",
+    "voteAgreedCta": "Đồng ý - chuyển riêng tư",
+    "voteDeniedCta": "Từ chối",
+    "withdrawCta": "Rút lại lựa chọn",
+    "errSave": "Không lưu được - thử lại nhé.",
+    "errVote": "Không lưu được lựa chọn - thử lại nhé.",
+    "notifTitle": "Thông báo cho thử thách này",
+    "notif": {
+      "all": "Mọi tin nhắn",
+      "milestones": "Cột mốc",
+      "off": "Tắt"
+    },
+    "notifHint": {
+      "all": "Báo cho tôi mỗi tin nhắn mới trong kênh.",
+      "milestones": "Khi người nhận chấp nhận, gửi bằng chứng và xác nhận cuối cùng.",
+      "off": "Im lặng - tôi sẽ tự kiểm tra kênh."
+    }
   },
   "details": {
     "collapseAria": "Ẩn chi tiết kênh",
@@ -561,7 +608,8 @@
       "debrief": "Nhiệm vụ hoàn thành 🎉",
       "ghost": "May mắn lần sau 👻",
       "default": "Bạn đang leo bảng xếp hạng 🚀",
-      "meet_bonus": "Mở khóa thưởng gặp mặt 🤝"
+      "meet_bonus": "Mở khóa thưởng gặp mặt 🤝",
+      "challenge_created": "Bạn đã tạo một thử thách 🎯"
     },
     "rank": {
       "city": "#{{rank}} tại {{city}}",
@@ -581,7 +629,8 @@
       "debrief": "Cả hai đã đánh giá",
       "ghost": "Ghosted",
       "default": "Đã đạt",
-      "meet_bonus": "Thưởng gặp mặt"
+      "meet_bonus": "Thưởng gặp mặt",
+      "challenge_created": "Đã tạo thử thách"
     },
     "event": {
       "deletedChallenge": "Challenge đã xoá",
@@ -722,5 +771,19 @@
     "place": "VD: Dẫn tôi đến nơi bí mật yêu thích của bạn 📍",
     "culture": "VD: Cho tôi xem điều chỉ dân địa phương biết 🎭",
     "help": "VD: Thách tôi làm điều gì đó điên rồ 🤪"
+  },
+  "leaveTakeon": {
+    "pill": "Rời đi",
+    "confirmTitle": "Rời thử thách này?",
+    "confirmBody": "Tiến trình sẽ về 0 và thử thách mở lại cho người khác. Không thể hoàn tác.",
+    "confirmCta": "Rời đi",
+    "failed": "Không rời được - thử lại nhé."
+  },
+  "restart": {
+    "cta": "Khởi động lại thử thách",
+    "confirmTitle": "Khởi động lại thử thách?",
+    "confirmBody": "Việc này gỡ người nhận hiện tại, xoá chat, và mở lại thử thách từ đầu. Không thể hoàn tác.",
+    "confirmCta": "Khởi động lại",
+    "failed": "Không khởi động lại được - thử lại nhé."
   }
 }

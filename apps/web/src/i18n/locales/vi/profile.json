@@ -41,7 +41,7 @@
     "beach": "biển",
     "wellness": "sức khỏe",
     "travel": "du lịch",
-    "hangout": "đi chơi",
+    "hangout": "tụ tập",
     "socializing": "giao lưu",
     "gaming": "chơi game",
     "tech": "công nghệ",
@@ -87,7 +87,7 @@
     "hosting": "Tổ chức",
     "hostingEmpty": "Chưa tổ chức gì - bắt đầu đi ✨",
     "live": "Trực tiếp",
-    "recurring": "↻ Lặp lại",
+    "recurring": "↻ Định kỳ",
     "upcoming": "Sắp tới",
     "deleteEvent": "Xóa sự kiện"
   },
@@ -101,7 +101,8 @@
     "score": "điểm vibe {{score}}",
     "basedOn_other": "dựa trên {{count}} vibe",
     "empty": "Chưa có vibe nào",
-    "emptyHint": "Điểm của bạn sẽ xuất hiện ở đây khi mọi người để lại lời nhắn ✨"
+    "emptyHint": "Điểm của bạn sẽ xuất hiện ở đây khi mọi người để lại lời nhắn ✨",
+    "basedOn_one": "dựa trên {{count}} vibe"
   },
   "save": {
     "uploading": "Đang tải lên…",
@@ -129,6 +130,6 @@
   },
   "challenges": {
     "empty": "Chưa có thử thách - hãy tung một cái 🔥",
-    "challenger": "Người tung thử thách"
+    "challenger": "Challenger"
   }
 }

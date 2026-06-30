@@ -32,7 +32,7 @@
     },
     "create_challenge": {
       "pageTitle": "Tung thử thách",
-      "title": "Khách lướt qua, không tung thử thách được.",
+      "title": "Khách vãng lai có thể xem, nhưng không thể tung thử thách.",
       "sub": "Đăng ký để tung thử thách cho người địa phương hoặc du khách và xác nhận nó."
     },
     "accept_challenge": {
@@ -58,14 +58,16 @@
     "cities": "Thành phố",
     "switchTitle": "Đổi thành phố",
     "filterActive": "🔥 Sôi động nhất",
-    "filterEvents": "🎉 Most Local Events",
+    "filterEvents": "🎉 Nhiều sự kiện nhất",
     "filterOnline": "🟢 Trực tuyến nhiều nhất",
     "backToLocation": "Về vị trí của tôi",
     "youreHere": "bạn đang ở đây",
     "online": "{{count}} trực tuyến",
     "events_other": "{{count}} sự kiện",
     "hangout_other": "{{count}} tụ tập",
-    "msgs": "{{count}} tin"
+    "msgs": "{{count}} tin",
+    "events_one": "{{count}} sự kiện",
+    "hangout_one": "{{count}} tụ tập"
   },
   "joining": "Đang vào {{city}}…",
   "joiningDefault": "Đang vào chat…",
@@ -79,10 +81,10 @@
     "replies_other": "💬 {{count}} trả lời",
     "going_other": "🙌 {{count}} tham gia",
     "hostedBy": "Tổ chức bởi {{name}}",
-    "groupHilads": "Hilads Local Events",
-    "groupPublic": "Public Local Events",
-    "groupPublicTicket": "🎫 Public Local Events",
-    "createEvent": "Create Local Event",
+    "groupHilads": "Sự kiện địa phương Hilads",
+    "groupPublic": "Sự kiện địa phương công khai",
+    "groupPublicTicket": "🎫 Sự kiện địa phương công khai",
+    "createEvent": "Tạo sự kiện địa phương",
     "startHangout": "Tạo tụ tập 🗣️",
     "openPlace": "Mở spot của bạn",
     "loadError": "Không thể tải sự kiện",
@@ -91,14 +93,23 @@
     "emptyTitle": "Chưa có gì diễn ra",
     "emptyLocalSub": "Làm cho {{city}} sống động. Tạo sự kiện định kỳ tại nơi yêu thích.",
     "emptySub": "Hãy là người đầu tiên tạo điều gì đó ở {{city}}",
-    "noEvents": "Hiện không có Local Events",
+    "noEvents": "Hiện không có sự kiện địa phương",
     "noHangouts": "Chưa có tụ tập",
     "noEventsSub": "Hãy là người đầu tiên tạo một cái ở {{city}}",
     "noHangoutsSub": "Tạo tụ tập và khiến cả thành phố trò chuyện",
     "filterAll": "Tất cả",
     "seeComing": "Sắp tới 🔮",
     "seeHappened": "Sự kiện đã qua",
-    "createNew": "Tạo mới"
+    "createNew": "Tạo mới",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Chào {{name}}",
+    "sayHiGeneric": "Chào 👋",
+    "hostWaiting": "Đang chờ lời chào đầu tiên 👋",
+    "replies_one": "💬 {{count}} trả lời",
+    "going_one": "🙌 {{count}} tham gia"
   },
   "header": {
     "online": "{{count}} ở gần",
@@ -135,7 +146,8 @@
     "here": "{{count}} ở đây",
     "going_other": "{{count}} tham gia",
     "locationPending": "Chưa có địa điểm",
-    "hostedBy": "Tổ chức bởi {{name}}"
+    "hostedBy": "Tổ chức bởi {{name}}",
+    "going_one": "{{count}} tham gia"
   },
   "chatEmpty": {
     "beginning": "Đầu cuộc trò chuyện",
@@ -234,7 +246,8 @@
     "challengeExplorers": "🔥 {{name}} thách du khách: {{title}}",
     "challengeCta": "Xem →",
     "challengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Thử thách quốc tế: {{title}}",
+    "replies_one": "{{count}} trả lời"
   },
   "replyPreview": {
     "photo": "📷 Ảnh"

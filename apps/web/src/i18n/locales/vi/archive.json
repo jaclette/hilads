@@ -28,5 +28,7 @@
   "emptyRecentSub": "Sự kiện và tụ tập đã qua sẽ hiển thị ở đây khi thành phố có một chút lịch sử.",
   "emptyWindowSub": "Không có sự kiện hay tụ tập nào trong khoảng này. Thử khoảng rộng hơn.",
   "loadMore": "Tải thêm",
-  "loading": "Đang tải…"
+  "loading": "Đang tải…",
+  "went_one": "🙌 {{count}} đã tham gia",
+  "replies_one": "💬 {{count}} trả lời"
 }

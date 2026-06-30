@@ -1,7 +1,10 @@
 {
   "title": "Thông báo",
   "markAllRead": "Đánh dấu tất cả đã đọc",
-  "empty": { "title": "Đã xem hết", "sub": "Thông báo sẽ xuất hiện ở đây" },
+  "empty": {
+    "title": "Đã xem hết",
+    "sub": "Thông báo sẽ xuất hiện ở đây"
+  },
   "loading": "Đang tải…",
   "seeAll": "Xem tất cả thông báo →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Lượt xem hồ sơ 👀",
     "profileViewDesc": "Khi ai đó xem hồ sơ của bạn",
     "announcementName": "Thông báo từ Hilads",
-    "announcementDesc": "Đôi khi có cập nhật từ đội ngũ"
+    "announcementDesc": "Đôi khi có cập nhật từ đội ngũ",
+    "newChallengeName": "Thử thách mới trong thành phố của bạn",
+    "newChallengeDesc": "Khi ai đó tung thử thách trong thành phố của bạn"
   }
 }

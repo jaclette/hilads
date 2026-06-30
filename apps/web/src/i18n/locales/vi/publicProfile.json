@@ -64,7 +64,8 @@
     "sendNote": "Gửi ghi chú ✨",
     "notesLabel": "Ghi chú · {{count}}",
     "emptyTitle": "Chưa có ghi chú",
-    "emptySub": "Hãy là người đầu tiên để lại ghi chú ✨"
+    "emptySub": "Hãy là người đầu tiên để lại ghi chú ✨",
+    "basedOn_one": "dựa trên {{count}} vibe"
   },
   "picks": {
     "restaurant": "NHÀ HÀNG YÊU THÍCH",
