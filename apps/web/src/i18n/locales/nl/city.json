@@ -102,7 +102,14 @@
     "filterAll": "Alles",
     "seeComing": "Kijk wat eraan komt 🔮",
     "seeHappened": "kijk wat er gebeurd is",
-    "createNew": "Nieuw maken"
+    "createNew": "Nieuw maken",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Zeg {{name}} gedag",
+    "sayHiGeneric": "Zeg gedag 👋",
+    "hostWaiting": "Wachten op de eerste begroeting 👋"
   },
   "header": {
     "online": "{{count}} in de buurt",

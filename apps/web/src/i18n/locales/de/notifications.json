@@ -1,7 +1,10 @@
 {
   "title": "Benachrichtigungen",
   "markAllRead": "Alle als gelesen markieren",
-  "empty": { "title": "Alles erledigt", "sub": "Benachrichtigungen erscheinen hier" },
+  "empty": {
+    "title": "Alles erledigt",
+    "sub": "Benachrichtigungen erscheinen hier"
+  },
   "loading": "Wird geladen…",
   "seeAll": "Alle Benachrichtigungen ansehen →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Profilbesuche 👀",
     "profileViewDesc": "Wenn jemand dein Profil ansieht",
     "announcementName": "Ankündigungen von Hilads",
-    "announcementDesc": "Gelegentliche Neuigkeiten vom Team"
+    "announcementDesc": "Gelegentliche Neuigkeiten vom Team",
+    "newChallengeName": "Neue Challenges in deiner Stadt",
+    "newChallengeDesc": "Wenn jemand eine Challenge in deiner Stadt startet"
   }
 }

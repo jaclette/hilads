@@ -129,7 +129,9 @@
     "placeholderCity": "Diz olá à tua cidade 👋",
     "placeholderHangout": "Avisa que estás dentro 🙌",
     "placeholderEvent": "Conversa com quem vai 🎉",
-    "placeholderChallenge": "Apoia-os ou partilha a tua dica 🔥"
+    "placeholderChallenge": "Apoia-os ou partilha a tua dica 🔥",
+    "endedEvent": "Este evento terminou",
+    "closedChallenge": "Este desafio está fechado"
   },
   "modeHeading": "MODO",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "Expira em {{hours}} h {{mins}} min",
     "expiresInHour": "Expira em {{count}} h"
   },
-  "shareToCity": "Partilhar na minha cidade"
+  "shareToCity": "Partilhar na minha cidade",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "PASSADO",
+  "sayHi": "Diz olá a {{name}}",
+  "hostWaiting": "À espera do primeiro olá 👋",
+  "shareToCityError": "Não foi possível partilhar na tua cidade. Tenta de novo."
 }

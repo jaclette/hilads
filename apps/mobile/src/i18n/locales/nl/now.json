@@ -48,5 +48,9 @@
   "noChallengesCity": "Wees de eerste die er een start in {{city}}",
   "noChallengesGeneric": "Wees de eerste die een challenge start.",
   "hiNowHint": "nu afspreken",
-  "hiLaterHint": "een plan maken"
+  "hiLaterHint": "een plan maken",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

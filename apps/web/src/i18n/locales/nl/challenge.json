@@ -72,7 +72,17 @@
     "takeIt": "Ik doe mee",
     "takerLabel": "Aannemer",
     "rankBadge": "Rang {{rank}}",
-    "photoBadge": "Foto"
+    "photoBadge": "Foto",
+    "meetBadge": "Afspraak",
+    "photosCount": "{{count}} foto's",
+    "noOneJoined": "Nog niemand meegedaan",
+    "beFirst": "⚡ Wees de eerste · +2",
+    "daysLeft": "Nog {{count}} d",
+    "lastDay": "Verloopt binnenkort",
+    "joinGroup": "Meedoen aan de challenge",
+    "whoJoined": "Wie doet mee ({{count}})",
+    "ended": "Afgelopen",
+    "awaitingResults": "Wachten op resultaten"
   },
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
@@ -156,6 +166,10 @@
       "in_progress": {
         "title": "Iemand is hier al mee bezig",
         "body": "Een andere reiziger pakt 'm nu op. Kom terug als ze klaar zijn - dan komt de challenge weer vrij."
+      },
+      "completed": {
+        "title": "Challenge al voltooid",
+        "body": "Deze challenge is voltooid – gesloten voor nieuwe deelnames."
       }
     }
   },
@@ -452,11 +466,54 @@
       "public": "🌍 Openbaar",
       "friends": "👯 Vrienden",
       "private": "🔒 Privé"
+    },
+    "label": "Wie kan dit zien?",
+    "public": "🌍 Openbaar",
+    "friends": "👯 Vrienden",
+    "publicHint": "Iedereen in de stad kan dit zien en aannemen.",
+    "friendsHint": "Alleen je vrienden en mensen die je uitnodigt kunnen dit zien.",
+    "intlLocked": "Internationale challenges zijn altijd openbaar.",
+    "moderationBlocked": "Je tekst is gemarkeerd – herformuleer hem.",
+    "optin": {
+      "title": "Let op – dit is openbaar",
+      "body": "Openbare challenges verschijnen in de stadsfeed en op het openbare web. Je naam en je challengetekst zijn voor iedereen zichtbaar – ook voor niet-leden en zoekmachines. Je kunt hieronder naar Vrienden wisselen als je het liever besloten houdt.",
+      "cta": "Begrepen, openbaar plaatsen",
+      "switchToFriends": "Liever Vrienden",
+      "dontShowAgain": "Niet meer tonen"
     }
   },
   "privacy": {
     "closedCloseCta": "Geen nieuwe deelnemers",
-    "closedReopenCta": "Heropen voor deelnemers"
+    "closedReopenCta": "Heropen voor deelnemers",
+    "panelTitle": "Privacy",
+    "currentPublic": "Deze challenge is openbaar – iedereen kan hem zien.",
+    "currentFriends": "Deze challenge wordt alleen met vrienden gedeeld.",
+    "currentPrivate": "Deze challenge is privé – alleen jullie twee kunnen hem zien.",
+    "intlNote": "Internationale challenges zijn altijd openbaar.",
+    "goPrivateCta": "Privé maken (beiden moeten akkoord gaan)",
+    "myVoteAgreed": "Je stemde ja – wachten op de ander.",
+    "myVoteDenied": "Je weigerde. Tik hieronder om van gedachten te veranderen.",
+    "otherVoteAgreed": "De ander stemde ja – jij beslist.",
+    "otherVoteDenied": "De ander weigerde.",
+    "voteAgreedCta": "Akkoord – privé maken",
+    "voteDeniedCta": "Weigeren",
+    "withdrawCta": "Mijn stem intrekken",
+    "needCounterparty": "Beschikbaar zodra iemand deze challenge aanneemt.",
+    "errVote": "Kon je stem niet opslaan – probeer opnieuw.",
+    "errSave": "Kon niet opslaan – probeer opnieuw.",
+    "notifTitle": "Meldingen voor deze challenge",
+    "notif": {
+      "milestones": "Mijlpalen",
+      "all": "Elk bericht",
+      "off": "Uit"
+    },
+    "notifHint": {
+      "milestones": "Acceptatie door deelnemer, foto-inzending, eindbevestiging.",
+      "all": "Stuur me een melding bij elk nieuw bericht in het kanaal.",
+      "off": "Stil – ik kijk zelf wel in het kanaal."
+    },
+    "closedTitle": "Sluiten voor nieuwe deelnames",
+    "closedBody": "Bestaande deelnemers blijven. De Meedoen-knop neemt geen nieuwe mensen meer aan tot je weer opent."
   },
   "details": {
     "collapseAria": "Kanaaldetails verbergen",
@@ -503,7 +560,8 @@
       "body": "Wees de eerste die een challenge aangaat en punten scoort."
     },
     "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen.",
-    "neutral": "🏆 De meest lokale"
+    "neutral": "🏆 De meest lokale",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",
@@ -530,7 +588,16 @@
       "heading": "🔁 Eén challenge per keer",
       "body": "Als de uitvoerder klaar is, wordt de chat gewist - de challenge blijft, klaar voor de volgende avonturier."
     },
-    "pointsHeading": "💯 Zo verdien je punten"
+    "pointsHeading": "💯 Zo verdien je punten",
+    "ways": {
+      "join": "Meedoen aan een challenge",
+      "create": "Een challenge maken",
+      "present": "Komen opdagen – aanwezigheid bevestigd",
+      "host": "Een afspraak organiseren",
+      "submit": "Een foto insturen voor een challenge",
+      "win": "De fotochallenge winnen"
+    },
+    "seeExamples": "Bekijk 3 echte voorbeelden"
   },
   "scoreCelebration": {
     "unit": "punten",
@@ -541,7 +608,8 @@
       "debrief": "Missie geslaagd 🎉",
       "ghost": "Volgende keer beter 👻",
       "default": "Je klimt in de ranglijst 🚀",
-      "meet_bonus": "Ontmoetingsbonus vrijgespeeld 🤝"
+      "meet_bonus": "Ontmoetingsbonus vrijgespeeld 🤝",
+      "challenge_created": "Je hebt een challenge gestart 🎯"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -561,7 +629,8 @@
       "debrief": "Beiden beoordeeld",
       "ghost": "Geghost",
       "default": "Verdiend",
-      "meet_bonus": "Ontmoetingsbonus"
+      "meet_bonus": "Ontmoetingsbonus",
+      "challenge_created": "Challenge gemaakt"
     },
     "event": {
       "deletedChallenge": "Verwijderde challenge",
@@ -597,7 +666,10 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Mooi!",
-    "total": "Je hebt nu {{total}} punten"
+    "total": "Je hebt nu {{total}} punten",
+    "rateTitle": "Beoordeel deze challenge",
+    "notePlaceholder": "Voeg een notitie toe (optioneel)",
+    "saveRating": "Beoordeling opslaan"
   },
   "status": {
     "live": "Live",
@@ -605,6 +677,113 @@
   },
   "group": {
     "meetCta": "Kies de datum van de meetup",
-    "meetRequired": "Kies een datum voor de meetup."
+    "meetRequired": "Kies een datum voor de meetup.",
+    "meetLabel": "Wanneer & waar",
+    "meetHint": "Iedereen die meedoet komt hier samen. Daarna bevestig je wie er was.",
+    "meetSet": "Afspraak instellen",
+    "done": "Deze afspraak is voorbij.",
+    "validateCta": "Bevestig wie er was",
+    "validateAfter": "Je kunt bevestigen na de afspraak · {{time}}",
+    "youreIn": "Je doet mee – tot dan!",
+    "joinCta": "Meedoen aan de challenge (+2 ptn)",
+    "closed": "Gesloten voor nieuwe deelnames",
+    "joinFailed": "Meedoen mislukt – probeer opnieuw.",
+    "validateFailed": "Bevestigen mislukt – probeer opnieuw.",
+    "validateTitle": "Wie was er?",
+    "validateSub": "Vink iedereen aan die naar de afspraak kwam. Ieder krijgt de beloning.",
+    "rateMeet": "Hoe was de afspraak?",
+    "validateConfirm": "{{count}} aanwezigen bevestigen",
+    "noParticipants": "Nog niemand meegedaan.",
+    "join": "Meedoen",
+    "joinedCount": "{{count}} deelnemers",
+    "deadlineLabel": "Inzenddeadline",
+    "deadline24h": "24h",
+    "deadline3d": "3 dagen",
+    "deadline1w": "1 week",
+    "deadlineHint": "Iedereen die meedoet stuurt een foto in vóór de deadline. Daarna kies jij de winnaar.",
+    "deadlineRequiredTitle": "Kies een deadline",
+    "deadlineRequired": "Kies hoe lang de challenge loopt.",
+    "deadlinePrefix": "Vóór",
+    "contestDone": "Deze challenge is voorbij.",
+    "youreInPhoto": "Je doet mee – stuur hieronder je foto in.",
+    "pickWinnerCta": "Kies de winnaar",
+    "joinContestCta": "Meedoen aan de challenge (+2 ptn)",
+    "winnerTitle": "Kies de winnaar",
+    "winnerSub": "Kies de beste foto. De winnaar krijgt de grote beloning.",
+    "winnerConfirm": "Kroon de winnaar",
+    "winnerNoSubmission": "Die persoon heeft geen foto ingestuurd.",
+    "winnerFailed": "Kon de winnaar niet kiezen – probeer opnieuw.",
+    "submissionsHeader": "{{count}} foto's",
+    "tapToPick": "kies de beste",
+    "winnerTag": "Winnaar",
+    "pickThis": "Kiezen",
+    "winnerConfirmTitle": "Winnaar kronen?",
+    "winnerConfirmBody": "{{name}} krijgt de grote beloning.",
+    "pickHint": "Kies de winnaar uit de foto's hieronder.",
+    "awaitingPhotos": "Nog geen foto's – de challenge warmt op 🔥",
+    "checkPhotos": "Bekijk de {{count}} foto's"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 Verlaten",
+    "confirmTitle": "Deze challenge verlaten?",
+    "confirmBody": "De tijdlijn gaat terug naar nul en de challenge opent weer voor anderen. Dit kan niet ongedaan worden gemaakt.",
+    "confirmCta": "Verlaten",
+    "failed": "Verlaten mislukt – probeer opnieuw."
+  },
+  "restart": {
+    "cta": "Challenge opnieuw starten",
+    "confirmTitle": "Challenge opnieuw starten?",
+    "confirmBody": "Dit verwijdert de huidige deelnemer, wist de chat en heropent de challenge vanaf nul. Dit kan niet ongedaan worden gemaakt.",
+    "confirmCta": "Opnieuw starten",
+    "failed": "Opnieuw starten mislukt – probeer opnieuw."
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Voel de stad, nu",
+      "body": "Challenges zijn kleine real-life uitdagingen tussen mensen in een stad – en tussen steden."
+    },
+    "slide2": {
+      "title": "Zet een challenge op",
+      "body": "Maak een afspraak (datum + plek) of een fotochallenge met deadline. Jij bent de host."
+    },
+    "slide3": {
+      "title": "Iedereen doet gewoon mee",
+      "body": "Geen vragen, geen wachten – wie wil, doet mee. Je krijgt meteen +2."
+    },
+    "slide4": {
+      "title": "Laat het gebeuren",
+      "body": "Iedereen komt samen naar je afspraak – of stuurt zijn beste foto in vóór de deadline."
+    },
+    "slide5": {
+      "title": "Jij bevestigt",
+      "body": "Daarna bevestig je wie er was, of kies je de winnende foto. Daar vallen de grote punten."
+    },
+    "slide6": {
+      "title": "Tussen steden",
+      "body": "Fotochallenges werken op afstand – daag een hele andere stad uit om hun beste shot te sturen."
+    },
+    "slide7": {
+      "title": "Klim in Most Local",
+      "body": "Kom opdagen en win om te stijgen op het bord. Punten voor meedoen blijven klein: het draait om het écht doen."
+    }
+  },
+  "pointExamples": {
+    "title": "3 echte voorbeelden",
+    "intro": "Hoe echte challenges uitbetaalden – wie wat verdiende.",
+    "empty": "Nog geen voorbeelden – start als eerste een challenge!",
+    "each": "elk",
+    "line": {
+      "created": "{{name}} maakte het",
+      "winner": "{{name}} won",
+      "present": "{{count}} kwamen opdagen",
+      "submission": "{{count}} stuurden een foto in",
+      "host": "{{name}} organiseerde"
+    }
+  },
+  "titlePh": {
+    "food": "bijv. Vind de beste kom pho voor me 🍜",
+    "place": "bijv. Neem me mee naar je favoriete geheime plek 📍",
+    "culture": "bijv. Laat me iets zien dat alleen locals kennen 🎭",
+    "help": "bijv. Daag me uit iets geks te doen 🤪"
   }
 }

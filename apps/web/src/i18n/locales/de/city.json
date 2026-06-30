@@ -102,7 +102,14 @@
     "filterAll": "Alle",
     "seeComing": "Sieh, was kommt 🔮",
     "seeHappened": "sieh, was passiert ist",
-    "createNew": "Neu erstellen"
+    "createNew": "Neu erstellen",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Sag {{name}} Hallo",
+    "sayHiGeneric": "Sag Hallo 👋",
+    "hostWaiting": "Warten auf das erste Hallo 👋"
   },
   "header": {
     "online": "{{count}} in der Nähe",

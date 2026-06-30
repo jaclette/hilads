@@ -1,7 +1,10 @@
 {
   "title": "Meldingen",
   "markAllRead": "Alles als gelezen markeren",
-  "empty": { "title": "Alles bijgewerkt", "sub": "Meldingen verschijnen hier" },
+  "empty": {
+    "title": "Alles bijgewerkt",
+    "sub": "Meldingen verschijnen hier"
+  },
   "loading": "Laden…",
   "seeAll": "Alle meldingen bekijken →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Profielweergaven 👀",
     "profileViewDesc": "Wanneer iemand je profiel bekijkt",
     "announcementName": "Aankondigingen van Hilads",
-    "announcementDesc": "Af en toe nieuws van het team"
+    "announcementDesc": "Af en toe nieuws van het team",
+    "newChallengeName": "Nieuwe challenges in je stad",
+    "newChallengeDesc": "Wanneer iemand een challenge in je stad start"
   }
 }

@@ -159,5 +159,6 @@
     "expiresInHour": "Scade tra {{hours}} h"
   },
   "filterChallenges": "🔥 Sfide",
-  "shareToCity": "Condividi nella mia città"
+  "shareToCity": "Condividi nella mia città",
+  "hiLocalTitle": "👋 Hi Local"
 }

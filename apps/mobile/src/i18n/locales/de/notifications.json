@@ -25,6 +25,8 @@
     "newTopicLabel": "Neue Treffen in deiner Stadt",
     "newTopicSub": "Wenn jemand ein neues Treffen in deiner Stadt startet",
     "announceLabel": "Ankündigungen von Hilads",
-    "announceSub": "Gelegentliche Neuigkeiten vom Team"
+    "announceSub": "Gelegentliche Neuigkeiten vom Team",
+    "newChallengeLabel": "Neue Challenges in deiner Stadt",
+    "newChallengeSub": "Wenn jemand eine Challenge in deiner Stadt startet"
   }
 }

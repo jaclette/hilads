@@ -25,6 +25,8 @@
     "newTopicLabel": "Nieuwe meetups in je stad",
     "newTopicSub": "Wanneer iemand een nieuwe meetup start in je stad",
     "announceLabel": "Aankondigingen van Hilads",
-    "announceSub": "Af en toe updates van het team"
+    "announceSub": "Af en toe updates van het team",
+    "newChallengeLabel": "Nieuwe challenges in je stad",
+    "newChallengeSub": "Wanneer iemand een challenge in je stad start"
   }
 }

@@ -159,5 +159,6 @@
     "expiresInHour": "Verloopt over {{hours}} u"
   },
   "filterChallenges": "🔥 Challenges",
-  "shareToCity": "Deel in mijn stad"
+  "shareToCity": "Deel in mijn stad",
+  "hiLocalTitle": "👋 Hi Local"
 }

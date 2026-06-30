@@ -48,5 +48,9 @@
     "cancel": "Annuler"
   },
   "hiNowHint": "se voir maintenant",
-  "hiLaterHint": "planifier un événement"
+  "hiLaterHint": "planifier un événement",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

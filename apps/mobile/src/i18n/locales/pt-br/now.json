@@ -48,5 +48,9 @@
   "noChallengesCity": "Seja o primeiro a lançar um em {{city}}",
   "noChallengesGeneric": "Seja o primeiro a lançar um desafio.",
   "hiNowHint": "rolê agora",
-  "hiLaterHint": "planejar um evento"
+  "hiLaterHint": "planejar um evento",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

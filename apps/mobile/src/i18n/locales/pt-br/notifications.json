@@ -25,6 +25,8 @@
     "newTopicLabel": "Novos rolês na sua cidade",
     "newTopicSub": "Quando alguém começa um novo rolê na sua cidade",
     "announceLabel": "Anúncios da Hilads",
-    "announceSub": "Novidades ocasionais da equipe"
+    "announceSub": "Novidades ocasionais da equipe",
+    "newChallengeLabel": "Novos desafios na sua cidade",
+    "newChallengeSub": "Quando alguém lança um desafio na sua cidade"
   }
 }

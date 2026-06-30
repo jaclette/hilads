@@ -25,6 +25,8 @@
     "newTopicLabel": "Novos convívios na tua cidade",
     "newTopicSub": "Quando alguém lança um novo convívio na tua cidade",
     "announceLabel": "Anúncios da Hilads",
-    "announceSub": "Novidades ocasionais da equipa"
+    "announceSub": "Novidades ocasionais da equipa",
+    "newChallengeLabel": "Novos desafios na tua cidade",
+    "newChallengeSub": "Quando alguém lança um desafio na tua cidade"
   }
 }

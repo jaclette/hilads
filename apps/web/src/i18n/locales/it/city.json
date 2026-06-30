@@ -102,7 +102,14 @@
     "filterAll": "Tutto",
     "seeComing": "In arrivo 🔮",
     "seeHappened": "Eventi passati",
-    "createNew": "Crea"
+    "createNew": "Crea",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Saluta {{name}}",
+    "sayHiGeneric": "Saluta 👋",
+    "hostWaiting": "In attesa del primo saluto 👋"
   },
   "header": {
     "online": "{{count}} nelle vicinanze",

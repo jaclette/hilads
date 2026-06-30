@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{count}} sfida · 🏆 #{{rank}} a {{city}}",
     "mainRanked_other": "🔥 {{count}} sfide · 🏆 #{{rank}} a {{city}}",
     "mainTop_one": "🔥 {{count}} sfida · 🏆 #1 a {{city}}",
-    "mainTop_other": "🔥 {{count}} sfide · 🏆 #1 a {{city}}"
+    "mainTop_other": "🔥 {{count}} sfide · 🏆 #1 a {{city}}",
+    "mainLoading": "🔥 Sfide a {{city}}",
+    "subLoading": " "
   }
 }

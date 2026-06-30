@@ -1,7 +1,10 @@
 {
   "title": "Notifiche",
   "markAllRead": "Segna tutto come letto",
-  "empty": { "title": "Tutto in pari", "sub": "Le notifiche appariranno qui" },
+  "empty": {
+    "title": "Tutto in pari",
+    "sub": "Le notifiche appariranno qui"
+  },
   "loading": "Caricamento…",
   "seeAll": "Vedi tutte le notifiche →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Visite al profilo 👀",
     "profileViewDesc": "Quando qualcuno visita il tuo profilo",
     "announcementName": "Annunci da Hilads",
-    "announcementDesc": "Qualche novità dal team ogni tanto"
+    "announcementDesc": "Qualche novità dal team ogni tanto",
+    "newChallengeName": "Nuove sfide nella tua città",
+    "newChallengeDesc": "Quando qualcuno lancia una sfida nella tua città"
   }
 }

@@ -1,8 +1,8 @@
 {
   "nowTitle": "Maintenant",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Événements locaux",
   "filterHangouts": "🗣️ Sorties",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 Événements publics",
   "accountWelcome": {
     "title": "Bravo, {{username}} ! 🎉",
     "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Trois façons de vivre la ville",
       "itemChallenges": "🤝 Challenges - défie ou laisse-toi défier pour découvrir des spots cachés, goûter la vraie cuisine, partager la culture ou rendre service.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - rencontre quelqu'un de façon spontanée",
+      "itemEvents": "🎉 Hi plan - planifie un moment pour se voir"
     },
     "slide3": {
       "title": "Gagne ta place dans la ville",
@@ -48,7 +48,7 @@
     },
     "slide2": {
       "title": "Lance ton défi",
-      "body": "Bouffe, lieu, culture ou coup de main. Choisis pour qui, combien de places, et comment vous bouclez ça - en vrai ou en photo."
+      "body": "Bouffe, lieu, culture ou coup de main. Choisis pour qui, combien de places, et comment tu boucles ça - en vrai ou en photo."
     },
     "slide3": {
       "title": "Quelqu'un le relève",
@@ -56,11 +56,11 @@
     },
     "slide4": {
       "title": "Rencontre ou preuve photo",
-      "body": "Voyez-vous en vrai ou envoyez une photo à distance - c'est ton choix. Dans tous les cas, le pipeline suit chaque étape."
+      "body": "En vrai ou par photo à distance — c'est toi qui choisis. Dans tous les cas, le pipeline suit chaque étape."
     },
     "slide5": {
       "title": "Conclus le défi",
-      "body": "Après la rencontre (ou une fois la photo validée), marquez-le accompli. Ta ville, vécue pour de vrai - un challenge à la fois."
+      "body": "Après la rencontre (ou une fois la photo validée), marque-le comme accompli. Ta ville, vécue pour de vrai - un challenge à la fois."
     },
     "next": "Suivant",
     "done": "C'est compris !",
@@ -198,5 +198,8 @@
     "expiresInHour": "Expire dans {{count}} h"
   },
   "shareToCity": "Partager dans ma ville",
-  "shareToCityError": "Impossible de partager dans ta ville. Réessaie."
+  "shareToCityError": "Impossible de partager dans ta ville. Réessaie.",
+  "hiLocalTitle": "👋 Hi Local",
+  "sayHi": "Dis bonjour à {{name}}",
+  "hostWaiting": "En attente du premier bonjour 👋"
 }

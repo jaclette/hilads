@@ -69,9 +69,9 @@
     "takeIt": "Je le relève",
     "takerLabel": "Preneur",
     "rankBadge": "Rang {{rank}}",
-    "photoBadge": "Photo proof",
+    "photoBadge": "Preuve photo",
     "joinedCount": "{{count}} inscrits",
-    "meetBadge": "Meet",
+    "meetBadge": "Rencontre",
     "photosCount": "{{count}} photos",
     "noOneJoined": "Personne n'a encore rejoint",
     "beFirst": "⚡ Sois le premier · +2",
@@ -91,7 +91,7 @@
     "label": "Comment valider ?",
     "meet": {
       "label": "Rencontre",
-      "hint": "Partagez l'expérience en vrai",
+      "hint": "Partage l'expérience en vrai",
       "bonusChip": "+50 bonus Rencontre quand tout le monde vient"
     },
     "photo_proof": {
@@ -173,7 +173,7 @@
   },
   "thread": {
     "notFound": "Fil introuvable",
-    "empty": "Dis bonjour 👋 et fixez une date pour vous retrouver.",
+    "empty": "Dis bonjour 👋 et propose une date pour vous voir.",
     "emptyIntl": "Dis salut 👋 - lâche une 📸 quand t'y arrives.",
     "cancel": {
       "creatorTitle": "Annuler ce take-on ?",
@@ -490,6 +490,20 @@
       "public": "🌍 Public",
       "friends": "👯 Amis",
       "private": "🔒 Privé"
+    },
+    "label": "Qui peut voir ça ?",
+    "public": "🌍 Public",
+    "friends": "👯 Amis",
+    "publicHint": "Tout le monde dans la ville peut le voir et le relever.",
+    "friendsHint": "Seuls tes amis et les personnes que tu invites peuvent le voir.",
+    "intlLocked": "Les défis internationaux sont toujours publics.",
+    "moderationBlocked": "Ton texte a été signalé - reformule-le.",
+    "optin": {
+      "title": "Attention - c'est public",
+      "body": "Les défis publics apparaissent dans le fil de la ville et sur le web public. Ton nom et le texte de ton défi seront visibles par tout le monde - y compris les non-membres et les moteurs de recherche. Tu peux passer en Amis ci-dessous si tu préfères rester plus discret.",
+      "cta": "Compris, publier en public",
+      "switchToFriends": "Plutôt en Amis",
+      "dontShowAgain": "Ne plus afficher"
     }
   },
   "privacy": {
@@ -516,7 +530,7 @@
     "errSubmit": "Impossible d’envoyer la note. Réessaie."
   },
   "leaderboard": {
-    "title": "🏆 Les plus locaux",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -541,8 +555,12 @@
       "body": "Sois le premier à relever un défi et marquer des points."
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
-    "neutral": "🏆 Les plus locaux",
-    "titleCity": "🏆 Le plus {{demonym}}"
+    "neutral": "🏆 Most Local",
+    "titleCity": "🏆 Most {{demonym}}",
+    "cityPicker": {
+      "searchPlaceholder": "Rechercher des villes…",
+      "empty": "Aucune ville ne correspond."
+    }
   },
   "scoringInfo": {
     "aria": "Comment marchent les points",
@@ -752,5 +770,19 @@
     "place": "ex. Emmène-moi dans ton coin secret préféré 📍",
     "culture": "ex. Montre-moi un truc que seuls les locaux connaissent 🎭",
     "help": "ex. Mets-moi au défi de faire un truc de fou 🤪"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 Quitter",
+    "confirmTitle": "Quitter ce défi ?",
+    "confirmBody": "La progression revient à zéro et le défi rouvre pour les autres. Action irréversible.",
+    "confirmCta": "Quitter",
+    "failed": "Impossible de quitter - réessaie."
+  },
+  "restart": {
+    "cta": "Relancer le défi",
+    "confirmTitle": "Relancer le défi ?",
+    "confirmBody": "Cela retire le preneur actuel, efface le chat et rouvre le défi à zéro. Action irréversible.",
+    "confirmCta": "Relancer",
+    "failed": "Impossible de relancer - réessaie."
   }
 }

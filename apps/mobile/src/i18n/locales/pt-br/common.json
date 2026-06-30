@@ -129,7 +129,9 @@
     "placeholderCity": "Manda um oi pra sua cidade 👋",
     "placeholderHangout": "Avisa que você tá dentro 🙌",
     "placeholderEvent": "Converse com quem vai 🎉",
-    "placeholderChallenge": "Torça por eles ou compartilhe sua dica 🔥"
+    "placeholderChallenge": "Torça por eles ou compartilhe sua dica 🔥",
+    "endedEvent": "Este evento acabou",
+    "closedChallenge": "Este desafio está fechado"
   },
   "modeHeading": "MODO",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "Expira em {{hours}} h {{mins}} min",
     "expiresInHour": "Expira em {{count}} h"
   },
-  "shareToCity": "Compartilhar na minha cidade"
+  "shareToCity": "Compartilhar na minha cidade",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "PASSADO",
+  "sayHi": "Diga oi para {{name}}",
+  "hostWaiting": "Esperando o primeiro oi 👋",
+  "shareToCityError": "Não foi possível compartilhar na sua cidade. Tente de novo."
 }

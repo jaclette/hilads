@@ -129,7 +129,9 @@
     "placeholderCity": "Zeg hoi tegen je stad 👋",
     "placeholderHangout": "Laat ze weten dat je erbij bent 🙌",
     "placeholderEvent": "Chat met de aanwezigen 🎉",
-    "placeholderChallenge": "Moedig ze aan of deel je tip 🔥"
+    "placeholderChallenge": "Moedig ze aan of deel je tip 🔥",
+    "endedEvent": "Dit event is afgelopen",
+    "closedChallenge": "Deze challenge is gesloten"
   },
   "modeHeading": "MODUS",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "Verloopt over {{hours}} u {{mins}} min",
     "expiresInHour": "Verloopt over {{count}} u"
   },
-  "shareToCity": "Deel in mijn stad"
+  "shareToCity": "Deel in mijn stad",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "VOORBIJ",
+  "sayHi": "Zeg {{name}} gedag",
+  "hostWaiting": "Wachten op de eerste begroeting 👋",
+  "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw."
 }

@@ -1,6 +1,7 @@
 {
   "hero": {
-    "sub": "Não estás só de passagem. Estás a tornar-te local.\nCada challenge, cada encontro, cada sítio - conquista o teu lugar nesta cidade."
+    "sub": "Não estás só de passagem. Estás a tornar-te local.\nCada challenge, cada encontro, cada sítio - conquista o teu lugar nesta cidade.",
+    "orPreview": "Ou dá uma vista de olhos no navegador — sem instalar"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} pessoa por aqui agora mesmo",

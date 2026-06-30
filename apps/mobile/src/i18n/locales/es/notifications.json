@@ -25,6 +25,8 @@
     "newTopicLabel": "Nuevas quedadas en tu ciudad",
     "newTopicSub": "Cuando alguien lanza una nueva quedada en tu ciudad",
     "announceLabel": "Anuncios de Hilads",
-    "announceSub": "Novedades ocasionales del equipo"
+    "announceSub": "Novedades ocasionales del equipo",
+    "newChallengeLabel": "Nuevos retos en tu ciudad",
+    "newChallengeSub": "Cuando alguien lanza un reto en tu ciudad"
   }
 }

@@ -10,5 +10,13 @@
   "here": "here",
   "me": "me",
   "feelLocal": "feel local",
-  "anywhere": "anywhere"
+  "anywhere": "anywhere",
+  "vibe": {
+    "party": "Festa",
+    "board_games": "Jogos de tabuleiro",
+    "coffee": "Café",
+    "music": "Música",
+    "food": "Comida",
+    "chill": "Relax"
+  }
 }
