@@ -48,5 +48,9 @@
   "noChallengesCity": "Запусти первый в городе {{city}}",
   "noChallengesGeneric": "Запусти первый челлендж.",
   "hiNowHint": "тусить сейчас",
-  "hiLaterHint": "запланировать"
+  "hiLaterHint": "запланировать",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

@@ -110,7 +110,14 @@
     "filterAll": "الكل",
     "seeComing": "شاهد ما هو قادم 🔮",
     "seeHappened": "شاهد ما الذي حدث",
-    "createNew": "إنشاء"
+    "createNew": "إنشاء",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "ألقِ التحية على {{name}}",
+    "sayHiGeneric": "ألقِ التحية 👋",
+    "hostWaiting": "بانتظار أول تحية 👋"
   },
   "header": {
     "online": "{{count}} بالقرب",

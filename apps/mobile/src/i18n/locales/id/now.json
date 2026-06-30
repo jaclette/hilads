@@ -48,5 +48,9 @@
   "noChallengesCity": "Jadilah yang pertama meluncurkan di {{city}}",
   "noChallengesGeneric": "Jadilah yang pertama meluncurkan tantangan.",
   "hiNowHint": "nongkrong sekarang",
-  "hiLaterHint": "rencanakan acara"
+  "hiLaterHint": "rencanakan acara",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

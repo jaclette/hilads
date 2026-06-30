@@ -129,7 +129,9 @@
     "placeholderCity": "Sapa kotamu 👋",
     "placeholderHangout": "Kasih tahu kamu ikutan 🙌",
     "placeholderEvent": "Ngobrol sama yang datang 🎉",
-    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥"
+    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥",
+    "endedEvent": "Acara ini sudah berakhir",
+    "closedChallenge": "Tantangan ini sudah ditutup"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "Berakhir dalam {{hours}}j {{mins}}m",
     "expiresInHour": "Berakhir dalam {{count}}j"
   },
-  "shareToCity": "Bagikan ke kotaku"
+  "shareToCity": "Bagikan ke kotaku",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "LAMPAU",
+  "sayHi": "Sapa {{name}}",
+  "hostWaiting": "Menunggu sapaan pertama 👋",
+  "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi."
 }

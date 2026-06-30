@@ -48,5 +48,9 @@
   "noChallengesCity": "كن أول من يطلق واحدًا في {{city}}",
   "noChallengesGeneric": "كن أول من يطلق تحديًا.",
   "hiNowHint": "نلتقي الآن",
-  "hiLaterHint": "خطّط لحدث"
+  "hiLaterHint": "خطّط لحدث",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

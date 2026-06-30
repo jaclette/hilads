@@ -48,5 +48,9 @@
   "noChallengesCity": "เป็นคนแรกที่เริ่มใน {{city}}",
   "noChallengesGeneric": "เป็นคนแรกที่เริ่มชาเลนจ์",
   "hiNowHint": "เจอกันตอนนี้",
-  "hiLaterHint": "วางแผนกิจกรรม"
+  "hiLaterHint": "วางแผนกิจกรรม",
+  "nowTag": "Now",
+  "laterTag": "Plan",
+  "hiNow": "Hi now",
+  "hiLater": "Hi plan"
 }

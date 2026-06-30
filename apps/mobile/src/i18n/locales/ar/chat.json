@@ -116,6 +116,8 @@
     "mainTop_other": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainTop_two": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainTop_few": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
-    "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}"
+    "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
+    "mainLoading": "🔥 تحديات في {{city}}",
+    "subLoading": " "
   }
 }

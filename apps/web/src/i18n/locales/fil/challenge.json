@@ -72,7 +72,17 @@
     "takeIt": "Tatanggapin ko",
     "takerLabel": "Tagapagtanggap",
     "rankBadge": "Ranggo {{rank}}",
-    "photoBadge": "Photo"
+    "photoBadge": "Photo",
+    "meetBadge": "Kita",
+    "photosCount": "{{count}} larawan",
+    "noOneJoined": "Wala pang sumasali",
+    "beFirst": "⚡ Mauna ka · +2",
+    "daysLeft": "{{count}}d na lang",
+    "lastDay": "Malapit nang mag-expire",
+    "joinGroup": "Sumali sa challenge",
+    "whoJoined": "Sino ang sumali ({{count}})",
+    "ended": "Tapos na",
+    "awaitingResults": "Hinihintay ang resulta"
   },
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
@@ -156,6 +166,10 @@
       "in_progress": {
         "title": "May tumanggap na nito",
         "body": "May ibang biyaherong kumukuha ngayon. Balikan mo pag tapos na sila - magiging available ulit ang challenge."
+      },
+      "completed": {
+        "title": "Tapos na ang challenge",
+        "body": "Natapos na ang challenge na ito — sarado na sa bagong sasali."
       }
     }
   },
@@ -452,11 +466,54 @@
       "public": "🌍 Pampubliko",
       "friends": "👯 Mga kaibigan",
       "private": "🔒 Pribado"
+    },
+    "label": "Sino ang makakakita nito?",
+    "public": "🌍 Pampubliko",
+    "friends": "👯 Mga kaibigan",
+    "publicHint": "Kahit sino sa lungsod ay makakakita at makakasali.",
+    "friendsHint": "Ang mga kaibigan mo lang at mga inimbitahan ang makakakita.",
+    "intlLocked": "Laging pampubliko ang mga international challenge.",
+    "moderationBlocked": "Na-flag ang text mo — pakibago ang pananalita.",
+    "optin": {
+      "title": "Heads up — pampubliko ito",
+      "body": "Lumalabas ang mga pampublikong challenge sa city feed at sa pampublikong web. Makikita ng kahit sino ang pangalan mo at ang text ng challenge — pati ng mga hindi miyembro at search engine. Pwede kang lumipat sa Mga kaibigan sa ibaba kung gusto mong mas pribado.",
+      "cta": "Sige, i-post na pampubliko",
+      "switchToFriends": "Gawing Mga kaibigan na lang",
+      "dontShowAgain": "Huwag nang ipakita ulit"
     }
   },
   "privacy": {
     "closedCloseCta": "Sarado sa bagong miyembro",
-    "closedReopenCta": "Buksang muli sa mga sasali"
+    "closedReopenCta": "Buksang muli sa mga sasali",
+    "panelTitle": "Privacy",
+    "currentPublic": "Pampubliko ang challenge na ito — kahit sino makakakita.",
+    "currentFriends": "Sa mga kaibigan lang naka-share ang challenge na ito.",
+    "currentPrivate": "Pribado ang challenge na ito — kayong dalawa lang ang makakakita.",
+    "intlNote": "Laging pampubliko ang mga international challenge.",
+    "goPrivateCta": "Gawing pribado (pareho dapat pumayag)",
+    "myVoteAgreed": "Bumoto kang oo — hinihintay ang isa pa.",
+    "myVoteDenied": "Tumanggi ka. I-tap sa ibaba para magbago ng isip.",
+    "otherVoteAgreed": "Bumoto siyang oo — ikaw na ang magdedesisyon.",
+    "otherVoteDenied": "Tumanggi siya.",
+    "voteAgreedCta": "Pumayag — gawing pribado",
+    "voteDeniedCta": "Tumanggi",
+    "withdrawCta": "Bawiin ang boto ko",
+    "needCounterparty": "Available kapag may tumanggap na sa challenge na ito.",
+    "errVote": "Hindi na-save ang boto mo — subukan ulit.",
+    "errSave": "Hindi na-save — subukan ulit.",
+    "notifTitle": "Mga notification para sa challenge na ito",
+    "notif": {
+      "milestones": "Mga milestone",
+      "all": "Bawat mensahe",
+      "off": "Naka-off"
+    },
+    "notifHint": {
+      "milestones": "Pagtanggap ng taker, pagsumite ng patunay, panghuling validation.",
+      "all": "I-ping ako sa bawat bagong mensahe sa channel.",
+      "off": "Tahimik lang — ako na ang titingin sa channel."
+    },
+    "closedTitle": "Isara sa bagong sasali",
+    "closedBody": "Mananatili ang kasalukuyang mga sumali. Titigil ang Sumali na button sa pagtanggap ng bago hanggang buksan mo muli."
   },
   "details": {
     "collapseAria": "Itago ang detalye ng channel",
@@ -503,7 +560,8 @@
       "body": "Maging una sa pag-take ng challenge at makakuha ng points."
     },
     "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
-    "neutral": "🏆 Pinaka-local"
+    "neutral": "🏆 Pinaka-local",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Paano gumagana ang points",
@@ -530,7 +588,16 @@
       "heading": "🔁 Isa lang sa isang pagkakataon",
       "body": "Kapag tapos na ang taker, magre-reset ang chat - nandyan pa rin ang challenge, handa para sa susunod."
     },
-    "pointsHeading": "💯 Paano kumita ng points"
+    "pointsHeading": "💯 Paano kumita ng points",
+    "ways": {
+      "join": "Sumali sa isang challenge",
+      "create": "Gumawa ng challenge",
+      "present": "Dumating — na-validate na present",
+      "host": "Mag-host ng meetup",
+      "submit": "Mag-submit ng larawan sa challenge",
+      "win": "Manalo sa photo challenge"
+    },
+    "seeExamples": "Tingnan ang 3 totoong halimbawa"
   },
   "scoreCelebration": {
     "unit": "puntos",
@@ -541,7 +608,8 @@
       "debrief": "Mission accomplished 🎉",
       "ghost": "Sa susunod ulit 👻",
       "default": "Umaakyat ka sa ranking 🚀",
-      "meet_bonus": "Na-unlock ang meet bonus 🤝"
+      "meet_bonus": "Na-unlock ang meet bonus 🤝",
+      "challenge_created": "Naglunsad ka ng challenge 🎯"
     },
     "rank": {
       "city": "#{{rank}} sa {{city}}",
@@ -561,7 +629,8 @@
       "debrief": "Parehong nag-rate",
       "ghost": "Ghosted",
       "default": "Nakuha",
-      "meet_bonus": "Meet bonus"
+      "meet_bonus": "Meet bonus",
+      "challenge_created": "Nagawa ang challenge"
     },
     "event": {
       "deletedChallenge": "Tinanggal na challenge",
@@ -597,7 +666,10 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Galing!",
-    "total": "Mayroon ka nang {{total}} points"
+    "total": "Mayroon ka nang {{total}} points",
+    "rateTitle": "I-rate ang challenge na ito",
+    "notePlaceholder": "Magdagdag ng note (opsyonal)",
+    "saveRating": "I-save ang rating"
   },
   "status": {
     "live": "Live",
@@ -605,6 +677,113 @@
   },
   "group": {
     "meetCta": "Piliin ang petsa ng meetup",
-    "meetRequired": "Pumili ng petsa para sa meetup."
+    "meetRequired": "Pumili ng petsa para sa meetup.",
+    "meetLabel": "Kailan at saan",
+    "meetHint": "Lahat ng sasali ay magkikita-kita dito. Ikaw ang magva-validate kung sino ang dumating pagkatapos.",
+    "meetSet": "Itakda ang meetup",
+    "done": "Tapos na ang meetup na ito.",
+    "validateCta": "I-validate kung sino ang dumating",
+    "validateAfter": "Mava-validate mo pagkatapos ng meetup · {{time}}",
+    "youreIn": "Sali ka na — kita tayo doon!",
+    "joinCta": "Sumali sa challenge (+2 pts)",
+    "closed": "Sarado na sa bagong sasali",
+    "joinFailed": "Hindi nakasali — subukan ulit.",
+    "validateFailed": "Hindi na-validate — subukan ulit.",
+    "validateTitle": "Sino ang dumating?",
+    "validateSub": "I-tsek lahat ng pumunta sa meetup. Bawat isa ay makakakuha ng reward.",
+    "rateMeet": "Kumusta ang meetup?",
+    "validateConfirm": "I-validate ang {{count}} present",
+    "noParticipants": "Wala pang sumasali.",
+    "join": "Sumali",
+    "joinedCount": "{{count}} sumali",
+    "deadlineLabel": "Deadline ng pagsumite",
+    "deadline24h": "24h",
+    "deadline3d": "3 araw",
+    "deadline1w": "1 linggo",
+    "deadlineHint": "Lahat ng sasali ay magsu-submit ng larawan bago ang deadline. Ikaw ang pipili ng panalo pagkatapos.",
+    "deadlineRequiredTitle": "Pumili ng deadline",
+    "deadlineRequired": "Piliin kung gaano katagal ang challenge.",
+    "deadlinePrefix": "Bago ang",
+    "contestDone": "Tapos na ang challenge na ito.",
+    "youreInPhoto": "Sali ka na — i-submit ang larawan mo sa ibaba.",
+    "pickWinnerCta": "Pumili ng panalo",
+    "joinContestCta": "Sumali sa challenge (+2 pts)",
+    "winnerTitle": "Pumili ng panalo",
+    "winnerSub": "Piliin ang pinakamagandang larawan. Ang panalo ang kukuha ng malaking reward.",
+    "winnerConfirm": "Koronahan ang panalo",
+    "winnerNoSubmission": "Hindi pa nag-submit ng larawan ang taong iyon.",
+    "winnerFailed": "Hindi nakapili ng panalo — subukan ulit.",
+    "submissionsHeader": "{{count}} larawan",
+    "tapToPick": "piliin ang pinakamaganda",
+    "winnerTag": "Panalo",
+    "pickThis": "Piliin",
+    "winnerConfirmTitle": "Koronahan ang panalo?",
+    "winnerConfirmBody": "Si {{name}} ang kukuha ng malaking reward.",
+    "pickHint": "Piliin ang panalo mula sa mga larawan sa ibaba.",
+    "awaitingPhotos": "Wala pang larawan — umiinit na ang challenge 🔥",
+    "checkPhotos": "Tingnan ang {{count}} larawan"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 Umalis",
+    "confirmTitle": "Aalis sa challenge na ito?",
+    "confirmBody": "Babalik sa zero ang timeline at mabubuksan muli ang challenge para sa iba. Hindi na maibabalik.",
+    "confirmCta": "Umalis",
+    "failed": "Hindi nakaalis — subukan ulit."
+  },
+  "restart": {
+    "cta": "I-restart ang challenge",
+    "confirmTitle": "I-restart ang challenge?",
+    "confirmBody": "Aalisin nito ang kasalukuyang taker, buburahin ang chat, at muling bubuksan ang challenge mula sa zero. Hindi na maibabalik.",
+    "confirmCta": "I-restart",
+    "failed": "Hindi na-restart — subukan ulit."
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Damhin ang lungsod, ngayon",
+      "body": "Ang mga challenge ay maliliit na totoong hamon sa pagitan ng mga tao sa isang lungsod — at sa pagitan ng mga lungsod."
+    },
+    "slide2": {
+      "title": "Mag-set up ng challenge",
+      "body": "Mag-set ng meetup (petsa + lugar) o photo challenge na may deadline. Ikaw ang host."
+    },
+    "slide3": {
+      "title": "Basta sumali ang kahit sino",
+      "body": "Walang hingian, walang hintayan — kung sino ang gusto, sumali. May +2 ka agad."
+    },
+    "slide4": {
+      "title": "Paganahin mo",
+      "body": "Sabay-sabay na pupunta ang lahat sa meetup mo — o magsu-submit ng pinakamagandang larawan bago ang deadline."
+    },
+    "slide5": {
+      "title": "Ikaw ang magva-validate",
+      "body": "Pagkatapos, kukumpirmahin mo kung sino ang dumating, o pipiliin ang panalong larawan. Doon pumapasok ang malalaking puntos."
+    },
+    "slide6": {
+      "title": "Sa pagitan ng mga lungsod",
+      "body": "Gumagana ang mga photo challenge kahit malayo — hamunin ang buong ibang lungsod na magpadala ng pinakamagandang kuha."
+    },
+    "slide7": {
+      "title": "Umakyat sa Most Local",
+      "body": "Dumating at manalo para umangat sa board. Maliit lang ang puntos sa pagsali — ang importante ay talagang gawin."
+    }
+  },
+  "pointExamples": {
+    "title": "3 totoong halimbawa",
+    "intro": "Paano nagbigay ng puntos ang mga totoong challenge — sino ang nakakuha ng ano.",
+    "empty": "Wala pang halimbawa — mauna kang maglunsad ng challenge!",
+    "each": "bawat isa",
+    "line": {
+      "created": "Ginawa ni {{name}}",
+      "winner": "Nanalo si {{name}}",
+      "present": "{{count}} ang dumating",
+      "submission": "{{count}} ang nag-submit ng larawan",
+      "host": "Nag-host si {{name}}"
+    }
+  },
+  "titlePh": {
+    "food": "hal. Hanapan mo ako ng pinakamasarap na pho 🍜",
+    "place": "hal. Dalhin mo ako sa paborito mong sikretong lugar 📍",
+    "culture": "hal. Ipakita mo sa akin ang alam lang ng mga local 🎭",
+    "help": "hal. Hamunin mo akong gumawa ng kakaiba 🤪"
   }
 }

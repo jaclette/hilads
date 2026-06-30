@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
     "mainRanked_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
     "mainTop_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
-    "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1"
+    "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
+    "mainLoading": "🔥 {{city}} में चैलेंज",
+    "subLoading": " "
   }
 }

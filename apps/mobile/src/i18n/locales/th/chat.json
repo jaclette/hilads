@@ -107,6 +107,8 @@
     "mainRanked_one": "🔥 {{count}} ชาเลนจ์ · 🏆 #{{rank}} ใน {{city}}",
     "mainRanked_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #{{rank}} ใน {{city}}",
     "mainTop_one": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}",
-    "mainTop_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}"
+    "mainTop_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}",
+    "mainLoading": "🔥 ชาเลนจ์ใน {{city}}",
+    "subLoading": " "
   }
 }

@@ -159,5 +159,6 @@
     "expiresInHour": "Истекает через {{hours}} ч"
   },
   "filterChallenges": "🔥 Вызовы",
-  "shareToCity": "Поделиться в моём городе"
+  "shareToCity": "Поделиться в моём городе",
+  "hiLocalTitle": "👋 Hi Local"
 }

@@ -102,7 +102,14 @@
     "filterAll": "Semua",
     "seeComing": "Lihat yang akan datang 🔮",
     "seeHappened": "lihat apa yang terjadi",
-    "createNew": "Buat baru"
+    "createNew": "Buat baru",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Sapa {{name}}",
+    "sayHiGeneric": "Sapa 👋",
+    "hostWaiting": "Menunggu sapaan pertama 👋"
   },
   "header": {
     "online": "{{count}} di sekitar",

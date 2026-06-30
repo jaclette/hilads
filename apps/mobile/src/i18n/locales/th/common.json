@@ -129,7 +129,9 @@
     "placeholderCity": "ทักทายเมืองของคุณ 👋",
     "placeholderHangout": "บอกพวกเขาว่าคุณมาแล้ว 🙌",
     "placeholderEvent": "พูดคุยกับผู้เข้าร่วม 🎉",
-    "placeholderChallenge": "เชียร์พวกเขา หรือแชร์เคล็ดลับของคุณ 🔥"
+    "placeholderChallenge": "เชียร์พวกเขา หรือแชร์เคล็ดลับของคุณ 🔥",
+    "endedEvent": "อีเวนต์นี้จบแล้ว",
+    "closedChallenge": "ชาเลนจ์นี้ปิดแล้ว"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "หมดอายุใน {{hours}} ชม. {{mins}} นาที",
     "expiresInHour": "หมดอายุใน {{count}} ชม."
   },
-  "shareToCity": "แชร์ไปยังเมืองของฉัน"
+  "shareToCity": "แชร์ไปยังเมืองของฉัน",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "ที่ผ่านมา",
+  "sayHi": "ทักทาย {{name}}",
+  "hostWaiting": "กำลังรอคำทักทายแรก 👋",
+  "shareToCityError": "แชร์ไปยังเมืองของคุณไม่สำเร็จ ลองอีกครั้ง"
 }

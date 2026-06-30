@@ -1,7 +1,10 @@
 {
   "title": "Notifikasi",
   "markAllRead": "Tandai semua dibaca",
-  "empty": { "title": "Semua sudah dibaca", "sub": "Notifikasi akan muncul di sini" },
+  "empty": {
+    "title": "Semua sudah dibaca",
+    "sub": "Notifikasi akan muncul di sini"
+  },
   "loading": "Memuat…",
   "seeAll": "Lihat semua notifikasi →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Kunjungan profil 👀",
     "profileViewDesc": "Saat seseorang melihat profilmu",
     "announcementName": "Pengumuman dari Hilads",
-    "announcementDesc": "Sesekali kabar terbaru dari tim"
+    "announcementDesc": "Sesekali kabar terbaru dari tim",
+    "newChallengeName": "Tantangan baru di kotamu",
+    "newChallengeDesc": "Saat seseorang meluncurkan tantangan di kotamu"
   }
 }

@@ -129,7 +129,9 @@
     "placeholderCity": "ألقِ التحيّة على مدينتك 👋",
     "placeholderHangout": "أخبرهم أنك معهم 🙌",
     "placeholderEvent": "تحدّث مع الحاضرين 🎉",
-    "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥"
+    "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥",
+    "endedEvent": "انتهت هذه الفعالية",
+    "closedChallenge": "هذا التحدي مغلق"
   },
   "modeHeading": "الوضع",
   "mode": {
@@ -198,5 +200,10 @@
     "expiresInHourMin": "ينتهي خلال {{hours}} س {{mins}} د",
     "expiresInHour": "ينتهي خلال {{count}} س"
   },
-  "shareToCity": "شارك في مدينتي"
+  "shareToCity": "شارك في مدينتي",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "السابقة",
+  "sayHi": "ألقِ التحية على {{name}}",
+  "hostWaiting": "بانتظار أول تحية 👋",
+  "shareToCityError": "تعذّرت المشاركة في مدينتك. حاول مجددًا."
 }

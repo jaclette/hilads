@@ -25,6 +25,8 @@
     "newTopicLabel": "لقاءات جديدة في مدينتك",
     "newTopicSub": "عندما يبدأ أحدهم لقاءً جديدًا في مدينتك",
     "announceLabel": "إعلانات من Hilads",
-    "announceSub": "تحديثات عرضية من الفريق"
+    "announceSub": "تحديثات عرضية من الفريق",
+    "newChallengeLabel": "تحديات جديدة في مدينتك",
+    "newChallengeSub": "عندما يطلق أحدهم تحديًا في مدينتك"
   }
 }

@@ -129,7 +129,9 @@
     "placeholderCity": "Поздоровайся со своим городом 👋",
     "placeholderHangout": "Дай знать, что ты в деле 🙌",
     "placeholderEvent": "Пообщайся с участниками 🎉",
-    "placeholderChallenge": "Поддержи их или поделись советом 🔥"
+    "placeholderChallenge": "Поддержи их или поделись советом 🔥",
+    "endedEvent": "Это событие завершилось",
+    "closedChallenge": "Этот челлендж закрыт"
   },
   "modeHeading": "РЕЖИМ",
   "mode": {
@@ -196,5 +198,10 @@
     "expiresInHourMin": "Истекает через {{hours}} ч {{mins}} мин",
     "expiresInHour": "Истекает через {{count}} ч"
   },
-  "shareToCity": "Поделиться в моём городе"
+  "shareToCity": "Поделиться в моём городе",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "ПРОШЕДШИЕ",
+  "sayHi": "Поздоровайся с {{name}}",
+  "hostWaiting": "Ждём первое приветствие 👋",
+  "shareToCityError": "Не удалось поделиться в твоём городе. Попробуй ещё раз."
 }

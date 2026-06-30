@@ -102,7 +102,14 @@
     "filterAll": "Lahat",
     "seeComing": "Tingnan ang paparating 🔮",
     "seeHappened": "tingnan ang nangyari",
-    "createNew": "Gumawa ng bago"
+    "createNew": "Gumawa ng bago",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Batiin si {{name}}",
+    "sayHiGeneric": "Mag-hi 👋",
+    "hostWaiting": "Hinihintay ang unang hi 👋"
   },
   "header": {
     "online": "{{count}} malapit",

@@ -159,5 +159,6 @@
     "expiresInHour": "หมดอายุในอีก {{hours}} ชม."
   },
   "filterChallenges": "🔥 ชาเลนจ์",
-  "shareToCity": "แชร์ไปยังเมืองของฉัน"
+  "shareToCity": "แชร์ไปยังเมืองของฉัน",
+  "hiLocalTitle": "👋 Hi Local"
 }

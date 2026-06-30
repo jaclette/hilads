@@ -102,7 +102,14 @@
     "filterAll": "सभी",
     "seeComing": "देखें आगे क्या है 🔮",
     "seeHappened": "देखें क्या हुआ था",
-    "createNew": "नया बनाएं"
+    "createNew": "नया बनाएं",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "{{name}} को नमस्ते कहो",
+    "sayHiGeneric": "नमस्ते कहो 👋",
+    "hostWaiting": "पहले नमस्ते का इंतज़ार 👋"
   },
   "header": {
     "online": "{{count}} आसपास",

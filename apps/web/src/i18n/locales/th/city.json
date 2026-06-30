@@ -102,7 +102,14 @@
     "filterAll": "ทั้งหมด",
     "seeComing": "ดูสิ่งที่กำลังจะมา 🔮",
     "seeHappened": "ดูสิ่งที่เกิดขึ้น",
-    "createNew": "สร้างใหม่"
+    "createNew": "สร้างใหม่",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "ทักทาย {{name}}",
+    "sayHiGeneric": "ทักทาย 👋",
+    "hostWaiting": "กำลังรอคำทักทายแรก 👋"
   },
   "header": {
     "online": "{{count}} คนใกล้เคียง",

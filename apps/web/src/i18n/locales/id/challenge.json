@@ -72,7 +72,17 @@
     "takeIt": "Saya terima",
     "takerLabel": "Penerima",
     "rankBadge": "Peringkat {{rank}}",
-    "photoBadge": "Foto"
+    "photoBadge": "Foto",
+    "meetBadge": "Ketemuan",
+    "photosCount": "{{count}} foto",
+    "noOneJoined": "Belum ada yang gabung",
+    "beFirst": "⚡ Jadi yang pertama · +2",
+    "daysLeft": "{{count}} hr lagi",
+    "lastDay": "Segera berakhir",
+    "joinGroup": "Gabung tantangan",
+    "whoJoined": "Siapa yang gabung ({{count}})",
+    "ended": "Selesai",
+    "awaitingResults": "Menunggu hasil"
   },
   "statusInProgress": "Tantangan berlangsung",
   "statusAccomplished": "Tantangan kelar",
@@ -156,6 +166,10 @@
       "in_progress": {
         "title": "Ada yang lagi ngambil",
         "body": "Pelancong lain lagi ngambil ini sekarang. Cek lagi pas mereka selesai - challenge-nya bakal kosong lagi."
+      },
+      "completed": {
+        "title": "Tantangan sudah selesai",
+        "body": "Tantangan ini sudah selesai — ditutup untuk peserta baru."
       }
     }
   },
@@ -452,11 +466,54 @@
       "public": "🌍 Publik",
       "friends": "👯 Teman",
       "private": "🔒 Pribadi"
+    },
+    "label": "Siapa yang bisa melihat ini?",
+    "public": "🌍 Publik",
+    "friends": "👯 Teman",
+    "publicHint": "Siapa pun di kota bisa melihat dan menerimanya.",
+    "friendsHint": "Hanya temanmu dan orang yang kamu undang yang bisa melihatnya.",
+    "intlLocked": "Tantangan internasional selalu publik.",
+    "moderationBlocked": "Teksmu ditandai — tolong tulis ulang.",
+    "optin": {
+      "title": "Perhatian — ini publik",
+      "body": "Tantangan publik muncul di feed kota dan di web publik. Nama dan teks tantanganmu akan terlihat oleh siapa pun — termasuk non-anggota dan mesin pencari. Kamu bisa beralih ke Teman di bawah jika ingin lebih privat.",
+      "cta": "Mengerti, posting publik",
+      "switchToFriends": "Jadikan Teman saja",
+      "dontShowAgain": "Jangan tampilkan lagi"
     }
   },
   "privacy": {
     "closedCloseCta": "Tutup untuk anggota baru",
-    "closedReopenCta": "Buka kembali untuk anggota"
+    "closedReopenCta": "Buka kembali untuk anggota",
+    "panelTitle": "Privasi",
+    "currentPublic": "Tantangan ini publik — siapa pun bisa melihat.",
+    "currentFriends": "Tantangan ini hanya dibagikan ke teman.",
+    "currentPrivate": "Tantangan ini privat — hanya kalian berdua yang bisa melihat.",
+    "intlNote": "Tantangan internasional selalu publik.",
+    "goPrivateCta": "Jadikan privat (keduanya harus setuju)",
+    "myVoteAgreed": "Kamu memilih ya — menunggu orang lain.",
+    "myVoteDenied": "Kamu menolak. Ketuk di bawah untuk berubah pikiran.",
+    "otherVoteAgreed": "Dia memilih ya — giliranmu memutuskan.",
+    "otherVoteDenied": "Dia menolak.",
+    "voteAgreedCta": "Setuju — jadikan privat",
+    "voteDeniedCta": "Tolak",
+    "withdrawCta": "Tarik suaraku",
+    "needCounterparty": "Tersedia setelah ada yang menerima tantangan ini.",
+    "errVote": "Gagal menyimpan suaramu — coba lagi.",
+    "errSave": "Gagal menyimpan — coba lagi.",
+    "notifTitle": "Notifikasi untuk tantangan ini",
+    "notif": {
+      "milestones": "Tonggak",
+      "all": "Setiap pesan",
+      "off": "Mati"
+    },
+    "notifHint": {
+      "milestones": "Penerimaan peserta, pengiriman bukti, validasi akhir.",
+      "all": "Beri tahu aku setiap pesan baru di channel.",
+      "off": "Diam saja — aku akan cek channel sendiri."
+    },
+    "closedTitle": "Tutup untuk peserta baru",
+    "closedBody": "Peserta yang ada tetap. Tombol Gabung berhenti menerima orang baru sampai kamu membukanya lagi."
   },
   "details": {
     "collapseAria": "Sembunyikan detail kanal",
@@ -503,7 +560,8 @@
       "body": "Jadi yang pertama menerima challenge dan dapat poin."
     },
     "errLoad": "Gagal memuat papan peringkat. Tarik untuk coba lagi.",
-    "neutral": "🏆 Paling lokal"
+    "neutral": "🏆 Paling lokal",
+    "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",
@@ -530,7 +588,16 @@
       "heading": "🔁 Satu per satu",
       "body": "Ketika yang mengambil selesai, chat di-reset - challenge tetap ada, siap untuk petualang berikutnya."
     },
-    "pointsHeading": "💯 Cara dapat poin"
+    "pointsHeading": "💯 Cara dapat poin",
+    "ways": {
+      "join": "Gabung tantangan",
+      "create": "Buat tantangan",
+      "present": "Datang — kehadiran tervalidasi",
+      "host": "Adakan ketemuan",
+      "submit": "Kirim foto ke tantangan",
+      "win": "Menang tantangan foto"
+    },
+    "seeExamples": "Lihat 3 contoh nyata"
   },
   "scoreCelebration": {
     "unit": "poin",
@@ -541,7 +608,8 @@
       "debrief": "Misi selesai 🎉",
       "ghost": "Semoga lebih beruntung lain kali 👻",
       "default": "Kamu naik peringkat 🚀",
-      "meet_bonus": "Bonus ketemuan kebuka 🤝"
+      "meet_bonus": "Bonus ketemuan kebuka 🤝",
+      "challenge_created": "Kamu meluncurkan tantangan 🎯"
     },
     "rank": {
       "city": "#{{rank}} di {{city}}",
@@ -561,7 +629,8 @@
       "debrief": "Saling beri rating",
       "ghost": "Ghosting",
       "default": "Diraih",
-      "meet_bonus": "Bonus ketemuan"
+      "meet_bonus": "Bonus ketemuan",
+      "challenge_created": "Tantangan dibuat"
     },
     "event": {
       "deletedChallenge": "Challenge dihapus",
@@ -597,7 +666,10 @@
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
     },
     "cta": "Mantap!",
-    "total": "Sekarang kamu punya {{total}} poin"
+    "total": "Sekarang kamu punya {{total}} poin",
+    "rateTitle": "Nilai tantangan ini",
+    "notePlaceholder": "Tambahkan catatan (opsional)",
+    "saveRating": "Simpan penilaian"
   },
   "status": {
     "live": "Berlangsung",
@@ -605,6 +677,113 @@
   },
   "group": {
     "meetCta": "Pilih tanggal pertemuan",
-    "meetRequired": "Pilih tanggal untuk pertemuan."
+    "meetRequired": "Pilih tanggal untuk pertemuan.",
+    "meetLabel": "Kapan & di mana",
+    "meetHint": "Semua yang gabung bertemu di sini bersama. Setelahnya kamu memvalidasi siapa yang datang.",
+    "meetSet": "Atur ketemuan",
+    "done": "Ketemuan ini sudah selesai.",
+    "validateCta": "Validasi siapa yang datang",
+    "validateAfter": "Kamu bisa memvalidasi setelah ketemuan · {{time}}",
+    "youreIn": "Kamu ikut — sampai jumpa di sana!",
+    "joinCta": "Gabung tantangan (+2 poin)",
+    "closed": "Ditutup untuk peserta baru",
+    "joinFailed": "Gagal gabung — coba lagi.",
+    "validateFailed": "Gagal memvalidasi — coba lagi.",
+    "validateTitle": "Siapa yang datang?",
+    "validateSub": "Centang semua yang datang ke ketemuan. Masing-masing dapat hadiah.",
+    "rateMeet": "Bagaimana ketemuannya?",
+    "validateConfirm": "Validasi {{count}} hadir",
+    "noParticipants": "Belum ada yang gabung.",
+    "join": "Gabung",
+    "joinedCount": "{{count}} bergabung",
+    "deadlineLabel": "Batas waktu kirim",
+    "deadline24h": "24h",
+    "deadline3d": "3 hari",
+    "deadline1w": "1 minggu",
+    "deadlineHint": "Semua yang gabung mengirim foto sebelum batas waktu. Kamu memilih pemenang setelahnya.",
+    "deadlineRequiredTitle": "Pilih batas waktu",
+    "deadlineRequired": "Pilih berapa lama tantangan berlangsung.",
+    "deadlinePrefix": "Sebelum",
+    "contestDone": "Tantangan ini sudah selesai.",
+    "youreInPhoto": "Kamu ikut — kirim fotomu di bawah.",
+    "pickWinnerCta": "Pilih pemenang",
+    "joinContestCta": "Gabung tantangan (+2 poin)",
+    "winnerTitle": "Pilih pemenang",
+    "winnerSub": "Pilih foto terbaik. Pemenang dapat hadiah besar.",
+    "winnerConfirm": "Nobatkan pemenang",
+    "winnerNoSubmission": "Orang itu belum mengirim foto.",
+    "winnerFailed": "Gagal memilih pemenang — coba lagi.",
+    "submissionsHeader": "{{count}} foto",
+    "tapToPick": "pilih yang terbaik",
+    "winnerTag": "Pemenang",
+    "pickThis": "Pilih",
+    "winnerConfirmTitle": "Nobatkan pemenang?",
+    "winnerConfirmBody": "{{name}} dapat hadiah besar.",
+    "pickHint": "Pilih pemenang dari foto-foto di bawah.",
+    "awaitingPhotos": "Belum ada foto — tantangan mulai memanas 🔥",
+    "checkPhotos": "Lihat {{count}} foto"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 Keluar",
+    "confirmTitle": "Keluar dari tantangan ini?",
+    "confirmBody": "Progres kembali ke nol dan tantangan terbuka lagi untuk yang lain. Tidak bisa dibatalkan.",
+    "confirmCta": "Keluar",
+    "failed": "Gagal keluar — coba lagi."
+  },
+  "restart": {
+    "cta": "Mulai ulang tantangan",
+    "confirmTitle": "Mulai ulang tantangan?",
+    "confirmBody": "Ini menghapus peserta saat ini, mengosongkan chat, dan membuka tantangan dari nol. Tidak bisa dibatalkan.",
+    "confirmCta": "Mulai ulang",
+    "failed": "Gagal memulai ulang — coba lagi."
+  },
+  "challengeIntro": {
+    "slide1": {
+      "title": "Rasakan kotanya, sekarang",
+      "body": "Tantangan adalah tantangan kecil dunia nyata antar orang di satu kota — dan antar kota."
+    },
+    "slide2": {
+      "title": "Susun tantangan",
+      "body": "Atur ketemuan (tanggal + tempat) atau tantangan foto dengan batas waktu. Kamu hostnya."
+    },
+    "slide3": {
+      "title": "Siapa pun langsung gabung",
+      "body": "Tanpa minta, tanpa nunggu — siapa yang mau, gabung. Kamu langsung dapat +2."
+    },
+    "slide4": {
+      "title": "Wujudkan",
+      "body": "Semua datang bareng ke ketemuanmu — atau kirim foto terbaik sebelum batas waktu."
+    },
+    "slide5": {
+      "title": "Kamu yang validasi",
+      "body": "Setelahnya kamu konfirmasi siapa yang hadir, atau pilih foto pemenang. Di situ poin besar didapat."
+    },
+    "slide6": {
+      "title": "Antar kota",
+      "body": "Tantangan foto bisa jarak jauh — tantang seluruh kota lain untuk mengirim jepretan terbaik mereka."
+    },
+    "slide7": {
+      "title": "Naik di Most Local",
+      "body": "Datang dan menang untuk naik peringkat. Poin gabung tetap kecil — yang penting benar-benar melakukannya."
+    }
+  },
+  "pointExamples": {
+    "title": "3 contoh nyata",
+    "intro": "Bagaimana tantangan nyata membagi poin — siapa dapat apa.",
+    "empty": "Belum ada contoh — jadilah yang pertama membuat tantangan!",
+    "each": "masing-masing",
+    "line": {
+      "created": "{{name}} membuatnya",
+      "winner": "{{name}} menang",
+      "present": "{{count}} datang",
+      "submission": "{{count}} mengirim foto",
+      "host": "{{name}} jadi host"
+    }
+  },
+  "titlePh": {
+    "food": "mis. Carikan aku semangkuk pho terbaik 🍜",
+    "place": "mis. Ajak aku ke tempat rahasia favoritmu 📍",
+    "culture": "mis. Tunjukkan sesuatu yang cuma diketahui warga lokal 🎭",
+    "help": "mis. Tantang aku melakukan hal gila 🤪"
   }
 }

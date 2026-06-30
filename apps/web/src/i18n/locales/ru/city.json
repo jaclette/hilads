@@ -106,7 +106,14 @@
     "filterAll": "Всё",
     "seeComing": "Посмотри, что впереди 🔮",
     "seeHappened": "посмотри, что было",
-    "createNew": "Создать"
+    "createNew": "Создать",
+    "nowTag": "Now",
+    "laterTag": "Plan",
+    "hiNow": "Hi now",
+    "hiLater": "Hi plan",
+    "sayHi": "Поздоровайся с {{name}}",
+    "sayHiGeneric": "Поздоровайся 👋",
+    "hostWaiting": "Ждём первое приветствие 👋"
   },
   "header": {
     "online": "{{count}} рядом",

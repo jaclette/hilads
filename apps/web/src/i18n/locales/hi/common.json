@@ -159,5 +159,6 @@
     "expiresInHour": "{{hours}} घंटे में समाप्त"
   },
   "filterChallenges": "🔥 चैलेंजेस",
-  "shareToCity": "मेरे शहर में शेयर करें"
+  "shareToCity": "मेरे शहर में शेयर करें",
+  "hiLocalTitle": "👋 Hi Local"
 }

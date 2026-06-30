@@ -129,7 +129,9 @@
     "placeholderCity": "Mag-hi sa city mo 👋",
     "placeholderHangout": "Sabihin na sasali ka 🙌",
     "placeholderEvent": "Mag-chat sa mga papasok 🎉",
-    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥"
+    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥",
+    "endedEvent": "Tapos na ang event na ito",
+    "closedChallenge": "Sarado na ang challenge na ito"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "Mag-e-expire sa {{hours}}h {{mins}}m",
     "expiresInHour": "Mag-e-expire sa {{count}}h"
   },
-  "shareToCity": "Ibahagi sa aking lungsod"
+  "shareToCity": "Ibahagi sa aking lungsod",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "NAKARAAN",
+  "sayHi": "Batiin si {{name}}",
+  "hostWaiting": "Hinihintay ang unang hi 👋",
+  "shareToCityError": "Hindi na-share sa lungsod mo. Subukan ulit."
 }

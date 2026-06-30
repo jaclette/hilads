@@ -466,11 +466,54 @@
       "public": "🌍 Public",
       "friends": "👯 Amis",
       "private": "🔒 Privé"
+    },
+    "label": "Qui peut voir ça ?",
+    "public": "🌍 Public",
+    "friends": "👯 Amis",
+    "publicHint": "Tout le monde dans la ville peut le voir et le relever.",
+    "friendsHint": "Seuls tes amis et les personnes que tu invites peuvent le voir.",
+    "intlLocked": "Les défis internationaux sont toujours publics.",
+    "moderationBlocked": "Ton texte a été signalé - reformule-le.",
+    "optin": {
+      "title": "Attention - c'est public",
+      "body": "Les défis publics apparaissent dans le fil de la ville et sur le web public. Ton nom et le texte de ton défi seront visibles par tout le monde - y compris les non-membres et les moteurs de recherche. Tu peux passer en Amis ci-dessous si tu préfères rester plus discret.",
+      "cta": "Compris, publier en public",
+      "switchToFriends": "Plutôt en Amis",
+      "dontShowAgain": "Ne plus afficher"
     }
   },
   "privacy": {
     "closedCloseCta": "Fermer aux nouveaux",
-    "closedReopenCta": "Rouvrir aux nouveaux"
+    "closedReopenCta": "Rouvrir aux nouveaux",
+    "panelTitle": "Confidentialité",
+    "currentPublic": "Ce défi est public — tout le monde peut le voir.",
+    "currentFriends": "Ce défi n'est partagé qu'avec tes amis.",
+    "currentPrivate": "Ce défi est privé — seuls vous deux pouvez le voir.",
+    "intlNote": "Les défis internationaux sont toujours publics.",
+    "goPrivateCta": "Passer en privé (les deux doivent accepter)",
+    "myVoteAgreed": "Tu as voté oui — en attente de l'autre personne.",
+    "myVoteDenied": "Tu as refusé. Touche ci-dessous pour changer d'avis.",
+    "otherVoteAgreed": "L'autre a voté oui — à toi de décider.",
+    "otherVoteDenied": "L'autre a refusé.",
+    "voteAgreedCta": "Accepter — passer en privé",
+    "voteDeniedCta": "Refuser",
+    "withdrawCta": "Retirer mon vote",
+    "needCounterparty": "Disponible quand quelqu'un relève ce défi.",
+    "errVote": "Impossible d'enregistrer ton vote — réessaie.",
+    "errSave": "Impossible d'enregistrer — réessaie.",
+    "notifTitle": "Notifications pour ce défi",
+    "notif": {
+      "milestones": "Étapes clés",
+      "all": "Chaque message",
+      "off": "Désactivées"
+    },
+    "notifHint": {
+      "milestones": "Acceptation du preneur, envoi de la preuve, validation finale.",
+      "all": "Préviens-moi à chaque nouveau message du canal.",
+      "off": "Silence — je vérifierai le canal moi-même."
+    },
+    "closedTitle": "Fermer aux nouveaux",
+    "closedBody": "Les participants actuels restent. Le bouton Rejoindre cesse d'accepter de nouvelles personnes jusqu'à ce que tu rouvres."
   },
   "details": {
     "collapseAria": "Masquer les détails du canal",
@@ -728,5 +771,19 @@
     "place": "ex. Emmène-moi dans ton coin secret préféré 📍",
     "culture": "ex. Montre-moi un truc que seuls les locaux connaissent 🎭",
     "help": "ex. Mets-moi au défi de faire un truc de fou 🤪"
+  },
+  "leaveTakeon": {
+    "pill": "🚪 Quitter",
+    "confirmTitle": "Quitter ce défi ?",
+    "confirmBody": "La progression revient à zéro et le défi rouvre pour les autres. Action irréversible.",
+    "confirmCta": "Quitter",
+    "failed": "Impossible de quitter - réessaie."
+  },
+  "restart": {
+    "cta": "Relancer le défi",
+    "confirmTitle": "Relancer le défi ?",
+    "confirmBody": "Cela retire le preneur actuel, efface le chat et rouvre le défi à zéro. Action irréversible.",
+    "confirmCta": "Relancer",
+    "failed": "Impossible de relancer - réessaie."
   }
 }

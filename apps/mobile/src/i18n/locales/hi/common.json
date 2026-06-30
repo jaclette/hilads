@@ -129,7 +129,9 @@
     "placeholderCity": "अपने शहर को हाय कहो 👋",
     "placeholderHangout": "बताओ कि आप शामिल हो 🙌",
     "placeholderEvent": "जाने वालों से बात करो 🎉",
-    "placeholderChallenge": "हौसला बढ़ाओ या अपना टिप शेयर करो 🔥"
+    "placeholderChallenge": "हौसला बढ़ाओ या अपना टिप शेयर करो 🔥",
+    "endedEvent": "यह इवेंट ख़त्म हो गया",
+    "closedChallenge": "यह चैलेंज बंद है"
   },
   "modeHeading": "MODE",
   "mode": {
@@ -194,5 +196,10 @@
     "expiresInHourMin": "{{hours}} घं {{mins}} मि में समाप्त",
     "expiresInHour": "{{count}} घंटे में समाप्त"
   },
-  "shareToCity": "मेरे शहर में शेयर करें"
+  "shareToCity": "मेरे शहर में शेयर करें",
+  "hiLocalTitle": "👋 Hi Local",
+  "past": "बीते",
+  "sayHi": "{{name}} को नमस्ते कहो",
+  "hostWaiting": "पहले नमस्ते का इंतज़ार 👋",
+  "shareToCityError": "तुम्हारे शहर में साझा नहीं कर सके। फिर कोशिश करें।"
 }

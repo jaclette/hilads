@@ -159,5 +159,6 @@
     "expiresInHour": "Mag-e-expire sa {{hours}}h"
   },
   "filterChallenges": "🔥 Mga Challenge",
-  "shareToCity": "Ibahagi sa aking lungsod"
+  "shareToCity": "Ibahagi sa aking lungsod",
+  "hiLocalTitle": "👋 Hi Local"
 }

@@ -1,7 +1,10 @@
 {
   "title": "Mga notification",
   "markAllRead": "Markahan lahat na nabasa",
-  "empty": { "title": "Wala nang bago", "sub": "Lalabas dito ang mga notification" },
+  "empty": {
+    "title": "Wala nang bago",
+    "sub": "Lalabas dito ang mga notification"
+  },
   "loading": "Naglo-load…",
   "seeAll": "Tingnan lahat ng notification →",
   "prefs": {
@@ -17,6 +20,8 @@
     "profileViewName": "Mga profile view 👀",
     "profileViewDesc": "Kapag may tumingin sa iyong profile",
     "announcementName": "Mga anunsyo mula sa Hilads",
-    "announcementDesc": "Paminsan-minsang update mula sa team"
+    "announcementDesc": "Paminsan-minsang update mula sa team",
+    "newChallengeName": "Mga bagong challenge sa lungsod mo",
+    "newChallengeDesc": "Kapag may naglunsad ng challenge sa lungsod mo"
   }
 }

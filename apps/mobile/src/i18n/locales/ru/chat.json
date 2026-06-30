@@ -113,6 +113,8 @@
     "mainTop_one": "🔥 {{count}} испытание · 🏆 #1 в {{city}}",
     "mainTop_other": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}",
     "mainTop_few": "🔥 {{count}} испытания · 🏆 #1 в {{city}}",
-    "mainTop_many": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}"
+    "mainTop_many": "🔥 {{count}} испытаний · 🏆 #1 в {{city}}",
+    "mainLoading": "🔥 Челленджи в {{city}}",
+    "subLoading": " "
   }
 }
