@@ -269,6 +269,7 @@ class EventRepository
               AND ce.source_type    = 'hilads'
               AND ce.occurrence_date IS NULL
               AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
+              AND NOT EXISTS (SELECT 1 FROM channels dc WHERE dc.id = ce.channel_id AND dc.status = 'deleted')
             ORDER BY ce.starts_at ASC
         ");
         $stmt->execute(['city_id' => 'city_' . $channelId]);
@@ -426,6 +427,7 @@ class EventRepository
                       AND ce.starts_at >= to_timestamp(:from_ts)
                       AND ce.starts_at <  to_timestamp(:to_ts))
               )
+              AND NOT EXISTS (SELECT 1 FROM channels dc WHERE dc.id = ce.channel_id AND dc.status = 'deleted')
         ");
         $stmt->execute(['city_id' => $cityId, 'from_ts' => $fromTs, 'to_ts' => $toTs]);
 
@@ -526,6 +528,7 @@ class EventRepository
               AND ce.source_type IN ('hilads', 'ticketmaster')
               AND ce.occurrence_date IS NULL
               AND (ce.series_id IS NOT NULL OR ce.expires_at > now())
+              AND NOT EXISTS (SELECT 1 FROM channels dc WHERE dc.id = ce.channel_id AND dc.status = 'deleted')
             ORDER BY ce.source_type ASC, ce.starts_at ASC
             LIMIT 200
         ");
