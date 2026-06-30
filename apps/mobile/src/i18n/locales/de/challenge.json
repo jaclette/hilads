@@ -9,7 +9,7 @@
     "loadMore": "Mehr laden",
     "empty": {
       "title": "Noch keine Erfolge",
-      "body": "Abgeschlossene, top bewertete Challenges erscheinen hier. Mach du die erste!"
+      "body": "Abgeschlossene, top bewertete Challenges erscheinen hier. Mach den Anfang!"
     },
     "tryCta": "Neue Challenge erstellen",
     "note": "Das sagen sie"
@@ -32,7 +32,7 @@
       "body": "Erstelle ein Konto, um Challenges zu starten und die anderer anzunehmen."
     }
   },
-  "tabIntro": "Challenges zwischen Einheimischen und Entdeckern in einer Stadt - und stadtübergreifend.",
+  "tabIntro": "Challenges zwischen Locals und Reisenden in einer Stadt - und stadtübergreifend.",
   "howItWorks": "So funktioniert's",
   "mostLocal": "Most Local",
   "seeAll": "Alle ansehen",
@@ -120,9 +120,9 @@
   },
   "notFound": "Challenge nicht gefunden",
   "typeBadge": {
-    "food": "Food Challenge",
-    "place": "Ort Challenge",
-    "culture": "Kultur Challenge",
+    "food": "Essens-Challenge",
+    "place": "Orts-Challenge",
+    "culture": "Kultur-Challenge",
     "help": "Verrückte Challenge"
   },
   "challengerTag": "Challenger",
@@ -130,7 +130,7 @@
   "editBtn": "Bearbeiten",
   "deleteBtn": "Löschen",
   "shareCta": "Teilen",
-  "shareInvite": "Nimm diese Herausforderung mit mir an!",
+  "shareInvite": "Nimm diese Challenge mit mir an!",
   "shareCopied": "Link kopiert ✓",
   "noun": "Challenge",
   "examples": {
@@ -166,15 +166,15 @@
         "body": "Etwas ist schiefgelaufen. Versuch es nochmal."
       },
       "not_creator": {
-        "title": "Das ist dein eigener Challenge",
-        "body": "Du hast diesen Challenge erstellt - warte, bis ihn jemand anderes annimmt."
+        "title": "Das ist deine eigene Challenge",
+        "body": "Du hast diese Challenge erstellt - warte, bis sie jemand anderes annimmt."
       },
       "mode_required": {
-        "title": "Wähle zuerst Local oder Traveler",
+        "title": "Wähle zuerst Local oder Reisender",
         "body": "Stell deinen Modus im Profil ein, bevor du Challenges annimmst."
       },
       "mode_mismatch": {
-        "title": "Falsche Seite des Challenges",
+        "title": "Falsche Seite der Challenge",
         "body": "Wechsel deinen Modus im Profil, wenn du das hier annehmen willst."
       },
       "cap_reached": {
@@ -211,7 +211,7 @@
     "noMessagesYet": "Noch keine Nachrichten",
     "empty": {
       "title": "Keine aktiven Threads",
-      "body": "Wenn du einen Challenge annimmst oder jemand deinen annimmt, taucht das Gespräch hier auf."
+      "body": "Wenn du eine Challenge annimmst oder jemand deine annimmt, taucht das Gespräch hier auf."
     },
     "guestGate": {
       "title": "Anmelden, um Threads zu sehen",
@@ -546,9 +546,9 @@
       "month": "Diesen Monat",
       "alltime": "Allzeit"
     },
-    "points": "{{points}} pts",
+    "points": "{{points}} Pkt.",
     "me": {
-      "ranked": "Du · #{{rank}} · {{points}} pts",
+      "ranked": "Du · #{{rank}} · {{points}} Pkt.",
       "unranked": "Nimm eine Challenge an, um auf die Liste zu kommen"
     },
     "empty": {
@@ -602,7 +602,7 @@
   "scoreCelebration": {
     "unit": "Punkte",
     "subtitle": {
-      "accepted": "Dein Challenge wurde angenommen 🤝",
+      "accepted": "Deine Challenge wurde angenommen 🤝",
       "date_locked": "Termin bestätigt - los geht’s 🗓️",
       "meetup": "Mission erfüllt 🎉",
       "debrief": "Mission erfüllt 🎉",
@@ -633,7 +633,7 @@
       "challenge_created": "Challenge erstellt"
     },
     "event": {
-      "deletedChallenge": "Gelöschter Challenge",
+      "deletedChallenge": "Gelöschte Challenge",
       "andMore": "und {{count}} weitere"
     },
     "total": "Gesamt: {{total}} Pkt."
