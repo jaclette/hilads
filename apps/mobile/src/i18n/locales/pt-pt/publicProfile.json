@@ -64,9 +64,9 @@
   "alreadyReportedBody": "Denunciaste este utilizador em {{date}}. A tua denúncia está em análise.",
   "blockUser": "Bloquear o utilizador",
   "blocking": "A bloquear…",
-  "ghostName": "Fantasma",
+  "ghostName": "Ghost",
   "visiting": "De visita em {{city}}",
-  "ghostNote": "A flutuar por aqui como um fantasma 👻",
+  "ghostNote": "A flutuar por aqui como um Ghost 👻",
   "tabChallenges": "Desafios",
   "noChallenges": "Sem desafios ainda"
 }

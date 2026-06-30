@@ -12,27 +12,27 @@
     "signIn": "Iniciar sessão",
     "create_event": {
       "pageTitle": "Cria um evento",
-      "title": "Os fantasmas podem ver, mas não organizar.",
+      "title": "Os Ghosts podem ver, mas não organizar.",
       "sub": "Cria uma conta para organizares o teu próprio evento e pores a tua cidade no mapa."
     },
     "view_profile": {
       "pageTitle": "Perfil",
-      "title": "Os fantasmas podem ver, mas os perfis são para membros.",
+      "title": "Os Ghosts podem ver, mas os perfis são para membros.",
       "sub": "Cria uma conta para desbloqueares perfis, ligares-te a pessoas e formares o teu grupo na cidade."
     },
     "join_hangout": {
       "pageTitle": "Juntar-se a um convívio",
-      "title": "Os fantasmas podem ver, mas não juntar-se a convívios.",
+      "title": "Os Ghosts podem ver, mas não juntar-se a convívios.",
       "sub": "Regista-te para te juntares a convívios, guardares o teu nome e receberes aviso quando alguém quiser encontrar-se."
     },
     "create_hangout": {
       "pageTitle": "Iniciar um convívio",
-      "title": "Os fantasmas podem ver, mas não organizar.",
+      "title": "Os Ghosts podem ver, mas não organizar.",
       "sub": "Regista-te para iniciares um convívio, guardares o teu nome e atraíres gente."
     },
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
-      "title": "Os fantasmas podem ver, mas não desafiar.",
+      "title": "Os Ghosts podem ver, mas não desafiar.",
       "sub": "Cria conta para lançar um desafio a locais ou viajantes e validá-lo."
     },
     "accept_challenge": {
@@ -95,7 +95,7 @@
     "emptyTitle": "Ainda não acontece nada",
     "emptyLocalSub": "Faz {{city}} ganhar vida. Lança um evento recorrente no teu sítio favorito.",
     "emptySub": "Sê o primeiro a fazer acontecer algo em {{city}}",
-    "noEvents": "Sem Local Events de momento",
+    "noEvents": "Sem eventos locais de momento",
     "noHangouts": "Ainda não há convívios",
     "noEventsSub": "Sê o primeiro a criar um em {{city}}",
     "noHangoutsSub": "Lança um convívio e põe a cidade a falar",

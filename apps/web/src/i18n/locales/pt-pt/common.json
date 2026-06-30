@@ -1,7 +1,7 @@
 {
   "meta": {
     "cityTitle": "Torna-te local em {{city}} - Hilads",
-    "cityDesc": "Torna-te local em {{city}}: lança um challenge, junta-te a um meetup, cai num hangout, descobre Local Events. Chat ao vivo com quem está online.",
+    "cityDesc": "Torna-te local em {{city}}: lança um desafio, junta-te a um meetup, cai num hangout, descobre Local Events. Chat ao vivo com quem está online.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Junta-te a {{title}} no Hilads - um Local Event a acontecer agora. Vê quem vai e conversa ao vivo."
   },
