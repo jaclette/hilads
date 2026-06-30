@@ -60,12 +60,12 @@
         "desc": "Local. Du kennst die Stadt.\nReisender. Du willst sie erleben."
       },
       {
-        "title": "Starte oder nimm eine Challenge an",
-        "desc": "Jeder kann eine Food-, Orts-, Kultur- oder Hilfe-Challenge starten - für Locals oder für Reisende. Die andere Seite nimmt sie an."
+        "title": "Starte oder mach bei einer Challenge mit",
+        "desc": "Jeder startet ein Treffen — Datum und Ort — oder einen Fotowettbewerb mit Deadline. Offen für eine ganze Gruppe, nicht 1-zu-1."
       },
       {
-        "title": "Trefft euch persönlich",
-        "desc": "Chattet in einem privaten Thread, macht einen Termin aus und macht es klar.\nSchluss mit Touri-Modus."
+        "title": "Kommt zusammen",
+        "desc": "Alle, die mitmachen, treffen sich persönlich — oder schicken vor der Deadline ihr bestes Foto. Der Gastgeber bestätigt, wer da war, oder kürt den Gewinner."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Kein weiteres soziales Netzwerk.\nEin Grund, sich persönlich zu treffen.",
     "rules": [
       "Keine Follower. Keine Feeds. Keine Algorithmen.",
-      "Locals und Reisende fordern sich gegenseitig heraus. Die andere Seite nimmt an.",
+      "Versammle eine Gruppe für ein echtes Treffen oder veranstalte einen Fotowettbewerb. Wer auftaucht — oder gewinnt — hat es sich verdient.",
       "Echte Menschen. Echte Orte. Jetzt."
     ]
   },
-  "seo": "Hilads ist eine Echtzeit-Social-App, in der Locals und Reisende sich gegenseitig herausfordern, die Stadt echt zu entdecken. Nimm eine Food-, Orts- oder Kultur-Challenge in Paris an, akzeptiere eine in Barcelona, oder starte deine in Lissabon - Hilads macht aus jedem Trip ein persönliches Treffen. Kein Account nötig. Einfach da sein.",
+  "seo": "Hilads ist eine Echtzeit-Social-App, in der sich Menschen rund um echte Challenges treffen — Gruppentreffen zu fester Zeit und festem Ort und Fotowettbewerbe zwischen Städten. Mach bei einer Challenge in Paris mit, veranstalte ein Treffen in Barcelona oder starte einen Fotowettbewerb aus Lissabon. Kein Account nötig. Einfach da sein.",
   "download": {
     "eyebrow": "Mobile Apps",
     "title": "Deine Stadt in deiner Tasche.",

@@ -60,12 +60,12 @@
         "desc": "Local. Je kent de stad.\nReiziger. Je wil hem beleven."
       },
       {
-        "title": "Lanceer of neem een challenge aan",
-        "desc": "Iedereen kan een food-, plek-, cultuur- of hulp-challenge lanceren - voor locals of voor reizigers. De andere kant pakt 'm op."
+        "title": "Start of doe mee aan een challenge",
+        "desc": "Iedereen start een meet — datum en plek — of een fotowedstrijd met deadline. Open voor een hele groep, niet 1-op-1."
       },
       {
-        "title": "Kom persoonlijk samen",
-        "desc": "Chat in een privéthread, spreek een datum af en maak het waar.\nGeen toeristmodus meer."
+        "title": "Kom samen",
+        "desc": "Iedereen die meedoet komt in het echt samen — of stuurt zijn beste foto voor de deadline. De host bevestigt wie er was, of kiest de winnaar."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Niet zomaar een sociaal netwerk.\nEen reden om persoonlijk samen te komen.",
     "rules": [
       "Geen volgers. Geen feeds. Geen algoritmes.",
-      "Locals en reizigers dagen elkaar uit. De andere kant pakt 'm op.",
+      "Verzamel een groep rond een echte meet, of houd een fotowedstrijd. Wie komt opdagen — of wint — verdient het.",
       "Echte mensen. Echte plekken. Nu."
     ]
   },
-  "seo": "Hilads is een realtime sociale app waar locals en reizigers elkaar uitdagen om de stad echt te ontdekken. Neem een food-, plek- of cultuur-challenge aan in Parijs, accepteer er een in Barcelona, of lanceer je eigen in Lissabon - Hilads maakt van elke trip een persoonlijke ontmoeting. Geen account nodig. Gewoon komen.",
+  "seo": "Hilads is een realtime sociale app waar mensen samenkomen rond echte challenges — groepsmeets op een vaste tijd en plek, en fotowedstrijden tussen steden. Doe mee aan een challenge in Parijs, organiseer een meet in Barcelona of start een fotowedstrijd vanuit Lissabon. Geen account nodig. Gewoon komen.",
   "download": {
     "eyebrow": "Mobiele apps",
     "title": "Jouw stad in je broekzak.",

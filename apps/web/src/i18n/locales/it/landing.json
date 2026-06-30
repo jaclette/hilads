@@ -60,12 +60,12 @@
         "desc": "Local. Conosci la città.\nViaggiatore. Vuoi viverla."
       },
       {
-        "title": "Lancia o accetta una sfida",
-        "desc": "Chiunque può lanciare una sfida di cibo, posto, cultura o aiuto - per i local o per i viaggiatori. L'altra parte la accetta."
+        "title": "Lancia o unisciti a una sfida",
+        "desc": "Chiunque può organizzare un incontro — data e luogo — o un concorso fotografico con scadenza. È aperto a tutto un gruppo, non uno a uno."
       },
       {
-        "title": "Incontratevi di persona",
-        "desc": "Parlate in una chat privata, fissate la data e fatelo succedere.\nBasta modalità turista."
+        "title": "Presentatevi insieme",
+        "desc": "Tutti quelli che partecipano si incontrano di persona — o inviano la loro foto migliore entro la scadenza. L'organizzatore conferma chi è venuto o sceglie il vincitore."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Non un altro social network.\nUn motivo per incontrarsi di persona.",
     "rules": [
       "Niente follower. Niente feed. Niente algoritmi.",
-      "Local e viaggiatori si sfidano a vicenda. L'altra parte accetta.",
+      "Raduna un gruppo attorno a un vero incontro, o organizza un concorso fotografico. Chi si presenta — o vince — se lo merita.",
       "Persone vere. Posti veri. Proprio ora."
     ]
   },
-  "seo": "Hilads è un'app sociale in tempo reale dove local e viaggiatori si sfidano a vicenda per scoprire la città davvero. Accetta una sfida di cibo, posto o cultura a Parigi, accettane una a Barcellona, o lancia la tua a Lisbona - Hilads trasforma ogni viaggio in un incontro di persona. Senza account. Basta esserci.",
+  "seo": "Hilads è un'app sociale in tempo reale dove le persone si radunano attorno a sfide reali: incontri di gruppo a un'ora e un luogo precisi, e concorsi fotografici tra città. Unisciti a una sfida a Parigi, organizza un incontro a Barcellona o lancia un concorso fotografico da Lisbona. Senza account. Basta esserci.",
   "download": {
     "eyebrow": "App mobile",
     "title": "La tua città in tasca.",

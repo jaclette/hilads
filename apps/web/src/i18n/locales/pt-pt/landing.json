@@ -60,12 +60,12 @@
         "desc": "Local. Conheces a cidade.\nViajante. Queres vivê-la."
       },
       {
-        "title": "Lança ou aceita um desafio",
-        "desc": "Qualquer um pode lançar um desafio de comida, sítio, cultura ou ajuda - para locais ou para viajantes. O outro lado aceita."
+        "title": "Lança ou entra num desafio",
+        "desc": "Qualquer um cria um encontro — data e local — ou um concurso de fotografia com prazo. É aberto a um grupo inteiro, não um a um."
       },
       {
-        "title": "Encontrem-se pessoalmente",
-        "desc": "Conversem num chat privado, marquem a data e façam acontecer.\nAcabou o modo turista."
+        "title": "Apareçam juntos",
+        "desc": "Todos os que entram encontram-se pessoalmente — ou enviam a sua melhor foto antes do prazo. O anfitrião valida quem veio ou escolhe o vencedor."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Não é mais uma rede social.\nUma razão para se encontrarem pessoalmente.",
     "rules": [
       "Sem seguidores. Sem feeds. Sem algoritmos.",
-      "Locais e viajantes desafiam-se uns aos outros. O outro lado aceita.",
+      "Junta um grupo à volta de um encontro a sério, ou organiza um concurso de fotografia. Quem aparece — ou ganha — merece-o.",
       "Pessoas reais. Lugares reais. Agora mesmo."
     ]
   },
-  "seo": "Hilads é uma app social em tempo real onde locais e viajantes se desafiam para descobrir a cidade a sério. Aceita um desafio de comida, sítio ou cultura em Paris, aceita um em Barcelona, ou lança o teu em Lisboa - Hilads transforma cada viagem num encontro pessoalmente. Sem conta. Só aparecer.",
+  "seo": "Hilads é uma app social em tempo real onde as pessoas se reúnem à volta de desafios do mundo real: encontros em grupo a uma hora e local marcados, e concursos de fotografia entre cidades. Entra num desafio em Paris, organiza um encontro em Barcelona ou lança um concurso de fotografia a partir de Lisboa. Sem conta. Basta apareceres.",
   "download": {
     "eyebrow": "Apps móveis",
     "title": "A tua cidade no bolso.",

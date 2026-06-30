@@ -60,12 +60,12 @@
         "desc": "Local. Kabisado mo ang siyudad.\nBiyahero. Gusto mong i-live ito."
       },
       {
-        "title": "Mag-launch o tanggapin ang challenge",
-        "desc": "Pwedeng mag-launch ang sinuman ng food, place, culture o help challenge - para sa mga local o sa mga biyahero. Tinatanggap ito ng kabilang side."
+        "title": "Mag-launch o sumali sa challenge",
+        "desc": "Pwedeng mag-launch ang sinuman ng meet — petsa + lugar — o photo contest na may deadline. Bukas ito sa buong grupo, hindi one-on-one."
       },
       {
-        "title": "Magkita in person",
-        "desc": "Mag-chat sa private thread, mag-set ng date, at gawing totoo.\nTapos na ang tourist mode."
+        "title": "Magsama-sama",
+        "desc": "Lahat ng sumali ay magkikita in person — o magpapadala ng pinakamagandang photo bago ang deadline. Vine-validate ng host kung sino ang dumating, o pumipili ng panalo."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Hindi isa pang social network.\nDahilan para magkita in person.",
     "rules": [
       "Walang follower. Walang feed. Walang algorithm.",
-      "Naghahamunan ang mga local at biyahero. Tinatanggap ito ng kabilang side.",
+      "Mag-ipon ng grupo para sa totoong meet, o magpatakbo ng photo contest. Ang sumipot — o nanalo — ang nakakakuha.",
       "Totoong tao. Totoong lugar. Ngayon na."
     ]
   },
-  "seo": "Ang Hilads ay isang real-time social app kung saan naghahamunan ang mga local at biyahero para tuklasin ang siyudad sa totoong paraan. Tanggapin ang food, place o culture challenge sa Paris, tanggapin ang isa sa Barcelona, o mag-launch ng iyo sa Lisbon - ginagawa ng Hilads na in-person meet-up ang bawat byahe. Walang kailangang account. Sumipot lang.",
+  "seo": "Ang Hilads ay isang real-time social app kung saan nagtitipon ang mga tao sa real-world na challenges — group meets sa takdang oras at lugar, at photo contests sa pagitan ng mga siyudad. Sumali sa challenge sa Paris, mag-host ng meet sa Barcelona, o mag-launch ng photo contest mula Lisbon. Walang kailangang account. Sumipot lang.",
   "download": {
     "eyebrow": "Mga mobile app",
     "title": "Ang lungsod mo sa bulsa mo.",

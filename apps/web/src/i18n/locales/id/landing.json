@@ -60,12 +60,12 @@
         "desc": "Local. Kamu kenal kotanya.\nPelancong. Kamu ingin menjalaninya."
       },
       {
-        "title": "Luncurkan atau terima tantangan",
-        "desc": "Siapa pun bisa meluncurkan tantangan makanan, tempat, budaya atau bantuan - untuk local atau pelancong. Sisi lain yang menerima."
+        "title": "Luncurkan atau ikut tantangan",
+        "desc": "Siapa pun bisa membuat meet — tanggal + tempat — atau kontes foto dengan tenggat. Terbuka untuk satu grup, bukan satu lawan satu."
       },
       {
-        "title": "Ketemu langsung",
-        "desc": "Ngobrol di thread privat, atur tanggalnya, dan wujudkan.\nGak ada lagi mode turis."
+        "title": "Datang bareng",
+        "desc": "Semua yang ikut ketemu langsung — atau kirim foto terbaik sebelum tenggat. Host memvalidasi siapa yang datang, atau memilih pemenang."
       }
     ]
   },
@@ -79,11 +79,11 @@
     "title": "Bukan jejaring sosial lain.\nAlasan buat ketemu langsung.",
     "rules": [
       "Tanpa pengikut. Tanpa feed. Tanpa algoritma.",
-      "Local dan pelancong saling menantang. Sisi lain yang menerima.",
+      "Kumpulkan grup untuk meet sungguhan, atau adakan kontes foto. Yang datang — atau menang — yang dapat.",
       "Orang nyata. Tempat nyata. Sekarang juga."
     ]
   },
-  "seo": "Hilads adalah aplikasi sosial real-time tempat local dan pelancong saling menantang untuk menemukan kota dengan cara sungguhan. Terima tantangan makanan, tempat atau budaya di Paris, terima satu di Barcelona, atau luncurkan punyamu di Lisbon - Hilads mengubah setiap perjalanan jadi pertemuan langsung. Tanpa akun. Datang saja.",
+  "seo": "Hilads adalah aplikasi sosial real-time tempat orang berkumpul di sekitar tantangan dunia nyata — meet grup di waktu dan tempat yang ditentukan, dan kontes foto antarkota. Ikut tantangan di Paris, jadi host meet di Barcelona, atau luncurkan kontes foto dari Lisbon. Tanpa akun. Datang saja.",
   "download": {
     "eyebrow": "Aplikasi mobile",
     "title": "Kotamu dalam genggaman.",
