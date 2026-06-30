@@ -12,27 +12,27 @@
     "signIn": "登入",
     "create_event": {
       "pageTitle": "建立活動",
-      "title": "幽靈可以瀏覽，但無法主辦。",
+      "title": "Ghost 可以瀏覽，但無法主辦。",
       "sub": "建立帳號來舉辦你自己的活動，讓你的城市登上版圖。"
     },
     "view_profile": {
       "pageTitle": "個人資料",
-      "title": "幽靈可以瀏覽，但個人資料是會員專屬的。",
+      "title": "Ghost 可以瀏覽，但個人資料是會員專屬的。",
       "sub": "建立帳號來解鎖個人資料、與人連結，並打造你的城市好友圈。"
     },
     "join_hangout": {
       "pageTitle": "加入聚會",
-      "title": "幽靈可以瀏覽，但無法加入聚會。",
+      "title": "Ghost 可以瀏覽，但無法加入聚會。",
       "sub": "註冊以加入聚會、保留你的名字，並在有人想碰面時收到通知。"
     },
     "create_hangout": {
       "pageTitle": "發起聚會",
-      "title": "幽靈可以瀏覽，但無法主辦。",
+      "title": "Ghost 可以瀏覽，但無法主辦。",
       "sub": "註冊以發起聚會、保留你的名字，並吸引大家加入你。"
     },
     "create_challenge": {
       "pageTitle": "發起挑戰",
-      "title": "幽靈能瀏覽，但不能發起挑戰。",
+      "title": "Ghost 可以瀏覽，但不能發起挑戰。",
       "sub": "註冊以向本地人或旅行者發起挑戰，並驗證它。"
     },
     "accept_challenge": {
@@ -164,7 +164,7 @@
     "challengeTitle": "發起挑戰",
     "challengeSub": "在地人和旅人 - 透過一個挑戰連結",
     "challengePageTitle": "發起挑戰",
-    "challengeAudience": "給誰?",
+    "challengeAudience": "給誰？",
     "challengeAudLocals": "在地人",
     "challengeAudExplorers": "旅人",
     "challengeType": "類型",
@@ -173,7 +173,7 @@
     "challengeTypeCulture": "文化",
     "challengeTypeHelp": "瘋狂",
     "challengeTitleLabel": "你的挑戰",
-    "challengeTitlePlaceholder": "例如,帶我去你最愛的咖啡館",
+    "challengeTitlePlaceholder": "例如，帶我去你最愛的咖啡館",
     "challengeCta": "發起挑戰 🔥",
     "challengeErrStart": "無法發起挑戰"
   },

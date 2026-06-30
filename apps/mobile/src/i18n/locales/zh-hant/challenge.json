@@ -42,9 +42,9 @@
     "sub": "成為第一個上榜的人 - 發起並完成一個挑戰"
   },
   "createTitle": "發起挑戰",
-  "allTitle": "全部 Challenges",
+  "allTitle": "全部挑戰",
   "editTitle": "編輯挑戰",
-  "audience": "給誰?",
+  "audience": "給誰？",
   "aud": {
     "locals": "在地人",
     "explorers": "旅人",
@@ -58,23 +58,23 @@
     "help": "瘋狂"
   },
   "titleLabel": "你的挑戰",
-  "titlePlaceholder": "例如,帶我去你最愛的咖啡館",
+  "titlePlaceholder": "例如，帶我去你最愛的咖啡館",
   "maxParticipantsLabel": {
-    "locals": "最多多少在地人?",
-    "explorers": "最多多少旅人?"
+    "locals": "最多多少在地人？",
+    "explorers": "最多多少旅人？"
   },
-  "returnClauseLabel": "然後呢?",
+  "returnClauseLabel": "然後呢？",
   "returnClauseTemplates": {
     "food": "……然後過來跟我一起分享 🍜",
     "place": "……然後你親自帶我去 🗺️",
     "culture": "……然後我們見面聊聊 🎭",
-    "help": "……然後我們見面讓我當面幫你 🙏"
+    "help": "……然後我們一起做點瘋狂的事 🤪"
   },
   "createCta": "發起挑戰 🔥",
   "saveChanges": "儲存變更",
   "errSave": "儲存失敗",
   "errStart": "無法發起挑戰",
-  "deleteTitle": "刪除挑戰?",
+  "deleteTitle": "刪除挑戰？",
   "deleteBody": "挑戰將對所有人刪除。無法復原。",
   "deleteConfirm": "刪除",
   "acceptCta": "接受挑戰",
@@ -86,7 +86,7 @@
     "available": "可接受",
     "inProgress": "進行中",
     "takeIt": "我接受",
-    "takerLabel": "接戰者",
+    "takerLabel": "接受者",
     "rankBadge": "第 {{rank}} 名",
     "photoBadge": "照片",
     "joinedCount": "{{count}} 人已加入",
@@ -175,7 +175,7 @@
       },
       "mode_mismatch": {
         "title": "這個挑戰不適合你",
-        "body": "想接受的話,在個人檔案裡切換你的模式。"
+        "body": "想接受的話，在個人檔案裡切換你的模式。"
       },
       "cap_reached": {
         "title": "挑戰已滿"
@@ -192,18 +192,18 @@
   },
   "thread": {
     "notFound": "找不到對話",
-    "empty": "打聲招呼 👋,約一下見面時間。",
+    "empty": "第一個說點什麼吧。",
     "emptyIntl": "打個招呼 👋 - 搞定後丟張 📸 上來。",
     "cancel": {
-      "creatorTitle": "取消這次take-on?",
-      "acceptorTitle": "放棄這個挑戰?",
-      "body": "對話和聊天將被刪除。如果改變主意了,之後可以重新接受。",
+      "creatorTitle": "取消這次參與？",
+      "acceptorTitle": "放棄這個挑戰？",
+      "body": "對話和聊天將被刪除。如果改變主意了，之後可以重新接受。",
       "confirm": "取消",
       "failed": "無法取消。請再試一次。"
     },
     "cancelledByOther": {
       "title": "對話已取消",
-      "body": "對方取消了這次take-on。"
+      "body": "對方取消了這次參與。"
     }
   },
   "threads": {
@@ -211,7 +211,7 @@
     "noMessagesYet": "還沒有訊息",
     "empty": {
       "title": "沒有進行中的對話",
-      "body": "當你接受挑戰或有人接受你的挑戰時,對話會出現在這裡。"
+      "body": "當你接受挑戰或有人接受你的挑戰時，對話會出現在這裡。"
     },
     "guestGate": {
       "title": "登入後查看對話",
@@ -229,14 +229,14 @@
       "title": "見面已安排"
     },
     "withdraw": {
-      "title": "撤回提議?",
+      "title": "撤回提議？",
       "body": "你提議的日期會被清除，對方會收到通知。",
       "confirm": "撤回"
     },
     "today": "今天",
     "tomorrow": "明天",
     "picker": {
-      "title": "什麼時候見面?",
+      "title": "什麼時候見面？",
       "whenLabel": "什麼時候",
       "timeLabel": "開始時間",
       "whereLabel": "在哪裡（選填）",
@@ -254,8 +254,8 @@
   },
   "debrief": {
     "creatorPrompt": {
-      "title": "怎麼樣?",
-      "body": "{{name}}做到了嗎?"
+      "title": "怎麼樣？",
+      "body": "{{name}}做到了嗎？"
     },
     "acceptorWaiting": {
       "title": "等待結果",
@@ -269,19 +269,19 @@
     },
     "confirm": {
       "approve": {
-        "title": "標記為完成?",
-        "body": "這是最終決定,之後無法更改。",
+        "title": "標記為完成？",
+        "body": "這是最終決定，之後無法更改。",
         "confirm": "標記為完成"
       },
       "reject": {
-        "title": "不作判定就關閉?",
-        "body": "如果見面沒有真的發生,使用這個。這是最終決定。",
+        "title": "不作判定就關閉？",
+        "body": "如果見面沒有真的發生，使用這個。這是最終決定。",
         "confirm": "關閉"
       }
     },
     "err": {
-      "approveFailed": "無法確認,請再試一次。",
-      "rejectFailed": "無法關閉,請再試一次。"
+      "approveFailed": "無法確認，請再試一次。",
+      "rejectFailed": "無法關閉，請再試一次。"
     }
   },
   "closeCta": "關閉挑戰",
@@ -333,16 +333,16 @@
   },
   "locked": {
     "visitor": {
-      "title": "接下挑戰,解鎖聊天",
-      "body": "你一旦接下,你們就會有一個私密對話來約見面時間。"
+      "title": "接下挑戰，解鎖聊天",
+      "body": "你一旦接下，你們就會有一個私密對話來約見面時間。"
     },
     "creator": {
       "title": "等人來接挑戰",
-      "body": "有旅人接下挑戰後,你們就在這裡聊,約見面時間。"
+      "body": "有旅人接下挑戰後，你們就在這裡聊，約見面時間。"
     },
     "full": {
       "title": "挑戰已滿",
-      "body": "名額已滿,有人退出再回來看看。"
+      "body": "名額已滿，有人退出再回來看看。"
     },
     "inProgress": {
       "title": "現在有人在接",
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "目標城市",
     "targetCityAnywhere": "🌍 世界任何地方",
-    "targetCityHint": "保留「任何地方」可觸達全球旅行者，或選擇一個城市定向。",
+    "targetCityHint": "選擇一個目標城市——「世界任何地方」尚未開放。",
     "proofRequirementsLabel": "照片要拍到什麼？",
     "proofRequirementsPlaceholder": "例如：日光下的菜餚，本人入鏡",
     "proofRequirementsHint": "證據是一張照片 📸。參與者提交前會看到這裡 - 寫得具體些。",
@@ -436,7 +436,7 @@
       "submitFailBody": "檢查網路後重試。",
       "reviewFailTitle": "判定未儲存"
     },
-    "targetCityRequired": "「全球任意地點」尚未開放 — 請選擇一個目標城市以繼續。",
+    "targetCityRequired": "「世界任何地方」尚未開放——請選擇一個目標城市以繼續。",
     "targetCityRequiredTitle": "選擇目標城市"
   },
   "modeFilter": {
@@ -531,7 +531,7 @@
     "errSubmit": "評分送出失敗，請重試。"
   },
   "leaderboard": {
-    "title": "🏆 最在地",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "成為第一個接受挑戰並獲得分數的人。"
     },
     "errLoad": "載入排行榜失敗，下拉重試。",
-    "neutral": "🏆 最在地",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "搜尋城市…",
       "empty": "沒有符合的城市。"
@@ -567,7 +567,7 @@
     "aria": "積分如何獲得",
     "helpLabel": "🏆 如何賺取積分",
     "title": "🏆 挑戰如何運作",
-    "intro": "每個挑戰都會給雙方加分 -- 計入你的城市和全球排行榜。",
+    "intro": "加入只得一點小分；真正到場或獲勝才有大分。光刷加入毫無意義。",
     "colStep": "步驟",
     "steps": {
       "created": "已建立挑戰",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "每個挑戰合計",
-    "footnote": "建立積分（+10）立即到帳。其餘積分只有在雙方都評價見面後才發放。",
+    "footnote": "隨著我們調整玩法，分數可能會變化。",
     "types": {
-      "heading": "🎯 兩種玩法",
-      "local": "🏙️ 本地 - 在同城。線下見面才算數。",
-      "international": "🌍 國際 - 跨城市。一張即時照片作證明。"
+      "heading": "兩種挑戰",
+      "local": "🏙️ 見面 — 在約定的時間和地點線下組隊集合。所有到場的人都能拿大分。",
+      "international": "🌍 照片挑戰 — 所有人在截止前提交照片；由發起人選出獲勝者。"
     },
     "lifecycle": {
-      "heading": "🔁 一次只來一位",
-      "body": "挑戰者完成後,聊天會重置--挑戰仍在,等待下一位冒險者。"
+      "heading": "🔁 如何收尾",
+      "body": "發起人設定挑戰，大家加入，最後由發起人確認 —— 誰到場了，或哪張照片獲勝。"
     },
     "pointsHeading": "💯 如何賺取積分",
     "ways": {
@@ -636,7 +636,7 @@
       "deletedChallenge": "已刪除的挑戰",
       "andMore": "另外 {{count}} 項"
     },
-    "total": "總分: {{total}} 分"
+    "total": "總分： {{total}} 分"
   },
   "welcomeGuest": {
     "title": "👋 歡迎！無需註冊即可暢聊。",
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "你贏了！",
-      "body": "你的照片贏得了比賽。"
+      "body": "你的照片贏得了挑戰。"
     },
     "loser": {
       "title": "{{name}} 贏了",
@@ -660,7 +660,7 @@
       "body": "下次聚會一定要來 — 你的位置留著。"
     },
     "host": {
-      "titlePhoto": "{{name}} 贏得了你的比賽！",
+      "titlePhoto": "{{name}} 贏得了你的挑戰！",
       "titleMeet": "你的聚會結束了！",
       "body": "感謝你的籌辦。",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"

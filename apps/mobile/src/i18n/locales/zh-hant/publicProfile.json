@@ -64,9 +64,9 @@
   "alreadyReportedBody": "你已在 {{date}} 檢舉這位使用者。你的檢舉正在審核中。",
   "blockUser": "封鎖使用者",
   "blocking": "封鎖中…",
-  "ghostName": "幽靈",
+  "ghostName": "Ghost",
   "visiting": "正在造訪 {{city}}",
-  "ghostNote": "化身幽靈四處漂流 👻",
+  "ghostNote": "化身 Ghost 四處漂流 👻",
   "tabChallenges": "挑戰",
   "noChallenges": "尚無挑戰"
 }
