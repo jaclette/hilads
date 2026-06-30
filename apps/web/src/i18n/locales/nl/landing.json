@@ -32,7 +32,7 @@
   "local": {
     "badge": "🌍 Local",
     "title": "Wees de local die de stad maakt",
-    "tagline": "Jij kent de spots. Daag locals of reizigers uit ze te vinden.",
+    "tagline": "Jij kent de spots. Daag locals of reizigers uit om ze te vinden.",
     "bullets": [
       "Daag locals of reizigers uit - food, plaats, cultuur of hulp",
       "Breng mensen naar de plekken waar jij van houdt",
@@ -42,7 +42,7 @@
   },
   "exploring": {
     "badge": "🧭 Verkennen",
-    "title": "Doe lokale challenges aan overal",
+    "title": "Ga overal lokale challenges aan",
     "tagline": "Waar je ook landt, doe mee aan wat locals hebben gelanceerd.",
     "bullets": [
       "Doe mee aan challenges van locals",

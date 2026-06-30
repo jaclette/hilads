@@ -64,9 +64,9 @@
   "alreadyReportedBody": "Je hebt deze gebruiker gemeld op {{date}}. Je melding wordt beoordeeld.",
   "blockUser": "Gebruiker blokkeren",
   "blocking": "Blokkeren…",
-  "ghostName": "Geest",
+  "ghostName": "Ghost",
   "visiting": "Op bezoek in {{city}}",
-  "ghostNote": "Zweeft hier rond als een geest 👻",
+  "ghostNote": "Zweeft hier rond als Ghost 👻",
   "tabChallenges": "Challenges",
   "noChallenges": "Nog geen challenges"
 }

@@ -17,7 +17,7 @@
   "myChallenges": {
     "cta": "Mijn challenges"
   },
-  "tabIntro": "Challenges tussen locals en ontdekkers binnen een stad - en tussen steden.",
+  "tabIntro": "Challenges tussen locals en reizigers binnen een stad - en tussen steden.",
   "howItWorks": "Hoe het werkt",
   "mostLocal": "Most Local",
   "seeAll": "Alles bekijken",
@@ -52,7 +52,7 @@
     "food": "...en kom het met me delen 🍜",
     "place": "...en neem me er zelf mee naartoe 🗺️",
     "culture": "...en we spreken af om erover te praten 🎭",
-    "help": "...en we spreken af zodat ik persoonlijk kan helpen 🙏"
+    "help": "...en laten we samen iets geks doen 🤪"
   },
   "createCta": "Challenge starten 🔥",
   "saveChanges": "Wijzigingen opslaan",
@@ -113,7 +113,7 @@
   "editBtn": "Bewerken",
   "deleteBtn": "Verwijderen",
   "shareCta": "Delen",
-  "shareInvite": "Doe deze uitdaging met me mee!",
+  "shareInvite": "Doe deze challenge met me mee!",
   "shareCopied": "Link gekopieerd ✓",
   "noun": "Challenge",
   "examples": {
@@ -153,7 +153,7 @@
         "body": "Jij hebt deze challenge gemaakt - wacht tot iemand anders 'm accepteert."
       },
       "mode_required": {
-        "title": "Kies eerst local of traveler",
+        "title": "Kies eerst local of reiziger",
         "body": "Stel je modus in je profiel in voor je challenges accepteert."
       },
       "mode_mismatch": {
@@ -175,10 +175,10 @@
   },
   "thread": {
     "notFound": "Thread niet gevonden",
-    "empty": "Zeg hoi 👋 en plan wanneer jullie afspreken.",
+    "empty": "Wees de eerste die iets zegt.",
     "emptyIntl": "Zeg hi 👋 - drop een 📸 als het gelukt is.",
     "cancel": {
-      "creatorTitle": "Deze take-on annuleren?",
+      "creatorTitle": "Deze deelname annuleren?",
       "acceptorTitle": "Deze challenge laten vallen?",
       "body": "De thread en chat worden verwijderd. Je kunt later opnieuw accepteren als je van gedachten verandert.",
       "confirm": "Annuleren",
@@ -186,7 +186,7 @@
     },
     "cancelledByOther": {
       "title": "Thread geannuleerd",
-      "body": "De ander heeft deze take-on geannuleerd."
+      "body": "De andere persoon heeft deze deelname geannuleerd."
     }
   },
   "threads": {
@@ -305,8 +305,8 @@
     },
     "acceptor": {
       "waitingTitle": "Wachten op reactie",
-      "waitingBody": "{{name}} accepteert of wijst je take-on af. Je krijgt een push zodra ze beslissen.",
-      "rejectedTitle": "Take-on afgewezen",
+      "waitingBody": "{{name}} accepteert of weigert je verzoek. Je krijgt een melding zodra er een beslissing is.",
+      "rejectedTitle": "Verzoek afgewezen",
       "rejectedBody": "{{name}} heeft deze afgewezen. Je kunt nog steeds een andere challenge pakken."
     }
   },
@@ -376,7 +376,7 @@
   "intl": {
     "targetCityLabel": "Doelstad",
     "targetCityAnywhere": "🌍 Waar dan ook ter wereld",
-    "targetCityHint": "Laat \"Waar dan ook\" staan om reizigers overal te bereiken, of kies een stad.",
+    "targetCityHint": "Kies een doelstad — \"Waar dan ook ter wereld\" is nog niet beschikbaar.",
     "proofRequirementsLabel": "Wat moet de foto laten zien?",
     "proofRequirementsPlaceholder": "bv. Het gerecht bij daglicht, met jou erbij",
     "proofRequirementsHint": "Het bewijs is een foto 📸. De deelnemer ziet dit vóór het versturen - wees specifiek.",
@@ -421,7 +421,7 @@
   },
   "messageCreator": "Stuur {{name}} privé een bericht",
   "badge": {
-    "challenger": "Uitdager",
+    "challenger": "Challenger",
     "taker": "Acceptant",
     "spectator": "Toeschouwer"
   },
@@ -535,11 +535,11 @@
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   },
   "leaderboard": {
-    "title": "🏆 De meest lokale",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top-uitdagers"
+      "neutral": "🏆 Top-challengers"
     },
     "scope": {
       "city": "My city",
@@ -560,14 +560,14 @@
       "body": "Wees de eerste die een challenge aangaat en punten scoort."
     },
     "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen.",
-    "neutral": "🏆 De meest lokale",
+    "neutral": "🏆 Most Local",
     "titleCity": "🏆 Most {{demonym}}"
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",
     "helpLabel": "🏆 Zo verdien je punten",
     "title": "🏆 Hoe challenges werken",
-    "intro": "Elke challenge levert beide kanten punten op - die tellen mee in je stad- en wereldklassement.",
+    "intro": "Kleine punten voor meedoen; de grote punten voor echt komen opdagen of winnen. Alleen maar meedoen levert nooit wat op.",
     "colStep": "Stap",
     "steps": {
       "created": "Challenge aangemaakt",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "Totaal per challenge",
-    "footnote": "Aanmaakpunten (+10) krijg je meteen. De rest pas als beiden de meet-up beoordelen.",
+    "footnote": "De cijfers kunnen veranderen terwijl we het spel finetunen.",
     "types": {
-      "heading": "🎯 Twee manieren om te spelen",
-      "local": "🏙️ Lokaal - in jouw stad. Spreek in het echt af om het te laten tellen.",
-      "international": "🌍 Internationaal - tussen steden. Een instant foto als bewijs."
+      "heading": "Twee soorten challenge",
+      "local": "🏙️ Meet — verzamel een groep in het echt op een vaste tijd + plek. Iedereen die komt opdagen verdient groot.",
+      "international": "🌍 Foto-challenge — iedereen stuurt voor de deadline een foto in; de challenger kiest de winnaar."
     },
     "lifecycle": {
-      "heading": "🔁 Eén challenge per keer",
-      "body": "Als de uitvoerder klaar is, wordt de chat gewist - de challenge blijft, klaar voor de volgende avonturier."
+      "heading": "🔁 Hoe het wordt beslist",
+      "body": "De challenger stelt het op, mensen doen mee, en aan het eind bevestigt de challenger — wie er was, of welke foto won."
     },
     "pointsHeading": "💯 Zo verdien je punten",
     "ways": {
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "Je hebt gewonnen!",
-      "body": "Jouw foto won de wedstrijd."
+      "body": "Jouw foto won de challenge."
     },
     "loser": {
       "title": "{{name}} won",
@@ -660,7 +660,7 @@
       "body": "Wees erbij bij de volgende meet — je plek wacht."
     },
     "host": {
-      "titlePhoto": "{{name}} won jouw wedstrijd!",
+      "titlePhoto": "{{name}} won jouw challenge!",
       "titleMeet": "Je meet is afgelopen!",
       "body": "Bedankt voor het organiseren.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
@@ -740,7 +740,7 @@
   "challengeIntro": {
     "slide1": {
       "title": "Voel de stad, nu",
-      "body": "Challenges zijn kleine real-life uitdagingen tussen mensen in een stad – en tussen steden."
+      "body": "Challenges zijn kleine real-life challenges tussen mensen in een stad – en tussen steden."
     },
     "slide2": {
       "title": "Zet een challenge op",

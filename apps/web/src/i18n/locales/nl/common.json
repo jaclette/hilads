@@ -16,7 +16,7 @@
     "f2": "📅 Organiseer een evenement in je stad",
     "f3": "💬 Stuur iedereen een privébericht",
     "f4": "📍 Zie live wie er in de buurt is",
-    "f5": "🤝 Maak contact met locals en ontdekkers",
+    "f5": "🤝 Maak contact met locals en reizigers",
     "cta": "Let's go 🚀"
   },
   "onboarding": {
@@ -62,7 +62,7 @@
     },
     "slide4": {
       "title": "Afspreken of foto-bewijs",
-      "body": "Spreek persoonlijk af of stuur een foto vanop afstand - jij beslist. Hoe dan ook, de pipeline volgt elke stap."
+      "body": "Spreek persoonlijk af of stuur een foto vanop afstand - jij beslist. Hoe dan ook, elke stap wordt bijgehouden."
     },
     "slide5": {
       "title": "Sluit 'm af",
@@ -76,7 +76,7 @@
       "body": "Daag iedereen overal uit. Die persoon stuurt bewijs - een geotagged foto - en jij valideert vanop afstand. Dezelfde foto-flow werkt ook lokaal. Local of global, elke challenge telt."
     },
     "slide7": {
-      "title": "Word de meest lokale",
+      "title": "Word Most Local",
       "body": "Elke challenge levert je punten op - in jouw stad EN wereldwijd. Spreek persoonlijk af voor een bonus van +50. Local of reiziger, het gaat om wat je hier opbouwt. Elke maand een nieuwe ranking."
     },
     "createCta": "🔥 Maak een challenge"
