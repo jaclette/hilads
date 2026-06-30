@@ -94,10 +94,10 @@
   "limit": {
     "title": "Já criaste o teu evento de hoje!",
     "body": "No Hilads mantemos as coisas frescas - um evento por dia para que cada plano receba a atenção que merece. Volta amanhã para criar outro.",
-    "legendLink": "👑 Torna-te uma Legend para criar eventos ilimitados",
-    "legendA11y": "Saber mais sobre como te tornares uma Legend",
-    "legendAlertTitle": "👑 Torna-te uma Legend",
-    "legendAlertBody": "As Legends são locais escolhidos para manter a sua cidade viva - podem organizar tantos eventos quantos quiserem. Queres ser uma? Contacta-nos em contact@hilads.live.",
+    "legendLink": "👑 Torna-te uma Lenda para criar eventos ilimitados",
+    "legendA11y": "Saber mais sobre como te tornares uma Lenda",
+    "legendAlertTitle": "👑 Torna-te uma Lenda",
+    "legendAlertBody": "As Lendas são locais escolhidos para manter a sua cidade viva - podem organizar tantos eventos quantos quiserem. Queres ser uma? Contacta-nos em contact@hilads.live.",
     "gotIt": "Entendido",
     "backToNow": "Voltar a Now"
   },

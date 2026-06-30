@@ -32,7 +32,7 @@
     },
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
-      "title": "Fantasmas vêem, mas não desafiam.",
+      "title": "Os fantasmas podem ver, mas não desafiar.",
       "sub": "Cria conta para lançar um desafio a locais ou viajantes e validá-lo."
     },
     "accept_challenge": {
@@ -247,7 +247,7 @@
     "challengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
     "challengeCta": "Ver →",
     "challengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\".",
-    "challengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}"
+    "challengeInternational": "{{fromFlag}} → {{toFlag}} Desafio internacional: {{title}}"
   },
   "replyPreview": {
     "photo": "📷 Foto"

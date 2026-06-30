@@ -29,17 +29,17 @@
     },
     "slide2": {
       "title": "Três formas de viver a cidade",
-      "itemChallenges": "🤝 Challenges - desafia ou deixa-te desafiar para descobrir sítios escondidos, provar comida a sério, partilhar cultura ou dar uma mão.",
+      "itemChallenges": "🤝 Desafios - desafia ou deixa-te desafiar para descobrir sítios escondidos, provar comida a sério, partilhar cultura ou dar uma mão.",
       "itemHangouts": "🗣️ Hi now - conhece alguém de forma espontânea",
       "itemEvents": "🎉 Hi plan - planeia um momento para se verem"
     },
     "slide3": {
       "title": "Conquista o teu lugar na cidade",
-      "body": "Cada challenge que completas, cada encontro, cada sítio que descobres dá-te pontos. Os pontos refletem o quanto te tornaste local em {{city}}. Chega ao topo de Most Local e conquista o teu lugar entre quem faz a cidade ganhar vida."
+      "body": "Cada desafio que completas, cada encontro, cada sítio que descobres dá-te pontos. Os pontos refletem o quanto te tornaste local em {{city}}. Chega ao topo de Most Local e conquista o teu lugar entre quem faz a cidade ganhar vida."
     },
     "slide4": {
       "title": "Pronto para começar?",
-      "ctaChallenge": "📍 Lança o teu primeiro challenge em {{city}}",
+      "ctaChallenge": "📍 Lança o teu primeiro desafio em {{city}}",
       "ctaMostLocal": "🤝 Descobre Most Local de {{city}}",
       "ctaLookAround": "👀 Só dar uma vista de olhos",
       "ctaHiNow": "🗣️ Hi now",
@@ -62,22 +62,22 @@
     },
     "slide4": {
       "title": "Encontro ou prova por foto",
-      "body": "Encontrem-se pessoalmente ou enviem uma foto à distância - tu decides. De qualquer forma, o pipeline acompanha cada passo."
+      "body": "Encontrem-se pessoalmente ou enviem uma foto à distância - tu decides. De qualquer forma, cada passo é acompanhado."
     },
     "slide5": {
       "title": "Fecha o desafio",
-      "body": "Depois do encontro (ou quando a foto chegar), marca como concluído. A tua cidade, vivida a sério - um challenge de cada vez."
+      "body": "Depois do encontro (ou quando a foto chegar), marca como concluído. A tua cidade, vivida a sério - um desafio de cada vez."
     },
     "next": "Seguinte",
     "done": "Percebi!",
     "skip": "Saltar ✕",
     "slide6": {
       "title": "Para além da tua cidade",
-      "body": "Desafia qualquer pessoa, em qualquer lugar. A pessoa envia prova - uma foto geolocalizada - e tu validas à distância. O mesmo fluxo de foto também serve no local. Local ou global, cada challenge conta."
+      "body": "Desafia qualquer pessoa, em qualquer lugar. A pessoa envia prova - uma foto geolocalizada - e tu validas à distância. O mesmo fluxo de foto também serve no local. Local ou global, cada desafio conta."
     },
     "slide7": {
-      "title": "Torna-te o mais local",
-      "body": "Cada challenge dá-te pontos - na tua cidade E no mundo. Encontrem-se em pessoa para um bónus de +50. Local ou viajante, o que importa é o que constróis aqui. Tabela nova todos os meses."
+      "title": "Torna-te o Most Local",
+      "body": "Cada desafio dá-te pontos - na tua cidade E no mundo. Encontrem-se em pessoa para um bónus de +50. Local ou viajante, o que importa é o que constróis aqui. Tabela nova todos os meses."
     },
     "createCta": "🔥 Criar um desafio"
   },

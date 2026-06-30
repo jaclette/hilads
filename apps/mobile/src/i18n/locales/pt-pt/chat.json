@@ -2,7 +2,7 @@
   "changeCity": "Mudar de cidade",
   "shareCity": "Partilhar a cidade",
   "shareTitle": "O que se passa em {{city}} agora mesmo",
-  "shareMessage": "Vê quem está por {{city}} esta noite no Hilads. Atividade da cidade em tempo real, sem registo.",
+  "shareMessage": "Vê quem está por {{city}} agora mesmo no Hilads. Atividade da cidade em tempo real, sem registo.",
   "currentWeather": "Tempo atual: {{label}}",
   "weatherAlert": "Tempo",
   "online": "{{count}} por perto",
@@ -88,7 +88,7 @@
   "bannerChallengeLocals": "🔥 {{name}} desafia os locais: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} desafia os viajantes: {{title}}",
   "bannerChallengeValidated": "🏆 Desafio cumprido! {{name}} validou \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge internacional: {{title}}",
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Desafio internacional: {{title}}",
   "arrivalsBar": {
     "label": "✈️ Chegadas recentes",
     "sheetTitle": "Chegadas",
