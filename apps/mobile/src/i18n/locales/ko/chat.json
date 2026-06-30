@@ -2,7 +2,7 @@
   "changeCity": "도시 변경",
   "shareCity": "도시 공유",
   "shareTitle": "지금 {{city}}에서 일어나는 일",
-  "shareMessage": "오늘 밤 {{city}}에 누가 있는지 Hilads에서 확인하세요. 실시간 도시 활동, 가입 없이.",
+  "shareMessage": "지금 {{city}}에 누가 있는지 Hilads에서 확인하세요. 실시간 도시 활동, 가입 없이.",
   "currentWeather": "현재 날씨: {{label}}",
   "weatherAlert": "날씨",
   "online": "근처 {{count}}명",
@@ -29,8 +29,8 @@
   "actionEdit": "수정",
   "actionDelete": "삭제",
   "actionCancel": "취소",
-  "deleteConfirmTitle": "메시지를 삭제하시겠습니까?",
-  "deleteConfirmBody": "이 메시지는 모든 사람에게서 삭제됩니다.",
+  "deleteConfirmTitle": "메시지를 삭제할까요?",
+  "deleteConfirmBody": "이 메시지는 모든 사람에게서 삭제돼요.",
   "deleteConfirmCta": "삭제",
   "deleteConfirmCancel": "취소",
   "editFailed": "수정을 저장하지 못했어요",
@@ -85,14 +85,14 @@
   "photoSavePermTitle": "사진 접근 권한이 필요해요",
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
   "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
-  "bannerChallengeLocals": "🔥 {{name}} 님이 로컬에게 도전: {{title}}",
-  "bannerChallengeExplorers": "🔥 {{name}} 님이 여행자에게 도전: {{title}}",
-  "bannerChallengeValidated": "🏆 도전 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요.",
+  "bannerChallengeLocals": "🔥 {{name}} 님이 로컬에게 챌린지: {{title}}",
+  "bannerChallengeExplorers": "🔥 {{name}} 님이 여행자에게 챌린지: {{title}}",
+  "bannerChallengeValidated": "🏆 챌린지 완료! {{name}} 님이 \"{{title}}\" 을 검증했어요.",
   "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} 국제 챌린지: {{title}}",
   "arrivalsBar": {
     "label": "✈️ 최근 도착",
     "sheetTitle": "도착",
-    "empty": "아직 도착이 없습니다"
+    "empty": "아직 도착이 없어요"
   },
   "cityHero": {
     "mainEmpty": "🌱 {{city}}에 아직 챌린지가 없어요",
