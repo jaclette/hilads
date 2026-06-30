@@ -42,7 +42,7 @@
     "sub": "Sé el primero en el ranking - lanza y termina un reto"
   },
   "createTitle": "Crear un reto",
-  "allTitle": "Todos los Challenges",
+  "allTitle": "Todos los retos",
   "editTitle": "Editar reto",
   "audience": "¿Para quién?",
   "aud": {
@@ -68,7 +68,7 @@
     "food": "...y ven a compartirlo conmigo 🍜",
     "place": "...y llévame tú mismo 🗺️",
     "culture": "...y quedamos para hablarlo 🎭",
-    "help": "...y quedamos para que pueda ayudarte en persona 🙏"
+    "help": "...y hacemos juntos una locura 🤪"
   },
   "createCta": "Lanzar reto 🔥",
   "saveChanges": "Guardar cambios",
@@ -86,7 +86,7 @@
     "available": "Disponible",
     "inProgress": "En curso",
     "takeIt": "Lo acepto",
-    "takerLabel": "Receptor",
+    "takerLabel": "Retado",
     "rankBadge": "Puesto {{rank}}",
     "photoBadge": "Foto",
     "joinedCount": "{{count}} apuntados",
@@ -192,10 +192,10 @@
   },
   "thread": {
     "notFound": "Hilo no encontrado",
-    "empty": "Saluda 👋 y planifica cuándo os veréis.",
+    "empty": "Sé el primero en decir algo.",
     "emptyIntl": "Saluda 👋 - manda una 📸 cuando lo logres.",
     "cancel": {
-      "creatorTitle": "¿Cancelar este take-on?",
+      "creatorTitle": "¿Cancelar esta participación?",
       "acceptorTitle": "¿Dejar este reto?",
       "body": "El hilo y el chat se eliminarán. Puedes volver a aceptar más tarde si cambias de opinión.",
       "confirm": "Cancelar",
@@ -203,7 +203,7 @@
     },
     "cancelledByOther": {
       "title": "Hilo cancelado",
-      "body": "La otra persona canceló este take-on."
+      "body": "La otra persona canceló su participación."
     }
   },
   "threads": {
@@ -222,7 +222,7 @@
     "proposeCta": "Proponer una fecha 📅",
     "counterCta": "Contraproponer",
     "editCta": "Cambiar la fecha",
-    "you": "ti",
+    "you": "Tú",
     "iProposedTitle": "Esperando que confirme",
     "theyProposedTitle": "{{name}} propuso",
     "scheduled": {
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "Ciudad objetivo",
     "targetCityAnywhere": "🌍 Cualquier lugar del mundo",
-    "targetCityHint": "Déjalo en Cualquier lugar para llegar a viajeros en todas partes, o elige una ciudad.",
+    "targetCityHint": "Elige una ciudad objetivo — «Cualquier lugar del mundo» aún no está disponible.",
     "proofRequirementsLabel": "¿Qué debe mostrar la foto?",
     "proofRequirementsPlaceholder": "ej. El plato a la luz del día, contigo en la imagen",
     "proofRequirementsHint": "La prueba es una foto 📸. El participante la ve antes de enviar - sé específico.",
@@ -436,7 +436,7 @@
       "submitFailBody": "Revisa tu conexión e inténtalo de nuevo.",
       "reviewFailTitle": "No se pudo guardar el veredicto"
     },
-    "targetCityRequired": "«En cualquier parte del mundo» aún no está disponible: elige una ciudad objetivo para continuar.",
+    "targetCityRequired": "«Cualquier lugar del mundo» aún no está disponible: elige una ciudad objetivo para continuar.",
     "targetCityRequiredTitle": "Elige una ciudad objetivo"
   },
   "modeFilter": {
@@ -447,7 +447,7 @@
   "messageCreator": "Enviar mensaje privado a {{name}}",
   "badge": {
     "challenger": "Retador",
-    "taker": "Aceptante",
+    "taker": "Retado",
     "spectator": "Espectador"
   },
   "cta": {
@@ -465,7 +465,7 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Este desafío es privado",
+      "title": "🔒 Este reto es privado",
       "body": "Solo el creador y quien lo acepta pueden ver la conversación."
     }
   },
@@ -531,7 +531,7 @@
     "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
   },
   "leaderboard": {
-    "title": "🏆 Los más locales",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "Sé el primero en aceptar un reto y ganar puntos."
     },
     "errLoad": "No se pudo cargar la clasificación. Desliza para reintentar.",
-    "neutral": "🏆 Los más locales",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "Buscar ciudades…",
       "empty": "Ninguna ciudad coincide."
@@ -567,7 +567,7 @@
     "aria": "Cómo funcionan los puntos",
     "helpLabel": "🏆 Cómo ganar puntos",
     "title": "🏆 Cómo funcionan los retos",
-    "intro": "Cada reto da puntos a ambos lados - se suman a tu clasificación de ciudad y mundial.",
+    "intro": "Pequeñas chispas por apuntarte; los grandes puntos por presentarte de verdad o ganar. Acumular participaciones nunca compensa.",
     "colStep": "Paso",
     "steps": {
       "created": "Reto creado",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "Total por reto",
-    "footnote": "Los puntos de creación (+10) se dan al instante. Lo demás solo se otorga cuando ambas partes valoran el encuentro.",
+    "footnote": "Los números pueden cambiar mientras ajustamos el juego.",
     "types": {
-      "heading": "🎯 Dos formas de jugar",
-      "local": "🏙️ Local - en tu ciudad. Quedáis en persona para que cuente.",
-      "international": "🌍 Internacional - entre ciudades. Una foto instantánea como prueba."
+      "heading": "Dos tipos de reto",
+      "local": "🏙️ Quedada — reúne a un grupo en persona en una fecha y lugar concretos. Todos los que se presentan ganan mucho.",
+      "international": "🌍 Reto de fotos — todos envían una foto antes de la fecha límite; el retador elige al ganador."
     },
     "lifecycle": {
-      "heading": "🔁 Un reto a la vez",
-      "body": "Cuando termine quien lo toma, el chat se reinicia - el reto sigue ahí, listo para el siguiente."
+      "heading": "🔁 Cómo se resuelve",
+      "body": "El retador lo plantea, la gente se apunta y el retador valida al final — quién estuvo presente o qué foto ganó."
     },
     "pointsHeading": "💯 Cómo ganas puntos",
     "ways": {
@@ -602,7 +602,7 @@
   "scoreCelebration": {
     "unit": "puntos",
     "subtitle": {
-      "accepted": "Aceptaron tu challenge 🤝",
+      "accepted": "Aceptaron tu reto 🤝",
       "date_locked": "Cita confirmada - ¡vamos! 🗓️",
       "meetup": "¡Misión cumplida! 🎉",
       "debrief": "¡Misión cumplida! 🎉",
@@ -633,19 +633,19 @@
       "challenge_created": "Reto creado"
     },
     "event": {
-      "deletedChallenge": "Challenge eliminado",
+      "deletedChallenge": "Reto eliminado",
       "andMore": "y {{count}} más"
     },
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
     "title": "👋 ¡Bienvenido! Charla libremente, sin registro.",
-    "cta": "¿Quieres aceptar este desafío? Regístrate en 3 segundos →"
+    "cta": "¿Quieres aceptar este reto? Regístrate en 3 segundos →"
   },
   "result": {
     "winner": {
       "title": "¡Ganaste!",
-      "body": "Tu foto ganó el concurso."
+      "body": "Tu foto ganó el reto."
     },
     "loser": {
       "title": "{{name}} ganó",
@@ -660,7 +660,7 @@
       "body": "No te pierdas el próximo encuentro — tu lugar te espera."
     },
     "host": {
-      "titlePhoto": "¡{{name}} ganó tu concurso!",
+      "titlePhoto": "¡{{name}} ganó tu reto!",
       "titleMeet": "¡Tu encuentro terminó!",
       "body": "Gracias por organizar.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
@@ -673,7 +673,7 @@
   },
   "status": {
     "live": "En vivo",
-    "done": "Hecho"
+    "done": "Finalizado"
   },
   "group": {
     "meetCta": "Elige la fecha del encuentro",

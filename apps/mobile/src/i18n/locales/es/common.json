@@ -23,17 +23,17 @@
     },
     "slide2": {
       "title": "Tres formas de vivir la ciudad",
-      "itemChallenges": "🤝 Challenges - desafía o déjate desafiar para descubrir lugares ocultos, probar comida real, compartir cultura o echar una mano.",
+      "itemChallenges": "🤝 Retos - desafía o déjate desafiar para descubrir lugares ocultos, probar comida real, compartir cultura o echar una mano.",
       "itemHangouts": "🗣️ Hi now - conoce a alguien de forma espontánea",
       "itemEvents": "🎉 Hi plan - planifica un momento para veros"
     },
     "slide3": {
       "title": "Gana tu sitio en la ciudad",
-      "body": "Cada challenge que completas, cada quedada, cada lugar que descubres te da puntos. Los puntos reflejan lo local que te has vuelto en {{city}}. Llega al top de Most Local y gana tu sitio entre los que hacen que la ciudad esté viva."
+      "body": "Cada reto que completas, cada quedada, cada lugar que descubres te da puntos. Los puntos reflejan lo local que te has vuelto en {{city}}. Llega al top de Most Local y gana tu sitio entre los que hacen que la ciudad esté viva."
     },
     "slide4": {
       "title": "¿Listo para empezar?",
-      "ctaChallenge": "📍 Lanza tu primer challenge en {{city}}",
+      "ctaChallenge": "📍 Lanza tu primer reto en {{city}}",
       "ctaMostLocal": "🤝 Descubre Most Local de {{city}}",
       "ctaLookAround": "👀 Solo explorar por ahora",
       "ctaHiNow": "🗣️ Hi now",
@@ -60,18 +60,18 @@
     },
     "slide5": {
       "title": "Cierra el reto",
-      "body": "Tras la quedada (o cuando llegue la foto), márcalo como hecho. Tu ciudad, vivida de verdad - un challenge a la vez."
+      "body": "Tras la quedada (o cuando llegue la foto), márcalo como hecho. Tu ciudad, vivida de verdad - un reto a la vez."
     },
     "next": "Siguiente",
     "done": "¡Entendido!",
     "skip": "Saltar ✕",
     "slide6": {
       "title": "Más allá de tu ciudad",
-      "body": "Reta a quien sea, donde sea. La persona manda prueba - una foto geolocalizada - y tú validas a distancia. El mismo flujo de foto vale también en local. Local o global, cada challenge cuenta."
+      "body": "Reta a quien sea, donde sea. La persona manda prueba - una foto geolocalizada - y tú validas a distancia. El mismo flujo de foto vale también en local. Local o global, cada reto cuenta."
     },
     "slide7": {
       "title": "Vuélvete el más local",
-      "body": "Cada challenge te da puntos - en tu ciudad Y en el mundo. Quedad en persona para sumar +50 de bonus. Local o viajero, lo que cuenta es lo que construyes aquí. Clasificación nueva cada mes."
+      "body": "Cada reto te da puntos - en tu ciudad Y en el mundo. Quedad en persona para sumar +50 de bonus. Local o viajero, lo que cuenta es lo que construyes aquí. Clasificación nueva cada mes."
     },
     "createCta": "🔥 Crear un reto"
   },
