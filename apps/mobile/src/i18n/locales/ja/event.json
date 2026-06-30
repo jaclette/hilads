@@ -94,10 +94,10 @@
   "limit": {
     "title": "今日はもうイベントを作成済みです！",
     "body": "Hiladsでは新鮮さを大切にしています - 1日1イベントにすることで、それぞれの予定がふさわしい注目を集められます。また明日、別のイベントを作りに来てください。",
-    "legendLink": "👑 Legendになって無制限にイベントを作成",
-    "legendA11y": "Legendになる方法について知る",
-    "legendAlertTitle": "👑 Legendになる",
-    "legendAlertBody": "Legendは街を活気づけるために選ばれた地元の人たち - 好きなだけイベントを主催できます。なってみたいですか？ contact@hilads.live までご連絡ください。",
+    "legendLink": "👑 伝説になって無制限にイベントを作成",
+    "legendA11y": "伝説になる方法について知る",
+    "legendAlertTitle": "👑 伝説になる",
+    "legendAlertBody": "伝説は街を活気づけるために選ばれた地元の人たち - 好きなだけイベントを主催できます。なってみたいですか？ contact@hilads.live までご連絡ください。",
     "gotIt": "了解",
     "backToNow": "Nowに戻る"
   },

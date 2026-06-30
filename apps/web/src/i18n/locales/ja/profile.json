@@ -15,7 +15,7 @@
     "events": "Hi plan",
     "friends": "友達",
     "vibes": "Vibes",
-    "challenges": "挑戦"
+    "challenges": "チャレンジ"
   },
   "vibes": {
     "party": "パーティー",
@@ -129,7 +129,7 @@
     "generic": "問題が発生しました。再試行してください。"
   },
   "challenges": {
-    "empty": "まだ挑戦がありません - 立ち上げよう 🔥",
-    "challenger": "挑戦者"
+    "empty": "まだチャレンジがありません - 立ち上げよう 🔥",
+    "challenger": "出題者"
   }
 }

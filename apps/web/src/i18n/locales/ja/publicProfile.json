@@ -42,7 +42,7 @@
     "friends": "友達",
     "vibes": "Vibes",
     "picks": "街のおすすめ 👑",
-    "challenges": "挑戦"
+    "challenges": "チャレンジ"
   },
   "host": "ホスト",
   "live": "ライブ",
@@ -50,7 +50,7 @@
     "hangouts": "まだ集まりはありません",
     "events": "まだイベントはありません",
     "friends": "まだ友達はいません",
-    "challenges": "まだ挑戦がありません - 立ち上げよう 🔥"
+    "challenges": "まだチャレンジがありません - 立ち上げよう 🔥"
   },
   "vibesTab": {
     "score": "vibeスコア {{score}}",
