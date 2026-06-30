@@ -2,7 +2,7 @@
   "changeCity": "Stadt wechseln",
   "shareCity": "Stadt teilen",
   "shareTitle": "Was in {{city}} gerade los ist",
-  "shareMessage": "Sieh auf Hilads, wer heute Abend in {{city}} unterwegs ist. Echtzeit-Aktivität der Stadt, ohne Registrierung.",
+  "shareMessage": "Sieh auf Hilads, wer gerade in {{city}} unterwegs ist. Echtzeit-Aktivität der Stadt, ohne Registrierung.",
   "currentWeather": "Aktuelles Wetter: {{label}}",
   "weatherAlert": "Wetter",
   "online": "{{count}} in der Nähe",

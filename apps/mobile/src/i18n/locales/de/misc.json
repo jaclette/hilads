@@ -16,7 +16,7 @@
   "blocked": {
     "title": "Blockierte Nutzer",
     "thisUser": "diesen Nutzer",
-    "ghostName": "Geist",
+    "ghostName": "Ghost",
     "guest": "Gast",
     "unblock": "Entsperren",
     "unblockTitle": "{{name}} entsperren?",

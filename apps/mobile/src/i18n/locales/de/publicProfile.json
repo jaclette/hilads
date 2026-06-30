@@ -64,9 +64,9 @@
   "alreadyReportedBody": "Du hast diesen Nutzer am {{date}} gemeldet. Deine Meldung wird geprüft.",
   "blockUser": "Nutzer blockieren",
   "blocking": "Wird blockiert…",
-  "ghostName": "Geist",
+  "ghostName": "Ghost",
   "visiting": "Zu Besuch in {{city}}",
-  "ghostNote": "Schwebt hier als Geist umher 👻",
+  "ghostNote": "Schwebt hier als Ghost umher 👻",
   "tabChallenges": "Challenges",
   "noChallenges": "Noch keine Challenges"
 }

@@ -68,7 +68,7 @@
     "food": "...und komm es mit mir teilen 🍜",
     "place": "...und nimm mich selbst mit dahin 🗺️",
     "culture": "...und wir treffen uns, um drüber zu reden 🎭",
-    "help": "...und wir treffen uns, damit ich persönlich helfen kann 🙏"
+    "help": "...und lass uns zusammen etwas Verrücktes machen 🤪"
   },
   "createCta": "Challenge starten 🔥",
   "saveChanges": "Änderungen speichern",
@@ -192,18 +192,18 @@
   },
   "thread": {
     "notFound": "Thread nicht gefunden",
-    "empty": "Sag hi 👋 und plant, wann ihr euch trefft.",
+    "empty": "Schreib die erste Nachricht.",
     "emptyIntl": "Sag hi 👋 - schick ein 📸, wenn du's geschafft hast.",
     "cancel": {
-      "creatorTitle": "Diesen Take-on abbrechen?",
-      "acceptorTitle": "Diesen Challenge fallen lassen?",
+      "creatorTitle": "Diese Annahme abbrechen?",
+      "acceptorTitle": "Diese Challenge fallen lassen?",
       "body": "Der Thread und der Chat werden gelöscht. Du kannst später wieder annehmen, wenn du es dir anders überlegst.",
       "confirm": "Abbrechen",
       "failed": "Abbrechen fehlgeschlagen. Versuch es nochmal."
     },
     "cancelledByOther": {
       "title": "Thread abgebrochen",
-      "body": "Die andere Person hat diesen Take-on abgebrochen."
+      "body": "Die andere Person hat die Annahme abgebrochen."
     }
   },
   "threads": {
@@ -326,8 +326,8 @@
     },
     "acceptor": {
       "waitingTitle": "Warten auf Antwort",
-      "waitingBody": "{{name}} bestätigt oder lehnt deinen Take-on ab. Du bekommst eine Push, sobald entschieden ist.",
-      "rejectedTitle": "Take-on abgelehnt",
+      "waitingBody": "{{name}} bestätigt oder lehnt deine Annahme ab. Du bekommst eine Push, sobald entschieden ist.",
+      "rejectedTitle": "Annahme abgelehnt",
       "rejectedBody": "{{name}} hat das hier abgelehnt. Du kannst dir aber jederzeit eine andere Challenge schnappen."
     }
   },
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "Zielstadt",
     "targetCityAnywhere": "🌍 Überall auf der Welt",
-    "targetCityHint": "Lass \"Überall\" stehen, um Reisende überall zu erreichen, oder wähl eine Stadt.",
+    "targetCityHint": "Wähl eine Zielstadt – „Überall auf der Welt“ ist noch nicht verfügbar.",
     "proofRequirementsLabel": "Was soll das Foto zeigen?",
     "proofRequirementsPlaceholder": "z.B. Das Gericht im Tageslicht, du im Bild",
     "proofRequirementsHint": "Der Beweis ist ein Foto 📸. Der Teilnehmer sieht das vor dem Absenden - sei konkret.",
@@ -531,7 +531,7 @@
     "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
   },
   "leaderboard": {
-    "title": "🏆 Die lokalsten",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "Sei der/die Erste, der/die eine Challenge annimmt und Punkte sammelt."
     },
     "errLoad": "Bestenliste konnte nicht geladen werden. Zum Erneutversuchen ziehen.",
-    "neutral": "🏆 Die lokalsten",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "Städte suchen…",
       "empty": "Keine Stadt gefunden."
@@ -567,7 +567,7 @@
     "aria": "Wie Punkte vergeben werden",
     "helpLabel": "🏆 So sammelst du Punkte",
     "title": "🏆 So funktionieren Challenges",
-    "intro": "Jede Challenge bringt beiden Seiten Punkte - sie fließen in deine Stadt- und Weltbestenliste ein.",
+    "intro": "Fürs Mitmachen gibt's kleine Funken – die großen Punkte fürs echte Auftauchen oder Gewinnen. Nur beizutreten lohnt sich nie.",
     "colStep": "Schritt",
     "steps": {
       "created": "Challenge erstellt",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "Gesamt pro Challenge",
-    "footnote": "Erstellungspunkte (+10) gibt es sofort. Alles andere erst, wenn beide das Treffen bewerten.",
+    "footnote": "Die Zahlen können sich ändern, während wir das Spiel justieren.",
     "types": {
-      "heading": "🎯 Zwei Arten zu spielen",
-      "local": "🏙️ Lokal - in deiner Stadt. Persönlich treffen, damit es zählt.",
-      "international": "🌍 International - zwischen Städten. Ein Sofortfoto als Beweis."
+      "heading": "Zwei Arten von Challenge",
+      "local": "🏙️ Treffen — bring eine Gruppe an einem festen Ort und Zeitpunkt persönlich zusammen. Alle, die auftauchen, kassieren groß.",
+      "international": "🌍 Foto-Challenge — alle reichen vor dem Stichtag ein Foto ein; der Challenger kürt den Gewinner."
     },
     "lifecycle": {
-      "heading": "🔁 Eine Challenge nach der anderen",
-      "body": "Wenn der Annehmer fertig ist, wird der Chat geleert - die Challenge bleibt, bereit für den Nächsten."
+      "heading": "🔁 So wird's entschieden",
+      "body": "Der Challenger steckt den Rahmen ab, andere machen mit, und am Ende bestätigt der Challenger – wer da war oder welches Foto gewonnen hat."
     },
     "pointsHeading": "💯 So sammelst du Punkte",
     "ways": {
@@ -645,7 +645,7 @@
   "result": {
     "winner": {
       "title": "Du hast gewonnen!",
-      "body": "Dein Foto hat den Wettbewerb gewonnen."
+      "body": "Dein Foto hat die Challenge gewonnen."
     },
     "loser": {
       "title": "{{name}} hat gewonnen",
@@ -660,7 +660,7 @@
       "body": "Sei beim nächsten Treffen dabei — dein Platz wartet."
     },
     "host": {
-      "titlePhoto": "{{name}} hat deinen Wettbewerb gewonnen!",
+      "titlePhoto": "{{name}} hat deine Challenge gewonnen!",
       "titleMeet": "Dein Treffen ist beendet!",
       "body": "Danke fürs Hosten.",
       "breakdown": "{{people}} = +{{headTotal}}   🏠 +{{base}}"
