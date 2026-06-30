@@ -33,7 +33,7 @@
     "create_challenge": {
       "pageTitle": "發起挑戰",
       "title": "Ghost 可以瀏覽，但不能發起挑戰。",
-      "sub": "註冊以向本地人或旅行者發起挑戰，並驗證它。"
+      "sub": "註冊以向在地人或旅行者發起挑戰，並驗證它。"
     },
     "accept_challenge": {
       "pageTitle": "接受挑戰",
@@ -243,7 +243,7 @@
     "join": "加入",
     "replies_one": "{{count}} 則回覆",
     "replies_other": "{{count}} 則回覆",
-    "challengeLocals": "🔥 {{name}} 向本地人發起挑戰：{{title}}",
+    "challengeLocals": "🔥 {{name}} 向在地人發起挑戰：{{title}}",
     "challengeExplorers": "🔥 {{name}} 向旅行者發起挑戰：{{title}}",
     "challengeCta": "查看 →",
     "challengeValidated": "🏆 挑戰完成！{{name}} 驗證了「{{title}}」。",
