@@ -34,7 +34,7 @@
   },
   "tabIntro": "Thử thách giữa người địa phương và du khách trong một thành phố - và giữa các thành phố.",
   "howItWorks": "Cách hoạt động",
-  "mostLocal": "Most Local",
+  "mostLocal": "Thổ địa",
   "seeAll": "Xem tất cả",
   "leaderboardCta": {
     "title": "🏆 Bảng xếp hạng thành phố",
@@ -531,7 +531,7 @@
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
   },
   "leaderboard": {
-    "title": "🏆 Người dân địa phương nhất",
+    "title": "🏆 Thổ địa",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,8 +556,8 @@
       "body": "Hãy là người đầu tiên nhận thử thách và kiếm điểm."
     },
     "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại.",
-    "neutral": "🏆 Người dân địa phương nhất",
-    "titleCity": "🏆 {{demonym}} nhất",
+    "neutral": "🏆 Thổ địa",
+    "titleCity": "🏆 Thổ địa {{demonym}}",
     "cityPicker": {
       "searchPlaceholder": "Tìm thành phố…",
       "empty": "Không có thành phố nào khớp."
@@ -716,7 +716,7 @@
       "body": "Thử thách ảnh hoạt động từ xa — thách cả một thành phố khác gửi ảnh đẹp nhất."
     },
     "slide7": {
-      "title": "Leo bảng xếp hạng",
+      "title": "Leo bảng Thổ địa",
       "body": "Có mặt và chiến thắng để thăng hạng. Điểm tham gia nhỏ, nên quan trọng là thực sự làm."
     }
   },

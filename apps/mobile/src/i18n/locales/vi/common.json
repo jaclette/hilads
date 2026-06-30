@@ -29,12 +29,12 @@
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
-      "body": "Mỗi challenge bạn hoàn thành, mỗi cuộc gặp, mỗi địa điểm bạn khám phá đều cộng điểm cho bạn. Điểm phản ánh bạn đã trở thành người địa phương ở {{city}} đến mức nào. Lên đỉnh Most Local và kiếm chỗ đứng giữa những người làm cho thành phố sống động."
+      "body": "Mỗi challenge bạn hoàn thành, mỗi cuộc gặp, mỗi địa điểm bạn khám phá đều cộng điểm cho bạn. Điểm phản ánh bạn đã trở thành người địa phương ở {{city}} đến mức nào. Lên đỉnh bảng Thổ địa và kiếm chỗ đứng giữa những người làm cho thành phố sống động."
     },
     "slide4": {
       "title": "Sẵn sàng bắt đầu?",
       "ctaChallenge": "📍 Nhận challenge đầu tiên ở {{city}}",
-      "ctaMostLocal": "🤝 Khám phá Most Local của {{city}}",
+      "ctaMostLocal": "🤝 Khám phá Thổ địa của {{city}}",
       "ctaLookAround": "👀 Cứ ngó qua đã",
       "ctaHiNow": "🗣️ Hi now",
       "ctaHiLater": "🎉 Hi plan"
@@ -70,7 +70,7 @@
       "body": "Thách bất cứ ai, ở bất cứ đâu. Người đó gửi chứng minh - ảnh có gắn vị trí - và bạn duyệt từ xa. Cùng luồng ảnh đó cũng dùng được cho local. Local hay global, mọi challenge đều tính."
     },
     "slide7": {
-      "title": "Trở thành người địa phương nhất",
+      "title": "Trở thành Thổ địa",
       "body": "Mỗi challenge đều có điểm - cả thành phố lẫn toàn cầu. Gặp mặt trực tiếp được thêm +50 thưởng. Người địa phương hay du khách, điều quan trọng là bạn xây dựng gì ở đây. Bảng xếp hạng làm mới mỗi tháng."
     },
     "createCta": "🔥 Tạo thử thách"
