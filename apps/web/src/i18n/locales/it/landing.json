@@ -1,6 +1,6 @@
 {
   "hero": {
-    "sub": "Non sei solo di passaggio. Stai diventando locale.\nOgni challenge, ogni incontro, ogni posto - guadagna il tuo posto in questa città.",
+    "sub": "Non sei solo di passaggio. Stai diventando locale.\nOgni sfida, ogni incontro, ogni posto - guadagna il tuo posto in questa città.",
     "orPreview": "Oppure dai un'occhiata nel browser — senza installare"
   },
   "join": {
@@ -57,7 +57,7 @@
     "steps": [
       {
         "title": "Scegli da che parte stai",
-        "desc": "Local. Conosci la città.\nViaggiatore. Vuoi viverla."
+        "desc": "Locale. Conosci la città.\nViaggiatore. Vuoi viverla."
       },
       {
         "title": "Lancia o unisciti a una sfida",

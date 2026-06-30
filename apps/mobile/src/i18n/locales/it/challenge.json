@@ -32,7 +32,7 @@
       "body": "Crea un account per lanciare sfide e accettare quelle degli altri."
     }
   },
-  "tabIntro": "Sfide tra locali ed esploratori in una città - e tra città diverse.",
+  "tabIntro": "Sfide tra locali e viaggiatori in una città - e tra città diverse.",
   "howItWorks": "Come funziona",
   "mostLocal": "Most Local",
   "seeAll": "Vedi tutto",
@@ -42,7 +42,7 @@
     "sub": "Sii il primo in classifica - lancia e completa una sfida"
   },
   "createTitle": "Crea una sfida",
-  "allTitle": "Tutte le Challenges",
+  "allTitle": "Tutte le sfide",
   "editTitle": "Modifica sfida",
   "audience": "Per chi?",
   "aud": {
@@ -68,7 +68,7 @@
     "food": "...e vieni a condividerlo con me 🍜",
     "place": "...e portami tu lì 🗺️",
     "culture": "...e ci vediamo per parlarne 🎭",
-    "help": "...e ci vediamo così posso aiutarti di persona 🙏"
+    "help": "...e facciamo qualcosa di folle insieme 🤪"
   },
   "createCta": "Lancia la sfida 🔥",
   "saveChanges": "Salva modifiche",
@@ -170,7 +170,7 @@
         "body": "Hai creato tu questa sfida - aspetta che qualcun altro l'accetti."
       },
       "mode_required": {
-        "title": "Scegli local o viaggiatore prima",
+        "title": "Scegli locale o viaggiatore prima",
         "body": "Imposta la tua modalità nel profilo prima di accettare sfide."
       },
       "mode_mismatch": {
@@ -192,10 +192,10 @@
   },
   "thread": {
     "notFound": "Thread non trovato",
-    "empty": "Saluta 👋 e organizzate quando vedervi.",
+    "empty": "Sii il primo a scrivere qualcosa.",
     "emptyIntl": "Saluta 👋 - manda una 📸 quando ce la fai.",
     "cancel": {
-      "creatorTitle": "Annullare questo take-on?",
+      "creatorTitle": "Annullare questa partecipazione?",
       "acceptorTitle": "Mollare questa sfida?",
       "body": "Il thread e la chat verranno eliminati. Puoi accettare di nuovo più tardi se cambi idea.",
       "confirm": "Annulla",
@@ -203,7 +203,7 @@
     },
     "cancelledByOther": {
       "title": "Thread annullato",
-      "body": "L'altra persona ha annullato questo take-on."
+      "body": "L'altra persona ha annullato questa partecipazione."
     }
   },
   "threads": {
@@ -326,8 +326,8 @@
     },
     "acceptor": {
       "waitingTitle": "In attesa della risposta",
-      "waitingBody": "{{name}} accetterà o rifiuterà il tuo take-on. Riceverai una notifica appena decide.",
-      "rejectedTitle": "Take-on rifiutato",
+      "waitingBody": "{{name}} accetterà o rifiuterà la tua richiesta. Riceverai una notifica appena decide.",
+      "rejectedTitle": "Richiesta rifiutata",
       "rejectedBody": "{{name}} ha rifiutato questo. Puoi sempre sceglierne un'altra."
     }
   },
@@ -398,7 +398,7 @@
   "intl": {
     "targetCityLabel": "Città bersaglio",
     "targetCityAnywhere": "🌍 Ovunque nel mondo",
-    "targetCityHint": "Lascia \"Ovunque\" per raggiungere viaggiatori dappertutto, o scegli una città.",
+    "targetCityHint": "Scegli una città di destinazione — \"Ovunque nel mondo\" non è ancora disponibile.",
     "proofRequirementsLabel": "Cosa deve mostrare la foto?",
     "proofRequirementsPlaceholder": "es. Il piatto alla luce del giorno, con te nell’inquadratura",
     "proofRequirementsHint": "La prova è una foto 📸. Il partecipante la vede prima di inviare - sii specifico.",
@@ -531,7 +531,7 @@
     "errSubmit": "Impossibile inviare la valutazione. Riprova."
   },
   "leaderboard": {
-    "title": "🏆 I più locali",
+    "title": "🏆 Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -556,7 +556,7 @@
       "body": "Sii il primo ad accettare una sfida e guadagnare punti."
     },
     "errLoad": "Impossibile caricare la classifica. Trascina per riprovare.",
-    "neutral": "🏆 I più locali",
+    "neutral": "🏆 Most Local",
     "cityPicker": {
       "searchPlaceholder": "Cerca città…",
       "empty": "Nessuna città corrisponde."
@@ -567,7 +567,7 @@
     "aria": "Come funzionano i punti",
     "helpLabel": "🏆 Come guadagnare punti",
     "title": "🏆 Come funzionano le sfide",
-    "intro": "Ogni sfida dà punti a entrambe le parti - confluiscono nelle classifiche di città e mondiale.",
+    "intro": "Piccoli punti per partecipare; i punti grossi per presentarti davvero o vincere. Accumulare partecipazioni non serve a niente.",
     "colStep": "Passo",
     "steps": {
       "created": "Sfida creata",
@@ -578,15 +578,15 @@
     },
     "noPoints": "-",
     "totalLabel": "Totale per sfida",
-    "footnote": "I punti di creazione (+10) arrivano subito. Il resto si guadagna solo quando entrambi valutano l'incontro.",
+    "footnote": "I numeri possono cambiare mentre mettiamo a punto il gioco.",
     "types": {
-      "heading": "🎯 Due modi di giocare",
-      "local": "🏙️ Local - nella tua città. Vi incontrate di persona per validare.",
-      "international": "🌍 International - tra città. Una foto istantanea come prova."
+      "heading": "Due tipi di sfida",
+      "local": "🏙️ Incontro — raduna un gruppo di persona a un orario e luogo fissati. Chi si presenta guadagna alla grande.",
+      "international": "🌍 Sfida fotografica — tutti inviano una foto entro la scadenza; il Challenger sceglie il vincitore."
     },
     "lifecycle": {
-      "heading": "🔁 Una sfida alla volta",
-      "body": "Quando chi accetta finisce, la chat si svuota - la sfida resta, pronta per il prossimo avventuriero."
+      "heading": "🔁 Come si conclude",
+      "body": "Il Challenger la imposta, le persone si uniscono e alla fine il Challenger conferma — chi era presente, o quale foto ha vinto."
     },
     "pointsHeading": "💯 Come guadagni punti",
     "ways": {
@@ -602,7 +602,7 @@
   "scoreCelebration": {
     "unit": "punti",
     "subtitle": {
-      "accepted": "Il tuo challenge è stato accettato 🤝",
+      "accepted": "La tua sfida è stata accettata 🤝",
       "date_locked": "Appuntamento confermato - si va 🗓️",
       "meetup": "Missione compiuta 🎉",
       "debrief": "Missione compiuta 🎉",
@@ -633,7 +633,7 @@
       "challenge_created": "Sfida creata"
     },
     "event": {
-      "deletedChallenge": "Challenge eliminato",
+      "deletedChallenge": "Sfida eliminata",
       "andMore": "e altri {{count}}"
     },
     "total": "Totale: {{total}} pts"

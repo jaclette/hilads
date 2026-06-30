@@ -1,7 +1,7 @@
 {
   "meta": {
     "cityTitle": "Diventa locale a {{city}} - Hilads",
-    "cityDesc": "Diventa locale a {{city}}: lancia un challenge, unisciti a un meetup, entra in un hangout, scopri Local Events. Chat live con chi è online.",
+    "cityDesc": "Diventa locale a {{city}}: lancia una sfida, unisciti a un meetup, entra in un hangout, scopri Local Events. Chat live con chi è online.",
     "eventTitle": "Local Event: {{title}} | Hilads",
     "eventDesc": "Partecipa a {{title}} su Hilads - un Local Event in corso. Vedi chi viene e chatta live."
   },
@@ -29,17 +29,17 @@
     },
     "slide2": {
       "title": "Tre modi di vivere la città",
-      "itemChallenges": "🤝 Challenges - sfida o lasciati sfidare per scoprire posti nascosti, assaggiare cibo vero, condividere cultura o dare una mano.",
+      "itemChallenges": "🤝 Sfide - sfida o lasciati sfidare per scoprire posti nascosti, assaggiare cibo vero, condividere cultura o dare una mano.",
       "itemHangouts": "🗣️ Hi now - incontra qualcuno in modo spontaneo",
       "itemEvents": "🎉 Hi plan - pianifica un momento per vedervi"
     },
     "slide3": {
       "title": "Guadagna il tuo posto in città",
-      "body": "Ogni challenge che completi, ogni incontro, ogni posto che scopri ti dà punti. I punti riflettono quanto sei diventato locale a {{city}}. Arriva in cima a Most Local e guadagna il tuo posto tra chi rende viva la città."
+      "body": "Ogni sfida che completi, ogni incontro, ogni posto che scopri ti dà punti. I punti riflettono quanto sei diventato locale a {{city}}. Arriva in cima a Most Local e guadagna il tuo posto tra chi rende viva la città."
     },
     "slide4": {
       "title": "Pronto a iniziare?",
-      "ctaChallenge": "📍 Lancia il tuo primo challenge a {{city}}",
+      "ctaChallenge": "📍 Lancia la tua prima sfida a {{city}}",
       "ctaMostLocal": "🤝 Scopri Most Local di {{city}}",
       "ctaLookAround": "👀 Solo dare un'occhiata",
       "ctaHiNow": "🗣️ Hi now",
@@ -50,7 +50,7 @@
     "title": "Come funzionano le sfide",
     "slide1": {
       "title": "Le sfide trasformano i viaggi in storie",
-      "body": "Locals e viaggiatori si sfidano per far vivere la città davvero - cibo, posti, cultura, aiuto. La ricompensa? Vedersi di persona - o mandare una prova a distanza."
+      "body": "Locali e viaggiatori si sfidano per far vivere la città davvero - cibo, posti, cultura, aiuto. La ricompensa? Vedersi di persona - o mandare una prova a distanza."
     },
     "slide2": {
       "title": "Lancia la tua sfida",
@@ -62,22 +62,22 @@
     },
     "slide4": {
       "title": "Incontro o prova foto",
-      "body": "Vedetevi di persona o mandate una foto a distanza - decidi tu. In ogni caso, il pipeline tiene traccia di ogni passaggio."
+      "body": "Vedetevi di persona o mandate una foto a distanza - decidi tu. In ogni caso, ogni passaggio viene registrato."
     },
     "slide5": {
       "title": "Chiudi la sfida",
-      "body": "Dopo l'incontro (o appena arriva la foto), segnalo come completato. La tua città, vissuta davvero - un challenge alla volta."
+      "body": "Dopo l'incontro (o appena arriva la foto), segnalo come completato. La tua città, vissuta davvero - una sfida alla volta."
     },
     "next": "Avanti",
     "done": "Capito!",
     "skip": "Salta ✕",
     "slide6": {
       "title": "Oltre la tua città",
-      "body": "Sfida chiunque, ovunque. La persona manda una prova - una foto geolocalizzata - e tu validi a distanza. Lo stesso flusso foto vale anche in locale. Local o global, ogni challenge conta."
+      "body": "Sfida chiunque, ovunque. La persona manda una prova - una foto geolocalizzata - e tu validi a distanza. Lo stesso flusso foto vale anche in locale. Locale o globale, ogni sfida conta."
     },
     "slide7": {
-      "title": "Diventa il più locale",
-      "body": "Ogni challenge ti dà punti - nella tua città E nel mondo. Vedetevi di persona per un bonus di +50. Locale o viaggiatore, conta quello che costruisci qui. Classifica nuova ogni mese."
+      "title": "Diventa Most Local",
+      "body": "Ogni sfida ti dà punti - nella tua città E nel mondo. Vedetevi di persona per un bonus di +50. Locale o viaggiatore, conta quello che costruisci qui. Classifica nuova ogni mese."
     },
     "createCta": "🔥 Crea una sfida"
   },
