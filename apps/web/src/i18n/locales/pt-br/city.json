@@ -12,27 +12,27 @@
     "signIn": "Entrar",
     "create_event": {
       "pageTitle": "Criar um evento",
-      "title": "Fantasmas podem dar uma olhada, mas não podem organizar.",
+      "title": "Ghosts podem dar uma olhada, mas não podem organizar.",
       "sub": "Crie uma conta para organizar seu próprio evento e colocar sua cidade no mapa."
     },
     "view_profile": {
       "pageTitle": "Perfil",
-      "title": "Fantasmas podem dar uma olhada, mas perfis são para membros.",
+      "title": "Ghosts podem dar uma olhada, mas perfis são para membros.",
       "sub": "Crie uma conta para desbloquear os perfis, conectar com pessoas e montar seu grupo na cidade."
     },
     "join_hangout": {
       "pageTitle": "Participar de um rolê",
-      "title": "Fantasmas podem dar uma olhada, mas não podem participar de rolês.",
+      "title": "Ghosts podem dar uma olhada, mas não podem participar de rolês.",
       "sub": "Cadastre-se para participar de rolês, salvar seu nome e receber aviso quando alguém quiser se encontrar."
     },
     "create_hangout": {
       "pageTitle": "Iniciar um rolê",
-      "title": "Fantasmas podem dar uma olhada, mas não podem organizar.",
+      "title": "Ghosts podem dar uma olhada, mas não podem organizar.",
       "sub": "Cadastre-se para iniciar um rolê, salvar seu nome e atrair gente."
     },
     "create_challenge": {
       "pageTitle": "Lançar um desafio",
-      "title": "Fantasmas podem dar uma olhada, mas não podem desafiar.",
+      "title": "Ghosts podem dar uma olhada, mas não podem desafiar.",
       "sub": "Cadastre-se para lançar um desafio para locais ou viajantes e validá-lo."
     },
     "accept_challenge": {
@@ -95,7 +95,7 @@
     "emptyTitle": "Ainda não rola nada",
     "emptyLocalSub": "Faça {{city}} ganhar vida. Inicie um evento recorrente no seu lugar favorito.",
     "emptySub": "Seja o primeiro a fazer algo acontecer em {{city}}",
-    "noEvents": "Sem Local Events agora",
+    "noEvents": "Sem eventos locais agora",
     "noHangouts": "Ainda não há rolês",
     "noEventsSub": "Seja o primeiro a criar um em {{city}}",
     "noHangoutsSub": "Inicie um rolê e faça a cidade conversar",
