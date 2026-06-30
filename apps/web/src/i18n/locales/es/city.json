@@ -12,33 +12,33 @@
     "signIn": "Iniciar sesión",
     "create_event": {
       "pageTitle": "Crear un evento",
-      "title": "Los fantasmas pueden mirar, pero no organizar.",
+      "title": "Los Ghost pueden mirar, pero no organizar.",
       "sub": "Crea una cuenta para organizar tu propio evento y poner tu ciudad en el mapa."
     },
     "view_profile": {
       "pageTitle": "Perfil",
-      "title": "Los fantasmas pueden mirar, pero los perfiles son para miembros.",
+      "title": "Los Ghost pueden mirar, pero los perfiles son para miembros.",
       "sub": "Crea una cuenta para desbloquear los perfiles, conectar y formar tu grupo en la ciudad."
     },
     "join_hangout": {
       "pageTitle": "Unirse a una quedada",
-      "title": "Los fantasmas pueden mirar, pero no unirse a quedadas.",
+      "title": "Los Ghost pueden mirar, pero no unirse a quedadas.",
       "sub": "Regístrate para unirte a quedadas, conservar tu nombre y recibir aviso cuando alguien quiera quedar."
     },
     "create_hangout": {
       "pageTitle": "Lanzar una quedada",
-      "title": "Los fantasmas pueden mirar, pero no organizar.",
+      "title": "Los Ghost pueden mirar, pero no organizar.",
       "sub": "Regístrate para lanzar una quedada, conservar tu nombre y atraer gente."
     },
     "create_challenge": {
       "pageTitle": "Lanzar un reto",
-      "title": "Los fantasmas miran, pero no retan.",
+      "title": "Los Ghost miran, pero no retan.",
       "sub": "Regístrate para lanzar un reto a locales o viajeros y validarlo."
     },
     "accept_challenge": {
-      "pageTitle": "Aceptar un desafío",
-      "title": "Regístrate para aceptar este desafío",
-      "sub": "3 segundos. Vuelves al desafío al instante."
+      "pageTitle": "Aceptar un reto",
+      "title": "Regístrate para aceptar este reto",
+      "sub": "3 segundos. Vuelves al reto al instante."
     }
   },
   "welcome": {
@@ -95,7 +95,7 @@
     "emptyTitle": "Aún no pasa nada",
     "emptyLocalSub": "Haz vivir {{city}}. Lanza un evento recurrente en tu sitio favorito.",
     "emptySub": "Sé el primero en mover {{city}}",
-    "noEvents": "No hay Local Events ahora mismo",
+    "noEvents": "No hay eventos locales ahora mismo",
     "noHangouts": "Aún no hay quedadas",
     "noEventsSub": "Sé el primero en crear uno en {{city}}",
     "noHangoutsSub": "Lanza una quedada y haz que la ciudad hable",
