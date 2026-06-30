@@ -67,5 +67,6 @@
   "visiting": "Đang ghé thăm {{city}}",
   "ghostNote": "Đang lượn lờ như một bóng ma 👻",
   "tabChallenges": "Thử thách",
-  "noChallenges": "Chưa có thử thách nào"
+  "noChallenges": "Chưa có thử thách nào",
+  "vibeBasis_one": "dựa trên {{count}} vibe"
 }

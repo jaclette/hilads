@@ -1,8 +1,8 @@
 {
   "nowTitle": "Bây giờ",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "🎉 Sự kiện địa phương",
   "filterHangouts": "🗣️ Tụ tập",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
     "title": "Chúc mừng, {{username}}! 🎉",
     "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay 👇",
@@ -24,8 +24,8 @@
     "slide2": {
       "title": "Ba cách sống thành phố",
       "itemChallenges": "🤝 Challenges - thách hoặc được thách để khám phá địa điểm bí mật, nếm món ăn thật, chia sẻ văn hóa, hoặc giúp đỡ.",
-      "itemHangouts": "🗣️ Hi now - meet someone spontaneously",
-      "itemEvents": "🎉 Hi plan - plan a moment to meet"
+      "itemHangouts": "🗣️ Hi now - gặp ai đó một cách ngẫu hứng",
+      "itemEvents": "🎉 Hi plan - lên lịch một buổi gặp"
     },
     "slide3": {
       "title": "Kiếm chỗ đứng trong thành phố",
@@ -127,7 +127,7 @@
     "locPermTitle": "Cần quyền vị trí",
     "locPermSettings": "Vui lòng bật vị trí trong Cài đặt → Hilads → Vị trí.",
     "locNeededTitle": "Cần vị trí",
-    "locNeededBody": "Cho phép truy cập vị trí để chia sẻ spot của bạn.",
+    "locNeededBody": "Cho phép truy cập vị trí để chia sẻ vị trí của bạn.",
     "placeholderCity": "Chào thành phố của bạn 👋",
     "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
     "placeholderEvent": "Trò chuyện với người tham dự 🎉",
@@ -197,5 +197,9 @@
     "expiresInHour": "Hết hạn sau {{count}} giờ"
   },
   "shareToCity": "Chia sẻ lên thành phố của tôi",
-  "shareToCityError": "Không thể chia sẻ lên thành phố. Thử lại."
+  "shareToCityError": "Không thể chia sẻ lên thành phố. Thử lại.",
+  "hiLocalTitle": "👋 Hi Local",
+  "replies_one": "💬 {{count}} trả lời",
+  "sayHi": "Chào {{name}}",
+  "hostWaiting": "Đang chờ lời chào đầu tiên 👋"
 }

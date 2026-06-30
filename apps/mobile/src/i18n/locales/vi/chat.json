@@ -2,7 +2,7 @@
   "changeCity": "Đổi thành phố",
   "shareCity": "Chia sẻ thành phố",
   "shareTitle": "Điều đang diễn ra ở {{city}} ngay bây giờ",
-  "shareMessage": "Xem ai đang ở quanh {{city}} tối nay trên Hilads. Hoạt động thành phố thời gian thực, không cần đăng ký.",
+  "shareMessage": "Xem ai đang ở quanh {{city}} ngay bây giờ trên Hilads. Hoạt động thành phố theo thời gian thực, không cần đăng ký.",
   "currentWeather": "Thời tiết hiện tại: {{label}}",
   "weatherAlert": "Thời tiết",
   "online": "{{count}} ở gần",
@@ -88,7 +88,7 @@
   "bannerChallengeLocals": "🔥 {{name}} thách dân địa phương: {{title}}",
   "bannerChallengeExplorers": "🔥 {{name}} thách du khách: {{title}}",
   "bannerChallengeValidated": "🏆 Thử thách hoàn thành! {{name}} đã xác nhận \"{{title}}\".",
-  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Challenge quốc tế: {{title}}",
+  "bannerChallengeInternational": "{{fromFlag}} → {{toFlag}} Thử thách quốc tế: {{title}}",
   "arrivalsBar": {
     "label": "✈️ Vừa đến",
     "sheetTitle": "Mới đến",

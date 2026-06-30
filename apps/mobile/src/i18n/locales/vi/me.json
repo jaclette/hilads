@@ -88,5 +88,6 @@
   "errorTitle": "Lỗi",
   "deleteAccountFail": "Không thể xóa tài khoản. Thử lại.",
   "tabChallenges": "Thử thách",
-  "noChallenges": "Chưa có thử thách - tạo một 🔥"
+  "noChallenges": "Chưa có thử thách - tạo một 🔥",
+  "vibeBasis_one": "dựa trên {{count}} vibe"
 }
