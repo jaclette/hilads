@@ -46,5 +46,7 @@
     "eventLabel": "Créer un événement",
     "eventSub": "Organise quelque chose à rejoindre",
     "cancel": "Annuler"
-  }
+  },
+  "hiNowHint": "se voir maintenant",
+  "hiLaterHint": "planifier un événement"
 }

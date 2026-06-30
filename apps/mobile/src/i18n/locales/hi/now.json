@@ -46,5 +46,7 @@
   "seeAllChallenges": "सब देखें →",
   "noChallenges": "अभी कोई चैलेंज नहीं",
   "noChallengesCity": "{{city}} में लॉन्च करने वाले पहले बनो",
-  "noChallengesGeneric": "चैलेंज लॉन्च करने वाले पहले बनो।"
+  "noChallengesGeneric": "चैलेंज लॉन्च करने वाले पहले बनो।",
+  "hiNowHint": "अभी मिलें",
+  "hiLaterHint": "इवेंट प्लान करें"
 }

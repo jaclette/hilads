@@ -46,5 +46,7 @@
   "seeAllChallenges": "Alles bekijken →",
   "noChallenges": "Nog geen challenges",
   "noChallengesCity": "Wees de eerste die er een start in {{city}}",
-  "noChallengesGeneric": "Wees de eerste die een challenge start."
+  "noChallengesGeneric": "Wees de eerste die een challenge start.",
+  "hiNowHint": "nu afspreken",
+  "hiLaterHint": "een plan maken"
 }

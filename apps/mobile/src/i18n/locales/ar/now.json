@@ -46,5 +46,7 @@
   "seeAllChallenges": "عرض الكل →",
   "noChallenges": "لا توجد تحديات بعد",
   "noChallengesCity": "كن أول من يطلق واحدًا في {{city}}",
-  "noChallengesGeneric": "كن أول من يطلق تحديًا."
+  "noChallengesGeneric": "كن أول من يطلق تحديًا.",
+  "hiNowHint": "نلتقي الآن",
+  "hiLaterHint": "خطّط لحدث"
 }

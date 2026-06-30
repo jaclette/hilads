@@ -46,5 +46,7 @@
   "seeAllChallenges": "Lihat semua →",
   "noChallenges": "Belum ada tantangan",
   "noChallengesCity": "Jadilah yang pertama meluncurkan di {{city}}",
-  "noChallengesGeneric": "Jadilah yang pertama meluncurkan tantangan."
+  "noChallengesGeneric": "Jadilah yang pertama meluncurkan tantangan.",
+  "hiNowHint": "nongkrong sekarang",
+  "hiLaterHint": "rencanakan acara"
 }

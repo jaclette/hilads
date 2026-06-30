@@ -46,5 +46,7 @@
   "seeAllChallenges": "Смотреть все →",
   "noChallenges": "Пока нет челленджей",
   "noChallengesCity": "Запусти первый в городе {{city}}",
-  "noChallengesGeneric": "Запусти первый челлендж."
+  "noChallengesGeneric": "Запусти первый челлендж.",
+  "hiNowHint": "тусить сейчас",
+  "hiLaterHint": "запланировать"
 }

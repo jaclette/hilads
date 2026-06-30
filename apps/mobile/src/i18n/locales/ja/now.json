@@ -46,5 +46,7 @@
   "seeAllChallenges": "すべて見る →",
   "noChallenges": "まだチャレンジはありません",
   "noChallengesCity": "{{city}}で最初の一人になろう",
-  "noChallengesGeneric": "最初にチャレンジを始めよう。"
+  "noChallengesGeneric": "最初にチャレンジを始めよう。",
+  "hiNowHint": "今すぐ集まる",
+  "hiLaterHint": "予定を立てる"
 }

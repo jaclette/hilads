@@ -833,6 +833,7 @@ export default function NowScreen() {
             accessibilityRole="button"
           >
             <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
+            <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: 'rgba(255,122,60,0.75)' }]}>{t('hiNowHint', { defaultValue: 'hang out now' })}</Text>
           </TouchableOpacity>
           {/* Line 2: Hi later + See what's coming, side by side. */}
           <View style={styles.hilocalRow}>
@@ -843,6 +844,7 @@ export default function NowScreen() {
               accessibilityRole="button"
             >
               <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: 'rgba(255,255,255,0.55)' }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
@@ -1078,6 +1080,7 @@ const styles = StyleSheet.create({
   hilocalCtaNow:   { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.45)' },
   hilocalCtaLater: { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.18)' },
   hilocalCtaText:      { fontSize: 15, fontWeight: '800' },
+  hilocalCtaSub:       { fontSize: 11, fontWeight: '600', fontStyle: 'italic', marginTop: 2 },
   hilocalCtaTextNow:   { color: Colors.accent },
   hilocalCtaTextLater: { color: Colors.text },
 

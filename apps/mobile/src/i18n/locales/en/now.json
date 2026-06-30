@@ -50,5 +50,7 @@
     "eventLabel": "Create an event",
     "eventSub": "Plan something others can join",
     "cancel": "Cancel"
-  }
+  },
+  "hiNowHint": "hang out now",
+  "hiLaterHint": "plan an event"
 }

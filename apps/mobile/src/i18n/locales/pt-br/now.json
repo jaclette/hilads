@@ -46,5 +46,7 @@
   "seeAllChallenges": "Ver todos →",
   "noChallenges": "Nenhum desafio ainda",
   "noChallengesCity": "Seja o primeiro a lançar um em {{city}}",
-  "noChallengesGeneric": "Seja o primeiro a lançar um desafio."
+  "noChallengesGeneric": "Seja o primeiro a lançar um desafio.",
+  "hiNowHint": "rolê agora",
+  "hiLaterHint": "planejar um evento"
 }

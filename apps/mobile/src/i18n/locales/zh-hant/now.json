@@ -46,5 +46,7 @@
   "seeAllChallenges": "查看全部 →",
   "noChallenges": "尚無挑戰",
   "noChallengesCity": "在 {{city}} 第一個發起一個吧",
-  "noChallengesGeneric": "第一個發起一個挑戰吧。"
+  "noChallengesGeneric": "第一個發起一個挑戰吧。",
+  "hiNowHint": "現在一起玩",
+  "hiLaterHint": "計劃活動"
 }

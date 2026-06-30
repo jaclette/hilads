@@ -46,5 +46,7 @@
   "seeAllChallenges": "ดูทั้งหมด →",
   "noChallenges": "ยังไม่มีชาเลนจ์",
   "noChallengesCity": "เป็นคนแรกที่เริ่มใน {{city}}",
-  "noChallengesGeneric": "เป็นคนแรกที่เริ่มชาเลนจ์"
+  "noChallengesGeneric": "เป็นคนแรกที่เริ่มชาเลนจ์",
+  "hiNowHint": "เจอกันตอนนี้",
+  "hiLaterHint": "วางแผนกิจกรรม"
 }

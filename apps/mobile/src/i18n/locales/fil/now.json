@@ -46,5 +46,7 @@
   "seeAllChallenges": "Tingnan lahat →",
   "noChallenges": "Walang challenge pa",
   "noChallengesCity": "Maging unang maglunsad sa {{city}}",
-  "noChallengesGeneric": "Maging unang maglunsad ng challenge."
+  "noChallengesGeneric": "Maging unang maglunsad ng challenge.",
+  "hiNowHint": "lumabas ngayon",
+  "hiLaterHint": "magplano ng event"
 }
