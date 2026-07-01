@@ -8,7 +8,7 @@
     "api/prerender.mjs": {
       "includeFiles": "dist/index.html"
     },
-    "api/og.tsx": {
+    "api/og.mjs": {
       "includeFiles": "node_modules/@vercel/og/dist/**"
     }
   },
