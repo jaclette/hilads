@@ -59,6 +59,7 @@
   "locNeededTitle": "Standort erforderlich",
   "locMapBody": "Erlaube den Standortzugriff, um einen Spot auf der Karte festzulegen.",
   "detailNotFound": "Event nicht gefunden",
+  "detailRemoved": "Dieses Event wurde entfernt",
   "edit": "✏️ Bearbeiten",
   "editEvent": "Event bearbeiten",
   "join": "Teilnehmen",

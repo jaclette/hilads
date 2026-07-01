@@ -59,6 +59,7 @@
   "locNeededTitle": "위치가 필요해요",
   "locMapBody": "지도에 자리를 설정하려면 위치 접근을 허용해 주세요.",
   "detailNotFound": "이벤트를 찾을 수 없어요",
+  "detailRemoved": "이 이벤트는 삭제되었어요",
   "edit": "✏️ 편집",
   "editEvent": "이벤트 편집",
   "join": "참여",

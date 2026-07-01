@@ -1,4 +1,4 @@
-import { api } from './client';
+import { api, ApiError } from './client';
 import type { HiladsEvent, Message, EventParticipant, Reaction } from '@/types';
 
 // ── Events ────────────────────────────────────────────────────────────────────
@@ -120,10 +120,18 @@ export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
   return data.events ?? [];
 }
 
+// `{ removed: true }` = the backend returned 410 Gone (event was deleted). The
+// caller shows a "this event was removed" state instead of a generic "not found",
+// and can drop it from any stale list. `null` = a transient/other failure.
+export type EventByIdResult =
+  | { event: HiladsEvent; cityName: string; country: string; timezone: string }
+  | { removed: true }
+  | null;
+
 export async function fetchEventById(
   eventIdOrSlug: string,
   guestId?: string,
-): Promise<{ event: HiladsEvent; cityName: string; country: string; timezone: string } | null> {
+): Promise<EventByIdResult> {
   // Accept hex IDs or slug-with-trailing-hex (M4). Backend only knows hex.
   const m = String(eventIdOrSlug || '').match(/([a-f0-9]{16})$/i);
   const hex = m ? m[1].toLowerCase() : eventIdOrSlug;
@@ -137,6 +145,9 @@ export async function fetchEventById(
     );
     return res;
   } catch (err) {
+    // 410 Gone = deleted event. Distinguish it so the UI can say "removed"
+    // (404 also lands here → treated as a transient/not-found null, unchanged).
+    if (err instanceof ApiError && err.status === 410) return { removed: true };
     console.log('[deeplink] fetchEventById failed', { input: eventIdOrSlug, hex, err: String(err) });
     return null;
   }

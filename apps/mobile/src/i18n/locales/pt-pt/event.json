@@ -59,6 +59,7 @@
   "locNeededTitle": "Localização necessária",
   "locMapBody": "Permite o acesso à localização para marcar um sítio no mapa.",
   "detailNotFound": "Evento não encontrado",
+  "detailRemoved": "Este evento foi removido",
   "edit": "✏️ Editar",
   "editEvent": "Editar o evento",
   "join": "Participar",

@@ -59,6 +59,7 @@
   "locNeededTitle": "位置情報が必要です",
   "locMapBody": "マップでスポットを設定するには位置情報へのアクセスを許可してください。",
   "detailNotFound": "イベントが見つかりません",
+  "detailRemoved": "このイベントは削除されました",
   "edit": "✏️ 編集",
   "editEvent": "イベントを編集",
   "join": "参加",

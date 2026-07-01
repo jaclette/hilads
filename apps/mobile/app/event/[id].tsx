@@ -183,7 +183,7 @@ export default function EventDetailScreen() {
   }
 
   const {
-    event, cityName: eventCityName, loading: eventLoading, error: eventError,
+    event, cityName: eventCityName, loading: eventLoading, error: eventError, removed: eventRemoved,
     toggling, toggleParticipation, isOwner,
   } = useEventDetail(id);
 
@@ -378,6 +378,12 @@ export default function EventDetailScreen() {
         <View style={styles.eventBlockLoading}>
           <ActivityIndicator color={Colors.accent} />
         </View>
+      ) : eventRemoved ? (
+        // 410 Gone - the event was deleted. Friendly message instead of the
+        // generic "not found"; the back pill above returns to the (now-refreshed) list.
+        <View style={styles.eventBlockLoading}>
+          <Text style={styles.errorText}>{t('detailRemoved')}</Text>
+        </View>
       ) : eventError || !event ? (
         <View style={styles.eventBlockLoading}>
           <Text style={styles.errorText}>{eventError ?? t('detailNotFound')}</Text>
@@ -484,7 +490,7 @@ export default function EventDetailScreen() {
       {event && <ParticipantsStrip participants={participants} onPress={() => setShowGoingSheet(true)} />}
 
       {/* Error banner */}
-      {msgError && (
+      {msgError && !eventRemoved && (
         <TouchableOpacity style={styles.errorBanner} onPress={clearError} activeOpacity={0.8}>
           <Text style={styles.errorBannerText}>{t('dismissHint', { ns: 'chat', error: msgError })}</Text>
         </TouchableOpacity>

@@ -8,6 +8,8 @@ interface Result {
   cityName:         string | null;
   loading:          boolean;
   error:            string | null;
+  /** true when the backend returned 410 Gone - the event was deleted (vs never found). */
+  removed:          boolean;
   toggling:         boolean;
   isOwner:          boolean;
   toggleParticipation: () => Promise<void>;
@@ -25,17 +27,26 @@ export function useEventDetail(eventId: string): Result {
   const [cityName, setCityName] = useState<string | null>(null);
   const [loading,  setLoading]  = useState(true);
   const [error,    setError]    = useState<string | null>(null);
+  const [removed,  setRemoved]  = useState(false);
   const [toggling, setToggling] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
+    setRemoved(false);
     try {
       // Pass guestId so the backend embeds is_participating + participant_count
       // directly in the event object - no secondary fetch needed, no race condition.
       const res = await fetchEventById(eventId, guestId ?? undefined);
-      setEvent(res?.event ?? null);
-      setCityName(res?.cityName ?? null);
+      if (res && 'removed' in res) {
+        // 410 Gone - the event was deleted. Surface a distinct "removed" state
+        // so the screen shows a friendly message instead of "Event not found".
+        setEvent(null);
+        setRemoved(true);
+      } else {
+        setEvent(res?.event ?? null);
+        setCityName(res?.cityName ?? null);
+      }
     } catch {
       setError('Failed to load event');
     } finally {
@@ -56,7 +67,7 @@ export function useEventDetail(eventId: string): Result {
       console.error('[event] toggle failed:', err);
       // Re-fetch event to get true server state after a failure
       fetchEventById(event.id, guestId).then(res => {
-        if (res?.event) setEvent(res.event);
+        if (res && 'event' in res) setEvent(res.event);
       });
     } finally {
       setToggling(false);
@@ -73,5 +84,5 @@ export function useEventDetail(eventId: string): Result {
     (identity?.guestId && event?.guest_id && event.guest_id === identity.guestId),
   );
 
-  return { event, cityName, loading, error, toggling, isOwner, toggleParticipation, reload: load };
+  return { event, cityName, loading, error, removed, toggling, isOwner, toggleParticipation, reload: load };
 }

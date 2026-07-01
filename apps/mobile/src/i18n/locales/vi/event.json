@@ -59,6 +59,7 @@
   "locNeededTitle": "Cần vị trí",
   "locMapBody": "Cho phép truy cập vị trí để đặt spot trên bản đồ.",
   "detailNotFound": "Không tìm thấy sự kiện",
+  "detailRemoved": "Sự kiện này đã bị xóa",
   "edit": "✏️ Sửa",
   "editEvent": "Sửa sự kiện",
   "join": "Tham gia",

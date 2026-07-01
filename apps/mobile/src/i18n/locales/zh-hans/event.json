@@ -59,6 +59,7 @@
   "locNeededTitle": "需要位置",
   "locMapBody": "请允许访问位置，以便在地图上设置地点。",
   "detailNotFound": "未找到活动",
+  "detailRemoved": "此活动已被删除",
   "edit": "✏️ 编辑",
   "editEvent": "编辑活动",
   "join": "加入",

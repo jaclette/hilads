@@ -59,6 +59,7 @@
   "locNeededTitle": "Locatie nodig",
   "locMapBody": "Geef locatietoegang om een spot op de kaart te zetten.",
   "detailNotFound": "Evenement niet gevonden",
+  "detailRemoved": "Dit evenement is verwijderd",
   "edit": "✏️ Bewerken",
   "editEvent": "Evenement bewerken",
   "join": "Meedoen",
