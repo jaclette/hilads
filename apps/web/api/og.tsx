@@ -156,7 +156,6 @@ function EventCard({ event, cityName, country, timezone, eventPath }: any) {
         background: `radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,74,56,0.18) 0%, transparent 60%), ${BG}`,
         padding:  60,
         color:    TEXT,
-        fontFamily: 'Geist',
         position: 'relative',
       }}
     >
@@ -228,7 +227,6 @@ function CityCard({ city, country, slug, eventCount, onlineCount }: any) {
         background: `radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,74,56,0.18) 0%, transparent 60%), ${BG}`,
         padding: 60,
         color: TEXT,
-        fontFamily: 'Geist',
         position: 'relative',
       }}
     >
@@ -299,7 +297,6 @@ function FallbackCard() {
         background: `radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,74,56,0.18) 0%, transparent 60%), ${BG}`,
         padding: 60,
         color: TEXT,
-        fontFamily: 'Geist',
         position: 'relative',
       }}
     >
@@ -394,11 +391,24 @@ export default async function handler(req: any, res: any) {
 
   // ImageResponse returns a Web Response with a streaming body. For Node
   // runtime we read the bytes once and send them via res.end(Buffer).
-  const ir  = new ImageResponse(element, { width: W, height: H });
-  const buf = Buffer.from(await ir.arrayBuffer());
+  //
+  // The render itself (@vercel/og / Satori: fonts, emoji, layout) can throw -
+  // and it MUST NOT 500 an og:image (WhatsApp/Twitter/Slack/SEO fetch this URL
+  // directly; a 500 = a broken/absent preview). On any failure, redirect to the
+  // static brand card so the preview is always valid.
+  try {
+    const ir  = new ImageResponse(element, { width: W, height: H });
+    const buf = Buffer.from(await ir.arrayBuffer());
 
-  res.statusCode = 200;
-  res.setHeader('Content-Type',  'image/png');
-  res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${cacheMaxAge}, stale-while-revalidate=86400`);
-  res.end(buf);
+    res.statusCode = 200;
+    res.setHeader('Content-Type',  'image/png');
+    res.setHeader('Cache-Control', `public, max-age=0, s-maxage=${cacheMaxAge}, stale-while-revalidate=86400`);
+    res.end(buf);
+  } catch (err) {
+    console.error('[og] render failed - falling back to static card:', String(err));
+    res.statusCode = 302;
+    res.setHeader('Location',      `${SITE_BASE}/og/og-default.png`);
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400');
+    res.end();
+  }
 }
