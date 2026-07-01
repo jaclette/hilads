@@ -1,5 +1,15 @@
+/* @jsxRuntime automatic */
+/* @jsxImportSource react */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /**
+ * JSX runtime (CRITICAL): the two pragmas above force esbuild (Vercel's Node
+ * function bundler) to use the AUTOMATIC runtime - `import { jsx } from
+ * "react/jsx-runtime"`. Without them esbuild defaults to CLASSIC JSX
+ * (`React.createElement`), but this file never imports React, so every JSX
+ * element build throws `React is not defined` at request time -> uncaught ->
+ * FUNCTION_INVOCATION_FAILED (500). react is a dependency, so react/jsx-runtime
+ * bundles fine. Do NOT remove these lines.
+ *
  * Vercel serverless function - dynamic OG image generation.
  *
  *   GET /api/og?type=event&id=<16-hex>
@@ -389,17 +399,17 @@ export default async function handler(req: any, res: any) {
     // fall through to FallbackCard
   }
 
-  if (!element) {
-    element = <FallbackCard />;
-    cacheMaxAge = 300;
-  }
-
-  // Load @vercel/og and render inside the guard. Importing it (WASM init) OR the
-  // render itself can throw - and an og:image MUST NOT 500 (WhatsApp/Twitter/Slack/
-  // SEO fetch this URL directly; a 500 = a broken/absent preview). On ANY failure,
-  // redirect to the static brand card so the preview is always valid. @vercel/og
-  // bundles Geist as its default font, so no font loading is needed.
+  // Build the fallback element + load @vercel/og + render, ALL inside the guard.
+  // Anything here (JSX element build, WASM init on import, or the render itself)
+  // can throw - and an og:image MUST NOT 500 (WhatsApp/Twitter/Slack/SEO fetch this
+  // URL directly; a 500 = a broken/absent preview). On ANY failure, redirect to the
+  // static brand card so the preview is always valid. @vercel/og bundles Geist as
+  // its default font, so no font loading is needed.
   try {
+    if (!element) {
+      element = <FallbackCard />;
+      cacheMaxAge = 300;
+    }
     const { ImageResponse } = await import('@vercel/og');
     const ir  = new ImageResponse(element, { width: W, height: H });
     const buf = Buffer.from(await ir.arrayBuffer());
