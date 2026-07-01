@@ -936,22 +936,33 @@ class EventRepository
 
         if ($userId !== null) {
             $check = $pdo->prepare("
-                SELECT 1 FROM channel_events
+                SELECT series_id FROM channel_events
                 WHERE channel_id = :id AND source_type = 'hilads'
                   AND (guest_id = :guest_id OR created_by = :user_id)
             ");
             $check->execute(['id' => $eventId, 'guest_id' => $guestId, 'user_id' => $userId]);
         } else {
             $check = $pdo->prepare("
-                SELECT 1 FROM channel_events
+                SELECT series_id FROM channel_events
                 WHERE channel_id = :id AND source_type = 'hilads' AND guest_id = :guest_id
             ");
             $check->execute(['id' => $eventId, 'guest_id' => $guestId]);
         }
-        if (!$check->fetch()) return false;
+        $row = $check->fetch();
+        if (!$row) return false;
 
         $pdo->prepare("UPDATE channels       SET status = 'deleted', updated_at = now() WHERE id = :id")->execute(['id' => $eventId]);
         $pdo->prepare("UPDATE channel_events SET expires_at = now()                      WHERE channel_id = :id")->execute(['id' => $eventId]);
+
+        // Recurring event: deleting the canonical row must ALSO end the series so
+        // read-side synthesis (nextOccurrenceDate/occurrenceDatesInRange) yields no
+        // future dates and the occurrence cron can't resurrect it. Without this the
+        // channel was soft-deleted but event_series stayed 'alive' (ends_on future)
+        // - an inconsistent, re-materializable state. Mirrors deleteSeries().
+        if (!empty($row['series_id'])) {
+            $pdo->prepare("UPDATE event_series SET ends_on = CURRENT_DATE - INTERVAL '1 day' WHERE id = :sid")
+                ->execute(['sid' => $row['series_id']]);
+        }
 
         return true;
     }
