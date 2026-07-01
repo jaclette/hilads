@@ -25,7 +25,10 @@ export default function ChallengesTab() {
   const [showChallengeIntro, setShowChallengeIntro] = useState(false);
 
   return (
-    <SafeAreaView style={styles.container}>
+    // Exclude the bottom edge: the CustomTabBar already reserves the bottom
+    // safe-area inset, so applying it here too double-counts it and leaves a
+    // black gap between the fixed "Create challenge" CTA and the tab bar.
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
       <View style={styles.appHeaderWrap}>
         <AppHeader />
       </View>
