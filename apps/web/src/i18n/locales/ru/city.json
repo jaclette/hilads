@@ -113,7 +113,9 @@
     "hiLater": "Hi plan",
     "sayHi": "Поздоровайся с {{name}}",
     "sayHiGeneric": "Поздоровайся 👋",
-    "hostWaiting": "Ждём первое приветствие 👋"
+    "hostWaiting": "Ждём первое приветствие 👋",
+    "hiNowHint": "тусить сейчас",
+    "hiLaterHint": "запланировать"
   },
   "header": {
     "online": "{{count}} рядом",

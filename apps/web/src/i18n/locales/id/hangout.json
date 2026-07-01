@@ -25,7 +25,8 @@
     "limitTitle": "Kamu sudah punya nongkrong",
     "limitSub": "Kamu hanya bisa menjalankan satu nongkrong dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
     "limitGo": "Ke nongkrong-ku →",
-    "yourHangout": "nongkrong-mu"
+    "yourHangout": "nongkrong-mu",
+    "geoHint": "📍 Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu 👀🔥"
   },
   "deleteConfirm": "Hapus nongkrong ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
   "deleteFailedAlert": "Tidak bisa menghapus. Silakan coba lagi.",

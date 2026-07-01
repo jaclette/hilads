@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "Batiin si {{name}}",
     "sayHiGeneric": "Mag-hi 👋",
-    "hostWaiting": "Hinihintay ang unang hi 👋"
+    "hostWaiting": "Hinihintay ang unang hi 👋",
+    "hiNowHint": "lumabas ngayon",
+    "hiLaterHint": "magplano ng event"
   },
   "header": {
     "online": "{{count}} malapit",

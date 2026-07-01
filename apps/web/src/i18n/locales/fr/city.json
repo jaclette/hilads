@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "Dis bonjour à {{name}}",
     "sayHiGeneric": "Dis bonjour 👋",
-    "hostWaiting": "En attente du premier bonjour 👋"
+    "hostWaiting": "En attente du premier bonjour 👋",
+    "hiNowHint": "se voir maintenant",
+    "hiLaterHint": "planifier un événement"
   },
   "header": {
     "online": "{{count}} près de toi",

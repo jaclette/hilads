@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "{{name}} को नमस्ते कहें",
     "sayHiGeneric": "नमस्ते कहें 👋",
-    "hostWaiting": "पहले नमस्ते का इंतज़ार 👋"
+    "hostWaiting": "पहले नमस्ते का इंतज़ार 👋",
+    "hiNowHint": "अभी मिलें",
+    "hiLaterHint": "इवेंट प्लान करें"
   },
   "header": {
     "online": "{{count}} आसपास",

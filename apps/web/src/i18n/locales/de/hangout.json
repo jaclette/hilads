@@ -25,7 +25,8 @@
     "limitTitle": "Du hast bereits ein Treffen",
     "limitSub": "Du kannst nur ein Treffen gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch es, um ein neues zu starten.",
     "limitGo": "Zu meinem Treffen →",
-    "yourHangout": "dein Treffen"
+    "yourHangout": "dein Treffen",
+    "geoHint": "📍 Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi 👀🔥"
   },
   "deleteConfirm": "Dieses Treffen löschen? Das beendet es für alle und kann nicht rückgängig gemacht werden.",
   "deleteFailedAlert": "Löschen fehlgeschlagen. Versuch es erneut.",

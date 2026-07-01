@@ -25,7 +25,8 @@
     "limitTitle": "May tambayan ka na",
     "limitSub": "Isang tambayan lang ang puwede mong patakbuhin sa isang pagkakataon. Pumunta sa “{{title}}”, o i-delete ito para magsimula ng bago.",
     "limitGo": "Pumunta sa aking tambayan →",
-    "yourHangout": "iyong tambayan"
+    "yourHangout": "iyong tambayan",
+    "geoHint": "📍 I-on ang location para makita kung sino ang malapit ngayon — at makita ng mga tao sa paligid ang Hi mo 👀🔥"
   },
   "deleteConfirm": "I-delete ang tambayan na ito? Tatapusin nito ito para sa lahat at hindi na maibabalik.",
   "deleteFailedAlert": "Hindi na-delete. Subukan ulit.",

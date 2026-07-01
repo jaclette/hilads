@@ -102,6 +102,13 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
             </p>
           )}
 
+          {/* Geo explainer - why turning on location matters (parity with native). */}
+          {!isEdit && (
+            <div className="topic-geohint">
+              {t('create.geoHint')}
+            </div>
+          )}
+
           {error && <p className="cef-error">{error}</p>}
 
           <button

@@ -25,7 +25,8 @@
     "limitTitle": "Já tens um convívio",
     "limitSub": "Só podes ter um convívio de cada vez. Vai a «{{title}}» ou elimina-o para iniciar um novo.",
     "limitGo": "Ir para o meu convívio →",
-    "yourHangout": "o teu convívio"
+    "yourHangout": "o teu convívio",
+    "geoHint": "📍 Ativa a localização para ver quem está por perto agora — e deixa quem está perto ver o teu Hi 👀🔥"
   },
   "deleteConfirm": "Eliminar este convívio? Isto termina-o para todos e não pode ser desfeito.",
   "deleteFailedAlert": "Não foi possível eliminar. Tenta novamente.",

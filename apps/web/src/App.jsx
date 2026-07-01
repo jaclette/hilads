@@ -5355,18 +5355,20 @@ export default function App() {
           <div className="now-actions-bar now-actions-bar--hilocal">
             {/* Line 1: Hi now, full width, alone. */}
             <button
-              className="hilocal-cta hilocal-cta--now"
+              className="hilocal-cta hilocal-cta--now hilocal-cta--stack"
               onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
             >
-              🗣️ {t('feed.hiNow')}
+              <span className="hilocal-cta-main">🗣️ {t('feed.hiNow')}</span>
+              <span className="hilocal-cta-sub">{t('feed.hiNowHint')}</span>
             </button>
             {/* Line 2: Hi later + See what's coming, side by side. */}
             <div className="hilocal-cta-row">
               <button
-                className="hilocal-cta hilocal-cta--later"
+                className="hilocal-cta hilocal-cta--later hilocal-cta--stack"
                 onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
               >
-                🎉 {t('feed.hiLater')}
+                <span className="hilocal-cta-main">🎉 {t('feed.hiLater')}</span>
+                <span className="hilocal-cta-sub">{t('feed.hiLaterHint')}</span>
               </button>
               <button
                 className="hilocal-cta hilocal-cta--coming"

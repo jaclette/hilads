@@ -25,7 +25,8 @@
     "limitTitle": "Bạn đã có một tụ tập",
     "limitSub": "Bạn chỉ có thể chạy một tụ tập cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",
     "limitGo": "Đến tụ tập của tôi →",
-    "yourHangout": "tụ tập của bạn"
+    "yourHangout": "tụ tập của bạn",
+    "geoHint": "📍 Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn 👀🔥"
   },
   "deleteConfirm": "Xóa tụ tập này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
   "deleteFailedAlert": "Không thể xóa. Vui lòng thử lại.",

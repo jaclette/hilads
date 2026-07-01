@@ -25,7 +25,8 @@
     "limitTitle": "你已經有一個聚會了",
     "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或將它刪除以開一個新的。",
     "limitGo": "前往我的聚會 →",
-    "yourHangout": "你的聚會"
+    "yourHangout": "你的聚會",
+    "geoHint": "📍 打開定位，看看現在誰在附近——也讓周圍的人發現你的 Hi 👀🔥"
   },
   "deleteConfirm": "刪除這個聚會？這會為所有人結束它，且無法復原。",
   "deleteFailedAlert": "無法刪除。請重試。",

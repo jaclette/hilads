@@ -25,7 +25,8 @@
     "limitTitle": "你已经有一个聚会了",
     "limitSub": "你一次只能运行一个聚会。去“{{title}}”看看，或删除它来发起新的。",
     "limitGo": "前往我的聚会 →",
-    "yourHangout": "你的聚会"
+    "yourHangout": "你的聚会",
+    "geoHint": "📍 打开定位，看看现在谁在附近——也让周围的人发现你的 Hi 👀🔥"
   },
   "deleteConfirm": "删除这个聚会？这会为所有人结束它，且无法撤销。",
   "deleteFailedAlert": "无法删除。请重试。",

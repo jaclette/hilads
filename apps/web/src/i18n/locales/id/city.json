@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "Sapa {{name}}",
     "sayHiGeneric": "Sapa 👋",
-    "hostWaiting": "Menunggu sapaan pertama 👋"
+    "hostWaiting": "Menunggu sapaan pertama 👋",
+    "hiNowHint": "nongkrong sekarang",
+    "hiLaterHint": "rencanakan acara"
   },
   "header": {
     "online": "{{count}} di sekitar",

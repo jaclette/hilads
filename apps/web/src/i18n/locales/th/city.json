@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "ทักทาย {{name}}",
     "sayHiGeneric": "ทักทาย 👋",
-    "hostWaiting": "กำลังรอคำทักทายแรก 👋"
+    "hostWaiting": "กำลังรอคำทักทายแรก 👋",
+    "hiNowHint": "เจอกันตอนนี้",
+    "hiLaterHint": "วางแผนกิจกรรม"
   },
   "header": {
     "online": "{{count}} คนใกล้เคียง",

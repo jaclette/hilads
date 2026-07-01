@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "向 {{name}} 打招呼",
     "sayHiGeneric": "打个招呼 👋",
-    "hostWaiting": "等待第一声招呼 👋"
+    "hostWaiting": "等待第一声招呼 👋",
+    "hiNowHint": "现在一起玩",
+    "hiLaterHint": "计划活动"
   },
   "header": {
     "online": "附近 {{count}} 人",

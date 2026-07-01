@@ -109,7 +109,9 @@
     "filterAll": "All",
     "seeComing": "See what's coming 🔮",
     "seeHappened": "see what happened",
-    "createNew": "Create new"
+    "createNew": "Create new",
+    "hiNowHint": "hang out now",
+    "hiLaterHint": "plan an event"
   },
   "header": {
     "online": "{{count}} nearby",

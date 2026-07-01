@@ -25,7 +25,8 @@
     "limitTitle": "Tu as déjà une sortie",
     "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",
     "limitGo": "Aller à ma sortie →",
-    "yourHangout": "ta sortie"
+    "yourHangout": "ta sortie",
+    "geoHint": "📍 Active ta localisation pour voir qui est dans le coin maintenant — et que les gens autour repèrent ton Hi 👀🔥"
   },
   "deleteConfirm": "Supprimer cette sortie ? Cela y met fin pour tout le monde et c'est irréversible.",
   "deleteFailedAlert": "Impossible de supprimer. Réessaie.",

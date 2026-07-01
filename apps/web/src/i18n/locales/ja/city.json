@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "{{name}}に挨拶しよう",
     "sayHiGeneric": "挨拶しよう 👋",
-    "hostWaiting": "最初の挨拶を待っています 👋"
+    "hostWaiting": "最初の挨拶を待っています 👋",
+    "hiNowHint": "今すぐ集まる",
+    "hiLaterHint": "予定を立てる"
   },
   "header": {
     "online": "近くに{{count}}人",

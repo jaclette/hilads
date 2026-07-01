@@ -6862,6 +6862,30 @@ img.pub-profile-avatar {
   color: var(--text);
   border-color: rgba(255, 255, 255, 0.18);
 }
+/* Stacked CTA: primary label + small italic subtitle (parity with native). */
+.hilocal-cta--stack { flex-direction: column; gap: 2px; }
+.hilocal-cta-main { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.hilocal-cta-sub {
+  font-size: 0.72rem;
+  font-weight: 600;
+  font-style: italic;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+/* Hi now creation: location explainer banner (parity with native). */
+.topic-geohint {
+  margin: 14px 0 2px;
+  padding: 13px 16px;
+  border: 1px solid rgba(255, 122, 60, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 122, 60, 0.08);
+  color: #FF7A3C;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+}
 
 .now-active-badge {
   display: inline-block;

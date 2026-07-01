@@ -117,7 +117,9 @@
     "hiLater": "Hi plan",
     "sayHi": "ألقِ التحية على {{name}}",
     "sayHiGeneric": "ألقِ التحية 👋",
-    "hostWaiting": "بانتظار أول تحية 👋"
+    "hostWaiting": "بانتظار أول تحية 👋",
+    "hiNowHint": "نلتقي الآن",
+    "hiLaterHint": "خطّط لحدث"
   },
   "header": {
     "online": "{{count}} بالقرب",

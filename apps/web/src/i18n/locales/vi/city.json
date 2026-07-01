@@ -109,7 +109,9 @@
     "sayHiGeneric": "Chào 👋",
     "hostWaiting": "Đang chờ lời chào đầu tiên 👋",
     "replies_one": "💬 {{count}} trả lời",
-    "going_one": "🙌 {{count}} tham gia"
+    "going_one": "🙌 {{count}} tham gia",
+    "hiNowHint": "gặp nhau ngay",
+    "hiLaterHint": "lên kế hoạch"
   },
   "header": {
     "online": "{{count}} ở gần",

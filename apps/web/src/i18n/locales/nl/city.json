@@ -109,7 +109,9 @@
     "hiLater": "Hi plan",
     "sayHi": "Zeg {{name}} gedag",
     "sayHiGeneric": "Zeg gedag 👋",
-    "hostWaiting": "Wachten op de eerste begroeting 👋"
+    "hostWaiting": "Wachten op de eerste begroeting 👋",
+    "hiNowHint": "nu afspreken",
+    "hiLaterHint": "een plan maken"
   },
   "header": {
     "online": "{{count}} in de buurt",
