@@ -41,6 +41,13 @@
 // into the guarded handler turns that into a clean fallback instead of a 500.
 // It also bundles Geist as its default font, so no font loading is needed.
 
+// Belt-and-suspenders for the JSX runtime: the pragmas above request the
+// AUTOMATIC runtime, but if Vercel's builder ignores them and falls back to
+// CLASSIC JSX (React.createElement), this import guarantees `React` is in scope
+// so element construction never throws `React is not defined`. Under the
+// automatic runtime this import is simply unused. Works either way.
+import React from 'react';
+
 const API_BASE  = 'https://api.hilads.live';
 const SITE_BASE = 'https://hilads.live';
 
@@ -344,8 +351,21 @@ function FallbackCard() {
 // Node serverless signature (req, res). `req.query` is populated by Vercel's
 // runtime; `res` is a Node ServerResponse-shaped object.
 
+// Bump on each deploy so `?ping=1` confirms which build is actually live.
+const OG_BUILD = 'og-v4-react-import';
+
 export default async function handler(req: any, res: any) {
-  const { type, id, slug } = (req.query || {}) as Record<string, string | undefined>;
+  const { type, id, slug, ping, debug } = (req.query || {}) as Record<string, string | undefined>;
+
+  // Deploy-verification probe: returns instantly, no JSX / @vercel/og touched.
+  // If this 200s with the marker, the new code is live and any remaining error
+  // is inside the render path (visible via ?debug=1), not a stale deploy.
+  if (ping) {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end(OG_BUILD);
+    return;
+  }
 
   let element: any;
   let cacheMaxAge = 60;
@@ -420,6 +440,14 @@ export default async function handler(req: any, res: any) {
     res.end(buf);
   } catch (err) {
     console.error('[og] render failed - falling back to static card:', String(err));
+    // Diagnostic escape hatch: ?debug=1 returns the real error+stack as text so a
+    // curl can see WHY it failed. Normal (scraper) requests get the 302 fallback.
+    if (debug) {
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'text/plain');
+      res.end(`[og ${OG_BUILD}] render failed:\n${(err as Error)?.stack || String(err)}`);
+      return;
+    }
     res.statusCode = 302;
     res.setHeader('Location',      `${SITE_BASE}/og/og-default.png`);
     res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400');
