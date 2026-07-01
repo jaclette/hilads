@@ -24,7 +24,12 @@
  * + tagline) so the link preview is never broken.
  */
 
-import { ImageResponse } from '@vercel/og';
+// @vercel/og is imported DYNAMICALLY inside the handler (not a top-level import).
+// It loads WASM (resvg/yoga) at init; if those assets aren't bundled into the
+// function, a top-level import crashes the whole invocation
+// (FUNCTION_INVOCATION_FAILED) BEFORE any try/catch can run. Deferring the import
+// into the guarded handler turns that into a clean fallback instead of a 500.
+// It also bundles Geist as its default font, so no font loading is needed.
 
 const API_BASE  = 'https://api.hilads.live';
 const SITE_BASE = 'https://hilads.live';
@@ -389,14 +394,13 @@ export default async function handler(req: any, res: any) {
     cacheMaxAge = 300;
   }
 
-  // ImageResponse returns a Web Response with a streaming body. For Node
-  // runtime we read the bytes once and send them via res.end(Buffer).
-  //
-  // The render itself (@vercel/og / Satori: fonts, emoji, layout) can throw -
-  // and it MUST NOT 500 an og:image (WhatsApp/Twitter/Slack/SEO fetch this URL
-  // directly; a 500 = a broken/absent preview). On any failure, redirect to the
-  // static brand card so the preview is always valid.
+  // Load @vercel/og and render inside the guard. Importing it (WASM init) OR the
+  // render itself can throw - and an og:image MUST NOT 500 (WhatsApp/Twitter/Slack/
+  // SEO fetch this URL directly; a 500 = a broken/absent preview). On ANY failure,
+  // redirect to the static brand card so the preview is always valid. @vercel/og
+  // bundles Geist as its default font, so no font loading is needed.
   try {
+    const { ImageResponse } = await import('@vercel/og');
     const ir  = new ImageResponse(element, { width: W, height: H });
     const buf = Buffer.from(await ir.arrayBuffer());
 
