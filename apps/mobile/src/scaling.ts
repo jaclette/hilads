@@ -19,8 +19,12 @@
  */
 import { Dimensions, StyleSheet } from 'react-native';
 
-const GUIDELINE_WIDTH = 448; // large-phone reference (Pixel 8 Pro); stays 1.0
-const FLOOR = 0.80;          // never shrink below this, even on tiny devices
+// Reference width at which scale = 1.0. Tuned to hit these targets:
+//   iPhone Pro Max 430dp -> 6% smaller, Medium/Pixel6 411dp -> 10%,
+//   Pixel 4a / iPhone 15 Pro 393dp -> 14%, small Androids ~360dp -> ~21-22%.
+// (457 is just above the Pixel 8 Pro's 448dp, so the 8 Pro shrinks ~2%.)
+const GUIDELINE_WIDTH = 457;
+const FLOOR = 0.78;          // never shrink below this, even on tiny devices (~22%)
 
 const { width, height } = Dimensions.get('window');
 const shortest = Math.min(width, height); // portrait-safe
