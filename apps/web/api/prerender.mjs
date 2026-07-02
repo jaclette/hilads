@@ -1456,10 +1456,10 @@ function composeChallengeMeta(payload, canonicalPath, locale = 'en') {
     description,
     url:   `${SITE_BASE}${canonicalPath}`,
     noindex,
-    // Reuse the city OG card so embeds aren't generic. A dedicated
-    // /api/og?type=challenge can ship later.
-    image: payload?.citySlug
-            ? `${SITE_BASE}/api/og?type=city&slug=${encodeURIComponent(payload.citySlug)}`
+    // Dedicated challenge OG card (title + cross-city route + type icon).
+    // /api/og falls back to the static brand card on any render failure.
+    image: ch.id
+            ? `${SITE_BASE}/api/og?type=challenge&id=${encodeURIComponent(ch.id)}`
             : `${SITE_BASE}/og/og-default.png`,
   }
 }

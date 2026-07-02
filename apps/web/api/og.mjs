@@ -198,6 +198,56 @@ function Stat(icon, label, value) {
   );
 }
 
+// ── Surface 3: Challenge card ─────────────────────────────────────────────────
+function ChallengeCard({ challenge, cityName, country, targetCityName, targetCountry }) {
+  const icon  = EVENT_ICONS[challenge.challenge_type] ?? '🏆';
+  const title = challenge.title;
+  const intl  = (challenge.mode ?? 'local') === 'international';
+  const originFlag = cityFlag(country);
+  const targetFlag = cityFlag(targetCountry);
+  const going = challenge.participant_count ?? 0;
+
+  // Route line: "🇻🇳 Ho Chi Minh City  →  🇩🇪 Munich" for cross-city, else "📍 city".
+  const routeChildren = intl && targetCityName
+    ? [
+        originFlag ? h('span', { key: 'of' }, `${originFlag} `) : null,
+        h('span', { key: 'oc' }, cityName || 'Anywhere'),
+        h('span', { key: 'ar', style: { color: ACCENT, margin: '0 6px' } }, ' → '),
+        targetFlag ? h('span', { key: 'tf' }, `${targetFlag} `) : null,
+        h('span', { key: 'tc' }, targetCityName),
+      ].filter(Boolean)
+    : [ h('span', { key: 'loc' }, `📍 ${originFlag ? `${originFlag}  ` : ''}${cityName || 'Anywhere'}`) ];
+
+  return h('div', {
+    style: {
+      width: W, height: H, display: 'flex', flexDirection: 'column',
+      background: `radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,74,56,0.18) 0%, transparent 60%), ${BG}`,
+      padding: 60, color: TEXT, position: 'relative',
+    },
+  },
+    h('div', { style: { display: 'flex', alignItems: 'center', gap: 18 } },
+      HiladsMark(72),
+      h('div', { style: { display: 'flex', fontSize: 22, color: MUTED2, fontWeight: 600 } }, 'hilads.live'),
+    ),
+    h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 22 } },
+      // "🏆 CHALLENGE" eyebrow so the card reads as a challenge, not an event.
+      h('div', {
+        style: {
+          alignSelf: 'flex-start', display: 'flex', background: 'rgba(255,122,60,0.15)',
+          border: `1.5px solid ${ACCENT}`, borderRadius: 999, padding: '8px 20px',
+          fontSize: 24, fontWeight: 800, color: ACCENT, letterSpacing: 1,
+        },
+      }, `🏆 ${intl ? 'CROSS-CITY CHALLENGE' : 'CHALLENGE'}`),
+      h('div', {
+        style: { display: 'flex', fontSize: 64, lineHeight: 1.05, fontWeight: 800, letterSpacing: -2, color: TEXT, maxHeight: 220, overflow: 'hidden' },
+      }, `${icon}  ${title}`),
+      h('div', { style: { display: 'flex', fontSize: 34, color: ACCENT, fontWeight: 700 } }, routeChildren),
+      going > 0 ? h('div', { style: { display: 'flex', fontSize: 28, color: MUTED, fontWeight: 600 } }, `🙌 ${going} taking it on`) : null,
+    ),
+    URLFooter(''),
+  );
+}
+
 // ── Fallback (homepage / unknown surface) ─────────────────────────────────────
 function FallbackCard() {
   return h('div', {
@@ -259,6 +309,19 @@ export default async function handler(req, res) {
             timezone: data.timezone, eventPath: `/event/${hex}`,
           });
           cacheMaxAge = 300;   // 5 min - attendee counts churn
+        }
+      }
+    } else if (type === 'challenge' && id) {
+      const m = String(id).match(/([a-f0-9]{16})$/i);
+      const hex = m ? m[1].toLowerCase() : null;
+      if (hex) {
+        const data = await fetchJson(`${API_BASE}/api/v1/challenges/${encodeURIComponent(hex)}`);
+        if (data?.challenge) {
+          element = ChallengeCard({
+            challenge: data.challenge, cityName: data.cityName, country: data.country,
+            targetCityName: data.targetCityName, targetCountry: data.targetCountry,
+          });
+          cacheMaxAge = 1800;  // 30 min - challenges churn slowly
         }
       }
     } else if (type === 'city' && slug && /^[a-z0-9-]{1,80}$/.test(slug)) {
