@@ -1,3 +1,5 @@
+import { Dimensions } from 'react-native';
+
 // ── Environment ───────────────────────────────────────────────────────────────
 
 // In development, these come from .env (EXPO_PUBLIC_* prefix required).
@@ -114,15 +116,43 @@ export const Colors = {
 // count pips, status dots) where the text sits inside a coloured shape and is
 // glyph-like, not informational. Apple Guideline 4 cited the prior 11/12pt
 // secondary text as too small to read on iPad and iPhone 17 Pro Max.
+// ── Responsive scaling ────────────────────────────────────────────────────────
+// The UI is authored in fixed dp. dp is the same PHYSICAL size on every device,
+// so on a narrower phone the same layout eats a bigger share of the screen and
+// "looks big" / cramped (e.g. Pixel 4a 393dp vs Pixel 8 Pro 448dp). We correct
+// this by scaling fonts + spacing down on screens narrower than a reference
+// width, so a small phone renders at roughly the same proportions as a large one.
+//
+// Design principles:
+//   - GUIDELINE_WIDTH is the "looks right" reference. Screens AT/ABOVE it are
+//     never touched (mult capped at 1) - so large phones & tablets don't inflate.
+//   - Only screens NARROWER than the guideline shrink, with a floor so tiny
+//     devices never collapse.
+//   - Fonts shrink gently (partial factor - text legibility matters); spacing
+//     shrinks fully (tightening gaps is what actually recovers vertical room).
+// Captured once at startup (mobile-first portrait app; we use the shortest edge
+// so rotation/tablets stay sane).
+const GUIDELINE_WIDTH = 430;
+const { width: _w, height: _h } = Dimensions.get('window');
+const _short = Math.min(_w, _h);
+const _mult  = Math.min(1, Math.max(0.85, _short / GUIDELINE_WIDTH)); // shrink-only, floor 0.85
+
+/** Scale a font size: gentle (applies 70% of the shrink), rounded to whole px. */
+export const fscale = (n: number) => Math.round(n * (1 - (1 - _mult) * 0.7));
+/** Scale a spacing/size value: full width proportion, rounded. */
+export const sscale = (n: number) => Math.round(n * _mult);
+/** Raw responsive multiplier (1 on reference+ screens, <1 on narrow ones). */
+export const screenScale = _mult;
+
 export const FontSizes = {
-  tiny: 11,  // badges + count pips ONLY (not visible body text)
-  xs:   13,
-  sm:   14,
-  md:   17,
-  lg:   20,
-  xl:   24,
-  xxl:  32,
-  hero: 40,  // city name hero, large screen titles
+  tiny: fscale(11),  // badges + count pips ONLY (not visible body text)
+  xs:   fscale(13),
+  sm:   fscale(14),
+  md:   fscale(17),
+  lg:   fscale(20),
+  xl:   fscale(24),
+  xxl:  fscale(32),
+  hero: fscale(40),  // city name hero, large screen titles
 } as const;
 
 export const Radius = {
@@ -133,12 +163,12 @@ export const Radius = {
 } as const;
 
 export const Spacing = {
-  xs:   5,
-  sm:   9,
-  md:   18,
-  lg:   27,
-  xl:   36,
-  xxl:  54,
+  xs:   sscale(5),
+  sm:   sscale(9),
+  md:   sscale(18),
+  lg:   sscale(27),
+  xl:   sscale(36),
+  xxl:  sscale(54),
 } as const;
 
 // ── Gradients - direct port of web index.css linear-gradients ────────────────
