@@ -132,13 +132,13 @@ export const Colors = {
 //     shrinks fully (tightening gaps is what actually recovers vertical room).
 // Captured once at startup (mobile-first portrait app; we use the shortest edge
 // so rotation/tablets stay sane).
-const GUIDELINE_WIDTH = 430;
+const GUIDELINE_WIDTH = 448;  // Pixel 8 Pro width - the "looks right" reference (stays 1.0)
 const { width: _w, height: _h } = Dimensions.get('window');
 const _short = Math.min(_w, _h);
-const _mult  = Math.min(1, Math.max(0.85, _short / GUIDELINE_WIDTH)); // shrink-only, floor 0.85
+const _mult  = Math.min(1, Math.max(0.80, _short / GUIDELINE_WIDTH)); // shrink-only, floor 0.80
 
-/** Scale a font size: gentle (applies 70% of the shrink), rounded to whole px. */
-export const fscale = (n: number) => Math.round(n * (1 - (1 - _mult) * 0.7));
+/** Scale a font size: full width proportion, rounded to whole px. */
+export const fscale = (n: number) => Math.round(n * _mult);
 /** Scale a spacing/size value: full width proportion, rounded. */
 export const sscale = (n: number) => Math.round(n * _mult);
 /** Raw responsive multiplier (1 on reference+ screens, <1 on narrow ones). */
