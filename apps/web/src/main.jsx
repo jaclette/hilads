@@ -42,6 +42,34 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.init({
         dsn: import.meta.env.VITE_SENTRY_DSN,
         environment: import.meta.env.MODE,
+        // Drop noise injected by in-app browsers (Facebook / Instagram / etc.).
+        // These errors come from `iabjs://` scripts Meta injects into its Android
+        // WebView - NOT our code - and typically throw during teardown
+        // ("Java object is gone" when the injected Java bridge is destroyed on
+        // beforeunload). They're unactionable and would otherwise flood Sentry as
+        // "unhandled / critical". See enableButtonsClickedMetaDataLogging /
+        // navigation_performance_logger_android.
+        ignoreErrors: [
+            /Java object is gone/i,
+            /Java bridge method/i,
+            /enableButtonsClickedMetaDataLogging/i,
+            /navigation_performance_logger/i,
+            /Object Not Found Matching Id/i,
+            /sendBeforeUnloadMessage/i,
+        ],
+        denyUrls: [
+            /iabjs:\/\//i,                    // in-app browser injected scripts
+            /navigation_performance_logger/i,
+        ],
+        beforeSend(event) {
+            // Belt-and-suspenders: drop any event whose stack references an
+            // in-app-browser injected script, regardless of the message text.
+            const frames = event?.exception?.values?.flatMap(v => v?.stacktrace?.frames ?? []) ?? []
+            if (frames.some(f => typeof f?.filename === 'string' && f.filename.includes('iabjs://'))) {
+                return null
+            }
+            return event
+        },
     })
 }
 
