@@ -22,6 +22,15 @@
   --mobile-tabbar-height: 78px;
 }
 
+/* Responsive root font-size. The app is ~74% rem-based, so scaling the root
+   shrinks the bulk of the UI (headers, banners, names, chat text) on narrow
+   phones to match the native app's proportions - a Pixel 4 (~393-411px) looked
+   oversized vs wider phones. 16px at >=457px wide (desktop/tablet unchanged),
+   scaling down to a 12.5px floor (~0.78x) on the smallest phones. Mirrors the
+   native GUIDELINE_WIDTH=457 / floor 0.78 curve. (Spacing is px-based and does
+   not scale with this - handled separately if needed.) */
+html { font-size: clamp(12.5px, 3.5vw, 16px); }
+
 html, body, #root {
   height: 100%;
   width: 100%;
