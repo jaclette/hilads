@@ -127,13 +127,19 @@ function RootLayoutInner() {
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
 
-  // Re-assert WS presence when login/logout happens mid-session so the Here screen
-  // immediately reflects the updated identity on all clients.
+  // Re-assert WS presence with the correct identity whenever it becomes known.
+  // Depend on account AND the join preconditions (joined/city/sessionId), not just
+  // account: on a slow cold start (esp. right after an app update) authMe can set
+  // `account` BEFORE the join is possible, so an [account]-only effect bails on the
+  // guard and — since account never changes again — never re-fires, leaving presence
+  // stamped with the guest nickname (user shows up as a random name in Arrivals /
+  // the Here list). Re-running when the preconditions settle guarantees we (re)join
+  // under the registered display name.
   useEffect(() => {
     if (!joined || !city || !sessionId) return;
     const nickname = account?.display_name ?? identity?.nickname ?? '';
     socket.joinCity(city.channelId, sessionId, nickname, account?.id ?? undefined, identity?.guestId ?? undefined);
-  }, [account]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [account, joined, city?.channelId, sessionId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!booting) SplashScreen.hideAsync();
