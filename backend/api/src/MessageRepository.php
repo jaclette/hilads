@@ -351,24 +351,6 @@ class MessageRepository
      * type='system', event='weather', content = display text.
      * No guest_id / nickname - weather has no author.
      */
-    public static function addWeatherSystem(int $channelId, string $content): array
-    {
-        $id = bin2hex(random_bytes(8));
-
-        Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, content, nickname)
-            VALUES (?, ?, 'system', 'weather', ?, '')
-        ")->execute([$id, self::dbKey($channelId), $content]);
-
-        return [
-            'id'        => $id,
-            'type'      => 'system',
-            'event'     => 'weather',
-            'content'   => $content,
-            'createdAt' => time(),
-        ];
-    }
-
     /**
      * Generic system message - used for in-thread audit lines like
      * "✅ X accepted your take-on" / "✕ X declined your take-on" on the

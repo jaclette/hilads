@@ -3606,14 +3606,6 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
 
         // ── Deferred side-effects ────────────────────────────────────────────
 
-        // Weather injection (after response flush)
-        $bCid = $channelId; $bCty = $city;
-        register_shutdown_function(static function () use ($bCid, $bCty): void {
-            if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
-            try { WeatherService::maybeInject($bCid, $bCty); }
-            catch (\Throwable $e) { error_log('[bootstrap] weather failed: ' . $e->getMessage()); }
-        });
-
         // Ticketmaster sync (replaces /city-events deferred sync)
         $tmCid  = $channelId;
         $tmName = $city['name'];
@@ -3810,22 +3802,6 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         if ($city === null) {
             Response::json(['error' => 'Channel not found'], 404);
         }
-
-        // Inject a live weather system message if 4 h have elapsed since the last one.
-        // Deferred: the Open-Meteo HTTP call (up to 4 s) runs after the response is sent
-        // so it never adds latency to the messages fetch.
-        $cid  = $channelId;
-        $cty  = $city;
-        register_shutdown_function(static function () use ($cid, $cty): void {
-            if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
-            }
-            try {
-                WeatherService::maybeInject($cid, $cty);
-            } catch (\Throwable $e) {
-                error_log('[weather] injection failed (non-fatal): ' . $e->getMessage());
-            }
-        });
 
         // lean=1: skip presence + badge enrichment - web uses this for the parallel
         // fast-path fetch (fired concurrently with POST /join). Badges are enriched
