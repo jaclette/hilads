@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Hindi ka lang nag-bisita. Nagiging local ka.\nBawat challenge, bawat meet, bawat lugar - kitain mo ang puwesto mo sa city na 'to.",
-    "orPreview": "O tingnan sa browser mo — walang i-install"
+    "orPreview": "O tingnan sa browser mo — walang i-install",
+    "storeDownloadOn": "I-download sa",
+    "storeGetItOn": "Kunin sa"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",

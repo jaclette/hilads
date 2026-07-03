@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Je bent niet zomaar op bezoek. Je wordt local.\nElke challenge, elke afspraak, elke plek - verdien je plek in deze stad.",
-    "orPreview": "Of neem een kijkje in je browser — geen installatie"
+    "orPreview": "Of neem een kijkje in je browser — geen installatie",
+    "storeDownloadOn": "Download in de",
+    "storeGetItOn": "Ontdek het op"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",

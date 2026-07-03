@@ -444,8 +444,8 @@ export default function LandingPage({
             entry: warm bio-link traffic has already seen the native experience
             in the promo video, and the web app lacks push (poor retention). */}
         <div className="lp-hero-stores lp-hero-stores--primary">
-          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
+          <StoreBadge icon={<AppleIcon />} top={t('hero.storeDownloadOn')} bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
+          <StoreBadge icon="▶" top={t('hero.storeGetItOn')} bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
         </div>
 
         {/* SECONDARY - take a look in the browser without installing. Demoted:
@@ -625,8 +625,8 @@ export default function LandingPage({
         <h2 className="lp-section-title">{t('download.title')}</h2>
         <p className="lp-download-sub">{t('download.sub')}</p>
         <div className="lp-store-badges">
-          <StoreBadge icon="▶" top="Get it on" bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
-          <StoreBadge icon={<AppleIcon />} top="Download on the" bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
+          <StoreBadge icon="▶" top={t('hero.storeGetItOn')} bottom="Google Play" href="https://play.google.com/store/apps/details?id=com.hilads.app" ariaLabel="Download Hilads on Google Play" />
+          <StoreBadge icon={<AppleIcon />} top={t('hero.storeDownloadOn')} bottom="App Store" href="https://apps.apple.com/app/id6768905591" ariaLabel="Download Hilads on the App Store" />
         </div>
       </section>
 

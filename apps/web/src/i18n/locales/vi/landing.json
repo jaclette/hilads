@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Bạn không chỉ ghé qua. Bạn đang trở thành người địa phương.\nMỗi challenge, mỗi cuộc gặp, mỗi địa điểm - kiếm cho mình một chỗ đứng trong thành phố này.",
-    "orPreview": "Hoặc xem thử trên trình duyệt — không cần cài đặt"
+    "orPreview": "Hoặc xem thử trên trình duyệt — không cần cài đặt",
+    "storeDownloadOn": "Tải trên",
+    "storeGetItOn": "Tải trên"
   },
   "join": {
     "peopleLive_other": "🔥 {{count}} người đang ở quanh đây",

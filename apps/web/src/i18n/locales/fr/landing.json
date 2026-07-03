@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Tu ne fais pas que passer. Tu deviens local.\nChaque challenge, chaque rencontre, chaque spot - gagne ta place dans cette ville.",
-    "orPreview": "Ou jeter un œil dans le navigateur — sans installer"
+    "orPreview": "Ou jeter un œil dans le navigateur — sans installer",
+    "storeDownloadOn": "Télécharger dans l’",
+    "storeGetItOn": "Disponible sur"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} personne dans le coin en ce moment",

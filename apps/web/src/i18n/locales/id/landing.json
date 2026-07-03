@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Kamu bukan cuma mampir. Kamu lagi jadi orang lokal.\nTiap tantangan, tiap pertemuan, tiap tempat - raih tempatmu di kota ini.",
-    "orPreview": "Atau lihat-lihat di browser — tanpa instal"
+    "orPreview": "Atau lihat-lihat di browser — tanpa instal",
+    "storeDownloadOn": "Unduh di",
+    "storeGetItOn": "Dapatkan di"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",

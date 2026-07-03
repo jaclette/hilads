@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Non sei solo di passaggio. Stai diventando locale.\nOgni sfida, ogni incontro, ogni posto - guadagna il tuo posto in questa città.",
-    "orPreview": "Oppure dai un'occhiata nel browser — senza installare"
+    "orPreview": "Oppure dai un'occhiata nel browser — senza installare",
+    "storeDownloadOn": "Scarica su",
+    "storeGetItOn": "Disponibile su"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",

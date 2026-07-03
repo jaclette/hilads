@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "You're not just visiting. You're becoming local.\nEvery challenge, every meet, every spot - earn your place in this city.",
-    "orPreview": "Or take a look in your browser — no install"
+    "orPreview": "Or take a look in your browser — no install",
+    "storeDownloadOn": "Download on the",
+    "storeGetItOn": "Get it on"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} person hanging out right now",

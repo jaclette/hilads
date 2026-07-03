@@ -1,7 +1,9 @@
 {
   "hero": {
     "sub": "Não estás só de passagem. Estás a tornar-te local.\nCada desafio, cada encontro, cada sítio - conquista o teu lugar nesta cidade.",
-    "orPreview": "Ou dá uma vista de olhos no navegador — sem instalar"
+    "orPreview": "Ou dá uma vista de olhos no navegador — sem instalar",
+    "storeDownloadOn": "Transferir na",
+    "storeGetItOn": "Disponível no"
   },
   "join": {
     "peopleLive_one": "🔥 {{count}} pessoa por aqui agora mesmo",
