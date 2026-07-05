@@ -43,12 +43,14 @@ if (import.meta.env.VITE_SENTRY_DSN) {
         dsn: import.meta.env.VITE_SENTRY_DSN,
         environment: import.meta.env.MODE,
         // Drop noise injected by in-app browsers (Facebook / Instagram / etc.).
-        // These errors come from `iabjs://` scripts Meta injects into its Android
-        // WebView - NOT our code - and typically throw during teardown
-        // ("Java object is gone" when the injected Java bridge is destroyed on
-        // beforeunload). They're unactionable and would otherwise flood Sentry as
-        // "unhandled / critical". See enableButtonsClickedMetaDataLogging /
-        // navigation_performance_logger_android.
+        // These errors come from scripts Meta injects into its WebViews - NOT our
+        // code - and are unactionable, but would otherwise flood Sentry as
+        // "unhandled / critical":
+        //   - Android FB IAB: `iabjs://` scripts, "Java object is gone" on
+        //     teardown, enableButtonsClickedMetaDataLogging / navigation_perf...
+        //   - iOS IG IAB: setupIosCallbackHandler touches window.webkit.messageHandlers
+        //     which is undefined outside a native WKWebView bridge. We never use
+        //     window.webkit anywhere, so any such error is always external.
         ignoreErrors: [
             /Java object is gone/i,
             /Java bridge method/i,
@@ -56,6 +58,9 @@ if (import.meta.env.VITE_SENTRY_DSN) {
             /navigation_performance_logger/i,
             /Object Not Found Matching Id/i,
             /sendBeforeUnloadMessage/i,
+            /window\.webkit\.messageHandlers/i,
+            /webkit\.messageHandlers/i,
+            /setupIosCallbackHandler/i,
         ],
         denyUrls: [
             /iabjs:\/\//i,                    // in-app browser injected scripts
