@@ -1180,6 +1180,7 @@ export default function ChatTab() {
         onReact={emoji => { if (actionSheetMsg) handleReact(actionSheetMsg, emoji); }}
         onReply={actionSheetMsg ? () => handleReply(actionSheetMsg) : undefined}
         onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
+        translateText={actionSheetMsg?.content}
         // Edit is text-only (no image/location edits); Delete works for any owned bubble.
         onEdit={actionSheetMsg && isOwnMessage(actionSheetMsg) && actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt && actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍')
           ? () => handleEdit(actionSheetMsg) : undefined}

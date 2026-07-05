@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}",
     "mainLoading": "🔥 Thử thách ở {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Dịch"
 }

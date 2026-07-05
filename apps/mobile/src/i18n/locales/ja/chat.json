@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{city}}のチャレンジ {{count}}件 · 🏆 #1",
     "mainLoading": "🔥 {{city}}のチャレンジ",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "翻訳"
 }

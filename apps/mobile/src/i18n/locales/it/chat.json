@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} sfide · 🏆 #1 a {{city}}",
     "mainLoading": "🔥 Sfide a {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Traduci"
 }

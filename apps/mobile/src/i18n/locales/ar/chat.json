@@ -119,5 +119,6 @@
     "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainLoading": "🔥 تحديات في {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "ترجمة"
 }

@@ -19,5 +19,6 @@
   "linkCopied": "Enlace copiado",
   "photoSavePermTitle": "Se necesita acceso a Fotos",
   "photoSavePermBody": "Permite el acceso a Fotos para guardar imágenes.",
-  "photoSavePermSettings": "Permite el acceso a Fotos en Ajustes para guardar imágenes."
+  "photoSavePermSettings": "Permite el acceso a Fotos en Ajustes para guardar imágenes.",
+  "actionTranslate": "🌐 Traducir"
 }

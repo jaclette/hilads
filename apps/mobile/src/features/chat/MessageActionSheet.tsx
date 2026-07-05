@@ -8,12 +8,26 @@
 import React from 'react';
 import {
   Modal, View, Text, TouchableOpacity, TouchableWithoutFeedback,
-  StyleSheet,
+  StyleSheet, Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { Reaction } from '@/types';
 
 const EMOJIS = ['❤️', '👍', '😂', '😮', '🔥'] as const;
+
+// Map our i18n locale codes to Google Translate target codes (mostly identical;
+// zh/pt/fil need special-casing). Opens translate.google.com with the message
+// text - resolves to the Google Translate app when installed, else the browser.
+function gtTarget(lang: string): string {
+  const map: Record<string, string> = {
+    'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', fil: 'tl', 'pt-br': 'pt', 'pt-pt': 'pt',
+  };
+  return map[lang] || (lang || 'en').split('-')[0] || 'en';
+}
+function openGoogleTranslate(text: string, lang: string): void {
+  const url = `https://translate.google.com/?sl=auto&tl=${gtTarget(lang)}&text=${encodeURIComponent(text)}&op=translate`;
+  Linking.openURL(url).catch(() => {});
+}
 
 interface Props {
   visible:   boolean;
@@ -21,13 +35,15 @@ interface Props {
   onReact:   (emoji: string) => void;
   onReply?:  () => void;
   onCopy?:   () => void;
+  /** Message text to translate; when set, a "Translate" action opens Google Translate. */
+  translateText?: string;
   onEdit?:   () => void;
   onDelete?: () => void;
   onClose:   () => void;
 }
 
-export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, onEdit, onDelete, onClose }: Props) {
-  const { t } = useTranslation('chat');
+export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
+  const { t, i18n } = useTranslation('chat');
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
 
   return (
@@ -78,6 +94,19 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
           >
             <Text style={styles.actionIcon}>📋</Text>
             <Text style={styles.actionLabel}>{t('actionCopy')}</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* Translate action - text messages only. Opens Google Translate with the
+            message text, target = the app's current language. */}
+        {translateText && (
+          <TouchableOpacity
+            style={styles.action}
+            onPress={() => { openGoogleTranslate(translateText, i18n.language); onClose(); }}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.actionIcon}>🌐</Text>
+            <Text style={styles.actionLabel}>{t('actionTranslate')}</Text>
           </TouchableOpacity>
         )}
 

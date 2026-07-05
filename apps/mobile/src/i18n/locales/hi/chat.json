@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
     "mainLoading": "🔥 {{city}} में चैलेंज",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "अनुवाद करें"
 }

@@ -15,6 +15,17 @@ import { useTranslation } from 'react-i18next'
 
 export const REACTION_EMOJIS = ['❤️', '👍', '😂', '😮', '🔥']
 
+// Open Google Translate with the message text, target = the app's current
+// language (zh/pt/fil need special-casing; others map 1:1).
+function gtTarget(lang) {
+  const map = { 'zh-hans': 'zh-CN', 'zh-hant': 'zh-TW', fil: 'tl', 'pt-br': 'pt', 'pt-pt': 'pt' }
+  return map[lang] || (lang || 'en').split('-')[0] || 'en'
+}
+function openGoogleTranslate(text, lang) {
+  const url = `https://translate.google.com/?sl=auto&tl=${gtTarget(lang)}&text=${encodeURIComponent(text)}&op=translate`
+  window.open(url, '_blank', 'noopener,noreferrer')
+}
+
 export function ReactionPills({ reactions, isMine, onToggle }) {
   if (!reactions || reactions.length === 0) return null
   return (
@@ -54,7 +65,7 @@ export function ReplyPreview({ replyingTo, onCancel }) {
  * (shown when the message has text). onReact(emoji) is required.
  */
 export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit, onDelete }) {
-  const { t } = useTranslation('chat')
+  const { t, i18n } = useTranslation('chat')
   if (!bubble) return null
   const msg = bubble.msg
   return (
@@ -87,6 +98,14 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
             onClick={() => { navigator.clipboard?.writeText(msg.content).catch(() => {}); onClose() }}
           >
             {t('actionCopy', { defaultValue: '📋 Copy' })}
+          </button>
+        )}
+        {msg.content && (
+          <button
+            className="action-bubble-btn"
+            onClick={() => { openGoogleTranslate(msg.content, i18n.language); onClose() }}
+          >
+            {t('actionTranslate', { defaultValue: '🌐 Translate' })}
           </button>
         )}
         {onEdit && (

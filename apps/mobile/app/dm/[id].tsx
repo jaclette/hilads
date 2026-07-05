@@ -816,6 +816,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
+        translateText={actionSheetMsg?.content}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;
           const mine = !!account?.id && actionSheetMsg.sender_id === account.id;

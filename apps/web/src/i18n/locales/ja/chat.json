@@ -19,5 +19,6 @@
   "linkCopied": "リンクをコピーしました",
   "photoSavePermTitle": "写真へのアクセスが必要です",
   "photoSavePermBody": "画像を保存するには写真へのアクセスを許可してください。",
-  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。"
+  "photoSavePermSettings": "設定で写真へのアクセスを許可してください。",
+  "actionTranslate": "🌐 翻訳"
 }

@@ -19,5 +19,6 @@
   "linkCopied": "링크가 복사됨",
   "photoSavePermTitle": "사진 접근 권한이 필요해요",
   "photoSavePermBody": "이미지를 저장하려면 사진 접근을 허용해 주세요.",
-  "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요."
+  "photoSavePermSettings": "설정에서 사진 접근을 허용해 주세요.",
+  "actionTranslate": "🌐 번역"
 }

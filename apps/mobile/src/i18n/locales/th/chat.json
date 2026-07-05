@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}",
     "mainLoading": "🔥 ชาเลนจ์ใน {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "แปล"
 }

@@ -473,6 +473,7 @@ export default function TopicChatScreen() {
           ? () => { const m = actionSheetMsg; setActionSheetMsg(null); if (m) handleReply(m); }
           : undefined}
         onCopy={actionSheetMsg?.content ? () => { Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {}); } : undefined}
+        translateText={actionSheetMsg?.content}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;
           const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);

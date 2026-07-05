@@ -635,6 +635,7 @@ export default function EventDetailScreen() {
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
+        translateText={actionSheetMsg?.content}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;
           const mine = (account?.id && actionSheetMsg.userId === account.id) || (identity?.guestId && actionSheetMsg.guestId === identity.guestId);

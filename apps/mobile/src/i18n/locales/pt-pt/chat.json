@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} desafios · 🏆 #1 em {{city}}",
     "mainLoading": "🔥 Desafios em {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Traduzir"
 }

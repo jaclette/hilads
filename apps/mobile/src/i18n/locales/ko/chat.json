@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{city}} 챌린지 {{count}}개 · 🏆 #1",
     "mainLoading": "🔥 {{city}}의 챌린지",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "번역"
 }

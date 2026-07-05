@@ -2207,6 +2207,7 @@ export default function ChallengeChatScreen() {
           Clipboard.setStringAsync(actionSheetMsg.content!).catch(() => {});
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         } : undefined}
+        translateText={actionSheetMsg?.content}
         onEdit={(() => {
           if (!actionSheetMsg) return undefined;
           const mine = (account?.id && actionSheetMsg.userId === account.id) ||

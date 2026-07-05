@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
     "mainLoading": "🔥 {{city}} 的挑战",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "翻译"
 }

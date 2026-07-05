@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}",
     "mainLoading": "🔥 Tantangan di {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Terjemahkan"
 }

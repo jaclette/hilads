@@ -110,5 +110,6 @@
     "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 sa {{city}}",
     "mainLoading": "🔥 Mga challenge sa {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Isalin"
 }

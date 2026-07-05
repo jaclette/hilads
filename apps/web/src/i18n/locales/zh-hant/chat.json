@@ -19,5 +19,6 @@
   "linkCopied": "已複製連結",
   "photoSavePermTitle": "需要照片存取權限",
   "photoSavePermBody": "請允許照片存取以儲存圖片。",
-  "photoSavePermSettings": "請在設定中允許照片存取以儲存圖片。"
+  "photoSavePermSettings": "請在設定中允許照片存取以儲存圖片。",
+  "actionTranslate": "🌐 翻譯"
 }

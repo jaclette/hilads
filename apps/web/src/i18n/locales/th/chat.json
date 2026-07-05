@@ -19,5 +19,6 @@
   "linkCopied": "คัดลอกลิงก์แล้ว",
   "photoSavePermTitle": "ต้องการสิทธิ์เข้าถึง Photos",
   "photoSavePermBody": "อนุญาตการเข้าถึง Photos เพื่อบันทึกรูป",
-  "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป"
+  "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป",
+  "actionTranslate": "🌐 แปล"
 }

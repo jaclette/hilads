@@ -116,5 +116,6 @@
     "mainTop_many": "🔥 {{count}} челленджей · 🏆 #1 в {{city}}",
     "mainLoading": "🔥 Челленджи в {{city}}",
     "subLoading": " "
-  }
+  },
+  "actionTranslate": "Перевести"
 }
