@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 /**
@@ -75,6 +76,7 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
         style={{ top: Math.max(8, bubble.y - 64), left: bubble.isMine ? 'auto' : bubble.x, right: bubble.isMine ? 16 : 'auto' }}
         onClick={e => e.stopPropagation()}
       >
+        {onReact && (
         <div className="action-bubble-emojis">
           {REACTION_EMOJIS.map(emoji => {
             const selfReacted = (msg.reactions ?? []).some(r => r.emoji === emoji && r.self)
@@ -87,6 +89,7 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
             )
           })}
         </div>
+        )}
         {onReply && (
           <button className="action-bubble-btn" onClick={() => { onClose(); onReply() }}>
             {t('actionReply', { defaultValue: '↩ Reply' })}
@@ -120,5 +123,31 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
         )}
       </div>
     </div>
+  )
+}
+
+/**
+ * A title / label that opens a Copy + Translate menu on click. Reuses
+ * MessageActionBubble without onReact (so no emoji strip / reply / edit / delete)
+ * - only Copy + Translate render. Used for the Hi now / Hi plan / Challenge
+ * detail titles so they can be copied or sent to Google Translate.
+ */
+export function CopyTranslateText({ value, className, as: Tag = 'span' }) {
+  const [bubble, setBubble] = useState(null)
+  if (!value) return null
+  return (
+    <>
+      <Tag
+        className={className}
+        style={{ cursor: 'pointer' }}
+        role="button"
+        tabIndex={0}
+        onClick={(e) => { e.stopPropagation(); setBubble({ msg: { content: value }, x: e.clientX, y: e.clientY, isMine: false }) }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setBubble({ msg: { content: value }, x: 24, y: 96, isMine: false }) } }}
+      >
+        {value}
+      </Tag>
+      <MessageActionBubble bubble={bubble} onClose={() => setBubble(null)} />
+    </>
   )
 }

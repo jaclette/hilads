@@ -19,6 +19,7 @@ import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { ComposerEndedNotice } from '@/features/chat/ComposerEndedNotice';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { CopyTranslateText } from '@/features/chat/CopyTranslateText';
 import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
@@ -392,13 +393,11 @@ export default function EventDetailScreen() {
         <Animated.View style={[styles.eventBlock, { paddingBottom: blockPaddingBottom }]}>
           {/* Title row + Join/Edit button - always visible */}
           <View style={styles.titleRow}>
-            <Text
+            <CopyTranslateText
+              value={event.title}
               style={styles.eventTitle}
               numberOfLines={1}
-              accessibilityRole="header"
-            >
-              {event.title}
-            </Text>
+            />
             {isOwner ? (
               <TouchableOpacity
                 style={[styles.joinBtn, styles.editBtn]}

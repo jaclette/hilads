@@ -23,6 +23,7 @@ import { useMessages } from '@/hooks/useMessages';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { CopyTranslateText } from '@/features/chat/CopyTranslateText';
 import * as Clipboard from 'expo-clipboard';
 import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
@@ -284,7 +285,7 @@ export default function TopicChatScreen() {
           {topic && (
             <>
               <Text style={styles.navIcon}>{CATEGORY_ICONS[topic.category] ?? '💬'}</Text>
-              <Text style={styles.navTitle} numberOfLines={2}>{topic.title}</Text>
+              <CopyTranslateText value={topic.title} style={styles.navTitle} numberOfLines={2} />
             </>
           )}
         </View>

@@ -29,6 +29,7 @@ import {
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { GroupSubmissionsGallery } from '@/features/challenge/GroupSubmissionsGallery';
 import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
+import { CopyTranslateText } from '@/features/chat/CopyTranslateText';
 import * as Clipboard from 'expo-clipboard';
 import * as Haptics from 'expo-haptics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
@@ -1039,7 +1040,7 @@ export default function ChallengeChatScreen() {
           <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
         <View style={styles.navCenter}>
-          <Text style={styles.navTitle} numberOfLines={2}>{challenge.title}</Text>
+          <CopyTranslateText value={challenge.title} style={styles.navTitle} numberOfLines={2} />
           {challenge.creator_display_name ? (
             <View style={styles.navCreatorRow}>
               {/* Tap the creator (avatar + "by name") to open their profile.

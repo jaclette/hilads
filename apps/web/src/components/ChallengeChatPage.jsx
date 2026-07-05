@@ -35,7 +35,7 @@ import ChallengePipeline from './ChallengePipeline'
 import ScoringInfoButton from './ScoringInfoButton'
 import ChallengeProofBlock from './ChallengeProofBlock'
 import GroupSubmissionsGallery from './GroupSubmissionsGallery'
-import { ReactionPills, ReplyPreview, MessageActionBubble } from './MessageActions'
+import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './MessageActions'
 import ProofReviewModal from './ProofReviewModal'
 import ChallengePostCreateModal from './ChallengePostCreateModal'
 import ChallengeChannelMembers from './ChallengeChannelMembers'
@@ -942,7 +942,7 @@ export default function ChallengeChatPage({
       <div className="page-header topic-chat-header challenge-chat-header">
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
-          <span className="topic-chat-header-title">{challenge.title}</span>
+          <CopyTranslateText value={challenge.title} className="topic-chat-header-title" />
           {challenge.creator_display_name && (
             <span className="challenge-header-creator">
               {/* Tap the creator (avatar + "by name") to open their profile.

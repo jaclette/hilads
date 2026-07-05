@@ -39,7 +39,7 @@ import RatePromptLaunchGate from './components/RatePromptLaunchGate'
 import ScoreCelebrationLaunchGate from './components/ScoreCelebrationLaunchGate'
 import ChallengeResultLaunchGate from './components/ChallengeResultLaunchGate'
 import ThumbImg from './components/ThumbImg'
-import { ReactionPills, ReplyPreview, MessageActionBubble } from './components/MessageActions'
+import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './components/MessageActions'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
 import OnboardingCarousel from './components/OnboardingCarousel'
@@ -4295,7 +4295,7 @@ export default function App() {
                   <span className="event-creator-badge">👑 {t('eventHeader.yourEvent')}</span>
                 )}
                 <div className="event-header-title-row">
-                  <h1 className="event-header-title" title={activeEvent.title}>{activeEvent.title}</h1>
+                  <CopyTranslateText as="h1" value={activeEvent.title} className="event-header-title" />
                   {isMyEvent ? (
                     <button
                       className={`event-join-btn event-join-btn--edit${showEditPulse ? ' event-join-btn--pulse' : ''}`}

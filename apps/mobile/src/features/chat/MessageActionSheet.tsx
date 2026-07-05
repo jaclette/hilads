@@ -31,8 +31,9 @@ function openGoogleTranslate(text: string, lang: string): void {
 
 interface Props {
   visible:   boolean;
-  reactions: Reaction[];
-  onReact:   (emoji: string) => void;
+  /** Reactions strip is shown only when onReact is provided (messages, not titles). */
+  reactions?: Reaction[];
+  onReact?:  (emoji: string) => void;
   onReply?:  () => void;
   onCopy?:   () => void;
   /** Message text to translate; when set, a "Translate" action opens Google Translate. */
@@ -42,7 +43,7 @@ interface Props {
   onClose:   () => void;
 }
 
-export function MessageActionSheet({ visible, reactions, onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
+export function MessageActionSheet({ visible, reactions = [], onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
   const { t, i18n } = useTranslation('chat');
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
 
@@ -59,7 +60,8 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
       </TouchableWithoutFeedback>
 
       <View style={styles.sheet}>
-        {/* Emoji strip */}
+        {/* Emoji strip - only for messages (onReact); titles show just Copy/Translate. */}
+        {onReact && (
         <View style={styles.emojiRow}>
           {EMOJIS.map(emoji => (
             <TouchableOpacity
@@ -72,6 +74,7 @@ export function MessageActionSheet({ visible, reactions, onReact, onReply, onCop
             </TouchableOpacity>
           ))}
         </View>
+        )}
 
         {/* Reply action */}
         {onReply && (

@@ -12,7 +12,7 @@ import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
 import useMentions from '../hooks/useMentions'
 import { splitContentByMentions } from '../lib/mentions'
-import { ReactionPills, ReplyPreview, MessageActionBubble } from './MessageActions'
+import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './MessageActions'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
 import LinkPreviewCard from './LinkPreviewCard'
 import { formatExpiresIn } from '../expiry'
@@ -473,7 +473,7 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
         <BackButton onClick={onBack} />
         <div className="topic-chat-header-center">
           <span className="topic-chat-header-icon">{icon}</span>
-          <span className="topic-chat-header-title">{topic.title}</span>
+          <CopyTranslateText value={topic.title} className="topic-chat-header-title" />
         </div>
         <button
           className="topic-share-btn"
