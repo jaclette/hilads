@@ -96,13 +96,19 @@ class MonthlyRankService
             return $cnt < $cap ? $cnt + 1 : null;
         };
 
+        // Ordinal rank (must match the leaderboard list ordering
+        // `ORDER BY score_month DESC, id ASC`): a user ranks above me if they
+        // have a strictly higher score OR the same score AND a smaller id. Using
+        // only `score_month > :s` gave every tied user the same best-case rank,
+        // so the profile badge read better (#1/#3) than the user's actual list
+        // position (#2/#6). Tie-break on id ASC brings the two into agreement.
         $globalRank = $boundedRank(
-            'score_month > :s AND score_month_ref = :m',
-            ['s' => $effectiveMonth, 'm' => $currentMonth],
+            '(score_month > :s OR (score_month = :s AND id < :uid)) AND score_month_ref = :m',
+            ['s' => $effectiveMonth, 'm' => $currentMonth, 'uid' => $userId],
         );
         $cityRank = $cityId === null ? null : $boundedRank(
-            'score_month > :s AND score_month_ref = :m AND current_city_id = :c',
-            ['s' => $effectiveMonth, 'm' => $currentMonth, 'c' => $cityId],
+            '(score_month > :s OR (score_month = :s AND id < :uid)) AND score_month_ref = :m AND current_city_id = :c',
+            ['s' => $effectiveMonth, 'm' => $currentMonth, 'uid' => $userId, 'c' => $cityId],
         );
 
         return [

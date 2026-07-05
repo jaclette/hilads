@@ -12296,7 +12296,8 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 SELECT u.score_alltime AS my_points,
                        (SELECT COUNT(*) FROM users u2
                           WHERE u2.deleted_at IS NULL
-                            AND u2.score_alltime > u.score_alltime) + 1 AS my_rank
+                            AND (u2.score_alltime > u.score_alltime
+                                 OR (u2.score_alltime = u.score_alltime AND u2.id < u.id))) + 1 AS my_rank
                 FROM users u
                 WHERE u.id = ?
             ");
@@ -12332,9 +12333,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                     SELECT COUNT(*) + 1 FROM users
                     WHERE deleted_at IS NULL
                       AND score_month_ref = :month
-                      AND score_month > :mine
+                      AND (score_month > :mine OR (score_month = :mine AND id < :uid))
                 ");
-                $me2->execute([':month' => $currentMonth, ':mine' => $myPoints]);
+                $me2->execute([':month' => $currentMonth, ':mine' => $myPoints, ':uid' => $callerId]);
                 $myRank = (int) $me2->fetchColumn();
             }
         }
@@ -12508,9 +12509,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                     SELECT COUNT(*) + 1 FROM users
                     WHERE deleted_at      IS NULL
                       AND current_city_id = :city
-                      AND score_alltime   > :mine
+                      AND (score_alltime > :mine OR (score_alltime = :mine AND id < :uid))
                 ");
-                $me2->execute([':city' => $cityId, ':mine' => $myPoints]);
+                $me2->execute([':city' => $cityId, ':mine' => $myPoints, ':uid' => $callerId]);
                 $myRank = (int) $me2->fetchColumn();
             }
         } else {
@@ -12548,9 +12549,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                     WHERE deleted_at      IS NULL
                       AND current_city_id = :city
                       AND score_month_ref = :month
-                      AND score_month     > :mine
+                      AND (score_month > :mine OR (score_month = :mine AND id < :uid))
                 ");
-                $me2->execute([':city' => $cityId, ':month' => $currentMonth, ':mine' => $myPoints]);
+                $me2->execute([':city' => $cityId, ':month' => $currentMonth, ':mine' => $myPoints, ':uid' => $callerId]);
                 $myRank = (int) $me2->fetchColumn();
             }
         }
