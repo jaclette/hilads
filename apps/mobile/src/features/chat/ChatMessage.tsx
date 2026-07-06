@@ -458,7 +458,7 @@ const MODE_EMOJI: Record<string, string> = {
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope, thumbAvatarUrl }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -473,14 +473,19 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   /** World channel: show the author line on own messages too, with a home-flag. */
   isMine?:       boolean;
   worldScope?:   boolean;
+  /** Other authors' small proxied avatar thumbnail (from the messages payload). */
+  thumbAvatarUrl?: string | null;
 }) {
   const router  = useRouter();
   const { t }   = useTranslation('common');
   const { t: tChallenge } = useTranslation('challenge');
   const { account, city } = useApp();
-  // Own messages aren't badge-enriched, so use the account photo + current-city
-  // country. (Other authors need a mobile badge-enrichment path - not yet wired.)
-  const photoThumb = isMine ? thumbUrl(account?.profile_photo_url) : undefined;
+  // Other authors carry a proxied thumbAvatarUrl on the message; own messages
+  // aren't badge-enriched, so use the account photo. Either way it's a thumbnail,
+  // never the full image.
+  const photoThumb = isMine
+    ? thumbUrl(account?.profile_photo_url)
+    : (thumbAvatarUrl ? thumbUrl(thumbAvatarUrl) : undefined);
   const flagCountry = worldScope ? (isMine ? city?.country ?? null : null) : null;
 
   // Navigate to a registered profile only when viewer is registered.
@@ -516,7 +521,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
       {/* World: home-country flag instead of the local/traveler mode label. */}
       {worldScope ? (
         flagCountry ? <Text style={styles.modeLabel}>{countryToFlag(flagCountry)}</Text> : null
-      ) : (() => { const m = mode || 'exploring'; return MODE_EMOJI[m] ? (
+      ) : (() => { const m = mode || (isMine ? account?.mode : undefined) || 'exploring'; return MODE_EMOJI[m] ? (
         <Text style={[styles.modeLabel, m === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
           {MODE_EMOJI[m]} {t(`mode.${m}.label`)}
         </Text>
@@ -829,7 +834,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             isGrouped ? styles.rowGrouped : styles.rowFirst,
             animStyle,
           ]}>
-            {!isGrouped && (worldScope || !isMine) && (
+            {!isGrouped && (
               <SenderMeta
                 nickname={message.nickname ?? '?'}
                 color={c1}
@@ -841,6 +846,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                 roleBadge={roleBadge}
                 vibe={message.vibe}
                 mode={message.mode} isMine={isMine} worldScope={worldScope}
+                thumbAvatarUrl={message.thumbAvatarUrl}
               />
             )}
             <View style={styles.bubbleWrap}>
@@ -875,7 +881,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
           animStyle,
           isSending && styles.rowSending,
         ]}>
-          {!isGrouped && (worldScope || !isMine) && (
+          {!isGrouped && (
             <SenderMeta
               nickname={message.nickname ?? '?'}
               color={c1}
@@ -887,6 +893,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
               roleBadge={roleBadge}
               vibe={message.vibe}
               mode={message.mode} isMine={isMine} worldScope={worldScope}
+              thumbAvatarUrl={message.thumbAvatarUrl}
             />
           )}
           {/* Wrap image + reactions so pills stay visually attached to the bubble */}
@@ -949,7 +956,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         />
 
         {/* ── Avatar + author - web: .msg-meta ── */}
-        {!isGrouped && (worldScope || !isMine) && (
+        {!isGrouped && (
           <SenderMeta
             nickname={message.nickname ?? '?'}
             color={c1}
@@ -961,6 +968,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             roleBadge={roleBadge}
             vibe={message.vibe}
             mode={message.mode} isMine={isMine} worldScope={worldScope}
+            thumbAvatarUrl={message.thumbAvatarUrl}
           />
         )}
 

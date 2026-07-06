@@ -3575,15 +3575,19 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                 $uid = $msg['userId'] ?? null;
                 if ($uid && isset($badgeMap[$uid])) {
                     $b = $badgeMap[$uid];
-                    $msg['primaryBadge'] = $b['primaryBadge'];
-                    $msg['contextBadge'] = $b['contextBadge'];
-                    $msg['vibe']         = $b['vibe'] ?? 'chill';
-                    $msg['mode']         = $b['mode'] ?? 'exploring';
+                    $msg['primaryBadge']   = $b['primaryBadge'];
+                    $msg['contextBadge']   = $b['contextBadge'];
+                    $msg['vibe']           = $b['vibe'] ?? 'chill';
+                    $msg['mode']           = $b['mode'] ?? 'exploring';
+                    // Small proxied avatar thumbnail so the native app can show
+                    // the sender's photo (web fetches this via /message-badges).
+                    $msg['thumbAvatarUrl'] = $b['thumbAvatarUrl'] ?? null;
                 } else {
-                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
-                    $msg['contextBadge'] = null;
-                    $msg['vibe']         = null;
-                    $msg['mode']         = null;
+                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge']   = null;
+                    $msg['vibe']           = null;
+                    $msg['mode']           = null;
+                    $msg['thumbAvatarUrl'] = null;
                 }
             }
         }

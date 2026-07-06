@@ -556,6 +556,7 @@ export interface Message {
   contextBadge?: Badge | null;    // city-specific badge (host = Legend)
   vibe?: string;                  // user's self-chosen vibe (party/coffee/…)
   mode?: string;                  // user's current mode (local/exploring)
+  thumbAvatarUrl?: string | null; // sender's small proxied avatar (other authors)
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
