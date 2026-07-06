@@ -158,12 +158,19 @@ export default function StoriesLanding({
         ))}
       </div>
 
+      {/* Sticky brand anchor, below the progress bar - keeps the Hilads mark +
+          baseline visible on every screen so users never lose track of the app.
+          Purely a brand anchor: not tappable, not a home link (pointer-events:none). */}
+      <header className="sl-header" aria-hidden="true">
+        <Logo variant="wordmark" size="sm" />
+        <span className="sl-header-baseline">{t('stories.tagline')}</span>
+      </header>
+
       {/* ── S1 Hook ─────────────────────────────────────────────── */}
       <section className="sl-screen sl-screen--hook" data-idx="0" ref={setRef(0)}>
-        <div className="sl-brand">
-          <Logo />
-          <span className="sl-tagline">{t('stories.tagline')}</span>
-        </div>
+        {/* Concept in one glance for cold Reel traffic (replaces the old brand
+            block, which now lives in the sticky header above). */}
+        <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
         <VideoHero onVisible={() => track('video_visible')} />
         {hint}
       </section>

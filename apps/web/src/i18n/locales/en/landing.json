@@ -109,6 +109,7 @@
   },
   "stories": {
     "tagline": "Become local. Anywhere.",
+    "concept_tagline": "Challenge locals. Meet travelers. Become local anywhere.",
     "enterCity": "Join {{city}} 🔥",
     "enterChallenge": "Take this challenge 🔥",
     "enterPicker": "Choose your city 🔥",

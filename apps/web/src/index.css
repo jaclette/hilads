@@ -15434,8 +15434,9 @@ body.has-app-promo-banner .page-header {
   justify-content: center;
   text-align: center;
   gap: 18px;
-  /* room for the fixed top progress bar + the fixed bottom CTA (+ safe areas) */
-  padding: calc(28px + env(safe-area-inset-top)) 22px calc(118px + env(safe-area-inset-bottom));
+  /* room for the fixed top progress bar + sticky brand header + the fixed bottom
+     CTA (+ safe areas) */
+  padding: calc(76px + env(safe-area-inset-top)) 22px calc(118px + env(safe-area-inset-bottom));
   color: var(--text);
 }
 
@@ -15542,8 +15543,46 @@ body.has-app-promo-banner .page-header {
 }
 
 /* ── S1 hook ── */
-.sl-brand { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.sl-tagline { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
+/* ── Sticky brand header (all screens, below the progress bar) ── */
+.sl-header {
+  position: fixed;
+  top: calc(24px + env(safe-area-inset-top));
+  left: 0; right: 0;
+  z-index: 44;              /* above screens; below the CTA dock (45) */
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  pointer-events: none;     /* brand anchor only - never intercepts taps */
+  /* subtle top-down tint so the mark reads on any background incl. the S1 video */
+  background: linear-gradient(180deg, rgba(13, 11, 9, 0.82) 0%, rgba(13, 11, 9, 0.5) 55%, transparent 100%);
+}
+.sl-header .logo-wordmark { font-weight: 800; }
+.sl-header-baseline {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1.15;
+  color: var(--muted2);
+  padding-left: 9px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  max-width: 42vw;
+  text-align: left;
+}
+
+/* ── S1 concept line (replaces the old brand block above the video) ── */
+.sl-concept-tagline {
+  margin: 0;
+  max-width: 17rem;
+  font-size: 1.12rem;
+  font-weight: 600;
+  line-height: 1.32;
+  letter-spacing: -0.2px;
+  color: var(--text);
+  text-wrap: balance;
+}
 .sl-video {
   position: relative;
   width: min(74vw, 340px);
