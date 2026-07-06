@@ -59,6 +59,28 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
     }
 }
 
+// ── World system message emitter ──────────────────────────────────────────────
+// Insert a cross-city World system message (type='system' + event subtype +
+// structured payload) and broadcast it to the World room. Best-effort: a failure
+// here NEVER breaks the caller (challenge accept / winner pick / arrival).
+function emitWorldSystem(string $event, string $content, array $payload): void
+{
+    try {
+        $msg = MessageRepository::addSystemMessage('world', $content, $event, null, $payload);
+        broadcastMessageToWs('world', $msg);
+    } catch (\Throwable $e) {
+        error_log('[world] emitWorldSystem failed: ' . $e->getMessage());
+    }
+}
+
+// Resolve a 'city_<int>' channel id to its display name (null if unknown).
+function worldCityName(?string $cityId): ?string
+{
+    if (!is_string($cityId) || !preg_match('/^city_(\d+)$/', $cityId, $m)) return null;
+    $c = CityRepository::findById((int) $m[1]);
+    return $c['name'] ?? null;
+}
+
 // ── Enrich broadcast message with sender identity ─────────────────────────────
 // Attaches primaryBadge, contextBadge, mode, and vibe to a message array before
 // it is broadcast over WS, so real-time recipients get the same context as
@@ -10145,6 +10167,25 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
             broadcastChallengeAcceptedToWs($userId, $payload);
         } catch (\Throwable $e) {
             error_log('[challenges] group join ws broadcast failed (non-fatal): ' . $e->getMessage());
+        }
+
+        // ── World cross-city surfacing (emergent) ────────────────────────────
+        // If the joiner's home city differs from the challenge's origin city, this
+        // acceptance makes the challenge span >=2 cities → record a one-time
+        // "challenge_created" World system message ("{joiner} · {cityA} -> {cityB}").
+        // Best-effort + deduped per challenge; never blocks the join.
+        try {
+            $originName   = worldCityName($challenge['city_id'] ?? null);
+            $acceptorCity = $authUser['home_city'] ?? null;
+            if ($originName && $acceptorCity && $originName !== $acceptorCity
+                && !WorldRepository::hasChallengeCreated($challengeId)) {
+                $nick = $authUser['display_name'] ?? 'Someone';
+                emitWorldSystem('challenge_created',
+                    "{$nick}: {$originName} -> {$acceptorCity}",
+                    ['challenge_id' => $challengeId, 'nickname' => $nick, 'city_a' => $originName, 'city_b' => $acceptorCity]);
+            }
+        } catch (\Throwable $e) {
+            error_log('[world] cross-city accept hook failed (non-fatal): ' . $e->getMessage());
         }
 
         // Notify the creator someone joined (bell row + push). Dedicated

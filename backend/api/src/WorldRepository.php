@@ -124,6 +124,28 @@ class WorldRepository
         ];
     }
 
+    /** Has a cross-city "challenge_created" system message already been recorded for this challenge? */
+    public static function hasChallengeCreated(string $challengeId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM messages
+            WHERE channel_id = 'world' AND type = 'system' AND event = 'challenge_created'
+              AND payload->>'challenge_id' = ? LIMIT 1
+        ");
+        $stmt->execute([$challengeId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
+    /** Global count of 'new_user' World system messages inserted today (throttle). */
+    public static function newUserCountToday(): int
+    {
+        return (int) Database::pdo()->query("
+            SELECT COUNT(*) FROM messages
+            WHERE channel_id = 'world' AND type = 'system' AND event = 'new_user'
+              AND created_at > date_trunc('day', now())
+        ")->fetchColumn();
+    }
+
     /** Recent World chat volume — used to avoid routing a quiet-city user to a quiet World. */
     public static function recentMessageCount(int $hours): int
     {
