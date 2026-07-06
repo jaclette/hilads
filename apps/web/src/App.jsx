@@ -4811,21 +4811,26 @@ export default function App() {
               >
                 🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}
               </button>
+              {/* Recent arrivals pill (restored: it used to live in the city row,
+                  which the channel toggle now occupies). */}
+              {(() => { const arrivals = feed.filter(i => i.type === 'activity' && i.subtype === 'join').length; return (
+                <button
+                  type="button"
+                  className={`ch-pill${!arrivals ? ' ch-pill--muted' : ''}`}
+                  onClick={() => setShowArrivalsSheet(true)}
+                  aria-label={`${arrivals} recent arrivals`}
+                >
+                  ✈️ {t('cityHero.recent', { count: arrivals })}
+                </button>
+              ) })()}
+              {/* Hi now (topics) + Hi plan (events) merged into one "Hi plans" pill. */}
               <button
                 type="button"
-                className={`ch-pill ch-pill--accent${!topics.length ? ' ch-pill--muted' : ''}`}
+                className={`ch-pill ch-pill--accent${!(topics.length + events.length) ? ' ch-pill--muted' : ''}`}
                 onClick={goToEventsTab}
-                aria-label={`${topics.length} Hi now`}
+                aria-label={`${topics.length + events.length} Hi plans`}
               >
-                🗣️ {topics.length > 0 ? `${topics.length} ` : ''}Hi now
-              </button>
-              <button
-                type="button"
-                className={`ch-pill ch-pill--accent${!events.length ? ' ch-pill--muted' : ''}`}
-                onClick={goToEventsTab}
-                aria-label={`${events.length} Hi plan`}
-              >
-                🎉 {events.length > 0 ? `${events.length} ` : ''}Hi plan
+                🎉 {(topics.length + events.length) > 0 ? `${topics.length + events.length} ` : ''}Hi plans
               </button>
             </div>
           </>
