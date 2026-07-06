@@ -3793,6 +3793,89 @@ $router->add('POST', '/api/v1/channels/{channelId}/heartbeat', function (array $
     Response::json(['ok' => true]);
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// WORLD CHANNEL — global companion channel (channels row id='world', type='world').
+// Reuses the messages table + WS plumbing. Writes are bot-gated; aggregates cached.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Fetch World messages. Unlike city reads, system messages stay INLINE (they are
+// the cross-city content). Public read, LIMIT-capped, cursor paginated.
+$router->add('GET', '/api/v1/world/messages', function () {
+    $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
+    $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
+    $res = MessageRepository::getByChannel(WorldRepository::WORLD_ID, $beforeId ?: null, $limit, false);
+    Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
+});
+
+// Send a message to World. Bots rejected outright (defence-in-depth over the
+// /guest/session UA gate). Requires a guest identity; rate-limited + ban + moderation.
+$router->add('POST', '/api/v1/world/messages', function () {
+    if (Request::isBot()) {
+        Response::json(['error' => 'forbidden'], 403);
+    }
+    $body     = Request::json() ?? [];
+    $guestId  = $body['guestId']  ?? '';
+    $nickname = trim($body['nickname'] ?? '');
+    $content  = $body['content']  ?? '';
+    $clientIp = Request::ip();
+
+    if (!isValidGuestId($guestId))                Response::json(['error' => 'invalid guestId'], 400);
+    if ($nickname === '')                          Response::json(['error' => 'nickname must not be empty'], 400);
+    if (!is_string($content) || $content === '')   Response::json(['error' => 'content is required'], 400);
+    if (strlen($content) > 1000)                   Response::json(['error' => 'content must not exceed 1000 characters'], 400);
+
+    if (!RateLimiter::allow('world_message:' . $guestId, 60, 300)) {
+        Response::json(['error' => 'Too many messages - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    if (BanRepository::isBanned($guestId, $clientIp)) {
+        Response::json(['error' => 'banned'], 403);
+    }
+    if (ModerationService::check($content) !== null) {
+        Response::json(['error' => 'Your message was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
+    }
+
+    $sender   = AuthService::currentUser();
+    $mentions = sanitizeMentions($body['mentions'] ?? null, 'world', 'world', $content);
+    $message  = MessageRepository::add(WorldRepository::WORLD_ID, $guestId, $nickname, $content, $sender['id'] ?? null, null, null, null, 'text', $mentions);
+
+    $message  = enrichBroadcastMessage($message, $sender);
+    broadcastMessageToWs(WorldRepository::WORLD_ID, $message);
+    Response::json(['message' => $message], 201);
+});
+
+// World header/pills aggregate — cached 45s to spare Postgres on high traffic.
+$router->add('GET', '/api/v1/world/activity', function () {
+    $data = Cache::remember('world_activity', 45, fn() => WorldRepository::activity());
+    Response::json($data ?? ['online' => 0, 'cities' => 0, 'crossCity' => ['count' => 0, 'cities' => []]]);
+});
+
+// Mark a channel (city integer id OR 'world') read up to now for the caller.
+$router->add('POST', '/api/v1/read', function () {
+    $body      = Request::json() ?? [];
+    $channelId = $body['channelId'] ?? null;
+    $guestId   = is_string($body['guestId'] ?? null) ? $body['guestId'] : null;
+    if ($channelId === null || $channelId === '') Response::json(['error' => 'channelId required'], 400);
+    $userId = AuthService::currentUser()['id'] ?? null;
+    $ik     = WorldRepository::identityKey($userId, $guestId);
+    if ($ik === null) Response::json(['error' => 'identity required'], 400);
+    WorldRepository::markRead($ik, is_numeric($channelId) ? (int) $channelId : (string) $channelId);
+    Response::json(['ok' => true]);
+});
+
+// Batch unread counts for the caller across [city channel id, 'world', ...].
+$router->add('GET', '/api/v1/unread', function () {
+    $channels = $_GET['channels'] ?? [];
+    if (!is_array($channels)) $channels = $channels === '' ? [] : [$channels];
+    $guestId  = isset($_GET['guestId']) && is_string($_GET['guestId']) ? $_GET['guestId'] : null;
+    $userId   = AuthService::currentUser()['id'] ?? null;
+    $ik       = WorldRepository::identityKey($userId, $guestId);
+    if ($ik === null || empty($channels)) {
+        Response::json(['unread' => []]);
+    }
+    $norm   = array_map(fn($c) => is_numeric($c) ? (int) $c : (string) $c, $channels);
+    Response::json(['unread' => WorldRepository::unreadCounts($ik, $guestId, $userId, $norm)]);
+});
+
 $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $params) {
     $startedAt = microtime(true);
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -6055,6 +6138,12 @@ $router->add('POST', '/api/v1/disconnect', function () {
 });
 
 $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $params) {
+    // Bot gate (defence-in-depth): crawlers never post. Combined with the
+    // /guest/session 'bot' sentinel + presence bot-exclusion, this keeps
+    // non-human traffic out of chat and the online counts entirely.
+    if (Request::isBot()) {
+        Response::json(['error' => 'forbidden'], 403);
+    }
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
     if ($channelId === false) {

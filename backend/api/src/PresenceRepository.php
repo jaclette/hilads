@@ -213,6 +213,9 @@ class PresenceRepository
 
     public static function heartbeat(int $channelId, string $sessionId, string $guestId, string $nickname): void
     {
+        // The 'bot' sentinel (from POST /guest/session on a crawler UA) never
+        // writes presence - defence-in-depth on top of the count exclusion.
+        if ($guestId === 'bot') return;
         Database::pdo()->prepare("
             INSERT INTO presence (session_id, channel_id, guest_id, nickname, last_seen_at)
             VALUES (?, ?, ?, ?, now())
@@ -245,6 +248,7 @@ class PresenceRepository
             FROM presence p
             LEFT JOIN users u ON u.guest_id = p.guest_id
             WHERE p.channel_id   = ?
+              AND p.guest_id    <> 'bot'
               AND p.last_seen_at > now() - interval '" . self::TTL . " seconds'
             ORDER BY p.guest_id, p.last_seen_at DESC
         ");
@@ -259,6 +263,7 @@ class PresenceRepository
             SELECT COUNT(DISTINCT guest_id)
             FROM presence
             WHERE channel_id   = ?
+              AND guest_id    <> 'bot'
               AND last_seen_at > now() - interval '" . self::TTL . " seconds'
         ");
         $stmt->execute([self::dbKey($channelId)]);
@@ -275,6 +280,7 @@ class PresenceRepository
             FROM presence p
             JOIN channels c ON c.id = p.channel_id AND c.type = 'city'
             WHERE p.last_seen_at > now() - interval '" . self::TTL . " seconds'
+              AND p.guest_id    <> 'bot'
             GROUP BY p.channel_id
         ")->fetchAll(PDO::FETCH_ASSOC);
 

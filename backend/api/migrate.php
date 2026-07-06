@@ -2426,6 +2426,30 @@ run($pdo, "
     )
 ", 'visible_ratings view');
 
+// ── World channel + per-user read positions ───────────────────────────────
+// A single global "World" companion channel (discriminator = type='world', no
+// city_id) where users from every city meet - a lively fallback when a city is
+// quiet. Reuses the messages table + realtime plumbing; no parallel infra.
+run($pdo, "INSERT INTO channels (id, type, name, status)
+           VALUES ('world', 'world', 'World', 'active')
+           ON CONFLICT (id) DO NOTHING", 'seed world channel');
+
+// Structured render data for World system messages (cross-city challenge, new-city
+// user, challenge won). Reuses type='system' + event subtype; payload holds fields.
+run($pdo, "ALTER TABLE messages ADD COLUMN IF NOT EXISTS payload JSONB", 'messages.payload');
+
+// Per-(identity, channel) read cursor for symmetric city <-> World unread badges.
+// identity_key = 'u:<userId>' (cross-device) | 'g:<guestId>' (device-local guest).
+// Timestamp cursor (message ids are random-hex, NOT monotonic). Unread counting
+// rides the existing idx_messages_channel_type_time index - no new messages index.
+run($pdo, "CREATE TABLE IF NOT EXISTS channel_read_positions (
+    identity_key TEXT        NOT NULL,
+    channel_id   TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+    last_read_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (identity_key, channel_id)
+)", 'channel_read_positions');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

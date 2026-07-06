@@ -53,6 +53,13 @@ class MessageRepository
                 'guestId'   => $row['guest_id'],
                 'userId'    => $row['user_id'] ?? null,
                 'nickname'  => $row['nickname'],
+                // content + payload carry the render data for World system messages
+                // (cross-city challenge / new-city user / challenge won). Null for
+                // legacy city join/system rows, which clients render from event alone.
+                'content'   => $row['content'] ?? null,
+                'payload'   => isset($row['payload']) && $row['payload'] !== null
+                    ? (is_array($row['payload']) ? $row['payload'] : json_decode($row['payload'], true))
+                    : null,
                 'createdAt' => $createdAt,
             ];
         }
@@ -170,13 +177,13 @@ class MessageRepository
         if ($beforeId !== null) {
             // Cursor-based: fetch messages strictly older than the given message's created_at.
             $stmt = Database::pdo()->prepare("
-                SELECT id, channel_id, type, event,
+                SELECT id, channel_id, type, event, payload,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                        edited_at, deleted_at
                 FROM (
                     SELECT
-                        id, channel_id, type, event,
+                        id, channel_id, type, event, payload,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
@@ -193,13 +200,13 @@ class MessageRepository
             $stmt->execute([$dbChan, $beforeId, $fetch]);
         } else {
             $stmt = Database::pdo()->prepare("
-                SELECT id, channel_id, type, event,
+                SELECT id, channel_id, type, event, payload,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                        edited_at, deleted_at
                 FROM (
                     SELECT
-                        id, channel_id, type, event,
+                        id, channel_id, type, event, payload,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
@@ -358,19 +365,20 @@ class MessageRepository
      * filter the bubble; content is the user-visible text. channel_id can be
      * either an int (city) or a 16-char hex (thread channels).
      */
-    public static function addSystemMessage(int|string $channelId, string $content, string $event = 'system', ?string $challengeAcceptanceId = null): array
+    public static function addSystemMessage(int|string $channelId, string $content, string $event = 'system', ?string $challengeAcceptanceId = null, ?array $payload = null): array
     {
         $id = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
-            INSERT INTO messages (id, channel_id, type, event, content, nickname, challenge_acceptance_id)
-            VALUES (?, ?, 'system', ?, ?, '', ?)
-        ")->execute([$id, self::dbKey($channelId), $event, $content, $challengeAcceptanceId]);
+            INSERT INTO messages (id, channel_id, type, event, content, nickname, challenge_acceptance_id, payload)
+            VALUES (?, ?, 'system', ?, ?, '', ?, ?::jsonb)
+        ")->execute([$id, self::dbKey($channelId), $event, $content, $challengeAcceptanceId, $payload !== null ? json_encode($payload) : null]);
 
         return [
             'id'        => $id,
             'type'      => 'system',
             'event'     => $event,
             'content'   => $content,
+            'payload'   => $payload,
             'createdAt' => time(),
         ];
     }
@@ -416,13 +424,13 @@ class MessageRepository
 
         if ($beforeId !== null) {
             $sql = "
-                SELECT id, channel_id, type, event,
+                SELECT id, channel_id, type, event, payload,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                        edited_at, deleted_at
                 FROM (
                     SELECT
-                        id, channel_id, type, event,
+                        id, channel_id, type, event, payload,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
@@ -445,13 +453,13 @@ class MessageRepository
             $stmt->execute();
         } else {
             $sql = "
-                SELECT id, channel_id, type, event,
+                SELECT id, channel_id, type, event, payload,
                        guest_id, user_id, nickname, content, image_url, created_at, mentions,
                        reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                        edited_at, deleted_at
                 FROM (
                     SELECT
-                        id, channel_id, type, event,
+                        id, channel_id, type, event, payload,
                         guest_id, user_id, nickname, content, image_url, mentions,
                         reply_to_id, reply_to_nickname, reply_to_content, reply_to_type,
                         EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at,
