@@ -67,6 +67,7 @@ export function createSocket() {
   let pendingEventJoin        = null
   let pendingConversationJoin = null
   let pendingTopicJoin        = null
+  let pendingWorldJoin        = null
   let pendingChallengeJoin    = null
   let pendingChallengeThreadJoin = null
   let pendingUserJoin         = null  // per-user channel for friend reqs etc.
@@ -100,6 +101,7 @@ export function createSocket() {
       if (pendingEventJoin)        send({ event: 'joinEvent',         ...pendingEventJoin })
       if (pendingConversationJoin) send({ event: 'joinConversation',  ...pendingConversationJoin })
       if (pendingTopicJoin)        send({ event: 'joinTopic',         ...pendingTopicJoin })
+      if (pendingWorldJoin)        send({ event: 'joinWorld',         ...pendingWorldJoin })
       if (pendingChallengeJoin)    send({ event: 'joinChallenge',     ...pendingChallengeJoin })
       if (pendingChallengeThreadJoin) send({ event: 'joinChallengeThread', ...pendingChallengeThreadJoin })
       if (pendingUserJoin)         send({ event: 'joinUser',          ...pendingUserJoin })
@@ -207,6 +209,18 @@ export function createSocket() {
     joinTopic(topicId, sessionId) {
       pendingTopicJoin = { topicId, sessionId }
       send({ event: 'joinTopic', topicId, sessionId })
+    },
+
+    /** Join the global World room. Additive (keeps the city room). Replayed on reconnect. */
+    joinWorld(sessionId) {
+      pendingWorldJoin = { sessionId }
+      send({ event: 'joinWorld', sessionId })
+    },
+
+    /** Leave the World room. */
+    leaveWorld(sessionId) {
+      pendingWorldJoin = null
+      send({ event: 'leaveWorld', sessionId })
     },
 
     /** Leave a topic room (e.g. on back navigation). */

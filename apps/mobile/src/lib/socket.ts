@@ -22,6 +22,7 @@ const RAPID_RETRY_MS  = 3000;
 type PendingCity  = { cityId: string; sessionId: string; nickname: string; userId?: string; guestId?: string; mode?: string | null };
 type PendingEvent = { eventId: string; sessionId: string; nickname?: string };
 type PendingTopic = { topicId: string; sessionId: string };
+type PendingWorld = { sessionId: string };
 type PendingChallenge = { challengeId: string; sessionId: string };
 type PendingChallengeThread = { threadChannelId: string; sessionId: string };
 type PendingDm    = { conversationId: string; userId: string };
@@ -38,6 +39,7 @@ class HiladsSocket {
   private pendingCity:  PendingCity  | null = null;
   private pendingEvent: PendingEvent | null = null;
   private pendingTopic:     PendingTopic     | null = null;
+  private pendingWorld:     PendingWorld     | null = null;
   private pendingChallenge: PendingChallenge | null = null;
   private pendingChallengeThread: PendingChallengeThread | null = null;
   private pendingDm:    PendingDm    | null = null;
@@ -158,6 +160,17 @@ class HiladsSocket {
     this.send({ event: 'leaveTopic', topicId, sessionId });
   }
 
+  // World: single global room, additive (keeps the city room). Replayed on reconnect.
+  joinWorld(sessionId: string): void {
+    this.pendingWorld = { sessionId };
+    this.send({ event: 'joinWorld', sessionId });
+  }
+
+  leaveWorld(sessionId: string): void {
+    this.pendingWorld = null;
+    this.send({ event: 'leaveWorld', sessionId });
+  }
+
   // Same pattern as joinTopic - pendingChallenge replays the room after a
   // WS reconnect (single active subscription at a time per socket).
   joinChallenge(challengeId: string, sessionId: string): void {
@@ -237,6 +250,7 @@ class HiladsSocket {
     this.pendingCity            = null;
     this.pendingEvent           = null;
     this.pendingTopic           = null;
+    this.pendingWorld           = null;
     this.pendingChallenge       = null;
     this.pendingChallengeThread = null;
     this.pendingDm              = null;
@@ -269,6 +283,7 @@ class HiladsSocket {
           this.send({ event: 'joinEvent', eventId: e.eventId, sessionId: e.sessionId, ...(e.nickname ? { nickname: e.nickname } : {}) });
         }
         if (this.pendingTopic)           this.send({ event: 'joinTopic',           ...this.pendingTopic });
+        if (this.pendingWorld)           this.send({ event: 'joinWorld',           ...this.pendingWorld });
         if (this.pendingChallenge)       this.send({ event: 'joinChallenge',       ...this.pendingChallenge });
         if (this.pendingChallengeThread) this.send({ event: 'joinChallengeThread', ...this.pendingChallengeThread });
         if (this.pendingDm)              this.send({ event: 'joinConversation',    ...this.pendingDm });

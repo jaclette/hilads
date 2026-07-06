@@ -77,6 +77,10 @@ const eventRooms = new Map()
 
 // topicRooms: Map<topicId, Map<sessionId, { sessionId, ws }>>
 const topicRooms = new Map()
+// worldRoom: the single global "World" channel. Map<sessionId,{sessionId,ws}>.
+// Additive like topics (does NOT evict the user's city room) - a user is in
+// their city AND World simultaneously so unread badges update in realtime.
+const worldRoom = new Map()
 
 // challengeRooms: Map<challengeId, Map<sessionId, { sessionId, ws }>>. Separate
 // from event/topic rooms - a user can sit in an event AND a challenge AND a
@@ -373,6 +377,20 @@ function handleLeaveTopic(ws, { topicId, sessionId }) {
   if (room.size === 0) topicRooms.delete(topicId)
 }
 
+// ── World room helpers ──────────────────────────────────────────────────────────
+// Single global room, additive (no city eviction). "N online" for World is the DB
+// aggregate (distinct guests across cities), NOT worldRoom.size - membership here
+// is purely for message delivery + realtime unread badges.
+function handleJoinWorld(ws, { sessionId }) {
+  if (!sessionId) return
+  worldRoom.set(sessionId, { sessionId, ws })
+  console.log(`[WS] joinWorld: ${sessionId.slice(0, 8)} (${worldRoom.size} in room)`)
+}
+
+function handleLeaveWorld(ws, { sessionId }) {
+  worldRoom.delete(sessionId)
+}
+
 // ── Challenge room helpers ─────────────────────────────────────────────────────
 // Same shape as topic rooms - open membership, no presence broadcast (we don't
 // surface "live in this challenge" the way events do).
@@ -491,6 +509,9 @@ function removeWs(ws) {
         if (room.size === 0) topicRooms.delete(topicId)
       }
     }
+  }
+  for (const [sessionId, member] of worldRoom) {
+    if (member.ws === ws) worldRoom.delete(sessionId)
   }
   for (const [challengeId, room] of challengeRooms) {
     for (const [sessionId, member] of room) {
@@ -709,6 +730,8 @@ wss.on('connection', (ws, req) => {
       case 'leaveEvent':         return handleLeaveEvent(ws, msg)
       case 'joinTopic':          return handleJoinTopic(ws, msg)
       case 'leaveTopic':         return handleLeaveTopic(ws, msg)
+      case 'joinWorld':          return handleJoinWorld(ws, msg)
+      case 'leaveWorld':         return handleLeaveWorld(ws, msg)
       case 'joinChallenge':      return handleJoinChallenge(ws, msg)
       case 'leaveChallenge':     return handleLeaveChallenge(ws, msg)
       case 'joinChallengeThread':  return handleJoinChallengeThread(ws, msg)
@@ -835,6 +858,8 @@ function broadcastNewMessage(channelId, message) {
   let room, kind
   if (typeof channelId === 'number') {
     room = rooms.get(channelId); kind = 'city'
+  } else if (channelId === 'world') {
+    room = worldRoom; kind = 'world'
   } else {
     // String channelId - could be event/topic/challenge/challenge-thread room;
     // check all four. Independent rooms because users can sit in one of each
