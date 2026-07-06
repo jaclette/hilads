@@ -3628,7 +3628,9 @@ export default function App() {
         const items = (messages || []).map(m => toFeedItem(m)).filter(Boolean)
         items.forEach(m => { const k = messageKey(m) || m.id; if (k) knownIdsRef.current.add(k) })
         ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
+        isNearBottomRef.current = true   // land at the bottom after toggling scope
         setFeed(items)
+        requestAnimationFrame(() => { const c = messagesContainerRef.current; if (c) c.scrollTop = c.scrollHeight })
         // Enrich World message authors (badges + avatar thumb + mode) - the
         // message-badges endpoint resolves user_ids regardless of channel.
         const uids = [...new Set((messages || []).filter(m => m.userId).map(m => m.userId))]
@@ -3653,7 +3655,9 @@ export default function App() {
         if (channelScopeRef.current !== 'city') return
         const items = (messages || []).map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
         ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
+        isNearBottomRef.current = true   // land at the bottom after toggling scope
         setFeed(items)
+        requestAnimationFrame(() => { const c = messagesContainerRef.current; if (c) c.scrollTop = c.scrollHeight })
       } catch { /* */ }
       if (guest?.guestId) markChannelRead(channelId, guest.guestId)
     }

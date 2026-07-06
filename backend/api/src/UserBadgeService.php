@@ -155,7 +155,8 @@ final class UserBadgeService
 
         // One query: user profile data + ambassador role (LEFT JOIN, no N+1).
         $stmt = Database::pdo()->prepare(
-            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode, u.profile_thumb_photo_url,
+            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode,
+                    u.profile_thumb_photo_url, u.profile_photo_url,
                     (ucr.user_id IS NOT NULL) AS is_ambassador
              FROM users u
              LEFT JOIN user_city_roles ucr
@@ -183,8 +184,9 @@ final class UserBadgeService
                 'mode'           => $row['mode'] ?? null,
                 'is_ambassador'  => $isAmbassador,
                 // Small proxied thumbnail (never the full image) for the chat
-                // message avatar - shown instead of the initial letter when set.
-                'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? null),
+                // message avatar. Prefer a pre-generated thumb; else proxy the full
+                // photo through /img-thumb (≤400px) so we never ship a 100KB+ avatar.
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? $row['profile_photo_url'] ?? null),
                 // Home-city country (ISO-2) → drives the flag next to the nickname
                 // in the World channel. Resolved from the home_city name.
                 'country'        => self::countryForCity($row['home_city'] ?? null),
