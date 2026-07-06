@@ -103,6 +103,58 @@ export async function fetchLeanMessages(channelId, { beforeId, limit = 50 } = {}
   return res.json() // { messages, hasMore }
 }
 
+// ── World channel (global companion channel) ────────────────────────────────
+export async function fetchWorldMessages({ beforeId, limit = 50 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit) })
+  if (beforeId) params.set('before_id', beforeId)
+  const res = await fetch(`${BASE}/world/messages?${params}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch world messages')
+  return res.json() // { messages, hasMore }
+}
+
+export async function sendWorldMessage(guestId, nickname, content, mentions = null) {
+  const body = { guestId, nickname, content }
+  if (mentions && mentions.length) body.mentions = mentions
+  const res = await fetch(`${BASE}/world/messages`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(body),
+  })
+  if (!res.ok) throw new Error('Failed to send world message')
+  return res.json()
+}
+
+// Cached server-side (~45s). { online, cities, crossCity: { count, cities[] } }
+export async function fetchWorldActivity() {
+  const res = await fetch(`${BASE}/world/activity`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch world activity')
+  return res.json()
+}
+
+// Mark a channel (city integer id or the string 'world') read up to now.
+export async function markChannelRead(channelId, guestId) {
+  try {
+    await fetch(`${BASE}/read`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ channelId, guestId }),
+    })
+  } catch { /* non-fatal: unread is a convenience, never blocks the UI */ }
+}
+
+// Batch unread counts. channelIds = [cityChannelId, 'world', ...]. → { [id]: count }
+export async function fetchUnread(channelIds, guestId) {
+  const params = new URLSearchParams()
+  for (const c of channelIds) params.append('channels[]', String(c))
+  if (guestId) params.set('guestId', guestId)
+  const res = await fetch(`${BASE}/unread?${params}`, { credentials: 'include' })
+  if (!res.ok) return {}
+  const data = await res.json()
+  return data.unread || {}
+}
+
 // POST /me/city - commit a manual city switch as users.current_city_id.
 // Backend bypasses the two-signal rule and sets the city immediately. Errors
 // are swallowed: the local UI switch is the source of truth for this frame;
