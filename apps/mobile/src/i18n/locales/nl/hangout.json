@@ -47,5 +47,8 @@
   "requestToJoin": "Vraag om mee te doen",
   "emptyReplies": "Nog geen reacties. Zeg iets! 💬",
   "inThisHangout": "in deze meetup",
-  "geoHint": "📍 Zet locatie aan om te zien wie er nu in de buurt is — en laat mensen dichtbij je Hi zien 👀🔥"
+  "geoHint": "📍 Zet locatie aan om te zien wie er nu in de buurt is — en laat mensen dichtbij je Hi zien 👀🔥",
+  "geoRequired": "Een Hi now vertelt mensen waar ze je vinden — zet locatie aan om door te gaan.",
+  "geoRequiredTitle": "Locatie nodig",
+  "geoRequiredSettings": "Zet locatie voor Hilads aan in Instellingen om een Hi now te starten."
 }

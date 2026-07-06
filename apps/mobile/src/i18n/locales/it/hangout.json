@@ -47,5 +47,8 @@
   "requestToJoin": "Chiedi di unirti",
   "emptyReplies": "Ancora nessuna risposta. Di' qualcosa! 💬",
   "inThisHangout": "in questo ritrovo",
-  "geoHint": "📍 Attiva la posizione per vedere chi c’è intorno ora — e far notare il tuo Hi a chi è vicino 👀🔥"
+  "geoHint": "📍 Attiva la posizione per vedere chi c’è intorno ora — e far notare il tuo Hi a chi è vicino 👀🔥",
+  "geoRequired": "Un Hi now dice alle persone dove trovarti — attiva la posizione per continuare.",
+  "geoRequiredTitle": "Serve la posizione",
+  "geoRequiredSettings": "Attiva la posizione per Hilads nelle Impostazioni per lanciare un Hi now."
 }

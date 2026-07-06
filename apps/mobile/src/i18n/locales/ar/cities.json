@@ -24,5 +24,6 @@
   "msgs": "{{count}} رسائل",
   "loadError": "تعذّر تحميل المدن",
   "noResults": "لم يُعثر على مدينة لـ «{{query}}»",
-  "noCities": "لم يُعثر على مدن"
+  "noCities": "لم يُعثر على مدن",
+  "firstTimeTitle": "اختر مدينتك للبدء"
 }

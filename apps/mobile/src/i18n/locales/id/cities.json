@@ -16,5 +16,6 @@
   "msgs": "{{count}} pesan",
   "loadError": "Tidak bisa memuat kota",
   "noResults": "Tidak ada kota untuk \"{{query}}\"",
-  "noCities": "Tidak ada kota ditemukan"
+  "noCities": "Tidak ada kota ditemukan",
+  "firstTimeTitle": "Pilih kotamu untuk mulai"
 }

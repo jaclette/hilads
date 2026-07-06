@@ -201,5 +201,6 @@
   "past": "VORBEI",
   "sayHi": "Sag {{name}} Hallo",
   "hostWaiting": "Warten auf das erste Hallo 👋",
-  "shareToCityError": "Konnte nicht in deiner Stadt geteilt werden. Versuch's nochmal."
+  "shareToCityError": "Konnte nicht in deiner Stadt geteilt werden. Versuch's nochmal.",
+  "placedBanner": "Wir haben dich in {{city}} platziert — oben änderbar."
 }

@@ -16,5 +16,6 @@
   "msgs": "{{count}} Nachr.",
   "loadError": "Städte konnten nicht geladen werden",
   "noResults": "Keine Stadt gefunden für „{{query}}“",
-  "noCities": "Keine Städte gefunden"
+  "noCities": "Keine Städte gefunden",
+  "firstTimeTitle": "Wähl deine Stadt zum Starten"
 }

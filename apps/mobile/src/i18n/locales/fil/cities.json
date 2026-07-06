@@ -16,5 +16,6 @@
   "msgs": "{{count}} mensahe",
   "loadError": "Hindi ma-load ang mga lungsod",
   "noResults": "Walang lungsod na nahanap para sa \"{{query}}\"",
-  "noCities": "Walang nahanap na lungsod"
+  "noCities": "Walang nahanap na lungsod",
+  "firstTimeTitle": "Piliin ang iyong lungsod para magsimula"
 }

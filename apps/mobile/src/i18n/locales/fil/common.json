@@ -201,5 +201,6 @@
   "past": "NAKARAAN",
   "sayHi": "Batiin si {{name}}",
   "hostWaiting": "Hinihintay ang unang hi 👋",
-  "shareToCityError": "Hindi na-share sa lungsod mo. Subukan ulit."
+  "shareToCityError": "Hindi na-share sa lungsod mo. Subukan ulit.",
+  "placedBanner": "Inilagay ka namin sa {{city}} — mababago mo ito sa itaas."
 }

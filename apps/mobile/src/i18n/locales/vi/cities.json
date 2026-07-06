@@ -16,5 +16,6 @@
   "noResults": "Không tìm thấy thành phố cho \"{{query}}\"",
   "noCities": "Không tìm thấy thành phố",
   "events_one": "{{count}} sự kiện",
-  "hangout_one": "{{count}} tụ tập"
+  "hangout_one": "{{count}} tụ tập",
+  "firstTimeTitle": "Chọn thành phố để bắt đầu"
 }

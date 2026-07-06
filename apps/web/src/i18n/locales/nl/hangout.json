@@ -26,7 +26,8 @@
     "limitSub": "Je kunt één meetup tegelijk hebben. Ga naar “{{title}}” of verwijder hem om een nieuwe te starten.",
     "limitGo": "Ga naar mijn meetup →",
     "yourHangout": "je meetup",
-    "geoHint": "📍 Zet locatie aan om te zien wie er nu in de buurt is — en laat mensen dichtbij je Hi zien 👀🔥"
+    "geoHint": "📍 Zet locatie aan om te zien wie er nu in de buurt is — en laat mensen dichtbij je Hi zien 👀🔥",
+    "geoRequired": "Een Hi now vertelt mensen waar ze je vinden — zet locatie aan om door te gaan."
   },
   "deleteConfirm": "Deze meetup verwijderen? Hiermee beëindig je hem voor iedereen en dit kan niet ongedaan worden gemaakt.",
   "deleteFailedAlert": "Verwijderen mislukt. Probeer opnieuw.",

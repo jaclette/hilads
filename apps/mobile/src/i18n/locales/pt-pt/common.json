@@ -201,5 +201,6 @@
   "past": "PASSADO",
   "sayHi": "Diz olá a {{name}}",
   "hostWaiting": "À espera do primeiro olá 👋",
-  "shareToCityError": "Não foi possível partilhar na tua cidade. Tenta de novo."
+  "shareToCityError": "Não foi possível partilhar na tua cidade. Tenta de novo.",
+  "placedBanner": "Colocámos-te em {{city}} — podes mudar em cima."
 }

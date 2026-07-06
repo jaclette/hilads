@@ -26,7 +26,8 @@
     "limitSub": "Você pode ter um rolê de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
     "limitGo": "Ir para o meu rolê →",
     "yourHangout": "seu rolê",
-    "geoHint": "📍 Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi 👀🔥"
+    "geoHint": "📍 Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi 👀🔥",
+    "geoRequired": "Um Hi now diz às pessoas onde te encontrar — ative a localização para continuar."
   },
   "deleteConfirm": "Excluir este rolê? Isso encerra para todo mundo e não pode ser desfeito.",
   "deleteFailedAlert": "Não foi possível excluir. Tente de novo.",

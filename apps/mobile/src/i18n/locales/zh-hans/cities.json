@@ -16,5 +16,6 @@
   "msgs": "{{count}} 条消息",
   "loadError": "无法加载城市",
   "noResults": "未找到与“{{query}}”匹配的城市",
-  "noCities": "未找到城市"
+  "noCities": "未找到城市",
+  "firstTimeTitle": "选择你的城市开始"
 }

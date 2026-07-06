@@ -26,7 +26,8 @@
     "limitSub": "Puoi avere un solo ritrovo alla volta. Vai su «{{title}}» o eliminalo per lanciarne uno nuovo.",
     "limitGo": "Vai al mio ritrovo →",
     "yourHangout": "il tuo ritrovo",
-    "geoHint": "📍 Attiva la posizione per vedere chi c’è intorno ora — e far notare il tuo Hi a chi è vicino 👀🔥"
+    "geoHint": "📍 Attiva la posizione per vedere chi c’è intorno ora — e far notare il tuo Hi a chi è vicino 👀🔥",
+    "geoRequired": "Un Hi now dice alle persone dove trovarti — attiva la posizione per continuare."
   },
   "deleteConfirm": "Eliminare questo ritrovo? Questo lo termina per tutti ed è irreversibile.",
   "deleteFailedAlert": "Impossibile eliminare. Riprova.",

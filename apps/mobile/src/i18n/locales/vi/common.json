@@ -201,5 +201,6 @@
   "hiLocalTitle": "👋 Hi Local",
   "replies_one": "💬 {{count}} trả lời",
   "sayHi": "Chào {{name}}",
-  "hostWaiting": "Đang chờ lời chào đầu tiên 👋"
+  "hostWaiting": "Đang chờ lời chào đầu tiên 👋",
+  "placedBanner": "Bạn được đặt ở {{city}} — có thể đổi ở phía trên."
 }

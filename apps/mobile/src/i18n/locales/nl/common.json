@@ -201,5 +201,6 @@
   "past": "VOORBIJ",
   "sayHi": "Zeg {{name}} gedag",
   "hostWaiting": "Wachten op de eerste begroeting 👋",
-  "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw."
+  "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw.",
+  "placedBanner": "We plaatsten je in {{city}} — je kunt het bovenaan wijzigen."
 }

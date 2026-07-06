@@ -47,5 +47,8 @@
   "requestToJoin": "Pedir para participar",
   "emptyReplies": "Ainda sem respostas. Diga algo! 💬",
   "inThisHangout": "neste rolê",
-  "geoHint": "📍 Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi 👀🔥"
+  "geoHint": "📍 Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi 👀🔥",
+  "geoRequired": "Um Hi now diz às pessoas onde te encontrar — ative a localização para continuar.",
+  "geoRequiredTitle": "Localização necessária",
+  "geoRequiredSettings": "Ative a localização para o Hilads nos Ajustes para lançar um Hi now."
 }

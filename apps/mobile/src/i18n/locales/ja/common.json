@@ -201,5 +201,6 @@
   "past": "過去",
   "sayHi": "{{name}}に挨拶しよう",
   "hostWaiting": "最初の挨拶を待っています 👋",
-  "shareToCityError": "街に共有できませんでした。もう一度お試しください。"
+  "shareToCityError": "街に共有できませんでした。もう一度お試しください。",
+  "placedBanner": "{{city}}に設定しました — 上部で変更できます。"
 }

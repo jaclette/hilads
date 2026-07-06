@@ -26,7 +26,8 @@
     "limitSub": "Solo puedes tener una quedada a la vez. Ve a «{{title}}» o elimínala para lanzar una nueva.",
     "limitGo": "Ir a mi quedada →",
     "yourHangout": "tu quedada",
-    "geoHint": "📍 Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi 👀🔥"
+    "geoHint": "📍 Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi 👀🔥",
+    "geoRequired": "Un Hi now le dice a la gente dónde encontrarte — activa la ubicación para continuar."
   },
   "deleteConfirm": "¿Eliminar esta quedada? Esto la termina para todos y es irreversible.",
   "deleteFailedAlert": "No se pudo eliminar. Inténtalo de nuevo.",

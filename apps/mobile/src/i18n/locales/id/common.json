@@ -201,5 +201,6 @@
   "past": "LAMPAU",
   "sayHi": "Sapa {{name}}",
   "hostWaiting": "Menunggu sapaan pertama 👋",
-  "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi."
+  "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi.",
+  "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas."
 }

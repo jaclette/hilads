@@ -26,7 +26,8 @@
     "limitSub": "Du kannst nur ein Treffen gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch es, um ein neues zu starten.",
     "limitGo": "Zu meinem Treffen →",
     "yourHangout": "dein Treffen",
-    "geoHint": "📍 Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi 👀🔥"
+    "geoHint": "📍 Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi 👀🔥",
+    "geoRequired": "Ein Hi now sagt anderen, wo sie dich treffen — aktiviere den Standort, um fortzufahren."
   },
   "deleteConfirm": "Dieses Treffen löschen? Das beendet es für alle und kann nicht rückgängig gemacht werden.",
   "deleteFailedAlert": "Löschen fehlgeschlagen. Versuch es erneut.",

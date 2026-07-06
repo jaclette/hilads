@@ -47,5 +47,8 @@
   "requestToJoin": "Yêu cầu tham gia",
   "emptyReplies": "Chưa có trả lời. Nói gì đó đi! 💬",
   "inThisHangout": "trong tụ tập này",
-  "geoHint": "📍 Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn 👀🔥"
+  "geoHint": "📍 Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn 👀🔥",
+  "geoRequired": "Một Hi now cho mọi người biết chỗ gặp bạn — bật vị trí để tiếp tục.",
+  "geoRequiredTitle": "Cần vị trí",
+  "geoRequiredSettings": "Bật vị trí cho Hilads trong Cài đặt để tạo Hi now."
 }

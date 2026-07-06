@@ -47,5 +47,8 @@
   "requestToJoin": "Minta gabung",
   "emptyReplies": "Belum ada balasan. Bilang sesuatu! 💬",
   "inThisHangout": "di nongkrong ini",
-  "geoHint": "📍 Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu 👀🔥"
+  "geoHint": "📍 Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu 👀🔥",
+  "geoRequired": "Hi now memberi tahu orang di mana menemukanmu — aktifkan lokasi untuk lanjut.",
+  "geoRequiredTitle": "Perlu lokasi",
+  "geoRequiredSettings": "Aktifkan lokasi untuk Hilads di Pengaturan untuk memulai Hi now."
 }

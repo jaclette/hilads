@@ -47,5 +47,8 @@
   "requestToJoin": "请求加入",
   "emptyReplies": "还没有回复。说点什么吧！ 💬",
   "inThisHangout": "在这个聚会里",
-  "geoHint": "📍 打开定位，看看现在谁在附近——也让周围的人发现你的 Hi 👀🔥"
+  "geoHint": "📍 打开定位，看看现在谁在附近——也让周围的人发现你的 Hi 👀🔥",
+  "geoRequired": "Hi now 会告诉大家在哪里找到你——开启定位以继续。",
+  "geoRequiredTitle": "需要定位",
+  "geoRequiredSettings": "在设置中为 Hilads 开启定位，以发起 Hi now。"
 }

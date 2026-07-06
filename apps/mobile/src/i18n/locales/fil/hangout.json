@@ -47,5 +47,8 @@
   "requestToJoin": "Humiling na sumali",
   "emptyReplies": "Wala pang tugon. Magsalita ka! 💬",
   "inThisHangout": "sa tambayan na ito",
-  "geoHint": "📍 I-on ang location para makita kung sino ang malapit ngayon — at makita ng mga tao sa paligid ang Hi mo 👀🔥"
+  "geoHint": "📍 I-on ang location para makita kung sino ang malapit ngayon — at makita ng mga tao sa paligid ang Hi mo 👀🔥",
+  "geoRequired": "Sinasabi ng Hi now sa mga tao kung saan ka matatagpuan — i-on ang lokasyon para magpatuloy.",
+  "geoRequiredTitle": "Kailangan ng lokasyon",
+  "geoRequiredSettings": "I-on ang lokasyon para sa Hilads sa Settings para maglunsad ng Hi now."
 }

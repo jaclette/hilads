@@ -16,5 +16,6 @@
   "msgs": "{{count}} ber.",
   "loadError": "Kon steden niet laden",
   "noResults": "Geen stad gevonden voor \"{{query}}\"",
-  "noCities": "Geen steden gevonden"
+  "noCities": "Geen steden gevonden",
+  "firstTimeTitle": "Kies je stad om te beginnen"
 }
