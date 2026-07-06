@@ -2739,7 +2739,7 @@ export default function App() {
           setFeed(prev => prev.map(item => {
             if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
         })
       }
@@ -3638,7 +3638,7 @@ export default function App() {
             setFeed(prev => prev.map(item => {
               if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
               const b = badges[item.userId]
-              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
             }))
           }).catch(() => {})
         }
@@ -3767,7 +3767,7 @@ export default function App() {
           setFeed(prev => prev.map(item => {
             if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
         })
       }

@@ -19,6 +19,23 @@ final class UserBadgeService
     // Threshold for "fresh" users: 60 days (roughly 2 months)
     private const FRESH_TTL = 60 * 24 * 3600;
 
+    // Home-city name → ISO-2 country, built once from the (cached) cities list.
+    private static ?array $cityCountryMap = null;
+
+    private static function countryForCity(?string $cityName): ?string
+    {
+        if (!$cityName) return null;
+        if (self::$cityCountryMap === null) {
+            self::$cityCountryMap = [];
+            foreach (CityRepository::all() as $c) {
+                if (!empty($c['name'])) {
+                    self::$cityCountryMap[mb_strtolower(trim($c['name']))] = $c['country'] ?? null;
+                }
+            }
+        }
+        return self::$cityCountryMap[mb_strtolower(trim($cityName))] ?? null;
+    }
+
 
     // ── Single-user resolution ─────────────────────────────────────────────────
 
@@ -168,6 +185,9 @@ final class UserBadgeService
                 // Small proxied thumbnail (never the full image) for the chat
                 // message avatar - shown instead of the initial letter when set.
                 'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? null),
+                // Home-city country (ISO-2) → drives the flag next to the nickname
+                // in the World channel. Resolved from the home_city name.
+                'country'        => self::countryForCity($row['home_city'] ?? null),
             ];
         }
 
