@@ -1694,11 +1694,15 @@ export default function App() {
   // Returns a location object so handleJoin can join the resolved city.
   function resolveLandingCity() {
     featuredEntryRef.current = true
+    // The landing renders INSTANTLY regardless (this only settles the CTA's city
+    // + variant), so the budget just bounds how long we wait before committing to
+    // the featured fallback. /api/geo answers in ~30ms (coords are bundled in the
+    // function), so this only needs to cover a cold lambda boot - 600ms is safe.
     const geoRace = Promise.race([
       fetch('/api/geo', { headers: { Accept: 'application/json' } })
         .then(r => (r.ok ? r.json() : null))
         .catch(() => null),
-      new Promise(resolve => setTimeout(() => resolve(null), 200)),
+      new Promise(resolve => setTimeout(() => resolve(null), 600)),
     ])
     return geoRace.then(geo => {
       if (geo && geo.state === 'city_matched' && geo.channelId) {

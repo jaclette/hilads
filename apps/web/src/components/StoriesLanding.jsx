@@ -111,7 +111,7 @@ export default function StoriesLanding({
   const landingStateRef = useRef(analyticsState); landingStateRef.current = analyticsState
   const detectedCityRef = useRef(detectedCity); detectedCityRef.current = detectedCity
 
-  // Funnel entry: fire once, deferred ~250ms so the IP→city race (200ms budget in
+  // Funnel entry: fire once, deferred ~700ms so the IP→city race (600ms budget in
   // App) has settled and landing_state / detected_city reflect the resolved values.
   // utm super-props are attached automatically by PostHog; here we add referrer,
   // screen size, and the resolved landing state. Rendering is never blocked on this.
@@ -125,7 +125,7 @@ export default function StoriesLanding({
         landing_state: landingStateRef.current,
         detected_city: detectedCityRef.current ?? 'unknown',
       })
-    }, 250)
+    }, 700)
     return () => clearTimeout(id)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
