@@ -60,7 +60,12 @@ export type AnalyticsEvent =
   | 'first_launch_ip_detection_resolved'
   | 'first_launch_ip_detection_failed'
   | 'first_launch_city_picker_shown'
-  | 'first_launch_city_selected';
+  | 'first_launch_city_selected'
+  // World channel.
+  | 'world_channel_viewed'
+  | 'quiet_city_card_shown'
+  | 'quiet_city_card_tapped'
+  | 'system_message_generated';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

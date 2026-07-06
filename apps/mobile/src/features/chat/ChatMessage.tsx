@@ -140,6 +140,11 @@ const FEED_JOIN_VARIANTS = 5;
 
 function systemText(message: Message): string {
   const nick = message.nickname ?? i18n.t('someone', { ns: 'common' });
+  // World cross-city system messages carry structured payload; render localized.
+  const p = ((message as { payload?: Record<string, string> }).payload) ?? {};
+  if (message.event === 'challenge_created') return i18n.t('world.sys.challengeCreated', { ns: 'chat', nickname: nick || p.nickname || '', cityA: p.city_a || '', cityB: p.city_b || '' });
+  if (message.event === 'new_user')          return i18n.t('world.sys.newUser',          { ns: 'chat', nickname: nick || p.nickname || '', city: p.city || '' });
+  if (message.event === 'challenge_won')     return i18n.t('world.sys.challengeWon',     { ns: 'chat', nickname: nick || p.nickname || '', city: p.city || '', challenge: p.challenge || '' });
   if (message.event === 'join') {
     const seed = `${nick}${message.createdAt ?? ''}`
       .split('').reduce((acc, ch) => acc + ch.charCodeAt(0), 0);

@@ -27,11 +27,13 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
+import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, type WorldActivity } from '@/api/world';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import { fetchCityChallenges } from '@/api/challenges';
 import type { HiladsEvent } from '@/types';
 import { socket } from '@/lib/socket';
+import { track } from '@/services/analytics';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { ChatMessage } from '@/features/chat/ChatMessage';
 import { ChatInput } from '@/features/chat/ChatInput';
@@ -182,6 +184,16 @@ export default function ChatTab() {
   }, [city?.channelId]);
 
   const channelId = city?.channelId ?? '';
+
+  // ── World channel (global companion channel) ──
+  // channelScope toggles the FEED between the city and the global World channel.
+  // City presence/typing stay on the city (channelId unchanged); World is an
+  // overlay feed on activeChannelId. Unread badges are symmetric.
+  const [channelScope, setChannelScope] = useState<'city' | 'world'>('city');
+  const [worldUnread,  setWorldUnread]  = useState(0);
+  const [cityUnread,   setCityUnread]   = useState(0);
+  const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
+  const activeChannelId = channelScope === 'world' ? 'world' : channelId;
 
   // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
   // One bounded fetch per city change. limit=1 to skip the list payload;
@@ -461,16 +473,18 @@ export default function ChatTab() {
   }, [channelId]);
 
   const loadFn = useCallback(
-    (opts?: { beforeId?: string }) => fetchMessages(channelId, opts),
-    [channelId],
+    (opts?: { beforeId?: string }) =>
+      channelScope === 'world' ? fetchWorldMessages(opts) : fetchMessages(channelId, opts),
+    [channelId, channelScope],
   );
 
   const postTextFn = useCallback(
     (content: string, replyToId?: string | null, mentions?: MentionRef[]): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
+      if (channelScope === 'world') return sendWorldMessage(identity.guestId, nickname, content, mentions);
       return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId, mentions);
     },
-    [channelId, identity, sessionId, nickname],
+    [channelId, channelScope, identity, sessionId, nickname],
   );
 
   const postImageFn = useCallback(
@@ -482,15 +496,55 @@ export default function ChatTab() {
   );
 
   // Use pre-loaded data from the bootstrap endpoint if available for the current channel.
-  const chatBootstrap = bootstrapData?.channelId === channelId ? bootstrapData : undefined;
+  // Only for the city scope - World has no bootstrap payload.
+  const chatBootstrap = channelScope === 'city' && bootstrapData?.channelId === channelId ? bootstrapData : undefined;
 
   const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage, reload } = useMessages({
-    channelId,
+    channelId: activeChannelId,
     loadFn,
     postTextFn,
     postImageFn,
     initialData: chatBootstrap ? { messages: chatBootstrap.messages, hasMore: chatBootstrap.hasMore } : undefined,
   });
+
+  // Toggle the feed between the city and the global World channel.
+  const switchScope = useCallback((scope: 'city' | 'world') => {
+    setChannelScope(scope);
+    if (scope === 'world') {
+      track('world_channel_viewed');
+      setWorldUnread(0);
+      fetchWorldActivity().then(setWorldActivity).catch(() => {});
+      if (identity?.guestId) markChannelRead('world', identity.guestId);
+    } else {
+      setCityUnread(0);
+      if (identity?.guestId && channelId) markChannelRead(channelId, identity.guestId);
+    }
+  }, [identity, channelId]);
+
+  // Join the World room on mount (additive - keeps the city room) + seed badges.
+  useEffect(() => {
+    if (!sessionId || !identity?.guestId || !channelId) return;
+    socket.joinWorld(sessionId);
+    fetchUnread([channelId, 'world'], identity.guestId).then(u => {
+      setCityUnread(Math.min(u[String(channelId)] ?? 0, 999));
+      setWorldUnread(Math.min(u.world ?? 0, 999));
+    }).catch(() => {});
+  }, [sessionId, identity?.guestId, channelId]);
+
+  // Unread badge for the channel the user is NOT currently viewing (useMessages
+  // handles the active one). Only while on the chat tab, which is where badges show.
+  useEffect(() => {
+    return socket.on('newMessage', (data: { channelId?: string | number; message?: Message }) => {
+      const cid = String(data?.channelId ?? '');
+      const m = data?.message;
+      if (!m) return;
+      const mine = (!!identity?.guestId && m.guestId === identity.guestId) || (!!account?.id && m.userId === account.id);
+      const isChat = m.type === 'text' || m.type === 'image';
+      if (!isChat || mine) return;
+      if (cid === 'world' && channelScope !== 'world') setWorldUnread(u => Math.min(u + 1, 999));
+      else if (channelScope === 'world' && (cid === String(channelId) || cid === `city_${channelId}`)) setCityUnread(u => Math.min(u + 1, 999));
+    });
+  }, [channelScope, channelId, identity?.guestId, account?.id]);
 
   // After a "share to my city" from another screen, the message was posted
   // out-of-band so this already-mounted tab never saw it - reload on focus.
@@ -972,31 +1026,60 @@ export default function ChatTab() {
         {/* ── City row: name selector (left) + compact "recent" pill (right) ──
             City name ellipsizes first on narrow screens; the recent pill never
             shrinks (flexShrink 0). */}
-        <View style={styles.cityRow}>
+        {/* ── City ↔ World channel toggle. City side opens the switcher when
+            active, returns to city when inactive. Symmetric unread badges. ── */}
+        <View style={styles.scopeToggle}>
           <TouchableOpacity
-            style={styles.citySelector}
-            onPress={() => router.push('/switch-city' as never)}
-            activeOpacity={0.7}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-            accessibilityRole="button"
-            accessibilityLabel={t('changeCity')}
+            style={[styles.scopeBtn, channelScope === 'city' && styles.scopeBtnActive]}
+            onPress={() => (channelScope === 'world' ? switchScope('city') : router.push('/switch-city' as never))}
+            activeOpacity={0.8}
+            accessibilityRole="tab"
           >
-            <Text style={styles.cityName} numberOfLines={1}>
+            <Text style={[styles.scopeBtnText, channelScope === 'city' && styles.scopeBtnTextActive]} numberOfLines={1}>
               {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
             </Text>
-            <Ionicons name="chevron-down" size={18} color="rgba(255,255,255,0.45)" style={styles.cityChevron} />
+            {channelScope === 'city' && <Ionicons name="chevron-down" size={15} color={Colors.bg} style={styles.scopeChevron} />}
+            {channelScope === 'world' && cityUnread > 0 && (
+              <Text style={styles.scopeBadge}>{cityUnread > 99 ? '99+' : cityUnread}</Text>
+            )}
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.recentPill}
-            onPress={() => setArrivalsSheetOpen(true)}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={`${arrivals.length} recent arrivals`}
+            style={[styles.scopeBtn, channelScope === 'world' && styles.scopeBtnActive]}
+            onPress={() => switchScope('world')}
+            activeOpacity={0.8}
+            accessibilityRole="tab"
           >
-            <Text style={styles.recentPillText} numberOfLines={1}>✈️ {t('cityHero.recent', { count: arrivals.length })}</Text>
+            <Text style={[styles.scopeBtnText, channelScope === 'world' && styles.scopeBtnTextActive]} numberOfLines={1}>
+              🌍 {t('world.tab')}
+            </Text>
+            {channelScope === 'city' && worldUnread > 0 && (
+              <Text style={styles.scopeBadge}>{worldUnread > 99 ? '99+' : worldUnread}</Text>
+            )}
           </TouchableOpacity>
         </View>
 
+        {/* ── World hero + pills (banner: N cross-city challenges + cities;
+            pills: N online / N cities). Replaces the city hero in World scope. ── */}
+        {channelScope === 'world' ? (
+          <>
+            <TouchableOpacity
+              style={styles.hero}
+              onPress={() => router.push('/(tabs)/challenges' as never)}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+            >
+              <Text style={styles.heroMain} numberOfLines={2}>{t('world.banner', { count: worldActivity?.crossCity?.count ?? 0 })}</Text>
+              {!!worldActivity?.crossCity?.cities?.length && (
+                <Text style={styles.heroSub} numberOfLines={1}>{worldActivity.crossCity.cities.join(', ')}</Text>
+              )}
+            </TouchableOpacity>
+            <View style={styles.pillsRow}>
+              <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</Text></View>
+              <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>🏙️ {t('world.cities', { count: worldActivity?.cities ?? 0 })}</Text></View>
+            </View>
+          </>
+        ) : (
+        <>
         {/* ── HERO: challenges + rank. Full-width, tappable → challenges list.
             Subtitle + copy adapt to the count / rank state (see heroMain).
             Zero-challenge cities lead with ACTION via the shared
@@ -1053,6 +1136,8 @@ export default function ChatTab() {
             <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🎉 {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi plan</Text>
           </TouchableOpacity>
         </View>
+        </>
+        )}
 
       </View>
       )}
@@ -1323,6 +1408,41 @@ const styles = StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center', // keep city name + recent pill grouped & centered
     gap:            10,
+  },
+  // ── City ↔ World scope toggle ──
+  scopeToggle: {
+    flexDirection: 'row',
+    gap:           6,
+    marginHorizontal: 12,
+    marginBottom:  4,
+  },
+  scopeBtn: {
+    flex:           1,
+    flexDirection:  'row',
+    alignItems:     'center',
+    justifyContent: 'center',
+    gap:            4,
+    paddingVertical:   8,
+    paddingHorizontal: 10,
+    borderRadius:   999,
+    backgroundColor: Colors.bg2,
+    borderWidth:    1,
+    borderColor:    Colors.border,
+  },
+  scopeBtnActive: { backgroundColor: Colors.text, borderColor: Colors.text },
+  scopeBtnText:   { color: Colors.text, fontSize: 13, fontWeight: '700' },
+  scopeBtnTextActive: { color: Colors.bg },
+  scopeChevron:   { opacity: 0.7 },
+  scopeBadge: {
+    minWidth:   18,
+    paddingHorizontal: 5,
+    borderRadius: 999,
+    backgroundColor: Colors.accent,
+    color:      '#fff',
+    fontSize:   11,
+    fontWeight: '800',
+    textAlign:  'center',
+    overflow:   'hidden',
   },
   citySelector: {
     flexDirection: 'row',

@@ -1,4 +1,16 @@
 {
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} défis inter-villes en cours",
+    "online": "{{count}} en ligne",
+    "cities": "{{count}} villes",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} a lancé un défi {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} de {{city}} vient de rejoindre Hilads",
+      "challengeWon": "🏆 {{nickname}} de {{city}} vient de gagner le défi {{challenge}}"
+    },
+    "quietCard": "Calme ici ? {{count}} messages non lus dans World 🌍 — tape pour voir"
+  },
   "changeCity": "Changer de ville",
   "shareCity": "Partager la ville",
   "shareTitle": "Ce qui se passe à {{city}} en ce moment",
