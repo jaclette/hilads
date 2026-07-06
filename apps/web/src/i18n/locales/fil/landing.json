@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Maging local. Kahit saan.",
-    "enterCity": "Pumasok sa {{city}} → libre, walang account, 5 segundo",
-    "enterChallenge": "Tanggapin ang challenge na ito sa {{city}} →",
+    "concept_tagline": "Hamunin ang mga local. Makilala ang mga manlalakbay. Maging local kahit saan.",
+    "enterCity": "Sumali sa {{city}} 🔥",
+    "enterChallenge": "Tanggapin ang challenge 🔥",
+    "enterPicker": "Piliin ang iyong lungsod 🔥",
     "swipeUp": "I-swipe pataas",
     "liveHeadline": "Buhay na buhay ang {{city}} ngayon.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Walang algorithm.",
       "line4": "Isang dahilan para magkita nang personal."
     },
-    "storePrompt": "Mas gusto ang app? Kunin ang notifications at buong experience."
+    "storePrompt": "Mas gusto ang app? Kunin ang notifications at buong experience.",
+    "reassurance": "libre · walang account · 5 segundo"
   }
 }

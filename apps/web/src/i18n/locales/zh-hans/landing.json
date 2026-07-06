@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "成为本地人。在任何地方。",
-    "enterCity": "进入{{city}} → 免费，无需账号，5 秒搞定",
-    "enterChallenge": "在{{city}}接受这个挑战 →",
+    "concept_tagline": "挑战本地人。结识旅行者。随时随地成为本地人。",
+    "enterCity": "加入{{city}} 🔥",
+    "enterChallenge": "接受这个挑战 🔥",
+    "enterPicker": "选择你的城市 🔥",
     "swipeUp": "向上滑动",
     "liveHeadline": "{{city}}此刻正热闹。",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "没有算法。",
       "line4": "一个线下见面的理由。"
     },
-    "storePrompt": "更喜欢用 App？获取通知和完整体验。"
+    "storePrompt": "更喜欢用 App？获取通知和完整体验。",
+    "reassurance": "免费 · 无需账号 · 5 秒"
   }
 }

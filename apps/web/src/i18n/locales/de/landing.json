@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Werde local. Überall.",
-    "enterCity": "Rein nach {{city}} → gratis, ohne Konto, 5 Sekunden",
-    "enterChallenge": "Nimm diese Challenge in {{city}} an →",
+    "concept_tagline": "Fordere die Locals heraus. Triff Reisende. Werde local, überall.",
+    "enterCity": "Komm nach {{city}} 🔥",
+    "enterChallenge": "Nimm die Challenge an 🔥",
+    "enterPicker": "Wähl deine Stadt 🔥",
     "swipeUp": "Nach oben wischen",
     "liveHeadline": "{{city}} ist gerade jetzt live.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Keine Algorithmen.",
       "line4": "Ein Grund, sich in echt zu treffen."
     },
-    "storePrompt": "Lieber die App? Push-Benachrichtigungen und das volle Erlebnis."
+    "storePrompt": "Lieber die App? Push-Benachrichtigungen und das volle Erlebnis.",
+    "reassurance": "gratis · ohne Konto · 5 Sekunden"
   }
 }

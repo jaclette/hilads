@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "成為在地人。在任何地方。",
-    "enterCity": "進入{{city}} → 免費，免帳號，5 秒搞定",
-    "enterChallenge": "在{{city}}接受這個挑戰 →",
+    "concept_tagline": "挑戰在地人。結識旅人。隨時隨地成為在地人。",
+    "enterCity": "加入{{city}} 🔥",
+    "enterChallenge": "接受這個挑戰 🔥",
+    "enterPicker": "選擇你的城市 🔥",
     "swipeUp": "向上滑動",
     "liveHeadline": "{{city}}此刻正熱鬧。",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "沒有演算法。",
       "line4": "一個線下見面的理由。"
     },
-    "storePrompt": "更喜歡用 App？取得通知和完整體驗。"
+    "storePrompt": "更喜歡用 App？取得通知和完整體驗。",
+    "reassurance": "免費 · 免帳號 · 5 秒"
   }
 }

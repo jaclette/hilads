@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Word local. Overal.",
-    "enterCity": "Ga naar {{city}} → gratis, geen account, 5 seconden",
-    "enterChallenge": "Doe deze uitdaging in {{city}} →",
+    "concept_tagline": "Daag locals uit. Ontmoet reizigers. Word overal local.",
+    "enterCity": "Kom naar {{city}} 🔥",
+    "enterChallenge": "Doe deze uitdaging 🔥",
+    "enterPicker": "Kies je stad 🔥",
     "swipeUp": "Veeg omhoog",
     "liveHeadline": "{{city}} is nu live.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Geen algoritmes.",
       "line4": "Een reden om elkaar echt te ontmoeten."
     },
-    "storePrompt": "Liever de app? Meldingen en de volledige ervaring."
+    "storePrompt": "Liever de app? Meldingen en de volledige ervaring.",
+    "reassurance": "gratis · geen account · 5 seconden"
   }
 }

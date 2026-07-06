@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Vuélvete local. En cualquier lugar.",
-    "enterCity": "Entra en {{city}} → gratis, sin cuenta, 5 segundos",
-    "enterChallenge": "Acepta este reto en {{city}} →",
+    "concept_tagline": "Desafía a los locales. Conoce viajeros. Vuélvete local en cualquier lugar.",
+    "enterCity": "Únete a {{city}} 🔥",
+    "enterChallenge": "Acepta este reto 🔥",
+    "enterPicker": "Elige tu ciudad 🔥",
     "swipeUp": "Desliza hacia arriba",
     "liveHeadline": "{{city}} está en vivo ahora mismo.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Sin algoritmos.",
       "line4": "Una razón para verse en persona."
     },
-    "storePrompt": "¿Prefieres la app? Recibe notificaciones y la experiencia completa."
+    "storePrompt": "¿Prefieres la app? Recibe notificaciones y la experiencia completa.",
+    "reassurance": "gratis · sin cuenta · 5 segundos"
   }
 }

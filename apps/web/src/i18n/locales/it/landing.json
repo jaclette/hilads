@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Diventa local. Ovunque.",
-    "enterCity": "Entra a {{city}} → gratis, senza account, 5 secondi",
-    "enterChallenge": "Accetta questa sfida a {{city}} →",
+    "concept_tagline": "Sfida i local. Incontra i viaggiatori. Diventa local ovunque.",
+    "enterCity": "Unisciti a {{city}} 🔥",
+    "enterChallenge": "Accetta questa sfida 🔥",
+    "enterPicker": "Scegli la tua città 🔥",
     "swipeUp": "Scorri verso l’alto",
     "liveHeadline": "{{city}} è viva in questo momento.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Niente algoritmi.",
       "line4": "Un motivo per vedersi di persona."
     },
-    "storePrompt": "Preferisci l’app? Notifiche ed esperienza completa."
+    "storePrompt": "Preferisci l’app? Notifiche ed esperienza completa.",
+    "reassurance": "gratis · senza account · 5 secondi"
   }
 }

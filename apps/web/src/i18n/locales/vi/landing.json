@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Trở thành người địa phương. Ở bất cứ đâu.",
-    "enterCity": "Vào {{city}} → miễn phí, không cần tài khoản, 5 giây",
-    "enterChallenge": "Nhận thử thách này ở {{city}} →",
+    "concept_tagline": "Thách thức người địa phương. Gặp gỡ du khách. Trở thành người địa phương ở bất cứ đâu.",
+    "enterCity": "Vào {{city}} 🔥",
+    "enterChallenge": "Nhận thử thách này 🔥",
+    "enterPicker": "Chọn thành phố của bạn 🔥",
     "swipeUp": "Vuốt lên",
     "liveHeadline": "{{city}} đang sôi động ngay bây giờ.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Không thuật toán.",
       "line4": "Một lý do để gặp nhau ngoài đời."
     },
-    "storePrompt": "Thích dùng app hơn? Nhận thông báo và trải nghiệm đầy đủ."
+    "storePrompt": "Thích dùng app hơn? Nhận thông báo và trải nghiệm đầy đủ.",
+    "reassurance": "miễn phí · không cần tài khoản · 5 giây"
   }
 }

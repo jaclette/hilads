@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "どこでも、ローカルに。",
-    "enterCity": "{{city}}に入る → 無料・アカウント不要・5秒",
-    "enterChallenge": "{{city}}でこのチャレンジに挑戦 →",
+    "concept_tagline": "ローカルに挑戦。旅人と出会う。どこでもローカルに。",
+    "enterCity": "{{city}}に参加 🔥",
+    "enterChallenge": "このチャレンジに挑戦 🔥",
+    "enterPicker": "都市を選ぶ 🔥",
     "swipeUp": "上にスワイプ",
     "liveHeadline": "{{city}}は今、盛り上がっています。",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "アルゴリズムなし。",
       "line4": "リアルに会う理由。"
     },
-    "storePrompt": "アプリの方がいい？通知とフル体験を。"
+    "storePrompt": "アプリの方がいい？通知とフル体験を。",
+    "reassurance": "無料 · アカウント不要 · 5秒"
   }
 }

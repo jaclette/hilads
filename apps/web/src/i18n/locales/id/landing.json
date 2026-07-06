@@ -109,8 +109,10 @@
   },
   "stories": {
     "tagline": "Jadi lokal. Di mana saja.",
-    "enterCity": "Masuk ke {{city}} → gratis, tanpa akun, 5 detik",
-    "enterChallenge": "Terima tantangan ini di {{city}} →",
+    "concept_tagline": "Tantang warga lokal. Temui pelancong. Jadi lokal di mana saja.",
+    "enterCity": "Gabung ke {{city}} 🔥",
+    "enterChallenge": "Terima tantangan ini 🔥",
+    "enterPicker": "Pilih kotamu 🔥",
     "swipeUp": "Geser ke atas",
     "liveHeadline": "{{city}} lagi rame sekarang.",
     "how": {
@@ -125,6 +127,7 @@
       "line3": "Tanpa algoritma.",
       "line4": "Alasan untuk ketemu langsung."
     },
-    "storePrompt": "Lebih suka aplikasinya? Dapat notifikasi dan pengalaman penuh."
+    "storePrompt": "Lebih suka aplikasinya? Dapat notifikasi dan pengalaman penuh.",
+    "reassurance": "gratis · tanpa akun · 5 detik"
   }
 }
