@@ -3057,6 +3057,18 @@ export default function App() {
 
       socket.joinRoom(location.channelId, sessionIdRef.current, name, accountRef.current?.id ?? null, accountRef.current?.mode ?? 'exploring', session.guestId)
 
+      // Subscribe to the global World room (additive - keeps the city room) so its
+      // unread badge updates in realtime even while the user reads their city.
+      socket.joinWorld(sessionIdRef.current)
+      worldJoinedRef.current = true
+      // Seed the symmetric unread badges from the server (persisted read positions).
+      fetchUnread([location.channelId, 'world'], session.guestId).then(u => {
+        setCityUnread(Math.min(u[String(location.channelId)] ?? 0, 999))
+        setWorldUnread(Math.min(u.world ?? 0, 999))
+      }).catch(() => {})
+      // Mark the city read on entry (we open on the city by default).
+      markChannelRead(location.channelId, session.guestId)
+
       // ── Periodic heartbeat: keeps session alive regardless of tab visibility ──
       clearInterval(heartbeatRef.current)
       heartbeatRef.current = setInterval(() => {
@@ -4684,35 +4696,41 @@ export default function App() {
                 {/* Section 1: shared app header (Share is MY-CITY-only) */}
                 {renderAppHeader({ withShare: true })}
 
-                {/* Section 2: city row - name selector (left) + compact "recent"
-                    pill (right). Online + rank move into the hero / pills below;
-                    weather is gone. */}
+                {/* Section 2: channel toggle - [📍 city] | [🌍 World]. The city
+                    side, when active, opens the city switcher (which city); when
+                    inactive it just returns to the city channel. Unread badges are
+                    symmetric: each side shows its own badge when the other is open. */}
                 {city && (
-                  <div className="ch-city-row">
+                  <div className="ch-scope-toggle" role="tablist" aria-label={t('header.channels', { defaultValue: 'Channels' })}>
                     <button
                       type="button"
-                      className="header-city-row header-city-row-button ch-city-selector"
-                      onClick={openCityPicker}
-                      aria-label={t('header.changeCity')}
+                      role="tab"
+                      aria-selected={channelScope === 'city'}
+                      className={`ch-scope-btn${channelScope === 'city' ? ' ch-scope-btn--active' : ''}`}
+                      onClick={() => { if (channelScope === 'world') switchScope('city'); else openCityPicker() }}
                     >
                       <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{localizeCityName(city)}
-                      <svg
-                        className="header-city-row-chevron"
-                        width="14" height="14" viewBox="0 0 24 24"
-                        fill="none" stroke="currentColor" strokeWidth="2.4"
-                        strokeLinecap="round" strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
+                      {channelScope === 'city' && (
+                        <svg className="ch-scope-chevron" width="13" height="13" viewBox="0 0 24 24"
+                          fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      )}
+                      {channelScope === 'world' && cityUnread > 0 && (
+                        <span className="ch-scope-badge">{cityUnread > 99 ? '99+' : cityUnread}</span>
+                      )}
                     </button>
                     <button
                       type="button"
-                      className="ch-recent-pill"
-                      onClick={() => setShowArrivalsSheet(true)}
-                      aria-label={`${feed.filter(i => i.type === 'activity' && i.subtype === 'join').length} recent arrivals`}
+                      role="tab"
+                      aria-selected={channelScope === 'world'}
+                      className={`ch-scope-btn${channelScope === 'world' ? ' ch-scope-btn--active' : ''}`}
+                      onClick={() => switchScope('world')}
                     >
-                      ✈️ {t('cityHero.recent', { count: feed.filter(i => i.type === 'activity' && i.subtype === 'join').length })}
+                      🌍 {t('world.tab')}
+                      {channelScope === 'city' && worldUnread > 0 && (
+                        <span className="ch-scope-badge">{worldUnread > 99 ? '99+' : worldUnread}</span>
+                      )}
                     </button>
                   </div>
                 )}
@@ -4726,7 +4744,21 @@ export default function App() {
             the old arrivals strip + activity pills. Hi locals = topics
             (spontaneous), Hi later = events (planned); both → the Hi Local
             feed. 0-count pills stay visible but greyed. ── */}
-        {city && (
+        {city && channelScope === 'world' && (
+          <>
+            <button type="button" className="header-hero header-hero--world" onClick={goToChallengesTab}>
+              <span className="hero-main">{t('world.banner', { count: worldActivity?.crossCity?.count ?? 0 })}</span>
+              {worldActivity?.crossCity?.cities?.length > 0 && (
+                <span className="hero-sub">{worldActivity.crossCity.cities.join(', ')}</span>
+              )}
+            </button>
+            <div className="ch-pills">
+              <span className="ch-pill ch-pill--static">👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</span>
+              <span className="ch-pill ch-pill--static">🏙️ {t('world.cities', { count: worldActivity?.cities ?? 0 })}</span>
+            </div>
+          </>
+        )}
+        {city && channelScope === 'city' && (
           <>
             {renderChallengeHero()}
             <div className="ch-pills">
@@ -4782,6 +4814,21 @@ export default function App() {
             </div>
           )}
           {feed.map((item, i) => {
+            if (item.type === 'world_system') {
+              const p = item.payload || {}
+              const nick = item.nickname || p.nickname || ''
+              const text = item.subtype === 'challenge_created'
+                ? t('world.sys.challengeCreated', { nickname: nick, cityA: p.city_a || '', cityB: p.city_b || '' })
+                : item.subtype === 'new_user'
+                  ? t('world.sys.newUser', { nickname: nick, city: p.city || '' })
+                  : t('world.sys.challengeWon', { nickname: nick, city: p.city || '', challenge: p.challenge || '' })
+              return (
+                <div key={item.id} className="feed-world-sys">
+                  {text}
+                  {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
+                </div>
+              )
+            }
             if (item.type === 'activity') {
               if (item.subtype === 'weather') return null
               // Arrivals render in the ArrivalsBar / ArrivalsSheet, not inline.

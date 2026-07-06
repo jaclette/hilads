@@ -1,4 +1,16 @@
 {
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} cross-city challenges live",
+    "online": "{{count}} online",
+    "cities": "{{count}} cities",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} launched a challenge {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} from {{city}} just joined Hilads",
+      "challengeWon": "🏆 {{nickname}} from {{city}} won the challenge {{challenge}}"
+    },
+    "quietCard": "Quiet here? {{count}} unread in World 🌍 — tap to open"
+  },
   "inspiration": {
     "heading": "💡 Hangout ideas",
     "sub": "What locals organise elsewhere - get inspired",
