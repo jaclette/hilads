@@ -7166,7 +7166,32 @@ img.pub-profile-avatar {
   text-align: center;
 }
 .ch-pill--static { cursor: default; }
-.header-hero--world { cursor: pointer; text-align: left; }
+/* World hero - a dark card (NOT a default-styled <button>, which rendered a
+   white block). Banner variant when cross-city challenges exist; empty-state
+   variant ("be the first…") otherwise → opens the create-challenge flow. */
+.ch-world-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: calc(100% - 1.5rem);
+  margin: 0.625rem auto 0;
+  padding: 0.9rem 1rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(194, 74, 56, 0.13), rgba(184, 114, 40, 0.13));
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.ch-world-hero:active { opacity: 0.85; }
+.ch-world-hero--empty { border-color: var(--accent2); }
+.ch-world-hero-emoji { font-size: 1.35rem; line-height: 1; }
+.ch-world-hero-main  { font-size: 0.95rem; font-weight: 800; }
+.ch-world-hero-sub   { font-size: 0.8rem; font-weight: 600; color: var(--muted2); }
 /* World cross-city system messages - distinct centered info row in the feed. */
 .feed-world-sys {
   align-self: center;

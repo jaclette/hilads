@@ -4764,15 +4764,30 @@ export default function App() {
             feed. 0-count pills stay visible but greyed. ── */}
         {city && channelScope === 'world' && (
           <>
-            <button type="button" className="header-hero header-hero--world" onClick={goToChallengesTab}>
-              <span className="hero-main">{t('world.banner', { count: worldActivity?.crossCity?.count ?? 0 })}</span>
-              {worldActivity?.crossCity?.cities?.length > 0 && (
-                <span className="hero-sub">{worldActivity.crossCity.cities.join(', ')}</span>
-              )}
-            </button>
+            {(worldActivity?.crossCity?.count ?? 0) > 0 ? (
+              <button type="button" className="ch-world-hero" onClick={goToChallengesTab}>
+                <span className="ch-world-hero-main">{t('world.banner', { count: worldActivity.crossCity.count })}</span>
+                {worldActivity.crossCity.cities?.length > 0 && (
+                  <span className="ch-world-hero-sub">{worldActivity.crossCity.cities.join(', ')}</span>
+                )}
+              </button>
+            ) : (
+              <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>
+                <span className="ch-world-hero-emoji" aria-hidden="true">🔥</span>
+                <span className="ch-world-hero-main">{t('world.heroEmpty')}</span>
+                <span className="ch-world-hero-sub">{t('world.heroEmptySub')}</span>
+              </button>
+            )}
             <div className="ch-pills">
               <span className="ch-pill ch-pill--static">👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</span>
               <span className="ch-pill ch-pill--static">🏙️ {t('world.cities', { count: worldActivity?.cities ?? 0 })}</span>
+              <button
+                type="button"
+                className="ch-pill ch-pill--accent"
+                onClick={() => { setLeaderboardScope('world'); setShowLeaderboard(true) }}
+              >
+                🏆 {t('world.leaderboard')}
+              </button>
             </div>
           </>
         )}
