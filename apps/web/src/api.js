@@ -144,6 +144,15 @@ export async function markChannelRead(channelId, guestId) {
   } catch { /* non-fatal: unread is a convenience, never blocks the UI */ }
 }
 
+// Quiet-city fallback context for a city. → { cityQuiet, worldActive }
+export async function fetchQuietContext(cityChannelId) {
+  try {
+    const res = await fetch(`${BASE}/world/quiet-context?city=${encodeURIComponent(cityChannelId)}`, { credentials: 'include' })
+    if (!res.ok) return { cityQuiet: false, worldActive: false }
+    return res.json()
+  } catch { return { cityQuiet: false, worldActive: false } }
+}
+
 // Batch unread counts. channelIds = [cityChannelId, 'world', ...]. → { [id]: count }
 export async function fetchUnread(channelIds, guestId) {
   const params = new URLSearchParams()

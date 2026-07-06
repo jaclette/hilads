@@ -7182,6 +7182,23 @@ img.pub-profile-avatar {
   text-align: center;
 }
 .feed-world-sys .feed-join-time { margin-left: 0.4rem; opacity: 0.6; }
+/* Quiet-city → World nudge card, pinned at the top of a quiet city feed. */
+.feed-quiet-card {
+  display: block;
+  width: calc(100% - 1.5rem);
+  margin: 0.5rem auto;
+  padding: 0.7rem 1rem;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(194, 74, 56, 0.14), rgba(184, 114, 40, 0.14));
+  border: 1px solid var(--accent2);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+.feed-quiet-card:active { opacity: 0.85; }
 .ch-pill {
   flex: 1;
   min-width: 0;

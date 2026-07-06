@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -878,9 +878,27 @@ export default function App() {
   const [worldUnread,  setWorldUnread]  = useState(0)
   const [cityUnread,   setCityUnread]   = useState(0)
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
+  const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
   const channelScopeRef = useRef('city')
   const worldJoinedRef  = useRef(false)
+  const quietCardDismissedRef = useRef(false) // once per session
   useEffect(() => { channelScopeRef.current = channelScope }, [channelScope])
+  // Quiet-city → World nudge: when the user is on a quiet city with unread World
+  // activity, offer a one-tap jump. Shown once per session; never routes a user
+  // from one quiet room to another (worldActive gate is server-side).
+  useEffect(() => {
+    if (status !== 'ready' || channelScope !== 'city' || !channelId || quietCardDismissedRef.current) return
+    if (worldUnread <= 0) return
+    let cancelled = false
+    fetchQuietContext(channelId).then(ctx => {
+      if (cancelled || quietCardDismissedRef.current) return
+      if (ctx.cityQuiet && ctx.worldActive) {
+        setQuietCardOpen(true)
+        track('quiet_city_card_shown', { city_id: channelId })
+      }
+    }).catch(() => {})
+    return () => { cancelled = true }
+  }, [status, channelId, channelScope, worldUnread]) // eslint-disable-line react-hooks/exhaustive-deps
   const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
@@ -4791,6 +4809,20 @@ export default function App() {
         )}
 
         <div className="messages" ref={messagesContainerRef}>
+          {channelScope === 'city' && quietCardOpen && (
+            <button
+              type="button"
+              className="feed-quiet-card"
+              onClick={() => {
+                track('quiet_city_card_tapped', { city_id: channelId })
+                quietCardDismissedRef.current = true
+                setQuietCardOpen(false)
+                switchScope('world')
+              }}
+            >
+              {t('world.quietCard', { count: worldUnread })}
+            </button>
+          )}
           {loadingOlder && (
             <div className="messages-load-older">
               <span className="messages-load-older-spinner" />
