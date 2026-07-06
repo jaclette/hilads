@@ -6,6 +6,7 @@ import OpenInAppBanner from './components/OpenInAppBanner'
 import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
 import posthog from 'posthog-js'
+import { captureUtm } from './lib/utm'
 
 // Crawler / bot / link-previewer short-circuit. The prerender already shipped
 // the SSR HTML (title, meta, hreflang, JSON-LD, body) that bots index - running
@@ -37,6 +38,10 @@ posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
         }
     },
 })
+
+// Capture ad UTM/click-ids from the entry URL as PostHog super properties so the
+// whole landing→join funnel is attributable to the creative that drove the click.
+captureUtm()
 
 if (import.meta.env.VITE_SENTRY_DSN) {
     Sentry.init({

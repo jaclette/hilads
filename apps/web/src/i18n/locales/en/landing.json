@@ -106,5 +106,25 @@
       "You validate from your couch. Reject with a reason if it's off."
     ],
     "cta": "Try a global challenge"
+  },
+  "stories": {
+    "tagline": "Become local. Anywhere.",
+    "enterCity": "Enter {{city}} → free, no account, 5 seconds",
+    "enterChallenge": "Take this challenge in {{city}} →",
+    "swipeUp": "Swipe up",
+    "liveHeadline": "{{city}} is live right now.",
+    "how": {
+      "title": "Meet people in person, in 3 steps.",
+      "step1": "Pick your side — local or traveler",
+      "step2": "Launch or join a challenge",
+      "step3": "Meet up for real"
+    },
+    "concept": {
+      "line1": "No followers.",
+      "line2": "No feed.",
+      "line3": "No algorithms.",
+      "line4": "A reason to meet in person."
+    },
+    "storePrompt": "Prefer the app? Get notifications and the full experience."
   }
 }

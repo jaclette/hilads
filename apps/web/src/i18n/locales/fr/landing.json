@@ -106,5 +106,25 @@
       "Tu valides depuis ton canapé. Refuse avec une raison si ça ne colle pas."
     ],
     "cta": "Tester un défi global"
+  },
+  "stories": {
+    "tagline": "Deviens local. Partout.",
+    "enterCity": "Entrer dans {{city}} → gratuit, sans compte, 5 secondes",
+    "enterChallenge": "Relève ce défi à {{city}} →",
+    "swipeUp": "Glisse vers le haut",
+    "liveHeadline": "{{city}} vit en ce moment.",
+    "how": {
+      "title": "Rencontre des gens en vrai, en 3 étapes.",
+      "step1": "Choisis ton camp — local ou voyageur",
+      "step2": "Lance ou rejoins un défi",
+      "step3": "Retrouve les autres en vrai"
+    },
+    "concept": {
+      "line1": "Pas d’abonnés.",
+      "line2": "Pas de fil.",
+      "line3": "Pas d’algorithme.",
+      "line4": "Juste une raison de se voir en vrai."
+    },
+    "storePrompt": "Tu préfères l’app ? Notifications et expérience complète."
   }
 }

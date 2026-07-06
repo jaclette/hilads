@@ -15397,3 +15397,219 @@ body.has-app-promo-banner .page-header {
 }
 .proof-review-charcount { align-self: flex-end; font-size: 0.6875rem; color: var(--muted-2, #888); }
 .proof-review-error     { margin: 0; color: #ef4444; font-size: 0.8125rem; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   StoriesLanding (.sl-*) - mobile-first vertical "stories" ad-landing.
+   Full-viewport CSS scroll-snap. dvh is critical: Instagram/TikTok in-app
+   webviews change chrome height, and vh would leave the sticky CTA under the
+   toolbar. Fallback order: 100vh (old) → 100dvh (modern, wins).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.sl {
+  height: 100vh;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  background:
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(194, 74, 56, 0.16) 0%, transparent 62%),
+    var(--bg);
+  scrollbar-width: none;
+}
+.sl::-webkit-scrollbar { display: none; }
+
+.sl-screen {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 18px;
+  /* room for the fixed top progress bar + the fixed bottom CTA (+ safe areas) */
+  padding: calc(28px + env(safe-area-inset-top)) 22px calc(96px + env(safe-area-inset-bottom));
+  color: var(--text);
+}
+
+/* ── Segmented progress bar (stories style), fixed top ── */
+.sl-progress {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 40;
+  display: flex;
+  gap: 5px;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 8px;
+  pointer-events: none;
+}
+.sl-progress-seg {
+  flex: 1 1 0;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.25s ease;
+}
+.sl-progress-seg.done   { background: rgba(255, 122, 60, 0.55); }
+.sl-progress-seg.active { background: var(--hot-dot); }
+
+/* ── Sticky primary CTA (persists across screens 1-4) ── */
+.sl-cta,
+.sl-cta-big {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1.2;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 8px 30px rgba(194, 74, 56, 0.35);
+  -webkit-tap-highlight-color: transparent;
+}
+.sl-cta {
+  position: fixed;
+  left: 16px; right: 16px;
+  bottom: 0;
+  z-index: 45;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
+  margin-bottom: max(0px, env(safe-area-inset-bottom));
+  padding-bottom: max(16px, calc(16px + env(safe-area-inset-bottom)));
+}
+.sl-cta-big {
+  padding: 18px 26px;
+  max-width: 460px;
+  width: 100%;
+}
+.sl-cta:active, .sl-cta-big:active { filter: brightness(1.12); }
+
+/* ── Swipe-up hint (chevron), all screens except last ── */
+.sl-hint {
+  position: absolute;
+  bottom: calc(84px + env(safe-area-inset-bottom));
+  left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  color: var(--muted2);
+  pointer-events: none;
+}
+.sl-hint-text { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.3px; }
+.sl-chevron { animation: sl-bounce 1.5s ease-in-out infinite; }
+@keyframes sl-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ── S1 hook ── */
+.sl-brand { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.sl-tagline { font-size: 1rem; font-weight: 700; color: var(--text); letter-spacing: -0.2px; }
+.sl-video {
+  position: relative;
+  width: min(74vw, 340px);
+  aspect-ratio: 9 / 16;
+  max-height: 62dvh;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #050403;              /* dark poster bg - no layout jump while loading */
+  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+.sl-video-el { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+
+/* ── S2 live ── */
+.sl-headline {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  max-width: 22ch;
+}
+.sl-headline--convert { margin-bottom: 4px; }
+.sl-flag { font-size: 1.1em; vertical-align: middle; }
+.sl-activity { align-items: center; gap: 4px; }
+.sl-activity .ob-activity-line { font-size: 0.95rem; }
+/* Tappable preview rows */
+.sl-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: min(88vw, 420px);
+  text-align: left;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 12px 14px;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, border-color 0.15s ease;
+}
+.sl-row:active { transform: scale(0.98); }
+.sl-row--hot {
+  border-color: rgba(255, 122, 60, 0.55);
+  background: rgba(255, 122, 60, 0.10);
+  box-shadow: 0 0 20px rgba(255, 122, 60, 0.12);
+}
+.sl-row .ob-event-title { font-weight: 600; }
+.sl-row-cta { color: var(--hot-dot); font-weight: 800; flex-shrink: 0; }
+.sl-screen--live .ob-events-preview { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center; }
+
+/* ── S3 how ── */
+.sl-steps { display: flex; flex-direction: column; gap: 20px; width: min(86vw, 420px); }
+.sl-step { display: flex; align-items: center; gap: 14px; text-align: left; }
+.sl-step-icon {
+  flex-shrink: 0;
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  font-size: 24px;
+  border-radius: 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+}
+.sl-step-text { font-size: 1.05rem; font-weight: 600; line-height: 1.25; }
+
+/* ── S4 proof ── */
+.sl-concept {
+  display: flex; flex-direction: column; gap: 2px;
+  margin: 0;
+  font-size: 1.9rem; font-weight: 800; letter-spacing: -0.6px; line-height: 1.12;
+}
+.sl-concept strong { color: var(--hot-dot); margin-top: 8px; }
+.sl-stats { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.sl-stat {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 90px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.sl-stat-num { font-size: 1.7rem; font-weight: 800; color: var(--text); }
+.sl-stat-label { font-size: 0.72rem; color: var(--muted2); margin-top: 2px; }
+
+/* ── S5 convert ── */
+.sl-screen--convert { gap: 22px; }
+.sl-store { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.sl-store-prompt { margin: 0; font-size: 0.8rem; color: var(--muted2); max-width: 30ch; }
+.sl-stores { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.sl-tertiary { display: flex; align-items: center; gap: 10px; }
+.sl-link {
+  background: none; border: none; cursor: pointer;
+  color: var(--muted2); font-size: 0.8rem; font-weight: 600;
+  text-decoration: underline; text-underline-offset: 2px;
+  padding: 6px 2px;
+}
+.sl-tertiary-dot { color: var(--muted); }

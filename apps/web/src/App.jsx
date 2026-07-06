@@ -21,6 +21,8 @@ import { formatExpiresIn } from './expiry'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
 import LandingPage from './components/LandingPage'
+import StoriesLanding from './components/StoriesLanding'
+import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
 import EventsSidebar from './components/EventsSidebar'
 import AttendeeAvatars from './components/AttendeeAvatars'
 import useMentions from './hooks/useMentions'
@@ -111,6 +113,10 @@ function parseDeepLink() {
   const venueMatch     = path.match(/^\/venue\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)
   const shortLinkMatch = path.match(/^\/e\/([a-f0-9]{16})$/)
   const topicMatch     = path.match(/^\/t\/([a-f0-9]{16})$/)
+  // /c/:hex16 - AD-CREATIVE deep link. Unlike /challenge/:id (which silently
+  // auto-joins into the app), this shows the STORIES landing with the challenge
+  // highlighted on Screen 2; the primary CTA joins the user into that challenge.
+  const landingChallengeMatch = path.match(/^\/c\/([a-f0-9]{16})$/)
   // /city/:slug/:category - SPA treats as a regular city deep-link; the
   // prerender handles the SEO-specific /category route. SPA hydration just
   // shows the city page. (Future: pre-apply category filter from link[2].)
@@ -122,6 +128,7 @@ function parseDeepLink() {
   if (venueMatch)          return { type: 'venue',         id: venueMatch[1] }
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
+  if (landingChallengeMatch) return { type: 'landing_challenge', id: landingChallengeMatch[1] }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/friend-requests') return { type: 'friend-requests' }
@@ -919,7 +926,12 @@ export default function App() {
   const [eventInspirationCity, setEventInspirationCity] = useState(null)
 
   const [previewTimezone, setPreviewTimezone] = useState(() => loadIdentity()?.timezone ?? 'UTC')
-  const [previewLiveCount] = useState(() => 15 + Math.floor(Math.random() * 35))
+  // Real "people online now" for the featured/preview city (channel activeUsers).
+  // Starts at 0; the StoriesLanding hides the people-online line below
+  // MIN_LIVE_COUNT and leads with the persistent challenges/events counts instead.
+  const [previewLiveCount, setPreviewLiveCount] = useState(0)
+  // /c/:id ad-landing: the highlighted challenge shown on Screen 2 (null on bare /).
+  const [landingChallenge, setLandingChallenge] = useState(null)
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
@@ -1382,6 +1394,13 @@ export default function App() {
   const prevChallengeCountRef = useRef(0)  // detects new challenges added to cityChallenges
   const locPromiseRef = useRef(null)
   const openScreenOnJoinRef = useRef(null) // set by deep link; opened after handleJoin completes
+  // Stories-landing: challenge id to open after the join completes (set by a
+  // Screen-2 challenge-row tap or a /c/:id primary CTA).
+  const pendingChallengeRef = useRef(null)
+  // True when the visitor is on the stories ad-landing (bare / or /c/:id) so
+  // handleJoin joins the FEATURED city (via locPromiseRef) rather than a stale
+  // saved city, and we kick off background geo (no prompt) after entry.
+  const featuredEntryRef = useRef(false)
   // Guard for the auto-bootstrap effect - prevents the deep-link auto-join
   // from firing twice under React StrictMode in dev.
   const guestAutoJoinedRef = useRef(false)
@@ -1634,6 +1653,30 @@ export default function App() {
     }
   }, [account]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Resolve the FEATURED city (Ho Chi Minh City) for the stories ad-landing with
+  // NO geolocation prompt. Sets the header city + preview channel (drives the
+  // Screen-2 live widget) + real people-online count (channel activeUsers), and
+  // returns a location object so handleJoin can join it. (function decl = hoisted,
+  // so the effects below can call it.)
+  function resolveFeaturedCity() {
+    featuredEntryRef.current = true
+    return fetchCityBySlug(FEATURED_CITY.slug).then(data => {
+      if (!data) return null
+      setCity(data.city)
+      setCityCountry(data.country)
+      setCityTimezone(data.timezone)
+      setPreviewChannelId(data.channelId)
+      setPreviewTimezone(data.timezone ?? 'UTC')
+      // Real live count for the featured city - best effort, non-blocking.
+      fetchChannels().then(list => {
+        const ch = (list?.channels ?? []).find(c => c.channelId === data.channelId)
+        const n = Number(ch?.activeUsers ?? 0)
+        if (n > 0) setPreviewLiveCount(n)
+      }).catch(() => {})
+      return { channelId: data.channelId, city: data.city, timezone: data.timezone, country: data.country }
+    }).catch(() => null)
+  }
+
   // ── Deep link resolution on cold load ─────────────────────────────────────
   // Runs once. If the URL is /city/:slug or /event/:id, override geolocation
   // by pointing locPromiseRef at the linked city before handleJoin fires.
@@ -1705,6 +1748,31 @@ export default function App() {
       })
     }
 
+    if (link.type === 'landing_challenge') {
+      // /c/:id AD-CREATIVE deep link. Resolve the challenge + its host city and
+      // highlight it on the stories landing, but DO NOT auto-join (this type is
+      // excluded from the guest auto-join list below). The primary CTA / row tap
+      // joins into it via pendingChallengeRef. Falls back to the featured city on 404.
+      featuredEntryRef.current = true
+      locPromiseRef.current = fetchChallengeById(link.id).then(data => {
+        if (!data) return resolveFeaturedCity()
+        const { challenge, channelId, cityName, country, timezone } = data
+        setLandingChallenge(challenge)
+        pendingChallengeRef.current = challenge.id
+        setCity(cityName)
+        setCityCountry(country)
+        setCityTimezone(timezone)
+        setPreviewChannelId(channelId)
+        setPreviewTimezone(timezone ?? 'UTC')
+        fetchChannels().then(list => {
+          const ch = (list?.channels ?? []).find(c => c.channelId === channelId)
+          const n = Number(ch?.activeUsers ?? 0)
+          if (n > 0) setPreviewLiveCount(n)
+        }).catch(() => {})
+        return { channelId, city: cityName, timezone, country }
+      })
+    }
+
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
@@ -1733,8 +1801,20 @@ export default function App() {
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    // start geolocation immediately - runs concurrently with auth check
-    locPromiseRef.current = locPromiseRef.current ?? startGeolocation()
+    // Resolve the target city. The stories ad-landing (bare / or /c/:id) features
+    // a fixed city with NO GPS prompt; real deep links keep geolocation as the
+    // fallback. Registered users with a saved city auto-rejoin (below) and never
+    // await locPromiseRef, so we skip resolving anything for them.
+    if (!locPromiseRef.current) {
+      const entryLink   = parseDeepLink()
+      const storiesEntry = !entryLink || entryLink.type === 'landing_challenge'
+      const willAutoRejoin = !!localStorage.getItem(AUTH_FLAG_KEY) && !!loadIdentity()?.channelId
+      if (storiesEntry && !willAutoRejoin) {
+        locPromiseRef.current = resolveFeaturedCity()   // guest ad-landing: no GPS prompt
+      } else {
+        locPromiseRef.current = startGeolocation()       // registered / unhandled: geo as before
+      }
+    }
 
     // Resolve auth state BEFORE auto-rejoining so handleJoin always has the
     // correct identity. Without this, accountRef.current is null when
@@ -2004,7 +2084,11 @@ export default function App() {
     return () => { cancelled = true }
   }, [channelId, cityTimezone, city, activeNickname])
 
-  async function startGeolocation() {
+  // switchCity=false: capture coords + record the geo city for "Back to my
+  // location" WITHOUT relocating the user. Used post-entry on the stories landing
+  // so we honor "request GPS after entry" but never yank someone out of the
+  // featured city they chose to enter.
+  async function startGeolocation({ switchCity = true } = {}) {
     setGeoState('pending')
     try {
       const position = await getPosition()
@@ -2018,10 +2102,12 @@ export default function App() {
       // falls back to global nearest when no country is sent.
       const country = await reverseGeocodeCountry(userLat, userLng)
       const location = await resolveLocation(userLat, userLng, country)
-      setCity(location.city)
-      setCityCountry(location.country ?? null)
-      setPreviewTimezone(location.timezone ?? 'UTC')
-      setPreviewChannelId(location.channelId ?? null)
+      if (switchCity) {
+        setCity(location.city)
+        setCityCountry(location.country ?? null)
+        setPreviewTimezone(location.timezone ?? 'UTC')
+        setPreviewChannelId(location.channelId ?? null)
+      }
       setGeoChannelId(location.channelId ?? null)
       setGeoCity(location.city ?? null)
       setGeoCountry(location.country ?? null)
@@ -2305,7 +2391,7 @@ export default function App() {
     if (nowDotTimerRef.current) clearTimeout(nowDotTimerRef.current)
   }, [])
 
-  async function handleJoin(e, rejoinData = null) {
+  async function handleJoin(e, rejoinData = null, opts = null) {
     if (e) e.preventDefault()
     // Registered users always lead with their backend display_name.
     // This handles the authMe() → handleJoin() race on auto-rejoin.
@@ -2315,6 +2401,12 @@ export default function App() {
     setNickname(name)
     nicknameRef.current = name
     setStatus('joining')
+
+    // Funnel: fire only for genuine anonymous (guest) joins - the landing funnel,
+    // not registered auto-rejoins.
+    if (!accountRef.current) {
+      track('anonymous_join_started', { entry: featuredEntryRef.current ? 'stories' : 'other', has_challenge: !!pendingChallengeRef.current })
+    }
 
     const _t0 = performance.now()
 
@@ -2361,10 +2453,14 @@ export default function App() {
       const urlLink = parseDeepLink()
       const deepLinkCity = !rejoinData && urlLink &&
         (urlLink.type === 'city' || urlLink.type === 'event' || urlLink.type === 'topic' || urlLink.type === 'challenge' || urlLink.type === 'past')
+      // opts.featured (stories primary CTA) makes the FEATURED city (already in
+      // locPromiseRef) win over any stale saved city - the ad says "Enter Saigon",
+      // so we join Saigon even for a returning guest with an old saved city.
+      const useLocPromise = deepLinkCity || (!rejoinData && opts?.featured)
       if (rejoinData) {
         console.debug('[hilads:join] path=rejoin ms=0')
         location = await hydrateSavedLocation(rejoinData)
-      } else if (deepLinkCity) {
+      } else if (useLocPromise) {
         console.debug('[hilads:join] path=deep-link type=' + urlLink.type + ' ms=' + Math.round(performance.now() - _t0))
         location = await locPromiseRef.current
         // Resolution failed (bad slug / offline) → fall back to saved city rather
@@ -2467,6 +2563,27 @@ export default function App() {
       setOnlineUsers([{ id: 'me', sessionId: sessionIdRef.current, nickname: name, isMe: true }])
       setOnlineCount(boot.onlineCount ?? null)
       setStatus('ready')
+
+      // ── Stories ad-landing post-entry hooks ──────────────────────────────────
+      if (!accountRef.current) {
+        track('anonymous_join_completed', { channel_id: location.channelId, has_challenge: !!pendingChallengeRef.current })
+      }
+      // A Screen-2 challenge tap / /c/:id CTA queued a challenge to open once the
+      // city is joined. Fetch the full object and open its chat.
+      if (pendingChallengeRef.current) {
+        const chId = pendingChallengeRef.current
+        pendingChallengeRef.current = null
+        setTimeout(() => {
+          fetchChallengeById(chId).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
+        }, 600)
+      }
+      // "Request GPS after entry": on the stories featured-entry, kick off a
+      // background geolocation that records the user's coords/country for
+      // presence WITHOUT switching them out of the city they just entered.
+      if (featuredEntryRef.current) {
+        featuredEntryRef.current = false
+        startGeolocation({ switchCity: false }).catch(() => {})
+      }
 
       // If the user entered via the bare root (hilads.live, /fr, /vi) and then
       // joined a city - onboarding pick or returning-user auto-rejoin - reflect
@@ -3984,13 +4101,10 @@ export default function App() {
 
     return (
       <>
-        <LandingPage
-          city={city}
+        <StoriesLanding
+          cityName={city}
           cityCountry={cityCountry}
-          geoState={geoState}
-          nickname={nickname}
-          setNickname={setNickname}
-          handleJoin={handleJoin}
+          landingChallenge={landingChallenge}
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
@@ -3999,10 +4113,10 @@ export default function App() {
           previewTopics={previewTopics}
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
+          onPrimaryCta={() => handleJoin(null, null, { featured: true })}
+          onChallengeRow={(ch) => { pendingChallengeRef.current = ch?.id ?? null; handleJoin(null, null, { featured: true }) }}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
           onSignIn={() => { setObAuthInitialTab('login');  setObShowAuth(true) }}
-          onOpenCityPicker={openObCityPicker}
-          retryGeo={retryGeo}
         />
 
         {obPickingCity && (
