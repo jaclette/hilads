@@ -1789,6 +1789,15 @@ function injectMeta(shell, meta, locale = 'en') {
 // ── Locale (Option A: un-prefixed = English canonical; /fr, /vi additive) ─────
 const I18N_LOCALES = ['en', 'fr', 'vi', 'es', 'it', 'pt-br', 'pt-pt', 'de', 'nl', 'zh-hans', 'zh-hant', 'ja', 'ko', 'fil', 'th', 'id', 'hi', 'ru', 'ar']
 
+// Ephemeral, per-item pages (events, challenges) are thin and near-duplicate
+// across 19 machine translations - Google crawled all 19 and filed the localized
+// variants under "Crawled - currently not indexed" (~10k URLs). Keep ONLY the
+// English page indexable: drop the 19-locale hreflang fan-out on these types and
+// noindex the localized variants, so Google stops discovering + recrawling 18
+// extra URLs per item. Cuts crawl budget + Postgres egress. City / category /
+// venue / home stay full 19-locale (they're the pages that actually earn rankings).
+const EPHEMERAL_SEO_TYPES = new Set(['event', 'challenge'])
+
 function setHtmlLang(shell, locale) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr'
   return shell.replace(/<html\s+lang="[^"]*"/i, `<html lang="${locale}" dir="${dir}"`)
@@ -1938,7 +1947,7 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
         canonicalPath = data?.event ? `/event/${eventSlug(data.event)}` : `/event/${hex}`
         meta = composeEventMeta(data, canonicalPath, hex, locale)
         if (meta) {
-          cacheMaxAge = 1800                 // 30 min - SSR meta/JSON-LD; crawler freshness doesn't need 5 min, and per-locale URLs multiply backend egress
+          cacheMaxAge = 3600                 // 1 h - events change slowly for crawlers; longer TTL + fewer indexed locales cuts Postgres egress
           const augmented = {
             ...data,
             _descriptionForSchema: meta.description,
@@ -2178,8 +2187,14 @@ http host: ${process.env.VERCEL_URL || req.headers['x-forwarded-host'] || req.he
   }
 
   if (meta)          html = injectMeta(html, meta, locale)
-  if (meta)          html = injectHreflang(html, canonicalPath)
-  if (meta?.noindex) html = injectRobotsNoindex(html)
+  // Skip the 19-locale hreflang fan-out on ephemeral per-item pages (events /
+  // challenges) - only their English page is a first-class SEO surface.
+  if (meta && !EPHEMERAL_SEO_TYPES.has(type)) html = injectHreflang(html, canonicalPath)
+  // noindex the LOCALIZED (non-English) variant of an ephemeral page. English
+  // (localePrefix === '') stays indexable; the /fr, /ar, … duplicates get a
+  // robots noindex so Google drops them from the "crawled - not indexed" bucket.
+  const ephemeralLocaleVariant = EPHEMERAL_SEO_TYPES.has(type) && !!localePrefix
+  if (meta && (meta.noindex || ephemeralLocaleVariant)) html = injectRobotsNoindex(html)
   if (jsonLd)        html = injectJsonLd(html, jsonLd)
   if (bodyHtml)      html = injectBody(html,   bodyHtml)
 

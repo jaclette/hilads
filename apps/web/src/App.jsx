@@ -668,7 +668,10 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   // World cross-city system messages render INLINE as distinct info rows (unlike
   // city joins, which are diverted to the arrivals bar). Payload carries the
   // structured fields (cities, challenge, nickname) for localized rendering.
-  if (m.type === 'system' && (m.event === 'challenge_created' || m.event === 'new_user' || m.event === 'challenge_won')) {
+  // World "new_user" arrivals are surfaced by the arrivals pill (✈️ N arrivals),
+  // so the inline "X from City just joined" lines are redundant noise - drop them.
+  if (m.type === 'system' && m.event === 'new_user') return null
+  if (m.type === 'system' && (m.event === 'challenge_created' || m.event === 'challenge_won')) {
     return { type: 'world_system', subtype: m.event, id: m.id || `wsys_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, createdAt: m.createdAt }
   }
   // Guard: any other system message that slips through has no nickname - skip it rather than crash.

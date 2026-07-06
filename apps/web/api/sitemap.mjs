@@ -104,11 +104,15 @@ function hreflangLinks(loc) {
   ]
 }
 
-function urlEntry({ loc, lastmod, changefreq, priority }) {
+function urlEntry({ loc, lastmod, changefreq, priority, alternates = true }) {
   return [
     '  <url>',
     `    <loc>${xmlEscape(loc)}</loc>`,
-    ...hreflangLinks(loc),
+    // Ephemeral per-item pages (events, challenges) list ONLY the English URL -
+    // their localized variants are noindex'd in the prerender, so advertising 19
+    // hreflang alternates here would just feed Google URLs it will refuse to
+    // index. City / category / venue pages keep the full 19-locale cluster.
+    ...(alternates ? hreflangLinks(loc) : []),
     lastmod    ? `    <lastmod>${lastmod}</lastmod>` : null,
     changefreq ? `    <changefreq>${changefreq}</changefreq>` : null,
     priority   ? `    <priority>${priority}</priority>` : null,
@@ -188,7 +192,7 @@ function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
   for (const e of events) {
     if (!e?.id || !e?.title) continue
     const lastmod = e.updated_at ? dayFromEpoch(e.updated_at) : today
-    entries.push(urlEntry({ loc: `${SITE_BASE}/event/${eventSlug(e.title, e.id)}`, lastmod, changefreq: 'daily', priority: '0.7' }))
+    entries.push(urlEntry({ loc: `${SITE_BASE}/event/${eventSlug(e.title, e.id)}`, lastmod, changefreq: 'daily', priority: '0.7', alternates: false }))
   }
 
   // Challenge pages - both open and validated are indexable (validated stay
@@ -197,7 +201,7 @@ function buildEntries({ channels, venues, categoryPairs, events, challenges }) {
   for (const c of (challenges || [])) {
     if (!c?.id || !c?.title) continue
     const lastmod = c.updated_at ? dayFromEpoch(c.updated_at) : today
-    entries.push(urlEntry({ loc: `${SITE_BASE}/challenge/${challengeSlug(c.title, c.id)}`, lastmod, changefreq: 'weekly', priority: '0.7' }))
+    entries.push(urlEntry({ loc: `${SITE_BASE}/challenge/${challengeSlug(c.title, c.id)}`, lastmod, changefreq: 'weekly', priority: '0.7', alternates: false }))
   }
 
   return entries

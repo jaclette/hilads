@@ -811,7 +811,9 @@ export default function ChatTab() {
   //   high index = top of screen (oldest, user scrolls up)
   const allMessages = useMemo<Message[]>(() => {
     const chat = messages.filter(m =>
-      !(m.type === 'system' && (m.event === 'weather' || m.event === 'join'))
+      // 'new_user' = World "X from City just joined" arrivals; the arrivals pill
+      // already surfaces these, so keep them out of the conversation.
+      !(m.type === 'system' && (m.event === 'weather' || m.event === 'join' || m.event === 'new_user'))
     );
     return [...chat, ...promptItems]
       .sort((a, b) => toMs(b.createdAt) - toMs(a.createdAt));
