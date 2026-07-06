@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useTranslation, Trans } from 'react-i18next'
 import { track } from '../lib/analytics'
 import Logo from './Logo'
 import { cityFlag, EVENT_ICONS } from '../cityMeta'
@@ -199,7 +199,7 @@ export default function StoriesLanding({
             block, which now lives in the sticky header above). */}
         <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
         <VideoHero onVisible={() => track('video_visible')} />
-        <p className="sl-bridge">{t('stories.screen1_invitation')}</p>
+        <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen1_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>
 
@@ -250,7 +250,7 @@ export default function StoriesLanding({
             ))}
           </div>
         )}
-        <p className="sl-bridge">{t('stories.screen2_invitation')}</p>
+        <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen2_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>
 
@@ -262,7 +262,7 @@ export default function StoriesLanding({
           <div className="sl-step"><span className="sl-step-icon">🔥</span><span className="sl-step-text">{t('stories.how.step2')}</span></div>
           <div className="sl-step"><span className="sl-step-icon">👋</span><span className="sl-step-text">{t('stories.how.step3')}</span></div>
         </div>
-        <p className="sl-bridge">{t('stories.screen3_invitation')}</p>
+        <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen3_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>
 
@@ -281,7 +281,7 @@ export default function StoriesLanding({
           <div className="sl-stat"><span className="sl-stat-num">20+</span><span className="sl-stat-label">{t('stats.cities')}</span></div>
           <div className="sl-stat"><span className="sl-stat-num">500+</span><span className="sl-stat-label">{t('stats.eventsCreated')}</span></div>
         </div>
-        <p className="sl-bridge">{t('stories.screen4_invitation')}</p>
+        <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen4_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>
 

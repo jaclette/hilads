@@ -15756,14 +15756,27 @@ body.has-app-promo-banner .page-header {
    screen's content and the swipe-up chevron. Slightly smaller than the screen
    title, medium weight, primary on-dark, centered. NOT animated. */
 .sl-bridge {
-  margin: 0;
-  max-width: 18rem;
-  font-size: 0.98rem;
+  /* The invitation line is an emotional bridge to the CTA - a moment, not a
+     caption. align-self:center keeps it viewport-centered on EVERY screen even
+     next to a wide left-aligned block (fixes the S3 "how it works" steps case). */
+  align-self: center;
+  /* Own margin ADDS to the screen's 14px flex gap, so ~10-18px here lands the
+     total breathing room at ~24-32px without overflowing the busy S2 screen. */
+  margin: clamp(10px, 2.2dvh, 18px) auto;
+  max-width: min(22rem, 86vw);
+  font-size: clamp(20px, 5.4vw, 22px);      /* real presence, not body copy */
   font-weight: 600;
   line-height: 1.3;
   color: var(--text);
   text-align: center;
   text-wrap: balance;
+}
+/* Highlighted action phrase - same brand accent as the CTA gradient, so the
+   invitation reads as connected to the button below it. Marked in i18n strings
+   with <hi>…</hi> (see stories.screenN_invitation). */
+.sl-bridge-accent {
+  color: var(--accent);
+  font-weight: 700;
 }
 .sl-video {
   position: relative;
