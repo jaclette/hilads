@@ -5137,13 +5137,13 @@ export default function App() {
                   className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : '', 'animate', highlightedMsgId === item.id ? 'msg-highlight' : ''].filter(Boolean).join(' ')}
                   style={item.staggerDelay ? { animationDelay: item.staggerDelay } : undefined}
                 >
-                  {/* In World, the author line shows on EVERY message (incl. your
-                      own) with a home-country flag instead of the local/traveler
-                      mode - it's a global room, so you see your own name + flag.
-                      City chat keeps own messages name-less (intimate). */}
-                  {!isGrouped && (channelScope === 'world' || !isMine) && (
+                  {/* The author line shows on the first message of every run,
+                      including your OWN - you want to see your nickname on your
+                      messages (in both World and city). Own headers align right
+                      via msg-meta--mine. */}
+                  {!isGrouped && (
                     <div
-                      className={`msg-meta${channelScope === 'world' && isMine ? ' msg-meta--mine' : ''}${(item.userId || item.guestId) ? ' msg-meta--tappable' : ''}`}
+                      className={`msg-meta${isMine ? ' msg-meta--mine' : ''}${(item.userId || item.guestId) ? ' msg-meta--tappable' : ''}`}
                       onClick={
                         item.userId    ? () => openProfile(item.userId, item.nickname)
                         : item.guestId ? () => setGuestProfile({ guestId: item.guestId, nickname: item.nickname ?? '' })
@@ -5171,7 +5171,7 @@ export default function App() {
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                       {channelScope === 'world'
                         ? (() => { const cc = item.country || (isMine ? cityCountry : null); return cc ? <span className="msg-flag">{cityFlag(cc)}</span> : null })()
-                        : (() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
+                        : (() => { const m = item.mode || (isMine ? account?.mode : null) || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
                       {item.vibe && VIBE_META[item.vibe] && (
                         <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
                       )}
