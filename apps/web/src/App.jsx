@@ -1716,8 +1716,16 @@ export default function App() {
         }).catch(() => {})
         return { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
       }
-      // State B: no confident match → featured fallback + city-picker CTA.
-      setLandingState('city_picker')
+      // Server CONFIDENTLY found no nearby/only-in-country city → picker (State B).
+      if (geo && geo.state === 'city_unknown') {
+        setLandingState('city_picker')
+        setDetectedCity('unknown')
+        return resolveFeaturedCity()
+      }
+      // Geo merely UNAVAILABLE (localhost has no edge fn; cold-start >200ms;
+      // network/parse fail) - don't front a picker to everyone. Optimistically
+      // feature the default city; the CTA stays "Join {featured} 🔥" and the user
+      // can still switch cities inside. detected_city='unknown' keeps analytics honest.
       setDetectedCity('unknown')
       return resolveFeaturedCity()
     })

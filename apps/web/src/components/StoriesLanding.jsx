@@ -99,9 +99,16 @@ export default function StoriesLanding({
     return () => io.disconnect()
   }, [])
 
-  // Keep the latest landing_state / detected_city visible to the deferred
-  // landing_view timer below (props change once the /api/geo race settles).
-  const landingStateRef = useRef(landingState); landingStateRef.current = landingState
+  // Analytics landing_state (spec vocab), independent of which CTA we show: a real
+  // detected city name = "city_matched"; otherwise "city_unknown" (this correctly
+  // logs the optimistic geo-unavailable case as unknown even though its CTA joins).
+  const analyticsState = (landingChallenge || landingState === 'deep_link')
+    ? 'deep_link'
+    : (detectedCity && detectedCity !== 'unknown') ? 'city_matched' : 'city_unknown'
+
+  // Keep the latest values visible to the deferred landing_view timer below
+  // (props change once the /api/geo race settles).
+  const landingStateRef = useRef(analyticsState); landingStateRef.current = analyticsState
   const detectedCityRef = useRef(detectedCity); detectedCityRef.current = detectedCity
 
   // Funnel entry: fire once, deferred ~250ms so the IP→city race (200ms budget in
