@@ -24,7 +24,9 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import { Colors, FontSizes } from '@/constants';
+import { Image } from 'expo-image';
 import { avatarColor } from '@/lib/avatarColors';
+import { thumbUrl } from '@/lib/imageThumb';
 import { countryToFlag } from '@/lib/countryFlag';
 import { formatSmartTime } from '@/lib/messageTime';
 import type { Message, Badge } from '@/types';
@@ -247,6 +249,8 @@ interface Props {
    *  PR23 - Spectator added for posters who joined the channel but are
    *  neither the challenger nor the active taker. */
   roleBadge?:     'challenger' | 'taker' | 'spectator' | null;
+  /** World channel: show the author line (name + home-flag) on own messages too. */
+  worldScope?:    boolean;
 }
 
 // ── Join-request feed card (hangout request-to-join) ──────────────────────────
@@ -454,7 +458,7 @@ const MODE_EMOJI: Record<string, string> = {
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -466,11 +470,18 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   mode?:         string;
   /** PR9 - see ChatMessage Props. */
   roleBadge?:    'challenger' | 'taker' | 'spectator' | null;
+  /** World channel: show the author line on own messages too, with a home-flag. */
+  isMine?:       boolean;
+  worldScope?:   boolean;
 }) {
   const router  = useRouter();
   const { t }   = useTranslation('common');
   const { t: tChallenge } = useTranslation('challenge');
-  const { account } = useApp();
+  const { account, city } = useApp();
+  // Own messages aren't badge-enriched, so use the account photo + current-city
+  // country. (Other authors need a mobile badge-enrichment path - not yet wired.)
+  const photoThumb = isMine ? thumbUrl(account?.profile_photo_url) : undefined;
+  const flagCountry = worldScope ? (isMine ? city?.country ?? null : null) : null;
 
   // Navigate to a registered profile only when viewer is registered.
   // If viewer is a ghost, redirect to AuthGate instead.
@@ -494,11 +505,18 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
   const inner = (
     <>
-      <View style={[styles.avatar, { backgroundColor: color }]}>
-        <Text style={styles.avatarLetter}>{initial}</Text>
-      </View>
+      {photoThumb ? (
+        <Image source={{ uri: photoThumb }} style={[styles.avatar, { backgroundColor: color }]} contentFit="cover" cachePolicy="memory-disk" />
+      ) : (
+        <View style={[styles.avatar, { backgroundColor: color }]}>
+          <Text style={styles.avatarLetter}>{initial}</Text>
+        </View>
+      )}
       <Text style={[styles.author, { color }]}>{nickname}</Text>
-      {(() => { const m = mode || 'exploring'; return MODE_EMOJI[m] ? (
+      {/* World: home-country flag instead of the local/traveler mode label. */}
+      {worldScope ? (
+        flagCountry ? <Text style={styles.modeLabel}>{countryToFlag(flagCountry)}</Text> : null
+      ) : (() => { const m = mode || 'exploring'; return MODE_EMOJI[m] ? (
         <Text style={[styles.modeLabel, m === 'local' ? styles.modeLabelLocal : styles.modeLabelExploring]}>
           {MODE_EMOJI[m]} {t(`mode.${m}.label`)}
         </Text>
@@ -544,7 +562,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null }: Props) {
+function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null, worldScope = false }: Props) {
   const router = useRouter();
   const { t } = useTranslation('chat');
   const { account } = useApp();
@@ -811,7 +829,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             isGrouped ? styles.rowGrouped : styles.rowFirst,
             animStyle,
           ]}>
-            {!isMine && !isGrouped && (
+            {!isGrouped && (worldScope || !isMine) && (
               <SenderMeta
                 nickname={message.nickname ?? '?'}
                 color={c1}
@@ -822,7 +840,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                 contextBadge={message.contextBadge}
                 roleBadge={roleBadge}
                 vibe={message.vibe}
-                mode={message.mode}
+                mode={message.mode} isMine={isMine} worldScope={worldScope}
               />
             )}
             <View style={styles.bubbleWrap}>
@@ -857,7 +875,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
           animStyle,
           isSending && styles.rowSending,
         ]}>
-          {!isMine && !isGrouped && (
+          {!isGrouped && (worldScope || !isMine) && (
             <SenderMeta
               nickname={message.nickname ?? '?'}
               color={c1}
@@ -868,7 +886,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
               contextBadge={message.contextBadge}
               roleBadge={roleBadge}
               vibe={message.vibe}
-              mode={message.mode}
+              mode={message.mode} isMine={isMine} worldScope={worldScope}
             />
           )}
           {/* Wrap image + reactions so pills stay visually attached to the bubble */}
@@ -931,7 +949,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         />
 
         {/* ── Avatar + author - web: .msg-meta ── */}
-        {!isMine && !isGrouped && (
+        {!isGrouped && (worldScope || !isMine) && (
           <SenderMeta
             nickname={message.nickname ?? '?'}
             color={c1}
@@ -942,7 +960,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             contextBadge={message.contextBadge}
             roleBadge={roleBadge}
             vibe={message.vibe}
-            mode={message.mode}
+            mode={message.mode} isMine={isMine} worldScope={worldScope}
           />
         )}
 

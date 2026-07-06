@@ -954,6 +954,7 @@ export default function ChatTab() {
       <ChatMessage
         message={item}
         myGuestId={identity?.guestId}
+        worldScope={channelScope === 'world'}
         index={index}
         isGrouped={isGrouped}
         showTime={showTime}
@@ -975,7 +976,7 @@ export default function ChatTab() {
         reduceMotion={reduceMotion}
       />
     );
-  }, [allMessages, identity?.guestId, highlightedMsgId, handlePromptCta,
+  }, [allMessages, identity?.guestId, channelScope, highlightedMsgId, handlePromptCta,
       handleMessageLongPress, scrollToMessage, handleReact, handleAutoDismiss, reduceMotion]);
 
   // No city yet - prompt to pick one
