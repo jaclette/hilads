@@ -883,9 +883,13 @@ export default function App() {
   const worldJoinedRef  = useRef(false)
   const quietCardDismissedRef = useRef(false) // once per session
   useEffect(() => { channelScopeRef.current = channelScope }, [channelScope])
-  // Quiet-city → World nudge: when the user is on a quiet city with unread World
-  // activity, offer a one-tap jump. Shown once per session; never routes a user
-  // from one quiet room to another (worldActive gate is server-side).
+  const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
+  const [error, setError] = useState(null)
+  const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
+  const [channelId, setChannelId] = useState(null)
+  // Quiet-city → World nudge (declared AFTER channelId so its deps array doesn't
+  // TDZ). Shown once per session when the city is quiet and World has unread
+  // activity; never routes a user from one quiet room to another (server-gated).
   useEffect(() => {
     if (status !== 'ready' || channelScope !== 'city' || !channelId || quietCardDismissedRef.current) return
     if (worldUnread <= 0) return
@@ -899,10 +903,6 @@ export default function App() {
     }).catch(() => {})
     return () => { cancelled = true }
   }, [status, channelId, channelScope, worldUnread]) // eslint-disable-line react-hooks/exhaustive-deps
-  const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
-  const [error, setError] = useState(null)
-  const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
-  const [channelId, setChannelId] = useState(null)
   const [guest, setGuest] = useState(null)
   const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
   const [feed, setFeed] = useState([])
