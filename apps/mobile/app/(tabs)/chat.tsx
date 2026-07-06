@@ -27,7 +27,7 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
-import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, type WorldActivity } from '@/api/world';
+import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity } from '@/api/world';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import { fetchCityChallenges } from '@/api/challenges';
@@ -193,6 +193,8 @@ export default function ChatTab() {
   const [worldUnread,  setWorldUnread]  = useState(0);
   const [cityUnread,   setCityUnread]   = useState(0);
   const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
+  const [quietCardOpen, setQuietCardOpen] = useState(false);
+  const quietCardDismissed = useRef(false);
   const activeChannelId = channelScope === 'world' ? 'world' : channelId;
 
   // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
@@ -545,6 +547,21 @@ export default function ChatTab() {
       else if (channelScope === 'world' && (cid === String(channelId) || cid === `city_${channelId}`)) setCityUnread(u => Math.min(u + 1, 999));
     });
   }, [channelScope, channelId, identity?.guestId, account?.id]);
+
+  // Quiet-city → World nudge (once per session): shown when this city is quiet
+  // and World has unread activity and is itself lively (server-gated).
+  useEffect(() => {
+    if (channelScope !== 'city' || !channelId || quietCardDismissed.current || worldUnread <= 0) return;
+    let cancelled = false;
+    fetchQuietContext(channelId).then(ctx => {
+      if (cancelled || quietCardDismissed.current) return;
+      if (ctx.cityQuiet && ctx.worldActive) {
+        setQuietCardOpen(true);
+        track('quiet_city_card_shown', { city_id: channelId });
+      }
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, [channelScope, channelId, worldUnread]);
 
   // After a "share to my city" from another screen, the message was posted
   // out-of-band so this already-mounted tab never saw it - reload on focus.
@@ -1154,6 +1171,20 @@ export default function ChatTab() {
         style={styles.flex}
         behavior="padding"
       >
+        {channelScope === 'city' && quietCardOpen && (
+          <TouchableOpacity
+            style={styles.quietCard}
+            activeOpacity={0.85}
+            onPress={() => {
+              track('quiet_city_card_tapped', { city_id: channelId });
+              quietCardDismissed.current = true;
+              setQuietCardOpen(false);
+              switchScope('world');
+            }}
+          >
+            <Text style={styles.quietCardText} numberOfLines={2}>{t('world.quietCard', { count: worldUnread })}</Text>
+          </TouchableOpacity>
+        )}
         {loading ? (
           <View style={styles.center}>
             <ActivityIndicator color={Colors.accent} />
@@ -1444,6 +1475,17 @@ const styles = StyleSheet.create({
     textAlign:  'center',
     overflow:   'hidden',
   },
+  quietCard: {
+    marginHorizontal: 12,
+    marginTop:      8,
+    paddingVertical:   11,
+    paddingHorizontal: 14,
+    borderRadius:   14,
+    backgroundColor: Colors.bg2,
+    borderWidth:    1,
+    borderColor:    Colors.accent2,
+  },
+  quietCardText: { color: Colors.text, fontSize: 14, fontWeight: '700', textAlign: 'center' },
   citySelector: {
     flexDirection: 'row',
     alignItems:    'center',

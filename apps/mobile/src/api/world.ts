@@ -35,6 +35,14 @@ export async function fetchWorldActivity(): Promise<WorldActivity> {
   return api.get<WorldActivity>('/world/activity');
 }
 
+export async function fetchQuietContext(cityChannelId: string): Promise<{ cityQuiet: boolean; worldActive: boolean }> {
+  try {
+    return await api.get<{ cityQuiet: boolean; worldActive: boolean }>(`/world/quiet-context?city=${encodeURIComponent(cityChannelId)}`);
+  } catch {
+    return { cityQuiet: false, worldActive: false };
+  }
+}
+
 // Mark a channel (city integer id or 'world') read up to now. Non-fatal.
 export async function markChannelRead(channelId: string, guestId: string): Promise<void> {
   try {
