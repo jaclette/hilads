@@ -10,6 +10,7 @@ export interface NotificationPreferences {
   mention_push:         boolean;
   channel_message_push: boolean;
   city_join_push:       boolean;
+  world_arrival_push:   boolean;
   friend_request_push:  boolean;
   vibe_received_push:   boolean;
   profile_view_push:    boolean;

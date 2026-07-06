@@ -14,6 +14,8 @@
     "newEventSub": "Wanneer iemand een evenement maakt in je stad",
     "cityJoinLabel": "Iemand arriveert in je stad",
     "cityJoinSub": "Wanneer iemand meedoet aan het kanaal van jouw stad",
+    "worldArrivalLabel": "Nieuwe aankomsten wereldwijd",
+    "worldArrivalSub": "Wanneer iemand nieuw uit een willekeurige stad binnenkomt (World-kanaal)",
     "friendLabel": "Vriendverzoeken",
     "friendSub": "Wanneer iemand je een vriendverzoek stuurt of het jouwe accepteert",
     "vibeLabel": "Vibes ✨",

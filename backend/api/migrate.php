@@ -748,6 +748,9 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS admin_a
 // which makes the notification toggles flip back. Provision it here so a plain
 // migrate.php run fixes it.
 run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS new_challenge_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.new_challenge_push');
+// World channel arrivals push - opt-in, default OFF. city_join stays scoped to
+// the current city; this is the separate global-arrivals toggle.
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS world_arrival_push BOOLEAN NOT NULL DEFAULT FALSE", 'notification_preferences.world_arrival_push');
 
 // mobile_push_tokens
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS last_used_at TIMESTAMPTZ NOT NULL DEFAULT now()", 'mobile_push_tokens.last_used_at');

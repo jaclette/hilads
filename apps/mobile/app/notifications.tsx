@@ -79,6 +79,7 @@ export default function NotificationsScreen() {
     mention_push:         true,
     channel_message_push: false,
     city_join_push:       false,
+    world_arrival_push:   false,
     friend_request_push:  true,
     vibe_received_push:   true,
     profile_view_push:    true,
@@ -255,6 +256,8 @@ export default function NotificationsScreen() {
             <PrefRow label={t('pref.newChallengeLabel')} subtitle={t('pref.newChallengeSub')} value={prefs.new_challenge_push} onChange={v => togglePref('new_challenge_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.cityJoinLabel')} subtitle={t('pref.cityJoinSub')} value={prefs.city_join_push} onChange={v => togglePref('city_join_push', v)} />
+            <View style={styles.prefDivider} />
+            <PrefRow label={t('pref.worldArrivalLabel')} subtitle={t('pref.worldArrivalSub')} value={prefs.world_arrival_push} onChange={v => togglePref('world_arrival_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.friendLabel')} subtitle={t('pref.friendSub')} value={prefs.friend_request_push} onChange={v => togglePref('friend_request_push', v)} />
             <View style={styles.prefDivider} />

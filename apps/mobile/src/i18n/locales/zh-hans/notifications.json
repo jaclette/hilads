@@ -14,6 +14,8 @@
     "newEventSub": "当有人在你所在城市创建活动时",
     "cityJoinLabel": "有人来到了你所在的城市",
     "cityJoinSub": "当有人加入你所在的城市频道时",
+    "worldArrivalLabel": "来自全球的新加入",
+    "worldArrivalSub": "当有新用户从任何城市加入时（World 频道）",
     "friendLabel": "好友请求",
     "friendSub": "当有人给你发送好友请求或接受了你的请求时",
     "vibeLabel": "Vibes ✨",

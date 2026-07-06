@@ -97,6 +97,10 @@ class NotificationRepository
             // nobody). Muting @mentions also mutes being @here'd.
             'city_here'                                                 => 'mention_push',
             'city_join'                                                 => 'city_join_push',
+            // World channel: a genuinely-new user arrived from another city.
+            // Opt-in (default OFF) so only people who want global-arrival noise
+            // get it - keeps city_join (current city only) clean.
+            'world_arrival'                                             => 'world_arrival_push',
             // friend_request_received + friend_request_accepted are the new
             // request-flow types; friend_added is kept as a legacy alias so
             // historical rows from before the refactor still display correctly.
@@ -129,6 +133,7 @@ class NotificationRepository
             'mention_push'         => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
+            'world_arrival_push'   => false,
             'friend_request_push'  => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
@@ -719,6 +724,9 @@ class NotificationRepository
                     WorldRepository::emitSystem('new_user',
                         "{$arriverNickname}: {$cityName}",
                         ['guest_id' => $arriverGuestId, 'nickname' => $arriverNickname, 'city' => $cityName]);
+                    // Opt-in global push (default OFF). Bounded by the same
+                    // genuine-new-user gate above (deduped per guest, ≤10/day).
+                    self::notifyWorldArrival($arriverUserId, $arriverNickname, $cityName);
                 }
             }
         } catch (\Throwable $e) {
@@ -932,6 +940,52 @@ class NotificationRepository
             }
 
             self::createUnchecked($uid, $type, $title, $body, $data, $locales[$uid] ?? 'en');
+        }
+    }
+
+    /**
+     * World-channel arrival push: a genuinely-new user landed (from any city).
+     * Global fan-out to users who opted IN via world_arrival_push (default OFF),
+     * so the recipient set is naturally small; still capped + TTL-bounded like the
+     * city fan-out. The arriver is excluded. Best-effort; never throws.
+     */
+    public static function notifyWorldArrival(
+        ?string $arriverUserId,
+        string  $arriverNickname,
+        string  $cityName
+    ): void {
+        try {
+            $cap = self::CITY_PUSH_FANOUT_CAP;
+            // Select opted-in, recently-active, non-deleted users, excluding the
+            // arriver. Driving off the preference table keeps this cheap - almost
+            // nobody has the (default-OFF) flag on.
+            $stmt = Database::pdo()->prepare("
+                SELECT np.user_id
+                FROM notification_preferences np
+                JOIN users u ON u.id = np.user_id
+                WHERE np.world_arrival_push = true
+                  AND u.deleted_at IS NULL
+                  AND u.current_city_last_confirmed_at > now() - interval '30 days'
+                  AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+                ORDER BY u.current_city_last_confirmed_at DESC NULLS LAST
+                LIMIT {$cap}
+            ");
+            $stmt->execute([$arriverUserId, $arriverUserId]);
+            $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
+            if (empty($userIds)) return;
+
+            $title = '🌍 New arrival';
+            $body  = $arriverNickname . ' just landed in ' . $cityName;
+            $data  = ['scope' => 'world', 'nickname' => $arriverNickname, 'cityName' => $cityName];
+
+            $locales = self::batchLocale($userIds);
+            foreach ($userIds as $uid) {
+                // Light per-recipient floor so a burst of arrivals can't spam.
+                if (!RateLimiter::allow("notif:world_arrival:{$uid}", 1, 300)) continue;
+                self::createUnchecked($uid, 'world_arrival', $title, $body, $data, $locales[$uid] ?? 'en');
+            }
+        } catch (\Throwable $e) {
+            error_log('[world] notifyWorldArrival failed (non-fatal): ' . $e->getMessage());
         }
     }
 

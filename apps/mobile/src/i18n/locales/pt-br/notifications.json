@@ -14,6 +14,8 @@
     "newEventSub": "Quando alguém cria um evento na sua cidade",
     "cityJoinLabel": "Alguém chegou na sua cidade",
     "cityJoinSub": "Quando alguém entra no canal da sua cidade",
+    "worldArrivalLabel": "Novas chegadas pelo mundo",
+    "worldArrivalSub": "Quando alguém novo entra de qualquer cidade (canal World)",
     "friendLabel": "Pedidos de amizade",
     "friendSub": "Quando alguém te envia um pedido de amizade ou aceita o seu",
     "vibeLabel": "Vibes ✨",

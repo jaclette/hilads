@@ -15,6 +15,7 @@ class NotificationPreferencesRepository
             'mention_push'         => true,
             'channel_message_push' => false,
             'city_join_push'       => false,
+            'world_arrival_push'   => false,  // World channel arrivals (opt-in)
             'friend_request_push'    => true,
             'vibe_received_push'   => true,
             'profile_view_push'    => true,
@@ -29,7 +30,7 @@ class NotificationPreferencesRepository
         try {
             $stmt = Database::pdo()->prepare("
                 SELECT dm_push, event_message_push, event_join_push, new_event_push, new_challenge_push, mention_push,
-                       channel_message_push, city_join_push, friend_request_push, vibe_received_push,
+                       channel_message_push, city_join_push, world_arrival_push, friend_request_push, vibe_received_push,
                        profile_view_push, topic_reply_push, new_topic_push, admin_announcement_push
                 FROM notification_preferences
                 WHERE user_id = ?
@@ -50,6 +51,7 @@ class NotificationPreferencesRepository
                 'mention_push'         => (bool) ($row['mention_push'] ?? true),
                 'channel_message_push' => (bool) $row['channel_message_push'],
                 'city_join_push'       => (bool) $row['city_join_push'],
+                'world_arrival_push'   => (bool) ($row['world_arrival_push'] ?? false),
                 'friend_request_push'    => (bool) ($row['friend_request_push'] ?? true),
                 'vibe_received_push'   => (bool) ($row['vibe_received_push'] ?? true),
                 'profile_view_push'    => (bool) ($row['profile_view_push'] ?? true),

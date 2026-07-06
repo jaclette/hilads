@@ -198,6 +198,7 @@ export default function ChatTab() {
   const [showWorldArrivals, setShowWorldArrivals] = useState(false);
   const [quietCardOpen, setQuietCardOpen] = useState(false);
   const quietCardDismissed = useRef(false);
+  const didAutoWorld = useRef(false);
   const activeChannelId = channelScope === 'world' ? 'world' : channelId;
 
   // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
@@ -526,6 +527,17 @@ export default function ChatTab() {
       if (identity?.guestId && channelId) markChannelRead(channelId, identity.guestId);
     }
   }, [identity, channelId]);
+
+  // Auto-enter the World channel on open for every city EXCEPT Ho Chi Minh City,
+  // which has a real local user base worth landing in. Fires once per session,
+  // as soon as the resolved city is known.
+  useEffect(() => {
+    if (didAutoWorld.current || !city?.name || !identity?.guestId) return;
+    didAutoWorld.current = true;
+    const norm = city.name.trim().toLowerCase();
+    if (norm === 'ho chi minh city' || norm === 'saigon') return;
+    switchScope('world');
+  }, [city?.name, identity?.guestId, switchScope]);
 
   // Keep World pills (online / arrivals) fresh - the aggregate is server-cached,
   // so a single fetch on entry can be stale. Re-poll every 30s while viewing World.

@@ -16,6 +16,8 @@
     "newChallengeSub": "When someone launches a challenge in your city",
     "cityJoinLabel": "Someone arrived in your city",
     "cityJoinSub": "When anyone joins the city channel you're in",
+    "worldArrivalLabel": "New arrivals worldwide",
+    "worldArrivalSub": "When a newcomer joins from any city (World channel)",
     "friendLabel": "Friend requests",
     "friendSub": "When someone sends you a friend request or accepts yours",
     "vibeLabel": "Vibes ✨",

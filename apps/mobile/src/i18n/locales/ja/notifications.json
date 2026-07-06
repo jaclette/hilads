@@ -14,6 +14,8 @@
     "newEventSub": "誰かがあなたの街でイベントを作成したとき",
     "cityJoinLabel": "誰かがあなたの街に到着",
     "cityJoinSub": "あなたがいる街のチャンネルに誰かが参加したとき",
+    "worldArrivalLabel": "世界中からの新着",
+    "worldArrivalSub": "どこかの都市から新しい人が参加したとき（Worldチャンネル）",
     "friendLabel": "友達リクエスト",
     "friendSub": "誰かが友達リクエストを送ったり、あなたのリクエストを承認したとき",
     "vibeLabel": "Vibes ✨",

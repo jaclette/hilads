@@ -2694,6 +2694,15 @@ export default function App() {
       if (!accountRef.current) {
         track('anonymous_join_completed', { channel_id: location.channelId, has_challenge: !!pendingChallengeRef.current })
       }
+
+      // Auto-enter the World channel on open for every city EXCEPT Ho Chi Minh
+      // City, which has a real local user base worth landing in. Skip when
+      // opening straight into a challenge chat - that intent wins.
+      const _cityNorm = (location.city || '').trim().toLowerCase()
+      const _isHomeLocalCity = _cityNorm === 'ho chi minh city' || _cityNorm === 'saigon'
+      if (!_isHomeLocalCity && !pendingChallengeRef.current) {
+        setTimeout(() => { switchScope('world') }, 0)
+      }
       // A Screen-2 challenge tap / /c/:id CTA queued a challenge to open once the
       // city is joined. Fetch the full object and open its chat.
       if (pendingChallengeRef.current) {
