@@ -7192,6 +7192,10 @@ img.pub-profile-avatar {
 .ch-world-hero-emoji { font-size: 1.35rem; line-height: 1; }
 .ch-world-hero-main  { font-size: 0.95rem; font-weight: 800; }
 .ch-world-hero-sub   { font-size: 0.8rem; font-weight: 600; color: var(--muted2); }
+/* World: author line on own messages mirrors to the right (own bubbles are
+   right-aligned); the home-country flag sits next to the nickname. */
+.msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }
+.msg-flag { font-size: 0.95rem; line-height: 1; }
 /* World cross-city system messages - distinct centered info row in the feed. */
 .feed-world-sys {
   align-self: center;
