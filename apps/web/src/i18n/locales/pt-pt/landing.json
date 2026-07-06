@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Torna-te local. Em qualquer lugar.",
     "concept_tagline": "Desafia os locais. Conhece viajantes. Torna-te local em qualquer lugar.",
+    "screen1_invitation": "É a tua vez. Lança ou entra num desafio.",
+    "screen2_invitation": "Já lá estão. Vens?",
+    "screen3_invitation": "Fácil, não? É contigo.",
+    "screen4_invitation": "Sem feed. Só encontros a sério.",
     "enterCity": "Junta-te a {{city}} 🔥",
     "enterChallenge": "Aceita este desafio 🔥",
     "enterPicker": "Escolhe a tua cidade 🔥",

@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Word local. Overal.",
     "concept_tagline": "Daag locals uit. Ontmoet reizigers. Word overal local.",
+    "screen1_invitation": "Jouw beurt. Start of doe mee aan een challenge.",
+    "screen2_invitation": "Ze zijn er al. Doe je mee?",
+    "screen3_invitation": "Simpel, toch? Jouw beurt.",
+    "screen4_invitation": "Geen feed. Alleen echte meetups.",
     "enterCity": "Kom naar {{city}} 🔥",
     "enterChallenge": "Doe deze uitdaging 🔥",
     "enterPicker": "Kies je stad 🔥",

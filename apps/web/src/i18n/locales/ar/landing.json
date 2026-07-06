@@ -126,6 +126,10 @@
   "stories": {
     "tagline": "كن محليًا. في أي مكان.",
     "concept_tagline": "تحدَّ السكان المحليين. قابل المسافرين. كن محليًا في أي مكان.",
+    "screen1_invitation": "دورك الآن. أطلق تحديًا أو انضم إليه.",
+    "screen2_invitation": "هم هناك بالفعل. هل تنضم؟",
+    "screen3_invitation": "بسيط، صحيح؟ دورك الآن.",
+    "screen4_invitation": "بلا موجز. فقط لقاءات حقيقية.",
     "enterCity": "انضم إلى {{city}} 🔥",
     "enterChallenge": "اقبل هذا التحدي 🔥",
     "enterPicker": "اختر مدينتك 🔥",

@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Maging local. Kahit saan.",
     "concept_tagline": "Hamunin ang mga local. Makilala ang mga manlalakbay. Maging local kahit saan.",
+    "screen1_invitation": "Ikaw naman. Maglunsad o sumali sa challenge.",
+    "screen2_invitation": "Nandoon na sila. Sali ka na.",
+    "screen3_invitation": "Simple, di ba? Ikaw naman.",
+    "screen4_invitation": "Walang feed. Puro totoong meetup.",
     "enterCity": "Sumali sa {{city}} 🔥",
     "enterChallenge": "Tanggapin ang challenge 🔥",
     "enterPicker": "Piliin ang iyong lungsod 🔥",

@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "어디서나, 로컬처럼.",
     "concept_tagline": "로컬에게 도전하기. 여행자 만나기. 어디서나 로컬처럼.",
+    "screen1_invitation": "이제 네 차례. 챌린지를 열거나 참여해.",
+    "screen2_invitation": "이미 모여 있어. 함께할래?",
+    "screen3_invitation": "간단하지? 이제 네 차례야.",
+    "screen4_invitation": "피드는 없어. 진짜 만남만 있어.",
     "enterCity": "{{city}} 참여하기 🔥",
     "enterChallenge": "이 챌린지 도전하기 🔥",
     "enterPicker": "도시 선택하기 🔥",

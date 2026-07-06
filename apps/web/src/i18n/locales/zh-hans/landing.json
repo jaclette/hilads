@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "成为本地人。在任何地方。",
     "concept_tagline": "挑战本地人。结识旅行者。随时随地成为本地人。",
+    "screen1_invitation": "该你了。发起或加入一个挑战。",
+    "screen2_invitation": "他们已经在了。一起来吗？",
+    "screen3_invitation": "很简单吧？看你的了。",
+    "screen4_invitation": "没有信息流。只有真实见面。",
     "enterCity": "加入{{city}} 🔥",
     "enterChallenge": "接受这个挑战 🔥",
     "enterPicker": "选择你的城市 🔥",

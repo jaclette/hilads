@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "लोकल बनो। कहीं भी।",
     "concept_tagline": "लोकल्स को चैलेंज दो। यात्रियों से मिलो। कहीं भी लोकल बनो।",
+    "screen1_invitation": "तुम्हारी बारी। चैलेंज शुरू करो या जॉइन करो।",
+    "screen2_invitation": "वे पहले से हैं। तुम आ रहे हो?",
+    "screen3_invitation": "आसान है ना? अब तुम्हारी बारी।",
+    "screen4_invitation": "कोई फीड नहीं। बस असली मुलाक़ातें।",
     "enterCity": "{{city}} में जुड़ो 🔥",
     "enterChallenge": "यह चैलेंज लो 🔥",
     "enterPicker": "अपना शहर चुनो 🔥",

@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Trở thành người địa phương. Ở bất cứ đâu.",
     "concept_tagline": "Thách thức người địa phương. Gặp gỡ du khách. Trở thành người địa phương ở bất cứ đâu.",
+    "screen1_invitation": "Tới lượt bạn. Tạo hoặc tham gia một thử thách.",
+    "screen2_invitation": "Họ đang ở đó. Bạn tham gia chứ?",
+    "screen3_invitation": "Đơn giản nhỉ? Tới lượt bạn.",
+    "screen4_invitation": "Không feed. Chỉ những cuộc gặp thật.",
     "enterCity": "Vào {{city}} 🔥",
     "enterChallenge": "Nhận thử thách này 🔥",
     "enterPicker": "Chọn thành phố của bạn 🔥",

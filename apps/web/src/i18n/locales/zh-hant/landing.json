@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "成為在地人。在任何地方。",
     "concept_tagline": "挑戰在地人。結識旅人。隨時隨地成為在地人。",
+    "screen1_invitation": "換你了。發起或加入一個挑戰。",
+    "screen2_invitation": "他們已經在了。一起來嗎？",
+    "screen3_invitation": "很簡單吧？看你的了。",
+    "screen4_invitation": "沒有動態牆。只有真實見面。",
     "enterCity": "加入{{city}} 🔥",
     "enterChallenge": "接受這個挑戰 🔥",
     "enterPicker": "選擇你的城市 🔥",

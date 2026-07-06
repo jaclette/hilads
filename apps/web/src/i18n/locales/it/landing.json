@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Diventa local. Ovunque.",
     "concept_tagline": "Sfida i local. Incontra i viaggiatori. Diventa local ovunque.",
+    "screen1_invitation": "Tocca a te. Lancia o unisciti a una sfida.",
+    "screen2_invitation": "Ci sono già. Ti unisci?",
+    "screen3_invitation": "Facile, no? Tocca a te.",
+    "screen4_invitation": "Niente feed. Solo incontri veri.",
     "enterCity": "Unisciti a {{city}} 🔥",
     "enterChallenge": "Accetta questa sfida 🔥",
     "enterPicker": "Scegli la tua città 🔥",
