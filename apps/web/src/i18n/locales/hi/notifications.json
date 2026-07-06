@@ -22,6 +22,10 @@
     "announcementName": "Hilads की घोषणाएं",
     "announcementDesc": "टीम की ओर से कभी-कभार अपडेट",
     "newChallengeName": "तुम्हारे शहर में नए चैलेंज",
-    "newChallengeDesc": "जब कोई तुम्हारे शहर में चैलेंज शुरू करे"
+    "newChallengeDesc": "जब कोई तुम्हारे शहर में चैलेंज शुरू करे",
+    "cityJoinName": "कोई आपके शहर में आया",
+    "cityJoinDesc": "जब कोई आपके शहर के चैनल में शामिल हो",
+    "worldArrivalName": "दुनिया भर से नए लोग",
+    "worldArrivalDesc": "जब कोई नया व्यक्ति किसी भी शहर से जुड़ता है (World चैनल)"
   }
 }

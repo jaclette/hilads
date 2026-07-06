@@ -22,6 +22,10 @@
     "announcementName": "Hilads 소식",
     "announcementDesc": "팀에서 가끔 전하는 업데이트",
     "newChallengeName": "내 도시의 새 챌린지",
-    "newChallengeDesc": "누군가 내 도시에서 챌린지를 시작할 때"
+    "newChallengeDesc": "누군가 내 도시에서 챌린지를 시작할 때",
+    "cityJoinName": "누군가 내 도시에 도착",
+    "cityJoinDesc": "누군가 내가 있는 도시 채널에 참여할 때",
+    "worldArrivalName": "전 세계 새 도착",
+    "worldArrivalDesc": "다른 도시에서 새로운 사람이 합류할 때 (World 채널)"
   }
 }

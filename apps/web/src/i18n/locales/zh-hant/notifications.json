@@ -22,6 +22,10 @@
     "announcementName": "來自 Hilads 的公告",
     "announcementDesc": "團隊不定期的最新消息",
     "newChallengeName": "你所在城市的新挑戰",
-    "newChallengeDesc": "當有人在你所在城市發起挑戰時"
+    "newChallengeDesc": "當有人在你所在城市發起挑戰時",
+    "cityJoinName": "有人來到你的城市",
+    "cityJoinDesc": "當有人加入你所在的城市頻道時",
+    "worldArrivalName": "來自全球的新加入",
+    "worldArrivalDesc": "當有新用戶從任何城市加入時（World 頻道）"
   }
 }

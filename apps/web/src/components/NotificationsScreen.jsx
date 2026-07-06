@@ -235,6 +235,30 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
 
           <div className="notif-pref-row">
             <div className="notif-pref-label">
+              <span className="notif-pref-name">{t('prefs.cityJoinName')}</span>
+              <span className="notif-pref-desc">{t('prefs.cityJoinDesc')}</span>
+            </div>
+            <Toggle
+              checked={prefs?.city_join_push ?? false}
+              onChange={v => handleTogglePref('city_join_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
+              <span className="notif-pref-name">{t('prefs.worldArrivalName')}</span>
+              <span className="notif-pref-desc">{t('prefs.worldArrivalDesc')}</span>
+            </div>
+            <Toggle
+              checked={prefs?.world_arrival_push ?? false}
+              onChange={v => handleTogglePref('world_arrival_push', v)}
+              disabled={prefsSaving || !prefs}
+            />
+          </div>
+
+          <div className="notif-pref-row">
+            <div className="notif-pref-label">
               <span className="notif-pref-name">{t('prefs.friendName')}</span>
               <span className="notif-pref-desc">{t('prefs.friendDesc')}</span>
             </div>

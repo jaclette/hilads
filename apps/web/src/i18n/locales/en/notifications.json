@@ -1,7 +1,10 @@
 {
   "title": "Notifications",
   "markAllRead": "Mark all read",
-  "empty": { "title": "All caught up", "sub": "Notifications will appear here" },
+  "empty": {
+    "title": "All caught up",
+    "sub": "Notifications will appear here"
+  },
   "loading": "Loading…",
   "seeAll": "See all notifications →",
   "prefs": {
@@ -12,6 +15,10 @@
     "newEventDesc": "When someone creates an event in your city",
     "newChallengeName": "New challenges in your city",
     "newChallengeDesc": "When someone launches a challenge in your city",
+    "cityJoinName": "Someone arrived in your city",
+    "cityJoinDesc": "When anyone joins the city channel you're in",
+    "worldArrivalName": "New arrivals worldwide",
+    "worldArrivalDesc": "When a newcomer joins from any city (World channel)",
     "friendName": "Friend requests",
     "friendDesc": "When someone sends you a friend request or accepts yours",
     "notesName": "Notes ✨",

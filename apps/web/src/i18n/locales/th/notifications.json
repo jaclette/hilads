@@ -22,6 +22,10 @@
     "announcementName": "ประกาศจาก Hilads",
     "announcementDesc": "ข่าวสารจากทีมเป็นครั้งคราว",
     "newChallengeName": "ชาเลนจ์ใหม่ในเมืองของคุณ",
-    "newChallengeDesc": "เมื่อมีคนเริ่มชาเลนจ์ในเมืองของคุณ"
+    "newChallengeDesc": "เมื่อมีคนเริ่มชาเลนจ์ในเมืองของคุณ",
+    "cityJoinName": "มีคนมาถึงเมืองของคุณ",
+    "cityJoinDesc": "เมื่อมีใครเข้าร่วมช่องเมืองที่คุณอยู่",
+    "worldArrivalName": "ผู้มาใหม่จากทั่วโลก",
+    "worldArrivalDesc": "เมื่อมีคนใหม่เข้าร่วมจากเมืองใดก็ตาม (แชนเนล World)"
   }
 }

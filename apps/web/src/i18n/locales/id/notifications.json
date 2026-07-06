@@ -22,6 +22,10 @@
     "announcementName": "Pengumuman dari Hilads",
     "announcementDesc": "Sesekali kabar terbaru dari tim",
     "newChallengeName": "Tantangan baru di kotamu",
-    "newChallengeDesc": "Saat seseorang meluncurkan tantangan di kotamu"
+    "newChallengeDesc": "Saat seseorang meluncurkan tantangan di kotamu",
+    "cityJoinName": "Seseorang tiba di kotamu",
+    "cityJoinDesc": "Saat ada yang gabung ke channel kota yang kamu ikuti",
+    "worldArrivalName": "Kedatangan baru dari seluruh dunia",
+    "worldArrivalDesc": "Saat orang baru bergabung dari kota mana pun (kanal World)"
   }
 }

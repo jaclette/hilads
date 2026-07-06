@@ -22,6 +22,10 @@
     "announcementName": "Thông báo từ Hilads",
     "announcementDesc": "Đôi khi có cập nhật từ đội ngũ",
     "newChallengeName": "Thử thách mới trong thành phố của bạn",
-    "newChallengeDesc": "Khi ai đó tung thử thách trong thành phố của bạn"
+    "newChallengeDesc": "Khi ai đó tung thử thách trong thành phố của bạn",
+    "cityJoinName": "Có người đến thành phố của bạn",
+    "cityJoinDesc": "Khi có ai đó tham gia kênh thành phố bạn đang ở",
+    "worldArrivalName": "Người mới từ khắp thế giới",
+    "worldArrivalDesc": "Khi có người mới tham gia từ bất kỳ thành phố nào (kênh World)"
   }
 }

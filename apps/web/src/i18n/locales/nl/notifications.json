@@ -22,6 +22,10 @@
     "announcementName": "Aankondigingen van Hilads",
     "announcementDesc": "Af en toe nieuws van het team",
     "newChallengeName": "Nieuwe challenges in je stad",
-    "newChallengeDesc": "Wanneer iemand een challenge in je stad start"
+    "newChallengeDesc": "Wanneer iemand een challenge in je stad start",
+    "cityJoinName": "Iemand arriveert in je stad",
+    "cityJoinDesc": "Wanneer iemand meedoet aan het kanaal van jouw stad",
+    "worldArrivalName": "Nieuwe aankomsten wereldwijd",
+    "worldArrivalDesc": "Wanneer iemand nieuw uit een willekeurige stad binnenkomt (World-kanaal)"
   }
 }

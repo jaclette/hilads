@@ -1,7 +1,10 @@
 {
   "title": "Notifications",
   "markAllRead": "Tout marquer comme lu",
-  "empty": { "title": "Tout est à jour", "sub": "Les notifications apparaîtront ici" },
+  "empty": {
+    "title": "Tout est à jour",
+    "sub": "Les notifications apparaîtront ici"
+  },
   "loading": "Chargement…",
   "seeAll": "Voir toutes les notifications →",
   "prefs": {
@@ -12,6 +15,10 @@
     "newEventDesc": "Quand quelqu'un crée un événement dans ta ville",
     "newChallengeName": "Nouveaux défis dans ta ville",
     "newChallengeDesc": "Quand quelqu'un lance un défi dans ta ville",
+    "cityJoinName": "Quelqu'un arrive dans ta ville",
+    "cityJoinDesc": "Quand quelqu'un rejoint le canal de ta ville",
+    "worldArrivalName": "Nouveaux arrivants dans le monde",
+    "worldArrivalDesc": "Quand un nouveau arrive depuis n'importe quelle ville (canal World)",
     "friendName": "Demandes d'amis",
     "friendDesc": "Quand quelqu'un t'envoie une demande d'ami ou accepte la tienne",
     "notesName": "Notes ✨",

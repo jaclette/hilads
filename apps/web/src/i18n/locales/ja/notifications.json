@@ -22,6 +22,10 @@
     "announcementName": "Hiladsからのお知らせ",
     "announcementDesc": "チームからのときどきのアップデート",
     "newChallengeName": "あなたの街の新しいチャレンジ",
-    "newChallengeDesc": "誰かがあなたの街でチャレンジを始めたとき"
+    "newChallengeDesc": "誰かがあなたの街でチャレンジを始めたとき",
+    "cityJoinName": "誰かがあなたの街に到着",
+    "cityJoinDesc": "あなたがいる街のチャンネルに誰かが参加したとき",
+    "worldArrivalName": "世界中からの新着",
+    "worldArrivalDesc": "どこかの都市から新しい人が参加したとき（Worldチャンネル）"
   }
 }

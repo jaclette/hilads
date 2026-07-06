@@ -22,6 +22,10 @@
     "announcementName": "Mga anunsyo mula sa Hilads",
     "announcementDesc": "Paminsan-minsang update mula sa team",
     "newChallengeName": "Mga bagong challenge sa lungsod mo",
-    "newChallengeDesc": "Kapag may naglunsad ng challenge sa lungsod mo"
+    "newChallengeDesc": "Kapag may naglunsad ng challenge sa lungsod mo",
+    "cityJoinName": "May dumating sa iyong lungsod",
+    "cityJoinDesc": "Kapag may sumali sa channel ng lungsod na kinaroroonan mo",
+    "worldArrivalName": "Mga bagong dating sa buong mundo",
+    "worldArrivalDesc": "Kapag may bagong sumali mula sa kahit anong lungsod (World channel)"
   }
 }

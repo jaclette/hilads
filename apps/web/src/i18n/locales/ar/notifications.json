@@ -22,6 +22,10 @@
     "announcementName": "إعلانات من Hilads",
     "announcementDesc": "تحديثات من الفريق بين الحين والآخر",
     "newChallengeName": "تحديات جديدة في مدينتك",
-    "newChallengeDesc": "عندما يطلق أحدهم تحديًا في مدينتك"
+    "newChallengeDesc": "عندما يطلق أحدهم تحديًا في مدينتك",
+    "cityJoinName": "وصل أحدهم إلى مدينتك",
+    "cityJoinDesc": "عندما ينضم أي شخص إلى قناة المدينة التي أنت فيها",
+    "worldArrivalName": "وافدون جدد حول العالم",
+    "worldArrivalDesc": "عند انضمام شخص جديد من أي مدينة (قناة World)"
   }
 }

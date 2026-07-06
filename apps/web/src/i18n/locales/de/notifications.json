@@ -22,6 +22,10 @@
     "announcementName": "Ankündigungen von Hilads",
     "announcementDesc": "Gelegentliche Neuigkeiten vom Team",
     "newChallengeName": "Neue Challenges in deiner Stadt",
-    "newChallengeDesc": "Wenn jemand eine Challenge in deiner Stadt startet"
+    "newChallengeDesc": "Wenn jemand eine Challenge in deiner Stadt startet",
+    "cityJoinName": "Jemand ist in deiner Stadt angekommen",
+    "cityJoinDesc": "Wenn jemand dem Kanal deiner Stadt beitritt",
+    "worldArrivalName": "Neue Ankünfte weltweit",
+    "worldArrivalDesc": "Wenn ein Neuling aus einer beliebigen Stadt beitritt (World-Kanal)"
   }
 }
