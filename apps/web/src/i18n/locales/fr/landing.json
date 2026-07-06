@@ -109,8 +109,8 @@
   },
   "stories": {
     "tagline": "Deviens local. Partout.",
-    "enterCity": "Entrer dans {{city}} → gratuit, sans compte, 5 secondes",
-    "enterChallenge": "Relève ce défi à {{city}} →",
+    "enterCity": "Rejoins {{city}} 🔥",
+    "enterChallenge": "Je relève ce défi 🔥",
     "swipeUp": "Glisse vers le haut",
     "liveHeadline": "{{city}} vit en ce moment.",
     "how": {
@@ -125,6 +125,7 @@
       "line3": "Pas d’algorithme.",
       "line4": "Juste une raison de se voir en vrai."
     },
-    "storePrompt": "Tu préfères l’app ? Notifications et expérience complète."
+    "storePrompt": "Tu préfères l’app ? Notifications et expérience complète.",
+    "reassurance": "gratuit · sans compte · 5 secondes"
   }
 }

@@ -102,8 +102,9 @@ export default function StoriesLanding({
 
   const setRef = (i) => (el) => { screenRefs.current[i] = el }
 
+  const ctaVariant = landingChallenge ? 'challenge_join' : 'city_join'
   const primary = () => {
-    track('cta_primary_clicked', { screen: active, has_challenge: !!landingChallenge })
+    track('cta_primary_clicked', { screen: active, cta_variant: ctaVariant })
     onPrimaryCta?.()
   }
   const tapChallenge = (ch) => {
@@ -220,7 +221,10 @@ export default function StoriesLanding({
       {/* ── S5 Conversion ───────────────────────────────────────── */}
       <section className="sl-screen sl-screen--convert" data-idx="4" ref={setRef(4)}>
         <h2 className="sl-headline sl-headline--convert">{t('stories.liveHeadline', { city: headlineCity })}</h2>
-        <button className="sl-cta-big" onClick={primary}>{ctaLabel}</button>
+        <div className="sl-cta-group">
+          <button className="sl-cta-big" onClick={primary}>{ctaLabel}</button>
+          <p className="sl-reassure">{t('stories.reassurance')}</p>
+        </div>
 
         <div className="sl-store">
           <p className="sl-store-prompt">{t('stories.storePrompt')}</p>
@@ -239,11 +243,14 @@ export default function StoriesLanding({
         </div>
       </section>
 
-      {/* Sticky primary CTA - persists across every screen except the last
-          (which has its own large centered CTA). Safe-area padded so in-app
-          browser chrome never covers it. */}
+      {/* Sticky CTA dock (button + reassurance line) - persists across every
+          screen except the last (which has its own centered CTA group). Safe-area
+          padded so the whole block stays above in-app browser chrome. */}
       {active < LAST && (
-        <button className="sl-cta" onClick={primary}>{ctaLabel}</button>
+        <div className="sl-cta-dock">
+          <button className="sl-cta" onClick={primary}>{ctaLabel}</button>
+          <p className="sl-reassure">{t('stories.reassurance')}</p>
+        </div>
       )}
     </div>
   )

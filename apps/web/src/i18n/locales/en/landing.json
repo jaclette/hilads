@@ -109,8 +109,8 @@
   },
   "stories": {
     "tagline": "Become local. Anywhere.",
-    "enterCity": "Enter {{city}} → free, no account, 5 seconds",
-    "enterChallenge": "Take this challenge in {{city}} →",
+    "enterCity": "Join {{city}} 🔥",
+    "enterChallenge": "Take this challenge 🔥",
     "swipeUp": "Swipe up",
     "liveHeadline": "{{city}} is live right now.",
     "how": {
@@ -125,6 +125,7 @@
       "line3": "No algorithms.",
       "line4": "A reason to meet in person."
     },
-    "storePrompt": "Prefer the app? Get notifications and the full experience."
+    "storePrompt": "Prefer the app? Get notifications and the full experience.",
+    "reassurance": "free · no account · 5 seconds"
   }
 }
