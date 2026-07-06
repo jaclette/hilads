@@ -14,8 +14,9 @@ import { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator,
   StyleSheet, KeyboardAvoidingView, Keyboard, Platform,
-  TouchableOpacity, Animated, Alert,
+  TouchableOpacity, Animated, Alert, Modal,
 } from 'react-native';
+import { avatarColor } from '@/lib/avatarColors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
@@ -27,7 +28,7 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
-import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity } from '@/api/world';
+import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival } from '@/api/world';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import { fetchCityChallenges } from '@/api/challenges';
@@ -193,6 +194,8 @@ export default function ChatTab() {
   const [worldUnread,  setWorldUnread]  = useState(0);
   const [cityUnread,   setCityUnread]   = useState(0);
   const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
+  const [worldArrivals, setWorldArrivals] = useState<WorldArrival[]>([]);
+  const [showWorldArrivals, setShowWorldArrivals] = useState(false);
   const [quietCardOpen, setQuietCardOpen] = useState(false);
   const quietCardDismissed = useRef(false);
   const activeChannelId = channelScope === 'world' ? 'world' : channelId;
@@ -516,12 +519,24 @@ export default function ChatTab() {
       track('world_channel_viewed');
       setWorldUnread(0);
       fetchWorldActivity().then(setWorldActivity).catch(() => {});
+      fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
       if (identity?.guestId) markChannelRead('world', identity.guestId);
     } else {
       setCityUnread(0);
       if (identity?.guestId && channelId) markChannelRead(channelId, identity.guestId);
     }
   }, [identity, channelId]);
+
+  // Keep World pills (online / arrivals) fresh - the aggregate is server-cached,
+  // so a single fetch on entry can be stale. Re-poll every 30s while viewing World.
+  useEffect(() => {
+    if (channelScope !== 'world') return;
+    const id = setInterval(() => {
+      fetchWorldActivity().then(setWorldActivity).catch(() => {});
+      fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
+    }, 30000);
+    return () => clearInterval(id);
+  }, [channelScope]);
 
   // Join the World room on mount (additive - keeps the city room) + seed badges.
   useEffect(() => {
@@ -1079,20 +1094,37 @@ export default function ChatTab() {
             pills: N online / N cities). Replaces the city hero in World scope. ── */}
         {channelScope === 'world' ? (
           <>
-            <TouchableOpacity
-              style={styles.hero}
-              onPress={() => router.push('/(tabs)/challenges' as never)}
-              activeOpacity={0.85}
-              accessibilityRole="button"
-            >
-              <Text style={styles.heroMain} numberOfLines={2}>{t('world.banner', { count: worldActivity?.crossCity?.count ?? 0 })}</Text>
-              {!!worldActivity?.crossCity?.cities?.length && (
-                <Text style={styles.heroSub} numberOfLines={1}>{worldActivity.crossCity.cities.join(', ')}</Text>
-              )}
-            </TouchableOpacity>
+            {(worldActivity?.crossCity?.count ?? 0) > 0 ? (
+              <TouchableOpacity
+                style={styles.hero}
+                onPress={() => router.push('/(tabs)/challenges' as never)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+              >
+                <Text style={styles.heroMain} numberOfLines={2}>{t('world.banner', { count: worldActivity!.crossCity.count })}</Text>
+                {!!worldActivity?.crossCity?.cities?.length && (
+                  <Text style={styles.heroSub} numberOfLines={1}>{worldActivity.crossCity.cities.join(', ')}</Text>
+                )}
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.hero}
+                onPress={() => router.push('/challenge/create' as never)}
+                activeOpacity={0.85}
+                accessibilityRole="button"
+              >
+                <Text style={styles.heroMain} numberOfLines={2}>🔥 {t('world.heroEmpty')}</Text>
+                <Text style={styles.heroSub} numberOfLines={1}>{t('world.heroEmptySub')}</Text>
+              </TouchableOpacity>
+            )}
             <View style={styles.pillsRow}>
               <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</Text></View>
-              <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>🏙️ {t('world.cities', { count: worldActivity?.cities ?? 0 })}</Text></View>
+              <TouchableOpacity style={[styles.pill, !worldArrivals.length && styles.pillMuted]} onPress={() => setShowWorldArrivals(true)} activeOpacity={0.75}>
+                <Text style={[styles.pillText, !worldArrivals.length && styles.pillTextMuted]} numberOfLines={1}>✈️ {t('world.arrivals', { count: worldArrivals.length })}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.pill, styles.pillAccent]} onPress={() => router.push('/leaderboard?scope=world' as never)} activeOpacity={0.75}>
+                <Text style={[styles.pillText, styles.pillTextAccent]} numberOfLines={1}>🏆 {t('world.leaderboard')}</Text>
+              </TouchableOpacity>
             </View>
           </>
         ) : (
@@ -1132,25 +1164,26 @@ export default function ChatTab() {
           >
             <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}</Text>
           </TouchableOpacity>
-          {/* Hi now = spontaneous hangouts (topics). */}
+          {/* Recent arrivals pill (restored - it used to live in the city row,
+              which the channel toggle now occupies). */}
           <TouchableOpacity
-            style={[styles.pill, styles.pillAccent, !topicFeedItems.length && styles.pillMuted]}
-            onPress={() => router.push('/(tabs)/events' as never)}
+            style={[styles.pill, !arrivals.length && styles.pillMuted]}
+            onPress={() => setArrivalsSheetOpen(true)}
             activeOpacity={0.75}
             accessibilityRole="button"
-            accessibilityLabel={`${topicFeedItems.length} Hi now`}
+            accessibilityLabel={`${arrivals.length} recent arrivals`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !topicFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🗣️ {topicFeedItems.length > 0 ? `${topicFeedItems.length} ` : ''}Hi now</Text>
+            <Text style={[styles.pillText, !arrivals.length && styles.pillTextMuted]} numberOfLines={1}>✈️ {t('cityHero.recent', { count: arrivals.length })}</Text>
           </TouchableOpacity>
-          {/* Hi later = planned events. Both land on the unified Hi Local feed. */}
+          {/* Hi now (topics) + Hi plan (events) merged into one "Hi plans" pill. */}
           <TouchableOpacity
-            style={[styles.pill, styles.pillAccent, !eventFeedItems.length && styles.pillMuted]}
+            style={[styles.pill, styles.pillAccent, !(topicFeedItems.length + eventFeedItems.length) && styles.pillMuted]}
             onPress={() => router.push('/(tabs)/events' as never)}
             activeOpacity={0.75}
             accessibilityRole="button"
-            accessibilityLabel={`${eventFeedItems.length} Hi plan`}
+            accessibilityLabel={`${topicFeedItems.length + eventFeedItems.length} Hi plans`}
           >
-            <Text style={[styles.pillText, styles.pillTextAccent, !eventFeedItems.length && styles.pillTextMuted]} numberOfLines={1}>🎉 {eventFeedItems.length > 0 ? `${eventFeedItems.length} ` : ''}Hi plan</Text>
+            <Text style={[styles.pillText, styles.pillTextAccent, !(topicFeedItems.length + eventFeedItems.length) && styles.pillTextMuted]} numberOfLines={1}>🎉 {(topicFeedItems.length + eventFeedItems.length) > 0 ? `${topicFeedItems.length + eventFeedItems.length} ` : ''}Hi plans</Text>
           </TouchableOpacity>
         </View>
         </>
@@ -1324,6 +1357,35 @@ export default function ChatTab() {
         arrivals={arrivals}
         onClose={() => setArrivalsSheetOpen(false)}
       />
+
+      {/* World arrivals sheet - global "who just landed", each with city + flag. */}
+      <Modal visible={showWorldArrivals} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setShowWorldArrivals(false)}>
+        <SafeAreaView style={styles.waSheet}>
+          <View style={styles.waHeader}>
+            <Text style={styles.waTitle}>{t('world.arrivalsTitle')}</Text>
+            <TouchableOpacity onPress={() => setShowWorldArrivals(false)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="close" size={24} color={Colors.text} />
+            </TouchableOpacity>
+          </View>
+          {worldArrivals.length === 0 ? (
+            <Text style={styles.waEmpty}>{t('world.arrivalsEmpty')}</Text>
+          ) : (
+            <FlatList
+              data={worldArrivals}
+              keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
+              renderItem={({ item: a }) => (
+                <View style={styles.waRow}>
+                  <View style={[styles.waAvatar, { backgroundColor: avatarColor(a.nickname) }]}>
+                    <Text style={styles.waAvatarLetter}>{(a.nickname ?? '?')[0].toUpperCase()}</Text>
+                  </View>
+                  <Text style={styles.waName} numberOfLines={1}>{a.nickname}</Text>
+                  <Text style={styles.waCity} numberOfLines={1}>{cityFlag(a.country ?? undefined)} {a.city}</Text>
+                </View>
+              )}
+            />
+          )}
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1486,6 +1548,16 @@ const styles = StyleSheet.create({
     borderColor:    Colors.accent2,
   },
   quietCardText: { color: Colors.text, fontSize: 14, fontWeight: '700', textAlign: 'center' },
+  // World arrivals sheet
+  waSheet:  { flex: 1, backgroundColor: Colors.bg },
+  waHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
+  waTitle:  { color: Colors.text, fontSize: 17, fontWeight: '800' },
+  waEmpty:  { color: Colors.muted, textAlign: 'center', paddingVertical: 40 },
+  waRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10 },
+  waAvatar: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  waAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  waName:   { color: Colors.text, fontWeight: '700', fontSize: 15 },
+  waCity:   { color: Colors.muted, fontSize: 13, fontWeight: '600', marginLeft: 'auto' },
   citySelector: {
     flexDirection: 'row',
     alignItems:    'center',

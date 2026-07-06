@@ -35,6 +35,24 @@ export async function fetchWorldActivity(): Promise<WorldActivity> {
   return api.get<WorldActivity>('/world/activity');
 }
 
+export interface WorldArrival {
+  nickname: string;
+  guestId: string | null;
+  userId: string | null;
+  city: string | null;
+  country: string | null;
+  createdAt: number;
+}
+
+export async function fetchWorldArrivals(): Promise<WorldArrival[]> {
+  try {
+    const data = await api.get<{ arrivals?: WorldArrival[] }>('/world/arrivals');
+    return data.arrivals ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export async function fetchQuietContext(cityChannelId: string): Promise<{ cityQuiet: boolean; worldActive: boolean }> {
   try {
     return await api.get<{ cityQuiet: boolean; worldActive: boolean }>(`/world/quiet-context?city=${encodeURIComponent(cityChannelId)}`);
