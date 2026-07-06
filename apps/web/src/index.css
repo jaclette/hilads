@@ -3127,6 +3127,10 @@ html, body, #root {
   align-self: flex-end;
   width: fit-content;
   margin-left: auto;
+  /* The own-message author header (avatar + name + badges) is wider than a
+     short bubble; fit-content sizes the box to the header, so pin every child
+     (incl. the bubble) to the right edge - otherwise the bubble floats mid-row. */
+  align-items: flex-end;
   /* fit-content is the original right-alignment mechanism. The earlier
      "haha" collapse wasn't fit-content's fault - it was word-break: break-word
      dropping min-content to 1 char, which fit-content's clamp(min, available,
