@@ -2046,6 +2046,20 @@ export default function App() {
     }
   }, [feed])
 
+  // Late-loading media (avatar thumbs, image messages, link-preview cards like the
+  // Google Maps embed) grows the feed AFTER the feed-change scroll above has run,
+  // with no state change to re-trigger it - so the viewport drifts off the bottom
+  // and you land mid-conversation. Re-pin whenever any <img>/<iframe> inside the
+  // feed finishes loading, but only while the user is already at the bottom.
+  // `load` doesn't bubble, so listen in the capture phase.
+  useEffect(() => {
+    const container = messagesContainerRef.current
+    if (!container) return
+    const repin = () => { if (isNearBottomRef.current) container.scrollTop = container.scrollHeight }
+    container.addEventListener('load', repin, true)
+    return () => container.removeEventListener('load', repin, true)
+  }, [status])
+
   // ── Load older messages (pagination) ─────────────────────────────────────
   // Triggered by the scroll listener below when the user scrolls near the top.
   // Uses refs throughout to avoid stale closures - the scroll handler is attached once.
