@@ -12,7 +12,10 @@
     "quietCard": "Calme ici ? {{count}} messages non lus dans World 🌍 — tape pour voir",
     "heroEmpty": "Sois le premier à défier une ville",
     "heroEmptySub": "Lance un défi inter-villes",
-    "leaderboard": "Classement"
+    "leaderboard": "Classement",
+    "arrivals": "{{count}} arrivées",
+    "arrivalsTitle": "Arrivées récentes",
+    "arrivalsEmpty": "Aucune arrivée récente"
   },
   "changeCity": "Changer de ville",
   "shareCity": "Partager la ville",

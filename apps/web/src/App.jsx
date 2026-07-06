@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -878,6 +878,8 @@ export default function App() {
   const [worldUnread,  setWorldUnread]  = useState(0)
   const [cityUnread,   setCityUnread]   = useState(0)
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
+  const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
+  const [showWorldArrivals, setShowWorldArrivals] = useState(false)
   const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
   const channelScopeRef = useRef('city')
   const worldJoinedRef  = useRef(false)
@@ -908,7 +910,10 @@ export default function App() {
   // count. Re-poll every 30s so "0 en ligne" self-corrects.
   useEffect(() => {
     if (channelScope !== 'world') return
-    const id = setInterval(() => { fetchWorldActivity().then(setWorldActivity).catch(() => {}) }, 30000)
+    const id = setInterval(() => {
+      fetchWorldActivity().then(setWorldActivity).catch(() => {})
+      fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
+    }, 30000)
     return () => clearInterval(id)
   }, [channelScope])
   const [guest, setGuest] = useState(null)
@@ -3624,8 +3629,22 @@ export default function App() {
         items.forEach(m => { const k = messageKey(m) || m.id; if (k) knownIdsRef.current.add(k) })
         ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
         setFeed(items)
+        // Enrich World message authors (badges + avatar thumb + mode) - the
+        // message-badges endpoint resolves user_ids regardless of channel.
+        const uids = [...new Set((messages || []).filter(m => m.userId).map(m => m.userId))]
+        if (uids.length && channelId) {
+          fetchMessageBadges(channelId, uids).then(badges => {
+            if (channelScopeRef.current !== 'world' || !badges) return
+            setFeed(prev => prev.map(item => {
+              if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+              const b = badges[item.userId]
+              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            }))
+          }).catch(() => {})
+        }
       } catch { /* realtime will populate */ }
       fetchWorldActivity().then(a => setWorldActivity(a)).catch(() => {})
+      fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
       if (guest?.guestId) markChannelRead('world', guest.guestId)
     } else {
       setCityUnread(0)
@@ -4790,6 +4809,14 @@ export default function App() {
               <span className="ch-pill ch-pill--static">👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</span>
               <button
                 type="button"
+                className={`ch-pill${!worldArrivals.length ? ' ch-pill--muted' : ''}`}
+                onClick={() => setShowWorldArrivals(true)}
+                aria-label={t('world.arrivals', { count: worldArrivals.length })}
+              >
+                ✈️ {t('world.arrivals', { count: worldArrivals.length })}
+              </button>
+              <button
+                type="button"
                 className="ch-pill ch-pill--accent"
                 onClick={() => { setLeaderboardScope('world'); setShowLeaderboard(true) }}
               >
@@ -5101,16 +5128,21 @@ export default function App() {
                       }
                       title={item.userId ? `View ${item.nickname}'s profile` : (item.guestId ? `View ${item.nickname}` : undefined)}
                     >
-                      {item.thumbAvatarUrl ? (
-                        <img className="msg-avatar msg-avatar--photo" src={thumbUrl(item.thumbAvatarUrl)} alt={item.nickname ?? ''} loading="lazy" />
-                      ) : (
-                        <span
-                          className="msg-avatar"
-                          style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                        >
-                          {(item.nickname ?? '?')[0].toUpperCase()}
-                        </span>
-                      )}
+                      {(() => {
+                        // Own messages aren't badge-enriched (that's for other
+                        // authors), so fall back to the account's own photo.
+                        const avatarThumb = item.thumbAvatarUrl || (isMine ? account?.profile_thumb_photo_url : null)
+                        return avatarThumb ? (
+                          <img className="msg-avatar msg-avatar--photo" src={thumbUrl(avatarThumb)} alt={item.nickname ?? ''} loading="lazy" />
+                        ) : (
+                          <span
+                            className="msg-avatar"
+                            style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                          >
+                            {(item.nickname ?? '?')[0].toUpperCase()}
+                          </span>
+                        )
+                      })()}
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                       {channelScope === 'world'
                         ? (() => { const cc = item.country || (isMine ? cityCountry : null); return cc ? <span className="msg-flag">{cityFlag(cc)}</span> : null })()
@@ -5375,6 +5407,35 @@ export default function App() {
       </div>
 
       {/* ── Full-screen pages ─────────────────────────── */}
+
+      {showWorldArrivals && (
+        <div className="full-page">
+          <div className="page-header">
+            <BackButton onClick={() => setShowWorldArrivals(false)} />
+            <span className="page-title">{t('world.arrivalsTitle')}</span>
+          </div>
+          <div className="page-body">
+            {worldArrivals.length === 0 ? (
+              <div className="wa-empty">{t('world.arrivalsEmpty')}</div>
+            ) : worldArrivals.map((a, i) => {
+              const [ac1, ac2] = avatarColors(a.nickname)
+              return (
+                <div
+                  key={`${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
+                  className={`wa-row${a.userId ? ' wa-row--tappable' : ''}`}
+                  onClick={a.userId ? () => { setShowWorldArrivals(false); openProfile(a.userId, a.nickname) } : undefined}
+                >
+                  <span className="wa-avatar" style={{ background: `linear-gradient(135deg, ${ac1}, ${ac2})` }}>
+                    {(a.nickname ?? '?')[0].toUpperCase()}
+                  </span>
+                  <span className="wa-name">{a.nickname}</span>
+                  <span className="wa-city">{cityFlag(a.country)} {a.city}</span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {showCityPicker && (
         <div className="full-page">

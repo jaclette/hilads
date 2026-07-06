@@ -323,6 +323,9 @@
     "quietCard": "هادئ هنا؟ {{count}} غير مقروءة في World 🌍 — اضغط للفتح",
     "heroEmpty": "كن أول من يتحدى مدينة",
     "heroEmptySub": "أطلق تحديًا بين المدن",
-    "leaderboard": "المتصدرون"
+    "leaderboard": "المتصدرون",
+    "arrivals": "{{count}} وصلوا",
+    "arrivalsTitle": "الوافدون حديثًا",
+    "arrivalsEmpty": "لا وافدين حديثًا"
   }
 }

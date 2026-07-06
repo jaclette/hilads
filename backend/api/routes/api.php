@@ -3876,6 +3876,12 @@ $router->add('GET', '/api/v1/world/quiet-context', function () {
     Response::json($data ?? ['cityQuiet' => false, 'worldActive' => false]);
 });
 
+// Global "who just landed" across all cities (each tagged with city + flag).
+$router->add('GET', '/api/v1/world/arrivals', function () {
+    $data = Cache::remember('world_arrivals', 20, fn() => ['arrivals' => WorldRepository::recentArrivals(30)]);
+    Response::json($data ?? ['arrivals' => []]);
+});
+
 // World header/pills aggregate — cached 45s to spare Postgres on high traffic.
 $router->add('GET', '/api/v1/world/activity', function () {
     $data = Cache::remember('world_activity', 45, fn() => WorldRepository::activity());

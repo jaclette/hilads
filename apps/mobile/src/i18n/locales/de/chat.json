@@ -125,6 +125,9 @@
     "quietCard": "Ruhig hier? {{count}} ungelesen in World 🌍 — zum Öffnen tippen",
     "heroEmpty": "Sei der Erste, der eine Stadt herausfordert",
     "heroEmptySub": "Starte eine städteübergreifende Challenge",
-    "leaderboard": "Rangliste"
+    "leaderboard": "Rangliste",
+    "arrivals": "{{count}} Ankünfte",
+    "arrivalsTitle": "Neue Ankünfte",
+    "arrivalsEmpty": "Keine neuen Ankünfte"
   }
 }

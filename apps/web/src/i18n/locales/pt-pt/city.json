@@ -298,6 +298,9 @@
     "quietCard": "Está calmo? {{count}} não lidas no World 🌍 — toca para abrir",
     "heroEmpty": "Sê o primeiro a desafiar uma cidade",
     "heroEmptySub": "Lança um desafio entre cidades",
-    "leaderboard": "Classificação"
+    "leaderboard": "Classificação",
+    "arrivals": "{{count}} chegadas",
+    "arrivalsTitle": "Chegadas recentes",
+    "arrivalsEmpty": "Sem chegadas recentes"
   }
 }

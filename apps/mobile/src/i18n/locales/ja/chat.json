@@ -125,6 +125,9 @@
     "quietCard": "静かですか？World に未読が {{count}} 件 🌍 — タップして開く",
     "heroEmpty": "最初に都市へ挑戦しよう",
     "heroEmptySub": "都市間チャレンジを立てる",
-    "leaderboard": "ランキング"
+    "leaderboard": "ランキング",
+    "arrivals": "{{count}} 人到着",
+    "arrivalsTitle": "最近の到着",
+    "arrivalsEmpty": "最近の到着はありません"
   }
 }

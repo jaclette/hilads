@@ -202,6 +202,45 @@ class WorldRepository
         ")->fetchColumn();
     }
 
+    /**
+     * Recent arrivals across ALL cities (global "who just landed"), each tagged
+     * with the city name + country flag. Powers the World arrivals pill + sheet.
+     * Reads the persisted join system messages; resolves each city once.
+     */
+    public static function recentArrivals(int $limit = 30): array
+    {
+        $limit = max(1, min(50, $limit));
+        $stmt  = Database::pdo()->prepare("
+            SELECT nickname, guest_id, user_id, channel_id,
+                   EXTRACT(EPOCH FROM created_at)::int AS created_at
+            FROM messages
+            WHERE type = 'system' AND event = 'join' AND channel_id LIKE 'city_%'
+              AND created_at > now() - interval '24 hours'
+            ORDER BY created_at DESC
+            LIMIT ?
+        ");
+        $stmt->execute([$limit]);
+
+        $out   = [];
+        $cache = [];
+        foreach ($stmt->fetchAll() as $r) {
+            $cid = (int) substr($r['channel_id'], 5);
+            if (!array_key_exists($cid, $cache)) {
+                $c = CityRepository::findById($cid);
+                $cache[$cid] = ['name' => $c['name'] ?? null, 'country' => $c['country'] ?? null];
+            }
+            $out[] = [
+                'nickname'  => $r['nickname'],
+                'guestId'   => $r['guest_id'],
+                'userId'    => $r['user_id'],
+                'city'      => $cache[$cid]['name'],
+                'country'   => $cache[$cid]['country'],
+                'createdAt' => (int) $r['created_at'],
+            ];
+        }
+        return $out;
+    }
+
     /** Recent World chat volume — used to avoid routing a quiet-city user to a quiet World. */
     public static function recentMessageCount(int $hours): int
     {

@@ -125,6 +125,9 @@
     "quietCard": "यहाँ शांति है? World में {{count}} अनरेड 🌍 — खोलने के लिए टैप करें",
     "heroEmpty": "किसी शहर को चैलेंज करने वाले पहले बनो",
     "heroEmptySub": "एक इंटर-सिटी चैलेंज शुरू करो",
-    "leaderboard": "लीडरबोर्ड"
+    "leaderboard": "लीडरबोर्ड",
+    "arrivals": "{{count}} पहुंचे",
+    "arrivalsTitle": "हाल की आमद",
+    "arrivalsEmpty": "हाल में कोई नहीं आया"
   }
 }

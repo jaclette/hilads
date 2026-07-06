@@ -298,6 +298,9 @@
     "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน World 🌍 — แตะเพื่อเปิด",
     "heroEmpty": "เป็นคนแรกที่ท้าทายเมือง",
     "heroEmptySub": "เริ่มความท้าทายข้ามเมือง",
-    "leaderboard": "อันดับ"
+    "leaderboard": "อันดับ",
+    "arrivals": "{{count}} คนเพิ่งมา",
+    "arrivalsTitle": "เพิ่งมาถึง",
+    "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา"
   }
 }

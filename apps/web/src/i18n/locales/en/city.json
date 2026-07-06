@@ -12,7 +12,10 @@
     "quietCard": "Quiet here? {{count}} unread in World 🌍 — tap to open",
     "heroEmpty": "Be the first to challenge a city",
     "heroEmptySub": "Launch a cross-city challenge",
-    "leaderboard": "Leaderboard"
+    "leaderboard": "Leaderboard",
+    "arrivals": "{{count}} arrivals",
+    "arrivalsTitle": "Recent arrivals",
+    "arrivalsEmpty": "No recent arrivals"
   },
   "inspiration": {
     "heading": "💡 Hangout ideas",

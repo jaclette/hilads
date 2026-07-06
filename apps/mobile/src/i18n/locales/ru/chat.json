@@ -131,6 +131,9 @@
     "quietCard": "Тихо здесь? {{count}} непрочитанных в World 🌍 — нажми, чтобы открыть",
     "heroEmpty": "Стань первым, кто бросит вызов городу",
     "heroEmptySub": "Запусти межгородской челлендж",
-    "leaderboard": "Рейтинг"
+    "leaderboard": "Рейтинг",
+    "arrivals": "{{count}} прибыло",
+    "arrivalsTitle": "Недавно прибыли",
+    "arrivalsEmpty": "Пока никто не прибыл"
   }
 }

@@ -298,6 +298,9 @@
     "quietCard": "这里很安静？World 里有 {{count}} 条未读 🌍 — 点击查看",
     "heroEmpty": "成为第一个挑战城市的人",
     "heroEmptySub": "发起一个跨城市挑战",
-    "leaderboard": "排行榜"
+    "leaderboard": "排行榜",
+    "arrivals": "{{count}} 位新来",
+    "arrivalsTitle": "最近到达",
+    "arrivalsEmpty": "暂无新到达"
   }
 }

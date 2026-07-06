@@ -298,6 +298,9 @@
     "quietCard": "여기 조용하죠? World에 안 읽은 메시지 {{count}}개 🌍 — 탭하여 열기",
     "heroEmpty": "도시에 도전하는 첫 번째 사람이 되세요",
     "heroEmptySub": "도시 간 챌린지를 열어보세요",
-    "leaderboard": "리더보드"
+    "leaderboard": "리더보드",
+    "arrivals": "{{count}}명 도착",
+    "arrivalsTitle": "최근 도착",
+    "arrivalsEmpty": "최근 도착이 없어요"
   }
 }

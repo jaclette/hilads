@@ -298,6 +298,9 @@
     "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong World 🌍 — chạm để xem",
     "heroEmpty": "Hãy là người đầu tiên thách đấu một thành phố",
     "heroEmptySub": "Tạo một thử thách liên thành phố",
-    "leaderboard": "Bảng xếp hạng"
+    "leaderboard": "Bảng xếp hạng",
+    "arrivals": "{{count}} lượt đến",
+    "arrivalsTitle": "Vừa đến",
+    "arrivalsEmpty": "Chưa có ai vừa đến"
   }
 }

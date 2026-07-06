@@ -298,6 +298,9 @@
     "quietCard": "Rustig hier? {{count}} ongelezen in World 🌍 — tik om te openen",
     "heroEmpty": "Wees de eerste die een stad uitdaagt",
     "heroEmptySub": "Start een challenge tussen steden",
-    "leaderboard": "Ranglijst"
+    "leaderboard": "Ranglijst",
+    "arrivals": "{{count}} aankomsten",
+    "arrivalsTitle": "Recente aankomsten",
+    "arrivalsEmpty": "Geen recente aankomsten"
   }
 }

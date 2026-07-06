@@ -125,6 +125,16 @@ export async function sendWorldMessage(guestId, nickname, content, mentions = nu
   return res.json()
 }
 
+// Recent arrivals across all cities → { arrivals: [{ nickname, guestId, userId, city, country, createdAt }] }
+export async function fetchWorldArrivals() {
+  try {
+    const res = await fetch(`${BASE}/world/arrivals`, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.arrivals || []
+  } catch { return [] }
+}
+
 // Cached server-side (~45s). { online, cities, crossCity: { count, cities[] } }
 export async function fetchWorldActivity() {
   const res = await fetch(`${BASE}/world/activity`, { credentials: 'include' })

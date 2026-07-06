@@ -7199,6 +7199,18 @@ img.pub-profile-avatar {
 /* Message avatar as a small profile thumbnail (loads the thumb, not the full
    image) instead of the initial letter when the author has a photo. */
 .msg-avatar--photo { object-fit: cover; background: var(--surface); }
+/* World arrivals sheet - global "who just landed", each tagged with city + flag. */
+.wa-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 1rem; }
+.wa-row--tappable { cursor: pointer; }
+.wa-row--tappable:active { background: var(--surface); }
+.wa-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
+}
+.wa-name { font-weight: 700; color: var(--text); }
+.wa-city { margin-left: auto; color: var(--muted2); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.wa-empty { padding: 2rem 1rem; text-align: center; color: var(--muted2); }
 /* World cross-city system messages - distinct centered info row in the feed. */
 .feed-world-sys {
   align-self: center;
