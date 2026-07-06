@@ -3002,6 +3002,10 @@ $router->add('GET', '/api/v1/channels', function () {
             'channelId'          => $id,
             'city'               => $city['name'],
             'country'            => $city['country'] ?? null,
+            // lat/lng power the landing IP→city proximity match (edge /api/geo).
+            // Already loaded by CityRepository::all() - no extra query.
+            'lat'                => isset($city['lat']) ? (float) $city['lat'] : null,
+            'lng'                => isset($city['lng']) ? (float) $city['lng'] : null,
             'timezone'           => $city['timezone'],
             'messageCount'       => $stats['messageCount'],
             'recentMessageCount' => $stats['recentMessageCount'] ?? 0,

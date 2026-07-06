@@ -932,6 +932,15 @@ export default function App() {
   const [previewLiveCount, setPreviewLiveCount] = useState(0)
   // /c/:id ad-landing: the highlighted challenge shown on Screen 2 (null on bare /).
   const [landingChallenge, setLandingChallenge] = useState(null)
+  // Landing CTA state (drives copy + primary action on the stories landing):
+  //   'city_join'    - IP matched a supported city → "Join {city} 🔥", joins it
+  //   'city_picker'  - no confident IP match → "Choose your city 🔥" → picker
+  //   'deep_link'    - /c/:id → "Take this challenge 🔥" (no IP detection)
+  // Starts 'city_join' (the featured-city default) and settles within ~200ms of
+  // the /api/geo race. detectedCity is the resolved city name (or 'unknown') for
+  // aggregate analytics only - never the raw IP.
+  const [landingState, setLandingState] = useState('city_join')
+  const [detectedCity, setDetectedCity] = useState(null)
   const [previewEventCount, setPreviewEventCount] = useState(0)
   const [previewEvents, setPreviewEvents]         = useState([])
   const [previewTopicCount, setPreviewTopicCount] = useState(0)
@@ -1677,6 +1686,43 @@ export default function App() {
     }).catch(() => null)
   }
 
+  // Bare-root ad-landing: resolve the visitor's closest supported city via the
+  // edge IP lookup (/api/geo), with NO GPS prompt. Raced against a 200ms budget:
+  //   State A (city_matched) → feature the detected city, CTA joins it.
+  //   State B (timeout/fail/unknown) → fall back to the featured city (HCMC) and
+  //     flip the CTA to the city picker. Never blocks render.
+  // Returns a location object so handleJoin can join the resolved city.
+  function resolveLandingCity() {
+    featuredEntryRef.current = true
+    const geoRace = Promise.race([
+      fetch('/api/geo', { headers: { Accept: 'application/json' } })
+        .then(r => (r.ok ? r.json() : null))
+        .catch(() => null),
+      new Promise(resolve => setTimeout(() => resolve(null), 200)),
+    ])
+    return geoRace.then(geo => {
+      if (geo && geo.state === 'city_matched' && geo.channelId) {
+        setCity(geo.city)
+        setCityCountry(geo.country)
+        setCityTimezone(geo.timezone)
+        setPreviewChannelId(geo.channelId)
+        setPreviewTimezone(geo.timezone ?? 'UTC')
+        setLandingState('city_join')
+        setDetectedCity(geo.city)
+        fetchChannels().then(list => {
+          const ch = (list?.channels ?? []).find(c => c.channelId === geo.channelId)
+          const n = Number(ch?.activeUsers ?? 0)
+          if (n > 0) setPreviewLiveCount(n)
+        }).catch(() => {})
+        return { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
+      }
+      // State B: no confident match → featured fallback + city-picker CTA.
+      setLandingState('city_picker')
+      setDetectedCity('unknown')
+      return resolveFeaturedCity()
+    })
+  }
+
   // ── Deep link resolution on cold load ─────────────────────────────────────
   // Runs once. If the URL is /city/:slug or /event/:id, override geolocation
   // by pointing locPromiseRef at the linked city before handleJoin fires.
@@ -1754,6 +1800,7 @@ export default function App() {
       // excluded from the guest auto-join list below). The primary CTA / row tap
       // joins into it via pendingChallengeRef. Falls back to the featured city on 404.
       featuredEntryRef.current = true
+      setLandingState('deep_link')   // /c/:id CTA = "Take this challenge 🔥", no IP detection
       locPromiseRef.current = fetchChallengeById(link.id).then(data => {
         if (!data) return resolveFeaturedCity()
         const { challenge, channelId, cityName, country, timezone } = data
@@ -1810,7 +1857,9 @@ export default function App() {
       const storiesEntry = !entryLink || entryLink.type === 'landing_challenge'
       const willAutoRejoin = !!localStorage.getItem(AUTH_FLAG_KEY) && !!loadIdentity()?.channelId
       if (storiesEntry && !willAutoRejoin) {
-        locPromiseRef.current = resolveFeaturedCity()   // guest ad-landing: no GPS prompt
+        // Bare / : IP-detect the closest supported city (State A/B), no GPS prompt.
+        // (/c/:id already set locPromiseRef above, so it never reaches here.)
+        locPromiseRef.current = resolveLandingCity()
       } else {
         locPromiseRef.current = startGeolocation()       // registered / unhandled: geo as before
       }
@@ -3430,7 +3479,14 @@ export default function App() {
     }
   }
 
+  // State-B CTA: open the existing city picker (fires the analytics marker).
+  function openLandingCityPicker() {
+    track('city_picker_shown', { detected_city: detectedCity ?? 'unknown' })
+    openObCityPicker()
+  }
+
   function joinCityFromOb(newChannelId, cityName, timezone, country) {
+    track('city_picker_selected', { city: cityName })
     setObPickingCity(false)
     setCity(cityName)
     setCityCountry(country ?? null)
@@ -4105,6 +4161,8 @@ export default function App() {
           cityName={city}
           cityCountry={cityCountry}
           landingChallenge={landingChallenge}
+          landingState={landingState}
+          detectedCity={detectedCity}
           previewLiveCount={previewLiveCount}
           previewEventCount={previewEventCount}
           previewTopicCount={previewTopicCount}
@@ -4114,6 +4172,7 @@ export default function App() {
           previewEvents={previewEvents}
           previewTimezone={previewTimezone}
           onPrimaryCta={() => handleJoin(null, null, { featured: true })}
+          onChooseCity={openLandingCityPicker}
           onChallengeRow={(ch) => { pendingChallengeRef.current = ch?.id ?? null; handleJoin(null, null, { featured: true }) }}
           onSignUp={() => { setObAuthInitialTab('signup'); setObShowAuth(true) }}
           onSignIn={() => { setObAuthInitialTab('login');  setObShowAuth(true) }}

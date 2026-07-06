@@ -52,10 +52,11 @@ function Chevron() {
 
 export default function StoriesLanding({
   cityName, cityCountry, landingChallenge = null,
+  landingState = 'city_join', detectedCity = null,
   previewChallenges = [], previewEvents = [], previewTopics = [],
   previewLiveCount = 0, previewChallengeCount = 0, previewEventCount = 0, previewTopicCount = 0,
   previewTimezone = 'UTC',
-  onPrimaryCta, onChallengeRow, onSignUp, onSignIn, onStoreClick,
+  onPrimaryCta, onChooseCity, onChallengeRow, onSignUp, onSignIn, onStoreClick,
 }) {
   const { t } = useTranslation('landing')
   const screenRefs = useRef([])
@@ -64,9 +65,18 @@ export default function StoriesLanding({
 
   const showLive = previewLiveCount >= MIN_LIVE_COUNT
   const headlineCity = cityName || FEATURED_CITY.displayName
-  const ctaLabel = landingChallenge
-    ? t('stories.enterChallenge', { city: FEATURED_CITY.displayName })
-    : t('stories.enterCity', { city: FEATURED_CITY.displayName })
+  // Primary-CTA variant, from the landing state resolved in App:
+  //   deep_link   → challenge CTA · city_picker → picker CTA · else → join CTA.
+  const ctaVariant = landingChallenge || landingState === 'deep_link'
+    ? 'challenge_join'
+    : landingState === 'city_picker'
+      ? 'city_picker'
+      : 'city_join'
+  const ctaLabel = ctaVariant === 'challenge_join'
+    ? t('stories.enterChallenge')
+    : ctaVariant === 'city_picker'
+      ? t('stories.enterPicker')
+      : t('stories.enterCity', { city: headlineCity })
 
   // screen_viewed funnel event (once per screen) + progress bar.
   useEffect(() => {
@@ -89,23 +99,35 @@ export default function StoriesLanding({
     return () => io.disconnect()
   }, [])
 
-  // Funnel entry: fire once when the stories landing mounts (utm super-props are
-  // attached automatically by PostHog; here we add referrer + screen size).
+  // Keep the latest landing_state / detected_city visible to the deferred
+  // landing_view timer below (props change once the /api/geo race settles).
+  const landingStateRef = useRef(landingState); landingStateRef.current = landingState
+  const detectedCityRef = useRef(detectedCity); detectedCityRef.current = detectedCity
+
+  // Funnel entry: fire once, deferred ~250ms so the IP→city race (200ms budget in
+  // App) has settled and landing_state / detected_city reflect the resolved values.
+  // utm super-props are attached automatically by PostHog; here we add referrer,
+  // screen size, and the resolved landing state. Rendering is never blocked on this.
   useEffect(() => {
-    track('landing_view', {
-      referrer: (typeof document !== 'undefined' && document.referrer) || null,
-      screen_w: typeof window !== 'undefined' ? window.screen?.width : null,
-      screen_h: typeof window !== 'undefined' ? window.screen?.height : null,
-      has_challenge: !!landingChallenge,
-    })
+    const id = setTimeout(() => {
+      track('landing_view', {
+        referrer: (typeof document !== 'undefined' && document.referrer) || null,
+        screen_w: typeof window !== 'undefined' ? window.screen?.width : null,
+        screen_h: typeof window !== 'undefined' ? window.screen?.height : null,
+        has_challenge: !!landingChallenge,
+        landing_state: landingStateRef.current,
+        detected_city: detectedCityRef.current ?? 'unknown',
+      })
+    }, 250)
+    return () => clearTimeout(id)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const setRef = (i) => (el) => { screenRefs.current[i] = el }
 
-  const ctaVariant = landingChallenge ? 'challenge_join' : 'city_join'
   const primary = () => {
     track('cta_primary_clicked', { screen: active, cta_variant: ctaVariant })
-    onPrimaryCta?.()
+    if (ctaVariant === 'city_picker') onChooseCity?.()
+    else onPrimaryCta?.()
   }
   const tapChallenge = (ch) => {
     track('challenge_row_clicked', { challenge_id: ch?.id })
