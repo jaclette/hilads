@@ -4788,7 +4788,6 @@ export default function App() {
             )}
             <div className="ch-pills">
               <span className="ch-pill ch-pill--static">👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</span>
-              <span className="ch-pill ch-pill--static">🏙️ {t('world.cities', { count: worldActivity?.cities ?? 0 })}</span>
               <button
                 type="button"
                 className="ch-pill ch-pill--accent"
