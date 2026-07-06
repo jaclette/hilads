@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, markChannelRead, fetchUnread } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -665,6 +665,12 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && m.event === 'weather') {
     return { type: 'activity', subtype: 'weather', id: `weather_${m.createdAt}`, text: m.content, createdAt: m.createdAt }
   }
+  // World cross-city system messages render INLINE as distinct info rows (unlike
+  // city joins, which are diverted to the arrivals bar). Payload carries the
+  // structured fields (cities, challenge, nickname) for localized rendering.
+  if (m.type === 'system' && (m.event === 'challenge_created' || m.event === 'new_user' || m.event === 'challenge_won')) {
+    return { type: 'world_system', subtype: m.event, id: m.id || `wsys_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, createdAt: m.createdAt }
+  }
   // Guard: any other system message that slips through has no nickname - skip it rather than crash.
   if (m.type === 'system') {
     console.warn('[feed] unhandled system message - skipping:', m)
@@ -867,6 +873,14 @@ export default function App() {
   const { t } = useTranslation('city')
   const installPrompt = useBeforeInstallPrompt()
   const [status, setStatus] = useState('onboarding') // onboarding | joining | ready | error
+  // ── World channel (global companion channel) ──
+  const [channelScope, setChannelScope] = useState('city') // 'city' | 'world'
+  const [worldUnread,  setWorldUnread]  = useState(0)
+  const [cityUnread,   setCityUnread]   = useState(0)
+  const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
+  const channelScopeRef = useRef('city')
+  const worldJoinedRef  = useRef(false)
+  useEffect(() => { channelScopeRef.current = channelScope }, [channelScope])
   const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
@@ -2779,9 +2793,27 @@ export default function App() {
       // Socket: push new messages instantly instead of waiting for the 3s poll.
       // The poll remains as a fallback for when WS is disconnected.
       socket.on('newMessage', ({ channelId, message }) => {
+        const scope  = channelScopeRef.current
+        const myGId  = guestIdRef.current
+        const myUId  = accountRef.current?.id
+        const isMine = (myGId && message.guestId === myGId) || (myUId && message.userId === myUId)
+        const isChat = message.type === 'text' || message.type === 'image'
+
+        // World message arriving while NOT viewing World → bump the World unread badge.
+        if (String(channelId) === 'world' && scope !== 'world') {
+          if (!isMine && isChat) setWorldUnread(u => Math.min(u + 1, 999))
+          return
+        }
+        // City message for MY city arriving while viewing World → bump the city badge.
+        if (scope === 'world' && String(channelId) === String(activeChannelRef.current)
+            && channelId !== activeEventIdRef.current) {
+          if (!isMine && isChat) setCityUnread(u => Math.min(u + 1, 999))
+          return
+        }
+
         // City channelId is a number from WS but string from API - use String() coercion.
-        // Event channelId is a UUID string on both sides - strict equality works fine.
-        const isCityMsg  = String(channelId) === String(activeChannelRef.current)
+        // In World scope the active feed channel is 'world'; otherwise the city channel.
+        const isCityMsg  = String(channelId) === String(scope === 'world' ? 'world' : activeChannelRef.current)
         const isEventMsg = channelId === activeEventIdRef.current
 
         if (!isCityMsg && !isEventMsg) return
@@ -3190,6 +3222,9 @@ export default function App() {
       const mArg = builtMentions.length ? builtMentions : null
       if (activeEventIdRef.current) {
         msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
+      } else if (channelScopeRef.current === 'world') {
+        const r = await sendWorldMessage(guest.guestId, activeNickname, content, mArg)
+        msg = r.message ?? r
       } else {
         msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
       }
@@ -3527,6 +3562,44 @@ export default function App() {
   function retryGeo() {
     setGeoState('pending')
     locPromiseRef.current = startGeolocation()
+  }
+
+  // Toggle the in-tab channel between the current city and the global World
+  // channel. City presence/typing stay on the city (activeChannelRef unchanged);
+  // World is an overlay feed. Resets the feed + dedup and loads the target's
+  // messages, marks it read, and clears its unread badge.
+  async function switchScope(scope) {
+    if (scope === channelScopeRef.current) return
+    channelScopeRef.current = scope
+    setChannelScope(scope)
+    setFeed([])
+    knownIdsRef.current = new Set()
+
+    if (scope === 'world') {
+      track('world_channel_viewed', {})
+      setWorldUnread(0)
+      if (!worldJoinedRef.current) { socketRef.current?.joinWorld(sessionIdRef.current); worldJoinedRef.current = true }
+      try {
+        const { messages } = await fetchWorldMessages({ limit: 50 })
+        if (channelScopeRef.current !== 'world') return // toggled back mid-fetch
+        const items = (messages || []).map(m => toFeedItem(m)).filter(Boolean)
+        items.forEach(m => { const k = messageKey(m) || m.id; if (k) knownIdsRef.current.add(k) })
+        ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
+        setFeed(items)
+      } catch { /* realtime will populate */ }
+      fetchWorldActivity().then(a => setWorldActivity(a)).catch(() => {})
+      if (guest?.guestId) markChannelRead('world', guest.guestId)
+    } else {
+      setCityUnread(0)
+      try {
+        const { messages } = await fetchLeanMessages(channelId, { limit: 50 })
+        if (channelScopeRef.current !== 'city') return
+        const items = (messages || []).map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
+        ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
+        setFeed(items)
+      } catch { /* */ }
+      if (guest?.guestId) markChannelRead(channelId, guest.guestId)
+    }
   }
 
   async function switchCity(newChannelId, newCityName, newCityTimezone, newCityCountry, opts = {}) {
