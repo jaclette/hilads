@@ -2678,7 +2678,13 @@ export default function App() {
         return toFeedItem(m, delay)
       }))
 
+      isNearBottomRef.current = true   // enter the city at the newest message
       setFeed(initialItems)
+      // Force the viewport to the bottom after paint. A single rAF can fire
+      // before late layout (banners, lazy avatar thumbs) settles and leaves the
+      // user mid-conversation, so re-pin once more shortly after.
+      requestAnimationFrame(() => { const c = messagesContainerRef.current; if (c) c.scrollTop = c.scrollHeight })
+      setTimeout(() => { if (isNearBottomRef.current) { const c = messagesContainerRef.current; if (c) c.scrollTop = c.scrollHeight } }, 250)
 
       // Set pagination cursor: oldest message that HAS an id (system messages
       // - arrivals/weather - come back id-less, so boot.messages[0] is often id-less).
@@ -2735,9 +2741,13 @@ export default function App() {
       // Bootstrap (lean=1) skips the badge DB query - messages arrive with ghost
       // badges by default. Enrich registered-user messages immediately after the
       // screen is usable so badges appear within ~200 ms of first render.
+      // Regular chat messages come back with type UNDEFINED (only system rows
+      // carry type='system'), so filter by "has a userId and isn't a system row"
+      // - NOT m.type === 'text', which matched nothing and left every city
+      // message un-enriched (letter avatars + default mode).
       const joinBadgeIds = [...new Set(
         boot.messages
-          .filter(m => (m.type === 'text' || m.type === 'image') && m.userId)
+          .filter(m => m.userId && m.type !== 'system')
           .map(m => m.userId)
       )]
       const joinBadgeChannel = location.channelId
@@ -3770,7 +3780,7 @@ export default function App() {
       // Deferred badge enrichment - same pattern as handleJoin
       const switchBadgeIds = [...new Set(
         boot.messages
-          .filter(m => (m.type === 'text' || m.type === 'image') && m.userId)
+          .filter(m => m.userId && m.type !== 'system')
           .map(m => m.userId)
       )]
       if (switchBadgeIds.length > 0) {
