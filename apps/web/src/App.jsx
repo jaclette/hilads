@@ -903,6 +903,14 @@ export default function App() {
     }).catch(() => {})
     return () => { cancelled = true }
   }, [status, channelId, channelScope, worldUnread]) // eslint-disable-line react-hooks/exhaustive-deps
+  // Keep the World pills (N online / N cities) fresh while viewing World - the
+  // aggregate is server-cached ~45s, so a single fetch on entry can show a stale
+  // count. Re-poll every 30s so "0 en ligne" self-corrects.
+  useEffect(() => {
+    if (channelScope !== 'world') return
+    const id = setInterval(() => { fetchWorldActivity().then(setWorldActivity).catch(() => {}) }, 30000)
+    return () => clearInterval(id)
+  }, [channelScope])
   const [guest, setGuest] = useState(null)
   const [nickname, setNickname] = useState(() => loadIdentity()?.nickname ?? generateNickname())
   const [feed, setFeed] = useState([])
@@ -2726,7 +2734,7 @@ export default function App() {
           setFeed(prev => prev.map(item => {
             if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
           }))
         })
       }
@@ -3740,7 +3748,7 @@ export default function App() {
           setFeed(prev => prev.map(item => {
             if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
           }))
         })
       }
@@ -5089,12 +5097,16 @@ export default function App() {
                       }
                       title={item.userId ? `View ${item.nickname}'s profile` : (item.guestId ? `View ${item.nickname}` : undefined)}
                     >
-                      <span
-                        className="msg-avatar"
-                        style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
-                      >
-                        {(item.nickname ?? '?')[0].toUpperCase()}
-                      </span>
+                      {item.thumbAvatarUrl ? (
+                        <img className="msg-avatar msg-avatar--photo" src={thumbUrl(item.thumbAvatarUrl)} alt={item.nickname ?? ''} loading="lazy" />
+                      ) : (
+                        <span
+                          className="msg-avatar"
+                          style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}
+                        >
+                          {(item.nickname ?? '?')[0].toUpperCase()}
+                        </span>
+                      )}
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                       {channelScope === 'world'
                         ? (() => { const cc = item.country || (isMine ? cityCountry : null); return cc ? <span className="msg-flag">{cityFlag(cc)}</span> : null })()

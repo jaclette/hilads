@@ -138,7 +138,7 @@ final class UserBadgeService
 
         // One query: user profile data + ambassador role (LEFT JOIN, no N+1).
         $stmt = Database::pdo()->prepare(
-            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode,
+            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode, u.profile_thumb_photo_url,
                     (ucr.user_id IS NOT NULL) AS is_ambassador
              FROM users u
              LEFT JOIN user_city_roles ucr
@@ -160,11 +160,14 @@ final class UserBadgeService
             }
 
             $result[$uid] = [
-                'primaryBadge' => $primary,
-                'contextBadge' => $context,
-                'vibe'         => $row['vibe'] ?? 'chill',
-                'mode'         => $row['mode'] ?? null,
-                'is_ambassador'=> $isAmbassador,
+                'primaryBadge'   => $primary,
+                'contextBadge'   => $context,
+                'vibe'           => $row['vibe'] ?? 'chill',
+                'mode'           => $row['mode'] ?? null,
+                'is_ambassador'  => $isAmbassador,
+                // Small proxied thumbnail (never the full image) for the chat
+                // message avatar - shown instead of the initial letter when set.
+                'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? null),
             ];
         }
 

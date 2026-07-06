@@ -7196,6 +7196,9 @@ img.pub-profile-avatar {
    right-aligned); the home-country flag sits next to the nickname. */
 .msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }
 .msg-flag { font-size: 0.95rem; line-height: 1; }
+/* Message avatar as a small profile thumbnail (loads the thumb, not the full
+   image) instead of the initial letter when the author has a photo. */
+.msg-avatar--photo { object-fit: cover; background: var(--surface); }
 /* World cross-city system messages - distinct centered info row in the feed. */
 .feed-world-sys {
   align-self: center;
