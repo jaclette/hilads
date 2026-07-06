@@ -49,6 +49,7 @@ interface AppState {
   activeDmId:           string | null;   // dm/[id] screen currently mounted
   geoState:             GeoState;
   detectedCity:         City | null;     // geo-resolved city, shown on landing screen
+  justPlacedCity:       City | null;     // IP-auto-placed city (first launch) → one-shot banner
   joined:               boolean;         // true once user has joined a city (or auto-rejoined)
   onlineUsers:          OnlineUser[];    // live presence list for the current city
   bootstrapData:        BootstrapData | null; // pre-loaded from /bootstrap, consumed once by tabs
@@ -81,6 +82,7 @@ interface AppActions {
   setActiveDmId:           (id: string | null) => void;
   setGeoState:             (state: GeoState) => void;
   setDetectedCity:         (city: City | null) => void;
+  setJustPlacedCity:       (city: City | null) => void;
   setJoined:               (joined: boolean) => void;
   setOnlineUsers:          (users: OnlineUser[]) => void;
   setBootstrapData:        (data: BootstrapData | null) => void;
@@ -116,6 +118,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [activeDmId,              setActiveDmId]              = useState<string | null>(null);
   const [geoState,                setGeoState]                = useState<GeoState>('pending');
   const [detectedCity, setDetectedCity] = useState<City | null>(null);
+  const [justPlacedCity, setJustPlacedCity] = useState<City | null>(null);
   const [joined,         setJoined]         = useState(false);
   const [onlineUsers,    setOnlineUsers]    = useState<OnlineUser[]>([]);
   const [bootstrapData,  setBootstrapData]  = useState<BootstrapData | null>(null);
@@ -241,7 +244,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const value = useMemo(() => ({
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
     setBooting, setBootError,
     setIdentity,
     setSessionId:            setSessionIdCb,
@@ -257,6 +260,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setActiveDmId:           setActiveDmIdCb,
     setGeoState:             setGeoStateCb,
     setDetectedCity:         setDetectedCityCb,
+    setJustPlacedCity,
     setJoined:               setJoinedCb,
     setOnlineUsers:          setOnlineUsersCb,
     setBootstrapData:        setBootstrapDataCb,
@@ -270,7 +274,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }), [
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
-    geoState, detectedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
+    geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
     setIdentity, setSessionIdCb, setAccountWithLog, setCityCb, setEventChatPreview,
     removeEventChatPreview, clearEventChatCounts, setActiveEventIdCb, setActiveDmIdCb,
     setGeoStateCb, setDetectedCityCb, setJoinedCb, setOnlineUsersCb, setBootstrapDataCb,

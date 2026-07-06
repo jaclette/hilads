@@ -102,6 +102,7 @@
   "done": "Terminé",
   "close": "Fermer",
   "back": "Retour",
+  "placedBanner": "On t'a placé à {{city}} — tu peux changer en haut.",
   "connectionHint": "Vérifie ta connexion et réessaie.",
   "notifications": "Notifications",
   "messages": "Messages",

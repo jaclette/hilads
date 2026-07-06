@@ -103,6 +103,7 @@
   "done": "Done",
   "close": "Close",
   "back": "Back",
+  "placedBanner": "We placed you in {{city}} — you can change it up top.",
   "connectionHint": "Check your connection and try again.",
   "notifications": "Notifications",
   "messages": "Messages",

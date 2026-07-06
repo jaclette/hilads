@@ -24,7 +24,7 @@ import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { usePushRegistration } from '@/hooks/usePushRegistration';
 import { BootScreen } from '@/components/BootScreen';
-import { LandingScreen } from '@/components/LandingScreen';
+import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
 import { track } from '@/services/analytics';
 import { Colors } from '@/constants';
@@ -118,7 +118,7 @@ function RootLayoutInner() {
 
     return () => sub.remove();
   }, []);
-  const { retry, retryGeo } = useAppBoot();
+  const { retry } = useAppBoot();
   useAppLifecycle();          // foreground/background WS resilience
   usePresenceHeartbeat();     // keep presence alive
   usePresence();              // sync online users list to AppContext
@@ -201,10 +201,10 @@ function RootLayoutInner() {
               options={{ animation: 'slide_from_bottom', presentation: 'modal' }}
             />
           </Stack>
-          {/* LandingScreen overlays until user joins a city - guests only.
-              Logged-in users skip it (routed to /switch-city by the effect
-              above) so they never see the "anonymous · instant access" UI. */}
-          {!joined && !account && <LandingScreen onRetryGeo={retryGeo} />}
+          {/* First-launch guests are auto-joined to their IP city or routed to
+              the first-time picker in useAppBoot - no LandingScreen overlay, no
+              GPS prompt. A one-shot banner confirms the auto-placement. */}
+          <PlacedCityBanner />
         </>
       )}
 

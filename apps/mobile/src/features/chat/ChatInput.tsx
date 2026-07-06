@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
+import { requestFeatureLocation } from '@/lib/geoFeature';
 import { Colors, FontSizes } from '@/constants';
 import { useApp } from '@/context/AppContext';
 import type { ReplyRef } from '@/types';
@@ -364,39 +365,22 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
 
   async function handleMySpot() {
     setShowShareSheet(false);
-
-    // Permission check (fast if already granted on boot; shows dialog only on first use)
-    const existing = await Location.getForegroundPermissionsAsync();
-    let granted = existing.status === 'granted';
-    if (!granted) {
-      if (!existing.canAskAgain) {
-        Alert.alert(
-          t('composer.locPermTitle'),
-          t('composer.locPermSettings'),
-          [
-            { text: t('cancel'), style: 'cancel' },
-            { text: t('openSettings'), onPress: () => Linking.openSettings() },
-          ],
-        );
-        return;
-      }
-      const result = await Location.requestForegroundPermissionsAsync();
-      granted = result.status === 'granted';
-      if (!granted) {
+    // Request GPS at the moment of sharing (reuses granted silently; the util
+    // emits the share_spot permission funnel). Degrade gracefully on denial.
+    const geo = await requestFeatureLocation('share_spot');
+    if (!geo.ok) {
+      if (geo.permanentlyDenied) {
+        Alert.alert(t('composer.locPermTitle'), t('composer.locPermSettings'), [
+          { text: t('cancel'), style: 'cancel' },
+          { text: t('openSettings'), onPress: () => Linking.openSettings() },
+        ]);
+      } else if (geo.reason === 'denied') {
         Alert.alert(t('composer.locNeededTitle'), t('composer.locNeededBody'));
-        return;
       }
+      return;
     }
-
-    // Use last known position (instant cache lookup) to open the picker immediately.
-    // LocationPicker will refine to accurate GPS internally via injectJavaScript.
-    let lat = 0, lng = 0;
-    try {
-      const last = await Location.getLastKnownPositionAsync();
-      if (last) { lat = last.coords.latitude; lng = last.coords.longitude; }
-    } catch {}
-
-    setLocationCoords({ lat, lng });
+    // LocationPicker refines to accurate GPS internally via injectJavaScript.
+    setLocationCoords(geo.coords ?? { lat: 0, lng: 0 });
   }
 
   function handleLocationConfirm({ place, address, lat, lng }: { place: string; address: string; lat: number; lng: number }) {

@@ -50,7 +50,17 @@ export type AnalyticsEvent =
   | 'auth_login'
   | 'auth_logout'
   | 'user_authenticated'
-  | 'viewed_profile';
+  | 'viewed_profile'
+  // Per-feature GPS permission funnel (requested only at feature use).
+  | 'gps_permission_requested'
+  | 'gps_permission_granted'
+  | 'gps_permission_denied'
+  // First-launch IP city detection (no GPS prompt).
+  | 'first_launch_ip_detection_started'
+  | 'first_launch_ip_detection_resolved'
+  | 'first_launch_ip_detection_failed'
+  | 'first_launch_city_picker_shown'
+  | 'first_launch_city_selected';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

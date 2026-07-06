@@ -1,5 +1,6 @@
 {
   "title": "Switch city",
+  "firstTimeTitle": "Choose your city to start",
   "searchPlaceholder": "Search a city…",
   "topCities": "Top cities right now",
   "cities": "Cities",

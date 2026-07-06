@@ -25,7 +25,7 @@ import {
   Animated,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -136,6 +136,10 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 export default function SwitchCityScreen() {
   const router                                              = useRouter();
   const { t } = useTranslation('cities');
+  // First-launch mode: routed here by useAppBoot when IP detection found no city.
+  // No back button, a "start here" headline, and the pick completes onboarding.
+  const { firstTime } = useLocalSearchParams<{ firstTime?: string }>();
+  const isFirstTime = firstTime === '1';
   const { city: activeCity, setCity, identity, sessionId, setIdentity, account, detectedCity, setJoined } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   // Guards a double-tap / rapid re-pick from firing the switch sequence twice
@@ -203,6 +207,11 @@ export default function SwitchCityScreen() {
     // path on their profile (HOME CITY input → city picker with search +
     // autocomplete), which is the only place /me/city is called from now.
     track('city_selected', { cityId: item.channelId, cityName: item.name });
+    if (isFirstTime) {
+      // First-launch pick completes onboarding: the guest wasn't joined yet.
+      setJoined(true);
+      track('first_launch_city_selected', { chosen_city: item.name, method: 'manual_picker' });
+    }
     // replace (not push) - back from the City Channel shouldn't return here.
     router.replace('/(tabs)/chat');
   }
@@ -236,30 +245,34 @@ export default function SwitchCityScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
 
       {/* ── Header - web: .page-header (back button + centered title) ── */}
+      {/* First-launch mode: no back button (the user must pick to proceed) and a
+          "start here" headline. Otherwise the normal back button + "Switch city". */}
       <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backBtn}
-          onPress={() => {
-            // The landing's "Browse cities" navigates here with router.replace
-            // (+ setJoined(true)), so there's often no history to pop. Fall
-            // back gracefully instead of dead-ending:
-            //   - history exists        → normal back
-            //   - no city joined yet    → return to the landing (setJoined(false))
-            //   - already in a city     → go to the city chat
-            if (router.canGoBack()) { router.back(); return; }
-            if (!activeCity) {
-              setJoined(false);
-              router.replace('/(tabs)/events');
-            } else {
-              router.replace('/(tabs)/chat');
-            }
-          }}
-          activeOpacity={0.7}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Ionicons name="chevron-back" size={22} color={Colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>{t('title')}</Text>
+        {!isFirstTime && (
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => {
+              // The landing's "Browse cities" navigates here with router.replace
+              // (+ setJoined(true)), so there's often no history to pop. Fall
+              // back gracefully instead of dead-ending:
+              //   - history exists        → normal back
+              //   - no city joined yet    → return to the landing (setJoined(false))
+              //   - already in a city     → go to the city chat
+              if (router.canGoBack()) { router.back(); return; }
+              if (!activeCity) {
+                setJoined(false);
+                router.replace('/(tabs)/events');
+              } else {
+                router.replace('/(tabs)/chat');
+              }
+            }}
+            activeOpacity={0.7}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <Ionicons name="chevron-back" size={22} color={Colors.text} />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.headerTitle}>{isFirstTime ? t('firstTimeTitle') : t('title')}</Text>
       </View>
 
       {/* ── Search - web: .city-search-wrap + .city-search-input ── */}

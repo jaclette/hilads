@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, ActivityIndicator,
+  StyleSheet, ActivityIndicator, Alert, Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
+import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createTopic, updateTopic } from '@/api/topics';
 import { ApiError } from '@/api/client';
@@ -60,16 +60,23 @@ export default function CreateTopicScreen() {
       return;
     }
 
-    // Hangout's location = creator's location at creation. Reuse the OS-cached
-    // fix (no prompt, no watcher); missing/denied → no coords, no distance shown.
-    let coords: { lat: number; lng: number } | null = null;
-    try {
-      const { granted } = await Location.getForegroundPermissionsAsync();
-      if (granted) {
-        const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
-        if (last) coords = { lat: last.coords.latitude, lng: last.coords.longitude };
+    // Launching a Hi now REQUIRES precise location - it tells people where to
+    // meet you - so we request it here, at launch (not up-front). Block on denial
+    // and explain; offer Settings when permission is permanently denied.
+    const geo = await requestFeatureLocation('hi_now');
+    if (!geo.ok) {
+      if (geo.permanentlyDenied) {
+        Alert.alert(t('geoRequiredTitle'), t('geoRequiredSettings'), [
+          { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+          { text: t('openSettings', { ns: 'common' }), onPress: () => Linking.openSettings() },
+        ]);
+      } else {
+        setError(t('geoRequired'));
       }
-    } catch { /* no coords - non-fatal */ }
+      setSubmitting(false);
+      return;
+    }
+    const coords = geo.coords!;
     try {
       await createTopic(city.channelId, identity.guestId, trimmedTitle, description.trim() || null, category, coords);
       router.back();

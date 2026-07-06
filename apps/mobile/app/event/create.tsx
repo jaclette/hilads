@@ -22,7 +22,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
-import * as Location from 'expo-location';
+import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createEvent, createEventSeries } from '@/api/events';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
@@ -382,33 +382,19 @@ export default function CreateEventScreen() {
       setShowLocPicker(true);
       return;
     }
-    const existing = await Location.getForegroundPermissionsAsync();
-    let granted = existing.status === 'granted';
-    if (!granted) {
-      if (!existing.canAskAgain) {
-        Alert.alert(
-          t('locPermTitle'),
-          t('locPermSettings'),
-          [
-            { text: t('cancel', { ns: 'common' }), style: 'cancel' },
-            { text: t('openSettings', { ns: 'common' }), onPress: () => Linking.openSettings() },
-          ],
-        );
-        return;
-      }
-      const result = await Location.requestForegroundPermissionsAsync();
-      granted = result.status === 'granted';
-      if (!granted) {
+    const geo = await requestFeatureLocation('event_location');
+    if (!geo.ok) {
+      if (geo.permanentlyDenied) {
+        Alert.alert(t('locPermTitle'), t('locPermSettings'), [
+          { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+          { text: t('openSettings', { ns: 'common' }), onPress: () => Linking.openSettings() },
+        ]);
+      } else if (geo.reason === 'denied') {
         Alert.alert(t('locNeededTitle'), t('locMapBody'));
-        return;
       }
+      return;
     }
-    let lat = 0, lng = 0;
-    try {
-      const last = await Location.getLastKnownPositionAsync();
-      if (last) { lat = last.coords.latitude; lng = last.coords.longitude; }
-    } catch {}
-    setLocPickerCenter({ lat, lng });
+    setLocPickerCenter(geo.coords ?? { lat: 0, lng: 0 });
     setLocPickerAuto(true);
     setShowLocPicker(true);
   }
