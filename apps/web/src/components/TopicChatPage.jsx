@@ -1,4 +1,5 @@
 import { thumbUrl } from '../lib/imageThumb'
+import { requestFeatureLocation } from '../lib/gpsFeature'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
@@ -389,17 +390,10 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
   async function handleMySpot() {
     setShowShareSheet(false)
     setSpotLoading(true)
-    try {
-      const pos = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
-      )
-      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-    } catch (err) {
-      console.error('[spot/pulse]', err)
-      setError(t('errors.locFailed'))
-    } finally {
-      setSpotLoading(false)
-    }
+    const res = await requestFeatureLocation('share_spot')
+    if (res.ok) setLocationPickerCoords(res.coords)
+    else setError(t('errors.locFailed'))
+    setSpotLoading(false)
   }
 
   async function handleLocationConfirm({ place, address, lat, lng }) {

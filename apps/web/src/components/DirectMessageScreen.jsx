@@ -1,4 +1,5 @@
 import { thumbUrl } from '../lib/imageThumb'
+import { requestFeatureLocation } from '../lib/gpsFeature'
 import { useState, useEffect, useRef } from 'react'
 import ThumbImg from './ThumbImg'
 import { useTranslation } from 'react-i18next'
@@ -343,17 +344,10 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
   async function handleMySpot() {
     setShowShareSheet(false)
     setSpotLoading(true)
-    try {
-      const pos = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
-      )
-      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-    } catch (err) {
-      console.error('[spot/dm]', err)
-      setError("Couldn't get your location. Please enable location access and try again.")
-    } finally {
-      setSpotLoading(false)
-    }
+    const res = await requestFeatureLocation('share_spot')
+    if (res.ok) setLocationPickerCoords(res.coords)
+    else setError("Couldn't get your location. Please enable location access and try again.")
+    setSpotLoading(false)
   }
 
   async function handleLocationConfirm({ place, address, lat, lng }) {

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { requestFeatureLocation } from '../lib/gpsFeature'
 import { createEvent, createEventSeries, updateEvent, deleteEvent, EventLimitReachedError } from '../api'
 import { EVENT_TYPES } from '../cityMeta'
 import BackButton from './BackButton'
@@ -276,22 +277,13 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
   // the browser's current position (the web picker has no GPS auto-refine).
   async function handleOpenLocation() {
     if (locationCoords) { setPickerCenter(locationCoords); return }
-    if (!navigator.geolocation) {
-      setError(t('errors.locUnavailable'))
-      return
-    }
     setLocating(true)
     setError(null)
-    try {
-      const pos = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }),
-      )
-      setPickerCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-    } catch {
-      setError(t('errors.locFailed'))
-    } finally {
-      setLocating(false)
-    }
+    const res = await requestFeatureLocation('event_location')
+    if (res.ok) setPickerCenter(res.coords)
+    else if (res.reason === 'unsupported') setError(t('errors.locUnavailable'))
+    else setError(t('errors.locFailed'))
+    setLocating(false)
   }
 
   function handleLocationConfirm({ place, address, lat, lng }) {

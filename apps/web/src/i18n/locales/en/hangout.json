@@ -26,7 +26,8 @@
     "limitSub": "You can run one hangout at a time. Head to “{{title}}”, or delete it to start a new one.",
     "limitGo": "Go to my hangout →",
     "yourHangout": "your hangout",
-    "geoHint": "📍 Turn on location to see who’s around right now — and let nearby people catch your Hi 👀🔥"
+    "geoHint": "📍 Turn on location to see who’s around right now — and let nearby people catch your Hi 👀🔥",
+    "geoRequired": "A Hi now tells people where to find you — enable location to continue."
   },
   "deleteConfirm": "Delete this hangout? This ends it for everyone and cannot be undone.",
   "deleteFailedAlert": "Could not delete. Please try again.",

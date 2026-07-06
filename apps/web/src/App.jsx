@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
+import { requestFeatureLocation } from './lib/gpsFeature'
 import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
@@ -1873,7 +1874,9 @@ export default function App() {
         // (/c/:id already set locPromiseRef above, so it never reaches here.)
         locPromiseRef.current = resolveLandingCity()
       } else {
-        locPromiseRef.current = startGeolocation()       // registered / unhandled: geo as before
+        // Registered / unhandled routes: resolve a city by IP too - never a GPS
+        // prompt on any landing/entry surface.
+        locPromiseRef.current = resolveLandingCity()
       }
     }
 
@@ -2202,6 +2205,23 @@ export default function App() {
       // Pass the raw GeolocationPositionError so callers can inspect .code
       navigator.geolocation.getCurrentPosition(resolve, (err) => reject(err))
     })
+  }
+
+  // Silently reuse an ALREADY-granted location permission - never prompts. Lets
+  // event/hangout distance display keep working for users who granted GPS in a
+  // past session, now that we no longer request location up-front. No-op unless
+  // the Permissions API reports 'granted'.
+  async function hydrateLocationIfGranted() {
+    try {
+      if (typeof navigator === 'undefined' || !navigator.geolocation || !navigator.permissions?.query) return
+      const st = await navigator.permissions.query({ name: 'geolocation' })
+      if (st.state !== 'granted') return
+      navigator.geolocation.getCurrentPosition(
+        (pos) => setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => {},
+        { timeout: 8000, maximumAge: 600000 },
+      )
+    } catch { /* Permissions API unavailable → skip silently (never prompt) */ }
   }
 
   // Fetch landing page preview: events + topics for the pre-join activity block.
@@ -2638,13 +2658,13 @@ export default function App() {
           fetchChallengeById(chId).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
         }, 600)
       }
-      // "Request GPS after entry": on the stories featured-entry, kick off a
-      // background geolocation that records the user's coords/country for
-      // presence WITHOUT switching them out of the city they just entered.
-      if (featuredEntryRef.current) {
-        featuredEntryRef.current = false
-        startGeolocation({ switchCity: false }).catch(() => {})
-      }
+      // No GPS on entry. The city is already known (IP-detected or user-picked),
+      // so joining never prompts for location. Precise GPS is requested later,
+      // only at the moment a feature that needs it is used. If the user ALREADY
+      // granted location in a past session, silently reuse it (no prompt) so
+      // event/hangout distances still render.
+      featuredEntryRef.current = false
+      hydrateLocationIfGranted()
 
       // If the user entered via the bare root (hilads.live, /fr, /vi) and then
       // joined a city - onboarding pick or returning-user auto-rejoin - reflect
@@ -3257,18 +3277,14 @@ export default function App() {
   async function handleMySpot() {
     setShowShareSheet(false)
     setSpotLoading(true)
-    try {
-      const pos = await new Promise((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 })
-      )
-      setLocationPickerCoords({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-    } catch (err) {
-      console.error('[spot]', err)
+    const res = await requestFeatureLocation('share_spot')
+    if (res.ok) {
+      setLocationPickerCoords(res.coords)
+    } else {
       setSendError("Couldn't get your location. Please enable location access and try again.")
       setTimeout(() => setSendError(null), 4000)
-    } finally {
-      setSpotLoading(false)
     }
+    setSpotLoading(false)
   }
 
   async function handleLocationConfirm({ place, address, lat, lng }) {
@@ -4281,7 +4297,7 @@ export default function App() {
         <button
           className="retry-btn"
           onClick={() => {
-            locPromiseRef.current = startGeolocation()
+            locPromiseRef.current = resolveLandingCity()
             setStatus('onboarding')
             setError(null)
           }}
@@ -6202,9 +6218,9 @@ export default function App() {
             setRehydrating(false)  // never leave the boot spinner armed post-logout
             setAccount(null)
             clearIdentity()       // prevent auto-rejoin on next boot
-            // Reset geolocation so the next join triggers a fresh city resolution
-            // rather than silently reusing the member's stale location.
-            locPromiseRef.current = startGeolocation()
+            // Reset the target city so the next guest join re-resolves it - via
+            // IP now (no GPS prompt), rather than reusing the member's stale city.
+            locPromiseRef.current = resolveLandingCity()
             // Clear all overlay state so authenticated screens don't re-mount
             // if the user re-enters the app as a guest in the same session.
             setShowConversations(false)

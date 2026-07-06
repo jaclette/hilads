@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { createTopic, updateTopic, HangoutLimitError } from '../api'
+import { requestFeatureLocation } from '../lib/gpsFeature'
 import BackButton from './BackButton'
 
 // Labels are translated at render via t(`create.cat.${value}`); icons stay here.
@@ -26,19 +27,22 @@ export default function CreateTopicPage({ channelId, guest, onCreated, onUpdated
 
   async function handleSubmit(e) {
     e.preventDefault()
-    const t = title.trim()
-    if (!t) return
+    const trimmed = title.trim()
+    if (!trimmed) return
     setSubmitting(true)
     setError(null)
     try {
       if (isEdit) {
-        const topic = await updateTopic(editTopic.id, guest.guestId, t, description.trim() || null, category)
+        const topic = await updateTopic(editTopic.id, guest.guestId, trimmed, description.trim() || null, category)
         onUpdated?.(topic)
         return
       }
-      // Hangout's location = creator's location (the coords captured at boot
-      // geolocation). Null when geolocation is off → no distance, no block.
-      const topic = await createTopic(channelId, guest.guestId, t, description.trim() || null, category, userLocation ?? null)
+      // Launching a Hi now REQUIRES precise location - it tells people where to
+      // meet you - so we request it here, at the moment of launch (not up-front).
+      // On denial we block the launch and explain why (parity with native).
+      const geo = await requestFeatureLocation('hi_now')
+      if (!geo.ok) { setError(t('create.geoRequired')); return }
+      const topic = await createTopic(channelId, guest.guestId, trimmed, description.trim() || null, category, geo.coords)
       onCreated(topic)
     } catch (err) {
       // One-hangout-per-user: surface the existing hangout instead of an error.
