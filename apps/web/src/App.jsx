@@ -2461,7 +2461,7 @@ export default function App() {
         console.debug('[hilads:join] path=rejoin ms=0')
         location = await hydrateSavedLocation(rejoinData)
       } else if (useLocPromise) {
-        console.debug('[hilads:join] path=deep-link type=' + urlLink.type + ' ms=' + Math.round(performance.now() - _t0))
+        console.debug('[hilads:join] path=' + (urlLink?.type ?? 'featured') + ' ms=' + Math.round(performance.now() - _t0))
         location = await locPromiseRef.current
         // Resolution failed (bad slug / offline) → fall back to saved city rather
         // than dumping a returning user into onboarding.
