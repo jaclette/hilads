@@ -111,5 +111,17 @@
     "mainLoading": "🔥 Challenges in {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Vertalen"
+  "actionTranslate": "Vertalen",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} challenges tussen steden live",
+    "online": "{{count}} online",
+    "cities": "{{count}} steden",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} startte een challenge {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} uit {{city}} is net lid geworden van Hilads",
+      "challengeWon": "🏆 {{nickname}} uit {{city}} won de challenge {{challenge}}"
+    },
+    "quietCard": "Rustig hier? {{count}} ongelezen in World 🌍 — tik om te openen"
+  }
 }

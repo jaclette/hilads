@@ -111,5 +111,17 @@
     "mainLoading": "🔥 Thử thách ở {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Dịch"
+  "actionTranslate": "Dịch",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} thử thách liên thành phố đang diễn ra",
+    "online": "{{count}} đang online",
+    "cities": "{{count}} thành phố",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} đã tạo thử thách {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} từ {{city}} vừa tham gia Hilads",
+      "challengeWon": "🏆 {{nickname}} từ {{city}} vừa thắng thử thách {{challenge}}"
+    },
+    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong World 🌍 — chạm để xem"
+  }
 }

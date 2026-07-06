@@ -111,5 +111,17 @@
     "mainLoading": "🔥 {{city}} 的挑戰",
     "subLoading": " "
   },
-  "actionTranslate": "翻譯"
+  "actionTranslate": "翻譯",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} 個跨城市挑戰進行中",
+    "online": "{{count}} 人在線",
+    "cities": "{{count}} 個城市",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} 發起了一個挑戰 {{cityA}} → {{cityB}}",
+      "newUser": "🎉 來自{{city}}的 {{nickname}} 剛剛加入 Hilads",
+      "challengeWon": "🏆 來自{{city}}的 {{nickname}} 贏得了挑戰 {{challenge}}"
+    },
+    "quietCard": "這裡很安靜？World 裡有 {{count}} 則未讀 🌍 — 點擊查看"
+  }
 }

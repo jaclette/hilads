@@ -284,5 +284,17 @@
     "mainRanked_other": "🔥 {{count}} tantangan · 🏆 #{{rank}} di {{city}}",
     "mainTop_one": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}",
     "mainTop_other": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}"
+  },
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} tantangan antarkota berlangsung",
+    "online": "{{count}} online",
+    "cities": "{{count}} kota",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} meluncurkan tantangan {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} dari {{city}} baru saja bergabung dengan Hilads",
+      "challengeWon": "🏆 {{nickname}} dari {{city}} memenangkan tantangan {{challenge}}"
+    },
+    "quietCard": "Sepi di sini? {{count}} belum dibaca di World 🌍 — ketuk untuk buka"
   }
 }

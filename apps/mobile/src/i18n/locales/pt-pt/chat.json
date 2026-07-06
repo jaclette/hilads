@@ -111,5 +111,17 @@
     "mainLoading": "🔥 Desafios em {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Traduzir"
+  "actionTranslate": "Traduzir",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} desafios entre cidades a decorrer",
+    "online": "{{count}} online",
+    "cities": "{{count}} cidades",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} lançou um desafio {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} de {{city}} acabou de aderir ao Hilads",
+      "challengeWon": "🏆 {{nickname}} de {{city}} venceu o desafio {{challenge}}"
+    },
+    "quietCard": "Está calmo? {{count}} não lidas no World 🌍 — toca para abrir"
+  }
 }

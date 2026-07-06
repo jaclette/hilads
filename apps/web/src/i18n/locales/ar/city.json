@@ -309,5 +309,17 @@
     "mainTop_two": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainTop_few": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}",
     "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}"
+  },
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} تحديات بين المدن جارية الآن",
+    "online": "{{count}} متصل",
+    "cities": "{{count}} مدن",
+    "sys": {
+      "challengeCreated": "🔥 أطلق {{nickname}} تحديًا {{cityA}} ← {{cityB}}",
+      "newUser": "🎉 انضم {{nickname}} من {{city}} إلى Hilads للتو",
+      "challengeWon": "🏆 فاز {{nickname}} من {{city}} بالتحدي {{challenge}}"
+    },
+    "quietCard": "هادئ هنا؟ {{count}} غير مقروءة في World 🌍 — اضغط للفتح"
   }
 }

@@ -111,5 +111,17 @@
     "mainLoading": "🔥 Mga challenge sa {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Isalin"
+  "actionTranslate": "Isalin",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} cross-city challenges na live",
+    "online": "{{count}} online",
+    "cities": "{{count}} lungsod",
+    "sys": {
+      "challengeCreated": "🔥 Naglunsad si {{nickname}} ng challenge {{cityA}} → {{cityB}}",
+      "newUser": "🎉 Kasasali lang ni {{nickname}} mula {{city}} sa Hilads",
+      "challengeWon": "🏆 Napanalunan ni {{nickname}} mula {{city}} ang challenge {{challenge}}"
+    },
+    "quietCard": "Tahimik dito? {{count}} hindi pa nababasa sa World 🌍 — i-tap para buksan"
+  }
 }

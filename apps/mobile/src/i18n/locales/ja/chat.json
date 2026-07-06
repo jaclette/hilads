@@ -111,5 +111,17 @@
     "mainLoading": "🔥 {{city}}のチャレンジ",
     "subLoading": " "
   },
-  "actionTranslate": "翻訳"
+  "actionTranslate": "翻訳",
+  "world": {
+    "tab": "World",
+    "banner": "都市間チャレンジが {{count}} 件進行中",
+    "online": "{{count}} 人オンライン",
+    "cities": "{{count}} 都市",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} がチャレンジを立てました {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{city}}の {{nickname}} が Hilads に参加しました",
+      "challengeWon": "🏆 {{city}}の {{nickname}} がチャレンジ {{challenge}} に勝ちました"
+    },
+    "quietCard": "静かですか？World に未読が {{count}} 件 🌍 — タップして開く"
+  }
 }

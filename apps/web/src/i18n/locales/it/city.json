@@ -284,5 +284,17 @@
     "mainRanked_other": "🔥 {{count}} sfide · 🏆 #{{rank}} a {{city}}",
     "mainTop_one": "🔥 {{count}} sfida · 🏆 #1 a {{city}}",
     "mainTop_other": "🔥 {{count}} sfide · 🏆 #1 a {{city}}"
+  },
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} sfide tra città in corso",
+    "online": "{{count}} online",
+    "cities": "{{count}} città",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} ha lanciato una sfida {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} da {{city}} si è appena unito a Hilads",
+      "challengeWon": "🏆 {{nickname}} da {{city}} ha vinto la sfida {{challenge}}"
+    },
+    "quietCard": "Tutto tranquillo? {{count}} non letti in World 🌍 — tocca per aprire"
   }
 }

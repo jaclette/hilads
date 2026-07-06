@@ -111,5 +111,17 @@
     "mainLoading": "🔥 {{city}}의 챌린지",
     "subLoading": " "
   },
-  "actionTranslate": "번역"
+  "actionTranslate": "번역",
+  "world": {
+    "tab": "World",
+    "banner": "도시 간 챌린지 {{count}}개 진행 중",
+    "online": "{{count}}명 온라인",
+    "cities": "{{count}}개 도시",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}}님이 챌린지를 열었어요 {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{city}}의 {{nickname}}님이 방금 Hilads에 합류했어요",
+      "challengeWon": "🏆 {{city}}의 {{nickname}}님이 챌린지 {{challenge}}에서 이겼어요"
+    },
+    "quietCard": "여기 조용하죠? World에 안 읽은 메시지 {{count}}개 🌍 — 탭하여 열기"
+  }
 }

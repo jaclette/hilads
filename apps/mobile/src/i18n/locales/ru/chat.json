@@ -117,5 +117,17 @@
     "mainLoading": "🔥 Челленджи в {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "Перевести"
+  "actionTranslate": "Перевести",
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} межгородских челленджей в эфире",
+    "online": "{{count}} онлайн",
+    "cities": "{{count}} городов",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} запустил челлендж {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} из {{city}} только что присоединился к Hilads",
+      "challengeWon": "🏆 {{nickname}} из {{city}} выиграл челлендж {{challenge}}"
+    },
+    "quietCard": "Тихо здесь? {{count}} непрочитанных в World 🌍 — нажми, чтобы открыть"
+  }
 }

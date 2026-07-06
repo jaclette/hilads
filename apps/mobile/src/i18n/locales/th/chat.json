@@ -111,5 +111,17 @@
     "mainLoading": "🔥 ชาเลนจ์ใน {{city}}",
     "subLoading": " "
   },
-  "actionTranslate": "แปล"
+  "actionTranslate": "แปล",
+  "world": {
+    "tab": "World",
+    "banner": "ความท้าทายข้ามเมือง {{count}} รายการกำลังดำเนินอยู่",
+    "online": "ออนไลน์ {{count}} คน",
+    "cities": "{{count}} เมือง",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} เปิดความท้าทาย {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{nickname}} จาก{{city}} เพิ่งเข้าร่วม Hilads",
+      "challengeWon": "🏆 {{nickname}} จาก{{city}} ชนะความท้าทาย {{challenge}}"
+    },
+    "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน World 🌍 — แตะเพื่อเปิด"
+  }
 }

@@ -284,5 +284,17 @@
     "mainRanked_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 {{rank}} 名",
     "mainTop_one": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名",
     "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名"
+  },
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} 个跨城市挑战进行中",
+    "online": "{{count}} 人在线",
+    "cities": "{{count}} 个城市",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} 发起了一个挑战 {{cityA}} → {{cityB}}",
+      "newUser": "🎉 来自{{city}}的 {{nickname}} 刚刚加入 Hilads",
+      "challengeWon": "🏆 来自{{city}}的 {{nickname}} 赢得了挑战 {{challenge}}"
+    },
+    "quietCard": "这里很安静？World 里有 {{count}} 条未读 🌍 — 点击查看"
   }
 }

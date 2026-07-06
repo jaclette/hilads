@@ -284,5 +284,17 @@
     "mainRanked_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #{{rank}}",
     "mainTop_one": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1",
     "mainTop_other": "🔥 {{city}} में {{count}} चैलेंज · 🏆 #1"
+  },
+  "world": {
+    "tab": "World",
+    "banner": "{{count}} इंटर-सिटी चैलेंज लाइव",
+    "online": "{{count}} ऑनलाइन",
+    "cities": "{{count}} शहर",
+    "sys": {
+      "challengeCreated": "🔥 {{nickname}} ने चैलेंज शुरू किया {{cityA}} → {{cityB}}",
+      "newUser": "🎉 {{city}} से {{nickname}} अभी Hilads से जुड़े",
+      "challengeWon": "🏆 {{city}} से {{nickname}} ने चैलेंज {{challenge}} जीता"
+    },
+    "quietCard": "यहाँ शांति है? World में {{count}} अनरेड 🌍 — खोलने के लिए टैप करें"
   }
 }
