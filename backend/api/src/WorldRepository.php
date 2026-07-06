@@ -124,6 +124,62 @@ class WorldRepository
         ];
     }
 
+    /**
+     * Insert a World system message (type='system' + event subtype + payload) and
+     * broadcast it to the World room. Self-contained (no dependency on route-level
+     * helpers) so it can fire from anywhere - challenge hooks, arrival flow, etc.
+     * Best-effort: a failure NEVER breaks the caller.
+     */
+    public static function emitSystem(string $event, string $content, array $payload): void
+    {
+        try {
+            $msg = MessageRepository::addSystemMessage(self::WORLD_ID, $content, $event, null, $payload);
+            self::broadcastToWs($msg);
+        } catch (\Throwable $e) {
+            error_log('[world] emitSystem failed: ' . $e->getMessage());
+        }
+    }
+
+    private static function broadcastToWs(array $message): void
+    {
+        $wsUrl   = rtrim(getenv('WS_INTERNAL_URL') ?: 'http://localhost:8082', '/');
+        $payload = json_encode(['channelId' => self::WORLD_ID, 'message' => $message]);
+        $token   = getenv('WS_INTERNAL_TOKEN') ?: '';
+        $headers = "Content-Type: application/json\r\nContent-Length: " . strlen($payload) . "\r\n";
+        if ($token !== '') $headers .= "X-Internal-Token: {$token}\r\n";
+        $ctx = stream_context_create(['http' => [
+            'method' => 'POST', 'header' => $headers, 'content' => $payload,
+            'timeout' => 2, 'ignore_errors' => true,
+        ]]);
+        @file_get_contents($wsUrl . '/broadcast/message', false, $ctx);
+    }
+
+    /** True if this city has had NO real (text/image) user message in the last $hours. */
+    public static function cityIsQuiet(int|string $channelId, int $hours): bool
+    {
+        $db = self::dbKey($channelId);
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM messages
+            WHERE channel_id = ? AND type IN ('text','image')
+              AND created_at > now() - (? * interval '1 hour')
+            LIMIT 1
+        ");
+        $stmt->execute([$db, $hours]);
+        return !$stmt->fetchColumn();
+    }
+
+    /** Has this guest already been announced in World as a new user? (dedup) */
+    public static function hasNewUserForGuest(string $guestId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM messages
+            WHERE channel_id = 'world' AND type = 'system' AND event = 'new_user'
+              AND payload->>'guest_id' = ? LIMIT 1
+        ");
+        $stmt->execute([$guestId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
     /** Has a cross-city "challenge_created" system message already been recorded for this challenge? */
     public static function hasChallengeCreated(string $challengeId): bool
     {

@@ -65,12 +65,7 @@ function broadcastMessageToWs(int|string $channelId, array $message): void
 // here NEVER breaks the caller (challenge accept / winner pick / arrival).
 function emitWorldSystem(string $event, string $content, array $payload): void
 {
-    try {
-        $msg = MessageRepository::addSystemMessage('world', $content, $event, null, $payload);
-        broadcastMessageToWs('world', $msg);
-    } catch (\Throwable $e) {
-        error_log('[world] emitWorldSystem failed: ' . $e->getMessage());
-    }
+    WorldRepository::emitSystem($event, $content, $payload);
 }
 
 // Resolve a 'city_<int>' channel id to its display name (null if unknown).
@@ -3863,6 +3858,22 @@ $router->add('POST', '/api/v1/world/messages', function () {
     $message  = enrichBroadcastMessage($message, $sender);
     broadcastMessageToWs(WorldRepository::WORLD_ID, $message);
     Response::json(['message' => $message], 201);
+});
+
+// Quiet-city fallback context: is the given city quiet (no user msg in 6h) AND is
+// World lively enough (>= 5 msgs in 6h) to be worth routing to? Cached 30s.
+$router->add('GET', '/api/v1/world/quiet-context', function () {
+    $cid = $_GET['city'] ?? null;
+    if ($cid === null || $cid === '' || !ctype_digit((string) $cid)) {
+        Response::json(['cityQuiet' => false, 'worldActive' => false]);
+    }
+    $data = Cache::remember('world_quiet_' . (int) $cid, 30, function () use ($cid) {
+        return [
+            'cityQuiet'   => WorldRepository::cityIsQuiet((int) $cid, 6),
+            'worldActive' => WorldRepository::recentMessageCount(6) >= 5,
+        ];
+    });
+    Response::json($data ?? ['cityQuiet' => false, 'worldActive' => false]);
 });
 
 // World header/pills aggregate — cached 45s to spare Postgres on high traffic.
@@ -10004,6 +10015,23 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/pick-winner', function (a
     }
     $pdo->prepare("UPDATE channel_challenges SET status='validated', validated_at=COALESCE(validated_at,now()), updated_at=now() WHERE channel_id = ?")
         ->execute([$challengeId]);
+
+    // ── World: cross-city challenge WON ──────────────────────────────────────
+    // If the winner's home city differs from the challenge's origin city, surface
+    // the win in World ("🏆 {winner} de {city} a gagné le défi {challenge}").
+    try {
+        $winnerUser = UserRepository::findById($winnerUserId);
+        $winnerCity = $winnerUser['home_city'] ?? null;
+        $originName = worldCityName($challenge['city_id'] ?? null);
+        if ($originName && $winnerCity && $originName !== $winnerCity) {
+            $nick = $winnerUser['display_name'] ?? 'Someone';
+            emitWorldSystem('challenge_won',
+                "{$nick}: {$challenge['title']}",
+                ['challenge_id' => $challengeId, 'nickname' => $nick, 'city' => $winnerCity, 'challenge' => $challenge['title'] ?? '']);
+        }
+    } catch (\Throwable $e) {
+        error_log('[world] challenge_won hook failed (non-fatal): ' . $e->getMessage());
+    }
 
     // Mark the winner's latest photo as the challenger-approved proof. This is
     // the same invariant the success showcase reads (status='approved'), so the

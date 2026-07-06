@@ -708,6 +708,23 @@ class NotificationRepository
             error_log('[arrival] join feed write/broadcast failed: ' . $e->getMessage());
         }
 
+        // ── World: announce a genuinely-new user's arrival (throttled) ──────────
+        // First time we ever see this guest, capped globally per day (default 10),
+        // so World gains cold-start density without spam. Best-effort.
+        try {
+            if (!WorldRepository::hasNewUserForGuest($arriverGuestId)
+                && WorldRepository::newUserCountToday() < 10) {
+                $cityName = CityRepository::findById($channelId)['name'] ?? null;
+                if ($cityName) {
+                    WorldRepository::emitSystem('new_user',
+                        "{$arriverNickname}: {$cityName}",
+                        ['guest_id' => $arriverGuestId, 'nickname' => $arriverNickname, 'city' => $cityName]);
+                }
+            }
+        } catch (\Throwable $e) {
+            error_log('[world] new_user hook failed (non-fatal): ' . $e->getMessage());
+        }
+
         // Push to opted-in city members, excluding the arriver.
         self::notifyCityOnlineUsers(
             $cityChannelId,
