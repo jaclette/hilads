@@ -122,6 +122,9 @@
       "newUser": "🎉 Kasasali lang ni {{nickname}} mula {{city}} sa Hilads",
       "challengeWon": "🏆 Napanalunan ni {{nickname}} mula {{city}} ang challenge {{challenge}}"
     },
-    "quietCard": "Tahimik dito? {{count}} hindi pa nababasa sa World 🌍 — i-tap para buksan"
+    "quietCard": "Tahimik dito? {{count}} hindi pa nababasa sa World 🌍 — i-tap para buksan",
+    "heroEmpty": "Maging una sa paghamon sa isang lungsod",
+    "heroEmptySub": "Maglunsad ng cross-city challenge",
+    "leaderboard": "Leaderboard"
   }
 }

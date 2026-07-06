@@ -9,7 +9,10 @@
       "newUser": "🎉 {{nickname}} de {{city}} vient de rejoindre Hilads",
       "challengeWon": "🏆 {{nickname}} de {{city}} vient de gagner le défi {{challenge}}"
     },
-    "quietCard": "Calme ici ? {{count}} messages non lus dans World 🌍 — tape pour voir"
+    "quietCard": "Calme ici ? {{count}} messages non lus dans World 🌍 — tape pour voir",
+    "heroEmpty": "Sois le premier à défier une ville",
+    "heroEmptySub": "Lance un défi inter-villes",
+    "leaderboard": "Classement"
   },
   "changeCity": "Changer de ville",
   "shareCity": "Partager la ville",

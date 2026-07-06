@@ -122,6 +122,9 @@
       "newUser": "🎉 {{city}}의 {{nickname}}님이 방금 Hilads에 합류했어요",
       "challengeWon": "🏆 {{city}}의 {{nickname}}님이 챌린지 {{challenge}}에서 이겼어요"
     },
-    "quietCard": "여기 조용하죠? World에 안 읽은 메시지 {{count}}개 🌍 — 탭하여 열기"
+    "quietCard": "여기 조용하죠? World에 안 읽은 메시지 {{count}}개 🌍 — 탭하여 열기",
+    "heroEmpty": "도시에 도전하는 첫 번째 사람이 되세요",
+    "heroEmptySub": "도시 간 챌린지를 열어보세요",
+    "leaderboard": "리더보드"
   }
 }

@@ -295,6 +295,9 @@
       "newUser": "🎉 {{nickname}} de {{city}} acabou de entrar no Hilads",
       "challengeWon": "🏆 {{nickname}} de {{city}} venceu o desafio {{challenge}}"
     },
-    "quietCard": "Calmo por aqui? {{count}} não lidas no World 🌍 — toque para abrir"
+    "quietCard": "Calmo por aqui? {{count}} não lidas no World 🌍 — toque para abrir",
+    "heroEmpty": "Seja o primeiro a desafiar uma cidade",
+    "heroEmptySub": "Lance um desafio entre cidades",
+    "leaderboard": "Ranking"
   }
 }

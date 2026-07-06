@@ -295,6 +295,9 @@
       "newUser": "🎉 {{nickname}} từ {{city}} vừa tham gia Hilads",
       "challengeWon": "🏆 {{nickname}} từ {{city}} vừa thắng thử thách {{challenge}}"
     },
-    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong World 🌍 — chạm để xem"
+    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong World 🌍 — chạm để xem",
+    "heroEmpty": "Hãy là người đầu tiên thách đấu một thành phố",
+    "heroEmptySub": "Tạo một thử thách liên thành phố",
+    "leaderboard": "Bảng xếp hạng"
   }
 }

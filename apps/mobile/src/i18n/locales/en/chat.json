@@ -9,7 +9,10 @@
       "newUser": "🎉 {{nickname}} from {{city}} just joined Hilads",
       "challengeWon": "🏆 {{nickname}} from {{city}} won the challenge {{challenge}}"
     },
-    "quietCard": "Quiet here? {{count}} unread in World 🌍 — tap to open"
+    "quietCard": "Quiet here? {{count}} unread in World 🌍 — tap to open",
+    "heroEmpty": "Be the first to challenge a city",
+    "heroEmptySub": "Launch a cross-city challenge",
+    "leaderboard": "Leaderboard"
   },
   "changeCity": "Change city",
   "shareCity": "Share city",

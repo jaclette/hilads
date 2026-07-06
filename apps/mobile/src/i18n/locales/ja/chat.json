@@ -122,6 +122,9 @@
       "newUser": "🎉 {{city}}の {{nickname}} が Hilads に参加しました",
       "challengeWon": "🏆 {{city}}の {{nickname}} がチャレンジ {{challenge}} に勝ちました"
     },
-    "quietCard": "静かですか？World に未読が {{count}} 件 🌍 — タップして開く"
+    "quietCard": "静かですか？World に未読が {{count}} 件 🌍 — タップして開く",
+    "heroEmpty": "最初に都市へ挑戦しよう",
+    "heroEmptySub": "都市間チャレンジを立てる",
+    "leaderboard": "ランキング"
   }
 }

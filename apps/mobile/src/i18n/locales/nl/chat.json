@@ -122,6 +122,9 @@
       "newUser": "🎉 {{nickname}} uit {{city}} is net lid geworden van Hilads",
       "challengeWon": "🏆 {{nickname}} uit {{city}} won de challenge {{challenge}}"
     },
-    "quietCard": "Rustig hier? {{count}} ongelezen in World 🌍 — tik om te openen"
+    "quietCard": "Rustig hier? {{count}} ongelezen in World 🌍 — tik om te openen",
+    "heroEmpty": "Wees de eerste die een stad uitdaagt",
+    "heroEmptySub": "Start een challenge tussen steden",
+    "leaderboard": "Ranglijst"
   }
 }
