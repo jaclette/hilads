@@ -5131,7 +5131,9 @@ export default function App() {
                       {(() => {
                         // Own messages aren't badge-enriched (that's for other
                         // authors), so fall back to the account's own photo.
-                        const avatarThumb = item.thumbAvatarUrl || (isMine ? account?.profile_thumb_photo_url : null)
+                        // /auth/me returns profile_photo_url (full); thumbUrl()
+                        // derives the small thumbnail from it.
+                        const avatarThumb = item.thumbAvatarUrl || (isMine ? account?.profile_photo_url : null)
                         return avatarThumb ? (
                           <img className="msg-avatar msg-avatar--photo" src={thumbUrl(avatarThumb)} alt={item.nickname ?? ''} loading="lazy" />
                         ) : (
