@@ -106,5 +106,25 @@
       "Validi dal divano. Rifiuti con una motivazione se non torna."
     ],
     "cta": "Prova una sfida globale"
+  },
+  "stories": {
+    "tagline": "Diventa local. Ovunque.",
+    "enterCity": "Entra a {{city}} → gratis, senza account, 5 secondi",
+    "enterChallenge": "Accetta questa sfida a {{city}} →",
+    "swipeUp": "Scorri verso l’alto",
+    "liveHeadline": "{{city}} è viva in questo momento.",
+    "how": {
+      "title": "Incontra gente di persona, in 3 passi.",
+      "step1": "Scegli la tua parte — local o viaggiatore",
+      "step2": "Lancia o unisciti a una sfida",
+      "step3": "Vedersi dal vivo"
+    },
+    "concept": {
+      "line1": "Niente follower.",
+      "line2": "Niente feed.",
+      "line3": "Niente algoritmi.",
+      "line4": "Un motivo per vedersi di persona."
+    },
+    "storePrompt": "Preferisci l’app? Notifiche ed esperienza completa."
   }
 }

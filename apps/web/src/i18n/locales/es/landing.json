@@ -106,5 +106,25 @@
       "Validas desde el sofá. Rechazas con motivo si no encaja."
     ],
     "cta": "Prueba un reto global"
+  },
+  "stories": {
+    "tagline": "Vuélvete local. En cualquier lugar.",
+    "enterCity": "Entra en {{city}} → gratis, sin cuenta, 5 segundos",
+    "enterChallenge": "Acepta este reto en {{city}} →",
+    "swipeUp": "Desliza hacia arriba",
+    "liveHeadline": "{{city}} está en vivo ahora mismo.",
+    "how": {
+      "title": "Conoce gente en persona, en 3 pasos.",
+      "step1": "Elige tu bando — local o viajero",
+      "step2": "Lanza o únete a un reto",
+      "step3": "A verse en persona"
+    },
+    "concept": {
+      "line1": "Sin seguidores.",
+      "line2": "Sin feed.",
+      "line3": "Sin algoritmos.",
+      "line4": "Una razón para verse en persona."
+    },
+    "storePrompt": "¿Prefieres la app? Recibe notificaciones y la experiencia completa."
   }
 }

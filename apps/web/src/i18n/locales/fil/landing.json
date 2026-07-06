@@ -106,5 +106,25 @@
       "I-validate mula sa sofa. Tanggihan na may dahilan kung hindi tumutugma."
     ],
     "cta": "Subukan ang global challenge"
+  },
+  "stories": {
+    "tagline": "Maging local. Kahit saan.",
+    "enterCity": "Pumasok sa {{city}} → libre, walang account, 5 segundo",
+    "enterChallenge": "Tanggapin ang challenge na ito sa {{city}} →",
+    "swipeUp": "I-swipe pataas",
+    "liveHeadline": "Buhay na buhay ang {{city}} ngayon.",
+    "how": {
+      "title": "Magkita nang personal, sa 3 hakbang.",
+      "step1": "Piliin ang panig mo — local o traveler",
+      "step2": "Maglunsad o sumali sa isang challenge",
+      "step3": "Magkita nang totoo"
+    },
+    "concept": {
+      "line1": "Walang followers.",
+      "line2": "Walang feed.",
+      "line3": "Walang algorithm.",
+      "line4": "Isang dahilan para magkita nang personal."
+    },
+    "storePrompt": "Mas gusto ang app? Kunin ang notifications at buong experience."
   }
 }

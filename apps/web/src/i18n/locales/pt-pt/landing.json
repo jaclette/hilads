@@ -106,5 +106,25 @@
       "Validas do sofá. Recusas com um motivo se não bater certo."
     ],
     "cta": "Testar um desafio global"
+  },
+  "stories": {
+    "tagline": "Torna-te local. Em qualquer lugar.",
+    "enterCity": "Entrar em {{city}} → grátis, sem conta, 5 segundos",
+    "enterChallenge": "Aceita este desafio em {{city}} →",
+    "swipeUp": "Desliza para cima",
+    "liveHeadline": "{{city}} está ao vivo agora mesmo.",
+    "how": {
+      "title": "Conhece pessoas ao vivo, em 3 passos.",
+      "step1": "Escolhe o teu lado — local ou viajante",
+      "step2": "Lança ou junta-te a um desafio",
+      "step3": "Encontrem-se ao vivo"
+    },
+    "concept": {
+      "line1": "Sem seguidores.",
+      "line2": "Sem feed.",
+      "line3": "Sem algoritmos.",
+      "line4": "Um motivo para se encontrarem ao vivo."
+    },
+    "storePrompt": "Preferes a app? Notificações e a experiência completa."
   }
 }

@@ -106,5 +106,25 @@
       "Du bestätigst vom Sofa. Lehne mit Begründung ab, wenn was nicht stimmt."
     ],
     "cta": "Globale Challenge ausprobieren"
+  },
+  "stories": {
+    "tagline": "Werde local. Überall.",
+    "enterCity": "Rein nach {{city}} → gratis, ohne Konto, 5 Sekunden",
+    "enterChallenge": "Nimm diese Challenge in {{city}} an →",
+    "swipeUp": "Nach oben wischen",
+    "liveHeadline": "{{city}} ist gerade jetzt live.",
+    "how": {
+      "title": "Triff Leute in echt — in 3 Schritten.",
+      "step1": "Wähl deine Seite — Local oder Reisender",
+      "step2": "Starte eine Challenge oder mach mit",
+      "step3": "Trefft euch in echt"
+    },
+    "concept": {
+      "line1": "Keine Follower.",
+      "line2": "Kein Feed.",
+      "line3": "Keine Algorithmen.",
+      "line4": "Ein Grund, sich in echt zu treffen."
+    },
+    "storePrompt": "Lieber die App? Push-Benachrichtigungen und das volle Erlebnis."
   }
 }

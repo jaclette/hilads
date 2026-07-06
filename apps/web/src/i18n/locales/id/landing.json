@@ -106,5 +106,25 @@
       "Validasi dari sofa. Tolak dengan alasan kalau tidak cocok."
     ],
     "cta": "Coba tantangan global"
+  },
+  "stories": {
+    "tagline": "Jadi lokal. Di mana saja.",
+    "enterCity": "Masuk ke {{city}} → gratis, tanpa akun, 5 detik",
+    "enterChallenge": "Terima tantangan ini di {{city}} →",
+    "swipeUp": "Geser ke atas",
+    "liveHeadline": "{{city}} lagi rame sekarang.",
+    "how": {
+      "title": "Ketemu orang langsung, dalam 3 langkah.",
+      "step1": "Pilih sisimu — lokal atau pelancong",
+      "step2": "Buat atau ikut tantangan",
+      "step3": "Ketemu langsung"
+    },
+    "concept": {
+      "line1": "Tanpa pengikut.",
+      "line2": "Tanpa feed.",
+      "line3": "Tanpa algoritma.",
+      "line4": "Alasan untuk ketemu langsung."
+    },
+    "storePrompt": "Lebih suka aplikasinya? Dapat notifikasi dan pengalaman penuh."
   }
 }

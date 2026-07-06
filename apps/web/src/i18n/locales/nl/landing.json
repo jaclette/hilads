@@ -106,5 +106,25 @@
       "Jij bevestigt vanaf de bank. Wijs af met reden als het niet klopt."
     ],
     "cta": "Probeer een globale challenge"
+  },
+  "stories": {
+    "tagline": "Word local. Overal.",
+    "enterCity": "Ga naar {{city}} → gratis, geen account, 5 seconden",
+    "enterChallenge": "Doe deze uitdaging in {{city}} →",
+    "swipeUp": "Veeg omhoog",
+    "liveHeadline": "{{city}} is nu live.",
+    "how": {
+      "title": "Ontmoet mensen in het echt, in 3 stappen.",
+      "step1": "Kies je kant — local of reiziger",
+      "step2": "Start of doe mee aan een uitdaging",
+      "step3": "Ontmoet elkaar echt"
+    },
+    "concept": {
+      "line1": "Geen volgers.",
+      "line2": "Geen feed.",
+      "line3": "Geen algoritmes.",
+      "line4": "Een reden om elkaar echt te ontmoeten."
+    },
+    "storePrompt": "Liever de app? Meldingen en de volledige ervaring."
   }
 }
