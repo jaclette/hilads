@@ -1623,6 +1623,13 @@ export default function ChallengeChatPage({
                   <div key={m.id ?? idx} className={['message', isMine ? 'mine' : '', isGrouped ? 'grouped' : ''].filter(Boolean).join(' ')}>
                     {!isMine && !isGrouped && (
                       <div className="msg-meta">
+                        {m.thumbAvatarUrl ? (
+                          <img className="msg-avatar msg-avatar--photo" src={thumbUrl(m.thumbAvatarUrl)} alt={m.nickname ?? ''} loading="lazy" />
+                        ) : (
+                          <span className="msg-avatar" style={{ background: `linear-gradient(135deg, ${avatarColors(m.nickname)[0]}, ${avatarColors(m.nickname)[1]})` }}>
+                            {(m.nickname ?? '?')[0].toUpperCase()}
+                          </span>
+                        )}
                         <span className="msg-author">{m.nickname}</span>
                         {badge}
                       </div>

@@ -76,6 +76,34 @@ function worldCityName(?string $cityId): ?string
     return $c['name'] ?? null;
 }
 
+// Attach sender avatar thumbnail + identity badges INLINE to a list of messages
+// (in place). Used by sub-channel message endpoints (event / topic / world) whose
+// clients read these fields straight off the payload - without it, other authors
+// show a letter avatar. cityChannelId=0 skips the city-specific Legend context
+// (not meaningful in sub-channels); primaryBadge/mode/vibe/thumbAvatarUrl/country
+// are all city-independent. One batched query regardless of message count.
+function attachAuthorBadges(array &$messages): void
+{
+    $uids = [];
+    foreach ($messages as $m) { if (!empty($m['userId'])) $uids[$m['userId']] = true; }
+    $uids = array_keys($uids);
+    if (!$uids) return;
+    $badges = UserBadgeService::batchFull($uids, 0, '');
+    foreach ($messages as &$m) {
+        $uid = $m['userId'] ?? null;
+        if ($uid && isset($badges[$uid])) {
+            $b = $badges[$uid];
+            $m['primaryBadge']   = $b['primaryBadge'];
+            $m['contextBadge']   = $b['contextBadge'];
+            $m['vibe']           = $b['vibe'] ?? 'chill';
+            $m['mode']           = $b['mode'] ?? 'exploring';
+            $m['thumbAvatarUrl'] = $b['thumbAvatarUrl'] ?? null;
+            $m['country']        = $b['country'] ?? null;
+        }
+    }
+    unset($m);
+}
+
 // ── Enrich broadcast message with sender identity ─────────────────────────────
 // Attaches primaryBadge, contextBadge, mode, and vibe to a message array before
 // it is broadcast over WS, so real-time recipients get the same context as
@@ -5890,6 +5918,7 @@ $router->add('GET', '/api/v1/events/{eventId}/messages', function (array $params
         );
 
         MessageRepository::attachReactions($messages, $viewerGuestId ?: null, $viewerUserId);
+        attachAuthorBadges($messages);   // sender avatar thumb + badges (other authors)
 
         Response::json(['messages' => $messages, 'hasMore' => $hasMore]);
     } catch (\Throwable $e) {
@@ -7297,7 +7326,9 @@ $router->add('GET', '/api/v1/topics/{topicId}/messages', function (array $params
         $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
         $limit    = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
         $res = MessageRepository::getByChannel($topicId, $beforeId ?: null, $limit);
-        Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
+        $messages = $res['messages'];
+        attachAuthorBadges($messages);   // sender avatar thumb + badges (other authors)
+        Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
     } catch (\Throwable $e) {
         error_log('[topic-messages] GET failed for topic ' . $topicId . ': ' . $e->getMessage());
         Response::json(['error' => 'Failed to load messages'], 500);
@@ -13201,7 +13232,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
         if (!empty($msgUserIds)) {
             $in   = implode(',', array_fill(0, count($msgUserIds), '?'));
             $stmt = Database::pdo()->prepare(
-                "SELECT id, mode, vibe, created_at FROM users WHERE id IN ($in)"
+                "SELECT id, mode, vibe, created_at, profile_thumb_photo_url, profile_photo_url FROM users WHERE id IN ($in)"
             );
             $stmt->execute($msgUserIds);
             $userInfo = [];
@@ -13210,6 +13241,8 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
                     'mode'         => $row['mode'] ?? null,
                     'vibe'         => $row['vibe'] ?? null,
                     'primaryBadge' => UserBadgeService::primaryForUser($row),
+                    // Small proxied avatar thumbnail (other authors' bubbles).
+                    'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? $row['profile_photo_url'] ?? null),
                 ];
             }
             foreach ($res['messages'] as &$msg) {
@@ -13221,12 +13254,14 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
                     $msg['vibe']         = $userInfo[$uid]['vibe'];
                     $msg['primaryBadge'] = $userInfo[$uid]['primaryBadge'];
                     $msg['contextBadge'] = null; // no host badge on challenge channels
+                    $msg['thumbAvatarUrl'] = $userInfo[$uid]['thumbAvatarUrl'];
                 } else {
                     // No user row resolved → ghost (anonymous or deleted).
                     $msg['mode']         = null;
                     $msg['vibe']         = null;
                     $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge'] = null;
+                    $msg['thumbAvatarUrl'] = null;
                 }
             }
             unset($msg);

@@ -615,9 +615,13 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
             >
               {!isMine && !isGrouped && (
                 <div className="msg-meta">
-                  <span className="msg-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
-                    {(item.nickname ?? '?')[0].toUpperCase()}
-                  </span>
+                  {item.thumbAvatarUrl ? (
+                    <img className="msg-avatar msg-avatar--photo" src={thumbUrl(item.thumbAvatarUrl)} alt={item.nickname ?? ''} loading="lazy" />
+                  ) : (
+                    <span className="msg-avatar" style={{ background: `linear-gradient(135deg, ${c1}, ${c2})` }}>
+                      {(item.nickname ?? '?')[0].toUpperCase()}
+                    </span>
+                  )}
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                   {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`modes.${m}`)}</span> : null; })()}
                   {item.vibe && VIBE_META[item.vibe] && (
