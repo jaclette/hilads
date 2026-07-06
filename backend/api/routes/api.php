@@ -3825,7 +3825,33 @@ $router->add('GET', '/api/v1/world/messages', function () {
     $beforeId = isset($_GET['before_id']) && is_string($_GET['before_id']) ? trim($_GET['before_id']) : null;
     $limit    = min(100, max(10, (int) ($_GET['limit'] ?? 50)));
     $res = MessageRepository::getByChannel(WorldRepository::WORLD_ID, $beforeId ?: null, $limit, false);
-    Response::json(['messages' => $res['messages'], 'hasMore' => $res['hasMore']]);
+
+    // Enrich author badges + avatar thumbnail + home-country INLINE. The web
+    // World client fetches these separately via /message-badges, but the native
+    // app reads them straight off the message payload - without this, other
+    // authors show a letter avatar and no flag. City context (Legend) is not
+    // meaningful globally, so we pass cityChannelId=0 (no ambassador match).
+    $messages = $res['messages'];
+    $uids = [];
+    foreach ($messages as $m) { if (!empty($m['userId'])) $uids[$m['userId']] = true; }
+    $uids = array_keys($uids);
+    if ($uids) {
+        $badges = UserBadgeService::batchFull($uids, 0, '');
+        foreach ($messages as &$m) {
+            $uid = $m['userId'] ?? null;
+            if ($uid && isset($badges[$uid])) {
+                $b = $badges[$uid];
+                $m['primaryBadge']   = $b['primaryBadge'];
+                $m['contextBadge']   = $b['contextBadge'];
+                $m['vibe']           = $b['vibe'] ?? 'chill';
+                $m['mode']           = $b['mode'] ?? 'exploring';
+                $m['thumbAvatarUrl'] = $b['thumbAvatarUrl'] ?? null;
+                $m['country']        = $b['country'] ?? null;
+            }
+        }
+        unset($m);
+    }
+    Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
 });
 
 // Send a message to World. Bots rejected outright (defence-in-depth over the

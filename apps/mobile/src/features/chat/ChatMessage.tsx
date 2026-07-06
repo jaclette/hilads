@@ -458,7 +458,7 @@ const MODE_EMOJI: Record<string, string> = {
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope, thumbAvatarUrl }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope, thumbAvatarUrl, country }: {
   nickname:     string;
   color:        string;
   initial:      string;
@@ -475,6 +475,8 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   worldScope?:   boolean;
   /** Other authors' small proxied avatar thumbnail (from the messages payload). */
   thumbAvatarUrl?: string | null;
+  /** Other authors' home-country ISO-2 (World only) - drives the flag. */
+  country?:      string | null;
 }) {
   const router  = useRouter();
   const { t }   = useTranslation('common');
@@ -486,7 +488,8 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   const photoThumb = isMine
     ? thumbUrl(account?.profile_photo_url)
     : (thumbAvatarUrl ? thumbUrl(thumbAvatarUrl) : undefined);
-  const flagCountry = worldScope ? (isMine ? city?.country ?? null : null) : null;
+  // World: own flag from current city; other authors' flag from their home country.
+  const flagCountry = worldScope ? (isMine ? city?.country ?? null : (country ?? null)) : null;
 
   // Navigate to a registered profile only when viewer is registered.
   // If viewer is a ghost, redirect to AuthGate instead.
@@ -846,7 +849,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                 roleBadge={roleBadge}
                 vibe={message.vibe}
                 mode={message.mode} isMine={isMine} worldScope={worldScope}
-                thumbAvatarUrl={message.thumbAvatarUrl}
+                thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
               />
             )}
             <View style={styles.bubbleWrap}>
@@ -893,7 +896,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
               roleBadge={roleBadge}
               vibe={message.vibe}
               mode={message.mode} isMine={isMine} worldScope={worldScope}
-              thumbAvatarUrl={message.thumbAvatarUrl}
+              thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
             />
           )}
           {/* Wrap image + reactions so pills stay visually attached to the bubble */}
@@ -968,7 +971,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             roleBadge={roleBadge}
             vibe={message.vibe}
             mode={message.mode} isMine={isMine} worldScope={worldScope}
-            thumbAvatarUrl={message.thumbAvatarUrl}
+            thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
           />
         )}
 
