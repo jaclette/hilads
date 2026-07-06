@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Deviens local. Partout.",
     "concept_tagline": "Défie les locaux. Rencontre les voyageurs. Deviens local partout.",
+    "screen1_invitation": "À toi. Lance ou rejoins un défi.",
+    "screen2_invitation": "Ils y sont. Tu viens ?",
+    "screen3_invitation": "Simple, non ? À toi de jouer.",
+    "screen4_invitation": "Aucun feed. Juste des vraies rencontres.",
     "enterCity": "Rejoins {{city}} 🔥",
     "enterChallenge": "Je relève ce défi 🔥",
     "enterPicker": "Choisis ta ville 🔥",

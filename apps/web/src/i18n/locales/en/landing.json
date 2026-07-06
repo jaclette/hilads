@@ -110,6 +110,10 @@
   "stories": {
     "tagline": "Become local. Anywhere.",
     "concept_tagline": "Challenge locals. Meet travelers. Become local anywhere.",
+    "screen1_invitation": "Your turn. Launch or join a challenge.",
+    "screen2_invitation": "They're already in. Join them.",
+    "screen3_invitation": "Simple, right? Your move.",
+    "screen4_invitation": "No feed. Just real meetups.",
     "enterCity": "Join {{city}} 🔥",
     "enterChallenge": "Take this challenge 🔥",
     "enterPicker": "Choose your city 🔥",

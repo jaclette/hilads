@@ -61,7 +61,12 @@ export default function StoriesLanding({
   const { t } = useTranslation('landing')
   const screenRefs = useRef([])
   const seenRef = useRef(new Set())
+  const rootRef = useRef(null)
   const [active, setActive] = useState(0)
+  // Pause the CTA's shimmer/breathe animations while the user is actively
+  // interacting (touch / scroll / focus); resume after 3s idle. Alive at rest,
+  // respectful when busy.
+  const [ctaPaused, setCtaPaused] = useState(false)
 
   const showLive = previewLiveCount >= MIN_LIVE_COUNT
   const headlineCity = cityName || FEATURED_CITY.displayName
@@ -129,6 +134,28 @@ export default function StoriesLanding({
     return () => clearTimeout(id)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Pause CTA animation on any interaction, resume 3s after the last one. Listens
+  // on the scroll container (scroll/swipe) + document (touchstart/focus). Passive.
+  useEffect(() => {
+    let idle
+    const onInteract = () => {
+      setCtaPaused(true)
+      clearTimeout(idle)
+      idle = setTimeout(() => setCtaPaused(false), 3000)
+    }
+    const root = rootRef.current
+    const opts = { passive: true }
+    root?.addEventListener('scroll', onInteract, opts)
+    document.addEventListener('touchstart', onInteract, opts)
+    document.addEventListener('focusin', onInteract)
+    return () => {
+      clearTimeout(idle)
+      root?.removeEventListener('scroll', onInteract, opts)
+      document.removeEventListener('touchstart', onInteract, opts)
+      document.removeEventListener('focusin', onInteract)
+    }
+  }, [])
+
   const setRef = (i) => (el) => { screenRefs.current[i] = el }
 
   const primary = () => {
@@ -150,7 +177,7 @@ export default function StoriesLanding({
   )
 
   return (
-    <div className="sl">
+    <div className={`sl${ctaPaused ? ' sl-cta-paused' : ''}`} ref={rootRef}>
       {/* Stories-style segmented progress bar (fixed top) */}
       <div className="sl-progress" aria-hidden="true">
         {SCREENS.map((s, i) => (
@@ -172,6 +199,7 @@ export default function StoriesLanding({
             block, which now lives in the sticky header above). */}
         <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
         <VideoHero onVisible={() => track('video_visible')} />
+        <p className="sl-bridge">{t('stories.screen1_invitation')}</p>
         {hint}
       </section>
 
@@ -222,6 +250,7 @@ export default function StoriesLanding({
             ))}
           </div>
         )}
+        <p className="sl-bridge">{t('stories.screen2_invitation')}</p>
         {hint}
       </section>
 
@@ -233,6 +262,7 @@ export default function StoriesLanding({
           <div className="sl-step"><span className="sl-step-icon">🔥</span><span className="sl-step-text">{t('stories.how.step2')}</span></div>
           <div className="sl-step"><span className="sl-step-icon">👋</span><span className="sl-step-text">{t('stories.how.step3')}</span></div>
         </div>
+        <p className="sl-bridge">{t('stories.screen3_invitation')}</p>
         {hint}
       </section>
 
@@ -251,6 +281,7 @@ export default function StoriesLanding({
           <div className="sl-stat"><span className="sl-stat-num">20+</span><span className="sl-stat-label">{t('stats.cities')}</span></div>
           <div className="sl-stat"><span className="sl-stat-num">500+</span><span className="sl-stat-label">{t('stats.eventsCreated')}</span></div>
         </div>
+        <p className="sl-bridge">{t('stories.screen4_invitation')}</p>
         {hint}
       </section>
 
