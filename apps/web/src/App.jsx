@@ -2706,7 +2706,9 @@ export default function App() {
       // opening straight into a challenge chat - that intent wins.
       const _cityNorm = (location.city || '').trim().toLowerCase()
       const _isHomeLocalCity = _cityNorm === 'ho chi minh city' || _cityNorm === 'saigon'
-      if (!_isHomeLocalCity && !pendingChallengeRef.current) {
+      // Require a KNOWN city name: if a saved identity has no city, stay in the
+      // city channel rather than risk yanking an HCMC returner into World.
+      if (_cityNorm && !_isHomeLocalCity && !pendingChallengeRef.current) {
         setTimeout(() => { switchScope('world') }, 0)
       }
       // A Screen-2 challenge tap / /c/:id CTA queued a challenge to open once the
