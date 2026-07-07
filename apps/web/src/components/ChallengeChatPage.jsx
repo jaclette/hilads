@@ -22,7 +22,7 @@ import {
   approveTakeOn, rejectTakeOn,
   fetchMyChallengeParticipation, joinChallenge, leaveChallenge,
   kickChallengeParticipant, setChallengeCloseToJoins, setChallengeVisibility,
-  abandonAcceptance, restartChallenge,
+  abandonAcceptance, restartChallenge, relaunchChallenge,
 } from '../api'
 import { countryToFlag } from '../lib/countryFlag'
 import { linkifyText, extractFirstUrl } from '../linkify.jsx'
@@ -306,6 +306,10 @@ export default function ChallengeChatPage({
             }
           : null)
   const isValidated = challenge?.status === 'validated'
+  // Ended = the meet date passed and it was never validated (mirrors the card's
+  // isEnded). An ended challenge with no active taker can be relaunched by the
+  // creator with a new future date.
+  const isEnded = !isValidated && challenge?.meet_at != null && (challenge.meet_at * 1000) < Date.now()
   // closed = successfully completed (one-shot, no re-take). Distinct from the
   // reversible 'validated' archive toggle - a completed challenge stays closed.
   const isClosed = !!challenge?.closed
@@ -826,6 +830,32 @@ export default function ChallengeChatPage({
     })
   }, [id, guest, busy, t, onDeleted])
 
+  // Relaunch (creator): an ENDED challenge reopens with the SAME countdown it was
+  // originally given (server recomputes the deadline). One tap, confirm first.
+  const handleRelaunch = useCallback(() => {
+    if (busy) return
+    setAlertModal({
+      emoji: '🔄',
+      title: t('relaunch.confirmTitle', { ns: 'challenge', defaultValue: 'Restart this challenge?' }),
+      body:  t('relaunch.confirmBody',  { ns: 'challenge', defaultValue: 'It reopens with the same countdown you set the first time.' }),
+      primary: {
+        label: t('relaunch.confirmCta', { ns: 'challenge', defaultValue: 'Restart' }),
+        onPress: async () => {
+          setBusy('relaunch')
+          try {
+            const res = await relaunchChallenge(id, guest?.guestId)
+            if (res?.challenge) setChallenge(res.challenge)
+            else loadChallenge()
+          } catch {
+            setAlertModal({ emoji: '😬', title: t('relaunch.failed', { ns: 'challenge', defaultValue: 'Could not restart' }), body: '' })
+          } finally {
+            setBusy(null)
+          }
+        },
+      },
+    })
+  }, [busy, id, guest?.guestId, loadChallenge, t])
+
   // Restart (creator): remove the current taker, wipe the chat, reopen from zero.
   const handleRestart = useCallback(() => {
     if (busy) return
@@ -990,12 +1020,33 @@ export default function ChallengeChatPage({
         <span className="challenge-badge challenge-badge--kind">
           {t(`typeBadge.${challenge.challenge_type}`).toUpperCase()}
         </span>
-        {/* Status pill - state at a glance (replaces the big done line below). */}
-        <span className={`challenge-status-pill ${(isValidated || challenge.closed) ? 'challenge-status-pill--done' : 'challenge-status-pill--live'}`}>
-          {(isValidated || challenge.closed)
-            ? `✓ ${t('status.done', { ns: 'challenge', defaultValue: 'Done' })}`
-            : `🟢 ${t('status.live', { ns: 'challenge', defaultValue: 'Live' })}`}
-        </span>
+        {/* Status pill - state at a glance. An ENDED challenge (deadline/meet
+            date passed, not validated) must NOT read "Live": the creator gets a
+            tappable Restart pill (sets a new date + reopens), others see "Ended". */}
+        {(isValidated || challenge.closed) ? (
+          <span className="challenge-status-pill challenge-status-pill--done">
+            ✓ {t('status.done', { ns: 'challenge', defaultValue: 'Done' })}
+          </span>
+        ) : isEnded ? (
+          isOwner ? (
+            <button
+              type="button"
+              className="challenge-status-pill challenge-status-pill--restart"
+              onClick={handleRelaunch}
+              disabled={busy !== null}
+            >
+              🔄 {busy === 'relaunch' ? '…' : t('relaunch.cta', { ns: 'challenge', defaultValue: 'Restart' })}
+            </button>
+          ) : (
+            <span className="challenge-status-pill challenge-status-pill--ended">
+              ⌛ {t('status.ended', { ns: 'challenge', defaultValue: 'Ended' })}
+            </span>
+          )
+        ) : (
+          <span className="challenge-status-pill challenge-status-pill--live">
+            🟢 {t('status.live', { ns: 'challenge', defaultValue: 'Live' })}
+          </span>
+        )}
         {(challenge.mode ?? 'local') === 'international' ? (() => {
           // Origin → target flag rendering. Falls back to "🌍" for the
           // target when "anywhere" (no target_city_id) or unknown.

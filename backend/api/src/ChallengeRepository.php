@@ -1342,27 +1342,56 @@ class ChallengeRepository
     }
 
     /**
-     * Relaunch an ended challenge: set a NEW future meet date (+ matching
-     * meet_ends_at). The "Ended" state is derived purely from meet_at < now, so
-     * pushing the date forward reopens the challenge for new takers. Creator-only.
-     * Returns the updated row, or null if not found / not the owner.
+     * Relaunch an ended challenge: restart it with the SAME countdown the creator
+     * set the first time. The original duration = meet_at - created_at; the new
+     * deadline is now + that duration, so a "3-day submission" challenge gets a
+     * fresh 3 days. created_at is bumped to now so the duration stays stable across
+     * repeated relaunches (and the challenge resurfaces as freshly active). The
+     * "Ended" state is derived purely from meet_at < now, so this reopens it.
+     * Creator-only. Returns the updated row, or null if not found / not the owner.
      */
     public static function relaunch(
         string $challengeId,
         string $guestId,
-        ?string $userId,
-        int $meetAt
+        ?string $userId
     ): ?array {
         if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
 
-        $meetEndsAt = $meetAt + 10800; // 3 h default window (mirrors create)
-        Database::pdo()->prepare("
+        $pdo = Database::pdo();
+        $cur = $pdo->prepare("
+            SELECT EXTRACT(EPOCH FROM meet_at)::BIGINT      AS meet_at,
+                   EXTRACT(EPOCH FROM meet_ends_at)::BIGINT AS meet_ends_at,
+                   EXTRACT(EPOCH FROM created_at)::BIGINT   AS created_at
+            FROM channel_challenges WHERE channel_id = :id
+        ");
+        $cur->execute(['id' => $challengeId]);
+        $row = $cur->fetch(\PDO::FETCH_ASSOC) ?: [];
+
+        $origMeet    = isset($row['meet_at'])      ? (int) $row['meet_at']      : null;
+        $origEnds    = isset($row['meet_ends_at']) ? (int) $row['meet_ends_at'] : null;
+        $origCreated = isset($row['created_at'])   ? (int) $row['created_at']   : null;
+
+        $now      = time();
+        // Same countdown as originally set. Clamp to ≥1h; fall back to 7 days if
+        // the row somehow has no meet date.
+        $duration = ($origMeet !== null && $origCreated !== null)
+            ? max(3600, $origMeet - $origCreated)
+            : 604800;
+        $window   = ($origEnds !== null && $origMeet !== null && $origEnds > $origMeet)
+            ? ($origEnds - $origMeet)
+            : 10800;
+
+        $newMeet = $now + $duration;
+        $newEnds = $newMeet + $window;
+
+        $pdo->prepare("
             UPDATE channel_challenges
             SET meet_at      = to_timestamp(:m),
                 meet_ends_at = to_timestamp(:e),
+                created_at   = now(),
                 updated_at   = now()
             WHERE channel_id = :id
-        ")->execute(['m' => $meetAt, 'e' => $meetEndsAt, 'id' => $challengeId]);
+        ")->execute(['m' => $newMeet, 'e' => $newEnds, 'id' => $challengeId]);
 
         return self::findById($challengeId);
     }

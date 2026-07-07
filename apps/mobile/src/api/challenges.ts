@@ -494,6 +494,15 @@ export async function restartChallenge(challengeId: string): Promise<{ ok: boole
   );
 }
 
+/** Relaunch an ENDED challenge: reopens with the SAME countdown originally set
+ *  (server recomputes the deadline). Returns the updated challenge. */
+export async function relaunchChallenge(challengeId: string): Promise<{ ok: boolean; challenge: Challenge }> {
+  return api.post<{ ok: boolean; challenge: Challenge }>(
+    `/challenges/${challengeId}/relaunch`,
+    {},
+  );
+}
+
 // ── PR4: debrief verdict (creator only, after meetup ends) ──────────────────
 
 /** Creator approves the take-on as accomplished (post-debrief). Final state. */

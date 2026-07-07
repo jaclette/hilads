@@ -10848,9 +10848,9 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array
 });
 
 // POST /api/v1/challenges/{challengeId}/relaunch
-// The CREATOR relaunches an ENDED challenge (its meet date passed with no taker)
-// by setting a new future meet date - reopening it. "Ended" is derived purely
-// from meet_at < now, so pushing the date forward makes it live again.
+// The CREATOR relaunches an ENDED challenge: it reopens with the SAME countdown
+// originally set (new deadline = now + original duration). "Ended" is derived
+// purely from meet_at < now, so this makes it live again. Creator-only.
 $router->add('POST', '/api/v1/challenges/{challengeId}/relaunch', function (array $params) {
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
@@ -10861,10 +10861,6 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/relaunch', function (arra
     if (!isValidGuestId($guestId)) {
         Response::json(['error' => 'guestId is required'], 400);
     }
-    $meetAt = (int) ($body['meetAt'] ?? 0);
-    if ($meetAt < time() + 60) {
-        Response::json(['error' => 'meetAt must be in the future', 'code' => 'meet_in_past'], 400);
-    }
 
     $userId    = AuthService::currentUser()['id'] ?? null;
     $challenge = ChallengeRepository::findByIdUnchecked($challengeId);
@@ -10872,7 +10868,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/relaunch', function (arra
         Response::json(['error' => 'Challenge not found'], 404);
     }
 
-    $updated = ChallengeRepository::relaunch($challengeId, $guestId, $userId, $meetAt);
+    $updated = ChallengeRepository::relaunch($challengeId, $guestId, $userId);
     if ($updated === null) {
         Response::json(['error' => 'Only the creator can relaunch this challenge', 'code' => 'not_creator'], 403);
     }

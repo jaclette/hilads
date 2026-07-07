@@ -727,6 +727,24 @@ export async function updateChallenge(challengeId, guestId, title, challengeType
   return res.json()
 }
 
+// Relaunch an ENDED challenge: reopens it with the SAME countdown originally set
+// (server computes the new deadline). Returns the updated challenge.
+export async function relaunchChallenge(challengeId, guestId) {
+  const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/relaunch`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ guestId }),
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    const err  = new Error(data.error || 'Failed to relaunch challenge')
+    err.code   = data.code || null
+    throw err
+  }
+  return res.json()
+}
+
 export async function deleteChallenge(challengeId, guestId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}`, {
     method: 'DELETE',

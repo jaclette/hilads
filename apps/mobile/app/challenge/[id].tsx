@@ -24,7 +24,7 @@ import {
   fetchChallengeMessages, sendChallengeMessage, sendChallengeImageMessage,
   fetchMyChallengeParticipation, joinChallengeChannel, leaveChallengeChannel,
   setChallengeCloseToJoins, setChallengeVisibility, toggleChallengeReaction,
-  abandonAcceptance, restartChallenge, validatePresence,
+  abandonAcceptance, restartChallenge, relaunchChallenge, validatePresence,
 } from '@/api/challenges';
 import { ValidatePresenceSheet } from '@/features/challenge/ValidatePresenceSheet';
 import { GroupSubmissionsGallery } from '@/features/challenge/GroupSubmissionsGallery';
@@ -359,6 +359,30 @@ export default function ChallengeChatScreen() {
       },
     ]);
   }, [id, t, loadChallenge, loadParticipants, loadMyAcceptance]);
+
+  // Creator relaunches an ENDED challenge: reopens with the SAME countdown it was
+  // originally given (server recomputes the deadline). One tap, confirm first.
+  const handleRelaunch = useCallback(() => {
+    Alert.alert(
+      t('relaunch.confirmTitle', { defaultValue: 'Restart this challenge?' }),
+      t('relaunch.confirmBody', { defaultValue: 'It reopens with the same countdown you set the first time.' }),
+      [
+        { text: t('cancel', { ns: 'common' }), style: 'cancel' },
+        {
+          text: t('relaunch.confirmCta', { defaultValue: 'Restart' }),
+          onPress: async () => {
+            try {
+              const res = await relaunchChallenge(id);
+              if (res?.challenge) setChallenge(res.challenge);
+              else loadChallenge();
+            } catch {
+              Alert.alert(t('relaunch.failed', { defaultValue: 'Could not restart' }));
+            }
+          },
+        },
+      ],
+    );
+  }, [id, t, loadChallenge]);
 
   const handleToggleStatus = useCallback(async () => {
     if (!identity || !challenge) return;
@@ -1005,6 +1029,9 @@ export default function ChallengeChatScreen() {
   };
   const typeIcon = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
   const isValidated = challenge.status === 'validated';
+  // Ended = meet date / deadline passed and never validated. The creator gets a
+  // Restart pill (reopens with the same countdown); others see "Ended".
+  const isEnded = !isValidated && challenge.meet_at != null && (challenge.meet_at * 1000) < Date.now();
   // closed = successfully completed (one-shot, no re-take). Treated like the
   // 'validated' archive for the passive "closed" state + Accept gating.
   const isClosed = !!challenge.closed;
@@ -1105,13 +1132,25 @@ export default function ChallengeChatScreen() {
           </View>
           {/* Status pill - the challenge's state at a glance (replaces the big
               "This contest is done" line below, saving vertical space). */}
-          <View style={[styles.statusPill, (isValidated || isClosed) ? styles.statusPillDone : styles.statusPillLive]}>
-            <Text style={[styles.statusPillText, (isValidated || isClosed) ? styles.statusPillTextDone : styles.statusPillTextLive]}>
-              {(isValidated || isClosed)
-                ? `✓ ${t('status.done', { defaultValue: 'Done' })}`
-                : `🟢 ${t('status.live', { defaultValue: 'Live' })}`}
-            </Text>
-          </View>
+          {(isValidated || isClosed) ? (
+            <View style={[styles.statusPill, styles.statusPillDone]}>
+              <Text style={[styles.statusPillText, styles.statusPillTextDone]}>✓ {t('status.done', { defaultValue: 'Done' })}</Text>
+            </View>
+          ) : isEnded ? (
+            isOwner ? (
+              <TouchableOpacity style={[styles.statusPill, styles.statusPillRestart]} onPress={handleRelaunch} activeOpacity={0.8}>
+                <Text style={[styles.statusPillText, styles.statusPillTextRestart]}>🔄 {t('relaunch.cta', { defaultValue: 'Restart' })}</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={[styles.statusPill, styles.statusPillEnded]}>
+                <Text style={[styles.statusPillText, styles.statusPillTextEnded]}>⌛ {t('status.ended', { defaultValue: 'Ended' })}</Text>
+              </View>
+            )
+          ) : (
+            <View style={[styles.statusPill, styles.statusPillLive]}>
+              <Text style={[styles.statusPillText, styles.statusPillTextLive]}>🟢 {t('status.live', { defaultValue: 'Live' })}</Text>
+            </View>
+          )}
           {/* Audience / mode pill - Local rows get the audience target
               (locals vs travelers); International rows swap it for a 🌐
               chip since audience doesn't apply (no IRL meetup). */}
@@ -2395,9 +2434,13 @@ const styles = StyleSheet.create({
   statusPill:          { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
   statusPillDone:      { backgroundColor: 'rgba(34,197,94,0.14)',  borderColor: 'rgba(34,197,94,0.34)' },
   statusPillLive:      { backgroundColor: 'rgba(255,201,60,0.14)', borderColor: 'rgba(255,201,60,0.34)' },
+  statusPillEnded:     { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.18)' },
+  statusPillRestart:   { backgroundColor: Colors.accent, borderColor: 'transparent' },
   statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: '#22c55e' },
   statusPillTextLive:  { color: '#FFC93C' },
+  statusPillTextEnded: { color: Colors.muted2 },
+  statusPillTextRestart: { color: '#fff' },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
   // orange brand + green validated, the other pills on the same row).
