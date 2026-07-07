@@ -1342,6 +1342,32 @@ class ChallengeRepository
     }
 
     /**
+     * Relaunch an ended challenge: set a NEW future meet date (+ matching
+     * meet_ends_at). The "Ended" state is derived purely from meet_at < now, so
+     * pushing the date forward reopens the challenge for new takers. Creator-only.
+     * Returns the updated row, or null if not found / not the owner.
+     */
+    public static function relaunch(
+        string $challengeId,
+        string $guestId,
+        ?string $userId,
+        int $meetAt
+    ): ?array {
+        if (!self::ownerCheck($challengeId, $guestId, $userId)) return null;
+
+        $meetEndsAt = $meetAt + 10800; // 3 h default window (mirrors create)
+        Database::pdo()->prepare("
+            UPDATE channel_challenges
+            SET meet_at      = to_timestamp(:m),
+                meet_ends_at = to_timestamp(:e),
+                updated_at   = now()
+            WHERE channel_id = :id
+        ")->execute(['m' => $meetAt, 'e' => $meetEndsAt, 'id' => $challengeId]);
+
+        return self::findById($challengeId);
+    }
+
+    /**
      * Move challenge from 'open' → 'validated'. Idempotent: a re-validate is a
      * no-op but still returns the row.
      *
