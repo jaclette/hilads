@@ -5199,7 +5199,12 @@ export default function App() {
               )
             }
 
-            const isMine = item.guestId === guest?.guestId
+            // Match by userId too: a registered user's own messages carry a
+            // guest_id from a PRIOR session that no longer equals the current
+            // one, so a guestId-only check mis-flags them as someone else's
+            // (left-aligned, no own-flag). userId is stable across sessions.
+            const isMine = (!!item.guestId && item.guestId === guest?.guestId)
+                        || (!!item.userId && item.userId === account?.id)
             const prevItem = feed[i - 1]
             const nextItem = feed[i + 1]
             // group consecutive messages/images from the same sender
