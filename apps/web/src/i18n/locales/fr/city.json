@@ -1,6 +1,6 @@
 {
   "world": {
-    "tab": "World",
+    "tab": "Monde",
     "banner": "{{count}} défis inter-villes en cours",
     "online": "{{count}} en ligne",
     "cities": "{{count}} villes",
@@ -9,7 +9,7 @@
       "newUser": "🎉 {{nickname}} de {{city}} vient de rejoindre Hilads",
       "challengeWon": "🏆 {{nickname}} de {{city}} vient de gagner le défi {{challenge}}"
     },
-    "quietCard": "Calme ici ? {{count}} messages non lus dans World 🌍 — tape pour voir",
+    "quietCard": "Calme ici ? {{count}} messages non lus dans Monde 🌍 — tape pour voir",
     "heroEmpty": "Sois le premier à défier une ville",
     "heroEmptySub": "Lance un défi inter-villes",
     "leaderboard": "Classement",

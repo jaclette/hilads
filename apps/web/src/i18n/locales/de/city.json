@@ -286,7 +286,7 @@
     "mainTop_other": "🔥 {{count}} Challenges · 🏆 #1 in {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "Welt",
     "banner": "{{count}} städteübergreifende Challenges live",
     "online": "{{count}} online",
     "cities": "{{count}} Städte",
@@ -295,7 +295,7 @@
       "newUser": "🎉 {{nickname}} aus {{city}} ist gerade Hilads beigetreten",
       "challengeWon": "🏆 {{nickname}} aus {{city}} hat die Challenge {{challenge}} gewonnen"
     },
-    "quietCard": "Ruhig hier? {{count}} ungelesen in World 🌍 — zum Öffnen tippen",
+    "quietCard": "Ruhig hier? {{count}} ungelesen in Welt 🌍 — zum Öffnen tippen",
     "heroEmpty": "Sei der Erste, der eine Stadt herausfordert",
     "heroEmptySub": "Starte eine städteübergreifende Challenge",
     "leaderboard": "Rangliste",

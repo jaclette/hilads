@@ -286,7 +286,7 @@
     "mainTop_other": "🔥 {{count}} tantangan · 🏆 #1 di {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "Dunia",
     "banner": "{{count}} tantangan antarkota berlangsung",
     "online": "{{count}} online",
     "cities": "{{count}} kota",
@@ -295,7 +295,7 @@
       "newUser": "🎉 {{nickname}} dari {{city}} baru saja bergabung dengan Hilads",
       "challengeWon": "🏆 {{nickname}} dari {{city}} memenangkan tantangan {{challenge}}"
     },
-    "quietCard": "Sepi di sini? {{count}} belum dibaca di World 🌍 — ketuk untuk buka",
+    "quietCard": "Sepi di sini? {{count}} belum dibaca di Dunia 🌍 — ketuk untuk buka",
     "heroEmpty": "Jadilah yang pertama menantang sebuah kota",
     "heroEmptySub": "Luncurkan tantangan antarkota",
     "leaderboard": "Papan peringkat",

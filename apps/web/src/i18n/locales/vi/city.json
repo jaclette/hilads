@@ -286,7 +286,7 @@
     "mainTop_other": "🔥 {{count}} thử thách · 🏆 #1 ở {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "Thế giới",
     "banner": "{{count}} thử thách liên thành phố đang diễn ra",
     "online": "{{count}} đang online",
     "cities": "{{count}} thành phố",
@@ -295,7 +295,7 @@
       "newUser": "🎉 {{nickname}} từ {{city}} vừa tham gia Hilads",
       "challengeWon": "🏆 {{nickname}} từ {{city}} vừa thắng thử thách {{challenge}}"
     },
-    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong World 🌍 — chạm để xem",
+    "quietCard": "Yên tĩnh quá? {{count}} tin chưa đọc trong Thế giới 🌍 — chạm để xem",
     "heroEmpty": "Hãy là người đầu tiên thách đấu một thành phố",
     "heroEmptySub": "Tạo một thử thách liên thành phố",
     "leaderboard": "Bảng xếp hạng",

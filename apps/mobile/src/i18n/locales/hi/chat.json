@@ -113,7 +113,7 @@
   },
   "actionTranslate": "अनुवाद करें",
   "world": {
-    "tab": "World",
+    "tab": "दुनिया",
     "banner": "{{count}} इंटर-सिटी चैलेंज लाइव",
     "online": "{{count}} ऑनलाइन",
     "cities": "{{count}} शहर",
@@ -122,7 +122,7 @@
       "newUser": "🎉 {{city}} से {{nickname}} अभी Hilads से जुड़े",
       "challengeWon": "🏆 {{city}} से {{nickname}} ने चैलेंज {{challenge}} जीता"
     },
-    "quietCard": "यहाँ शांति है? World में {{count}} अनरेड 🌍 — खोलने के लिए टैप करें",
+    "quietCard": "यहाँ शांति है? दुनिया में {{count}} अनरेड 🌍 — खोलने के लिए टैप करें",
     "heroEmpty": "किसी शहर को चैलेंज करने वाले पहले बनो",
     "heroEmptySub": "एक इंटर-सिटी चैलेंज शुरू करो",
     "leaderboard": "लीडरबोर्ड",

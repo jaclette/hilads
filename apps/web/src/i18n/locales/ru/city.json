@@ -300,7 +300,7 @@
     "mainTop_many": "🔥 {{count}} челленджей · 🏆 #1 в {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "Мир",
     "banner": "{{count}} межгородских челленджей в эфире",
     "online": "{{count}} онлайн",
     "cities": "{{count}} городов",
@@ -309,7 +309,7 @@
       "newUser": "🎉 {{nickname}} из {{city}} только что присоединился к Hilads",
       "challengeWon": "🏆 {{nickname}} из {{city}} выиграл челлендж {{challenge}}"
     },
-    "quietCard": "Тихо здесь? {{count}} непрочитанных в World 🌍 — нажми, чтобы открыть",
+    "quietCard": "Тихо здесь? {{count}} непрочитанных в Мир 🌍 — нажми, чтобы открыть",
     "heroEmpty": "Стань первым, кто бросит вызов городу",
     "heroEmptySub": "Запусти межгородской челлендж",
     "leaderboard": "Рейтинг",

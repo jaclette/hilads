@@ -113,7 +113,7 @@
   },
   "actionTranslate": "번역",
   "world": {
-    "tab": "World",
+    "tab": "세계",
     "banner": "도시 간 챌린지 {{count}}개 진행 중",
     "online": "{{count}}명 온라인",
     "cities": "{{count}}개 도시",

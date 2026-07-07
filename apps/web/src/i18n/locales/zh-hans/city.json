@@ -286,7 +286,7 @@
     "mainTop_other": "🔥 {{city}} {{count}} 个挑战 · 🏆 第 1 名"
   },
   "world": {
-    "tab": "World",
+    "tab": "世界",
     "banner": "{{count}} 个跨城市挑战进行中",
     "online": "{{count}} 人在线",
     "cities": "{{count}} 个城市",
@@ -295,7 +295,7 @@
       "newUser": "🎉 来自{{city}}的 {{nickname}} 刚刚加入 Hilads",
       "challengeWon": "🏆 来自{{city}}的 {{nickname}} 赢得了挑战 {{challenge}}"
     },
-    "quietCard": "这里很安静？World 里有 {{count}} 条未读 🌍 — 点击查看",
+    "quietCard": "这里很安静？世界 里有 {{count}} 条未读 🌍 — 点击查看",
     "heroEmpty": "成为第一个挑战城市的人",
     "heroEmptySub": "发起一个跨城市挑战",
     "leaderboard": "排行榜",

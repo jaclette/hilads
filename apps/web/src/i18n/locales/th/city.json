@@ -286,7 +286,7 @@
     "mainTop_other": "🔥 {{count}} ชาเลนจ์ · 🏆 #1 ใน {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "โลก",
     "banner": "ความท้าทายข้ามเมือง {{count}} รายการกำลังดำเนินอยู่",
     "online": "ออนไลน์ {{count}} คน",
     "cities": "{{count}} เมือง",
@@ -295,7 +295,7 @@
       "newUser": "🎉 {{nickname}} จาก{{city}} เพิ่งเข้าร่วม Hilads",
       "challengeWon": "🏆 {{nickname}} จาก{{city}} ชนะความท้าทาย {{challenge}}"
     },
-    "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน World 🌍 — แตะเพื่อเปิด",
+    "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน โลก 🌍 — แตะเพื่อเปิด",
     "heroEmpty": "เป็นคนแรกที่ท้าทายเมือง",
     "heroEmptySub": "เริ่มความท้าทายข้ามเมือง",
     "leaderboard": "อันดับ",

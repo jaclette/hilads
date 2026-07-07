@@ -113,7 +113,7 @@
   },
   "actionTranslate": "翻訳",
   "world": {
-    "tab": "World",
+    "tab": "世界",
     "banner": "都市間チャレンジが {{count}} 件進行中",
     "online": "{{count}} 人オンライン",
     "cities": "{{count}} 都市",
@@ -122,7 +122,7 @@
       "newUser": "🎉 {{city}}の {{nickname}} が Hilads に参加しました",
       "challengeWon": "🏆 {{city}}の {{nickname}} がチャレンジ {{challenge}} に勝ちました"
     },
-    "quietCard": "静かですか？World に未読が {{count}} 件 🌍 — タップして開く",
+    "quietCard": "静かですか？世界 に未読が {{count}} 件 🌍 — タップして開く",
     "heroEmpty": "最初に都市へ挑戦しよう",
     "heroEmptySub": "都市間チャレンジを立てる",
     "leaderboard": "ランキング",

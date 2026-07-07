@@ -113,7 +113,7 @@
   },
   "actionTranslate": "Traduci",
   "world": {
-    "tab": "World",
+    "tab": "Mondo",
     "banner": "{{count}} sfide tra città in corso",
     "online": "{{count}} online",
     "cities": "{{count}} città",
@@ -122,7 +122,7 @@
       "newUser": "🎉 {{nickname}} da {{city}} si è appena unito a Hilads",
       "challengeWon": "🏆 {{nickname}} da {{city}} ha vinto la sfida {{challenge}}"
     },
-    "quietCard": "Tutto tranquillo? {{count}} non letti in World 🌍 — tocca per aprire",
+    "quietCard": "Tutto tranquillo? {{count}} non letti in Mondo 🌍 — tocca per aprire",
     "heroEmpty": "Sii il primo a sfidare una città",
     "heroEmptySub": "Lancia una sfida tra città",
     "leaderboard": "Classifica",

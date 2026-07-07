@@ -311,7 +311,7 @@
     "mainTop_many": "🔥 {{count}} تحديات · 🏆 #1 في {{city}}"
   },
   "world": {
-    "tab": "World",
+    "tab": "العالم",
     "banner": "{{count}} تحديات بين المدن جارية الآن",
     "online": "{{count}} متصل",
     "cities": "{{count}} مدن",
@@ -320,7 +320,7 @@
       "newUser": "🎉 انضم {{nickname}} من {{city}} إلى Hilads للتو",
       "challengeWon": "🏆 فاز {{nickname}} من {{city}} بالتحدي {{challenge}}"
     },
-    "quietCard": "هادئ هنا؟ {{count}} غير مقروءة في World 🌍 — اضغط للفتح",
+    "quietCard": "هادئ هنا؟ {{count}} غير مقروءة في العالم 🌍 — اضغط للفتح",
     "heroEmpty": "كن أول من يتحدى مدينة",
     "heroEmptySub": "أطلق تحديًا بين المدن",
     "leaderboard": "المتصدرون",

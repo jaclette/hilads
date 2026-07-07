@@ -113,7 +113,7 @@
   },
   "actionTranslate": "翻譯",
   "world": {
-    "tab": "World",
+    "tab": "世界",
     "banner": "{{count}} 個跨城市挑戰進行中",
     "online": "{{count}} 人在線",
     "cities": "{{count}} 個城市",
@@ -122,7 +122,7 @@
       "newUser": "🎉 來自{{city}}的 {{nickname}} 剛剛加入 Hilads",
       "challengeWon": "🏆 來自{{city}}的 {{nickname}} 贏得了挑戰 {{challenge}}"
     },
-    "quietCard": "這裡很安靜？World 裡有 {{count}} 則未讀 🌍 — 點擊查看",
+    "quietCard": "這裡很安靜？世界 裡有 {{count}} 則未讀 🌍 — 點擊查看",
     "heroEmpty": "成為第一個挑戰城市的人",
     "heroEmptySub": "發起一個跨城市挑戰",
     "leaderboard": "排行榜",
