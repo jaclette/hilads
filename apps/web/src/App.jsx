@@ -2775,7 +2775,7 @@ export default function App() {
       // message un-enriched (letter avatars + default mode).
       const joinBadgeIds = [...new Set(
         boot.messages
-          .filter(m => m.userId && m.type !== 'system')
+          .filter(m => m.userId)
           .map(m => m.userId)
       )]
       const joinBadgeChannel = location.channelId
@@ -2784,8 +2784,11 @@ export default function App() {
           if (activeChannelRef.current !== joinBadgeChannel) return
           if (!badges || Object.keys(badges).length === 0) return
           setFeed(prev => prev.map(item => {
-            if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+            if (!item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
+            // Arrival ("join") rows also show the arriver's avatar in the arrivals sheet.
+            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            if (item.type !== 'message') return item
             return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
         })
@@ -3834,7 +3837,7 @@ export default function App() {
       // Deferred badge enrichment - same pattern as handleJoin
       const switchBadgeIds = [...new Set(
         boot.messages
-          .filter(m => m.userId && m.type !== 'system')
+          .filter(m => m.userId)
           .map(m => m.userId)
       )]
       if (switchBadgeIds.length > 0) {
@@ -3842,8 +3845,11 @@ export default function App() {
           if (activeChannelRef.current !== newChannelId) return
           if (!badges || Object.keys(badges).length === 0) return
           setFeed(prev => prev.map(item => {
-            if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+            if (!item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
+            // Arrival ("join") rows also show the arriver's avatar in the arrivals sheet.
+            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            if (item.type !== 'message') return item
             return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
         })
