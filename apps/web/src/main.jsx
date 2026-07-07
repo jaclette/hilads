@@ -25,7 +25,10 @@ const IS_BOT = typeof navigator !== 'undefined' && BOT_UA_RE.test(navigator.user
 if (!IS_BOT) {
 
 posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
-    api_host: 'https://eu.posthog.com',
+    // Events route through the managed reverse proxy; ui_host keeps the toolbar
+    // and PostHog UI features pointed at the real EU instance.
+    api_host: 'https://hi.hilads.live',
+    ui_host: 'https://eu.posthog.com',
     disable_toolbar: true,
     autocapture: false,        // all events tracked manually via track()
     capture_pageleave: false,  // not useful for a SPA chat context
