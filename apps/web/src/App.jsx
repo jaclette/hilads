@@ -3691,11 +3691,28 @@ export default function App() {
       try {
         const { messages } = await fetchLeanMessages(channelId, { limit: 50 })
         if (channelScopeRef.current !== 'city') return
-        const items = (messages || []).map(m => toFeedItem(m, undefined, lastJoinAtRef)).filter(Boolean)
+        // NOTE: do NOT pass lastJoinAtRef here. That throttle is for LIVE joins
+        // arriving one at a time; applied to a bulk history reload it collapses
+        // every arrival into one (the "1 recent" bug after toggling back from World).
+        const items = (messages || []).map(m => toFeedItem(m)).filter(Boolean)
         ;(messages || []).forEach(m => { const k = messageKey(m); if (k) knownIdsRef.current.add(k) })
         isNearBottomRef.current = true   // land at the bottom after toggling scope
         setFeed(items)
         requestAnimationFrame(() => { const c = messagesContainerRef.current; if (c) c.scrollTop = c.scrollHeight })
+        // Re-enrich author badges + avatar + mode: the lean reload returns ghost
+        // badges, so without this, toggling back from World drops everyone's
+        // Legend / Local-mode / avatar (kitty_3 → "Exploring", etc.).
+        const uids = [...new Set((messages || []).filter(m => m.userId).map(m => m.userId))]
+        if (uids.length) {
+          fetchMessageBadges(channelId, uids).then(badges => {
+            if (channelScopeRef.current !== 'city' || !badges) return
+            setFeed(prev => prev.map(item => {
+              if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
+              const b = badges[item.userId]
+              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
+            }))
+          }).catch(() => {})
+        }
       } catch { /* */ }
       if (guest?.guestId) markChannelRead(channelId, guest.guestId)
     }
