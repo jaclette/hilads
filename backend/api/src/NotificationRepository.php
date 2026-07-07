@@ -726,7 +726,9 @@ class NotificationRepository
                         ['guest_id' => $arriverGuestId, 'nickname' => $arriverNickname, 'city' => $cityName]);
                     // Opt-in global push (default OFF). Bounded by the same
                     // genuine-new-user gate above (deduped per guest, ≤10/day).
-                    self::notifyWorldArrival($arriverUserId, $arriverNickname, $cityName);
+                    // Pass the arriver's city so members of it (who get the city
+                    // push) are excluded - one push per arrival, city takes priority.
+                    self::notifyWorldArrival($arriverUserId, $arriverNickname, $cityName, $cityChannelId);
                 }
             }
         } catch (\Throwable $e) {
@@ -952,13 +954,19 @@ class NotificationRepository
     public static function notifyWorldArrival(
         ?string $arriverUserId,
         string  $arriverNickname,
-        string  $cityName
+        string  $cityName,
+        ?string $arriverCityChannelId = null
     ): void {
         try {
             $cap = self::CITY_PUSH_FANOUT_CAP;
             // Select opted-in, recently-active, non-deleted users, excluding the
             // arriver. Driving off the preference table keeps this cheap - almost
             // nobody has the (default-OFF) flag on.
+            //
+            // EXCLUDE members of the arriver's own city: they already receive the
+            // city_join push for this arrival, which takes priority. Without this,
+            // a city member who also opted into World arrivals got TWO pushes for
+            // the same person.
             $stmt = Database::pdo()->prepare("
                 SELECT np.user_id
                 FROM notification_preferences np
@@ -967,10 +975,11 @@ class NotificationRepository
                   AND u.deleted_at IS NULL
                   AND u.current_city_last_confirmed_at > now() - interval '30 days'
                   AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
+                  AND (CAST(? AS text) IS NULL OR u.current_city_id IS DISTINCT FROM CAST(? AS text))
                 ORDER BY u.current_city_last_confirmed_at DESC NULLS LAST
                 LIMIT {$cap}
             ");
-            $stmt->execute([$arriverUserId, $arriverUserId]);
+            $stmt->execute([$arriverUserId, $arriverUserId, $arriverCityChannelId, $arriverCityChannelId]);
             $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
             if (empty($userIds)) return;
 
