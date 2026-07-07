@@ -3885,6 +3885,41 @@ $router->add('GET', '/api/v1/world/messages', function () {
         }
         unset($m);
     }
+
+    // Guest authors have no user row, so batchFull skips them. Resolve their
+    // country from their most recent CITY presence so World shows a flag for
+    // guests too (one bounded query for all guest ids on the page).
+    $guestIds = [];
+    foreach ($messages as $m) { if (empty($m['userId']) && !empty($m['guestId'])) $guestIds[$m['guestId']] = true; }
+    $guestIds = array_keys($guestIds);
+    if ($guestIds) {
+        $gin  = implode(',', array_fill(0, count($guestIds), '?'));
+        $gStmt = Database::pdo()->prepare("
+            SELECT DISTINCT ON (guest_id) guest_id, channel_id
+            FROM presence
+            WHERE guest_id IN ($gin) AND channel_id LIKE 'city_%'
+            ORDER BY guest_id, last_seen_at DESC
+        ");
+        $gStmt->execute($guestIds);
+        $guestCountry = [];
+        $cityCache    = [];
+        foreach ($gStmt->fetchAll() as $r) {
+            $cid = $r['channel_id'];
+            if (!array_key_exists($cid, $cityCache)) {
+                $n = preg_match('/^city_(\d+)$/', $cid, $mm) ? (int) $mm[1] : null;
+                $c = $n !== null ? CityRepository::findById($n) : null;
+                $cityCache[$cid] = $c['country'] ?? null;
+            }
+            $guestCountry[$r['guest_id']] = $cityCache[$cid];
+        }
+        foreach ($messages as &$m) {
+            if (empty($m['userId']) && !empty($m['guestId']) && isset($guestCountry[$m['guestId']])) {
+                $m['country'] = $guestCountry[$m['guestId']];
+            }
+        }
+        unset($m);
+    }
+
     Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
 });
 
