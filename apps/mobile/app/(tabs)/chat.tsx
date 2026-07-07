@@ -1156,7 +1156,9 @@ export default function ChatTab() {
                       </View>
                       <MarqueeText text={c.title} fadeColor="#181113" style={styles.heroSlideTitleWrap} textStyle={styles.heroSlideTitle} active={channelScope === 'world'} />
                       <View style={styles.heroSlideFoot}>
-                        <Text style={styles.heroSlideFlags}>{cityFlag(c.country ?? undefined) || '🌍'}  →  {cityFlag(c.target_country ?? undefined) || '🌍'}</Text>
+                        <Text style={styles.heroSlidePlace} numberOfLines={1}>{cityFlag(c.country ?? undefined) || '🌍'}{c.city ? ` ${localizeCityName(c.city)}` : ''}</Text>
+                        <Text style={styles.heroSlideArrow}>→</Text>
+                        <Text style={styles.heroSlidePlace} numberOfLines={1}>{cityFlag(c.target_country ?? undefined) || '🌍'}{c.target_city ? ` ${localizeCityName(c.target_city)}` : ''}</Text>
                       </View>
                     </TouchableOpacity>
                   );
@@ -1712,8 +1714,9 @@ const styles = StyleSheet.create({
   heroSlideTypeText: { color: '#fff', fontWeight: '800', fontSize: 10, letterSpacing: 0.4, textTransform: 'uppercase' },
   heroSlideTitleWrap: { alignSelf: 'stretch' },
   heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
-  heroSlideFoot:  { flexDirection: 'row', alignItems: 'center' },
-  heroSlideFlags: { fontSize: 15, fontWeight: '700', letterSpacing: 1, color: Colors.text },
+  heroSlideFoot:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  heroSlidePlace: { flex: 1, fontSize: 12.5, fontWeight: '700', color: Colors.text },
+  heroSlideArrow: { color: Colors.muted, fontWeight: '800', fontSize: 13 },
   heroSeeAll: {
     width: 130, borderRadius: 18, borderWidth: 1.5, borderColor: Colors.accent,
     borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4,

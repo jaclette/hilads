@@ -4891,7 +4891,11 @@ export default function App() {
                       </div>
                       <Marquee text={ch.title} className="ch-world-slide-title" fadeColor="#181113" />
                       <div className="ch-world-slide-foot">
-                        <span className="ch-world-slide-flags">{cityFlag(ch.country) || '🌍'} <span className="ch-world-slide-arrow">→</span> {cityFlag(ch.target_country) || '🌍'}</span>
+                        <span className="ch-world-slide-flags">
+                          <span className="ch-world-slide-place">{cityFlag(ch.country) || '🌍'}{ch.city ? ` ${localizeCityName(ch.city)}` : ''}</span>
+                          <span className="ch-world-slide-arrow">→</span>
+                          <span className="ch-world-slide-place">{cityFlag(ch.target_country) || '🌍'}{ch.target_city ? ` ${localizeCityName(ch.target_city)}` : ''}</span>
+                        </span>
                       </div>
                     </button>
                   )

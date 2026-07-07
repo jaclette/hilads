@@ -630,6 +630,8 @@ class ChallengeRepository
             'mode'                     => $r['mode'] ?? 'international',
             'country'                  => self::countryForCityId($r['city_id']),
             'target_country'           => self::countryForCityId($r['target_city_id']),
+            'city'                     => self::cityNameForCityId($r['city_id']),
+            'target_city'              => self::cityNameForCityId($r['target_city_id']),
             'creator_username'         => $r['creator_username'],
             'creator_display_name'     => $r['creator_display_name'],
             'creator_thumb_avatar_url' => R2Uploader::thumbProxy($r['creator_thumb_avatar_url']),

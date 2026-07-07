@@ -42,6 +42,8 @@ export interface WorldChallenge {
   mode: string;
   country: string | null;
   target_country: string | null;
+  city: string | null;
+  target_city: string | null;
   creator_username: string | null;
   creator_display_name: string | null;
   creator_thumb_avatar_url: string | null;
