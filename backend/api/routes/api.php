@@ -3583,7 +3583,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
-            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
+            // Include 'join' system messages so the arrivals list can show the
+            // arriver's avatar (they carry a userId for registered users).
+            if (($t === 'text' || $t === 'image' || ($t === 'system' && ($msg['event'] ?? '') === 'join')) && !empty($msg['userId'])) {
                 $msgUserIds[] = $msg['userId'];
             }
         }
@@ -3617,6 +3619,10 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     $msg['mode']           = null;
                     $msg['thumbAvatarUrl'] = null;
                 }
+            } elseif ($t === 'system' && ($msg['event'] ?? '') === 'join') {
+                // Arrival rows: attach the arriver's avatar thumb for the sheet.
+                $uid = $msg['userId'] ?? null;
+                $msg['thumbAvatarUrl'] = ($uid && isset($badgeMap[$uid])) ? ($badgeMap[$uid]['thumbAvatarUrl'] ?? null) : null;
             }
         }
         unset($msg);
@@ -4062,7 +4068,9 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
-            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
+            // Include 'join' system messages so the arrivals list can show the
+            // arriver's avatar (they carry a userId for registered users).
+            if (($t === 'text' || $t === 'image' || ($t === 'system' && ($msg['event'] ?? '') === 'join')) && !empty($msg['userId'])) {
                 $msgUserIds[] = $msg['userId'];
             }
         }

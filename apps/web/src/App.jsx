@@ -659,7 +659,7 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
       lastJoinAtRef.current = now
     }
     const joinVariant = Math.floor(Math.random() * JOIN_TEMPLATES.length)
-    return { type: 'activity', subtype: 'join', id: messageKey(m), joinVariant, text: JOIN_TEMPLATES[joinVariant](m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null }
+    return { type: 'activity', subtype: 'join', id: messageKey(m), joinVariant, text: JOIN_TEMPLATES[joinVariant](m.nickname), createdAt: m.createdAt, nickname: m.nickname, userId: m.userId ?? null, guestId: m.guestId ?? null, thumbAvatarUrl: m.thumbAvatarUrl ?? null }
   }
   // Weather system messages have no nickname/id - render as a subtle activity line.
   if (m.type === 'system' && m.event === 'weather') {

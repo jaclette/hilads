@@ -10,6 +10,9 @@
  */
 
 import { Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { thumbUrl } from '@/lib/imageThumb';
+import { avatarColor } from '@/lib/avatarColors';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
@@ -87,6 +90,13 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
                   activeOpacity={tappable ? 0.7 : 1}
                   disabled={!tappable}
                 >
+                  {m.thumbAvatarUrl ? (
+                    <Image source={{ uri: thumbUrl(m.thumbAvatarUrl) }} style={styles.rowAvatar} contentFit="cover" cachePolicy="memory-disk" />
+                  ) : (
+                    <View style={[styles.rowAvatar, styles.rowAvatarLetterWrap, { backgroundColor: avatarColor(m.nickname ?? '') }]}>
+                      <Text style={styles.rowAvatarLetter}>{(m.nickname ?? '?')[0].toUpperCase()}</Text>
+                    </View>
+                  )}
                   <Text style={styles.rowText} numberOfLines={1}>{joinText(m)}</Text>
                   <Text style={styles.rowTime}>{formatSmartTime(m.createdAt)}</Text>
                 </TouchableOpacity>
@@ -123,6 +133,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     gap:              10,
   },
+  rowAvatar: { width: 30, height: 30, borderRadius: 15 },
+  rowAvatarLetterWrap: { alignItems: 'center', justifyContent: 'center' },
+  rowAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 13 },
   rowText: { flex: 1, color: Colors.text, fontSize: FontSizes.sm, fontWeight: '600' },
   rowTime: { color: Colors.muted2, fontSize: FontSizes.xs },
 });

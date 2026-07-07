@@ -1,5 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { thumbUrl } from '../lib/imageThumb'
+
+// Self-contained per-nickname hue for the letter-avatar fallback.
+const avatarHue = (name = '') => name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 360
 
 /**
  * ArrivalsBar - slim strip between the chat header and the messages list.
@@ -143,6 +147,13 @@ export function ArrivalsSheet({ open, arrivals, onClose, onTapUser, formatTime }
                   onClick={tappable ? () => onTapUser?.(a) : undefined}
                   disabled={!tappable}
                 >
+                  {a.thumbAvatarUrl ? (
+                    <img className="arrivals-sheet-row-avatar" src={thumbUrl(a.thumbAvatarUrl)} alt="" loading="lazy" />
+                  ) : (
+                    <span className="arrivals-sheet-row-avatar arrivals-sheet-row-avatar--letter" style={{ background: `hsl(${avatarHue(a.nickname)}, 55%, 45%)` }}>
+                      {(a.nickname ?? '?')[0].toUpperCase()}
+                    </span>
+                  )}
                   <span className="arrivals-sheet-row-text">
                     {t(`feedJoin.${a.joinVariant ?? 0}`, { name: a.nickname })}
                   </span>

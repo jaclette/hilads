@@ -4631,6 +4631,14 @@ html, body, #root {
 }
 .arrivals-sheet-row.is-tappable { cursor: pointer; }
 .arrivals-sheet-row.is-tappable:hover { background: rgba(255,255,255,0.04); }
+.arrivals-sheet-row-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  flex-shrink: 0; object-fit: cover;
+}
+.arrivals-sheet-row-avatar--letter {
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 0.8rem;
+}
 .arrivals-sheet-row-text {
   flex: 1;
   min-width: 0;
