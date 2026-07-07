@@ -3952,6 +3952,12 @@ $router->add('GET', '/api/v1/world/activity', function () {
     Response::json($data ?? ['online' => 0, 'cities' => 0, 'crossCity' => ['count' => 0, 'cities' => []]]);
 });
 
+// Recent international (cross-city) challenges — powers the World hero carousel.
+$router->add('GET', '/api/v1/world/challenges', function () {
+    $data = Cache::remember('world_challenges', 60, fn() => ['challenges' => ChallengeRepository::recentInternational(5)]);
+    Response::json($data ?? ['challenges' => []]);
+});
+
 // Mark a channel (city integer id OR 'world') read up to now for the caller.
 $router->add('POST', '/api/v1/read', function () {
     $body      = Request::json() ?? [];

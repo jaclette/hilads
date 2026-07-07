@@ -526,6 +526,45 @@ class ChallengeRepository
     }
 
     /**
+     * The N most recent OPEN, public, international (cross-city) challenges,
+     * globally. Powers the World-channel hero carousel. Lean projection - only
+     * what a carousel slide renders (owner + avatar, title, type, id to open).
+     */
+    public static function recentInternational(int $limit = 5): array
+    {
+        $limit = max(1, min(10, $limit));
+        $stmt = Database::pdo()->prepare("
+            SELECT cc.channel_id AS id, cc.title, cc.challenge_type, cc.mode,
+                   cc.city_id, cc.target_city_id,
+                   u.username     AS creator_username,
+                   u.display_name AS creator_display_name,
+                   COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS creator_thumb_avatar_url
+            FROM channel_challenges cc
+            JOIN channels c ON c.id = cc.channel_id
+            JOIN users    u ON u.id = cc.created_by
+            WHERE cc.mode       = 'international'
+              AND cc.status     = 'open'
+              AND cc.visibility = 'public'
+              AND c.status      = 'active'
+            ORDER BY cc.created_at DESC
+            LIMIT {$limit}
+        ");
+        $stmt->execute();
+
+        return array_map(static fn(array $r): array => [
+            'id'                       => $r['id'],
+            'title'                    => $r['title'],
+            'challenge_type'           => $r['challenge_type'],
+            'mode'                     => $r['mode'] ?? 'international',
+            'country'                  => self::countryForCityId($r['city_id']),
+            'target_country'           => self::countryForCityId($r['target_city_id']),
+            'creator_username'         => $r['creator_username'],
+            'creator_display_name'     => $r['creator_display_name'],
+            'creator_thumb_avatar_url' => R2Uploader::thumbProxy($r['creator_thumb_avatar_url']),
+        ], $stmt->fetchAll());
+    }
+
+    /**
      * Validated (archived) challenges for a city - feeds the "See past
      * challenges" CTA. Most-recently-validated first.
      */

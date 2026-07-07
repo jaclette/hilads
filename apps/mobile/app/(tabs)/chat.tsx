@@ -31,7 +31,8 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
-import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival } from '@/api/world';
+import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival, type WorldChallenge } from '@/api/world';
+import { MarqueeText } from '@/components/MarqueeText';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
 import { fetchCityChallenges } from '@/api/challenges';
@@ -197,6 +198,7 @@ export default function ChatTab() {
   const [worldUnread,  setWorldUnread]  = useState(0);
   const [cityUnread,   setCityUnread]   = useState(0);
   const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
+  const [worldChallenges, setWorldChallenges] = useState<WorldChallenge[]>([]);
   const [worldArrivals, setWorldArrivals] = useState<WorldArrival[]>([]);
   const [showWorldArrivals, setShowWorldArrivals] = useState(false);
   const [quietCardOpen, setQuietCardOpen] = useState(false);
@@ -524,6 +526,7 @@ export default function ChatTab() {
       setWorldUnread(0);
       fetchWorldActivity().then(setWorldActivity).catch(() => {});
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
+      fetchWorldChallenges().then(setWorldChallenges).catch(() => {});
       if (identity?.guestId) markChannelRead('world', identity.guestId);
     } else {
       setCityUnread(0);
@@ -549,6 +552,7 @@ export default function ChatTab() {
     const id = setInterval(() => {
       fetchWorldActivity().then(setWorldActivity).catch(() => {});
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {});
+      fetchWorldChallenges().then(setWorldChallenges).catch(() => {});
     }, 30000);
     return () => clearInterval(id);
   }, [channelScope]);
@@ -1112,18 +1116,37 @@ export default function ChatTab() {
             pills: N online / N cities). Replaces the city hero in World scope. ── */}
         {channelScope === 'world' ? (
           <>
-            {(worldActivity?.crossCity?.count ?? 0) > 0 ? (
-              <TouchableOpacity
-                style={styles.hero}
-                onPress={() => router.push('/(tabs)/challenges' as never)}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-              >
-                <Text style={styles.heroMain} numberOfLines={2}>{t('world.banner', { count: worldActivity!.crossCity.count })}</Text>
-                {!!worldActivity?.crossCity?.cities?.length && (
-                  <Text style={styles.heroSub} numberOfLines={1}>{worldActivity.crossCity.cities.join(', ')}</Text>
+            {worldChallenges.length > 0 ? (
+              <FlatList
+                horizontal
+                data={worldChallenges}
+                keyExtractor={c => c.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.heroCarousel}
+                renderItem={({ item: c }) => (
+                  <TouchableOpacity
+                    style={styles.heroSlide}
+                    activeOpacity={0.85}
+                    onPress={() => router.push(`/challenge/${c.id}` as never)}
+                    accessibilityRole="button"
+                  >
+                    <View style={styles.heroSlideHead}>
+                      {c.creator_thumb_avatar_url ? (
+                        <Image source={{ uri: thumbUrl(c.creator_thumb_avatar_url) }} style={styles.heroSlideAvatar} contentFit="cover" cachePolicy="memory-disk" />
+                      ) : (
+                        <View style={[styles.heroSlideAvatar, styles.heroSlideAvatarLetter]}>
+                          <Text style={styles.heroSlideAvatarLetterText}>{(c.creator_display_name ?? '?')[0].toUpperCase()}</Text>
+                        </View>
+                      )}
+                      <Text style={styles.heroSlideOwner} numberOfLines={1}>{c.creator_display_name ?? '—'}</Text>
+                      <Text style={styles.heroSlideType} numberOfLines={1}>
+                        {(({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' } as Record<string, string>)[c.challenge_type] ?? '🔥')} {t(`typeBadge.${c.challenge_type}`, { ns: 'challenge', defaultValue: c.challenge_type })}
+                      </Text>
+                    </View>
+                    <MarqueeText text={c.title} fadeColor="#1a1210" style={styles.heroSlideTitleWrap} textStyle={styles.heroSlideTitle} active={channelScope === 'world'} />
+                  </TouchableOpacity>
                 )}
-              </TouchableOpacity>
+              />
             ) : (
               <TouchableOpacity
                 style={styles.hero}
@@ -1644,6 +1667,27 @@ const styles = StyleSheet.create({
     fontSize:   FontSizes.xs,
     fontWeight: '500',
   },
+
+  // ── World hero: carousel of recent international challenges ──────────────────
+  heroCarousel: { gap: 10, paddingRight: 4 },
+  heroSlide: {
+    width:             270,
+    paddingVertical:   14,
+    paddingHorizontal: 14,
+    borderRadius:      Radius.lg,
+    backgroundColor:   Colors.bg2,
+    borderWidth:       1,
+    borderColor:       'rgba(255,122,60,0.45)',
+    gap:               8,
+  },
+  heroSlideHead:  { flexDirection: 'row', alignItems: 'center', gap: 7 },
+  heroSlideAvatar: { width: 26, height: 26, borderRadius: 13 },
+  heroSlideAvatarLetter: { alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.accent },
+  heroSlideAvatarLetterText: { color: '#fff', fontWeight: '700', fontSize: 12 },
+  heroSlideOwner: { color: Colors.text, fontWeight: '800', fontSize: 13, flexShrink: 1 },
+  heroSlideType:  { marginLeft: 'auto', color: Colors.muted, fontWeight: '700', fontSize: 11 },
+  heroSlideTitleWrap: { alignSelf: 'stretch' },
+  heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 15 },
 
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },

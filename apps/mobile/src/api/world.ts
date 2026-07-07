@@ -35,6 +35,28 @@ export async function fetchWorldActivity(): Promise<WorldActivity> {
   return api.get<WorldActivity>('/world/activity');
 }
 
+export interface WorldChallenge {
+  id: string;
+  title: string;
+  challenge_type: string;
+  mode: string;
+  country: string | null;
+  target_country: string | null;
+  creator_username: string | null;
+  creator_display_name: string | null;
+  creator_thumb_avatar_url: string | null;
+}
+
+// Recent international (cross-city) challenges for the World hero carousel.
+export async function fetchWorldChallenges(): Promise<WorldChallenge[]> {
+  try {
+    const data = await api.get<{ challenges?: WorldChallenge[] }>('/world/challenges');
+    return data.challenges ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export interface WorldArrival {
   nickname: string;
   guestId: string | null;

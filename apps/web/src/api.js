@@ -142,6 +142,18 @@ export async function fetchWorldActivity() {
   return res.json()
 }
 
+// Recent international (cross-city) challenges for the World hero carousel.
+export async function fetchWorldChallenges() {
+  try {
+    const res = await fetch(`${BASE}/world/challenges`, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.challenges ?? []
+  } catch {
+    return []
+  }
+}
+
 // Mark a channel (city integer id or the string 'world') read up to now.
 export async function markChannelRead(channelId, guestId) {
   try {

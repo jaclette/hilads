@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -882,6 +882,7 @@ export default function App() {
   const [cityUnread,   setCityUnread]   = useState(0)
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
+  const [worldChallenges, setWorldChallenges] = useState([]) // last 5 international challenges (hero carousel)
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
   const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
   const channelScopeRef = useRef('city')
@@ -916,6 +917,7 @@ export default function App() {
     const id = setInterval(() => {
       fetchWorldActivity().then(setWorldActivity).catch(() => {})
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
+      fetchWorldChallenges().then(setWorldChallenges).catch(() => {})
     }, 30000)
     return () => clearInterval(id)
   }, [channelScope])
@@ -1324,6 +1326,12 @@ export default function App() {
     // validate/edit/delete and a target for participant notifications.
     if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
     setShowCreateChallenge(true)
+  }
+  // Open an international challenge from the World hero carousel. The carousel
+  // rows are a lean projection, so fetch the full object before opening its chat.
+  const openWorldChallenge = (ch) => {
+    if (!ch?.id) return
+    fetchChallengeById(ch.id).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
   }
   // "Try this challenge" from the showcase - seed a fresh challenge from a
   // success story's title + type (registered-only; create overlays in place).
@@ -3685,6 +3693,7 @@ export default function App() {
       } catch { /* realtime will populate */ }
       fetchWorldActivity().then(a => setWorldActivity(a)).catch(() => {})
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
+      fetchWorldChallenges().then(setWorldChallenges).catch(() => {})
       if (guest?.guestId) markChannelRead('world', guest.guestId)
     } else {
       setCityUnread(0)
@@ -4850,13 +4859,23 @@ export default function App() {
             feed. 0-count pills stay visible but greyed. ── */}
         {city && channelScope === 'world' && (
           <>
-            {(worldActivity?.crossCity?.count ?? 0) > 0 ? (
-              <button type="button" className="ch-world-hero" onClick={goToChallengesTab}>
-                <span className="ch-world-hero-main">{t('world.banner', { count: worldActivity.crossCity.count })}</span>
-                {worldActivity.crossCity.cities?.length > 0 && (
-                  <span className="ch-world-hero-sub">{worldActivity.crossCity.cities.join(', ')}</span>
-                )}
-              </button>
+            {worldChallenges.length > 0 ? (
+              <div className="ch-world-carousel" role="list">
+                {worldChallenges.map(ch => (
+                  <button key={ch.id} type="button" className="ch-world-slide" role="listitem" onClick={() => openWorldChallenge(ch)}>
+                    <div className="ch-world-slide-head">
+                      {ch.creator_thumb_avatar_url ? (
+                        <img className="ch-world-slide-avatar" src={thumbUrl(ch.creator_thumb_avatar_url)} alt="" loading="lazy" />
+                      ) : (
+                        <span className="ch-world-slide-avatar ch-world-slide-avatar--letter">{(ch.creator_display_name ?? '?')[0].toUpperCase()}</span>
+                      )}
+                      <span className="ch-world-slide-owner">{ch.creator_display_name ?? '—'}</span>
+                      <span className="ch-world-slide-type">{({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[ch.challenge_type] ?? '🔥')} {t(`typeBadge.${ch.challenge_type}`, { ns: 'challenge', defaultValue: ch.challenge_type })}</span>
+                    </div>
+                    <Marquee text={ch.title} className="ch-world-slide-title" fadeColor="#1a1210" />
+                  </button>
+                ))}
+              </div>
             ) : (
               <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>
                 <span className="ch-world-hero-emoji" aria-hidden="true">🔥</span>

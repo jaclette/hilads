@@ -7204,6 +7204,42 @@ img.pub-profile-avatar {
 .ch-world-hero-emoji { font-size: 1.35rem; line-height: 1; }
 .ch-world-hero-main  { font-size: 0.95rem; font-weight: 800; }
 .ch-world-hero-sub   { font-size: 0.8rem; font-weight: 600; color: var(--muted2); }
+/* World hero: horizontal snap-carousel of recent international challenges. */
+.ch-world-carousel {
+  display: flex;
+  gap: 0.6rem;
+  width: calc(100% - 1.5rem);
+  margin: 0.625rem auto 0;
+  padding: 0 0.125rem 0.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ch-world-carousel::-webkit-scrollbar { display: none; }
+.ch-world-slide {
+  flex: 0 0 85%;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(194, 74, 56, 0.16), rgba(184, 114, 40, 0.16));
+  border: 1px solid var(--accent2);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+.ch-world-slide:active { opacity: 0.85; }
+.ch-world-slide-head { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.ch-world-slide-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.ch-world-slide-avatar--letter { display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.72rem; }
+.ch-world-slide-owner { font-weight: 800; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ch-world-slide-type { margin-left: auto; flex-shrink: 0; font-size: 0.7rem; font-weight: 700; color: var(--muted2); white-space: nowrap; }
+.ch-world-slide-title { font-size: 0.95rem; font-weight: 800; }
 /* World: author line on own messages mirrors to the right (own bubbles are
    right-aligned); the home-country flag sits next to the nickname. */
 .msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }
