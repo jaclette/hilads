@@ -17,6 +17,9 @@ import {
   TouchableOpacity, Animated, Alert, Modal,
 } from 'react-native';
 import { avatarColor } from '@/lib/avatarColors';
+import { Image } from 'expo-image';
+import { thumbUrl } from '@/lib/imageThumb';
+import { formatSmartTime } from '@/lib/messageTime';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
@@ -1390,11 +1393,18 @@ export default function ChatTab() {
               keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
               renderItem={({ item: a }) => (
                 <View style={styles.waRow}>
-                  <View style={[styles.waAvatar, { backgroundColor: avatarColor(a.nickname) }]}>
-                    <Text style={styles.waAvatarLetter}>{(a.nickname ?? '?')[0].toUpperCase()}</Text>
-                  </View>
+                  {a.thumbAvatarUrl ? (
+                    <Image source={{ uri: thumbUrl(a.thumbAvatarUrl) }} style={styles.waAvatar} contentFit="cover" cachePolicy="memory-disk" />
+                  ) : (
+                    <View style={[styles.waAvatar, { backgroundColor: avatarColor(a.nickname), alignItems: 'center', justifyContent: 'center' }]}>
+                      <Text style={styles.waAvatarLetter}>{(a.nickname ?? '?')[0].toUpperCase()}</Text>
+                    </View>
+                  )}
                   <Text style={styles.waName} numberOfLines={1}>{a.nickname}</Text>
-                  <Text style={styles.waCity} numberOfLines={1}>{cityFlag(a.country ?? undefined)} {a.city}</Text>
+                  <View style={styles.waMeta}>
+                    <Text style={styles.waCity} numberOfLines={1}>{cityFlag(a.country ?? undefined)} {a.city}</Text>
+                    <Text style={styles.waTime}>{formatSmartTime(a.createdAt)}</Text>
+                  </View>
                 </View>
               )}
             />
@@ -1569,10 +1579,12 @@ const styles = StyleSheet.create({
   waTitle:  { color: Colors.text, fontSize: 17, fontWeight: '800' },
   waEmpty:  { color: Colors.muted, textAlign: 'center', paddingVertical: 40 },
   waRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10 },
-  waAvatar: { width: 34, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  waAvatar: { width: 34, height: 34, borderRadius: 17 },
   waAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  waName:   { color: Colors.text, fontWeight: '700', fontSize: 15 },
-  waCity:   { color: Colors.muted, fontSize: 13, fontWeight: '600', marginLeft: 'auto' },
+  waName:   { color: Colors.text, fontWeight: '700', fontSize: 15, flex: 1 },
+  waMeta:   { alignItems: 'flex-end', marginLeft: 'auto' },
+  waCity:   { color: Colors.muted, fontSize: 13, fontWeight: '600' },
+  waTime:   { color: Colors.muted2, fontSize: 11, marginTop: 2 },
   citySelector: {
     flexDirection: 'row',
     alignItems:    'center',

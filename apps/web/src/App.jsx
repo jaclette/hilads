@@ -5469,11 +5469,18 @@ export default function App() {
                   className={`wa-row${a.userId ? ' wa-row--tappable' : ''}`}
                   onClick={a.userId ? () => { setShowWorldArrivals(false); openProfile(a.userId, a.nickname) } : undefined}
                 >
-                  <span className="wa-avatar" style={{ background: `linear-gradient(135deg, ${ac1}, ${ac2})` }}>
-                    {(a.nickname ?? '?')[0].toUpperCase()}
-                  </span>
+                  {a.thumbAvatarUrl ? (
+                    <img className="wa-avatar wa-avatar--photo" src={thumbUrl(a.thumbAvatarUrl)} alt={a.nickname ?? ''} loading="lazy" />
+                  ) : (
+                    <span className="wa-avatar" style={{ background: `linear-gradient(135deg, ${ac1}, ${ac2})` }}>
+                      {(a.nickname ?? '?')[0].toUpperCase()}
+                    </span>
+                  )}
                   <span className="wa-name">{a.nickname}</span>
-                  <span className="wa-city">{cityFlag(a.country)} {a.city}</span>
+                  <span className="wa-meta">
+                    <span className="wa-city">{cityFlag(a.country)} {a.city}</span>
+                    <span className="wa-time">{formatMsgTime(a.createdAt)}</span>
+                  </span>
                 </div>
               )
             })}

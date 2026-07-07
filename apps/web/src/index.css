@@ -7212,8 +7212,11 @@ img.pub-profile-avatar {
   display: flex; align-items: center; justify-content: center;
   color: #fff; font-weight: 700; font-size: 0.8rem; flex-shrink: 0;
 }
+.wa-avatar--photo { object-fit: cover; }
 .wa-name { font-weight: 700; color: var(--text); }
-.wa-city { margin-left: auto; color: var(--muted2); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.wa-meta { margin-left: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.wa-city { color: var(--muted2); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+.wa-time { color: var(--muted2); font-size: 0.72rem; opacity: 0.8; white-space: nowrap; }
 .wa-empty { padding: 2rem 1rem; text-align: center; color: var(--muted2); }
 /* World cross-city system messages - distinct centered info row in the feed. */
 .feed-world-sys {

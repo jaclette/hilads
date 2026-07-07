@@ -42,6 +42,7 @@ export interface WorldArrival {
   city: string | null;
   country: string | null;
   createdAt: number;
+  thumbAvatarUrl: string | null;
 }
 
 export async function fetchWorldArrivals(): Promise<WorldArrival[]> {

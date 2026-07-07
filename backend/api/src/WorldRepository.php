@@ -238,6 +238,26 @@ class WorldRepository
                 'createdAt' => (int) $r['created_at'],
             ];
         }
+
+        // Resolve avatar thumbnails for registered arrivers (one batched query).
+        // Guest-only arrivals (no user_id) fall back to a letter avatar client-side.
+        $uids = array_values(array_unique(array_filter(array_column($out, 'userId'))));
+        $avatars = [];
+        if ($uids) {
+            $in = implode(',', array_fill(0, count($uids), '?'));
+            $stmt2 = Database::pdo()->prepare(
+                "SELECT id, profile_thumb_photo_url, profile_photo_url FROM users WHERE id IN ($in)"
+            );
+            $stmt2->execute($uids);
+            foreach ($stmt2->fetchAll() as $u) {
+                $avatars[$u['id']] = R2Uploader::thumbProxy($u['profile_thumb_photo_url'] ?? $u['profile_photo_url'] ?? null);
+            }
+        }
+        foreach ($out as &$o) {
+            $o['thumbAvatarUrl'] = ($o['userId'] && isset($avatars[$o['userId']])) ? $avatars[$o['userId']] : null;
+        }
+        unset($o);
+
         return $out;
     }
 
