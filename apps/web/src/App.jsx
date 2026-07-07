@@ -4896,7 +4896,6 @@ export default function App() {
               </button>
             )}
             <div className="ch-pills">
-              <span className="ch-pill ch-pill--static">👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</span>
               <button
                 type="button"
                 className={`ch-pill${!worldArrivals.length ? ' ch-pill--muted' : ''}`}

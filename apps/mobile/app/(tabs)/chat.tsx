@@ -1174,7 +1174,6 @@ export default function ChatTab() {
               </TouchableOpacity>
             )}
             <View style={styles.pillsRow}>
-              <View style={styles.pill}><Text style={styles.pillText} numberOfLines={1}>👥 {t('world.online', { count: worldActivity?.online ?? 0 })}</Text></View>
               <TouchableOpacity style={[styles.pill, !worldArrivals.length && styles.pillMuted]} onPress={() => setShowWorldArrivals(true)} activeOpacity={0.75}>
                 <Text style={[styles.pillText, !worldArrivals.length && styles.pillTextMuted]} numberOfLines={1}>✈️ {t('world.arrivals', { count: worldArrivals.length })}</Text>
               </TouchableOpacity>
