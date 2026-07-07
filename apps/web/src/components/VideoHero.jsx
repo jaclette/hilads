@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * The hook video for Screen 1 of the stories landing.
@@ -23,9 +23,13 @@ const YT_SRC =
 
 // const MP4_SRC = '/landing/hero.mp4'   // TODO: self-host, then source="video"
 
-export default function VideoHero({ source = 'iframe', onVisible }) {
+export default function VideoHero({ source = 'iframe', onVisible, onPlay }) {
   const wrapRef = useRef(null)
   const firedRef = useRef(false)
+  // Click-to-play: the heavy autoplaying iframe is NOT loaded on mount (on slow
+  // connections that left a black rectangle while it buffered). Show a light
+  // thumbnail + play button first; load the iframe only when the user taps.
+  const [playing, setPlaying] = useState(false)
 
   // Fire once when the video is ≥50% on screen (funnel: video_visible).
   useEffect(() => {
@@ -53,14 +57,14 @@ export default function VideoHero({ source = 'iframe', onVisible }) {
         // eslint-disable-next-line jsx-a11y/media-has-caption
         <video
           className="sl-video-el"
-          autoPlay
           muted
           loop
           playsInline
-          preload="auto"
-          // src={MP4_SRC}
+          controls
+          preload="none"
+          // src={MP4_SRC}   // TODO: self-host, then source="video"
         />
-      ) : (
+      ) : playing ? (
         <iframe
           className="sl-video-el"
           src={YT_SRC}
@@ -70,6 +74,18 @@ export default function VideoHero({ source = 'iframe', onVisible }) {
           allow="autoplay; encrypted-media; picture-in-picture"
           allowFullScreen
         />
+      ) : (
+        // Lightweight poster - the thumbnail (~10-20 KB) paints instantly even on
+        // slow connections; tapping loads the autoplaying iframe (user gesture).
+        <button
+          type="button"
+          className="sl-video-play-btn"
+          onClick={() => { setPlaying(true); onPlay?.() }}
+          aria-label="Play video"
+        >
+          <img className="sl-video-el" src={`https://i.ytimg.com/vi/${YT_ID}/hqdefault.jpg`} alt="" loading="eager" />
+          <span className="sl-video-play" aria-hidden="true">▶</span>
+        </button>
       )}
     </div>
   )

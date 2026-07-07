@@ -198,7 +198,7 @@ export default function StoriesLanding({
         {/* Concept in one glance for cold Reel traffic (replaces the old brand
             block, which now lives in the sticky header above). */}
         <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
-        <VideoHero onVisible={() => track('video_visible')} />
+        <VideoHero onVisible={() => track('video_visible')} onPlay={() => track('video_played')} />
         <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen1_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>
