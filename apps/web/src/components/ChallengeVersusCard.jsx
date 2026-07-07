@@ -64,11 +64,11 @@ export default function ChallengeVersusCard({
   // → worldwide. Backend already applies the score_month_ref staleness
   // guard so we just read whatever's there and pass through.
   const challengerRank = isInternational
-    ? c.creator_monthly_rank_worldwide
-    : c.creator_monthly_rank_in_city
+    ? c.creator_alltime_rank_worldwide
+    : c.creator_alltime_rank_in_city
   const takerRank = isInternational
-    ? c.acceptor_monthly_rank_worldwide
-    : c.acceptor_monthly_rank_in_city
+    ? c.acceptor_alltime_rank_worldwide
+    : c.acceptor_alltime_rank_in_city
 
   // Stop the avatar's onClick from also triggering the card's onClick.
   // React event bubbling, not CSS pointer-events - keeps focus/keyboard

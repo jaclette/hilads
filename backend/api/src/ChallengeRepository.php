@@ -135,7 +135,21 @@ class ChallengeRepository
             u.score_month_ref           AS creator_score_month_ref,
             au.monthly_rank_in_city     AS acceptor_monthly_rank_in_city,
             au.monthly_rank_worldwide   AS acceptor_monthly_rank_worldwide,
-            au.score_month_ref          AS acceptor_score_month_ref
+            au.score_month_ref          AS acceptor_score_month_ref,
+            -- All-time rank badges. All-time rank isn't denormalised onto users
+            -- (only monthly is), so compute it on-read via COUNT of higher scorers -
+            -- the same method as the /leaderboard my-rank endpoint. NULL for guests
+            -- (no user row) and 0-score users. The card picks worldwide
+            -- (international) vs in_city (local) by challenge mode; the formatter
+            -- bounds these to the Top-10 medal threshold.
+            CASE WHEN cc.created_by IS NOT NULL AND u.score_alltime > 0
+                 THEN (SELECT COUNT(*) FROM users ru WHERE ru.deleted_at IS NULL AND ru.score_alltime > u.score_alltime) END      AS creator_alltime_higher_worldwide,
+            CASE WHEN cc.created_by IS NOT NULL AND u.score_alltime > 0 AND u.current_city_id IS NOT NULL
+                 THEN (SELECT COUNT(*) FROM users ru WHERE ru.deleted_at IS NULL AND ru.current_city_id = u.current_city_id AND ru.score_alltime > u.score_alltime) END AS creator_alltime_higher_in_city,
+            CASE WHEN ac.acceptor_user_id IS NOT NULL AND au.score_alltime > 0
+                 THEN (SELECT COUNT(*) FROM users ru WHERE ru.deleted_at IS NULL AND ru.score_alltime > au.score_alltime) END     AS acceptor_alltime_higher_worldwide,
+            CASE WHEN ac.acceptor_user_id IS NOT NULL AND au.score_alltime > 0 AND au.current_city_id IS NOT NULL
+                 THEN (SELECT COUNT(*) FROM users ru WHERE ru.deleted_at IS NULL AND ru.current_city_id = au.current_city_id AND ru.score_alltime > au.score_alltime) END AS acceptor_alltime_higher_in_city
         FROM channels c
         JOIN channel_challenges cc ON cc.channel_id = c.id
         LEFT JOIN users u           ON u.id = cc.created_by
@@ -283,6 +297,12 @@ class ChallengeRepository
             'creator_monthly_rank_worldwide'  => self::staleGuard($row['creator_monthly_rank_worldwide']  ?? null, $row['creator_score_month_ref']  ?? null),
             'acceptor_monthly_rank_in_city'   => self::staleGuard($row['acceptor_monthly_rank_in_city']   ?? null, $row['acceptor_score_month_ref'] ?? null),
             'acceptor_monthly_rank_worldwide' => self::staleGuard($row['acceptor_monthly_rank_worldwide'] ?? null, $row['acceptor_score_month_ref'] ?? null),
+            // All-time rank badges (Top 10). rank = higher-scorers + 1; NULL past
+            // the top-10 medal threshold or for guest/0-score users.
+            'creator_alltime_rank_worldwide'  => self::rankFromHigher($row['creator_alltime_higher_worldwide']  ?? null),
+            'creator_alltime_rank_in_city'    => self::rankFromHigher($row['creator_alltime_higher_in_city']    ?? null),
+            'acceptor_alltime_rank_worldwide' => self::rankFromHigher($row['acceptor_alltime_higher_worldwide'] ?? null),
+            'acceptor_alltime_rank_in_city'   => self::rankFromHigher($row['acceptor_alltime_higher_in_city']   ?? null),
             // Populated by batched queries; default so the field is always present.
             'participants_preview' => [],
             'participant_count'    => 0,
@@ -302,6 +322,16 @@ class ChallengeRepository
         $current = gmdate('Y-m');
         if ($monthRef !== $current) return null;
         return (int) $rank;
+    }
+
+    // Number of higher scorers → 1-based rank, bounded to the Top-10 medal
+    // threshold (NULL past it, matching the monthly badge behaviour). NULL in =
+    // NULL out (guest / 0-score user).
+    private static function rankFromHigher(mixed $higher): ?int
+    {
+        if ($higher === null) return null;
+        $rank = (int) $higher + 1;
+        return $rank <= 10 ? $rank : null;
     }
 
     // ── Reads ─────────────────────────────────────────────────────────────────
@@ -415,9 +445,10 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
+                     u.score_alltime, u.current_city_id,
                      ac.acceptor_user_id, ac.phase, ac.acceptance_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id,
+                     au.current_city_id, au.score_alltime,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
             ORDER BY cc.created_at DESC
             LIMIT $limit
@@ -600,9 +631,10 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
+                     u.score_alltime, u.current_city_id,
                      ac.acceptor_user_id, ac.phase, ac.acceptance_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id,
+                     au.current_city_id, au.score_alltime,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
             ORDER BY cc.validated_at DESC NULLS LAST, cc.created_at DESC
             LIMIT $limit

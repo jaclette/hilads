@@ -330,6 +330,11 @@ export interface Challenge {
   creator_monthly_rank_worldwide?:  number | null;
   acceptor_monthly_rank_in_city?:   number | null;
   acceptor_monthly_rank_worldwide?: number | null;
+  // All-time rank badges (Top 10) - the card shows these; scope by challenge mode.
+  creator_alltime_rank_in_city?:    number | null;
+  creator_alltime_rank_worldwide?:  number | null;
+  acceptor_alltime_rank_in_city?:   number | null;
+  acceptor_alltime_rank_worldwide?: number | null;
   message_count:         number;
   last_activity_at:      number | null;   // unix timestamp
   validated_at:          number | null;   // unix timestamp; set when status flips to 'validated'

@@ -475,12 +475,12 @@ function pickRank(
 ): number | null {
   if (party === 'creator') {
     return (isInternational
-      ? challenge.creator_monthly_rank_worldwide
-      : challenge.creator_monthly_rank_in_city) ?? null;
+      ? challenge.creator_alltime_rank_worldwide
+      : challenge.creator_alltime_rank_in_city) ?? null;
   }
   return (isInternational
-    ? challenge.acceptor_monthly_rank_worldwide
-    : challenge.acceptor_monthly_rank_in_city) ?? null;
+    ? challenge.acceptor_alltime_rank_worldwide
+    : challenge.acceptor_alltime_rank_in_city) ?? null;
 }
 
 /**
