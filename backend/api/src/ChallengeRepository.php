@@ -993,9 +993,10 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
+                     u.score_alltime, u.current_city_id,
                      ac.acceptor_user_id, ac.phase, ac.acceptance_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id,
+                     au.current_city_id, au.score_alltime,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
         ");
         $stmt->execute($params);
@@ -1030,9 +1031,10 @@ class ChallengeRepository
                      u.display_name, u.username,
                      u.profile_thumb_photo_url, u.profile_photo_url,
                      u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
+                     u.score_alltime, u.current_city_id,
                      ac.acceptor_user_id, ac.phase, ac.acceptance_id, au.display_name,
                      au.profile_thumb_photo_url, au.profile_photo_url,
-                     au.current_city_id,
+                     au.current_city_id, au.score_alltime,
                      au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
         ");
         $stmt->execute(['id' => $challengeId]);
