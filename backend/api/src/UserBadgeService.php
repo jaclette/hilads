@@ -36,6 +36,16 @@ final class UserBadgeService
         return self::$cityCountryMap[mb_strtolower(trim($cityName))] ?? null;
     }
 
+    // ISO-2 country for a 'city_<int>' channel id (the user's current_city_id).
+    // More reliable than home_city for the World flag: home_city is often unset,
+    // but current_city_id is stamped whenever a user is active in a city.
+    private static function countryForCityChannelId(?string $cityChannelId): ?string
+    {
+        if (!is_string($cityChannelId) || !preg_match('/^city_(\d+)$/', $cityChannelId, $m)) return null;
+        $c = CityRepository::findById((int) $m[1]);
+        return $c['country'] ?? null;
+    }
+
 
     // ── Single-user resolution ─────────────────────────────────────────────────
 
@@ -155,7 +165,7 @@ final class UserBadgeService
 
         // One query: user profile data + ambassador role (LEFT JOIN, no N+1).
         $stmt = Database::pdo()->prepare(
-            "SELECT u.id, u.created_at, u.home_city, u.vibe, u.mode,
+            "SELECT u.id, u.created_at, u.home_city, u.current_city_id, u.vibe, u.mode,
                     u.profile_thumb_photo_url, u.profile_photo_url,
                     (ucr.user_id IS NOT NULL) AS is_ambassador
              FROM users u
@@ -187,9 +197,12 @@ final class UserBadgeService
                 // message avatar. Prefer a pre-generated thumb; else proxy the full
                 // photo through /img-thumb (≤400px) so we never ship a 100KB+ avatar.
                 'thumbAvatarUrl' => R2Uploader::thumbProxy($row['profile_thumb_photo_url'] ?? $row['profile_photo_url'] ?? null),
-                // Home-city country (ISO-2) → drives the flag next to the nickname
-                // in the World channel. Resolved from the home_city name.
-                'country'        => self::countryForCity($row['home_city'] ?? null),
+                // Country (ISO-2) → flag next to the nickname in the World channel.
+                // Prefer the CURRENT city (reliably stamped when a user is active),
+                // fall back to home_city (often unset). Without this, most users
+                // showed no flag because home_city was null.
+                'country'        => self::countryForCityChannelId($row['current_city_id'] ?? null)
+                                    ?? self::countryForCity($row['home_city'] ?? null),
             ];
         }
 
