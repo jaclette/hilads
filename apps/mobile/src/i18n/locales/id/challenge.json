@@ -393,7 +393,8 @@
     "local": "Lokal",
     "international": "Internasional",
     "localHint": "Di kotamu. Berakhir dengan pertemuan tatap muka.",
-    "internationalHint": "Di mana saja di dunia. Mereka kirim bukti, kamu validasi dari jauh."
+    "internationalHint": "Di mana saja di dunia. Mereka kirim bukti, kamu validasi dari jauh.",
+    "worldwide": "Dunia"
   },
   "intl": {
     "targetCityLabel": "Kota target",

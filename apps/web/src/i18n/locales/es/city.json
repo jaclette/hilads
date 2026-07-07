@@ -301,6 +301,7 @@
     "leaderboard": "Clasificación",
     "arrivals": "{{count}} llegadas",
     "arrivalsTitle": "Llegadas recientes",
-    "arrivalsEmpty": "Sin llegadas recientes"
+    "arrivalsEmpty": "Sin llegadas recientes",
+    "seeAll": "Ver todo"
   }
 }

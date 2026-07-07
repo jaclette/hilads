@@ -128,6 +128,7 @@
     "leaderboard": "Papan peringkat",
     "arrivals": "{{count}} kedatangan",
     "arrivalsTitle": "Baru tiba",
-    "arrivalsEmpty": "Belum ada yang baru tiba"
+    "arrivalsEmpty": "Belum ada yang baru tiba",
+    "seeAll": "Lihat semua"
   }
 }

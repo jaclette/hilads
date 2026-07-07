@@ -371,7 +371,8 @@
     "local": "Lokal",
     "international": "International",
     "localHint": "Sa lungsod mo. Nagtatapos sa pagkikita nang personal.",
-    "internationalHint": "Kahit saan sa mundo. Magpapadala sila ng patunay, ikaw ang magvavalidate mula sa malayo."
+    "internationalHint": "Kahit saan sa mundo. Magpapadala sila ng patunay, ikaw ang magvavalidate mula sa malayo.",
+    "worldwide": "Buong mundo"
   },
   "intl": {
     "targetCityLabel": "Target na lungsod",

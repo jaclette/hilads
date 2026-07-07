@@ -393,7 +393,8 @@
     "local": "Local",
     "international": "Internacional",
     "localHint": "Na tua cidade. Termina com um encontro presencial.",
-    "internationalHint": "Em qualquer parte do mundo. Enviam-te uma prova, validas à distância."
+    "internationalHint": "Em qualquer parte do mundo. Enviam-te uma prova, validas à distância.",
+    "worldwide": "Mundo"
   },
   "intl": {
     "targetCityLabel": "Cidade-alvo",

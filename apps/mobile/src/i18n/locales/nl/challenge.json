@@ -393,7 +393,8 @@
     "local": "Lokaal",
     "international": "Internationaal",
     "localHint": "In jouw stad. Eindigt met een afspraak in persoon.",
-    "internationalHint": "Overal ter wereld. Zij sturen bewijs, jij beoordeelt van afstand."
+    "internationalHint": "Overal ter wereld. Zij sturen bewijs, jij beoordeelt van afstand.",
+    "worldwide": "Wereldwijd"
   },
   "intl": {
     "targetCityLabel": "Doelstad",

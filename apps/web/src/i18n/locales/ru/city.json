@@ -315,6 +315,7 @@
     "leaderboard": "Рейтинг",
     "arrivals": "{{count}} прибыло",
     "arrivalsTitle": "Недавно прибыли",
-    "arrivalsEmpty": "Пока никто не прибыл"
+    "arrivalsEmpty": "Пока никто не прибыл",
+    "seeAll": "Показать все"
   }
 }

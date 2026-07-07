@@ -393,7 +393,8 @@
     "local": "本地",
     "international": "國際",
     "localHint": "在你的城市。以面對面會面結束。",
-    "internationalHint": "世界任何地方。他們提交證據，你遠程驗證。"
+    "internationalHint": "世界任何地方。他們提交證據，你遠程驗證。",
+    "worldwide": "全球"
   },
   "intl": {
     "targetCityLabel": "目標城市",

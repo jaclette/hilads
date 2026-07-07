@@ -15,7 +15,8 @@
     "leaderboard": "Leaderboard",
     "arrivals": "{{count}} arrivals",
     "arrivalsTitle": "Recent arrivals",
-    "arrivalsEmpty": "No recent arrivals"
+    "arrivalsEmpty": "No recent arrivals",
+    "seeAll": "See all"
   },
   "changeCity": "Change city",
   "shareCity": "Share city",

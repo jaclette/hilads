@@ -541,7 +541,8 @@
     "local": "Local",
     "international": "International",
     "localHint": "In your city. Ends with an in-person meetup.",
-    "internationalHint": "Anywhere in the world. They send proof, you validate from afar."
+    "internationalHint": "Anywhere in the world. They send proof, you validate from afar.",
+    "worldwide": "Worldwide"
   },
   "visibility": {
     "label": "Who can see this?",

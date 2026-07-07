@@ -137,6 +137,7 @@
     "leaderboard": "المتصدرون",
     "arrivals": "{{count}} وصلوا",
     "arrivalsTitle": "الوافدون حديثًا",
-    "arrivalsEmpty": "لا وافدين حديثًا"
+    "arrivalsEmpty": "لا وافدين حديثًا",
+    "seeAll": "عرض الكل"
   }
 }

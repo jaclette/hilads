@@ -393,7 +393,8 @@
     "local": "Lokal",
     "international": "International",
     "localHint": "In deiner Stadt. Endet mit einem Treffen in Person.",
-    "internationalHint": "Überall auf der Welt. Sie schicken dir einen Beweis, du bestätigst aus der Ferne."
+    "internationalHint": "Überall auf der Welt. Sie schicken dir einen Beweis, du bestätigst aus der Ferne.",
+    "worldwide": "Weltweit"
   },
   "intl": {
     "targetCityLabel": "Zielstadt",

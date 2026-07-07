@@ -371,7 +371,8 @@
     "local": "本地",
     "international": "国际",
     "localHint": "在你的城市。以面对面会面结束。",
-    "internationalHint": "世界任何地方。他们提交证据，你远程验证。"
+    "internationalHint": "世界任何地方。他们提交证据，你远程验证。",
+    "worldwide": "全球"
   },
   "intl": {
     "targetCityLabel": "目标城市",

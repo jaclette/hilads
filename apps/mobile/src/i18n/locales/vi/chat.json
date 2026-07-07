@@ -128,6 +128,7 @@
     "leaderboard": "Bảng xếp hạng",
     "arrivals": "{{count}} lượt đến",
     "arrivalsTitle": "Vừa đến",
-    "arrivalsEmpty": "Chưa có ai vừa đến"
+    "arrivalsEmpty": "Chưa có ai vừa đến",
+    "seeAll": "Xem tất cả"
   }
 }

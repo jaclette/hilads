@@ -128,6 +128,7 @@
     "leaderboard": "Ranglijst",
     "arrivals": "{{count}} aankomsten",
     "arrivalsTitle": "Recente aankomsten",
-    "arrivalsEmpty": "Geen recente aankomsten"
+    "arrivalsEmpty": "Geen recente aankomsten",
+    "seeAll": "Alles bekijken"
   }
 }

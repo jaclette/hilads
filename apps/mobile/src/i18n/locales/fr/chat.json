@@ -15,7 +15,8 @@
     "leaderboard": "Classement",
     "arrivals": "{{count}} arrivées",
     "arrivalsTitle": "Arrivées récentes",
-    "arrivalsEmpty": "Aucune arrivée récente"
+    "arrivalsEmpty": "Aucune arrivée récente",
+    "seeAll": "Voir tout"
   },
   "changeCity": "Changer de ville",
   "shareCity": "Partager la ville",

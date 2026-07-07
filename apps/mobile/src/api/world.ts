@@ -57,6 +57,16 @@ export async function fetchWorldChallenges(): Promise<WorldChallenge[]> {
   }
 }
 
+// ALL international challenges worldwide (full card DTOs) for the "See all" screen.
+export async function fetchWorldChallengesAll<T = unknown>(limit = 60): Promise<T[]> {
+  try {
+    const data = await api.get<{ challenges?: T[] }>(`/world/challenges/all?limit=${limit}`);
+    return data.challenges ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export interface WorldArrival {
   nickname: string;
   guestId: string | null;

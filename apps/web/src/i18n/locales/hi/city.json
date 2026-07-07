@@ -301,6 +301,7 @@
     "leaderboard": "लीडरबोर्ड",
     "arrivals": "{{count}} पहुंचे",
     "arrivalsTitle": "हाल की आमद",
-    "arrivalsEmpty": "हाल में कोई नहीं आया"
+    "arrivalsEmpty": "हाल में कोई नहीं आया",
+    "seeAll": "सभी देखें"
   }
 }

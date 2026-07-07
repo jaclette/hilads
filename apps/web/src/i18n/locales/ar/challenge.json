@@ -371,7 +371,8 @@
     "local": "محلي",
     "international": "دولي",
     "localHint": "في مدينتك. ينتهي بلقاء شخصي.",
-    "internationalHint": "في أي مكان بالعالم. يرسلون دليلًا، وتُصادق عن بعد."
+    "internationalHint": "في أي مكان بالعالم. يرسلون دليلًا، وتُصادق عن بعد.",
+    "worldwide": "حول العالم"
   },
   "intl": {
     "targetCityLabel": "المدينة المستهدفة",

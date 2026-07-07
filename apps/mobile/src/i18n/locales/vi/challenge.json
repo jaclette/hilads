@@ -393,7 +393,8 @@
     "local": "Trong thành phố",
     "international": "Quốc tế",
     "localHint": "Trong thành phố của bạn. Kết thúc bằng buổi gặp trực tiếp.",
-    "internationalHint": "Bất cứ đâu trên thế giới. Họ gửi bằng chứng, bạn duyệt từ xa."
+    "internationalHint": "Bất cứ đâu trên thế giới. Họ gửi bằng chứng, bạn duyệt từ xa.",
+    "worldwide": "Toàn cầu"
   },
   "intl": {
     "targetCityLabel": "Thành phố đích",

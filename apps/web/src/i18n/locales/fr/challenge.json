@@ -371,7 +371,8 @@
     "local": "Local",
     "international": "International",
     "localHint": "Dans ta ville. Se termine par un rendez-vous en vrai.",
-    "internationalHint": "N'importe où dans le monde. On t'envoie une preuve, tu valides à distance."
+    "internationalHint": "N'importe où dans le monde. On t'envoie une preuve, tu valides à distance.",
+    "worldwide": "Monde"
   },
   "intl": {
     "targetCityLabel": "Ville cible",

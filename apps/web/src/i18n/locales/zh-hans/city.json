@@ -301,6 +301,7 @@
     "leaderboard": "排行榜",
     "arrivals": "{{count}} 位新来",
     "arrivalsTitle": "最近到达",
-    "arrivalsEmpty": "暂无新到达"
+    "arrivalsEmpty": "暂无新到达",
+    "seeAll": "查看全部"
   }
 }

@@ -128,6 +128,7 @@
     "leaderboard": "อันดับ",
     "arrivals": "{{count}} คนเพิ่งมา",
     "arrivalsTitle": "เพิ่งมาถึง",
-    "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา"
+    "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา",
+    "seeAll": "ดูทั้งหมด"
   }
 }

@@ -393,7 +393,8 @@
     "local": "ローカル",
     "international": "国際",
     "localHint": "あなたの街で。対面の待ち合わせで終わる。",
-    "internationalHint": "世界中どこでも。証拠を送ってもらい、遠隔で承認する。"
+    "internationalHint": "世界中どこでも。証拠を送ってもらい、遠隔で承認する。",
+    "worldwide": "世界"
   },
   "intl": {
     "targetCityLabel": "ターゲットの街",

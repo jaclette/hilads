@@ -3,7 +3,8 @@ import {
   View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { fetchWorldChallengesAll } from '@/api/world';
 import { useTranslation } from 'react-i18next';
 import {
   fetchCityChallenges, fetchValidatedChallenges, fetchChallengeInspiration,
@@ -31,11 +32,12 @@ const TYPE_FILTERS: { key: TypeFilter; emoji: string }[] = [
   { key: 'help',    emoji: '🤪' },
 ];
 
-type ModeFilter = 'all' | 'local' | 'international';
+type ModeFilter = 'all' | 'local' | 'international' | 'worldwide';
 const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
   { key: 'all',           emoji: '✨' },
   { key: 'local',         emoji: '🏙️' },
   { key: 'international', emoji: '🌐' },
+  { key: 'worldwide',     emoji: '🌍' },
 ];
 
 // Progressive reveal: render PAGE rows, +PAGE each time the user scrolls to the
@@ -68,7 +70,20 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
     router.push({ pathname: '/user/[id]', params: { id: userId } } as never);
   }, [account, router]);
   const [modeFilter, setModeFilter] = useState<ModeFilter>('all');
+  const [worldList,  setWorldList]  = useState<Challenge[]>([]); // 🌍 Worldwide feed (all international, global)
   const [openList,   setOpenList]   = useState<Challenge[]>([]);
+
+  // Deep-link from the World hero "See all" → pre-select the 🌍 Worldwide filter.
+  const routeParams = useLocalSearchParams<{ mode?: string }>();
+  useEffect(() => {
+    if (routeParams?.mode === 'worldwide') setModeFilter('worldwide');
+  }, [routeParams?.mode]);
+
+  // Fetch the global international feed the first time Worldwide is selected.
+  useEffect(() => {
+    if (modeFilter !== 'worldwide' || worldList.length > 0) return;
+    fetchWorldChallengesAll<Challenge>(60).then(setWorldList).catch(() => {});
+  }, [modeFilter, worldList.length]);
   const [pastList,   setPastList]   = useState<Challenge[]>([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -121,12 +136,14 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   const dataRaw = tab === 'open' ? openList : pastList;
   const data = useMemo(
     () => {
-      let pool = dataRaw;
-      if (modeFilter !== 'all') pool = pool.filter(c => (c.mode ?? 'local') === modeFilter);
+      // 🌍 Worldwide = the global international feed (separate from the city-scoped
+      // 'international' filter). Type sub-filter still applies.
+      let pool = modeFilter === 'worldwide' ? worldList : dataRaw;
+      if (modeFilter === 'local' || modeFilter === 'international') pool = pool.filter(c => (c.mode ?? 'local') === modeFilter);
       if (typeFilter !== 'all') pool = pool.filter(c => c.challenge_type === typeFilter);
       return pool;
     },
-    [dataRaw, typeFilter, modeFilter],
+    [dataRaw, worldList, typeFilter, modeFilter],
   );
 
   // How many of `data` to actually render. Resets to the first page whenever the
@@ -182,7 +199,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
               activeOpacity={0.75}
             >
               <Text style={[styles.typeChipText, active && styles.typeChipTextActive]}>
-                {emoji} {key === 'all' ? t('modeFilter.all') : t(`mode.${key}`)}
+                {emoji} {key === 'all' ? t('modeFilter.all') : t(`mode.${key}`, { defaultValue: key === 'worldwide' ? 'Worldwide' : key })}
               </Text>
             </TouchableOpacity>
           );

@@ -301,6 +301,7 @@
     "leaderboard": "리더보드",
     "arrivals": "{{count}}명 도착",
     "arrivalsTitle": "최근 도착",
-    "arrivalsEmpty": "최근 도착이 없어요"
+    "arrivalsEmpty": "최근 도착이 없어요",
+    "seeAll": "모두 보기"
   }
 }

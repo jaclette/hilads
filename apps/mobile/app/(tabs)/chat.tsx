@@ -1161,6 +1161,17 @@ export default function ChatTab() {
                     </TouchableOpacity>
                   );
                 }}
+                ListFooterComponent={
+                  <TouchableOpacity
+                    style={styles.heroSeeAll}
+                    activeOpacity={0.85}
+                    onPress={() => router.push({ pathname: '/(tabs)/challenges', params: { mode: 'worldwide' } } as never)}
+                  >
+                    <Text style={styles.heroSeeAllIcon}>🌍</Text>
+                    <Text style={styles.heroSeeAllText}>{t('world.seeAll', { defaultValue: 'See all' })}</Text>
+                    <Text style={styles.heroSeeAllArrow}>→</Text>
+                  </TouchableOpacity>
+                }
               />
             ) : (
               <TouchableOpacity
@@ -1703,6 +1714,14 @@ const styles = StyleSheet.create({
   heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
   heroSlideFoot:  { flexDirection: 'row', alignItems: 'center' },
   heroSlideFlags: { fontSize: 15, fontWeight: '700', letterSpacing: 1, color: Colors.text },
+  heroSeeAll: {
+    width: 130, borderRadius: 18, borderWidth: 1.5, borderColor: Colors.accent,
+    borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4,
+    backgroundColor: 'rgba(255,255,255,0.04)', paddingVertical: 14,
+  },
+  heroSeeAllIcon:  { fontSize: 22 },
+  heroSeeAllText:  { color: Colors.text, fontWeight: '800', fontSize: 14 },
+  heroSeeAllArrow: { color: Colors.accent, fontWeight: '800', fontSize: 16 },
 
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },

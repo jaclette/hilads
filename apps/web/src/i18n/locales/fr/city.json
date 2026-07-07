@@ -15,7 +15,8 @@
     "leaderboard": "Classement",
     "arrivals": "{{count}} arrivées",
     "arrivalsTitle": "Arrivées récentes",
-    "arrivalsEmpty": "Aucune arrivée récente"
+    "arrivalsEmpty": "Aucune arrivée récente",
+    "seeAll": "Voir tout"
   },
   "inspiration": {
     "heading": "💡 Des idées de sorties",

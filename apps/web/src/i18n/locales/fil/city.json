@@ -301,6 +301,7 @@
     "leaderboard": "Leaderboard",
     "arrivals": "{{count}} dumating",
     "arrivalsTitle": "Kababa lang",
-    "arrivalsEmpty": "Walang kababa lang"
+    "arrivalsEmpty": "Walang kababa lang",
+    "seeAll": "Tingnan lahat"
   }
 }

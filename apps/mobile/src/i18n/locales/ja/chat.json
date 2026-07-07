@@ -128,6 +128,7 @@
     "leaderboard": "ランキング",
     "arrivals": "{{count}} 人到着",
     "arrivalsTitle": "最近の到着",
-    "arrivalsEmpty": "最近の到着はありません"
+    "arrivalsEmpty": "最近の到着はありません",
+    "seeAll": "すべて見る"
   }
 }

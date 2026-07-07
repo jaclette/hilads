@@ -393,7 +393,8 @@
     "local": "로컬",
     "international": "국제",
     "localHint": "내 도시에서. 직접 만나는 걸로 끝나요.",
-    "internationalHint": "세계 어디든. 증거를 보내면 멀리서 승인해요."
+    "internationalHint": "세계 어디든. 증거를 보내면 멀리서 승인해요.",
+    "worldwide": "전 세계"
   },
   "intl": {
     "targetCityLabel": "타겟 도시",
