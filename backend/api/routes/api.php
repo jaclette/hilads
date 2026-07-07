@@ -3887,8 +3887,9 @@ $router->add('GET', '/api/v1/world/messages', function () {
     }
 
     // Guest authors have no user row, so batchFull skips them. Resolve their
-    // country from their most recent CITY presence so World shows a flag for
-    // guests too (one bounded query for all guest ids on the page).
+    // country from their most recent CITY ARRIVAL (join system message) - which
+    // is PERSISTENT, unlike presence (TTL-expired), so it works for guests who
+    // aren't currently online. One bounded query for all guest ids on the page.
     $guestIds = [];
     foreach ($messages as $m) { if (empty($m['userId']) && !empty($m['guestId'])) $guestIds[$m['guestId']] = true; }
     $guestIds = array_keys($guestIds);
@@ -3896,9 +3897,9 @@ $router->add('GET', '/api/v1/world/messages', function () {
         $gin  = implode(',', array_fill(0, count($guestIds), '?'));
         $gStmt = Database::pdo()->prepare("
             SELECT DISTINCT ON (guest_id) guest_id, channel_id
-            FROM presence
-            WHERE guest_id IN ($gin) AND channel_id LIKE 'city_%'
-            ORDER BY guest_id, last_seen_at DESC
+            FROM messages
+            WHERE guest_id IN ($gin) AND type = 'system' AND event = 'join' AND channel_id LIKE 'city_%'
+            ORDER BY guest_id, created_at DESC
         ");
         $gStmt->execute($guestIds);
         $guestCountry = [];
