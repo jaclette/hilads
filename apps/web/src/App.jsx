@@ -4861,20 +4861,32 @@ export default function App() {
           <>
             {worldChallenges.length > 0 ? (
               <div className="ch-world-carousel" role="list">
-                {worldChallenges.map(ch => (
-                  <button key={ch.id} type="button" className="ch-world-slide" role="listitem" onClick={() => openWorldChallenge(ch)}>
-                    <div className="ch-world-slide-head">
-                      {ch.creator_thumb_avatar_url ? (
-                        <img className="ch-world-slide-avatar" src={thumbUrl(ch.creator_thumb_avatar_url)} alt="" loading="lazy" />
-                      ) : (
-                        <span className="ch-world-slide-avatar ch-world-slide-avatar--letter">{(ch.creator_display_name ?? '?')[0].toUpperCase()}</span>
-                      )}
-                      <span className="ch-world-slide-owner">{ch.creator_display_name ?? '—'}</span>
-                      <span className="ch-world-slide-type">{({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[ch.challenge_type] ?? '🔥')} {t(`typeBadge.${ch.challenge_type}`, { ns: 'challenge', defaultValue: ch.challenge_type })}</span>
-                    </div>
-                    <Marquee text={ch.title} className="ch-world-slide-title" fadeColor="#1a1210" />
-                  </button>
-                ))}
+                {worldChallenges.map(ch => {
+                  const TH = { food: { a: '#FF7A3C', b: '#C24A38' }, place: { a: '#2DD4BF', b: '#0EA5E9' }, culture: { a: '#A78BFA', b: '#7C3AED' }, help: { a: '#F472B6', b: '#DB2777' } }
+                  const th = TH[ch.challenge_type] ?? { a: '#FF7A3C', b: '#C24A38' }
+                  const emoji = ({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[ch.challenge_type] ?? '🔥')
+                  return (
+                    <button
+                      key={ch.id} type="button" className="ch-world-slide" role="listitem"
+                      style={{ background: `linear-gradient(150deg, ${th.a}33, ${th.b}1c)`, borderColor: `${th.a}aa`, boxShadow: `0 8px 26px ${th.a}30` }}
+                      onClick={() => openWorldChallenge(ch)}
+                    >
+                      <div className="ch-world-slide-head">
+                        {ch.creator_thumb_avatar_url ? (
+                          <img className="ch-world-slide-avatar" src={thumbUrl(ch.creator_thumb_avatar_url)} alt="" loading="lazy" style={{ boxShadow: `0 0 0 2px ${th.a}` }} />
+                        ) : (
+                          <span className="ch-world-slide-avatar ch-world-slide-avatar--letter" style={{ background: th.a, boxShadow: `0 0 0 2px ${th.a}` }}>{(ch.creator_display_name ?? '?')[0].toUpperCase()}</span>
+                        )}
+                        <span className="ch-world-slide-owner">{ch.creator_display_name ?? '—'}</span>
+                        <span className="ch-world-slide-type" style={{ background: th.a }}>{emoji} {t(`typeBadge.${ch.challenge_type}`, { ns: 'challenge', defaultValue: ch.challenge_type })}</span>
+                      </div>
+                      <Marquee text={ch.title} className="ch-world-slide-title" fadeColor="#181113" />
+                      <div className="ch-world-slide-foot">
+                        <span className="ch-world-slide-flags">{cityFlag(ch.country) || '🌍'} <span className="ch-world-slide-arrow">→</span> {cityFlag(ch.target_country) || '🌍'}</span>
+                      </div>
+                    </button>
+                  )
+                })}
               </div>
             ) : (
               <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>

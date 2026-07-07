@@ -104,6 +104,14 @@ function cityFlag(countryCode?: string): string {
     .join('');
 }
 
+// Per-challenge-type colour theme for the World hero carousel slides.
+const CH_TYPE_THEME: Record<string, { a: string; tint: string }> = {
+  food:    { a: '#FF7A3C', tint: 'rgba(255,122,60,0.16)' },
+  place:   { a: '#2DD4BF', tint: 'rgba(45,212,191,0.15)' },
+  culture: { a: '#A78BFA', tint: 'rgba(167,139,250,0.16)' },
+  help:    { a: '#F472B6', tint: 'rgba(244,114,182,0.16)' },
+};
+
 // ── City short name for the challenge hero ───────────────────────────────────
 // Hero copy is English-only for this phase (per spec). Known cities map to a
 // canonical short form; otherwise keep the full name unless it's too long
@@ -1123,29 +1131,36 @@ export default function ChatTab() {
                 keyExtractor={c => c.id}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.heroCarousel}
-                renderItem={({ item: c }) => (
-                  <TouchableOpacity
-                    style={styles.heroSlide}
-                    activeOpacity={0.85}
-                    onPress={() => router.push(`/challenge/${c.id}` as never)}
-                    accessibilityRole="button"
-                  >
-                    <View style={styles.heroSlideHead}>
-                      {c.creator_thumb_avatar_url ? (
-                        <Image source={{ uri: thumbUrl(c.creator_thumb_avatar_url) }} style={styles.heroSlideAvatar} contentFit="cover" cachePolicy="memory-disk" />
-                      ) : (
-                        <View style={[styles.heroSlideAvatar, styles.heroSlideAvatarLetter]}>
-                          <Text style={styles.heroSlideAvatarLetterText}>{(c.creator_display_name ?? '?')[0].toUpperCase()}</Text>
+                renderItem={({ item: c }) => {
+                  const th = CH_TYPE_THEME[c.challenge_type] ?? CH_TYPE_THEME.food;
+                  const emoji = (({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' } as Record<string, string>)[c.challenge_type] ?? '🔥');
+                  return (
+                    <TouchableOpacity
+                      style={[styles.heroSlide, { backgroundColor: th.tint, borderColor: th.a }]}
+                      activeOpacity={0.85}
+                      onPress={() => router.push(`/challenge/${c.id}` as never)}
+                      accessibilityRole="button"
+                    >
+                      <View style={styles.heroSlideHead}>
+                        {c.creator_thumb_avatar_url ? (
+                          <Image source={{ uri: thumbUrl(c.creator_thumb_avatar_url) }} style={[styles.heroSlideAvatar, { borderWidth: 2, borderColor: th.a }]} contentFit="cover" cachePolicy="memory-disk" />
+                        ) : (
+                          <View style={[styles.heroSlideAvatar, styles.heroSlideAvatarLetter, { backgroundColor: th.a, borderWidth: 2, borderColor: th.a }]}>
+                            <Text style={styles.heroSlideAvatarLetterText}>{(c.creator_display_name ?? '?')[0].toUpperCase()}</Text>
+                          </View>
+                        )}
+                        <Text style={styles.heroSlideOwner} numberOfLines={1}>{c.creator_display_name ?? '—'}</Text>
+                        <View style={[styles.heroSlideType, { backgroundColor: th.a }]}>
+                          <Text style={styles.heroSlideTypeText} numberOfLines={1}>{emoji} {t(`typeBadge.${c.challenge_type}`, { ns: 'challenge', defaultValue: c.challenge_type })}</Text>
                         </View>
-                      )}
-                      <Text style={styles.heroSlideOwner} numberOfLines={1}>{c.creator_display_name ?? '—'}</Text>
-                      <Text style={styles.heroSlideType} numberOfLines={1}>
-                        {(({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' } as Record<string, string>)[c.challenge_type] ?? '🔥')} {t(`typeBadge.${c.challenge_type}`, { ns: 'challenge', defaultValue: c.challenge_type })}
-                      </Text>
-                    </View>
-                    <MarqueeText text={c.title} fadeColor="#1a1210" style={styles.heroSlideTitleWrap} textStyle={styles.heroSlideTitle} active={channelScope === 'world'} />
-                  </TouchableOpacity>
-                )}
+                      </View>
+                      <MarqueeText text={c.title} fadeColor="#181113" style={styles.heroSlideTitleWrap} textStyle={styles.heroSlideTitle} active={channelScope === 'world'} />
+                      <View style={styles.heroSlideFoot}>
+                        <Text style={styles.heroSlideFlags}>{cityFlag(c.country ?? undefined) || '🌍'}  →  {cityFlag(c.target_country ?? undefined) || '🌍'}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  );
+                }}
               />
             ) : (
               <TouchableOpacity
@@ -1669,25 +1684,26 @@ const styles = StyleSheet.create({
   },
 
   // ── World hero: carousel of recent international challenges ──────────────────
-  heroCarousel: { gap: 10, paddingRight: 4 },
+  heroCarousel: { gap: 12, paddingRight: 4 },
   heroSlide: {
-    width:             270,
+    width:             280,
     paddingVertical:   14,
-    paddingHorizontal: 14,
-    borderRadius:      Radius.lg,
-    backgroundColor:   Colors.bg2,
-    borderWidth:       1,
-    borderColor:       'rgba(255,122,60,0.45)',
-    gap:               8,
+    paddingHorizontal: 15,
+    borderRadius:      18,
+    borderWidth:       1.5,
+    gap:               10,
   },
-  heroSlideHead:  { flexDirection: 'row', alignItems: 'center', gap: 7 },
-  heroSlideAvatar: { width: 26, height: 26, borderRadius: 13 },
-  heroSlideAvatarLetter: { alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.accent },
-  heroSlideAvatarLetterText: { color: '#fff', fontWeight: '700', fontSize: 12 },
-  heroSlideOwner: { color: Colors.text, fontWeight: '800', fontSize: 13, flexShrink: 1 },
-  heroSlideType:  { marginLeft: 'auto', color: Colors.muted, fontWeight: '700', fontSize: 11 },
+  heroSlideHead:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  heroSlideAvatar: { width: 30, height: 30, borderRadius: 15 },
+  heroSlideAvatarLetter: { alignItems: 'center', justifyContent: 'center' },
+  heroSlideAvatarLetterText: { color: '#fff', fontWeight: '800', fontSize: 13 },
+  heroSlideOwner: { color: Colors.text, fontWeight: '800', fontSize: 14, flexShrink: 1, letterSpacing: -0.2 },
+  heroSlideType:  { marginLeft: 'auto', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
+  heroSlideTypeText: { color: '#fff', fontWeight: '800', fontSize: 10, letterSpacing: 0.4, textTransform: 'uppercase' },
   heroSlideTitleWrap: { alignSelf: 'stretch' },
-  heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 15 },
+  heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
+  heroSlideFoot:  { flexDirection: 'row', alignItems: 'center' },
+  heroSlideFlags: { fontSize: 15, fontWeight: '700', letterSpacing: 1, color: Colors.text },
 
   // ── Error banner ─────────────────────────────────────────────────────────
   errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },

@@ -7222,24 +7222,33 @@ img.pub-profile-avatar {
   scroll-snap-align: center;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  padding: 0.8rem 0.9rem;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(194, 74, 56, 0.16), rgba(184, 114, 40, 0.16));
-  border: 1px solid var(--accent2);
+  gap: 0.55rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 18px;
+  border: 1.5px solid var(--accent2);   /* color overridden inline per type */
   color: var(--text);
   font-family: inherit;
   cursor: pointer;
   text-align: left;
+  transition: transform 0.12s ease;
   -webkit-tap-highlight-color: transparent;
 }
-.ch-world-slide:active { opacity: 0.85; }
-.ch-world-slide-head { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
-.ch-world-slide-avatar { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
-.ch-world-slide-avatar--letter { display: flex; align-items: center; justify-content: center; background: var(--accent); color: #fff; font-weight: 700; font-size: 0.72rem; }
-.ch-world-slide-owner { font-weight: 800; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ch-world-slide-type { margin-left: auto; flex-shrink: 0; font-size: 0.7rem; font-weight: 700; color: var(--muted2); white-space: nowrap; }
-.ch-world-slide-title { font-size: 0.95rem; font-weight: 800; }
+.ch-world-slide:active { transform: scale(0.98); }
+.ch-world-slide-head { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
+.ch-world-slide-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.ch-world-slide-avatar--letter { display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.8rem; }
+.ch-world-slide-owner { font-weight: 800; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.2px; }
+.ch-world-slide-type {
+  margin-left: auto; flex-shrink: 0;
+  padding: 0.15rem 0.5rem; border-radius: 999px;
+  font-size: 0.66rem; font-weight: 800; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+.ch-world-slide-title { font-size: 1.12rem; font-weight: 800; letter-spacing: -0.3px; line-height: 1.15; }
+.ch-world-slide-foot { display: flex; align-items: center; }
+.ch-world-slide-flags { font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; opacity: 0.95; }
+.ch-world-slide-arrow { color: var(--muted2); font-weight: 800; margin: 0 0.1rem; }
 /* World: author line on own messages mirrors to the right (own bubbles are
    right-aligned); the home-country flag sits next to the nickname. */
 .msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }
