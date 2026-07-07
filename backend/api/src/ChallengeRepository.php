@@ -462,6 +462,47 @@ class ChallengeRepository
     }
 
     /**
+     * Global cross-city feed: ALL open, public international challenges worldwide,
+     * newest first. Powers the World "See all" screen - distinct from getByCity's
+     * International filter, which is scoped to a single city (its origin/target).
+     * Returns full card DTOs (same shape as getByCity) so the existing cards render.
+     */
+    public static function getInternationalWorldwide(int $limit = 60): array
+    {
+        $limit = max(1, min(200, $limit));
+        $stmt  = Database::pdo()->prepare(self::SELECT . "
+            WHERE cc.mode       = 'international'
+              AND cc.status     = 'open'
+              AND cc.visibility = 'public'
+              AND c.status      = 'active'
+            GROUP BY c.id, cc.city_id, cc.created_by, cc.guest_id,
+                     cc.title, cc.challenge_type, cc.audience, cc.status,
+                     cc.max_participants, cc.return_clause,
+                     cc.mode, cc.challenge_format, cc.target_city_id, cc.proof_requirements, cc.validation_method,
+                     cc.visibility,
+            cc.closed_to_new_joins,
+                     cc.meet_at, cc.meet_ends_at, cc.venue, cc.venue_lat, cc.venue_lng,
+                     cc.validated_at, cc.created_at,
+                     u.display_name, u.username,
+                     u.profile_thumb_photo_url, u.profile_photo_url,
+                     u.monthly_rank_in_city, u.monthly_rank_worldwide, u.score_month_ref,
+                     u.score_alltime, u.current_city_id,
+                     ac.acceptor_user_id, ac.phase, ac.acceptance_id, au.display_name,
+                     au.profile_thumb_photo_url, au.profile_photo_url,
+                     au.current_city_id, au.score_alltime,
+                     au.monthly_rank_in_city, au.monthly_rank_worldwide, au.score_month_ref
+            ORDER BY cc.created_at DESC
+            LIMIT $limit
+        ");
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+        if (empty($rows)) return [];
+
+        $out = array_map(static fn(array $r): array => self::format($r), $rows);
+        return self::enrichWithParticipants($out);
+    }
+
+    /**
      * Inspiration block for the zero-challenge empty state. Picks the single
      * most-active OTHER city that currently has open PUBLIC challenges by a
      * registered creator, and returns up to 3 of them as a read-only

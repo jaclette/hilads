@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -883,6 +883,7 @@ export default function App() {
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
   const [worldChallenges, setWorldChallenges] = useState([]) // last 5 international challenges (hero carousel)
+  const [worldChallengesAll, setWorldChallengesAll] = useState([]) // all international worldwide ("See all" / 🌍 Worldwide filter)
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
   const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
   const channelScopeRef = useRef('city')
@@ -3512,6 +3513,14 @@ export default function App() {
     dismissFullPageOverlays()
     setShowChallengesDrawer(true)
   }
+  // "See all" from the World hero carousel: open the challenges browser with the
+  // 🌍 Worldwide filter pre-selected (all international challenges globally).
+  function goToWorldChallenges() {
+    fetchWorldChallengesAll(60).then(setWorldChallengesAll).catch(() => {})
+    setChallengeTypeFilter('all')
+    setChallengeModeFilter('worldwide')
+    goToChallengesTab()
+  }
   function goToHereTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
@@ -4887,6 +4896,11 @@ export default function App() {
                     </button>
                   )
                 })}
+                <button type="button" className="ch-world-slide ch-world-seeall" onClick={goToWorldChallenges}>
+                  <span className="ch-world-seeall-icon" aria-hidden="true">🌍</span>
+                  <span className="ch-world-seeall-txt">{t('world.seeAll', { defaultValue: 'See all' })}</span>
+                  <span className="ch-world-seeall-arrow" aria-hidden="true">→</span>
+                </button>
               </div>
             ) : (
               <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>
@@ -6019,8 +6033,14 @@ export default function App() {
                 )}
               </div>
             ) : (() => {
-              const visibleChallenges = filteredChallenges.slice(0, challengesShownCount)
-              const hasMoreInFilter   = filteredChallenges.length > visibleChallenges.length
+              // 🌍 Worldwide = ALL international challenges globally (separate feed
+              // from the city-scoped 'international' filter). Type sub-filter still applies.
+              const worldMode = challengeModeFilter === 'worldwide'
+              const sourcePool = worldMode
+                ? (challengeTypeFilter === 'all' ? worldChallengesAll : worldChallengesAll.filter(c => c.challenge_type === challengeTypeFilter))
+                : filteredChallenges
+              const visibleChallenges = sourcePool.slice(0, challengesShownCount)
+              const hasMoreInFilter   = sourcePool.length > visibleChallenges.length
               return (
               <div className="now-challenges-section">
                 {/* Mode sub-filter - All / Local / International */}
@@ -6029,6 +6049,7 @@ export default function App() {
                     { key: 'all',           emoji: '✨' },
                     { key: 'local',         emoji: '🏙️' },
                     { key: 'international', emoji: '🌐' },
+                    { key: 'worldwide',     emoji: '🌍' },
                   ].map(({ key, emoji }) => (
                     <button
                       key={key}
@@ -6036,12 +6057,15 @@ export default function App() {
                       role="tab"
                       aria-selected={challengeModeFilter === key}
                       className={`challenge-type-chip${challengeModeFilter === key ? ' challenge-type-chip--active' : ''}`}
-                      onClick={() => setChallengeModeFilter(key)}
+                      onClick={() => {
+                        setChallengeModeFilter(key)
+                        if (key === 'worldwide') fetchWorldChallengesAll(60).then(setWorldChallengesAll).catch(() => {})
+                      }}
                     >
                       <span aria-hidden="true">{emoji}</span>
                       <span>{key === 'all'
                         ? t('modeFilter.all', { ns: 'challenge' })
-                        : t(`mode.${key}`,    { ns: 'challenge' })}</span>
+                        : t(`mode.${key}`, { ns: 'challenge', defaultValue: key === 'worldwide' ? 'Worldwide' : key })}</span>
                     </button>
                   ))}
                 </div>
@@ -6078,7 +6102,7 @@ export default function App() {
                     onAvatarClick={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
                   />
                 ))}
-                {filteredChallenges.length === 0 && (
+                {sourcePool.length === 0 && (
                   <div className="challenge-type-empty">
                     {t('typeFilter.empty', { ns: 'challenge', defaultValue: 'Nothing in this category right now.' })}
                   </div>

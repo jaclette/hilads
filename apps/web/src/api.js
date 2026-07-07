@@ -154,6 +154,18 @@ export async function fetchWorldChallenges() {
   }
 }
 
+// ALL international challenges worldwide (full card DTOs) for the "See all" view.
+export async function fetchWorldChallengesAll(limit = 60) {
+  try {
+    const res = await fetch(`${BASE}/world/challenges/all?limit=${limit}`, { credentials: 'include' })
+    if (!res.ok) return []
+    const data = await res.json()
+    return data.challenges ?? []
+  } catch {
+    return []
+  }
+}
+
 // Mark a channel (city integer id or the string 'world') read up to now.
 export async function markChannelRead(channelId, guestId) {
   try {

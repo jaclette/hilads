@@ -7249,6 +7249,18 @@ img.pub-profile-avatar {
 .ch-world-slide-foot { display: flex; align-items: center; }
 .ch-world-slide-flags { font-size: 0.95rem; font-weight: 700; letter-spacing: 1px; opacity: 0.95; }
 .ch-world-slide-arrow { color: var(--muted2); font-weight: 800; margin: 0 0.1rem; }
+/* Trailing "See all" slide in the World hero carousel. */
+.ch-world-seeall {
+  flex: 0 0 42%;
+  align-items: center; justify-content: center; text-align: center;
+  gap: 0.35rem;
+  background: rgba(255,255,255,0.04);
+  border: 1.5px dashed var(--accent2);
+  color: var(--text);
+}
+.ch-world-seeall-icon { font-size: 1.4rem; }
+.ch-world-seeall-txt  { font-weight: 800; font-size: 0.9rem; }
+.ch-world-seeall-arrow { color: var(--accent2); font-weight: 800; font-size: 1.1rem; }
 /* World: author line on own messages mirrors to the right (own bubbles are
    right-aligned); the home-country flag sits next to the nickname. */
 .msg-meta--mine { flex-direction: row-reverse; align-self: flex-end; }

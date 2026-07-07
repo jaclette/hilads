@@ -3958,6 +3958,13 @@ $router->add('GET', '/api/v1/world/challenges', function () {
     Response::json($data ?? ['challenges' => []]);
 });
 
+// ALL international challenges worldwide — the "See all" screen. Full card DTOs.
+$router->add('GET', '/api/v1/world/challenges/all', function () {
+    $limit = min(200, max(1, (int) ($_GET['limit'] ?? 60)));
+    $data  = Cache::remember('world_challenges_all_' . $limit, 45, fn() => ['challenges' => ChallengeRepository::getInternationalWorldwide($limit)]);
+    Response::json($data ?? ['challenges' => []]);
+});
+
 // Mark a channel (city integer id OR 'world') read up to now for the caller.
 $router->add('POST', '/api/v1/read', function () {
     $body      = Request::json() ?? [];
