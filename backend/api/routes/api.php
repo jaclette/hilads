@@ -4136,16 +4136,22 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             if ($t === 'text' || $t === 'image') {
                 if (!empty($msg['userId']) && isset($badgeMap[$msg['userId']])) {
                     $entry = $badgeMap[$msg['userId']];
-                    $msg['primaryBadge'] = $entry['primaryBadge'];
-                    $msg['contextBadge'] = $entry['contextBadge'];
-                    $msg['vibe']         = $entry['vibe'] ?? 'chill';
-                    $msg['mode']         = $entry['mode'] ?? 'exploring';
+                    $msg['primaryBadge']   = $entry['primaryBadge'];
+                    $msg['contextBadge']   = $entry['contextBadge'];
+                    $msg['vibe']           = $entry['vibe'] ?? 'chill';
+                    $msg['mode']           = $entry['mode'] ?? 'exploring';
+                    $msg['thumbAvatarUrl'] = $entry['thumbAvatarUrl'] ?? null;
                 } else {
-                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
-                    $msg['contextBadge'] = null;
-                    $msg['vibe']         = null;
-                    $msg['mode']         = null;
+                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['contextBadge']   = null;
+                    $msg['vibe']           = null;
+                    $msg['mode']           = null;
+                    $msg['thumbAvatarUrl'] = null;
                 }
+            } elseif ($t === 'system' && ($msg['event'] ?? '') === 'join') {
+                // Arrival rows: attach the arriver's avatar thumb for the sheet.
+                $uid = $msg['userId'] ?? null;
+                $msg['thumbAvatarUrl'] = ($uid && isset($badgeMap[$uid])) ? ($badgeMap[$uid]['thumbAvatarUrl'] ?? null) : null;
             }
         }
         unset($msg);
