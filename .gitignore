@@ -47,3 +47,5 @@ package-lock.json
 *.log
 
 .claude/settings.json
+# Landing hero video source (compressed output committed instead)
+apps/web/public/landing/randomwithmeal.mp4

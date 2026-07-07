@@ -15807,17 +15807,6 @@ body.has-app-promo-banner .page-header {
   box-shadow: 0 12px 44px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 .sl-video-el { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
-/* Click-to-play poster (no autoplay) - fills the 9:16 frame; dark bg only shows
-   for the instant before the tiny thumbnail paints. */
-.sl-video-play-btn { position: absolute; inset: 0; padding: 0; border: 0; background: #050403; cursor: pointer; }
-.sl-video-play {
-  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  width: 64px; height: 64px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(0, 0, 0, 0.55); color: #fff;
-  font-size: 24px; padding-left: 4px;   /* optically center the ▶ glyph */
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
-}
 
 /* ── S2 live ── */
 .sl-headline {
