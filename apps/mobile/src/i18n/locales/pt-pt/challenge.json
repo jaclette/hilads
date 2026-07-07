@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "Ao vivo",
-    "done": "Concluído"
+    "done": "Concluído",
+    "ended": "Terminado"
   },
   "group": {
     "meetCta": "Escolhe a data do encontro",
@@ -785,5 +786,12 @@
     "place": "ex. Leva-me ao teu recanto secreto preferido 📍",
     "culture": "ex. Mostra-me algo que só os locais conhecem 🎭",
     "help": "ex. Desafia-me a fazer algo louco 🤪"
+  },
+  "relaunch": {
+    "cta": "Reiniciar",
+    "confirmTitle": "Reiniciar este desafio?",
+    "confirmBody": "Reabre com a mesma contagem decrescente que definiste da primeira vez.",
+    "confirmCta": "Reiniciar",
+    "failed": "Não foi possível reiniciar - tenta novamente."
   }
 }

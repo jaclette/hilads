@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "En vivo",
-    "done": "Finalizado"
+    "done": "Finalizado",
+    "ended": "Finalizado"
   },
   "group": {
     "meetCta": "Elige la fecha del encuentro",
@@ -785,5 +786,12 @@
     "place": "ej. Llévame a tu rincón secreto favorito 📍",
     "culture": "ej. Muéstrame algo que solo los locales conocen 🎭",
     "help": "ej. Rétame a hacer algo loco 🤪"
+  },
+  "relaunch": {
+    "cta": "Reiniciar",
+    "confirmTitle": "¿Reiniciar este reto?",
+    "confirmBody": "Se reabre con la misma cuenta atrás que fijaste la primera vez.",
+    "confirmCta": "Reiniciar",
+    "failed": "No se pudo reiniciar - inténtalo de nuevo."
   }
 }

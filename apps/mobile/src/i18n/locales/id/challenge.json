@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "Berlangsung",
-    "done": "Selesai"
+    "done": "Selesai",
+    "ended": "Selesai"
   },
   "group": {
     "meetCta": "Pilih tanggal pertemuan",
@@ -785,5 +786,12 @@
     "place": "mis. Ajak aku ke tempat rahasia favoritmu 📍",
     "culture": "mis. Tunjukkan sesuatu yang cuma diketahui warga lokal 🎭",
     "help": "mis. Tantang aku melakukan hal gila 🤪"
+  },
+  "relaunch": {
+    "cta": "Mulai ulang",
+    "confirmTitle": "Mulai ulang tantangan ini?",
+    "confirmBody": "Terbuka lagi dengan hitung mundur yang sama seperti yang kamu atur pertama kali.",
+    "confirmCta": "Mulai ulang",
+    "failed": "Gagal memulai ulang - coba lagi."
   }
 }

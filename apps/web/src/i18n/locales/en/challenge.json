@@ -765,7 +765,8 @@
   },
   "status": {
     "live": "Live",
-    "done": "Done"
+    "done": "Done",
+    "ended": "Ended"
   },
   "pointExamples": {
     "title": "3 real examples",
@@ -785,5 +786,12 @@
     "place": "e.g. Take me to your favorite hidden spot 📍",
     "culture": "e.g. Show me something only locals know 🎭",
     "help": "e.g. Dare me to try something wild 🤪"
+  },
+  "relaunch": {
+    "cta": "Restart",
+    "confirmTitle": "Restart this challenge?",
+    "confirmBody": "It reopens with the same countdown you set the first time.",
+    "confirmCta": "Restart",
+    "failed": "Could not restart - try again."
   }
 }

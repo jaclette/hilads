@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "Live",
-    "done": "Fertig"
+    "done": "Fertig",
+    "ended": "Beendet"
   },
   "group": {
     "meetCta": "Datum fürs Treffen wählen",
@@ -785,5 +786,12 @@
     "place": "z. B. Bring mich zu deinem liebsten Geheimtipp 📍",
     "culture": "z. B. Zeig mir was, das nur Locals kennen 🎭",
     "help": "z. B. Fordere mich zu etwas Verrücktem heraus 🤪"
+  },
+  "relaunch": {
+    "cta": "Neu starten",
+    "confirmTitle": "Diese Challenge neu starten?",
+    "confirmBody": "Sie öffnet wieder mit demselben Countdown, den du zuerst gesetzt hast.",
+    "confirmCta": "Neu starten",
+    "failed": "Neustart fehlgeschlagen - versuch es erneut."
   }
 }

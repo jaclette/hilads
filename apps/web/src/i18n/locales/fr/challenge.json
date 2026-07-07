@@ -751,7 +751,8 @@
   },
   "status": {
     "live": "En cours",
-    "done": "Terminé"
+    "done": "Terminé",
+    "ended": "Terminé"
   },
   "pointExamples": {
     "title": "3 exemples réels",
@@ -785,5 +786,12 @@
     "confirmBody": "Cela retire le preneur actuel, efface le chat et rouvre le défi à zéro. Action irréversible.",
     "confirmCta": "Relancer",
     "failed": "Impossible de relancer - réessaie."
+  },
+  "relaunch": {
+    "cta": "Relancer",
+    "confirmTitle": "Relancer ce défi ?",
+    "confirmBody": "Il rouvre avec le même compte à rebours que tu avais défini au départ.",
+    "confirmCta": "Relancer",
+    "failed": "Échec de la relance - réessaie."
   }
 }

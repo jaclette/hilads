@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "Live",
-    "done": "Tapos"
+    "done": "Tapos",
+    "ended": "Tapos na"
   },
   "group": {
     "meetCta": "Piliin ang petsa ng meetup",
@@ -785,5 +786,12 @@
     "place": "hal. Dalhin mo ako sa paborito mong sikretong lugar 📍",
     "culture": "hal. Ipakita mo sa akin ang alam lang ng mga local 🎭",
     "help": "hal. I-challenge mo akong gumawa ng kakaiba 🤪"
+  },
+  "relaunch": {
+    "cta": "I-restart",
+    "confirmTitle": "I-restart ang challenge na ito?",
+    "confirmBody": "Bubukas ulit ito gamit ang parehong countdown na itinakda mo noong una.",
+    "confirmCta": "I-restart",
+    "failed": "Hindi na-restart - subukan ulit."
   }
 }

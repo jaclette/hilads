@@ -673,7 +673,8 @@
   },
   "status": {
     "live": "Live",
-    "done": "Klaar"
+    "done": "Klaar",
+    "ended": "Afgelopen"
   },
   "group": {
     "meetCta": "Kies de datum van de meetup",
@@ -785,5 +786,12 @@
     "place": "bijv. Neem me mee naar je favoriete geheime plek 📍",
     "culture": "bijv. Laat me iets zien dat alleen locals kennen 🎭",
     "help": "bijv. Daag me uit iets geks te doen 🤪"
+  },
+  "relaunch": {
+    "cta": "Herstart",
+    "confirmTitle": "Deze challenge herstarten?",
+    "confirmBody": "Hij opent opnieuw met dezelfde teller die je de eerste keer instelde.",
+    "confirmCta": "Herstart",
+    "failed": "Herstarten mislukt - probeer opnieuw."
   }
 }

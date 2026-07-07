@@ -751,7 +751,8 @@
   },
   "status": {
     "live": "Đang diễn ra",
-    "done": "Đã xong"
+    "done": "Đã xong",
+    "ended": "Đã kết thúc"
   },
   "pointExamples": {
     "title": "3 ví dụ thực tế",
@@ -785,5 +786,12 @@
     "confirmBody": "Việc này gỡ người nhận hiện tại, xoá chat, và mở lại thử thách từ đầu. Không thể hoàn tác.",
     "confirmCta": "Khởi động lại",
     "failed": "Không khởi động lại được - thử lại nhé."
+  },
+  "relaunch": {
+    "cta": "Khởi động lại",
+    "confirmTitle": "Khởi động lại thử thách này?",
+    "confirmBody": "Nó mở lại với cùng bộ đếm ngược bạn đã đặt lần đầu.",
+    "confirmCta": "Khởi động lại",
+    "failed": "Không thể khởi động lại - hãy thử lại."
   }
 }
