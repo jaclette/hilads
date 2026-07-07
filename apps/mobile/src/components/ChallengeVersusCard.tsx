@@ -106,7 +106,10 @@ export function ChallengeVersusCard({
   const isEnded = isGroup && !isValidated
     && challenge.meet_at != null && (challenge.meet_at * 1000) < Date.now();
   // Subtitle: "by {challenger} · {location} · {date}" (date for meet only).
-  const groupLocation = challenge.venue || challenge.target_city_name || null;
+  // International shows the full route "🇻🇳 Origin → 🇧🇷 Target" with flags.
+  const groupLocation = (isInternational && challenge.city_name && challenge.target_city_name)
+    ? `${countryToFlag(challenge.country ?? null)} ${challenge.city_name} → ${countryToFlag(challenge.target_country ?? null) || '🌍'} ${challenge.target_city_name}`
+    : (challenge.venue || challenge.target_city_name || null);
   const groupSubtitle = [
     challenge.creator_display_name ? t('byCreator', { name: challenge.creator_display_name }) : null,
     groupLocation,

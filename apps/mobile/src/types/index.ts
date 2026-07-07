@@ -265,6 +265,7 @@ export interface Challenge {
    *  the International pill so it stays readable even when the flag emoji
    *  doesn't render on a given device. Null for "anywhere" / local rows. */
   target_city_name?:     string | null;
+  city_name?:            string | null;
   /** Creator-authored proof spec shown to acceptors before they upload.
    *  International only - null on local rows. */
   proof_requirements?:   string | null;

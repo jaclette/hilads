@@ -265,6 +265,8 @@ class ChallengeRepository
             // gaps on country flags). Resolved from the same APCU-cached
             // city list as country. Null for "anywhere" / local rows.
             'target_city_name'     => self::cityNameForCityId($row['target_city_id'] ?? null),
+            // Origin city name - for the "origin → target" route on international cards.
+            'city_name'            => self::cityNameForCityId($row['city_id'] ?? null),
             // Visibility - 'public' default for pre-migration rows.
             'visibility'           => $row['visibility']         ?? 'public',
             'closed_to_new_joins'  => (bool) ($row['closed_to_new_joins'] ?? false),

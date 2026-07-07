@@ -97,7 +97,10 @@ export default function ChallengeVersusCard({
     // Meet date / submission deadline passed but not resolved yet → "ended",
     // never "Available" + Join (you can't join a finished meet or submit late).
     const isEnded = !isValidated && c.meet_at != null && (c.meet_at * 1000) < Date.now()
-    const groupLocation = c.venue || c.target_city_name || null
+    // International shows the full route "🇻🇳 Origin → 🇧🇷 Target" with flags.
+    const groupLocation = (isInternational && c.city_name && c.target_city_name)
+      ? `${countryToFlag(c.country ?? null)} ${c.city_name} → ${countryToFlag(c.target_country ?? null) || '🌍'} ${c.target_city_name}`
+      : (c.venue || c.target_city_name || null)
     const groupSubtitle = [
       c.creator_display_name ? t('byCreator', { name: c.creator_display_name }) : null,
       groupLocation,
