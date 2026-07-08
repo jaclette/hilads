@@ -64,6 +64,23 @@
     .slide.deck .lb-list, .slide.deck .ch-list{ flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:2px; }
     .slide.deck .foot{ flex:0 0 auto; padding-top:12px; display:flex; flex-direction:column; align-items:center; gap:10px; }
 
+    /* Hero portrait — "King Jack", the #1 to dethrone. Sized conservatively (vh
+       clamp) so the 3 CTAs stay above the fold even on iPhone SE. A radial mask
+       fades the edges into the warm gradient (no harsh rectangle); the 👑 is a
+       CSS overlay sitting on his head — playful, weightless, always aligned. */
+    .hero{ position:relative; display:flex; justify-content:center; }
+    .hero-img{
+      width:clamp(80px,13.5vh,128px); height:clamp(80px,13.5vh,128px);
+      object-fit:cover; border-radius:50%;
+      -webkit-mask-image:radial-gradient(circle at 50% 47%, #000 60%, rgba(0,0,0,0) 100%);
+              mask-image:radial-gradient(circle at 50% 47%, #000 60%, rgba(0,0,0,0) 100%);
+    }
+    .hero-crown{
+      position:absolute; left:50%; top:-9%; transform:translateX(-50%) rotate(-12deg);
+      font-size:clamp(28px,5.6vh,44px); line-height:1; pointer-events:none;
+      filter:drop-shadow(0 2px 4px rgba(0,0,0,.55));
+    }
+
     h1{
       margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
       font-size:clamp(26px,7.4vw,42px); text-wrap:balance;
@@ -170,8 +187,12 @@
 
   <!-- ── Slide 1: hero ───────────────────────────────────────────────────────── -->
   <section class="slide center" id="s1">
+    <div class="hero" aria-hidden="true">
+      <img class="hero-img" src="/landing/join-hero.webp" alt="" width="360" height="360" fetchpriority="high" decoding="async" />
+      <span class="hero-crown">👑</span>
+    </div>
     <h1 id="hl">Deviens local à <span id="city">ta ville</span>.</h1>
-    <p class="sub" id="sub">Comme Jacques à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆</p>
+    <p class="sub" id="sub">Comme jaclette à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆</p>
     <div class="ctas">
       <div class="stores" id="stores">
         <a class="btn" id="cta-ios" href="https://apps.apple.com/app/id6768905591" rel="noopener">
@@ -185,7 +206,7 @@
       </div>
       <a class="btn web" id="cta-web" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
-    <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
+    <p class="personal" id="personal">Suis <b>jaclette</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
 
     <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
   </section>
@@ -261,25 +282,25 @@
       return SUP.indexOf(s) >= 0 ? s : 'en';
     }
     var T = {
-      en:{ tag:"Become local. Anywhere.", h1:"Become a local in {city}.", city:"your city", sub:"Like Jacques in Saigon 🇻🇳, launch challenges, take on everyone else's, and climb to the top of your city's leaderboard. 🏆", ios:"Download on", android:"Get it on", web:"Sign up & challenge the world →", personal:"Follow <b>Jacques</b> 🇫🇷 — French expat in Saigon 🇻🇳" },
-      fr:{ tag:"Deviens local. Partout.", h1:"Deviens local à {city}.", city:"ta ville", sub:"Comme Jacques à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆", ios:"Télécharge sur", android:"Disponible sur", web:"Inscris-toi et défie le monde →", personal:"Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳" },
-      vi:{ tag:"Trở thành người bản địa. Ở khắp nơi.", h1:"Trở thành người địa phương ở {city}.", city:"thành phố của bạn", sub:"Giống như Jacques ở Sài Gòn 🇻🇳, tung thử thách, tham gia thử thách của người khác và leo lên top bảng xếp hạng thành phố của bạn. 🏆", ios:"Tải trên", android:"Có trên", web:"Đăng ký và thách đấu cả thế giới →", personal:"Theo dõi <b>Jacques</b> 🇫🇷 — chàng trai Pháp sống ở Sài Gòn 🇻🇳" },
-      es:{ tag:"Vuélvete local. En todas partes.", h1:"Vuélvete un local en {city}.", city:"tu ciudad", sub:"Como Jacques en Saigón 🇻🇳, lanza retos, acepta los de los demás y sube a lo más alto del ranking de tu ciudad. 🏆", ios:"Descárgalo en", android:"Disponible en", web:"Regístrate y reta al mundo →", personal:"Sigue a <b>Jacques</b> 🇫🇷 — expat francés en Saigón 🇻🇳" },
-      it:{ tag:"Diventa local. Ovunque.", h1:"Diventa un local a {city}.", city:"la tua città", sub:"Come Jacques a Saigon 🇻🇳, lancia sfide, accetta quelle degli altri e scala la classifica della tua città. 🏆", ios:"Scarica su", android:"Disponibile su", web:"Iscriviti e sfida il mondo →", personal:"Segui <b>Jacques</b> 🇫🇷 — expat francese a Saigon 🇻🇳" },
-      "pt-br":{ tag:"Vire um local. Em qualquer lugar.", h1:"Vire um local em {city}.", city:"sua cidade", sub:"Como o Jacques em Saigon 🇻🇳, lance desafios, encare os dos outros e suba pro topo do ranking da sua cidade. 🏆", ios:"Baixe na", android:"Disponível no", web:"Cadastre-se e desafie o mundo →", personal:"Siga o <b>Jacques</b> 🇫🇷 — expat francês em Saigon 🇻🇳" },
-      "pt-pt":{ tag:"Torna-te local. Em todo o lado.", h1:"Torna-te um local em {city}.", city:"a tua cidade", sub:"Como o Jacques em Saigão 🇻🇳, lança desafios, aceita os dos outros e sobe ao topo do ranking da tua cidade. 🏆", ios:"Descarrega na", android:"Disponível no", web:"Regista-te e desafia o mundo →", personal:"Segue o <b>Jacques</b> 🇫🇷 — expat francês em Saigão 🇻🇳" },
-      de:{ tag:"Werde ein Local. Überall.", h1:"Werde ein Local in {city}.", city:"deiner Stadt", sub:"Wie Jacques in Saigon 🇻🇳: starte Challenges, nimm die der anderen an und klettere an die Spitze der Rangliste deiner Stadt. 🏆", ios:"Laden im", android:"Jetzt bei", web:"Registrier dich und fordere die Welt heraus →", personal:"Folge <b>Jacques</b> 🇫🇷 — französischer Expat in Saigon 🇻🇳" },
-      nl:{ tag:"Word een local. Overal.", h1:"Word een local in {city}.", city:"jouw stad", sub:"Net als Jacques in Saigon 🇻🇳: daag anderen uit, neem hun challenges aan en klim naar de top van de ranglijst van jouw stad. 🏆", ios:"Download in", android:"Ontdek op", web:"Meld je aan en daag de wereld uit →", personal:"Volg <b>Jacques</b> 🇫🇷 — Franse expat in Saigon 🇻🇳" },
-      "zh-hans":{ tag:"成为本地人。在任何地方。", h1:"在{city}成为本地人。", city:"你的城市", sub:"像 Jacques 在西贡 🇻🇳 一样，发起挑战，接受别人的挑战，冲上你城市排行榜的榜首。🏆", ios:"下载", android:"获取", web:"注册，向全世界发起挑战 →", personal:"关注 <b>Jacques</b> 🇫🇷 —— 住在西贡的法国人 🇻🇳" },
-      "zh-hant":{ tag:"成為在地人。在任何地方。", h1:"在{city}成為在地人。", city:"你的城市", sub:"像 Jacques 在西貢 🇻🇳 一樣，發起挑戰，接受別人的挑戰，衝上你城市排行榜的榜首。🏆", ios:"下載", android:"取得", web:"註冊，向全世界發起挑戰 →", personal:"追蹤 <b>Jacques</b> 🇫🇷 —— 住在西貢的法國人 🇻🇳" },
-      ja:{ tag:"どこでも、ローカルに。", h1:"{city}でローカルになろう。", city:"あなたの街", sub:"サイゴン 🇻🇳 の Jacques のように、チャレンジを送って、みんなのチャレンジにも挑戦して、街のランキング1位を目指そう。🏆", ios:"ダウンロード", android:"手に入れる", web:"登録して世界にチャレンジ →", personal:"<b>Jacques</b> 🇫🇷 をフォロー — サイゴン 🇻🇳 在住のフランス人" },
-      ko:{ tag:"어디서든, 로컬로.", h1:"{city}에서 로컬이 되어보세요.", city:"당신의 도시", sub:"사이공 🇻🇳 의 Jacques처럼, 챌린지를 보내고 다른 사람의 챌린지에도 도전하며 우리 도시 랭킹 1위에 올라보세요. 🏆", ios:"다운로드", android:"다운로드", web:"가입하고 전 세계에 도전하세요 →", personal:"<b>Jacques</b> 🇫🇷 팔로우 — 사이공 🇻🇳 에 사는 프랑스인" },
-      fil:{ tag:"Maging local. Kahit saan.", h1:"Maging local sa {city}.", city:"city mo", sub:"Tulad ni Jacques sa Saigon 🇻🇳, mag-challenge, sagutin ang sa iba, at umakyat sa tuktok ng leaderboard ng city mo. 🏆", ios:"I-download sa", android:"Kunin sa", web:"Mag-sign up at i-challenge ang mundo →", personal:"I-follow si <b>Jacques</b> 🇫🇷 — French expat sa Saigon 🇻🇳" },
-      th:{ tag:"เป็นคนท้องถิ่นได้ทุกที่", h1:"มาเป็นคนท้องถิ่นใน {city} กันเถอะ", city:"เมืองของคุณ", sub:"เหมือน Jacques ที่ไซง่อน 🇻🇳 ท้าคนอื่น รับคำท้าของคนอื่น แล้วไต่ขึ้นอันดับ 1 ของเมืองคุณ 🏆", ios:"ดาวน์โหลดบน", android:"ดาวน์โหลดจาก", web:"สมัครแล้วท้าคนทั้งโลกเลย →", personal:"ติดตาม <b>Jacques</b> 🇫🇷 — หนุ่มฝรั่งเศสที่อยู่ในไซง่อน 🇻🇳" },
-      id:{ tag:"Jadi warga lokal. Di mana saja.", h1:"Jadi warga lokal di {city}.", city:"kotamu", sub:"Seperti Jacques di Saigon 🇻🇳, lempar tantangan, terima tantangan orang lain, dan naik ke puncak peringkat kotamu. 🏆", ios:"Unduh di", android:"Dapatkan di", web:"Daftar dan tantang dunia →", personal:"Ikuti <b>Jacques</b> 🇫🇷 — ekspat Prancis di Saigon 🇻🇳" },
-      hi:{ tag:"लोकल बनो। कहीं भी।", h1:"{city} में लोकल बनो।", city:"अपने शहर", sub:"साइगॉन 🇻🇳 में Jacques की तरह, चैलेंज दो, दूसरों के चैलेंज लो और अपने शहर की लीडरबोर्ड में टॉप पर पहुंचो। 🏆", ios:"डाउनलोड करें", android:"पाएं", web:"साइन अप करो और दुनिया को चैलेंज दो →", personal:"<b>Jacques</b> 🇫🇷 को फ़ॉलो करो — साइगॉन 🇻🇳 में रहने वाला फ्रेंच एक्सपैट" },
-      ru:{ tag:"Стань местным. Где угодно.", h1:"Стань местным в {city}.", city:"своём городе", sub:"Как Jacques в Сайгоне 🇻🇳, бросай вызовы, принимай чужие и поднимайся на вершину рейтинга своего города. 🏆", ios:"Загрузить в", android:"Доступно в", web:"Зарегистрируйся и брось вызов миру →", personal:"Подпишись на <b>Jacques</b> 🇫🇷 — француз, живущий в Сайгоне 🇻🇳" },
-      ar:{ tag:"كن محليًا. في أي مكان.", h1:"كن محليًا في {city}.", city:"مدينتك", sub:"مثل Jacques في سايغون 🇻🇳، أطلق التحديات، وواجه تحديات الآخرين، وتصدّر تصنيف مدينتك. 🏆", ios:"حمّله من", android:"احصل عليه من", web:"سجّل وتحدَّ العالم", personal:"تابِع <b>Jacques</b> 🇫🇷 — فرنسي مقيم في سايغون 🇻🇳" },
+      en:{ tag:"Become local. Anywhere.", h1:"Become a local in {city}.", city:"your city", sub:"Like jaclette in Saigon 🇻🇳, launch challenges, take on everyone else's, and climb to the top of your city's leaderboard. 🏆", ios:"Download on", android:"Get it on", web:"Sign up & challenge the world →", personal:"Follow <b>jaclette</b> 🇫🇷 — French expat in Saigon 🇻🇳" },
+      fr:{ tag:"Deviens local. Partout.", h1:"Deviens local à {city}.", city:"ta ville", sub:"Comme jaclette à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆", ios:"Télécharge sur", android:"Disponible sur", web:"Inscris-toi et défie le monde →", personal:"Suis <b>jaclette</b> 🇫🇷 — expat français à Saigon 🇻🇳" },
+      vi:{ tag:"Trở thành người bản địa. Ở khắp nơi.", h1:"Trở thành người địa phương ở {city}.", city:"thành phố của bạn", sub:"Giống như jaclette ở Sài Gòn 🇻🇳, tung thử thách, tham gia thử thách của người khác và leo lên top bảng xếp hạng thành phố của bạn. 🏆", ios:"Tải trên", android:"Có trên", web:"Đăng ký và thách đấu cả thế giới →", personal:"Theo dõi <b>jaclette</b> 🇫🇷 — chàng trai Pháp sống ở Sài Gòn 🇻🇳" },
+      es:{ tag:"Vuélvete local. En todas partes.", h1:"Vuélvete un local en {city}.", city:"tu ciudad", sub:"Como jaclette en Saigón 🇻🇳, lanza retos, acepta los de los demás y sube a lo más alto del ranking de tu ciudad. 🏆", ios:"Descárgalo en", android:"Disponible en", web:"Regístrate y reta al mundo →", personal:"Sigue a <b>jaclette</b> 🇫🇷 — expat francés en Saigón 🇻🇳" },
+      it:{ tag:"Diventa local. Ovunque.", h1:"Diventa un local a {city}.", city:"la tua città", sub:"Come jaclette a Saigon 🇻🇳, lancia sfide, accetta quelle degli altri e scala la classifica della tua città. 🏆", ios:"Scarica su", android:"Disponibile su", web:"Iscriviti e sfida il mondo →", personal:"Segui <b>jaclette</b> 🇫🇷 — expat francese a Saigon 🇻🇳" },
+      "pt-br":{ tag:"Vire um local. Em qualquer lugar.", h1:"Vire um local em {city}.", city:"sua cidade", sub:"Como o jaclette em Saigon 🇻🇳, lance desafios, encare os dos outros e suba pro topo do ranking da sua cidade. 🏆", ios:"Baixe na", android:"Disponível no", web:"Cadastre-se e desafie o mundo →", personal:"Siga o <b>jaclette</b> 🇫🇷 — expat francês em Saigon 🇻🇳" },
+      "pt-pt":{ tag:"Torna-te local. Em todo o lado.", h1:"Torna-te um local em {city}.", city:"a tua cidade", sub:"Como o jaclette em Saigão 🇻🇳, lança desafios, aceita os dos outros e sobe ao topo do ranking da tua cidade. 🏆", ios:"Descarrega na", android:"Disponível no", web:"Regista-te e desafia o mundo →", personal:"Segue o <b>jaclette</b> 🇫🇷 — expat francês em Saigão 🇻🇳" },
+      de:{ tag:"Werde ein Local. Überall.", h1:"Werde ein Local in {city}.", city:"deiner Stadt", sub:"Wie jaclette in Saigon 🇻🇳: starte Challenges, nimm die der anderen an und klettere an die Spitze der Rangliste deiner Stadt. 🏆", ios:"Laden im", android:"Jetzt bei", web:"Registrier dich und fordere die Welt heraus →", personal:"Folge <b>jaclette</b> 🇫🇷 — französischer Expat in Saigon 🇻🇳" },
+      nl:{ tag:"Word een local. Overal.", h1:"Word een local in {city}.", city:"jouw stad", sub:"Net als jaclette in Saigon 🇻🇳: daag anderen uit, neem hun challenges aan en klim naar de top van de ranglijst van jouw stad. 🏆", ios:"Download in", android:"Ontdek op", web:"Meld je aan en daag de wereld uit →", personal:"Volg <b>jaclette</b> 🇫🇷 — Franse expat in Saigon 🇻🇳" },
+      "zh-hans":{ tag:"成为本地人。在任何地方。", h1:"在{city}成为本地人。", city:"你的城市", sub:"像 jaclette 在西贡 🇻🇳 一样，发起挑战，接受别人的挑战，冲上你城市排行榜的榜首。🏆", ios:"下载", android:"获取", web:"注册，向全世界发起挑战 →", personal:"关注 <b>jaclette</b> 🇫🇷 —— 住在西贡的法国人 🇻🇳" },
+      "zh-hant":{ tag:"成為在地人。在任何地方。", h1:"在{city}成為在地人。", city:"你的城市", sub:"像 jaclette 在西貢 🇻🇳 一樣，發起挑戰，接受別人的挑戰，衝上你城市排行榜的榜首。🏆", ios:"下載", android:"取得", web:"註冊，向全世界發起挑戰 →", personal:"追蹤 <b>jaclette</b> 🇫🇷 —— 住在西貢的法國人 🇻🇳" },
+      ja:{ tag:"どこでも、ローカルに。", h1:"{city}でローカルになろう。", city:"あなたの街", sub:"サイゴン 🇻🇳 の jaclette のように、チャレンジを送って、みんなのチャレンジにも挑戦して、街のランキング1位を目指そう。🏆", ios:"ダウンロード", android:"手に入れる", web:"登録して世界にチャレンジ →", personal:"<b>jaclette</b> 🇫🇷 をフォロー — サイゴン 🇻🇳 在住のフランス人" },
+      ko:{ tag:"어디서든, 로컬로.", h1:"{city}에서 로컬이 되어보세요.", city:"당신의 도시", sub:"사이공 🇻🇳 의 jaclette처럼, 챌린지를 보내고 다른 사람의 챌린지에도 도전하며 우리 도시 랭킹 1위에 올라보세요. 🏆", ios:"다운로드", android:"다운로드", web:"가입하고 전 세계에 도전하세요 →", personal:"<b>jaclette</b> 🇫🇷 팔로우 — 사이공 🇻🇳 에 사는 프랑스인" },
+      fil:{ tag:"Maging local. Kahit saan.", h1:"Maging local sa {city}.", city:"city mo", sub:"Tulad ni jaclette sa Saigon 🇻🇳, mag-challenge, sagutin ang sa iba, at umakyat sa tuktok ng leaderboard ng city mo. 🏆", ios:"I-download sa", android:"Kunin sa", web:"Mag-sign up at i-challenge ang mundo →", personal:"I-follow si <b>jaclette</b> 🇫🇷 — French expat sa Saigon 🇻🇳" },
+      th:{ tag:"เป็นคนท้องถิ่นได้ทุกที่", h1:"มาเป็นคนท้องถิ่นใน {city} กันเถอะ", city:"เมืองของคุณ", sub:"เหมือน jaclette ที่ไซง่อน 🇻🇳 ท้าคนอื่น รับคำท้าของคนอื่น แล้วไต่ขึ้นอันดับ 1 ของเมืองคุณ 🏆", ios:"ดาวน์โหลดบน", android:"ดาวน์โหลดจาก", web:"สมัครแล้วท้าคนทั้งโลกเลย →", personal:"ติดตาม <b>jaclette</b> 🇫🇷 — หนุ่มฝรั่งเศสที่อยู่ในไซง่อน 🇻🇳" },
+      id:{ tag:"Jadi warga lokal. Di mana saja.", h1:"Jadi warga lokal di {city}.", city:"kotamu", sub:"Seperti jaclette di Saigon 🇻🇳, lempar tantangan, terima tantangan orang lain, dan naik ke puncak peringkat kotamu. 🏆", ios:"Unduh di", android:"Dapatkan di", web:"Daftar dan tantang dunia →", personal:"Ikuti <b>jaclette</b> 🇫🇷 — ekspat Prancis di Saigon 🇻🇳" },
+      hi:{ tag:"लोकल बनो। कहीं भी।", h1:"{city} में लोकल बनो।", city:"अपने शहर", sub:"साइगॉन 🇻🇳 में jaclette की तरह, चैलेंज दो, दूसरों के चैलेंज लो और अपने शहर की लीडरबोर्ड में टॉप पर पहुंचो। 🏆", ios:"डाउनलोड करें", android:"पाएं", web:"साइन अप करो और दुनिया को चैलेंज दो →", personal:"<b>jaclette</b> 🇫🇷 को फ़ॉलो करो — साइगॉन 🇻🇳 में रहने वाला फ्रेंच एक्सपैट" },
+      ru:{ tag:"Стань местным. Где угодно.", h1:"Стань местным в {city}.", city:"своём городе", sub:"Как jaclette в Сайгоне 🇻🇳, бросай вызовы, принимай чужие и поднимайся на вершину рейтинга своего города. 🏆", ios:"Загрузить в", android:"Доступно в", web:"Зарегистрируйся и брось вызов миру →", personal:"Подпишись на <b>jaclette</b> 🇫🇷 — француз, живущий в Сайгоне 🇻🇳" },
+      ar:{ tag:"كن محليًا. في أي مكان.", h1:"كن محليًا في {city}.", city:"مدينتك", sub:"مثل jaclette في سايغون 🇻🇳، أطلق التحديات، وواجه تحديات الآخرين، وتصدّر تصنيف مدينتك. 🏆", ios:"حمّله من", android:"احصل عليه من", web:"سجّل وتحدَّ العالم", personal:"تابِع <b>jaclette</b> 🇫🇷 — فرنسي مقيم في سايغون 🇻🇳" },
     };
     /* Slide 2 & 3 strings (leaderboard + international challenges). */
     var LB = {
