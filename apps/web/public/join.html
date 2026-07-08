@@ -33,22 +33,24 @@
       padding:28px 22px calc(28px + env(safe-area-inset-bottom));
       gap:18px;
     }
-    .brand{ display:flex; align-items:center; gap:9px; margin-bottom:2px; }
-    .brand .sq{
-      width:30px; height:30px; border-radius:9px;
-      background:linear-gradient(140deg,var(--accent),var(--accent2));
-      color:#fff; font-weight:800; font-size:15px;
-      display:flex; align-items:center; justify-content:center;
-      letter-spacing:-.5px;
-    }
+    .brand{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
+    .brand svg{ display:block; flex:0 0 auto; }
     .brand .name{ font-weight:700; font-size:19px; letter-spacing:-.4px; }
     h1{
       margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
-      font-size:clamp(28px,7.8vw,42px);
+      font-size:clamp(26px,7.4vw,42px);
+      text-wrap:balance;                 /* long city names wrap evenly, not orphaned */
     }
-    h1 #city{
-      background:linear-gradient(120deg,var(--hot),var(--accent2));
-      -webkit-background-clip:text; background-clip:text; color:transparent;
+    /* Accent city name. Solid colour is the fallback; the gradient clip only
+       applies where the browser supports it, so the name is never invisible
+       on a webview that lacks background-clip:text. */
+    h1 #city{ color:var(--hot); }
+    @supports ((-webkit-background-clip:text) or (background-clip:text)){
+      h1 #city{
+        background:linear-gradient(120deg,var(--hot),var(--accent2));
+        -webkit-background-clip:text; background-clip:text;
+        -webkit-text-fill-color:transparent; color:transparent;
+      }
     }
     .sub{
       margin:0; max-width:22em; color:var(--text); opacity:.82;
@@ -77,13 +79,26 @@
 <body>
   <main class="wrap">
     <div class="brand">
-      <div class="sq">Hi</div>
+      <!-- Real Hilads mark (inline SVG, mirrors src/components/Logo.jsx). -->
+      <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
+        <defs>
+          <linearGradient id="hig" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#C24A38"/><stop offset="44%" stop-color="#B85530"/><stop offset="100%" stop-color="#B87228"/>
+          </linearGradient>
+        </defs>
+        <rect width="64" height="64" rx="15" fill="url(#hig)"/>
+        <rect x="9" y="13" width="8" height="38" rx="2.5" fill="#fff"/>
+        <rect x="26" y="13" width="8" height="38" rx="2.5" fill="#fff"/>
+        <rect x="17" y="28" width="9" height="6" rx="2" fill="#fff"/>
+        <rect x="43" y="25" width="8" height="26" rx="2.5" fill="#fff"/>
+        <circle cx="47" cy="15" r="5.5" fill="#fff"/>
+      </svg>
       <div class="name">hilads</div>
     </div>
 
     <h1>Deviens local à <span id="city">ta ville</span>.</h1>
 
-    <p class="sub">Comme Jacques à Saigon, lance des défis aux gens de ta ville et découvre-la comme un vrai local.</p>
+    <p class="sub">Comme Jacques à Saigon 🇻🇳, lance des défis aux gens de ta ville et découvre-la comme un vrai local.</p>
 
     <div class="ctas">
       <div class="stores" id="stores">
@@ -99,10 +114,10 @@
         </a>
       </div>
 
-      <a class="web" id="cta-web" href="/?auth=signup" rel="noopener">Commencer sur le web&nbsp;→</a>
+      <a class="btn web" id="cta-web" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
 
-    <p class="personal">Suis <b>Jacques</b> 🇫🇷 — French expat à Saigon</p>
+    <p class="personal">Suis <b>Jacques</b> 🇫🇷 — French expat à Saigon 🇻🇳</p>
   </main>
 
   <script>
@@ -132,11 +147,14 @@
 
     /* ── City from the existing IP edge function. Never render undefined/empty:
        the HTML already says "ta ville"; we only upgrade it on a real match. ── */
+    // Display aliases: warmer / shorter local names for the headline. Tracking
+    // still uses the raw detected city so analytics match other surfaces.
+    var ALIAS = { 'Ho Chi Minh City': 'Saigon' };
     var CITY = 'unknown', viewed = false;
     function pageView(){ if (viewed) return; viewed = true; cap('join_page_view', { city: CITY }); }
     fetch('/api/geo')
       .then(function (r) { return r.json(); })
-      .then(function (d) { if (d && d.city) { CITY = d.city; document.getElementById('city').textContent = d.city; } pageView(); })
+      .then(function (d) { if (d && d.city) { CITY = d.city; document.getElementById('city').textContent = ALIAS[d.city] || d.city; } pageView(); })
       .catch(function () { pageView(); });
     setTimeout(pageView, 1500);   // safety net if /api/geo hangs
 
