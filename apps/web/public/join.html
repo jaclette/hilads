@@ -73,7 +73,7 @@
        clamp) so the 3 CTAs stay above the fold even on iPhone SE. A radial mask
        fades the edges into the warm gradient (no harsh rectangle); the 👑 is a
        CSS overlay sitting on his head — playful, weightless, always aligned. */
-    .hero{ position:relative; display:flex; justify-content:center; }
+    .hero{ position:relative; display:flex; justify-content:center; cursor:pointer; }
     .hero-img{
       width:clamp(72px,12vh,116px); height:clamp(72px,12vh,116px);
       object-fit:cover; border-radius:50%;
@@ -103,7 +103,7 @@
     /* Rank + dethrone badge under the portrait (jaclette is #1 to dethrone).
        Populated from the live leaderboard rank; hidden until it loads. */
     .hero-badge{
-      display:inline-flex; align-items:center; gap:6px; align-self:center;
+      display:inline-flex; align-items:center; gap:6px; align-self:center; cursor:pointer;
       font-size:13px; font-weight:700; color:var(--text); white-space:nowrap;
       background:linear-gradient(135deg,rgba(194,74,56,.24),rgba(184,114,40,.16));
       border:1px solid rgba(255,122,60,.42); border-radius:999px; padding:6px 13px;
@@ -220,7 +220,7 @@
   <!-- ── Slide 1: hero ───────────────────────────────────────────────────────── -->
   <section class="slide center" id="s1">
     <button class="flags" id="flags" type="button" hidden aria-label="challenges"></button>
-    <div class="hero" aria-hidden="true">
+    <div class="hero" id="hero" aria-hidden="true">
       <img class="hero-img" src="/landing/join-hero.webp" alt="" width="360" height="360" fetchpriority="high" decoding="async" />
       <span class="hero-crown">👑</span>
     </div>
@@ -395,6 +395,8 @@
     function setCurrent(i){ for (var k=0;k<tabs.length;k++){ tabs[k].classList.toggle('on', k<=i); tabs[k].classList.toggle('cur', k===i); } }
     // Tap a tab → jump straight to that slide.
     for (var _t=0; _t<tabs.length; _t++){ (function(el){ el.addEventListener('click', function(){ var s=$(el.getAttribute('data-target')); if (s) s.scrollIntoView({ behavior:'smooth' }); }); })(tabs[_t]); }
+    // Portrait + rank badge → leaderboard (slide 2).
+    ['hero','hero-badge'].forEach(function (id) { var el = $(id); if (el) el.addEventListener('click', function () { $('s2').scrollIntoView({ behavior:'smooth' }); }); });
     var slideEls = [$('s1'), $('s2'), $('s3')];
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (entries) {
