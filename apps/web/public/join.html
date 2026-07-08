@@ -241,8 +241,6 @@
       <a class="btn web" id="cta-web" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
     <p class="personal" id="personal">Suis <b>jaclette</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
-
-    <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
   </section>
 
   <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
@@ -372,7 +370,6 @@
     $('personal').innerHTML = t.personal;
     ['cta-web','cta-web2','cta-web3'].forEach(function(id){ $(id).textContent = t.web; });
     $('lb-title').textContent = lb.lbTitle;
-    $('cue1-label').textContent = lb.cue1;
     $('cue2-label').textContent = lb.cue2;
     $('ch-title').textContent = lb.chTitle;
     $('ch-sub').textContent = lb.chSub;
@@ -443,7 +440,6 @@
         hb.textContent = (medals[jac - 1] || ('#' + jac)) + ' ' + lb.heroBadge.replace('{rank}', jac);
         hb.hidden = false;
       }
-      cue('cue1', 's2');   // slide-1 arrow now points to a populated board
     }).catch(function () {});
 
     /* ── Slide 3: live international challenges (cached edge fn) ──────────────── */
@@ -473,8 +469,13 @@
       items.forEach(function (e) { [e.country, e.targetCountry].forEach(function (c) { if (c) tally[c] = (tally[c] || 0) + 1; }); });
       var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }).slice(0, 5);
       if (top.length) {
+        // Localized country names via the browser (no data map needed).
+        var _loc = L.replace('zh-hans','zh-Hans').replace('zh-hant','zh-Hant').replace('pt-br','pt-BR').replace('pt-pt','pt-PT');
+        var regionOf;
+        try { var _dn = new Intl.DisplayNames([_loc, 'en'], { type:'region' }); regionOf = function (c) { try { return _dn.of(c) || c; } catch (e) { return c; } }; }
+        catch (e) { regionOf = function (c) { return c; }; }
         var fh = '<span class="cap">' + esc(lb.chTitle) + '</span><span class="row">';
-        top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' <span class="n">' + tally[c] + '</span></span>'; });
+        top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' ' + esc(regionOf(c)) + ' <span class="n">' + tally[c] + '</span></span>'; });
         fh += '</span><span class="go"><i>⌄</i><i>⌄</i></span>';
         var fe = $('flags');
         fe.innerHTML = fh;
