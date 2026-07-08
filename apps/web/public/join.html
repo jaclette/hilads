@@ -87,16 +87,18 @@
     }
     /* Live country challenge-counter ABOVE the portrait — flag + count chips,
        tap to jump to the challenges slide. Fun + language-neutral (flags/numbers). */
-    .flags{ display:flex; flex-direction:column; align-items:center; gap:7px;
-      align-self:center; max-width:100%; background:none; border:0; padding:0; cursor:pointer; }
-    .flags .cap{ font-size:12.5px; font-weight:700; color:var(--accent2); letter-spacing:.2px; }
-    .flags .row{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px; }
-    .flags .chip{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:700; color:var(--text);
-      background:var(--surface); border:1px solid rgba(255,255,255,.10); border-radius:999px; padding:4px 9px; }
+    .flags{ display:flex; flex-direction:column; align-items:center; gap:8px; align-self:center; max-width:100%; cursor:pointer;
+      background:linear-gradient(135deg,rgba(194,74,56,.18),rgba(184,114,40,.10));
+      border:1px solid rgba(255,122,60,.38); border-radius:18px; padding:11px 18px 9px;
+      box-shadow:0 6px 20px rgba(0,0,0,.28); }
+    .flags .cap{ font-size:14px; font-weight:800; color:var(--text); letter-spacing:.2px; }
+    .flags .row{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:7px; }
+    .flags .chip{ display:inline-flex; align-items:center; gap:5px; font-size:14px; font-weight:800; color:var(--text);
+      background:rgba(0,0,0,.34); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:5px 12px; }
     .flags .chip .n{ color:var(--accent2); }
-    .flags .go{ color:var(--accent2); font-weight:800; font-size:16px; }
-    @media (prefers-reduced-motion: no-preference){ .flags .go{ animation:flagsPoke 1.5s ease-in-out infinite; display:inline-block; } }
-    @keyframes flagsPoke{ 0%,100%{ transform:translateX(0);} 50%{ transform:translateX(3px);} }
+    .flags .go{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
+    .flags .go i{ font-style:normal; font-size:20px; line-height:.5; }
+    @media (prefers-reduced-motion: no-preference){ .flags .go{ animation:scrollBounce 1.5s ease-in-out infinite; } }
 
     /* Rank + dethrone badge under the portrait (jaclette is #1 to dethrone).
        Populated from the live leaderboard rank; hidden until it loads. */
@@ -473,7 +475,7 @@
       if (top.length) {
         var fh = '<span class="cap">' + esc(lb.chTitle) + '</span><span class="row">';
         top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' <span class="n">' + tally[c] + '</span></span>'; });
-        fh += '<span class="go">→</span></span>';
+        fh += '</span><span class="go"><i>⌄</i><i>⌄</i></span>';
         var fe = $('flags');
         fe.innerHTML = fh;
         fe.hidden = false;
