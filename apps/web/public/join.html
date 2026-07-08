@@ -35,18 +35,23 @@
       padding:28px 22px calc(28px + env(safe-area-inset-bottom));
       gap:18px;
     }
-    /* Scroll cue — only shown once the leaderboard below has loaded, so people
-       discover the board instead of thinking the page ends at the hero. */
+    /* Scroll cue — a tappable pill, shown once the leaderboard has loaded, so
+       people discover the board instead of thinking the page ends at the hero. */
     .scroll-hint{
-      position:absolute; left:50%; bottom:calc(12px + env(safe-area-inset-bottom));
+      position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom));
       transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
-      gap:2px; color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.3px;
+      gap:7px; cursor:pointer;
     }
-    .scroll-hint .chev{ font-size:18px; line-height:1; }
+    .scroll-hint .label{
+      font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
+      background:var(--surface); border:1px solid rgba(255,255,255,.10);
+      padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.35);
+    }
+    .scroll-hint .chev{ font-size:22px; line-height:1; color:var(--accent2); }
     @media (prefers-reduced-motion: no-preference){
-      .scroll-hint .chev{ animation:scrollBounce 1.6s ease-in-out infinite; }
+      .scroll-hint .chev{ animation:scrollBounce 1.5s ease-in-out infinite; }
     }
-    @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+    @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
     .brand{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
     .brand svg{ display:block; flex:0 0 auto; }
     .brand .name{ font-weight:700; font-size:19px; letter-spacing:-.4px; }
@@ -174,7 +179,7 @@
 
     <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
 
-    <div class="scroll-hint" id="scroll-hint" hidden aria-hidden="true"><span>🏆</span><span class="chev">↓</span></div>
+    <div class="scroll-hint" id="scroll-hint" hidden><span class="label" id="scroll-hint-label">🏆 Vois le top 10 mondial</span><span class="chev">↓</span></div>
   </main>
 
   <!-- Below-the-fold social proof: live top-10 worldwide board. Hidden until
@@ -301,25 +306,25 @@
       return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
     }
     var LB = {
-      en:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts" },
-      fr:{ title:"🏆 Classement mondial", sub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts" },
-      vi:{ title:"🏆 Bảng xếp hạng thế giới", sub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm" },
-      es:{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts" },
-      it:{ title:"🏆 Classifica mondiale", sub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts" },
-      "pt-br":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts" },
-      "pt-pt":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts" },
-      de:{ title:"🏆 Weltrangliste", sub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt." },
-      nl:{ title:"🏆 Wereldranglijst", sub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn" },
-      "zh-hans":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分" },
-      "zh-hant":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分" },
-      ja:{ title:"🏆 世界ランキング", sub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt" },
-      ko:{ title:"🏆 글로벌 랭킹", sub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점" },
-      fil:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos" },
-      th:{ title:"🏆 อันดับโลก", sub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม" },
-      id:{ title:"🏆 Peringkat dunia", sub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin" },
-      hi:{ title:"🏆 वर्ल्ड लीडरबोर्ड", sub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट" },
-      ru:{ title:"🏆 Мировой рейтинг", sub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк." },
-      ar:{ title:"🏆 التصنيف العالمي", sub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة" },
+      en:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts", hint:"🏆 See the world's top 10" },
+      fr:{ title:"🏆 Classement mondial", sub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts", hint:"🏆 Vois le top 10 mondial" },
+      vi:{ title:"🏆 Bảng xếp hạng thế giới", sub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm", hint:"🏆 Xem top 10 thế giới" },
+      es:{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts", hint:"🏆 Mira el top 10 mundial" },
+      it:{ title:"🏆 Classifica mondiale", sub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts", hint:"🏆 Guarda la top 10 mondiale" },
+      "pt-br":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts", hint:"🏆 Veja o top 10 mundial" },
+      "pt-pt":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts", hint:"🏆 Vê o top 10 mundial" },
+      de:{ title:"🏆 Weltrangliste", sub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt.", hint:"🏆 Sieh dir die Top 10 an" },
+      nl:{ title:"🏆 Wereldranglijst", sub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn", hint:"🏆 Bekijk de wereld-top 10" },
+      "zh-hans":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分", hint:"🏆 看看全球前十" },
+      "zh-hant":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分", hint:"🏆 看看全球前十" },
+      ja:{ title:"🏆 世界ランキング", sub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt", hint:"🏆 世界トップ10を見る" },
+      ko:{ title:"🏆 글로벌 랭킹", sub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점", hint:"🏆 세계 톱10 보기" },
+      fil:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos", hint:"🏆 Tingnan ang world top 10" },
+      th:{ title:"🏆 อันดับโลก", sub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม", hint:"🏆 ดูท็อป 10 ของโลก" },
+      id:{ title:"🏆 Peringkat dunia", sub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin", hint:"🏆 Lihat top 10 dunia" },
+      hi:{ title:"🏆 वर्ल्ड लीडरबोर्ड", sub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट", hint:"🏆 वर्ल्ड टॉप 10 देखो" },
+      ru:{ title:"🏆 Мировой рейтинг", sub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк.", hint:"🏆 Смотри топ-10 мира" },
+      ar:{ title:"🏆 التصنيف العالمي", sub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", hint:"🏆 شاهد أفضل 10 في العالم" },
     };
     var lb = LB[L] || LB.en;
     fetch('/api/leaderboard-top')
@@ -346,7 +351,15 @@
         if (jac != null) subEl.innerHTML = lb.sub.replace('{rank}', jac);
         else subEl.hidden = true;
         document.getElementById('lb').hidden = false;
-        var sh = document.getElementById('scroll-hint'); if (sh) sh.hidden = false;
+        var sh = document.getElementById('scroll-hint');
+        if (sh) {
+          var shl = document.getElementById('scroll-hint-label');
+          if (shl) shl.textContent = lb.hint;
+          sh.hidden = false;
+          sh.addEventListener('click', function () {
+            document.getElementById('lb').scrollIntoView({ behavior: 'smooth' });
+          });
+        }
       })
       .catch(function () { /* keep the section hidden */ });
 
