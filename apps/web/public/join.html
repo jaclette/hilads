@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <!-- Paid-traffic conversion landing (Instagram). Not for SEO — the SSR home
-       page owns organic. Keep this page STANDALONE + tiny: it must paint on a
-       Vietnamese 4G connection inside the Instagram in-app webview. No external
-       fonts, no images, no app bundle. City comes from the existing /api/geo
-       edge function; analytics reuse the same PostHog project + reverse proxy.
-       Copy is localized client-side from navigator.language (all 19 app
-       locales); the French markup below is the no-JS fallback. -->
+  <!-- Paid-traffic conversion landing (Instagram), built as a 3-slide "stories"
+       experience. Standalone + tiny: must paint on Vietnamese 4G inside the IG
+       in-app webview. No external fonts, no app bundle. City from /api/geo;
+       leaderboard from /api/leaderboard-top; international challenges from
+       /api/world-challenges (both CDN-cached). Analytics reuse the same PostHog
+       project + reverse proxy. Copy is localized client-side from
+       navigator.language (all 19 app locales); French markup is the no-JS fallback. -->
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#0d0b09" />
   <title>Hilads — deviens local dans ta ville</title>
@@ -20,150 +20,148 @@
       --text:#ede9e5; --muted:#8a7c74;
     }
     *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html{ scroll-snap-type:y proximity; scroll-behavior:smooth; }
     html,body{ margin:0; padding:0; }
     body{
       background:var(--bg); color:var(--text);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
       -webkit-font-smoothing:antialiased;
-      min-height:100svh;
-      background-image:radial-gradient(120% 80% at 50% -10%, rgba(194,74,56,.28), rgba(13,11,9,0) 60%);
+      background-image:radial-gradient(120% 60% at 50% -6%, rgba(194,74,56,.30), rgba(13,11,9,0) 55%);
     }
-    .wrap{
-      position:relative;
-      min-height:100svh; display:flex; flex-direction:column;
-      align-items:center; justify-content:center; text-align:center;
-      padding:28px 22px calc(28px + env(safe-area-inset-bottom));
-      gap:18px;
+
+    /* ── Persistent stories header: progress bar + brand ─────────────────────── */
+    .topbar{
+      position:fixed; top:0; left:0; right:0; z-index:20;
+      padding:calc(9px + env(safe-area-inset-top)) 16px 9px;
+      background:linear-gradient(to bottom, rgba(13,11,9,.94) 55%, rgba(13,11,9,0));
     }
-    /* Scroll cue — a tappable pill, shown once the leaderboard has loaded, so
-       people discover the board instead of thinking the page ends at the hero. */
-    .scroll-hint{
-      position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
-      gap:7px; cursor:pointer;
+    .progress{ display:flex; gap:5px; }
+    .progress .seg{ flex:1; height:3px; border-radius:3px; background:rgba(255,255,255,.16); transition:background .3s ease; }
+    .progress .seg.on{ background:var(--accent2); }
+    .brandrow{ display:flex; align-items:center; gap:7px; margin-top:9px; }
+    .brandrow svg{ display:block; flex:0 0 auto; }
+    .brandrow .name{ font-weight:700; font-size:16px; letter-spacing:-.3px; }
+    .brandrow .tag{ color:var(--muted); font-size:12px; margin-inline-start:2px; padding-inline-start:8px; border-inline-start:1px solid rgba(255,255,255,.14); }
+
+    /* ── Slides ──────────────────────────────────────────────────────────────── */
+    .slide{
+      position:relative; scroll-snap-align:start; min-height:100svh;
+      display:flex; flex-direction:column; align-items:center; text-align:center;
+      padding:78px 22px calc(28px + env(safe-area-inset-bottom));
     }
-    .scroll-hint .label{
-      font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
-      background:var(--surface); border:1px solid rgba(255,255,255,.10);
-      padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.35);
-    }
-    .scroll-hint .chev{ font-size:22px; line-height:1; color:var(--accent2); }
-    @media (prefers-reduced-motion: no-preference){
-      .scroll-hint .chev{ animation:scrollBounce 1.5s ease-in-out infinite; }
-    }
-    @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
-    .brand{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
-    .brand svg{ display:block; flex:0 0 auto; }
-    .brand .name{ font-weight:700; font-size:19px; letter-spacing:-.4px; }
+    .slide.center{ justify-content:center; gap:18px; }
+    .slide.top{ justify-content:flex-start; gap:0; }
+
     h1{
       margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
-      font-size:clamp(26px,7.4vw,42px);
-      text-wrap:balance;                 /* long city names wrap evenly, not orphaned */
+      font-size:clamp(26px,7.4vw,42px); text-wrap:balance;
     }
-    /* Accent city name. Solid colour is the fallback; the gradient clip only
-       applies where the browser supports it, so the name is never invisible
-       on a webview that lacks background-clip:text. */
     h1 #city{ color:var(--hot); }
     @supports ((-webkit-background-clip:text) or (background-clip:text)){
-      h1 #city{
-        background:linear-gradient(120deg,var(--hot),var(--accent2));
-        -webkit-background-clip:text; background-clip:text;
-        -webkit-text-fill-color:transparent; color:transparent;
-      }
+      h1 #city{ background:linear-gradient(120deg,var(--hot),var(--accent2));
+        -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
     }
-    .sub{
-      margin:0; max-width:22em; color:var(--text); opacity:.82;
-      font-size:clamp(15px,4vw,17px); line-height:1.5;
-    }
+    .sub{ margin:0; max-width:22em; color:var(--text); opacity:.82; font-size:clamp(15px,4vw,17px); line-height:1.5; }
     .ctas{ width:100%; max-width:360px; display:flex; flex-direction:column; gap:11px; margin-top:6px; }
     .stores{ display:flex; flex-direction:column; gap:11px; }
     a.btn{
       display:flex; align-items:center; justify-content:center; gap:10px;
-      width:100%; min-height:56px; padding:0 18px;
-      border-radius:16px; text-decoration:none; font-weight:700; font-size:16px;
-      color:#fff; background:var(--surface2); border:1px solid rgba(255,255,255,.09);
+      width:100%; min-height:56px; padding:0 18px; border-radius:16px;
+      text-decoration:none; font-weight:700; font-size:16px; color:#fff;
+      background:var(--surface2); border:1px solid rgba(255,255,255,.09);
     }
     a.btn .ico{ width:20px; height:20px; flex:0 0 auto; }
     a.btn small{ display:block; font-weight:500; font-size:11px; opacity:.7; line-height:1; margin-bottom:2px; }
     a.btn .lbl{ text-align:left; line-height:1.05; }
-    /* Primary CTA — vivid, so it clearly reads as THE action. Bright bold text
-       with a soft shadow (crisp on the warm gradient), a subtle shimmer sweep
-       and a gentle glow pulse to draw the eye without shouting. */
+    [dir="rtl"] a.btn .lbl{ text-align:right; }
+    /* Primary CTA — vivid, bright bold text, subtle shimmer + glow. */
     a.web{
       position:relative; overflow:hidden; isolation:isolate;
       background:linear-gradient(135deg,#FF7A3C 0%,var(--accent) 58%,#A5372A 100%);
       border:none; font-size:16.5px; min-height:56px; border-radius:16px;
       color:#fff; font-weight:800; letter-spacing:.2px;
-      text-shadow:0 1px 2px rgba(0,0,0,.30);
-      box-shadow:0 6px 20px rgba(194,74,56,.38);
+      text-shadow:0 1px 2px rgba(0,0,0,.30); box-shadow:0 6px 20px rgba(194,74,56,.38);
       transition:transform .12s ease;
     }
     a.web:active{ transform:scale(.98); }
-    a.web::after{                                  /* shimmer band (absolute → not a flex item) */
-      content:""; position:absolute; top:0; bottom:0; left:-60%; width:42%;
+    a.web::after{ content:""; position:absolute; top:0; bottom:0; left:-60%; width:42%;
       background:linear-gradient(100deg,transparent,rgba(255,255,255,.42),transparent);
-      transform:skewX(-18deg); pointer-events:none;
-    }
+      transform:skewX(-18deg); pointer-events:none; }
     @media (prefers-reduced-motion: no-preference){
       a.web{ animation:ctaGlow 2.8s ease-in-out infinite; }
       a.web::after{ animation:ctaShine 3.6s ease-in-out infinite; will-change:left; }
     }
     @keyframes ctaShine{ 0%{ left:-60%; } 48%{ left:130%; } 100%{ left:130%; } }
-    @keyframes ctaGlow{
-      0%,100%{ box-shadow:0 6px 18px rgba(194,74,56,.30); }
-      50%    { box-shadow:0 9px 28px rgba(255,122,60,.52); }
-    }
-    [dir="rtl"] a.btn .lbl{ text-align:right; }
+    @keyframes ctaGlow{ 0%,100%{ box-shadow:0 6px 18px rgba(194,74,56,.30); } 50%{ box-shadow:0 9px 28px rgba(255,122,60,.52); } }
     .personal{ margin-top:8px; color:var(--muted); font-size:13.5px; line-height:1.4; }
     .personal b{ color:var(--text); font-weight:600; }
 
-    /* Worldwide top-10 board — below-the-fold social proof + dethrone hook. */
-    .lb-wrap{ display:flex; flex-direction:column; align-items:center; padding:6px 22px calc(40px + env(safe-area-inset-bottom)); }
-    .lb{ width:100%; max-width:420px; }
-    .lb-head{ text-align:center; margin-bottom:12px; }
-    .lb-title{ font-weight:800; font-size:18px; letter-spacing:-.3px; }
-    .lb-sub{ margin-top:5px; color:var(--muted); font-size:13px; line-height:1.4; }
-    .lb-sub b{ color:var(--text); font-weight:700; }
+    /* ── Scroll cue — tappable pill + bigger bouncing arrow ──────────────────── */
+    .cue{
+      position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom));
+      transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
+      gap:6px; cursor:pointer;
+    }
+    .cue .label{
+      font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
+      background:var(--surface); border:1px solid rgba(255,255,255,.10);
+      padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.35);
+    }
+    .cue .chev{ font-size:30px; line-height:1; color:var(--accent2); }
+    @media (prefers-reduced-motion: no-preference){ .cue .chev{ animation:scrollBounce 1.5s ease-in-out infinite; } }
+    @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(7px); } }
+
+    /* ── Section head (slides 2 & 3) ─────────────────────────────────────────── */
+    .head{ text-align:center; margin-bottom:14px; }
+    .head .title{ font-weight:800; font-size:20px; letter-spacing:-.3px; }
+    .head .desc{ margin-top:5px; color:var(--muted); font-size:13px; line-height:1.4; }
+    .head .desc b{ color:var(--text); font-weight:700; }
+    .panel{ width:100%; max-width:420px; }
+
+    /* ── Leaderboard rows ────────────────────────────────────────────────────── */
     .lb-list{ display:flex; flex-direction:column; gap:6px; }
     .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:13px; background:var(--surface); border:1px solid rgba(255,255,255,.05); }
     .lb-row.me{ background:linear-gradient(135deg,rgba(194,74,56,.22),rgba(184,114,40,.14)); border-color:rgba(255,122,60,.45); }
     .lb-rank{ width:26px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); flex:0 0 auto; }
     .lb-av{ width:32px; height:32px; border-radius:50%; object-fit:cover; background:var(--surface2); color:var(--muted); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; overflow:hidden; }
-    .lb-main{ flex:1 1 auto; min-width:0; }
+    .lb-main{ flex:1 1 auto; min-width:0; text-align:left; }
     .lb-name{ font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .lb-city{ color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .lb-pts{ font-weight:800; font-size:13.5px; color:var(--accent2); flex:0 0 auto; }
-    .lb-cta{ margin-top:14px; }
+    .cta-foot{ margin-top:14px; }
+
+    /* ── International challenge cards ───────────────────────────────────────── */
+    .ch-list{ display:flex; flex-direction:column; gap:9px; }
+    .ch-card{ padding:12px 14px; border-radius:14px; background:var(--surface); border:1px solid rgba(255,255,255,.06); text-align:left; }
+    .ch-route{ font-size:12.5px; color:var(--text); opacity:.9; font-weight:700; margin-bottom:6px; }
+    .ch-route .arrow{ color:var(--accent2); margin:0 5px; }
+    .ch-title{ font-size:14.5px; font-weight:600; line-height:1.35; }
+    .ch-by{ display:flex; align-items:center; gap:7px; margin-top:9px; color:var(--muted); font-size:12px; }
+    .ch-by .av{ width:22px; height:22px; border-radius:50%; object-fit:cover; background:var(--surface2); display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; overflow:hidden; flex:0 0 auto; }
   </style>
 </head>
 <body>
-  <main class="wrap">
-    <div class="brand">
-      <!-- Real Hilads mark (inline SVG, mirrors src/components/Logo.jsx). -->
-      <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
-        <defs>
-          <linearGradient id="hig" x1="5%" y1="0%" x2="95%" y2="100%">
-            <stop offset="0%" stop-color="#C24A38"/><stop offset="44%" stop-color="#B85530"/><stop offset="100%" stop-color="#B87228"/>
-          </linearGradient>
-        </defs>
+  <header class="topbar">
+    <div class="progress" id="progress"><span class="seg on"></span><span class="seg"></span><span class="seg"></span></div>
+    <div class="brandrow">
+      <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
+        <defs><linearGradient id="hig" x1="5%" y1="0%" x2="95%" y2="100%"><stop offset="0%" stop-color="#C24A38"/><stop offset="44%" stop-color="#B85530"/><stop offset="100%" stop-color="#B87228"/></linearGradient></defs>
         <rect width="64" height="64" rx="15" fill="url(#hig)"/>
-        <rect x="9" y="13" width="8" height="38" rx="2.5" fill="#fff"/>
-        <rect x="26" y="13" width="8" height="38" rx="2.5" fill="#fff"/>
-        <rect x="17" y="28" width="9" height="6" rx="2" fill="#fff"/>
-        <rect x="43" y="25" width="8" height="26" rx="2.5" fill="#fff"/>
+        <rect x="9" y="13" width="8" height="38" rx="2.5" fill="#fff"/><rect x="26" y="13" width="8" height="38" rx="2.5" fill="#fff"/>
+        <rect x="17" y="28" width="9" height="6" rx="2" fill="#fff"/><rect x="43" y="25" width="8" height="26" rx="2.5" fill="#fff"/>
         <circle cx="47" cy="15" r="5.5" fill="#fff"/>
       </svg>
-      <div class="name">hilads</div>
+      <span class="name">hilads</span>
+      <span class="tag" id="tagline">Deviens local. Partout.</span>
     </div>
+  </header>
 
+  <!-- ── Slide 1: hero ───────────────────────────────────────────────────────── -->
+  <section class="slide center" id="s1">
     <h1 id="hl">Deviens local à <span id="city">ta ville</span>.</h1>
-
-    <p class="sub" id="sub">Comme Jacques à Saigon 🇻🇳, lance des défis aux gens de ta ville et découvre-la comme un vrai local.</p>
-
+    <p class="sub" id="sub">Comme Jacques à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆</p>
     <div class="ctas">
       <div class="stores" id="stores">
-        <!-- Default order = iOS then Android (spec CTA priority). On an Android UA
-             the two are swapped at runtime so the relevant store is on top. -->
         <a class="btn" id="cta-ios" href="https://apps.apple.com/app/id6768905591" rel="noopener">
           <svg class="ico" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.417 2.2-1.11 3.02-.83.98-2.19 1.74-3.32 1.65-.14-1.1.42-2.27 1.08-3.02.75-.85 2.06-1.5 3.35-1.65zM20.5 17.02c-.55 1.27-.81 1.83-1.52 2.95-.99 1.57-2.39 3.52-4.12 3.53-1.54.02-1.94-.99-4.03-.98-2.09.01-2.53 1-4.07.97-1.73-.02-3.05-1.79-4.04-3.36C-.19 16.6-.46 11.5 1.4 8.79c1.05-1.55 2.71-2.53 4.28-2.53 1.6 0 2.61 1 3.93 1 1.28 0 2.06-1 3.91-1 1.4 0 2.88.76 3.94 2.08-3.46 1.9-2.9 6.84.14 8.68z"/></svg>
           <span class="lbl"><small id="ios-sub">Télécharge sur</small>App Store</span>
@@ -173,25 +171,35 @@
           <span class="lbl"><small id="and-sub">Disponible sur</small>Google Play</span>
         </a>
       </div>
-
       <a class="btn web" id="cta-web" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
-
     <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
 
-    <div class="scroll-hint" id="scroll-hint" hidden><span class="label" id="scroll-hint-label">🏆 Vois le top 10 mondial</span><span class="chev">↓</span></div>
-  </main>
+    <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev">↓</span></div>
+  </section>
 
-  <!-- Below-the-fold social proof: live top-10 worldwide board. Hidden until
-       /api/leaderboard-top returns rows, so it never blocks or shifts the hero. -->
-  <section class="lb-wrap" id="lb" hidden>
-    <div class="lb">
-      <div class="lb-head">
-        <div class="lb-title" id="lb-title">🏆 Classement mondial</div>
-        <div class="lb-sub" id="lb-sub"></div>
+  <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
+  <section class="slide top" id="s2">
+    <div class="panel">
+      <div class="head">
+        <div class="title" id="lb-title">🏆 Classement mondial</div>
+        <div class="desc" id="lb-sub"></div>
       </div>
       <div class="lb-list" id="lb-list"></div>
-      <a class="btn web lb-cta" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+      <a class="btn web cta-foot" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+    </div>
+    <div class="cue" id="cue2" hidden><span class="label" id="cue2-label">🌍 Les défis internationaux</span><span class="chev">↓</span></div>
+  </section>
+
+  <!-- ── Slide 3: live international challenges ───────────────────────────────── -->
+  <section class="slide top" id="s3" hidden>
+    <div class="panel">
+      <div class="head">
+        <div class="title" id="ch-title">🌍 Défis internationaux en cours</div>
+        <div class="desc" id="ch-sub"></div>
+      </div>
+      <div class="ch-list" id="ch-list"></div>
+      <a class="btn web cta-foot" id="cta-web3" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
   </section>
 
@@ -200,35 +208,32 @@
     /* ── PostHog (same project + managed reverse proxy as the app) ──────────── */
     !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister getFeatureFlag isFeatureEnabled reloadFeatureFlags identify setPersonProperties reset get_distinct_id opt_in_capturing opt_out_capturing set_config".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
     posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
-      api_host: 'https://hi.hilads.live',
-      ui_host: 'https://eu.posthog.com',
-      autocapture: false,
-      capture_pageleave: false,
-      disable_session_recording: true,
-      disable_toolbar: true,
+      api_host: 'https://hi.hilads.live', ui_host: 'https://eu.posthog.com',
+      autocapture: false, capture_pageleave: false, disable_session_recording: true, disable_toolbar: true,
     });
-
     function cap(ev, props){ try { posthog.capture(ev, props); } catch (e) {} }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+    function flag(code){
+      if (typeof code!=='string') return '🌍';
+      var c=code.trim().toUpperCase();
+      if(!/^[A-Z]{2}$/.test(c)) return '🌍';
+      return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
+    }
+    function $(id){ return document.getElementById(id); }
 
-    /* ── UTM passthrough: register as super props (so every event carries them)
-       AND forward on the web-signup link, so attribution survives the hop. ──── */
+    /* ── UTM passthrough → super props + all signup CTAs ─────────────────────── */
     var KEEP = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid','ttclid','ref'];
     var sp = new URLSearchParams(location.search);
     var pass = new URLSearchParams(), sup = {};
     KEEP.forEach(function (k) { var v = sp.get(k); if (v) { pass.set(k, v); sup[k] = v; } });
     if (Object.keys(sup).length) { try { posthog.register(sup); } catch (e) {} }
     var signupHref = '/?auth=signup' + (pass.toString() ? '&' + pass.toString() : '');
-    document.getElementById('cta-web').setAttribute('href', signupHref);
-    document.getElementById('cta-web2').setAttribute('href', signupHref);
+    ['cta-web','cta-web2','cta-web3'].forEach(function(id){ $(id).setAttribute('href', signupHref); });
 
-    /* ── i18n: pick the language from the browser (mirrors the app's
-       resolveInitialLocale) and swap the copy. Friendly / fun register, informal
-       "you" per locale. Jacques + the flags stay; "Saigon" is localized. The
-       French markup above is the no-JS fallback. {city} keeps per-language word
-       order; it's replaced by the accent span the geo lookup fills in. ──────── */
+    /* ── i18n: browser language (mirrors the app's resolveInitialLocale) ─────── */
     var SUP = ['en','fr','vi','es','it','pt-br','pt-pt','de','nl','zh-hans','zh-hant','ja','ko','fil','th','id','hi','ru','ar'];
     function pickLocale(){
-      var q = new URLSearchParams(location.search).get('lang');   // ?lang= override (handy for QA)
+      var q = new URLSearchParams(location.search).get('lang');
       var nav = (q || navigator.language || 'en').toLowerCase();
       if (nav === 'pt-br') return 'pt-br';
       if (nav.slice(0,2) === 'pt') return 'pt-pt';
@@ -238,141 +243,147 @@
       return SUP.indexOf(s) >= 0 ? s : 'en';
     }
     var T = {
-      en:{ h1:"Become a local in {city}.", city:"your city", sub:"Like Jacques in Saigon 🇻🇳, launch challenges, take on everyone else's, and climb to the top of your city's leaderboard. 🏆", ios:"Download on", android:"Get it on", web:"Sign up & challenge the world →", personal:"Follow <b>Jacques</b> 🇫🇷 — French expat in Saigon 🇻🇳" },
-      fr:{ h1:"Deviens local à {city}.", city:"ta ville", sub:"Comme Jacques à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆", ios:"Télécharge sur", android:"Disponible sur", web:"Inscris-toi et défie le monde →", personal:"Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳" },
-      vi:{ h1:"Trở thành người địa phương ở {city}.", city:"thành phố của bạn", sub:"Giống như Jacques ở Sài Gòn 🇻🇳, tung thử thách, tham gia thử thách của người khác và leo lên top bảng xếp hạng thành phố của bạn. 🏆", ios:"Tải trên", android:"Có trên", web:"Đăng ký và thách đấu cả thế giới →", personal:"Theo dõi <b>Jacques</b> 🇫🇷 — chàng trai Pháp sống ở Sài Gòn 🇻🇳" },
-      es:{ h1:"Vuélvete un local en {city}.", city:"tu ciudad", sub:"Como Jacques en Saigón 🇻🇳, lanza retos, acepta los de los demás y sube a lo más alto del ranking de tu ciudad. 🏆", ios:"Descárgalo en", android:"Disponible en", web:"Regístrate y reta al mundo →", personal:"Sigue a <b>Jacques</b> 🇫🇷 — expat francés en Saigón 🇻🇳" },
-      it:{ h1:"Diventa un local a {city}.", city:"la tua città", sub:"Come Jacques a Saigon 🇻🇳, lancia sfide, accetta quelle degli altri e scala la classifica della tua città. 🏆", ios:"Scarica su", android:"Disponibile su", web:"Iscriviti e sfida il mondo →", personal:"Segui <b>Jacques</b> 🇫🇷 — expat francese a Saigon 🇻🇳" },
-      "pt-br":{ h1:"Vire um local em {city}.", city:"sua cidade", sub:"Como o Jacques em Saigon 🇻🇳, lance desafios, encare os dos outros e suba pro topo do ranking da sua cidade. 🏆", ios:"Baixe na", android:"Disponível no", web:"Cadastre-se e desafie o mundo →", personal:"Siga o <b>Jacques</b> 🇫🇷 — expat francês em Saigon 🇻🇳" },
-      "pt-pt":{ h1:"Torna-te um local em {city}.", city:"a tua cidade", sub:"Como o Jacques em Saigão 🇻🇳, lança desafios, aceita os dos outros e sobe ao topo do ranking da tua cidade. 🏆", ios:"Descarrega na", android:"Disponível no", web:"Regista-te e desafia o mundo →", personal:"Segue o <b>Jacques</b> 🇫🇷 — expat francês em Saigão 🇻🇳" },
-      de:{ h1:"Werde ein Local in {city}.", city:"deiner Stadt", sub:"Wie Jacques in Saigon 🇻🇳: starte Challenges, nimm die der anderen an und klettere an die Spitze der Rangliste deiner Stadt. 🏆", ios:"Laden im", android:"Jetzt bei", web:"Registrier dich und fordere die Welt heraus →", personal:"Folge <b>Jacques</b> 🇫🇷 — französischer Expat in Saigon 🇻🇳" },
-      nl:{ h1:"Word een local in {city}.", city:"jouw stad", sub:"Net als Jacques in Saigon 🇻🇳: daag anderen uit, neem hun challenges aan en klim naar de top van de ranglijst van jouw stad. 🏆", ios:"Download in", android:"Ontdek op", web:"Meld je aan en daag de wereld uit →", personal:"Volg <b>Jacques</b> 🇫🇷 — Franse expat in Saigon 🇻🇳" },
-      "zh-hans":{ h1:"在{city}成为本地人。", city:"你的城市", sub:"像 Jacques 在西贡 🇻🇳 一样，发起挑战，接受别人的挑战，冲上你城市排行榜的榜首。🏆", ios:"下载", android:"获取", web:"注册，向全世界发起挑战 →", personal:"关注 <b>Jacques</b> 🇫🇷 —— 住在西贡的法国人 🇻🇳" },
-      "zh-hant":{ h1:"在{city}成為在地人。", city:"你的城市", sub:"像 Jacques 在西貢 🇻🇳 一樣，發起挑戰，接受別人的挑戰，衝上你城市排行榜的榜首。🏆", ios:"下載", android:"取得", web:"註冊，向全世界發起挑戰 →", personal:"追蹤 <b>Jacques</b> 🇫🇷 —— 住在西貢的法國人 🇻🇳" },
-      ja:{ h1:"{city}でローカルになろう。", city:"あなたの街", sub:"サイゴン 🇻🇳 の Jacques のように、チャレンジを送って、みんなのチャレンジにも挑戦して、街のランキング1位を目指そう。🏆", ios:"ダウンロード", android:"手に入れる", web:"登録して世界にチャレンジ →", personal:"<b>Jacques</b> 🇫🇷 をフォロー — サイゴン 🇻🇳 在住のフランス人" },
-      ko:{ h1:"{city}에서 로컬이 되어보세요.", city:"당신의 도시", sub:"사이공 🇻🇳 의 Jacques처럼, 챌린지를 보내고 다른 사람의 챌린지에도 도전하며 우리 도시 랭킹 1위에 올라보세요. 🏆", ios:"다운로드", android:"다운로드", web:"가입하고 전 세계에 도전하세요 →", personal:"<b>Jacques</b> 🇫🇷 팔로우 — 사이공 🇻🇳 에 사는 프랑스인" },
-      fil:{ h1:"Maging local sa {city}.", city:"city mo", sub:"Tulad ni Jacques sa Saigon 🇻🇳, mag-challenge, sagutin ang sa iba, at umakyat sa tuktok ng leaderboard ng city mo. 🏆", ios:"I-download sa", android:"Kunin sa", web:"Mag-sign up at i-challenge ang mundo →", personal:"I-follow si <b>Jacques</b> 🇫🇷 — French expat sa Saigon 🇻🇳" },
-      th:{ h1:"มาเป็นคนท้องถิ่นใน {city} กันเถอะ", city:"เมืองของคุณ", sub:"เหมือน Jacques ที่ไซง่อน 🇻🇳 ท้าคนอื่น รับคำท้าของคนอื่น แล้วไต่ขึ้นอันดับ 1 ของเมืองคุณ 🏆", ios:"ดาวน์โหลดบน", android:"ดาวน์โหลดจาก", web:"สมัครแล้วท้าคนทั้งโลกเลย →", personal:"ติดตาม <b>Jacques</b> 🇫🇷 — หนุ่มฝรั่งเศสที่อยู่ในไซง่อน 🇻🇳" },
-      id:{ h1:"Jadi warga lokal di {city}.", city:"kotamu", sub:"Seperti Jacques di Saigon 🇻🇳, lempar tantangan, terima tantangan orang lain, dan naik ke puncak peringkat kotamu. 🏆", ios:"Unduh di", android:"Dapatkan di", web:"Daftar dan tantang dunia →", personal:"Ikuti <b>Jacques</b> 🇫🇷 — ekspat Prancis di Saigon 🇻🇳" },
-      hi:{ h1:"{city} में लोकल बनो।", city:"अपने शहर", sub:"साइगॉन 🇻🇳 में Jacques की तरह, चैलेंज दो, दूसरों के चैलेंज लो और अपने शहर की लीडरबोर्ड में टॉप पर पहुंचो। 🏆", ios:"डाउनलोड करें", android:"पाएं", web:"साइन अप करो और दुनिया को चैलेंज दो →", personal:"<b>Jacques</b> 🇫🇷 को फ़ॉलो करो — साइगॉन 🇻🇳 में रहने वाला फ्रेंच एक्सपैट" },
-      ru:{ h1:"Стань местным в {city}.", city:"своём городе", sub:"Как Jacques в Сайгоне 🇻🇳, бросай вызовы, принимай чужие и поднимайся на вершину рейтинга своего города. 🏆", ios:"Загрузить в", android:"Доступно в", web:"Зарегистрируйся и брось вызов миру →", personal:"Подпишись на <b>Jacques</b> 🇫🇷 — француз, живущий в Сайгоне 🇻🇳" },
-      ar:{ h1:"كن محليًا في {city}.", city:"مدينتك", sub:"مثل Jacques في سايغون 🇻🇳، أطلق التحديات، وواجه تحديات الآخرين، وتصدّر تصنيف مدينتك. 🏆", ios:"حمّله من", android:"احصل عليه من", web:"سجّل وتحدَّ العالم", personal:"تابِع <b>Jacques</b> 🇫🇷 — فرنسي مقيم في سايغون 🇻🇳" },
+      en:{ tag:"Become local. Anywhere.", h1:"Become a local in {city}.", city:"your city", sub:"Like Jacques in Saigon 🇻🇳, launch challenges, take on everyone else's, and climb to the top of your city's leaderboard. 🏆", ios:"Download on", android:"Get it on", web:"Sign up & challenge the world →", personal:"Follow <b>Jacques</b> 🇫🇷 — French expat in Saigon 🇻🇳" },
+      fr:{ tag:"Deviens local. Partout.", h1:"Deviens local à {city}.", city:"ta ville", sub:"Comme Jacques à Saigon 🇻🇳, lance des défis, relève ceux des autres et grimpe en haut du classement de ta ville. 🏆", ios:"Télécharge sur", android:"Disponible sur", web:"Inscris-toi et défie le monde →", personal:"Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳" },
+      vi:{ tag:"Trở thành người bản địa. Ở khắp nơi.", h1:"Trở thành người địa phương ở {city}.", city:"thành phố của bạn", sub:"Giống như Jacques ở Sài Gòn 🇻🇳, tung thử thách, tham gia thử thách của người khác và leo lên top bảng xếp hạng thành phố của bạn. 🏆", ios:"Tải trên", android:"Có trên", web:"Đăng ký và thách đấu cả thế giới →", personal:"Theo dõi <b>Jacques</b> 🇫🇷 — chàng trai Pháp sống ở Sài Gòn 🇻🇳" },
+      es:{ tag:"Vuélvete local. En todas partes.", h1:"Vuélvete un local en {city}.", city:"tu ciudad", sub:"Como Jacques en Saigón 🇻🇳, lanza retos, acepta los de los demás y sube a lo más alto del ranking de tu ciudad. 🏆", ios:"Descárgalo en", android:"Disponible en", web:"Regístrate y reta al mundo →", personal:"Sigue a <b>Jacques</b> 🇫🇷 — expat francés en Saigón 🇻🇳" },
+      it:{ tag:"Diventa local. Ovunque.", h1:"Diventa un local a {city}.", city:"la tua città", sub:"Come Jacques a Saigon 🇻🇳, lancia sfide, accetta quelle degli altri e scala la classifica della tua città. 🏆", ios:"Scarica su", android:"Disponibile su", web:"Iscriviti e sfida il mondo →", personal:"Segui <b>Jacques</b> 🇫🇷 — expat francese a Saigon 🇻🇳" },
+      "pt-br":{ tag:"Vire um local. Em qualquer lugar.", h1:"Vire um local em {city}.", city:"sua cidade", sub:"Como o Jacques em Saigon 🇻🇳, lance desafios, encare os dos outros e suba pro topo do ranking da sua cidade. 🏆", ios:"Baixe na", android:"Disponível no", web:"Cadastre-se e desafie o mundo →", personal:"Siga o <b>Jacques</b> 🇫🇷 — expat francês em Saigon 🇻🇳" },
+      "pt-pt":{ tag:"Torna-te local. Em todo o lado.", h1:"Torna-te um local em {city}.", city:"a tua cidade", sub:"Como o Jacques em Saigão 🇻🇳, lança desafios, aceita os dos outros e sobe ao topo do ranking da tua cidade. 🏆", ios:"Descarrega na", android:"Disponível no", web:"Regista-te e desafia o mundo →", personal:"Segue o <b>Jacques</b> 🇫🇷 — expat francês em Saigão 🇻🇳" },
+      de:{ tag:"Werde ein Local. Überall.", h1:"Werde ein Local in {city}.", city:"deiner Stadt", sub:"Wie Jacques in Saigon 🇻🇳: starte Challenges, nimm die der anderen an und klettere an die Spitze der Rangliste deiner Stadt. 🏆", ios:"Laden im", android:"Jetzt bei", web:"Registrier dich und fordere die Welt heraus →", personal:"Folge <b>Jacques</b> 🇫🇷 — französischer Expat in Saigon 🇻🇳" },
+      nl:{ tag:"Word een local. Overal.", h1:"Word een local in {city}.", city:"jouw stad", sub:"Net als Jacques in Saigon 🇻🇳: daag anderen uit, neem hun challenges aan en klim naar de top van de ranglijst van jouw stad. 🏆", ios:"Download in", android:"Ontdek op", web:"Meld je aan en daag de wereld uit →", personal:"Volg <b>Jacques</b> 🇫🇷 — Franse expat in Saigon 🇻🇳" },
+      "zh-hans":{ tag:"成为本地人。在任何地方。", h1:"在{city}成为本地人。", city:"你的城市", sub:"像 Jacques 在西贡 🇻🇳 一样，发起挑战，接受别人的挑战，冲上你城市排行榜的榜首。🏆", ios:"下载", android:"获取", web:"注册，向全世界发起挑战 →", personal:"关注 <b>Jacques</b> 🇫🇷 —— 住在西贡的法国人 🇻🇳" },
+      "zh-hant":{ tag:"成為在地人。在任何地方。", h1:"在{city}成為在地人。", city:"你的城市", sub:"像 Jacques 在西貢 🇻🇳 一樣，發起挑戰，接受別人的挑戰，衝上你城市排行榜的榜首。🏆", ios:"下載", android:"取得", web:"註冊，向全世界發起挑戰 →", personal:"追蹤 <b>Jacques</b> 🇫🇷 —— 住在西貢的法國人 🇻🇳" },
+      ja:{ tag:"どこでも、ローカルに。", h1:"{city}でローカルになろう。", city:"あなたの街", sub:"サイゴン 🇻🇳 の Jacques のように、チャレンジを送って、みんなのチャレンジにも挑戦して、街のランキング1位を目指そう。🏆", ios:"ダウンロード", android:"手に入れる", web:"登録して世界にチャレンジ →", personal:"<b>Jacques</b> 🇫🇷 をフォロー — サイゴン 🇻🇳 在住のフランス人" },
+      ko:{ tag:"어디서든, 로컬로.", h1:"{city}에서 로컬이 되어보세요.", city:"당신의 도시", sub:"사이공 🇻🇳 의 Jacques처럼, 챌린지를 보내고 다른 사람의 챌린지에도 도전하며 우리 도시 랭킹 1위에 올라보세요. 🏆", ios:"다운로드", android:"다운로드", web:"가입하고 전 세계에 도전하세요 →", personal:"<b>Jacques</b> 🇫🇷 팔로우 — 사이공 🇻🇳 에 사는 프랑스인" },
+      fil:{ tag:"Maging local. Kahit saan.", h1:"Maging local sa {city}.", city:"city mo", sub:"Tulad ni Jacques sa Saigon 🇻🇳, mag-challenge, sagutin ang sa iba, at umakyat sa tuktok ng leaderboard ng city mo. 🏆", ios:"I-download sa", android:"Kunin sa", web:"Mag-sign up at i-challenge ang mundo →", personal:"I-follow si <b>Jacques</b> 🇫🇷 — French expat sa Saigon 🇻🇳" },
+      th:{ tag:"เป็นคนท้องถิ่นได้ทุกที่", h1:"มาเป็นคนท้องถิ่นใน {city} กันเถอะ", city:"เมืองของคุณ", sub:"เหมือน Jacques ที่ไซง่อน 🇻🇳 ท้าคนอื่น รับคำท้าของคนอื่น แล้วไต่ขึ้นอันดับ 1 ของเมืองคุณ 🏆", ios:"ดาวน์โหลดบน", android:"ดาวน์โหลดจาก", web:"สมัครแล้วท้าคนทั้งโลกเลย →", personal:"ติดตาม <b>Jacques</b> 🇫🇷 — หนุ่มฝรั่งเศสที่อยู่ในไซง่อน 🇻🇳" },
+      id:{ tag:"Jadi warga lokal. Di mana saja.", h1:"Jadi warga lokal di {city}.", city:"kotamu", sub:"Seperti Jacques di Saigon 🇻🇳, lempar tantangan, terima tantangan orang lain, dan naik ke puncak peringkat kotamu. 🏆", ios:"Unduh di", android:"Dapatkan di", web:"Daftar dan tantang dunia →", personal:"Ikuti <b>Jacques</b> 🇫🇷 — ekspat Prancis di Saigon 🇻🇳" },
+      hi:{ tag:"लोकल बनो। कहीं भी।", h1:"{city} में लोकल बनो।", city:"अपने शहर", sub:"साइगॉन 🇻🇳 में Jacques की तरह, चैलेंज दो, दूसरों के चैलेंज लो और अपने शहर की लीडरबोर्ड में टॉप पर पहुंचो। 🏆", ios:"डाउनलोड करें", android:"पाएं", web:"साइन अप करो और दुनिया को चैलेंज दो →", personal:"<b>Jacques</b> 🇫🇷 को फ़ॉलो करो — साइगॉन 🇻🇳 में रहने वाला फ्रेंच एक्सपैट" },
+      ru:{ tag:"Стань местным. Где угодно.", h1:"Стань местным в {city}.", city:"своём городе", sub:"Как Jacques в Сайгоне 🇻🇳, бросай вызовы, принимай чужие и поднимайся на вершину рейтинга своего города. 🏆", ios:"Загрузить в", android:"Доступно в", web:"Зарегистрируйся и брось вызов миру →", personal:"Подпишись на <b>Jacques</b> 🇫🇷 — француз, живущий в Сайгоне 🇻🇳" },
+      ar:{ tag:"كن محليًا. في أي مكان.", h1:"كن محليًا في {city}.", city:"مدينتك", sub:"مثل Jacques في سايغون 🇻🇳، أطلق التحديات، وواجه تحديات الآخرين، وتصدّر تصنيف مدينتك. 🏆", ios:"حمّله من", android:"احصل عليه من", web:"سجّل وتحدَّ العالم", personal:"تابِع <b>Jacques</b> 🇫🇷 — فرنسي مقيم في سايغون 🇻🇳" },
+    };
+    /* Slide 2 & 3 strings (leaderboard + international challenges). */
+    var LB = {
+      en:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts", cue1:"🏆 See the world's top 10", cue2:"🌍 Live international challenges", chTitle:"🌍 International challenges, live", chSub:"One city dares another, right now. Jump in." },
+      fr:{ lbTitle:"🏆 Classement mondial", lbSub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts", cue1:"🏆 Vois le top 10 mondial", cue2:"🌍 Les défis internationaux", chTitle:"🌍 Défis internationaux en cours", chSub:"Une ville en défie une autre, là maintenant. Rejoins le mouvement." },
+      vi:{ lbTitle:"🏆 Bảng xếp hạng thế giới", lbSub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm", cue1:"🏆 Xem top 10 thế giới", cue2:"🌍 Thử thách quốc tế", chTitle:"🌍 Thử thách quốc tế đang diễn ra", chSub:"Thành phố này thách thức thành phố kia, ngay lúc này. Tham gia ngay." },
+      es:{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts", cue1:"🏆 Mira el top 10 mundial", cue2:"🌍 Retos internacionales", chTitle:"🌍 Retos internacionales en directo", chSub:"Una ciudad reta a otra, ahora mismo. Únete." },
+      it:{ lbTitle:"🏆 Classifica mondiale", lbSub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts", cue1:"🏆 Guarda la top 10 mondiale", cue2:"🌍 Sfide internazionali", chTitle:"🌍 Sfide internazionali in corso", chSub:"Una città ne sfida un'altra, proprio ora. Unisciti." },
+      "pt-br":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts", cue1:"🏆 Veja o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais ao vivo", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nessa." },
+      "pt-pt":{ lbTitle:"🏆 Ranking mundial", lbSub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts", cue1:"🏆 Vê o top 10 mundial", cue2:"🌍 Desafios internacionais", chTitle:"🌍 Desafios internacionais em direto", chSub:"Uma cidade desafia a outra, agora mesmo. Entra nisto." },
+      de:{ lbTitle:"🏆 Weltrangliste", lbSub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt.", cue1:"🏆 Sieh dir die Top 10 an", cue2:"🌍 Internationale Challenges", chTitle:"🌍 Internationale Challenges, live", chSub:"Eine Stadt fordert die andere heraus, genau jetzt. Mach mit." },
+      nl:{ lbTitle:"🏆 Wereldranglijst", lbSub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn", cue1:"🏆 Bekijk de wereld-top 10", cue2:"🌍 Internationale challenges", chTitle:"🌍 Internationale challenges, live", chSub:"De ene stad daagt de andere uit, nu meteen. Doe mee." },
+      "zh-hans":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 国际挑战", chTitle:"🌍 正在进行的国际挑战", chSub:"此刻，一座城市正在挑战另一座。加入吧。" },
+      "zh-hant":{ lbTitle:"🏆 全球排行榜", lbSub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分", cue1:"🏆 看看全球前十", cue2:"🌍 國際挑戰", chTitle:"🌍 正在進行的國際挑戰", chSub:"此刻，一座城市正在挑戰另一座。加入吧。" },
+      ja:{ lbTitle:"🏆 世界ランキング", lbSub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt", cue1:"🏆 世界トップ10を見る", cue2:"🌍 世界の挑戦", chTitle:"🌍 進行中の国際チャレンジ", chSub:"今この瞬間、街が街に挑んでいる。君も参加しよう。" },
+      ko:{ lbTitle:"🏆 글로벌 랭킹", lbSub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점", cue1:"🏆 세계 톱10 보기", cue2:"🌍 국제 챌린지", chTitle:"🌍 진행 중인 국제 챌린지", chSub:"지금 한 도시가 다른 도시에 도전 중이에요. 함께해요." },
+      fil:{ lbTitle:"🏆 Global leaderboard", lbSub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos", cue1:"🏆 Tingnan ang world top 10", cue2:"🌍 International challenges", chTitle:"🌍 International challenges, live", chSub:"May city na naghahamon sa iba, ngayon mismo. Sali na." },
+      th:{ lbTitle:"🏆 อันดับโลก", lbSub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม", cue1:"🏆 ดูท็อป 10 ของโลก", cue2:"🌍 ชาเลนจ์ระดับโลก", chTitle:"🌍 ชาเลนจ์ระดับโลกที่กำลังเกิดขึ้น", chSub:"ตอนนี้เมืองหนึ่งกำลังท้าอีกเมือง มาร่วมสนุกกัน" },
+      id:{ lbTitle:"🏆 Peringkat dunia", lbSub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin", cue1:"🏆 Lihat top 10 dunia", cue2:"🌍 Tantangan internasional", chTitle:"🌍 Tantangan internasional, live", chSub:"Satu kota menantang kota lain, sekarang juga. Ikutan yuk." },
+      hi:{ lbTitle:"🏆 वर्ल्ड लीडरबोर्ड", lbSub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट", cue1:"🏆 वर्ल्ड टॉप 10 देखो", cue2:"🌍 इंटरनेशनल चैलेंज", chTitle:"🌍 लाइव इंटरनेशनल चैलेंज", chSub:"अभी एक शहर दूसरे को चैलेंज कर रहा है। तुम भी जुड़ो।" },
+      ru:{ lbTitle:"🏆 Мировой рейтинг", lbSub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк.", cue1:"🏆 Смотри топ-10 мира", cue2:"🌍 Международные челленджи", chTitle:"🌍 Международные челленджи прямо сейчас", chSub:"Прямо сейчас один город бросает вызов другому. Присоединяйся." },
+      ar:{ lbTitle:"🏆 التصنيف العالمي", lbSub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", cue1:"🏆 شاهد أفضل 10 في العالم", cue2:"🌍 تحديات دولية", chTitle:"🌍 تحديات دولية جارية الآن", chSub:"مدينة تتحدّى أخرى الآن. انضمّ إلى الحدث." },
     };
 
     var L = pickLocale();
     var t = T[L] || T.en;
+    var lb = LB[L] || LB.en;
     document.documentElement.lang = L;
     if (L === 'ar') document.documentElement.dir = 'rtl';
-    document.getElementById('hl').innerHTML = t.h1.replace('{city}', '<span id="city">' + t.city + '</span>');
-    document.getElementById('sub').textContent = t.sub;
-    document.getElementById('ios-sub').textContent = t.ios;
-    document.getElementById('and-sub').textContent = t.android;
-    document.getElementById('cta-web').textContent = t.web;
-    document.getElementById('cta-web2').textContent = t.web;
-    document.getElementById('personal').innerHTML = t.personal;
-    // Localize the tab / share title too (reuse the headline + the "your city"
-    // word, minus its trailing full stop). The French <title> is the no-JS fallback.
+    $('tagline').textContent = t.tag;
+    $('hl').innerHTML = t.h1.replace('{city}', '<span id="city">' + t.city + '</span>');
+    $('sub').textContent = t.sub;
+    $('ios-sub').textContent = t.ios;
+    $('and-sub').textContent = t.android;
+    $('personal').innerHTML = t.personal;
+    ['cta-web','cta-web2','cta-web3'].forEach(function(id){ $(id).textContent = t.web; });
+    $('lb-title').textContent = lb.lbTitle;
+    $('cue1-label').textContent = lb.cue1;
+    $('cue2-label').textContent = lb.cue2;
+    $('ch-title').textContent = lb.chTitle;
+    $('ch-sub').textContent = lb.chSub;
     document.title = ('Hilads — ' + t.h1.replace('{city}', t.city)).replace(/[.。]\s*$/, '');
 
-    /* ── City from the existing IP edge function. Never render undefined/empty:
-       the headline already shows the localized "your city"; we only upgrade it
-       on a real match. Tracking uses the raw detected city so analytics match
-       other surfaces; ALIAS only affects the warmer/shorter display name. ──── */
+    /* ── City from the IP edge fn (never empty: localized "your city" fallback) ─ */
     var ALIAS = { 'Ho Chi Minh City': 'Saigon' };
     var CITY = 'unknown', viewed = false;
     function pageView(){ if (viewed) return; viewed = true; cap('join_page_view', { city: CITY }); }
-    fetch('/api/geo')
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d && d.city) {
-          CITY = d.city;
-          var el = document.getElementById('city');
-          if (el) el.textContent = ALIAS[d.city] || d.city;
-        }
-        pageView();
-      })
-      .catch(function () { pageView(); });
-    setTimeout(pageView, 1500);   // safety net if /api/geo hangs
+    fetch('/api/geo').then(function (r) { return r.json(); }).then(function (d) {
+      if (d && d.city) { CITY = d.city; var el = $('city'); if (el) el.textContent = ALIAS[d.city] || d.city; }
+      pageView();
+    }).catch(function () { pageView(); });
+    setTimeout(pageView, 1500);
 
-    /* ── Worldwide top-10 leaderboard (social proof + dethrone-the-#1 hook).
-       Served by the CDN-cached /api/leaderboard-top so ad traffic doesn't hammer
-       the DB. Names are user-supplied → HTML-escaped. Section stays hidden on
-       failure/empty, so it never blocks or shifts the hero above it. ────────── */
-    function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
-    function flag(code){
-      if (typeof code!=='string') return '🌍';
-      var c=code.trim().toUpperCase();
-      if(!/^[A-Z]{2}$/.test(c)) return '🌍';
-      return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
-    }
-    var LB = {
-      en:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts", hint:"🏆 See the world's top 10" },
-      fr:{ title:"🏆 Classement mondial", sub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts", hint:"🏆 Vois le top 10 mondial" },
-      vi:{ title:"🏆 Bảng xếp hạng thế giới", sub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm", hint:"🏆 Xem top 10 thế giới" },
-      es:{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts", hint:"🏆 Mira el top 10 mundial" },
-      it:{ title:"🏆 Classifica mondiale", sub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts", hint:"🏆 Guarda la top 10 mondiale" },
-      "pt-br":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts", hint:"🏆 Veja o top 10 mundial" },
-      "pt-pt":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts", hint:"🏆 Vê o top 10 mundial" },
-      de:{ title:"🏆 Weltrangliste", sub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt.", hint:"🏆 Sieh dir die Top 10 an" },
-      nl:{ title:"🏆 Wereldranglijst", sub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn", hint:"🏆 Bekijk de wereld-top 10" },
-      "zh-hans":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分", hint:"🏆 看看全球前十" },
-      "zh-hant":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分", hint:"🏆 看看全球前十" },
-      ja:{ title:"🏆 世界ランキング", sub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt", hint:"🏆 世界トップ10を見る" },
-      ko:{ title:"🏆 글로벌 랭킹", sub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점", hint:"🏆 세계 톱10 보기" },
-      fil:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos", hint:"🏆 Tingnan ang world top 10" },
-      th:{ title:"🏆 อันดับโลก", sub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม", hint:"🏆 ดูท็อป 10 ของโลก" },
-      id:{ title:"🏆 Peringkat dunia", sub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin", hint:"🏆 Lihat top 10 dunia" },
-      hi:{ title:"🏆 वर्ल्ड लीडरबोर्ड", sub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट", hint:"🏆 वर्ल्ड टॉप 10 देखो" },
-      ru:{ title:"🏆 Мировой рейтинг", sub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк.", hint:"🏆 Смотри топ-10 мира" },
-      ar:{ title:"🏆 التصنيف العالمي", sub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", hint:"🏆 شاهد أفضل 10 في العالم" },
-    };
-    var lb = LB[L] || LB.en;
-    fetch('/api/leaderboard-top')
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        var items = (d && d.items) || [];
-        if (!items.length) return;                       // no data → keep hidden
-        var medals = ['🥇','🥈','🥉'], html = '', jac = null;
-        items.forEach(function (e) {
-          if (e.name === 'jaclette') jac = e.rank;
-          var badge = medals[e.rank - 1] || ('#' + e.rank);
-          var av = e.avatar
-            ? '<img class="lb-av" loading="lazy" alt="" src="' + esc(e.avatar) + '">'
-            : '<div class="lb-av">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</div>';
-          html += '<div class="lb-row' + (e.name === 'jaclette' ? ' me' : '') + '">'
-            + '<span class="lb-rank">' + badge + '</span>' + av
-            + '<div class="lb-main"><div class="lb-name">' + esc(e.name) + '</div>'
-            + '<div class="lb-city">' + flag(e.country) + ' ' + esc(e.city) + '</div></div>'
-            + '<span class="lb-pts">' + Number(e.points || 0) + ' ' + esc(lb.pts) + '</span></div>';
+    /* ── Progress bar: highlight segments up to the current slide ────────────── */
+    var segs = $('progress').children;
+    function setCurrent(i){ for (var k=0;k<segs.length;k++) segs[k].classList.toggle('on', k<=i); }
+    var slideEls = [$('s1'), $('s2'), $('s3')];
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting && en.intersectionRatio >= 0.5) setCurrent(slideEls.indexOf(en.target));
         });
-        document.getElementById('lb-list').innerHTML = html;
-        document.getElementById('lb-title').textContent = lb.title;
-        var subEl = document.getElementById('lb-sub');
-        if (jac != null) subEl.innerHTML = lb.sub.replace('{rank}', jac);
-        else subEl.hidden = true;
-        document.getElementById('lb').hidden = false;
-        var sh = document.getElementById('scroll-hint');
-        if (sh) {
-          var shl = document.getElementById('scroll-hint-label');
-          if (shl) shl.textContent = lb.hint;
-          sh.hidden = false;
-          sh.addEventListener('click', function () {
-            document.getElementById('lb').scrollIntoView({ behavior: 'smooth' });
-          });
-        }
-      })
-      .catch(function () { /* keep the section hidden */ });
-
-    /* ── OS-aware store order: put the visitor's store first. ────────────────── */
-    if (/Android/i.test(navigator.userAgent || '')) {
-      var s = document.getElementById('stores');
-      s.insertBefore(document.getElementById('cta-android'), document.getElementById('cta-ios'));
+      }, { threshold: [0.5] });
+      slideEls.forEach(function (s) { io.observe(s); });
+    }
+    function cue(id, targetId){
+      var el = $(id); if (!el) return;
+      el.hidden = false;
+      el.addEventListener('click', function () { $(targetId).scrollIntoView({ behavior: 'smooth' }); });
     }
 
-    /* ── CTA tracking. Fire the event, then navigate after a short beat so the
-       request flushes before the webview unloads this page. ──────────────────── */
+    /* ── Slide 2: worldwide top-10 leaderboard (cached edge fn) ──────────────── */
+    fetch('/api/leaderboard-top').then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [];
+      if (!items.length) return;
+      var medals = ['🥇','🥈','🥉'], html = '', jac = null;
+      items.forEach(function (e) {
+        if (e.name === 'jaclette') jac = e.rank;
+        var badge = medals[e.rank - 1] || ('#' + e.rank);
+        var av = e.avatar
+          ? '<img class="lb-av" loading="lazy" alt="" src="' + esc(e.avatar) + '">'
+          : '<div class="lb-av">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</div>';
+        html += '<div class="lb-row' + (e.name === 'jaclette' ? ' me' : '') + '">'
+          + '<span class="lb-rank">' + badge + '</span>' + av
+          + '<div class="lb-main"><div class="lb-name">' + esc(e.name) + '</div>'
+          + '<div class="lb-city">' + flag(e.country) + ' ' + esc(e.city) + '</div></div>'
+          + '<span class="lb-pts">' + Number(e.points || 0) + ' ' + esc(lb.pts) + '</span></div>';
+      });
+      $('lb-list').innerHTML = html;
+      var subEl = $('lb-sub');
+      if (jac != null) subEl.innerHTML = lb.lbSub.replace('{rank}', jac); else subEl.hidden = true;
+      cue('cue1', 's2');   // slide-1 arrow now points to a populated board
+    }).catch(function () {});
+
+    /* ── Slide 3: live international challenges (cached edge fn) ──────────────── */
+    fetch('/api/world-challenges').then(function (r) { return r.json(); }).then(function (d) {
+      var items = (d && d.items) || [];
+      if (!items.length) return;                       // no data → slide stays hidden
+      var html = '';
+      items.forEach(function (e) {
+        var av = e.avatar
+          ? '<span class="av"><img src="' + esc(e.avatar) + '" alt="" loading="lazy" width="22" height="22"></span>'
+          : '<span class="av">' + esc((e.creator || '?').charAt(0).toUpperCase()) + '</span>';
+        html += '<div class="ch-card">'
+          + '<div class="ch-route">' + flag(e.country) + ' ' + esc(e.city)
+          + '<span class="arrow">→</span>' + flag(e.targetCountry) + ' ' + esc(e.targetCity) + '</div>'
+          + '<div class="ch-title">' + esc(e.title) + '</div>'
+          + '<div class="ch-by">' + av + esc(e.creator) + '</div></div>';
+      });
+      $('ch-list').innerHTML = html;
+      $('s3').hidden = false;      // reveal the slide + its progress segment
+      cue('cue2', 's3');           // slide-2 arrow now points to a populated slide
+    }).catch(function () {});
+
+    /* ── OS-aware store order ────────────────────────────────────────────────── */
+    if (/Android/i.test(navigator.userAgent || '')) {
+      $('stores').insertBefore($('cta-android'), $('cta-ios'));
+    }
+
+    /* ── CTA tracking (fire, then navigate after a beat so it flushes) ───────── */
     function wire(id, ev){
-      var el = document.getElementById(id);
+      var el = $(id);
       el.addEventListener('click', function (e) {
         e.preventDefault();
         var url = el.getAttribute('href');
@@ -384,6 +395,7 @@
     wire('cta-android', 'join_cta_playstore');
     wire('cta-web', 'join_cta_websignup');
     wire('cta-web2', 'join_cta_leaderboard');
+    wire('cta-web3', 'join_cta_challenges');
   })();
   </script>
 </body>
