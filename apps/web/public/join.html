@@ -85,6 +85,17 @@
       font-size:clamp(26px,5.2vh,42px); line-height:1; pointer-events:none;
       filter:drop-shadow(0 2px 4px rgba(0,0,0,.55));
     }
+    /* Live country challenge-counter ABOVE the portrait — flag + count chips,
+       tap to jump to the challenges slide. Fun + language-neutral (flags/numbers). */
+    .flags{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:6px;
+      align-self:center; max-width:100%; background:none; border:0; padding:0; cursor:pointer; }
+    .flags .chip{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:700; color:var(--text);
+      background:var(--surface); border:1px solid rgba(255,255,255,.10); border-radius:999px; padding:4px 9px; }
+    .flags .chip .n{ color:var(--accent2); }
+    .flags .go{ color:var(--accent2); font-weight:800; font-size:16px; }
+    @media (prefers-reduced-motion: no-preference){ .flags .go{ animation:flagsPoke 1.5s ease-in-out infinite; display:inline-block; } }
+    @keyframes flagsPoke{ 0%,100%{ transform:translateX(0);} 50%{ transform:translateX(3px);} }
+
     /* Rank + dethrone badge under the portrait (jaclette is #1 to dethrone).
        Populated from the live leaderboard rank; hidden until it loads. */
     .hero-badge{
@@ -204,6 +215,7 @@
 
   <!-- ── Slide 1: hero ───────────────────────────────────────────────────────── -->
   <section class="slide center" id="s1">
+    <button class="flags" id="flags" type="button" hidden aria-label="challenges"></button>
     <div class="hero" aria-hidden="true">
       <img class="hero-img" src="/landing/join-hero.webp" alt="" width="360" height="360" fetchpriority="high" decoding="async" />
       <span class="hero-crown">👑</span>
@@ -450,6 +462,21 @@
       $('s3').hidden = false;                        // reveal the slide…
       $('progress').children[2].hidden = false;      // …and its progress segment
       cue('cue2', 's3');                             // slide-2 arrow now points to it
+
+      // Country counter above the hero: tally the countries involved (origin +
+      // target) across these live challenges, top 5 as flag+count chips → slide 3.
+      var tally = {};
+      items.forEach(function (e) { [e.country, e.targetCountry].forEach(function (c) { if (c) tally[c] = (tally[c] || 0) + 1; }); });
+      var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }).slice(0, 5);
+      if (top.length) {
+        var fh = '🌍 ';
+        top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' <span class="n">' + tally[c] + '</span></span>'; });
+        fh += '<span class="go">→</span>';
+        var fe = $('flags');
+        fe.innerHTML = fh;
+        fe.hidden = false;
+        fe.addEventListener('click', function () { $('s3').scrollIntoView({ behavior: 'smooth' }); });
+      }
     }).catch(function () {});
 
     /* ── OS-aware store order ────────────────────────────────────────────────── */
