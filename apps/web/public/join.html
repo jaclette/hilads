@@ -98,6 +98,24 @@
     [dir="rtl"] a.btn .lbl{ text-align:right; }
     .personal{ margin-top:8px; color:var(--muted); font-size:13.5px; line-height:1.4; }
     .personal b{ color:var(--text); font-weight:600; }
+
+    /* Worldwide top-10 board — below-the-fold social proof + dethrone hook. */
+    .lb-wrap{ display:flex; flex-direction:column; align-items:center; padding:6px 22px calc(40px + env(safe-area-inset-bottom)); }
+    .lb{ width:100%; max-width:420px; }
+    .lb-head{ text-align:center; margin-bottom:12px; }
+    .lb-title{ font-weight:800; font-size:18px; letter-spacing:-.3px; }
+    .lb-sub{ margin-top:5px; color:var(--muted); font-size:13px; line-height:1.4; }
+    .lb-sub b{ color:var(--text); font-weight:700; }
+    .lb-list{ display:flex; flex-direction:column; gap:6px; }
+    .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:13px; background:var(--surface); border:1px solid rgba(255,255,255,.05); }
+    .lb-row.me{ background:linear-gradient(135deg,rgba(194,74,56,.22),rgba(184,114,40,.14)); border-color:rgba(255,122,60,.45); }
+    .lb-rank{ width:26px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); flex:0 0 auto; }
+    .lb-av{ width:32px; height:32px; border-radius:50%; object-fit:cover; background:var(--surface2); color:var(--muted); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; overflow:hidden; }
+    .lb-main{ flex:1 1 auto; min-width:0; }
+    .lb-name{ font-weight:700; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lb-city{ color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .lb-pts{ font-weight:800; font-size:13.5px; color:var(--accent2); flex:0 0 auto; }
+    .lb-cta{ margin-top:14px; }
   </style>
 </head>
 <body>
@@ -144,6 +162,19 @@
     <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
   </main>
 
+  <!-- Below-the-fold social proof: live top-10 worldwide board. Hidden until
+       /api/leaderboard-top returns rows, so it never blocks or shifts the hero. -->
+  <section class="lb-wrap" id="lb" hidden>
+    <div class="lb">
+      <div class="lb-head">
+        <div class="lb-title" id="lb-title">🏆 Classement mondial</div>
+        <div class="lb-sub" id="lb-sub"></div>
+      </div>
+      <div class="lb-list" id="lb-list"></div>
+      <a class="btn web lb-cta" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+    </div>
+  </section>
+
   <script>
   (function () {
     /* ── PostHog (same project + managed reverse proxy as the app) ──────────── */
@@ -166,7 +197,9 @@
     var pass = new URLSearchParams(), sup = {};
     KEEP.forEach(function (k) { var v = sp.get(k); if (v) { pass.set(k, v); sup[k] = v; } });
     if (Object.keys(sup).length) { try { posthog.register(sup); } catch (e) {} }
-    document.getElementById('cta-web').setAttribute('href', '/?auth=signup' + (pass.toString() ? '&' + pass.toString() : ''));
+    var signupHref = '/?auth=signup' + (pass.toString() ? '&' + pass.toString() : '');
+    document.getElementById('cta-web').setAttribute('href', signupHref);
+    document.getElementById('cta-web2').setAttribute('href', signupHref);
 
     /* ── i18n: pick the language from the browser (mirrors the app's
        resolveInitialLocale) and swap the copy. Friendly / fun register, informal
@@ -215,6 +248,7 @@
     document.getElementById('ios-sub').textContent = t.ios;
     document.getElementById('and-sub').textContent = t.android;
     document.getElementById('cta-web').textContent = t.web;
+    document.getElementById('cta-web2').textContent = t.web;
     document.getElementById('personal').innerHTML = t.personal;
     // Localize the tab / share title too (reuse the headline + the "your city"
     // word, minus its trailing full stop). The French <title> is the no-JS fallback.
@@ -240,6 +274,66 @@
       .catch(function () { pageView(); });
     setTimeout(pageView, 1500);   // safety net if /api/geo hangs
 
+    /* ── Worldwide top-10 leaderboard (social proof + dethrone-the-#1 hook).
+       Served by the CDN-cached /api/leaderboard-top so ad traffic doesn't hammer
+       the DB. Names are user-supplied → HTML-escaped. Section stays hidden on
+       failure/empty, so it never blocks or shifts the hero above it. ────────── */
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+    function flag(code){
+      if (typeof code!=='string') return '🌍';
+      var c=code.trim().toUpperCase();
+      if(!/^[A-Z]{2}$/.test(c)) return '🌍';
+      return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
+    }
+    var LB = {
+      en:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> is #{rank} in the world 👑 Sign up and take the crown.", pts:"pts" },
+      fr:{ title:"🏆 Classement mondial", sub:"<b>jaclette</b> est n°{rank} mondial 👑 Inscris-toi et détrône-le.", pts:"pts" },
+      vi:{ title:"🏆 Bảng xếp hạng thế giới", sub:"<b>jaclette</b> đang hạng {rank} thế giới 👑 Đăng ký và soán ngôi đi.", pts:"điểm" },
+      es:{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> es el n.º {rank} del mundo 👑 Regístrate y destrónalo.", pts:"pts" },
+      it:{ title:"🏆 Classifica mondiale", sub:"<b>jaclette</b> è n°{rank} al mondo 👑 Iscriviti e detronizzalo.", pts:"pts" },
+      "pt-br":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Cadastre-se e destrone ele.", pts:"pts" },
+      "pt-pt":{ title:"🏆 Ranking mundial", sub:"<b>jaclette</b> é o nº {rank} do mundo 👑 Regista-te e destrona-o.", pts:"pts" },
+      de:{ title:"🏆 Weltrangliste", sub:"<b>jaclette</b> ist weltweit auf Platz {rank} 👑 Registrier dich und stürze ihn.", pts:"Pkt." },
+      nl:{ title:"🏆 Wereldranglijst", sub:"<b>jaclette</b> is #{rank} van de wereld 👑 Meld je aan en onttroon 'm.", pts:"ptn" },
+      "zh-hans":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 注册，把他拉下王座。", pts:"分" },
+      "zh-hant":{ title:"🏆 全球排行榜", sub:"<b>jaclette</b> 全球第 {rank} 名 👑 註冊，把他拉下王座。", pts:"分" },
+      ja:{ title:"🏆 世界ランキング", sub:"<b>jaclette</b> は世界{rank}位 👑 登録して王座を奪おう。", pts:"pt" },
+      ko:{ title:"🏆 글로벌 랭킹", sub:"<b>jaclette</b> 는 세계 {rank}위 👑 가입하고 왕좌를 뺏으세요.", pts:"점" },
+      fil:{ title:"🏆 Global leaderboard", sub:"<b>jaclette</b> ang #{rank} sa mundo 👑 Mag-sign up at agawin ang korona.", pts:"puntos" },
+      th:{ title:"🏆 อันดับโลก", sub:"<b>jaclette</b> อันดับ {rank} ของโลก 👑 สมัครแล้วโค่นเขาเลย", pts:"แต้ม" },
+      id:{ title:"🏆 Peringkat dunia", sub:"<b>jaclette</b> peringkat {rank} dunia 👑 Daftar dan rebut takhtanya.", pts:"poin" },
+      hi:{ title:"🏆 वर्ल्ड लीडरबोर्ड", sub:"<b>jaclette</b> दुनिया में #{rank} पर है 👑 साइन अप करो और ताज छीन लो।", pts:"पॉइंट" },
+      ru:{ title:"🏆 Мировой рейтинг", sub:"<b>jaclette</b> — №{rank} в мире 👑 Зарегистрируйся и свергни его.", pts:"очк." },
+      ar:{ title:"🏆 التصنيف العالمي", sub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة" },
+    };
+    var lb = LB[L] || LB.en;
+    fetch('/api/leaderboard-top')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        var items = (d && d.items) || [];
+        if (!items.length) return;                       // no data → keep hidden
+        var medals = ['🥇','🥈','🥉'], html = '', jac = null;
+        items.forEach(function (e) {
+          if (e.name === 'jaclette') jac = e.rank;
+          var badge = medals[e.rank - 1] || ('#' + e.rank);
+          var av = e.avatar
+            ? '<img class="lb-av" loading="lazy" alt="" src="' + esc(e.avatar) + '">'
+            : '<div class="lb-av">' + esc((e.name || '?').charAt(0).toUpperCase()) + '</div>';
+          html += '<div class="lb-row' + (e.name === 'jaclette' ? ' me' : '') + '">'
+            + '<span class="lb-rank">' + badge + '</span>' + av
+            + '<div class="lb-main"><div class="lb-name">' + esc(e.name) + '</div>'
+            + '<div class="lb-city">' + flag(e.country) + ' ' + esc(e.city) + '</div></div>'
+            + '<span class="lb-pts">' + Number(e.points || 0) + ' ' + esc(lb.pts) + '</span></div>';
+        });
+        document.getElementById('lb-list').innerHTML = html;
+        document.getElementById('lb-title').textContent = lb.title;
+        var subEl = document.getElementById('lb-sub');
+        if (jac != null) subEl.innerHTML = lb.sub.replace('{rank}', jac);
+        else subEl.hidden = true;
+        document.getElementById('lb').hidden = false;
+      })
+      .catch(function () { /* keep the section hidden */ });
+
     /* ── OS-aware store order: put the visitor's store first. ────────────────── */
     if (/Android/i.test(navigator.userAgent || '')) {
       var s = document.getElementById('stores');
@@ -260,6 +354,7 @@
     wire('cta-ios', 'join_cta_appstore');
     wire('cta-android', 'join_cta_playstore');
     wire('cta-web', 'join_cta_websignup');
+    wire('cta-web2', 'join_cta_leaderboard');
   })();
   </script>
 </body>
