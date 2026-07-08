@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -2154,11 +2154,14 @@ export default function App() {
   // don't need.
   const reactChannelMsg = async (msgId, emoji) => {
     if (!msgId) return
+    const isWorld = channelScopeRef.current === 'world'
     triggerReactionBurst(emoji, msgId)
-    socketRef.current?.sendReaction(EMOJI_TO_TYPE[emoji] ?? emoji, msgId, channelId, accountRef.current?.id ?? null)
+    socketRef.current?.sendReaction(EMOJI_TO_TYPE[emoji] ?? emoji, msgId, isWorld ? 'world' : channelId, accountRef.current?.id ?? null)
     try {
-      const data = await toggleChannelReaction(channelId, msgId, emoji, guest?.guestId)
-      setFeed(prev => prev.map(m => m.id === msgId ? { ...m, reactions: data.reactions } : m))
+      const reactions = isWorld
+        ? await toggleWorldReaction(msgId, emoji, guest?.guestId)
+        : (await toggleChannelReaction(channelId, msgId, emoji, guest?.guestId)).reactions
+      setFeed(prev => prev.map(m => m.id === msgId ? { ...m, reactions } : m))
     } catch { /* silent */ }
   }
 
@@ -3316,7 +3319,7 @@ export default function App() {
       if (activeEventIdRef.current) {
         msg = await sendEventMessage(activeEventIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
       } else if (channelScopeRef.current === 'world') {
-        const r = await sendWorldMessage(guest.guestId, activeNickname, content, mArg)
+        const r = await sendWorldMessage(guest.guestId, activeNickname, content, mArg, currentReply?.id ?? null)
         msg = r.message ?? r
       } else {
         msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)

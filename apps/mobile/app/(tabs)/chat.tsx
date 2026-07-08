@@ -31,7 +31,7 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
-import { fetchWorldMessages, sendWorldMessage, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival, type WorldChallenge } from '@/api/world';
+import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival, type WorldChallenge } from '@/api/world';
 import { MarqueeText } from '@/components/MarqueeText';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
 import { fetchCityTopics } from '@/api/topics';
@@ -500,7 +500,7 @@ export default function ChatTab() {
   const postTextFn = useCallback(
     (content: string, replyToId?: string | null, mentions?: MentionRef[]): Promise<Message> => {
       if (!identity || !sessionId) return Promise.reject(new Error('Not ready'));
-      if (channelScope === 'world') return sendWorldMessage(identity.guestId, nickname, content, mentions);
+      if (channelScope === 'world') return sendWorldMessage(identity.guestId, nickname, content, mentions, replyToId);
       return sendMessage(channelId, sessionId, identity.guestId, nickname, content, replyToId, mentions);
     },
     [channelId, channelScope, identity, sessionId, nickname],
@@ -933,17 +933,20 @@ export default function ChatTab() {
     if (!msg.id || !identity) return;
     // Fire local animation + broadcast to other clients
     const type = EMOJI_TO_TYPE[emoji];
+    const isWorld = channelScope === 'world';
     if (type) {
       reactionEmitter.emit(msg.id, type);
-      socket.sendReaction(type, msg.id, String(channelId), account?.id ?? null);
+      socket.sendReaction(type, msg.id, isWorld ? 'world' : String(channelId), account?.id ?? null);
     }
     try {
-      const reactions = await toggleChannelReaction(String(channelId), msg.id, emoji, identity.guestId);
+      const reactions = isWorld
+        ? await toggleWorldReaction(msg.id, emoji, identity.guestId)
+        : await toggleChannelReaction(String(channelId), msg.id, emoji, identity.guestId);
       setMessageReactions(msg.id, reactions);
     } catch (e) {
       console.warn('[chat] reaction failed:', e);
     }
-  }, [channelId, identity, account, setMessageReactions]);
+  }, [channelId, channelScope, identity, account, setMessageReactions]);
 
   // Stable renderItem so a presence/WS re-render of this screen doesn't recreate
   // the row closure (which, with non-memoized rows, re-rendered the whole

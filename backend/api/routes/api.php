@@ -3921,6 +3921,12 @@ $router->add('GET', '/api/v1/world/messages', function () {
         unset($m);
     }
 
+    // Emoji reactions - same as every other channel; without this, reactions
+    // written via POST never come back on load and the World feed reads as inert.
+    $reactViewerGuestId = $_SERVER['HTTP_X_GUEST_ID'] ?? ($_COOKIE['guestId'] ?? null);
+    $reactViewerUserId  = AuthService::currentUser()['id'] ?? null;
+    MessageRepository::attachReactions($messages, $reactViewerGuestId ?: null, $reactViewerUserId);
+
     Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
 });
 
@@ -3951,13 +3957,49 @@ $router->add('POST', '/api/v1/world/messages', function () {
         Response::json(['error' => 'Your message was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
     }
 
-    $sender   = AuthService::currentUser();
-    $mentions = sanitizeMentions($body['mentions'] ?? null, 'world', 'world', $content);
-    $message  = MessageRepository::add(WorldRepository::WORLD_ID, $guestId, $nickname, $content, $sender['id'] ?? null, null, null, null, 'text', $mentions);
+    $sender    = AuthService::currentUser();
+    $mentions  = sanitizeMentions($body['mentions'] ?? null, 'world', 'world', $content);
+    $replySnap = resolveReplySnapshot($body['replyToMessageId'] ?? null);
+    $message   = MessageRepository::add(
+        WorldRepository::WORLD_ID, $guestId, $nickname, $content, $sender['id'] ?? null,
+        $replySnap['id'] ?? null,
+        $replySnap['nickname'] ?? null,
+        $replySnap['content']  ?? null,
+        $replySnap['type']     ?? 'text',
+        $mentions
+    );
 
     $message  = enrichBroadcastMessage($message, $sender);
     broadcastMessageToWs(WorldRepository::WORLD_ID, $message);
     Response::json(['message' => $message], 201);
+});
+
+// POST /api/v1/world/messages/{messageId}/reactions - same shape as the city
+// reactions endpoint, so the World channel reacts identically to every other one.
+$router->add('POST', '/api/v1/world/messages/{messageId}/reactions', function (array $params) {
+    $messageId = $params['messageId'] ?? '';
+    if (empty($messageId)) {
+        Response::json(['error' => 'Invalid messageId'], 400);
+    }
+
+    $body    = Request::json();
+    $emoji   = trim((string) ($body['emoji'] ?? ''));
+    $guestId = $body['guestId'] ?? null;
+
+    $allowedEmojis = ['❤️', '👍', '😂', '😮', '🔥'];
+    if (!in_array($emoji, $allowedEmojis, true)) {
+        Response::json(['error' => 'Invalid emoji'], 400);
+    }
+
+    $userId = AuthService::currentUser()['id'] ?? null;
+    if ($userId === null && !isValidGuestId($guestId)) {
+        Response::json(['error' => 'guestId or auth token required'], 400);
+    }
+
+    $result = toggleMessageReaction($messageId, $emoji, $guestId, $userId);
+    broadcastReactionToWs(WorldRepository::WORLD_ID, $messageId, $result['reactions']);
+
+    Response::json(['reactions' => $result['reactions']]);
 });
 
 // Quiet-city fallback context: is the given city quiet (no user msg in 6h) AND is

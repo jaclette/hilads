@@ -24,11 +24,26 @@ export async function sendWorldMessage(
   nickname: string,
   content: string,
   mentions?: MentionInput[],
+  replyToMessageId?: string | null,
 ): Promise<Message> {
   const body: Record<string, unknown> = { guestId, nickname, content };
   if (mentions && mentions.length) body.mentions = mentions;
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId;
   const r = await api.post<{ message: Message }>('/world/messages', body);
   return r.message;
+}
+
+// Toggle an emoji reaction on a World message (own endpoint; same shape as city).
+export async function toggleWorldReaction(
+  messageId: string,
+  emoji: string,
+  guestId: string,
+): Promise<import('@/types').Reaction[]> {
+  const data = await api.post<{ reactions: import('@/types').Reaction[] }>(
+    `/world/messages/${messageId}/reactions`,
+    { emoji, guestId },
+  );
+  return data.reactions ?? [];
 }
 
 export async function fetchWorldActivity(): Promise<WorldActivity> {

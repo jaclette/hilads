@@ -112,9 +112,10 @@ export async function fetchWorldMessages({ beforeId, limit = 50 } = {}) {
   return res.json() // { messages, hasMore }
 }
 
-export async function sendWorldMessage(guestId, nickname, content, mentions = null) {
+export async function sendWorldMessage(guestId, nickname, content, mentions = null, replyToMessageId = null) {
   const body = { guestId, nickname, content }
   if (mentions && mentions.length) body.mentions = mentions
+  if (replyToMessageId) body.replyToMessageId = replyToMessageId
   const res = await fetch(`${BASE}/world/messages`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -123,6 +124,19 @@ export async function sendWorldMessage(guestId, nickname, content, mentions = nu
   })
   if (!res.ok) throw new Error('Failed to send world message')
   return res.json()
+}
+
+// Toggle an emoji reaction on a World message (own endpoint; same shape as city).
+export async function toggleWorldReaction(messageId, emoji, guestId) {
+  const res = await fetch(`${BASE}/world/messages/${encodeURIComponent(messageId)}/reactions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ emoji, guestId }),
+  })
+  if (!res.ok) throw new Error('Failed to toggle world reaction')
+  const data = await res.json()
+  return data.reactions ?? []
 }
 
 // Recent arrivals across all cities → { arrivals: [{ nickname, guestId, userId, city, country, createdAt }] }
