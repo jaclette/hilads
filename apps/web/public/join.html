@@ -216,6 +216,9 @@
     document.getElementById('and-sub').textContent = t.android;
     document.getElementById('cta-web').textContent = t.web;
     document.getElementById('personal').innerHTML = t.personal;
+    // Localize the tab / share title too (reuse the headline + the "your city"
+    // word, minus its trailing full stop). The French <title> is the no-JS fallback.
+    document.title = ('Hilads — ' + t.h1.replace('{city}', t.city)).replace(/[.。]\s*$/, '');
 
     /* ── City from the existing IP edge function. Never render undefined/empty:
        the headline already shows the localized "your city"; we only upgrade it
