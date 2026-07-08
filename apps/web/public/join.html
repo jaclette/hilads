@@ -155,9 +155,9 @@
 
     /* ── Scroll cue — tappable pill + bigger bouncing arrow ──────────────────── */
     .cue{ display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; }
-    /* On the centered hero the cue floats at the bottom; on deck slides it lives
-       in the pinned footer (normal flow). */
-    .slide.center .cue{ position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateX(-50%); }
+    /* In normal flow — stacks UNDER the personal line so it never overlaps it
+       (on deck slides the cue lives in the pinned footer). */
+    .slide.center .cue{ margin-top:4px; }
     .cue .label{
       font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
       background:var(--surface); border:1px solid rgba(255,255,255,.10);
@@ -241,6 +241,7 @@
       <a class="btn web" id="cta-web" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
     </div>
     <p class="personal" id="personal">Suis <b>jaclette</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
+    <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
   </section>
 
   <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
@@ -370,6 +371,7 @@
     $('personal').innerHTML = t.personal;
     ['cta-web','cta-web2','cta-web3'].forEach(function(id){ $(id).textContent = t.web; });
     $('lb-title').textContent = lb.lbTitle;
+    $('cue1-label').textContent = lb.cue1;
     $('cue2-label').textContent = lb.cue2;
     $('ch-title').textContent = lb.chTitle;
     $('ch-sub').textContent = lb.chSub;
@@ -440,6 +442,7 @@
         hb.textContent = (medals[jac - 1] || ('#' + jac)) + ' ' + lb.heroBadge.replace('{rank}', jac);
         hb.hidden = false;
       }
+      cue('cue1', 's2');
     }).catch(function () {});
 
     /* ── Slide 3: live international challenges (cached edge fn) ──────────────── */
