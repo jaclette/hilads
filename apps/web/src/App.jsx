@@ -1115,6 +1115,7 @@ export default function App() {
   useEffect(() => {
     try {
       if (new URLSearchParams(window.location.search).get('auth') === 'signup') {
+        cameFromJoinRef.current = true
         setObAuthInitialTab('signup')
         setObShowAuth(true)
         setShowProfileDrawer(true)
@@ -1488,6 +1489,10 @@ export default function App() {
   // handleJoin joins the FEATURED city (via locPromiseRef) rather than a stale
   // saved city, and we kick off background geo (no prompt) after entry.
   const featuredEntryRef = useRef(false)
+  // True when this session arrived via the /join landing's ?auth=signup deep-link.
+  // Drives (a) the signup back button → back to /join, and (b) dropping the new
+  // user straight into the World (international) channel after signup.
+  const cameFromJoinRef = useRef(false)
   // Guard for the auto-bootstrap effect - prevents the deep-link auto-join
   // from firing twice under React StrictMode in dev.
   const guestAutoJoinedRef = useRef(false)
@@ -2757,7 +2762,10 @@ export default function App() {
       const _isHomeLocalCity = _cityNorm === 'ho chi minh city' || _cityNorm === 'saigon'
       // Require a KNOWN city name: if a saved identity has no city, stay in the
       // city channel rather than risk yanking an HCMC returner into World.
-      if (_cityNorm && !_isHomeLocalCity && !pendingChallengeRef.current) {
+      // /join signups land in the World (international) channel regardless of
+      // city; otherwise auto-enter World for every city except the HCMC home base.
+      const _forceWorld = opts?.forceWorld === true
+      if (!pendingChallengeRef.current && (_forceWorld || (_cityNorm && !_isHomeLocalCity))) {
         setTimeout(() => { switchScope('world') }, 0)
       }
       // A Screen-2 challenge tap / /c/:id CTA queued a challenge to open once the
@@ -4411,9 +4419,17 @@ export default function App() {
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
             setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
             track('user_authenticated')
-            handleJoin(null)
+            handleJoin(null, null, { forceWorld: cameFromJoinRef.current })
           }}
-          onBack={() => setObShowAuth(false)}
+          onBack={() => {
+            // Came from the /join landing → go back THERE, not the stories landing.
+            if (cameFromJoinRef.current) {
+              if (window.history.length > 1) window.history.back()
+              else window.location.assign('/join')
+            } else {
+              setObShowAuth(false)
+            }
+          }}
           onForgotPassword={() => { setObShowAuth(false); setShowForgotPassword(true) }}
         />
       )
