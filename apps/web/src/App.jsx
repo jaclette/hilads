@@ -1105,6 +1105,21 @@ export default function App() {
     return () => clearTimeout(t)
   }, [status, account])
 
+  // ── /?auth=signup deep-link ─────────────────────────────────────────────────
+  // The /join paid-traffic landing sends its "Commencer sur le web" CTA here so
+  // the visitor lands straight on account creation. Open the signup modal once,
+  // on mount (the modal renders under showProfileDrawer && showAuthScreen).
+  useEffect(() => {
+    try {
+      if (new URLSearchParams(window.location.search).get('auth') === 'signup') {
+        setShowProfileDrawer(true)
+        setShowAuthScreenTab('signup')
+        setShowAuthScreen(true)
+      }
+    } catch { /* no-op */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // ── Tab scroll preservation ─────────────────────────────────────────────────
   // Each of the 3 inline tab drawers (NOW / HERE / ME-guest) has its own scroll
   // container. Drawers unmount when their flag flips false, so we stash the

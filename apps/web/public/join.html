@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <!-- Paid-traffic conversion landing (Instagram). Not for SEO — the SSR home
+       page owns organic. Keep this page STANDALONE + tiny: it must paint on a
+       Vietnamese 4G connection inside the Instagram in-app webview. No external
+       fonts, no images, no app bundle. City comes from the existing /api/geo
+       edge function; analytics reuse the same PostHog project + reverse proxy. -->
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0d0b09" />
+  <title>Hilads — deviens local dans ta ville</title>
+  <style>
+    :root{
+      --bg:#0d0b09; --surface:#161210; --surface2:#1e1812;
+      --accent:#C24A38; --accent2:#B87228; --hot:#FF7A3C;
+      --text:#ede9e5; --muted:#8a7c74;
+    }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body{ margin:0; padding:0; }
+    body{
+      background:var(--bg); color:var(--text);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      min-height:100svh;
+      /* warm glow behind the hero — pure CSS, no asset */
+      background-image:radial-gradient(120% 80% at 50% -10%, rgba(194,74,56,.28), rgba(13,11,9,0) 60%);
+    }
+    .wrap{
+      min-height:100svh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; text-align:center;
+      padding:28px 22px calc(28px + env(safe-area-inset-bottom));
+      gap:18px;
+    }
+    .brand{ display:flex; align-items:center; gap:9px; margin-bottom:2px; }
+    .brand .sq{
+      width:30px; height:30px; border-radius:9px;
+      background:linear-gradient(140deg,var(--accent),var(--accent2));
+      color:#fff; font-weight:800; font-size:15px;
+      display:flex; align-items:center; justify-content:center;
+      letter-spacing:-.5px;
+    }
+    .brand .name{ font-weight:700; font-size:19px; letter-spacing:-.4px; }
+    h1{
+      margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
+      font-size:clamp(28px,7.8vw,42px);
+    }
+    h1 #city{
+      background:linear-gradient(120deg,var(--hot),var(--accent2));
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .sub{
+      margin:0; max-width:22em; color:var(--text); opacity:.82;
+      font-size:clamp(15px,4vw,17px); line-height:1.5;
+    }
+    .ctas{ width:100%; max-width:360px; display:flex; flex-direction:column; gap:11px; margin-top:6px; }
+    .store{ display:flex; }               /* row holding the two store buttons, stacked for full-width tap targets */
+    .stores{ display:flex; flex-direction:column; gap:11px; }
+    a.btn{
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%; min-height:56px; padding:0 18px;
+      border-radius:16px; text-decoration:none; font-weight:700; font-size:16px;
+      color:#fff; background:var(--surface2); border:1px solid rgba(255,255,255,.09);
+    }
+    a.btn .ico{ width:20px; height:20px; flex:0 0 auto; }
+    a.btn small{ display:block; font-weight:500; font-size:11px; opacity:.7; line-height:1; margin-bottom:2px; }
+    a.btn .lbl{ text-align:left; line-height:1.05; }
+    a.web{
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      border:none; font-size:16px; min-height:54px; border-radius:16px;
+    }
+    .personal{ margin-top:8px; color:var(--muted); font-size:13.5px; line-height:1.4; }
+    .personal b{ color:var(--text); font-weight:600; }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand">
+      <div class="sq">Hi</div>
+      <div class="name">hilads</div>
+    </div>
+
+    <h1>Deviens local à <span id="city">ta ville</span>.</h1>
+
+    <p class="sub">Comme Jacques à Saigon, lance des défis aux gens de ta ville et découvre-la comme un vrai local.</p>
+
+    <div class="ctas">
+      <div class="stores" id="stores">
+        <!-- Default order = iOS then Android (spec CTA priority). On an Android UA
+             the two are swapped at runtime so the relevant store is on top. -->
+        <a class="btn" id="cta-ios" href="https://apps.apple.com/app/id6768905591" rel="noopener">
+          <svg class="ico" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.417 2.2-1.11 3.02-.83.98-2.19 1.74-3.32 1.65-.14-1.1.42-2.27 1.08-3.02.75-.85 2.06-1.5 3.35-1.65zM20.5 17.02c-.55 1.27-.81 1.83-1.52 2.95-.99 1.57-2.39 3.52-4.12 3.53-1.54.02-1.94-.99-4.03-.98-2.09.01-2.53 1-4.07.97-1.73-.02-3.05-1.79-4.04-3.36C-.19 16.6-.46 11.5 1.4 8.79c1.05-1.55 2.71-2.53 4.28-2.53 1.6 0 2.61 1 3.93 1 1.28 0 2.06-1 3.91-1 1.4 0 2.88.76 3.94 2.08-3.46 1.9-2.9 6.84.14 8.68z"/></svg>
+          <span class="lbl"><small>Télécharge sur</small>App Store</span>
+        </a>
+        <a class="btn" id="cta-android" href="https://play.google.com/store/apps/details?id=com.hilads.app" rel="noopener">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 2.2 13 11.6l2.6-2.6z"/><path fill="#EA4335" d="M3.05 1.9c-.28.2-.45.5-.45.9v18.4c0 .4.17.7.45.9L13 11.6z" opacity=".9"/><path fill="#4285F4" d="M3.6 21.8 15.6 15l-2.6-2.6z"/><path fill="#FBBC05" d="M18.9 10.1 15.6 8.2 12.7 11l2.9 2.9 3.3-1.9c.9-.5.9-1.4 0-1.9z"/></svg>
+          <span class="lbl"><small>Disponible sur</small>Google Play</span>
+        </a>
+      </div>
+
+      <a class="web" id="cta-web" href="/?auth=signup" rel="noopener">Commencer sur le web&nbsp;→</a>
+    </div>
+
+    <p class="personal">Suis <b>Jacques</b> 🇫🇷 — French expat à Saigon</p>
+  </main>
+
+  <script>
+  (function () {
+    /* ── PostHog (same project + managed reverse proxy as the app) ──────────── */
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister getFeatureFlag isFeatureEnabled reloadFeatureFlags identify setPersonProperties reset get_distinct_id opt_in_capturing opt_out_capturing set_config".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
+      api_host: 'https://hi.hilads.live',
+      ui_host: 'https://eu.posthog.com',
+      autocapture: false,
+      capture_pageleave: false,
+      disable_session_recording: true,
+      disable_toolbar: true,
+    });
+
+    function cap(ev, props){ try { posthog.capture(ev, props); } catch (e) {} }
+
+    /* ── UTM passthrough: register as super props (so every event carries them)
+       AND forward on the web-signup link, so attribution survives the hop. ──── */
+    var KEEP = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid','ttclid','ref'];
+    var sp = new URLSearchParams(location.search);
+    var pass = new URLSearchParams(), sup = {};
+    KEEP.forEach(function (k) { var v = sp.get(k); if (v) { pass.set(k, v); sup[k] = v; } });
+    if (Object.keys(sup).length) { try { posthog.register(sup); } catch (e) {} }
+    var webEl = document.getElementById('cta-web');
+    webEl.setAttribute('href', '/?auth=signup' + (pass.toString() ? '&' + pass.toString() : ''));
+
+    /* ── City from the existing IP edge function. Never render undefined/empty:
+       the HTML already says "ta ville"; we only upgrade it on a real match. ── */
+    var CITY = 'unknown', viewed = false;
+    function pageView(){ if (viewed) return; viewed = true; cap('join_page_view', { city: CITY }); }
+    fetch('/api/geo')
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.city) { CITY = d.city; document.getElementById('city').textContent = d.city; } pageView(); })
+      .catch(function () { pageView(); });
+    setTimeout(pageView, 1500);   // safety net if /api/geo hangs
+
+    /* ── OS-aware store order: put the visitor's store first (spec = optional). ─ */
+    if (/Android/i.test(navigator.userAgent || '')) {
+      var s = document.getElementById('stores');
+      s.insertBefore(document.getElementById('cta-android'), document.getElementById('cta-ios'));
+    }
+
+    /* ── CTA tracking. Fire the event, then navigate after a short beat so the
+       request flushes before the webview unloads this page. ──────────────────── */
+    function wire(id, ev){
+      var el = document.getElementById(id);
+      el.addEventListener('click', function (e) {
+        e.preventDefault();
+        var url = el.getAttribute('href');
+        cap(ev, { city: CITY });
+        setTimeout(function () { window.location.href = url; }, 140);
+      });
+    }
+    wire('cta-ios', 'join_cta_appstore');
+    wire('cta-android', 'join_cta_playstore');
+    wire('cta-web', 'join_cta_websignup');
+  })();
+  </script>
+</body>
+</html>
