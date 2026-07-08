@@ -1106,12 +1106,17 @@ export default function App() {
   }, [status, account])
 
   // ── /?auth=signup deep-link ─────────────────────────────────────────────────
-  // The /join paid-traffic landing sends its "Commencer sur le web" CTA here so
-  // the visitor lands straight on account creation. Open the signup modal once,
-  // on mount (the modal renders under showProfileDrawer && showAuthScreen).
+  // The /join paid-traffic landing sends its "Sign up" CTA here so the visitor
+  // lands straight on account creation instead of the stories landing. Open the
+  // signup screen once, on mount. A fresh visitor is in status 'onboarding' and
+  // reaches AuthScreen via obShowAuth (the landing's own auth path); a returning
+  // guest is 'ready' and reaches it via showProfileDrawer + showAuthScreen. We
+  // set both so it opens from either entry state (each is a no-op in the other).
   useEffect(() => {
     try {
       if (new URLSearchParams(window.location.search).get('auth') === 'signup') {
+        setObAuthInitialTab('signup')
+        setObShowAuth(true)
         setShowProfileDrawer(true)
         setShowAuthScreenTab('signup')
         setShowAuthScreen(true)
