@@ -118,7 +118,8 @@
       background:var(--surface); border:1px solid rgba(255,255,255,.10);
       padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.35);
     }
-    .cue .chev{ font-size:30px; line-height:1; color:var(--accent2); }
+    .cue .chev{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
+    .cue .chev i{ font-style:normal; font-size:34px; line-height:.5; }
     @media (prefers-reduced-motion: no-preference){ .cue .chev{ animation:scrollBounce 1.5s ease-in-out infinite; } }
     @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(7px); } }
 
@@ -186,7 +187,7 @@
     </div>
     <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
 
-    <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev">↓</span></div>
+    <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
   </section>
 
   <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
@@ -199,7 +200,7 @@
       <div class="lb-list" id="lb-list"></div>
       <div class="foot">
         <a class="btn web" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
-        <div class="cue" id="cue2" hidden><span class="label" id="cue2-label">🌍 Les défis internationaux</span><span class="chev">↓</span></div>
+        <div class="cue" id="cue2" hidden><span class="label" id="cue2-label">🌍 Les défis internationaux</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
       </div>
     </div>
   </section>
