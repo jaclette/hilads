@@ -57,7 +57,11 @@
     .slide.deck{ justify-content:flex-start; }
     .slide.deck .panel{ width:100%; max-width:420px; height:100%; display:flex; flex-direction:column; min-height:0; }
     .slide.deck .head{ flex:0 0 auto; }
-    .slide.deck .lb-list, .slide.deck .ch-list{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:2px; }
+    /* No overscroll-behavior:contain here — that traps the swipe over the list
+       (the whole centre), so paging only worked from the header/footer. Default
+       chaining lets a centre swipe reach the page snap; when the list overflows
+       on a small phone it scrolls its rows first, then pages. */
+    .slide.deck .lb-list, .slide.deck .ch-list{ flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:2px; }
     .slide.deck .foot{ flex:0 0 auto; padding-top:12px; display:flex; flex-direction:column; align-items:center; gap:10px; }
 
     h1{
