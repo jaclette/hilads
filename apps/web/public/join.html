@@ -20,7 +20,7 @@
       --text:#ede9e5; --muted:#8a7c74;
     }
     *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    html{ scroll-snap-type:y proximity; scroll-behavior:smooth; }
+    html{ scroll-snap-type:y mandatory; scroll-behavior:smooth; }
     html,body{ margin:0; padding:0; }
     body{
       background:var(--bg); color:var(--text);
@@ -45,12 +45,20 @@
 
     /* ── Slides ──────────────────────────────────────────────────────────────── */
     .slide{
-      position:relative; scroll-snap-align:start; min-height:100svh;
+      position:relative; scroll-snap-align:start; scroll-snap-stop:always;
+      height:100svh; overflow:hidden;
       display:flex; flex-direction:column; align-items:center; text-align:center;
-      padding:78px 22px calc(28px + env(safe-area-inset-bottom));
+      padding:72px 22px calc(20px + env(safe-area-inset-bottom));
     }
-    .slide.center{ justify-content:center; gap:18px; }
-    .slide.top{ justify-content:flex-start; gap:0; }
+    .slide.center{ justify-content:center; gap:16px; }
+    /* Deck slides (leaderboard / challenges): header + an internally-scrolling
+       list + pinned footer, so the slide is ALWAYS exactly one screen — you can
+       never rest showing the bottom of one slide and the top of the next. */
+    .slide.deck{ justify-content:flex-start; }
+    .slide.deck .panel{ width:100%; max-width:420px; height:100%; display:flex; flex-direction:column; min-height:0; }
+    .slide.deck .head{ flex:0 0 auto; }
+    .slide.deck .lb-list, .slide.deck .ch-list{ flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; padding:2px; }
+    .slide.deck .foot{ flex:0 0 auto; padding-top:12px; display:flex; flex-direction:column; align-items:center; gap:10px; }
 
     h1{
       margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
@@ -97,11 +105,10 @@
     .personal b{ color:var(--text); font-weight:600; }
 
     /* ── Scroll cue — tappable pill + bigger bouncing arrow ──────────────────── */
-    .cue{
-      position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom));
-      transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
-      gap:6px; cursor:pointer;
-    }
+    .cue{ display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; }
+    /* On the centered hero the cue floats at the bottom; on deck slides it lives
+       in the pinned footer (normal flow). */
+    .slide.center .cue{ position:absolute; left:50%; bottom:calc(16px + env(safe-area-inset-bottom)); transform:translateX(-50%); }
     .cue .label{
       font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
       background:var(--surface); border:1px solid rgba(255,255,255,.10);
@@ -142,7 +149,7 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="progress" id="progress"><span class="seg on"></span><span class="seg"></span><span class="seg"></span></div>
+    <div class="progress" id="progress"><span class="seg on"></span><span class="seg"></span><span class="seg" hidden></span></div>
     <div class="brandrow">
       <svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true">
         <defs><linearGradient id="hig" x1="5%" y1="0%" x2="95%" y2="100%"><stop offset="0%" stop-color="#C24A38"/><stop offset="44%" stop-color="#B85530"/><stop offset="100%" stop-color="#B87228"/></linearGradient></defs>
@@ -179,27 +186,31 @@
   </section>
 
   <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
-  <section class="slide top" id="s2">
+  <section class="slide deck" id="s2">
     <div class="panel">
       <div class="head">
         <div class="title" id="lb-title">🏆 Classement mondial</div>
         <div class="desc" id="lb-sub"></div>
       </div>
       <div class="lb-list" id="lb-list"></div>
-      <a class="btn web cta-foot" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+      <div class="foot">
+        <a class="btn web" id="cta-web2" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+        <div class="cue" id="cue2" hidden><span class="label" id="cue2-label">🌍 Les défis internationaux</span><span class="chev">↓</span></div>
+      </div>
     </div>
-    <div class="cue" id="cue2" hidden><span class="label" id="cue2-label">🌍 Les défis internationaux</span><span class="chev">↓</span></div>
   </section>
 
   <!-- ── Slide 3: live international challenges ───────────────────────────────── -->
-  <section class="slide top" id="s3" hidden>
+  <section class="slide deck" id="s3" hidden>
     <div class="panel">
       <div class="head">
         <div class="title" id="ch-title">🌍 Défis internationaux en cours</div>
         <div class="desc" id="ch-sub"></div>
       </div>
       <div class="ch-list" id="ch-list"></div>
-      <a class="btn web cta-foot" id="cta-web3" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+      <div class="foot">
+        <a class="btn web" id="cta-web3" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
+      </div>
     </div>
   </section>
 
@@ -372,8 +383,9 @@
           + '<div class="ch-by">' + av + esc(e.creator) + '</div></div>';
       });
       $('ch-list').innerHTML = html;
-      $('s3').hidden = false;      // reveal the slide + its progress segment
-      cue('cue2', 's3');           // slide-2 arrow now points to a populated slide
+      $('s3').hidden = false;                        // reveal the slide…
+      $('progress').children[2].hidden = false;      // …and its progress segment
+      cue('cue2', 's3');                             // slide-2 arrow now points to it
     }).catch(function () {});
 
     /* ── OS-aware store order ────────────────────────────────────────────────── */
