@@ -29,11 +29,24 @@
       background-image:radial-gradient(120% 80% at 50% -10%, rgba(194,74,56,.28), rgba(13,11,9,0) 60%);
     }
     .wrap{
+      position:relative;
       min-height:100svh; display:flex; flex-direction:column;
       align-items:center; justify-content:center; text-align:center;
       padding:28px 22px calc(28px + env(safe-area-inset-bottom));
       gap:18px;
     }
+    /* Scroll cue — only shown once the leaderboard below has loaded, so people
+       discover the board instead of thinking the page ends at the hero. */
+    .scroll-hint{
+      position:absolute; left:50%; bottom:calc(12px + env(safe-area-inset-bottom));
+      transform:translateX(-50%); display:flex; flex-direction:column; align-items:center;
+      gap:2px; color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.3px;
+    }
+    .scroll-hint .chev{ font-size:18px; line-height:1; }
+    @media (prefers-reduced-motion: no-preference){
+      .scroll-hint .chev{ animation:scrollBounce 1.6s ease-in-out infinite; }
+    }
+    @keyframes scrollBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
     .brand{ display:flex; align-items:center; gap:8px; margin-bottom:2px; }
     .brand svg{ display:block; flex:0 0 auto; }
     .brand .name{ font-weight:700; font-size:19px; letter-spacing:-.4px; }
@@ -160,6 +173,8 @@
     </div>
 
     <p class="personal" id="personal">Suis <b>Jacques</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
+
+    <div class="scroll-hint" id="scroll-hint" hidden aria-hidden="true"><span>🏆</span><span class="chev">↓</span></div>
   </main>
 
   <!-- Below-the-fold social proof: live top-10 worldwide board. Hidden until
@@ -331,6 +346,7 @@
         if (jac != null) subEl.innerHTML = lb.sub.replace('{rank}', jac);
         else subEl.hidden = true;
         document.getElementById('lb').hidden = false;
+        var sh = document.getElementById('scroll-hint'); if (sh) sh.hidden = false;
       })
       .catch(function () { /* keep the section hidden */ });
 
