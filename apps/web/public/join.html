@@ -236,6 +236,8 @@
       return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
     }
     function $(id){ return document.getElementById(id); }
+    // City DISPLAY localization — mirrors the app's localizeCityName slug rule.
+    function locCity(CN, n){ if(!n||!CN) return n||''; var s=String(n).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); return CN[s]||n; }
 
     /* ── UTM passthrough → super props + all signup CTAs ─────────────────────── */
     var KEEP = ['utm_source','utm_medium','utm_campaign','utm_content','utm_term','gclid','fbclid','ttclid','ref'];
@@ -349,8 +351,14 @@
       el.addEventListener('click', function () { $(targetId).scrollIntoView({ behavior: 'smooth' }); });
     }
 
+    /* ── City-name localization map for THIS locale (mirrors the app). Only the
+       visitor's one locale file loads; en/most-Latin locales are ~empty so names
+       stay canonical. Both lists await it so city names render localized first paint. */
+    var cnReady = fetch('/citynames/' + L + '.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; });
+
     /* ── Slide 2: worldwide top-10 leaderboard (cached edge fn) ──────────────── */
-    fetch('/api/leaderboard-top').then(function (r) { return r.json(); }).then(function (d) {
+    Promise.all([ fetch('/api/leaderboard-top').then(function (r) { return r.json(); }), cnReady ]).then(function (res) {
+      var d = res[0], CN = res[1];
       var items = (d && d.items) || [];
       if (!items.length) return;
       var medals = ['🥇','🥈','🥉'], html = '', jac = null;
@@ -363,7 +371,7 @@
         html += '<div class="lb-row' + (e.name === 'jaclette' ? ' me' : '') + '">'
           + '<span class="lb-rank">' + badge + '</span>' + av
           + '<div class="lb-main"><div class="lb-name">' + esc(e.name) + '</div>'
-          + '<div class="lb-city">' + flag(e.country) + ' ' + esc(e.city) + '</div></div>'
+          + '<div class="lb-city">' + flag(e.country) + ' ' + esc(locCity(CN, e.city)) + '</div></div>'
           + '<span class="lb-pts">' + Number(e.points || 0) + ' ' + esc(lb.pts) + '</span></div>';
       });
       $('lb-list').innerHTML = html;
@@ -373,7 +381,8 @@
     }).catch(function () {});
 
     /* ── Slide 3: live international challenges (cached edge fn) ──────────────── */
-    fetch('/api/world-challenges').then(function (r) { return r.json(); }).then(function (d) {
+    Promise.all([ fetch('/api/world-challenges').then(function (r) { return r.json(); }), cnReady ]).then(function (res) {
+      var d = res[0], CN = res[1];
       var items = (d && d.items) || [];
       if (!items.length) return;                       // no data → slide stays hidden
       var html = '';
@@ -382,8 +391,8 @@
           ? '<span class="av"><img src="' + esc(e.avatar) + '" alt="" loading="lazy" width="22" height="22"></span>'
           : '<span class="av">' + esc((e.creator || '?').charAt(0).toUpperCase()) + '</span>';
         html += '<div class="ch-card">'
-          + '<div class="ch-route">' + flag(e.country) + ' ' + esc(e.city)
-          + '<span class="arrow">→</span>' + flag(e.targetCountry) + ' ' + esc(e.targetCity) + '</div>'
+          + '<div class="ch-route">' + flag(e.country) + ' ' + esc(locCity(CN, e.city))
+          + '<span class="arrow">→</span>' + flag(e.targetCountry) + ' ' + esc(locCity(CN, e.targetCity)) + '</div>'
           + '<div class="ch-title">' + esc(e.title) + '</div>'
           + '<div class="ch-by">' + av + esc(e.creator) + '</div></div>';
       });
