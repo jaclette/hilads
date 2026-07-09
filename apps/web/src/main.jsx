@@ -46,9 +46,11 @@ posthog.init(POSTHOG_KEY, {
         if (typeof ph.stopSessionRecording === 'function') {
             ph.stopSessionRecording()
         }
-        // Expose for console debugging in dev (posthog-js sets window.posthog on
-        // init anyway, but make it explicit so `window.posthog` is reliable).
-        if (import.meta.env.DEV) window.posthog = ph
+        // Expose the instance globally. posthog-js does NOT reliably set
+        // window.posthog with the ES-module import, so set it ourselves — this
+        // enables console debugging AND the window.posthog.capture() calls used
+        // elsewhere in the app (PastArchive, calendar) which otherwise no-op.
+        window.posthog = ph
     },
 })
 
