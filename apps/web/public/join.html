@@ -98,6 +98,10 @@
     .flags .chip .n{ color:var(--accent2); }
     .flags .go{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
     .flags .go i{ font-style:normal; font-size:20px; line-height:.5; }
+    /* Challenge types — colourful gradient chips (same colours as the app). */
+    .flags .types{ display:inline-flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+    .flags .type{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:800; color:#fff;
+      border-radius:999px; padding:4px 10px; text-shadow:0 1px 1px rgba(0,0,0,.4); box-shadow:0 2px 6px rgba(0,0,0,.25); }
     @media (prefers-reduced-motion: no-preference){ .flags .go{ animation:scrollBounce 1.5s ease-in-out infinite; } }
 
     /* Rank + dethrone badge under the portrait (jaclette is #1 to dethrone).
@@ -358,6 +362,18 @@
       ar:{ lbTitle:"🏆 التصنيف العالمي", lbSub:"<b>jaclette</b> رقم {rank} عالميًا 👑 سجّل وأطِح به عن العرش.", pts:"نقطة", cue1:"🏆 شاهد أفضل 10 في العالم", cue2:"🌍 تحديات دولية", chTitle:"🌍 تحديات دولية جارية الآن", chSub:"مدينة تتحدّى أخرى الآن. انضمّ إلى الحدث.", heroBadge:"أطِح بـ jaclette · رقم {rank} عالميًا", nav1:"الرئيسية", nav2:"التصنيف", nav3:"التحديات" },
     };
 
+    // Challenge types — the app's 4 types, exact gradient colours + icons, with
+    // localized labels (challenge.json "tp") for all 19 locales.
+    var TYPES = [ { e:'🍜', a:'#FF7A3C', b:'#C24A38' }, { e:'📍', a:'#2DD4BF', b:'#0EA5E9' }, { e:'🎭', a:'#A78BFA', b:'#7C3AED' }, { e:'🤪', a:'#F472B6', b:'#DB2777' } ];
+    var TYPE_LABELS = {
+      en:["Food","Place","Culture","Crazy"], fr:["Bouffe","Lieu","Culture","Délire"], vi:["Ăn uống","Địa điểm","Văn hóa","Điên rồ"],
+      es:["Comida","Lugar","Cultura","Locura"], it:["Cibo","Posto","Cultura","Pazzia"], "pt-br":["Comida","Lugar","Cultura","Maluco"],
+      "pt-pt":["Comida","Sítio","Cultura","Maluco"], de:["Essen","Ort","Kultur","Verrückt"], nl:["Eten","Plek","Cultuur","Gek"],
+      "zh-hans":["美食","地点","文化","疯狂"], "zh-hant":["美食","地點","文化","瘋狂"], ja:["食","場所","文化","クレイジー"],
+      ko:["음식","장소","문화","크레이지"], fil:["Pagkain","Lugar","Kultura","Baliw"], th:["อาหาร","สถานที่","วัฒนธรรม","บ้าๆ"],
+      id:["Makanan","Tempat","Budaya","Gila"], hi:["फ़ूड","जगह","कल्चर","पागलपन"], ru:["Еда","Место","Культура","Безумие"], ar:["طعام","مكان","ثقافة","جنون"],
+    };
+
     var L = pickLocale();
     var t = T[L] || T.en;
     var lb = LB[L] || LB.en;
@@ -481,6 +497,9 @@
         catch (e) { regionOf = function (c) { return c; }; }
         var fh = '<span class="cap">' + esc(lb.chTitle) + '</span><span class="row">';
         top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' ' + esc(regionOf(c)) + ' <span class="n">' + tally[c] + '</span></span>'; });
+        fh += '</span><span class="types">';
+        var TL = TYPE_LABELS[L] || TYPE_LABELS.en;
+        TYPES.forEach(function (ty, i) { fh += '<span class="type" style="background:linear-gradient(135deg,' + ty.a + ',' + ty.b + ')">' + ty.e + ' ' + esc(TL[i]) + '</span>'; });
         fh += '</span><span class="go"><i>⌄</i><i>⌄</i></span>';
         var fe = $('flags');
         fe.innerHTML = fh;
