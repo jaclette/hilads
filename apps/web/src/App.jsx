@@ -2762,10 +2762,11 @@ export default function App() {
       const _isHomeLocalCity = _cityNorm === 'ho chi minh city' || _cityNorm === 'saigon'
       // Require a KNOWN city name: if a saved identity has no city, stay in the
       // city channel rather than risk yanking an HCMC returner into World.
-      // /join signups land in the World (international) channel regardless of
-      // city; otherwise auto-enter World for every city except the HCMC home base.
+      // Auto-enter the World (international) channel for every city EXCEPT the
+      // HCMC home base — it has a real local user base worth landing in, so HCMC
+      // always lands on its own city channel (even for /join signups).
       const _forceWorld = opts?.forceWorld === true
-      if (!pendingChallengeRef.current && (_forceWorld || (_cityNorm && !_isHomeLocalCity))) {
+      if (!pendingChallengeRef.current && !_isHomeLocalCity && (_forceWorld || _cityNorm)) {
         setTimeout(() => { switchScope('world') }, 0)
       }
       // A Screen-2 challenge tap / /c/:id CTA queued a challenge to open once the
