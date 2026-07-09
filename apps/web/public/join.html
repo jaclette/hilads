@@ -55,7 +55,11 @@
       display:flex; flex-direction:column; align-items:center; text-align:center;
       padding:88px 22px calc(20px + env(safe-area-inset-bottom));
     }
-    .slide.center{ justify-content:center; gap:13px; }
+    .slide.center{ justify-content:center; }
+    /* Slide 1 content scales to fit any screen height (JS-driven) so nothing is
+       ever clipped or pushed off — the whole hero shrinks uniformly on short
+       phones and sits at full size on tall ones. */
+    .slide.center > .fit{ display:flex; flex-direction:column; align-items:center; gap:13px; width:100%; transform-origin:center center; will-change:transform; }
     /* Deck slides (leaderboard / challenges): header + an internally-scrolling
        list + pinned footer, so the slide is ALWAYS exactly one screen — you can
        never rest showing the bottom of one slide and the top of the next. */
@@ -85,16 +89,24 @@
       font-size:clamp(26px,5.2vh,42px); line-height:1; pointer-events:none;
       filter:drop-shadow(0 2px 4px rgba(0,0,0,.55));
     }
-    /* Challenges-slide summary: country counts + colourful challenge-type chips
-       (moved off the hero to keep slide 1 uncluttered). */
-    .ch-summary{ flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:8px; margin-bottom:12px; }
-    .ch-summary .row{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:7px; }
-    .ch-summary .chip{ display:inline-flex; align-items:center; gap:5px; font-size:13.5px; font-weight:800; color:var(--text);
-      background:var(--surface); border:1px solid rgba(255,255,255,.10); border-radius:999px; padding:5px 11px; }
-    .ch-summary .chip .n{ color:var(--accent2); }
-    .ch-summary .types{ display:inline-flex; flex-wrap:wrap; justify-content:center; gap:6px; }
-    .ch-summary .type{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:800; color:#fff;
+    /* Live country challenge-counter ABOVE the portrait — flag + count chips,
+       tap to jump to the challenges slide. Fun + language-neutral (flags/numbers). */
+    .flags{ display:flex; flex-direction:column; align-items:center; gap:8px; align-self:center; max-width:100%; cursor:pointer;
+      background:linear-gradient(135deg,rgba(194,74,56,.18),rgba(184,114,40,.10));
+      border:1px solid rgba(255,122,60,.38); border-radius:18px; padding:11px 18px 9px;
+      box-shadow:0 6px 20px rgba(0,0,0,.28); }
+    .flags .cap{ font-size:14px; font-weight:800; color:var(--text); letter-spacing:.2px; }
+    .flags .row{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:7px; }
+    .flags .chip{ display:inline-flex; align-items:center; gap:5px; font-size:14px; font-weight:800; color:var(--text);
+      background:rgba(0,0,0,.34); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:5px 12px; }
+    .flags .chip .n{ color:var(--accent2); }
+    .flags .go{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
+    .flags .go i{ font-style:normal; font-size:20px; line-height:.5; }
+    /* Challenge types — colourful gradient chips (same colours as the app). */
+    .flags .types{ display:inline-flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+    .flags .type{ display:inline-flex; align-items:center; gap:4px; font-size:12.5px; font-weight:800; color:#fff;
       border-radius:999px; padding:4px 10px; text-shadow:0 1px 1px rgba(0,0,0,.4); box-shadow:0 2px 6px rgba(0,0,0,.25); }
+    @media (prefers-reduced-motion: no-preference){ .flags .go{ animation:scrollBounce 1.5s ease-in-out infinite; } }
 
     /* Rank + dethrone badge under the portrait (jaclette is #1 to dethrone).
        Populated from the live leaderboard rank; hidden until it loads. */
@@ -215,6 +227,8 @@
 
   <!-- ── Slide 1: hero ───────────────────────────────────────────────────────── -->
   <section class="slide center" id="s1">
+    <div class="fit" id="s1fit">
+    <button class="flags" id="flags" type="button" hidden aria-label="challenges"></button>
     <div class="hero" id="hero" aria-hidden="true">
       <img class="hero-img" src="/landing/join-hero.webp" alt="" width="360" height="360" fetchpriority="high" decoding="async" />
       <span class="hero-crown">👑</span>
@@ -237,6 +251,7 @@
     </div>
     <p class="personal" id="personal">Suis <b>jaclette</b> 🇫🇷 — expat français à Saigon 🇻🇳</p>
     <div class="cue" id="cue1" hidden><span class="label" id="cue1-label">🏆 Vois le top 10 mondial</span><span class="chev"><i>⌄</i><i>⌄</i></span></div>
+    </div>
   </section>
 
   <!-- ── Slide 2: worldwide leaderboard ──────────────────────────────────────── -->
@@ -261,7 +276,6 @@
         <div class="title" id="ch-title">🌍 Défis internationaux en cours</div>
         <div class="desc" id="ch-sub"></div>
       </div>
-      <div class="ch-summary" id="ch-summary"></div>
       <div class="ch-list" id="ch-list"></div>
       <div class="foot">
         <a class="btn web" id="cta-web3" href="/?auth=signup" rel="noopener">Inscris-toi et défie le monde&nbsp;→</a>
@@ -286,6 +300,17 @@
       return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65, 0x1F1E6+c.charCodeAt(1)-65);
     }
     function $(id){ return document.getElementById(id); }
+    // Scale slide 1 to fit the viewport height so ALL its content stays visible
+    // (no clipping / overflow) — shrinks uniformly on short screens, full size
+    // on tall ones. Re-run whenever content changes (async loads) or on resize.
+    function fitS1(){
+      var s = $('s1'), f = $('s1fit'); if (!s || !f) return;
+      f.style.transform = 'none';
+      var cs = getComputedStyle(s);
+      var avail = s.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      var need = f.offsetHeight;
+      f.style.transform = (need > avail && need > 0) ? 'scale(' + (avail / need).toFixed(4) + ')' : 'none';
+    }
     // City DISPLAY localization — mirrors the app's localizeCityName slug rule.
     function locCity(CN, n){ if(!n||!CN) return n||''; var s=String(n).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); return CN[s]||n; }
 
@@ -395,6 +420,7 @@
     fetch('/api/geo').then(function (r) { return r.json(); }).then(function (d) {
       if (d && d.city) { CITY = d.city; var el = $('city'); if (el) el.textContent = ALIAS[d.city] || d.city; }
       pageView();
+      fitS1();
     }).catch(function () { pageView(); });
     setTimeout(pageView, 1500);
 
@@ -453,6 +479,7 @@
         hb.hidden = false;
       }
       cue('cue1', 's2');
+      fitS1();
     }).catch(function () {});
 
     /* ── Slide 3: live international challenges (cached edge fn) ──────────────── */
@@ -476,23 +503,29 @@
       $('progress').children[2].hidden = false;      // …and its progress segment
       cue('cue2', 's3');                             // slide-2 arrow now points to it
 
-      // Summary at the top of the challenges slide: country counts (countries
-      // involved = origin + target, top 5) + the colourful challenge-type chips.
+      // Country counter above the hero: tally the countries involved (origin +
+      // target) across these live challenges, top 5 as flag+count chips → slide 3.
       var tally = {};
       items.forEach(function (e) { [e.country, e.targetCountry].forEach(function (c) { if (c) tally[c] = (tally[c] || 0) + 1; }); });
       var top = Object.keys(tally).sort(function (a, b) { return tally[b] - tally[a]; }).slice(0, 5);
-      // Localized country names via the browser (no data map needed).
-      var _loc = L.replace('zh-hans','zh-Hans').replace('zh-hant','zh-Hant').replace('pt-br','pt-BR').replace('pt-pt','pt-PT');
-      var regionOf;
-      try { var _dn = new Intl.DisplayNames([_loc, 'en'], { type:'region' }); regionOf = function (c) { try { return _dn.of(c) || c; } catch (e) { return c; } }; }
-      catch (e) { regionOf = function (c) { return c; }; }
-      var fh = '<span class="row">';
-      top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' ' + esc(regionOf(c)) + ' <span class="n">' + tally[c] + '</span></span>'; });
-      fh += '</span><span class="types">';
-      var TL = TYPE_LABELS[L] || TYPE_LABELS.en;
-      TYPES.forEach(function (ty, i) { fh += '<span class="type" style="background:linear-gradient(135deg,' + ty.a + ',' + ty.b + ')">' + ty.e + ' ' + esc(TL[i]) + '</span>'; });
-      fh += '</span>';
-      $('ch-summary').innerHTML = fh;
+      if (top.length) {
+        // Localized country names via the browser (no data map needed).
+        var _loc = L.replace('zh-hans','zh-Hans').replace('zh-hant','zh-Hant').replace('pt-br','pt-BR').replace('pt-pt','pt-PT');
+        var regionOf;
+        try { var _dn = new Intl.DisplayNames([_loc, 'en'], { type:'region' }); regionOf = function (c) { try { return _dn.of(c) || c; } catch (e) { return c; } }; }
+        catch (e) { regionOf = function (c) { return c; }; }
+        var fh = '<span class="cap">' + esc(lb.chTitle) + '</span><span class="row">';
+        top.forEach(function (c) { fh += '<span class="chip">' + flag(c) + ' ' + esc(regionOf(c)) + ' <span class="n">' + tally[c] + '</span></span>'; });
+        fh += '</span><span class="types">';
+        var TL = TYPE_LABELS[L] || TYPE_LABELS.en;
+        TYPES.forEach(function (ty, i) { fh += '<span class="type" style="background:linear-gradient(135deg,' + ty.a + ',' + ty.b + ')">' + ty.e + ' ' + esc(TL[i]) + '</span>'; });
+        fh += '</span><span class="go"><i>⌄</i><i>⌄</i></span>';
+        var fe = $('flags');
+        fe.innerHTML = fh;
+        fe.hidden = false;
+        fe.addEventListener('click', function () { $('s3').scrollIntoView({ behavior: 'smooth' }); });
+        fitS1();
+      }
     }).catch(function () {});
 
     /* ── OS-aware store order ────────────────────────────────────────────────── */
@@ -515,6 +548,14 @@
     wire('cta-web', 'join_cta_websignup');
     wire('cta-web2', 'join_cta_leaderboard');
     wire('cta-web3', 'join_cta_challenges');
+
+    // Fit slide 1 now + on any viewport change (and a couple of delayed passes
+    // once fonts/emoji have laid out).
+    fitS1();
+    window.addEventListener('resize', fitS1);
+    window.addEventListener('orientationchange', function () { setTimeout(fitS1, 120); });
+    setTimeout(fitS1, 200);
+    setTimeout(fitS1, 600);
   })();
   </script>
 </body>
