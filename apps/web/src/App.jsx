@@ -3354,6 +3354,11 @@ export default function App() {
         msg = await sendMessage(channelId, sessionIdRef.current, guest.guestId, activeNickname, content, currentReply?.id ?? null, mArg)
       }
 
+      track('message_sent', {
+        cityId: channelScopeRef.current === 'world' ? 'world' : channelId,
+        messageLength: content.length,
+      })
+
       knownIdsRef.current.add(msg.id)
 
       setFeed(prev => {

@@ -22,12 +22,19 @@ import { captureUtm } from './lib/utm'
 const BOT_UA_RE = /Googlebot|bingbot|YandexBot|DuckDuckBot|Slurp|Baiduspider|Applebot|Twitterbot|facebookexternalhit|LinkedInBot|Slackbot|Discordbot|TelegramBot|AhrefsBot|SemrushBot|MJ12bot|PetalBot|GPTBot|ClaudeBot|Bytespider/i
 const IS_BOT = typeof navigator !== 'undefined' && BOT_UA_RE.test(navigator.userAgent || '')
 
+// Key + host come from env (VITE_POSTHOG_KEY / VITE_POSTHOG_HOST) — never hard
+// coded. Set VITE_POSTHOG_KEY in .env (local) and in the Vercel dashboard (prod).
+// Host defaults to the managed reverse proxy so events dodge ad/tracker blockers.
+const POSTHOG_KEY  = import.meta.env.VITE_POSTHOG_KEY
+const POSTHOG_HOST = import.meta.env.VITE_POSTHOG_HOST || 'https://hi.hilads.live'
+
 if (!IS_BOT) {
 
-posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
+if (POSTHOG_KEY)
+posthog.init(POSTHOG_KEY, {
     // Events route through the managed reverse proxy; ui_host keeps the toolbar
     // and PostHog UI features pointed at the real EU instance.
-    api_host: 'https://hi.hilads.live',
+    api_host: POSTHOG_HOST,
     ui_host: 'https://eu.posthog.com',
     disable_toolbar: true,
     autocapture: false,        // all events tracked manually via track()
@@ -39,6 +46,9 @@ posthog.init('phc_zz4Q6VJETesgBUkeKe8a9asUwbra9qGXgw4ff6zPTxLM', {
         if (typeof ph.stopSessionRecording === 'function') {
             ph.stopSessionRecording()
         }
+        // Expose for console debugging in dev (posthog-js sets window.posthog on
+        // init anyway, but make it explicit so `window.posthog` is reliable).
+        if (import.meta.env.DEV) window.posthog = ph
     },
 })
 
