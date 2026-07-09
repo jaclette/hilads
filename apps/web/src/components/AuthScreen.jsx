@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { authSignup, authLogin, checkUsernameAvailability } from '../api'
 import BackButton from './BackButton'
@@ -24,6 +24,11 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [uStatus, setUStatus] = useState('idle') // idle|checking|available|taken|invalid
   const [uReason, setUReason] = useState(null)
   const uTimer = useRef(null)
+  const bodyRef = useRef(null)
+  // Open the form scrolled to the TOP so the S'inscrire/Se connecter tabs are
+  // always visible — on short screens the tall form could otherwise open
+  // scrolled down, hiding the tabs.
+  useEffect(() => { bodyRef.current?.scrollTo?.(0, 0) }, [tab])
 
   function handleUsernameChange(val) {
     const cleaned = val.toLowerCase().replace(/[^a-z0-9_]/g, '')
@@ -72,7 +77,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
         <span className="page-title">{tab === 'signup' ? t('title.signup') : t('title.login')}</span>
       </div>
 
-      <div className="page-body page-body--centered">
+      <div className="page-body page-body--centered" ref={bodyRef}>
         <div className="auth-tabs">
           <button
             className={`auth-tab${tab === 'signup' ? ' auth-tab--active' : ''}`}
