@@ -22,6 +22,8 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
   const { t } = useTranslation('common');
 
   const features = [
+    t('accountWelcome.fc1'),   // local challenge — the primary action
+    t('accountWelcome.fc2'),   // international challenge
     t('accountWelcome.f1'),
     t('accountWelcome.f2'),
     t('accountWelcome.f3'),
