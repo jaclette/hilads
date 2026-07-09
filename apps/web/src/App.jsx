@@ -4415,6 +4415,11 @@ export default function App() {
             accountRef.current = user // sync ref before handleJoin reads it
             setAccount(user)
             setObShowAuth(false)
+            // The /join ?auth=signup handler also primed the ME-tab auth states;
+            // clear them so closing the welcome lands on the city page, not back
+            // on the signup screen.
+            setShowAuthScreen(false)
+            setShowProfileDrawer(false)
             if (isSignup) setShowAccountWelcome(true)
             identifyUser(user.id, { account_type: 'registered', username: user.display_name })
             setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })

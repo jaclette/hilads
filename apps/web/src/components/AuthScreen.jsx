@@ -15,7 +15,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [username, setUsername] = useState('')
-  const [mode, setMode]       = useState(null)
+  const [mode, setMode]       = useState('local') // Local pre-selected by default
   const [eula, setEula]       = useState(false) // EULA - must start UNCHECKED (explicit user action)
   const [error, setError]     = useState(null)
   const [loading, setLoading] = useState(false)

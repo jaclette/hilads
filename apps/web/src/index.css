@@ -6512,6 +6512,9 @@ img.pub-profile-avatar {
   max-width: 400px;
   margin: 0 auto;
   width: 100%;
+  /* Flex item must be allowed to shrink or the tall form overflows the fixed
+     .full-page and the top (tabs) gets clipped + unscrollable on short screens. */
+  min-height: 0;
 }
 
 .people-page-body,

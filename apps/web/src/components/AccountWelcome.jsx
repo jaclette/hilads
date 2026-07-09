@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next'
 export default function AccountWelcome({ username, onClose }) {
   const { t } = useTranslation('common')
   const features = [
+    t('accountWelcome.fc1'),   // local challenge — the primary action
+    t('accountWelcome.fc2'),   // international challenge
     t('accountWelcome.f1'),
     t('accountWelcome.f2'),
     t('accountWelcome.f3'),
