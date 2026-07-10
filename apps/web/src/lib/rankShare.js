@@ -12,13 +12,12 @@
  * enough context (subject or the two neighbours missing) → CTA hidden.
  */
 
-import i18n, { SUPPORTED, DEFAULT_LOCALE } from '../i18n'
 import { countryToFlag } from './countryFlag'
 
 export function buildLeaderboardUrl(scope, period) {
-  const lang = i18n.language
-  const lp = lang && lang !== DEFAULT_LOCALE && SUPPORTED.includes(lang) ? `/${lang}` : ''
-  return `${window.location.origin}${lp}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`
+  // No locale prefix: the shared message is English-only and the leaderboard is
+  // an in-app overlay (not an SSR page), so the prefix would be dead weight.
+  return `${window.location.origin}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`
 }
 
 function pushMention(text, mentions, name, userId, from) {
@@ -33,6 +32,10 @@ function pushMention(text, mentions, name, userId, from) {
 // args: { scope, period, entries, me, myCityId, placeCityName, url, t }
 export function buildRankShareMessage({ scope, period, entries, me, myCityId, placeCityName, url, t }) {
   const isCities = scope === 'cities'
+
+  // The shared text is a CHAT message read by people of every language, so it's
+  // always built in English (not the sharer's locale) - force lng:'en'.
+  const tEn = (key, opts) => t(key, { ...(opts || {}), lng: 'en' })
 
   let subjectRank = null
   let subjectPoints = 0
@@ -51,14 +54,14 @@ export function buildRankShareMessage({ scope, period, entries, me, myCityId, pl
     ? `${countryToFlag(e.cityCountry ?? null) ?? ''} ${e.cityName ?? ''}`.trim()
     : (e.displayName ?? '')
 
-  const periodStr = period === 'alltime' ? t('leaderboard.share.periodAll') : t('leaderboard.share.periodMonth')
+  const periodStr = period === 'alltime' ? tEn('leaderboard.share.periodAll') : tEn('leaderboard.share.periodMonth')
   // {place} carries its own preposition ("in Saigon"/"in the World") so the
   // template stays preposition-free. Cities variant uses the bare city name.
   const place = isCities
     ? (placeCityName ?? '')
     : (scope === 'world'
-        ? t('leaderboard.share.placeWorld')
-        : t('leaderboard.share.placeCity', { city: placeCityName ?? '' }))
+        ? tEn('leaderboard.share.placeWorld')
+        : tEn('leaderboard.share.placeCity', { city: placeCityName ?? '' }))
 
   const mentions = []
   let text
@@ -66,7 +69,7 @@ export function buildRankShareMessage({ scope, period, entries, me, myCityId, pl
   if (subjectRank === 1) {
     const b1 = byRank(2), b2 = byRank(3)
     if (!b1 || !b2) return null
-    text = t(isCities ? 'leaderboard.share.cityTop' : 'leaderboard.share.userTop', {
+    text = tEn(isCities ? 'leaderboard.share.cityTop' : 'leaderboard.share.userTop', {
       rank: subjectRank, pts: subjectPoints, place, period: periodStr,
       below1: label(b1), b1Pts: b1.points, below2: label(b2), b2Pts: b2.points,
     })
@@ -77,7 +80,7 @@ export function buildRankShareMessage({ scope, period, entries, me, myCityId, pl
   } else {
     const above = byRank(subjectRank - 1), below = byRank(subjectRank + 1)
     if (!above || !below) return null
-    text = t(isCities ? 'leaderboard.share.cityNotTop' : 'leaderboard.share.userNotTop', {
+    text = tEn(isCities ? 'leaderboard.share.cityNotTop' : 'leaderboard.share.userNotTop', {
       rank: subjectRank, pts: subjectPoints, place, period: periodStr,
       above: label(above), aPts: above.points, below: label(below), bPts: below.points,
     })

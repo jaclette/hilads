@@ -47,6 +47,10 @@ export function buildRankShareMessage(args: Args): RankShareResult | null {
   const { scope, period, entries, me, myCityId, placeCityName, url, t } = args;
   const isCities = scope === 'cities';
 
+  // The shared text is a CHAT message read by people of every language, so it's
+  // always built in English (not the sharer's locale) - force lng:'en'.
+  const tEn = (key: string, opts?: Record<string, unknown>) => t(key, { ...(opts ?? {}), lng: 'en' });
+
   // Subject row (my user row, or my city row for the cities scope).
   let subjectRank: number | null = null;
   let subjectPoints = 0;
@@ -66,16 +70,16 @@ export function buildRankShareMessage(args: Args): RankShareResult | null {
     : (e.displayName ?? '');
 
   const periodStr = period === 'alltime'
-    ? t('leaderboard.share.periodAll')
-    : t('leaderboard.share.periodMonth');
+    ? tEn('leaderboard.share.periodAll')
+    : tEn('leaderboard.share.periodMonth');
   // {place} carries its own preposition (EN "in Saigon"/"in the World", FR
   // "à Saigon"/"dans le Monde") so the template stays preposition-free. The
   // cities variant uses the bare city name (it's the subject, not a locative).
   const place = isCities
     ? (placeCityName ?? '')
     : (scope === 'world'
-        ? t('leaderboard.share.placeWorld')
-        : t('leaderboard.share.placeCity', { city: placeCityName ?? '' }));
+        ? tEn('leaderboard.share.placeWorld')
+        : tEn('leaderboard.share.placeCity', { city: placeCityName ?? '' }));
 
   const mentions: MentionInput[] = [];
   let text: string;
@@ -83,7 +87,7 @@ export function buildRankShareMessage(args: Args): RankShareResult | null {
   if (subjectRank === 1) {
     const b1 = byRank(2), b2 = byRank(3);
     if (!b1 || !b2) return null;
-    text = t(isCities ? 'leaderboard.share.cityTop' : 'leaderboard.share.userTop', {
+    text = tEn(isCities ? 'leaderboard.share.cityTop' : 'leaderboard.share.userTop', {
       rank: subjectRank, pts: subjectPoints, place, period: periodStr,
       below1: label(b1), b1Pts: b1.points, below2: label(b2), b2Pts: b2.points,
     });
@@ -94,7 +98,7 @@ export function buildRankShareMessage(args: Args): RankShareResult | null {
   } else {
     const above = byRank(subjectRank - 1), below = byRank(subjectRank + 1);
     if (!above || !below) return null;
-    text = t(isCities ? 'leaderboard.share.cityNotTop' : 'leaderboard.share.userNotTop', {
+    text = tEn(isCities ? 'leaderboard.share.cityNotTop' : 'leaderboard.share.userNotTop', {
       rank: subjectRank, pts: subjectPoints, place, period: periodStr,
       above: label(above), aPts: above.points, below: label(below), bPts: below.points,
     });

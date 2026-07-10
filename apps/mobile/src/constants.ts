@@ -66,7 +66,9 @@ export function buildChallengeUrl(challenge: { id: string; title?: string } | st
  * link card) re-opens the leaderboard on the same scope + period.
  */
 export function buildLeaderboardUrl(scope: string, period: string): string {
-  return `${BASE_URL}${sharePrefix()}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`;
+  // No locale prefix: the shared message is English-only and the leaderboard is
+  // an in-app overlay (not an SSR page), so the prefix would be dead weight.
+  return `${BASE_URL}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`;
 }
 
 // ── Env diagnostics - unconditional, fires in both dev and production APK ─────
