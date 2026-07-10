@@ -31,7 +31,7 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
-import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction } from '@/api/channels';
+import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction, fetchCityMembers } from '@/api/channels';
 import { fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, markChannelRead, fetchUnread, fetchQuietContext, type WorldActivity, type WorldArrival, type WorldChallenge } from '@/api/world';
 import { MarqueeText } from '@/components/MarqueeText';
 import { fetchCityEvents, fetchCanCreateEvent } from '@/api/events';
@@ -206,6 +206,9 @@ export default function ChatTab() {
   const [channelScope, setChannelScope] = useState<'city' | 'world'>('city');
   const [worldUnread,  setWorldUnread]  = useState(0);
   const [cityUnread,   setCityUnread]   = useState(0);
+  // Total city members - gates the header pill: with <2 nearby we show a
+  // "N members" pill instead, and hide it entirely for empty cities (<2 members).
+  const [cityMemberCount, setCityMemberCount] = useState<number | null>(null);
   const [worldActivity, setWorldActivity] = useState<WorldActivity | null>(null);
   const [worldChallenges, setWorldChallenges] = useState<WorldChallenge[]>([]);
   const [worldArrivals, setWorldArrivals] = useState<WorldArrival[]>([]);
@@ -575,6 +578,14 @@ export default function ChatTab() {
       setWorldUnread(Math.min(u.world ?? 0, 999));
     }).catch(() => {});
   }, [sessionId, identity?.guestId, channelId]);
+
+  // City member count for the header pill (off the boot critical path). Only the
+  // total is needed - limit=1 keeps the payload tiny. Reset on city change.
+  useEffect(() => {
+    setCityMemberCount(null);
+    if (!channelId) return;
+    fetchCityMembers(channelId, { limit: 1 }).then(r => setCityMemberCount(r.total ?? 0)).catch(() => {});
+  }, [channelId]);
 
   // Unread badge for the channel the user is NOT currently viewing (useMessages
   // handles the active one). Only while on the chat tab, which is where badges show.
@@ -1232,19 +1243,30 @@ export default function ChatTab() {
             0-count pills stay visible but greyed (still tappable → the target
             screen's own empty state). ── */}
         <View style={styles.pillsRow}>
-          <TouchableOpacity
-            style={styles.pill}
-            onPress={() => router.push('/(tabs)/here' as never)}
-            activeOpacity={0.75}
-            accessibilityRole="button"
-            accessibilityLabel={(onlineCount ?? 0) >= 2 ? t('onlineAria', { count: onlineCount ?? 0 }) : t('cityHero.members')}
-          >
-            {/* Solo (0-1 present) → the "N nearby" count would just be you, so show
-                a Members entry point instead; tap target is unchanged (here screen). */}
-            <Text style={styles.pillText} numberOfLines={1}>
-              {(onlineCount ?? 0) >= 2 ? `🟢 ${t('cityHero.nearby', { count: onlineCount ?? 0 })}` : `👥 ${t('cityHero.members')}`}
-            </Text>
-          </TouchableOpacity>
+          {(() => {
+            // ≥2 present → live "N nearby". Otherwise the count would just be you,
+            // so show "N members" instead - but only if the city actually has ≥2
+            // members; an empty/near-empty city shows no pill at all.
+            const online = onlineCount ?? 0;
+            const showNearby  = online >= 2;
+            const showMembers = !showNearby && (cityMemberCount ?? 0) >= 2;
+            if (!showNearby && !showMembers) return null;
+            return (
+              <TouchableOpacity
+                style={styles.pill}
+                onPress={() => router.push('/(tabs)/here' as never)}
+                activeOpacity={0.75}
+                accessibilityRole="button"
+                accessibilityLabel={showNearby ? t('onlineAria', { count: online }) : t('cityHero.members', { count: cityMemberCount ?? 0 })}
+              >
+                <Text style={styles.pillText} numberOfLines={1}>
+                  {showNearby
+                    ? `🟢 ${t('cityHero.nearby',  { count: online })}`
+                    : `👥 ${t('cityHero.members', { count: cityMemberCount ?? 0 })}`}
+                </Text>
+              </TouchableOpacity>
+            );
+          })()}
           {/* Recent arrivals pill (restored - it used to live in the city row,
               which the channel toggle now occupies). */}
           <TouchableOpacity

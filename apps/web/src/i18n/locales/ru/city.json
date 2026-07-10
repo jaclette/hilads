@@ -284,7 +284,7 @@
     "subUnranked": "Прими первый челлендж и начни подъём →",
     "subTop": "Защити свой титул →",
     "subEmpty": "Создай первое для путешественников →",
-    "members": "Участники",
+    "members": "{{count}} участников",
     "nearby": "{{count}} рядом",
     "recent": "{{count}} недавно",
     "mainUnranked_one": "🔥 {{count}} челлендж в {{city}}",

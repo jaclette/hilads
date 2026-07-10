@@ -100,7 +100,7 @@
     "subUnranked": "पहला चैलेंज स्वीकार करें और ऊपर चढ़ें →",
     "subTop": "अपना खिताब बचाएँ →",
     "subEmpty": "यात्रियों के लिए पहला बनाएँ →",
-    "members": "सदस्य",
+    "members": "{{count}} सदस्य",
     "nearby": "{{count}} पास में",
     "recent": "{{count}} हाल ही में",
     "mainUnranked_one": "🔥 {{city}} में {{count}} चैलेंज",

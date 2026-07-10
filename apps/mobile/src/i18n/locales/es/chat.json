@@ -100,7 +100,7 @@
     "subUnranked": "Acepta tu primer reto para empezar a subir →",
     "subTop": "Defiende tu título →",
     "subEmpty": "Crea el primero para que los viajeros lo acepten →",
-    "members": "Miembros",
+    "members": "{{count}} miembros",
     "nearby": "{{count}} cerca",
     "recent": "{{count}} recientes",
     "mainUnranked_one": "🔥 {{count}} reto en {{city}}",

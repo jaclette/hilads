@@ -944,6 +944,9 @@ export default function App() {
   const reactionBurstIdRef = useRef(0)
   const triggerReactionBurstRef = useRef(null)
   const [onlineCount, setOnlineCount] = useState(null)
+  // Total city members - gates the header pill (see the pill render): with <2
+  // nearby we show "N members", and hide the pill entirely for empty cities.
+  const [cityMemberCount, setCityMemberCount] = useState(null)
   const [showCityPicker, setShowCityPicker] = useState(false)
   const [channels, setChannels] = useState([])          // ranked top-10 (used in default mode)
   const [allChannels, setAllChannels] = useState([])    // all channels unranked (used in search mode)
@@ -1577,6 +1580,15 @@ export default function App() {
       ]
     })
   }
+
+  // City member count → gates the header pill (see its render). Kept off the boot
+  // critical path: only the total is needed, so limit=1 keeps it tiny. Refetch on
+  // city change; skip in World scope (the World hero has no nearby/members pill).
+  useEffect(() => {
+    setCityMemberCount(null)
+    if (!channelId || channelScope === 'world') return
+    fetchCityMembers(channelId, { limit: 1 }).then(r => setCityMemberCount(r?.total ?? 0)).catch(() => {})
+  }, [channelId, channelScope])
 
   // Lightweight unread check at boot - only fetches a boolean, not the full conversations list.
   // Full conversations are loaded by ConversationsScreen when it mounts.
@@ -4992,16 +5004,27 @@ export default function App() {
           <>
             {renderChallengeHero()}
             <div className="ch-pills">
-              <button
-                type="button"
-                className="ch-pill"
-                onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-                aria-label={(onlineCount ?? 0) >= 2 ? t('header.onlineAria', { count: onlineCount ?? 0 }) : t('cityHero.members')}
-              >
-                {/* Solo (0-1 present) → the "N nearby" count would just be you, so show
-                    a Members entry point instead; tap target is unchanged (people drawer). */}
-                {(onlineCount ?? 0) >= 2 ? `🟢 ${t('cityHero.nearby', { count: onlineCount ?? 0 })}` : `👥 ${t('cityHero.members')}`}
-              </button>
+              {/* ≥2 present → live "N nearby". Otherwise the count would just be you,
+                  so show "N members" instead - but only if the city has ≥2 members;
+                  an empty/near-empty city shows no pill at all. */}
+              {(() => {
+                const online = onlineCount ?? 0
+                const showNearby  = online >= 2
+                const showMembers = !showNearby && (cityMemberCount ?? 0) >= 2
+                if (!showNearby && !showMembers) return null
+                return (
+                  <button
+                    type="button"
+                    className="ch-pill"
+                    onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+                    aria-label={showNearby ? t('header.onlineAria', { count: online }) : t('cityHero.members', { count: cityMemberCount ?? 0 })}
+                  >
+                    {showNearby
+                      ? `🟢 ${t('cityHero.nearby',  { count: online })}`
+                      : `👥 ${t('cityHero.members', { count: cityMemberCount ?? 0 })}`}
+                  </button>
+                )
+              })()}
               {/* Recent arrivals pill (restored: it used to live in the city row,
                   which the channel toggle now occupies). */}
               {(() => { const arrivals = feed.filter(i => i.type === 'activity' && i.subtype === 'join').length; return (

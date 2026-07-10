@@ -276,7 +276,7 @@
     "subUnranked": "첫 챌린지를 수락하고 순위를 올리세요 →",
     "subTop": "타이틀을 방어하세요 →",
     "subEmpty": "여행자를 위해 첫 챌린지를 만드세요 →",
-    "members": "멤버",
+    "members": "멤버 {{count}}명",
     "nearby": "근처 {{count}}명",
     "recent": "최근 {{count}}명",
     "mainUnranked_one": "🔥 {{city}} 챌린지 {{count}}개",

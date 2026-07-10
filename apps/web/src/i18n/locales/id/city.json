@@ -276,7 +276,7 @@
     "subUnranked": "Terima tantangan pertamamu untuk mulai naik →",
     "subTop": "Pertahankan gelarmu →",
     "subEmpty": "Buat yang pertama untuk para pelancong →",
-    "members": "Anggota",
+    "members": "{{count}} anggota",
     "nearby": "{{count}} di dekatmu",
     "recent": "{{count}} baru tiba",
     "mainUnranked_one": "🔥 {{count}} tantangan di {{city}}",

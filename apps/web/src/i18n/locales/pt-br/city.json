@@ -276,7 +276,7 @@
     "subUnranked": "Aceite seu primeiro desafio para começar a subir →",
     "subTop": "Defenda seu título →",
     "subEmpty": "Crie o primeiro para os viajantes aceitarem →",
-    "members": "Membros",
+    "members": "{{count}} membros",
     "nearby": "{{count}} por perto",
     "recent": "{{count}} recentes",
     "mainUnranked_one": "🔥 {{count}} desafio em {{city}}",

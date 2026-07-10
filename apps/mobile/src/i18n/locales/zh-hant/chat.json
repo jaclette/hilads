@@ -100,7 +100,7 @@
     "subUnranked": "接受第一個挑戰，開始往上爬 →",
     "subTop": "衛冕你的頭銜 →",
     "subEmpty": "建立第一個，讓旅客接受 →",
-    "members": "成員",
+    "members": "{{count}} 名成員",
     "nearby": "附近 {{count}} 人",
     "recent": "最近 {{count}} 位",
     "mainUnranked_one": "🔥 {{city}} {{count}} 個挑戰",

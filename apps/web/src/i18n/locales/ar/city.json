@@ -292,7 +292,7 @@
     "subUnranked": "اقبل أول تحدٍّ لتبدأ الصعود →",
     "subTop": "دافع عن لقبك →",
     "subEmpty": "أنشئ الأول ليقبله المسافرون →",
-    "members": "الأعضاء",
+    "members": "{{count}} عضو",
     "nearby": "{{count}} قريبون",
     "recent": "{{count}} وصلوا حديثًا",
     "mainUnranked_one": "🔥 {{count}} تحدٍّ في {{city}}",
