@@ -749,6 +749,10 @@ export async function updateChallenge(challengeId, guestId, title, challengeType
       guestId, title, challengeType, audience, returnClause,
       targetCityChannelId: intl.targetCityChannelId ?? null,
       proofRequirements:   intl.proofRequirements ?? null,
+      // Preserve the challenge's saved proof type on edit. null = don't change
+      // (server COALESCEs); we pass the ORIGINAL validation_method so a title
+      // edit never silently resets photo_proof back to the 'meet' form default.
+      validationMethod:    intl.validationMethod ?? null,
       // 'public' | 'friends' only; null/omitted = don't change. The server
       // enforces "private not at input" - it's only reachable via the mutual
       // privacy flow.

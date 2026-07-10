@@ -209,6 +209,9 @@ export default function CreateChallengePage({ channelId, guest, account, editCha
         const updated = await updateChallenge(editChallenge.id, guest.guestId, trimmed, type, audience, trimmedClause, {
           targetCityChannelId: targetForApi,
           proofRequirements:   trimmedProof,
+          // Send the SAVED proof type (not the form's default) so editing the
+          // title keeps photo_proof instead of resetting to 'meet'.
+          validationMethod:    editChallenge?.validation_method ?? null,
           visibility:          visibilityForApi,
         })
         onUpdated?.(updated)
