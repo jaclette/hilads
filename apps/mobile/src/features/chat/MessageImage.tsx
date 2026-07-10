@@ -36,8 +36,24 @@ interface Props {
   surface?:       string;
 }
 
+// Bounding box for a chat photo. The image is fit to its natural aspect ratio
+// inside these bounds so the WHOLE picture shows (no cover-crop / zoom-in),
+// while extreme panoramas/strips stay reasonable.
+const MAX_W = 280;
+const MAX_H = 360;
+function fitBox(ratio: number) {
+  // ratio = width / height
+  let w = MAX_W;
+  let h = MAX_W / ratio;
+  if (h > MAX_H) { h = MAX_H; w = MAX_H * ratio; }
+  return { width: Math.round(w), height: Math.round(h) };
+}
+
 export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, imageStyle, surface = 'msg' }: Props) {
   const [loadFailed, setLoadFailed] = useState(false);
+  // Natural aspect ratio (w/h), learned from onLoad. null → fall back to the
+  // caller's box until known; 'contain' still shows the full image meanwhile.
+  const [ratio, setRatio] = useState<number | null>(null);
   // Display the lightweight thumbnail; the caller's onPress still opens the full
   // image. Fall back to the full URL if the thumb is missing (pre-deterministic
   // uploads), and only then show the unavailable state.
@@ -62,8 +78,16 @@ export function MessageImage({ uri, isSending, isFailed, onPress, onLongPress, i
     >
       <Image
         source={{ uri: src }}
-        style={imageStyle}
-        resizeMode="cover"
+        // Caller style (corner radii, margins) first; our aspect-fit box overrides
+        // the caller's fixed width/height once the natural ratio is known.
+        style={[imageStyle, ratio ? fitBox(ratio) : null]}
+        // 'contain' guarantees the whole photo is visible even before the box is
+        // sized (and if onLoad never reports dimensions) - no cover-crop / zoom-in.
+        resizeMode="contain"
+        onLoad={(e) => {
+          const s = e?.nativeEvent?.source;
+          if (s?.width && s?.height) setRatio(s.width / s.height);
+        }}
         onError={(e) => {
           const reason = e?.nativeEvent?.error ?? 'unknown';
           // Thumb missing (legacy upload) → retry with the full image once.

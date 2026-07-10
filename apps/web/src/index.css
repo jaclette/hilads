@@ -3289,7 +3289,8 @@ html, body, #root {
   width: auto;
   height: auto;
   border-radius: 4px 16px 16px 16px;
-  object-fit: cover;
+  /* contain (not cover) so the whole picture shows - never crop/zoom the preview */
+  object-fit: contain;
   cursor: zoom-in;
   transition: opacity 0.15s, transform 0.12s;
 }
