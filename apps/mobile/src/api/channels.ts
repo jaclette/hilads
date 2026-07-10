@@ -1,5 +1,5 @@
 import { api } from './client';
-import type { City, Message, Reaction, UserDTO } from '@/types';
+import type { City, Message, Reaction, UserDTO, Badge } from '@/types';
 
 // ── City / channel resolution ─────────────────────────────────────────────────
 
@@ -196,6 +196,29 @@ export async function fetchCityMembers(
   if (opts.vibe)  q.set('vibe',  opts.vibe);
   if (opts.mode)  q.set('mode',  opts.mode);
   return api.get<CityMembersResult>(`/channels/${channelId}/members?${q}`);
+}
+
+/** Badge + avatar for an arbitrary set of user IDs (not just message authors).
+ *  Used to enrich the "here now" presence list, whose WS payload carries no
+ *  avatar and whose users aren't guaranteed to be in the paginated crew list. */
+export interface UserBadgeInfo {
+  primaryBadge?:   Badge | null;
+  contextBadge?:   Badge | null;
+  vibe?:           string | null;
+  mode?:           string | null;
+  thumbAvatarUrl?: string | null;
+  country?:        string | null;
+}
+export async function fetchMessageBadges(
+  channelId: string,
+  userIds: string[],
+): Promise<Record<string, UserBadgeInfo>> {
+  if (!userIds.length) return {};
+  const qs = userIds.map(id => `ids[]=${encodeURIComponent(id)}`).join('&');
+  try {
+    const data = await api.get<{ badges?: Record<string, UserBadgeInfo> }>(`/channels/${channelId}/message-badges?${qs}`);
+    return data.badges ?? {};
+  } catch { return {}; }
 }
 
 export interface CityAmbassador extends UserDTO {

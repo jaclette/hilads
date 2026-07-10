@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { fetchCityMembers, fetchCityAmbassadors, type CityMember, type CityAmbassador } from '@/api/channels';
+import { fetchCityMembers, fetchCityAmbassadors, fetchMessageBadges, type CityMember, type CityAmbassador, type UserBadgeInfo } from '@/api/channels';
 import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
@@ -173,6 +173,7 @@ export default function HereScreen() {
   const [legends,      setLegends]      = useState<CityAmbassador[]>([]);
 
   const [crewMembers,  setCrewMembers]  = useState<CityMember[]>([]);
+  const [onlineBadges, setOnlineBadges] = useState<Record<string, UserBadgeInfo>>({});
   const [crewPage,     setCrewPage]     = useState(1);
   const [crewHasMore,  setCrewHasMore]  = useState(false);
   const [crewLoading,  setCrewLoading]  = useState(false);
@@ -221,31 +222,47 @@ export default function HereScreen() {
     loadCrew(1, true);
   }, [loadCrew]);
 
+  // Resolve avatars + badges for whoever is present right now. Presence has no
+  // avatar and an online user may be outside the paginated crew list, so fetch
+  // directly by userId (keyed on the set of online userIds).
+  const onlineUserIdsKey = onlineUsers.map(u => u.userId ?? '').filter(Boolean).sort().join(',');
+  useEffect(() => {
+    const ids = onlineUsers.map(u => u.userId).filter((x): x is string => !!x);
+    if (!city?.channelId || ids.length === 0) { setOnlineBadges({}); return; }
+    fetchMessageBadges(city.channelId, ids).then(setOnlineBadges).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [city?.channelId, onlineUserIdsKey]);
+
   // Fetch local legends (ambassadors) when city changes
   useEffect(() => {
     if (!city?.channelId) return;
     fetchCityAmbassadors(city.channelId).then(setLegends).catch(() => {});
   }, [city?.channelId]);
 
-  // Enrich HERE NOW users with badge/vibe/avatar from crew data (WS presence has no badges).
-  // Self entry is enriched the same way; photo falls back to account data if not in crew list.
+  // Enrich HERE NOW users with badge/vibe/avatar. WS presence carries no avatar,
+  // and an online user isn't guaranteed to be in the paginated crew list, so we
+  // resolve badges/avatars for the online userIds directly (onlineBadges) and use
+  // that as the reliable source; crew + self/account are fallbacks.
   const enrichedOnline = useMemo(() => onlineUsers.map(u => {
     if (!u.userId) return u; // guest: no enrichment possible
     const isSelf = u.sessionId === mySessionId;
     const crew   = crewLookup.get(u.userId);
-    if (!crew && !isSelf) return u;
+    const b      = onlineBadges[u.userId];
+    if (!crew && !b && !isSelf) return u;
     const primaryKey = crew?.badges.find(k => !CONTEXT_BADGE_KEYS.has(k));
     const contextKey = crew?.badges.find(k => CONTEXT_BADGE_KEYS.has(k));
     return {
       ...u,
-      primaryBadge:    primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : u.primaryBadge,
-      contextBadge:    contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : u.contextBadge,
-      vibe:            crew?.vibe ?? u.vibe,
-      mode:            crew?.mode ?? u.mode,
-      profilePhotoUrl:      crew?.avatarUrl      ?? (isSelf ? (account?.profile_photo_url       ?? undefined) : undefined) ?? u.profilePhotoUrl,
-      profileThumbPhotoUrl: crew?.thumbAvatarUrl ?? (isSelf ? (account?.profile_thumb_photo_url ?? undefined) : undefined) ?? u.profileThumbPhotoUrl,
+      primaryBadge:    primaryKey ? { key: primaryKey, label: BADGE_META[primaryKey as keyof typeof BADGE_META]?.label ?? primaryKey } : (b?.primaryBadge ?? u.primaryBadge),
+      contextBadge:    contextKey ? { key: contextKey, label: BADGE_META[contextKey as keyof typeof BADGE_META]?.label ?? contextKey } : (b?.contextBadge ?? u.contextBadge),
+      vibe:            crew?.vibe ?? b?.vibe ?? u.vibe,
+      mode:            crew?.mode ?? b?.mode ?? u.mode,
+      // profilePhotoUrl just needs to be truthy for OnlineUserRow to render the
+      // image; the thumb URL from onlineBadges works for both fields.
+      profilePhotoUrl:      crew?.avatarUrl      ?? b?.thumbAvatarUrl ?? (isSelf ? (account?.profile_photo_url       ?? undefined) : undefined) ?? u.profilePhotoUrl,
+      profileThumbPhotoUrl: crew?.thumbAvatarUrl ?? b?.thumbAvatarUrl ?? (isSelf ? (account?.profile_thumb_photo_url ?? undefined) : undefined) ?? u.profileThumbPhotoUrl,
     };
-  }), [onlineUsers, crewLookup, mySessionId, account]);
+  }), [onlineUsers, crewLookup, onlineBadges, mySessionId, account]);
 
   // Apply badge + vibe filters to live users (client-side - small list)
   const filteredOnline = enrichedOnline.filter(u => {

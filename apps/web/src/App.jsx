@@ -964,6 +964,10 @@ export default function App() {
   const reminderTimersRef    = useRef([])
   const nowDotTimerRef       = useRef(null)
   const [onlineUsers, setOnlineUsers] = useState([])
+  // userId → { thumbAvatarUrl, primaryBadge, ... } for the "here now" list. WS
+  // presence carries no avatar and online users may be outside the paginated
+  // crew list, so we resolve avatars/badges by userId directly (see effect).
+  const [onlineBadges, setOnlineBadges] = useState({})
   const [typingUsers, setTypingUsers] = useState([])
   const [uploading, setUploading] = useState(false)
   const [lightboxUrl, setLightboxUrl] = useState(null)
@@ -1427,6 +1431,16 @@ export default function App() {
       .then(data => setLegends(data.ambassadors ?? []))
       .catch(() => {})
   }, [showPeopleDrawer, channelId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Here-now avatar/badge resolve - by userId (presence has no avatar and an
+  //    online user may be outside the paginated crew list). ──
+  const onlineUserIdsKey = onlineUsers.map(u => u.userId).filter(Boolean).sort().join(',')
+  useEffect(() => {
+    if (!showPeopleDrawer || !channelId) return
+    const ids = onlineUsers.map(u => u.userId).filter(Boolean)
+    if (ids.length === 0) { setOnlineBadges({}); return }
+    fetchMessageBadges(channelId, ids).then(setOnlineBadges).catch(() => {})
+  }, [showPeopleDrawer, channelId, onlineUserIdsKey]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── City crew fetch - triggered when people drawer opens or filters change ──
   // Guard: skip when a profile overlay is open - the crew list isn't visible.
@@ -6266,17 +6280,20 @@ export default function App() {
         const enrichedOnline = onlineUsers.map(u => {
           if (!u.userId) return u // guest: no enrichment possible
           const crew = crewLookupMap.get(u.userId)
-          if (!crew && !u.isMe) return u
+          const b    = onlineBadges[u.userId] // resolved by userId - covers online users not in the crew page
+          if (!crew && !b && !u.isMe) return u
           const primaryKey = (crew?.badges ?? []).find(k => !CONTEXT_BADGE_KEYS_WEB.has(k))
           const contextKey = (crew?.badges ?? []).find(k => CONTEXT_BADGE_KEYS_WEB.has(k))
           return {
             ...u,
-            primaryBadge:    primaryKey ? { key: primaryKey, label: badgeLabel(primaryKey) } : u.primaryBadge,
-            contextBadge:    contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : u.contextBadge,
-            vibe:            crew?.vibe ?? u.vibe,
-            mode:            crew?.mode ?? u.mode,
-            avatarUrl:       crew?.avatarUrl      ?? (u.isMe ? account?.profile_photo_url       : undefined) ?? u.avatarUrl,
-            thumbAvatarUrl:  crew?.thumbAvatarUrl ?? (u.isMe ? account?.profile_thumb_photo_url : undefined) ?? u.thumbAvatarUrl,
+            primaryBadge:    primaryKey ? { key: primaryKey, label: badgeLabel(primaryKey) } : (b?.primaryBadge ?? u.primaryBadge),
+            contextBadge:    contextKey ? { key: contextKey, label: badgeLabel(contextKey) } : (b?.contextBadge ?? u.contextBadge),
+            vibe:            crew?.vibe ?? b?.vibe ?? u.vibe,
+            mode:            crew?.mode ?? b?.mode ?? u.mode,
+            // avatarUrl only needs to be truthy for the row to render an <img>;
+            // the thumb from onlineBadges serves both the guard and the src.
+            avatarUrl:       crew?.avatarUrl      ?? b?.thumbAvatarUrl ?? (u.isMe ? account?.profile_photo_url       : undefined) ?? u.avatarUrl,
+            thumbAvatarUrl:  crew?.thumbAvatarUrl ?? b?.thumbAvatarUrl ?? (u.isMe ? account?.profile_thumb_photo_url : undefined) ?? u.thumbAvatarUrl,
           }
         })
 
