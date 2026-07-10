@@ -3971,6 +3971,23 @@ $router->add('POST', '/api/v1/world/messages', function () {
 
     $message  = enrichBroadcastMessage($message, $sender);
     broadcastMessageToWs(WorldRepository::WORLD_ID, $message);
+
+    // Mention push — the World channel previously sent none. scope=world drives
+    // the "mentioned you in the World channel" wording (NotificationI18n).
+    if (!empty($mentions)) {
+        try {
+            notifyMentions(
+                $mentions,
+                $sender['id'] ?? null,
+                $nickname . ' mentioned you in the World channel',
+                mb_substr((string) $content, 0, 100),
+                ['channelId' => WorldRepository::WORLD_ID, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $sender['id'] ?? null, 'scope' => 'world']
+            );
+        } catch (\Throwable $e) {
+            error_log('[world-msg] mention notify failed (non-fatal): ' . $e->getMessage());
+        }
+    }
+
     Response::json(['message' => $message], 201);
 });
 
@@ -6516,12 +6533,14 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
             );
         }
         if (!empty($mentions ?? [])) {
+            $msgCity     = CityRepository::findById((int) $channelId); // in-process cached — 0ms
+            $msgCityName = $msgCity['name'] ?? null;
             notifyMentions(
                 $mentions,
                 $msgSenderUserId,
-                $nickname . ' mentioned you in the city chat',
+                $nickname . ' mentioned you in ' . ($msgCityName ?: 'the city chat'),
                 $msgPreview,
-                ['channelId' => $msgCityChannelId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId]
+                ['channelId' => $msgCityChannelId, 'messageId' => $message['id'], 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId, 'cityName' => $msgCityName, 'scope' => 'city']
             );
         }
     } catch (\Throwable $e) {

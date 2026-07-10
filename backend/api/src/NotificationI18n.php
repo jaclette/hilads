@@ -736,75 +736,93 @@ final class NotificationI18n
     private const MENTION = [
         'fr' => [
             'titled' => "{name} t'a mentionné dans {title}",        // event / topic
-            'city'   => "{name} t'a mentionné dans le chat de la ville",
+            'city'   => "{name} t'a mentionné à {city}",            // {city} = city name
+            'world'  => "{name} t'a mentionné dans le canal Monde",
         ],
         'vi' => [
             'titled' => "{name} đã nhắc đến bạn trong {title}",
-            'city'   => "{name} đã nhắc đến bạn trong chat thành phố",
+            'city'   => "{name} đã nhắc đến bạn ở {city}",
+            'world'  => "{name} đã nhắc đến bạn trong kênh Thế giới",
         ],
         'es' => [
             'titled' => "{name} te ha mencionado en {title}",
-            'city'   => "{name} te ha mencionado en el chat de la ciudad",
+            'city'   => "{name} te ha mencionado en {city}",
+            'world'  => "{name} te ha mencionado en el canal Mundo",
         ],
         'it' => [
             'titled' => "{name} ti ha menzionato in {title}",
-            'city'   => "{name} ti ha menzionato nella chat della città",
+            'city'   => "{name} ti ha menzionato a {city}",
+            'world'  => "{name} ti ha menzionato nel canale Mondo",
         ],
         'pt-br' => [
             'titled' => "{name} mencionou você em {title}",
-            'city'   => "{name} mencionou você no chat da cidade",
+            'city'   => "{name} mencionou você em {city}",
+            'world'  => "{name} mencionou você no canal Mundo",
         ],
         'pt-pt' => [
             'titled' => "{name} mencionou-te em {title}",
-            'city'   => "{name} mencionou-te no chat da cidade",
+            'city'   => "{name} mencionou-te em {city}",
+            'world'  => "{name} mencionou-te no canal Mundo",
         ],
         'de' => [
             'titled' => "{name} hat dich in {title} erwähnt",
-            'city'   => "{name} hat dich im Stadt-Chat erwähnt",
+            'city'   => "{name} hat dich in {city} erwähnt",
+            'world'  => "{name} hat dich im Welt-Kanal erwähnt",
         ],
         'nl' => [
             'titled' => "{name} heeft je genoemd in {title}",
-            'city'   => "{name} heeft je genoemd in de stadschat",
+            'city'   => "{name} heeft je genoemd in {city}",
+            'world'  => "{name} heeft je genoemd in het Wereld-kanaal",
         ],
         'zh-hans' => [
             'titled' => "{name} 在 {title} 提到了你",
-            'city'   => "{name} 在城市聊天里提到了你",
+            'city'   => "{name} 在{city}提到了你",
+            'world'  => "{name} 在世界频道提到了你",
         ],
         'zh-hant' => [
             'titled' => "{name} 在 {title} 提到了你",
-            'city'   => "{name} 在城市聊天室提到了你",
+            'city'   => "{name} 在{city}提到了你",
+            'world'  => "{name} 在世界頻道提到了你",
         ],
         'ja' => [
             'titled' => "{name} が {title} であなたにメンションしました",
-            'city'   => "{name} がシティチャットであなたにメンションしました",
+            'city'   => "{name} が{city}であなたにメンションしました",
+            'world'  => "{name} がワールドチャンネルであなたにメンションしました",
         ],
         'ko' => [
             'titled' => "{name} 님이 {title}에서 당신을 언급했어요",
-            'city'   => "{name} 님이 시티 채팅에서 당신을 언급했어요",
+            'city'   => "{name} 님이 {city}에서 당신을 언급했어요",
+            'world'  => "{name} 님이 월드 채널에서 당신을 언급했어요",
         ],
         'fil' => [
             'titled' => "Binanggit ka ni {name} sa {title}",
-            'city'   => "Binanggit ka ni {name} sa city chat",
+            'city'   => "Binanggit ka ni {name} sa {city}",
+            'world'  => "Binanggit ka ni {name} sa World channel",
         ],
         'th' => [
             'titled' => "{name} กล่าวถึงคุณใน {title}",
-            'city'   => "{name} กล่าวถึงคุณในแชทเมือง",
+            'city'   => "{name} กล่าวถึงคุณใน {city}",
+            'world'  => "{name} กล่าวถึงคุณในแชนเนล World",
         ],
         'id' => [
             'titled' => "{name} menyebutmu di {title}",
-            'city'   => "{name} menyebutmu di obrolan kota",
+            'city'   => "{name} menyebutmu di {city}",
+            'world'  => "{name} menyebutmu di channel World",
         ],
         'hi' => [
             'titled' => "{name} ने आपको {title} में मेंशन किया",
-            'city'   => "{name} ने आपको सिटी चैट में मेंशन किया",
+            'city'   => "{name} ने आपको {city} में मेंशन किया",
+            'world'  => "{name} ने आपको World चैनल में मेंशन किया",
         ],
         'ru' => [
             'titled' => "{name} упомянул тебя в {title}",
-            'city'   => "{name} упомянул тебя в чате города",
+            'city'   => "{name} упомянул тебя в {city}",
+            'world'  => "{name} упомянул тебя в канале Мир",
         ],
         'ar' => [
             'titled' => "{name} ذكرك في {title}",
-            'city'   => "{name} ذكرك في دردشة المدينة",
+            'city'   => "{name} ذكرك في {city}",
+            'world'  => "{name} ذكرك في قناة العالم",
         ],
     ];
 
@@ -831,8 +849,11 @@ final class NotificationI18n
         ];
 
         if ($type === 'mention') {
-            $hasTitle  = ($data['eventTitle'] ?? $data['topicTitle'] ?? null) !== null;
-            $titleTpl  = self::MENTION[$locale][$hasTitle ? 'titled' : 'city'];
+            // titled = event/topic (has {title}); world = World channel
+            // (scope=world); else city (interpolates the {city} name).
+            $hasTitle = ($data['eventTitle'] ?? $data['topicTitle'] ?? null) !== null;
+            $variant  = $hasTitle ? 'titled' : (($data['scope'] ?? null) === 'world' ? 'world' : 'city');
+            $titleTpl = self::MENTION[$locale][$variant] ?? self::MENTION[$locale]['city'];
             return [strtr($titleTpl, $params), null];
         }
 
