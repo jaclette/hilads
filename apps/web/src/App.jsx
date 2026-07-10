@@ -4994,11 +4994,13 @@ export default function App() {
             <div className="ch-pills">
               <button
                 type="button"
-                className={`ch-pill${!onlineCount ? ' ch-pill--muted' : ''}`}
+                className="ch-pill"
                 onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-                aria-label={t('header.onlineAria', { count: onlineCount ?? 0 })}
+                aria-label={(onlineCount ?? 0) >= 2 ? t('header.onlineAria', { count: onlineCount ?? 0 }) : t('cityHero.members')}
               >
-                🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}
+                {/* Solo (0-1 present) → the "N nearby" count would just be you, so show
+                    a Members entry point instead; tap target is unchanged (people drawer). */}
+                {(onlineCount ?? 0) >= 2 ? `🟢 ${t('cityHero.nearby', { count: onlineCount ?? 0 })}` : `👥 ${t('cityHero.members')}`}
               </button>
               {/* Recent arrivals pill (restored: it used to live in the city row,
                   which the channel toggle now occupies). */}
@@ -6399,15 +6401,18 @@ export default function App() {
 
             <div className="page-body people-page-body" ref={hereBodyRef}>
 
-              {/* ── Section 1: Here now ── */}
-              <div className="here-section-header">
-                <span className="here-section-dot here-section-dot--live" />
-                {t('here.hereNow')} · {filteredOnline.length}
-              </div>
-              {filteredOnline.length === 0
-                ? <p className="here-section-empty">{t('here.noMatchLive')}</p>
-                : filteredOnline.map(renderOnlineUser)
-              }
+              {/* ── Section 1: Here now — only when ≥2 people are present. On your
+                  own it's just you, which isn't activity worth a section (matches
+                  the header pill dropping to "Members"). ── */}
+              {filteredOnline.length >= 2 && (
+                <>
+                  <div className="here-section-header">
+                    <span className="here-section-dot here-section-dot--live" />
+                    {t('here.hereNow')} · {filteredOnline.length}
+                  </div>
+                  {filteredOnline.map(renderOnlineUser)}
+                </>
+              )}
 
               {/* ── Section 2: Local legends ── */}
               {legends.length > 0 && (

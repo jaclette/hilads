@@ -295,6 +295,7 @@
     "subUnranked": "Accept your first challenge to start climbing →",
     "subTop": "Defend your title →",
     "subEmpty": "Create the first one for travelers to accept →",
+    "members": "Members",
     "nearby": "{{count}} nearby",
     "recent": "{{count}} recent",
     "mainUnranked_one": "🔥 {{count}} challenge in {{city}}",

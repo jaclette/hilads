@@ -346,32 +346,36 @@ export default function HereScreen() {
       {/* Content */}
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
 
-        {/* ── Section 1: Here now ── */}
-        <View style={styles.sectionHeader}>
-          <View style={styles.liveDotSection} />
-          <Text style={styles.sectionTitle}>{t('hereNow')} · {liveList.length}</Text>
-        </View>
+        {/* ── Section 1: Here now — shown only when ≥2 people are present. On
+            your own, "here now" is just you, which isn't activity worth a
+            section (matches the header pill dropping to "Members"). ── */}
+        {liveList.length >= 2 && (
+          <>
+            <View style={styles.sectionHeader}>
+              <View style={styles.liveDotSection} />
+              <Text style={styles.sectionTitle}>{t('hereNow')} · {liveList.length}</Text>
+            </View>
 
-        {liveList.length === 0 ? (
-          <Text style={styles.sectionEmpty}>{t('noMatchLive')}</Text>
-        ) : liveList.map((item) => {
-          const isMe = item.sessionId === mySessionId;
-          return (
-            <OnlineUserRow
-              key={item.sessionId}
-              user={item}
-              isMe={isMe}
-              onPress={!isMe && item.userId ? () => {
-                if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
-                router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
-              } : undefined}
-              onDm={() => {
-                if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
-                if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
-              }}
-            />
-          );
-        })}
+            {liveList.map((item) => {
+              const isMe = item.sessionId === mySessionId;
+              return (
+                <OnlineUserRow
+                  key={item.sessionId}
+                  user={item}
+                  isMe={isMe}
+                  onPress={!isMe && item.userId ? () => {
+                    if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+                    router.push({ pathname: '/user/[id]', params: { id: item.userId! } });
+                  } : undefined}
+                  onDm={() => {
+                    if (!canAccessProfile(account)) { router.push('/auth-gate?reason=send_dm'); return; }
+                    if (item.userId) router.push({ pathname: '/dm/[id]', params: { id: item.userId, name: item.nickname } });
+                  }}
+                />
+              );
+            })}
+          </>
+        )}
 
         {/* ── Section 2: Local legends ── */}
         {legends.length > 0 && (

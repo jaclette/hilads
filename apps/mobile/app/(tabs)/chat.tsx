@@ -1233,13 +1233,17 @@ export default function ChatTab() {
             screen's own empty state). ── */}
         <View style={styles.pillsRow}>
           <TouchableOpacity
-            style={[styles.pill, !onlineCount && styles.pillMuted]}
+            style={styles.pill}
             onPress={() => router.push('/(tabs)/here' as never)}
             activeOpacity={0.75}
             accessibilityRole="button"
-            accessibilityLabel={t('onlineAria', { count: onlineCount ?? 0 })}
+            accessibilityLabel={(onlineCount ?? 0) >= 2 ? t('onlineAria', { count: onlineCount ?? 0 }) : t('cityHero.members')}
           >
-            <Text style={[styles.pillText, !onlineCount && styles.pillTextMuted]} numberOfLines={1}>🟢 {t('cityHero.nearby', { count: onlineCount ?? 0 })}</Text>
+            {/* Solo (0-1 present) → the "N nearby" count would just be you, so show
+                a Members entry point instead; tap target is unchanged (here screen). */}
+            <Text style={styles.pillText} numberOfLines={1}>
+              {(onlineCount ?? 0) >= 2 ? `🟢 ${t('cityHero.nearby', { count: onlineCount ?? 0 })}` : `👥 ${t('cityHero.members')}`}
+            </Text>
           </TouchableOpacity>
           {/* Recent arrivals pill (restored - it used to live in the city row,
               which the channel toggle now occupies). */}
