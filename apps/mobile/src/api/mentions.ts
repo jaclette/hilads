@@ -12,7 +12,7 @@ export interface MentionSuggestion {
   thumbAvatarUrl?: string | null;
 }
 
-export type MentionContext = 'city' | 'event' | 'topic' | 'challenge';
+export type MentionContext = 'city' | 'event' | 'topic' | 'challenge' | 'world';
 
 /** What the composer sends to the backend - username is resolved server-side on read.
  *  Member mentions carry userId; online-guest mentions carry guestId. */
@@ -28,7 +28,8 @@ export async function fetchMentionSuggestions(
   channelId: string,
   q: string,
 ): Promise<MentionSuggestion[]> {
-  const path = context === 'city'      ? `/channels/${channelId}/mention-suggestions`
+  const path = context === 'world'     ? `/world/mention-suggestions`
+             : context === 'city'      ? `/channels/${channelId}/mention-suggestions`
              : context === 'event'     ? `/events/${channelId}/mention-suggestions`
              : context === 'challenge' ? `/challenges/${channelId}/mention-suggestions`
              :                           `/topics/${channelId}/mention-suggestions`;

@@ -170,6 +170,16 @@ final class MentionService
                 ) t
             ");
             $stmt->execute([$channelId, $channelId, $channelId]);
+        } elseif ($context === 'world') {
+            // World channel: EVERYONE is mentionable (small global user base, by
+            // design). Registered users only - guests have no @handle. This is the
+            // allow-set for send-time sanitize; the actual push fan-out is bounded
+            // by how many @tokens the sender typed. Keep in sync with suggest('world').
+            $stmt = $pdo->prepare("
+                SELECT id FROM users
+                WHERE deleted_at IS NULL AND username IS NOT NULL
+            ");
+            $stmt->execute();
         } else { // city
             // PR29 - Mentionable in a city = ACTUAL members of that city only:
             // current_city_id (the source of truth per the membership rule)
@@ -258,6 +268,19 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$like, $excludeUserId, $excludeUserId, $channelId, $channelId, $channelId];
+        } elseif ($context === 'world') {
+            // World channel: suggest ANY registered user (prefix match), capped.
+            // Mirrors mentionableUserIds('world') so a suggested handle is never
+            // stripped at send time.
+            $sql = "
+                SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
+                FROM users u
+                WHERE u.username IS NOT NULL AND u.deleted_at IS NULL
+                  AND lower(u.username) LIKE ?
+                  AND (CAST(? AS text) IS NULL OR u.id != ?)
+                ORDER BY u.username ASC
+                LIMIT $cap";
+            $params = [$like, $excludeUserId, $excludeUserId];
         } else { // city - actual members of the city only
             // PR29 - Mirror mentionableUserIds(): match on current_city_id
             // OR an explicit user_city_memberships row. Previously the gate

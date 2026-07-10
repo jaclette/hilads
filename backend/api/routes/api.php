@@ -7800,6 +7800,14 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/mention-suggestions', func
     Response::json(['suggestions' => MentionService::suggest('challenge', $challengeId, (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
 });
 
+// World channel @mention autocomplete - suggests ANY registered user (small
+// global user base). Send-time sanitize uses the matching mentionableUserIds('world').
+$router->add('GET', '/api/v1/world/mention-suggestions', function () {
+    enforceRateLimit('mention_suggest', 120, 60);
+    $viewer = AuthService::currentUser();
+    Response::json(['suggestions' => MentionService::suggest('world', 'world', (string) ($_GET['q'] ?? ''), $viewer['id'] ?? null)]);
+});
+
 // POST /api/v1/topics/{topicId}/mark-read
 // Upserts an event_participants row (reuses same unread-tracking table) and sets last_read_at.
 // Idempotent - safe to call on every topic open.

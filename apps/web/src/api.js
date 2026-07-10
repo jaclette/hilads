@@ -1548,7 +1548,8 @@ export async function sendEventMessage(eventId, guestId, nickname, content, repl
 // context: 'city' | 'event' | 'topic'. id: city numeric id, or event/topic hex id.
 // Registered, in-context users only (backend excludes guests + the caller).
 export async function fetchMentionSuggestions(context, id, q) {
-  const path = context === 'city'  ? `/channels/${id}/mention-suggestions`
+  const path = context === 'world' ? `/world/mention-suggestions`
+             : context === 'city'  ? `/channels/${id}/mention-suggestions`
              : context === 'event' ? `/events/${id}/mention-suggestions`
              :                       `/topics/${id}/mention-suggestions`
   try {

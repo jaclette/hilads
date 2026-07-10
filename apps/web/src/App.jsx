@@ -1525,8 +1525,8 @@ export default function App() {
   // @mention autocomplete for the shared city/event composer. Context follows the
   // active event (event chat) or falls back to the city channel.
   const mentions = useMentions({
-    context:   activeEvent ? 'event' : 'city',
-    channelId: activeEvent ? activeEvent.id : channelId,
+    context:   activeEvent ? 'event' : channelScope === 'world' ? 'world' : 'city',
+    channelId: activeEvent ? activeEvent.id : channelScope === 'world' ? 'world' : channelId,
     value:     input,
     setValue:  setInput,
     inputRef:  chatInputRef,

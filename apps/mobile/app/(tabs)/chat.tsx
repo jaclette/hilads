@@ -1409,8 +1409,8 @@ export default function ChatTab() {
         {/* ── Input - web: .input-bar ── */}
         <ChatInput
           sending={sending}
-          mentionContext="city"
-          mentionChannelId={channelId}
+          mentionContext={channelScope === 'world' ? 'world' : 'city'}
+          mentionChannelId={channelScope === 'world' ? 'world' : channelId}
           // Drop the keyboard on send so the collapsed header + tab bar
           // re-appear (keyboardDidHide resets the focus-mode state).
           dismissOnSend
