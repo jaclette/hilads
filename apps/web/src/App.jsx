@@ -6838,13 +6838,17 @@ export default function App() {
               if (ev) handleSelectEvent(ev)
               else setShowEventDrawer(true)
             } else if (notif.type === 'mention') {
-              // Route to the message's context: event chat, pulse, or city chat.
-              if (d.eventId) {
+              // Route to the exact channel the mention happened in.
+              if (d.challengeId) {
+                fetchChallengeById(d.challengeId).then(x => { if (x?.challenge) setActiveChallenge(x.challenge) }).catch(() => {})
+              } else if (d.eventId) {
                 const ev = events.find(e => e.id === d.eventId) ?? cityEvents.find(e => e.id === d.eventId)
                 if (ev) handleSelectEvent(ev); else setShowEventDrawer(true)
               } else if (d.topicId) {
                 const t = (topics || []).find(tp => tp.id === d.topicId)
                 if (t) setActiveTopic(t)
+              } else if (d.scope === 'world' || d.channelId === 'world') {
+                switchScope('world')
               }
               // city-channel mentions: closing the panel returns to the city chat.
             } else if (notif.type === 'friend_request_received') {

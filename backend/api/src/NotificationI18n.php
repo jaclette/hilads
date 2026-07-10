@@ -849,9 +849,11 @@ final class NotificationI18n
         ];
 
         if ($type === 'mention') {
-            // titled = event/topic (has {title}); world = World channel
-            // (scope=world); else city (interpolates the {city} name).
-            $hasTitle = ($data['eventTitle'] ?? $data['topicTitle'] ?? null) !== null;
+            // titled = event/topic/challenge (has {title}); world = World channel
+            // (scope=world); else city (interpolates the {city} name). challengeTitle
+            // MUST be in this check or challenge mentions fall to the city variant
+            // and render "mentioned you at " with an empty city name.
+            $hasTitle = ($data['eventTitle'] ?? $data['topicTitle'] ?? $data['challengeTitle'] ?? null) !== null;
             $variant  = $hasTitle ? 'titled' : (($data['scope'] ?? null) === 'world' ? 'world' : 'city');
             $titleTpl = self::MENTION[$locale][$variant] ?? self::MENTION[$locale]['city'];
             return [strtr($titleTpl, $params), null];

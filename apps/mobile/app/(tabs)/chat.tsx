@@ -23,6 +23,7 @@ import { formatSmartTime } from '@/lib/messageTime';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
+import { consumeWorldScopeOpen } from '@/lib/worldScopeOpen';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
@@ -608,7 +609,12 @@ export default function ChatTab() {
   // After a "share to my city" from another screen, the message was posted
   // out-of-band so this already-mounted tab never saw it - reload on focus.
   useFocusEffect(
-    useCallback(() => { if (consumeCityFeedRefresh()) reload(); }, [reload]),
+    useCallback(() => {
+      if (consumeCityFeedRefresh()) reload();
+      // A World-channel mention push deep-links here - switch to World scope so
+      // the user lands on the exact channel they were mentioned in.
+      if (consumeWorldScopeOpen()) switchScope('world');
+    }, [reload, switchScope]),
   );
 
   // ── System feed prompts + ambient activity messages ────────────────────────

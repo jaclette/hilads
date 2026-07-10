@@ -19,6 +19,7 @@ import { acceptFriendRequest, declineFriendRequest } from '@/api/friendRequests'
 import { resolveHangoutJoinRequest } from '@/api/topics';
 import { acceptInvitation, ignoreInvitation, acceptChallenge } from '@/api/challenges';
 import { track } from '@/services/analytics';
+import { requestWorldScopeOpen } from '@/lib/worldScopeOpen';
 
 // ── Cold-start notification - resolved at module load ─────────────────────────
 // Start this promise immediately when the module is first imported, BEFORE any
@@ -203,10 +204,17 @@ function resolveRoute(data: NotifData): string | null {
       return '/(tabs)/events';
 
     case 'mention':
-      // Route to the message's context: event chat, pulse, or city chat.
-      if (data.eventId) return `/event/${data.eventId}`;
-      if (data.topicId) return `/topic/${data.topicId}`;
-      return '/(tabs)/chat';
+      // Route to the exact channel the mention happened in.
+      if (data.challengeId)          return `/challenge/${data.challengeId}`;
+      if (data.eventId)              return `/event/${data.eventId}`;
+      if (data.topicId)              return `/topic/${data.topicId}`;
+      if (data.channelId === 'world') {
+        // World lives inside the chat tab as a scope toggle - flag it so the tab
+        // switches to World scope on focus (the tab is persistent + city-default).
+        requestWorldScopeOpen();
+        return '/(tabs)/chat';
+      }
+      return '/(tabs)/chat'; // city chat (the user's current city channel)
 
     case 'topic_message':
     case 'new_topic':
