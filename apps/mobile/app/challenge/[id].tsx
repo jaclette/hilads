@@ -57,6 +57,7 @@ import { avatarColor } from '@/lib/avatarColors';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { shareLink } from '@/lib/shareLink';
 import { ShareToCityPill } from '@/components/ShareToCityPill';
+import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
@@ -1651,12 +1652,23 @@ export default function ChallengeChatScreen() {
           ? `🌍 International Challenge ${from} → ${to}`
           : '⚡ Challenge';
         return (
-          <ShareToCityPill
-            url={buildChallengeUrl(challenge)}
-            title={challenge.title}
-            label={shareLabel}
-            style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
-          />
+          <>
+            <ShareToCityPill
+              url={buildChallengeUrl(challenge)}
+              title={challenge.title}
+              label={shareLabel}
+              style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
+            />
+            {/* International challenges can also be broadcast to the World channel. */}
+            {isIntl && (
+              <ShareToWorldPill
+                url={buildChallengeUrl(challenge)}
+                title={challenge.title}
+                label={shareLabel}
+                style={{ alignSelf: 'center', marginTop: Spacing.sm, marginHorizontal: Spacing.md }}
+              />
+            )}
+          </>
         );
       })()}
 

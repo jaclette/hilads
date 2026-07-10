@@ -201,7 +201,9 @@
     "expiresInHour": "Expire dans {{count}} h"
   },
   "shareToCity": "Partager dans ma ville",
+  "shareToWorld": "Partager sur le Monde",
   "shareToCityError": "Impossible de partager dans ta ville. Réessaie.",
+  "shareToWorldError": "Impossible de partager sur le Monde. Réessaie.",
   "hiLocalTitle": "👋 Hi Local",
   "sayHi": "Dis bonjour à {{name}}",
   "hostWaiting": "En attente du premier bonjour 👋"

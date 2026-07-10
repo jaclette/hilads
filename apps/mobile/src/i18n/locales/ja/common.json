@@ -199,10 +199,12 @@
     "expiresInHour": "あと{{count}}時間で期限切れ"
   },
   "shareToCity": "自分の街でシェア",
+  "shareToWorld": "ワールドに共有",
   "hiLocalTitle": "👋 Hi Local",
   "past": "過去",
   "sayHi": "{{name}}に挨拶しよう",
   "hostWaiting": "最初の挨拶を待っています 👋",
   "shareToCityError": "街に共有できませんでした。もう一度お試しください。",
+  "shareToWorldError": "ワールドに共有できませんでした。もう一度お試しください。",
   "placedBanner": "{{city}}に設定しました — 上部で変更できます。"
 }

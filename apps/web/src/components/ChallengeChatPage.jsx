@@ -111,6 +111,7 @@ export default function ChallengeChatPage({
   onEdit,
   onDeleted,
   onShareToCity, // host posts the challenge deeplink into the user's city feed
+  onShareToWorld, // host posts an international challenge into the global World channel
   onNeedAuth,    // host routes guest to sign-up gate
   onOpenMyProfile, // host opens this user's profile drawer (used by mode_* error CTAs)
   onSendDm,        // host opens a 1:1 DM with the given userId
@@ -1354,6 +1355,25 @@ export default function ChallengeChatPage({
             }}
           >
             📣 {t('shareToCity', { ns: 'common', defaultValue: 'Share in my city' })}
+          </button>
+        </div>
+      )}
+
+      {/* Share-on-World: only INTERNATIONAL challenges, owner (or active taker),
+          posts the deeplink into the global World channel as a clickable card. */}
+      {(challenge.mode ?? 'local') === 'international' && (isOwner || !!activeAcceptance) && onShareToWorld && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '0 16px 8px' }}>
+          <button
+            type="button"
+            className="share-to-city-pill"
+            onClick={() => {
+              const from = [countryToFlag(challenge.country), originCityName].filter(Boolean).join(' ')
+              const to   = [countryToFlag(challenge.target_country) || '🌍', targetCityNameOnly].filter(Boolean).join(' ')
+              const label = `🌍 International Challenge ${from} → ${to}`
+              onShareToWorld(`${label}: ${challenge.title}\n${buildChallengeUrl(challenge)}`)
+            }}
+          >
+            🌍 {t('shareToWorld', { ns: 'common', defaultValue: 'Share on World' })}
           </button>
         </div>
       )}

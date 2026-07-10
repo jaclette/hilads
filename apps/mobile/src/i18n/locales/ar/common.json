@@ -203,10 +203,12 @@
     "expiresInHour": "ينتهي خلال {{count}} س"
   },
   "shareToCity": "شارك في مدينتي",
+  "shareToWorld": "المشاركة في العالم",
   "hiLocalTitle": "👋 Hi Local",
   "past": "السابقة",
   "sayHi": "ألقِ التحية على {{name}}",
   "hostWaiting": "بانتظار أول تحية 👋",
   "shareToCityError": "تعذّرت المشاركة في مدينتك. حاول مجددًا.",
+  "shareToWorldError": "تعذّرت المشاركة في العالم. حاول مرة أخرى.",
   "placedBanner": "وضعناك في {{city}} — يمكنك تغييرها من الأعلى."
 }

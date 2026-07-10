@@ -199,10 +199,12 @@
     "expiresInHour": "Mag-e-expire sa {{count}}h"
   },
   "shareToCity": "Ibahagi sa aking lungsod",
+  "shareToWorld": "I-share sa World",
   "hiLocalTitle": "👋 Hi Local",
   "past": "NAKARAAN",
   "sayHi": "Batiin si {{name}}",
   "hostWaiting": "Hinihintay ang unang hi 👋",
   "shareToCityError": "Hindi na-share sa lungsod mo. Subukan ulit.",
+  "shareToWorldError": "Hindi na-share sa World. Subukan ulit.",
   "placedBanner": "Inilagay ka namin sa {{city}} — mababago mo ito sa itaas."
 }

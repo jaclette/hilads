@@ -10396,7 +10396,11 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
         try {
             $originName   = worldCityName($challenge['city_id'] ?? null);
             $acceptorCity = $authUser['home_city'] ?? null;
+            // World only surfaces INTERNATIONAL challenges. A local challenge whose
+            // acceptor stored a differently-spelled home city ("Saïgon" vs "Ho Chi
+            // Minh City") must NOT leak onto World - gate on the challenge mode.
             if ($originName && $acceptorCity && $originName !== $acceptorCity
+                && ($challenge['mode'] ?? 'local') === 'international'
                 && !WorldRepository::hasChallengeCreated($challengeId)) {
                 $nick = $authUser['display_name'] ?? 'Someone';
                 emitWorldSystem('challenge_created',

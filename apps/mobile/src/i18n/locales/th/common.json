@@ -199,10 +199,12 @@
     "expiresInHour": "หมดอายุใน {{count}} ชม."
   },
   "shareToCity": "แชร์ไปยังเมืองของฉัน",
+  "shareToWorld": "แชร์ไปที่ World",
   "hiLocalTitle": "👋 Hi Local",
   "past": "ที่ผ่านมา",
   "sayHi": "ทักทาย {{name}}",
   "hostWaiting": "กำลังรอคำทักทายแรก 👋",
   "shareToCityError": "แชร์ไปยังเมืองของคุณไม่สำเร็จ ลองอีกครั้ง",
+  "shareToWorldError": "แชร์ไปที่ World ไม่สำเร็จ ลองใหม่อีกครั้ง",
   "placedBanner": "เราจัดคุณไว้ที่{{city}} — เปลี่ยนได้ที่ด้านบน"
 }

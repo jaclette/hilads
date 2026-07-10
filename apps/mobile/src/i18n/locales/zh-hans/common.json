@@ -199,10 +199,12 @@
     "expiresInHour": "{{count}} 小时后到期"
   },
   "shareToCity": "分享到我的城市",
+  "shareToWorld": "分享到世界频道",
   "hiLocalTitle": "👋 Hi Local",
   "past": "已结束",
   "sayHi": "向 {{name}} 打招呼",
   "hostWaiting": "等待第一声招呼 👋",
   "shareToCityError": "无法分享到你的城市，请重试。",
+  "shareToWorldError": "无法分享到世界频道，请重试。",
   "placedBanner": "已把你放在{{city}} —— 可在上方更改。"
 }

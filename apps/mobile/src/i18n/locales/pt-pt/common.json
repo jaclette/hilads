@@ -199,10 +199,12 @@
     "expiresInHour": "Expira em {{count}} h"
   },
   "shareToCity": "Partilhar na minha cidade",
+  "shareToWorld": "Partilhar no Mundo",
   "hiLocalTitle": "👋 Hi Local",
   "past": "PASSADO",
   "sayHi": "Diz olá a {{name}}",
   "hostWaiting": "À espera do primeiro olá 👋",
   "shareToCityError": "Não foi possível partilhar na tua cidade. Tenta de novo.",
+  "shareToWorldError": "Não foi possível partilhar no Mundo. Tenta de novo.",
   "placedBanner": "Colocámos-te em {{city}} — podes mudar em cima."
 }

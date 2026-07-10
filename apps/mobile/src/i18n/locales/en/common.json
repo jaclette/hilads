@@ -204,5 +204,7 @@
     "expiresInHour": "Expires in {{count}}h"
   },
   "shareToCity": "Share in my city",
-  "shareToCityError": "Could not share to your city. Try again."
+  "shareToWorld": "Share on World",
+  "shareToCityError": "Could not share to your city. Try again.",
+  "shareToWorldError": "Could not share to World. Try again."
 }

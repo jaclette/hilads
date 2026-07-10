@@ -199,10 +199,12 @@
     "expiresInHour": "Verloopt over {{count}} u"
   },
   "shareToCity": "Deel in mijn stad",
+  "shareToWorld": "Delen in de Wereld",
   "hiLocalTitle": "👋 Hi Local",
   "past": "VOORBIJ",
   "sayHi": "Zeg {{name}} gedag",
   "hostWaiting": "Wachten op de eerste begroeting 👋",
   "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw.",
+  "shareToWorldError": "Delen in de Wereld mislukt. Probeer opnieuw.",
   "placedBanner": "We plaatsten je in {{city}} — je kunt het bovenaan wijzigen."
 }

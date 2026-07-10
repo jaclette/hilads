@@ -199,10 +199,12 @@
     "expiresInHour": "Berakhir dalam {{count}}j"
   },
   "shareToCity": "Bagikan ke kotaku",
+  "shareToWorld": "Bagikan ke World",
   "hiLocalTitle": "👋 Hi Local",
   "past": "LAMPAU",
   "sayHi": "Sapa {{name}}",
   "hostWaiting": "Menunggu sapaan pertama 👋",
   "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi.",
+  "shareToWorldError": "Gagal membagikan ke World. Coba lagi.",
   "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas."
 }

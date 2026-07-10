@@ -199,7 +199,9 @@
     "expiresInHour": "Hết hạn sau {{count}} giờ"
   },
   "shareToCity": "Chia sẻ lên thành phố của tôi",
+  "shareToWorld": "Chia sẻ lên Thế giới",
   "shareToCityError": "Không thể chia sẻ lên thành phố. Thử lại.",
+  "shareToWorldError": "Không thể chia sẻ lên Thế giới. Thử lại.",
   "hiLocalTitle": "👋 Hi Local",
   "replies_one": "💬 {{count}} trả lời",
   "sayHi": "Chào {{name}}",
