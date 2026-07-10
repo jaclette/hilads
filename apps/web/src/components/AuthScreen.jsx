@@ -100,11 +100,12 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                   <input
                     className="modal-input username-input"
                     type="text"
+                    name="username"
                     value={username}
                     onChange={e => handleUsernameChange(e.target.value)}
                     placeholder={t('fields.usernamePlaceholder')}
                     maxLength={20}
-                    autoComplete="off"
+                    autoComplete="username"
                     autoCapitalize="none"
                     required
                   />
@@ -141,6 +142,8 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
             <input
               className="modal-input"
               type="email"
+              name="email"
+              autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder={t('fields.emailPlaceholder')}
@@ -160,6 +163,8 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
               <input
                 className="modal-input password-field-input"
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete={tab === 'signup' ? 'new-password' : 'current-password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder={tab === 'signup' ? t('fields.passwordPlaceholder') : ''}
