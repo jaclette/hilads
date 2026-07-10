@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 チャレンジ",
   "shareToCity": "自分の街でシェア",
   "shareToWorld": "ワールドに共有",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 ランキングを見る",
+    "challenge": "⚡ チャレンジを見る",
+    "event": "🎉 Hi plan を見る",
+    "topic": "🗣️ Hi now を見る"
+  }
 }

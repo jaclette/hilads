@@ -206,5 +206,11 @@
   "hostWaiting": "Wachten op de eerste begroeting 👋",
   "shareToCityError": "Kon niet delen in je stad. Probeer opnieuw.",
   "shareToWorldError": "Delen in de Wereld mislukt. Probeer opnieuw.",
-  "placedBanner": "We plaatsten je in {{city}} — je kunt het bovenaan wijzigen."
+  "placedBanner": "We plaatsten je in {{city}} — je kunt het bovenaan wijzigen.",
+  "shareCta": {
+    "leaderboard": "🏆 Bekijk het klassement",
+    "challenge": "⚡ Bekijk de challenge",
+    "event": "🎉 Bekijk de Hi plan",
+    "topic": "🗣️ Bekijk de Hi now"
+  }
 }

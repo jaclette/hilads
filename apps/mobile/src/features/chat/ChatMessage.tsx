@@ -35,6 +35,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { splitContentByMentions } from '@/lib/mentions';
 import { linkifyText, extractFirstUrl } from '@/lib/linkify';
 import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
+import { parseSharedHiladsLink, sharedLinkRoute } from '@/lib/sharedLink';
 
 // ── Location message helpers ──────────────────────────────────────────────────
 // Messages starting with '📍' are location shares sent by the LocationPicker.
@@ -821,6 +822,10 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
   const isFailed  = message.status === 'failed';
   const isDeleted = Boolean(message.deletedAt);
   const isEdited  = !isDeleted && Boolean(message.editedAt);
+  // Shared internal Hilads link (challenge / Hi plan / Hi now / leaderboard):
+  // hide the raw URL in the bubble text and render a fun CTA that opens it in-app.
+  const sharedLink    = parseSharedHiladsLink(message.content);
+  const bubbleContent = sharedLink ? (message.content ?? '').replace(sharedLink.url, '').trimEnd() : (message.content ?? '');
 
   // ── Image message ─────────────────────────────────────────────────────────
   if (message.type === 'image') {
@@ -1015,7 +1020,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                   </TouchableOpacity>
                 )}
                 <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
-                  {splitContentByMentions(message.content ?? '', message.mentions).map((seg, i) => (
+                  {splitContentByMentions(bubbleContent, message.mentions).map((seg, i) => (
                     seg.type === 'text'
                       ? linkifyText(seg.text, undefined, `m${i}-`)
                       // Mention = a nested <Text> with a dark highlight + white
@@ -1038,7 +1043,16 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                     </Text>
                   )}
                 </Text>
-                {(() => {
+                {sharedLink ? (
+                  <TouchableOpacity
+                    style={styles.sharedLinkCta}
+                    onPress={() => router.push(sharedLinkRoute(sharedLink) as never)}
+                    activeOpacity={0.85}
+                    accessibilityRole="button"
+                  >
+                    <Text style={styles.sharedLinkCtaText} numberOfLines={1}>{t(`shareCta.${sharedLink.kind}`, { ns: 'common' })}</Text>
+                  </TouchableOpacity>
+                ) : (() => {
                   const u = extractFirstUrl(message.content);
                   return u ? <LinkPreviewCard url={u} isMine={isMine} /> : null;
                 })()}
@@ -1400,6 +1414,13 @@ const styles = StyleSheet.create({
   },
   bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
+  sharedLinkCta: {
+    alignSelf: 'flex-start', marginTop: 8,
+    flexDirection: 'row', alignItems: 'center',
+    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999,
+    backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
+  },
+  sharedLinkCtaText: { fontSize: 13, fontWeight: '700', color: Colors.accent },
   // Tombstone - keep the same bubble silhouette but flatten the fill so it
   // visually reads as inactive without losing the position-in-thread anchor.
   bubbleTombstone: {

@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 चैलेंज",
   "shareToCity": "मेरे शहर में शेयर करें",
   "shareToWorld": "World में शेयर करें",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 लीडरबोर्ड देखें",
+    "challenge": "⚡ चैलेंज देखें",
+    "event": "🎉 Hi plan देखें",
+    "topic": "🗣️ Hi now देखें"
+  }
 }

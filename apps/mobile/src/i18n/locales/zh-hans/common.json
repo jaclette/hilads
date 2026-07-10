@@ -206,5 +206,11 @@
   "hostWaiting": "等待第一声招呼 👋",
   "shareToCityError": "无法分享到你的城市，请重试。",
   "shareToWorldError": "无法分享到世界频道，请重试。",
-  "placedBanner": "已把你放在{{city}} —— 可在上方更改。"
+  "placedBanner": "已把你放在{{city}} —— 可在上方更改。",
+  "shareCta": {
+    "leaderboard": "🏆 查看排行榜",
+    "challenge": "⚡ 查看挑战",
+    "event": "🎉 查看 Hi plan",
+    "topic": "🗣️ 查看 Hi now"
+  }
 }

@@ -206,5 +206,11 @@
   "shareToWorldError": "Impossible de partager sur le Monde. Réessaie.",
   "hiLocalTitle": "👋 Hi Local",
   "sayHi": "Dis bonjour à {{name}}",
-  "hostWaiting": "En attente du premier bonjour 👋"
+  "hostWaiting": "En attente du premier bonjour 👋",
+  "shareCta": {
+    "leaderboard": "🏆 Voir le classement",
+    "challenge": "⚡ Voir le défi",
+    "event": "🎉 Voir le Hi plan",
+    "topic": "🗣️ Voir le Hi now"
+  }
 }

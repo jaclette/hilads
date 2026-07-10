@@ -206,5 +206,11 @@
   "hostWaiting": "กำลังรอคำทักทายแรก 👋",
   "shareToCityError": "แชร์ไปยังเมืองของคุณไม่สำเร็จ ลองอีกครั้ง",
   "shareToWorldError": "แชร์ไปที่ World ไม่สำเร็จ ลองใหม่อีกครั้ง",
-  "placedBanner": "เราจัดคุณไว้ที่{{city}} — เปลี่ยนได้ที่ด้านบน"
+  "placedBanner": "เราจัดคุณไว้ที่{{city}} — เปลี่ยนได้ที่ด้านบน",
+  "shareCta": {
+    "leaderboard": "🏆 ดูลีดเดอร์บอร์ด",
+    "challenge": "⚡ ดูชาเลนจ์",
+    "event": "🎉 ดู Hi plan",
+    "topic": "🗣️ ดู Hi now"
+  }
 }

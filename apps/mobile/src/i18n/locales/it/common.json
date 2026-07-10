@@ -206,5 +206,11 @@
   "hostWaiting": "In attesa del primo saluto 👋",
   "shareToCityError": "Impossibile condividere nella tua città. Riprova.",
   "shareToWorldError": "Impossibile condividere nel Mondo. Riprova.",
-  "placedBanner": "Ti abbiamo messo a {{city}} — puoi cambiarla in alto."
+  "placedBanner": "Ti abbiamo messo a {{city}} — puoi cambiarla in alto.",
+  "shareCta": {
+    "leaderboard": "🏆 Vedi la classifica",
+    "challenge": "⚡ Vedi la sfida",
+    "event": "🎉 Vedi il Hi plan",
+    "topic": "🗣️ Vedi il Hi now"
+  }
 }

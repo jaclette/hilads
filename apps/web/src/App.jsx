@@ -144,6 +144,30 @@ function parseDeepLink() {
   return null
 }
 
+// Detect a shared INTERNAL Hilads link inside a chat message (leaderboard,
+// challenge, Hi plan/event, Hi now/topic) so we can hide the raw URL and render a
+// fun contextual CTA that opens it in-app. External links fall through to null
+// (→ normal link-preview card). Returns { url, kind, id?, scope?, period? }.
+function parseSharedHiladsLink(content) {
+  if (!content) return null
+  const m = content.match(/https?:\/\/\S+/i)
+  if (!m) return null
+  const url = m[0]
+  let path
+  try { path = new URL(url).pathname } catch { return null }
+  path = path.replace(LOCALE_PREFIX_RE, '') || '/'
+  if (/^\/leaderboard$/.test(path)) {
+    const q = url.split('?')[1] || ''
+    const get = (k) => { const mm = q.match(new RegExp('(?:^|&)' + k + '=([^&#]*)')); return mm ? decodeURIComponent(mm[1]) : null }
+    return { url, kind: 'leaderboard', scope: get('scope') || 'city', period: get('period') || 'month' }
+  }
+  let mm
+  if ((mm = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'challenge', id: mm[1] }
+  if ((mm = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)) || (mm = path.match(/^\/e\/([a-f0-9]{16})$/i))) return { url, kind: 'event', id: mm[1] }
+  if ((mm = path.match(/^\/(?:t|topic)\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'topic', id: mm[1] }
+  return null
+}
+
 // Did the visitor land directly on a content deep-link (/city, /event, /venue,
 // /topic, …) instead of entering through the landing page? Captured ONCE at page
 // load, before any client-side navigation, so it reflects the true ENTRY URL.
@@ -3601,6 +3625,26 @@ export default function App() {
     else                   shareToMyCity(content, mentions)
   }
 
+  // Open a shared internal link (from a feed CTA) in-app - no full navigation.
+  function openSharedLink(link) {
+    if (!link) return
+    if (link.kind === 'leaderboard') {
+      setLeaderboardScope(link.scope === 'world' ? 'world' : link.scope === 'cities' ? 'cities' : 'city')
+      setLeaderboardPeriod(link.period === 'alltime' ? 'alltime' : 'month')
+      setShowLeaderboard(true)
+    } else if (link.kind === 'challenge') {
+      fetchChallengeById(link.id).then(d => { if (d?.challenge) setActiveChallenge(d.challenge) }).catch(() => {})
+    } else if (link.kind === 'event') {
+      const ev = events.find(e => e.id === link.id) ?? cityEvents.find(e => e.id === link.id)
+      if (ev) handleSelectEvent(ev)
+      else fetchEventById(link.id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})
+    } else if (link.kind === 'topic') {
+      const tp = (topics || []).find(x => x.id === link.id)
+      if (tp) setActiveTopic(tp)
+      else fetchTopicById(link.id).then(d => { if (d?.topic) setActiveTopic(d.topic) }).catch(() => {})
+    }
+  }
+
   // Bottom-tab handlers for CHALLENGES / EVENTS / HERE / ME - each clears every
   // other top-level flag before setting its own. Without this, tapping e.g.
   // EVENTS then CHALLENGES leaves both drawer flags true and closing the top
@@ -5478,15 +5522,32 @@ export default function App() {
                             </span>
                           </div>
                         )}
-                        <span className="msg-text">
-                          {renderMessageContent(item)}
-                          {item.editedAt && (
-                            <span className="msg-edited-tag">{` ${t('edited', { ns: 'chat', defaultValue: 'edited' })}`}</span>
-                          )}
-                        </span>
                         {(() => {
-                          const u = extractFirstUrl(item.content)
-                          return u ? <LinkPreviewCard url={u} /> : null
+                          // Shared internal link (challenge / Hi plan / Hi now /
+                          // leaderboard) → hide the raw URL, show a fun CTA. Else
+                          // keep the normal text + link-preview card.
+                          const shared = parseSharedHiladsLink(item.content)
+                          const textItem = shared ? { ...item, content: (item.content ?? '').replace(shared.url, '').trimEnd() } : item
+                          const u = shared ? null : extractFirstUrl(item.content)
+                          return (
+                            <>
+                              <span className="msg-text">
+                                {renderMessageContent(textItem)}
+                                {item.editedAt && (
+                                  <span className="msg-edited-tag">{` ${t('edited', { ns: 'chat', defaultValue: 'edited' })}`}</span>
+                                )}
+                              </span>
+                              {shared ? (
+                                <a
+                                  className="shared-link-cta"
+                                  href={shared.url}
+                                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSharedLink(shared) }}
+                                >
+                                  {t(`shareCta.${shared.kind}`, { ns: 'common' })}
+                                </a>
+                              ) : (u ? <LinkPreviewCard url={u} /> : null)}
+                            </>
+                          )
                         })()}
                       </div>
                     )}

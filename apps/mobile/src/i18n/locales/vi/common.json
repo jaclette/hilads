@@ -206,5 +206,11 @@
   "replies_one": "💬 {{count}} trả lời",
   "sayHi": "Chào {{name}}",
   "hostWaiting": "Đang chờ lời chào đầu tiên 👋",
-  "placedBanner": "Bạn được đặt ở {{city}} — có thể đổi ở phía trên."
+  "placedBanner": "Bạn được đặt ở {{city}} — có thể đổi ở phía trên.",
+  "shareCta": {
+    "leaderboard": "🏆 Xem bảng xếp hạng",
+    "challenge": "⚡ Xem thử thách",
+    "event": "🎉 Xem Hi plan",
+    "topic": "🗣️ Xem Hi now"
+  }
 }

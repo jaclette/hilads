@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 Mga Challenge",
   "shareToCity": "Ibahagi sa aking lungsod",
   "shareToWorld": "I-share sa World",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 Tingnan ang leaderboard",
+    "challenge": "⚡ Tingnan ang challenge",
+    "event": "🎉 Tingnan ang Hi plan",
+    "topic": "🗣️ Tingnan ang Hi now"
+  }
 }

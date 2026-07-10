@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 التحديات",
   "shareToCity": "شارك في مدينتي",
   "shareToWorld": "المشاركة في العالم",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 عرض المتصدرين",
+    "challenge": "⚡ عرض التحدي",
+    "event": "🎉 عرض Hi plan",
+    "topic": "🗣️ عرض Hi now"
+  }
 }

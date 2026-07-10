@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 ชาเลนจ์",
   "shareToCity": "แชร์ไปยังเมืองของฉัน",
   "shareToWorld": "แชร์ไปที่ World",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 ดูลีดเดอร์บอร์ด",
+    "challenge": "⚡ ดูชาเลนจ์",
+    "event": "🎉 ดู Hi plan",
+    "topic": "🗣️ ดู Hi now"
+  }
 }

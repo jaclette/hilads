@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 Tantangan",
   "shareToCity": "Bagikan ke kotaku",
   "shareToWorld": "Bagikan ke World",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 Lihat papan peringkat",
+    "challenge": "⚡ Lihat challenge",
+    "event": "🎉 Lihat Hi plan",
+    "topic": "🗣️ Lihat Hi now"
+  }
 }

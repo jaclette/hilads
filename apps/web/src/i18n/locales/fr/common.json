@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 Défis",
   "shareToCity": "Partager dans ma ville",
   "shareToWorld": "Partager sur le Monde",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 Voir le classement",
+    "challenge": "⚡ Voir le défi",
+    "event": "🎉 Voir le Hi plan",
+    "topic": "🗣️ Voir le Hi now"
+  }
 }

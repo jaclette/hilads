@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 挑战",
   "shareToCity": "分享到我的城市",
   "shareToWorld": "分享到世界频道",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 查看排行榜",
+    "challenge": "⚡ 查看挑战",
+    "event": "🎉 查看 Hi plan",
+    "topic": "🗣️ 查看 Hi now"
+  }
 }

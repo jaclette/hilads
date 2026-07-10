@@ -206,5 +206,11 @@
   "hostWaiting": "पहले नमस्ते का इंतज़ार 👋",
   "shareToCityError": "आपके शहर में साझा नहीं कर सके। फिर कोशिश करें।",
   "shareToWorldError": "World में शेयर नहीं हो सका। फिर से कोशिश करें।",
-  "placedBanner": "हमने तुम्हें {{city}} में रखा — ऊपर से बदल सकते हो।"
+  "placedBanner": "हमने तुम्हें {{city}} में रखा — ऊपर से बदल सकते हो।",
+  "shareCta": {
+    "leaderboard": "🏆 लीडरबोर्ड देखें",
+    "challenge": "⚡ चैलेंज देखें",
+    "event": "🎉 Hi plan देखें",
+    "topic": "🗣️ Hi now देखें"
+  }
 }

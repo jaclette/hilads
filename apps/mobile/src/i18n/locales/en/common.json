@@ -206,5 +206,11 @@
   "shareToCity": "Share in my city",
   "shareToWorld": "Share on World",
   "shareToCityError": "Could not share to your city. Try again.",
-  "shareToWorldError": "Could not share to World. Try again."
+  "shareToWorldError": "Could not share to World. Try again.",
+  "shareCta": {
+    "leaderboard": "🏆 See the leaderboard",
+    "challenge": "⚡ See the challenge",
+    "event": "🎉 See the Hi plan",
+    "topic": "🗣️ See the Hi now"
+  }
 }

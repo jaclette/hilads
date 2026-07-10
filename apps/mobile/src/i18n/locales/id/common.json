@@ -206,5 +206,11 @@
   "hostWaiting": "Menunggu sapaan pertama 👋",
   "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi.",
   "shareToWorldError": "Gagal membagikan ke World. Coba lagi.",
-  "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas."
+  "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas.",
+  "shareCta": {
+    "leaderboard": "🏆 Lihat papan peringkat",
+    "challenge": "⚡ Lihat challenge",
+    "event": "🎉 Lihat Hi plan",
+    "topic": "🗣️ Lihat Hi now"
+  }
 }

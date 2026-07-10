@@ -163,5 +163,11 @@
   "filterChallenges": "🔥 Челленджи",
   "shareToCity": "Поделиться в моём городе",
   "shareToWorld": "Поделиться в Мире",
-  "hiLocalTitle": "👋 Hi Local"
+  "hiLocalTitle": "👋 Hi Local",
+  "shareCta": {
+    "leaderboard": "🏆 Смотреть рейтинг",
+    "challenge": "⚡ Смотреть челлендж",
+    "event": "🎉 Смотреть Hi plan",
+    "topic": "🗣️ Смотреть Hi now"
+  }
 }
