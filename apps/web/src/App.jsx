@@ -2922,7 +2922,10 @@ export default function App() {
         const myGId  = guestIdRef.current
         const myUId  = accountRef.current?.id
         const isMine = (myGId && message.guestId === myGId) || (myUId && message.userId === myUId)
-        const isChat = message.type === 'text' || message.type === 'image'
+        // Broadcast DTOs omit `type` for plain text (set only for non-text:
+        // system/event/image/join). Treat an absent type as text — otherwise the
+        // cross-scope World/City unread badges never bump for normal messages.
+        const isChat = message.type == null || message.type === 'text' || message.type === 'image'
 
         // World message arriving while NOT viewing World → bump the World unread badge.
         if (String(channelId) === 'world' && scope !== 'world') {

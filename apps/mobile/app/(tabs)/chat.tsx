@@ -595,7 +595,9 @@ export default function ChatTab() {
       const m = data?.message;
       if (!m) return;
       const mine = (!!identity?.guestId && m.guestId === identity.guestId) || (!!account?.id && m.userId === account.id);
-      const isChat = m.type === 'text' || m.type === 'image';
+      // Broadcast DTOs omit `type` for plain text (set only for non-text); treat an
+      // absent type as text or the World/City unread badges never bump for chat.
+      const isChat = m.type == null || m.type === 'text' || m.type === 'image';
       if (!isChat || mine) return;
       if (cid === 'world' && channelScope !== 'world') setWorldUnread(u => Math.min(u + 1, 999));
       else if (channelScope === 'world' && (cid === String(channelId) || cid === `city_${channelId}`)) setCityUnread(u => Math.min(u + 1, 999));
