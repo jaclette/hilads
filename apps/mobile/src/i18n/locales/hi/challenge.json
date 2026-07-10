@@ -562,7 +562,18 @@
       "searchPlaceholder": "शहर खोजें…",
       "empty": "कोई शहर मेल नहीं खाता।"
     },
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "मेरी रैंक शेयर करें",
+      "periodMonth": "इस महीने",
+      "periodAll": "हर समय की",
+      "placeCity": "{{city}} में",
+      "placeWorld": "World में",
+      "userNotTop": "🔥 मैं {{place}} {{period}} #{{rank}} पर हूँ — {{pts}} अंक! @{{above}} ({{aPts}} अंक) का पीछा कर रहा हूँ 👀 और @{{below}} ({{bPts}} अंक) को पीछे रखा है। लगता है मुझसे आगे निकल पाओगे? 🏆",
+      "userTop": "👑 मैं {{place}} {{period}} #1 पर हूँ — {{pts}} अंक! @{{below1}} ({{b1Pts}} अंक) और @{{below2}} ({{b2Pts}} अंक) मेरे पीछे हैं। आकर ताज छीन लो 😏",
+      "cityNotTop": "🔥 {{place}} सभी शहरों में {{period}} #{{rank}} पर है — {{pts}} अंक! {{above}} ({{aPts}} अंक) के ठीक पीछे 👀 और {{below}} ({{bPts}} अंक) से आगे। लोकल दोस्तों, चढ़ाई करें 🏆",
+      "cityTop": "👑 {{place}} सभी शहरों में {{period}} #1 पर है — {{pts}} अंक! {{below1}} ({{b1Pts}} अंक) और {{below2}} ({{b2Pts}} अंक) हमारा पीछा कर रहे हैं। लोकल दोस्तों, टॉप पर बने रहें 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "पॉइंट्स कैसे मिलते हैं",

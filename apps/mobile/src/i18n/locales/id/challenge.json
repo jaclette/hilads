@@ -562,7 +562,18 @@
       "searchPlaceholder": "Cari kota…",
       "empty": "Tidak ada kota yang cocok."
     },
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "Bagikan peringkatku",
+      "periodMonth": "bulan ini",
+      "periodAll": "sepanjang masa",
+      "placeCity": "di {{city}}",
+      "placeWorld": "di World",
+      "userNotTop": "🔥 Aku #{{rank}} {{place}} {{period}} — {{pts}} poin! Mengejar @{{above}} ({{aPts}} poin) 👀 dan menahan @{{below}} ({{bPts}} poin) di belakangku. Pikir bisa menyalipku? 🏆",
+      "userTop": "👑 Aku #1 {{place}} {{period}} — {{pts}} poin! @{{below1}} ({{b1Pts}} poin) dan @{{below2}} ({{b2Pts}} poin) mengejarku. Ayo rebut takhtanya 😏",
+      "cityNotTop": "🔥 {{place}} #{{rank}} di antara semua kota {{period}} — {{pts}} poin! Tepat di belakang {{above}} ({{aPts}} poin) 👀 dan di depan {{below}} ({{bPts}} poin). Warga lokal, ayo naik 🏆",
+      "cityTop": "👑 {{place}} #1 di antara semua kota {{period}} — {{pts}} poin! {{below1}} ({{b1Pts}} poin) dan {{below2}} ({{b2Pts}} poin) mengejar kita. Warga lokal, pertahankan puncak 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "Cara kerja poin",

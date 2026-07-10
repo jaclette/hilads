@@ -562,7 +562,18 @@
       "searchPlaceholder": "Поиск городов…",
       "empty": "Нет подходящих городов."
     },
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "Поделиться рангом",
+      "periodMonth": "в этом месяце",
+      "periodAll": "за всё время",
+      "placeCity": "в {{city}}",
+      "placeWorld": "в Мире",
+      "userNotTop": "🔥 Я #{{rank}} {{place}} {{period}} — {{pts}} очков! Догоняю @{{above}} ({{aPts}} очков) 👀 и держу @{{below}} ({{bPts}} очков) позади. Думаешь, обгонишь меня? 🏆",
+      "userTop": "👑 Я #1 {{place}} {{period}} — {{pts}} очков! @{{below1}} ({{b1Pts}} очков) и @{{below2}} ({{b2Pts}} очков) дышат мне в спину. Приходи свергнуть меня 😏",
+      "cityNotTop": "🔥 {{place}} — #{{rank}} среди всех городов {{period}} — {{pts}} очков! Прямо за {{above}} ({{aPts}} очков) 👀 и впереди {{below}} ({{bPts}} очков). Местные, поднимаемся 🏆",
+      "cityTop": "👑 {{place}} — #1 среди всех городов {{period}} — {{pts}} очков! {{below1}} ({{b1Pts}} очков) и {{below2}} ({{b2Pts}} очков) гонятся за нами. Местные, держим вершину 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "Как начисляются очки",

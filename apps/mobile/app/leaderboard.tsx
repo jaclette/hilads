@@ -1,5 +1,5 @@
 import { thumbUrl } from '@/lib/imageThumb';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, RefreshControl,
 } from 'react-native';
@@ -17,7 +17,10 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { cityDemonym } from '@/lib/cityDemonym';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
-import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
+import { Colors, FontSizes, Spacing, Radius, Gradients, buildLeaderboardUrl } from '@/constants';
+import { useShareToCity } from '@/lib/useShareToCity';
+import { useShareToWorld } from '@/lib/useShareToWorld';
+import { buildRankShareMessage } from '@/lib/buildRankShareMessage';
 import type {
   LeaderboardResponse, LeaderboardScope, LeaderboardPeriod, LeaderboardEntry,
 } from '@/types';
@@ -44,11 +47,16 @@ export default function LeaderboardScreen() {
   // scope via /leaderboard?scope=world. Only 'world' is honoured here;
   // anything else (including the absence of the param) falls back to
   // 'city', preserving the trophy-chip default.
-  const params = useLocalSearchParams<{ scope?: string }>();
-  const initialScope: LeaderboardScope = params.scope === 'world' ? 'world' : 'city';
+  const params = useLocalSearchParams<{ scope?: string; period?: string }>();
+  const initialScope: LeaderboardScope =
+    params.scope === 'world' ? 'world' : params.scope === 'cities' ? 'cities' : 'city';
+  const initialPeriod: LeaderboardPeriod = params.period === 'alltime' ? 'alltime' : 'month';
 
   const [scope,  setScope]  = useState<LeaderboardScope>(initialScope);
-  const [period, setPeriod] = useState<LeaderboardPeriod>('month');
+  const [period, setPeriod] = useState<LeaderboardPeriod>(initialPeriod);
+
+  const { shareToCity }  = useShareToCity();
+  const { shareToWorld } = useShareToWorld();
 
   // PR13 - picker-overridden city for the leaderboard view. Null = use the
   // caller's current city (default behaviour). Setting this DOES NOT change
@@ -118,6 +126,24 @@ export default function LeaderboardScreen() {
     ? t('leaderboard.titleCity', { demonym, defaultValue: `🏆 Most ${demonym}` })
     : t('leaderboard.title');
 
+  // "Share my rank" - fun message + neighbour @mentions (users only), posted to
+  // the right channel (city/cities → my city; world → World). Null when there's
+  // no rank or the two neighbours aren't on the loaded page → CTA hidden.
+  const rankShare = useMemo(() => buildRankShareMessage({
+    scope, period, entries,
+    me: me ? { rank: me.rank, points: me.points } : null,
+    myCityId: city?.channelId ? `city_${city.channelId}` : null,
+    placeCityName: localizeCityName(effectiveCityName) ?? effectiveCityName ?? undefined,
+    url: buildLeaderboardUrl(scope, period),
+    t,
+  }), [scope, period, entries, me, city?.channelId, effectiveCityName, t]);
+
+  const onShareRank = useCallback(() => {
+    if (!rankShare) return;
+    if (scope === 'world') shareToWorld(rankShare.text, rankShare.mentions);
+    else                   shareToCity(rankShare.text, rankShare.mentions);
+  }, [rankShare, scope, shareToWorld, shareToCity]);
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Header
@@ -134,6 +160,18 @@ export default function LeaderboardScreen() {
         onCityTap={scope === 'city' ? () => setCityPickerOpen(true) : undefined}
         t={t}
       />
+
+      {rankShare && (
+        <TouchableOpacity
+          style={styles.shareRankPill}
+          onPress={onShareRank}
+          activeOpacity={0.85}
+          accessibilityRole="button"
+          accessibilityLabel={t('leaderboard.share.cta')}
+        >
+          <Text style={styles.shareRankText} numberOfLines={1}>📣 {t('leaderboard.share.cta')}</Text>
+        </TouchableOpacity>
+      )}
 
       {loading && !data ? (
         <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
@@ -530,6 +568,13 @@ function CityRow({
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  shareRankPill: {
+    alignSelf: 'center', marginTop: Spacing.sm, marginBottom: Spacing.xs,
+    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
+    backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
+  },
+  shareRankText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent },
 
   nav: {
     flexDirection: 'row', alignItems: 'center',

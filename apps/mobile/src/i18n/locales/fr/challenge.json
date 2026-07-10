@@ -561,6 +561,17 @@
     "cityPicker": {
       "searchPlaceholder": "Rechercher des villes…",
       "empty": "Aucune ville ne correspond."
+    },
+    "share": {
+      "cta": "Partager mon rang",
+      "periodMonth": "ce mois-ci",
+      "periodAll": "de tous les temps",
+      "placeCity": "à {{city}}",
+      "placeWorld": "dans le Monde",
+      "userNotTop": "🔥 Je suis #{{rank}} {{place}} {{period}} — {{pts}} pts ! Je cours après @{{above}} ({{aPts}} pts) 👀 et je garde @{{below}} ({{bPts}} pts) derrière moi. Tu crois pouvoir me dépasser ? 🏆",
+      "userTop": "👑 Je suis #1 {{place}} {{period}} — {{pts}} pts ! @{{below1}} ({{b1Pts}} pts) et @{{below2}} ({{b2Pts}} pts) me collent aux basques. Viens me détrôner 😏",
+      "cityNotTop": "🔥 {{place}} est #{{rank}} parmi toutes les villes {{period}} — {{pts}} pts ! Juste derrière {{above}} ({{aPts}} pts) 👀 et devant {{below}} ({{bPts}} pts). Locaux, on grimpe 🏆",
+      "cityTop": "👑 {{place}} est #1 parmi toutes les villes {{period}} — {{pts}} pts ! {{below1}} ({{b1Pts}} pts) et {{below2}} ({{b2Pts}} pts) nous poursuivent. Locaux, on reste au top 🔥"
     }
   },
   "scoringInfo": {

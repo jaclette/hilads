@@ -22,12 +22,12 @@ export function useShareToWorld() {
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   const canShare = !!identity?.guestId;
 
-  const shareToWorld = useCallback(async (url: string) => {
+  const shareToWorld = useCallback(async (url: string, mentions?: import('@/api/mentions').MentionInput[]) => {
     if (!identity?.guestId || sharing) return;
     setSharing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     try {
-      await sendWorldMessage(identity.guestId, nickname, url);
+      await sendWorldMessage(identity.guestId, nickname, url, mentions);
       // Chat tab is persistent + city-default; flag it to open in World scope on
       // focus so the freshly posted card is visible, then jump there.
       requestWorldScopeOpen();

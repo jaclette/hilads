@@ -562,7 +562,18 @@
     },
     "errLoad": "ランキングを読み込めませんでした。引いて再試行してください。",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "順位をシェア",
+      "periodMonth": "今月",
+      "periodAll": "歴代",
+      "placeCity": "{{city}}で",
+      "placeWorld": "ワールドで",
+      "userNotTop": "🔥 {{place}}{{period}} #{{rank}} 位 — {{pts}} pts！@{{above}}（{{aPts}} pts）を追いかけ 👀、@{{below}}（{{bPts}} pts）を抑えてる。私を抜ける？🏆",
+      "userTop": "👑 {{place}}{{period}} #1 — {{pts}} pts！@{{below1}}（{{b1Pts}} pts）と @{{below2}}（{{b2Pts}} pts）がすぐ後ろに。王座を奪いに来て 😏",
+      "cityNotTop": "🔥 {{place}} は全都市中{{period}} #{{rank}} 位 — {{pts}} pts！{{above}}（{{aPts}} pts）のすぐ後ろ 👀、{{below}}（{{bPts}} pts）の前。ローカルのみんな、登ろう 🏆",
+      "cityTop": "👑 {{place}} は全都市中{{period}} #1 — {{pts}} pts！{{below1}}（{{b1Pts}} pts）と {{below2}}（{{b2Pts}} pts）が追ってる。ローカルのみんな、首位をキープ 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "ポイントの仕組み",

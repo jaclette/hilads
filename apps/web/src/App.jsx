@@ -130,6 +130,11 @@ function parseDeepLink() {
   if (shortLinkMatch)      return { type: 'event',         id: shortLinkMatch[1] }
   if (topicMatch)          return { type: 'topic',         id: topicMatch[1] }
   if (landingChallengeMatch) return { type: 'landing_challenge', id: landingChallengeMatch[1] }
+  if (path === '/leaderboard') return {
+    type: 'leaderboard',
+    scope:  params.get('scope')  ?? 'city',
+    period: params.get('period') ?? 'month',
+  }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/friend-requests') return { type: 'friend-requests' }
@@ -1217,6 +1222,7 @@ export default function App() {
   const [showThreadsList,       setShowThreadsList]       = useState(false) // opens ThreadsListPage
   const [showLeaderboard,       setShowLeaderboard]       = useState(false) // opens LeaderboardPage
   const [leaderboardScope,      setLeaderboardScope]      = useState('city') // PR38 - initial scope when opened
+  const [leaderboardPeriod,     setLeaderboardPeriod]     = useState('month') // initial period (for share deeplink)
   const [celebrationRefetchKey, setCelebrationRefetchKey] = useState(0)     // PR47 - bumps on WS mutual_rating_complete
   const [challengeResultRefetchKey, setChallengeResultRefetchKey] = useState(0) // bumps on WS challenge_validated → group result reveal
   const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
@@ -1955,6 +1961,11 @@ export default function App() {
       })
     }
 
+    if (link.type === 'leaderboard') {
+      setLeaderboardScope(link.scope === 'world' ? 'world' : link.scope === 'cities' ? 'cities' : 'city')
+      setLeaderboardPeriod(link.period === 'alltime' ? 'alltime' : 'month')
+      openScreenOnJoinRef.current = 'leaderboard'
+    }
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
@@ -2882,6 +2893,7 @@ export default function App() {
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'past')          { setShowPastArchive(true);  openScreenOnJoinRef.current = null }
+      if (openScreenOnJoinRef.current === 'leaderboard')   { setShowLeaderboard(true);  openScreenOnJoinRef.current = null }
 
       activeRef.current = true
       scheduleActivity(true)
@@ -3552,11 +3564,11 @@ export default function App() {
   // renders the link-preview card) into the user's current city channel, then
   // jump to the city feed so they see it land. Used by the owner of a
   // topic/event/challenge and by a challenge taker.
-  async function shareToMyCity(content) {
+  async function shareToMyCity(content, mentions) {
     const cid = activeChannelRef.current
     if (!cid || !content || !guest?.guestId) return
     try {
-      const msg = await sendMessage(cid, sessionIdRef.current, guest.guestId, activeNickname, content)
+      const msg = await sendMessage(cid, sessionIdRef.current, guest.guestId, activeNickname, content, null, mentions)
       // Append to the (city) feed so the link card shows immediately - the WS
       // echo may not reach us since the socket was in the other room. knownIds
       // guards against a later duplicate from the echo.
@@ -3571,14 +3583,22 @@ export default function App() {
   // Owner shares an INTERNATIONAL challenge into the global World channel (the
   // World version of shareToMyCity). Posts the challenge deeplink as a message -
   // the feed renders it as a clickable link card - then opens World scope.
-  async function shareToWorld(content) {
+  async function shareToWorld(content, mentions) {
     if (!content || !guest?.guestId) return
     const nickname = account?.display_name ?? guest?.nickname ?? activeNickname
     try {
       if (!worldJoinedRef.current) { socketRef.current?.joinWorld(sessionIdRef.current); worldJoinedRef.current = true }
-      await sendWorldMessage(guest.guestId, nickname, content)
+      await sendWorldMessage(guest.guestId, nickname, content, mentions)
     } catch { /* best-effort - still switch so the user can retry from the feed */ }
     switchScope('world')
+  }
+
+  // Leaderboard "Share my rank" → post to my city (city/cities scope) or World
+  // (world scope). Message + neighbour @mentions are built by the LeaderboardPage.
+  function shareRank(content, mentions, scope) {
+    setShowLeaderboard(false)
+    if (scope === 'world') shareToWorld(content, mentions)
+    else                   shareToMyCity(content, mentions)
   }
 
   // Bottom-tab handlers for CHALLENGES / EVENTS / HERE / ME - each clears every
@@ -7294,6 +7314,8 @@ export default function App() {
           city={city}
           cityChannelId={channelId}
           initialScope={leaderboardScope}
+          initialPeriod={leaderboardPeriod}
+          onShareRank={shareRank}
           onBack={() => setShowLeaderboard(false)}
           onOpenProfile={(userId, displayName) => {
             // Tapping a row opens the user's profile drawer (the same one

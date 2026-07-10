@@ -562,6 +562,17 @@
     "cityPicker": {
       "searchPlaceholder": "Tìm thành phố…",
       "empty": "Không có thành phố nào khớp."
+    },
+    "share": {
+      "cta": "Chia sẻ hạng của tôi",
+      "periodMonth": "tháng này",
+      "periodAll": "mọi thời điểm",
+      "placeCity": "ở {{city}}",
+      "placeWorld": "trên Thế giới",
+      "userNotTop": "🔥 Tôi hạng #{{rank}} {{place}} {{period}} — {{pts}} điểm! Đang bám đuổi @{{above}} ({{aPts}} điểm) 👀 và giữ @{{below}} ({{bPts}} điểm) phía sau. Nghĩ mình vượt được tôi? 🏆",
+      "userTop": "👑 Tôi hạng #1 {{place}} {{period}} — {{pts}} điểm! @{{below1}} ({{b1Pts}} điểm) và @{{below2}} ({{b2Pts}} điểm) đang đuổi theo. Tới lật đổ tôi đi 😏",
+      "cityNotTop": "🔥 {{place}} hạng #{{rank}} trong tất cả thành phố {{period}} — {{pts}} điểm! Ngay sau {{above}} ({{aPts}} điểm) 👀 và trên {{below}} ({{bPts}} điểm). Người địa phương ơi, leo lên nào 🏆",
+      "cityTop": "👑 {{place}} hạng #1 trong tất cả thành phố {{period}} — {{pts}} điểm! {{below1}} ({{b1Pts}} điểm) và {{below2}} ({{b2Pts}} điểm) đang đuổi theo. Người địa phương ơi, giữ vững ngôi đầu 🔥"
     }
   },
   "scoringInfo": {

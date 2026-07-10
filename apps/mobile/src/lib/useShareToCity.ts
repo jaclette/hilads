@@ -26,12 +26,12 @@ export function useShareToCity() {
   const nickname = account?.display_name ?? identity?.nickname ?? '';
   const canShare = !!(city?.channelId && identity?.guestId);
 
-  const shareToCity = useCallback(async (url: string) => {
+  const shareToCity = useCallback(async (url: string, mentions?: import('@/api/mentions').MentionInput[]) => {
     if (!city?.channelId || !identity?.guestId || sharing) return;
     setSharing(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     try {
-      await sendMessage(city.channelId, sessionId ?? '', identity.guestId, nickname, url);
+      await sendMessage(city.channelId, sessionId ?? '', identity.guestId, nickname, url, null, mentions);
       // Tell the (already-mounted) city tab to reload on focus so the freshly
       // posted link card is visible without a manual refresh, then jump there.
       requestCityFeedRefresh();

@@ -562,7 +562,18 @@
     },
     "errLoad": "리더보드를 불러오지 못했어요. 당겨서 다시 시도해 주세요.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "내 순위 공유",
+      "periodMonth": "이번 달",
+      "periodAll": "전체 기간",
+      "placeCity": "{{city}}에서",
+      "placeWorld": "월드에서",
+      "userNotTop": "🔥 {{place}} {{period}} #{{rank}}위 — {{pts}}점! @{{above}}({{aPts}}점) 쫓는 중 👀, @{{below}}({{bPts}}점)는 뒤에 두고 있어요. 날 넘어설 수 있어? 🏆",
+      "userTop": "👑 {{place}} {{period}} #1 — {{pts}}점! @{{below1}}({{b1Pts}}점)와 @{{below2}}({{b2Pts}}점)가 바짝 쫓아와요. 왕좌를 뺏으러 와 😏",
+      "cityNotTop": "🔥 {{place}}는 모든 도시 중 {{period}} #{{rank}}위 — {{pts}}점! {{above}}({{aPts}}점) 바로 뒤 👀, {{below}}({{bPts}}점) 앞이에요. 로컬 여러분, 올라가요 🏆",
+      "cityTop": "👑 {{place}}는 모든 도시 중 {{period}} #1 — {{pts}}점! {{below1}}({{b1Pts}}점)와 {{below2}}({{b2Pts}}점)가 쫓아와요. 로컬 여러분, 1위 지켜요 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "포인트가 어떻게 쌓이는지",

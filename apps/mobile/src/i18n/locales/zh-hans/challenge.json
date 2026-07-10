@@ -562,7 +562,18 @@
       "searchPlaceholder": "搜索城市…",
       "empty": "没有匹配的城市。"
     },
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "分享我的排名",
+      "periodMonth": "本月",
+      "periodAll": "历史",
+      "placeCity": "在{{city}}",
+      "placeWorld": "在世界",
+      "userNotTop": "🔥 我{{place}}{{period}}排名第 {{rank}} — {{pts}} 分！正追着 @{{above}}（{{aPts}} 分）👀，把 @{{below}}（{{bPts}} 分）甩在身后。觉得你能超过我吗？🏆",
+      "userTop": "👑 我{{place}}{{period}}排名第 1 — {{pts}} 分！@{{below1}}（{{b1Pts}} 分）和 @{{below2}}（{{b2Pts}} 分）正紧追不舍。来把我拉下王座吧 😏",
+      "cityNotTop": "🔥 {{place}}在所有城市中{{period}}排名第 {{rank}} — {{pts}} 分！紧跟 {{above}}（{{aPts}} 分）👀，领先 {{below}}（{{bPts}} 分）。本地人们，一起冲 🏆",
+      "cityTop": "👑 {{place}}在所有城市中{{period}}排名第 1 — {{pts}} 分！{{below1}}（{{b1Pts}} 分）和 {{below2}}（{{b2Pts}} 分）正在追赶。本地人们，稳住第一 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "积分如何获得",

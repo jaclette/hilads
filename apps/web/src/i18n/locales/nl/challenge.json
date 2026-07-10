@@ -562,7 +562,18 @@
     },
     "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "Deel mijn positie",
+      "periodMonth": "deze maand",
+      "periodAll": "aller tijden",
+      "placeCity": "in {{city}}",
+      "placeWorld": "in de Wereld",
+      "userNotTop": "🔥 Ik ben #{{rank}} {{place}} {{period}} — {{pts}} ptn! Ik jaag op @{{above}} ({{aPts}} ptn) 👀 en houd @{{below}} ({{bPts}} ptn) achter me. Denk je dat je me voorbij komt? 🏆",
+      "userTop": "👑 Ik ben #1 {{place}} {{period}} — {{pts}} ptn! @{{below1}} ({{b1Pts}} ptn) en @{{below2}} ({{b2Pts}} ptn) zitten me op de hielen. Kom me onttronen 😏",
+      "cityNotTop": "🔥 {{place}} is #{{rank}} van alle steden {{period}} — {{pts}} ptn! Vlak achter {{above}} ({{aPts}} ptn) 👀 en voor {{below}} ({{bPts}} ptn). Locals, we klimmen 🏆",
+      "cityTop": "👑 {{place}} is #1 van alle steden {{period}} — {{pts}} ptn! {{below1}} ({{b1Pts}} ptn) en {{below2}} ({{b2Pts}} ptn) zitten ons op de hielen. Locals, we blijven bovenaan 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",

@@ -562,7 +562,18 @@
     },
     "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "Ibahagi ang rank ko",
+      "periodMonth": "ngayong buwan",
+      "periodAll": "sa lahat ng panahon",
+      "placeCity": "sa {{city}}",
+      "placeWorld": "sa World",
+      "userNotTop": "🔥 #{{rank}} ako {{place}} {{period}} — {{pts}} pts! Hinahabol si @{{above}} ({{aPts}} pts) 👀 at nasa likod ko si @{{below}} ({{bPts}} pts). Kaya mo ba akong lampasan? 🏆",
+      "userTop": "👑 #1 ako {{place}} {{period}} — {{pts}} pts! Nasa likuran ko sina @{{below1}} ({{b1Pts}} pts) at @{{below2}} ({{b2Pts}} pts). Subukan mong agawin ang korona 😏",
+      "cityNotTop": "🔥 Ang {{place}} ay #{{rank}} sa lahat ng lungsod {{period}} — {{pts}} pts! Kasunod lang ng {{above}} ({{aPts}} pts) 👀 at nauuna kay {{below}} ({{bPts}} pts). Mga local, akyat na 🏆",
+      "cityTop": "👑 Ang {{place}} ay #1 sa lahat ng lungsod {{period}} — {{pts}} pts! Hinahabol tayo nina {{below1}} ({{b1Pts}} pts) at {{below2}} ({{b2Pts}} pts). Mga local, manatili sa tuktok 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "Paano gumagana ang points",

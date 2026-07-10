@@ -562,7 +562,18 @@
       "searchPlaceholder": "Buscar ciudades…",
       "empty": "Ninguna ciudad coincide."
     },
-    "titleCity": "🏆 Most {{demonym}}"
+    "titleCity": "🏆 Most {{demonym}}",
+    "share": {
+      "cta": "Compartir mi rango",
+      "periodMonth": "este mes",
+      "periodAll": "de todos los tiempos",
+      "placeCity": "en {{city}}",
+      "placeWorld": "en el Mundo",
+      "userNotTop": "🔥 ¡Soy #{{rank}} {{place}} {{period}} — {{pts}} pts! Persiguiendo a @{{above}} ({{aPts}} pts) 👀 y dejando a @{{below}} ({{bPts}} pts) atrás. ¿Crees que puedes superarme? 🏆",
+      "userTop": "👑 ¡Soy #1 {{place}} {{period}} — {{pts}} pts! @{{below1}} ({{b1Pts}} pts) y @{{below2}} ({{b2Pts}} pts) me pisan los talones. Ven a destronarme 😏",
+      "cityNotTop": "🔥 ¡{{place}} es #{{rank}} entre todas las ciudades {{period}} — {{pts}} pts! Justo detrás de {{above}} ({{aPts}} pts) 👀 y por delante de {{below}} ({{bPts}} pts). Locales, ¡a subir! 🏆",
+      "cityTop": "👑 ¡{{place}} es #1 entre todas las ciudades {{period}} — {{pts}} pts! {{below1}} ({{b1Pts}} pts) y {{below2}} ({{b2Pts}} pts) nos persiguen. Locales, ¡sigamos arriba! 🔥"
+    }
   },
   "scoringInfo": {
     "aria": "Cómo funcionan los puntos",

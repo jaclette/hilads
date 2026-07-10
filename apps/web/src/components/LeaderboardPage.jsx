@@ -7,6 +7,7 @@ import { cityDemonym } from '../lib/cityDemonym'
 import { countryToFlag } from '../lib/countryFlag'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import BackButton from './BackButton'
+import { buildRankShareMessage, buildLeaderboardUrl } from '../lib/rankShare'
 
 /**
  * PR7 - Leaderboard screen. Reached from the 🏆 chip on the city header.
@@ -35,14 +36,15 @@ function avatarColors(name = '') {
 
 const PAGE_SIZE = 50
 
-export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, onCreateChallenge, initialScope = 'city' }) {
+export default function LeaderboardPage({ account, city, cityChannelId, onBack, onOpenProfile, onCreateChallenge, onShareRank, initialScope = 'city', initialPeriod = 'month' }) {
   const { t } = useTranslation('challenge')
 
   // PR38 - initialScope lets callers (e.g. the score celebration popin's
   // rank rows) request a starting scope. Default 'city' preserves the
-  // existing entry from the trophy chip.
-  const [scope,  setScope]  = useState(initialScope === 'world' ? 'world' : 'city')
-  const [period, setPeriod] = useState('month')
+  // existing entry from the trophy chip. initialPeriod lets a shared
+  // leaderboard deeplink land on the same month/all-time filter.
+  const [scope,  setScope]  = useState(initialScope === 'world' ? 'world' : initialScope === 'cities' ? 'cities' : 'city')
+  const [period, setPeriod] = useState(initialPeriod === 'alltime' ? 'alltime' : 'month')
 
   const [data,    setData]    = useState(null)
   const [loading, setLoading] = useState(true)
@@ -82,6 +84,16 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
 
   const cityLabel = localizeCityName(effectiveCityName) || t('leaderboard.scope.city')
   const cityFlag  = effectiveCityCountry ? countryToFlag(effectiveCityCountry) : ''
+
+  // "Share my rank": fun message + neighbour @mentions (users only), posted to
+  // the right channel (city/cities → my city; world → World). Null → CTA hidden.
+  const rankShare = buildRankShareMessage({
+    scope, period, entries, me,
+    myCityId: cityChannelId ? `city_${cityChannelId}` : null,
+    placeCityName: localizeCityName(effectiveCityName) || effectiveCityName || null,
+    url: buildLeaderboardUrl(scope, period),
+    t,
+  })
 
   return (
     <div className="full-page leaderboard-page">
@@ -147,6 +159,18 @@ export default function LeaderboardPage({ account, city, cityChannelId, onBack, 
           </button>
         </div>
       </div>
+
+      {rankShare && onShareRank && (
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 16px 4px' }}>
+          <button
+            type="button"
+            className="share-to-city-pill"
+            onClick={() => onShareRank(rankShare.text, rankShare.mentions, scope)}
+          >
+            📣 {t('leaderboard.share.cta')}
+          </button>
+        </div>
+      )}
 
       <div className="page-body" style={{ padding: 0 }}>
         {loading && !data ? (

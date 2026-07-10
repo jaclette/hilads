@@ -61,6 +61,14 @@ export function buildChallengeUrl(challenge: { id: string; title?: string } | st
   return `${BASE_URL}${lp}/challenge/${challengeSlug(challenge)}`;
 }
 
+/**
+ * Shareable leaderboard URL carrying the current filter. Tapping it (in a feed
+ * link card) re-opens the leaderboard on the same scope + period.
+ */
+export function buildLeaderboardUrl(scope: string, period: string): string {
+  return `${BASE_URL}${sharePrefix()}/leaderboard?scope=${encodeURIComponent(scope)}&period=${encodeURIComponent(period)}`;
+}
+
 // ── Env diagnostics - unconditional, fires in both dev and production APK ─────
 console.log('[env] EXPO_PUBLIC_API_URL =', process.env.EXPO_PUBLIC_API_URL ?? '(undefined - will use localhost fallback!)');
 console.log('[env] API_URL (resolved)  =', API_URL);
