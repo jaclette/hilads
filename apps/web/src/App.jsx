@@ -1900,18 +1900,32 @@ export default function App() {
     }
 
     if (link.type === 'challenge') {
-      // Same flow as topic: fetch metadata for the host city, join it, then
-      // open the challenge chat once the city's loaded so the user lands on
-      // a fully-hydrated page. Skip the city-join setTimeout if the fetch
-      // returned null (404) - we'll just stay on home.
-      locPromiseRef.current = fetchChallengeById(link.id).then(data => {
+      // A shared challenge (esp. an INTERNATIONAL one, e.g. HCMC → São Paulo)
+      // must open for the recipient in THEIR OWN city - not the challenge's
+      // origin city. So we place the visitor via IP geolocation (/api/geo, no
+      // GPS prompt) and fall back to the origin city only when IP finds no
+      // supported city. pendingChallengeRef makes the post-join flow open the
+      // challenge chat once the visitor's city is loaded (challenge chat is its
+      // own channel, independent of which city the user is in).
+      locPromiseRef.current = fetchChallengeById(link.id).then(async data => {
         if (!data) return null
         const { challenge, channelId, cityName, country, timezone } = data
-        setCity(cityName)
-        setCityCountry(country)
-        setCityTimezone(timezone)
-        setTimeout(() => setActiveChallenge(challenge), 800)
-        return { channelId, city: cityName, timezone, country }
+        pendingChallengeRef.current = challenge.id
+        const origin = { channelId, city: cityName, timezone, country }
+        // IP geo raced against a short budget (/api/geo answers in ~30ms; the
+        // budget only covers a cold lambda boot). Failure/timeout → origin.
+        const geo = await Promise.race([
+          fetch('/api/geo', { headers: { Accept: 'application/json' } })
+            .then(r => (r.ok ? r.json() : null)).catch(() => null),
+          new Promise(resolve => setTimeout(() => resolve(null), 600)),
+        ])
+        const loc = (geo && geo.state === 'city_matched' && geo.channelId)
+          ? { channelId: geo.channelId, city: geo.city, timezone: geo.timezone, country: geo.country }
+          : origin
+        setCity(loc.city)
+        setCityCountry(loc.country ?? null)
+        setCityTimezone(loc.timezone ?? 'UTC')
+        return loc
       })
     }
 
