@@ -569,10 +569,10 @@
       "periodAll": "de sempre",
       "placeCity": "em {{city}}",
       "placeWorld": "no Mundo",
-      "userNotTop": "🔥 Sou #{{rank}} {{place}} {{period}} — {{pts}} pts! A perseguir @{{above}} ({{aPts}} pts) 👀 e a manter @{{below}} ({{bPts}} pts) atrás de mim. Achas que me ultrapassas? 🏆",
-      "userTop": "👑 Sou #1 {{place}} {{period}} — {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) andam atrás de mim. Vem destronar-me 😏",
-      "cityNotTop": "🔥 {{place}} é #{{rank}} entre todas as cidades {{period}} — {{pts}} pts! Mesmo atrás de {{above}} ({{aPts}} pts) 👀 e à frente de {{below}} ({{bPts}} pts). Locais, vamos subir 🏆",
-      "cityTop": "👑 {{place}} é #1 entre todas as cidades {{period}} — {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) andam atrás de nós. Locais, vamos ficar no topo 🔥"
+      "userNotTop": "🔥 Sou #{{rank}} {{place}} {{period}}: {{pts}} pts! A perseguir @{{above}} ({{aPts}} pts) 👀 e a manter @{{below}} ({{bPts}} pts) atrás de mim. Achas que me ultrapassas? 🏆",
+      "userTop": "👑 Sou #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) e @{{below2}} ({{b2Pts}} pts) andam atrás de mim. Vem destronar-me 😏",
+      "cityNotTop": "🔥 {{place}} é #{{rank}} entre todas as cidades {{period}}: {{pts}} pts! Mesmo atrás de {{above}} ({{aPts}} pts) 👀 e à frente de {{below}} ({{bPts}} pts). Locais, vamos subir 🏆",
+      "cityTop": "👑 {{place}} é #1 entre todas as cidades {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) e {{below2}} ({{b2Pts}} pts) andam atrás de nós. Locais, vamos ficar no topo 🔥"
     }
   },
   "scoringInfo": {

@@ -569,10 +569,10 @@
       "periodAll": "على الإطلاق",
       "placeCity": "في {{city}}",
       "placeWorld": "في العالم",
-      "userNotTop": "🔥 أنا #{{rank}} {{place}} {{period}} — {{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأُبقي @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تتجاوزني؟ 🏆",
-      "userTop": "👑 أنا #1 {{place}} {{period}} — {{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وأطِح بي عن العرش 😏",
-      "cityNotTop": "🔥 {{place}} #{{rank}} بين كل المدن {{period}} — {{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، لنصعد 🏆",
-      "cityTop": "👑 {{place}} #1 بين كل المدن {{period}} — {{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
+      "userNotTop": "🔥 أنا #{{rank}} {{place}} {{period}}: {{pts}} نقطة! أطارد @{{above}} ({{aPts}} نقطة) 👀 وأُبقي @{{below}} ({{bPts}} نقطة) خلفي. تظن أنك تتجاوزني؟ 🏆",
+      "userTop": "👑 أنا #1 {{place}} {{period}}: {{pts}} نقطة! @{{below1}} ({{b1Pts}} نقطة) و@{{below2}} ({{b2Pts}} نقطة) يلاحقانني. تعال وأطِح بي عن العرش 😏",
+      "cityNotTop": "🔥 {{place}} #{{rank}} بين كل المدن {{period}}: {{pts}} نقطة! خلف {{above}} ({{aPts}} نقطة) مباشرة 👀 وأمام {{below}} ({{bPts}} نقطة). يا أهل المدينة، لنصعد 🏆",
+      "cityTop": "👑 {{place}} #1 بين كل المدن {{period}}: {{pts}} نقطة! {{below1}} ({{b1Pts}} نقطة) و{{below2}} ({{b2Pts}} نقطة) يلاحقاننا. يا أهل المدينة، لنبقَ في القمة 🔥"
     }
   },
   "scoringInfo": {

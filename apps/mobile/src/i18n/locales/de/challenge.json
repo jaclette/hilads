@@ -569,10 +569,10 @@
       "periodAll": "aller Zeiten",
       "placeCity": "in {{city}}",
       "placeWorld": "in der Welt",
-      "userNotTop": "🔥 Ich bin #{{rank}} {{place}} {{period}} — {{pts}} Pkt! Ich jage @{{above}} ({{aPts}} Pkt) 👀 und halte @{{below}} ({{bPts}} Pkt) hinter mir. Glaubst du, du ziehst an mir vorbei? 🏆",
-      "userTop": "👑 Ich bin #1 {{place}} {{period}} — {{pts}} Pkt! @{{below1}} ({{b1Pts}} Pkt) und @{{below2}} ({{b2Pts}} Pkt) sitzen mir im Nacken. Komm, stürz mich vom Thron 😏",
-      "cityNotTop": "🔥 {{place}} ist #{{rank}} unter allen Städten {{period}} — {{pts}} Pkt! Direkt hinter {{above}} ({{aPts}} Pkt) 👀 und vor {{below}} ({{bPts}} Pkt). Locals, wir klettern 🏆",
-      "cityTop": "👑 {{place}} ist #1 unter allen Städten {{period}} — {{pts}} Pkt! {{below1}} ({{b1Pts}} Pkt) und {{below2}} ({{b2Pts}} Pkt) sind uns auf den Fersen. Locals, wir bleiben oben 🔥"
+      "userNotTop": "🔥 Ich bin #{{rank}} {{place}} {{period}}: {{pts}} Pkt! Ich jage @{{above}} ({{aPts}} Pkt) 👀 und halte @{{below}} ({{bPts}} Pkt) hinter mir. Glaubst du, du ziehst an mir vorbei? 🏆",
+      "userTop": "👑 Ich bin #1 {{place}} {{period}}: {{pts}} Pkt! @{{below1}} ({{b1Pts}} Pkt) und @{{below2}} ({{b2Pts}} Pkt) sitzen mir im Nacken. Komm, stürz mich vom Thron 😏",
+      "cityNotTop": "🔥 {{place}} ist #{{rank}} unter allen Städten {{period}}: {{pts}} Pkt! Direkt hinter {{above}} ({{aPts}} Pkt) 👀 und vor {{below}} ({{bPts}} Pkt). Locals, wir klettern 🏆",
+      "cityTop": "👑 {{place}} ist #1 unter allen Städten {{period}}: {{pts}} Pkt! {{below1}} ({{b1Pts}} Pkt) und {{below2}} ({{b2Pts}} Pkt) sind uns auf den Fersen. Locals, wir bleiben oben 🔥"
     }
   },
   "scoringInfo": {

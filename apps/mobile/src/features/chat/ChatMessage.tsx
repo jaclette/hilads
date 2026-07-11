@@ -1418,9 +1418,10 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', marginTop: 8,
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999,
-    backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
+    // White bg so the CTA pops on the orange (sent) bubble AND the dark (received) one.
+    backgroundColor: '#fff',
   },
-  sharedLinkCtaText: { fontSize: 13, fontWeight: '700', color: Colors.accent },
+  sharedLinkCtaText: { fontSize: 13, fontWeight: '800', color: Colors.accent },
   // Tombstone - keep the same bubble silhouette but flatten the fill so it
   // visually reads as inactive without losing the position-in-thread anchor.
   bubbleTombstone: {

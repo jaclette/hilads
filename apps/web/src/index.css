@@ -14272,7 +14272,8 @@ body.has-app-promo-banner .page-header {
 }
 .share-to-city-pill:hover { background: rgba(255, 122, 60, 0.22); }
 
-/* Fun CTA that replaces the raw deeplink in a shared feed message. */
+/* Fun CTA that replaces the raw deeplink in a shared feed message. White bg so
+   it pops on the orange (sent) bubble AND the dark (received) one. */
 .shared-link-cta {
   display: inline-flex;
   align-items: center;
@@ -14280,17 +14281,17 @@ body.has-app-promo-banner .page-header {
   margin-top: 0.375rem;
   padding: 0.4375rem 0.8125rem;
   border-radius: 999px;
-  border: 1px solid rgba(255, 122, 60, 0.5);
-  background: rgba(255, 122, 60, 0.14);
+  border: none;
+  background: #fff;
   color: #FF7A3C;
   font-size: 0.8125rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.01em;
   text-decoration: none;
   cursor: pointer;
   width: fit-content;
 }
-.shared-link-cta:hover { background: rgba(255, 122, 60, 0.22); }
+.shared-link-cta:hover { background: #f3f3f3; }
 /* Compact variant inside the event row (sits under the avatars). */
 .share-to-city-pill--row {
   margin-top: 0.5rem;

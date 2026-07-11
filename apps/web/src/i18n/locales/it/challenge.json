@@ -569,10 +569,10 @@
       "periodAll": "di sempre",
       "placeCity": "a {{city}}",
       "placeWorld": "nel Mondo",
-      "userNotTop": "🔥 Sono #{{rank}} {{place}} {{period}} — {{pts}} pt! Inseguo @{{above}} ({{aPts}} pt) 👀 e tengo @{{below}} ({{bPts}} pt) dietro di me. Pensi di superarmi? 🏆",
-      "userTop": "👑 Sono #1 {{place}} {{period}} — {{pts}} pt! @{{below1}} ({{b1Pts}} pt) e @{{below2}} ({{b2Pts}} pt) mi stanno col fiato sul collo. Vieni a detronizzarmi 😏",
-      "cityNotTop": "🔥 {{place}} è #{{rank}} tra tutte le città {{period}} — {{pts}} pt! Proprio dietro {{above}} ({{aPts}} pt) 👀 e davanti a {{below}} ({{bPts}} pt). Gente del posto, scaliamo 🏆",
-      "cityTop": "👑 {{place}} è #1 tra tutte le città {{period}} — {{pts}} pt! {{below1}} ({{b1Pts}} pt) e {{below2}} ({{b2Pts}} pt) ci inseguono. Gente del posto, restiamo in cima 🔥"
+      "userNotTop": "🔥 Sono #{{rank}} {{place}} {{period}}: {{pts}} pt! Inseguo @{{above}} ({{aPts}} pt) 👀 e tengo @{{below}} ({{bPts}} pt) dietro di me. Pensi di superarmi? 🏆",
+      "userTop": "👑 Sono #1 {{place}} {{period}}: {{pts}} pt! @{{below1}} ({{b1Pts}} pt) e @{{below2}} ({{b2Pts}} pt) mi stanno col fiato sul collo. Vieni a detronizzarmi 😏",
+      "cityNotTop": "🔥 {{place}} è #{{rank}} tra tutte le città {{period}}: {{pts}} pt! Proprio dietro {{above}} ({{aPts}} pt) 👀 e davanti a {{below}} ({{bPts}} pt). Gente del posto, scaliamo 🏆",
+      "cityTop": "👑 {{place}} è #1 tra tutte le città {{period}}: {{pts}} pt! {{below1}} ({{b1Pts}} pt) e {{below2}} ({{b2Pts}} pt) ci inseguono. Gente del posto, restiamo in cima 🔥"
     }
   },
   "scoringInfo": {

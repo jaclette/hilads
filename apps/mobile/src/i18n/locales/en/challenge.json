@@ -382,10 +382,10 @@
       "periodAll": "all-time",
       "placeCity": "in {{city}}",
       "placeWorld": "in the World",
-      "userNotTop": "🔥 I'm #{{rank}} {{place}} {{period}} — {{pts}} pts! Chasing @{{above}} ({{aPts}} pts) 👀 and keeping @{{below}} ({{bPts}} pts) behind me. Think you can climb past me? 🏆",
-      "userTop": "👑 I'm #1 {{place}} {{period}} — {{pts}} pts! @{{below1}} ({{b1Pts}} pts) and @{{below2}} ({{b2Pts}} pts) are on my tail. Come take the crown 😏",
-      "cityNotTop": "🔥 {{place}} is #{{rank}} among all cities {{period}} — {{pts}} pts! Right behind {{above}} ({{aPts}} pts) 👀 and ahead of {{below}} ({{bPts}} pts). Locals, let's climb 🏆",
-      "cityTop": "👑 {{place}} is #1 among all cities {{period}} — {{pts}} pts! {{below1}} ({{b1Pts}} pts) and {{below2}} ({{b2Pts}} pts) are chasing us. Locals, let's stay on top 🔥"
+      "userNotTop": "🔥 I'm #{{rank}} {{place}} {{period}}: {{pts}} pts! Chasing @{{above}} ({{aPts}} pts) 👀 and keeping @{{below}} ({{bPts}} pts) behind me. Think you can climb past me? 🏆",
+      "userTop": "👑 I'm #1 {{place}} {{period}}: {{pts}} pts! @{{below1}} ({{b1Pts}} pts) and @{{below2}} ({{b2Pts}} pts) are on my tail. Come take the crown 😏",
+      "cityNotTop": "🔥 {{place}} is #{{rank}} among all cities {{period}}: {{pts}} pts! Right behind {{above}} ({{aPts}} pts) 👀 and ahead of {{below}} ({{bPts}} pts). Locals, let's climb 🏆",
+      "cityTop": "👑 {{place}} is #1 among all cities {{period}}: {{pts}} pts! {{below1}} ({{b1Pts}} pts) and {{below2}} ({{b2Pts}} pts) are chasing us. Locals, let's stay on top 🔥"
     }
   },
   "schedule": {
