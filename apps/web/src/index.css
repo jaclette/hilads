@@ -14372,8 +14372,10 @@ body.has-app-promo-banner .page-header {
   margin: 0 0.75rem 0.875rem;
   padding: 0.875rem;
   background: var(--bg2, #161412);
-  border: 0.5px solid rgba(255, 255, 255, 0.10);
+  /* Gold border so the Most Local podium stands out (matches the Legend/crown theme). */
+  border: 1.5px solid rgba(251, 191, 36, 0.55);
   border-radius: 14px;
+  box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.08), 0 4px 18px rgba(251, 191, 36, 0.10);
 }
 /* Empty-leaderboard CTA variant - whole card is the tappable button. */
 .most-local-cta {
