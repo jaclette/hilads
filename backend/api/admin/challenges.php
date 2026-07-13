@@ -6,7 +6,9 @@ admin_require_login();
 
 $pdo = Database::pdo();
 
-$TYPE_ICON = ['food' => '🍜', 'place' => '📍', 'culture' => '🎭', 'help' => '🤝'];
+$TYPE_ICON  = ['food' => '🍜', 'place' => '📍', 'culture' => '🎭', 'help' => '🤪'];
+// 'help' KEY renders as "Crazy" app-wide (the old "Help" label is gone).
+$TYPE_LABEL = ['food' => 'Food', 'place' => 'Place', 'culture' => 'Culture', 'help' => 'Crazy'];
 
 // ── Date range (UTC+7) ────────────────────────────────────────────────────────
 $today  = date('Y-m-d');
@@ -156,7 +158,7 @@ admin_nav('/admin/challenges');
                             <span class="badge" style="background:#ffffff0d;color:#777;border:1px solid #ffffff14;margin-left:4px"><?= $usesProof ? '📸 photo' : '📍 meet' ?> · 1-1</span>
                         <?php endif; ?>
                     </td>
-                    <td style="color:#888"><?= htmlspecialchars($it['challenge_type'] ?? '-', ENT_QUOTES) ?></td>
+                    <td style="color:#888"><?= htmlspecialchars($TYPE_LABEL[$it['challenge_type']] ?? ($it['challenge_type'] ?? '-'), ENT_QUOTES) ?></td>
                     <td class="td-clip"><?= htmlspecialchars($creator, ENT_QUOTES) ?></td>
                     <td>
                         <?php if ($deleted): ?>

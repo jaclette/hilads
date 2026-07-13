@@ -15,6 +15,9 @@ $pdo    = Database::pdo();
 $cities = CityRepository::all();
 $errors = [];
 $types  = ['food', 'place', 'culture', 'help'];
+// User-facing labels: the 'help' KEY is displayed as "Crazy" 🤪 across the app
+// (the old "Help" wording is gone). Keys stay stable for data continuity.
+$TYPE_LABELS = ['food' => '🍜 Food', 'place' => '📍 Place', 'culture' => '🎭 Culture', 'help' => '🤪 Crazy'];
 $post   = $_POST;
 
 // Resolve the @hilads brand account (seeded by the migration).
@@ -154,7 +157,7 @@ admin_nav('/admin/campaigns');
             <label>Type</label>
             <select name="type">
                 <?php foreach ($types as $t): ?>
-                    <option value="<?= $t ?>" <?= ($post['type'] ?? '') === $t ? 'selected' : '' ?>><?= ucfirst($t) ?></option>
+                    <option value="<?= $t ?>" <?= ($post['type'] ?? '') === $t ? 'selected' : '' ?>><?= $TYPE_LABELS[$t] ?? ucfirst($t) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>

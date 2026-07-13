@@ -9,6 +9,8 @@ $pdo    = Database::pdo();
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
 $TYPES        = ['food', 'place', 'culture', 'help'];
+// 'help' KEY renders as "Crazy" 🤪 (app-wide label; old "Help" wording is gone).
+$TYPE_LABELS  = ['food' => '🍜 Food', 'place' => '📍 Place', 'culture' => '🎭 Culture', 'help' => '🤪 Crazy'];
 $VALIDATIONS  = ['meet', 'photo_proof'];
 $VISIBILITIES = ['public', 'friends'];
 $STATUSES     = ['open', 'validated'];
@@ -157,7 +159,7 @@ $backHref = '/admin/challenges?city=' . urlencode($ch['city_id'] ?? '');
             <label for="challenge_type">Type</label>
             <select id="challenge_type" name="challenge_type">
                 <?php $curType = $_POST['challenge_type'] ?? $ch['challenge_type']; foreach ($TYPES as $tp): ?>
-                    <option value="<?= $tp ?>"<?= $tp === $curType ? ' selected' : '' ?>><?= ucfirst($tp) ?></option>
+                    <option value="<?= $tp ?>"<?= $tp === $curType ? ' selected' : '' ?>><?= $TYPE_LABELS[$tp] ?? ucfirst($tp) ?></option>
                 <?php endforeach; ?>
             </select>
         </div>
