@@ -1,11 +1,13 @@
 import { thumbUrl } from '@/lib/imageThumb';
+import { useEffect, useState } from 'react';
 import {
   Modal, View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Pressable,
+  type NativeSyntheticEvent, type NativeScrollEvent, type LayoutChangeEvent,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
-import type { ShowcaseItem } from '@/api/challenges';
+import { fetchGroupSubmissions, type ShowcaseItem, type GroupSubmission } from '@/api/challenges';
 import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 
 const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
@@ -46,7 +48,37 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
   onAvatar?: (userId: string) => void;
 }) {
   const { t } = useTranslation('challenge');
+
+  // Group photo-proof contests have many takers → many photos. Pull them all so
+  // we can show a carousel (winner first, with a Winner pill). 1-1 challenges
+  // return 0/1 and fall back to the single winning proof below.
+  const [subs, setSubs]         = useState<GroupSubmission[]>([]);
+  const [winnerId, setWinnerId] = useState<string | null>(null);
+  const [carouselW, setCarouselW] = useState(0);
+  const [page, setPage]         = useState(0);
+  const itemId = item?.id ?? null;
+
+  useEffect(() => {
+    setSubs([]); setWinnerId(null); setPage(0);
+    if (!itemId) return;
+    let alive = true;
+    fetchGroupSubmissions(itemId)
+      .then(r => { if (alive) { setSubs(r.submissions ?? []); setWinnerId(r.winnerUserId ?? null); } })
+      .catch(() => { /* not a group contest / no submissions → single-proof fallback */ });
+    return () => { alive = false; };
+  }, [itemId]);
+
   if (!item) return null;
+
+  // Winner first, then the rest, so tile 0 is always the crowned photo.
+  const ordered: GroupSubmission[] = winnerId
+    ? [...subs.filter(s => s.user_id === winnerId), ...subs.filter(s => s.user_id !== winnerId)]
+    : subs;
+  const isCarousel = ordered.length > 1;
+  const onCarouselScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    if (carouselW > 0) setPage(Math.round(e.nativeEvent.contentOffset.x / carouselW));
+  };
+  const onCarouselLayout = (e: LayoutChangeEvent) => setCarouselW(e.nativeEvent.layout.width);
 
   const intl     = item.mode === 'international';
   const icon     = TYPE_ICON[item.challenge_type] ?? '🔥';
@@ -63,7 +95,31 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
       <View style={styles.sheet}>
         <View style={styles.handle} />
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-          {hasProof ? <ThumbImage uri={item.proof_media_url!} style={styles.proof} /> : null}
+          {isCarousel ? (
+            <View style={styles.carouselWrap} onLayout={onCarouselLayout}>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={onCarouselScroll}
+              >
+                {ordered.map((s, i) => (
+                  <View key={s.id} style={{ width: carouselW }}>
+                    <ThumbImage uri={s.media_url} style={styles.carouselImg} />
+                    {winnerId && s.user_id === winnerId ? (
+                      <View style={styles.winnerPill}><Text style={styles.winnerPillText}>🏆 {t('group.winnerTag')}</Text></View>
+                    ) : null}
+                    {s.display_name ? (
+                      <View style={styles.nameChip}><Text style={styles.nameChipText} numberOfLines={1}>{s.display_name}</Text></View>
+                    ) : null}
+                  </View>
+                ))}
+              </ScrollView>
+              <View style={styles.counter}><Text style={styles.counterText}>{page + 1}/{ordered.length}</Text></View>
+            </View>
+          ) : hasProof ? (
+            <ThumbImage uri={item.proof_media_url!} style={styles.proof} />
+          ) : null}
 
           <View style={styles.badges}>
             <View style={[styles.modePill, intl ? styles.modeIntl : styles.modeLocal]}>
@@ -146,6 +202,25 @@ const styles = StyleSheet.create({
   scroll: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm },
 
   proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: 14, backgroundColor: '#000' },
+
+  // Multi-taker photo carousel: winner tile first with a gold pill.
+  carouselWrap: { position: 'relative', marginBottom: 14 },
+  carouselImg:  { width: '100%', height: 220, borderRadius: 14, backgroundColor: '#000' },
+  winnerPill: {
+    position: 'absolute', top: 10, left: 10,
+    backgroundColor: '#fbbf24', paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+  },
+  winnerPillText: { fontSize: 12, fontWeight: '800', color: '#1a1205', letterSpacing: 0.2 },
+  nameChip: {
+    position: 'absolute', bottom: 12, left: 10, maxWidth: '68%',
+    backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full,
+  },
+  nameChipText: { fontSize: 12, fontWeight: '700', color: '#fff' },
+  counter: {
+    position: 'absolute', bottom: 12, right: 10,
+    backgroundColor: 'rgba(0,0,0,0.55)', paddingHorizontal: 9, paddingVertical: 3, borderRadius: Radius.full,
+  },
+  counterText: { fontSize: 11, fontWeight: '700', color: '#fff' },
 
   badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   modePill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full },
