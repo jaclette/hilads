@@ -1,10 +1,11 @@
 <?php
 // Horizontal bar chart of per-city counts (CSS bars, no JS/library).
 // Expects in scope:
-//   $cities    - rows with id, name, cnt (ordered desc)
+//   $cities    - rows with id, name, cnt (ordered desc); optional `country` (ISO-2)
 //   $chartLink - fn(string $id): string  → href for a city's drill-in
 //   $barColors - OPTIONAL [id => '#hex'] per-city colours; falls back to the
 //                brand orange gradient when a city has no entry.
+//   $isoFlag   - OPTIONAL fn(?string): string → country flag emoji from ISO-2.
 declare(strict_types=1);
 
 if (empty($cities)) { return; }
@@ -22,7 +23,7 @@ foreach ($cities as $r) { $maxCnt = max($maxCnt, (int) $r['cnt']); }
         <a href="<?= $chartLink($c['id']) ?>"
            style="display:flex;align-items:center;gap:12px;padding:5px 0;text-decoration:none"
            onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">
-            <span style="width:150px;flex-shrink:0;color:#ddd;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></span>
+            <span style="width:150px;flex-shrink:0;color:#ddd;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><?php if (isset($isoFlag) && !empty($c['country'])) { $f = $isoFlag($c['country']); if ($f) echo $f . ' '; } ?><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></span>
             <?php $fill = $barColors[$c['id']] ?? 'linear-gradient(90deg,#FF7A3C,#C24A38)'; ?>
             <span style="flex:1;height:18px;background:rgba(255,255,255,0.05);border-radius:5px;overflow:hidden">
                 <span style="display:block;height:100%;width:<?= $pct ?>%;background:<?= $fill ?>;border-radius:5px"></span>

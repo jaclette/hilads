@@ -35,13 +35,25 @@ $rangeLabel = $from === $to ? $from : "$from → $to";
 $PALETTE = ['#FF7A3C','#3b82f6','#22c55e','#a855f7','#eab308','#ec4899',
             '#14b8a6','#f97316','#8b5cf6','#06b6d4','#ef4444','#84cc16'];
 
+// ISO-2 → flag emoji (regional-indicator pair). Empty when missing/invalid.
+// Shared by every view (city list, charts, city-detail header).
+$isoFlag = static function (?string $cc): string {
+    if (!$cc || !preg_match('/^[A-Za-z]{2}$/', $cc)) return '';
+    $cc = strtoupper($cc);
+    return mb_chr(127397 + ord($cc[0])) . mb_chr(127397 + ord($cc[1]));
+};
+
 admin_head('Arrivals');
 admin_nav('/admin/arrivals');
 ?>
 <div class="admin-main">
 <?php if ($channel !== ''):
     // ── City mode: who arrived in this city over the range ──────────────────
-    $chStmt = $pdo->prepare("SELECT id, type, name FROM channels WHERE id = :id");
+    $chStmt = $pdo->prepare("
+        SELECT c.id, c.type, c.name, ci.country
+        FROM channels c LEFT JOIN cities ci ON ci.channel_id = c.id
+        WHERE c.id = :id
+    ");
     $chStmt->execute([':id' => $channel]);
     $ch = $chStmt->fetch();
 
@@ -88,21 +100,13 @@ admin_nav('/admin/arrivals');
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
         <h1 class="page-title" style="margin-bottom:0">
             <span class="badge" style="background:#3b82f622;color:#3b82f6;border:1px solid #3b82f655">City</span>
-            <?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
+            <?php $chFlag = $isoFlag($ch['country'] ?? ''); if ($chFlag) echo '<span style="margin-right:2px">' . $chFlag . '</span> '; ?><?= htmlspecialchars($ch['name'] ?? '(untitled)', ENT_QUOTES) ?>
             <span style="color:#555;font-size:14px;font-weight:400"><?= number_format($total) ?> arrivals · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?></span>
         </h1>
         <a href="<?= $backHref ?>" class="btn btn-secondary btn-sm">← Back</a>
     </div>
     <div class="td-mono" style="color:#555;margin-bottom:16px;font-size:11px"><?= htmlspecialchars($ch['id'], ENT_QUOTES) ?></div>
 
-    <?php
-    // ISO-2 → flag emoji (regional-indicator pair). Empty when missing/invalid.
-    $isoFlag = static function (?string $cc): string {
-        if (!$cc || !preg_match('/^[A-Za-z]{2}$/', $cc)) return '';
-        $cc = strtoupper($cc);
-        return mb_chr(127397 + ord($cc[0])) . mb_chr(127397 + ord($cc[1]));
-    };
-    ?>
     <div class="table-wrapper">
         <table>
             <thead><tr><th style="width:160px">When</th><th>Who arrived</th><th style="width:130px">From (IP)</th><th style="width:110px">Platform</th><th style="width:90px">Actions</th></tr></thead>
@@ -219,26 +223,28 @@ admin_nav('/admin/arrivals');
     if ($view === 'daily'):
         // Per-(city, UTC-day) counts pivoted in PHP.
         $stmt = $pdo->prepare("
-            SELECT c.id, c.name,
+            SELECT c.id, c.name, ci.country,
                    (m.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date AS day,
                    COUNT(m.id) AS cnt
             FROM channels c
             JOIN messages m ON m.channel_id = c.id
+            LEFT JOIN cities ci ON ci.channel_id = c.id
             WHERE c.type = 'city'
               AND m.type = 'system' AND m.event = 'join'
               AND m.created_at >= :ds::timestamptz AND m.created_at < :de::timestamptz
-            GROUP BY c.id, c.name, day
+            GROUP BY c.id, c.name, ci.country, day
         ");
         $stmt->execute([':ds' => $ds, ':de' => $de]);
         $rows = $stmt->fetchAll();
 
-        $daily = []; $dayTotals = []; $cityTotals = []; $cityName = [];
+        $daily = []; $dayTotals = []; $cityTotals = []; $cityName = []; $cityFlag = [];
         foreach ($rows as $r) {
             $cid = $r['id']; $day = $r['day']; $cnt = (int) $r['cnt'];
             $daily[$day][$cid] = $cnt;
             $dayTotals[$day]   = ($dayTotals[$day] ?? 0) + $cnt;
             $cityTotals[$cid]  = ($cityTotals[$cid] ?? 0) + $cnt;
             $cityName[$cid]    = $r['name'];
+            $cityFlag[$cid]    = $isoFlag($r['country'] ?? '');
         }
         arsort($cityTotals);
         $cityColor = [];
@@ -262,15 +268,16 @@ admin_nav('/admin/arrivals');
     <?php else:
         // Accumulation: sum per city over the whole range.
         $cityStmt = $pdo->prepare("
-            SELECT c.id, c.name,
+            SELECT c.id, c.name, ci.country,
                    COUNT(m.id)        AS cnt,
                    MAX(m.created_at)  AS last_at
             FROM channels c
             JOIN messages m ON m.channel_id = c.id
+            LEFT JOIN cities ci ON ci.channel_id = c.id
             WHERE c.type = 'city'
               AND m.type = 'system' AND m.event = 'join'
               AND m.created_at >= :ds::timestamptz AND m.created_at < :de::timestamptz
-            GROUP BY c.id, c.name
+            GROUP BY c.id, c.name, ci.country
             ORDER BY cnt DESC, c.name ASC
         ");
         $cityStmt->execute([':ds' => $ds, ':de' => $de]);
@@ -304,6 +311,7 @@ admin_nav('/admin/arrivals');
                     <tr>
                         <td>
                             <span style="width:10px;height:10px;border-radius:3px;background:<?= $barColors[$c['id']] ?>;display:inline-block;margin-right:6px"></span>
+                            <?php $cFlag = $isoFlag($c['country'] ?? ''); if ($cFlag) echo '<span style="margin-right:4px">' . $cFlag . '</span>'; ?>
                             <strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong>
                         </td>
                         <td><strong style="color:#fff;font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>

@@ -3,6 +3,7 @@
 // clickable segments (→ that city for that single day). Expects in scope:
 //   $cityColor   [id => '#hex']  ordered by total desc
 //   $cityName    [id => name]
+//   $cityFlag    [id => flag emoji]  OPTIONAL - country flag per city
 //   $cityTotals  [id => int]
 //   $daily       [day][id] => int
 //   $dayTotals   [day] => int
@@ -33,7 +34,7 @@ declare(strict_types=1);
     <?php foreach ($cityColor as $cid => $col): ?>
         <a class="dsc-legend-item" href="<?= $legendHref($cid) ?>">
             <span style="width:12px;height:12px;border-radius:3px;background:<?= $col ?>;display:inline-block"></span>
-            <?= htmlspecialchars($cityName[$cid] ?? '?', ENT_QUOTES) ?>
+            <?php if (!empty($cityFlag[$cid])) echo $cityFlag[$cid] . ' '; ?><?= htmlspecialchars($cityName[$cid] ?? '?', ENT_QUOTES) ?>
             <span style="color:#666">(<?= number_format((int) $cityTotals[$cid]) ?>)</span>
         </a>
     <?php endforeach; ?>
