@@ -143,12 +143,16 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
       if (modeFilter === 'local' || modeFilter === 'international') pool = pool.filter(c => (c.mode ?? 'local') === modeFilter);
       if (modeFilter === 'special') pool = pool.filter(c => c.is_campaign);
       if (typeFilter !== 'all') pool = pool.filter(c => c.challenge_type === typeFilter);
-      // Pin Hilads campaign (2×-points) challenges that involve MY city to the top.
+      // Pin Hilads campaign (2×-points) challenges to the top: global campaigns
+      // (mode 'global', shown in every city) always, plus city/world ones that
+      // involve MY city.
       const myKey = channelId != null
         ? (String(channelId).startsWith('city_') ? String(channelId) : `city_${channelId}`)
         : null;
-      const isMyCampaign = (c: Challenge) => !!c.is_campaign && myKey != null &&
-        (c.city_id === myKey || (c as { target_city_id?: string }).target_city_id === myKey);
+      const isMyCampaign = (c: Challenge) => !!c.is_campaign && (
+        c.mode === 'global' ||
+        (myKey != null && (c.city_id === myKey || (c as { target_city_id?: string }).target_city_id === myKey))
+      );
       return [...pool].sort((a, b) => (isMyCampaign(b) ? 1 : 0) - (isMyCampaign(a) ? 1 : 0));
     },
     [dataRaw, worldList, typeFilter, modeFilter, channelId],

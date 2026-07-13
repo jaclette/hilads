@@ -254,7 +254,7 @@ export interface Challenge {
   /** Mode discriminator - 'local' (default, IRL meetup) or 'international'
    *  (cross-city, proof-based). Local challenges keep the existing audience
    *  + return_clause flow; international rows use target_city_id + proof_requirements. */
-  mode?:                 'local' | 'international';
+  mode?:                 'local' | 'international' | 'global';
   /** Target city for International mode. Null = "anywhere" (no fan-out).
    *  Format: 'city_<int>' matching channels.id. Local rows: null. */
   target_city_id?:       string | null;

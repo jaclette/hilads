@@ -416,7 +416,9 @@ class ChallengeRepository
         if ($viewerUserId !== null) $params['viewer_id'] = $viewerUserId;
 
         $stmt = $pdo->prepare(self::SELECT . "
-            WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id)
+            WHERE (cc.city_id = :city_id OR cc.target_city_id = :city_id
+                   -- Global Hilads campaigns surface in EVERY city's feed.
+                   OR (cc.is_campaign = true AND cc.mode = 'global'))
               AND c.status   = 'active'
               -- Active feed = still-open challenges PLUS a 24h grace window for
               -- ones that were just validated / completed, so the city keeps
@@ -1190,7 +1192,11 @@ class ChallengeRepository
      * Auto-joins the creator as the first participant (mirror events).
      * Returns the freshly-built challenge via findById (consistent shape).
      */
-    public const ALLOWED_MODES         = ['local', 'international'];
+    // 'global' = a Hilads campaign shown in EVERY city's feed (no single origin
+    // audience). Only meaningful together with is_campaign; created from the
+    // admin back-office. Rooted in an origin city channel like any challenge,
+    // but getByCity() surfaces it for all cities.
+    public const ALLOWED_MODES         = ['local', 'international', 'global'];
     /** Validation methods. International is locked to photo_proof in the
      *  create/update routes regardless of input. Local creators pick. */
     public const ALLOWED_VALIDATION_METHODS = ['meet', 'photo_proof'];

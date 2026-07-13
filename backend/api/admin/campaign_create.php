@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title        = trim((string) ($post['title'] ?? ''));
     $type         = in_array($post['type'] ?? '', $types, true) ? $post['type'] : 'food';
     $audience     = ($post['audience'] ?? 'locals') === 'explorers' ? 'explorers' : 'locals';
-    $scope        = ($post['scope'] ?? 'city') === 'world' ? 'world' : 'city';
+    $scope        = in_array($post['scope'] ?? 'city', ['city', 'world', 'global'], true) ? $post['scope'] : 'city';
     $originCityId = (int) ($post['origin_city_id'] ?? 0);
     $targetCityId = (int) ($post['target_city_id'] ?? 0);
     $deadlineDays = max(1, min(60, (int) ($post['deadline_days'] ?? 7)));
@@ -46,13 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($hilads === false)      $errors[] = 'The @hilads account is missing — run migrations first.';
     if ($title === '')          $errors[] = 'Title is required.';
-    if ($originCityId <= 0)     $errors[] = 'Pick an origin city.';
+    if ($originCityId <= 0)     $errors[] = 'Pick an origin city (the campaign is rooted there; global still needs a home channel).';
     if ($scope === 'world' && $targetCityId <= 0) $errors[] = 'World campaigns need a target city.';
     if ($originCityId > 0 && CityRepository::findById($originCityId) === null) $errors[] = 'Unknown origin city.';
 
     if (empty($errors)) {
         try {
-            $mode     = $scope === 'world' ? 'international' : 'local';
+            // city → local (shares to that city) · world → international origin→target
+            // (shares to World) · global → shown in EVERY city's feed (shares to World).
+            $mode     = match ($scope) { 'world' => 'international', 'global' => 'global', default => 'local' };
             $target   = $scope === 'world' ? ('city_' . $targetCityId) : null;
             $group    = ['format' => 'group', 'meet_at' => time() + $deadlineDays * 86400, 'meet_ends_at' => null];
 
@@ -75,16 +77,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Auto-share: post as @hilads into the target channel with a join CTA.
             $challengeId = (string) $challenge['id'];
             $url  = 'https://hilads.live/challenge/' . $challengeId;
-            $copy = $customCopy !== ''
-                ? $customCopy
+            $defaultCopy = $scope === 'global'
+                ? '🌍 HILADS GLOBAL CAMPAIGN — "' . $title . '"! Every city is in. Take it on and earn DOUBLE points ⚡ Climb the worldwide leaderboard. Who\'s in? 👀🏆'
                 : '🔥 HILADS CAMPAIGN — "' . $title . '"! Take it on and earn DOUBLE points ⚡ Rocket up the leaderboard before anyone else. Who\'s in? 👀🏆';
+            $copy = $customCopy !== '' ? $customCopy : $defaultCopy;
             $text = $copy . "\n" . $url;
 
-            $shareChannel = $scope === 'world' ? WorldRepository::WORLD_ID : $originCityId;
+            // city → post into that city; world & global → post into World.
+            $shareChannel = $scope === 'city' ? $originCityId : WorldRepository::WORLD_ID;
             $msg = MessageRepository::add($shareChannel, (string) $hilads['guest_id'], 'Hilads', $text, (string) $hilads['id']);
             campaign_broadcast_ws($shareChannel, $msg);
 
-            flash_set('success', 'Campaign "' . $title . '" created (2× points) and shared to ' . ($scope === 'world' ? 'the World channel' : 'the city') . '.');
+            $sharedTo = match ($scope) {
+                'world'  => 'the World channel',
+                'global' => 'the World channel (visible in every city)',
+                default  => 'the city',
+            };
+            flash_set('success', 'Campaign "' . $title . '" created (2× points) and shared to ' . $sharedTo . '.');
             admin_redirect('/admin/challenges');
         } catch (\Throwable $e) {
             $errors[] = 'Create failed: ' . $e->getMessage();
@@ -146,13 +155,14 @@ admin_nav('/admin/campaigns');
         <div class="form-group">
             <label>Scope</label>
             <div class="scope-toggle">
-                <label><input type="radio" name="scope" value="city"  onchange="toggleScope()" <?= ($post['scope'] ?? 'city') !== 'world' ? 'checked' : '' ?>> 🏙️ City (shares to the city)</label>
-                <label><input type="radio" name="scope" value="world" onchange="toggleScope()" <?= ($post['scope'] ?? '') === 'world' ? 'checked' : '' ?>> 🌍 World (shares to World)</label>
+                <label><input type="radio" name="scope" value="city"   onchange="toggleScope()" <?= (($post['scope'] ?? 'city') === 'city') ? 'checked' : '' ?>> 🏙️ City<br><small>shows &amp; shares in one city</small></label>
+                <label><input type="radio" name="scope" value="world"  onchange="toggleScope()" <?= (($post['scope'] ?? '') === 'world') ? 'checked' : '' ?>> 🌐 World<br><small>city → target, shares to World</small></label>
+                <label><input type="radio" name="scope" value="global" onchange="toggleScope()" <?= (($post['scope'] ?? '') === 'global') ? 'checked' : '' ?>> 🌍 All cities<br><small>shows in EVERY city</small></label>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="origin_city_id">Origin city</label>
+            <label for="origin_city_id">Origin / home city <small>(where the challenge lives; global still needs one)</small></label>
             <select id="origin_city_id" name="origin_city_id" required>
                 <option value="">— pick —</option>
                 <?php foreach ($cities as $c): ?>
