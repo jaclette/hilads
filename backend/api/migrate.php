@@ -2453,6 +2453,46 @@ run($pdo, "CREATE TABLE IF NOT EXISTS channel_read_positions (
     PRIMARY KEY (identity_key, channel_id)
 )", 'channel_read_positions');
 
+// ── Hilads admin + double-points campaign challenges ──────────────────────
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false", 'users.is_admin');
+run($pdo, "ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS is_campaign BOOLEAN NOT NULL DEFAULT false", 'channel_challenges.is_campaign');
+
+// Seed the @hilads brand account: owns campaign challenges, shows on the
+// leaderboard, never earns points (guarded below). Deterministic hex id keeps
+// re-runs idempotent. Avatar can be replaced with a square PNG via /admin/users.
+run($pdo, "
+    INSERT INTO users (id, username, email, display_name, is_admin, is_fake, guest_id, profile_photo_url, vibe, locale, created_at, updated_at)
+    VALUES (md5('hilads-admin'), 'hilads', 'admin@hilads.live', 'Hilads', true, true, md5('hilads-guest'),
+            'https://hilads.live/logo/icon.svg', 'chill', 'en',
+            EXTRACT(EPOCH FROM now())::INT, EXTRACT(EPOCH FROM now())::INT)
+    ON CONFLICT (id) DO UPDATE SET is_admin = true, display_name = 'Hilads'
+", 'seed @hilads admin account');
+
+// One BEFORE-INSERT guard on score_events: (1) admins (@hilads) earn nothing;
+// (2) campaign challenges award DOUBLE. Keeps every reward path (create / join /
+// present / submission / winner) in sync without editing each award trigger fn.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_score_event_adjust() RETURNS TRIGGER AS \$\$
+    BEGIN
+        IF EXISTS (SELECT 1 FROM users WHERE id = NEW.user_id AND is_admin) THEN
+            RETURN NULL;  -- admin earns nothing
+        END IF;
+        IF NEW.challenge_id IS NOT NULL AND EXISTS (
+             SELECT 1 FROM channel_challenges WHERE channel_id = NEW.challenge_id AND is_campaign
+           ) THEN
+            NEW.points := NEW.points * 2;  -- campaign challenge = double points
+        END IF;
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_score_event_adjust');
+run($pdo, "DROP TRIGGER IF EXISTS trg_score_event_adjust ON score_events", 'drop trg_score_event_adjust');
+run($pdo, "
+    CREATE TRIGGER trg_score_event_adjust
+    BEFORE INSERT ON score_events
+    FOR EACH ROW EXECUTE FUNCTION on_score_event_adjust()
+", 'trg_score_event_adjust');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

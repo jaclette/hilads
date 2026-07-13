@@ -63,6 +63,7 @@ class ChallengeRepository
             -- 'photo_proof' (DB column + UI + create-route enforcement); local
             -- creators pick at creation. Card + ProofBlock branch off this.
             cc.validation_method,
+            cc.is_campaign,
             -- Visibility (privacy round 2). 'public' default; 'friends' / 'private'
             -- gate the row out of sitemap, public city feed, and crawler-visible
             -- surfaces at the route layer.
@@ -252,6 +253,7 @@ class ChallengeRepository
             // flow. International rows are forced to 'photo_proof' by the
             // migrate backfill + the create/update routes.
             'validation_method'    => $row['validation_method']  ?? 'meet',
+            'is_campaign'          => (bool) ($row['is_campaign'] ?? false),
             'target_city_id'       => $row['target_city_id']     ?? null,
             'proof_requirements'   => $row['proof_requirements'] ?? null,
             // Origin + target country (ISO-2). Resolved via the cached
@@ -1211,7 +1213,8 @@ class ChallengeRepository
         ?string $proofRequirements = null,
         string $visibility = 'public',
         string $validationMethod = 'meet',
-        ?array $group = null
+        ?array $group = null,
+        bool $isCampaign = false
     ): array {
         if (!in_array($challengeType, self::ALLOWED_TYPES,     true)) $challengeType = 'food';
         if (!in_array($audience,      self::ALLOWED_AUDIENCES, true)) $audience      = 'locals';
@@ -1293,11 +1296,11 @@ class ChallengeRepository
             INSERT INTO channel_challenges
                 (channel_id, city_id, created_by, guest_id, title, challenge_type, audience, status, return_clause,
                  mode, target_city_id, proof_requirements, validation_method, visibility,
-                 challenge_format, meet_at, meet_ends_at, venue, venue_lat, venue_lng)
+                 challenge_format, meet_at, meet_ends_at, venue, venue_lat, venue_lng, is_campaign)
             VALUES
                 (:channel_id, :city_id, :created_by, :guest_id, :title, :challenge_type, :audience, 'open', :return_clause,
                  :mode, :target_city_id, :proof_requirements, :validation_method, :visibility,
-                 :format, to_timestamp(:meet_at), to_timestamp(:meet_ends_at), :venue, :venue_lat, :venue_lng)
+                 :format, to_timestamp(:meet_at), to_timestamp(:meet_ends_at), :venue, :venue_lat, :venue_lng, :is_campaign)
         ")->execute([
             'channel_id'         => $id,
             'city_id'            => $cityId,
@@ -1318,6 +1321,7 @@ class ChallengeRepository
             'venue'              => $venue,
             'venue_lat'          => $venueLat,
             'venue_lng'          => $venueLng,
+            'is_campaign'        => $isCampaign ? 'true' : 'false',
         ]);
 
         // Auto-join the creator (guests included).

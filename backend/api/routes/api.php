@@ -1303,6 +1303,39 @@ $router->add('GET', '/internal/run-migrations', function () {
         $errors[] = "users.eula_accepted_at: " . $e->getMessage();
     }
 
+    // ── 8b. Hilads admin + double-points campaign challenges ──────────────────
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT false");
+        $pdo->exec("ALTER TABLE channel_challenges ADD COLUMN IF NOT EXISTS is_campaign BOOLEAN NOT NULL DEFAULT false");
+        $pdo->exec("
+            INSERT INTO users (id, username, email, display_name, is_admin, is_fake, guest_id, profile_photo_url, vibe, locale, created_at, updated_at)
+            VALUES (md5('hilads-admin'), 'hilads', 'admin@hilads.live', 'Hilads', true, true, md5('hilads-guest'),
+                    'https://hilads.live/logo/icon.svg', 'chill', 'en',
+                    EXTRACT(EPOCH FROM now())::INT, EXTRACT(EPOCH FROM now())::INT)
+            ON CONFLICT (id) DO UPDATE SET is_admin = true, display_name = 'Hilads'
+        ");
+        $pdo->exec("
+            CREATE OR REPLACE FUNCTION on_score_event_adjust() RETURNS TRIGGER AS \$\$
+            BEGIN
+                IF EXISTS (SELECT 1 FROM users WHERE id = NEW.user_id AND is_admin) THEN
+                    RETURN NULL;
+                END IF;
+                IF NEW.challenge_id IS NOT NULL AND EXISTS (
+                     SELECT 1 FROM channel_challenges WHERE channel_id = NEW.challenge_id AND is_campaign
+                   ) THEN
+                    NEW.points := NEW.points * 2;
+                END IF;
+                RETURN NEW;
+            END;
+            \$\$ LANGUAGE plpgsql;
+        ");
+        $pdo->exec("DROP TRIGGER IF EXISTS trg_score_event_adjust ON score_events");
+        $pdo->exec("CREATE TRIGGER trg_score_event_adjust BEFORE INSERT ON score_events FOR EACH ROW EXECUTE FUNCTION on_score_event_adjust()");
+        $log[] = "admin+campaign: is_admin/is_campaign columns, @hilads seed, score_event adjust trigger ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "admin+campaign: " . $e->getMessage();
+    }
+
     // ── 9. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
@@ -12678,7 +12711,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch  ON city_ch.id        = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-                WHERE u.deleted_at IS NULL AND u.score_alltime > 0
+                -- Zero-point users (incl. the @hilads admin) are shown too, ranked
+                -- last. Pagination bounds the volume; page 1 still shows top scorers.
+                WHERE u.deleted_at IS NULL
                 ORDER BY u.score_alltime DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
@@ -12697,20 +12732,20 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $me->execute([$callerId]);
             $row = $me->fetch(\PDO::FETCH_ASSOC);
             $myPoints = $row ? (int) $row['my_points'] : 0;
-            $myRank   = ($row && $myPoints > 0) ? (int) $row['my_rank'] : null;
+            $myRank   = $row ? (int) $row['my_rank'] : null;
         } else {
+            // Effective month points = 0 when the user hasn't scored THIS month
+            // (stale/absent ref). Shows every user, incl. 0-pt + @hilads, ranked last.
             $list = $pdo->prepare("
                 SELECT u.id, u.display_name,
                        COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
-                       u.score_month AS points,
+                       (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) AS points,
                        city_ch.name AS city_name, city_meta.country AS city_country
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
                 WHERE u.deleted_at IS NULL
-                  AND u.score_month > 0
-                  AND u.score_month_ref = :month
-                ORDER BY u.score_month DESC, u.id ASC
+                ORDER BY (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
             $list->execute([':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
@@ -12721,16 +12756,14 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $r1 = $me1->fetch(\PDO::FETCH_ASSOC);
             $myPoints = ($r1 && $r1['score_month_ref'] === $currentMonth) ? (int) $r1['score_month'] : 0;
 
-            if ($myPoints > 0) {
-                $me2 = $pdo->prepare("
-                    SELECT COUNT(*) + 1 FROM users
-                    WHERE deleted_at IS NULL
-                      AND score_month_ref = :month
-                      AND (score_month > :mine OR (score_month = :mine AND id < :uid))
-                ");
-                $me2->execute([':month' => $currentMonth, ':mine' => $myPoints, ':uid' => $callerId]);
-                $myRank = (int) $me2->fetchColumn();
-            }
+            $me2 = $pdo->prepare("
+                SELECT COUNT(*) + 1 FROM users
+                WHERE deleted_at IS NULL
+                  AND ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) > :mine
+                       OR ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) = :mine AND id < :uid))
+            ");
+            $me2->execute([':month' => $currentMonth, ':mine' => $myPoints, ':uid' => $callerId]);
+            $myRank = (int) $me2->fetchColumn();
         }
     } elseif ($scope === 'cities') {
         // Cities leaderboard - rank cities by the SUM of their members'
@@ -12879,9 +12912,9 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
+                -- City members with 0 points are shown too (ranked last).
                 WHERE u.deleted_at      IS NULL
                   AND u.current_city_id = :city
-                  AND u.score_alltime   > 0
                 ORDER BY u.score_alltime DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
@@ -12897,7 +12930,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $inThisCity = $r1 && $r1['current_city_id'] === $cityId;
             $myPoints = $inThisCity ? (int) $r1['score_alltime'] : 0;
 
-            if ($inThisCity && $myPoints > 0) {
+            if ($inThisCity) {
                 $me2 = $pdo->prepare("
                     SELECT COUNT(*) + 1 FROM users
                     WHERE deleted_at      IS NULL
@@ -12908,19 +12941,19 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 $myRank = (int) $me2->fetchColumn();
             }
         } else {
+            // Effective month points = 0 when the member hasn't scored THIS month;
+            // shows every city member (incl. 0-pt), ranked last.
             $list = $pdo->prepare("
                 SELECT u.id, u.display_name,
                        COALESCE(u.profile_thumb_photo_url, u.profile_photo_url) AS profile_thumb_photo_url,
-                       u.score_month AS points,
+                       (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) AS points,
                        city_ch.name AS city_name, city_meta.country AS city_country
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
                 WHERE u.deleted_at      IS NULL
                   AND u.current_city_id = :city
-                  AND u.score_month     > 0
-                  AND u.score_month_ref = :month
-                ORDER BY u.score_month DESC, u.id ASC
+                ORDER BY (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
             $list->execute([':city' => $cityId, ':month' => $currentMonth, ':limit' => $limit, ':offset' => $offset]);
@@ -12936,13 +12969,13 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $myPoints   = ($inThisCity && $r1['score_month_ref'] === $currentMonth)
                 ? (int) $r1['score_month'] : 0;
 
-            if ($inThisCity && $myPoints > 0) {
+            if ($inThisCity) {
                 $me2 = $pdo->prepare("
                     SELECT COUNT(*) + 1 FROM users
                     WHERE deleted_at      IS NULL
                       AND current_city_id = :city
-                      AND score_month_ref = :month
-                      AND (score_month > :mine OR (score_month = :mine AND id < :uid))
+                      AND ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) > :mine
+                           OR ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) = :mine AND id < :uid))
                 ");
                 $me2->execute([':city' => $cityId, ':month' => $currentMonth, ':mine' => $myPoints, ':uid' => $callerId]);
                 $myRank = (int) $me2->fetchColumn();
