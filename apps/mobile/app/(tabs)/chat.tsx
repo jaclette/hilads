@@ -29,6 +29,7 @@ import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { canAccessProfile } from '@/lib/profileAccess';
 import { localizeCityName } from '@/i18n/cityName';
 import { useMessages } from '@/hooks/useMessages';
 import { fetchMessages, sendMessage, sendImageMessage, toggleChannelReaction, fetchCityMembers } from '@/api/channels';
@@ -1479,7 +1480,21 @@ export default function ChatTab() {
               data={worldArrivals}
               keyExtractor={(a, i) => `${a.guestId ?? a.userId ?? a.nickname}-${a.createdAt}-${i}`}
               renderItem={({ item: a }) => (
-                <View style={styles.waRow}>
+                <TouchableOpacity
+                  style={styles.waRow}
+                  activeOpacity={0.7}
+                  onPress={() => {
+                    // Tap → open the arriver's profile (guard guests behind auth gate).
+                    if (a.userId) {
+                      if (!canAccessProfile(account)) { setShowWorldArrivals(false); router.push('/auth-gate'); return; }
+                      setShowWorldArrivals(false);
+                      router.push({ pathname: '/user/[id]', params: { id: a.userId } });
+                    } else if (a.guestId) {
+                      setShowWorldArrivals(false);
+                      router.push({ pathname: '/user/guest', params: { guestId: a.guestId, nickname: a.nickname ?? '' } });
+                    }
+                  }}
+                >
                   {a.thumbAvatarUrl ? (
                     <Image source={{ uri: thumbUrl(a.thumbAvatarUrl) }} style={styles.waAvatar} contentFit="cover" cachePolicy="memory-disk" />
                   ) : (
@@ -1492,7 +1507,7 @@ export default function ChatTab() {
                     <Text style={styles.waCity} numberOfLines={1}>{cityFlag(a.country ?? undefined)} {a.city}</Text>
                     <Text style={styles.waTime}>{formatSmartTime(a.createdAt)}</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
             />
           )}
