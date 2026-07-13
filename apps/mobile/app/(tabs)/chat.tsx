@@ -624,11 +624,18 @@ export default function ChatTab() {
   // out-of-band so this already-mounted tab never saw it - reload on focus.
   useFocusEffect(
     useCallback(() => {
-      if (consumeCityFeedRefresh()) reload();
+      if (consumeCityFeedRefresh()) {
+        // A "share to my city" (from an event / challenge / topic) posted into the
+        // CITY channel. The chat tab is persistent, so it may still be on World -
+        // force CITY scope so the user lands on their own city, not World. Switching
+        // scope reloads the city feed; if already on city, reload to show the new msg.
+        if (channelScope !== 'city') switchScope('city');
+        else reload();
+      }
       // A World-channel mention push deep-links here - switch to World scope so
       // the user lands on the exact channel they were mentioned in.
       if (consumeWorldScopeOpen()) switchScope('world');
-    }, [reload, switchScope]),
+    }, [reload, switchScope, channelScope]),
   );
 
   // ── System feed prompts + ambient activity messages ────────────────────────

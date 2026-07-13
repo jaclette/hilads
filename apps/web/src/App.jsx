@@ -3582,6 +3582,9 @@ export default function App() {
     setShowNotifications(false)
     setViewingProfile(null)
     dismissFullPageOverlays()
+    // "Go to my city" means the CITY channel - if we're on World, switch back so
+    // a share-to-my-city (or any city-channel return) doesn't land on World.
+    if (channelScopeRef.current === 'world') switchScope('city')
   }
 
   // Share-to-my-city: post the entity's deeplink (only the URL - the city feed
