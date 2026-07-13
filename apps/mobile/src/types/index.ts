@@ -243,6 +243,8 @@ export interface Challenge {
   challenge_type:        ChallengeType;
   audience:              ChallengeAudience;
   status:                ChallengeStatus;
+  /** Hilads campaign challenge (2× points). Pinned + styled in the list. */
+  is_campaign?:          boolean;
   /** (Legacy) Cap on concurrent take-ons. Kept on the type for one release -
    *  the 1:1 model uses `is_in_progress` instead. The column still exists in
    *  the DB and is returned as-is for back-compat, but nothing reads it now. */

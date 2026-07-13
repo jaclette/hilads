@@ -282,12 +282,15 @@ export default function ChallengeVersusCard({
   return (
     <button
       type="button"
-      className="city-row event-row-card challenge-row-card"
+      className={`city-row event-row-card challenge-row-card${c.is_campaign ? ' challenge-row-card--campaign' : ''}`}
       style={{ cursor: 'pointer', textAlign: 'left' }}
       onClick={onClick}
     >
       {/* Badge row - unchanged from the previous flat card. */}
       <div className="er-badges">
+        {c.is_campaign && (
+          <span className="challenge-badge challenge-badge--campaign">⚡ {t('campaignBadge', { defaultValue: '2× points' })}</span>
+        )}
         {isInternational
           ? (() => {
               const fromFlag = countryToFlag(c.country)

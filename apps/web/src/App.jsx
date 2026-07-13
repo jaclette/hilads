@@ -1285,18 +1285,24 @@ export default function App() {
     let pool = cityChallenges
     // The Challenges drawer is the only consumer now - always apply the
     // mode + type sub-filters.
-    if (challengeModeFilter !== 'all') {
+    if (challengeModeFilter === 'special') {
+      // ⚡ Special = Hilads campaign challenges only (2× points).
+      pool = pool.filter(c => c.is_campaign)
+    } else if (challengeModeFilter !== 'all') {
       pool = pool.filter(c => (c.mode ?? 'local') === challengeModeFilter)
     }
     if (challengeTypeFilter !== 'all') {
       pool = pool.filter(c => c.challenge_type === challengeTypeFilter)
     }
-    // Local first, international last. Stable within each bucket so the
-    // backend ordering (recent first) survives - we only push intl rows
-    // below locals, not reshuffle within them. Applied in both views so
-    // the NOW "All" challenge strip and the dedicated Challenges sub-tab
-    // share the same priority signal.
+    // Campaigns first (this pool is already scoped to the current city, so any
+    // campaign here is "related to my city"), then local, international last.
+    // Stable within each bucket so the backend ordering (recent first)
+    // survives. Applied in both views so the NOW "All" challenge strip and the
+    // dedicated Challenges sub-tab share the same priority signal.
     return [...pool].sort((a, b) => {
+      const ac = a.is_campaign ? 1 : 0
+      const bc = b.is_campaign ? 1 : 0
+      if (ac !== bc) return bc - ac
       const am = (a.mode ?? 'local') === 'international' ? 1 : 0
       const bm = (b.mode ?? 'local') === 'international' ? 1 : 0
       return am - bm
@@ -6277,6 +6283,7 @@ export default function App() {
                 <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
                   {[
                     { key: 'all',           emoji: '✨' },
+                    { key: 'special',       emoji: '⚡' },
                     { key: 'local',         emoji: '🏙️' },
                     { key: 'international', emoji: '🌐' },
                     { key: 'worldwide',     emoji: '🌍' },
@@ -6295,7 +6302,7 @@ export default function App() {
                       <span aria-hidden="true">{emoji}</span>
                       <span>{key === 'all'
                         ? t('modeFilter.all', { ns: 'challenge' })
-                        : t(`mode.${key}`, { ns: 'challenge', defaultValue: key === 'worldwide' ? 'Worldwide' : key })}</span>
+                        : t(`mode.${key}`, { ns: 'challenge', defaultValue: key === 'worldwide' ? 'Worldwide' : key === 'special' ? 'Special' : key })}</span>
                     </button>
                   ))}
                 </div>

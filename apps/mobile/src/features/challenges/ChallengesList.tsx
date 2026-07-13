@@ -32,9 +32,10 @@ const TYPE_FILTERS: { key: TypeFilter; emoji: string }[] = [
   { key: 'help',    emoji: '🤪' },
 ];
 
-type ModeFilter = 'all' | 'local' | 'international' | 'worldwide';
+type ModeFilter = 'all' | 'local' | 'international' | 'worldwide' | 'special';
 const MODE_FILTERS: { key: ModeFilter; emoji: string }[] = [
   { key: 'all',           emoji: '✨' },
+  { key: 'special',       emoji: '⚡' },
   { key: 'local',         emoji: '🏙️' },
   { key: 'international', emoji: '🌐' },
   { key: 'worldwide',     emoji: '🌍' },
@@ -140,10 +141,17 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
       // 'international' filter). Type sub-filter still applies.
       let pool = modeFilter === 'worldwide' ? worldList : dataRaw;
       if (modeFilter === 'local' || modeFilter === 'international') pool = pool.filter(c => (c.mode ?? 'local') === modeFilter);
+      if (modeFilter === 'special') pool = pool.filter(c => c.is_campaign);
       if (typeFilter !== 'all') pool = pool.filter(c => c.challenge_type === typeFilter);
-      return pool;
+      // Pin Hilads campaign (2×-points) challenges that involve MY city to the top.
+      const myKey = channelId != null
+        ? (String(channelId).startsWith('city_') ? String(channelId) : `city_${channelId}`)
+        : null;
+      const isMyCampaign = (c: Challenge) => !!c.is_campaign && myKey != null &&
+        (c.city_id === myKey || (c as { target_city_id?: string }).target_city_id === myKey);
+      return [...pool].sort((a, b) => (isMyCampaign(b) ? 1 : 0) - (isMyCampaign(a) ? 1 : 0));
     },
-    [dataRaw, worldList, typeFilter, modeFilter],
+    [dataRaw, worldList, typeFilter, modeFilter, channelId],
   );
 
   // How many of `data` to actually render. Resets to the first page whenever the
@@ -199,7 +207,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
               activeOpacity={0.75}
             >
               <Text style={[styles.typeChipText, active && styles.typeChipTextActive]}>
-                {emoji} {key === 'all' ? t('modeFilter.all') : t(`mode.${key}`, { defaultValue: key === 'worldwide' ? 'Worldwide' : key })}
+                {emoji} {key === 'all' ? t('modeFilter.all') : t(`mode.${key}`, { defaultValue: key === 'worldwide' ? 'Worldwide' : key === 'special' ? 'Special' : key })}
               </Text>
             </TouchableOpacity>
           );

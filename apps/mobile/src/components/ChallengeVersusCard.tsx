@@ -129,7 +129,7 @@ export function ChallengeVersusCard({
   if (isGroup) {
     return (
       <TouchableOpacity
-        style={[styles.card, zeroParticipants && !isValidated && styles.cardAccent]}
+        style={[styles.card, zeroParticipants && !isValidated && styles.cardAccent, challenge.is_campaign && styles.cardCampaign]}
         activeOpacity={0.75}
         onPress={onPress}
       >
@@ -548,6 +548,19 @@ const styles = StyleSheet.create({
   cardAccent: {
     borderColor:     'rgba(255,170,60,0.55)',
     backgroundColor: 'rgba(255,150,40,0.05)',
+  },
+  // Hilads campaign (2× points): gold dashed border + glow so it stands out
+  // at the top of the list.
+  cardCampaign: {
+    borderWidth:     2,
+    borderStyle:     'dashed',
+    borderColor:     '#fbbf24',
+    backgroundColor: 'rgba(251,191,36,0.06)',
+    shadowColor:     '#fbbf24',
+    shadowOpacity:   0.35,
+    shadowRadius:    10,
+    shadowOffset:    { width: 0, height: 0 },
+    elevation:       5,
   },
 
   // ── Group card ──
