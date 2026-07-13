@@ -3,8 +3,11 @@
 declare(strict_types=1);
 
 // Admin: create a Hilads CAMPAIGN challenge (group photo-proof, 2× points),
-// owned by @hilads, then auto-share it to the origin city channel (city scope)
-// or the World channel (world scope) with a fun join CTA.
+// owned by @hilads, then auto-share it with a fun join CTA. Scope:
+//   city   → rooted in one city, shared to that city's channel
+//   world  → origin → target city, shared to the World channel
+//   global → shown in EVERY city's feed (no origin picked; a home channel is
+//            auto-assigned), shared to the World channel.
 
 admin_require_login();
 
@@ -37,16 +40,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title        = trim((string) ($post['title'] ?? ''));
     $type         = in_array($post['type'] ?? '', $types, true) ? $post['type'] : 'food';
-    $audience     = ($post['audience'] ?? 'locals') === 'explorers' ? 'explorers' : 'locals';
+    $audience     = 'locals';   // Audience is legacy/unused - always store a stable value.
     $scope        = in_array($post['scope'] ?? 'city', ['city', 'world', 'global'], true) ? $post['scope'] : 'city';
     $originCityId = (int) ($post['origin_city_id'] ?? 0);
     $targetCityId = (int) ($post['target_city_id'] ?? 0);
     $deadlineDays = max(1, min(60, (int) ($post['deadline_days'] ?? 7)));
     $customCopy   = trim((string) ($post['copy'] ?? ''));
 
+    // Global campaigns apply to ALL cities - the admin doesn't pick an origin.
+    // The challenge still needs a home channel to live in; default to the brand
+    // home (Ho Chi Minh City), falling back to the first city.
+    if ($scope === 'global' && $originCityId <= 0) {
+        $home = null;
+        foreach ($cities as $c) {
+            if (stripos($c['name'], 'Ho Chi Minh') !== false || stripos($c['name'], 'Saigon') !== false) { $home = $c; break; }
+        }
+        $home = $home ?? ($cities[0] ?? null);
+        $originCityId = $home ? (int) $home['id'] : 0;
+    }
+
     if ($hilads === false)      $errors[] = 'The @hilads account is missing — run migrations first.';
     if ($title === '')          $errors[] = 'Title is required.';
-    if ($originCityId <= 0)     $errors[] = 'Pick an origin city (the campaign is rooted there; global still needs a home channel).';
+    if ($originCityId <= 0)     $errors[] = $scope === 'global' ? 'No cities exist to host the campaign.' : 'Pick an origin city.';
     if ($scope === 'world' && $targetCityId <= 0) $errors[] = 'World campaigns need a target city.';
     if ($originCityId > 0 && CityRepository::findById($originCityId) === null) $errors[] = 'Unknown origin city.';
 
@@ -145,14 +160,6 @@ admin_nav('/admin/campaigns');
         </div>
 
         <div class="form-group">
-            <label>Audience</label>
-            <select name="audience">
-                <option value="locals"    <?= ($post['audience'] ?? '') === 'locals'    ? 'selected' : '' ?>>Locals</option>
-                <option value="explorers" <?= ($post['audience'] ?? '') === 'explorers' ? 'selected' : '' ?>>Explorers</option>
-            </select>
-        </div>
-
-        <div class="form-group">
             <label>Scope</label>
             <div class="scope-toggle">
                 <label><input type="radio" name="scope" value="city"   onchange="toggleScope()" <?= (($post['scope'] ?? 'city') === 'city') ? 'checked' : '' ?>> 🏙️ City<br><small>shows &amp; shares in one city</small></label>
@@ -161,8 +168,8 @@ admin_nav('/admin/campaigns');
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="origin_city_id">Origin / home city <small>(where the challenge lives; global still needs one)</small></label>
+        <div class="form-group" id="origin-city-group">
+            <label for="origin_city_id">Origin city <small>(city &amp; world only — “All cities” needs none)</small></label>
             <select id="origin_city_id" name="origin_city_id" required>
                 <option value="">— pick —</option>
                 <?php foreach ($cities as $c): ?>
@@ -202,8 +209,12 @@ admin_nav('/admin/campaigns');
 
 <script>
 function toggleScope() {
-    var world = document.querySelector('input[name=scope]:checked').value === 'world';
-    document.getElementById('target-city-group').style.display = world ? 'block' : 'none';
+    var v = document.querySelector('input[name=scope]:checked').value;
+    // World needs a target city; global needs NO origin (applies to every city).
+    document.getElementById('target-city-group').style.display = (v === 'world')  ? 'block' : 'none';
+    document.getElementById('origin-city-group').style.display = (v === 'global') ? 'none'  : 'block';
+    // A hidden required field blocks submit - only require origin when it's shown.
+    document.getElementById('origin_city_id').required = (v !== 'global');
 }
 toggleScope();
 </script>
