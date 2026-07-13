@@ -95,9 +95,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Auto-share: post as @hilads into the target channel with a join CTA.
             $challengeId = (string) $challenge['id'];
             $url  = 'https://hilads.live/challenge/' . $challengeId;
-            $defaultCopy = $scope === 'global'
-                ? '🌍 HILADS GLOBAL CAMPAIGN — "' . $title . '"! Every city is in. Take it on and earn DOUBLE points ⚡ Climb the worldwide leaderboard. Who\'s in? 👀🏆'
-                : '🔥 HILADS CAMPAIGN — "' . $title . '"! Take it on and earn DOUBLE points ⚡ Rocket up the leaderboard before anyone else. Who\'s in? 👀🏆';
+            // Lead with the CHALLENGE TITLE (the actual ask) so people see what
+            // it is, then a short DOUBLE-points hook. The title carries the message.
+            $hook = $scope === 'global'
+                ? '🌍 Hilads Campaign in every city — take it on for DOUBLE points! ⚡🏆'
+                : '⚡ Hilads Campaign — take it on for DOUBLE points! 🏆';
+            $defaultCopy = $title . "\n" . $hook;
             $copy = $customCopy !== '' ? $customCopy : $defaultCopy;
             $text = $copy . "\n" . $url;
 
@@ -202,8 +205,8 @@ admin_nav('/admin/campaigns');
         </div>
 
         <div class="form-group">
-            <label for="copy">Share message (optional — a fun default is used if blank)</label>
-            <textarea id="copy" name="copy" rows="3" placeholder='🔥 HILADS CAMPAIGN! Take it on and earn DOUBLE points ⚡'><?= htmlspecialchars($post['copy'] ?? '', ENT_QUOTES) ?></textarea>
+            <label for="copy">Share message <small>(optional — blank = the challenge title + a DOUBLE points hook)</small></label>
+            <textarea id="copy" name="copy" rows="3" placeholder='Leave blank to lead with the challenge title, e.g. “Find me the tastiest bánh mì” + ⚡ DOUBLE points hook'><?= htmlspecialchars($post['copy'] ?? '', ENT_QUOTES) ?></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Create &amp; share campaign 🚀</button>
