@@ -2345,6 +2345,14 @@ html, body, #root {
   align-items: center;
   gap: 0.5rem;
 }
+.profile-rank-row-line--tappable {
+  cursor: pointer;
+  margin: -2px -6px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  transition: background 0.12s;
+}
+.profile-rank-row-line--tappable:hover { background: rgba(255, 255, 255, 0.05); }
 .profile-rank-row-emoji {
   width: 22px;
   font-size: 1rem;

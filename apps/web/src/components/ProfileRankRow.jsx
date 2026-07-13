@@ -13,7 +13,7 @@ import { countryToFlag } from '../lib/countryFlag'
  * Hides itself entirely when the user has no city scope AND no monthly
  * score yet (fresh signup) - there is nothing meaningful to show.
  */
-export default function ProfileRankRow({ rank, cityName, cityCountry }) {
+export default function ProfileRankRow({ rank, cityName, cityCountry, onOpenLeaderboard }) {
   const { t } = useTranslation('challenge')
 
   if (!rank) return null
@@ -41,7 +41,10 @@ export default function ProfileRankRow({ rank, cityName, cityCountry }) {
   return (
     <div className="profile-rank-row">
       {cityLine ? (
-        <div className="profile-rank-row-line">
+        <div
+          className={`profile-rank-row-line${onOpenLeaderboard ? ' profile-rank-row-line--tappable' : ''}`}
+          onClick={onOpenLeaderboard ? () => onOpenLeaderboard('city') : undefined}
+        >
           <span className="profile-rank-row-emoji">{flag}</span>
           <span className="profile-rank-row-badge">
             {city != null ? <RankBadge rank={city} size={22} /> : null}
@@ -49,7 +52,10 @@ export default function ProfileRankRow({ rank, cityName, cityCountry }) {
           <span className="profile-rank-row-text">{cityLine}</span>
         </div>
       ) : null}
-      <div className="profile-rank-row-line">
+      <div
+        className={`profile-rank-row-line${onOpenLeaderboard ? ' profile-rank-row-line--tappable' : ''}`}
+        onClick={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
+      >
         <span className="profile-rank-row-emoji">🌐</span>
         <span className="profile-rank-row-badge">
           {global != null ? <RankBadge rank={global} size={22} /> : null}

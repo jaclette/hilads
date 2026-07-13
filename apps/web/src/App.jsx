@@ -3625,6 +3625,17 @@ export default function App() {
     else                   shareToMyCity(content, mentions)
   }
 
+  // From a profile's rank rows → open the leaderboard in the tapped scope
+  // (city rank → city board; worldwide rank → world board). Close the profile
+  // overlays first so the leaderboard renders on the clean shell.
+  function openLeaderboardFromProfile(scope) {
+    setViewingProfile(null)
+    setShowProfileDrawer(false)
+    setLeaderboardScope(scope === 'world' ? 'world' : 'city')
+    setLeaderboardPeriod('month')
+    setShowLeaderboard(true)
+  }
+
   // Open a shared internal link (from a feed CTA) in-app - no full navigation.
   function openSharedLink(link) {
     if (!link) return
@@ -6661,6 +6672,7 @@ export default function App() {
           cityCountry={cityCountry}
           account={account}
           guest={guest}
+          onOpenLeaderboard={openLeaderboardFromProfile}
           onBack={() => setViewingProfile(null)}
           onViewProfile={(uid, nickname) => openProfile(uid, nickname)}
           onOpenHangout={(h) => { setViewingProfile(null); openHangout(h) }}
@@ -6746,6 +6758,7 @@ export default function App() {
       {showProfileDrawer && !showAuthScreen && account && (
         <ProfileScreen
           account={account}
+          onOpenLeaderboard={openLeaderboardFromProfile}
           myEvents={myEventsLoaded ? myEvents : null}
           myFriends={myFriendsLoaded ? myFriends : null}
           friendRequestCount={friendReqCount}

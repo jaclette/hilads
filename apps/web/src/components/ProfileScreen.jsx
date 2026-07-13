@@ -82,7 +82,7 @@ const LANGS = [
   { code: 'ar',    flag: '🇸🇦', name: 'العربية' },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onOpenThreads, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange }) {
+export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onOpenThreads, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange, onOpenLeaderboard }) {
   const { t, i18n } = useTranslation(['profile', 'common'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
@@ -338,6 +338,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             rank={account.monthly_rank ?? null}
             cityName={account.current_city?.name ?? null}
             cityCountry={account.current_city?.country ?? null}
+            onOpenLeaderboard={onOpenLeaderboard}
           />
 
           {/* Mode selector */}

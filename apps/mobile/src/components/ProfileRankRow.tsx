@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { RankBadge } from './RankBadge';
 import { countryToFlag } from '../lib/countryFlag';
@@ -33,6 +34,7 @@ export function ProfileRankRow({
   cityCountry?: string | null;
 }) {
   const { t } = useTranslation('challenge');
+  const router = useRouter();
 
   if (!rank) return null;
   const { city, global, score_month: score, has_city: hasCity, top_n: topN } = rank;
@@ -62,7 +64,11 @@ export function ProfileRankRow({
   return (
     <View style={styles.wrap}>
       {cityLine ? (
-        <View style={styles.row}>
+        <TouchableOpacity
+          style={styles.row}
+          activeOpacity={0.7}
+          onPress={() => router.push('/leaderboard?scope=city&period=month' as never)}
+        >
           <Text style={styles.emoji}>{flag}</Text>
           {city != null ? (
             <View style={styles.badgeSlot}>
@@ -70,9 +76,13 @@ export function ProfileRankRow({
             </View>
           ) : null}
           <Text style={styles.line} numberOfLines={1}>{cityLine}</Text>
-        </View>
+        </TouchableOpacity>
       ) : null}
-      <View style={styles.row}>
+      <TouchableOpacity
+        style={styles.row}
+        activeOpacity={0.7}
+        onPress={() => router.push('/leaderboard?scope=world&period=month' as never)}
+      >
         <Text style={styles.emoji}>🌐</Text>
         {global != null ? (
           <View style={styles.badgeSlot}>
@@ -80,7 +90,7 @@ export function ProfileRankRow({
           </View>
         ) : null}
         <Text style={styles.line} numberOfLines={1}>{worldLine}</Text>
-      </View>
+      </TouchableOpacity>
     </View>
   );
 }
