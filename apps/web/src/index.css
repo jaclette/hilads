@@ -13189,10 +13189,10 @@ body.has-app-promo-banner .page-header {
   color: #FF7A3C;
 }
 
-/* ⚡ Hilads campaign card (2× points) - animated gold dashed border + glow so
-   it stands out at the top of the challenge list. */
+/* ⚡ Hilads campaign card (2× points) - animated gold DOTTED border + glow so
+   it reads as special and stands out at the top of the challenge list. */
 .challenge-row-card--campaign {
-  border: 2px dashed #fbbf24;
+  border: 2px dotted #fbbf24;
   background:
     linear-gradient(rgba(251, 191, 36, 0.06), rgba(251, 191, 36, 0.06));
   animation: campaign-pulse 1.8s ease-in-out infinite;
@@ -13205,6 +13205,11 @@ body.has-app-promo-banner .page-header {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
   color: #1a1205;
   font-weight: 800;
+}
+/* Campaign "Be the first" pill: gold to match the special card. */
+.challenge-group-pill--campaign {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: #1a1205;
 }
 @media (prefers-reduced-motion: reduce) {
   .challenge-row-card--campaign { animation: none; }

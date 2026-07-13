@@ -231,9 +231,13 @@ export function ChallengeVersusCard({
             // Nobody's in yet → just the action, no empty-state text.
             <>
               <View style={{ flex: 1 }} />
-              <TouchableOpacity style={styles.beFirstPill} activeOpacity={0.85} onPress={onAcceptPress}>
+              <TouchableOpacity style={[styles.beFirstPill, challenge.is_campaign && styles.beFirstPillCampaign]} activeOpacity={0.85} onPress={onAcceptPress}>
                 <Text style={styles.beFirstPillText}>
-                  {t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })}
+                  {(() => {
+                    const label = t('card.beFirst', { defaultValue: '⚡ Be the first · +2' });
+                    // Campaign = 2× points, so the join reward is +4, not +2.
+                    return challenge.is_campaign ? label.replace('+2', '+4') : label;
+                  })()}
                 </Text>
               </TouchableOpacity>
             </>
@@ -549,11 +553,11 @@ const styles = StyleSheet.create({
     borderColor:     'rgba(255,170,60,0.55)',
     backgroundColor: 'rgba(255,150,40,0.05)',
   },
-  // Hilads campaign (2× points): gold dashed border + glow so it stands out
-  // at the top of the list.
+  // Hilads campaign (2× points): gold DOTTED border + glow so it reads as
+  // special and stands out at the top of the list.
   cardCampaign: {
     borderWidth:     2,
-    borderStyle:     'dashed',
+    borderStyle:     'dotted',
     borderColor:     '#fbbf24',
     backgroundColor: 'rgba(251,191,36,0.06)',
     shadowColor:     '#fbbf24',
@@ -562,6 +566,8 @@ const styles = StyleSheet.create({
     shadowOffset:    { width: 0, height: 0 },
     elevation:       5,
   },
+  // Campaign "Be the first" pill: gold to match the special card border.
+  beFirstPillCampaign: { backgroundColor: '#fbbf24' },
 
   // ── Group card ──
   // Resolution badges (top row). Meet = warm pin; Photo proof = cool camera.
