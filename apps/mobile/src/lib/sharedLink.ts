@@ -14,6 +14,7 @@ export interface SharedLink {
   id?:     string;
   scope?:  string;
   period?: string;
+  campaign?: boolean;   // Hilads campaign challenge (?c=1) → 2× points + scope pill
 }
 
 export function parseSharedHiladsLink(content?: string | null): SharedLink | null {
@@ -36,8 +37,15 @@ export function parseSharedHiladsLink(content?: string | null): SharedLink | nul
     };
     return { url, kind: 'leaderboard', scope: get('scope') || 'city', period: get('period') || 'month' };
   }
+  const qparam = (k: string): string | null => {
+    const q = url.split('?')[1] || '';
+    const mm = q.match(new RegExp('(?:^|&)' + k + '=([^&#]*)'));
+    return mm ? decodeURIComponent(mm[1]) : null;
+  };
   let mm: RegExpMatchArray | null;
-  if ((mm = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'challenge', id: mm[1] };
+  if ((mm = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) {
+    return { url, kind: 'challenge', id: mm[1], campaign: qparam('c') === '1', scope: qparam('scope') || undefined };
+  }
   if ((mm = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)) || (mm = path.match(/^\/e\/([a-f0-9]{16})$/i))) return { url, kind: 'event', id: mm[1] };
   if ((mm = path.match(/^\/(?:t|topic)\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'topic', id: mm[1] };
   return null;

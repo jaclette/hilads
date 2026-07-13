@@ -161,8 +161,9 @@ function parseSharedHiladsLink(content) {
     const get = (k) => { const mm = q.match(new RegExp('(?:^|&)' + k + '=([^&#]*)')); return mm ? decodeURIComponent(mm[1]) : null }
     return { url, kind: 'leaderboard', scope: get('scope') || 'city', period: get('period') || 'month' }
   }
+  const qparam = (k) => { const mm = (url.split('?')[1] || '').match(new RegExp('(?:^|&)' + k + '=([^&#]*)')); return mm ? decodeURIComponent(mm[1]) : null }
   let mm
-  if ((mm = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'challenge', id: mm[1] }
+  if ((mm = path.match(/^\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'challenge', id: mm[1], campaign: qparam('c') === '1', scope: qparam('scope') || undefined }
   if ((mm = path.match(/^\/event\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i)) || (mm = path.match(/^\/e\/([a-f0-9]{16})$/i))) return { url, kind: 'event', id: mm[1] }
   if ((mm = path.match(/^\/(?:t|topic)\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'topic', id: mm[1] }
   return null
@@ -5565,15 +5566,26 @@ export default function App() {
                                   <span className="msg-edited-tag">{` ${t('edited', { ns: 'chat', defaultValue: 'edited' })}`}</span>
                                 )}
                               </span>
-                              {shared ? (
-                                <a
-                                  className="shared-link-cta"
-                                  href={shared.url}
-                                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSharedLink(shared) }}
-                                >
-                                  {t(`shareCta.${shared.kind}`, { ns: 'common' })}
-                                </a>
-                              ) : (u ? <LinkPreviewCard url={u} /> : null)}
+                              {shared ? (() => {
+                                const isCampaign = shared.kind === 'challenge' && shared.campaign
+                                const pill = isCampaign
+                                  ? (shared.scope === 'global' ? '🌍 All cities' : shared.scope === 'world' ? '🌍 World' : null)
+                                  : null
+                                return (
+                                  <>
+                                    {pill && <span className="campaign-scope-pill">{pill}</span>}
+                                    <a
+                                      className={`shared-link-cta${isCampaign ? ' shared-link-cta--campaign' : ''}`}
+                                      href={shared.url}
+                                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSharedLink(shared) }}
+                                    >
+                                      {isCampaign
+                                        ? '⚡ + Double scoring points · Take the challenge'
+                                        : t(`shareCta.${shared.kind}`, { ns: 'common' })}
+                                    </a>
+                                  </>
+                                )
+                              })() : (u ? <LinkPreviewCard url={u} /> : null)}
                             </>
                           )
                         })()}

@@ -1043,16 +1043,31 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                     </Text>
                   )}
                 </Text>
-                {sharedLink ? (
-                  <TouchableOpacity
-                    style={styles.sharedLinkCta}
-                    onPress={() => router.push(sharedLinkRoute(sharedLink) as never)}
-                    activeOpacity={0.85}
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.sharedLinkCtaText} numberOfLines={1}>{t(`shareCta.${sharedLink.kind}`, { ns: 'common' })}</Text>
-                  </TouchableOpacity>
-                ) : (() => {
+                {sharedLink ? (() => {
+                  const isCampaign = sharedLink.kind === 'challenge' && !!sharedLink.campaign;
+                  const pill = isCampaign
+                    ? (sharedLink.scope === 'global' ? '🌍 All cities' : sharedLink.scope === 'world' ? '🌍 World' : null)
+                    : null;
+                  return (
+                    <View>
+                      {pill ? (
+                        <View style={styles.campaignScopePill}><Text style={styles.campaignScopePillText}>{pill}</Text></View>
+                      ) : null}
+                      <TouchableOpacity
+                        style={[styles.sharedLinkCta, isCampaign && styles.sharedLinkCtaCampaign]}
+                        onPress={() => router.push(sharedLinkRoute(sharedLink) as never)}
+                        activeOpacity={0.85}
+                        accessibilityRole="button"
+                      >
+                        <Text style={styles.sharedLinkCtaText} numberOfLines={2}>
+                          {isCampaign
+                            ? '⚡ + Double scoring points · Take the challenge'
+                            : t(`shareCta.${sharedLink.kind}`, { ns: 'common' })}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })() : (() => {
                   const u = extractFirstUrl(message.content);
                   return u ? <LinkPreviewCard url={u} isMine={isMine} /> : null;
                 })()}
@@ -1422,6 +1437,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   sharedLinkCtaText: { fontSize: 13, fontWeight: '800', color: Colors.accent },
+  // Campaign share: gold scope pill above a slightly wider CTA.
+  sharedLinkCtaCampaign: { alignSelf: 'stretch', justifyContent: 'center' },
+  campaignScopePill: {
+    alignSelf: 'flex-start', marginTop: 8, marginBottom: 6,
+    paddingHorizontal: 10, paddingVertical: 3, borderRadius: 999,
+    backgroundColor: '#fbbf24',
+  },
+  campaignScopePillText: { fontSize: 11, fontWeight: '800', color: '#1a1205', letterSpacing: 0.2 },
   // Tombstone - keep the same bubble silhouette but flatten the fill so it
   // visually reads as inactive without losing the position-in-thread anchor.
   bubbleTombstone: {

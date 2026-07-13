@@ -14339,6 +14339,21 @@ body.has-app-promo-banner .page-header {
   width: fit-content;
 }
 .shared-link-cta:hover { background: #f3f3f3; }
+/* Campaign share: gold scope pill above a full-width "double points" CTA. */
+.campaign-scope-pill {
+  display: block;
+  width: fit-content;
+  margin-top: 0.5rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  background: #fbbf24;
+  color: #1a1205;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+.campaign-scope-pill + .shared-link-cta { margin-top: 0.375rem; }
+.shared-link-cta--campaign { display: flex; }
 /* Compact variant inside the event row (sits under the avatars). */
 .share-to-city-pill--row {
   margin-top: 0.5rem;

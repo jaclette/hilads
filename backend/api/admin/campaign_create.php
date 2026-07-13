@@ -92,15 +92,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 true                          // is_campaign → 2× points
             );
 
-            // Auto-share: post as @hilads into the target channel with a join CTA.
+            // Auto-share: post as @hilads with a join CTA. The URL carries the
+            // campaign flag + scope in its query so clients render a scope pill
+            // ("All cities" / "World") and a "double points" CTA - the path still
+            // matches /challenge/<id>, so routing is unaffected.
             $challengeId = (string) $challenge['id'];
-            $url  = 'https://hilads.live/challenge/' . $challengeId;
-            // Lead with the CHALLENGE TITLE (the actual ask) so people see what
-            // it is, then a short DOUBLE-points hook. The title carries the message.
-            $hook = $scope === 'global'
-                ? '🌍 Hilads Campaign in every city — take it on for DOUBLE points! ⚡🏆'
-                : '⚡ Hilads Campaign — take it on for DOUBLE points! 🏆';
-            $defaultCopy = $title . "\n" . $hook;
+            $url  = 'https://hilads.live/challenge/' . $challengeId . '?c=1&scope=' . $scope;
+            // Message = type emoji + English challenge type + title. English type
+            // reads the same for every locale (like the rank-share message); the
+            // title is the actual ask, so people see WHAT the challenge is.
+            $typeTag     = $TYPE_LABELS[$type] ?? ucfirst($type);   // e.g. "🍜 Food"
+            $defaultCopy = $typeTag . ' · ' . $title;
             $copy = $customCopy !== '' ? $customCopy : $defaultCopy;
             $text = $copy . "\n" . $url;
 
