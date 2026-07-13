@@ -145,6 +145,14 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/challenges') {
     require __DIR__ . '/challenges.php';
 
+} elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/submissions$#', $uri, $m)) {
+    $challengeId = $m[1];
+    require __DIR__ . '/challenge_submissions.php';
+
+} elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/pick-winner$#', $uri, $m) && $method === 'POST') {
+    $challengeId = $m[1];
+    require __DIR__ . '/challenge_pick_winner.php';
+
 } elseif (preg_match('#^/admin/challenges/([a-f0-9]+)/delete$#', $uri, $m) && $method === 'POST') {
     $challengeId = $m[1];
     require __DIR__ . '/challenge_delete.php';

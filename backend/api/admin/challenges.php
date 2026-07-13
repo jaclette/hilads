@@ -239,6 +239,9 @@ admin_nav('/admin/challenges');
                             <?php if (!$deleted): ?>
                                 <a href="/admin/challenges/<?= urlencode($it['channel_id']) ?>/edit" class="btn btn-secondary btn-sm">Edit</a>
                             <?php endif; ?>
+                            <?php if ($isGroup && $usesProof && !$deleted): ?>
+                                <a href="/admin/challenges/<?= urlencode($it['channel_id']) ?>/submissions" class="btn btn-primary btn-sm"><?= $winnerUid ? '🏆 Winner' : '🏆 Pick winner' ?></a>
+                            <?php endif; ?>
                             <a href="/admin/messages?channel=<?= urlencode($it['channel_id']) ?>" class="btn btn-secondary btn-sm">Messages</a>
                             <?php if (!$deleted): ?>
                                 <form method="POST" action="/admin/challenges/<?= urlencode($it['channel_id']) ?>/delete"
