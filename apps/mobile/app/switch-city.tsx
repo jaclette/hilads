@@ -107,11 +107,19 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         )}
       </View>
 
-      {/* ── Stats row: online · events · conversations · msgs ── */}
+      {/* ── Stats row: challenges (main feature, first) · presence · events · hangouts · msgs ── */}
       <View style={styles.statsRow}>
-        {(city.onlineCount ?? 0) > 0 && (
-          <Text style={styles.statOnline}>{t('online', { count: city.onlineCount })}</Text>
+        {/* Challenges first - the app's headline feature */}
+        {(city.challengeCount ?? 0) > 0 && (
+          <Text style={styles.statChallenges}>{t('challenges', { count: city.challengeCount })}</Text>
         )}
+        {/* Presence: ≥2 online → "X online"; <2 online → "X members" (if any);
+            no members → show nothing. */}
+        {(city.onlineCount ?? 0) >= 2 ? (
+          <Text style={styles.statOnline}>{t('online', { count: city.onlineCount })}</Text>
+        ) : (city.memberCount ?? 0) > 0 ? (
+          <Text style={styles.statMembers}>{t('members', { count: city.memberCount })}</Text>
+        ) : null}
         {(city.eventCount ?? 0) > 0 && (
           <Text style={styles.statEvents}>
             {t('events', { count: city.eventCount })}
@@ -152,7 +160,7 @@ export default function SwitchCityScreen() {
   const [error,         setError]         = useState(false);
   const [query,         setQuery]         = useState('');
   const [searchFocused, setSearchFocused] = useState(false);
-  const [filter,        setFilter]        = useState<'active' | 'events' | 'online'>('active');
+  const [filter,        setFilter]        = useState<'active' | 'challenges' | 'events' | 'online'>('active');
 
   async function load(sort: string, isRefresh = false) {
     if (isRefresh) setRefreshing(true);
@@ -180,7 +188,7 @@ export default function SwitchCityScreen() {
 
   useEffect(() => { load(filter); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function changeFilter(f: 'active' | 'events' | 'online') {
+  function changeFilter(f: 'active' | 'challenges' | 'events' | 'online') {
     setFilter(f);
     load(f);
   }
@@ -305,6 +313,7 @@ export default function SwitchCityScreen() {
         <View style={styles.filterRow}>
           {([
             { id: 'active', labelKey: 'filterActive' },
+            { id: 'challenges', labelKey: 'filterChallenges' },
             { id: 'events', labelKey: 'filterEvents' },
             { id: 'online', labelKey: 'filterOnline' },
           ] as const).map(f => (
@@ -678,6 +687,9 @@ const styles = StyleSheet.create({
     gap:           10,
   },
   statOnline: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.green },
+  // Challenges = the headline feature → accent colour so it leads the eye.
+  statChallenges: { fontSize: FontSizes.xs, fontWeight: '800', color: Colors.accent },
+  statMembers: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
   statEvents: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.text },
   statTopics: { fontSize: FontSizes.xs, fontWeight: '600', color: '#60a5fa' },
   statMsgs:   { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },

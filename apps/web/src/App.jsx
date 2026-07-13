@@ -4475,6 +4475,8 @@ export default function App() {
     const hasActivity = ch.activeUsers > 0
     const eventCount = ch.eventCount ?? 0
     const topicCount = ch.topicCount ?? 0
+    const challengeCount = ch.challengeCount ?? 0
+    const memberCount = ch.memberCount ?? 0
     return (
       <button
         key={ch.channelId}
@@ -4490,7 +4492,14 @@ export default function App() {
           {isActive && <span className="city-row-current">{t('picker.youreHere')}</span>}
         </div>
         <div className="city-row-stats">
-          {ch.activeUsers > 0 && <span className="city-row-users">{t('picker.online', { count: ch.activeUsers })}</span>}
+          {/* Challenges first - the app's headline feature */}
+          {challengeCount > 0 && <span className="city-row-challenges">{t('picker.challenges', { count: challengeCount })}</span>}
+          {/* Presence: ≥2 online → "X online"; <2 online → "X members" (if any); none → nothing */}
+          {ch.activeUsers >= 2
+            ? <span className="city-row-users">{t('picker.online', { count: ch.activeUsers })}</span>
+            : memberCount > 0
+              ? <span className="city-row-members">{t('picker.members', { count: memberCount })}</span>
+              : null}
           {eventCount > 0 && <span className="city-row-events">{t('picker.events', { count: eventCount })}</span>}
           {topicCount > 0 && <span className="city-row-topics">{t('picker.hangout', { count: topicCount })}</span>}
           {ch.messageCount > 0 && <span className="city-row-count">{t('picker.msgs', { count: ch.messageCount })}</span>}
@@ -5825,6 +5834,7 @@ export default function App() {
             <div className="city-filter-tabs">
               {[
                 { id: 'active', label: t('picker.filterActive') },
+                { id: 'challenges', label: t('picker.filterChallenges') },
                 { id: 'events', label: t('picker.filterEvents') },
                 { id: 'online', label: t('picker.filterOnline') },
               ].map(f => (

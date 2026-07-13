@@ -38,6 +38,8 @@ interface RawChannel {
   recentMessageCount?: number;          // messages in last 24 h - used for "most active" ranking
   eventCount?:         number;
   topicCount?:         number;
+  challengeCount?:     number;
+  memberCount?:        number;
   liveScore?:          number;
 }
 
@@ -55,6 +57,8 @@ export async function fetchChannels(sort?: string): Promise<City[]> {
     recentMessageCount:  ch.recentMessageCount,
     eventCount:          ch.eventCount,
     topicCount:          ch.topicCount,
+    challengeCount:      ch.challengeCount,
+    memberCount:         ch.memberCount,
     liveScore:           ch.liveScore,
   }));
 }

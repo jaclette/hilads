@@ -18,6 +18,8 @@ export interface City {
   onlineCount?:        number;
   eventCount?:         number;
   topicCount?:         number;
+  challengeCount?:     number;
+  memberCount?:        number;
   messageCount?:       number;
   recentMessageCount?: number;
   liveScore?:          number;

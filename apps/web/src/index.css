@@ -7622,6 +7622,18 @@ img.pub-profile-avatar {
   font-weight: 700;
 }
 
+/* Challenges = the headline feature → accent colour so it leads the eye. */
+.city-row-challenges {
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 800;
+}
+.city-row-members {
+  font-size: 0.72rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
 .city-row-count {
   font-size: 0.72rem;
   color: var(--muted);

@@ -3064,11 +3064,24 @@ $router->add('GET', '/api/v1/events/{eventId}', function (array $params) {
 });
 
 $router->add('GET', '/api/v1/channels', function () {
-    // Five batch queries - no per-city loops
-    $eventCounts    = EventRepository::getCountsPerCity();
-    $topicCounts    = TopicRepository::getCountsPerCity();
-    $messageStats   = MessageRepository::getStatsBatch();
-    $presenceCounts = PresenceRepository::getCountBatch();
+    // Batch queries - no per-city loops
+    $eventCounts     = EventRepository::getCountsPerCity();
+    $topicCounts     = TopicRepository::getCountsPerCity();
+    $messageStats    = MessageRepository::getStatsBatch();
+    $presenceCounts  = PresenceRepository::getCountBatch();
+    $challengeCounts = ChallengeRepository::getCountsPerCity();
+
+    // Member counts per city (current_city_id = source of truth). Keyed by the
+    // numeric city id to match the other *Counts batches.
+    $memberCounts = [];
+    foreach (Database::pdo()->query(
+        "SELECT current_city_id AS cid, COUNT(*) AS cnt
+         FROM users
+         WHERE deleted_at IS NULL AND current_city_id IS NOT NULL
+         GROUP BY current_city_id"
+    )->fetchAll() as $r) {
+        $memberCounts[(int) str_replace('city_', '', (string) $r['cid'])] = (int) $r['cnt'];
+    }
 
     $channels = [];
 
@@ -3091,6 +3104,8 @@ $router->add('GET', '/api/v1/channels', function () {
             'lastActivityAt'     => $stats['lastActivityAt'],
             'eventCount'         => $eventCounts[$id] ?? 0,
             'topicCount'         => $topicCounts[$id]  ?? 0,
+            'challengeCount'     => $challengeCounts[$id] ?? 0,
+            'memberCount'        => $memberCounts[$id] ?? 0,
         ];
     }
 
@@ -3104,6 +3119,9 @@ $router->add('GET', '/api/v1/channels', function () {
                     return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
                 case 'online':
                     $d = ($b['activeUsers'] ?? 0) <=> ($a['activeUsers'] ?? 0);
+                    return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
+                case 'challenges':
+                    $d = ($b['challengeCount'] ?? 0) <=> ($a['challengeCount'] ?? 0);
                     return $d !== 0 ? $d : (($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0));
                 default: // 'active' - most messages in last 24 h, tiebreak total messages
                     $d = ($b['recentMessageCount'] ?? 0) <=> ($a['recentMessageCount'] ?? 0);
