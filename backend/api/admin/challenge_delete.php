@@ -42,6 +42,22 @@ if ($row['status'] === 'deleted') {
 $pdo->prepare("UPDATE channels SET status = 'deleted', updated_at = now() WHERE id = :id")
     ->execute([':id' => $challengeId]);
 
-error_log('[admin] challenge deleted: ' . $challengeId . ' (' . ($row['title'] ?? '') . ')');
-flash_set('success', 'Challenge "' . ($row['title'] ?? '') . '" deleted.');
+// Also soft-delete any shared messages that link to this challenge - notably the
+// campaign auto-share "See the challenge" card in the World / city channel - so
+// its CTA doesn't dead-end on a deleted challenge. Matches the full 16-hex id in
+// the /challenge/<id> URL, so it can't collide with other challenges.
+// ($challengeId is [a-f0-9]+ from the route regex; bound as a param regardless.)
+$msgStmt = $pdo->prepare("
+    UPDATE messages
+       SET content = '', image_url = NULL, deleted_at = now()
+     WHERE deleted_at IS NULL
+       AND type IN ('text', 'image')
+       AND content LIKE :needle
+");
+$msgStmt->execute([':needle' => '%/challenge/' . $challengeId . '%']);
+$sharedDeleted = $msgStmt->rowCount();
+
+error_log('[admin] challenge deleted: ' . $challengeId . ' (' . ($row['title'] ?? '') . ') + ' . $sharedDeleted . ' shared message(s)');
+flash_set('success', 'Challenge "' . ($row['title'] ?? '') . '" deleted'
+    . ($sharedDeleted > 0 ? ' (removed ' . $sharedDeleted . ' shared message(s)).' : '.'));
 admin_redirect($back);
