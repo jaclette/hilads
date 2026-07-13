@@ -12,12 +12,14 @@ $pdo = Database::pdo();
 // "city_<n>", the rest = hex), so one query spans them all.
 $TYPE_LABELS = [
     'city'      => 'City',
+    'world'     => 'World',
     'event'     => 'Hi plan',
     'topic'     => 'Hi now',
     'challenge' => 'Challenge',
 ];
 $TYPE_BADGE = [
     'city'      => '#3b82f6',
+    'world'     => '#22c55e',
     'event'     => '#f59e0b',
     'topic'     => '#a855f7',
     'challenge' => '#ef4444',
@@ -217,7 +219,7 @@ admin_nav('/admin/messages');
 
 <?php elseif ($search !== ''):
     // ── Search mode: find channels by name across all four types ────────────
-    $where  = ["c.type IN ('city','event','topic','challenge')"];
+    $where  = ["c.type IN ('city','world','event','topic','challenge')"];
     $params = [];
     $where[]          = '(c.name ILIKE :q OR c.id = :exact)';
     $params[':q']     = '%' . $search . '%';
@@ -317,6 +319,36 @@ admin_nav('/admin/messages');
         ?>
             <a href="<?= $href ?>" class="btn btn-sm <?= $active ? 'btn-primary' : 'btn-secondary' ?>"><?= $vlabel ?></a>
         <?php endforeach; ?>
+    </div>
+
+    <?php
+    // 🌍 World channel card - a single global channel (type='world'), not a city,
+    // so it never appears in the per-city breakdown below. Surface it here so the
+    // admin can open and moderate World messages.
+    $wStmt = $pdo->prepare("
+        SELECT COUNT(*) AS cnt, MAX(created_at) AS last_at
+        FROM messages
+        WHERE channel_id = 'world' AND type IN ('text', 'image')
+          AND created_at >= :ds::timestamptz AND created_at < :de::timestamptz
+    ");
+    $wStmt->execute([':ds' => $ds, ':de' => $de]);
+    $world     = $wStmt->fetch();
+    $worldLast = !empty($world['last_at']) ? strtotime($world['last_at']) : 0;
+    $worldHref = '/admin/messages?channel=world&from=' . urlencode($from) . '&to=' . urlencode($to);
+    ?>
+    <div class="table-wrapper" style="margin-bottom:16px">
+        <table><tbody>
+            <tr>
+                <td>
+                    <span class="badge" style="background:#22c55e22;color:#22c55e;border:1px solid #22c55e55">🌍 World</span>
+                    <strong style="margin-left:4px">World channel</strong>
+                    <span style="color:#666;font-size:12px;margin-left:6px">everyone, all cities</span>
+                </td>
+                <td style="width:120px"><strong style="color:#fff;font-size:15px"><?= number_format((int) ($world['cnt'] ?? 0)) ?></strong> <span style="color:#666;font-size:12px">msgs</span></td>
+                <td style="width:150px;color:#888;white-space:nowrap"><?= $worldLast ? date('M d, H:i', $worldLast) : '-' ?></td>
+                <td style="width:130px"><a href="<?= $worldHref ?>" class="btn btn-primary btn-sm">View messages →</a></td>
+            </tr>
+        </tbody></table>
     </div>
 
     <?php
