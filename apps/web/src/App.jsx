@@ -5421,8 +5421,16 @@ export default function App() {
             const isGrouped = prevItem?.guestId === item.guestId && prevItem?.type !== 'activity'
             // show time below the last bubble in a sender run
             const showTime = !nextItem || nextItem.guestId !== item.guestId || !['text', 'image'].includes(nextItem.type ?? '')
-            // show date separator above first message of a new day
-            const dateLabel = !msgIsSameDay(item.createdAt, prevItem?.createdAt) ? formatMsgDateLabel(item.createdAt) : null
+            // Show a date separator above the first message of a new day.
+            // Anchor to the nearest OLDER item that actually carries a
+            // timestamp: interleaved system/activity rows can lack one, and
+            // msgIsSameDay returns true when a side is absent - which suppressed
+            // the separator and made a new-day message render under the
+            // PREVIOUS day's header (e.g. a Jul 13 message shown under "Jul 9").
+            let prevDated = null
+            for (let j = i - 1; j >= 0; j--) { if (tsToMs(feed[j].createdAt) > 0) { prevDated = feed[j]; break } }
+            const dateLabel = tsToMs(item.createdAt) > 0 && (!prevDated || !msgIsSameDay(item.createdAt, prevDated.createdAt))
+              ? formatMsgDateLabel(item.createdAt) : null
             const [c1, c2] = avatarColors(item.nickname)
 
             return (

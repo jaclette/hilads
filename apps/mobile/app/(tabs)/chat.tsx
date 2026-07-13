@@ -1003,10 +1003,20 @@ export default function ChatTab() {
         newerMsg.guestId !== item.guestId ||
         newerMsg.type === 'system'
       );
+    // Anchor the date separator to the nearest OLDER item that actually has a
+    // timestamp. Interleaved system/activity/prompt rows can lack one, and
+    // isSameDay returns true when a side is absent - which suppressed the
+    // separator and made a new-day message render under the PREVIOUS day's
+    // header (e.g. a Jul 13 message shown under "Jul 9").
+    let olderDated: Message | undefined;
+    for (let j = index + 1; j < allMessages.length; j++) {
+      if (toMs(allMessages[j].createdAt) > 0) { olderDated = allMessages[j]; break; }
+    }
     const dateLabel =
       item.type !== 'event' && item.type !== 'topic' &&
       item.type !== 'activity' && item.type !== 'prompt' &&
-      !isSameDay(item.createdAt, olderMsg?.createdAt)
+      toMs(item.createdAt) > 0 &&
+      (!olderDated || !isSameDay(item.createdAt, olderDated.createdAt))
         ? formatDateLabel(item.createdAt)
         : undefined;
     return (
