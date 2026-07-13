@@ -190,7 +190,8 @@ final class PushBroadcastService
         string $title,
         string $body,
         ?string $deepLink,
-        array  $extraData = []
+        array  $extraData = [],
+        string $notifType = 'admin_announcement'
     ): array {
         $delivered = 0;
         $failed    = 0;
@@ -208,7 +209,7 @@ final class PushBroadcastService
         foreach (array_chunk($userIds, self::BATCH_SIZE) as $batch) {
             foreach ($batch as $uid) {
                 try {
-                    NotificationRepository::createUnchecked($uid, 'admin_announcement', $title, $body, $data);
+                    NotificationRepository::createUnchecked($uid, $notifType, $title, $body, $data);
                     $delivered++;
                 } catch (\Throwable $e) {
                     error_log('[push-broadcast] dispatch failed for user=' . $uid . ' err=' . $e->getMessage());

@@ -21,6 +21,29 @@ final class NotificationI18n
     // [type][locale] => [titleTemplate, bodyTemplate|null]
     // bodyTemplate null ⇒ keep the caller's body (preview / proper nouns / no body).
     private const T = [
+        // Hilads campaign challenge push (2× points). {title} = the challenge
+        // title (verbatim). Body ends with an "Are you in?" hook. English
+        // recipients get the caller's fallback text (already interpolated).
+        'campaign_challenge' => [
+            'fr'      => ["⚡ Campagne Hilads — points x2", "{title} — gagne des points DOUBLÉS ! 🏆 Tu es partant ?"],
+            'vi'      => ["⚡ Chiến dịch Hilads — điểm x2",  "{title} — nhận GẤP ĐÔI điểm! 🏆 Bạn tham gia chứ?"],
+            'es'      => ["⚡ Campaña Hilads — puntos x2",   "{title} — ¡gana el DOBLE de puntos! 🏆 ¿Te apuntas?"],
+            'it'      => ["⚡ Campagna Hilads — punti x2",   "{title} — guadagna punti DOPPI! 🏆 Ci stai?"],
+            'pt-br'   => ["⚡ Campanha Hilads — pontos x2",  "{title} — ganhe pontos EM DOBRO! 🏆 Bora?"],
+            'pt-pt'   => ["⚡ Campanha Hilads — pontos x2",  "{title} — ganha pontos a DOBRAR! 🏆 Alinhas?"],
+            'de'      => ["⚡ Hilads-Kampagne — 2× Punkte",  "{title} — verdiene DOPPELTE Punkte! 🏆 Bist du dabei?"],
+            'nl'      => ["⚡ Hilads-campagne — 2× punten",  "{title} — verdien DUBBELE punten! 🏆 Doe je mee?"],
+            'zh-hans' => ["⚡ Hilads 活动 — 双倍积分",        "{title} — 赢取双倍积分！🏆 你加入吗？"],
+            'zh-hant' => ["⚡ Hilads 活動 — 雙倍積分",        "{title} — 贏取雙倍積分！🏆 你加入嗎？"],
+            'ja'      => ["⚡ Hiladsキャンペーン — ポイント2倍", "{title} — ポイント2倍を獲得！🏆 参加する？"],
+            'ko'      => ["⚡ Hilads 캠페인 — 2배 포인트",      "{title} — 2배 포인트 획득! 🏆 참여할래요?"],
+            'fil'     => ["⚡ Hilads Campaign — 2× puntos",  "{title} — kumita ng DOBLENG puntos! 🏆 Sali ka ba?"],
+            'th'      => ["⚡ แคมเปญ Hilads — พอยต์ 2 เท่า",   "{title} — รับพอยต์ 2 เท่า! 🏆 เอาด้วยไหม?"],
+            'id'      => ["⚡ Kampanye Hilads — poin 2×",     "{title} — dapatkan poin GANDA! 🏆 Ikut nggak?"],
+            'hi'      => ["⚡ Hilads कैंपेन — डबल पॉइंट्स",     "{title} — डबल पॉइंट्स कमाओ! 🏆 आप हो न?"],
+            'ru'      => ["⚡ Кампания Hilads — x2 очков",    "{title} — получи ДВОЙНЫЕ очки! 🏆 Ты в деле?"],
+            'ar'      => ["⚡ حملة Hilads — نقاط مضاعفة",     "{title} — اربح نقاطًا مُضاعفة! 🏆 هل أنت معنا؟"],
+        ],
         'city_join' => [
             'fr' => ["👀 Quelqu'un est arrivé à {city}", "{name} vient d'arriver"],
             'vi' => ["👀 Có người vừa đến {city}",        "{name} vừa đến"],

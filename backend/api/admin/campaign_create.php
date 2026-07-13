@@ -130,16 +130,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($pushSkip !== '') {
                     $pushSummary = $pushSkip;
                 } else {
-                    $pTitle  = trim((string) ($post['push_title'] ?? '')) ?: '⚡ Hilads Campaign — 2× points';
-                    $pBody   = trim((string) ($post['push_body'] ?? '')) ?: ($title . ' — take it on for DOUBLE points! 🏆');
-                    $deep    = '/challenge/' . $challengeId;
-                    $userIds = PushBroadcastService::resolveAudience($paudType, $paudFilter);
+                    $customTitle = trim((string) ($post['push_title'] ?? ''));
+                    $customBody  = trim((string) ($post['push_body'] ?? ''));
+                    // Default push is localized per recipient (type campaign_challenge,
+                    // ends with "Are you in?"). A custom title/body is sent verbatim
+                    // (English) to everyone via the generic admin_announcement type.
+                    $useDefault = ($customTitle === '' && $customBody === '');
+                    $notifType  = $useDefault ? 'campaign_challenge' : 'admin_announcement';
+                    $pTitle     = $customTitle !== '' ? $customTitle : '⚡ Hilads Campaign — 2× points';
+                    $pBody      = $customBody  !== '' ? $customBody  : ($title . ' — earn DOUBLE points! 🏆 Are you in?');
+                    $deep       = '/challenge/' . $challengeId;
+                    $userIds    = PushBroadcastService::resolveAudience($paudType, $paudFilter);
                     if (!empty($userIds)) {
                         $bid = PushBroadcastService::recordBroadcast(
                             getenv('ADMIN_USERNAME') ?: 'admin', $_SERVER['REMOTE_ADDR'] ?? '',
                             $pTitle, $pBody, $paudType, $paudFilter, $deep, count($userIds),
                         );
-                        $res = PushBroadcastService::dispatch($bid, $userIds, $pTitle, $pBody, $deep, ['challengeId' => $challengeId]);
+                        // challengeTitle drives the {title} placeholder in the localized template.
+                        $res = PushBroadcastService::dispatch(
+                            $bid, $userIds, $pTitle, $pBody, $deep,
+                            ['challengeId' => $challengeId, 'challengeTitle' => $title],
+                            $notifType,
+                        );
                         $pushSummary = ' Push sent to ' . number_format((int) $res['delivered']) . ' user(s).';
                     } else {
                         $pushSummary = ' (No users matched the push audience.)';
@@ -288,9 +300,9 @@ admin_nav('/admin/campaigns');
                        value="<?= htmlspecialchars($post['push_title'] ?? '', ENT_QUOTES) ?>" placeholder="⚡ Hilads Campaign — 2× points">
             </div>
             <div class="form-group">
-                <label for="push_body">Push body <small>(blank = the challenge title + hook)</small></label>
+                <label for="push_body">Push body <small>(blank = localized “{title} — earn DOUBLE points! 🏆 Are you in?” per user)</small></label>
                 <input type="text" id="push_body" name="push_body" maxlength="160"
-                       value="<?= htmlspecialchars($post['push_body'] ?? '', ENT_QUOTES) ?>" placeholder="Take it on for DOUBLE points! 🏆">
+                       value="<?= htmlspecialchars($post['push_body'] ?? '', ENT_QUOTES) ?>" placeholder="Leave blank for the localized default ending with “Are you in?”">
             </div>
         </div>
 

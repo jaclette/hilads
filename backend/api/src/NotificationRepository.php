@@ -241,7 +241,8 @@ class NotificationRepository
             'dm_message'                      => '/conversations',
             'event_message', 'event_join',
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
-            'new_challenge'                   => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/',
+            'new_challenge',
+            'campaign_challenge'              => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/',
             // Mention deep-links to the message's context: event chat, pulse, or city chat.
             'mention'                         => isset($data['eventId']) ? "/event/{$data['eventId']}"
                                                 : (isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/'),
