@@ -54,6 +54,10 @@ const CATEGORIES: {
 // ── Repeat options - matches web (Once/Daily/Weekly/Every N days) ─────────────
 
 const REPEAT_OPTIONS: RepeatMode[] = ['once', 'daily', 'weekly', 'every_n_days'];
+// Recurrence-only options shown when the Repeat section is expanded. "Once" is
+// the implicit default (collapsed) - no chip for it; deselecting a recurrence
+// chip returns to one-shot.
+const RECURRENCE_OPTIONS: RepeatMode[] = ['daily', 'weekly', 'every_n_days'];
 
 // ── Quick presets - one-tap recurring event shortcuts ─────────────────────────
 
@@ -323,6 +327,9 @@ export default function CreateEventScreen() {
   const [startsAt,        setStartsAt]        = useState<Date>(() => nextHalfHour());
   const [endsAt,          setEndsAt]          = useState<Date>(() => addHours(nextHalfHour(), 2));
   const [repeat,          setRepeat]          = useState<RepeatMode>('once');
+  // Repeat section is collapsed by default (one-shot). Expands to reveal the
+  // recurrence options; auto-expanded when a recurrence is already set (edit/preset).
+  const [repeatExpanded,  setRepeatExpanded]  = useState(false);
   const [weekdays,        setWeekdays]        = useState<number[]>(() => [new Date().getDay()]);
   const [intervalDays,    setIntervalDays]    = useState('7');
   const [location,        setLocation]        = useState('');                 // address label (display + location_hint)
@@ -356,6 +363,7 @@ export default function CreateEventScreen() {
   function applyPreset(key: PresetKey) {
     setSelectedPreset(prev => prev === key ? null : key);
     if (selectedPreset === key) return; // toggle off
+    setRepeatExpanded(true); // presets set a recurrence → reveal the Repeat options
     if (key === 'daily_spot') {
       setRepeat('daily');
       const s = new Date(); s.setHours(18, 0, 0, 0); setStartsAt(s);
@@ -640,42 +648,59 @@ export default function CreateEventScreen() {
           />
         )}
 
-        {/* ── REPEAT ────────────────────────────────────────────────────────── */}
+        {/* ── REPEAT (collapsed = one-shot; expand to pick a recurrence) ──────── */}
         <View style={styles.section}>
-          <Text style={styles.fieldLabel}>{t('repeat')}</Text>
-          <View style={styles.repeatRow}>
-            {REPEAT_OPTIONS.map(mode => {
-              const active = mode === repeat;
-              return (
-                <TouchableOpacity
-                  key={mode}
-                  style={[styles.repeatChip, active && styles.repeatChipActive]}
-                  onPress={() => setRepeat(mode)}
-                  activeOpacity={0.75}
-                >
-                  <Text style={[styles.repeatLabel, active && styles.repeatLabelActive]}>
-                    {t(`repeatMode.${mode}`)}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-
-          {/* "Every N days" interval input */}
-          {repeat === 'every_n_days' && (
-            <View style={styles.intervalRow}>
-              <Text style={styles.intervalLabel}>{t('every')}</Text>
-              <TextInput
-                style={styles.intervalInput}
-                value={intervalDays}
-                onChangeText={v => setIntervalDays(v.replace(/[^0-9]/g, ''))}
-                keyboardType="number-pad"
-                maxLength={3}
-              />
-              <Text style={styles.intervalLabel}>{t('days')}</Text>
+          <TouchableOpacity
+            style={styles.repeatHeader}
+            activeOpacity={0.7}
+            onPress={() => setRepeatExpanded(v => !v)}
+          >
+            <Text style={styles.fieldLabel}>{t('repeat')}</Text>
+            <View style={styles.repeatHeaderRight}>
+              {repeat !== 'once' && (
+                <Text style={styles.repeatSummary}>{t(`repeatMode.${repeat}`)}</Text>
+              )}
+              <Ionicons name={repeatExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={Colors.muted2} />
             </View>
-          )}
+          </TouchableOpacity>
 
+          {repeatExpanded && (
+            <>
+              <View style={styles.repeatRow}>
+                {RECURRENCE_OPTIONS.map(mode => {
+                  const active = mode === repeat;
+                  return (
+                    <TouchableOpacity
+                      key={mode}
+                      style={[styles.repeatChip, active && styles.repeatChipActive]}
+                      // Tap the active chip again to go back to one-shot ('once').
+                      onPress={() => setRepeat(active ? 'once' : mode)}
+                      activeOpacity={0.75}
+                    >
+                      <Text style={[styles.repeatLabel, active && styles.repeatLabelActive]}>
+                        {t(`repeatMode.${mode}`)}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {/* "Every N days" interval input */}
+              {repeat === 'every_n_days' && (
+                <View style={styles.intervalRow}>
+                  <Text style={styles.intervalLabel}>{t('every')}</Text>
+                  <TextInput
+                    style={styles.intervalInput}
+                    value={intervalDays}
+                    onChangeText={v => setIntervalDays(v.replace(/[^0-9]/g, ''))}
+                    keyboardType="number-pad"
+                    maxLength={3}
+                  />
+                  <Text style={styles.intervalLabel}>{t('days')}</Text>
+                </View>
+              )}
+            </>
+          )}
         </View>
 
         {/* ── LOCATION (tappable → map picker; optional) ────────────────────── */}
@@ -988,7 +1013,10 @@ const styles = StyleSheet.create({
   presetDesc:  { fontSize: 10, color: Colors.muted2, textAlign: 'center' },
 
   // ── Repeat chips - square-ish matching web (not pill) ─────────────────────
-  repeatRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  repeatHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  repeatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  repeatSummary: { fontSize: 13, fontWeight: '700', color: Colors.accent },
+  repeatRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 10 },
   repeatChip: {
     paddingHorizontal: 16,
     paddingVertical:   11,

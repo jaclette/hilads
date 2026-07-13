@@ -241,6 +241,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
 
   // Recurrence state (registered users only)
   const [recurrence, setRecurrence] = useState('once') // 'once' | 'daily' | 'weekly' | 'every_n_days'
+  const [recurExpanded, setRecurExpanded] = useState(false) // Repeat section collapsed by default (one-shot)
   const [weekdays, setWeekdays] = useState([])           // [0-6] for weekly
   const [intervalDays, setIntervalDays] = useState(2)    // for every_n_days
   const [selectedPreset, setSelectedPreset] = useState(null)
@@ -262,6 +263,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
     if (selectedPreset === preset.key) { setSelectedPreset(null); return }
     setSelectedPreset(preset.key)
     setRecurrence(preset.recurrence)
+    setRecurExpanded(true) // presets set a recurrence → reveal the Repeat options
     if (preset.startTime) setStartTime(preset.startTime)
     if (preset.endTime)   setEndTime(preset.endTime)
     if (preset.weekdays)  setWeekdays(preset.weekdays)
@@ -570,21 +572,33 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
           {/* Recurrence - registered users only, not available in edit mode */}
           {account && !isEdit && (
             <div className="cef-section">
-              <p className="cef-label">{t('repeat')}</p>
-              <div className="cef-recurrence-row">
-                {RECURRENCE_OPTS.map(opt => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={`cef-recur-btn${recurrence === opt.value ? ' selected' : ''}`}
-                    onClick={() => setRecurrence(opt.value)}
-                  >
-                    {t(`recurrence.${opt.tk}`)}
-                  </button>
-                ))}
-              </div>
+              {/* Collapsed = one-shot ('once'); expand to pick a recurrence. */}
+              <button type="button" className="cef-repeat-header" onClick={() => setRecurExpanded(v => !v)}>
+                <span className="cef-label" style={{ margin: 0 }}>{t('repeat')}</span>
+                <span className="cef-repeat-header-right">
+                  {recurrence !== 'once' && (
+                    <span className="cef-repeat-summary">{t(`recurrence.${RECURRENCE_OPTS.find(o => o.value === recurrence)?.tk}`)}</span>
+                  )}
+                  <span className="cef-repeat-chevron">{recurExpanded ? '▲' : '▼'}</span>
+                </span>
+              </button>
+              {recurExpanded && (
+                <div className="cef-recurrence-row">
+                  {RECURRENCE_OPTS.filter(o => o.value !== 'once').map(opt => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={`cef-recur-btn${recurrence === opt.value ? ' selected' : ''}`}
+                      // Tap the active option again to go back to one-shot.
+                      onClick={() => setRecurrence(recurrence === opt.value ? 'once' : opt.value)}
+                    >
+                      {t(`recurrence.${opt.tk}`)}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-              {recurrence === 'weekly' && (
+              {recurExpanded && recurrence === 'weekly' && (
                 <div className="cef-weekday-row">
                   {t('weekdays', { returnObjects: true }).map((label, dow) => (
                     <button
@@ -599,7 +613,7 @@ export default function CreateEventPage({ channelId, guest, nickname, cityTimezo
                 </div>
               )}
 
-              {recurrence === 'every_n_days' && (
+              {recurExpanded && recurrence === 'every_n_days' && (
                 <div className="cef-interval-row">
                   <span className="cef-interval-label">{t('intervalEvery')}</span>
                   <input
