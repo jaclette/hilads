@@ -84,6 +84,9 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/MobilePushService.php';
     require_once __DIR__ . '/../src/PushBroadcastService.php';
     require_once __DIR__ . '/../src/MonthlyRankService.php';
+    // Campaign auto-share posts a message as @hilads into the city / World channel.
+    require_once __DIR__ . '/../src/MessageRepository.php';
+    require_once __DIR__ . '/../src/WorldRepository.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }

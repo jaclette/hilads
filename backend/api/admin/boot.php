@@ -139,6 +139,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
     $banId = (int) $m[1];
     require __DIR__ . '/ban_unban.php';
 
+} elseif ($uri === '/admin/campaigns' || $uri === '/admin/campaigns/create') {
+    require __DIR__ . '/campaign_create.php';
+
 } elseif ($uri === '/admin/challenges') {
     require __DIR__ . '/challenges.php';
 
