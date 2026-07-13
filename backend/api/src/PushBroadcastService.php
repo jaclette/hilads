@@ -189,11 +189,14 @@ final class PushBroadcastService
         array  $userIds,
         string $title,
         string $body,
-        ?string $deepLink
+        ?string $deepLink,
+        array  $extraData = []
     ): array {
         $delivered = 0;
         $failed    = 0;
-        $data = [
+        // extraData lets callers attach routing hints (e.g. challengeId, so the
+        // native app's default push route opens /challenge/<id> on tap).
+        $data = $extraData + [
             'broadcastId' => $broadcastId,
             'deepLink'    => $deepLink ?? '',
         ];

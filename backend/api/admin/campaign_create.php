@@ -111,12 +111,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $msg = MessageRepository::add($shareChannel, (string) $hilads['guest_id'], 'Hilads', $text, (string) $hilads['id']);
             campaign_broadcast_ws($shareChannel, $msg);
 
+            // ── Optional push notification ────────────────────────────────────
+            // Ping everyone / a city's members / one user. Tapping the push opens
+            // the challenge (native routes on challengeId; web on the deepLink).
+            $pushSummary = '';
+            if (($post['push_enabled'] ?? '') === '1') {
+                $pt = in_array($post['push_audience'] ?? 'all', ['all', 'city', 'user'], true) ? $post['push_audience'] : 'all';
+                $paudType = 'all'; $paudFilter = []; $pushSkip = '';
+                if ($pt === 'city') {
+                    $pcid = (int) ($post['push_city_channel_id'] ?? 0);
+                    if ($pcid > 0) { $paudType = 'city'; $paudFilter = ['channelId' => $pcid]; }
+                    else $pushSkip = ' (Push skipped: pick a city.)';
+                } elseif ($pt === 'user') {
+                    $puid = trim((string) ($post['push_user_id'] ?? ''));
+                    if (preg_match('/^[a-f0-9]{32}$/', $puid)) { $paudType = 'user'; $paudFilter = ['userId' => $puid]; }
+                    else $pushSkip = ' (Push skipped: invalid user id.)';
+                }
+                if ($pushSkip !== '') {
+                    $pushSummary = $pushSkip;
+                } else {
+                    $pTitle  = trim((string) ($post['push_title'] ?? '')) ?: '⚡ Hilads Campaign — 2× points';
+                    $pBody   = trim((string) ($post['push_body'] ?? '')) ?: ($title . ' — take it on for DOUBLE points! 🏆');
+                    $deep    = '/challenge/' . $challengeId;
+                    $userIds = PushBroadcastService::resolveAudience($paudType, $paudFilter);
+                    if (!empty($userIds)) {
+                        $bid = PushBroadcastService::recordBroadcast(
+                            getenv('ADMIN_USERNAME') ?: 'admin', $_SERVER['REMOTE_ADDR'] ?? '',
+                            $pTitle, $pBody, $paudType, $paudFilter, $deep, count($userIds),
+                        );
+                        $res = PushBroadcastService::dispatch($bid, $userIds, $pTitle, $pBody, $deep, ['challengeId' => $challengeId]);
+                        $pushSummary = ' Push sent to ' . number_format((int) $res['delivered']) . ' user(s).';
+                    } else {
+                        $pushSummary = ' (No users matched the push audience.)';
+                    }
+                }
+            }
+
             $sharedTo = match ($scope) {
                 'world'  => 'the World channel',
                 'global' => 'the World channel (visible in every city)',
                 default  => 'the city',
             };
-            flash_set('success', 'Campaign "' . $title . '" created (2× points) and shared to ' . $sharedTo . '.');
+            flash_set('success', 'Campaign "' . $title . '" created (2× points) and shared to ' . $sharedTo . '.' . $pushSummary);
             admin_redirect('/admin/challenges');
         } catch (\Throwable $e) {
             $errors[] = 'Create failed: ' . $e->getMessage();
@@ -211,6 +247,53 @@ admin_nav('/admin/campaigns');
             <textarea id="copy" name="copy" rows="3" placeholder='Leave blank to lead with the challenge title, e.g. “Find me the tastiest bánh mì” + ⚡ DOUBLE points hook'><?= htmlspecialchars($post['copy'] ?? '', ENT_QUOTES) ?></textarea>
         </div>
 
+        <div class="form-group" style="border-top:1px solid #2a2a2a;padding-top:16px;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+                <input type="checkbox" id="push_enabled" name="push_enabled" value="1" onchange="togglePush()" <?= ($post['push_enabled'] ?? '') === '1' ? 'checked' : '' ?>>
+                🔔 Also send a push notification (opens the challenge on tap)
+            </label>
+        </div>
+
+        <div id="push-fields" style="display:none;border-left:2px solid #FF7A3C33;padding-left:14px">
+            <div class="form-group">
+                <label>Push audience</label>
+                <div class="scope-toggle">
+                    <label><input type="radio" name="push_audience" value="all"  onchange="togglePushAud()" <?= (($post['push_audience'] ?? 'all') === 'all') ? 'checked' : '' ?>> 🌍 Everyone</label>
+                    <label><input type="radio" name="push_audience" value="city" onchange="togglePushAud()" <?= (($post['push_audience'] ?? '') === 'city') ? 'checked' : '' ?>> 🏙️ A city</label>
+                    <label><input type="radio" name="push_audience" value="user" onchange="togglePushAud()" <?= (($post['push_audience'] ?? '') === 'user') ? 'checked' : '' ?>> 👤 One user</label>
+                </div>
+            </div>
+
+            <div class="form-group" id="push-city-group" style="display:none">
+                <label for="push_city_channel_id">City (its members)</label>
+                <select id="push_city_channel_id" name="push_city_channel_id">
+                    <option value="">— pick —</option>
+                    <?php foreach ($cities as $c): ?>
+                        <option value="<?= $c['id'] ?>" <?= (int)($post['push_city_channel_id'] ?? 0) === $c['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($c['name'], ENT_QUOTES) ?> (<?= htmlspecialchars($c['country'], ENT_QUOTES) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="form-group" id="push-user-group" style="display:none">
+                <label for="push_user_id">User id <small>(32-hex — copy from the Users page)</small></label>
+                <input type="text" id="push_user_id" name="push_user_id" maxlength="32" placeholder="e.g. 3f2a…"
+                       value="<?= htmlspecialchars($post['push_user_id'] ?? '', ENT_QUOTES) ?>">
+            </div>
+
+            <div class="form-group">
+                <label for="push_title">Push title <small>(blank = a default)</small></label>
+                <input type="text" id="push_title" name="push_title" maxlength="80"
+                       value="<?= htmlspecialchars($post['push_title'] ?? '', ENT_QUOTES) ?>" placeholder="⚡ Hilads Campaign — 2× points">
+            </div>
+            <div class="form-group">
+                <label for="push_body">Push body <small>(blank = the challenge title + hook)</small></label>
+                <input type="text" id="push_body" name="push_body" maxlength="160"
+                       value="<?= htmlspecialchars($post['push_body'] ?? '', ENT_QUOTES) ?>" placeholder="Take it on for DOUBLE points! 🏆">
+            </div>
+        </div>
+
         <button type="submit" class="btn btn-primary">Create &amp; share campaign 🚀</button>
     </form>
 </div>
@@ -225,6 +308,17 @@ function toggleScope() {
     document.getElementById('origin_city_id').required = (v !== 'global');
 }
 toggleScope();
+
+function togglePush() {
+    document.getElementById('push-fields').style.display = document.getElementById('push_enabled').checked ? 'block' : 'none';
+}
+function togglePushAud() {
+    var v = (document.querySelector('input[name=push_audience]:checked') || {}).value;
+    document.getElementById('push-city-group').style.display = (v === 'city') ? 'block' : 'none';
+    document.getElementById('push-user-group').style.display = (v === 'user') ? 'block' : 'none';
+}
+togglePush();
+togglePushAud();
 </script>
 <?php
 admin_foot();
