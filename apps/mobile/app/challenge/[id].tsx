@@ -36,6 +36,7 @@ import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import i18n from '@/i18n';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
+import { CampaignCelebration } from '@/features/challenge/CampaignCelebration';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
@@ -70,6 +71,10 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
   help:    '🤪',
 };
 
+// Campaign celebration fires once per challenge per app session (so re-opening
+// the same campaign doesn't re-confetti on every visit).
+const celebratedCampaigns = new Set<string>();
+
 export default function ChallengeChatScreen() {
   const router = useRouter();
   const { t } = useTranslation('challenge');
@@ -83,6 +88,14 @@ export default function ChallengeChatScreen() {
 
   const [challenge,        setChallenge]        = useState<Challenge | null>(null);
   const [challengeLoading, setChallengeLoading] = useState(true);
+  // Campaign (2× points) arrival celebration - confetti + badge, once per session.
+  const [showCampaignCelebration, setShowCampaignCelebration] = useState(false);
+  useEffect(() => {
+    if (challenge?.is_campaign && id && !celebratedCampaigns.has(id)) {
+      celebratedCampaigns.add(id);
+      setShowCampaignCelebration(true);
+    }
+  }, [challenge?.is_campaign, id]);
   // Carry these alongside the challenge so the post-create modal can fetch
   // city members and label them by city name without re-querying.
   const [challengeCityName,    setChallengeCityName]    = useState<string | null>(null);
@@ -1422,7 +1435,9 @@ export default function ChallengeChatScreen() {
           acceptance={effectiveActiveAcceptance}
           iAmCreator={isOwner}
           myUserId={account?.id ?? null}
-          mode={challenge.mode ?? 'local'}
+          // A 'global' campaign is a cross-city photo-proof contest; the pipeline
+          // only models local/international, so treat global like international.
+          mode={(challenge.mode === 'global' ? 'international' : challenge.mode) ?? 'local'}
           validationMethod={challenge.validation_method ?? 'meet'}
           onPress={(() => {
             // Local + meet only: open date picker. Local + photo_proof has
@@ -2309,6 +2324,9 @@ export default function ChallengeChatScreen() {
           router.push('/challenge/create' as never);
         }}
       />
+      {showCampaignCelebration && (
+        <CampaignCelebration onDone={() => setShowCampaignCelebration(false)} />
+      )}
     </SafeAreaView>
   );
 }
