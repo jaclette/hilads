@@ -97,6 +97,7 @@ $savedAudience = 'all';
 $savedCity     = '';
 $savedUserId   = '';
 $savedDeepLink = '';
+$savedImageUrl = '';
 
 if ($method === 'POST') {
     csrf_verify();
@@ -139,6 +140,16 @@ if ($method === 'POST') {
         $deepLinkCustom = trim((string) ($_POST['deep_link_custom'] ?? ''));
         $deepLink = $deepLinkCustom !== '' ? $deepLinkCustom : ($deepLinkPreset !== '' ? $deepLinkPreset : null);
 
+        // Optional campaign image → a big-picture, colorful "special" push
+        // (Android rich notification). Must be an https image URL. Threaded into
+        // the push data as imageUrl; MobilePushService turns it into richContent.
+        $imageUrl  = trim((string) ($_POST['image_url'] ?? ''));
+        if ($imageUrl !== '' && !preg_match('#^https://\S+#i', $imageUrl)) {
+            $imageUrl = ''; // ignore non-https / malformed - degrade to a normal push
+        }
+        $pushExtra = $imageUrl !== '' ? ['imageUrl' => $imageUrl] : [];
+        $savedImageUrl = (string) ($_POST['image_url'] ?? '');
+
         // Save form values for re-rendering on validation failure.
         $savedTitle    = $title;
         $savedBody     = $body;
@@ -171,7 +182,7 @@ if ($method === 'POST') {
                                 $title, $body, $audienceType, $audienceFilter, $deepLink,
                                 count($userIds),
                             );
-                            $result = PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink);
+                            $result = PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink, $pushExtra);
                             $flash = "Test push sent ({$result['delivered']} delivered, {$result['failed']} failed). Form kept - edit if needed, then send to your audience.";
                             // Intentionally KEEP the form populated after a test: the
                             // whole point of a test is to verify the content, then send
@@ -200,16 +211,16 @@ if ($method === 'POST') {
                         // so the admin doesn't sit on a hanging request while we
                         // POST 50k pushes one by one. The history table reflects
                         // sending → sent as the loop runs.
-                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink, $includeGuests): void {
+                        register_shutdown_function(static function () use ($broadcastId, $userIds, $title, $body, $deepLink, $includeGuests, $pushExtra): void {
                             if (function_exists('fastcgi_finish_request')) {
                                 fastcgi_finish_request();
                             }
                             try {
-                                PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink);
+                                PushBroadcastService::dispatch($broadcastId, $userIds, $title, $body, $deepLink, $pushExtra);
                                 // Guest devices: native-only push after the registered
                                 // dispatch sets status='sent'; this bumps delivered_count.
                                 if ($includeGuests) {
-                                    PushBroadcastService::dispatchGuestTokens($broadcastId, $title, $body, $deepLink);
+                                    PushBroadcastService::dispatchGuestTokens($broadcastId, $title, $body, $deepLink, $pushExtra);
                                 }
                             } catch (\Throwable $e) {
                                 error_log('[admin/push] dispatch crashed for broadcast=' . $broadcastId . ' err=' . $e->getMessage());
@@ -217,7 +228,9 @@ if ($method === 'POST') {
                             }
                         });
 
-                        $flash = "Broadcast started - sending to " . count($userIds) . " user" . (count($userIds) === 1 ? '' : 's') . ". Refresh the history table to watch progress.";
+                        $flash = "Broadcast started - sending to " . count($userIds) . " registered user" . (count($userIds) === 1 ? '' : 's')
+                               . ($includeGuests ? " + " . $guestCount . " unregistered guest device" . ($guestCount === 1 ? '' : 's') : "")
+                               . ". Refresh the history table to watch progress.";
                         $savedTitle = $savedBody = '';
                     }
                 }
@@ -319,6 +332,13 @@ admin_nav('/admin/push');
                 <div class="hint">Or custom path:</div>
                 <input type="text" name="deep_link_custom" placeholder="/event/abc123… (overrides preset)"
                        value="<?= htmlspecialchars($savedDeepLink, ENT_QUOTES) ?>">
+            </div>
+
+            <div class="form-group">
+                <label>🎉 Campaign image <span style="color:#666;font-weight:400">(optional — a big colorful picture for a special campaign push)</span></label>
+                <input type="text" name="image_url" placeholder="https://… (Android big-picture; https only. iOS shows text only.)"
+                       value="<?= htmlspecialchars($savedImageUrl, ENT_QUOTES) ?>">
+                <div class="hint" style="color:#666">Turns the push into a rich, eye-catching notification with your image. Leave blank for a plain push.</div>
             </div>
 
             <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap">

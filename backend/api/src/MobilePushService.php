@@ -193,6 +193,12 @@ class MobilePushService
             // visible immediately.
             $isActionable = $category !== null;
 
+            // Optional big-picture image (Android rich notification) - lets the
+            // admin send a colorful, eye-catching "campaign" push. Rendered by
+            // Expo/Android from the payload; no app change needed. iOS ignores it.
+            $richImage = (isset($data['imageUrl']) && is_string($data['imageUrl']) && $data['imageUrl'] !== '')
+                ? $data['imageUrl'] : null;
+
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => array_filter([
                 'to'         => $token,
@@ -203,6 +209,7 @@ class MobilePushService
                 'channelId'  => 'default', // Android channel defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
                 'priority'   => $isActionable ? 'high' : null,
+                'richContent' => $richImage !== null ? ['image' => $richImage] : null,
                 // iOS-only - make actionable pushes time-sensitive so the
                 // system bypasses focus modes + shows the full banner.
                 '_displayInForeground' => $isActionable ? true : null,
@@ -242,14 +249,17 @@ class MobilePushService
         )));
         if (empty($tokens)) return 0;
 
+        $richImage = (isset($data['imageUrl']) && is_string($data['imageUrl']) && $data['imageUrl'] !== '')
+            ? $data['imageUrl'] : null;
         foreach ($tokens as $token) {
             $message = array_filter([
-                'to'        => $token,
-                'title'     => $title,
-                'body'      => $body ?? '',
-                'data'      => array_merge($data, ['type' => 'admin_announcement']),
-                'sound'     => 'default',
-                'channelId' => 'default',
+                'to'         => $token,
+                'title'      => $title,
+                'body'       => $body ?? '',
+                'data'       => array_merge($data, ['type' => 'admin_announcement']),
+                'sound'      => 'default',
+                'channelId'  => 'default',
+                'richContent' => $richImage !== null ? ['image' => $richImage] : null,
             ], static fn($v) => $v !== null);
             self::$queue[] = ['message' => $message, 'token' => $token];
         }

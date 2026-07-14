@@ -138,12 +138,13 @@ final class PushBroadcastService
         int     $broadcastId,
         string  $title,
         string  $body,
-        ?string $deepLink
+        ?string $deepLink,
+        array   $extraData = []
     ): int {
         $tokens = self::guestTokens();
         if (empty($tokens)) return 0;
 
-        $sent = MobilePushService::sendToTokens($tokens, $title, $body, [
+        $sent = MobilePushService::sendToTokens($tokens, $title, $body, $extraData + [
             'broadcastId' => $broadcastId,
             'deepLink'    => $deepLink ?? '',
         ]);
