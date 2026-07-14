@@ -141,11 +141,19 @@ if ($method === 'POST') {
         $deepLink = $deepLinkCustom !== '' ? $deepLinkCustom : ($deepLinkPreset !== '' ? $deepLinkPreset : null);
 
         // Optional campaign image → a big-picture, colorful "special" push
-        // (Android rich notification). Must be an https image URL. Threaded into
-        // the push data as imageUrl; MobilePushService turns it into richContent.
+        // (Android rich notification). An uploaded file (→ R2) wins over a pasted
+        // URL. Threaded into the push data as imageUrl; MobilePushService turns it
+        // into richContent.
         $imageUrl  = trim((string) ($_POST['image_url'] ?? ''));
         if ($imageUrl !== '' && !preg_match('#^https://\S+#i', $imageUrl)) {
             $imageUrl = ''; // ignore non-https / malformed - degrade to a normal push
+        }
+        $imageUploadError = null;
+        try {
+            $uploadedImg = admin_upload_avatar($_FILES['image_file'] ?? null);
+            if ($uploadedImg !== null) $imageUrl = $uploadedImg;   // R2 public URL
+        } catch (\Throwable $e) {
+            $imageUploadError = 'Campaign image upload failed: ' . $e->getMessage();
         }
         $pushExtra = $imageUrl !== '' ? ['imageUrl' => $imageUrl] : [];
         $savedImageUrl = (string) ($_POST['image_url'] ?? '');
@@ -172,7 +180,9 @@ if ($method === 'POST') {
         $savedUserId   = (string) ($_POST['user_id'] ?? '');
         $savedDeepLink = $deepLinkCustom !== '' ? $deepLinkCustom : $deepLinkPreset;
 
-        if ($title === '' || $body === '') {
+        if ($imageUploadError !== null) {
+            $flashError = $imageUploadError;
+        } elseif ($title === '' || $body === '') {
             $flashError = 'Title and body are required.';
         } elseif (mb_strlen($title) > PUSH_TITLE_MAX) {
             $flashError = 'Title is too long (max ' . PUSH_TITLE_MAX . ' chars).';
@@ -276,7 +286,7 @@ admin_nav('/admin/push');
         <div class="flash flash-error"><?= htmlspecialchars($flashError, ENT_QUOTES) ?></div>
     <?php endif; ?>
 
-    <form method="POST" action="/admin/push" id="push-form">
+    <form method="POST" action="/admin/push" id="push-form" enctype="multipart/form-data">
         <?= csrf_input() ?>
         <input type="hidden" name="action" id="push-action" value="send">
 
@@ -350,9 +360,12 @@ admin_nav('/admin/push');
 
             <div class="form-group">
                 <label>🎉 Campaign image <span style="color:#666;font-weight:400">(optional — a big colorful picture for a special campaign push)</span></label>
-                <input type="text" name="image_url" placeholder="https://… (Android big-picture; https only. iOS shows text only.)"
+                <input type="file" name="image_file" accept="image/jpeg,image/png,image/webp"
+                       style="color:#aaa;font-size:13px;margin-bottom:8px">
+                <div class="hint" style="color:#666;margin-bottom:8px">Upload a picture (JPEG / PNG / WebP, max 5 MB) — or paste a link below.</div>
+                <input type="text" name="image_url" placeholder="…or an https:// image URL"
                        value="<?= htmlspecialchars($savedImageUrl, ENT_QUOTES) ?>">
-                <div class="hint" style="color:#666">Turns the push into a rich, eye-catching notification with your image. Leave blank for a plain push.</div>
+                <div class="hint" style="color:#666">Turns the push into a rich, eye-catching notification (Android big-picture; iOS shows text only). Leave blank for a plain push.</div>
             </div>
 
             <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap">
