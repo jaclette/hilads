@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hilads",
     "slug": "hilads",
-    "version": "1.6.3",
+    "version": "1.6.4",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -19,6 +19,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.hilads.app",
+      "appleTeamId": "3387URLHK7",
       "associatedDomains": [
         "applinks:hilads.live"
       ],
