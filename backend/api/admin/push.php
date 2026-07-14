@@ -549,6 +549,7 @@ admin_nav('/admin/push');
                     <td style="color:#888"><?= htmlspecialchars($aud, ENT_QUOTES) ?></td>
                     <td>
                         <form method="POST" action="/admin/push" onsubmit="return confirm('Cancel this scheduled push?')">
+                            <?= csrf_input() ?>
                             <input type="hidden" name="action" value="cancel_schedule">
                             <input type="hidden" name="schedule_id" value="<?= (int) $s['id'] ?>">
                             <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
