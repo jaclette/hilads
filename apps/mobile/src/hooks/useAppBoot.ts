@@ -79,6 +79,10 @@ export function useAppBoot(): Result {
           })
           .catch(() => {});
         socket.joinCity(city.channelId, sessionId, nickname, undefined, identity.guestId);
+        // The geo-detected reference: powers "Back to my location" AND lets the
+        // GPS city-correction know the user is still on the auto-placed city (so
+        // it can safely fix an IP mislocaction without overriding a manual switch).
+        setDetectedCity(city);
         setJustPlacedCity(city); // one-shot "On t'a placé à {city}" banner
         track('first_launch_city_selected', { chosen_city: city.name, method: 'ip_auto' });
         setJoined(true);

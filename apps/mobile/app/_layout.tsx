@@ -23,6 +23,7 @@ import { useGlobalNotifications } from '@/hooks/useGlobalNotifications';
 import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { usePushRegistration } from '@/hooks/usePushRegistration';
+import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
@@ -126,6 +127,7 @@ function RootLayoutInner() {
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
+  useGpsCityCorrection();          // fix an IP-mislocated city when precise GPS becomes available
 
   // Re-assert WS presence with the correct identity whenever it becomes known.
   // Depend on account AND the join preconditions (joined/city/sessionId), not just

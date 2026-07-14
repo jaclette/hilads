@@ -55,6 +55,7 @@ export type AnalyticsEvent =
   | 'gps_permission_requested'
   | 'gps_permission_granted'
   | 'gps_permission_denied'
+  | 'gps_city_corrected'
   // First-launch IP city detection (no GPS prompt).
   | 'first_launch_ip_detection_started'
   | 'first_launch_ip_detection_resolved'

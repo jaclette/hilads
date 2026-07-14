@@ -1,5 +1,6 @@
 import * as Location from 'expo-location';
 import { track } from '@/services/analytics';
+import { runCityCorrection } from '@/lib/gpsCityCorrection';
 
 export type GpsFeature =
   | 'share_spot'
@@ -53,7 +54,11 @@ export async function requestFeatureLocation(feature: GpsFeature): Promise<GpsRe
 
     const last = await Location.getLastKnownPositionAsync({ maxAge: 10 * 60 * 1000 });
     const pos = last ?? (await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced }));
-    return { ok: true, coords: { lat: pos.coords.latitude, lng: pos.coords.longitude } };
+    const coords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    // Opportunistically fix a city that IP-geolocation placed wrong (no prompt -
+    // we already have a real fix here). Fire-and-forget; never blocks the caller.
+    runCityCorrection(coords);
+    return { ok: true, coords };
   } catch {
     return { ok: false, reason: 'error' };
   }
