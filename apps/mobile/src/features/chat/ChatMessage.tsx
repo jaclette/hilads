@@ -1432,11 +1432,14 @@ const styles = StyleSheet.create({
   sharedLinkCta: {
     alignSelf: 'flex-start', marginTop: 8,
     flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999,
-    // White bg so the CTA pops on the orange (sent) bubble AND the dark (received) one.
-    backgroundColor: '#fff',
+    paddingHorizontal: 14, paddingVertical: 8, borderRadius: 999,
+    // Bright gold pill with dark text - highly visible on BOTH the orange (sent)
+    // and dark (received) bubbles, and more attractive than the old white pill.
+    backgroundColor: '#fbbf24',
+    shadowColor: '#000', shadowOpacity: 0.22, shadowRadius: 5, shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
-  sharedLinkCtaText: { fontSize: 13, fontWeight: '800', color: Colors.accent },
+  sharedLinkCtaText: { fontSize: 13.5, fontWeight: '800', color: '#1a1205', letterSpacing: 0.2 },
   // Campaign share: gold scope pill above a slightly wider CTA.
   sharedLinkCtaCampaign: { alignSelf: 'stretch', justifyContent: 'center' },
   campaignScopePill: {
