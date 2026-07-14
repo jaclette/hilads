@@ -141,16 +141,11 @@ function admin_upload_notification_image(?array $file): ?string
     $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
     if (!isset($allowed[$mime])) throw new \RuntimeException('Image must be a JPEG, PNG, or WebP.');
 
-    // Letterbox so the whole picture shows in the Android big-picture push.
-    $boxed = admin_letterbox_2to1($file['tmp_name'], $mime);
-    $path  = $boxed ?? $file['tmp_name'];
-    $upMime = $boxed ? 'image/jpeg' : $mime;
-    $ext    = $boxed ? 'jpg' : $allowed[$mime];
-
-    $filename = 'campaign-' . bin2hex(random_bytes(12)) . '.' . $ext;
-    $url      = \R2Uploader::put($path, $filename, $upMime);
-    if ($boxed) @unlink($boxed);
-    return $url;
+    // Upload the ORIGINAL image (no letterbox): the letterboxed 2:1 version shows
+    // the whole picture but renders small in Android's collapsed notification.
+    // The big center-cropped original reads better, so we keep it as-is.
+    $filename = 'campaign-' . bin2hex(random_bytes(12)) . '.' . $allowed[$mime];
+    return \R2Uploader::put($file['tmp_name'], $filename, $mime);
 }
 
 // ── POST handling ────────────────────────────────────────────────────────────
@@ -164,6 +159,7 @@ $savedCity     = '';
 $savedUserId   = '';
 $savedDeepLink = '';
 $savedImageUrl = '';
+$savedSchedule = '';
 
 if ($method === 'POST') {
     csrf_verify();
@@ -195,6 +191,15 @@ if ($method === 'POST') {
         [$audienceType, $audienceFilter] = admin_push_parse_audience();
         echo json_encode(['count' => PushBroadcastService::countAudience($audienceType, $audienceFilter)]);
         exit;
+    }
+
+    if ($action === 'cancel_schedule') {
+        $sid = (int) ($_POST['schedule_id'] ?? 0);
+        if ($sid > 0) {
+            Database::pdo()->prepare("UPDATE scheduled_pushes SET status='cancelled' WHERE id=? AND status='scheduled'")
+                ->execute([$sid]);
+            $flash = 'Scheduled push cancelled.';
+        }
     }
 
     if ($action === 'send' || $action === 'test') {
@@ -239,6 +244,26 @@ if ($method === 'POST') {
             }
         }
 
+        // Optional scheduling: a datetime-local value (interpreted in ops time,
+        // UTC+7) → store the push and let the cron dispatch it when due. Blank =
+        // send now. Only applies to the real 'send' action, never a test.
+        $scheduleAt    = trim((string) ($_POST['schedule_at'] ?? ''));
+        $savedSchedule = $scheduleAt;
+        $scheduledFor  = null;   // timestamptz string when a valid future time
+        $scheduleError = null;
+        if ($scheduleAt !== '' && $action === 'send') {
+            try {
+                $dt = new DateTime($scheduleAt, new DateTimeZone('Asia/Ho_Chi_Minh'));
+                if ($dt->getTimestamp() > time() + 30) {
+                    $scheduledFor = $dt->format('Y-m-d H:i:sP');
+                } else {
+                    $scheduleError = 'Scheduled time must be in the future.';
+                }
+            } catch (\Throwable $e) {
+                $scheduleError = 'Invalid schedule time.';
+            }
+        }
+
         // Save form values for re-rendering on validation failure.
         $savedTitle    = $title;
         $savedBody     = $body;
@@ -249,6 +274,8 @@ if ($method === 'POST') {
 
         if ($imageUploadError !== null) {
             $flashError = $imageUploadError;
+        } elseif ($scheduleError !== null) {
+            $flashError = $scheduleError;
         } elseif ($title === '' || $body === '') {
             $flashError = 'Title and body are required.';
         } elseif (mb_strlen($title) > PUSH_TITLE_MAX) {
@@ -257,7 +284,22 @@ if ($method === 'POST') {
             $flashError = 'Body is too long (max ' . PUSH_BODY_MAX . ' chars).';
         } else {
             try {
-                if ($action === 'test') {
+                if ($action === 'send' && $scheduledFor !== null) {
+                    // ── Schedule for later: store; the cron dispatches when due ──
+                    [$audienceType, $audienceFilter] = admin_push_parse_audience();
+                    $includeGuests = ($audienceType === 'all_installs');
+                    Database::pdo()->prepare("
+                        INSERT INTO scheduled_pushes
+                            (title, body, audience_type, audience_filter, deep_link, extra_data, include_guests, send_at, created_by)
+                        VALUES (?, ?, ?, ?::jsonb, ?, ?::jsonb, ?, ?::timestamptz, ?)
+                    ")->execute([
+                        $title, $body, $audienceType, json_encode($audienceFilter),
+                        $deepLink, json_encode((object) $pushExtra), $includeGuests ? 'true' : 'false',
+                        $scheduledFor, admin_push_username(),
+                    ]);
+                    $flash = 'Push scheduled for ' . htmlspecialchars($scheduleAt, ENT_QUOTES) . ' (UTC+7). It will send automatically.';
+                    $savedTitle = $savedBody = $savedSchedule = '';
+                } elseif ($action === 'test') {
                     $testUserId = admin_push_test_user_id();
                     if ($testUserId === null) {
                         $flashError = 'Test send requires ADMIN_TEST_USER_ID env var to be set.';
@@ -435,6 +477,13 @@ admin_nav('/admin/push');
                 <div class="hint" style="color:#666">Turns the push into a rich, eye-catching notification (Android big-picture; iOS shows text only). Leave blank for a plain push.</div>
             </div>
 
+            <div class="form-group">
+                <label>🕑 Schedule for later <span style="color:#666;font-weight:400">(optional — leave blank to send now)</span></label>
+                <input type="datetime-local" name="schedule_at" value="<?= htmlspecialchars($savedSchedule, ENT_QUOTES) ?>"
+                       style="color:#eee;background:#1a1a1a;border:1px solid #333;border-radius:6px;padding:6px 8px;font-size:13px">
+                <div class="hint" style="color:#666">Time is UTC+7 (ops time). The push is stored and sent automatically at that time by the cron.</div>
+            </div>
+
             <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap">
                 <?php if ($testUserId): ?>
                     <button type="button" id="btn-test" class="btn btn-secondary">
@@ -452,6 +501,49 @@ admin_nav('/admin/push');
             </div>
         </div>
     </form>
+
+    <?php
+    $scheduled = [];
+    try {
+        $scheduled = Database::pdo()->query("
+            SELECT id, title, body, audience_type, send_at, created_by,
+                   to_char(send_at AT TIME ZONE 'Asia/Ho_Chi_Minh', 'YYYY-MM-DD HH24:MI') AS send_local
+            FROM scheduled_pushes
+            WHERE status = 'scheduled'
+            ORDER BY send_at ASC
+            LIMIT 50
+        ")->fetchAll(\PDO::FETCH_ASSOC);
+    } catch (\Throwable $e) { /* table may not exist until migration runs */ }
+    ?>
+    <?php if (!empty($scheduled)): ?>
+        <h2 style="margin-top:32px;margin-bottom:12px;color:#ccc;font-size:18px">🕑 Scheduled (<?= count($scheduled) ?>)</h2>
+        <table class="admin-table" style="width:100%">
+            <thead><tr>
+                <th style="width:150px">When (UTC+7)</th><th>Title</th><th style="width:130px">Audience</th><th style="width:90px">Actions</th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($scheduled as $s):
+                $aud = match ($s['audience_type']) {
+                    'all' => 'All registered', 'all_installs' => 'All installs (+guests)',
+                    'city' => 'City', 'user' => 'One user', default => $s['audience_type'],
+                }; ?>
+                <tr>
+                    <td style="color:#eee;white-space:nowrap">🕑 <?= htmlspecialchars($s['send_local'], ENT_QUOTES) ?></td>
+                    <td class="td-clip"><strong style="color:#ddd"><?= htmlspecialchars($s['title'], ENT_QUOTES) ?></strong>
+                        <span style="color:#666;display:block;font-size:11px"><?= htmlspecialchars(mb_strimwidth((string) $s['body'], 0, 70, '…'), ENT_QUOTES) ?></span></td>
+                    <td style="color:#888"><?= htmlspecialchars($aud, ENT_QUOTES) ?></td>
+                    <td>
+                        <form method="POST" action="/admin/push" onsubmit="return confirm('Cancel this scheduled push?')">
+                            <input type="hidden" name="action" value="cancel_schedule">
+                            <input type="hidden" name="schedule_id" value="<?= (int) $s['id'] ?>">
+                            <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
 
     <h2 style="margin-top:32px;margin-bottom:12px;color:#ccc;font-size:18px">Recent broadcasts</h2>
     <table class="admin-table" style="width:100%">
@@ -583,11 +675,14 @@ async function confirmAndSend() {
 
     const title = form.querySelector('input[name=title]').value;
     const body  = form.querySelector('textarea[name=body]').value;
+    const when  = (form.querySelector('input[name=schedule_at]').value || '').trim();
     const ok = confirm(
         '🔔 PUSH NOTIFICATION CONFIRMATION\n\n' +
         'Title: ' + title + '\n' +
         'Body:  ' + body + '\n\n' +
-        'This will send to ' + count.toLocaleString() + ' user' + (count === 1 ? '' : 's') + '.\n\n' +
+        (when
+            ? '🕑 Scheduled for ' + when.replace('T', ' ') + ' (UTC+7)\nAudience ~' + count.toLocaleString() + ' user' + (count === 1 ? '' : 's') + ' at send time.\n\n'
+            : 'This will send NOW to ' + count.toLocaleString() + ' user' + (count === 1 ? '' : 's') + '.\n\n') +
         'Are you sure?'
     );
     if (!ok) return;

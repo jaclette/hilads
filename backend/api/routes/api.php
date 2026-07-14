@@ -891,7 +891,60 @@ $router->add('GET', '/internal/run-cron', function () {
         $stmt->execute();
         $closed = $stmt->fetchAll(\PDO::FETCH_COLUMN);
         error_log('[cron] auto-closed ' . count($closed) . ' photo-proof contest(s)');
-        Response::json(['ok' => true, 'photo_proof_auto_closed' => count($closed)]);
+
+        // ── Scheduled pushes: dispatch any that are now due ───────────────────
+        // Atomically claim due rows (status → 'sending') so overlapping cron
+        // ticks can't double-send, then dispatch each outside the claim.
+        $pushDispatched = 0;
+        $pdo = Database::pdo();
+        $claim = $pdo->query("
+            UPDATE scheduled_pushes
+            SET status = 'sending'
+            WHERE id IN (
+                SELECT id FROM scheduled_pushes
+                WHERE status = 'scheduled' AND send_at <= now()
+                ORDER BY send_at ASC
+                LIMIT 20
+                FOR UPDATE SKIP LOCKED
+            )
+            RETURNING id, title, body, audience_type, audience_filter, deep_link, extra_data, include_guests
+        ")->fetchAll(\PDO::FETCH_ASSOC);
+
+        foreach ($claim as $row) {
+            try {
+                $audienceType   = (string) $row['audience_type'];
+                $audienceFilter = json_decode((string) ($row['audience_filter'] ?: '{}'), true) ?: [];
+                $extra          = json_decode((string) ($row['extra_data'] ?: '{}'), true) ?: [];
+                $deepLink       = ($row['deep_link'] ?? '') !== '' ? (string) $row['deep_link'] : null;
+                $includeGuests  = ($audienceType === 'all_installs') || !empty($row['include_guests']);
+
+                $userIds    = PushBroadcastService::resolveAudience($audienceType, $audienceFilter);
+                $guestCount = $includeGuests ? count(PushBroadcastService::guestTokens()) : 0;
+                $total      = count($userIds) + $guestCount;
+
+                if ($total > 0) {
+                    $bid = PushBroadcastService::recordBroadcast(
+                        'scheduler', null, (string) $row['title'], (string) $row['body'],
+                        $audienceType, $audienceFilter, $deepLink, $total,
+                    );
+                    PushBroadcastService::dispatch($bid, $userIds, (string) $row['title'], (string) $row['body'], $deepLink, $extra);
+                    if ($includeGuests) {
+                        PushBroadcastService::dispatchGuestTokens($bid, (string) $row['title'], (string) $row['body'], $deepLink, $extra);
+                    }
+                } else {
+                    $bid = null;
+                }
+                $pdo->prepare("UPDATE scheduled_pushes SET status='sent', sent_at=now(), broadcast_id=?, recipient_count=? WHERE id=?")
+                    ->execute([$bid, $total, $row['id']]);
+                $pushDispatched++;
+            } catch (\Throwable $e) {
+                $pdo->prepare("UPDATE scheduled_pushes SET status='failed', error=? WHERE id=?")
+                    ->execute([substr($e->getMessage(), 0, 500), $row['id']]);
+                error_log('[cron] scheduled push ' . $row['id'] . ' failed: ' . $e->getMessage());
+            }
+        }
+
+        Response::json(['ok' => true, 'photo_proof_auto_closed' => count($closed), 'scheduled_pushes_dispatched' => $pushDispatched]);
     } catch (\Throwable $e) {
         error_log('[cron] run-cron failed: ' . $e->getMessage());
         Response::json(['error' => 'cron failed'], 500);
@@ -1334,6 +1387,34 @@ $router->add('GET', '/internal/run-migrations', function () {
         $log[] = "admin+campaign: is_admin/is_campaign columns, @hilads seed, score_event adjust trigger ensured";
     } catch (\Throwable $e) {
         $errors[] = "admin+campaign: " . $e->getMessage();
+    }
+
+    // ── 8c. Scheduled push notifications ──────────────────────────────────────
+    try {
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS scheduled_pushes (
+                id              BIGSERIAL PRIMARY KEY,
+                title           TEXT NOT NULL,
+                body            TEXT NOT NULL,
+                audience_type   TEXT NOT NULL,
+                audience_filter JSONB NOT NULL DEFAULT '{}',
+                deep_link       TEXT,
+                extra_data      JSONB NOT NULL DEFAULT '{}',
+                include_guests  BOOLEAN NOT NULL DEFAULT false,
+                send_at         TIMESTAMPTZ NOT NULL,
+                status          TEXT NOT NULL DEFAULT 'scheduled',
+                created_by      TEXT,
+                created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+                sent_at         TIMESTAMPTZ,
+                broadcast_id    BIGINT,
+                recipient_count INT,
+                error           TEXT
+            )
+        ");
+        $pdo->exec("CREATE INDEX IF NOT EXISTS idx_scheduled_pushes_due ON scheduled_pushes (send_at) WHERE status = 'scheduled'");
+        $log[] = "scheduled_pushes table ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "scheduled_pushes: " . $e->getMessage();
     }
 
     // ── 9. Summary query ──────────────────────────────────────────────────────
