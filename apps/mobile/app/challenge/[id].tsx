@@ -3,6 +3,7 @@ import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'r
 import {
   View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList, Platform,
+  Keyboard,
 } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -1004,6 +1005,14 @@ export default function ChallengeChatScreen() {
   // no-op onScroll keeps the prop wired in case we want to re-introduce
   // a debounced behavior later.
   const onChatScroll = useCallback(() => {}, []);
+  // Re-expand the header whenever the keyboard hides. onBlur handles the normal
+  // "tap away" case, but dismissing the keyboard via the system back gesture /
+  // swipe doesn't blur the input on Android (it keeps focus) - so without this
+  // the header would stay collapsed after the keyboard closes.
+  useEffect(() => {
+    const sub = Keyboard.addListener('keyboardDidHide', () => collapseTo(0));
+    return () => sub.remove();
+  }, [collapseTo]);
   // Expanded cap = the MEASURED natural height of the collapsible header, so it
   // never clips whichever flow renders. The old fixed 320 clipped the members
   // strip once the photo-proof "Waiting for the verdict" card was added. Starts
