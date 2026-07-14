@@ -894,8 +894,11 @@ $router->add('GET', '/internal/run-cron', function () {
 
         // ── Scheduled pushes: dispatch any that are now due ───────────────────
         // Atomically claim due rows (status → 'sending') so overlapping cron
-        // ticks can't double-send, then dispatch each outside the claim.
+        // ticks can't double-send, then dispatch each outside the claim. Isolated
+        // in its own try/catch so a missing table (migration not run yet) or a
+        // dispatch error never fails the whole cron.
         $pushDispatched = 0;
+        try {
         $pdo = Database::pdo();
         $claim = $pdo->query("
             UPDATE scheduled_pushes
@@ -942,6 +945,10 @@ $router->add('GET', '/internal/run-cron', function () {
                     ->execute([substr($e->getMessage(), 0, 500), $row['id']]);
                 error_log('[cron] scheduled push ' . $row['id'] . ' failed: ' . $e->getMessage());
             }
+        }
+        } catch (\Throwable $e) {
+            // e.g. scheduled_pushes table doesn't exist yet - skip, don't 500 the cron.
+            error_log('[cron] scheduled-push dispatch skipped: ' . $e->getMessage());
         }
 
         Response::json(['ok' => true, 'photo_proof_auto_closed' => count($closed), 'scheduled_pushes_dispatched' => $pushDispatched]);
