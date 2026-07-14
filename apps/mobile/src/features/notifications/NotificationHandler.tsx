@@ -20,6 +20,7 @@ import { resolveHangoutJoinRequest } from '@/api/topics';
 import { acceptInvitation, ignoreInvitation, acceptChallenge } from '@/api/challenges';
 import { track } from '@/services/analytics';
 import { requestWorldScopeOpen } from '@/lib/worldScopeOpen';
+import { parseSharedHiladsLink, sharedLinkRoute } from '@/lib/sharedLink';
 
 // ── Cold-start notification - resolved at module load ─────────────────────────
 // Start this promise immediately when the module is first imported, BEFORE any
@@ -94,7 +95,19 @@ type NotifData = {
   challengeId?:     string; // challenge_invitation / takeon_request
   invitationId?:    string; // challenge_invitation - id of the invitation row
   inviterName?:     string;
+  deepLink?:        string; // admin push broadcast - a raw in-app path to open on tap
 };
+
+// Admin push broadcasts carry a raw path in data.deepLink (e.g. the "Deep link"
+// field on /admin/push) instead of a typed id. Normalize a slug-prefixed
+// challenge/event/topic link to its clean id (matching the shared-link parser),
+// and pass any other in-app path through as-is.
+function deepLinkRoute(data: NotifData): string | null {
+  const dl = data.deepLink;
+  if (typeof dl !== 'string' || !dl.startsWith('/')) return null;
+  const parsed = parseSharedHiladsLink('https://hilads.live' + dl);
+  return parsed ? sharedLinkRoute(parsed) : dl;
+}
 
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
@@ -313,7 +326,8 @@ function resolveRoute(data: NotifData): string | null {
       // Any other challenge_* notification that carries a challengeId still
       // opens the challenge rather than dead-ending.
       if (data.challengeId) return `/challenge/${data.challengeId}`;
-      return null;
+      // Admin push broadcast with a "Deep link" path (no typed id) → open it.
+      return deepLinkRoute(data);
   }
 }
 
