@@ -251,7 +251,7 @@ if ($method === 'POST') {
         $savedSchedule = $scheduleAt;
         $scheduledFor  = null;   // timestamptz string when a valid future time
         $scheduleError = null;
-        if ($scheduleAt !== '' && $action === 'send') {
+        if ($scheduleAt !== '' && ($action === 'send' || $action === 'test')) {
             try {
                 $dt = new DateTime($scheduleAt, new DateTimeZone('Asia/Ho_Chi_Minh'));
                 if ($dt->getTimestamp() > time() + 30) {
@@ -284,21 +284,36 @@ if ($method === 'POST') {
             $flashError = 'Body is too long (max ' . PUSH_BODY_MAX . ' chars).';
         } else {
             try {
-                if ($action === 'send' && $scheduledFor !== null) {
+                if ($scheduledFor !== null && ($action === 'send' || $action === 'test')) {
                     // ── Schedule for later: store; the cron dispatches when due ──
-                    [$audienceType, $audienceFilter] = admin_push_parse_audience();
-                    $includeGuests = ($audienceType === 'all_installs');
-                    Database::pdo()->prepare("
-                        INSERT INTO scheduled_pushes
-                            (title, body, audience_type, audience_filter, deep_link, extra_data, include_guests, send_at, created_by)
-                        VALUES (?, ?, ?, ?::jsonb, ?, ?::jsonb, ?, ?::timestamptz, ?)
-                    ")->execute([
-                        $title, $body, $audienceType, json_encode($audienceFilter),
-                        $deepLink, json_encode((object) $pushExtra), $includeGuests ? 'true' : 'false',
-                        $scheduledFor, admin_push_username(),
-                    ]);
-                    $flash = 'Push scheduled for ' . htmlspecialchars($scheduleAt, ENT_QUOTES) . ' (UTC+7). It will send automatically.';
-                    $savedTitle = $savedBody = $savedSchedule = '';
+                    // A scheduled TEST targets only the admin's test device.
+                    if ($action === 'test') {
+                        $testUserId = admin_push_test_user_id();
+                        if ($testUserId === null) {
+                            $flashError = 'Test send requires ADMIN_TEST_USER_ID env var to be set.';
+                        } else {
+                            $audienceType   = 'test';
+                            $audienceFilter = ['userId' => $testUserId];
+                            $includeGuests  = false;
+                        }
+                    } else {
+                        [$audienceType, $audienceFilter] = admin_push_parse_audience();
+                        $includeGuests = ($audienceType === 'all_installs');
+                    }
+                    if ($flashError === null) {
+                        Database::pdo()->prepare("
+                            INSERT INTO scheduled_pushes
+                                (title, body, audience_type, audience_filter, deep_link, extra_data, include_guests, send_at, created_by)
+                            VALUES (?, ?, ?, ?::jsonb, ?, ?::jsonb, ?, ?::timestamptz, ?)
+                        ")->execute([
+                            $title, $body, $audienceType, json_encode($audienceFilter),
+                            $deepLink, json_encode((object) $pushExtra), $includeGuests ? 'true' : 'false',
+                            $scheduledFor, admin_push_username(),
+                        ]);
+                        $flash = ($action === 'test' ? 'Test push' : 'Push') . ' scheduled for '
+                               . htmlspecialchars($scheduleAt, ENT_QUOTES) . ' (UTC+7). It will send automatically.';
+                        $savedTitle = $savedBody = $savedSchedule = '';
+                    }
                 } elseif ($action === 'test') {
                     $testUserId = admin_push_test_user_id();
                     if ($testUserId === null) {
