@@ -6,11 +6,13 @@
  * "Join {city} 🔥", joins that city); anything else → State B (fall back to the
  * featured city; "unknown" additionally flips the CTA to the picker).
  *
- * Source: Vercel's edge geo headers (populated automatically by Vercel's
- * network — no external service, no API key, no browser GPS/permission prompt):
- *   x-vercel-ip-country   ISO-2 country (e.g. "FR")
- *   x-vercel-ip-latitude  approximate visitor latitude
- *   x-vercel-ip-longitude approximate visitor longitude
+ * Source: a precise IP→coords lookup via ipinfo.io (Vercel's own edge geo
+ * headers mislocate some ISP ranges by hundreds of km — e.g. Free SAS in France
+ * resolves to Strasbourg instead of the actual Bayonne area). If ipinfo fails or
+ * times out we fall back to Vercel's edge headers (x-vercel-ip-country /
+ * -latitude / -longitude). No browser GPS/permission prompt either way. The
+ * visitor IP is sent to ipinfo for the lookup only — never logged or returned.
+ * IPINFO_TOKEN (optional env var) raises the rate limit.
  *
  * The supported-city coordinates are BUNDLED (api/_cities.mjs) rather than
  * fetched from the backend per request: a cold lambda doing a backend round-trip
@@ -69,14 +71,57 @@ function resolve(country, lat, lng) {
   return { state: 'city_unknown', city: null, via: 'none' }
 }
 
-export default function handler(req, res) {
-  const country = (req.headers['x-vercel-ip-country'] || '').toString().toUpperCase()
-  const lat = parseFloat(req.headers['x-vercel-ip-latitude'])
-  const lng = parseFloat(req.headers['x-vercel-ip-longitude'])
+// Vercel's edge geo headers mislocate some ISP ranges badly (e.g. Free SAS in
+// France → Strasbourg instead of the actual Bayonne/Basque coast), so we prefer
+// a dedicated provider (ipinfo.io) and fall back to the edge headers on any
+// failure/timeout. The IP is sent to ipinfo for the lookup only — we still never
+// log or return it. Set IPINFO_TOKEN (optional) for higher rate limits.
+const IPINFO_TIMEOUT_MS = 1500
 
+function clientIp(req) {
+  const xff = (req.headers['x-forwarded-for'] || '').toString()
+  const first = xff.split(',')[0].trim()
+  return first || (req.headers['x-real-ip'] || '').toString().trim()
+}
+
+async function preciseLookup(ip) {
+  if (!ip) return null
+  const token = process.env.IPINFO_TOKEN
+  const url = `https://ipinfo.io/${encodeURIComponent(ip)}/json${token ? `?token=${encodeURIComponent(token)}` : ''}`
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), IPINFO_TIMEOUT_MS)
+  try {
+    const r = await fetch(url, { headers: { Accept: 'application/json' }, signal: controller.signal })
+    if (!r.ok) return null
+    const d = await r.json()
+    if (typeof d.loc === 'string' && d.loc.includes(',')) {
+      const [lat, lng] = d.loc.split(',').map(Number)
+      if (Number.isFinite(lat) && Number.isFinite(lng)) {
+        return { lat, lng, country: (d.country || '').toString().toUpperCase() }
+      }
+    }
+    return null
+  } catch {
+    return null // timeout / network / parse → fall back to Vercel headers
+  } finally {
+    clearTimeout(timer)
+  }
+}
+
+export default async function handler(req, res) {
   // Per-visitor result — must NOT be shared across visitors by the CDN.
   res.setHeader('Cache-Control', 'private, no-store')
   res.setHeader('Content-Type', 'application/json')
+
+  // Primary: precise ipinfo lookup. Fallback: Vercel's edge geo headers.
+  let country = (req.headers['x-vercel-ip-country'] || '').toString().toUpperCase()
+  let lat = parseFloat(req.headers['x-vercel-ip-latitude'])
+  let lng = parseFloat(req.headers['x-vercel-ip-longitude'])
+  let source = 'vercel'
+  try {
+    const p = await preciseLookup(clientIp(req))
+    if (p) { lat = p.lat; lng = p.lng; if (p.country) country = p.country; source = 'ipinfo' }
+  } catch { /* keep Vercel values */ }
 
   try {
     const { state, city, via } = resolve(country, lat, lng)
@@ -91,8 +136,9 @@ export default function handler(req, res) {
             timezone: city.tz,
             detectedCity: city.c,
             via,
+            source,
           }
-        : { state, detectedCity: 'unknown', via },
+        : { state, detectedCity: 'unknown', via, source },
     ))
   } catch {
     // Any failure → State B. Never blocks the client.
