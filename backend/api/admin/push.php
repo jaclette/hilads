@@ -150,6 +150,20 @@ if ($method === 'POST') {
         $pushExtra = $imageUrl !== '' ? ['imageUrl' => $imageUrl] : [];
         $savedImageUrl = (string) ($_POST['image_url'] ?? '');
 
+        // Extract a typed id from a challenge/event/topic deep link and attach it
+        // as challengeId/eventId/topicId. The native app routes on those ids in
+        // its default push handler, so the tap opens the right screen even on
+        // builds that don't yet honor the generic `deepLink` path field.
+        if ($deepLink !== null) {
+            if (preg_match('#/challenge/(?:[a-z0-9-]+-)?([a-f0-9]{16})#i', $deepLink, $mm)) {
+                $pushExtra['challengeId'] = $mm[1];
+            } elseif (preg_match('#/(?:event|e)/(?:[a-z0-9-]+-)?([a-f0-9]{16})#i', $deepLink, $mm)) {
+                $pushExtra['eventId'] = $mm[1];
+            } elseif (preg_match('#/(?:topic|t)/(?:[a-z0-9-]+-)?([a-f0-9]{16})#i', $deepLink, $mm)) {
+                $pushExtra['topicId'] = $mm[1];
+            }
+        }
+
         // Save form values for re-rendering on validation failure.
         $savedTitle    = $title;
         $savedBody     = $body;
