@@ -209,7 +209,10 @@ class MobilePushService
                 'channelId'  => 'default', // Android channel defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
                 'priority'   => $isActionable ? 'high' : null,
-                'richContent' => $richImage !== null ? ['image' => $richImage] : null,
+                // Android big-picture. On iOS, mutableContent lets the
+                // Notification Service Extension download + attach the image.
+                'richContent'    => $richImage !== null ? ['image' => $richImage] : null,
+                'mutableContent' => $richImage !== null ? true : null,
                 // iOS-only - make actionable pushes time-sensitive so the
                 // system bypasses focus modes + shows the full banner.
                 '_displayInForeground' => $isActionable ? true : null,

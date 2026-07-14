@@ -87,6 +87,72 @@ function admin_push_parse_audience(): array
     }
 }
 
+/**
+ * Letterbox an image onto a 2:1 dark canvas (contain, centered). Android's
+ * big-picture notification crops to ~2:1 and would clip a portrait image; fitting
+ * the WHOLE image on a 2:1 canvas guarantees nothing is cut off. Returns the path
+ * to a temp JPEG, or null if GD is unavailable / the source can't be decoded.
+ */
+function admin_letterbox_2to1(string $srcPath, string $mime): ?string
+{
+    if (!extension_loaded('gd')) return null;
+    $src = match ($mime) {
+        'image/jpeg' => @imagecreatefromjpeg($srcPath),
+        'image/png'  => @imagecreatefrompng($srcPath),
+        'image/webp' => @imagecreatefromwebp($srcPath),
+        default      => null,
+    };
+    if (!$src) return null;
+    $sw = imagesx($src); $sh = imagesy($src);
+    if ($sw < 1 || $sh < 1) { imagedestroy($src); return null; }
+
+    $cw = 1080; $ch = 540;                              // 2:1 canvas
+    $canvas = imagecreatetruecolor($cw, $ch);
+    $bg = imagecolorallocate($canvas, 0x16, 0x13, 0x10); // app dark surface
+    imagefilledrectangle($canvas, 0, 0, $cw, $ch, $bg);
+
+    $scale = min($cw / $sw, $ch / $sh);                 // contain
+    $dw = max(1, (int) round($sw * $scale));
+    $dh = max(1, (int) round($sh * $scale));
+    $dx = (int) (($cw - $dw) / 2);
+    $dy = (int) (($ch - $dh) / 2);
+    imagecopyresampled($canvas, $src, $dx, $dy, 0, 0, $dw, $dh, $sw, $sh);
+
+    $tmp = tempnam(sys_get_temp_dir(), 'push_img');
+    $ok  = imagejpeg($canvas, $tmp, 88);
+    imagedestroy($src); imagedestroy($canvas);
+    return $ok ? $tmp : null;
+}
+
+/**
+ * Validate + letterbox + upload a campaign image to R2. Returns the public URL,
+ * null when no file was selected, or throws with a user-facing message.
+ */
+function admin_upload_notification_image(?array $file): ?string
+{
+    if ($file === null || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+    if ($file['error'] !== UPLOAD_ERR_OK)  throw new \RuntimeException('Image upload failed (code ' . $file['error'] . ').');
+    if (!is_uploaded_file($file['tmp_name'])) throw new \RuntimeException('Invalid image upload.');
+    if ($file['size'] > 5 * 1024 * 1024)   throw new \RuntimeException('Image must be under 5 MB.');
+
+    $mime    = (new \finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    if (!isset($allowed[$mime])) throw new \RuntimeException('Image must be a JPEG, PNG, or WebP.');
+
+    // Letterbox so the whole picture shows in the Android big-picture push.
+    $boxed = admin_letterbox_2to1($file['tmp_name'], $mime);
+    $path  = $boxed ?? $file['tmp_name'];
+    $upMime = $boxed ? 'image/jpeg' : $mime;
+    $ext    = $boxed ? 'jpg' : $allowed[$mime];
+
+    $filename = 'campaign-' . bin2hex(random_bytes(12)) . '.' . $ext;
+    $url      = \R2Uploader::put($path, $filename, $upMime);
+    if ($boxed) @unlink($boxed);
+    return $url;
+}
+
 // ── POST handling ────────────────────────────────────────────────────────────
 
 $flash      = null;
@@ -150,7 +216,8 @@ if ($method === 'POST') {
         }
         $imageUploadError = null;
         try {
-            $uploadedImg = admin_upload_avatar($_FILES['image_file'] ?? null);
+            // Letterboxes to 2:1 so the whole picture shows (no Android crop).
+            $uploadedImg = admin_upload_notification_image($_FILES['image_file'] ?? null);
             if ($uploadedImg !== null) $imageUrl = $uploadedImg;   // R2 public URL
         } catch (\Throwable $e) {
             $imageUploadError = 'Campaign image upload failed: ' . $e->getMessage();
