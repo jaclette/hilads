@@ -262,7 +262,8 @@ class MobilePushService
                 'data'       => array_merge($data, ['type' => 'admin_announcement']),
                 'sound'      => 'default',
                 'channelId'  => 'default',
-                'richContent' => $richImage !== null ? ['image' => $richImage] : null,
+                'richContent'    => $richImage !== null ? ['image' => $richImage] : null,
+                'mutableContent' => $richImage !== null ? true : null, // iOS NSE trigger
             ], static fn($v) => $v !== null);
             self::$queue[] = ['message' => $message, 'token' => $token];
         }
