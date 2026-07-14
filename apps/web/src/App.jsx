@@ -5589,7 +5589,7 @@ export default function App() {
                                       onClick={(e) => { e.preventDefault(); e.stopPropagation(); openSharedLink(shared) }}
                                     >
                                       {isCampaign
-                                        ? '⚡ + Double scoring points · Take the challenge'
+                                        ? '+ Double scoring points · Take the challenge'
                                         : t(`shareCta.${shared.kind}`, { ns: 'common' })}
                                     </a>
                                   </>

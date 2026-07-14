@@ -208,8 +208,8 @@
   "sayHi": "Dis bonjour à {{name}}",
   "hostWaiting": "En attente du premier bonjour 👋",
   "shareCta": {
-    "leaderboard": "🏆 Voir le classement",
-    "challenge": "⚡ Voir le défi",
+    "leaderboard": "Voir le classement",
+    "challenge": "Voir le défi",
     "event": "🎉 Voir le Hi plan",
     "topic": "🗣️ Voir le Hi now"
   }

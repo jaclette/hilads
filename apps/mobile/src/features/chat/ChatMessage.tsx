@@ -1061,7 +1061,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                       >
                         <Text style={styles.sharedLinkCtaText} numberOfLines={2}>
                           {isCampaign
-                            ? '⚡ + Double scoring points · Take the challenge'
+                            ? '+ Double scoring points · Take the challenge'
                             : t(`shareCta.${sharedLink.kind}`, { ns: 'common' })}
                         </Text>
                       </TouchableOpacity>

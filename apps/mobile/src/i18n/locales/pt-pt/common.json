@@ -208,8 +208,8 @@
   "shareToWorldError": "Não foi possível partilhar no Mundo. Tenta de novo.",
   "placedBanner": "Colocámos-te em {{city}} — podes mudar em cima.",
   "shareCta": {
-    "leaderboard": "🏆 Ver a classificação",
-    "challenge": "⚡ Ver o desafio",
+    "leaderboard": "Ver a classificação",
+    "challenge": "Ver o desafio",
     "event": "🎉 Ver o Hi plan",
     "topic": "🗣️ Ver o Hi now"
   }

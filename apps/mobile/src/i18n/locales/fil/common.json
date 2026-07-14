@@ -208,8 +208,8 @@
   "shareToWorldError": "Hindi na-share sa World. Subukan ulit.",
   "placedBanner": "Inilagay ka namin sa {{city}} — mababago mo ito sa itaas.",
   "shareCta": {
-    "leaderboard": "🏆 Tingnan ang leaderboard",
-    "challenge": "⚡ Tingnan ang challenge",
+    "leaderboard": "Tingnan ang leaderboard",
+    "challenge": "Tingnan ang challenge",
     "event": "🎉 Tingnan ang Hi plan",
     "topic": "🗣️ Tingnan ang Hi now"
   }

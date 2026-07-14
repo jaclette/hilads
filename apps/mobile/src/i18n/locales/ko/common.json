@@ -208,8 +208,8 @@
   "shareToWorldError": "월드에 공유하지 못했어요. 다시 시도해 주세요.",
   "placedBanner": "{{city}}(으)로 설정했어요 — 위에서 바꿀 수 있어요.",
   "shareCta": {
-    "leaderboard": "🏆 리더보드 보기",
-    "challenge": "⚡ 챌린지 보기",
+    "leaderboard": "리더보드 보기",
+    "challenge": "챌린지 보기",
     "event": "🎉 Hi plan 보기",
     "topic": "🗣️ Hi now 보기"
   }

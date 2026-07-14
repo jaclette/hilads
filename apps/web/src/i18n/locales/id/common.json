@@ -165,8 +165,8 @@
   "shareToWorld": "Bagikan ke World",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 Lihat papan peringkat",
-    "challenge": "⚡ Lihat challenge",
+    "leaderboard": "Lihat papan peringkat",
+    "challenge": "Lihat challenge",
     "event": "🎉 Lihat Hi plan",
     "topic": "🗣️ Lihat Hi now"
   }

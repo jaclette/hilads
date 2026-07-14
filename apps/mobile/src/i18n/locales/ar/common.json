@@ -212,8 +212,8 @@
   "shareToWorldError": "تعذّرت المشاركة في العالم. حاول مرة أخرى.",
   "placedBanner": "وضعناك في {{city}} — يمكنك تغييرها من الأعلى.",
   "shareCta": {
-    "leaderboard": "🏆 عرض المتصدرين",
-    "challenge": "⚡ عرض التحدي",
+    "leaderboard": "عرض المتصدرين",
+    "challenge": "عرض التحدي",
     "event": "🎉 عرض Hi plan",
     "topic": "🗣️ عرض Hi now"
   }

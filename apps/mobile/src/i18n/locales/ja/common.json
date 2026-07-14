@@ -208,8 +208,8 @@
   "shareToWorldError": "ワールドに共有できませんでした。もう一度お試しください。",
   "placedBanner": "{{city}}に設定しました — 上部で変更できます。",
   "shareCta": {
-    "leaderboard": "🏆 ランキングを見る",
-    "challenge": "⚡ チャレンジを見る",
+    "leaderboard": "ランキングを見る",
+    "challenge": "チャレンジを見る",
     "event": "🎉 Hi plan を見る",
     "topic": "🗣️ Hi now を見る"
   }

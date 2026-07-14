@@ -165,8 +165,8 @@
   "shareToWorld": "Compartilhar no Mundo",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 Ver o ranking",
-    "challenge": "⚡ Ver o desafio",
+    "leaderboard": "Ver o ranking",
+    "challenge": "Ver o desafio",
     "event": "🎉 Ver o Hi plan",
     "topic": "🗣️ Ver o Hi now"
   }

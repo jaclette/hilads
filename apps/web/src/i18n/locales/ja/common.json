@@ -165,8 +165,8 @@
   "shareToWorld": "ワールドに共有",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 ランキングを見る",
-    "challenge": "⚡ チャレンジを見る",
+    "leaderboard": "ランキングを見る",
+    "challenge": "チャレンジを見る",
     "event": "🎉 Hi plan を見る",
     "topic": "🗣️ Hi now を見る"
   }

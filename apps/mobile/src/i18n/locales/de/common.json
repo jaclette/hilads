@@ -208,8 +208,8 @@
   "shareToWorldError": "Teilen in der Welt fehlgeschlagen. Versuch es nochmal.",
   "placedBanner": "Wir haben dich in {{city}} platziert — oben änderbar.",
   "shareCta": {
-    "leaderboard": "🏆 Rangliste ansehen",
-    "challenge": "⚡ Challenge ansehen",
+    "leaderboard": "Rangliste ansehen",
+    "challenge": "Challenge ansehen",
     "event": "🎉 Hi plan ansehen",
     "topic": "🗣️ Hi now ansehen"
   }

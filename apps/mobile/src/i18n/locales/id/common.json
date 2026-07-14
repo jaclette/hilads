@@ -208,8 +208,8 @@
   "shareToWorldError": "Gagal membagikan ke World. Coba lagi.",
   "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas.",
   "shareCta": {
-    "leaderboard": "🏆 Lihat papan peringkat",
-    "challenge": "⚡ Lihat challenge",
+    "leaderboard": "Lihat papan peringkat",
+    "challenge": "Lihat challenge",
     "event": "🎉 Lihat Hi plan",
     "topic": "🗣️ Lihat Hi now"
   }

@@ -208,8 +208,8 @@
   "shareToWorldError": "แชร์ไปที่ World ไม่สำเร็จ ลองใหม่อีกครั้ง",
   "placedBanner": "เราจัดคุณไว้ที่{{city}} — เปลี่ยนได้ที่ด้านบน",
   "shareCta": {
-    "leaderboard": "🏆 ดูลีดเดอร์บอร์ด",
-    "challenge": "⚡ ดูชาเลนจ์",
+    "leaderboard": "ดูลีดเดอร์บอร์ด",
+    "challenge": "ดูชาเลนจ์",
     "event": "🎉 ดู Hi plan",
     "topic": "🗣️ ดู Hi now"
   }

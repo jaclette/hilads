@@ -165,8 +165,8 @@
   "shareToWorld": "分享到世界頻道",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 查看排行榜",
-    "challenge": "⚡ 查看挑戰",
+    "leaderboard": "查看排行榜",
+    "challenge": "查看挑戰",
     "event": "🎉 查看 Hi plan",
     "topic": "🗣️ 查看 Hi now"
   }

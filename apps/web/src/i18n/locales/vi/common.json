@@ -165,8 +165,8 @@
   "shareToWorld": "Chia sẻ lên Thế giới",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 Xem bảng xếp hạng",
-    "challenge": "⚡ Xem thử thách",
+    "leaderboard": "Xem bảng xếp hạng",
+    "challenge": "Xem thử thách",
     "event": "🎉 Xem Hi plan",
     "topic": "🗣️ Xem Hi now"
   }

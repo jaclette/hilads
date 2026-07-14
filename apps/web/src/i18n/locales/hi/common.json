@@ -165,8 +165,8 @@
   "shareToWorld": "World में शेयर करें",
   "hiLocalTitle": "👋 Hi Local",
   "shareCta": {
-    "leaderboard": "🏆 लीडरबोर्ड देखें",
-    "challenge": "⚡ चैलेंज देखें",
+    "leaderboard": "लीडरबोर्ड देखें",
+    "challenge": "चैलेंज देखें",
     "event": "🎉 Hi plan देखें",
     "topic": "🗣️ Hi now देखें"
   }
