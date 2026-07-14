@@ -36,9 +36,33 @@ function parse_emails(string $raw): array
 function prepare_html(string $body): string
 {
     if (preg_match('/<[a-z][\s\S]*>/i', $body)) {
-        return $body; // already HTML
+        return $body; // already HTML - the author owns the layout
     }
-    return nl2br(htmlspecialchars($body, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+    // Plain text → escape, apply light markdown (**bold**), keep line breaks,
+    // then wrap in a centered responsive email column. Without the wrapper,
+    // clients left-align the bare text and leave a big white gap on the right.
+    $escaped = htmlspecialchars($body, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $escaped = preg_replace('/\*\*(.+?)\*\*/s', '<strong>$1</strong>', $escaped);
+    return email_wrap(nl2br($escaped));
+}
+
+/**
+ * Wrap email content in a centered, max-width (600px) card on a light
+ * background - the standard newsletter layout. Table-based so it renders
+ * consistently across Outlook / Gmail / Apple Mail.
+ */
+function email_wrap(string $innerHtml): string
+{
+    $font = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
+    return '<div style="margin:0;padding:24px 12px;background:#f4f4f5;">'
+         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f5;">'
+         . '<tr><td align="center">'
+         . '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#ffffff;border-radius:12px;">'
+         . '<tr><td style="padding:32px;font-family:' . $font . ';font-size:16px;line-height:1.6;color:#1a1a1a;">'
+         . $innerHtml
+         . '</td></tr></table>'
+         . '</td></tr></table>'
+         . '</div>';
 }
 
 /** Single Resend API call. Returns ['code'=>int, 'decoded'=>?array, 'raw'=>string]. */
