@@ -216,5 +216,8 @@
     "challenge": "عرض التحدي",
     "event": "🎉 عرض Hi plan",
     "topic": "🗣️ عرض Hi now"
-  }
+  },
+  "delete": "حذف",
+  "deleteConversationTitle": "حذف المحادثة؟",
+  "deleteConversationBody": "ستُزال من رسائلك، وستظهر مجددًا إذا راسلوك مرة أخرى."
 }

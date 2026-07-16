@@ -212,5 +212,8 @@
     "challenge": "Lihat challenge",
     "event": "🎉 Lihat Hi plan",
     "topic": "🗣️ Lihat Hi now"
-  }
+  },
+  "delete": "Hapus",
+  "deleteConversationTitle": "Hapus percakapan?",
+  "deleteConversationBody": "Akan dihapus dari pesanmu. Muncul lagi kalau mereka mengirim pesan lagi."
 }

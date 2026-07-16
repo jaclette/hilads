@@ -212,5 +212,8 @@
     "challenge": "Xem thử thách",
     "event": "🎉 Xem Hi plan",
     "topic": "🗣️ Xem Hi now"
-  }
+  },
+  "delete": "Xóa",
+  "deleteConversationTitle": "Xóa cuộc trò chuyện?",
+  "deleteConversationBody": "Nó sẽ bị xóa khỏi tin nhắn của bạn và xuất hiện lại nếu họ nhắn cho bạn."
 }

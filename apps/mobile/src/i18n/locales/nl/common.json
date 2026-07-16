@@ -212,5 +212,8 @@
     "challenge": "Bekijk de challenge",
     "event": "🎉 Bekijk de Hi plan",
     "topic": "🗣️ Bekijk de Hi now"
-  }
+  },
+  "delete": "Verwijderen",
+  "deleteConversationTitle": "Gesprek verwijderen?",
+  "deleteConversationBody": "Het wordt uit je berichten verwijderd en verschijnt weer als ze je opnieuw berichten."
 }

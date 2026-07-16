@@ -96,6 +96,9 @@ class ConversationRepository
                 ORDER BY created_at DESC
                 LIMIT 1
             ) lm ON true
+            -- Per-user hide: a conversation the user deleted stays hidden until a
+            -- newer message arrives (then it reappears, WhatsApp-style).
+            WHERE cp.hidden_at IS NULL OR cp.hidden_at < COALESCE(lm.created_at, c.updated_at)
             ORDER BY COALESCE(lm.created_at, c.updated_at) DESC
             LIMIT 50
         ");
@@ -141,6 +144,20 @@ class ConversationRepository
         Database::pdo()->prepare("
             UPDATE conversation_participants
             SET last_read_at = now()
+            WHERE conversation_id = ? AND user_id = ?
+        ")->execute([$conversationId, $userId]);
+    }
+
+    /**
+     * Per-user hide: removes the conversation from THIS user's DM list only (the
+     * other participant keeps their copy). It reappears if a newer message
+     * arrives (see the getListForUser WHERE clause).
+     */
+    public static function hideForUser(string $conversationId, string $userId): void
+    {
+        Database::pdo()->prepare("
+            UPDATE conversation_participants
+            SET hidden_at = now()
             WHERE conversation_id = ? AND user_id = ?
         ")->execute([$conversationId, $userId]);
     }

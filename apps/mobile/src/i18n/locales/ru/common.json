@@ -214,5 +214,8 @@
     "challenge": "Смотреть челлендж",
     "event": "🎉 Смотреть Hi plan",
     "topic": "🗣️ Смотреть Hi now"
-  }
+  },
+  "delete": "Удалить",
+  "deleteConversationTitle": "Удалить переписку?",
+  "deleteConversationBody": "Она исчезнет из ваших сообщений и появится снова, если вам напишут."
 }

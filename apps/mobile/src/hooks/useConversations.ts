@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { fetchConversations, markDmRead } from '@/api/conversations';
+import { fetchConversations, markDmRead, deleteConversation } from '@/api/conversations';
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { filterBlocked } from '@/lib/blockFilter';
@@ -11,6 +11,7 @@ interface Result {
   error:          string | null;
   reload:         () => void;
   markAllRead:    () => void;
+  remove:         (conversationId: string) => void;
 }
 
 export function useConversations(): Result {
@@ -68,6 +69,17 @@ export function useConversations(): Result {
     setUnreadDMs(0);
   }, [setUnreadDMs]);
 
+  // Delete (hide) a conversation from this user's list. Optimistic: drop it
+  // immediately, un-count its unread, then fire the API. Reloads on failure.
+  const remove = useCallback((conversationId: string) => {
+    setConversations(prev => {
+      const gone = prev.find(c => c.id === conversationId);
+      if (gone?.has_unread) setUnreadDMs(Math.max(0, unreadRef.current - 1));
+      return prev.filter(c => c.id !== conversationId);
+    });
+    deleteConversation(conversationId).catch(() => { load(); });
+  }, [setUnreadDMs, load]);
+
   // Block filter (Apple G1.2) - server already filters initial fetch; this
   // covers the optimistic gap after the user taps Block before reload runs.
   const visibleConversations = useMemo(
@@ -79,5 +91,5 @@ export function useConversations(): Result {
     [conversations, blockedSet],
   );
 
-  return { conversations: visibleConversations, loading, error, reload: load, markAllRead };
+  return { conversations: visibleConversations, loading, error, reload: load, markAllRead, remove };
 }

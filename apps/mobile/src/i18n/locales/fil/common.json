@@ -212,5 +212,8 @@
     "challenge": "Tingnan ang challenge",
     "event": "🎉 Tingnan ang Hi plan",
     "topic": "🗣️ Tingnan ang Hi now"
-  }
+  },
+  "delete": "Tanggalin",
+  "deleteConversationTitle": "Tanggalin ang usapan?",
+  "deleteConversationBody": "Aalisin ito sa iyong mga mensahe. Lalabas ulit kung magme-message sila muli."
 }

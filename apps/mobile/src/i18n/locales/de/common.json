@@ -212,5 +212,8 @@
     "challenge": "Challenge ansehen",
     "event": "🎉 Hi plan ansehen",
     "topic": "🗣️ Hi now ansehen"
-  }
+  },
+  "delete": "Löschen",
+  "deleteConversationTitle": "Unterhaltung löschen?",
+  "deleteConversationBody": "Sie wird aus deinen Nachrichten entfernt und erscheint wieder, wenn man dir erneut schreibt."
 }

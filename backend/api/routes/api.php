@@ -1424,6 +1424,14 @@ $router->add('GET', '/internal/run-migrations', function () {
         $errors[] = "scheduled_pushes: " . $e->getMessage();
     }
 
+    // ── 8e. Per-user hide of DM conversations ─────────────────────────────────
+    try {
+        $pdo->exec("ALTER TABLE conversation_participants ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ");
+        $log[] = "conversation_participants.hidden_at ensured";
+    } catch (\Throwable $e) {
+        $errors[] = "conversation hide: " . $e->getMessage();
+    }
+
     // ── 9. Summary query ──────────────────────────────────────────────────────
 
     $cityCount  = (int) $pdo->query("SELECT COUNT(*) FROM channels WHERE type='city'")->fetchColumn();
@@ -6929,6 +6937,19 @@ $router->add('DELETE', '/api/v1/dm-messages/{messageId}', function (array $param
         'messageId' => $messageId,
         'deletedAt' => $deletedAt,
     ]);
+});
+
+// DELETE /api/v1/conversations/{conversationId}
+// Per-user hide: removes the conversation from the caller's DM list only (the
+// other participant keeps theirs). Reappears if a newer message arrives.
+$router->add('DELETE', '/api/v1/conversations/{conversationId}', function (array $params) {
+    $user           = AuthService::requireAuth();
+    $conversationId = $params['conversationId'] ?? '';
+    if (!ConversationRepository::isParticipant($conversationId, $user['id'])) {
+        Response::json(['error' => 'Not a participant'], 403);
+    }
+    ConversationRepository::hideForUser($conversationId, $user['id']);
+    Response::json(['ok' => true]);
 });
 
 // GET /api/v1/conversations/{conversationId}/messages

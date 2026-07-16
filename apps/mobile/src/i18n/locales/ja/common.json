@@ -212,5 +212,8 @@
     "challenge": "チャレンジを見る",
     "event": "🎉 Hi plan を見る",
     "topic": "🗣️ Hi now を見る"
-  }
+  },
+  "delete": "削除",
+  "deleteConversationTitle": "会話を削除しますか？",
+  "deleteConversationBody": "メッセージ一覧から削除されます。相手が再度メッセージを送ると再表示されます。"
 }

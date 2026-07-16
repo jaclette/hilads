@@ -212,5 +212,8 @@
     "challenge": "See the challenge",
     "event": "🎉 See the Hi plan",
     "topic": "🗣️ See the Hi now"
-  }
+  },
+  "delete": "Delete",
+  "deleteConversationTitle": "Delete conversation?",
+  "deleteConversationBody": "It will be removed from your messages. It reappears if they message you again."
 }

@@ -212,5 +212,8 @@
     "challenge": "查看挑战",
     "event": "🎉 查看 Hi plan",
     "topic": "🗣️ 查看 Hi now"
-  }
+  },
+  "delete": "删除",
+  "deleteConversationTitle": "删除对话？",
+  "deleteConversationBody": "它将从你的消息中移除。如果对方再次给你发消息，它会重新出现。"
 }

@@ -212,5 +212,8 @@
     "challenge": "चैलेंज देखें",
     "event": "🎉 Hi plan देखें",
     "topic": "🗣️ Hi now देखें"
-  }
+  },
+  "delete": "हटाएँ",
+  "deleteConversationTitle": "बातचीत हटाएँ?",
+  "deleteConversationBody": "यह आपके संदेशों से हट जाएगी। अगर वे दोबारा संदेश भेजें तो यह फिर दिखेगी।"
 }

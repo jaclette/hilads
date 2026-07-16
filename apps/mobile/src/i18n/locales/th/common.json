@@ -212,5 +212,8 @@
     "challenge": "ดูชาเลนจ์",
     "event": "🎉 ดู Hi plan",
     "topic": "🗣️ ดู Hi now"
-  }
+  },
+  "delete": "ลบ",
+  "deleteConversationTitle": "ลบการสนทนา?",
+  "deleteConversationBody": "จะถูกลบออกจากข้อความของคุณ และจะปรากฏอีกครั้งหากมีการส่งข้อความหาคุณ"
 }

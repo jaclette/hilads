@@ -14,7 +14,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, Image, Switch,
-  ActivityIndicator, RefreshControl, StyleSheet,
+  ActivityIndicator, RefreshControl, StyleSheet, Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
@@ -54,14 +54,23 @@ function relativeTime(raw?: string | null): string {
 
 // ── DM row ────────────────────────────────────────────────────────────────────
 
-function DMRow({ convo, onPress }: { convo: Conversation; onPress: () => void }) {
+function DMRow({ convo, onPress, onDelete }: { convo: Conversation; onPress: () => void; onDelete: () => void }) {
+  const { t }   = useTranslation('common');
   const name    = convo.other_display_name;
   const color   = avatarColor(name);
   const initial = name.slice(0, 1).toUpperCase();
   const time    = relativeTime(convo.last_message_at);
+  const confirmDelete = () => Alert.alert(
+    t('deleteConversationTitle', { defaultValue: 'Delete conversation?' }),
+    t('deleteConversationBody', { defaultValue: 'It will be removed from your messages. It reappears if they message you again.' }),
+    [
+      { text: t('cancel', { defaultValue: 'Cancel' }), style: 'cancel' },
+      { text: t('delete', { defaultValue: 'Delete' }), style: 'destructive', onPress: onDelete },
+    ],
+  );
 
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.row} onPress={onPress} onLongPress={confirmDelete} delayLongPress={350} activeOpacity={0.7}>
       {convo.other_photo_url ? (
         <Image source={{ uri: thumbUrl(convo.other_photo_url) }} style={styles.avatar} />
       ) : (
@@ -197,7 +206,7 @@ export default function MessagesScreen() {
   const router = useRouter();
   const { t } = useTranslation('dm');
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
-  const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead } = useConversations();
+  const { conversations, loading: loadingDMs, error, reload: reloadDMs, markAllRead: markDMsRead, remove: removeDM } = useConversations();
 
   const [activeFilter, setActiveFilter] = useState<FilterKey>('all');
 
@@ -357,6 +366,7 @@ export default function MessagesScreen() {
                     pathname: '/dm/[id]',
                     params: { id: convo.other_user_id, name: convo.other_display_name },
                   })}
+                  onDelete={() => removeDM(convo.id)}
                 />
               ))}
             </>

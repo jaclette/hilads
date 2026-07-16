@@ -6,6 +6,11 @@ export async function fetchConversations(): Promise<Conversation[]> {
   return data.dms ?? [];
 }
 
+/** Per-user hide: removes the conversation from the caller's DM list only. */
+export async function deleteConversation(conversationId: string): Promise<void> {
+  await api.delete(`/conversations/${conversationId}`);
+}
+
 export async function findOrCreateDM(
   targetUserId: string,
 ): Promise<{ conversation: Conversation; otherUser: { id: string; display_name: string; profile_photo_url?: string } }> {

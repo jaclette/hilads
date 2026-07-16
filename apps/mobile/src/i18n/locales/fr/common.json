@@ -212,5 +212,8 @@
     "challenge": "Voir le défi",
     "event": "🎉 Voir le Hi plan",
     "topic": "🗣️ Voir le Hi now"
-  }
+  },
+  "delete": "Supprimer",
+  "deleteConversationTitle": "Supprimer la conversation ?",
+  "deleteConversationBody": "Elle disparaîtra de tes messages. Elle réapparaîtra s'ils t'écrivent à nouveau."
 }
