@@ -336,6 +336,10 @@ run($pdo, "
     )
 ", 'conversation_participants');
 
+// Per-user hide of a DM conversation (removes it from that user's list only;
+// reappears when a newer message arrives). See ConversationRepository::hideForUser.
+run($pdo, "ALTER TABLE conversation_participants ADD COLUMN IF NOT EXISTS hidden_at TIMESTAMPTZ", 'conversation_participants.hidden_at');
+
 run($pdo, "
     CREATE TABLE IF NOT EXISTS conversation_messages (
         id              TEXT        PRIMARY KEY,
@@ -427,6 +431,30 @@ run($pdo, "
         sent_at         TIMESTAMPTZ
     )
 ", 'push_broadcasts');
+
+// Scheduled push notifications: stored by the admin Push page, dispatched when
+// due by /internal/run-cron. See admin/push.php + the cron block in api.php.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS scheduled_pushes (
+        id              BIGSERIAL PRIMARY KEY,
+        title           TEXT NOT NULL,
+        body            TEXT NOT NULL,
+        audience_type   TEXT NOT NULL,
+        audience_filter JSONB NOT NULL DEFAULT '{}',
+        deep_link       TEXT,
+        extra_data      JSONB NOT NULL DEFAULT '{}',
+        include_guests  BOOLEAN NOT NULL DEFAULT false,
+        send_at         TIMESTAMPTZ NOT NULL,
+        status          TEXT NOT NULL DEFAULT 'scheduled',
+        created_by      TEXT,
+        created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+        sent_at         TIMESTAMPTZ,
+        broadcast_id    BIGINT,
+        recipient_count INT,
+        error           TEXT
+    )
+", 'scheduled_pushes');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_scheduled_pushes_due ON scheduled_pushes (send_at) WHERE status = 'scheduled'", 'idx_scheduled_pushes_due');
 
 run($pdo, "
     CREATE TABLE IF NOT EXISTS push_subscriptions (
