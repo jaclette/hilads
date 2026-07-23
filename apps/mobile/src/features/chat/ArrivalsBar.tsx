@@ -23,7 +23,8 @@ import i18n from '@/i18n';
 import type { Message } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 const FEED_JOIN_VARIANTS = 5;
 const LIVE_DURATION_MS   = 3000;
@@ -44,6 +45,9 @@ type Props = {
 };
 
 export function ArrivalsBar({ arrivals, onOpenSheet, style }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router    = useRouter();
   const { t }     = useTranslation('chat');
   const { account } = useApp();
@@ -150,7 +154,7 @@ export function ArrivalsBar({ arrivals, onOpenSheet, style }: Props) {
     >
       <Animated.View style={[styles.layer, { opacity: defaultOpacity }]} pointerEvents="none">
         <Text style={styles.defaultText} numberOfLines={1}>{t('arrivalsBar.label')}</Text>
-        <Ionicons name="chevron-forward" size={14} color={Colors.muted2} />
+        <Ionicons name="chevron-forward" size={14} color={colors.muted2} />
       </Animated.View>
       <Animated.View style={[styles.layer, { opacity: liveOpacity }]} pointerEvents="none">
         <Text style={styles.liveText} numberOfLines={1}>
@@ -171,16 +175,16 @@ function capQueue(q: Message[]): Message[] {
 
 const BAR_HEIGHT = 32;
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   bar: {
     height:            BAR_HEIGHT,
     marginHorizontal:  Spacing.md,
     marginTop:         Spacing.xs,
     marginBottom:      Spacing.xs,
     borderRadius:      Radius.md,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     overflow:          'hidden',
     justifyContent:    'center',
   },
@@ -198,13 +202,13 @@ const styles = StyleSheet.create({
   },
   defaultText: {
     flex:        1,
-    color:       Colors.muted,
+    color:       c.muted,
     fontSize:    FontSizes.xs,
     fontWeight:  '600',
   },
   liveText: {
     flex:        1,
-    color:       Colors.text,
+    color:       c.text,
     fontSize:    FontSizes.xs,
     fontWeight:  '600',
     textAlign:   'center',

@@ -1,7 +1,8 @@
 import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
-import { Colors, FontSizes } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import type { MentionSuggestion } from '@/api/mentions';
 
@@ -14,6 +15,7 @@ export function MentionSuggestions({
   suggestions: MentionSuggestion[];
   onSelect: (s: MentionSuggestion) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   if (suggestions.length === 0) return null;
   return (
     <View style={styles.panel}>
@@ -40,12 +42,12 @@ export function MentionSuggestions({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   panel: {
     maxHeight:       220,
-    backgroundColor: 'rgba(22, 18, 16, 0.99)',
+    backgroundColor: c.elevated,
     borderTopWidth:  1,
-    borderTopColor:  Colors.border,
+    borderTopColor:  c.border,
   },
   row: {
     flexDirection:     'row',
@@ -64,6 +66,6 @@ const styles = StyleSheet.create({
   },
   letter:   { color: '#fff', fontSize: 13, fontWeight: '700' },
   body:     { flex: 1, minWidth: 0 },
-  username: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
-  name:     { fontSize: FontSizes.xs, color: Colors.muted },
+  username: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  name:     { fontSize: FontSizes.xs, color: c.muted },
 });

@@ -10,7 +10,8 @@
  */
 
 import { ScrollView, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 // ~120 frequently-used emojis - mirrors web EmojiPicker.jsx
 export const EMOJIS = [
@@ -36,6 +37,8 @@ interface Props {
 }
 
 export function EmojiPanel({ onSelect }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   return (
     <ScrollView
       style={styles.panel}
@@ -62,12 +65,12 @@ export function EmojiPanel({ onSelect }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   panel: {
     maxHeight:       220,
-    backgroundColor: 'rgba(22, 18, 16, 0.99)',
+    backgroundColor: c.elevated,
     borderTopWidth:  1,
-    borderTopColor:  Colors.border,
+    borderTopColor:  c.border,
   },
   grid: {
     flexDirection: 'row',

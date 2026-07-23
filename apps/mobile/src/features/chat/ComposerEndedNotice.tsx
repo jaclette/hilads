@@ -8,18 +8,22 @@
 
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, FontSizes } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export function ComposerEndedNotice({ text }: { text: string }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   return (
     <View style={styles.container}>
-      <Ionicons name="lock-closed" size={14} color={Colors.muted} />
+      <Ionicons name="lock-closed" size={14} color={colors.muted} />
       <Text style={styles.text}>{text}</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -28,13 +32,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   16,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
-    backgroundColor:   'rgba(22, 18, 16, 0.99)',
+    borderTopColor:    c.border,
+    backgroundColor:   c.elevated,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -5 },
     shadowOpacity:     0.28,
     shadowRadius:      12,
     elevation:         30, // match ChatInput - render above the tab bar's shadow
   },
-  text: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
+  text: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
 });

@@ -20,7 +20,8 @@ import type { Message } from '@/types';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { formatSmartTime } from '@/lib/messageTime';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const FEED_JOIN_VARIANTS = 5;
 
@@ -38,6 +39,8 @@ type Props = {
 };
 
 export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const router    = useRouter();
   const { t }     = useTranslation('chat');
   const { account } = useApp();
@@ -109,22 +112,22 @@ export function ArrivalsSheet({ visible, arrivals, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '70%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  close: { fontSize: 18, color: Colors.muted, fontWeight: '700' },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  close: { fontSize: 18, color: c.muted, fontWeight: '700' },
   list: { paddingHorizontal: Spacing.md },
   listContent: { paddingBottom: Spacing.md },
-  empty: { color: Colors.muted, textAlign: 'center', marginVertical: Spacing.lg, fontSize: FontSizes.sm },
+  empty: { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg, fontSize: FontSizes.sm },
   row: {
     flexDirection:    'row',
     alignItems:       'center',
@@ -136,6 +139,6 @@ const styles = StyleSheet.create({
   rowAvatar: { width: 30, height: 30, borderRadius: 15 },
   rowAvatarLetterWrap: { alignItems: 'center', justifyContent: 'center' },
   rowAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 13 },
-  rowText: { flex: 1, color: Colors.text, fontSize: FontSizes.sm, fontWeight: '600' },
-  rowTime: { color: Colors.muted2, fontSize: FontSizes.xs },
+  rowText: { flex: 1, color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
+  rowTime: { color: c.muted2, fontSize: FontSizes.xs },
 });

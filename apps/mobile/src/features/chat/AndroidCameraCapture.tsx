@@ -21,7 +21,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -43,6 +44,8 @@ const JPEG_QUALITY = 0.78;
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const cameraRef = useRef<CameraView>(null);
   const insets    = useSafeAreaInsets();
 
@@ -278,7 +281,7 @@ export function AndroidCameraCapture({ visible, onCapture, onClose }: Props) {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   root: {
     flex:            1,
@@ -396,7 +399,7 @@ const styles = StyleSheet.create({
     paddingVertical:   13,
     borderRadius:    28,
     borderWidth:     1.5,
-    borderColor:     'rgba(255,255,255,0.6)',
+    borderColor:     c.overlayStrong,
   },
 
   retakeBtnText: {
@@ -412,7 +415,7 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
     paddingVertical: 14,
     borderRadius:    28,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
 
   useBtnText: {
@@ -437,7 +440,7 @@ const styles = StyleSheet.create({
   },
 
   permBtn: {
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     paddingHorizontal: 28,
     paddingVertical:   13,
     borderRadius:      28,
@@ -445,7 +448,7 @@ const styles = StyleSheet.create({
 
   permBtnSecondary: {
     marginTop:       12,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: c.overlayStrong,
   },
 
   permBtnText: {

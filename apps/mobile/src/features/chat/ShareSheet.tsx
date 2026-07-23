@@ -12,7 +12,8 @@ import {
   StyleSheet, ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
   visible:     boolean;
@@ -23,6 +24,9 @@ interface Props {
 }
 
 export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('common');
   return (
     <Modal
@@ -62,7 +66,7 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
             disabled={spotLoading}
           >
             {spotLoading
-              ? <ActivityIndicator size="small" color={Colors.accent} style={styles.actionSpinner} />
+              ? <ActivityIndicator size="small" color={colors.accent} style={styles.actionSpinner} />
               : <Text style={styles.actionIcon}>📍</Text>
             }
             <View style={styles.actionBody}>
@@ -82,15 +86,15 @@ export function ShareSheet({ visible, onSnap, onSpot, onClose, spotLoading }: Pr
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: c.scrim,
   },
   sheet: {
     backgroundColor:   '#1a1512',
     borderTopWidth:    1,
-    borderTopColor:    'rgba(255,255,255,0.08)',
+    borderTopColor:    c.overlay,
     borderRadius:      20,
     paddingHorizontal: 16,
     paddingTop:        20,
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize:    13,
     fontWeight:  '600',
-    color:       Colors.muted2,
+    color:       c.muted2,
     textAlign:   'center',
     marginBottom: 6,
     letterSpacing: 0.3,
@@ -113,9 +117,9 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     gap:             16,
     padding:         16,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.07)',
+    borderColor:     c.overlay,
     borderRadius:    16,
   },
   actionIcon: {
@@ -134,23 +138,23 @@ const styles = StyleSheet.create({
   actionLabel: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   actionDesc: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
   cancel: {
     marginTop:       4,
     padding:         14,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.07)',
+    borderColor:     c.overlay,
     borderRadius:    14,
     alignItems:      'center',
   },
   cancelText: {
     fontSize:   FontSizes.md,
     fontWeight: '600',
-    color:      Colors.muted2,
+    color:      c.muted2,
   },
 });
