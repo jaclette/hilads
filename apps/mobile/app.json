@@ -58,7 +58,7 @@
           "ar"
         ]
       },
-      "buildNumber": "109"
+      "buildNumber": "111"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -67,7 +67,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 238,
+      "versionCode": 241,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -611,6 +611,35 @@
               "host": "hilads.live",
               "pathPrefix": "/ar/challenge/"
             }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fr/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/vi/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/es/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/it/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/pt-br/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/pt-pt/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/de/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/nl/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/zh-hans/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/zh-hant/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ja/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ko/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/fil/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/th/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/id/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/hi/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ru/challenges" },
+            { "scheme": "https", "host": "hilads.live", "pathPrefix": "/ar/challenges" }
           ],
           "category": [
             "BROWSABLE",

@@ -138,6 +138,7 @@ function parseDeepLink() {
     scope:  params.get('scope')  ?? 'city',
     period: params.get('period') ?? 'month',
   }
+  if (path === '/challenges')    return { type: 'challenges' }
   if (path === '/conversations') return { type: 'conversations' }
   if (path === '/notifications') return { type: 'notifications' }
   if (path === '/friend-requests') return { type: 'friend-requests' }
@@ -2014,6 +2015,7 @@ export default function App() {
       setLeaderboardPeriod(link.period === 'alltime' ? 'alltime' : 'month')
       openScreenOnJoinRef.current = 'leaderboard'
     }
+    if (link.type === 'challenges')      openScreenOnJoinRef.current = 'challenges'
     if (link.type === 'conversations')   openScreenOnJoinRef.current = 'conversations'
     if (link.type === 'notifications')   openScreenOnJoinRef.current = 'notifications'
     if (link.type === 'reset-password')  setResetPasswordToken(link.token)
@@ -2938,6 +2940,7 @@ export default function App() {
       saveIdentity(name, location.channelId, location.city ?? rejoinData?.city ?? null, location.timezone ?? null)
       if (joinKey) scheduleEphemeral(joinKey)
       injectWelcomeCard(location.channelId, location.city ?? rejoinData?.city ?? null)
+      if (openScreenOnJoinRef.current === 'challenges')    { setShowChallengesDrawer(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'conversations') { setShowConversations(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'notifications') { setShowNotifications(true); openScreenOnJoinRef.current = null }
       if (openScreenOnJoinRef.current === 'past')          { setShowPastArchive(true);  openScreenOnJoinRef.current = null }
