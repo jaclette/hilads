@@ -2,7 +2,7 @@
   "expo": {
     "name": "Hilads",
     "slug": "hilads",
-    "version": "1.6.4",
+    "version": "1.6.6",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -58,7 +58,7 @@
           "ar"
         ]
       },
-      "buildNumber": "106"
+      "buildNumber": "109"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
@@ -67,7 +67,7 @@
         "backgroundColor": "#C24A38"
       },
       "package": "com.hilads.app",
-      "versionCode": 231,
+      "versionCode": 238,
       "permissions": [
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.ACCESS_COARSE_LOCATION",
@@ -634,8 +634,8 @@
         "expo-build-properties",
         {
           "android": {
-            "compileSdkVersion": 35,
-            "targetSdkVersion": 35
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36
           }
         }
       ],
