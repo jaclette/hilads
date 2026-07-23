@@ -55,7 +55,8 @@ export const LOCKUP = {
   /** Render the tagline under the name. */
   taglineFontSize: 11,
   taglineLineHeight: 14,
-  // taglineColor is applied per-theme in the component (colors.overlayStrong).
+  // taglineColor is applied per-theme in the component (colors.muted — visible
+  // secondary text; overlayStrong was an ~8% ink tint, invisible on light).
   taglineFontWeight: '400' as '400' | '500' | '600' | '700',
   taglineLetterSpacing: 0.2,
   /** Cap so a long locale can't blow up the header; raise if the line clips. */
@@ -125,7 +126,7 @@ export function BrandLockup({ iconSize, glow = false, tagline, style }: Props) {
             style={{
               fontSize:      LOCKUP.taglineFontSize,
               lineHeight:    LOCKUP.taglineLineHeight,
-              color:         colors.overlayStrong,
+              color:         colors.muted,
               fontWeight:    LOCKUP.taglineFontWeight,
               letterSpacing: LOCKUP.taglineLetterSpacing,
               maxWidth:      LOCKUP.taglineMaxWidth,
