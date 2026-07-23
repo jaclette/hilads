@@ -80,6 +80,7 @@
 [data-theme="light"] .action-bubble { box-shadow: 0 4px 16px rgba(28, 20, 14, 0.10); }
 [data-theme="light"] .reaction-pill.self .reaction-count { color: var(--accent); }
 [data-theme="light"] .send-error-toast { color: var(--accent); }
+[data-theme="light"] .topic-geohint { color: var(--accent); } /* #FF7A3C label fails on white */
 
 /* Responsive root font-size. The app is ~74% rem-based, so scaling the root
    shrinks the bulk of the UI (headers, banners, names, chat text) on narrow
@@ -5246,8 +5247,8 @@ html, body, #root {
 }
 
 .attendee-overflow {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--overlay-strong);
+  color: var(--text);
   font-size: 0.6rem;
 }
 
@@ -7819,7 +7820,7 @@ img.pub-profile-avatar {
 }
 
 .event-row:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-weak);
 }
 
 .event-row.active {
