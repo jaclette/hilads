@@ -3,7 +3,7 @@ import '@/i18n';       // init i18next (sync, device-locale default) before any 
 import * as Sentry from '@sentry/react-native';
 import { useEffect, useState } from 'react';
 import { Linking } from 'react-native';
-import { acceptEula } from '@/api/auth';
+import { acceptEula, updateProfile } from '@/api/auth';
 import { EulaPromptModal } from '@/features/auth/EulaPromptModal';
 import { AccountWelcome } from '@/features/onboarding/AccountWelcome';
 import { RatePromptLaunchGate } from '@/features/challenge/RatePromptLaunchGate';
@@ -45,16 +45,22 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayoutInner() {
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = useApp();
-  const { colors, setTheme } = useTheme();
+  const { colors, setTheme, theme } = useTheme();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 
-  // Members: apply the account's saved theme whenever it loads (DB is the
-  // cross-device source of truth; setTheme also refreshes the local cache).
-  // Guests never reach this — their theme lives only in device storage.
+  // Reconcile the account's theme when it loads. A saved theme is the
+  // cross-device source of truth → apply it (setTheme refreshes the local cache).
+  // If the account has none (fresh signup, or a member who never set one), push
+  // the current local preference up so it starts following the account. Guests
+  // never reach this — their theme lives only in device storage.
   useEffect(() => {
-    if (account?.theme === 'light' || account?.theme === 'dark') setTheme(account.theme);
-  }, [account?.theme]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (account?.theme === 'light' || account?.theme === 'dark') {
+      setTheme(account.theme);
+    } else if (account?.id && (theme === 'light' || theme === 'dark')) {
+      updateProfile({ theme }).catch(() => {});
+    }
+  }, [account?.theme, account?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apple G1.2 - registered users created before the moderation update have
   // a NULL eula_accepted_at on their record. Show a blocking modal until they

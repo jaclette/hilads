@@ -21,7 +21,8 @@ import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
-import { setTheme } from './lib/theme'
+import { setTheme, getStoredTheme } from './lib/theme'
+import { updateProfile } from './api'
 import LandingPage from './components/LandingPage'
 import StoriesLanding from './components/StoriesLanding'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
@@ -57,6 +58,7 @@ import ProfileScreen from './components/ProfileScreen'
 import PublicProfileScreen from './components/PublicProfileScreen'
 import VenueScreen from './components/VenueScreen'
 import GuestProfileCard from './components/GuestProfileCard'
+import AppearanceLanguageCard from './components/AppearanceLanguageCard'
 import MostLocalCard from './components/MostLocalCard'
 import ConversationsScreen from './components/ConversationsScreen'
 import UpcomingEventsScreen from './components/UpcomingEventsScreen'
@@ -1119,13 +1121,19 @@ export default function App() {
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
 
-  // Members: the DB theme is the cross-device source of truth. Whenever an
-  // account loads/changes (authMe, sign-in, sign-up), reconcile its saved theme
-  // against the local cache. setTheme applies + caches locally (no DB write), so
-  // this never loops with the Me-screen toggle (which updates the DB, not this).
+  // Reconcile the account's theme whenever it loads (authMe, sign-in, sign-up).
+  // If the account has a saved theme, it's the cross-device source of truth →
+  // apply it (setTheme caches locally too; no DB write, so no loop with the
+  // toggle). If it has none (fresh signup, or a member who never set one), push
+  // the current local preference up so it starts following the account.
   useEffect(() => {
-    if (account?.theme === 'light' || account?.theme === 'dark') setTheme(account.theme)
-  }, [account?.theme])
+    if (account?.theme === 'light' || account?.theme === 'dark') {
+      setTheme(account.theme)
+    } else if (account?.id) {
+      const local = getStoredTheme()
+      if (local === 'light' || local === 'dark') updateProfile({ theme: local }).catch(() => {})
+    }
+  }, [account?.theme, account?.id])
   const [showOnboarding, setShowOnboarding] = useState(false) // first-time guest carousel
   const [showChallengeIntro, setShowChallengeIntro] = useState(false) // "how challenges work" carousel, opened from city-chat feed prompt
   const [showNotifications, setShowNotifications] = useState(false)
@@ -6961,6 +6969,10 @@ export default function App() {
                   }}
                   disabled={!profileNickInput.trim()}
                 >{t('nickname.save')}</button>
+              </div>
+              {/* Appearance + Language — guests can pick their theme + language too. */}
+              <div className="me-card">
+                <AppearanceLanguageCard account={null} />
               </div>
               <div className="me-card">
                 <div className="me-upgrade">

@@ -1090,21 +1090,25 @@ export default function MeScreen() {
         )}
 
         {/* ── Settings (registered only) - Apple G1.2 requires reachable Block management ── */}
-        {!isGuest && (
-          <View style={styles.settingsCard}>
-            <Text style={styles.settingsLabel}>{t('settings')}</Text>
-            {/* Appearance - instant light/dark theme toggle. */}
-            <TouchableOpacity
-              style={styles.settingsRow}
-              onPress={onToggleTheme}
-              activeOpacity={0.7}
-            >
-              <Ionicons name={theme === 'dark' ? 'moon-outline' : 'sunny-outline'} size={18} color={colors.muted} />
-              <Text style={styles.settingsRowLabel}>{t('appearance', { defaultValue: 'Appearance' })}</Text>
-              <Text style={styles.settingsRowValue}>
-                {theme === 'dark' ? t('themeDark', { defaultValue: 'Dark' }) : t('themeLight', { defaultValue: 'Light' })}
-              </Text>
-            </TouchableOpacity>
+        {/* Settings card — shown for everyone. Appearance (theme) is universal;
+            Blocked users is registered-only. */}
+        <View style={styles.settingsCard}>
+          <Text style={styles.settingsLabel}>{t('settings')}</Text>
+          {/* Appearance - instant light/dark theme toggle (guests + members). */}
+          <TouchableOpacity
+            style={styles.settingsRow}
+            onPress={onToggleTheme}
+            activeOpacity={0.7}
+          >
+            <Ionicons name={theme === 'dark' ? 'moon-outline' : 'sunny-outline'} size={18} color={colors.muted} />
+            <Text style={styles.settingsRowLabel}>{t('appearance', { defaultValue: 'Appearance' })}</Text>
+            <Text style={styles.settingsRowValue}>
+              {theme === 'dark' ? t('themeDark', { defaultValue: 'Dark' }) : t('themeLight', { defaultValue: 'Light' })}
+            </Text>
+          </TouchableOpacity>
+          {/* Language - also available in the header flag; surfaced here too. */}
+          <LanguageRow trigger="row" />
+          {!isGuest && (
             <TouchableOpacity
               style={styles.settingsRow}
               onPress={() => router.push('/blocked-users' as never)}
@@ -1114,8 +1118,8 @@ export default function MeScreen() {
               <Text style={styles.settingsRowLabel}>{t('blockedUsers')}</Text>
               <Ionicons name="chevron-forward" size={16} color={colors.muted} />
             </TouchableOpacity>
-          </View>
-        )}
+          )}
+        </View>
 
       </ScrollView>
 

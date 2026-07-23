@@ -6,10 +6,9 @@
  * import. Changing the theme re-renders consumers and re-runs their style
  * factories → an instant toggle, no reload.
  *
- * DEFAULT is 'dark' during the screen-by-screen migration: the app keeps its
- * original look until every StyleSheet is converted, then this flips to 'light'
- * (same staged approach as the web migration). The Me-screen toggle is not
- * surfaced until the flip.
+ * DEFAULT is 'light' — the app shell is fully migrated, so new users get the
+ * warm daylight theme; the night look is a tap away in Me and remembered
+ * (device storage for guests, the account/DB for members).
  */
 import React, {
   createContext, useContext, useState, useEffect, useMemo, useCallback,
@@ -19,7 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Themes, type ThemeColors, type ThemeName } from '@/constants';
 
 const STORAGE_KEY = 'hilads_theme';
-const DEFAULT_THEME: ThemeName = 'dark'; // flip to 'light' once migration completes
+const DEFAULT_THEME: ThemeName = 'light'; // app shell fully migrated → daylight by default
 
 interface ThemeCtx {
   theme:       ThemeName;
