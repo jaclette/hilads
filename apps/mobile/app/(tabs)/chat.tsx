@@ -1671,9 +1671,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth:    1,
     borderColor:    c.border,
   },
-  scopeBtnActive: { backgroundColor: c.text, borderColor: c.text },
+  scopeBtnActive: { backgroundColor: c.accent2, borderColor: c.accent2 }, // deep-orange selected (was ink c.text)
   scopeBtnText:   { color: c.text, fontSize: 13, fontWeight: '700' },
-  scopeBtnTextActive: { color: c.bg },
+  scopeBtnTextActive: { color: c.white },
   scopeChevron:   { opacity: 0.7 },
   scopeBadge: {
     minWidth:   18,
