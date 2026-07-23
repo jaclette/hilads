@@ -1023,6 +1023,22 @@ $router->add('GET', '/internal/backfill-thumbs', function () {
     ]);
 });
 
+// ── One-shot: widen push_broadcasts.audience_type CHECK ───────────────────────
+// URL-runnable mirror of the migrate.php migration so the "All app installs"
+// audience ('all_installs') stops failing the CHECK constraint without needing a
+// shell. Idempotent (safe to re-run). Protected by MIGRATION_KEY like the runner.
+// Call: GET /internal/fix-push-audience?key=YOUR_KEY
+$router->add('GET', '/internal/fix-push-audience', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) Response::json(['error' => 'Not found'], 404);
+    if (!hash_equals($expectedKey, $_GET['key'] ?? '')) Response::json(['error' => 'Forbidden'], 403);
+
+    $pdo = Database::pdo();
+    $pdo->exec("ALTER TABLE push_broadcasts DROP CONSTRAINT IF EXISTS push_broadcasts_audience_type_check");
+    $pdo->exec("ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test'))");
+    Response::json(['ok' => true, 'message' => "push_broadcasts.audience_type now allows 'all_installs' - retry the push."]);
+});
+
 // ── Internal migration endpoint ───────────────────────────────────────────────
 // TEMPORARY - disable by removing MIGRATION_KEY from Render env vars.
 // Protected: returns 404 if MIGRATION_KEY is not set.
