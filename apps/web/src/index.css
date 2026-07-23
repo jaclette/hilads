@@ -5564,7 +5564,7 @@ html, body, #root {
   gap: 0.625rem;
   padding: 1rem 1.125rem 0;
   background: var(--bg);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--separator);
 }
 
 /* Override .profile-tabs padding when used inside pub-profile-sticky-identity */
@@ -5766,7 +5766,7 @@ img.pub-profile-avatar {
 .pub-profile-city {
   font-size: 0.82rem;
   color: var(--muted);
-  background: rgba(255,255,255,0.06);
+  background: var(--overlay);
   border-radius: 999px;
   padding: 0.1875rem 0.625rem;
 }
@@ -5834,7 +5834,7 @@ img.pub-profile-avatar {
   font-size: 0.6rem;
   font-weight: 700;
   color: var(--text-muted);
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--overlay);
   border-radius: 4px;
   padding: 0.125rem 0.3125rem;
   letter-spacing: 0.06em;
@@ -5895,7 +5895,7 @@ img.pub-profile-avatar {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--separator);
 }
 
 .pub-profile-info-row:last-child {
@@ -6077,7 +6077,7 @@ img.pub-profile-avatar {
 }
 
 .pub-profile-friend-row:hover {
-  background: var(--surface3, rgba(255,255,255,0.06));
+  background: var(--overlay);
 }
 
 .pub-profile-friend-avatar {
