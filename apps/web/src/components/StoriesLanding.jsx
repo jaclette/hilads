@@ -177,7 +177,7 @@ export default function StoriesLanding({
   )
 
   return (
-    <div className={`sl${ctaPaused ? ' sl-cta-paused' : ''}`} ref={rootRef}>
+    <div className={`sl${ctaPaused ? ' sl-cta-paused' : ''}`} data-theme="light" ref={rootRef}>
       {/* Stories-style segmented progress bar (fixed top) */}
       <div className="sl-progress" aria-hidden="true">
         {SCREENS.map((s, i) => (
