@@ -8,7 +8,7 @@
     },
     "orientation": "portrait",
     "scheme": "hilads",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "icon": "./assets/icon.png",
     "splash": {
