@@ -20,7 +20,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { avatarColor } from '@/lib/avatarColors';
 import type { UserDTO } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
   visible:      boolean;
@@ -34,6 +35,9 @@ interface Props {
 }
 
 export function ValidatePresenceSheet({ visible, participants, submitting, mode = 'presence', onClose, onConfirm }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('challenge');
   const isWinner = mode === 'winner';
   // Presence: all checked by default (uncheck no-shows). Winner: none checked.
@@ -113,7 +117,7 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
                   <Ionicons
                     name={n <= rating ? 'star' : 'star-outline'}
                     size={32}
-                    color={n <= rating ? '#FFC93C' : Colors.border}
+                    color={n <= rating ? '#FFC93C' : colors.border}
                   />
                 </TouchableOpacity>
               ))}
@@ -140,28 +144,28 @@ export function ValidatePresenceSheet({ visible, participants, submitting, mode 
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: Colors.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
     paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: 34, maxHeight: '80%',
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: Colors.border, marginBottom: 12 },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  sub:   { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 4, marginBottom: 12 },
-  empty: { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingVertical: 24 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, marginBottom: 12 },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  sub:   { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 12 },
+  empty: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 24 },
   list:  { maxHeight: 360 },
   row:   { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' },
+  name:  { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  check: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
   checkOn: { backgroundColor: '#3DDC84', borderColor: '#3DDC84' },
-  radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: Colors.border, alignItems: 'center', justifyContent: 'center' },
+  radio: { width: 26, height: 26, borderRadius: 13, borderWidth: 2, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
   radioOn: { backgroundColor: '#FFC93C', borderColor: '#FFC93C' },
   rateBlock: { marginTop: 14, alignItems: 'center', gap: 8 },
-  rateLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  rateLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   stars:     { flexDirection: 'row', gap: 8 },
   confirmBtn: {
     // Solid fill - reads as a primary action, not an already-done state.

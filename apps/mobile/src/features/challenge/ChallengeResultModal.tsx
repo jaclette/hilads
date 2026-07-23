@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { submitHostRating, submitTakerRating, type ChallengeReveal } from '@/api/challenges';
 
 /**
@@ -18,6 +19,8 @@ export function ChallengeResultModal({
   onClose: () => void;
   onOpenLeaderboard?: (scope: 'city' | 'world') => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
 
   // Count-up driver for the points + running total (hooks before any early
@@ -183,7 +186,7 @@ export function ChallengeResultModal({
                     style={[
                       styles.total,
                       {
-                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [Colors.muted, GOLD] }),
+                        color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, GOLD] }),
                         textShadowColor: GOLD,
                         textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
                         transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
@@ -236,14 +239,14 @@ export function ChallengeResultModal({
                 <View style={styles.rateStars}>
                   {[1, 2, 3, 4, 5].map(n => (
                     <TouchableOpacity key={n} onPress={() => setHostStars(n)} activeOpacity={0.7} hitSlop={{ top: 6, bottom: 6, left: 3, right: 3 }}>
-                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? GOLD : Colors.border} />
+                      <Ionicons name={n <= hostStars ? 'star' : 'star-outline'} size={30} color={n <= hostStars ? GOLD : colors.border} />
                     </TouchableOpacity>
                   ))}
                 </View>
                 <TextInput
                   style={styles.noteInput}
                   placeholder={t('result.notePlaceholder', { defaultValue: 'Add a note (optional)' })}
-                  placeholderTextColor={Colors.muted}
+                  placeholderTextColor={colors.muted}
                   value={hostNote}
                   onChangeText={setHostNote}
                   multiline
@@ -281,6 +284,7 @@ export function ChallengeResultModal({
 
 /** A person emoji that pops in (scale spring) on mount - one per attendee. */
 function PopEmoji({ char }: { char: string }) {
+  const styles = useThemedStyles(makeStyles);
   const s = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     Animated.spring(s, { toValue: 1, friction: 4, tension: 170, useNativeDriver: true }).start();
@@ -290,12 +294,12 @@ function PopEmoji({ char }: { char: string }) {
 
 const GOLD = '#FFC93C';
 
-const styles = StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.7)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
   wrap:     { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   card: {
     width: '100%', maxWidth: 420, maxHeight: '88%',
-    backgroundColor: Colors.bg2, borderRadius: Radius.lg,
+    backgroundColor: c.bg2, borderRadius: Radius.lg,
     borderWidth: 1, borderColor: 'rgba(255,201,60,0.30)', overflow: 'hidden',
   },
   scroll: { padding: Spacing.lg, alignItems: 'center', gap: Spacing.sm },
@@ -306,30 +310,30 @@ const styles = StyleSheet.create({
   photoCaptionText: { fontSize: FontSizes.sm, fontWeight: '800', color: '#1a1206' },
 
   bigEmoji: { fontSize: 64, marginTop: Spacing.sm },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center', letterSpacing: -0.3, marginTop: Spacing.sm },
-  body:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
-  challengeName: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, textAlign: 'center', marginTop: 2 },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3, marginTop: Spacing.sm },
+  body:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
+  challengeName: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', marginTop: 2 },
 
   rankBlock: { alignSelf: 'stretch', marginTop: Spacing.md, gap: 8 },
-  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
+  rankRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: c.overlayWeak, borderRadius: Radius.md, paddingHorizontal: 12, paddingVertical: 10 },
   rankFlag:  { fontSize: FontSizes.md },
-  rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
-  rankChevron: { fontSize: FontSizes.lg, color: Colors.muted, fontWeight: '700' },
+  rankLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  rankChevron: { fontSize: FontSizes.lg, color: c.muted, fontWeight: '700' },
 
   rateBlock: { alignSelf: 'stretch', alignItems: 'center', gap: 8, marginTop: Spacing.md },
-  rateTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  rateTitle: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   rateStars: { flexDirection: 'row', gap: 8 },
   noteInput: {
     alignSelf: 'stretch', minHeight: 44, maxHeight: 100, borderRadius: Radius.md,
-    backgroundColor: 'rgba(255,255,255,0.06)', color: Colors.text,
+    backgroundColor: c.overlay, color: c.text,
     paddingHorizontal: 12, paddingVertical: 10, fontSize: FontSizes.sm, textAlignVertical: 'top',
   },
 
   pointsBlock: { alignItems: 'center', marginTop: Spacing.xs },
   points:    { fontSize: 44, fontWeight: '900', color: GOLD, letterSpacing: -1 },
-  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted2, marginTop: 2 },
+  breakdown: { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted2, marginTop: 2 },
   breakdownRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 },
-  total:     { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted, marginTop: 4 },
+  total:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted, marginTop: 4 },
 
   cta: {
     marginTop: Spacing.md, alignSelf: 'stretch',

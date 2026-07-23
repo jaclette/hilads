@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { City } from '@/types';
 
 const RESULT_CAP = 10;
@@ -36,6 +37,8 @@ export function LeaderboardCityPickerSheet({
   onSelect: (channelId: string, city: City) => void;
   onClose: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [cities,  setCities]  = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -73,24 +76,24 @@ export function LeaderboardCityPickerSheet({
         <View style={styles.handle} />
 
         <View style={styles.header}>
-          <Ionicons name="search" size={18} color={Colors.muted2} />
+          <Ionicons name="search" size={18} color={colors.muted2} />
           <TextInput
             style={styles.search}
             value={query}
             onChangeText={setQuery}
             placeholder={t('leaderboard.cityPicker.searchPlaceholder', { defaultValue: 'Search cities…' })}
-            placeholderTextColor={Colors.muted2}
+            placeholderTextColor={colors.muted2}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
           />
           <TouchableOpacity onPress={onClose} hitSlop={12} accessibilityLabel={t('cancel', { ns: 'common' })}>
-            <Ionicons name="close" size={22} color={Colors.muted} />
+            <Ionicons name="close" size={22} color={colors.muted} />
           </TouchableOpacity>
         </View>
 
         {loading ? (
-          <View style={styles.empty}><ActivityIndicator color={Colors.accent} /></View>
+          <View style={styles.empty}><ActivityIndicator color={colors.accent} /></View>
         ) : filtered.length === 0 ? (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
@@ -127,37 +130,37 @@ export function LeaderboardCityPickerSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '70%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 8,
+    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 8,
   },
   header: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   search: {
-    flex: 1, fontSize: FontSizes.md, color: Colors.text,
+    flex: 1, fontSize: FontSizes.md, color: c.text,
     paddingVertical: Spacing.xs,
   },
   empty: { padding: Spacing.lg, alignItems: 'center' },
-  emptyText: { color: Colors.muted, fontSize: FontSizes.sm },
+  emptyText: { color: c.muted, fontSize: FontSizes.sm },
   row: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
   },
   rowSelected: { backgroundColor: 'rgba(255,122,60,0.10)' },
   flag: { fontSize: 22 },
-  cityName: { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  cityName: { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   cityNameSelected: { color: '#FF7A3C' },
-  sep: { height: 1, backgroundColor: Colors.border, marginLeft: Spacing.md + 22 + Spacing.md },
+  sep: { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 22 + Spacing.md },
 });

@@ -14,7 +14,8 @@ import { useTranslation } from 'react-i18next';
 import { fetchChallengeParticipants } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
 import type { Challenge } from '@/types';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // The card preview is camelCase ({displayName, thumbAvatarUrl}); the
 // /participants endpoint is snake_case ({display_name, profile_photo_url}).
@@ -35,6 +36,8 @@ export function ChallengeMembersPeek({
   onClose:   () => void;
   onSelect:  (userId: string) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [users,   setUsers]   = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +65,7 @@ export function ChallengeMembersPeek({
         </Text>
 
         {loading && users.length === 0 ? (
-          <View style={styles.center}><ActivityIndicator color={Colors.muted} /></View>
+          <View style={styles.center}><ActivityIndicator color={colors.muted} /></View>
         ) : users.length === 0 ? (
           <Text style={styles.empty}>{t('group.noParticipants', { defaultValue: 'Nobody has joined yet.' })}</Text>
         ) : (
@@ -87,20 +90,20 @@ export function ChallengeMembersPeek({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: Colors.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
     paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: 34, maxHeight: '70%',
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: Colors.border, marginBottom: 12 },
-  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, marginBottom: 8 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, marginBottom: 12 },
+  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: 8 },
   center: { paddingVertical: 24, alignItems: 'center' },
-  empty:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingVertical: 24 },
+  empty:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 24 },
   list:   { maxHeight: 380 },
   row:    { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  name:   { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  name:   { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
 });

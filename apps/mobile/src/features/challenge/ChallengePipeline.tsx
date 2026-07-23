@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 
 /**
@@ -240,6 +241,8 @@ export function ChallengePipeline({
   validationMethod?: 'meet' | 'photo_proof';
   onPress?: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('challenge');
   const isInternational = mode === 'international';
   const usesPhotoProof  = isInternational || validationMethod === 'photo_proof';
@@ -279,7 +282,7 @@ export function ChallengePipeline({
               )}
               <View style={[styles.dot, dotStyle]}>
                 {isDone
-                  ? <Ionicons name="checkmark" size={14} color={Colors.white} />
+                  ? <Ionicons name="checkmark" size={14} color={colors.white} />
                   : <Text style={[styles.dotEmoji, !isActive && styles.dotEmojiIdle]}>{STEP_ICONS[step]}</Text>}
               </View>
               <Text style={[
@@ -315,7 +318,7 @@ export function ChallengePipeline({
 
 const DOT_SIZE = 30;
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
@@ -343,7 +346,7 @@ const styles = StyleSheet.create({
     marginLeft:   DOT_SIZE / 2,
     marginRight:  DOT_SIZE / 2,
     height:       2,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
   },
   connectorDone: {
     backgroundColor: '#FF7A3C',
@@ -358,8 +361,8 @@ const styles = StyleSheet.create({
     borderWidth:     1.5,
   },
   dotIdle: {
-    backgroundColor: Colors.bg2,
-    borderColor:     Colors.border,
+    backgroundColor: c.bg2,
+    borderColor:     c.border,
   },
   dotActive: {
     backgroundColor: 'rgba(255,122,60,0.15)',
@@ -370,8 +373,8 @@ const styles = StyleSheet.create({
     borderColor:     '#FF7A3C',
   },
   dotRejected: {
-    backgroundColor: Colors.bg2,
-    borderColor:     'rgba(255,255,255,0.20)',
+    backgroundColor: c.bg2,
+    borderColor:     c.overlayStrong,
   },
   dotEmoji:     { fontSize: 14 },
   dotEmojiIdle: { opacity: 0.45 },
@@ -379,13 +382,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize:   10,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
     marginTop:  4,
     letterSpacing: 0.2,
   },
   labelActive: { color: '#FF7A3C', fontWeight: '800' },
-  labelDone:   { color: Colors.text, fontWeight: '700' },
-  labelReject: { color: Colors.muted2 },
+  labelDone:   { color: c.text, fontWeight: '700' },
+  labelReject: { color: c.muted2 },
 
   subCtaRow: {
     flexDirection: 'row',

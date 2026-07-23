@@ -9,13 +9,16 @@
  */
 import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
-import { Radius } from '@/constants';
+import { Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 const EMOJIS = ['⚡', '🎉', '🏆', '✨', '🔥', '⭐', '🥳'];
 const PIECES = 18;
 
 export function CampaignCelebration({ onDone }: { onDone: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+
   const badge = useRef(new Animated.Value(0)).current; // scale + opacity
 
   // Stable per-piece config (positions/timings fixed for the run's lifetime).
@@ -80,7 +83,7 @@ export function CampaignCelebration({ onDone }: { onDone: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: { ...StyleSheet.absoluteFillObject, zIndex: 50 },
   piece:   { position: 'absolute', top: 0 },
   badgeWrap: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center' },

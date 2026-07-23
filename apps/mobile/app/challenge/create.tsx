@@ -13,7 +13,8 @@ import { fetchChannels } from '@/api/channels';
 import { localizeCityName } from '@/i18n/cityName';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import type { ChallengeType, ChallengeAudience, City } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 const TYPES: { value: ChallengeType; icon: string }[] = [
   { value: 'food',    icon: '🍜' },
@@ -43,6 +44,9 @@ const VALIDATION_ICONS: Record<ValidationMethod, string> = { meet: '🤝', photo
 const MEET_BONUS_POINTS = 50;
 
 export default function CreateChallengeScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { city, identity, account } = useApp();
@@ -286,7 +290,7 @@ export default function CreateChallengeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{editId ? t('editTitle') : t('createTitle')}</Text>
@@ -381,7 +385,7 @@ export default function CreateChallengeScreen() {
                       ? `📅 ${new Date(meetAt * 1000).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}${meetVenue ? `  ·  📍 ${meetVenue}` : ''}`
                       : t('group.meetCta', { defaultValue: 'Set the meet date' })}
                   </Text>
-                  <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                  <Ionicons name="chevron-forward" size={16} color={colors.muted} />
                 </TouchableOpacity>
                 <Text style={[styles.sectionHint, meetError && styles.sectionHintError]}>
                   {meetError
@@ -409,7 +413,7 @@ export default function CreateChallengeScreen() {
                   ? `${targetCity.name} · ${targetCity.country}`
                   : t('intl.targetCityAnywhere')}
               </Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.muted} />
             </TouchableOpacity>
             <Text style={[styles.sectionHint, cityError && styles.sectionHintError]}>
               {cityError ? t('intl.targetCityRequired') : t('intl.targetCityHint')}
@@ -512,7 +516,7 @@ export default function CreateChallengeScreen() {
           // so the title itself never contains hard line breaks.
           onChangeText={(v) => setTitle(v.replace(/\n/g, ' '))}
           placeholder={t(`titlePh.${type}`, { defaultValue: t('titlePlaceholder') })}
-          placeholderTextColor={Colors.muted2}
+          placeholderTextColor={colors.muted2}
           maxLength={100}
           multiline
         />
@@ -529,7 +533,7 @@ export default function CreateChallengeScreen() {
               value={returnClause}
               onChangeText={(v) => { returnClauseDirty.current = true; setReturnClause(v); }}
               placeholder={t('returnClauseTemplates.food')}
-              placeholderTextColor={Colors.muted2}
+              placeholderTextColor={colors.muted2}
               maxLength={200}
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
@@ -548,7 +552,7 @@ export default function CreateChallengeScreen() {
               value={proofRequirements}
               onChangeText={setProofRequirements}
               placeholder={t('intl.proofRequirementsPlaceholder')}
-              placeholderTextColor={Colors.muted2}
+              placeholderTextColor={colors.muted2}
               maxLength={300}
               multiline
               numberOfLines={3}
@@ -572,7 +576,7 @@ export default function CreateChallengeScreen() {
           disabled={!title.trim() || submitting}
         >
           {submitting
-            ? <ActivityIndicator color={Colors.white} size="small" />
+            ? <ActivityIndicator color={colors.white} size="small" />
             : <Text style={styles.submitBtnText}>{editId ? t('saveChanges') : t('createCta')}</Text>
           }
         </TouchableOpacity>
@@ -657,6 +661,8 @@ function PublicOptinModal({
   onSwitchToFriends: () => void;
   onClose:           () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -671,7 +677,7 @@ function PublicOptinModal({
             activeOpacity={0.85}
           >
             {dismissing
-              ? <ActivityIndicator color={Colors.white} size="small" />
+              ? <ActivityIndicator color={colors.white} size="small" />
               : <Text style={styles.submitBtnText}>{t('visibility.optin.cta')}</Text>}
           </TouchableOpacity>
           <TouchableOpacity
@@ -705,6 +711,8 @@ function TargetCityPickerSheet({
   onClose:              () => void;
   onSelect:             (c: TargetCityChoice | null) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [cities,  setCities]  = useState<City[]>([]);
   const [loading, setLoading] = useState(false);
@@ -750,12 +758,12 @@ function TargetCityPickerSheet({
           value={query}
           onChangeText={setQuery}
           placeholder={t('intl.cityPicker.searchPlaceholder')}
-          placeholderTextColor={Colors.muted2}
+          placeholderTextColor={colors.muted2}
           autoCapitalize="none"
         />
 
         {loading ? (
-          <ActivityIndicator color={Colors.muted} style={{ marginVertical: Spacing.lg }} />
+          <ActivityIndicator color={colors.muted} style={{ marginVertical: Spacing.lg }} />
         ) : (
           <FlatList
             data={[{ channelId: '__anywhere__', name: '', country: '' } as City, ...filtered]}
@@ -795,8 +803,8 @@ function TargetCityPickerSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -804,22 +812,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
     zIndex:          1,
   },
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  headerTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   body:        { flex: 1 },
   bodyContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl * 2 },
@@ -829,7 +837,7 @@ const styles = StyleSheet.create({
     fontWeight:    '700',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    color:         Colors.muted,
+    color:         c.muted,
     marginTop:     Spacing.md,
     marginBottom:  Spacing.xs,
   },
@@ -845,8 +853,8 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.md - 2,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
     alignItems:        'center',
     justifyContent:    'center',
     gap:               8,
@@ -868,8 +876,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.sm,
     borderRadius:      Radius.md,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
     alignItems:        'center',
     justifyContent:    'flex-start',
     gap:               4,
@@ -877,7 +885,7 @@ const styles = StyleSheet.create({
   audienceLabel: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   audienceLabelSelected: { color: '#FF7A3C' },
   // Short hint line under the label inside a card (used by the
@@ -885,7 +893,7 @@ const styles = StyleSheet.create({
   // shrinking the primary label.
   audienceHint: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted2,
+    color:      c.muted2,
     textAlign:  'center',
     marginTop:  2,
   },
@@ -924,8 +932,8 @@ const styles = StyleSheet.create({
     aspectRatio:       1,
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
     alignItems:        'center',
     justifyContent:    'center',
     gap:               4,
@@ -935,18 +943,18 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,122,60,0.10)',
   },
   typeEmoji: { fontSize: 28 },
-  typeLabel: { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.muted },
+  typeLabel: { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   typeLabelSelected: { color: '#FF7A3C' },
 
   input: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     borderRadius:    Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 4,
     fontSize:        FontSizes.md,
-    color:           Colors.text,
+    color:           c.text,
   },
   inputMultiline: {
     minHeight:    80,
@@ -956,7 +964,7 @@ const styles = StyleSheet.create({
   // ── International-mode UI bits ──────────────────────────────────────────
   sectionHint: {
     fontSize:  FontSizes.xs + 1,
-    color:     Colors.muted2,
+    color:     c.muted2,
     marginTop: 2,
     lineHeight: 16,
   },
@@ -972,65 +980,65 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius:    Radius.md,
     borderWidth:     1,
-    borderColor:     Colors.border,
-    backgroundColor: Colors.bg2,
+    borderColor:     c.border,
+    backgroundColor: c.bg2,
   },
   deadlineChipActive: {
     borderColor:     '#FF7A3C',
     backgroundColor: 'rgba(255,122,60,0.12)',
   },
-  deadlineChipText:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  deadlineChipText:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
   deadlineChipTextActive: { color: '#FF7A3C' },
   cityPickerBtn: {
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'space-between',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 4,
   },
   cityPickerBtnError: { borderColor: '#FF6B5C' },
-  cityPickerText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
+  cityPickerText: { fontSize: FontSizes.md, color: c.text, flex: 1, marginRight: 8 },
 
-  cityModalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+  cityModalBackdrop: { flex: 1, backgroundColor: c.scrim },
   cityModalSheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '85%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
   cityModalHandle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4,
+    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
   },
   cityModalHeader: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm,
   },
-  cityModalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  cityModalClose: { fontSize: 18, color: Colors.muted, fontWeight: '700' },
+  cityModalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  cityModalClose: { fontSize: 18, color: c.muted, fontWeight: '700' },
   cityModalSearch: {
     marginHorizontal:  Spacing.md,
     marginBottom:      Spacing.sm,
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   c.overlay,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     fontSize:          FontSizes.md,
-    color:             Colors.text,
+    color:             c.text,
   },
   cityModalRow: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.lg, paddingVertical: 12,
   },
   cityModalRowSelected: { backgroundColor: 'rgba(255,122,60,0.08)' },
-  cityModalRowText: { fontSize: FontSizes.md, color: Colors.text, flex: 1, marginRight: 8 },
+  cityModalRowText: { fontSize: FontSizes.md, color: c.text, flex: 1, marginRight: 8 },
 
   // Stepper row for max_participants - −/+ buttons flanking the centred number.
   stepperRow: {
@@ -1044,8 +1052,8 @@ const styles = StyleSheet.create({
     height:          44,
     borderRadius:    Radius.full,
     borderWidth:     1,
-    borderColor:     Colors.border,
-    backgroundColor: Colors.bg2,
+    borderColor:     c.border,
+    backgroundColor: c.bg2,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -1053,14 +1061,14 @@ const styles = StyleSheet.create({
   stepperValue: {
     fontSize:   FontSizes.xl,
     fontWeight: '800',
-    color:      Colors.text,
+    color:      c.text,
     minWidth:   48,
     textAlign:  'center',
   },
 
   errorText: {
     fontSize:  FontSizes.sm,
-    color:     Colors.red,
+    color:     c.red,
     textAlign: 'center',
   },
 
@@ -1073,7 +1081,7 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.45 },
   submitBtnText: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '700',
     fontSize:   FontSizes.md,
   },
@@ -1084,30 +1092,30 @@ const styles = StyleSheet.create({
   examplesLabel:  {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
   examplesGrid:   { gap: 6 },
   exampleChip:    {
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     borderRadius:    10,
     paddingVertical:   10,
     paddingHorizontal: 14,
   },
-  exampleChipText: { color: Colors.text, fontSize: FontSizes.xs + 1 },
+  exampleChipText: { color: c.text, fontSize: FontSizes.xs + 1 },
 
   // First-time public opt-in modal.
   optinOverlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.65)',
+    backgroundColor: c.scrim,
     justifyContent:  'center',
     paddingHorizontal: Spacing.lg,
   },
   optinPanel: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     padding:         Spacing.lg,
     gap:             Spacing.sm,
@@ -1115,12 +1123,12 @@ const styles = StyleSheet.create({
   optinTitle: {
     fontSize:   FontSizes.lg,
     fontWeight: '800',
-    color:      Colors.text,
+    color:      c.text,
   },
   optinBody: {
     fontSize:   FontSizes.sm,
     lineHeight: FontSizes.sm * 1.45,
-    color:      Colors.muted,
+    color:      c.muted,
   },
   optinGhostBtn: {
     marginTop:       Spacing.xs,
@@ -1128,7 +1136,7 @@ const styles = StyleSheet.create({
     alignItems:      'center',
   },
   optinGhostText: {
-    color:      Colors.muted2,
+    color:      c.muted2,
     fontWeight: '600',
     fontSize:   FontSizes.sm,
   },

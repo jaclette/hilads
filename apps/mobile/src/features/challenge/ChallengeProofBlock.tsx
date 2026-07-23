@@ -35,7 +35,8 @@ import {
 } from '@/api/challenges';
 import { uploadFile } from '@/api/uploads';
 import { AndroidCameraCapture } from '@/features/chat/AndroidCameraCapture';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Props = {
   acceptanceId: string;
@@ -57,6 +58,8 @@ type Props = {
 export function ChallengeProofBlock({
   acceptanceId, iAmCreator, iAmAcceptor, proofRequirements, acceptancePhase, compact = false,
 }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [proofs,      setProofs]      = useState<ChallengeProof[]>([]);
   const [attempts,    setAttempts]    = useState(0);
@@ -180,7 +183,7 @@ export function ChallengeProofBlock({
   if (loading) {
     return (
       <View style={[styles.card, { alignItems: 'center' }]}>
-        <ActivityIndicator color={Colors.muted} />
+        <ActivityIndicator color={colors.muted} />
       </View>
     );
   }
@@ -226,7 +229,7 @@ export function ChallengeProofBlock({
               activeOpacity={0.85}
             >
               {busy === 'approve'
-                ? <ActivityIndicator color={Colors.white} size="small" />
+                ? <ActivityIndicator color={colors.white} size="small" />
                 : <Text style={styles.verdictApproveText}>✓ {t('intl.proof.approveCta')}</Text>}
             </TouchableOpacity>
             <TouchableOpacity
@@ -254,7 +257,7 @@ export function ChallengeProofBlock({
               value={rejectReason}
               onChangeText={setRejectReason}
               placeholder={t('intl.proof.reasonPlaceholder')}
-              placeholderTextColor={Colors.muted2}
+              placeholderTextColor={colors.muted2}
               maxLength={200}
               multiline
               autoFocus
@@ -267,7 +270,7 @@ export function ChallengeProofBlock({
               activeOpacity={0.85}
             >
               {busy === 'reject'
-                ? <ActivityIndicator color={Colors.white} />
+                ? <ActivityIndicator color={colors.white} />
                 : <Text style={styles.modalSubmitText}>{t('intl.proof.rejectConfirm')}</Text>}
             </TouchableOpacity>
           </View>
@@ -302,7 +305,7 @@ export function ChallengeProofBlock({
         activeOpacity={0.85}
       >
         {busy === 'submit'
-          ? <ActivityIndicator color={Colors.white} />
+          ? <ActivityIndicator color={colors.white} />
           : (
             <Text style={[styles.submitBtnText, compact && styles.submitBtnTextCompact]}>
               📸 {canRetry ? t('intl.proof.tryAgainCta', { count: attemptsLeft }) : t('intl.proof.submitCta')}
@@ -322,14 +325,14 @@ export function ChallengeProofBlock({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     margin:           Spacing.md,
     padding:          Spacing.md,
     borderRadius:     Radius.lg,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderWidth:      1,
-    borderColor:      'rgba(255,255,255,0.06)',
+    borderColor:      c.overlay,
     gap:              Spacing.sm,
   },
   reqsBlock: {
@@ -339,7 +342,7 @@ const styles = StyleSheet.create({
     gap:             2,
   },
   reqsLabel: { fontSize: FontSizes.xs, fontWeight: '700', color: '#FF7A3C', letterSpacing: 0.6, textTransform: 'uppercase' },
-  reqsText:  { fontSize: FontSizes.sm, color: Colors.text, lineHeight: 18 },
+  reqsText:  { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
 
   media: { width: '100%', aspectRatio: 4/3, borderRadius: Radius.md, backgroundColor: '#000' },
 
@@ -348,7 +351,7 @@ const styles = StyleSheet.create({
   verdictBtn: { flex: 1, paddingVertical: Spacing.sm + 2, borderRadius: Radius.full, alignItems: 'center' },
   verdictApprove: { backgroundColor: '#22c55e' },
   verdictReject:  { borderWidth: 1, borderColor: 'rgba(239,68,68,0.5)', backgroundColor: 'rgba(239,68,68,0.08)' },
-  verdictApproveText: { color: Colors.white, fontWeight: '800', fontSize: FontSizes.sm },
+  verdictApproveText: { color: c.white, fontWeight: '800', fontSize: FontSizes.sm },
   verdictRejectText:  { color: '#ef4444', fontWeight: '800', fontSize: FontSizes.sm },
 
   submitBtn: {
@@ -358,20 +361,20 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     marginTop:       Spacing.xs,
   },
-  submitBtnText: { color: Colors.white, fontWeight: '800', fontSize: FontSizes.md },
+  submitBtnText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md },
   // Compact variant - group photo channel, keeps the chat visible below.
   cardCompact:      { marginVertical: Spacing.xs, paddingVertical: Spacing.sm },
   submitBtnCompact: { paddingVertical: Spacing.sm, marginTop: 0 },
   submitBtnTextCompact: { fontSize: FontSizes.sm },
 
-  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, textAlign: 'center', paddingVertical: 4 },
-  reasonLine:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 18 },
+  terminalLine: { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, textAlign: 'center', paddingVertical: 4 },
+  reasonLine:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
   // Inline-rendered proof requirements (no popin, no separate button).
   // The pipeline carries the "Submit your proof →" CTA; this just reminds
   // the acceptor what the creator asked for.
   requirementsLine: {
     fontSize:   FontSizes.sm,
-    color:      Colors.text,
+    color:      c.text,
     lineHeight: 18,
     marginTop:  Spacing.xs,
   },
@@ -380,34 +383,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', gap: 8,
     marginTop: Spacing.sm,
   },
-  busyText: { fontSize: FontSizes.sm, color: Colors.muted },
+  busyText: { fontSize: FontSizes.sm, color: c.muted },
 
-  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+  modalBackdrop: { flex: 1, backgroundColor: c.scrim },
   modalSheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     padding: Spacing.md, paddingBottom: Spacing.xl, gap: Spacing.sm,
   },
   modalHandle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginBottom: Spacing.sm,
+    backgroundColor: c.overlayStrong, marginBottom: Spacing.sm,
   },
-  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  modalHint:  { fontSize: FontSizes.sm, color: Colors.muted },
+  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  modalHint:  { fontSize: FontSizes.sm, color: c.muted },
   reasonInput: {
     minHeight:         96,
     textAlignVertical: 'top',
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     fontSize:          FontSizes.md,
-    color:             Colors.text,
+    color:             c.text,
   },
-  charCount: { fontSize: 11, color: Colors.muted2, textAlign: 'right' },
+  charCount: { fontSize: 11, color: c.muted2, textAlign: 'right' },
   modalSubmit: {
     backgroundColor: '#ef4444',
     paddingVertical: Spacing.md,
@@ -415,5 +418,5 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     marginTop:       Spacing.xs,
   },
-  modalSubmitText: { color: Colors.white, fontWeight: '800', fontSize: FontSizes.md },
+  modalSubmitText: { color: c.white, fontWeight: '800', fontSize: FontSizes.md },
 });

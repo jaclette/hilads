@@ -6,7 +6,8 @@ import {
   fetchMyChallengeParticipation,
   setChallengeNotificationPreference,
 } from '@/api/challenges';
-import { Colors, FontSizes, Radius } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
  * Compact on/off notifications pill for the challenge channel - mirrors
@@ -21,6 +22,8 @@ export function ChallengeNotificationPill({
   challengeId:   string;
   currentUserId: string | null;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [pref, setPref] = useState<'milestones' | 'all' | 'off' | null>(null);
   const [busy, setBusy] = useState(false);
@@ -62,11 +65,11 @@ export function ChallengeNotificationPill({
       accessibilityState={{ checked: isOn }}
     >
       {busy
-        ? <ActivityIndicator size="small" color={isOn ? '#FFB37A' : Colors.muted} />
+        ? <ActivityIndicator size="small" color={isOn ? '#FFB37A' : colors.muted} />
         : <Ionicons
             name={isOn ? 'notifications-outline' : 'notifications-off-outline'}
             size={14}
-            color={isOn ? '#FFB37A' : Colors.muted}
+            color={isOn ? '#FFB37A' : colors.muted}
           />}
       <Text style={[styles.label, isOn && styles.labelOn]} numberOfLines={1}>
         {t(isOn ? 'notif.on' : 'notif.off')}
@@ -75,7 +78,7 @@ export function ChallengeNotificationPill({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   pill: {
     flexDirection:   'row',
     alignItems:      'center',
@@ -84,13 +87,13 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
+    borderColor:       c.overlayStrong,
     backgroundColor:   'transparent',
   },
   pillOn: {
     backgroundColor: 'rgba(255,122,60,0.10)',
     borderColor:     'rgba(255,122,60,0.42)',
   },
-  label:   { fontSize: 11, fontWeight: '700', color: Colors.muted, letterSpacing: 0.2 },
+  label:   { fontSize: 11, fontWeight: '700', color: c.muted, letterSpacing: 0.2 },
   labelOn: { color: '#FFB37A' },
 });

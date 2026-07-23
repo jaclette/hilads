@@ -8,7 +8,8 @@ import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { fetchChannelParticipants, kickChallengeParticipant, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 
 /**
@@ -41,6 +42,8 @@ export function ChallengeChannelMembersSheet({
   visible, challenge, activeTaker, currentUserId,
   isCreator, isActiveTaker, onClose, onSelect, onMembersChanged,
 }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [members, setMembers] = useState<ChannelMember[]>([]);
   const [count,   setCount]   = useState(0);
@@ -129,7 +132,7 @@ export function ChallengeChannelMembersSheet({
 
         <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
           {loading ? (
-            <ActivityIndicator color={Colors.muted} style={{ marginVertical: Spacing.lg }} />
+            <ActivityIndicator color={colors.muted} style={{ marginVertical: Spacing.lg }} />
           ) : rows.length === 0 ? (
             <Text style={styles.empty}>{t('members.empty')}</Text>
           ) : (
@@ -189,7 +192,7 @@ export function ChallengeChannelMembersSheet({
                       accessibilityLabel={t('members.kickAria', { name: r.displayName })}
                     >
                       {busyId === r.id
-                        ? <ActivityIndicator size="small" color={Colors.muted} />
+                        ? <ActivityIndicator size="small" color={colors.muted} />
                         : <Text style={styles.kickBtnText}>{t('members.kickCta')}</Text>}
                     </TouchableOpacity>
                   )}
@@ -203,22 +206,22 @@ export function ChallengeChannelMembersSheet({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '70%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  close:  { fontSize: 18, color: Colors.muted, fontWeight: '700' },
+  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  close:  { fontSize: 18, color: c.muted, fontWeight: '700' },
   list:   { paddingHorizontal: Spacing.md },
   listContent: { paddingBottom: Spacing.md },
-  empty:  { color: Colors.muted, textAlign: 'center', marginVertical: Spacing.lg, fontStyle: 'italic' },
+  empty:  { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg, fontStyle: 'italic' },
 
   row:        { flexDirection: 'row', alignItems: 'center', gap: 8, paddingVertical: 8 },
   rowMain:    { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12, minWidth: 0 },
@@ -226,7 +229,7 @@ const styles = StyleSheet.create({
   avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
   rowInfo:    { flex: 1, minWidth: 0 },
   nameRow:    { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
-  name:       { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, flexShrink: 1 },
+  name:       { fontSize: FontSizes.md, fontWeight: '600', color: c.text, flexShrink: 1 },
 
   roleBadge:  { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
   roleBadgeChallenger: { backgroundColor: 'rgba(255,122,60,0.14)', borderColor: 'rgba(255,122,60,0.30)' },
@@ -237,6 +240,6 @@ const styles = StyleSheet.create({
   roleBadgeTextTaker:      { color: '#4ADE80' },
   roleBadgeTextSpectator:  { color: '#94A3B8' },
 
-  kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)' },
-  kickBtnText:{ fontSize: 12, fontWeight: '700', color: Colors.muted },
+  kickBtn:    { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, borderWidth: 1, borderColor: c.overlayStrong },
+  kickBtnText:{ fontSize: 12, fontWeight: '700', color: c.muted },
 });

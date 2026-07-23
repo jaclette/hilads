@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { fetchUserChallenges, type ProfileChallenge } from '@/api/challenges';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeType } from '@/types';
 
 /**
@@ -25,6 +26,9 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
 type Filter = 'all' | 'created' | 'taken';
 
 export default function MyChallengesScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account } = useApp();
@@ -94,7 +98,7 @@ export default function MyChallengesScreen() {
       </View>
 
       {loading && items.length === 0 ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
       ) : filtered.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyEmoji}>🔥</Text>
@@ -113,7 +117,7 @@ export default function MyChallengesScreen() {
           data={filtered}
           keyExtractor={(c) => c.id}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
           ItemSeparatorComponent={() => <View style={styles.sep} />}
           renderItem={({ item }) => (
             <TouchableOpacity
@@ -138,7 +142,7 @@ export default function MyChallengesScreen() {
                   )}
                 </View>
               </View>
-              <Ionicons name="chevron-forward" size={18} color={Colors.muted2} />
+              <Ionicons name="chevron-forward" size={18} color={colors.muted2} />
             </TouchableOpacity>
           )}
         />
@@ -148,10 +152,12 @@ export default function MyChallengesScreen() {
 }
 
 function Header({ title, onBack, t }: { title: string; onBack: () => void; t: (k: string, opts?: { ns?: string }) => string }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.nav}>
       <TouchableOpacity style={styles.backPill} onPress={onBack} activeOpacity={0.75}>
-        <Ionicons name="chevron-back" size={18} color={Colors.text} />
+        <Ionicons name="chevron-back" size={18} color={colors.text} />
         <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
       </TouchableOpacity>
       <View style={styles.navCenter}>
@@ -162,8 +168,8 @@ function Header({ title, onBack, t }: { title: string; onBack: () => void; t: (k
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   nav: {
@@ -172,16 +178,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backPill: {
     flexDirection: 'row',
     alignItems:    'center',
     width:         70,
   },
-  backPillText: { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
+  backPillText: { fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
   navCenter:    { flex: 1, alignItems: 'center' },
-  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   filterRow: {
     flexDirection:     'row',
@@ -194,13 +200,13 @@ const styles = StyleSheet.create({
     paddingVertical:   7,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
   filterPillActive: {
     backgroundColor: 'rgba(255,122,60,0.12)',
     borderColor:     'rgba(255,122,60,0.5)',
   },
-  filterText:       { fontSize: 13, fontWeight: '700', color: Colors.muted },
+  filterText:       { fontSize: 13, fontWeight: '700', color: c.muted },
   filterTextActive: { color: '#FF7A3C' },
 
   list: { paddingVertical: Spacing.xs },
@@ -213,7 +219,7 @@ const styles = StyleSheet.create({
   },
   rowIcon:  { fontSize: 24, width: 30, textAlign: 'center' },
   rowBody:  { flex: 1, gap: 5 },
-  rowTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  rowTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   rowTags:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
   tag: {
     paddingHorizontal: 8,
@@ -224,19 +230,19 @@ const styles = StyleSheet.create({
   tagText:        { fontSize: 11, fontWeight: '700' },
   tagCreator:     { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.30)' },
   tagTextCreator: { color: '#FF7A3C' },
-  tagTaker:       { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.12)' },
-  tagTextTaker:   { color: Colors.muted },
+  tagTaker:       { backgroundColor: c.overlayWeak, borderColor: c.overlayStrong },
+  tagTextTaker:   { color: c.muted },
   tagIntl:        { backgroundColor: 'rgba(56,189,248,0.10)', borderColor: 'rgba(56,189,248,0.30)' },
   tagTextIntl:    { color: '#38bdf8' },
   tagDone:        { backgroundColor: 'rgba(34,197,94,0.10)', borderColor: 'rgba(34,197,94,0.20)' },
   tagTextDone:    { color: '#4ade80' },
 
-  sep: { height: 1, backgroundColor: Colors.border, marginLeft: Spacing.md + 30 + Spacing.md },
+  sep: { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 30 + Spacing.md },
 
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptyBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   createBtn: {
     marginTop:         8,
     paddingHorizontal: 20,

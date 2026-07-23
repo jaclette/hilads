@@ -27,7 +27,8 @@ import { useTranslation } from 'react-i18next';
 import {
   fetchProofs, approveProof, rejectProof, type ChallengeProof,
 } from '@/api/challenges';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Props = {
   visible:        boolean;
@@ -41,6 +42,9 @@ type Props = {
 };
 
 export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('challenge');
 
   const [proof,       setProof]       = useState<ChallengeProof | null>(null);
@@ -118,7 +122,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
 
         {loading ? (
           <View style={styles.loadingWrap}>
-            <ActivityIndicator color={Colors.muted} />
+            <ActivityIndicator color={colors.muted} />
           </View>
         ) : !proof ? (
           <View style={styles.loadingWrap}>
@@ -155,7 +159,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                   activeOpacity={0.85}
                 >
                   {busy === 'approve'
-                    ? <ActivityIndicator color={Colors.white} size="small" />
+                    ? <ActivityIndicator color={colors.white} size="small" />
                     : <Text style={styles.btnApproveText}>✓ {t('intl.proof.approveCta')}</Text>}
                 </TouchableOpacity>
               </View>
@@ -167,7 +171,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                   value={reason}
                   onChangeText={setReason}
                   placeholder={t('intl.proof.reasonPlaceholder')}
-                  placeholderTextColor={Colors.muted2}
+                  placeholderTextColor={colors.muted2}
                   maxLength={200}
                   multiline
                   autoFocus
@@ -189,7 +193,7 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
                     activeOpacity={0.85}
                   >
                     {busy === 'reject'
-                      ? <ActivityIndicator color={Colors.white} size="small" />
+                      ? <ActivityIndicator color={colors.white} size="small" />
                       : <Text style={styles.btnRejectText}>{t('intl.proof.rejectConfirm')}</Text>}
                   </TouchableOpacity>
                 </View>
@@ -204,44 +208,44 @@ export function ProofReviewModal({ visible, onClose, acceptanceId, onVerdict }: 
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '88%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4,
+    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
   },
   scroll: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.md },
   loadingWrap: { padding: Spacing.xl, alignItems: 'center' },
-  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
   image:    { width: '100%', aspectRatio: 1, borderRadius: Radius.md, backgroundColor: '#111' },
-  hint:     { fontSize: FontSizes.sm, color: Colors.muted },
-  emptyText:{ fontSize: FontSizes.sm, color: Colors.muted },
+  hint:     { fontSize: FontSizes.sm, color: c.muted },
+  emptyText:{ fontSize: FontSizes.sm, color: c.muted },
 
   verdictRow: { flexDirection: 'row', gap: Spacing.sm, marginTop: Spacing.xs },
   btn: { flex: 1, paddingVertical: 14, borderRadius: Radius.md, alignItems: 'center', justifyContent: 'center' },
   btnApprove: { backgroundColor: '#4ade80' },
   btnApproveText: { color: '#0b0d12', fontSize: FontSizes.md, fontWeight: '800' },
   btnReject:  { backgroundColor: '#ef4444' },
-  btnRejectText:  { color: Colors.white, fontSize: FontSizes.md, fontWeight: '800' },
-  btnSecondary: { backgroundColor: 'rgba(255,255,255,0.08)' },
-  btnSecondaryText: { color: Colors.muted, fontSize: FontSizes.md, fontWeight: '700' },
+  btnRejectText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  btnSecondary: { backgroundColor: c.overlay },
+  btnSecondaryText: { color: c.muted, fontSize: FontSizes.md, fontWeight: '700' },
 
   reasonInput: {
     minHeight: 96,
     padding: 12,
     borderRadius: Radius.md,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    color: Colors.text,
+    backgroundColor: c.overlayWeak,
+    color: c.text,
     fontSize: FontSizes.sm,
     textAlignVertical: 'top',
   },
-  charCount: { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: Colors.muted2 },
+  charCount: { alignSelf: 'flex-end', fontSize: FontSizes.xs, color: c.muted2 },
   errorLine: { color: '#ef4444', fontSize: FontSizes.sm, marginTop: 4 },
 });

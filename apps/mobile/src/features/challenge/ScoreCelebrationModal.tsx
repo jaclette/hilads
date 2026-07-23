@@ -3,7 +3,8 @@ import {
   Animated, Easing, Modal, Pressable, StyleSheet, Text, View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { countryToFlag } from '@/lib/countryFlag';
 import type { ScoreCelebration } from '@/api/challenges';
 
@@ -64,6 +65,9 @@ const KIND_EMOJI: Record<string, string> = {
  * same delta is never celebrated twice.
  */
 export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboard }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('challenge');
 
   // ── animation drivers ───────────────────────────────────────────────────
@@ -241,7 +245,7 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
               style={[
                 styles.total,
                 {
-                  color: glow.interpolate({ inputRange: [0, 1], outputRange: [Colors.muted, '#FFC93C'] }),
+                  color: glow.interpolate({ inputRange: [0, 1], outputRange: [colors.muted, '#FFC93C'] }),
                   textShadowColor: '#FFC93C',
                   textShadowRadius: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 8] }),
                   transform: [{ scale: pop.interpolate({ inputRange: [0, 1], outputRange: [1, 1.18] }) }],
@@ -364,10 +368,10 @@ export function ScoreCelebrationModal({ data, visible, onClose, onOpenLeaderboar
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.72)',
+    backgroundColor: c.scrim,
     alignItems: 'center',
     justifyContent: 'center',
     padding: Spacing.lg,
@@ -376,7 +380,7 @@ const styles = StyleSheet.create({
   card: {
     width: '100%',
     maxWidth: 360,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius: Radius.lg,
     borderWidth: 1,
     borderColor: 'rgba(255,122,60,0.32)',
@@ -414,20 +418,20 @@ const styles = StyleSheet.create({
   pointsUnit: {
     fontSize:   18,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
     letterSpacing: 0.2,
   },
   total: {
     marginTop: 2,
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.muted,
+    color:      c.muted,
     letterSpacing: 0.2,
     textAlign:  'center',
   },
   subtitle: {
     fontSize: FontSizes.md,
-    color:    Colors.muted,
+    color:    c.muted,
     textAlign: 'center',
     marginTop: 6,
     marginBottom: 14,
@@ -472,12 +476,12 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   eventKind: {
     fontSize:   FontSizes.xs,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   // Meet bonus tile - amber recolor of the base event row so the
   // "+50 Meet bonus" reads as a distinct extra reward rather than
@@ -497,7 +501,7 @@ const styles = StyleSheet.create({
   },
   eventsMore: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     marginTop:  2,
   },
@@ -505,7 +509,7 @@ const styles = StyleSheet.create({
   divider: {
     width:   '60%',
     height:  1,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     marginBottom: 14,
   },
   row: {
@@ -519,10 +523,10 @@ const styles = StyleSheet.create({
   },
   // PR38 - visual affordance for tappable rank rows.
   rowTappable: {
-    backgroundColor: 'rgba(255,255,255,0.02)',
+    backgroundColor: c.overlayWeak,
   },
   rowPressed: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     transform: [{ scale: 0.985 }],
   },
   rowFlag: {
@@ -533,12 +537,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   rowChevron: {
     fontSize:   18,
     lineHeight: 20,
-    color:      Colors.muted,
+    color:      c.muted,
   },
   cta: {
     marginTop: 16,

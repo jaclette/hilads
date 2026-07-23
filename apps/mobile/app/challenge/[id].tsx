@@ -62,7 +62,8 @@ import { ShareToCityPill } from '@/components/ShareToCityPill';
 import { ShareToWorldPill } from '@/components/ShareToWorldPill';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius, buildChallengeUrl } from '@/constants';
+import { FontSizes, Spacing, Radius, buildChallengeUrl, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Challenge, ChallengeType, ChallengeAudience, ChallengeThreadSummary, Message, UserDTO } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
@@ -77,6 +78,9 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
 const celebratedCampaigns = new Set<string>();
 
 export default function ChallengeChatScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const insets = useSafeAreaInsets();
@@ -1027,7 +1031,7 @@ export default function ChallengeChatScreen() {
   if (challengeLoading) {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
       </SafeAreaView>
     );
   }
@@ -1037,7 +1041,7 @@ export default function ChallengeChatScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.nav}>
           <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={18} color={Colors.text} />
+            <Ionicons name="chevron-back" size={18} color={colors.text} />
             <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
           </TouchableOpacity>
         </View>
@@ -1086,7 +1090,7 @@ export default function ChallengeChatScreen() {
           title stays visually centered; no need for a manual spacer. */}
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={Colors.text} />
+          <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
         <View style={styles.navCenter}>
@@ -1222,7 +1226,7 @@ export default function ChallengeChatScreen() {
             <Ionicons
               name={detailsOpen ? 'chevron-up' : 'chevron-down'}
               size={16}
-              color={Colors.muted}
+              color={colors.muted}
             />
           </TouchableOpacity>
         </View>
@@ -1762,7 +1766,7 @@ export default function ChallengeChatScreen() {
                   accessibilityLabel={i18n.t('close', { ns: 'common' })}
                   style={styles.guestWelcomeClose}
                 >
-                  <Ionicons name="close" size={16} color={Colors.muted2} />
+                  <Ionicons name="close" size={16} color={colors.muted2} />
                 </TouchableOpacity>
               </View>
             ) : null}
@@ -1793,7 +1797,7 @@ export default function ChallengeChatScreen() {
                     text={i18n.t('promptChallengeIntro', { ns: 'chat' })}
                     textStyle={styles.introBannerText}
                     style={styles.introBannerMarquee}
-                    fadeColor={Colors.bg2}
+                    fadeColor={colors.bg2}
                   />
                   <Text style={styles.introBannerCta} numberOfLines={1}>
                     {i18n.t('promptChallengeIntroCta', { ns: 'chat' })} →
@@ -1804,7 +1808,7 @@ export default function ChallengeChatScreen() {
                   hitSlop={10}
                   accessibilityLabel={i18n.t('close', { ns: 'common' })}
                 >
-                  <Ionicons name="close" size={16} color={Colors.muted2} />
+                  <Ionicons name="close" size={16} color={colors.muted2} />
                 </TouchableOpacity>
               </View>
             )}
@@ -1866,7 +1870,7 @@ export default function ChallengeChatScreen() {
               onEndReached={hasMore ? loadOlder : undefined}
               onEndReachedThreshold={0.2}
               ListFooterComponent={loadingOlder ? (
-                <View style={styles.loadingOlderWrap}><ActivityIndicator size="small" color={Colors.muted} /></View>
+                <View style={styles.loadingOlderWrap}><ActivityIndicator size="small" color={colors.muted} /></View>
               ) : null}
               ListEmptyComponent={!msgsLoading ? (
                 <View style={styles.emptyChat}>
@@ -2114,7 +2118,7 @@ export default function ChallengeChatScreen() {
               onPress={() => { setManageOpen(false); handleEdit(); }}
               activeOpacity={0.75}
             >
-              <Ionicons name="create-outline" size={18} color={Colors.text} />
+              <Ionicons name="create-outline" size={18} color={colors.text} />
               <Text style={styles.manageRowText}>{t('editTitle')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -2126,7 +2130,7 @@ export default function ChallengeChatScreen() {
               <Ionicons
                 name={isValidated ? 'checkmark-circle' : 'lock-closed-outline'}
                 size={18}
-                color={isValidated ? '#22c55e' : Colors.text}
+                color={isValidated ? '#22c55e' : colors.text}
               />
               <Text style={[styles.manageRowText, isValidated && { color: '#22c55e' }]}>
                 {isValidated ? t('reopenCta') : t('closeCta')}
@@ -2234,7 +2238,7 @@ export default function ChallengeChatScreen() {
                 >
                   <View style={{ flex: 1 }}>
                     <Text style={styles.manageRowText}>{t(`visibility.badge.${opt}`)}</Text>
-                    <Text style={{ fontSize: FontSizes.sm - 1, color: Colors.muted, marginTop: 2 }}>{hint}</Text>
+                    <Text style={{ fontSize: FontSizes.sm - 1, color: colors.muted, marginTop: 2 }}>{hint}</Text>
                   </View>
                 </TouchableOpacity>
               );
@@ -2340,11 +2344,11 @@ export default function ChallengeChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  errorText: { fontSize: FontSizes.md, color: Colors.red, padding: Spacing.md, textAlign: 'center' },
+  errorText: { fontSize: FontSizes.md, color: c.red, padding: Spacing.md, textAlign: 'center' },
 
   // "Learn how challenges work" banner - slim row above the chat
   // list, mirroring the visual of the city-chat prompt pill so the
@@ -2358,7 +2362,7 @@ const styles = StyleSheet.create({
     marginBottom:      Spacing.xs,
     paddingVertical:   8,
     paddingHorizontal: 12,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.md,
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.30)',
@@ -2376,13 +2380,13 @@ const styles = StyleSheet.create({
   // font so the banner doesn't grow when a long string lands.
   introBannerMarquee: { flex: 1, height: 18 },
   introBannerText: {
-    color:      Colors.text,
+    color:      c.text,
     fontSize:   FontSizes.sm,
     fontWeight: '600',
     lineHeight: 18,
   },
   introBannerCta: {
-    color:      Colors.accent,
+    color:      c.accent,
     fontSize:   FontSizes.sm,
     fontWeight: '700',
   },
@@ -2400,7 +2404,7 @@ const styles = StyleSheet.create({
     marginBottom:      Spacing.xs,
     paddingVertical:   10,
     paddingHorizontal: 12,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.md,
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.30)',
@@ -2410,12 +2414,12 @@ const styles = StyleSheet.create({
     gap:  2,
   },
   guestWelcomeText: {
-    color:      Colors.text,
+    color:      c.text,
     fontSize:   FontSizes.sm,
     fontWeight: '600',
   },
   guestWelcomeCta: {
-    color:      Colors.accent,
+    color:      c.accent,
     fontSize:   FontSizes.sm,
     fontWeight: '700',
   },
@@ -2431,23 +2435,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     gap:               Spacing.sm,
   },
   backPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 10, paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: c.overlay,
+    borderWidth: 1, borderColor: c.overlayStrong,
   },
-  backPillText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '700' },
+  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter: { flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
-  navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, flexShrink: 1, textAlign: 'center' },
+  navTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text, flexShrink: 1, textAlign: 'center' },
   navCreatorRow:    { flexDirection: 'row', alignItems: 'center', gap: 5, marginTop: 2 },
   navCreatorTap:    { flexDirection: 'row', alignItems: 'center', gap: 5, flexShrink: 1 },
   navCreatorAvatar: { width: 14, height: 14, borderRadius: 7 },
-  navCreatorText:   { fontSize: 11, fontWeight: '600', color: Colors.muted, flexShrink: 1 },
+  navCreatorText:   { fontSize: 11, fontWeight: '600', color: c.muted, flexShrink: 1 },
   // Sized to roughly match the back-pill width so the title stays centered
   // without needing a manual right-side spacer.
   navEmoji:  { fontSize: 28, lineHeight: 32, minWidth: 64, textAlign: 'center' },
@@ -2458,7 +2462,7 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.md,
     gap:               Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
 
@@ -2473,12 +2477,12 @@ const styles = StyleSheet.create({
   statusPill:          { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
   statusPillDone:      { backgroundColor: 'rgba(34,197,94,0.14)',  borderColor: 'rgba(34,197,94,0.34)' },
   statusPillLive:      { backgroundColor: 'rgba(255,201,60,0.14)', borderColor: 'rgba(255,201,60,0.34)' },
-  statusPillEnded:     { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.18)' },
-  statusPillRestart:   { backgroundColor: Colors.accent, borderColor: 'transparent' },
+  statusPillEnded:     { backgroundColor: c.overlay, borderColor: c.overlayStrong },
+  statusPillRestart:   { backgroundColor: c.accent, borderColor: 'transparent' },
   statusPillText:      { fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
   statusPillTextDone:  { color: '#22c55e' },
   statusPillTextLive:  { color: '#FFC93C' },
-  statusPillTextEnded: { color: Colors.muted2 },
+  statusPillTextEnded: { color: c.muted2 },
   statusPillTextRestart: { color: '#fff' },
 
   // Violet tint - see ChallengeVersusCard for the rationale (distinct from
@@ -2529,7 +2533,7 @@ const styles = StyleSheet.create({
   detailsToggle: {
     width: 26, height: 26, borderRadius: 13,
     alignItems: 'center', justifyContent: 'center',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    borderWidth: 1, borderColor: c.overlayStrong,
     marginLeft: 'auto',
   },
 
@@ -2552,11 +2556,11 @@ const styles = StyleSheet.create({
   groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },
   groupMeetCard:  {
     flexDirection: 'row', alignItems: 'center', gap: 8,
-    backgroundColor: Colors.bg2, borderRadius: 10, borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: c.bg2, borderRadius: 10, borderWidth: 1, borderColor: c.border,
     paddingHorizontal: Spacing.md, paddingVertical: 6,
   },
-  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: Colors.muted },
-  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.green, textAlign: 'center', paddingVertical: 4 },
+  groupMeetLine:  { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '600', color: c.muted },
+  groupStateText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.green, textAlign: 'center', paddingVertical: 4 },
   groupPrimaryBtn: {
     // Solid fill = unmistakably tappable. The old translucent/outlined style
     // read as an already-done state ("✓ validated") rather than a CTA.
@@ -2603,7 +2607,7 @@ const styles = StyleSheet.create({
     paddingVertical:   4,
     paddingHorizontal: 6,
   },
-  ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+  ownerIconLabel: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
   // Primary owner CTA - "Send it to someone in {city}". Cyan rather than
   // orange so it visually separates from the share pill above (which IS
@@ -2634,7 +2638,7 @@ const styles = StyleSheet.create({
   challengerRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   // Left half of the row stays tappable as a profile link; right half
   // hosts the inline quick actions.
@@ -2651,7 +2655,7 @@ const styles = StyleSheet.create({
   },
   challengerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 18 },
   challengerInfo: { flex: 1, gap: 2, minWidth: 0 },
-  challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  challengerName: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   challengerTag:  { fontSize: 11, fontWeight: '800', color: '#FF7A3C', letterSpacing: 0.3 },
 
   // Inline quick-action group - Share is a labeled pill (verb is the
@@ -2690,14 +2694,14 @@ const styles = StyleSheet.create({
   participantsRow: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   participantsInfo: {
     flex: 1, flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
     minWidth: 0,
   },
-  membersLabel: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
-  participantsEmpty: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+  membersLabel: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
+  participantsEmpty: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
 
   // Labeled Accept button - full-width when nobody has taken on yet (replaces
   // the old "Be the first to accept" + tiny + duo) and compact when there are
@@ -2729,7 +2733,7 @@ const styles = StyleSheet.create({
   loadingOlderWrap: { paddingVertical: Spacing.md, alignItems: 'center' },
   emptyChat:        { paddingVertical: 60, alignItems: 'center', gap: 8 },
   emptyChatEmoji:   { fontSize: 36 },
-  emptyChatText:    { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
+  emptyChatText:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingHorizontal: Spacing.lg },
 
   // Locked state - shown to visitors / creators with no acceptances yet.
   // Centered card-like block in the middle of the empty area below the
@@ -2739,8 +2743,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl, gap: 10,
   },
   lockedEmoji: { fontSize: 40, opacity: 0.7 },
-  lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'center' },
-  lockedBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', maxWidth: 320 },
+  lockedTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'center' },
+  lockedBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', maxWidth: 320 },
 
   // Join-the-channel CTA shown to non-participants in place of the chat.
   joinCta: {
@@ -2759,17 +2763,17 @@ const styles = StyleSheet.create({
   // Manage / proof-spec modal - bottom-sheet style with backdrop. Reuses
   // the same shape as the existing MembersSheet (handle + header) but
   // simpler: stacked rows.
-  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+  modalBackdrop: { flex: 1, backgroundColor: c.scrim },
   manageSheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingHorizontal: Spacing.lg, paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
     gap: Spacing.sm,
   },
   manageTitle: {
-    fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text,
+    fontSize: FontSizes.lg, fontWeight: '800', color: c.text,
     marginBottom: Spacing.sm,
   },
   manageRow: {
@@ -2777,16 +2781,16 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.md,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
   },
   manageRowDanger: { backgroundColor: 'rgba(252,165,165,0.06)' },
-  manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  manageRowText:   { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   proofSpecBody:   {
     fontSize: FontSizes.sm, lineHeight: FontSizes.sm * 1.5,
-    color: Colors.text,
+    color: c.text,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 2,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderRadius:      Radius.md,
   },
 
@@ -2801,11 +2805,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   10,
     borderRadius:      999,
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   c.overlay,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
   },
-  takeonRejectText: { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '700' },
+  takeonRejectText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
   takeonAcceptBtn: {
     paddingHorizontal: 16,
     paddingVertical:   10,

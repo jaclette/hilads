@@ -20,7 +20,8 @@ import { Image } from 'expo-image';
 import { useTranslation } from 'react-i18next';
 import { fetchGroupSubmissions, pickWinner, type GroupSubmission } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export function GroupSubmissionsGallery({
   challengeId, isChallenger, isValidated, refreshKey, onChanged, onCount, openSignal,
@@ -35,6 +36,8 @@ export function GroupSubmissionsGallery({
   /** Bump to open the gallery modal programmatically (e.g. proof-submitted push). */
   openSignal?:  number;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [subs,     setSubs]     = useState<GroupSubmission[]>([]);
   const [winnerId, setWinnerId] = useState<string | null>(null);
@@ -90,7 +93,7 @@ export function GroupSubmissionsGallery({
   }, [challengeId, load, onChanged, t]);
 
   if (loading) {
-    return <View style={styles.loading}><ActivityIndicator color={Colors.muted} /></View>;
+    return <View style={styles.loading}><ActivityIndicator color={colors.muted} /></View>;
   }
   if (subs.length === 0) return null;
 
@@ -185,7 +188,7 @@ export function GroupSubmissionsGallery({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   loading: { padding: Spacing.md, alignItems: 'center' },
 
   // CTA row (collapsed) - thumbs + "{n} photos" + chevron.
@@ -198,29 +201,29 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(255,201,60,0.55)',
   },
   ctaThumbs: { flexDirection: 'row' },
-  ctaThumb:  { width: 32, height: 32, borderRadius: 8, borderWidth: 2, borderColor: Colors.bg3 },
-  ctaLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
-  ctaChev:   { fontSize: 20, color: Colors.muted },
+  ctaThumb:  { width: 32, height: 32, borderRadius: 8, borderWidth: 2, borderColor: c.bg3 },
+  ctaLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
+  ctaChev:   { fontSize: 20, color: c.muted },
 
   // Grid modal (bottom sheet).
-  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)' },
+  modalBackdrop: { flex: 1, backgroundColor: c.scrim },
   modalSheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
-    backgroundColor: Colors.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
+    backgroundColor: c.bg, borderTopLeftRadius: 20, borderTopRightRadius: 20,
     paddingHorizontal: Spacing.md, paddingTop: 12, paddingBottom: 28, maxHeight: '85%',
   },
   modalHead:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  modalClose: { fontSize: 18, color: Colors.muted, paddingHorizontal: 4 },
-  modalHint:  { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 4, marginBottom: 8 },
+  modalTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  modalClose: { fontSize: 18, color: c.muted, paddingHorizontal: 4 },
+  modalHint:  { fontSize: FontSizes.sm, color: c.muted, marginTop: 4, marginBottom: 8 },
 
   grid:    { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, paddingTop: Spacing.sm },
   tile: {
     width: '47.5%',
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderRadius: Radius.md,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
+    borderColor: c.overlay,
     overflow: 'hidden',
   },
   tileWin: { borderColor: '#FFC93C', borderWidth: 2 },
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
   tileFooter: { flexDirection: 'row', alignItems: 'center', gap: 6, padding: 8 },
   avatar: { width: 22, height: 22, borderRadius: 11, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 11 },
-  name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: Colors.text },
+  name: { flex: 1, fontSize: FontSizes.xs + 1, fontWeight: '700', color: c.text },
 
   pickBtn: {
     // Solid fill (matches the fullscreen previewPick) so the challenger reads
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   },
   pickBtnText: { fontSize: FontSizes.xs + 1, fontWeight: '800', color: '#1a1206' },
 
-  previewBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.92)', alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
+  previewBackdrop: { flex: 1, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center', gap: Spacing.md },
   previewImg:  { width: '92%', height: '70%' },
   previewName: { fontSize: FontSizes.md, fontWeight: '800', color: '#fff' },
   previewPick: {

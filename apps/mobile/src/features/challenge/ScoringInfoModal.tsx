@@ -3,7 +3,8 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * Info-only sheet explaining the challenge scoring schedule. No CTAs -
@@ -24,6 +25,7 @@ export function ScoringInfoModal({
   visible: boolean;
   onClose: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const router = useRouter();
 
@@ -99,29 +101,29 @@ export function ScoringInfoModal({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '85%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4,
+    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
   },
   scrollContent: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.sm },
 
-  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
-  intro:  { fontSize: FontSizes.sm, color: Colors.muted, marginBottom: Spacing.sm },
+  title:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  intro:  { fontSize: FontSizes.sm, color: c.muted, marginBottom: Spacing.sm },
 
   // New section blocks above the points table. Light card-ish styling
   // so the two intro sections feel distinct from the dense points table
   // without screaming for attention.
   section: {
-    backgroundColor:   Colors.bg3,
+    backgroundColor:   c.bg3,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
@@ -131,36 +133,36 @@ const styles = StyleSheet.create({
   sectionHeading: {
     fontSize:      FontSizes.md,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.2,
     marginTop:     Spacing.sm,
   },
   sectionBody: {
     fontSize:   FontSizes.sm,
     lineHeight: 20,
-    color:      Colors.text,
+    color:      c.text,
   },
 
   headerRow: {
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 6,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
     marginTop: 4,
   },
-  headerStep: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase' },
+  headerStep: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted2, letterSpacing: 0.3, textTransform: 'uppercase' },
   // PR60 - column widened 64 → 88 so FR "CHALLENGER" (10 chars) fits on a
   // single line. Data cols match so the +5/+30 numbers stay aligned under
   // their header.
-  headerCol:  { width: 88, fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.3, textTransform: 'uppercase', textAlign: 'right' },
+  headerCol:  { width: 88, fontSize: FontSizes.xs, fontWeight: '700', color: c.muted2, letterSpacing: 0.3, textTransform: 'uppercase', textAlign: 'right' },
 
   row: {
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 8,
   },
   rowIcon:   { width: 26, fontSize: 16 },
-  rowLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+  rowLabel:  { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
   rowPoints: { width: 88, fontSize: FontSizes.sm, fontWeight: '800', color: '#FF7A3C', textAlign: 'right' },
-  rowPointsMuted: { color: Colors.muted2, fontWeight: '600' },
+  rowPointsMuted: { color: c.muted2, fontWeight: '600' },
   // Meet bonus - gold-tinted so it reads as the prize (the whole point).
   rowHighlight: {
     backgroundColor:   'rgba(255,201,60,0.10)',
@@ -177,12 +179,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: 10,
     marginTop: 4,
-    borderTopWidth: 1, borderTopColor: Colors.border,
+    borderTopWidth: 1, borderTopColor: c.border,
   },
-  totalLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
+  totalLabel: { flex: 1, fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   totalValue: { width: 88, fontSize: FontSizes.md, fontWeight: '800', color: '#FFC93C', textAlign: 'right' },
 
-  footnote: { marginTop: Spacing.sm, fontSize: FontSizes.xs, color: Colors.muted2, fontStyle: 'italic' },
+  footnote: { marginTop: Spacing.sm, fontSize: FontSizes.xs, color: c.muted2, fontStyle: 'italic' },
 
   examplesBtn: {
     marginTop:       Spacing.md,

@@ -6,7 +6,8 @@ import { Image } from 'expo-image';
 import { socket } from '@/lib/socket';
 import { fetchChannelParticipants, type ChannelMember } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import type { Challenge, UserDTO } from '@/types';
 
 /**
@@ -28,6 +29,7 @@ export function ChallengeChannelMembersStrip({
   activeTaker: UserDTO | null;
   onOpen:      () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [members, setMembers] = useState<ChannelMember[]>([]);
   const [count,   setCount]   = useState(0);
@@ -121,7 +123,7 @@ export function ChallengeChannelMembersStrip({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:   'row',
     alignItems:      'center',
@@ -130,16 +132,16 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.sm + 2,
     borderTopWidth:    StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor:       'rgba(255,255,255,0.06)',
+    borderColor:       c.overlay,
   },
   avatars: { flexDirection: 'row', alignItems: 'center' },
   avatar:  {
     width:           28, height: 28, borderRadius: 14,
     alignItems:      'center', justifyContent: 'center',
     overflow:        'hidden',
-    borderWidth:     2, borderColor: Colors.bg,
+    borderWidth:     2, borderColor: c.bg,
   },
   avatarText: { color: '#fff', fontWeight: '700', fontSize: 11 },
-  countLabel: { flex: 1, fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
+  countLabel: { flex: 1, fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
   seeAll:     { fontSize: FontSizes.sm, color: '#FF7A3C', fontWeight: '700' },
 });

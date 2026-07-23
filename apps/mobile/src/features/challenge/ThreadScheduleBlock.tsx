@@ -5,7 +5,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { proposeDate, withdrawProposal, approveDate } from '@/api/challenges';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary } from '@/types';
 import { DatePickerModal } from './DatePickerModal';
 
@@ -36,6 +37,8 @@ export function ThreadScheduleBlock({
   onChange: () => void;
   hideEmptyCta?: boolean;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t, i18n }  = useTranslation('challenge');
   const locale = i18n.language;
   const [busy, setBusy] = useState<'propose' | 'approve' | 'withdraw' | null>(null);
@@ -121,7 +124,7 @@ export function ThreadScheduleBlock({
             </Text>
           </View>
           <View style={styles.actionSecondary}>
-            <Ionicons name="pencil" size={16} color={Colors.muted} />
+            <Ionicons name="pencil" size={16} color={colors.muted} />
           </View>
         </TouchableOpacity>
         {pickerOpen && (
@@ -170,7 +173,7 @@ export function ThreadScheduleBlock({
   if (phase === 'rejected') {
     return (
       <View style={[styles.band, styles.bandRejected]}>
-        <Ionicons name="close-circle-outline" size={18} color={Colors.muted} />
+        <Ionicons name="close-circle-outline" size={18} color={colors.muted} />
         <View style={styles.bandTextWrap}>
           <Text style={styles.bandTitle}>{t('debrief.rejected.title')}</Text>
           {thread.rejected_at && (
@@ -235,20 +238,20 @@ export function ThreadScheduleBlock({
           {!iProposed && (
             <TouchableOpacity style={styles.actionPrimary} onPress={handleApprove} activeOpacity={0.85} disabled={busy !== null}>
               {busy === 'approve'
-                ? <ActivityIndicator size="small" color={Colors.white} />
-                : <Ionicons name="checkmark" size={18} color={Colors.white} />}
+                ? <ActivityIndicator size="small" color={colors.white} />
+                : <Ionicons name="checkmark" size={18} color={colors.white} />}
             </TouchableOpacity>
           )}
           {/* Either party can counter-propose. */}
           <TouchableOpacity style={styles.actionSecondary} onPress={() => setPickerOpen(true)} activeOpacity={0.75} disabled={busy !== null}>
-            <Ionicons name="create-outline" size={16} color={Colors.muted} />
+            <Ionicons name="create-outline" size={16} color={colors.muted} />
           </TouchableOpacity>
           {/* Proposer can withdraw. */}
           {iProposed && (
             <TouchableOpacity style={styles.actionSecondary} onPress={handleWithdraw} activeOpacity={0.75} disabled={busy !== null}>
               {busy === 'withdraw'
-                ? <ActivityIndicator size="small" color={Colors.muted} />
-                : <Ionicons name="close" size={16} color={Colors.muted} />}
+                ? <ActivityIndicator size="small" color={colors.muted} />
+                : <Ionicons name="close" size={16} color={colors.muted} />}
             </TouchableOpacity>
           )}
         </View>
@@ -301,7 +304,7 @@ function formatDateLine(
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   band: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -323,15 +326,15 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(34,197,94,0.20)',
   },
   bandRejected: {
-    backgroundColor:   'rgba(255,255,255,0.03)',
-    borderTopColor:    'rgba(255,255,255,0.08)',
-    borderBottomColor: 'rgba(255,255,255,0.08)',
+    backgroundColor:   c.overlayWeak,
+    borderTopColor:    c.overlay,
+    borderBottomColor: c.overlay,
   },
   verdictEmoji: { fontSize: 18, marginLeft: 1 },
   bandTextWrap: { flex: 1, minWidth: 0 },
-  bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: Colors.text },
+  bandTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
   bandTitleScheduled: { fontSize: FontSizes.sm, fontWeight: '800', color: '#22c55e' },
-  bandSubtitle: { fontSize: 12, color: Colors.muted, marginTop: 2 },
+  bandSubtitle: { fontSize: 12, color: c.muted, marginTop: 2 },
   bandActions:  { flexDirection: 'row', gap: 6 },
 
   proposeCta: {
@@ -356,9 +359,9 @@ const styles = StyleSheet.create({
   actionSecondary: {
     width: 32, height: 32, borderRadius: 16,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.10)',
+    borderColor: c.overlayStrong,
   },
 });
 

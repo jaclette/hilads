@@ -12,7 +12,8 @@ import { fetchChallengeShowcase, type ShowcaseItem } from '@/api/challenges';
 import { ShowcaseCard } from '@/features/challenges/ShowcaseCard';
 import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 const PAGE = 5;
 
@@ -21,6 +22,9 @@ const PAGE = 5;
  * discovery. Global by default, with an optional city filter. Open to guests.
  */
 export default function ShowcaseScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account } = useApp();
@@ -91,7 +95,7 @@ export default function ShowcaseScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={Colors.text} />
+          <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
         <View style={styles.navCenter}>
@@ -110,7 +114,7 @@ export default function ShowcaseScreen() {
           <Text style={[styles.cityPillText, cityId !== null && styles.cityPillTextActive]} numberOfLines={1}>
             🌍 {cityName ?? t('showcase.allCities')}
           </Text>
-          <Ionicons name="chevron-down" size={14} color={cityId !== null ? '#FF7A3C' : Colors.muted} />
+          <Ionicons name="chevron-down" size={14} color={cityId !== null ? '#FF7A3C' : colors.muted} />
         </TouchableOpacity>
         {cityId !== null && (
           <TouchableOpacity onPress={() => { setCityId(null); setCityName(null); }} activeOpacity={0.7}>
@@ -120,7 +124,7 @@ export default function ShowcaseScreen() {
       </View>
 
       {loading ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
       ) : items.length === 0 ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyEmoji}>✨</Text>
@@ -132,7 +136,7 @@ export default function ShowcaseScreen() {
           data={items}
           keyExtractor={(c) => c.id}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
           renderItem={({ item }) => (
             <ShowcaseCard
               item={item}
@@ -143,7 +147,7 @@ export default function ShowcaseScreen() {
           onEndReached={loadMore}
           onEndReachedThreshold={0.4}
           ListFooterComponent={loadingMore ? (
-            <View style={styles.footer}><ActivityIndicator size="small" color={Colors.muted} /></View>
+            <View style={styles.footer}><ActivityIndicator size="small" color={colors.muted} /></View>
           ) : null}
         />
       )}
@@ -170,36 +174,36 @@ export default function ShowcaseScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   nav: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   backPill:     { flexDirection: 'row', alignItems: 'center', width: 70 },
-  backPillText: { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
+  backPillText: { fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
   navCenter:    { flex: 1, alignItems: 'center' },
-  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   filterRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm },
   cityPill: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
     paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: Colors.border, maxWidth: '70%',
+    borderWidth: 1, borderColor: c.border, maxWidth: '70%',
   },
   cityPillActive:     { backgroundColor: 'rgba(255,122,60,0.12)', borderColor: 'rgba(255,122,60,0.5)' },
-  cityPillText:       { fontSize: 13, fontWeight: '700', color: Colors.muted, flexShrink: 1 },
+  cityPillText:       { fontSize: 13, fontWeight: '700', color: c.muted, flexShrink: 1 },
   cityPillTextActive: { color: '#FF7A3C' },
-  clearText:          { fontSize: 13, fontWeight: '600', color: Colors.muted },
+  clearText:          { fontSize: 13, fontWeight: '600', color: c.muted },
 
   list:   { paddingVertical: Spacing.sm },
   footer: { paddingVertical: Spacing.md },
 
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptyBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 });
