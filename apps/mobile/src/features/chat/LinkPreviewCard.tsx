@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Image, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { getLinkPreview, type LinkPreview } from '@/lib/linkPreviewCache';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   url:    string;
@@ -11,6 +13,7 @@ interface Props {
 // flight (no skeleton - polish layer, not core content) and nothing if the URL
 // returns no usable OG metadata. Tapping the card opens the original URL.
 export function LinkPreviewCard({ url, isMine = false }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const [preview, setPreview] = useState<LinkPreview | null>(null);
   const [imgError, setImgError] = useState(false);
 
@@ -57,15 +60,15 @@ export function LinkPreviewCard({ url, isMine = false }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     marginTop:       6,
     flexDirection:   'row',
     borderRadius:    10,
     overflow:        'hidden',
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth:     StyleSheet.hairlineWidth,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.separator,
     maxWidth:        320,
     alignSelf:       'stretch',
   },
@@ -88,17 +91,17 @@ const styles = StyleSheet.create({
   site: {
     fontSize:      10,
     letterSpacing: 0.5,
-    color:         'rgba(255,255,255,0.55)',
+    color:         c.muted2,
   },
   title: {
     fontSize:   13,
     fontWeight: '600',
-    color:      'rgba(255,255,255,0.92)',
+    color:      c.text,
     lineHeight: 17,
   },
   desc: {
     fontSize:   12,
-    color:      'rgba(255,255,255,0.70)',
+    color:      c.muted,
     lineHeight: 16,
     marginTop:  1,
   },

@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { Reaction } from '@/types';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const EMOJIS = ['❤️', '👍', '😂', '😮', '🔥'] as const;
 
@@ -39,6 +41,7 @@ interface Props {
 
 export function MessageActionSheet({ visible, reactions = [], onReact, onReply, onCopy, translateText, onEdit, onDelete, onClose }: Props) {
   const { t, i18n } = useTranslation('chat');
+  const styles = useThemedStyles(makeStyles);
   const selfMap = Object.fromEntries(reactions.map(r => [r.emoji, r.self]));
 
   return (
@@ -140,15 +143,15 @@ export function MessageActionSheet({ visible, reactions = [], onReact, onReply, 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: c.scrim,
   },
   sheet: {
-    backgroundColor:   '#1a1512',
+    backgroundColor:   c.elevated,
     borderTopWidth:    1,
-    borderTopColor:    'rgba(255,255,255,0.08)',
+    borderTopColor:    c.separator,
     borderRadius:      20,
     paddingHorizontal: 16,
     paddingTop:        20,
@@ -164,14 +167,14 @@ const styles = StyleSheet.create({
     width:           52,
     height:          52,
     borderRadius:    26,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     alignItems:      'center',
     justifyContent:  'center',
   },
   emojiBtnActive: {
     backgroundColor: 'rgba(255,122,60,0.25)',
     borderWidth:     1.5,
-    borderColor:     '#FF7A3C',
+    borderColor:     c.accent,
   },
   emojiText: {
     fontSize: 26,
@@ -183,29 +186,29 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 4,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.06)',
+    borderTopColor: c.separator,
   },
   actionIcon: {
     fontSize: 20,
   },
   actionLabel: {
     fontSize:   16,
-    color:      'rgba(255,255,255,0.85)',
+    color:      c.text,
     fontWeight: '500',
   },
   actionLabelDanger: {
-    color: '#FF6B5C',
+    color: c.red,
   },
   cancel: {
     alignItems:      'center',
     paddingVertical: 14,
     borderTopWidth:  1,
-    borderTopColor:  'rgba(255,255,255,0.06)',
+    borderTopColor:  c.separator,
     marginTop:       2,
   },
   cancelText: {
     fontSize:   16,
-    color:      'rgba(255,255,255,0.45)',
+    color:      c.muted,
     fontWeight: '500',
   },
 });

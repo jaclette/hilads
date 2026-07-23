@@ -8,6 +8,8 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import type { Reaction } from '@/types';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   reactions: Reaction[];
@@ -16,6 +18,7 @@ interface Props {
 }
 
 export function ReactionPills({ reactions, onReact, isMine }: Props) {
+  const styles = useThemedStyles(makeStyles);
   if (!reactions || reactions.length === 0) return null;
 
   return (
@@ -35,7 +38,7 @@ export function ReactionPills({ reactions, onReact, isMine }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection:  'row',
     flexWrap:       'wrap',
@@ -52,7 +55,7 @@ const styles = StyleSheet.create({
     flexDirection:   'row',
     alignItems:      'center',
     gap:             3,
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: c.overlay,
     borderRadius:    12,
     paddingVertical: 3,
     paddingHorizontal: 8,
@@ -61,17 +64,17 @@ const styles = StyleSheet.create({
   },
   pillActive: {
     backgroundColor: 'rgba(255,122,60,0.18)',
-    borderColor:     '#FF7A3C',
+    borderColor:     c.accent,
   },
   emoji: {
     fontSize: 14,
   },
   count: {
     fontSize:  12,
-    color:     'rgba(255,255,255,0.6)',
+    color:     c.muted2,
     fontWeight: '600',
   },
   countActive: {
-    color: '#FF7A3C',
+    color: c.accentText,
   },
 });
