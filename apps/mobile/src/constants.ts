@@ -117,7 +117,56 @@ export const Colors = {
   red:      '#f87171',
   violet:   '#8B5CF6',   // web --profile-dot (member badge)
   white:    '#ffffff',
+
+  // Bright orange used as TEXT (the `accent` above stays #FF7A3C for FILLS —
+  // FAB / active). Mirrors web --hot-text. Same value on dark, deep on light.
+  accentText: '#FF7A3C',
+
+  // Overlay / structural tokens — the vocabulary the theme migration routes the
+  // ~256 hardcoded rgba(255,255,255,.x) literals through (dark values here).
+  separator:     'rgba(255,255,255,0.08)',
+  overlayWeak:   'rgba(255,255,255,0.04)',
+  overlay:       'rgba(255,255,255,0.07)',
+  overlayStrong: 'rgba(255,255,255,0.12)',
+  scrim:         'rgba(0,0,0,0.6)',
+  elevated:      '#1e1812',
+  inputBg:       '#0d0b09',
 } as const;
+
+// A theme is the full color set; both palettes share these keys.
+export type ThemeColors = Record<keyof typeof Colors, string>;
+
+// ── Light palette (daylight) — same keys as Colors, light values. The
+// ThemeContext swaps between the two; migrated screens read from context. ──────
+export const LightColors: ThemeColors = {
+  bg:       '#FBF6F0',   // warm cream ground
+  bg2:      '#FFFFFF',   // surface / cards
+  bg3:      '#F3EAE0',   // sand inset
+  border:   '#EADDD0',   // warm hairline
+  text:     '#241A12',   // warm near-black
+  muted:    '#6E5D4E',   // secondary (AA on cream)
+  muted2:   '#6E5D4E',   // tertiary
+  mutedDim: '#9A8877',   // disabled-only
+  accent:   '#FF7A3C',   // FILL / FAB / active — brand energy (never text on white)
+  accentDim:'rgba(255,122,60,0.15)',
+  accent2:  '#C24A38',   // deep CTA orange
+  accent3:  '#B87228',
+  green:    '#17864C',   // darkened so it reads as text/dots on white
+  red:      '#C0264A',
+  violet:   '#7C4DE0',
+  white:    '#ffffff',
+  accentText: '#C24A38', // readable deep orange as text on cream
+  separator:     '#EADDD0',
+  overlayWeak:   'rgba(28,20,14,0.03)',
+  overlay:       'rgba(28,20,14,0.05)',
+  overlayStrong: 'rgba(28,20,14,0.08)',
+  scrim:         'rgba(28,20,14,0.35)',
+  elevated:      '#FFFFFF',
+  inputBg:       '#FFFFFF',
+};
+
+export type ThemeName = 'light' | 'dark';
+export const Themes: Record<ThemeName, ThemeColors> = { dark: Colors, light: LightColors };
 
 // Type scale floor: nothing rendered as visible body / secondary text may go
 // below `xs` (13pt). `tiny` (11pt) is reserved for badge content (notification

@@ -1,6 +1,7 @@
 import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useTheme, useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   error:    string | null;
@@ -9,6 +10,8 @@ interface Props {
 
 export function BootScreen({ error, onRetry }: Props) {
   const { t } = useTranslation('common');
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>Hilads</Text>
@@ -23,49 +26,49 @@ export function BootScreen({ error, onRetry }: Props) {
           )}
         </>
       ) : (
-        <ActivityIndicator color={Colors.accent} size="large" style={styles.spinner} />
+        <ActivityIndicator color={colors.accent} size="large" style={styles.spinner} />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex:            1,
-    backgroundColor: Colors.bg,
+    backgroundColor: c.bg,
     alignItems:      'center',
     justifyContent:  'center',
     padding:         Spacing.xl,
   },
   logo: {
-    fontSize:    40,
-    fontWeight:  '800',
-    color:       Colors.accent,
+    fontSize:      40,
+    fontWeight:    '800',
+    color:         c.accentText,   // bright #FF7A3C fails as text on cream → accentText
     letterSpacing: -1,
-    marginBottom: Spacing.xl,
+    marginBottom:  Spacing.xl,
   },
   spinner:   { marginTop: Spacing.md },
   errorText: {
-    fontSize:   FontSizes.md,
-    color:      Colors.red,
-    textAlign:  'center',
-    marginTop:  Spacing.md,
+    fontSize:  FontSizes.md,
+    color:     c.red,
+    textAlign: 'center',
+    marginTop: Spacing.md,
   },
   errorHint: {
     fontSize:  FontSizes.sm,
-    color:     Colors.muted,
+    color:     c.muted,
     textAlign: 'center',
     marginTop: Spacing.sm,
   },
   retryBtn: {
-    marginTop:       Spacing.lg,
-    backgroundColor: Colors.accent,
-    borderRadius:    Radius.lg,
+    marginTop:         Spacing.lg,
+    backgroundColor:   c.accent,
+    borderRadius:      Radius.lg,
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingVertical:   Spacing.sm,
   },
   retryText: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '700',
     fontSize:   FontSizes.sm,
   },

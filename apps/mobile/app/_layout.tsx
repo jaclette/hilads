@@ -14,6 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '@/context/AppContext';
+import { ThemeProvider } from '@/context/ThemeContext';
 import { socket } from '@/lib/socket';
 import { useAppBoot } from '@/hooks/useAppBoot';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
@@ -228,11 +229,13 @@ function RootLayoutInner() {
 
 export default function RootLayout() {
   return (
-    <SafeAreaProvider style={{ backgroundColor: Colors.bg }}>
-      <AppProvider>
-        <StatusBar style="light" backgroundColor={Colors.bg} />
-        <RootLayoutInner />
-      </AppProvider>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider style={{ backgroundColor: Colors.bg }}>
+        <AppProvider>
+          <StatusBar style="light" backgroundColor={Colors.bg} />
+          <RootLayoutInner />
+        </AppProvider>
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
