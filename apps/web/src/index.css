@@ -7247,9 +7247,9 @@ img.pub-profile-avatar {
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 .ch-scope-btn--active {
-  background: var(--accent);
+  background: var(--hot-dot);
   color: #fff;
-  border-color: var(--accent);
+  border-color: var(--hot-dot);
 }
 .ch-scope-chevron { flex-shrink: 0; opacity: 0.7; }
 .ch-scope-badge {

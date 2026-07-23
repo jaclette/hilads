@@ -1671,7 +1671,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     borderWidth:    1,
     borderColor:    c.border,
   },
-  scopeBtnActive: { backgroundColor: c.accent2, borderColor: c.accent2 }, // deep-orange selected (was ink c.text)
+  scopeBtnActive: { backgroundColor: c.accent, borderColor: c.accent }, // energy-orange selected (lighter than the deep accent2)
   scopeBtnText:   { color: c.text, fontSize: 13, fontWeight: '700' },
   scopeBtnTextActive: { color: c.white },
   scopeChevron:   { opacity: 0.7 },
