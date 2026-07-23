@@ -419,7 +419,7 @@ run($pdo, "
         admin_ip        INET,
         title           VARCHAR(80)  NOT NULL,
         body            VARCHAR(200) NOT NULL,
-        audience_type   TEXT         NOT NULL CHECK (audience_type IN ('all','city','user','test')),
+        audience_type   TEXT         NOT NULL CHECK (audience_type IN ('all','all_installs','city','user','test')),
         audience_filter JSONB        NOT NULL DEFAULT '{}'::jsonb,
         deep_link       TEXT,
         recipient_count INTEGER      NOT NULL DEFAULT 0,
@@ -1068,6 +1068,13 @@ run($pdo, "
 
 // push_broadcasts: history page reads recent rows DESC.
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_push_broadcasts_recent ON push_broadcasts (created_at DESC)", 'idx_push_broadcasts_recent');
+
+// push_broadcasts.audience_type gained 'all_installs' (the "All app installs incl.
+// guests" audience) after the table's original CHECK was written, so existing DBs
+// still reject it → "SQLSTATE[23514] ... push_broadcasts_audience_type_check". Widen
+// the constraint idempotently to match the CREATE TABLE above.
+run($pdo, "ALTER TABLE push_broadcasts DROP CONSTRAINT IF EXISTS push_broadcasts_audience_type_check", 'drop push_broadcasts audience_type check');
+run($pdo, "ALTER TABLE push_broadcasts ADD CONSTRAINT push_broadcasts_audience_type_check CHECK (audience_type IN ('all','all_installs','city','user','test'))", 'push_broadcasts.audience_type +all_installs');
 
 // ── Abuse bans (guest / IP) ───────────────────────────────────────────────────
 // Lets ops block a returning anonymous guest. A row bans EITHER a guest_id or an
