@@ -2877,7 +2877,7 @@ html, body, #root {
 .delete-account-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--scrim);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -4082,7 +4082,7 @@ html, body, #root {
 .share-sheet-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--scrim);
   z-index: 120;
   animation: fadeIn 0.15s ease;
 }
@@ -4212,7 +4212,7 @@ html, body, #root {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -4639,7 +4639,7 @@ html, body, #root {
 .arrivals-sheet-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.5);
+  background: var(--scrim);
   z-index: 1500;
 }
 .arrivals-sheet {
@@ -6412,7 +6412,7 @@ img.pub-profile-avatar {
   position: fixed;
   inset: 0;
   z-index: 400;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9042,7 +9042,7 @@ img.pub-profile-avatar {
 .delete-confirm-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   display: flex;
@@ -12336,7 +12336,7 @@ img.dm-header-avatar {
 .upc-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12623,7 +12623,7 @@ body.has-app-promo-banner .page-header {
   position: fixed;
   inset: 0;
   z-index: 1200;
-  background: rgba(0,0,0,0.78);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13544,7 +13544,7 @@ body.has-app-promo-banner .page-header {
 /* "Who joined" peek (tap the avatar stack) */
 .gmp-backdrop {
   position: fixed; inset: 0; z-index: 9060;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex; align-items: flex-end; justify-content: center;
 }
 .gmp-sheet {
@@ -13608,7 +13608,7 @@ body.has-app-promo-banner .page-header {
 /* ── Group challenge result reveal modal ── */
 .crm-backdrop {
   position: fixed; inset: 0; z-index: 9200;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--scrim);
   display: flex; align-items: center; justify-content: center; padding: 1.25rem;
 }
 .crm-card {
@@ -13722,7 +13722,7 @@ body.has-app-promo-banner .page-header {
 
 .gsg-modal-backdrop {
   position: fixed; inset: 0; z-index: 9050;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--scrim);
   display: flex; align-items: flex-end; justify-content: center;
 }
 .gsg-modal {
@@ -15501,7 +15501,7 @@ body.has-app-promo-banner .page-header {
 .score-celebration-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.72);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
