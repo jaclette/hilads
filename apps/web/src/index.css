@@ -24,6 +24,7 @@
   --other-bg: #1c1610;
   --bg2: #1a1614;       /* elevated secondary surface (sheets/cards) — was never defined, so var(--bg2, …) hard-fell-back to dark and broke in light */
   --text-muted: #968880;/* alias used across profile/vibe (= --muted2) — was undefined (7 uses) */
+  --hot-text: #FF7A3C;  /* bright orange used as TEXT — stays vivid on dark */
   --mobile-tabbar-height: 4.875rem;
 
   /* Semantic tokens — the vocabulary the app-shell migration (phase 3) routes the
@@ -61,6 +62,7 @@
   --other-bg: #F1E9DF;
   --bg2: #FFFFFF;
   --text-muted: #6E5D4E;
+  --hot-text: #C24A38;  /* readable deep orange as text on cream */
 
   --separator: #EADDD0;
   --overlay-weak: rgba(28, 20, 14, 0.03);
@@ -472,7 +474,7 @@ html, body, #root {
   background: rgba(255, 122, 60, 0.08);
   border: 1.5px solid #FF7A3C;
   border-radius: 10px;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.9rem;
   font-weight: 600;
   padding: 0.75rem;
@@ -838,7 +840,7 @@ html, body, #root {
   gap: 0.25rem;
   padding: 0.25rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-weak);
 }
 .leaderboard-seg-item {
   flex: 1;
@@ -854,7 +856,7 @@ html, body, #root {
   transition: background 0.15s, color 0.15s;
 }
 .leaderboard-seg-item.is-active {
-  background: rgba(255, 255, 255, 0.10);
+  background: var(--overlay-strong);
   color: var(--text, #fff);
 }
 
@@ -928,10 +930,10 @@ html, body, #root {
   -webkit-tap-highlight-color: transparent;
   text-align: left;
 }
-.leaderboard-city-picker-row:hover  { background: rgba(255, 255, 255, 0.04); }
-.leaderboard-city-picker-row:active { background: rgba(255, 255, 255, 0.06); }
+.leaderboard-city-picker-row:hover  { background: var(--overlay-weak); }
+.leaderboard-city-picker-row:active { background: var(--overlay); }
 .leaderboard-city-picker-row.is-selected { background: rgba(255, 122, 60, 0.10); }
-.leaderboard-city-picker-row.is-selected .leaderboard-city-picker-name { color: #FF7A3C; }
+.leaderboard-city-picker-row.is-selected .leaderboard-city-picker-name { color: var(--hot-text); }
 .leaderboard-city-picker-flag { font-size: 1.375rem; line-height: 1; }
 .leaderboard-city-picker-name {
   flex: 1;
@@ -941,14 +943,14 @@ html, body, #root {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.leaderboard-city-picker-check { color: #FF7A3C; font-weight: 800; }
+.leaderboard-city-picker-check { color: var(--hot-text); font-weight: 800; }
 
 .leaderboard-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--separator);
 }
 .leaderboard-row.is-me {
   background: rgba(255, 122, 60, 0.08);
@@ -962,7 +964,7 @@ html, body, #root {
   width: 40px;
   height: 40px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-weak);
   font-size: 1.375rem;
   line-height: 1;
   flex-shrink: 0;
@@ -972,7 +974,7 @@ html, body, #root {
   transition: background 120ms ease;
 }
 .leaderboard-row--tappable:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-weak);
 }
 .leaderboard-row--tappable.is-me:hover {
   background: rgba(255, 122, 60, 0.14);
@@ -987,7 +989,7 @@ html, body, #root {
   color: var(--muted-2, #888);
 }
 .leaderboard-row.is-me .leaderboard-rank {
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .leaderboard-avatar {
   width: 40px;
@@ -1043,12 +1045,12 @@ html, body, #root {
   color: var(--muted, #b3b3b3);
 }
 .leaderboard-row.is-me .leaderboard-points {
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 800;
 }
 
 .leaderboard-pinned {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--separator);
   background: var(--bg, #0d0b09);
 }
 /* Unranked CTA - replaces a previous muted-grey one-liner. Orange
@@ -1136,7 +1138,7 @@ html, body, #root {
   border-radius: 14px;
   background: rgba(255, 122, 60, 0.12);
   border: 1px solid rgba(255, 122, 60, 0.5);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.9375rem;
   font-weight: 800;
   letter-spacing: 0.2px;
@@ -1168,7 +1170,7 @@ html, body, #root {
   color: var(--muted, #9a9aa3); font-size: 0.8125rem; font-weight: 700; cursor: pointer;
   max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.showcase-city-pill--active { background: rgba(255, 122, 60, 0.12); border-color: rgba(255, 122, 60, 0.5); color: #FF7A3C; }
+.showcase-city-pill--active { background: rgba(255, 122, 60, 0.12); border-color: rgba(255, 122, 60, 0.5); color: var(--hot-text); }
 .showcase-clear { background: none; border: none; color: var(--muted, #9a9aa3); font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
 
 .showcase-card {
@@ -1182,7 +1184,7 @@ html, body, #root {
 .showcase-badges { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.625rem; }
 .showcase-mode { font-size: 0.75rem; font-weight: 700; padding: 0.1875rem 0.5625rem; border-radius: 999px; }
 .showcase-mode--intl  { background: rgba(96, 165, 250, 0.14); color: #93c5fd; }
-.showcase-mode--local { background: rgba(255, 255, 255, 0.06); color: var(--muted, #9a9aa3); }
+.showcase-mode--local { background: var(--overlay); color: var(--muted, #9a9aa3); }
 .showcase-stars { font-size: 0.8125rem; font-weight: 800; color: #FFC93C; white-space: nowrap; }
 
 .showcase-body { display: flex; gap: 0.75rem; }
@@ -1198,7 +1200,7 @@ html, body, #root {
 .showcase-avatar { width: 20px; height: 20px; border-radius: 999px; object-fit: cover; }
 .showcase-avatar--fallback {
   display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(255, 255, 255, 0.1); color: var(--text, #f4f4f5);
+  background: var(--overlay-strong); color: var(--text, #f4f4f5);
   font-size: 0.6875rem; font-weight: 700;
 }
 .showcase-comment { margin-top: 0.5rem; font-size: 0.8125rem; line-height: 1.4; color: var(--text, #d4d4d8); font-style: italic; }
@@ -1342,13 +1344,13 @@ html, body, #root {
 .showcase-person {
   display: flex; align-items: center; gap: 0.625rem;
   width: 100%; text-align: left; padding: 0.5rem 0.625rem;
-  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--separator); border: 1px solid var(--separator);
   border-radius: 12px; cursor: pointer;
 }
 .showcase-person-avatar { width: 36px; height: 36px; border-radius: 999px; object-fit: cover; flex-shrink: 0; }
 .showcase-person-avatar--fallback {
   display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(255, 255, 255, 0.12); color: var(--text, #f4f4f5); font-size: 0.875rem; font-weight: 700;
+  background: var(--overlay-strong); color: var(--text, #f4f4f5); font-size: 0.875rem; font-weight: 700;
 }
 .showcase-person-text { display: flex; flex-direction: column; min-width: 0; }
 .showcase-person-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted, #9a9aa3); }
@@ -1361,7 +1363,7 @@ html, body, #root {
 }
 .showcase-note-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #FFC93C; margin-bottom: 0.375rem; }
 .showcase-note-quote { display: flex; flex-direction: column; gap: 0.0625rem; }
-.showcase-note-quote + .showcase-note-quote { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.06); }
+.showcase-note-quote + .showcase-note-quote { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--separator); }
 .showcase-note-who { font-size: 0.75rem; font-weight: 700; color: var(--text, #f4f4f5); }
 .showcase-note-role { font-weight: 600; color: var(--muted, #9ca3af); text-transform: uppercase; font-size: 0.625rem; letter-spacing: 0.4px; }
 .showcase-note-text { font-size: 0.875rem; line-height: 1.45; color: var(--text, #e8e8ea); font-style: italic; }
@@ -1464,7 +1466,7 @@ html, body, #root {
   text-align: right;
   font-size: 0.875rem;
   font-weight: 800;
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .scoring-info-points--muted {
   color: var(--muted-2, #888);
@@ -1505,7 +1507,7 @@ html, body, #root {
   cursor: pointer;
   background: rgba(255, 122, 60, 0.14);
   border: 1px solid rgba(255, 122, 60, 0.45);
-  color: #ff7a3c;
+  color: var(--hot-text);
   font-size: 0.95rem;
   font-weight: 800;
 }
@@ -1858,7 +1860,7 @@ html, body, #root {
   transition: color 0.12s, border-color 0.12s;
 }
 .going-count-btn:hover {
-  color: #FF7A3C;
+  color: var(--hot-text);
   border-bottom-color: rgba(255,122,60,0.5);
 }
 
@@ -1916,7 +1918,7 @@ html, body, #root {
 .event-location {
   font-size: 0.75rem;
   line-height: 1.4;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 500;
   text-decoration: none;
   display: block;
@@ -2178,7 +2180,7 @@ html, body, #root {
 }
 
 .bottom-nav-tab.active {
-  color: #FF7A3C;
+  color: var(--hot-text);
   background: rgba(255, 122, 60, 0.06);
 }
 
@@ -2324,7 +2326,7 @@ html, body, #root {
 }
 .interest-chip {
   background: rgba(255,122,60,0.12);
-  color: #FF7A3C;
+  color: var(--hot-text);
   border: 1px solid rgba(255,122,60,0.25);
   border-radius: 20px;
   padding: 0.25rem 0.75rem;
@@ -2579,7 +2581,7 @@ html, body, #root {
 .profile-hero-mode--local {
   background: rgba(255,122,60,0.12);
   border-color: rgba(255,122,60,0.3);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 .profile-hero-mode--exploring {
@@ -2789,14 +2791,14 @@ html, body, #root {
 .vibe-chip--on {
   background: rgba(255,122,60,0.18);
   color: var(--text);
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
   font-weight: 700;
 }
 
 .interest-chip--on {
   background: #FF7A3C;
   color: #fff;
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
 }
 
 .interest-chip {
@@ -3010,7 +3012,7 @@ html, body, #root {
 }
 .auth-tab--active {
   background: rgba(255,122,60,0.15);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 600;
 }
 .auth-form {
@@ -3659,7 +3661,7 @@ html, body, #root {
 .reply-preview-name {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 .reply-preview-text {
@@ -3703,7 +3705,7 @@ html, body, #root {
 .edit-preview-name {
   font-size: 0.72rem;
   font-weight: 700;
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .edit-preview-text {
   font-size: 0.78rem;
@@ -3792,7 +3794,7 @@ html, body, #root {
 .msg-reply-quote-name {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #FF7A3C;
+  color: var(--hot-text);
   line-height: 1.3;
   white-space: nowrap;
   overflow: hidden;
@@ -4567,7 +4569,7 @@ html, body, #root {
   border-radius: 10px;
   background: rgba(255, 122, 60, 0.10);
   border: 1px solid rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 700;
   font-size: 0.85rem;
   white-space: nowrap;
@@ -4838,7 +4840,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--separator);
 }
 /* "📸 Photo" badge - local + photo_proof variant. Cool blue tint so
    scrollers can spot the lower-friction-but-no-Meet-bonus path. Meet
@@ -5335,7 +5337,7 @@ html, body, #root {
   letter-spacing: 0.01em;
   margin-left: 0.25rem;
 }
-.msg-mode--local     { color: #FF7A3C; }
+.msg-mode--local     { color: var(--hot-text); }
 .msg-mode--exploring { color: #60a5fa; }
 
 .msg-vibe {
@@ -5425,7 +5427,7 @@ html, body, #root {
 .here-chip--on-local {
   background: rgba(255,122,60,0.14);
   border-color: rgba(255,122,60,0.38);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 .here-chip--on-exploring {
@@ -5435,7 +5437,7 @@ html, body, #root {
 }
 
 /* Mode-specific color for vibe-badge (Here user rows) */
-.vibe-badge--local    { color: #FF7A3C !important; opacity: 1; }
+.vibe-badge--local    { color: var(--hot-text) !important; opacity: 1; }
 .vibe-badge--exploring { color: #60a5fa !important; opacity: 1; }
 
 /* ── Here section headers ─────────────────────────────── */
@@ -6894,7 +6896,7 @@ img.pub-profile-avatar {
 
 .er-going {
   font-size: 0.72rem;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 600;
   flex-shrink: 0;
   white-space: nowrap;
@@ -6918,7 +6920,7 @@ img.pub-profile-avatar {
 
 /* Hi Local temporality tags: Now = coral (flame), Later = neutral (calendar). */
 .er-going--now {
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 700;
 }
 .er-going--later {
@@ -6956,7 +6958,7 @@ img.pub-profile-avatar {
 }
 .hilocal-cta:active { filter: brightness(1.15); }
 .hilocal-cta--now {
-  color: #FF7A3C;
+  color: var(--hot-text);
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.10);
 }
@@ -6983,7 +6985,7 @@ img.pub-profile-avatar {
   border: 1px solid rgba(255, 122, 60, 0.35);
   border-radius: 12px;
   background: rgba(255, 122, 60, 0.08);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.9rem;
   font-weight: 600;
   line-height: 1.4;
@@ -7129,7 +7131,7 @@ img.pub-profile-avatar {
   text-overflow: ellipsis;
 }
 .city-activity-pill-cta {
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.85rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -7175,7 +7177,7 @@ img.pub-profile-avatar {
   white-space: nowrap;
   cursor: pointer;
 }
-.ch-recent-pill:hover  { background: rgba(255,255,255,0.04); }
+.ch-recent-pill:hover  { background: var(--overlay-weak); }
 .ch-recent-pill:active { opacity: 0.7; }
 
 .ch-hero {
@@ -7341,7 +7343,7 @@ img.pub-profile-avatar {
   flex: 0 0 42%;
   align-items: center; justify-content: center; text-align: center;
   gap: 0.35rem;
-  background: rgba(255,255,255,0.04);
+  background: var(--overlay-weak);
   border: 1.5px dashed var(--accent2);
   color: var(--text);
 }
@@ -7418,11 +7420,11 @@ img.pub-profile-avatar {
   text-overflow: ellipsis;
   cursor: pointer;
 }
-.ch-pill:hover  { background: rgba(255,255,255,0.04); }
+.ch-pill:hover  { background: var(--overlay-weak); }
 .ch-pill:active { opacity: 0.8; }
 .ch-pill--accent {
   border-color: rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .ch-pill--muted {
   border-color: var(--border);
@@ -7461,7 +7463,7 @@ img.pub-profile-avatar {
   font-weight: 600;
 }
 .challenge-guest-welcome-cta {
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -7515,7 +7517,7 @@ img.pub-profile-avatar {
   min-width: 0;
 }
 .challenge-intro-banner-cta {
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.85rem;
   font-weight: 700;
   flex-shrink: 0;
@@ -7959,7 +7961,7 @@ img.pub-profile-avatar {
   border-radius: 999px;
   border: 1.5px solid rgba(255, 122, 60, 0.55);
   background: transparent;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -7980,7 +7982,7 @@ img.pub-profile-avatar {
 
 .event-join-btn--active {
   background: #FF7A3C;
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
   color: #fff;
   box-shadow: 0 4px 16px rgba(255, 122, 60, 0.3);
 }
@@ -8082,7 +8084,7 @@ img.pub-profile-avatar {
 }
 .my-event-badge--live {
   background: rgba(255, 122, 60, 0.18);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .my-event-badge--recurring {
   background: rgba(167, 139, 250, 0.15);
@@ -8546,7 +8548,7 @@ img.pub-profile-avatar {
 .challenge-badge--kind {
   background: rgba(255, 122, 60, 0.14);
   border: 1px solid rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 .ecc-title-row { display: flex; align-items: flex-start; gap: 0.5rem; }
 .ecc-title-emoji { font-size: 1.2rem; line-height: 1.3; }
@@ -8573,7 +8575,7 @@ img.pub-profile-avatar {
   background: rgba(255, 122, 60, 0.16);
   border: 1px solid rgba(255, 122, 60, 0.35);
   border-radius: 12px;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.88rem;
   font-weight: 800;
   cursor: pointer;
@@ -8599,7 +8601,7 @@ img.pub-profile-avatar {
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-.ecc-open:hover .ecc-title { color: #FF7A3C; }
+.ecc-open:hover .ecc-title { color: var(--hot-text); }
 
 /* Inert example hangout/event card (events empty state) - mirrors the
    challenge example card; blue type badge to read as "hangout/event". */
@@ -8647,7 +8649,7 @@ img.pub-profile-avatar {
   background: rgba(255, 122, 60, 0.16);
   border: 1px solid rgba(255, 122, 60, 0.35);
   border-radius: 12px;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.88rem;
   font-weight: 800;
   cursor: pointer;
@@ -8820,7 +8822,7 @@ img.pub-profile-avatar {
 }
 
 .cef-cat-btn.selected {
-  color: #FF7A3C;
+  color: var(--hot-text);
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.07);
   box-shadow: 0 0 14px rgba(255, 122, 60, 0.1);
@@ -9142,7 +9144,7 @@ img.pub-profile-avatar {
 }
 
 .cef-preset-btn.selected {
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
   background: rgba(255,122,60,0.10);
 }
 
@@ -9154,7 +9156,7 @@ img.pub-profile-avatar {
   color: rgba(255,255,255,0.55);
 }
 
-.cef-preset-btn.selected .cef-preset-label { color: #FF7A3C; }
+.cef-preset-btn.selected .cef-preset-label { color: var(--hot-text); }
 
 .cef-preset-desc {
   font-size: 0.65rem;
@@ -9234,7 +9236,7 @@ img.pub-profile-avatar {
   color: inherit;
 }
 .cef-repeat-header-right { display: flex; align-items: center; gap: 0.375rem; }
-.cef-repeat-summary { font-size: 0.8125rem; font-weight: 700; color: #FF7A3C; }
+.cef-repeat-summary { font-size: 0.8125rem; font-weight: 700; color: var(--hot-text); }
 .cef-repeat-chevron { font-size: 0.7rem; color: var(--muted, #b3b3b3); }
 
 .cef-recurrence-row {
@@ -9535,7 +9537,7 @@ img.pub-profile-avatar {
 }
 
 .challenge-alert-btn:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--overlay-weak);
 }
 
 .challenge-alert-btn:active {
@@ -10618,7 +10620,7 @@ img.dm-header-avatar {
 .dm-reply-quote-name {
   font-size: 0.7rem;
   font-weight: 700;
-  color: #FF7A3C;
+  color: var(--hot-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -11295,7 +11297,7 @@ img.dm-header-avatar {
   letter-spacing: 0.04em;
   background: rgba(255,122,60,0.12);
   border: 1px solid rgba(255,122,60,0.22);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 .lp-split-badge--exploring {
@@ -11510,7 +11512,7 @@ img.dm-header-avatar {
   background: rgba(255,122,60,0.12);
 }
 
-.lp-mock-preset--on .lp-mock-preset-label { color: #FF7A3C; }
+.lp-mock-preset--on .lp-mock-preset-label { color: var(--hot-text); }
 
 .lp-mock-field-label {
   font-size: 0.4375rem;
@@ -11543,7 +11545,7 @@ img.dm-header-avatar {
   border-radius: 999px;
   font-weight: 700;
   background: rgba(255,122,60,0.14);
-  color: #FF7A3C;
+  color: var(--hot-text);
   border: 1px solid rgba(255,122,60,0.3);
 }
 
@@ -12996,7 +12998,7 @@ body.has-app-promo-banner .page-header {
 /* Inline validate button - sized like .topic-owner-btn but tinted orange to
    signal the primary creator action. Used inside .topic-owner-row. */
 .challenge-validate-btn-inline {
-  color: #FF7A3C !important;
+  color: var(--hot-text) !important;
   border-color: rgba(255, 122, 60, 0.30) !important;
   background: rgba(255, 122, 60, 0.10) !important;
 }
@@ -13009,14 +13011,14 @@ body.has-app-promo-banner .page-header {
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.3px;
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--separator);
+  background: var(--overlay);
   color: var(--muted, #b3b3b3);
 }
 .challenge-badge--kind {
   background: rgba(255, 122, 60, 0.14);
   border-color: rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
   letter-spacing: 0.5px;
 }
 .challenge-badge--audience {
@@ -13040,8 +13042,8 @@ body.has-app-promo-banner .page-header {
 /* Status pill - neutral. Currently used for the "In progress" state; the
    emoji (⏳) carries the semantic. */
 .challenge-badge--status {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--overlay);
+  border-color: var(--separator);
   color: var(--muted2, #b3b3b3);
 }
 /* Available pill - green tint to invite action. Same skeleton as --validated
@@ -13072,7 +13074,7 @@ body.has-app-promo-banner .page-header {
 
 .challenge-actions {
   padding: 0.625rem 1rem 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--separator);
 }
 
 .challenge-accept-btn,
@@ -13093,13 +13095,13 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-accept-btn--in {
   background: rgba(255, 122, 60, 0.14);
-  color: #FF7A3C;
+  color: var(--hot-text);
   border: 1px solid rgba(255, 122, 60, 0.30);
   box-shadow: none;
 }
 .challenge-validate-btn {
   background: rgba(255, 122, 60, 0.14);
-  color: #FF7A3C;
+  color: var(--hot-text);
   border: 1px solid rgba(255, 122, 60, 0.30);
 }
 .challenge-accept-btn:active,
@@ -13143,7 +13145,7 @@ body.has-app-promo-banner .page-header {
 .cef-audience-emoji { font-size: 1.15rem; line-height: 1; }
 .cef-audience-btn:active { transform: scale(0.985); }
 .cef-audience-btn.selected {
-  color: #FF7A3C;
+  color: var(--hot-text);
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.10);
 }
@@ -13200,7 +13202,7 @@ body.has-app-promo-banner .page-header {
 }
 .cef-type-btn:active { transform: scale(0.93); }
 .cef-type-btn.selected {
-  color: #FF7A3C;
+  color: var(--hot-text);
   border-color: rgba(255, 122, 60, 0.45);
   background: rgba(255, 122, 60, 0.07);
   box-shadow: 0 0 14px rgba(255, 122, 60, 0.1);
@@ -13268,7 +13270,7 @@ body.has-app-promo-banner .page-header {
   border-color: rgba(255, 122, 60, 0.15);
 }
 .er-going--challenge {
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 /* ⚡ Hilads campaign card (2× points) - animated gold DOTTED border + glow so
@@ -13482,7 +13484,7 @@ body.has-app-promo-banner .page-header {
 .challenge-badge--meet {
   background: rgba(255, 122, 60, 0.14);
   border: 1px solid rgba(255, 122, 60, 0.32);
-  color: #ff7a3c;
+  color: var(--hot-text);
 }
 /* Re-assert the blue photo-proof badge: the base .challenge-badge (defined
    later in this file than the original .challenge-badge--photo) was resetting
@@ -13495,7 +13497,7 @@ body.has-app-promo-banner .page-header {
 .challenge-badge--kind {
   background: rgba(255, 122, 60, 0.1);
   border: 1px solid rgba(255, 122, 60, 0.28);
-  color: #ff7a3c;
+  color: var(--hot-text);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   font-size: 0.62rem;
@@ -13647,7 +13649,7 @@ body.has-app-promo-banner .page-header {
 .point-example-line { display: flex; align-items: center; gap: 0.5rem; }
 .point-example-line-icon { font-size: 1rem; }
 .point-example-line-label { flex: 1; font-size: 0.86rem; font-weight: 600; color: var(--text, #f3ede4); }
-.point-example-line-points { font-size: 0.86rem; font-weight: 800; color: #FF7A3C; }
+.point-example-line-points { font-size: 0.86rem; font-weight: 800; color: var(--hot-text); }
 .crm-rate-block { align-self: stretch; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; margin-top: 0.875rem; }
 .crm-rate-title { font-size: 0.86rem; font-weight: 700; color: var(--text, #f3ede4); }
 .crm-rate-stars { display: flex; gap: 0.5rem; }
@@ -13698,7 +13700,7 @@ body.has-app-promo-banner .page-header {
 }
 .challenge-status-pill--done { background: rgba(34,197,94,0.14); border-color: rgba(34,197,94,0.34); color: #22c55e; }
 .challenge-status-pill--live { background: rgba(255,201,60,0.14); border-color: rgba(255,201,60,0.34); color: #FFC93C; }
-.challenge-status-pill--ended { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18); color: var(--muted2); }
+.challenge-status-pill--ended { background: var(--separator); border-color: var(--separator); color: var(--muted2); }
 .challenge-status-pill--restart {
   background: linear-gradient(135deg, var(--accent), var(--accent2)); border-color: transparent; color: #fff;
   cursor: pointer; font-family: inherit;
@@ -13826,7 +13828,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 999px;
   background: rgba(255, 122, 60, 0.10);
   border: 1px solid rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.875rem;
   font-weight: 800;
   letter-spacing: 0.2px;
@@ -13884,7 +13886,7 @@ body.has-app-promo-banner .page-header {
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.4px;
-  color: #FF7A3C;
+  color: var(--hot-text);
   text-transform: uppercase;
 }
 /* Creator info takes the available space; quick-action buttons sit on
@@ -13909,7 +13911,7 @@ body.has-app-promo-banner .page-header {
   cursor: pointer;
   background: rgba(255, 122, 60, 0.10);
   border: 1px solid rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
   -webkit-tap-highlight-color: transparent;
   transition: background 0.12s ease, transform 0.1s ease, color 0.12s ease;
 }
@@ -13964,7 +13966,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 999px;
   background: rgba(255, 122, 60, 0.10);
   border: 1px solid rgba(255, 122, 60, 0.35);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
@@ -14002,7 +14004,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 18px;
   background: rgba(255, 122, 60, 0.10);
   border: 1px solid rgba(255, 122, 60, 0.30);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.1px;
@@ -14050,14 +14052,14 @@ body.has-app-promo-banner .page-header {
   padding: 0;
   border-radius: 50%;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--separator);
   color: var(--muted);
   cursor: pointer;
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 .challenge-details-toggle:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.20);
+  background: var(--overlay);
+  border-color: var(--separator);
 }
 .challenge-details-toggle-chevron {
   display: inline-block;
@@ -14094,7 +14096,7 @@ body.has-app-promo-banner .page-header {
    "you're in" state reads as confirmed. */
 .challenge-quick-btn--accept-in {
   background: #FF7A3C;
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
   color: #fff;
 }
 .challenge-quick-btn--accept-in:hover { background: #ff8753; }
@@ -14192,7 +14194,7 @@ body.has-app-promo-banner .page-header {
   gap: 0.625rem;
   background: rgba(255,122,60,0.08);
   border: 1px solid rgba(255,122,60,0.4);
-  color: #FF7A3C;
+  color: var(--hot-text);
   padding: 0.75rem 0.875rem;
   border-radius: 14px;
   font: inherit;
@@ -14293,7 +14295,7 @@ body.has-app-promo-banner .page-header {
 }
 .cpcm-check--on {
   background: #FF7A3C;
-  border-color: #FF7A3C;
+  border-color: var(--hot-text);
 }
 
 .cpcm-send {
@@ -14398,7 +14400,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 999px;
   border: 1px solid rgba(255, 122, 60, 0.5);
   background: rgba(255, 122, 60, 0.14);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -14473,8 +14475,8 @@ body.has-app-promo-banner .page-header {
   gap: 0.25rem;
   padding: 0.3125rem 0.625rem;
   border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--separator);
+  background: var(--overlay-weak);
   color: var(--muted);
   font: inherit;
   font-size: 0.75rem;
@@ -14484,13 +14486,13 @@ body.has-app-promo-banner .page-header {
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }
 .challenge-type-chip:hover {
-  background: rgba(255,255,255,0.07);
+  background: var(--overlay);
   color: var(--text);
 }
 .challenge-type-chip--active {
   background: rgba(255,122,60,0.14);
   border-color: rgba(255,122,60,0.45);
-  color: #FF7A3C;
+  color: var(--hot-text);
 }
 
 .challenge-see-all {
@@ -14502,7 +14504,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 12px;
   border: 1px dashed rgba(255,122,60,0.4);
   background: transparent;
-  color: #FF7A3C;
+  color: var(--hot-text);
   font: inherit;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -14601,7 +14603,7 @@ body.has-app-promo-banner .page-header {
   color: var(--muted);
 }
 .mlp-slot--first .mlp-meta { color: var(--text, #ede9e5); font-weight: 700; }
-.mlp-meta strong { color: #FF7A3C; }
+.mlp-meta strong { color: var(--hot-text); }
 
 .challenge-load-more-hint {
   text-align: center;
@@ -14716,7 +14718,7 @@ body.has-app-promo-banner .page-header {
   text-align: left;
 }
 .cef-city-modal-row:hover { background: rgba(255, 255, 255, 0.04); }
-.cef-city-modal-row.selected { background: rgba(255, 122, 60, 0.10); color: #FF7A3C; }
+.cef-city-modal-row.selected { background: rgba(255, 122, 60, 0.10); color: var(--hot-text); }
 
 /* ── Challenge - International proof block ────────────────────────────────
    Sits below the pipeline on the detail page for International challenges.
@@ -14728,7 +14730,7 @@ body.has-app-promo-banner .page-header {
   padding: 0.75rem 0.875rem;
   border-radius: 14px;
   background: var(--surface2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--separator);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -14752,7 +14754,7 @@ body.has-app-promo-banner .page-header {
 .proof-reqs-label {
   font-size: 0.625rem;
   font-weight: 700;
-  color: #FF7A3C;
+  color: var(--hot-text);
   letter-spacing: 0.6px;
   text-transform: uppercase;
 }
@@ -14844,8 +14846,8 @@ body.has-app-promo-banner .page-header {
   min-height: 90px;
   resize: vertical;
   padding: 0.625rem 0.75rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--overlay-weak);
+  border: 1px solid var(--separator);
   border-radius: 10px;
   color: var(--text);
   font: inherit;
@@ -15134,9 +15136,9 @@ body.has-app-promo-banner .page-header {
 
 /* ── Visibility badge on challenge detail meta row ───────────────────────── */
 .challenge-badge--visibility {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-weak);
+  color: var(--text);
+  border: 1px solid var(--separator);
 }
 .challenge-badge--visibility-friends {
   background: rgba(147, 197, 253, 0.12);
@@ -15155,7 +15157,7 @@ body.has-app-promo-banner .page-header {
   max-width: 640px;
   padding: 1.25rem 1.125rem;
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--separator);
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -15220,11 +15222,11 @@ body.has-app-promo-banner .page-header {
 .challenge-privacy-btn--ghost {
   background: transparent;
   color: var(--text);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--separator);
 }
-.challenge-privacy-btn--ghost:hover { border-color: rgba(255, 255, 255, 0.22); }
+.challenge-privacy-btn--ghost:hover { border-color: var(--separator); }
 .challenge-privacy-anon {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--separator);
   padding-top: 0.875rem;
   display: flex;
   flex-direction: column;
@@ -15289,8 +15291,8 @@ body.has-app-promo-banner .page-header {
   width: 100%;
   padding: 0.75rem 0.875rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--overlay-weak);
+  border: 1px solid var(--separator);
   color: var(--muted);
   font-size: 0.95rem;
   text-align: center;
@@ -15310,8 +15312,8 @@ body.has-app-promo-banner .page-header {
   border: 1px solid rgba(255, 122, 0, 0.22);
 }
 .challenge-takeon-banner--muted {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--overlay-weak);
+  border-color: var(--separator);
 }
 .challenge-takeon-emoji { font-size: 1.5rem; text-align: center; }
 .challenge-takeon-text h3 { margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text); }
@@ -15342,7 +15344,7 @@ body.has-app-promo-banner .page-header {
   padding: 0.625rem 0.875rem;
   margin: 0.5rem auto 0;
   max-width: 640px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--separator);
 }
 .challenge-members-strip { flex: 1 1 auto; min-width: 0; }
 
@@ -15356,14 +15358,14 @@ body.has-app-promo-banner .page-header {
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--separator);
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 .challenge-notif-toggle:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.20);
+  border-color: var(--separator);
   color: var(--text);
 }
 .challenge-notif-toggle--on {
@@ -15384,7 +15386,7 @@ body.has-app-promo-banner .page-header {
   font-weight: 600;
   background: transparent;
   color: var(--muted);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--separator);
   border-radius: 8px;
   cursor: pointer;
 }
@@ -15401,7 +15403,7 @@ body.has-app-promo-banner .page-header {
 
 /* Close-to-new-joins is the only block still inside the privacy panel. */
 .challenge-privacy-closed {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--separator);
   padding-top: 0.875rem;
   display: flex;
   flex-direction: column;
@@ -15414,7 +15416,7 @@ body.has-app-promo-banner .page-header {
   max-width: 480px;
   padding: 1.75rem 1.5rem;
   background: var(--surface);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--separator);
   border-radius: 18px;
   display: flex;
   flex-direction: column;
@@ -15459,12 +15461,12 @@ body.has-app-promo-banner .page-header {
   padding: 0.5rem 0.875rem;
   background: transparent;
   color: var(--muted);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--separator);
   border-radius: 10px;
   font-size: 0.85rem;
   cursor: pointer;
 }
-.challenge-leave-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+.challenge-leave-btn:hover { color: var(--text); border-color: var(--separator); }
 
 /* ── "Message creator" DM shortcut (taker-only) ──────────────────────────── */
 .challenge-dm-creator {
@@ -15474,8 +15476,8 @@ body.has-app-promo-banner .page-header {
   width: calc(100% - 32px);
   padding: 0.75rem 1rem;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--overlay-weak);
+  border: 1px solid var(--separator);
   color: var(--text);
   font-size: 0.95rem;
   font-weight: 600;
@@ -15483,8 +15485,8 @@ body.has-app-promo-banner .page-header {
   -webkit-tap-highlight-color: transparent;
 }
 .challenge-dm-creator:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: var(--overlay);
+  border-color: var(--separator);
 }
 
 /* ── PR17: score celebration popin ──────────────────────────────────────────
@@ -15553,7 +15555,7 @@ body.has-app-promo-banner .page-header {
 .score-celebration-points {
   font-size: 2.75rem;
   font-weight: 900;
-  color: #FF7A3C;
+  color: var(--hot-text);
   letter-spacing: -0.5px;
   line-height: 1.1;
   margin-top: 0.25rem;
@@ -15607,7 +15609,7 @@ body.has-app-promo-banner .page-header {
   min-width: 44px;
   padding: 0.25rem 0.5rem;
   background: rgba(255, 122, 60, 0.18);
-  color: #FF7A3C;
+  color: var(--hot-text);
   font-size: 0.875rem;
   font-weight: 900;
   letter-spacing: 0.2px;
@@ -15773,13 +15775,13 @@ body.has-app-promo-banner .page-header {
 .proof-review-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 .proof-review-btn--approve   { background: #4ade80; color: #0b0d12; }
 .proof-review-btn--reject    { background: #ef4444; color: #fff; }
-.proof-review-btn--secondary { background: rgba(255,255,255,0.08); color: var(--muted, #b3b3b3); font-weight: 700; }
+.proof-review-btn--secondary { background: var(--overlay); color: var(--muted, #b3b3b3); font-weight: 700; }
 .proof-review-reason  { display: flex; flex-direction: column; gap: 0.5rem; }
 .proof-review-hint    { margin: 0; color: var(--muted, #b3b3b3); font-size: 0.8125rem; }
 .proof-review-reason-input {
   width: 100%; padding: 0.625rem 0.75rem; border-radius: 10px; resize: vertical;
-  background: rgba(255,255,255,0.05); color: var(--text, #fff);
-  border: 1px solid rgba(255,255,255,0.08); font-size: 0.875rem;
+  background: var(--overlay-weak); color: var(--text, #fff);
+  border: 1px solid var(--separator); font-size: 0.875rem;
 }
 .proof-review-charcount { align-self: flex-end; font-size: 0.6875rem; color: var(--muted-2, #888); }
 .proof-review-error     { margin: 0; color: #ef4444; font-size: 0.8125rem; }
