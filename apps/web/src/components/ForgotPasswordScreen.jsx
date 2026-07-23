@@ -24,7 +24,7 @@ export default function ForgotPasswordScreen({ onBack }) {
   }
 
   return (
-    <div className="full-page">
+    <div className="full-page auth-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
         <span className="page-title">Forgot password?</span>
