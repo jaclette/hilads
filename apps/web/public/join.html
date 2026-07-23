@@ -11,13 +11,16 @@
        project + reverse proxy. Copy is localized client-side from
        navigator.language (all 19 app locales); French markup is the no-JS fallback. -->
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="theme-color" content="#0d0b09" />
+  <meta name="theme-color" content="#FBF6F0" />
   <title>Hilads — deviens local dans ta ville</title>
   <style>
     :root{
-      --bg:#0d0b09; --surface:#161210; --surface2:#1e1812;
-      --accent:#C24A38; --accent2:#B87228; --hot:#FF7A3C;
-      --text:#ede9e5; --muted:#8a7c74;
+      /* Daylight theme — warm white + orange (logo colors). --accent2 is deepened
+         from #B87228 so it stays AA-legible as text on the light ground. */
+      --bg:#FBF6F0; --surface:#FFFFFF; --surface2:#F3EAE0;
+      --accent:#C24A38; --accent2:#9C5A1C; --hot:#FF7A3C;
+      --text:#241A12; --muted:#6E5D4E; --line:#EADDD0;
+      color-scheme:light;
     }
     *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
     html{ scroll-snap-type:y mandatory; scroll-behavior:smooth; }
@@ -26,27 +29,27 @@
       background:var(--bg); color:var(--text);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
       -webkit-font-smoothing:antialiased;
-      background-image:radial-gradient(120% 60% at 50% -6%, rgba(194,74,56,.30), rgba(13,11,9,0) 55%);
+      background-image:radial-gradient(120% 60% at 50% -6%, rgba(255,122,60,.16), rgba(251,246,240,0) 55%);
     }
 
     /* ── Persistent stories header: progress bar + brand ─────────────────────── */
     .topbar{
       position:fixed; top:0; left:0; right:0; z-index:20;
       padding:calc(9px + env(safe-area-inset-top)) 16px 9px;
-      background:linear-gradient(to bottom, rgba(13,11,9,.94) 55%, rgba(13,11,9,0));
+      background:linear-gradient(to bottom, rgba(251,246,240,.94) 55%, rgba(251,246,240,0));
     }
     .progress{ display:flex; gap:8px; }
     /* Each segment is a tappable tab: a progress bar + a title under it. Tapping
        jumps straight to that slide. */
     .seg-tab{ flex:1; min-width:0; background:none; border:0; padding:0; cursor:pointer; display:flex; flex-direction:column; gap:4px; font:inherit; }
-    .seg-tab .bar{ height:3px; border-radius:3px; background:rgba(255,255,255,.16); transition:background .3s ease; }
+    .seg-tab .bar{ height:3px; border-radius:3px; background:rgba(28,20,14,.14); transition:background .3s ease; }
     .seg-tab.on .bar{ background:var(--accent2); }
     .seg-tab .lbl{ font-size:10.5px; font-weight:600; letter-spacing:.2px; color:var(--muted); text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:color .3s ease; }
     .seg-tab.cur .lbl{ color:var(--text); }
     .brandrow{ display:flex; align-items:center; gap:7px; margin-top:9px; }
     .brandrow svg{ display:block; flex:0 0 auto; }
     .brandrow .name{ font-weight:700; font-size:16px; letter-spacing:-.3px; }
-    .brandrow .tag{ color:var(--muted); font-size:12px; margin-inline-start:2px; padding-inline-start:8px; border-inline-start:1px solid rgba(255,255,255,.14); }
+    .brandrow .tag{ color:var(--muted); font-size:12px; margin-inline-start:2px; padding-inline-start:8px; border-inline-start:1px solid rgba(28,20,14,.14); }
 
     /* ── Slides ──────────────────────────────────────────────────────────────── */
     .slide{
@@ -94,11 +97,11 @@
     .flags{ display:flex; flex-direction:column; align-items:center; gap:8px; align-self:center; max-width:100%; cursor:pointer;
       background:linear-gradient(135deg,rgba(194,74,56,.18),rgba(184,114,40,.10));
       border:1px solid rgba(255,122,60,.38); border-radius:18px; padding:11px 18px 9px;
-      box-shadow:0 6px 20px rgba(0,0,0,.28); }
+      box-shadow:0 6px 20px rgba(28,20,14,.12); }
     .flags .cap{ font-size:14px; font-weight:800; color:var(--text); letter-spacing:.2px; }
     .flags .row{ display:inline-flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:7px; }
     .flags .chip{ display:inline-flex; align-items:center; gap:5px; font-size:14px; font-weight:800; color:var(--text);
-      background:rgba(0,0,0,.34); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:5px 12px; }
+      background:rgba(28,20,14,.05); border:1px solid var(--line); border-radius:999px; padding:5px 12px; }
     .flags .chip .n{ color:var(--accent2); }
     .flags .go{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
     .flags .go i{ font-style:normal; font-size:20px; line-height:.5; }
@@ -121,9 +124,9 @@
       margin:0; font-weight:800; letter-spacing:-.6px; line-height:1.08;
       font-size:clamp(26px,7.4vw,42px); text-wrap:balance;
     }
-    h1 #city{ color:var(--hot); }
+    h1 #city{ color:var(--accent); }
     @supports ((-webkit-background-clip:text) or (background-clip:text)){
-      h1 #city{ background:linear-gradient(120deg,var(--hot),var(--accent2));
+      h1 #city{ background:linear-gradient(120deg,var(--accent),var(--accent2));
         -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:transparent; }
     }
     .sub{ margin:0; max-width:22em; color:var(--text); opacity:.82; font-size:clamp(15px,4vw,17px); line-height:1.5; }
@@ -133,7 +136,9 @@
       display:flex; align-items:center; justify-content:center; gap:10px;
       width:100%; min-height:56px; padding:0 18px; border-radius:16px;
       text-decoration:none; font-weight:700; font-size:16px; color:#fff;
-      background:var(--surface2); border:1px solid rgba(255,255,255,.09);
+      /* Store badges stay dark on the light page — the conventional App Store /
+         Play look, and keeps the white Apple glyph + label legible. */
+      background:#1E150F; border:1px solid rgba(255,255,255,.06); box-shadow:0 4px 14px rgba(28,20,14,.12);
     }
     a.btn .ico{ width:20px; height:20px; flex:0 0 auto; }
     a.btn small{ display:block; font-weight:500; font-size:11px; opacity:.7; line-height:1; margin-bottom:2px; }
@@ -168,8 +173,8 @@
     .slide.center .cue{ margin-top:4px; }
     .cue .label{
       font-size:14.5px; font-weight:700; color:var(--text); white-space:nowrap;
-      background:var(--surface); border:1px solid rgba(255,255,255,.10);
-      padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(0,0,0,.35);
+      background:var(--surface); border:1px solid var(--line);
+      padding:9px 17px; border-radius:999px; box-shadow:0 4px 16px rgba(28,20,14,.14);
     }
     .cue .chev{ display:flex; flex-direction:column; align-items:center; color:var(--accent2); }
     .cue .chev i{ font-style:normal; font-size:34px; line-height:.5; }
@@ -185,7 +190,7 @@
 
     /* ── Leaderboard rows ────────────────────────────────────────────────────── */
     .lb-list{ display:flex; flex-direction:column; gap:6px; }
-    .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:13px; background:var(--surface); border:1px solid rgba(255,255,255,.05); }
+    .lb-row{ display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:13px; background:var(--surface); border:1px solid var(--line); box-shadow:0 1px 2px rgba(28,20,14,.04); }
     .lb-row.me{ background:linear-gradient(135deg,rgba(194,74,56,.22),rgba(184,114,40,.14)); border-color:rgba(255,122,60,.45); }
     .lb-rank{ width:26px; text-align:center; font-weight:800; font-size:15px; color:var(--muted); flex:0 0 auto; }
     .lb-av{ width:32px; height:32px; border-radius:50%; object-fit:cover; background:var(--surface2); color:var(--muted); flex:0 0 auto; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; overflow:hidden; }
@@ -197,7 +202,7 @@
 
     /* ── International challenge cards ───────────────────────────────────────── */
     .ch-list{ display:flex; flex-direction:column; gap:9px; }
-    .ch-card{ padding:12px 14px; border-radius:14px; background:var(--surface); border:1px solid rgba(255,255,255,.06); text-align:left; }
+    .ch-card{ padding:12px 14px; border-radius:14px; background:var(--surface); border:1px solid var(--line); box-shadow:0 1px 2px rgba(28,20,14,.04); text-align:left; }
     .ch-route{ font-size:12.5px; color:var(--text); opacity:.9; font-weight:700; margin-bottom:6px; }
     .ch-route .arrow{ color:var(--accent2); margin:0 5px; }
     .ch-title{ font-size:14.5px; font-weight:600; line-height:1.35; }
