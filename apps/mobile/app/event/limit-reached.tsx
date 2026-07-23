@@ -18,9 +18,13 @@ import { useApp } from '@/context/AppContext';
 import { fetchMyEvents } from '@/api/events';
 import { EventPill } from '@/features/events/EventPill';
 import type { HiladsEvent } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export default function EventLimitReachedScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('event');
   const { identity, city } = useApp();
@@ -67,7 +71,7 @@ export default function EventLimitReachedScreen() {
           onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/events')}
           activeOpacity={0.75}
         >
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -132,8 +136,8 @@ function formatYmdInTz(d: Date, tz: string): string {
   return d.toLocaleDateString('en-CA', { timeZone: tz });
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -146,9 +150,9 @@ const styles = StyleSheet.create({
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -168,7 +172,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
     textAlign:     'center',
     paddingHorizontal: 12,
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
   body: {
     fontSize:      FontSizes.md,
     lineHeight:    22,
-    color:         Colors.muted,
+    color:         c.muted,
     textAlign:     'center',
     paddingHorizontal: 8,
   },
@@ -193,7 +197,7 @@ const styles = StyleSheet.create({
   },
   legendLinkText: {
     fontSize:      FontSizes.sm,
-    color:         Colors.accent,
+    color:         c.accent,
     fontWeight:    '600',
     textAlign:     'center',
   },
@@ -204,7 +208,7 @@ const styles = StyleSheet.create({
     paddingTop:        Spacing.md,
   },
   primaryBtn: {
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderRadius:    Radius.lg,
     paddingVertical: 17,
     alignItems:      'center',
@@ -212,7 +216,7 @@ const styles = StyleSheet.create({
     minHeight:       54,
   },
   primaryBtnText: {
-    color:         Colors.white,
+    color:         c.white,
     fontSize:      FontSizes.md,
     fontWeight:    '700',
     letterSpacing: -0.2,

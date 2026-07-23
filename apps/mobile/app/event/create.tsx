@@ -25,7 +25,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createEvent, createEventSeries } from '@/api/events';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { PrimaryButton } from '@/components/PrimaryButton';
 import { LocationPicker } from '@/features/chat/LocationPicker';
 
@@ -119,6 +120,8 @@ const MINUTE_STEPS = [0, 15, 30, 45];
 function TimePicker({
   label, value, onChange,
 }: { label: string; value: Date; onChange: (d: Date) => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
   const [open, setOpen] = useState(false);
   const [h, setH] = useState(value.getHours());
@@ -154,7 +157,7 @@ function TimePicker({
         <Text style={styles.fieldLabel}>{label}</Text>
         <TouchableOpacity style={styles.timeBtn} onPress={open_} activeOpacity={0.75}>
           <Text style={styles.timeBtnText}>{timeStr(value)}</Text>
-          <Ionicons name="time-outline" size={18} color={Colors.muted} />
+          <Ionicons name="time-outline" size={18} color={colors.muted} />
         </TouchableOpacity>
       </View>
 
@@ -167,11 +170,11 @@ function TimePicker({
               {/* Hours column */}
               <View style={styles.pickerCol}>
                 <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v + 1) % 24)}>
-                  <Ionicons name="chevron-up" size={22} color={Colors.text} />
+                  <Ionicons name="chevron-up" size={22} color={colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.pickerVal}>{String(h).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.pickerArrow} onPress={() => setH(v => (v - 1 + 24) % 24)}>
-                  <Ionicons name="chevron-down" size={22} color={Colors.text} />
+                  <Ionicons name="chevron-down" size={22} color={colors.text} />
                 </TouchableOpacity>
               </View>
 
@@ -180,11 +183,11 @@ function TimePicker({
               {/* Minutes column */}
               <View style={styles.pickerCol}>
                 <TouchableOpacity style={styles.pickerArrow} onPress={nextM}>
-                  <Ionicons name="chevron-up" size={22} color={Colors.text} />
+                  <Ionicons name="chevron-up" size={22} color={colors.text} />
                 </TouchableOpacity>
                 <Text style={styles.pickerVal}>{String(m).padStart(2, '0')}</Text>
                 <TouchableOpacity style={styles.pickerArrow} onPress={prevM}>
-                  <Ionicons name="chevron-down" size={22} color={Colors.text} />
+                  <Ionicons name="chevron-down" size={22} color={colors.text} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -213,6 +216,8 @@ function DatePicker({
   onClose:  () => void;
   maxDays?: number;
 }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('common');
   // Month being displayed (anchor on the first of the month).
   const [view, setView] = useState<Date>(() => new Date(value.getFullYear(), value.getMonth(), 1));
@@ -248,14 +253,14 @@ function DatePicker({
               onPress={prevMonth} disabled={prevDisabled}
               style={[styles.dpNavBtn, prevDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-back" size={20} color={prevDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-back" size={20} color={prevDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
             <Text style={styles.dpTitle}>{monthLabel}</Text>
             <TouchableOpacity
               onPress={nextMonth} disabled={nextDisabled}
               style={[styles.dpNavBtn, nextDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -308,6 +313,9 @@ function DatePicker({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function CreateEventScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('event');
   const { city, identity, account } = useApp();
@@ -506,7 +514,7 @@ export default function CreateEventScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{isLocal ? t('hostTitle') : t('createTitle')}</Text>
@@ -559,7 +567,7 @@ export default function CreateEventScreen() {
                   <Ionicons
                     name={cat.icon}
                     size={26}
-                    color={sel ? Colors.accent : Colors.muted}
+                    color={sel ? colors.accent : colors.muted}
                   />
                   <Text style={[styles.catLabel, sel && styles.catLabelSel]}>
                     {t(`cat.${cat.type}`)}
@@ -578,7 +586,7 @@ export default function CreateEventScreen() {
             value={title}
             onChangeText={setTitle}
             placeholder={t('titlePlaceholder')}
-            placeholderTextColor={Colors.muted2}
+            placeholderTextColor={colors.muted2}
             maxLength={100}
             autoCorrect={false}
           />
@@ -611,7 +619,7 @@ export default function CreateEventScreen() {
               onPress={() => setShowDatePicker(true)}
               activeOpacity={0.75}
             >
-              <Ionicons name="calendar-outline" size={14} color={isCustomDate ? Colors.accent : Colors.muted} />
+              <Ionicons name="calendar-outline" size={14} color={isCustomDate ? colors.accent : colors.muted} />
               <Text style={[styles.dateChipText, isCustomDate && styles.dateChipTextActive]}>
                 {isCustomDate ? customDateLabel : t('pickDate')}
               </Text>
@@ -621,7 +629,7 @@ export default function CreateEventScreen() {
                   hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                   style={{ marginLeft: 4 }}
                 >
-                  <Ionicons name="close" size={14} color={Colors.accent} />
+                  <Ionicons name="close" size={14} color={colors.accent} />
                 </TouchableOpacity>
               )}
             </TouchableOpacity>
@@ -660,7 +668,7 @@ export default function CreateEventScreen() {
               {repeat !== 'once' && (
                 <Text style={styles.repeatSummary}>{t(`repeatMode.${repeat}`)}</Text>
               )}
-              <Ionicons name={repeatExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={Colors.muted2} />
+              <Ionicons name={repeatExpanded ? 'chevron-up' : 'chevron-down'} size={18} color={colors.muted2} />
             </View>
           </TouchableOpacity>
 
@@ -711,16 +719,16 @@ export default function CreateEventScreen() {
             activeOpacity={0.7}
             onPress={handleOpenLocation}
           >
-            <Ionicons name="location-outline" size={18} color={location ? Colors.accent : Colors.muted2} />
+            <Ionicons name="location-outline" size={18} color={location ? colors.accent : colors.muted2} />
             <Text style={[styles.locFieldText, !location && styles.locFieldPlaceholder]} numberOfLines={2}>
               {location || t('locationPlaceholder')}
             </Text>
             {location ? (
               <TouchableOpacity onPress={clearLocation} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-                <Ionicons name="close-circle" size={18} color={Colors.muted2} />
+                <Ionicons name="close-circle" size={18} color={colors.muted2} />
               </TouchableOpacity>
             ) : (
-              <Ionicons name="chevron-forward" size={16} color={Colors.muted2} />
+              <Ionicons name="chevron-forward" size={16} color={colors.muted2} />
             )}
           </TouchableOpacity>
         </View>
@@ -759,8 +767,8 @@ export default function CreateEventScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   scroll:    { flex: 1 },
   content:   { paddingHorizontal: 18, paddingTop: 20, gap: 28 },
 
@@ -771,28 +779,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
     zIndex:          1,
   },
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
+  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
 
   // ── Field label - same uppercase tracking as web ──────────────────────────
   fieldLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
@@ -813,19 +821,19 @@ const styles = StyleSheet.create({
     flex:            0,
     width:           '22.5%',
     aspectRatio:     1,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    18,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     gap:             7,
   },
   catChipSel: {
-    borderColor:     Colors.accent,
+    borderColor:     c.accent,
     backgroundColor: 'rgba(255,122,60,0.10)',
     // Subtle glow matching web box-shadow
-    shadowColor:     Colors.accent,
+    shadowColor:     c.accent,
     shadowOffset:    { width: 0, height: 0 },
     shadowOpacity:   0.25,
     shadowRadius:    8,
@@ -834,21 +842,21 @@ const styles = StyleSheet.create({
   catLabel: {
     fontSize:      9,
     fontWeight:    '700',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
   },
-  catLabelSel: { color: Colors.accent },
+  catLabelSel: { color: c.accent },
 
   // ── Text input - matching web dark input style ─────────────────────────────
   input: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      12,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 16,
     paddingVertical:   Platform.OS === 'ios' ? 15 : 12,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.md,
   },
 
@@ -857,45 +865,45 @@ const styles = StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     gap:               10,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      12,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 16,
     paddingVertical:   Platform.OS === 'ios' ? 14 : 12,
     minHeight:         52,
   },
-  locFieldText:        { flex: 1, color: Colors.text, fontSize: FontSizes.md, lineHeight: 20 },
-  locFieldPlaceholder: { color: Colors.muted2 },
+  locFieldText:        { flex: 1, color: c.text, fontSize: FontSizes.md, lineHeight: 20 },
+  locFieldPlaceholder: { color: c.muted2 },
 
   // ── Time pickers ──────────────────────────────────────────────────────────
   timeRow:   { flexDirection: 'row', gap: 14 },
   timeGroup: { flex: 1, gap: 10 },
   timeBtn: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      12,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 16,
     paddingVertical:   Platform.OS === 'ios' ? 15 : 12,
     flexDirection:     'row',
     alignItems:        'center',
     justifyContent:    'space-between',
   },
-  timeBtnText: { fontSize: FontSizes.lg, fontWeight: '600', color: Colors.text },
+  timeBtnText: { fontSize: FontSizes.lg, fontWeight: '600', color: c.text },
 
   // ── Time picker modal ─────────────────────────────────────────────────────
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.65)',
+    backgroundColor: c.scrim,
     alignItems:      'center',
     justifyContent:  'center',
   },
   pickerBox: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     padding:         Spacing.lg,
     alignItems:      'center',
     gap:             12,
@@ -904,7 +912,7 @@ const styles = StyleSheet.create({
   pickerTitle: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     marginBottom:  4,
@@ -915,21 +923,21 @@ const styles = StyleSheet.create({
   pickerVal:   {
     fontSize:   40,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
     minWidth:   64,
     textAlign:  'center',
   },
-  pickerColon: { fontSize: 36, fontWeight: '700', color: Colors.muted, marginBottom: 4 },
+  pickerColon: { fontSize: 36, fontWeight: '700', color: c.muted, marginBottom: 4 },
   pickerDone: {
     marginTop:         8,
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     borderRadius:      Radius.lg,
     paddingHorizontal: Spacing.xl,
     paddingVertical:   Spacing.sm,
     alignSelf:         'stretch',
     alignItems:        'center',
   },
-  pickerDoneText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+  pickerDoneText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
 
   // ── Date selector chips (Today / Tomorrow / Pick a date) ─────────────────
   dateRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
@@ -939,25 +947,25 @@ const styles = StyleSheet.create({
     gap:               6,
     paddingHorizontal: 14,
     paddingVertical:   10,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      12,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
   dateChipActive: {
-    borderColor:     Colors.accent,
+    borderColor:     c.accent,
     backgroundColor: 'rgba(255,122,60,0.08)',
   },
-  dateChipText:        { fontSize: FontSizes.md, color: Colors.muted, fontWeight: '600' },
-  dateChipTextActive:  { color: Colors.accent, fontWeight: '700' },
-  dateHint:            { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 8 },
+  dateChipText:        { fontSize: FontSizes.md, color: c.muted, fontWeight: '600' },
+  dateChipTextActive:  { color: c.accent, fontWeight: '700' },
+  dateHint:            { fontSize: FontSizes.xs, color: c.muted2, marginTop: 8 },
 
   // ── Inline date-picker modal ─────────────────────────────────────────────
   datePickerBox: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     padding:         Spacing.lg,
     gap:             6,
     width:           320,
@@ -969,11 +977,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingBottom:  Spacing.sm,
   },
-  dpTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  dpTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   dpNavBtn: {
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
   },
   dpNavBtnDisabled: { opacity: 0.3 },
   dpRow: { flexDirection: 'row', justifyContent: 'space-between' },
@@ -982,7 +990,7 @@ const styles = StyleSheet.create({
     textAlign:  'center',
     fontSize:   11,
     fontWeight: '700',
-    color:      Colors.muted2,
+    color:      c.muted2,
     letterSpacing: 0.5,
     paddingVertical: 6,
   },
@@ -990,49 +998,49 @@ const styles = StyleSheet.create({
     width: 36, height: 36, borderRadius: 18,
     alignItems: 'center', justifyContent: 'center',
   },
-  dpCellSelected: { backgroundColor: Colors.accent },
+  dpCellSelected: { backgroundColor: c.accent },
   dpCellDisabled: { opacity: 0.25 },
-  dpCellText:         { fontSize: FontSizes.sm, color: Colors.text, fontWeight: '600' },
-  dpCellTextSelected: { color: Colors.white, fontWeight: '800' },
-  dpCellTextDisabled: { color: Colors.muted2 },
+  dpCellText:         { fontSize: FontSizes.sm, color: c.text, fontWeight: '600' },
+  dpCellTextSelected: { color: c.white, fontWeight: '800' },
+  dpCellTextDisabled: { color: c.muted2 },
 
   // ── Quick presets ─────────────────────────────────────────────────────────
   presetRow: { flexDirection: 'row', gap: 8 },
   presetBtn: {
     flex: 1, alignItems: 'center', paddingVertical: 14,
-    backgroundColor: Colors.bg2, borderRadius: 14,
-    borderWidth: 1, borderColor: Colors.border, gap: 4,
+    backgroundColor: c.bg2, borderRadius: 14,
+    borderWidth: 1, borderColor: c.border, gap: 4,
   },
   presetBtnActive: {
-    borderColor: Colors.accent,
+    borderColor: c.accent,
     backgroundColor: 'rgba(255,122,60,0.08)',
   },
   presetEmoji: { fontSize: 20 },
-  presetLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
-  presetLabelActive: { color: Colors.accent },
-  presetDesc:  { fontSize: 10, color: Colors.muted2, textAlign: 'center' },
+  presetLabel: { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
+  presetLabelActive: { color: c.accent },
+  presetDesc:  { fontSize: 10, color: c.muted2, textAlign: 'center' },
 
   // ── Repeat chips - square-ish matching web (not pill) ─────────────────────
   repeatHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   repeatHeaderRight: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  repeatSummary: { fontSize: 13, fontWeight: '700', color: Colors.accent },
+  repeatSummary: { fontSize: 13, fontWeight: '700', color: c.accent },
   repeatRow: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 10 },
   repeatChip: {
     paddingHorizontal: 16,
     paddingVertical:   11,
     borderRadius:      12,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     minWidth:          68,
     alignItems:        'center',
   },
   repeatChipActive: {
-    borderColor:     Colors.accent,
+    borderColor:     c.accent,
     backgroundColor: 'rgba(255,122,60,0.08)',
   },
-  repeatLabel:       { fontSize: FontSizes.md, color: Colors.muted, fontWeight: '500' },
-  repeatLabelActive: { color: Colors.accent, fontWeight: '700' },
+  repeatLabel:       { fontSize: FontSizes.md, color: c.muted, fontWeight: '500' },
+  repeatLabelActive: { color: c.accent, fontWeight: '700' },
 
   // ── "Every N days" interval input ─────────────────────────────────────────
   intervalRow: {
@@ -1041,23 +1049,23 @@ const styles = StyleSheet.create({
     gap:           10,
     marginTop:     8,
   },
-  intervalLabel: { fontSize: FontSizes.md, color: Colors.muted },
+  intervalLabel: { fontSize: FontSizes.md, color: c.muted },
   intervalInput: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      10,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 14,
     paddingVertical:   Platform.OS === 'ios' ? 10 : 7,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.lg,
     fontWeight:        '600',
     minWidth:          60,
     textAlign:         'center',
   },
-  repeatNote: { fontSize: FontSizes.xs, color: Colors.accent3, marginTop: 6 },
+  repeatNote: { fontSize: FontSizes.xs, color: c.accent3, marginTop: 6 },
 
   // ── Error ─────────────────────────────────────────────────────────────────
-  errorText: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
+  errorText: { fontSize: FontSizes.sm, color: c.red, textAlign: 'center' },
 
 });

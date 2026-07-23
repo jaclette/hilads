@@ -12,7 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { fetchPastArchive } from '@/api/topics';
 import { track } from '@/services/analytics';
 import type { FeedItem } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
 import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
@@ -54,6 +55,8 @@ function RangeMonthModal({
   onApply: (from: string, to: string) => void;
   onClose: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const today = parseYmd(cityTodayYmd(tz));
   const [view, setView]   = useState<Date>(new Date(today.getFullYear(), today.getMonth(), 1));
   const [start, setStart] = useState<Date | null>(initial.from ? parseYmd(initial.from) : null);
@@ -99,7 +102,7 @@ function RangeMonthModal({
               disabled={prevDisabled}
               style={[styles.dpNavBtn, prevDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-back" size={20} color={prevDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-back" size={20} color={prevDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
             <Text style={styles.dpTitle}>{monthLbl}</Text>
             <TouchableOpacity
@@ -107,7 +110,7 @@ function RangeMonthModal({
               disabled={nextDisabled}
               style={[styles.dpNavBtn, nextDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -166,6 +169,9 @@ function RangeMonthModal({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PastArchiveScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('archive');
   const { channelId, timezone, city } = useLocalSearchParams<{ channelId: string; timezone: string; city: string }>();
@@ -256,7 +262,7 @@ export default function PastArchiveScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
@@ -288,7 +294,7 @@ export default function PastArchiveScreen() {
           <Ionicons
             name="calendar-outline"
             size={13}
-            color={range.key === 'custom' ? '#fff' : Colors.muted}
+            color={range.key === 'custom' ? '#fff' : colors.muted}
             style={{ marginRight: 4 }}
           />
           <Text style={[styles.rangeChipText, range.key === 'custom' && styles.rangeChipTextActive]}>
@@ -300,7 +306,7 @@ export default function PastArchiveScreen() {
 
       {/* Body */}
       {loading && !refreshing ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} size="large" /></View>
       ) : error ? (
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
@@ -357,9 +363,9 @@ export default function PastArchiveScreen() {
           ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
           onEndReached={loadMore}
           onEndReachedThreshold={0.4}
-          ListFooterComponent={loadingMore ? <ActivityIndicator color={Colors.accent} style={{ marginVertical: 20 }} /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.accent} style={{ marginVertical: 20 }} /> : null}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={Colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.accent} />
           }
         />
       )}
@@ -378,23 +384,23 @@ export default function PastArchiveScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
-    borderBottomWidth: 1, borderBottomColor: Colors.border, minHeight: 56,
+    borderBottomWidth: 1, borderBottomColor: c.border, minHeight: 56,
   },
   backBtn: {
     width: 40, height: 40, borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: c.overlay, borderWidth: 1, borderColor: c.overlayStrong,
     alignItems: 'center', justifyContent: 'center', flexShrink: 0, zIndex: 1,
   },
   headerSpacer: { width: 40, height: 40, marginLeft: 'auto' },
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.xs, color: Colors.muted, marginTop: 1 },
+  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
+  headerSub:    { fontSize: FontSizes.xs, color: c.muted, marginTop: 1 },
 
   filterBar: {
     flexDirection: 'row', gap: 8,
@@ -402,57 +408,57 @@ const styles = StyleSheet.create({
   },
   filterPill: {
     paddingHorizontal: 14, paddingVertical: 7, borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: c.overlayWeak, borderWidth: 1, borderColor: c.overlay,
   },
-  filterPillActive:     { backgroundColor: Colors.accent, borderColor: Colors.accent },
-  filterPillText:       { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.muted },
+  filterPillActive:     { backgroundColor: c.accent, borderColor: c.accent },
+  filterPillText:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   filterPillTextActive: { color: '#fff' },
 
   rangeBar: {
     flexDirection: 'row', flexWrap: 'wrap', gap: 8,
     paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   rangeChip: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlayWeak, borderWidth: 1, borderColor: c.overlay,
   },
   rangeChipActive:     { backgroundColor: 'rgba(255,122,60,0.16)', borderColor: 'rgba(255,122,60,0.4)' },
-  rangeChipText:       { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+  rangeChipText:       { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
   rangeChipTextActive: { color: '#fff' },
 
   center:     { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
-  errorText:  { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
-  retryBtn:   { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: Colors.bg3, borderRadius: Radius.full },
-  retryText:  { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
+  errorText:  { fontSize: FontSizes.sm, color: c.red, textAlign: 'center' },
+  retryBtn:   { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: c.bg3, borderRadius: Radius.full },
+  retryText:  { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
+  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
 
   list: { padding: Spacing.md, paddingBottom: 40 },
 
   // ── Range picker modal ───────────────────────────────────────────────────
-  overlay:  { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'center', alignItems: 'center', padding: Spacing.lg },
+  overlay:  { flex: 1, backgroundColor: c.scrim, justifyContent: 'center', alignItems: 'center', padding: Spacing.lg },
   monthBox: {
-    width: '100%', maxWidth: 360, backgroundColor: Colors.bg2, borderRadius: Radius.lg,
-    padding: Spacing.md, borderWidth: 1, borderColor: Colors.border,
+    width: '100%', maxWidth: 360, backgroundColor: c.bg2, borderRadius: Radius.lg,
+    padding: Spacing.md, borderWidth: 1, borderColor: c.border,
   },
   dpHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: Spacing.sm },
-  dpTitle:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  dpHint:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', marginBottom: Spacing.sm },
-  dpNavBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' },
+  dpTitle:  { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  dpHint:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
+  dpNavBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: c.overlayWeak, alignItems: 'center', justifyContent: 'center' },
   dpNavBtnDisabled: { opacity: 0.4 },
   dpRow:    { flexDirection: 'row' },
-  dpDow:    { flex: 1, textAlign: 'center', fontSize: FontSizes.xs, color: Colors.muted, paddingVertical: 6, fontWeight: '600' },
+  dpDow:    { flex: 1, textAlign: 'center', fontSize: FontSizes.xs, color: c.muted, paddingVertical: 6, fontWeight: '600' },
   dpCell:   { flex: 1, aspectRatio: 1, alignItems: 'center', justifyContent: 'center', borderRadius: 8, margin: 2 },
   dpCellSel:     { backgroundColor: 'rgba(255,122,60,0.18)' },
-  dpCellEdge:    { backgroundColor: Colors.accent },
+  dpCellEdge:    { backgroundColor: c.accent },
   dpCellDisabled:{ opacity: 0.3 },
-  dpCellText:        { fontSize: FontSizes.md, color: Colors.text, fontWeight: '600' },
+  dpCellText:        { fontSize: FontSizes.md, color: c.text, fontWeight: '600' },
   dpCellTextSel:     { color: '#fff' },
-  dpCellTextDisabled:{ color: Colors.muted2 },
-  applyBtn:        { marginTop: Spacing.md, paddingVertical: 12, borderRadius: Radius.md, backgroundColor: Colors.accent, alignItems: 'center' },
+  dpCellTextDisabled:{ color: c.muted2 },
+  applyBtn:        { marginTop: Spacing.md, paddingVertical: 12, borderRadius: Radius.md, backgroundColor: c.accent, alignItems: 'center' },
   applyBtnDisabled:{ opacity: 0.4 },
   applyBtnText:    { fontSize: FontSizes.md, fontWeight: '700', color: '#fff' },
 });

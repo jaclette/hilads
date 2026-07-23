@@ -11,7 +11,8 @@ import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createTopic, updateTopic } from '@/api/topics';
 import { ApiError } from '@/api/client';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
 
@@ -25,6 +26,9 @@ const CATEGORIES: { value: TopicCategory; icon: string }[] = [
 ];
 
 export default function CreateTopicScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router   = useRouter();
   const { t } = useTranslation('hangout');
   const { city, identity, account } = useApp();
@@ -104,7 +108,7 @@ export default function CreateTopicScreen() {
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-            <Ionicons name="chevron-back" size={20} color={Colors.text} />
+            <Ionicons name="chevron-back" size={20} color={colors.text} />
           </TouchableOpacity>
           <View style={styles.headerCenter}><Text style={styles.headerTitle}>{t('limitHeader')}</Text></View>
         </View>
@@ -127,7 +131,7 @@ export default function CreateTopicScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{editId ? t('editTitle') : t('startTitle')}</Text>
@@ -143,7 +147,7 @@ export default function CreateTopicScreen() {
           value={title}
           onChangeText={setTitle}
           placeholder={t('titlePlaceholder')}
-          placeholderTextColor={Colors.muted2}
+          placeholderTextColor={colors.muted2}
           maxLength={100}
           autoFocus
           returnKeyType="next"
@@ -171,7 +175,7 @@ export default function CreateTopicScreen() {
           disabled={!title.trim() || submitting}
         >
           {submitting
-            ? <ActivityIndicator color={Colors.white} size="small" />
+            ? <ActivityIndicator color={colors.white} size="small" />
             : <Text style={styles.submitBtnText}>{editId ? t('saveChanges') : t('startCta')}</Text>
           }
         </TouchableOpacity>
@@ -181,13 +185,13 @@ export default function CreateTopicScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   limitWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.xl, gap: 10 },
   limitEmoji: { fontSize: 44 },
-  limitTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, textAlign: 'center' },
-  limitSub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22, marginBottom: 8 },
+  limitTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center' },
+  limitSub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22, marginBottom: 8 },
 
   header: {
     flexDirection:     'row',
@@ -195,22 +199,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
     zIndex:          1,
   },
   headerCenter: { position: 'absolute', left: 0, right: 0, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  headerTitle:  { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   body:        { flex: 1 },
   bodyContent: { padding: Spacing.md, gap: Spacing.sm, paddingBottom: Spacing.xl * 2 },
@@ -220,7 +224,7 @@ const styles = StyleSheet.create({
     fontWeight:   '700',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
-    color:         Colors.muted,
+    color:         c.muted,
     marginTop:     Spacing.md,
     marginBottom:  Spacing.xs,
   },
@@ -239,32 +243,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
-    backgroundColor: Colors.bg2,
+    borderColor:     c.border,
+    backgroundColor: c.bg2,
   },
   catChipSelected: {
     borderColor:     '#60a5fa',
     backgroundColor: 'rgba(96,165,250,0.10)',
   },
   catIcon:  { fontSize: 20 },
-  catLabel: { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.muted },
+  catLabel: { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
   catLabelSelected: { color: '#60a5fa' },
 
   input: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     borderRadius:    Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 4,
     fontSize:        FontSizes.md,
-    color:           Colors.text,
+    color:           c.text,
   },
   textArea: { minHeight: 90, paddingTop: Spacing.sm + 4 },
 
   expiryNote: {
     fontSize:  FontSizes.sm,
-    color:     Colors.muted2,
+    color:     c.muted2,
     textAlign: 'center',
     marginTop: Spacing.xs,
   },
@@ -280,14 +284,14 @@ const styles = StyleSheet.create({
   geoHintText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
     textAlign:  'center',
     lineHeight: 19,
   },
 
   errorText: {
     fontSize:  FontSizes.sm,
-    color:     Colors.red,
+    color:     c.red,
     textAlign: 'center',
   },
 
@@ -300,7 +304,7 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.45 },
   submitBtnText: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '700',
     fontSize:   FontSizes.md,
   },

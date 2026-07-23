@@ -22,7 +22,8 @@ import { track } from '@/services/analytics';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import type { FeedItem, HiladsEvent, UserDTO, Challenge } from '@/types';
-import { Colors, FontSizes, Spacing, Radius, Gradients, Shadows } from '@/constants';
+import { FontSizes, Spacing, Radius, Gradients, Shadows, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { CreateSheet } from '@/components/CreateSheet';
 import { EventCard } from '@/components/EventCard';
@@ -38,6 +39,7 @@ const NOW_CHALLENGES_CAP = 5;
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 function EmptyState({ city }: { city?: string }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('now');
   return (
     <View style={styles.empty}>
@@ -59,6 +61,7 @@ function FilterEmptyState({
   userMode?:     string | null;
   onStartPulse?: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('now');
   if (filter === 'all') return <EmptyState city={city} />;
   if (filter === 'challenges') {
@@ -128,6 +131,9 @@ function applyCountCache(feedItems: FeedItem[]): FeedItem[] {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function NowScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('now');
@@ -607,7 +613,7 @@ export default function NowScreen() {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       </SafeAreaView>
     );
@@ -654,7 +660,7 @@ export default function NowScreen() {
 
       {loading && !refreshing ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -667,7 +673,7 @@ export default function NowScreen() {
         <ScrollView
           contentContainerStyle={styles.emptyScroll}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={Colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.accent} />
           }
         >
           {/* Local hero stays on top, dominant. */}
@@ -813,7 +819,7 @@ export default function NowScreen() {
           }}
           contentContainerStyle={[styles.list, { paddingBottom: bottomBarH + Spacing.sm }]}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={Colors.accent} />
+            <RefreshControl refreshing={refreshing} onRefresh={() => { readUserLocation(); load(true); }} tintColor={colors.accent} />
           }
         />
       )}
@@ -844,7 +850,7 @@ export default function NowScreen() {
               accessibilityRole="button"
             >
               <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
-              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: 'rgba(255,255,255,0.55)' }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: colors.overlayStrong }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
@@ -882,8 +888,8 @@ export default function NowScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   // Header - web: BackButton left + "Now" centered (page-header layout)
   // Title is absolutely centered so it stays centered regardless of side elements.
@@ -893,7 +899,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   // Wrapper that frames the shared AppHeader with consistent padding.
@@ -904,11 +910,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
+  headerSub:    { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
 
   // ── Filter bar ─────────────────────────────────────────────────────────────
   // ScrollView style. flexGrow:0 is critical - without it the ScrollView
@@ -917,7 +923,7 @@ const styles = StyleSheet.create({
     flexGrow:          0,
     flexShrink:        0,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   // Inner row - what was previously the filterBar's layout.
   filterBarContent: {
@@ -932,26 +938,26 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
   },
   filterPillActive: {
-    backgroundColor: Colors.accent,
-    borderColor:     Colors.accent,
+    backgroundColor: c.accent,
+    borderColor:     c.accent,
   },
   filterPillText: {
     fontSize:   FontSizes.sm,
     fontWeight: '500',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   filterPillTextActive: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '600',
   },
 
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  errorText: { fontSize: FontSizes.sm, color: Colors.red, marginBottom: Spacing.md, textAlign: 'center' },
-  retryBtn:  { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: Colors.bg3, borderRadius: Radius.full },
-  retryText: { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
+  errorText: { fontSize: FontSizes.sm, color: c.red, marginBottom: Spacing.md, textAlign: 'center' },
+  retryBtn:  { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: c.bg3, borderRadius: Radius.full },
+  retryText: { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
 
   sectionLabel: {
     paddingHorizontal: Spacing.md,
@@ -961,7 +967,7 @@ const styles = StyleSheet.create({
     fontWeight:        '700',
     letterSpacing:     1.0,
     textTransform:     'uppercase',
-    color:             Colors.muted,
+    color:             c.muted,
   },
   // Row wrapper for section headers that need a trailing element (e.g. the
   // scoring-info (i) button next to "CHALLENGES"). Keeps padding identical
@@ -1013,16 +1019,16 @@ const styles = StyleSheet.create({
     gap:               Spacing.sm,
     marginTop:         Spacing.lg,
   },
-  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'left' },
-  inspirationSub:     { fontSize: 12, fontWeight: '600', color: Colors.muted, textAlign: 'left', marginBottom: 2 },
+  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'left' },
+  inspirationSub:     { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'left', marginBottom: 2 },
   emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
+  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
   emptyBtn: {
     marginTop: Spacing.md, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 2,
-    backgroundColor: Colors.accent, borderRadius: Radius.full,
+    backgroundColor: c.accent, borderRadius: Radius.full,
   },
-  emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
+  emptyBtnText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
 
   // ── Sticky bottom action block - single-row layout ─────────────────────────
   // Absolute-positioned container pinned above the bottom tab bar. One row:
@@ -1037,7 +1043,7 @@ const styles = StyleSheet.create({
     paddingTop:        10,
     backgroundColor:   'rgba(14,14,16,0.92)',
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
   },
   bottomActionsRow: {
     flexDirection: 'row',
@@ -1060,7 +1066,7 @@ const styles = StyleSheet.create({
     marginBottom:    8,
   },
   createEventCtaText: {
-    color:      Colors.accent,
+    color:      c.accent,
     fontSize:   15,
     fontWeight: '800',
   },
@@ -1078,11 +1084,11 @@ const styles = StyleSheet.create({
   },
   hilocalCtaFlex: { flex: 1, marginBottom: 0 },   // row children: equal width, no extra gap
   hilocalCtaNow:   { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: 'rgba(255,122,60,0.45)' },
-  hilocalCtaLater: { backgroundColor: 'transparent', borderColor: 'rgba(255,255,255,0.18)' },
+  hilocalCtaLater: { backgroundColor: 'transparent', borderColor: c.overlayStrong },
   hilocalCtaText:      { fontSize: 15, fontWeight: '800' },
   hilocalCtaSub:       { fontSize: 11, fontWeight: '600', fontStyle: 'italic', marginTop: 2 },
-  hilocalCtaTextNow:   { color: Colors.accent },
-  hilocalCtaTextLater: { color: Colors.text },
+  hilocalCtaTextNow:   { color: c.accent },
+  hilocalCtaTextLater: { color: c.text },
 
   // Wide pill on the left - orange-tinted, mirrors web .upcoming-cta.
   upcomingCta: {
@@ -1099,11 +1105,11 @@ const styles = StyleSheet.create({
     minHeight:         48,  // ≥44 tap target
   },
   upcomingCtaEmoji: { fontSize: 18, lineHeight: 22 },
-  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.accent },
+  upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.accent },
 
   // Discreet archive entry - muted, left-aligned under the upcoming pill.
   pastLink:     { alignSelf: 'flex-start', paddingTop: 6, paddingBottom: 2 },
-  pastLinkText: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+  pastLinkText: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
 
   // Circular + button on the right - opens CreateSheet picker. Background is a
   // 135° orange gradient (LinearGradient absolute child); shadow uses the

@@ -18,7 +18,8 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
 import type { HiladsEvent } from '@/types';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // Icon map - mirrors the web's EVENT_ICONS in apps/web/src/cityMeta.js
 const EVENT_ICONS: Record<string, string> = {
@@ -44,6 +45,9 @@ interface Props {
 }
 
 export function EventPill({ event, onPress }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('common');
   const icon   = EVENT_ICONS[event.event_type] ?? '📌';
   const now    = Date.now() / 1000;
@@ -70,7 +74,7 @@ export function EventPill({ event, onPress }: Props) {
           ) : null}
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
     </TouchableOpacity>
   );
 }
@@ -79,14 +83,14 @@ export function EventPill({ event, onPress }: Props) {
 // doesn't have to duplicate the map.
 export { EVENT_ICONS };
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   eventPill: {
     flexDirection:     'row',
     alignItems:        'center',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     padding:           Spacing.md,
     gap:               10,
   },
@@ -95,15 +99,15 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   eventMeta: {
     flexDirection: 'row',
     alignItems:    'center',
     gap:           6,
   },
-  eventTime:     { fontSize: FontSizes.xs, color: Colors.muted },
-  eventLocation: { fontSize: FontSizes.xs, color: Colors.muted, flexShrink: 1 },
+  eventTime:     { fontSize: FontSizes.xs, color: c.muted },
+  eventLocation: { fontSize: FontSizes.xs, color: c.muted, flexShrink: 1 },
   liveBadge: {
     backgroundColor:   'rgba(61,220,132,0.12)',
     borderRadius:      Radius.full,
@@ -113,11 +117,11 @@ const styles = StyleSheet.create({
   liveBadgeText: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.green,
+    color:         c.green,
     letterSpacing: 0.4,
   },
   pastBadge: {
-    backgroundColor:   'rgba(255,255,255,0.07)',
+    backgroundColor:   c.overlay,
     borderRadius:      Radius.full,
     paddingHorizontal: 6,
     paddingVertical:   2,
@@ -125,7 +129,7 @@ const styles = StyleSheet.create({
   pastBadgeText: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.4,
   },
 });

@@ -24,7 +24,8 @@ import * as Clipboard from 'expo-clipboard';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius, buildEventUrl } from '@/constants';
+import { FontSizes, Spacing, Radius, buildEventUrl, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import { shareLink } from '@/lib/shareLink';
 import { ShareToCityPill } from '@/components/ShareToCityPill';
@@ -99,6 +100,8 @@ function toMs(ts: number | string | undefined): number {
 // ── Participants strip ────────────────────────────────────────────────────────
 
 function ParticipantsStrip({ participants, onPress }: { participants: EventParticipant[]; onPress: () => void }) {
+  const stripStyles = useThemedStyles(makeStripStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('event');
   if (participants.length === 0) return null;
 
@@ -107,7 +110,7 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
       <AttendeeAvatars
         preview={participants.map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl }))}
         total={participants.length}
-        borderColor={Colors.bg}
+        borderColor={colors.bg}
       />
       <Text style={stripStyles.label}>
         {participants.length === 1
@@ -122,6 +125,9 @@ function ParticipantsStrip({ participants, onPress }: { participants: EventParti
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function EventDetailScreen() {
+  const sheetStyles = useThemedStyles(makeSheetStyles);
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const router = useRouter();
   const { t } = useTranslation('event');
   const { id: routeParam, autojoin } = useLocalSearchParams<{ id: string; autojoin?: string }>();
@@ -364,12 +370,12 @@ export default function EventDetailScreen() {
           onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
           activeOpacity={0.75}
         >
-          <Ionicons name="chevron-back" size={18} color={Colors.text} />
+          <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>{cityName}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.shareBtn} onPress={handleShare} activeOpacity={0.75}>
-          <Ionicons name="share-outline" size={16} color={Colors.accent} />
+          <Ionicons name="share-outline" size={16} color={colors.accent} />
           <Text style={styles.shareBtnText}>{t('bringPeople')}</Text>
         </TouchableOpacity>
       </View>
@@ -377,7 +383,7 @@ export default function EventDetailScreen() {
       {/* ── Event info block - web: sits at top, no card, just padding + border ── */}
       {eventLoading ? (
         <View style={styles.eventBlockLoading}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : eventRemoved ? (
         // 410 Gone - the event was deleted. Friendly message instead of the
@@ -418,7 +424,7 @@ export default function EventDetailScreen() {
                 activeOpacity={0.8}
               >
                 {toggling ? (
-                  <ActivityIndicator size="small" color={Colors.accent} />
+                  <ActivityIndicator size="small" color={colors.accent} />
                 ) : (
                   <Text style={[styles.joinBtnText, event.is_participating && styles.joinBtnTextActive]}>
                     {event.is_participating ? t('joined') : t('join')}
@@ -561,7 +567,7 @@ export default function EventDetailScreen() {
             ListFooterComponent={
               loadingOlder ? (
                 <View style={styles.loadingOlderWrap}>
-                  <ActivityIndicator size="small" color={Colors.muted} />
+                  <ActivityIndicator size="small" color={colors.muted} />
                 </View>
               ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
                 <View style={styles.loadingOlderWrap}>
@@ -572,7 +578,7 @@ export default function EventDetailScreen() {
             ListHeaderComponent={
               msgsLoading ? (
                 <View style={styles.msgsLoading}>
-                  <ActivityIndicator color={Colors.muted} />
+                  <ActivityIndicator color={colors.muted} />
                 </View>
               ) : null
             }
@@ -752,8 +758,8 @@ export default function EventDetailScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
   // ── Nav bar ───────────────────────────────────────────────────────────────
@@ -774,15 +780,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   11,
     borderRadius:      14,
-    backgroundColor:   'rgba(255,255,255,0.08)',
+    backgroundColor:   c.overlay,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
     maxWidth:          220,
   },
   backPillText: {
     fontSize:      FontSizes.md,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.2,
   },
 
@@ -800,7 +806,7 @@ const styles = StyleSheet.create({
   shareBtnText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
   },
 
   // Web: share button - same dark pill style (kept for reference)
@@ -808,9 +814,9 @@ const styles = StyleSheet.create({
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -822,7 +828,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop:        8,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     gap:               6,
   },
   eventBlockLoading: {
@@ -830,7 +836,7 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.lg,
     alignItems:        'center',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
 
   // Title row - title fills flex (single-line ellipsis), Join button on right
@@ -846,7 +852,7 @@ const styles = StyleSheet.create({
     flex:          1,
     fontSize:      FontSizes.lg,   // 20
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
     lineHeight:    26,
     minWidth:      0,              // ensures ellipsis kicks in inside the row
@@ -858,7 +864,7 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     borderRadius:      999,
     borderWidth:       1.5,
-    borderColor:       Colors.accent,
+    borderColor:       c.accent,
     backgroundColor:   'transparent',
     minWidth:          74,         // wide enough for "Joined ✓" so layout doesn't shift
     minHeight:         32,         // ≥32 tap target (touchable area extends)
@@ -867,42 +873,42 @@ const styles = StyleSheet.create({
     flexShrink:        0,
   },
   joinBtnActive: {
-    backgroundColor: Colors.accent,
-    borderColor:     Colors.accent,
+    backgroundColor: c.accent,
+    borderColor:     c.accent,
   },
   joinBtnText: {
     fontSize:   13,
     fontWeight: '700',
-    color:      Colors.accent,
+    color:      c.accent,
     letterSpacing: 0.1,
   },
   joinBtnTextActive: {
-    color: Colors.white,
+    color: c.white,
   },
   // Host-only "Edit event" CTA - violet to distinguish from the orange Join
   // button (matches web .event-join-btn--edit).
   editBtn: {
-    borderColor:     Colors.violet,
+    borderColor:     c.violet,
   },
   editBtnText: {
-    color:    Colors.violet,
+    color:    c.violet,
     fontSize: 13,
   },
 
   // Time + participants - single tight muted line
   eventMeta: {
     fontSize:   13,
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 18,
   },
 
   // "X going" - tappable inline span
   goingLink: {
-    color:               Colors.text,
+    color:               c.text,
     fontWeight:          '600',
     textDecorationLine:  'underline',
     textDecorationStyle: 'dashed',
-    textDecorationColor: 'rgba(255,255,255,0.3)',
+    textDecorationColor: c.overlayStrong,
   },
 
   // Address - orange accent, single-line ellipsis
@@ -912,31 +918,31 @@ const styles = StyleSheet.create({
   eventLocation: {
     fontSize:   13,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
     lineHeight: 18,
   },
   eventHost: {
     fontSize:   12,
     fontWeight: '500',
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 16,
   },
 
-  errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
-  errorText:       { color: Colors.red, fontSize: FontSizes.sm },
+  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
+  errorText:       { color: c.red, fontSize: FontSizes.sm },
 
   listContent: { paddingVertical: Spacing.sm },
   msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
+  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
   emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  emptyText:   { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center' },
+  emptyText:   { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center' },
 });
 
 // ── Participants strip styles ─────────────────────────────────────────────────
 
-const stripStyles = StyleSheet.create({
+const makeStripStyles = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -944,17 +950,17 @@ const stripStyles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   label: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
     flex:       1,
   },
   seeAll: {
     fontSize:   FontSizes.xs,
-    color:      Colors.accent,
+    color:      c.accent,
     fontWeight: '600',
     flexShrink: 0,
   },
@@ -962,28 +968,28 @@ const stripStyles = StyleSheet.create({
 
 // ── Going sheet styles ────────────────────────────────────────────────────────
 
-const sheetStyles = StyleSheet.create({
+const makeSheetStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: c.scrim,
   },
   sheet: {
     position:        'absolute',
     bottom:          0,
     left:            0,
     right:           0,
-    backgroundColor: '#161210',
+    backgroundColor: c.bg2,
     borderTopLeftRadius:  24,
     borderTopRightRadius: 24,
     borderTopWidth:  1,
-    borderTopColor:  'rgba(255,255,255,0.08)',
+    borderTopColor:  c.overlay,
     maxHeight:       '72%',
   },
   handle: {
     width:           40,
     height:          4,
     borderRadius:    2,
-    backgroundColor: 'rgba(255,255,255,0.18)',
+    backgroundColor: c.overlayStrong,
     alignSelf:       'center',
     marginTop:       10,
     marginBottom:    2,
@@ -995,23 +1001,23 @@ const sheetStyles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   14,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   title: {
     fontSize:      FontSizes.sm,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
   },
   closeBtn: {
     fontSize: FontSizes.md,
-    color:    Colors.muted,
+    color:    c.muted,
   },
   list:        { flex: 1 },
   listContent: { padding: Spacing.md, gap: 6 },
   emptyText: {
-    color:      Colors.muted,
+    color:      c.muted,
     fontSize:   FontSizes.sm,
     textAlign:  'center',
     paddingVertical: Spacing.lg,
@@ -1021,9 +1027,9 @@ const sheetStyles = StyleSheet.create({
     alignItems:     'center',
     gap:            14,
     padding:        14,
-    backgroundColor: 'rgba(255,255,255,0.03)',
+    backgroundColor: c.overlayWeak,
     borderWidth:    1,
-    borderColor:    'rgba(255,255,255,0.05)',
+    borderColor:    c.overlayWeak,
     borderRadius:   Radius.lg,
   },
   avatar: {
@@ -1043,7 +1049,7 @@ const sheetStyles = StyleSheet.create({
   name: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   badge: {
     alignSelf:         'flex-start',

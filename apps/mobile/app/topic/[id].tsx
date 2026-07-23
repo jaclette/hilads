@@ -28,7 +28,8 @@ import * as Clipboard from 'expo-clipboard';
 import i18n from '@/i18n';
 import { isSameDay, formatDateLabel } from '@/lib/messageTime';
 import { formatExpiresIn } from '@/lib/expiry';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Message, Topic, UserDTO } from '@/types';
 
 const CATEGORY_ICONS: Record<string, string> = {
@@ -36,6 +37,9 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 export default function TopicChatScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('hangout');
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -277,7 +281,7 @@ export default function TopicChatScreen() {
       {/* Header - back | [icon + title] | share */}
       <View style={styles.nav}>
         <TouchableOpacity style={styles.backPill} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={18} color={Colors.text} />
+          <Ionicons name="chevron-back" size={18} color={colors.text} />
           <Text style={styles.backPillText} numberOfLines={1}>{t('back', { ns: 'common' })}</Text>
         </TouchableOpacity>
 
@@ -294,7 +298,7 @@ export default function TopicChatScreen() {
           {shared ? (
             <Text style={styles.shareBtnCheck}>✓</Text>
           ) : (
-            <Ionicons name="share-outline" size={20} color={Colors.text} />
+            <Ionicons name="share-outline" size={20} color={colors.text} />
           )}
         </TouchableOpacity>
       </View>
@@ -302,7 +306,7 @@ export default function TopicChatScreen() {
       {/* Topic info block - description + expiry only (title is in header) */}
       {topicLoading ? (
         <View style={styles.infoBlockLoading}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : topic ? (
         (topic.description || topic.message_count >= 0) ? (
@@ -314,12 +318,12 @@ export default function TopicChatScreen() {
             {isOwner && (
               <View style={styles.ownerRow}>
                 <TouchableOpacity style={styles.ownerBtn} onPress={handleEdit} activeOpacity={0.8}>
-                  <Ionicons name="create-outline" size={15} color={Colors.text} />
+                  <Ionicons name="create-outline" size={15} color={colors.text} />
                   <Text style={styles.ownerBtnText}>{t('edit')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.ownerBtn, styles.ownerBtnDanger]} onPress={handleDelete} activeOpacity={0.8}>
-                  <Ionicons name="trash-outline" size={15} color={Colors.red} />
-                  <Text style={[styles.ownerBtnText, { color: Colors.red }]}>{t('delete')}</Text>
+                  <Ionicons name="trash-outline" size={15} color={colors.red} />
+                  <Text style={[styles.ownerBtnText, { color: colors.red }]}>{t('delete')}</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -340,7 +344,7 @@ export default function TopicChatScreen() {
           <AttendeeAvatars
             preview={participants.slice(0, 5).map(p => ({ id: p.id, displayName: p.displayName, thumbAvatarUrl: p.thumbAvatarUrl ?? p.avatarUrl }))}
             total={participants.length}
-            borderColor={Colors.bg}
+            borderColor={colors.bg}
           />
           <Text style={styles.membersLabel}>
             {participants.length === 1 ? t('oneIn', { name: participants[0].displayName }) : t('manyIn', { count: participants.length })}
@@ -421,7 +425,7 @@ export default function TopicChatScreen() {
           ListFooterComponent={
             loadingOlder ? (
               <View style={styles.loadingOlderWrap}>
-                <ActivityIndicator size="small" color={Colors.muted} />
+                <ActivityIndicator size="small" color={colors.muted} />
               </View>
             ) : (!hasMore && !msgsLoading && messages.length > 0) ? (
               <View style={styles.loadingOlderWrap}>
@@ -432,7 +436,7 @@ export default function TopicChatScreen() {
           ListHeaderComponent={
             msgsLoading ? (
               <View style={styles.msgsLoading}>
-                <ActivityIndicator color={Colors.muted} />
+                <ActivityIndicator color={colors.muted} />
               </View>
             ) : null
           }
@@ -519,8 +523,8 @@ export default function TopicChatScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
   nav: {
@@ -537,15 +541,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   11,
     borderRadius:      14,
-    backgroundColor:   'rgba(255,255,255,0.08)',
+    backgroundColor:   c.overlay,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
     flexShrink:        0,
   },
   backPillText: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   navCenter: {
     flex:           1,
@@ -558,7 +562,7 @@ const styles = StyleSheet.create({
   navTitle: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
     flexShrink: 1,
     textAlign:  'center',
     lineHeight: 22,
@@ -570,9 +574,9 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
     borderRadius:    22,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
   },
   shareBtnCheck: {
     fontSize:   18,
@@ -593,35 +597,35 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.lg,
     alignItems:        'center',
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
-  infoDesc:   { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  infoDesc:   { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
   infoExpiry: { fontSize: FontSizes.xs, color: '#60a5fa', fontWeight: '600' },
   ownerRow:   { flexDirection: 'row', gap: 8, marginTop: 8 },
   ownerBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 5,
     paddingHorizontal: 12, paddingVertical: 7, borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: c.overlay, borderWidth: 1, borderColor: c.overlayStrong,
   },
   ownerBtnDanger:  { borderColor: 'rgba(248,113,113,0.3)', backgroundColor: 'rgba(248,113,113,0.08)' },
-  ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
+  ownerBtnText:    { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
 
   membersStrip: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: Spacing.md, paddingVertical: 10,
-    borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomWidth: 1, borderBottomColor: c.overlay,
   },
-  membersLabel:  { flex: 1, fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
-  membersSeeAll: { fontSize: FontSizes.sm, color: Colors.accent, fontWeight: '700' },
+  membersLabel:  { flex: 1, fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
+  membersSeeAll: { fontSize: FontSizes.sm, color: c.accent, fontWeight: '700' },
   joinBtn: {
     marginTop:       10,
     alignSelf:       'flex-start',
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderRadius:    Radius.full,
     paddingHorizontal: 16,
     paddingVertical:   8,
   },
-  joinBtnDone: { backgroundColor: 'rgba(255,255,255,0.08)' },
+  joinBtnDone: { backgroundColor: c.overlay },
   joinBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
 
   gatedWrap: {
@@ -632,24 +636,24 @@ const styles = StyleSheet.create({
     gap:               10,
   },
   gatedEmoji: { fontSize: 44 },
-  gatedTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
-  gatedSub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  gatedTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
+  gatedSub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
   gatedBtn: {
     marginTop:         8,
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     borderRadius:      Radius.full,
     paddingHorizontal: 20,
     paddingVertical:   11,
   },
 
-  errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
-  errorText:       { color: Colors.red, fontSize: FontSizes.sm, textAlign: 'center' },
+  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
+  errorText:       { color: c.red, fontSize: FontSizes.sm, textAlign: 'center' },
 
   listContent: { paddingVertical: Spacing.sm },
   msgsLoading: { paddingVertical: Spacing.md, alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
+  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
   emptyWrap:   { paddingHorizontal: Spacing.md, paddingVertical: Spacing.lg, alignItems: 'center' },
-  emptyText:   { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center' },
+  emptyText:   { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center' },
 });

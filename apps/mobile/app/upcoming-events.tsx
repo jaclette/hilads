@@ -11,7 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { fetchUpcomingEvents, fetchCalendarSummary } from '@/api/events';
 import { track } from '@/services/analytics';
 import type { HiladsEvent } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { EventCard } from '@/components/EventCard';
 import { MarqueeText } from '@/components/MarqueeText';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -61,6 +62,8 @@ function DayCell({
   onPress: () => void;
   reduceMotion: boolean;
 }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const today    = startOfDay(new Date());
   const isToday  = isSameDay(date, today);
   const dowLabel = date.toLocaleDateString(i18n.language, { weekday: 'short' });
@@ -78,7 +81,7 @@ function DayCell({
         text={label}
         textStyle={[styles.dayCellDow, isSelected && styles.dayCellDowSelected]}
         style={styles.dayCellDowMarquee}
-        fadeColor={isSelected ? Colors.accent : Colors.bg}
+        fadeColor={isSelected ? colors.accent : colors.bg}
         fadeWidth={10}
         center
         reduceMotion={reduceMotion}
@@ -106,6 +109,8 @@ function MonthModal({
   onPick: (d: Date) => void;
   onClose: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const [view, setView] = useState<Date>(() =>
     new Date(visibleMonth.getFullYear(), visibleMonth.getMonth(), 1),
   );
@@ -136,7 +141,7 @@ function MonthModal({
               disabled={prevDisabled}
               style={[styles.dpNavBtn, prevDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-back" size={20} color={prevDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-back" size={20} color={prevDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
             <Text style={styles.dpTitle}>{monthLbl}</Text>
             <TouchableOpacity
@@ -144,7 +149,7 @@ function MonthModal({
               disabled={nextDisabled}
               style={[styles.dpNavBtn, nextDisabled && styles.dpNavBtnDisabled]}
             >
-              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? Colors.muted2 : Colors.text} />
+              <Ionicons name="chevron-forward" size={20} color={nextDisabled ? colors.muted2 : colors.text} />
             </TouchableOpacity>
           </View>
 
@@ -199,6 +204,9 @@ function MonthModal({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function UpcomingEventsScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('upcoming');
   const reduceMotion = useReducedMotion();
@@ -280,7 +288,7 @@ export default function UpcomingEventsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.75}>
-          <Ionicons name="chevron-back" size={20} color={Colors.text} />
+          <Ionicons name="chevron-back" size={20} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
@@ -290,7 +298,7 @@ export default function UpcomingEventsScreen() {
           onPress={() => setShowMonth(true)}
           activeOpacity={0.75}
         >
-          <Ionicons name="calendar-outline" size={20} color={Colors.text} />
+          <Ionicons name="calendar-outline" size={20} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -318,7 +326,7 @@ export default function UpcomingEventsScreen() {
       {/* List for the selected day */}
       {loading && !refreshing ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -350,7 +358,7 @@ export default function UpcomingEventsScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => loadDay(selected, true)}
-              tintColor={Colors.accent}
+              tintColor={colors.accent}
             />
           }
         />
@@ -371,8 +379,8 @@ export default function UpcomingEventsScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -380,16 +388,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -399,9 +407,9 @@ const styles = StyleSheet.create({
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
     marginLeft:      'auto',
@@ -414,14 +422,14 @@ const styles = StyleSheet.create({
     right:     0,
     alignItems: 'center',
   },
-  headerTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
+  headerTitle: { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
 
   // ── Day strip ──────────────────────────────────────────────────────────────
 
   strip: {
     flexGrow:        0,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   stripContent: {
     paddingHorizontal: Spacing.md,
@@ -432,37 +440,37 @@ const styles = StyleSheet.create({
     width:           56,
     paddingVertical: 10,
     borderRadius:    Radius.md,
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.07)',
+    borderColor:     c.overlay,
     alignItems:      'center',
   },
   dayCellSelected: {
-    backgroundColor: Colors.accent,
-    borderColor:     Colors.accent,
+    backgroundColor: c.accent,
+    borderColor:     c.accent,
   },
-  dayCellDow: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted, letterSpacing: 0.3 },
+  dayCellDow: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted, letterSpacing: 0.3 },
   dayCellDowSelected: { color: '#fff' },
   // Fills the cell width so MarqueeText can detect overflow and scroll the label.
   dayCellDowMarquee: { alignSelf: 'stretch' },
-  dayCellNum: { fontSize: 20, fontWeight: '800', color: Colors.text, marginTop: 2 },
+  dayCellNum: { fontSize: 20, fontWeight: '800', color: c.text, marginTop: 2 },
   dayCellNumSelected: { color: '#fff' },
   dayCellDotSlot: { height: 8, marginTop: 4, alignItems: 'center', justifyContent: 'center' },
   dayCellDot: {
     width: 5, height: 5, borderRadius: 3,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
   dayCellDotSelected: { backgroundColor: '#fff' },
 
   // ── List ───────────────────────────────────────────────────────────────────
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
-  errorText:  { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center' },
-  retryBtn:   { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: Colors.bg3, borderRadius: Radius.full },
-  retryText:  { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
+  errorText:  { fontSize: FontSizes.sm, color: c.red, textAlign: 'center' },
+  retryBtn:   { paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm, backgroundColor: c.bg3, borderRadius: Radius.full },
+  retryText:  { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
+  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
 
   list: { padding: Spacing.md, paddingBottom: 40 },
 
@@ -470,7 +478,7 @@ const styles = StyleSheet.create({
 
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: c.scrim,
     justifyContent:  'center',
     alignItems:      'center',
     padding:         Spacing.lg,
@@ -478,11 +486,11 @@ const styles = StyleSheet.create({
   monthBox: {
     width:           '100%',
     maxWidth:        360,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     padding:         Spacing.md,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
   },
   dpHeader: {
     flexDirection:  'row',
@@ -490,12 +498,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom:   Spacing.sm,
   },
-  dpTitle:           { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  dpTitle:           { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   dpNavBtn:          {
     width:           36,
     height:          36,
     borderRadius:    10,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: c.overlayWeak,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -505,7 +513,7 @@ const styles = StyleSheet.create({
     flex:        1,
     textAlign:   'center',
     fontSize:    FontSizes.xs,
-    color:       Colors.muted,
+    color:       c.muted,
     paddingVertical: 6,
     fontWeight:  '600',
   },
@@ -517,26 +525,26 @@ const styles = StyleSheet.create({
     borderRadius:   8,
     margin:         2,
   },
-  dpCellSelected:    { backgroundColor: Colors.accent },
+  dpCellSelected:    { backgroundColor: c.accent },
   dpCellDisabled:    { opacity: 0.3 },
-  dpCellText:        { fontSize: FontSizes.md, color: Colors.text, fontWeight: '600' },
+  dpCellText:        { fontSize: FontSizes.md, color: c.text, fontWeight: '600' },
   dpCellTextSelected:{ color: '#fff' },
-  dpCellTextDisabled:{ color: Colors.muted2 },
+  dpCellTextDisabled:{ color: c.muted2 },
   dpDot: {
     position:        'absolute',
     bottom:          4,
     width:           4,
     height:          4,
     borderRadius:    2,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
   dpDotSelected:     { backgroundColor: '#fff' },
   pickerDone: {
     marginTop:       Spacing.md,
     paddingVertical: 10,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     alignItems:      'center',
   },
-  pickerDoneText:    { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  pickerDoneText:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
 });
