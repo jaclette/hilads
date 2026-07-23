@@ -9,7 +9,6 @@ import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
 import { OpenChallengeSlot } from '@/components/OpenChallengeSlot';
 import { RankBadge } from '@/components/RankBadge';
-import { MarqueeText } from '@/components/MarqueeText';
 
 /**
  * Versus-layout challenge card. Replaces the previous flat ChallengeCard
@@ -186,13 +185,9 @@ export function ChallengeVersusCard({
           <View style={styles.groupHeaderText}>
             <View style={styles.titleRow}>
               <Text style={styles.titleEmoji}>{typeIcon}</Text>
-              <MarqueeText
-                text={challenge.title}
-                textStyle={styles.title}
-                style={styles.titleMarquee}
-                fadeColor={colors.bg2}
-                active={animated}
-              />
+              <Text style={[styles.title, styles.titleMarquee]} numberOfLines={1} ellipsizeMode="tail">
+                {challenge.title}
+              </Text>
             </View>
             {groupSubtitle ? (
               <Text style={styles.groupSubtitle} numberOfLines={1}>{groupSubtitle}</Text>
@@ -362,13 +357,9 @@ export function ChallengeVersusCard({
           don't burn CPU on rows the user can't see. */}
       <View style={styles.titleRow}>
         <Text style={styles.titleEmoji}>{typeIcon}</Text>
-        <MarqueeText
-          text={challenge.title}
-          textStyle={styles.title}
-          style={styles.titleMarquee}
-          fadeColor={colors.bg2}
-          active={animated}
-        />
+        <Text style={[styles.title, styles.titleMarquee]} numberOfLines={1} ellipsizeMode="tail">
+          {challenge.title}
+        </Text>
       </View>
 
       {/* "by {name}" line - null for pure-guest challenges. The avatar tap

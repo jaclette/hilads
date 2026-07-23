@@ -456,10 +456,6 @@ const makeRoleStyles = (c: ThemeColors) => StyleSheet.create({
 
 // ── Vibe emoji lookup ─────────────────────────────────────────────────────────
 
-const VIBE_EMOJI: Record<string, string> = {
-  party: '🔥', board_games: '🎲', coffee: '☕', music: '🎧', food: '🍜', chill: '🧘',
-};
-
 const MODE_EMOJI: Record<string, string> = {
   local: '🌍', exploring: '🧭',
 };
@@ -539,9 +535,6 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
           {MODE_EMOJI[m]} {t(`mode.${m}.label`)}
         </Text>
       ) : null; })()}
-      {vibe && VIBE_EMOJI[vibe] && (
-        <Text style={styles.vibeLabel}>{VIBE_EMOJI[vibe]}</Text>
-      )}
       {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
       {roleBadge && (
         <View style={[
@@ -1412,7 +1405,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // ── .msg-author ───────────────────────────────────────────────────────────
   author:    { fontSize: 13, fontWeight: '700', opacity: 0.9 },
   modeLabel:          { fontSize: FontSizes.xs, fontWeight: '600' },
-  vibeLabel:          { fontSize: 13, opacity: 0.55 },
   modeLabelLocal:     { color: '#FF7A3C', opacity: 0.85 },
   modeLabelExploring: { color: '#60a5fa', opacity: 0.85 },
 

@@ -5506,9 +5506,6 @@ export default function App() {
                       {channelScope === 'world'
                         ? (() => { const cc = item.country || (isMine ? cityCountry : null); return cc ? <span className="msg-flag">{cityFlag(cc)}</span> : null })()
                         : (() => { const m = item.mode || (isMine ? account?.mode : null) || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
-                      {item.vibe && VIBE_META[item.vibe] && (
-                        <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
-                      )}
                       {item.contextBadge?.key === 'host' && (
                         <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                       )}

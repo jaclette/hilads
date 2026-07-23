@@ -6894,7 +6894,7 @@ img.pub-profile-avatar {
    so the marquee only clips the title text, not the icon. */
 .er-title-emoji { flex: 0 0 auto; }
 /* Marquee clip window - takes the remaining row width inside .er-title. */
-.er-title-marquee { flex: 1 1 auto; min-width: 0; }
+.er-title-marquee { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .er-going {
   font-size: 0.72rem;

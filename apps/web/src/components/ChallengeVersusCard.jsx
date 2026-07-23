@@ -7,7 +7,6 @@ import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
 import { fetchChallengeParticipants } from '../api'
 import { avatarColors } from '../lib/avatarColors'
-import { Marquee } from './Marquee'
 
 /**
  * Versus-layout challenge card. Web mirror of the mobile
@@ -179,7 +178,7 @@ export default function ChallengeVersusCard({
           <div className="challenge-group-headtext">
             <span className="er-title">
               <span className="er-title-emoji">{typeIcon}</span>
-              <Marquee text={c.title} className="er-title-marquee" fadeColor="#161210" />
+              <span className="er-title-marquee">{c.title}</span>
             </span>
             {groupSubtitle ? <span className="challenge-group-subtitle">{groupSubtitle}</span> : null}
           </div>
@@ -430,7 +429,7 @@ export default function ChallengeVersusCard({
       <div className="er-header">
         <span className="er-title">
           <span className="er-title-emoji">{typeIcon}</span>
-          <Marquee text={c.title} className="er-title-marquee" fadeColor="#161210" />
+          <span className="er-title-marquee">{c.title}</span>
         </span>
         <span className="er-going er-going--challenge">{t(`typeBadge.${c.challenge_type}`)}</span>
       </div>

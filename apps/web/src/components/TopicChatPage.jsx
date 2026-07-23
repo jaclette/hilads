@@ -624,9 +624,6 @@ export default function TopicChatPage({ topic, guest, nickname, account, onBack,
                   )}
                   <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                   {(() => { const m = item.mode || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`modes.${m}`)}</span> : null; })()}
-                  {item.vibe && VIBE_META[item.vibe] && (
-                    <span className="msg-vibe">{VIBE_META[item.vibe].emoji}</span>
-                  )}
                   {item.contextBadge?.key === 'host' && (
                     <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                   )}
