@@ -242,10 +242,12 @@ class MessageRepository
             $guestIds    = array_values(array_unique(array_column($needsResolution, 'guest_id')));
             $in          = implode(',', array_fill(0, count($guestIds), '?'));
             $ustmt       = Database::pdo()->prepare(
-                "SELECT id, guest_id FROM users WHERE guest_id IN ($in)"
+                "SELECT id, guest_id, display_name FROM users WHERE guest_id IN ($in)"
             );
             $ustmt->execute($guestIds);
-            $guestToUser = array_column($ustmt->fetchAll(), 'id', 'guest_id');
+            $urows       = $ustmt->fetchAll();
+            $guestToUser = array_column($urows, 'id', 'guest_id');
+            $guestToName = array_column($urows, 'display_name', 'guest_id');
 
             foreach ($rows as &$row) {
                 if (
@@ -255,6 +257,13 @@ class MessageRepository
                     && isset($guestToUser[$row['guest_id']])
                 ) {
                     $row['user_id'] = $guestToUser[$row['guest_id']];
+                    // Also surface the account's CURRENT display name. Without this a
+                    // message the user sent while still a guest keeps the old guest
+                    // nickname even though its avatar (resolved client-side via the
+                    // now-linked user_id) is the account's - the mismatch users see.
+                    if (!empty($guestToName[$row['guest_id']])) {
+                        $row['nickname'] = $guestToName[$row['guest_id']];
+                    }
                 }
             }
             unset($row);

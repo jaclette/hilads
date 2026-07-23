@@ -235,6 +235,7 @@ class AuthService
         // check query in ownFields(), saving one full DB round-trip per /me call.
         $stmt = Database::pdo()->prepare("
             SELECT u.*,
+                   s.expires_at AS _sess_expires,
                    EXISTS(
                        SELECT 1 FROM user_city_roles
                        WHERE user_id = u.id AND role = 'ambassador' LIMIT 1
@@ -248,6 +249,20 @@ class AuthService
             $stmt->execute([$token]);
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
             if ($row) {
+                // Sliding-window refresh. Sessions are a hard 30-day window from
+                // login and were NEVER extended, so even a daily-active user got
+                // silently logged out a month after signing in (looks like a
+                // "mass logout" when a cohort logged in around the same time).
+                // Bump the expiry back to 30 days whenever a live session has
+                // < 23 days left → ~one write per active user per week, not per
+                // request. _sess_expires is filtered out of the API response by
+                // ownFields (whitelist), so it never leaks to the client.
+                if (isset($row['_sess_expires'])
+                    && strtotime((string) $row['_sess_expires']) < time() + 23 * 86400) {
+                    Database::pdo()
+                        ->prepare("UPDATE user_sessions SET expires_at = now() + INTERVAL '30 days' WHERE id = ?")
+                        ->execute([$token]);
+                }
                 self::$cached = $row;
                 return self::$cached;
             }
