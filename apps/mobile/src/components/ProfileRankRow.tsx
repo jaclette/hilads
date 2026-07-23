@@ -3,7 +3,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { RankBadge } from './RankBadge';
 import { countryToFlag } from '../lib/countryFlag';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import type { MonthlyRank } from '@/types';
 
 /**
@@ -33,6 +34,7 @@ export function ProfileRankRow({
   cityName?: string | null;
   cityCountry?: string | null;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const router = useRouter();
 
@@ -95,12 +97,12 @@ export function ProfileRankRow({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: {
     marginTop:        12,
     paddingHorizontal: 16,
     paddingVertical:   10,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      12,
     gap:               6,
   },
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
   },
   line: {
     flex:     1,
-    color:    Colors.text,
+    color:    c.text,
     fontSize: 14,
     fontWeight: '600',
   },

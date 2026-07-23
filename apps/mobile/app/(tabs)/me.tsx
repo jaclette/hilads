@@ -40,7 +40,8 @@ import { localizeCityName } from '@/i18n/cityName';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
 import { socket } from '@/lib/socket';
 import type { UserVibe } from '@/api/users';
-import { Colors, FontSizes, Spacing, Radius, APP_VERSION } from '@/constants';
+import { FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { HiladsEvent, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
@@ -105,16 +106,18 @@ function cityFlag(countryCode?: string): string {
 // ── Badge helpers ─────────────────────────────────────────────────────────────
 
 const ME_BADGE_BG: Record<string, object> = {
-  ghost:   { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
+  ghost:   { backgroundColor: 'rgba(128,128,128,0.14)', borderColor: 'rgba(128,128,128,0.24)' },
   fresh:   { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  regular: {
+  backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
   local:   { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
   host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
 const ME_BADGE_COLOR: Record<string, object> = {
   // ghost previously hardcoded '#666' (~3.4:1) - failed WCAG AA on the dark
   // bg. Routed through the theme token so future contrast fixes propagate.
-  ghost: { color: Colors.muted2 }, fresh: { color: '#4ade80' },
+  ghost: {
+  color: '#8a8a8a' }, fresh: { color: '#4ade80' },
   regular: { color: '#60a5fa' }, local: { color: '#34d399' }, host: { color: '#fbbf24' },
 };
 function meBadgeBg(key: string): object    { return ME_BADGE_BG[key]    ?? ME_BADGE_BG.regular; }
@@ -123,6 +126,9 @@ function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BA
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function MeScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router  = useRouter();
   const { t }   = useTranslation('me');
   const insets  = useSafeAreaInsets();
@@ -625,12 +631,12 @@ export default function MeScreen() {
                     value={username}
                     onChangeText={handleUsernameChange}
                     placeholder={t('usernamePlaceholder')}
-                    placeholderTextColor={Colors.muted2}
+                    placeholderTextColor={colors.muted2}
                     autoCapitalize="none"
                     autoCorrect={false}
                     maxLength={20}
                   />
-                  {uStatus === 'checking' && <ActivityIndicator size="small" color={Colors.muted} />}
+                  {uStatus === 'checking' && <ActivityIndicator size="small" color={colors.muted} />}
                   {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
                   {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
                 </View>
@@ -648,7 +654,7 @@ export default function MeScreen() {
                   value={aboutMe}
                   onChangeText={setAboutMe}
                   placeholder={t('aboutPlaceholder')}
-                  placeholderTextColor={Colors.muted2}
+                  placeholderTextColor={colors.muted2}
                   maxLength={150}
                   multiline
                   numberOfLines={2}
@@ -680,14 +686,14 @@ export default function MeScreen() {
                     onPress={() => setCityPickerOpen(true)}
                     activeOpacity={0.7}
                   >
-                    <Text style={{ color: city?.name ? Colors.text : Colors.muted2, fontSize: FontSizes.md }}>
+                    <Text style={{ color: city?.name ? colors.text : colors.muted2, fontSize: FontSizes.md }}>
                       {city?.name ? localizeCityName(city.name) : t('homeCityPlaceholder')}
                     </Text>
-                    <Ionicons name="chevron-down" size={18} color={Colors.muted2} />
+                    <Ionicons name="chevron-down" size={18} color={colors.muted2} />
                   </TouchableOpacity>
                 ) : (
                   <View style={[styles.fieldInput, { justifyContent: 'center' }]}>
-                    <Text style={{ color: city?.name ? Colors.text : Colors.muted2, fontSize: FontSizes.md }}>
+                    <Text style={{ color: city?.name ? colors.text : colors.muted2, fontSize: FontSizes.md }}>
                       {city?.name ? localizeCityName(city.name) : t('homeCityPlaceholder')}
                     </Text>
                   </View>
@@ -702,7 +708,7 @@ export default function MeScreen() {
                   value={ageStr}
                   onChangeText={text => setAgeStr(text.replace(/[^0-9]/g, ''))}
                   placeholder={t('agePlaceholder')}
-                  placeholderTextColor={Colors.muted2}
+                  placeholderTextColor={colors.muted2}
                   keyboardType="number-pad"
                   maxLength={3}
                 />
@@ -781,10 +787,10 @@ export default function MeScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.friendReqIcon}>
-                <Ionicons name="chatbubbles-outline" size={18} color={Colors.accent} />
+                <Ionicons name="chatbubbles-outline" size={18} color={colors.accent} />
               </View>
               <Text style={styles.friendReqLabel}>{t('threads.title', { ns: 'challenge' })}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.muted} />
             </TouchableOpacity>
 
             {/* Mode sub-tabs - All / Local / International. */}
@@ -873,7 +879,7 @@ export default function MeScreen() {
         {!isGuest && activeTab === 'events' && (
           <View style={styles.eventsCard}>
             {eventsLoading ? (
-              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+              <ActivityIndicator color={colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : (
               <>
                 <Text style={styles.eventsLabel}>{t('going')}</Text>
@@ -941,7 +947,7 @@ export default function MeScreen() {
                             )}
                             {recur && (
                               <View style={styles.recurPill}>
-                                <Ionicons name="refresh" size={10} color={Colors.violet} />
+                                <Ionicons name="refresh" size={10} color={colors.violet} />
                                 <Text style={styles.recurPillText}>{t('recurring')}</Text>
                               </View>
                             )}
@@ -974,7 +980,7 @@ export default function MeScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.friendReqIcon}>
-                <Ionicons name="person-add-outline" size={18} color={Colors.accent} />
+                <Ionicons name="person-add-outline" size={18} color={colors.accent} />
               </View>
               <Text style={styles.friendReqLabel}>{t('friendRequests')}</Text>
               {friendReqCount > 0 && (
@@ -982,13 +988,13 @@ export default function MeScreen() {
                   <Text style={styles.friendReqBadgeText}>{friendReqCount > 9 ? '9+' : friendReqCount}</Text>
                 </View>
               )}
-              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.muted} />
             </TouchableOpacity>
 
           <View style={styles.eventsCard}>
             <Text style={styles.eventsLabel}>{t('myFriends')}</Text>
             {friendsLoading ? (
-              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+              <ActivityIndicator color={colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : myFriends.length === 0 ? (
               <Text style={styles.eventsEmpty}>{t('noFriends')}</Text>
             ) : (
@@ -1015,7 +1021,7 @@ export default function MeScreen() {
                         </Text>
                       )}
                     </View>
-                    <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                    <Ionicons name="chevron-forward" size={16} color={colors.muted} />
                   </TouchableOpacity>
                 </View>
               ))
@@ -1029,7 +1035,7 @@ export default function MeScreen() {
           <View style={styles.eventsCard}>
             <Text style={styles.eventsLabel}>{t('vibesReceived')}</Text>
             {vibesLoading ? (
-              <ActivityIndicator color={Colors.muted} style={{ paddingVertical: Spacing.md }} />
+              <ActivityIndicator color={colors.muted} style={{ paddingVertical: Spacing.md }} />
             ) : (
               <>
                 {myVibeCount > 0 && (
@@ -1085,9 +1091,9 @@ export default function MeScreen() {
               onPress={() => router.push('/blocked-users' as never)}
               activeOpacity={0.7}
             >
-              <Ionicons name="ban-outline" size={18} color={Colors.muted} />
+              <Ionicons name="ban-outline" size={18} color={colors.muted} />
               <Text style={styles.settingsRowLabel}>{t('blockedUsers')}</Text>
-              <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+              <Ionicons name="chevron-forward" size={16} color={colors.muted} />
             </TouchableOpacity>
           </View>
         )}
@@ -1150,8 +1156,8 @@ export default function MeScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container:  { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container:  { flex: 1, backgroundColor: c.bg },
   scrollView: { flex: 1 },
 
   // ── Page header ───────────────────────────────────────────────────────────
@@ -1162,8 +1168,8 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.md,
     minHeight:         56,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor:   Colors.bg,
+    borderBottomColor: c.border,
+    backgroundColor:   c.bg,
   },
   // No borderBottom - header flows directly into the tab sub-header,
   // matching MY CITY's look.
@@ -1171,7 +1177,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
   },
   headerCenter: {
     flex:       1,
@@ -1189,15 +1195,15 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize:      FontSizes.xl,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
 
   // ── Sticky identity block ─────────────────────────────────────────────────
   stickyIdentity: {
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     paddingBottom:     Spacing.xs,
   },
 
@@ -1216,7 +1222,7 @@ const styles = StyleSheet.create({
     height:       68,
     borderRadius: Radius.full,
     borderWidth:  2,
-    borderColor:  Colors.accent,
+    borderColor:  c.accent,
   },
   avatarSmFallback: {
     width:           68,
@@ -1228,13 +1234,13 @@ const styles = StyleSheet.create({
   avatarSmInitials: {
     fontSize:   FontSizes.xl,
     fontWeight: '700',
-    color:      Colors.white,
+    color:      c.white,
   },
   avatarSmOverlay: {
     position:        'absolute',
     top: 0, left: 0, right: 0, bottom: 0,
     borderRadius:    Radius.full,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: c.scrim,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -1245,9 +1251,9 @@ const styles = StyleSheet.create({
     width:           22,
     height:          22,
     borderRadius:    11,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1.5,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -1256,12 +1262,12 @@ const styles = StyleSheet.create({
   identityName: {
     fontSize:      FontSizes.lg,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
   identityHandle: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
   identityMetaRow: {
@@ -1272,12 +1278,12 @@ const styles = StyleSheet.create({
   },
   identityMetaCity: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
   identityMetaVibe: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
 
@@ -1303,7 +1309,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius:      Radius.md,
     borderWidth:       1.5,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     backgroundColor:   'transparent',
     alignItems:        'center',
     gap:               2,
@@ -1316,12 +1322,12 @@ const styles = StyleSheet.create({
   modeBtnLabel: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   modeBtnLabelActive: { color: '#fff' },
   modeBtnDesc: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted2,
+    color:      c.muted2,
     textAlign:  'center',
     lineHeight: 15,
   },
@@ -1339,20 +1345,20 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     borderRadius:      20,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
   },
   filterPillActive: {
-    borderColor:     Colors.accent,
-    backgroundColor: Colors.accent + '18',
+    borderColor:     c.accent,
+    backgroundColor: c.accent + '18',
   },
   filterPillLabel: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   filterPillLabelActive: {
-    color: Colors.accent,
+    color: c.accent,
   },
 
   // ── Guest avatar section (scroll content) ─────────────────────────────────
@@ -1372,21 +1378,21 @@ const styles = StyleSheet.create({
   avatarInitials: {
     fontSize:   FontSizes.xxl,
     fontWeight: '700',
-    color:      Colors.white,
+    color:      c.white,
   },
   avatarName: {
     fontSize:      FontSizes.xl,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
     marginTop:     Spacing.xs,
   },
   accountType: {
     fontSize: FontSizes.sm,
-    color:    Colors.muted,
+    color:    c.muted,
   },
   badgeBlock:    { alignItems: 'center', gap: 4 },
-  badgeMicrocopy: { fontSize: FontSizes.xs, color: Colors.muted2, textAlign: 'center' },
+  badgeMicrocopy: { fontSize: FontSizes.xs, color: c.muted2, textAlign: 'center' },
 
   memberBadge: {
     borderRadius:      Radius.full,
@@ -1405,16 +1411,16 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginBottom:     Spacing.md,
     padding:          Spacing.md,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     gap:              10,
   },
   guestModeLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
   },
 
@@ -1423,10 +1429,10 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginTop:        Spacing.md,
     marginBottom:     Spacing.md,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     overflow:         'hidden',
     padding:          Spacing.md,
     gap:              Spacing.md,
@@ -1434,52 +1440,52 @@ const styles = StyleSheet.create({
   fieldGroup: {
     gap:               8,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     paddingBottom:     Spacing.md,
   },
   fieldGroupLast: { borderBottomWidth: 0, paddingBottom: 0 },
   fieldLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
   },
   fieldLabelHint: {
     fontSize:      FontSizes.xs,
     fontWeight:    '400',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0,
   },
   fieldInput: {
-    backgroundColor:   Colors.bg3,
+    backgroundColor:   c.bg3,
     borderRadius:      Radius.md,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 14,
     paddingVertical:   Platform.OS === 'ios' ? 13 : 10,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.md,
   },
   fieldInputReadOnly: {
-    color:           Colors.muted,
-    backgroundColor: Colors.bg,
+    color:           c.muted,
+    backgroundColor: c.bg,
   },
   usernameRow: {
     flexDirection:     'row',
     alignItems:        'center',
     gap:               6,
-    backgroundColor:   Colors.bg3,
+    backgroundColor:   c.bg3,
     borderRadius:      Radius.md,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 14,
   },
-  usernameAt:    { fontSize: FontSizes.md, color: Colors.muted2, fontWeight: '600' },
-  usernameInput: { flex: 1, color: Colors.text, fontSize: FontSizes.md, paddingVertical: Platform.OS === 'ios' ? 13 : 10 },
+  usernameAt:    { fontSize: FontSizes.md, color: c.muted2, fontWeight: '600' },
+  usernameInput: { flex: 1, color: c.text, fontSize: FontSizes.md, paddingVertical: Platform.OS === 'ios' ? 13 : 10 },
   uOk:           { color: '#4ade80', fontSize: FontSizes.md, fontWeight: '700' },
-  uBad:          { color: Colors.red, fontSize: FontSizes.md, fontWeight: '700' },
+  uBad:          { color: c.red, fontSize: FontSizes.md, fontWeight: '700' },
   uOkHint:       { fontSize: FontSizes.xs, color: '#4ade80', marginTop: 4 },
-  uBadHint:      { fontSize: FontSizes.xs, color: Colors.red, marginTop: 4 },
+  uBadHint:      { fontSize: FontSizes.xs, color: c.red, marginTop: 4 },
   fieldInputMultiline: {
     minHeight:        56,
     textAlignVertical: 'top',
@@ -1488,7 +1494,7 @@ const styles = StyleSheet.create({
   fieldLabelMeta: {
     fontSize:      FontSizes.xs,
     fontWeight:    '400',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0,
   },
 
@@ -1502,20 +1508,20 @@ const styles = StyleSheet.create({
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.20)',
   },
-  chipSelected:      { backgroundColor: Colors.accent, borderColor: Colors.accent },
-  chipText:          { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
-  chipTextSelected:  { color: Colors.white, fontWeight: '700' },
+  chipSelected:      { backgroundColor: c.accent, borderColor: c.accent },
+  chipText:          { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
+  chipTextSelected:  { color: c.white, fontWeight: '700' },
   vibeChip: {
     paddingHorizontal: 14,
     paddingVertical:   9,
     borderRadius:      Radius.full,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
   },
-  vibeChipActive:     { backgroundColor: 'rgba(255,122,60,0.18)', borderColor: Colors.accent },
-  vibeChipText:       { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
-  vibeChipTextActive: { color: Colors.text, fontWeight: '700' },
+  vibeChipActive:     { backgroundColor: 'rgba(255,122,60,0.18)', borderColor: c.accent },
+  vibeChipText:       { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
+  vibeChipTextActive: { color: c.text, fontWeight: '700' },
 
   hostTag: {
     backgroundColor: 'rgba(96,165,250,0.14)', borderRadius: Radius.full,
@@ -1535,14 +1541,14 @@ const styles = StyleSheet.create({
     paddingVertical:   5,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderColor:       c.overlayStrong,
+    backgroundColor:   c.overlayWeak,
   },
   subTabBtnActive: {
     borderColor:     'rgba(255,122,60,0.45)',
     backgroundColor: 'rgba(255,122,60,0.14)',
   },
-  subTabText:       { fontSize: 12, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
+  subTabText:       { fontSize: 12, fontWeight: '700', color: c.muted, letterSpacing: -0.2 },
   subTabTextActive: { color: '#FF7A3C' },
 
   // ── Events / generic card ─────────────────────────────────────────────────
@@ -1550,39 +1556,39 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginTop:        Spacing.xs,
     marginBottom:     Spacing.md,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     overflow:         'hidden',
     padding:          Spacing.md,
   },
   eventsLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
     marginBottom:  Spacing.sm,
   },
-  eventsEmpty: { fontSize: FontSizes.sm, color: Colors.muted2, paddingVertical: Spacing.sm },
-  divider:     { height: 1, backgroundColor: Colors.border, marginVertical: Spacing.sm },
+  eventsEmpty: { fontSize: FontSizes.sm, color: c.muted2, paddingVertical: Spacing.sm },
+  divider:     { height: 1, backgroundColor: c.border, marginVertical: Spacing.sm },
 
   // ── Settings card ─────────────────────────────────────────────────────────
   settingsCard: {
     marginHorizontal: Spacing.md,
     marginTop:        Spacing.xs,
     marginBottom:     Spacing.md,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     overflow:         'hidden',
     padding:          Spacing.md,
   },
   settingsLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.8,
     marginBottom:  Spacing.sm,
   },
@@ -1596,14 +1602,14 @@ const styles = StyleSheet.create({
     flex:       1,
     fontSize:   FontSizes.md,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
   },
 
   eventRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
   eventIcon:      { fontSize: 18, marginTop: 2 },
   eventInfo:      { flex: 1, gap: 4 },
-  eventTitle:     { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  eventRecurrence: { fontSize: FontSizes.sm, color: Colors.muted },
+  eventTitle:     { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  eventRecurrence: { fontSize: FontSizes.sm, color: c.muted },
   eventBadgeRow:  { flexDirection: 'row', gap: 6, marginTop: 2 },
   livePill: {
     backgroundColor:   'rgba(255,122,60,0.18)',
@@ -1611,7 +1617,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical:   2,
   },
-  livePillText:   { fontSize: 10, fontWeight: '700', color: Colors.accent, letterSpacing: 0.4 },
+  livePillText:   { fontSize: 10, fontWeight: '700', color: c.accent, letterSpacing: 0.4 },
   recurPill: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -1621,22 +1627,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 7,
     paddingVertical:   2,
   },
-  recurPillText:  { fontSize: 10, fontWeight: '700', color: Colors.violet, letterSpacing: 0.4 },
+  recurPillText:  { fontSize: 10, fontWeight: '700', color: c.violet, letterSpacing: 0.4 },
   deleteBtn:      { width: 28, height: 28, alignItems: 'center', justifyContent: 'center', marginTop: -2 },
-  deleteBtnText:  { fontSize: 22, color: Colors.muted2, lineHeight: 26 },
+  deleteBtnText:  { fontSize: 22, color: c.muted2, lineHeight: 26 },
 
   // Friend requests inbox row (above MY FRIENDS card on the Friends tab)
   friendReqRow: {
     flexDirection:   'row',
     alignItems:      'center',
     gap:             12,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     paddingVertical:   Spacing.sm + 2,
     paddingHorizontal: Spacing.md,
     marginBottom:    Spacing.sm,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
   },
   friendReqIcon: {
     width:           32,
@@ -1646,17 +1652,17 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
   },
-  friendReqLabel: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  friendReqLabel: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   friendReqBadge: {
     minWidth:          22,
     height:            22,
     borderRadius:      11,
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     paddingHorizontal: 7,
     alignItems:        'center',
     justifyContent:    'center',
   },
-  friendReqBadgeText: { color: Colors.white, fontWeight: '700', fontSize: 11 },
+  friendReqBadgeText: { color: c.white, fontWeight: '700', fontSize: 11 },
 
   // Friends
   friendRow:            { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -1664,8 +1670,8 @@ const styles = StyleSheet.create({
   friendAvatarFallback: { width: 38, height: 38, borderRadius: 19, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   friendAvatarInitial:  { fontSize: 15, fontWeight: '700', color: '#fff' },
   friendInfo:           { flex: 1, gap: 2 },
-  friendName:           { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  friendBadgeText:      { fontSize: FontSizes.xs, color: Colors.muted },
+  friendName:           { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  friendBadgeText:      { fontSize: FontSizes.xs, color: c.muted },
 
   // Vibes
   vibeScoreCard: {
@@ -1680,18 +1686,18 @@ const styles = StyleSheet.create({
   },
   vibeStarsRow:    { flexDirection: 'row', gap: 4 },
   vibeStarOn:      { fontSize: 20, color: '#fbbf24' },
-  vibeStarOff:     { fontSize: 20, color: 'rgba(255,255,255,0.12)' },
-  vibeScoreAvg:    { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  vibeScoreCount:  { fontSize: FontSizes.xs, color: Colors.muted2 },
+  vibeStarOff:     { fontSize: 20, color: c.overlayStrong },
+  vibeScoreAvg:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  vibeScoreCount:  { fontSize: FontSizes.xs, color: c.muted2 },
   receivedVibeRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: Spacing.xs },
   receivedVibeAvatar: { width: 36, height: 36, borderRadius: 18, flexShrink: 0 },
   receivedVibeAvatarFallback: { alignItems: 'center', justifyContent: 'center' },
   receivedVibeAvatarInitial:  { fontSize: 14, fontWeight: '700', color: '#fff' },
   receivedVibeContent:        { flex: 1, gap: 2 },
   receivedVibeHeader:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  receivedVibeAuthor:         { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  receivedVibeAuthor:         { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   receivedVibeRating:         { fontSize: FontSizes.sm, color: '#fbbf24' },
-  receivedVibeMsg:            { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 18 },
+  receivedVibeMsg:            { fontSize: FontSizes.sm, color: c.muted, lineHeight: 18 },
 
   // ── Sticky CTA bar ────────────────────────────────────────────────────────
   stickyCta: {
@@ -1699,7 +1705,7 @@ const styles = StyleSheet.create({
     paddingTop:        12,
     backgroundColor:   'rgba(14, 14, 16, 0.92)',
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
     gap:               2,
   },
   stickyBottomRow: {
@@ -1709,27 +1715,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   stickySignOut:        { paddingVertical: 8 },
-  stickySignOutText:    { fontSize: FontSizes.xs, fontWeight: '500', color: Colors.muted2 },
+  stickySignOutText:    { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted2 },
   stickyDeleteAccount:  { paddingVertical: 8 },
   stickyDeleteAccountText: { fontSize: FontSizes.xs, fontWeight: '500', color: 'rgba(248,113,113,0.35)' },
-  saveError: { fontSize: FontSizes.sm, color: Colors.red, textAlign: 'center', marginBottom: Spacing.xs },
+  saveError: { fontSize: FontSizes.sm, color: c.red, textAlign: 'center', marginBottom: Spacing.xs },
   // ── Guest upgrade ─────────────────────────────────────────────────────────
   upgradeCard: {
     margin:          Spacing.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     padding:         Spacing.md,
     gap:             Spacing.sm,
   },
-  upgradeTitle:      { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
-  upgradeSub:        { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  upgradeSignInHint: { fontSize: FontSizes.xs, color: Colors.muted, textAlign: 'center' },
-  upgradeSecondary:  { borderRadius: Radius.lg, paddingVertical: Spacing.sm, alignItems: 'center', borderWidth: 1, borderColor: Colors.border },
-  upgradeSecondaryText: { color: Colors.text, fontWeight: '600', fontSize: FontSizes.sm },
+  upgradeTitle:      { fontSize: FontSizes.lg, fontWeight: '700', color: c.text },
+  upgradeSub:        { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
+  upgradeSignInHint: { fontSize: FontSizes.xs, color: c.muted, textAlign: 'center' },
+  upgradeSecondary:  { borderRadius: Radius.lg, paddingVertical: Spacing.sm, alignItems: 'center', borderWidth: 1, borderColor: c.border },
+  upgradeSecondaryText: { color: c.text, fontWeight: '600', fontSize: FontSizes.sm },
 
   // ── Version ───────────────────────────────────────────────────────────────
   versionWrap: { alignItems: 'center', paddingVertical: Spacing.md },
-  version:     { fontSize: FontSizes.xs, color: Colors.muted2 },
+  version:     { fontSize: FontSizes.xs, color: c.muted2 },
 });

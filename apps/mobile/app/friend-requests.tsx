@@ -19,13 +19,17 @@ import { Feather, Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { FriendRequest } from '@/types';
 
 type Tab = 'incoming' | 'sent';
 
 export default function FriendRequestsScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('misc');
   const { account } = useApp();
@@ -83,7 +87,7 @@ export default function FriendRequestsScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={Colors.text} />
+          <Feather name="chevron-left" size={22} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{t('friendReq.title')}</Text>
         <View style={styles.backBtn} />
@@ -112,14 +116,14 @@ export default function FriendRequestsScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : data.length === 0 ? (
         <View style={styles.center}>
           <Ionicons
             name={tab === 'incoming' ? 'person-add-outline' : 'paper-plane-outline'}
             size={36}
-            color={Colors.muted2}
+            color={colors.muted2}
           />
           <Text style={styles.emptyTitle}>
             {tab === 'incoming' ? t('friendReq.emptyIncomingTitle') : t('friendReq.emptySentTitle')}
@@ -143,8 +147,8 @@ export default function FriendRequestsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection: 'row',
@@ -153,27 +157,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backBtn: { width: 36, height: 36, alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text },
+  headerTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text },
 
   tabs: { flexDirection: 'row', paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: 8 },
   tab: {
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 999,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: c.border,
   },
-  tabActive: { backgroundColor: Colors.accent, borderColor: Colors.accent },
-  tabText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
-  tabTextActive: { color: Colors.white },
+  tabActive: { backgroundColor: c.accent, borderColor: c.accent },
+  tabText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
+  tabTextActive: { color: c.white },
 
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 6 },
-  emptyTitle: { color: Colors.text, fontWeight: '700', fontSize: FontSizes.md, marginTop: 8 },
-  emptySub: { color: Colors.muted, fontSize: FontSizes.sm, textAlign: 'center', maxWidth: 280 },
+  emptyTitle: { color: c.text, fontWeight: '700', fontSize: FontSizes.md, marginTop: 8 },
+  emptySub: { color: c.muted, fontSize: FontSizes.sm, textAlign: 'center', maxWidth: 280 },
 
   listContent: { paddingVertical: Spacing.sm },
   row: {
@@ -183,28 +187,28 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     gap: 12,
   },
-  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: Colors.bg3 },
-  avatarInitial: { color: Colors.white, fontWeight: '700', fontSize: 18 },
+  avatar: { width: 44, height: 44, borderRadius: 22, backgroundColor: c.bg3 },
+  avatarInitial: { color: c.white, fontWeight: '700', fontSize: 18 },
   body: { flex: 1, minWidth: 0 },
-  name: { color: Colors.text, fontWeight: '700', fontSize: FontSizes.md },
-  sub:  { color: Colors.muted, fontSize: FontSizes.sm, marginTop: 1 },
+  name: { color: c.text, fontWeight: '700', fontSize: FontSizes.md },
+  sub:  { color: c.muted, fontSize: FontSizes.sm, marginTop: 1 },
 
   actions: { flexDirection: 'row', gap: 8 },
   btnDecline: {
     paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  btnDeclineText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
+  btnDeclineText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
   btnAccept: {
     paddingVertical: 8, paddingHorizontal: 14, borderRadius: Radius.full,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
-  btnAcceptText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
+  btnAcceptText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
   btnCancel: {
     paddingVertical: 8, paddingHorizontal: 12, borderRadius: Radius.full,
-    borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1, borderColor: c.border,
   },
-  btnCancelText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
+  btnCancelText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
 
-  separator: { height: StyleSheet.hairlineWidth, backgroundColor: Colors.border, marginLeft: Spacing.md + 44 + 12 },
+  separator: { height: StyleSheet.hairlineWidth, backgroundColor: c.border, marginLeft: Spacing.md + 44 + 12 },
 });

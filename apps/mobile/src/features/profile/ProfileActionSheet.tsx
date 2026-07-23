@@ -12,7 +12,8 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export interface ProfileSheetAction {
   key:          string;
@@ -32,6 +33,9 @@ interface Props {
 }
 
 export function ProfileActionSheet({ visible, title, actions, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   return (
     <Modal
       visible={visible}
@@ -62,7 +66,7 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
             <Ionicons
               name={a.icon}
               size={20}
-              color={a.destructive ? Colors.red : Colors.text}
+              color={a.destructive ? colors.red : colors.text}
             />
             <Text style={[
               styles.actionLabel,
@@ -82,15 +86,15 @@ export function ProfileActionSheet({ visible, title, actions, onClose }: Props) 
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: c.scrim,
   },
   sheet: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
     borderTopLeftRadius:  Radius.lg,
     borderTopRightRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
@@ -100,7 +104,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize:      FontSizes.sm,
-    color:         Colors.muted,
+    color:         c.muted,
     paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.xs,
     fontWeight:    '600',
@@ -114,32 +118,32 @@ const styles = StyleSheet.create({
   },
   actionDivider: {
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
+    borderTopColor: c.border,
   },
   actionDisabled: {
     opacity: 0.4,
   },
   actionLabel: {
     fontSize:   FontSizes.md,
-    color:      Colors.text,
+    color:      c.text,
     fontWeight: '500',
   },
   actionLabelDestructive: {
-    color: Colors.red,
+    color: c.red,
   },
   actionLabelDisabled: {
-    color: Colors.muted2,
+    color: c.muted2,
   },
   cancel: {
     alignItems:      'center',
     paddingVertical: 14,
     marginTop:       Spacing.sm,
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderRadius:    Radius.md,
   },
   cancelText: {
     fontSize:   FontSizes.md,
-    color:      Colors.text,
+    color:      c.text,
     fontWeight: '600',
   },
 });

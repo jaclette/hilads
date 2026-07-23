@@ -13,7 +13,8 @@ import { socket } from '@/lib/socket';
 import { fetchMyAcceptances, fetchRatePrompts } from '@/api/challenges';
 import { avatarColor } from '@/lib/avatarColors';
 import { RateSheet } from '@/components/RateSheet';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { ChallengeThreadSummary, ChallengeType, RatePrompt } from '@/types';
 
 const TYPE_ICONS: Record<ChallengeType, string> = {
@@ -32,6 +33,9 @@ const TYPE_ICONS: Record<ChallengeType, string> = {
  * from a push notification (planned).
  */
 export default function ThreadsListScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account } = useApp();
@@ -110,7 +114,7 @@ export default function ThreadsListScreen() {
       <Header title={t('threads.title')} onBack={() => router.back()} t={t} />
 
       {loading && threads.length === 0 ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
       ) : threads.length === 0 && !topPrompt ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyEmoji}>🤝</Text>
@@ -130,7 +134,7 @@ export default function ThreadsListScreen() {
               t={t}
             />
           ) : null}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
           renderItem={({ item }) => {
             const icon    = TYPE_ICONS[item.challenge_type] ?? '🔥';
             const cp      = item.counterparty;
@@ -166,7 +170,7 @@ export default function ThreadsListScreen() {
                   <Text style={styles.challengeTitle} numberOfLines={1}>{icon} {item.challenge_title}</Text>
                   <Text style={styles.preview} numberOfLines={1}>{preview}</Text>
                 </View>
-                <Ionicons name="chevron-forward" size={18} color={Colors.muted2} />
+                <Ionicons name="chevron-forward" size={18} color={colors.muted2} />
               </TouchableOpacity>
             );
           }}
@@ -192,6 +196,7 @@ function RatePromptBanner({
   onPress: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const cp = prompt.counterparty;
   const titleKey = prompt.other_rated
     ? 'ratePrompts.banner.titleUrgent'
@@ -229,10 +234,12 @@ function RatePromptBanner({
 }
 
 function Header({ title, onBack, t }: { title: string; onBack: () => void; t: (k: string, opts?: { ns?: string }) => string }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.nav}>
       <TouchableOpacity style={styles.backPill} onPress={onBack} activeOpacity={0.75}>
-        <Ionicons name="chevron-back" size={18} color={Colors.text} />
+        <Ionicons name="chevron-back" size={18} color={colors.text} />
         <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
       </TouchableOpacity>
       <View style={styles.navCenter}>
@@ -243,8 +250,8 @@ function Header({ title, onBack, t }: { title: string; onBack: () => void; t: (k
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   nav: {
@@ -253,18 +260,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 10, paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: c.overlay,
+    borderWidth: 1, borderColor: c.overlayStrong,
   },
-  backPillText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '700' },
+  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter:    { flex: 1, alignItems: 'center' },
-  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   list: { paddingVertical: Spacing.sm },
   row: {
@@ -282,16 +289,16 @@ const styles = StyleSheet.create({
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 18 },
   body:    { flex: 1, gap: 2, minWidth: 0 },
   headerRow: { flexDirection: 'row', alignItems: 'center' },
-  name:    { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  name:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
   crown:   { color: '#FF7A3C', fontWeight: '800' },
-  challengeTitle: { fontSize: FontSizes.sm, color: Colors.muted },
-  preview: { fontSize: FontSizes.sm, color: Colors.muted2 },
-  sep:     { height: 1, backgroundColor: Colors.border, marginLeft: Spacing.md + 48 + Spacing.md },
+  challengeTitle: { fontSize: FontSizes.sm, color: c.muted },
+  preview: { fontSize: FontSizes.sm, color: c.muted2 },
+  sep:     { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 48 + Spacing.md },
 
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptyBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 
   // Rate-prompt banner (above the threads list)
   banner: {
@@ -316,12 +323,12 @@ const styles = StyleSheet.create({
   bannerAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 16 },
   bannerBody: { flex: 1, minWidth: 0 },
   bannerStar: { color: '#FFC93C' },
-  bannerTitle: { fontSize: FontSizes.sm + 1, fontWeight: '800', color: Colors.text },
-  bannerSubtitle: { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 1 },
+  bannerTitle: { fontSize: FontSizes.sm + 1, fontWeight: '800', color: c.text },
+  bannerSubtitle: { fontSize: FontSizes.sm, color: c.muted, marginTop: 1 },
   bannerExtraPill: {
     paddingHorizontal: 8, paddingVertical: 3,
     borderRadius: Radius.full,
     backgroundColor: '#FF7A3C',
   },
-  bannerExtraPillText: { color: Colors.white, fontSize: FontSizes.xs, fontWeight: '800' },
+  bannerExtraPillText: { color: c.white, fontSize: FontSizes.xs, fontWeight: '800' },
 });

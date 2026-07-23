@@ -18,10 +18,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { fetchMyBlocks, unblockById, type BlockRow } from '@/api/blocks';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 
 export default function BlockedUsersScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('misc');
   const { account, removeBlocked } = useApp();
@@ -115,7 +119,7 @@ export default function BlockedUsersScreen() {
           activeOpacity={0.75}
         >
           {busy
-            ? <ActivityIndicator size="small" color={Colors.text} />
+            ? <ActivityIndicator size="small" color={colors.text} />
             : <Text style={styles.unblockBtnText}>{t('blocked.unblock')}</Text>
           }
         </TouchableOpacity>
@@ -128,7 +132,7 @@ export default function BlockedUsersScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={22} color={Colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('blocked.title')}</Text>
@@ -137,7 +141,7 @@ export default function BlockedUsersScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : rows.length === 0 ? (
         <View style={styles.center}>
@@ -156,7 +160,7 @@ export default function BlockedUsersScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(true)}
-              tintColor={Colors.accent}
+              tintColor={colors.accent}
             />
           }
         />
@@ -167,8 +171,8 @@ export default function BlockedUsersScreen() {
 
 const AVATAR_SIZE = 44;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -176,16 +180,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize:      FontSizes.lg,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
 
@@ -215,12 +219,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize:    FontSizes.lg,
     fontWeight:  '700',
-    color:       Colors.text,
+    color:       c.text,
     textAlign:   'center',
   },
   emptySub: {
     fontSize:    FontSizes.sm,
-    color:       Colors.muted,
+    color:       c.muted,
     textAlign:   'center',
     lineHeight:  20,
   },
@@ -230,7 +234,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height:          1,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
     marginLeft:      Spacing.md + AVATAR_SIZE + 12,
   },
 
@@ -267,20 +271,20 @@ const styles = StyleSheet.create({
   name: {
     fontSize:   FontSizes.md,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
   },
   subtitle: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
 
   unblockBtn: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.xs + 2,
     borderRadius:      Radius.full,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     minWidth:          80,
     alignItems:        'center',
   },
@@ -290,6 +294,6 @@ const styles = StyleSheet.create({
   unblockBtnText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
   },
 });

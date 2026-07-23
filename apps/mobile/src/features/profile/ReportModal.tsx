@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { submitReport, DuplicateReportError } from '@/api/reports';
 import { formatDateLabel } from '@/lib/messageTime';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   visible:         boolean;
@@ -23,6 +25,7 @@ interface Props {
 }
 
 export function ReportModal({ visible, reporterGuestId, targetUserId, targetGuestId, targetNickname, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const [reason,  setReason]  = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -87,7 +90,7 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
         <TextInput
           style={styles.input}
           placeholder="Describe the issue (min 10 characters)…"
-          placeholderTextColor="rgba(255,255,255,0.25)"
+          placeholderTextColor="rgba(128,128,128,0.7)"
           value={reason}
           onChangeText={setReason}
           multiline
@@ -118,15 +121,15 @@ export function ReportModal({ visible, reporterGuestId, targetUserId, targetGues
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   overlay: {
     flex:            1,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: c.scrim,
   },
   sheet: {
-    backgroundColor:   '#1a1512',
+    backgroundColor:   c.elevated,
     borderTopWidth:    1,
-    borderTopColor:    'rgba(255,255,255,0.08)',
+    borderTopColor:    c.separator,
     borderRadius:      20,
     paddingHorizontal: 20,
     paddingTop:        24,
@@ -136,32 +139,32 @@ const styles = StyleSheet.create({
   title: {
     fontSize:   18,
     fontWeight: '700',
-    color:      '#fff',
+    color:      c.text,
   },
   subtitle: {
     fontSize:  13,
-    color:     'rgba(255,255,255,0.45)',
+    color:     c.muted,
     lineHeight: 18,
   },
   input: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.1)',
+    borderColor:     c.separator,
     borderRadius:    10,
     padding:         12,
-    color:           '#fff',
+    color:           c.text,
     fontSize:        14,
     minHeight:       100,
     marginTop:       4,
   },
   charCount: {
     fontSize:  11,
-    color:     'rgba(255,255,255,0.25)',
+    color:     c.mutedDim,
     textAlign: 'right',
     marginTop: -6,
   },
   submitBtn: {
-    backgroundColor: '#FF7A3C',
+    backgroundColor: c.accent,
     borderRadius:    12,
     paddingVertical: 14,
     alignItems:      'center',
@@ -181,6 +184,6 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 15,
-    color:    'rgba(255,255,255,0.4)',
+    color:    c.muted,
   },
 });

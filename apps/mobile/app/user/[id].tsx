@@ -26,7 +26,8 @@ import {
 import { socket } from '@/lib/socket';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import type { HiladsEvent, PublicProfile, UserDTO } from '@/types';
 import { BADGE_META } from '@/types';
@@ -62,9 +63,10 @@ function cityFlag(countryCode?: string): string {
 // ── Badge helpers ─────────────────────────────────────────────────────────────
 
 const PROFILE_BADGE_BG: Record<string, object> = {
-  ghost:   { backgroundColor: 'rgba(255,255,255,0.06)', borderColor: 'rgba(255,255,255,0.10)' },
+  ghost:   { backgroundColor: 'rgba(128,128,128,0.14)', borderColor: 'rgba(128,128,128,0.24)' },
   fresh:   { backgroundColor: 'rgba(74,222,128,0.12)',  borderColor: 'rgba(74,222,128,0.22)'  },
-  regular: { backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
+  regular: {
+  backgroundColor: 'rgba(96,165,250,0.12)',  borderColor: 'rgba(96,165,250,0.22)'  },
   local:   { backgroundColor: 'rgba(52,211,153,0.12)',  borderColor: 'rgba(52,211,153,0.22)'  },
   host:    { backgroundColor: 'rgba(251,191,36,0.15)',  borderColor: 'rgba(251,191,36,0.28)'  },
 };
@@ -114,6 +116,9 @@ const CHALLENGE_ICONS: Record<string, string> = {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function PublicProfileScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router  = useRouter();
   const { t }   = useTranslation('publicProfile');
   const insets  = useSafeAreaInsets();
@@ -415,7 +420,7 @@ export default function PublicProfileScreen() {
       {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={22} color={Colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
@@ -424,7 +429,7 @@ export default function PublicProfileScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -687,7 +692,7 @@ export default function PublicProfileScreen() {
                           <Text style={styles.friendBadge}>{t(`badge.${f.badges[0]}`, { ns: 'common', defaultValue: BADGE_META[f.badges[0] as keyof typeof BADGE_META]?.label ?? f.badges[0] })}</Text>
                         )}
                       </View>
-                      <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+                      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -728,7 +733,7 @@ export default function PublicProfileScreen() {
                       <TextInput
                         style={styles.vibeInput}
                         placeholder={t('vibePlaceholder')}
-                        placeholderTextColor={Colors.muted2}
+                        placeholderTextColor={colors.muted2}
                         value={vibeMessage}
                         onChangeText={setVibeMessage}
                         maxLength={300}
@@ -811,7 +816,7 @@ export default function PublicProfileScreen() {
       {user && !isSelf && account && (
         <View style={[styles.stickyBar, { paddingBottom: Math.max(12, insets.bottom) }]}>
           <TouchableOpacity style={styles.dmBtn} onPress={handleDm} activeOpacity={0.85}>
-            <Feather name="message-square" size={18} color={Colors.white} />
+            <Feather name="message-square" size={18} color={colors.white} />
             <Text style={styles.dmBtnText}>{t('message')}</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -832,9 +837,9 @@ export default function PublicProfileScreen() {
               }
               size={18}
               color={
-                friendState === 'friend'      ? Colors.accent :
-                friendState === 'pending_out' ? Colors.muted2 :
-                                                Colors.text
+                friendState === 'friend'      ? colors.accent :
+                friendState === 'pending_out' ? colors.muted2 :
+                                                colors.text
               }
             />
             <Text style={[
@@ -930,8 +935,8 @@ export default function PublicProfileScreen() {
 
 const AVATAR_SIZE = 72;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   // ── Header ────────────────────────────────────────────────────────────────
   header: {
@@ -940,7 +945,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
     flexShrink:        0,
   },
@@ -948,9 +953,9 @@ const styles = StyleSheet.create({
     width:           40,
     height:          40,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -965,14 +970,14 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
   },
 
   // ── States ────────────────────────────────────────────────────────────────
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   errorText: {
-    color:     Colors.muted,
+    color:     c.muted,
     fontSize:  FontSizes.sm,
     textAlign: 'center',
     paddingHorizontal: Spacing.xl,
@@ -980,12 +985,12 @@ const styles = StyleSheet.create({
   retryBtn: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
-  retryBtnText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '600' },
+  retryBtnText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
 
   // ── Identity section (sticky, always visible) ─────────────────────────────
   identitySection: {
@@ -995,8 +1000,8 @@ const styles = StyleSheet.create({
     paddingBottom:     Spacing.sm,
     gap:               Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-    backgroundColor:   Colors.bg,
+    borderBottomColor: c.border,
+    backgroundColor:   c.bg,
   },
 
   // ── Hero: avatar left + identity column right (mirrors My Profile) ─────────
@@ -1014,7 +1019,7 @@ const styles = StyleSheet.create({
   },
   identityMetaCity: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
   avatar: {
@@ -1022,7 +1027,7 @@ const styles = StyleSheet.create({
     height:       AVATAR_SIZE,
     borderRadius: AVATAR_SIZE / 2,
     borderWidth:  2,
-    borderColor:  Colors.accent,
+    borderColor:  c.accent,
   },
   avatarFallback: {
     alignItems:     'center',
@@ -1036,7 +1041,7 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
   },
   badgeBlock: {
@@ -1056,7 +1061,7 @@ const styles = StyleSheet.create({
   },
   badgeMicrocopy: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted,
+    color:    c.muted,
   },
   cityPill: {
     flexDirection:     'row',
@@ -1064,18 +1069,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical:   4,
     borderRadius:      Radius.full,
-    backgroundColor:   'rgba(255,255,255,0.05)',
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.09)',
+    borderColor:       c.overlay,
   },
   cityPillText: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
   aboutMe: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     lineHeight: FontSizes.sm * 1.45,
     maxWidth:   260,
@@ -1090,7 +1095,7 @@ const styles = StyleSheet.create({
   },
   identityCard: {
     flex:             1,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderRadius:     Radius.lg,
     borderWidth:      1,
     borderColor:      'rgba(251,146,60,0.18)',
@@ -1104,20 +1109,20 @@ const styles = StyleSheet.create({
   identityCardTitle: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   identityCardSub: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 16,
   },
 
   // ── Details card - From + Age ─────────────────────────────────────────────
   detailsCard: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     overflow:        'hidden',
   },
   detailRow: {
@@ -1127,17 +1132,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
   },
   detailRowFirst: { borderTopWidth: 0 },
   detailLabel: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     fontWeight: '500',
   },
   detailValue: {
     fontSize:   FontSizes.sm,
-    color:      Colors.text,
+    color:      c.text,
     fontWeight: '600',
   },
 
@@ -1145,7 +1150,7 @@ const styles = StyleSheet.create({
   tabBarWrap: {
     flexShrink:        0,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   tabBar: {
     flexDirection:    'row',
@@ -1158,20 +1163,20 @@ const styles = StyleSheet.create({
     paddingVertical:   7,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderColor:       c.border,
+    backgroundColor:   c.overlayWeak,
   },
   tabPillActive: {
-    borderColor:     Colors.accent,
+    borderColor:     c.accent,
     backgroundColor: 'rgba(255,107,0,0.10)',
   },
   tabPillText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   tabPillTextActive: {
-    color: Colors.accent,
+    color: c.accent,
   },
 
   // ── Tab content ───────────────────────────────────────────────────────────
@@ -1182,7 +1187,7 @@ const styles = StyleSheet.create({
   },
   tabEmpty: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     paddingVertical: Spacing.xl,
   },
@@ -1192,14 +1197,14 @@ const styles = StyleSheet.create({
   profileSubTabBtn: {
     paddingHorizontal: 10, paddingVertical: 5,
     borderRadius: Radius.full,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderWidth: 1, borderColor: c.overlayStrong,
+    backgroundColor: c.overlayWeak,
   },
   profileSubTabBtnActive: {
     borderColor: 'rgba(255,122,60,0.45)',
     backgroundColor: 'rgba(255,122,60,0.14)',
   },
-  profileSubTabText:       { fontSize: 12, fontWeight: '700', color: Colors.muted },
+  profileSubTabText:       { fontSize: 12, fontWeight: '700', color: c.muted },
   profileSubTabTextActive: { color: '#FF7A3C' },
 
   // ── Event list ────────────────────────────────────────────────────────────
@@ -1211,7 +1216,7 @@ const styles = StyleSheet.create({
     borderWidth: 1, borderColor: 'rgba(96,165,250,0.15)',
   },
   hangoutIcon:  { fontSize: 16 },
-  hangoutTitle: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
+  hangoutTitle: { flex: 1, fontSize: FontSizes.md, fontWeight: '600', color: c.text },
   hostTag: {
     backgroundColor: 'rgba(96,165,250,0.14)', borderRadius: Radius.full,
     paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)',
@@ -1222,10 +1227,10 @@ const styles = StyleSheet.create({
   eventPill: {
     flexDirection:     'row',
     alignItems:        'center',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 2,
     gap:               Spacing.sm,
@@ -1235,7 +1240,7 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   eventMeta: {
     flexDirection: 'row',
@@ -1243,8 +1248,8 @@ const styles = StyleSheet.create({
     gap:           6,
     flexWrap:      'wrap',
   },
-  eventTime:     { fontSize: FontSizes.xs, color: Colors.muted },
-  eventLocation: { fontSize: FontSizes.xs, color: Colors.muted, flexShrink: 1 },
+  eventTime:     { fontSize: FontSizes.xs, color: c.muted },
+  eventLocation: { fontSize: FontSizes.xs, color: c.muted, flexShrink: 1 },
   liveBadge: {
     backgroundColor:   'rgba(61,220,132,0.12)',
     borderRadius:      Radius.full,
@@ -1256,7 +1261,7 @@ const styles = StyleSheet.create({
   liveBadgeText: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.green,
+    color:         c.green,
     letterSpacing: 0.4,
   },
 
@@ -1265,10 +1270,10 @@ const styles = StyleSheet.create({
   friendRow: {
     flexDirection:     'row',
     alignItems:        'center',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm + 2,
     gap:               Spacing.sm,
@@ -1285,9 +1290,9 @@ const styles = StyleSheet.create({
   friendName: {
     fontSize:   FontSizes.sm,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
-  friendBadge: { fontSize: FontSizes.xs, color: Colors.muted },
+  friendBadge: { fontSize: FontSizes.xs, color: c.muted },
 
   // ── Vibe score card ───────────────────────────────────────────────────────
   vibeScoreCard: {
@@ -1300,10 +1305,10 @@ const styles = StyleSheet.create({
     borderColor:     'rgba(251,191,36,0.12)',
   },
   vibeStarsRow:     { flexDirection: 'row', gap: 4 },
-  vibeStarStatic:   { fontSize: 22, color: 'rgba(255,255,255,0.12)' },
+  vibeStarStatic:   { fontSize: 22, color: c.overlayStrong },
   vibeStarStaticOn: { color: '#fbbf24' },
-  vibeScoreAvg:     { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  vibeScoreCount:   { fontSize: FontSizes.xs, color: Colors.muted2 },
+  vibeScoreAvg:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  vibeScoreCount:   { fontSize: FontSizes.xs, color: c.muted2 },
   vibeCtaBtn: {
     paddingVertical: 14,
     backgroundColor: 'rgba(251,191,36,0.08)',
@@ -1314,7 +1319,7 @@ const styles = StyleSheet.create({
   },
   vibeCtaBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: '#fbbf24' },
   vibeForm: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
     borderColor:     'rgba(251,191,36,0.18)',
@@ -1322,14 +1327,14 @@ const styles = StyleSheet.create({
     gap:             Spacing.sm,
   },
   vibeFormStars:  { flexDirection: 'row', justifyContent: 'center', gap: 8 },
-  vibeFormStar:   { fontSize: 30, color: 'rgba(255,255,255,0.15)' },
+  vibeFormStar:   { fontSize: 30, color: c.overlayStrong },
   vibeFormStarOn: { color: '#fbbf24' },
   vibeInput: {
-    backgroundColor:   Colors.bg3,
+    backgroundColor:   c.bg3,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.sm,
     paddingHorizontal: Spacing.sm + 2,
     paddingVertical:   Spacing.sm,
@@ -1337,8 +1342,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   vibeFormActions:       { flexDirection: 'row', gap: Spacing.sm, justifyContent: 'flex-end' },
-  vibeCancelBtn:         { paddingHorizontal: Spacing.md, paddingVertical: 9, borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.md },
-  vibeCancelBtnText:     { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
+  vibeCancelBtn:         { paddingHorizontal: Spacing.md, paddingVertical: 9, borderWidth: 1, borderColor: c.border, borderRadius: Radius.md },
+  vibeCancelBtnText:     { fontSize: FontSizes.xs, color: c.muted, fontWeight: '600' },
   vibeSubmitBtn:         { paddingHorizontal: Spacing.md, paddingVertical: 9, backgroundColor: '#fbbf24', borderRadius: Radius.md },
   vibeSubmitBtnDisabled: { opacity: 0.45 },
   vibeSubmitBtnText:     { fontSize: FontSizes.xs, fontWeight: '700', color: '#000' },
@@ -1354,12 +1359,12 @@ const styles = StyleSheet.create({
   vibeAvatarInitial:  { fontSize: 14, fontWeight: '700', color: '#fff' },
   vibeContent: { flex: 1, gap: 3 },
   vibeHeader:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  vibeAuthor:  { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
+  vibeAuthor:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   vibeRating:  { fontSize: FontSizes.xs, color: '#fbbf24', letterSpacing: 1 },
-  vibeMsg:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
+  vibeMsg:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
   vibeEmpty:          { alignItems: 'center', paddingVertical: Spacing.lg, gap: 4 },
-  vibeEmptyTitle:     { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
-  vibeEmptySubtitle:  { fontSize: FontSizes.xs, color: Colors.muted2 },
+  vibeEmptyTitle:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
+  vibeEmptySubtitle:  { fontSize: FontSizes.xs, color: c.muted2 },
 
   // ── City Picks cards ──────────────────────────────────────────────────────
   picksGrid: { gap: Spacing.sm },
@@ -1380,7 +1385,7 @@ const styles = StyleSheet.create({
   },
   pickCardContent: {
     fontSize:   FontSizes.sm,
-    color:      Colors.text,
+    color:      c.text,
     fontWeight: '500',
     lineHeight: 20,
   },
@@ -1393,7 +1398,7 @@ const styles = StyleSheet.create({
     paddingTop:        12,
     backgroundColor:   'rgba(14, 14, 16, 0.92)',
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
     flexShrink:        0,
   },
   friendBtn: {
@@ -1406,11 +1411,11 @@ const styles = StyleSheet.create({
     backgroundColor:   'transparent',
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
-  friendBtnActive:     { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: Colors.accent },
-  friendBtnText:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text },
-  friendBtnTextActive: { color: Colors.accent },
+  friendBtnActive:     { backgroundColor: 'rgba(255,122,60,0.10)', borderColor: c.accent },
+  friendBtnText:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  friendBtnTextActive: { color: c.accent },
 
   dmBtn: {
     flex:            1,
@@ -1419,15 +1424,15 @@ const styles = StyleSheet.create({
     justifyContent:  'center',
     gap:             8,
     paddingVertical: 15,
-    backgroundColor: Colors.accent2,
+    backgroundColor: c.accent2,
     borderRadius:    Radius.lg,
-    shadowColor:     Colors.accent2,
+    shadowColor:     c.accent2,
     shadowOffset:    { width: 0, height: 4 },
     shadowOpacity:   0.30,
     shadowRadius:    8,
     elevation:       5,
   },
-  dmBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.white },
+  dmBtnText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
 
   reportBtn: {
     width:           44,
@@ -1435,9 +1440,9 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
     borderRadius:    Radius.lg,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.08)',
+    borderColor:     c.overlay,
   },
 
   // ── Avatar lightbox ───────────────────────────────────────────────────────
@@ -1459,7 +1464,7 @@ const styles = StyleSheet.create({
     width:           38,
     height:          38,
     borderRadius:    19,
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
   },

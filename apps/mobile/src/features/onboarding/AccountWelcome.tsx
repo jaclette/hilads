@@ -9,7 +9,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   visible:  boolean;
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export function AccountWelcome({ visible, username, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('common');
 
@@ -71,33 +74,33 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   close: {
     position: 'absolute', right: Spacing.lg, zIndex: 2,
     width: 36, height: 36, borderRadius: Radius.full,
-    backgroundColor: Colors.bg2, borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  closeText: { color: Colors.text, fontSize: 16, fontWeight: '600' },
+  closeText: { color: c.text, fontSize: 16, fontWeight: '600' },
   content: {
     flexGrow: 1, justifyContent: 'center', alignItems: 'center',
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.xl, gap: Spacing.md,
   },
   party: { fontSize: 64, marginBottom: Spacing.sm },
-  title: { fontSize: 26, fontWeight: '800', color: Colors.text, textAlign: 'center', letterSpacing: -0.5 },
-  subtitle: { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', marginBottom: Spacing.sm },
+  title: { fontSize: 26, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
+  subtitle: { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
   features: { alignSelf: 'stretch', gap: Spacing.md, marginTop: Spacing.sm },
   feature: {
-    fontSize: FontSizes.md, color: Colors.text, lineHeight: 24,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1, borderColor: Colors.border, borderRadius: Radius.lg,
+    fontSize: FontSizes.md, color: c.text, lineHeight: 24,
+    backgroundColor: c.overlayWeak,
+    borderWidth: 1, borderColor: c.border, borderRadius: Radius.lg,
     paddingVertical: 14, paddingHorizontal: 16,
   },
   footer: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
   cta: {
-    backgroundColor: Colors.accent, borderRadius: 16, padding: 16, alignItems: 'center',
-    shadowColor: Colors.accent, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
+    backgroundColor: c.accent, borderRadius: 16, padding: 16, alignItems: 'center',
+    shadowColor: c.accent, shadowOffset: { width: 0, height: 6 }, shadowOpacity: 0.3, shadowRadius: 12, elevation: 6,
   },
   ctaText: { fontSize: FontSizes.md, fontWeight: '700', color: '#fff' },
 });

@@ -16,7 +16,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import { ReportModal } from '@/features/profile/ReportModal';
 import { ProfileActionSheet } from '@/features/profile/ProfileActionSheet';
@@ -27,6 +28,9 @@ import { formatDateLabel } from '@/lib/messageTime';
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function GuestProfileScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('publicProfile');
   const { nickname, guestId } = useLocalSearchParams<{ nickname: string; guestId: string }>();
@@ -88,7 +92,7 @@ export default function GuestProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Ionicons name="chevron-back" size={22} color={Colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle}>{t('title')}</Text>
@@ -171,8 +175,8 @@ export default function GuestProfileScreen() {
 
 const AVATAR_SIZE = 88;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -180,16 +184,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -204,7 +208,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
   },
 
@@ -229,14 +233,14 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
     textAlign:     'center',
   },
   guestBadge: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     borderRadius:    Radius.full,
     paddingHorizontal: 10,
     paddingVertical:   4,
@@ -244,17 +248,17 @@ const styles = StyleSheet.create({
   guestBadgeText: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.6,
   },
   cityLabel: {
     fontSize: FontSizes.sm,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
   note: {
     textAlign:         'center',
     fontSize:          FontSizes.sm,
-    color:             Colors.muted2,
+    color:             c.muted2,
     opacity:           0.6,
     paddingHorizontal: Spacing.xl,
     marginTop:         Spacing.sm,
@@ -267,6 +271,6 @@ const styles = StyleSheet.create({
   // Routed through the theme so it inherits future contrast fixes.
   reportLinkText: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
 });
