@@ -15721,6 +15721,23 @@ body.has-app-promo-banner .page-header {
    toolbar. Fallback order: 100vh (old) → 100dvh (modern, wins).
    ═══════════════════════════════════════════════════════════════════════════ */
 .sl {
+  /* Daylight theme, scoped to the landing so the still-dark app is untouched.
+     Overriding these tokens re-colors every var() descendant (the sl- and the
+     shared ob- and lp- classes) in one place; a few hardcoded dark literals are
+     overridden explicitly below and inline. Becomes the global default in phase 3. */
+  --bg: #FBF6F0;
+  --surface: #FFFFFF;
+  --surface2: #F3EAE0;
+  --border: #EADDD0;
+  --text: #241A12;
+  --muted: #6E5D4E;
+  --muted2: #6E5D4E;
+  --accent2: #9C5A1C;   /* deepened from #B87228 so it stays AA as text on white */
+  color-scheme: light;
+  /* Anchor color to the scoped dark ink — `color` inherits as a computed value,
+     so without this the body's dark-theme off-white would leak into any landing
+     text that doesn't re-declare color (e.g. the sticky header). */
+  color: var(--text);
   height: 100vh;
   height: 100dvh;
   overflow-y: auto;
@@ -15729,7 +15746,7 @@ body.has-app-promo-banner .page-header {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   background:
-    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(194, 74, 56, 0.16) 0%, transparent 62%),
+    radial-gradient(ellipse 90% 45% at 50% 0%, rgba(255, 122, 60, 0.12) 0%, transparent 62%),
     var(--bg);
   scrollbar-width: none;
 }
@@ -15772,7 +15789,7 @@ body.has-app-promo-banner .page-header {
   flex: 1 1 0;
   height: 3px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(28, 20, 14, 0.12);
   transition: background 0.25s ease;
 }
 .sl-progress-seg.done   { background: rgba(255, 122, 60, 0.55); }
@@ -15913,7 +15930,7 @@ body.has-app-promo-banner .page-header {
   padding: 0 16px;
   pointer-events: none;     /* brand anchor only - never intercepts taps */
   /* subtle top-down tint so the mark reads on any background incl. the S1 video */
-  background: linear-gradient(180deg, rgba(13, 11, 9, 0.82) 0%, rgba(13, 11, 9, 0.5) 55%, transparent 100%);
+  background: linear-gradient(180deg, rgba(251, 246, 240, 0.92) 0%, rgba(251, 246, 240, 0.6) 55%, transparent 100%);
 }
 .sl-header .logo-wordmark { font-weight: 800; }
 .sl-header-baseline {
@@ -15923,7 +15940,7 @@ body.has-app-promo-banner .page-header {
   line-height: 1.15;
   color: var(--muted2);
   padding-left: 9px;
-  border-left: 1px solid rgba(255, 255, 255, 0.14);
+  border-left: 1px solid rgba(28, 20, 14, 0.14);
   max-width: 42vw;
   text-align: left;
 }
@@ -15974,7 +15991,7 @@ body.has-app-promo-banner .page-header {
   border-radius: 20px;
   overflow: hidden;
   background: #050403;              /* dark poster bg - no layout jump while loading */
-  box-shadow: 0 12px 44px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  box-shadow: 0 14px 40px rgba(28, 20, 14, 0.22), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
 }
 .sl-video-el { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
 
@@ -16015,7 +16032,7 @@ body.has-app-promo-banner .page-header {
   box-shadow: 0 0 20px rgba(255, 122, 60, 0.12);
 }
 .sl-row .ob-event-title { font-weight: 600; }
-.sl-row-cta { color: var(--hot-dot); font-weight: 800; flex-shrink: 0; }
+.sl-row-cta { color: var(--accent); font-weight: 800; flex-shrink: 0; }
 .sl-screen--live .ob-events-preview { display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center; }
 
 /* ── S3 how ── */
@@ -16038,7 +16055,7 @@ body.has-app-promo-banner .page-header {
   margin: 0;
   font-size: 1.9rem; font-weight: 800; letter-spacing: -0.6px; line-height: 1.12;
 }
-.sl-concept strong { color: var(--hot-dot); margin-top: 8px; }
+.sl-concept strong { color: var(--accent); margin-top: 8px; }
 .sl-stats { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 .sl-stat {
   display: flex; flex-direction: column; align-items: center;
@@ -16064,3 +16081,22 @@ body.has-app-promo-banner .page-header {
   padding: 6px 2px;
 }
 .sl-tertiary-dot { color: var(--muted); }
+
+/* ── Landing daylight: overrides for the shared ob-/lp- classes used inside .sl.
+   Scoped to .sl so the in-app onboarding (which reuses these classes on the dark
+   theme) is unaffected. Fold into the global tokens when the app goes light in
+   phase 3. ── */
+.sl .ob-activity-block {
+  background: rgba(28, 20, 14, 0.03);
+  border-color: var(--border);
+}
+/* Store badges stay dark on the light page — the conventional App Store / Play
+   look, keeps the white glyph + label legible. Matches /join. */
+.sl .lp-store-btn {
+  background: #1E150F;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(28, 20, 14, 0.12);
+}
+.sl .lp-store-btn--live:hover { border-color: rgba(255, 255, 255, 0.22); }
+.sl .lp-store-top { color: rgba(255, 255, 255, 0.68); }

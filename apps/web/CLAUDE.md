@@ -109,10 +109,24 @@ Examples:
 
 ## 🎨 Visual Direction
 
-- dark UI with warm highlights
-- orange = energy / action
+Light-default, warm and approachable (migration from dark in progress).
+A dark theme is kept as a toggle, living in the Me / profile screen.
+
+- warm-white UI (cream ground, white cards) — NOT stark white
+- orange = energy / action, straight from the logo
 - minimal but expressive
 - smooth transitions
+
+Palette (light):
+- ground `#FBF6F0` · surface `#FFFFFF` · sand `#F3EAE0` · hairline `#EADDD0`
+- ink text `#241A12` · secondary `#6E5D4E`
+- energy orange `#FF7A3C` = FILL / accent only (fails contrast as text on white)
+- read-safe orange (buttons, links, orange text) = deep `#C24A38` → `#B87228`
+- "live" green must darken to `#17864C` for text on light
+
+Build for BOTH themes via tokens, don't hardcode dark-mode idioms:
+- separators use a hairline token, never `rgba(255,255,255,.x)`
+- elevation uses soft warm shadows, not dark-ground glows
 
 Avoid:
 - flat lifeless UI
