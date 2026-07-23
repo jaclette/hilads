@@ -21,6 +21,7 @@ import { haversineMeters, formatDistance } from './distance'
 import { formatExpiresIn } from './expiry'
 import { usePrefersReducedMotion } from './hooks/usePrefersReducedMotion'
 import Logo from './components/Logo'
+import { setTheme } from './lib/theme'
 import LandingPage from './components/LandingPage'
 import StoriesLanding from './components/StoriesLanding'
 import { FEATURED_CITY, MIN_LIVE_COUNT } from './config/featuredCity'
@@ -1117,6 +1118,14 @@ export default function App() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
+
+  // Members: the DB theme is the cross-device source of truth. Whenever an
+  // account loads/changes (authMe, sign-in, sign-up), reconcile its saved theme
+  // against the local cache. setTheme applies + caches locally (no DB write), so
+  // this never loops with the Me-screen toggle (which updates the DB, not this).
+  useEffect(() => {
+    if (account?.theme === 'light' || account?.theme === 'dark') setTheme(account.theme)
+  }, [account?.theme])
   const [showOnboarding, setShowOnboarding] = useState(false) // first-time guest carousel
   const [showChallengeIntro, setShowChallengeIntro] = useState(false) // "how challenges work" carousel, opened from city-chat feed prompt
   const [showNotifications, setShowNotifications] = useState(false)

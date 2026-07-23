@@ -127,7 +127,14 @@ function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BA
 
 export default function MeScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors, theme, toggleTheme } = useTheme();
+  const { colors, theme, setTheme } = useTheme();
+  // Local cache for instant boot (everyone) + DB for members (follows the account
+  // across devices; guests stay device-local).
+  const onToggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    if (account?.id) updateProfile({ theme: next }).catch(() => {});
+  };
 
   const router  = useRouter();
   const { t }   = useTranslation('me');
@@ -1089,7 +1096,7 @@ export default function MeScreen() {
             {/* Appearance - instant light/dark theme toggle. */}
             <TouchableOpacity
               style={styles.settingsRow}
-              onPress={toggleTheme}
+              onPress={onToggleTheme}
               activeOpacity={0.7}
             >
               <Ionicons name={theme === 'dark' ? 'moon-outline' : 'sunny-outline'} size={18} color={colors.muted} />

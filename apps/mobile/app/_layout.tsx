@@ -45,9 +45,16 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayoutInner() {
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = useApp();
-  const { colors } = useTheme();
+  const { colors, setTheme } = useTheme();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
+
+  // Members: apply the account's saved theme whenever it loads (DB is the
+  // cross-device source of truth; setTheme also refreshes the local cache).
+  // Guests never reach this — their theme lives only in device storage.
+  useEffect(() => {
+    if (account?.theme === 'light' || account?.theme === 'dark') setTheme(account.theme);
+  }, [account?.theme]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apple G1.2 - registered users created before the moderation update have
   // a NULL eula_accepted_at on their record. Show a blocking modal until they

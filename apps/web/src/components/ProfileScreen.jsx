@@ -96,7 +96,13 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [theme, setThemeChoice] = useState(
     () => (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme')) || 'light',
   )
-  const pickTheme = (t) => { setTheme(t); setThemeChoice(t) }
+  // Local cache for instant boot (everyone) + DB for members (follows the account
+  // across devices; guests stay device-local).
+  const pickTheme = (t) => {
+    setTheme(t)
+    setThemeChoice(t)
+    if (account?.id) updateProfile({ theme: t }).catch(() => {})
+  }
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   // Legend-only city picker. The "Home city" row is the ONLY surface

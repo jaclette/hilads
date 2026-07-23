@@ -613,6 +613,10 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_tip TEXT", 'use
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS ambassador_story TEXT", 'users.ambassador_story');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS about_me TEXT", 'users.about_me');
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_thumb_photo_url TEXT", 'users.profile_thumb_photo_url');
+// Theme preference ('light' | 'dark'). NULL = no preference → client uses its
+// default. Members store it here so it follows the account across devices;
+// guests keep theirs in device storage only.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS theme TEXT DEFAULT NULL", 'users.theme');
 
 // username - the unique @-mention handle. Case-insensitive uniqueness enforced
 // at the DB level via a partial unique index on lower(username) (partial so the

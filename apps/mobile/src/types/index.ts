@@ -618,6 +618,9 @@ export interface User {
   age?: number;
   vibe?: VibeKey;
   mode?: ModeKey;
+  /** Saved theme preference — members store it server-side so it follows the
+   *  account across devices. null/undefined = no preference (client default). */
+  theme?: 'light' | 'dark' | null;
   guest_id?: string;
   primaryBadge?: Badge;
   isFriend?: boolean;

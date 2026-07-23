@@ -469,6 +469,16 @@ class AuthService
             $fields['display_name'] = $name;
         }
 
+        // Theme preference. 'light' | 'dark', or null to clear (fall back to the
+        // client default). Anything else is rejected.
+        if (array_key_exists('theme', $body)) {
+            $theme = $body['theme'];
+            if ($theme !== null && $theme !== 'light' && $theme !== 'dark') {
+                Response::json(['error' => 'theme must be "light", "dark", or null'], 422);
+            }
+            $fields['theme'] = $theme;
+        }
+
         if (array_key_exists('birth_year', $body)) {
             $year    = $body['birth_year'];
             $minYear = (int) date('Y') - 100;
@@ -631,6 +641,9 @@ class AuthService
             'has_seen_public_optin' => (bool) ($user['has_seen_public_optin'] ?? false),
             'isAmbassador'      => $isAmbassador,
             'ambassadorPicks'   => $isAmbassador ? (object) $picks : null,
+            // Saved theme preference ('light'|'dark'), or null = no preference.
+            // The client reconciles this against its local cache on login.
+            'theme'             => $user['theme'] ?? null,
         ]);
     }
 

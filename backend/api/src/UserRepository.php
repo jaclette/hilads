@@ -107,7 +107,7 @@ class UserRepository
     {
         $allowed = [
             'username', 'display_name', 'birth_year', 'profile_photo_url', 'profile_thumb_photo_url',
-            'home_city', 'about_me', 'interests', 'vibe', 'mode',
+            'home_city', 'about_me', 'interests', 'vibe', 'mode', 'theme',
             'ambassador_restaurant', 'ambassador_spot', 'ambassador_tip', 'ambassador_story',
         ];
         $sets    = [];
