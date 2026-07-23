@@ -5,6 +5,9 @@
 }
 
 :root {
+  /* Dark palette (current default). Phase 3 flips the default to light and moves
+     these under :root[data-theme="dark"]; until then a data-theme="light" wrapper
+     (or the Me-screen toggle) re-themes any subtree via the block below. */
   --bg: #0d0b09;
   --surface: #161210;
   --surface2: #1e1812;
@@ -20,6 +23,50 @@
   --mine-bg: #8C3427;
   --other-bg: #1c1610;
   --mobile-tabbar-height: 4.875rem;
+
+  /* Semantic tokens — the vocabulary the app-shell migration (phase 3) routes the
+     scattered rgba(255,255,255,.x) overlays and dark glows through, so each has
+     ONE definition per theme instead of hundreds of literals. Dark values here. */
+  --separator: rgba(255, 255, 255, 0.08);
+  --overlay-weak: rgba(255, 255, 255, 0.04);
+  --overlay: rgba(255, 255, 255, 0.07);
+  --overlay-strong: rgba(255, 255, 255, 0.12);
+  --elevated: #1e1812;
+  --input-bg: #0d0b09;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Light palette + semantic tokens. Themes the document root when the Me-screen
+   toggle sets data-theme="light" (phase 3), AND any element carrying
+   data-theme="light" (scoped use). Defined now as phase-2 groundwork; the
+   pre-auth funnel (currently light via its own .sl / .auth-page blocks) folds
+   into this in phase 3. */
+[data-theme="light"] {
+  --bg: #FBF6F0;
+  --surface: #FFFFFF;
+  --surface2: #F3EAE0;
+  --border: #EADDD0;
+  --accent: #C24A38;
+  --accent2: #9C5A1C;   /* deepened from #B87228 for AA text on white */
+  --green: #17864C;     /* neon #3ddc84 fails on white; darkened for text/dots */
+  --hot-dot: #FF7A3C;   /* fill / accent only — never text on white */
+  --profile-dot: #7C4DE0;
+  --text: #241A12;
+  --muted: #6E5D4E;
+  --muted2: #6E5D4E;
+  --mine-bg: #C24A38;
+  --other-bg: #F1E9DF;
+
+  --separator: #EADDD0;
+  --overlay-weak: rgba(28, 20, 14, 0.03);
+  --overlay: rgba(28, 20, 14, 0.05);
+  --overlay-strong: rgba(28, 20, 14, 0.08);
+  --elevated: #FFFFFF;
+  --input-bg: #FFFFFF;
+  --scrim: rgba(28, 20, 14, 0.35);
+  --card-shadow: 0 1px 2px rgba(28, 20, 14, 0.06), 0 8px 24px rgba(28, 20, 14, 0.08);
+  color-scheme: light;
 }
 
 /* Responsive root font-size. The app is ~74% rem-based, so scaling the root

@@ -7,6 +7,7 @@ import i18n, { resolveInitialLocale, loadLocale, RTL_LOCALES } from './i18n'
 
 import posthog from 'posthog-js'
 import { captureUtm } from './lib/utm'
+import { initTheme } from './lib/theme'
 
 // Crawler / bot / link-previewer short-circuit. The prerender already shipped
 // the SSR HTML (title, meta, hreflang, JSON-LD, body) that bots index - running
@@ -104,6 +105,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 // stamp <html lang> / redirect by Accept-Language - this client step keeps the
 // SPA correct on every route in the meantime.
 async function bootstrap() {
+    // Apply the stored theme before first paint (defaults to dark today — a no-op
+    // until phase 3 flips the default and ships the Me-screen toggle).
+    initTheme()
+
     const locale = resolveInitialLocale()
     if (locale !== 'en') {
         try { await loadLocale(locale) } catch { /* fall back to bundled EN */ }
