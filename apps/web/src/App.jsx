@@ -4543,8 +4543,8 @@ export default function App() {
 
   if (rehydrating && status === 'onboarding') {
     return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: '#111' }}>
-        <div style={{ width: 32, height: 32, border: '3px solid #333', borderTopColor: '#f60', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100dvh', background: '#FBF6F0' }}>
+        <div style={{ width: 32, height: 32, border: '3px solid #EADDD0', borderTopColor: '#C24A38', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
       </div>
     )
   }

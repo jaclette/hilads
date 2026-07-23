@@ -71,7 +71,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
   }
 
   return (
-    <div className="full-page">
+    <div className="full-page auth-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
         <span className="page-title">{tab === 'signup' ? t('title.signup') : t('title.login')}</span>

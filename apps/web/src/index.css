@@ -16100,3 +16100,42 @@ body.has-app-promo-banner .page-header {
 }
 .sl .lp-store-btn--live:hover { border-color: rgba(255, 255, 255, 0.22); }
 .sl .lp-store-top { color: rgba(255, 255, 255, 0.68); }
+
+/* ── Auth sheet (sign-up / sign-in) daylight theme, scoped to .auth-page so the
+   shared page-/modal-/profile-mode-/back-button classes stay dark inside the app.
+   Same scoped-token pattern as .sl; folds into the global tokens in phase 3. ── */
+.auth-page {
+  --bg: #FBF6F0;
+  --surface: #FFFFFF;
+  --surface2: #F3EAE0;
+  --border: #EADDD0;
+  --text: #241A12;
+  --muted: #6E5D4E;
+  --muted2: #6E5D4E;
+  --accent2: #9C5A1C;   /* deepened from #B87228 so it stays AA as text on white */
+  color-scheme: light;
+  color: var(--text);   /* anchor: `color` inherits computed, don't leak the dark off-white */
+}
+/* White form fields pop on the cream page (base sets them to var(--bg)). */
+.auth-page .modal-input,
+.auth-page .username-input-row { background: var(--surface); }
+/* Chrome that was white-on-dark → warm hairline / ink. */
+.auth-page .page-header { border-bottom-color: var(--border); }
+.auth-page .back-button {
+  background: rgba(28, 20, 14, 0.04);
+  border-color: var(--border);
+  color: var(--text);
+}
+.auth-page .password-field-toggle:hover { background: rgba(28, 20, 14, 0.05); }
+/* Mode selector: off-brand blue → brand orange, legible on cream. */
+.auth-page .profile-mode-label { color: var(--accent); }
+.auth-page .profile-mode-btn { border-color: var(--border); }
+.auth-page .profile-mode-btn:hover { border-color: rgba(255, 122, 60, 0.40); background: rgba(255, 122, 60, 0.06); }
+.auth-page .profile-mode-btn--on { border-color: var(--accent); background: rgba(255, 122, 60, 0.12); }
+.auth-page .profile-mode-btn--on .profile-mode-btn-name { color: var(--text); }
+/* Accent tab + semantic text at readable contrast on cream (bright orange /
+   neon green / pink all fail on white). */
+.auth-page .auth-tab--active { color: var(--accent); }
+.auth-page .auth-error { color: #C0264A; }
+.auth-page .username-hint--ok  { color: #17864C; }
+.auth-page .username-hint--bad { color: #C0264A; }
