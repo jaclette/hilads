@@ -118,10 +118,20 @@ export async function hasBeenAsked(): Promise<boolean> {
  * Request push permission and register this device.
  * Safe to call multiple times - no-ops if already registered.
  * Pass `guestId` so the token is stored against the guest device too (a
- * logged-in user passes both → the row carries user_id + guest_id). Guests
- * (no account) register with guestId alone so the BO can reach them.
+ * logged-in user passes both → the row carries user_id + guest_id).
+ *
+ * `opts.prompt` (default true) controls whether the iOS/Android permission
+ * dialog is shown when permission is still undetermined. Pass `prompt: false`
+ * to register ONLY if the user has already granted permission - used for the
+ * at-boot guest registration so a first launch never triggers an unsolicited
+ * system prompt (product rule: no boot prompts). The real prompt happens on a
+ * value-first moment instead (sign-in / sign-up).
  */
-export async function requestAndRegisterPush(guestId?: string | null): Promise<string | null> {
+export async function requestAndRegisterPush(
+  guestId?: string | null,
+  opts: { prompt?: boolean } = {},
+): Promise<string | null> {
+  const prompt = opts.prompt !== false; // default: allowed to prompt
   console.log('[push-mobile] ── requestAndRegisterPush ────────────────────');
   console.log('[push-mobile] isDevice =', Device.isDevice, '| platform =', Platform.OS);
   console.log('[push-mobile] API_URL =', API_URL);
@@ -136,8 +146,6 @@ export async function requestAndRegisterPush(guestId?: string | null): Promise<s
   // Always ensure the Android channel is set up before token acquisition.
   await setupNotificationChannel();
 
-  await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
-
   const existing = await Notifications.getPermissionsAsync();
   let finalStatus = existing.status;
   console.log('[push-mobile] permission status (existing):', existing.status);
@@ -145,8 +153,19 @@ export async function requestAndRegisterPush(guestId?: string | null): Promise<s
     console.log('[push-mobile] iOS granular status:', JSON.stringify(existing.ios));
   }
 
+  // Prompt suppressed (at-boot guest path): register only if already granted,
+  // never show the system dialog. Bail quietly so the next value-first trigger
+  // (sign-in / sign-up) can do the real ask.
+  if (existing.status !== 'granted' && !prompt) {
+    console.log('[push-mobile] permission not granted and prompt disabled - skipping (no boot prompt)');
+    return null;
+  }
+
   if (existing.status !== 'granted') {
     console.log('[push-mobile] requesting permission...');
+    // Only mark "asked" when we actually show the dialog, so a suppressed
+    // (prompt:false) pass never makes hasBeenAsked() lie.
+    await AsyncStorage.setItem(PUSH_ASKED_KEY, '1');
     // On iOS, explicitly request alert + badge + sound.
     // On Android, requestPermissionsAsync() does nothing before Android 13
     // and prompts for POST_NOTIFICATIONS on Android 13+; ios options are ignored.

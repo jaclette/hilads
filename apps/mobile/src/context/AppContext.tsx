@@ -161,11 +161,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setIdentity = useCallback((id: GuestIdentity) => setIdentityRaw(id), []);
 
-  const setAccountWithLog = useCallback((u: User | null) => {
-    console.log('[app-ctx] setAccount called:', u ? `id=${u.id} name=${u.display_name}` : 'null');
-    setAccount(u);
-  }, []);
-
   // Bounded: this Record was only ever cleared on logout, so it grew per
   // event-chat across every city for the whole session (and the spread made
   // each context update heavier). Cap to the newest N by previewAt.
@@ -248,7 +243,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBooting, setBootError,
     setIdentity,
     setSessionId:            setSessionIdCb,
-    setAccount:              setAccountWithLog,
+    setAccount,
     setCity:                 setCityCb,
     setWsConnected,
     setUnreadDMs,
@@ -275,7 +270,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     booting, bootError, identity, sessionId, account, city, wsConnected,
     unreadDMs, unreadNotifications, eventChatPreviews, activeEventId, activeDmId,
     geoState, detectedCity, justPlacedCity, joined, onlineUsers, bootstrapData, showOnboarding, showAccountWelcome, nowPulse, blockedSet,
-    setIdentity, setSessionIdCb, setAccountWithLog, setCityCb, setEventChatPreview,
+    setIdentity, setSessionIdCb, setAccount, setCityCb, setEventChatPreview,
     removeEventChatPreview, clearEventChatCounts, setActiveEventIdCb, setActiveDmIdCb,
     setGeoStateCb, setDetectedCityCb, setJoinedCb, setOnlineUsersCb, setBootstrapDataCb,
     setShowOnboardingCb, setShowAccountWelcomeCb, pulseNow, setBlockedSet, addBlocked,

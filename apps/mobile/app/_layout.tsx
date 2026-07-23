@@ -41,30 +41,10 @@ if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
 // Keep native splash visible while booting
 SplashScreen.preventAutoHideAsync();
 
-// ── Module-level proof - runs once on JS bundle evaluation ───────────────────
-console.log('[layout] ── MODULE LOADED ───────────────────────────────────────');
-
 // ── Inner layout (has access to AppContext) ───────────────────────────────────
 
 function RootLayoutInner() {
-  const app = useApp();
-  const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = app;
-  // DIAG (shaking repro): the auth gate is confirmed stable (guest landing), so
-  // the loop driver is some OTHER context value. Log the full relevant state
-  // every render - whichever field flips between consecutive lines is the
-  // culprit. Remove once identified.
-  console.log('[layout] render |',
-    'booting=' + booting,
-    'joined=' + joined,
-    'account=' + !!account,
-    'city=' + (city?.channelId ?? null),
-    'geo=' + app.geoState,
-    'ws=' + app.wsConnected,
-    'detected=' + (app.detectedCity?.channelId ?? null),
-    'online=' + (app.onlineUsers?.length ?? 0),
-    'unreadDM=' + app.unreadDMs,
-    'unreadN=' + app.unreadNotifications,
-  );
+  const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = useApp();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 
@@ -154,7 +134,6 @@ function RootLayoutInner() {
   // change while sitting on /switch-city, so there's no redirect loop.
   useEffect(() => {
     if (!booting && !joined && account && !city) {
-      console.log('[layout] DIAG redirect → /switch-city (logged-in, no city)');
       router.replace('/switch-city');
     }
   }, [booting, joined, account, city]);
