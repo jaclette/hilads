@@ -307,7 +307,7 @@ function LeaderboardRow({ entry, isMe, showCity = false, onPress, t }) {
       >
         {entry.thumbAvatarUrl
           ? <img src={thumbUrl(entry.thumbAvatarUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          : (entry.displayName ?? '?')[0].toUpperCase()}
+          : (entry.displayName || '?')[0].toUpperCase()}
       </span>
       <span className="leaderboard-name-block">
         <span className="leaderboard-name">{entry.displayName}</span>
