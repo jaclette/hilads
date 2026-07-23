@@ -8,7 +8,8 @@ import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { avatarColor } from '@/lib/avatarColors';
 import type { LeaderboardEntry } from '@/types';
-import { Colors, Spacing } from '@/constants';
+import { Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 function Slot({
   entry,
@@ -19,6 +20,7 @@ function Slot({
   first?:  boolean;
   onPress: (userId: string | null) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const name = entry.displayName ?? '?';
   return (
     <View style={styles.slot}>
@@ -50,6 +52,8 @@ function Slot({
  * 3 right. Hidden when nobody is ranked yet; degrades cleanly with < 3.
  */
 export function MostLocalCard({ channelId, onSeeAll }: { channelId: number | string | null; onSeeAll: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('challenge');
   const router = useRouter();
   const { account } = useApp();
@@ -124,12 +128,12 @@ export function MostLocalCard({ channelId, onSeeAll }: { channelId: number | str
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     marginHorizontal: Spacing.md,
     marginBottom:     Spacing.md,
     padding:          14,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     // Gold border so the Most Local podium stands out (matches the Legend/crown theme).
     borderWidth:      1.5,
     borderColor:      'rgba(251,191,36,0.6)',
@@ -141,11 +145,11 @@ const styles = StyleSheet.create({
     elevation:        3,
   },
   head:  { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
-  title: { fontSize: 15, fontWeight: '800', color: Colors.text },
+  title: { fontSize: 15, fontWeight: '800', color: c.text },
   seeAll: { fontSize: 13, fontWeight: '600', color: '#60a5fa' },
   // Empty-leaderboard CTA: the head row's marginBottom is collapsed (no
   // podium below), the sub line carries the "be first ranked" nudge.
-  emptySub: { fontSize: 12, fontWeight: '500', color: Colors.muted, marginTop: -8 },
+  emptySub: { fontSize: 12, fontWeight: '500', color: c.muted, marginTop: -8 },
 
   podium: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 10 },
   slot:   { flex: 1, alignItems: 'center', gap: 6 },
@@ -156,12 +160,12 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
   },
   avatarFirst: { width: 66, height: 66, borderRadius: 33, borderWidth: 2, borderColor: 'rgba(255,122,60,0.55)' },
-  avatarSkel:  { backgroundColor: 'rgba(255,255,255,0.06)' },
+  avatarSkel:  { backgroundColor: c.overlay },
   avatarImg:   { width: '100%', height: '100%' },
   avatarLetter:      { color: '#fff', fontWeight: '800', fontSize: 18 },
   avatarLetterFirst: { fontSize: 22 },
 
-  meta:     { maxWidth: '100%', fontSize: 12, color: Colors.muted },
-  metaFirst: { color: Colors.text, fontWeight: '700' },
+  meta:     { maxWidth: '100%', fontSize: 12, color: c.muted },
+  metaFirst: { color: c.text, fontWeight: '700' },
   metaRank:  { color: '#FF7A3C', fontWeight: '800' },
 });

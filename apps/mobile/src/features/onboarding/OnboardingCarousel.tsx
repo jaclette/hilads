@@ -23,7 +23,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   visible: boolean;
@@ -32,6 +33,8 @@ interface Props {
 }
 
 export function OnboardingCarousel({ visible, city, onClose }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const insets   = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const router   = useRouter();
@@ -168,15 +171,15 @@ export function OnboardingCarousel({ visible, city, onClose }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   skip: {
     position: 'absolute',
     right: 14,
     zIndex: 2,
     padding: 8,
   },
-  skipText: { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '700' },
+  skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
 
   track: { flex: 1 },
   slide: {
@@ -190,13 +193,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: FontSizes.xl,
     fontWeight: '800',
-    color: Colors.text,
+    color: c.text,
     textAlign: 'center',
   },
   body: {
     fontSize: FontSizes.md,
     lineHeight: 24,
-    color: Colors.muted,
+    color: c.muted,
     textAlign: 'center',
     maxWidth: 340,
   },
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
   item: {
     fontSize: FontSizes.md,
     lineHeight: 22,
-    color: Colors.text,
+    color: c.text,
     textAlign: 'left',
   },
 
@@ -229,9 +232,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: Spacing.md,
     borderRadius: 14,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: c.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.22,
     shadowRadius: 10,
@@ -250,7 +253,7 @@ const styles = StyleSheet.create({
   ctaTertiaryText: {
     fontSize: FontSizes.sm,
     fontWeight: '600',
-    color: Colors.muted,
+    color: c.muted,
     textAlign: 'center',
   },
 
@@ -265,12 +268,12 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: Radius.full,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
   },
   dotActive: {
     width: 22,
     borderRadius: 4,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
 
   nextBtn: {
@@ -278,9 +281,9 @@ const styles = StyleSheet.create({
     maxWidth: 340,
     paddingVertical: 15,
     borderRadius: 14,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     alignItems: 'center',
-    shadowColor: Colors.accent,
+    shadowColor: c.accent,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

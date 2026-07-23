@@ -11,7 +11,8 @@ import { MostLocalCard } from '@/features/challenges/MostLocalCard';
 import { ShowcaseHeroCarousel } from '@/features/challenges/ShowcaseHeroCarousel';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeCityName } from '@/i18n/cityName';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * CHALLENGES bottom tab. Same browser as the pushed /challenge/all route, but
@@ -19,6 +20,8 @@ import { Colors, FontSizes, Spacing } from '@/constants';
  * AppHeader + a tab title instead of a back button.
  */
 export default function ChallengesTab() {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('challenge');
   const { city, account } = useApp();
   const router = useRouter();
@@ -84,8 +87,8 @@ export default function ChallengesTab() {
   );
 }
 
-const styles = StyleSheet.create({
-  container:     { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container:     { flex: 1, backgroundColor: c.bg },
   appHeaderWrap: { paddingHorizontal: Spacing.md },
   header: {
     flexDirection:     'row',
@@ -93,12 +96,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     minHeight:         56,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
+  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
+  headerSub:    { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
 
   myChallengesCta: {
     flexDirection:     'row',

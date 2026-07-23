@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { fetchCityMembers } from '@/api/channels';
 import { inviteToChallenge } from '@/api/challenges';
 import type { Challenge, UserDTO } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 
 type Props = {
@@ -37,6 +38,7 @@ type Props = {
 export function ChallengePostCreateSheet({
   visible, challenge, cityChannelId, cityName, currentUserId, onClose, onShare,
 }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const [step, setStep] = useState<'seed' | 'picker'>('seed');
 
@@ -85,6 +87,8 @@ function SeedView({
   onSkip:       () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   // International picker pings any city member; audience filtering only
   // applies to local challenges.
   const isInternational = (challenge?.mode ?? 'local') === 'international';
@@ -98,7 +102,7 @@ function SeedView({
       <Text style={styles.subtitle}>{t('postCreate.subtitle')}</Text>
 
       <TouchableOpacity style={styles.ctaPrimary} onPress={onPickPeople} activeOpacity={0.85}>
-        <Ionicons name="people" size={20} color={Colors.white} />
+        <Ionicons name="people" size={20} color={colors.white} />
         <View style={{ flex: 1 }}>
           <Text style={styles.ctaPrimaryText}>{t('postCreate.ctaInvite', { city })}</Text>
           <Text style={styles.ctaPrimarySub}>{t('postCreate.ctaInviteSub', { audience: audienceLabel })}</Text>
@@ -131,6 +135,8 @@ function PickerView({
   onBack: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   // International challenges target ANYONE in the target city - both locals
   // and travelers are valid candidates (the backend accept gate doesn't
   // check mode for international, only the target city). So we skip the
@@ -238,7 +244,7 @@ function PickerView({
     <View style={styles.body}>
       <View style={styles.pickerHeader}>
         <TouchableOpacity onPress={onBack} hitSlop={12} style={styles.headerBack}>
-          <Ionicons name="chevron-back" size={18} color={Colors.muted} />
+          <Ionicons name="chevron-back" size={18} color={colors.muted} />
         </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.title}>{t('postCreate.pickerTitle', { audience: audienceLabel, city })}</Text>
@@ -252,7 +258,7 @@ function PickerView({
 
       <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
         {loading ? (
-          <ActivityIndicator color={Colors.muted} style={{ marginVertical: Spacing.lg }} />
+          <ActivityIndicator color={colors.muted} style={{ marginVertical: Spacing.lg }} />
         ) : error ? (
           <Text style={styles.errorText}>{error}</Text>
         ) : members.length === 0 ? (
@@ -280,7 +286,7 @@ function PickerView({
                   {m.username ? <Text style={styles.handleText} numberOfLines={1}>@{m.username}</Text> : null}
                 </View>
                 <View style={[styles.check, isSelected && styles.checkSelected]}>
-                  {isSelected ? <Ionicons name="checkmark" size={16} color={Colors.white} /> : null}
+                  {isSelected ? <Ionicons name="checkmark" size={16} color={colors.white} /> : null}
                 </View>
               </TouchableOpacity>
             );
@@ -295,7 +301,7 @@ function PickerView({
         activeOpacity={0.85}
       >
         {sending
-          ? <ActivityIndicator color={Colors.white} size="small" />
+          ? <ActivityIndicator color={colors.white} size="small" />
           : (
             <Text style={styles.sendBtnText}>
               {selected.size === 0
@@ -309,23 +315,23 @@ function PickerView({
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '85%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4,
+    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4,
   },
   body: { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, gap: Spacing.sm },
 
-  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
-  subtitle: { fontSize: FontSizes.sm, color: Colors.muted, marginBottom: Spacing.sm },
+  title:    { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  subtitle: { fontSize: FontSizes.sm, color: c.muted, marginBottom: Spacing.sm },
 
   // ── Seed view CTAs ─────────────────────────────────────────────────────────
   ctaPrimary: {
@@ -335,8 +341,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     marginTop: Spacing.xs,
   },
-  ctaPrimaryText: { color: Colors.white, fontSize: FontSizes.md, fontWeight: '800' },
-  ctaPrimarySub:  { color: 'rgba(255,255,255,0.85)', fontSize: FontSizes.xs + 1, marginTop: 2 },
+  ctaPrimaryText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  ctaPrimarySub:  { color: c.overlayStrong, fontSize: FontSizes.xs + 1, marginTop: 2 },
 
   ctaSecondary: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -348,20 +354,20 @@ const styles = StyleSheet.create({
   ctaSecondaryText: { color: '#FF7A3C', fontSize: FontSizes.md, fontWeight: '700' },
 
   skipBtn: { paddingVertical: Spacing.sm, alignItems: 'center' },
-  skipText: { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '600' },
+  skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 
   // ── Picker view ────────────────────────────────────────────────────────────
   pickerHeader: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, paddingBottom: 4 },
   headerBack: {
     width: 32, height: 32, borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlay,
     alignItems: 'center', justifyContent: 'center',
     marginTop: 2,
   },
   list:        { maxHeight: 360 },
   listContent: { paddingBottom: Spacing.sm, gap: 4 },
-  empty:       { color: Colors.muted, textAlign: 'center', marginVertical: Spacing.lg },
-  errorText:   { color: Colors.red, textAlign: 'center', marginVertical: Spacing.md },
+  empty:       { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
+  errorText:   { color: c.red, textAlign: 'center', marginVertical: Spacing.md },
 
   memberRow: {
     flexDirection: 'row', alignItems: 'center', gap: 12,
@@ -372,11 +378,11 @@ const styles = StyleSheet.create({
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
   rowInfo: { flex: 1 },
-  name: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  handleText: { fontSize: FontSizes.sm, color: Colors.muted },
+  name: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  handleText: { fontSize: FontSizes.sm, color: c.muted },
   check: {
     width: 24, height: 24, borderRadius: 12,
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)',
+    borderWidth: 2, borderColor: c.overlayStrong,
     alignItems: 'center', justifyContent: 'center',
   },
   checkSelected: {
@@ -392,5 +398,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sendBtnDisabled: { opacity: 0.4 },
-  sendBtnText: { color: Colors.white, fontSize: FontSizes.md, fontWeight: '800' },
+  sendBtnText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
 });

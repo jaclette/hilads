@@ -14,7 +14,8 @@ import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
 
 const MODES = [
@@ -39,6 +40,9 @@ function safeReturnTo(raw: string | undefined): string | null {
 }
 
 export default function SignUpScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('auth');
   const { returnTo } = useLocalSearchParams<{ returnTo?: string }>();
@@ -183,13 +187,13 @@ export default function SignUpScreen() {
                   value={username}
                   onChangeText={handleUsernameChange}
                   placeholder={t('signUp.usernamePlaceholder')}
-                  placeholderTextColor={Colors.muted2}
+                  placeholderTextColor={colors.muted2}
                   autoCapitalize="none"
                   autoCorrect={false}
                   maxLength={20}
                   editable={!loading}
                 />
-                {uStatus === 'checking' && <ActivityIndicator size="small" color={Colors.muted} />}
+                {uStatus === 'checking' && <ActivityIndicator size="small" color={colors.muted} />}
                 {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
                 {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
               </View>
@@ -229,7 +233,7 @@ export default function SignUpScreen() {
                 value={email}
                 onChangeText={setEmail}
                 placeholder={t('signUp.emailPlaceholder')}
-                placeholderTextColor={Colors.muted2}
+                placeholderTextColor={colors.muted2}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -247,7 +251,7 @@ export default function SignUpScreen() {
                   value={password}
                   onChangeText={setPassword}
                   placeholder={t('signUp.passwordPlaceholder')}
-                  placeholderTextColor={Colors.muted2}
+                  placeholderTextColor={colors.muted2}
                   secureTextEntry={!showPassword}
                   autoComplete="new-password"
                   editable={!loading}
@@ -264,7 +268,7 @@ export default function SignUpScreen() {
                   <Ionicons
                     name={showPassword ? 'eye-off-outline' : 'eye-outline'}
                     size={20}
-                    color={Colors.muted2}
+                    color={colors.muted2}
                   />
                 </TouchableOpacity>
               </View>
@@ -283,7 +287,7 @@ export default function SignUpScreen() {
               disabled={loading || !eula}
             >
               {loading
-                ? <ActivityIndicator color={Colors.white} />
+                ? <ActivityIndicator color={colors.white} />
                 : <Text style={styles.submitText}>{t('signUp.submit')}</Text>
               }
             </TouchableOpacity>
@@ -300,14 +304,14 @@ export default function SignUpScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
   scroll:    { flexGrow: 1 },
 
   header:   { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
   backBtn:  { padding: 4, alignSelf: 'flex-start' },
-  backIcon: { fontSize: 22, color: Colors.text },
+  backIcon: { fontSize: 22, color: c.text },
 
   body: {
     flex:              1,
@@ -315,27 +319,27 @@ const styles = StyleSheet.create({
     paddingTop:        Spacing.xl,
     gap:               Spacing.md,
   },
-  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: Colors.text },
-  subtitle: { fontSize: FontSizes.sm,  color: Colors.muted, marginBottom: Spacing.sm },
+  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: c.text },
+  subtitle: { fontSize: FontSizes.sm,  color: c.muted, marginBottom: Spacing.sm },
 
   error: {
     fontSize:        FontSizes.sm,
-    color:           Colors.red,
+    color:           c.red,
     backgroundColor: 'rgba(248,113,113,0.1)',
     borderRadius:    Radius.md,
     padding:         Spacing.sm,
   },
 
   field:  { gap: 6 },
-  label:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+  label:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
   input: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.md,
     height:            48,
   },
@@ -356,19 +360,19 @@ const styles = StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     gap:               6,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     height:            48,
   },
-  usernameAt:    { fontSize: FontSizes.md, color: Colors.muted2, fontWeight: '600' },
-  usernameInput: { flex: 1, color: Colors.text, fontSize: FontSizes.md, height: 48 },
+  usernameAt:    { fontSize: FontSizes.md, color: c.muted2, fontWeight: '600' },
+  usernameInput: { flex: 1, color: c.text, fontSize: FontSizes.md, height: 48 },
   uOk:           { color: '#4ade80', fontSize: FontSizes.md, fontWeight: '700' },
-  uBad:          { color: Colors.red, fontSize: FontSizes.md, fontWeight: '700' },
+  uBad:          { color: c.red, fontSize: FontSizes.md, fontWeight: '700' },
   uOkHint:       { fontSize: FontSizes.xs, color: '#4ade80' },
-  uBadHint:      { fontSize: FontSizes.xs, color: Colors.red },
+  uBadHint:      { fontSize: FontSizes.xs, color: c.red },
 
   eulaSection: {
     marginTop: Spacing.sm,
@@ -376,7 +380,7 @@ const styles = StyleSheet.create({
   },
 
   submitBtn: {
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderRadius:    Radius.lg,
     paddingVertical: Spacing.md,
     alignItems:      'center',
@@ -385,15 +389,15 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.6 },
   submitText: {
-    color:              Colors.white,
+    color:              c.white,
     fontWeight:         '700',
     fontSize:           FontSizes.md,
     lineHeight:         FontSizes.md * 1.25,
     includeFontPadding: false,
   },
 
-  switchText: { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', marginTop: Spacing.sm },
-  switchLink: { color: Colors.accent, fontWeight: '600' },
+  switchText: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginTop: Spacing.sm },
+  switchLink: { color: c.accent, fontWeight: '600' },
 
   modeSection: {
     padding:         Spacing.md,
@@ -419,7 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     borderRadius:      Radius.md,
     borderWidth:       1.5,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     backgroundColor:   'transparent',
     alignItems:        'center',
     gap:               3,
@@ -435,14 +439,14 @@ const styles = StyleSheet.create({
   modeBtnLabel: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   modeBtnLabelActive: {
     color: '#fff',
   },
   modeBtnDesc: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted2,
+    color:      c.muted2,
     textAlign:  'center',
     lineHeight: 16,
   },

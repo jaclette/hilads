@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * Placeholder for the "no taker yet" right-hand slot on a challenge card's
@@ -36,6 +37,7 @@ export function OpenChallengeSlot({
   onPress,
   accessibilityLabel,
 }: OpenChallengeSlotProps) {
+  const styles = useThemedStyles(makeStyles);
   // Driver feeds both the opacity tween and the scale tween. Native
   // driver - no JS heap pressure during the loop, key for keeping the
   // feed buttery on entry-level Android.
@@ -104,7 +106,7 @@ export function OpenChallengeSlot({
   return slot;
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Dashed orange ring. RN's borderStyle: 'dashed' on iOS is reliable on
   // circular borders only when borderWidth is consistent on all sides
   // (which is the case here) and the radius matches half the size.

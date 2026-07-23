@@ -24,7 +24,8 @@ import { filterBlocked } from '@/lib/blockFilter';
 import type { OnlineUser } from '@/types';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { BADGE_META } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import { AppHeader } from '@/features/shell/AppHeader';
 
@@ -34,6 +35,8 @@ const CONTEXT_BADGE_KEYS = new Set(['host']);
 // Accepts a badge key string; derives label and colors from shared BADGE_META.
 
 function BadgePill({ badgeKey }: { badgeKey: string }) {
+  const pillStyles = useThemedStyles(makePillStyles);
+  const pillStyles = useThemedStyles(makePillStyles);
   const { t } = useTranslation('common');
   const meta = BADGE_META[badgeKey as keyof typeof BADGE_META] ?? BADGE_META.regular;
   return (
@@ -60,6 +63,8 @@ const VIBE_META: Record<string, { emoji: string; label: string; color: string; b
 };
 
 function VibePill({ vibe }: { vibe?: string | null }) {
+  const pillStyles = useThemedStyles(makePillStyles);
+  const pillStyles = useThemedStyles(makePillStyles);
   const { t } = useTranslation('common');
   if (!vibe) return null;
   const meta = VIBE_META[vibe];
@@ -71,7 +76,7 @@ function VibePill({ vibe }: { vibe?: string | null }) {
   );
 }
 
-const pillStyles = StyleSheet.create({
+const makePillStyles = (c: ThemeColors) => StyleSheet.create({
   pill: { alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 7, paddingVertical: 3, borderWidth: 1 },
   text: { fontSize: 10, fontWeight: '700' },
 });
@@ -87,6 +92,10 @@ const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, emoji:
 function OnlineUserRow({ user, isMe, onPress, onDm }: {
   user: OnlineUser; isMe: boolean; onPress?: () => void; onDm: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('here');
   const initials = (user.nickname ?? '?').slice(0, 2).toUpperCase();
   const color    = avatarColor(user.nickname ?? '');
@@ -122,7 +131,7 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
       </View>
       {!isMe && user.userId && (
         <TouchableOpacity style={styles.dmBtn} onPress={onDm} activeOpacity={0.7}>
-          <Feather name="message-square" size={22} color={Colors.text} />
+          <Feather name="message-square" size={22} color={colors.text} />
         </TouchableOpacity>
       )}
     </TouchableOpacity>
@@ -132,6 +141,8 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
 // ── City crew row ─────────────────────────────────────────────────────────────
 
 function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const styles = useThemedStyles(makeStyles);
   const initials = (member.displayName ?? '?').slice(0, 2).toUpperCase();
   const color    = avatarColor(member.displayName ?? '');
   return (
@@ -162,6 +173,10 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HereScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('here');
   const { city, sessionId, account, onlineUsers, blockedSet } = useApp();
@@ -398,10 +413,10 @@ export default function HereScreen() {
         {legends.length > 0 && (
           <>
             <View style={[styles.sectionHeader, { marginTop: Spacing.xl, flexDirection: 'column', alignItems: 'flex-start', gap: 2 }]}>
-              <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: Colors.text }]}>
+              <Text style={[styles.sectionTitle, { textTransform: 'none', letterSpacing: 0, fontSize: FontSizes.sm, color: colors.text }]}>
                 👑 {t('legends')}
               </Text>
-              <Text style={{ fontSize: FontSizes.xs, color: Colors.muted }}>{t('legendsSub')}</Text>
+              <Text style={{ fontSize: FontSizes.xs, color: colors.muted }}>{t('legendsSub')}</Text>
             </View>
             {legends.map(m => {
               const initials = (m.displayName ?? '?').slice(0, 2).toUpperCase();
@@ -446,7 +461,7 @@ export default function HereScreen() {
         </View>
 
         {crewLoading && visibleCrew.length === 0 ? (
-          <ActivityIndicator color={Colors.accent} style={{ marginTop: 12 }} />
+          <ActivityIndicator color={colors.accent} style={{ marginTop: 12 }} />
         ) : visibleCrew.length === 0 ? (
           <Text style={styles.sectionEmpty}>{t('noMatchCrew')}</Text>
         ) : visibleCrew.map(m => (
@@ -468,7 +483,7 @@ export default function HereScreen() {
             activeOpacity={0.7}
           >
             {crewLoading
-              ? <ActivityIndicator color={Colors.muted} size="small" />
+              ? <ActivityIndicator color={colors.muted} size="small" />
               : <Text style={styles.loadMoreText}>{t('loadMore')}</Text>
             }
           </TouchableOpacity>
@@ -481,14 +496,14 @@ export default function HereScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   // ── Header ────────────────────────────────────────────────────────────────
   header: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md,
-    borderBottomWidth: 1, borderBottomColor: Colors.border, minHeight: 56,
+    borderBottomWidth: 1, borderBottomColor: c.border, minHeight: 56,
   },
   // No borderBottom - header flows directly into the tab sub-header,
   // matching MY CITY's look.
@@ -496,16 +511,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
     paddingBottom:     12,
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
   },
   headerCenter: { flex: 1, alignItems: 'center' },
-  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: Colors.text, letterSpacing: -0.5 },
-  headerSub:    { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2, textAlign: 'center' },
+  headerTitle:  { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, letterSpacing: -0.5 },
+  headerSub:    { fontSize: FontSizes.sm, color: c.muted, marginTop: 2, textAlign: 'center' },
 
   // ── Filters ───────────────────────────────────────────────────────────────
   filtersWrap: {
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
-    backgroundColor: Colors.bg2,
+    borderBottomWidth: 1, borderBottomColor: c.border,
+    backgroundColor: c.bg2,
   },
   filterRow: {
     flexDirection: 'row', alignItems: 'center',
@@ -513,24 +528,24 @@ const styles = StyleSheet.create({
   },
   filterGroupLabel: {
     fontSize: 9, fontWeight: '700', textTransform: 'uppercase',
-    letterSpacing: 0.8, color: Colors.muted, marginRight: 2,
+    letterSpacing: 0.8, color: c.muted, marginRight: 2,
   },
   filterDivider: {
-    width: 1, height: 16, backgroundColor: Colors.border, marginHorizontal: 4,
+    width: 1, height: 16, backgroundColor: c.border, marginHorizontal: 4,
   },
   chip: {
     paddingHorizontal: 10, paddingVertical: 5,
-    borderRadius: 999, borderWidth: 1, borderColor: Colors.border,
+    borderRadius: 999, borderWidth: 1, borderColor: c.border,
     backgroundColor: 'transparent',
   },
   chipOn: {
-    borderColor: Colors.accent,
+    borderColor: c.accent,
     backgroundColor: 'rgba(194,74,56,0.12)',
   },
   chipOnLocal:     { borderColor: '#FF7A3C', backgroundColor: 'rgba(255,122,60,0.12)' },
   chipOnExploring: { borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.12)' },
-  chipText:           { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
-  chipTextOn:         { color: Colors.accent },
+  chipText:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  chipTextOn:         { color: c.accent },
   chipTextOnLocal:     { color: '#FF7A3C' },
   chipTextOnExploring: { color: '#60a5fa' },
 
@@ -543,23 +558,23 @@ const styles = StyleSheet.create({
   },
   liveDotSection: {
     width: 7, height: 7, borderRadius: 4,
-    backgroundColor: Colors.green,
-    shadowColor: Colors.green, shadowOpacity: 0.8, shadowRadius: 4, elevation: 3,
+    backgroundColor: c.green,
+    shadowColor: c.green, shadowOpacity: 0.8, shadowRadius: 4, elevation: 3,
   },
   sectionTitle: {
     fontSize: FontSizes.xs, fontWeight: '700', textTransform: 'uppercase',
-    letterSpacing: 0.8, color: Colors.muted,
+    letterSpacing: 0.8, color: c.muted,
   },
   sectionEmpty: {
-    fontSize: FontSizes.sm, color: Colors.muted,
+    fontSize: FontSizes.sm, color: c.muted,
     paddingVertical: 8, paddingLeft: 2,
   },
 
   // ── User row ──────────────────────────────────────────────────────────────
   row: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.bg2, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: c.bg2, borderRadius: Radius.lg,
+    borderWidth: 1, borderColor: c.border,
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md,
   },
   avatarWrap: {
@@ -573,12 +588,12 @@ const styles = StyleSheet.create({
   liveDot: {
     position: 'absolute', bottom: 1, right: 1,
     width: 10, height: 10, borderRadius: 5,
-    backgroundColor: Colors.green, borderWidth: 2, borderColor: Colors.bg2,
+    backgroundColor: c.green, borderWidth: 2, borderColor: c.bg2,
   },
   rowInfo: { flex: 1, gap: 4 },
   badgeRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
-  nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  youLabel:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '400' },
+  nickname:  { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  youLabel:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '400' },
 
   dmBtn: {
     width: 40, height: 40, borderRadius: 12,
@@ -596,29 +611,29 @@ const styles = StyleSheet.create({
   },
   legendPickPreview: {
     fontSize: FontSizes.xs,
-    color: Colors.muted,
+    color: c.muted,
     marginTop: 2,
   },
 
   // ── Load more ─────────────────────────────────────────────────────────────
   loadMoreBtn: {
     marginTop: 4, paddingVertical: 12,
-    backgroundColor: Colors.bg2, borderRadius: Radius.lg,
-    borderWidth: 1, borderColor: Colors.border,
+    backgroundColor: c.bg2, borderRadius: Radius.lg,
+    borderWidth: 1, borderColor: c.border,
     alignItems: 'center', justifyContent: 'center',
   },
-  loadMoreText: { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
+  loadMoreText: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
 
   // ── Empty (no city) ───────────────────────────────────────────────────────
   empty: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
   emptyEmoji: { fontSize: 48, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.md, color: Colors.muted, textAlign: 'center', lineHeight: 22 },
+  emptyTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', lineHeight: 22 },
   emptyBtn: {
     marginTop: Spacing.md, paddingHorizontal: Spacing.lg, paddingVertical: Spacing.sm + 2,
-    backgroundColor: Colors.accent, borderRadius: Radius.full,
+    backgroundColor: c.accent, borderRadius: Radius.full,
   },
-  emptyBtnText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.sm },
+  emptyBtnText: { color: c.white, fontWeight: '700', fontSize: FontSizes.sm },
 
   // ── Mode emoji colors ─────────────────────────────────────────────────────
   modeEmojiLocal:     { color: '#FF7A3C', opacity: 0.85 },

@@ -3,7 +3,8 @@ import { Modal, View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIn
 import { Image } from 'expo-image';
 import type { UserDTO, BadgeKey } from '@/types';
 import { BADGE_META } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 
 // Bottom-sheet list of members/attendees, opened by tapping the avatar row on a
@@ -20,6 +21,9 @@ type Props = {
 };
 
 export function MembersSheet({ visible, loading, participants, count, noun, onClose, onSelect }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <TouchableOpacity style={styles.backdrop} activeOpacity={1} onPress={onClose} />
@@ -34,7 +38,7 @@ export function MembersSheet({ visible, loading, participants, count, noun, onCl
 
         <ScrollView style={styles.list} contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
           {loading ? (
-            <ActivityIndicator color={Colors.muted} style={{ marginVertical: Spacing.lg }} />
+            <ActivityIndicator color={colors.muted} style={{ marginVertical: Spacing.lg }} />
           ) : participants.length === 0 ? (
             <Text style={styles.empty}>No one yet 🙌</Text>
           ) : (
@@ -77,28 +81,28 @@ export function MembersSheet({ visible, loading, participants, count, noun, onCl
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '70%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.2)', marginTop: 8, marginBottom: 4 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 4 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.lg, paddingVertical: Spacing.md },
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  close: { fontSize: 18, color: Colors.muted, fontWeight: '700' },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  close: { fontSize: 18, color: c.muted, fontWeight: '700' },
   list: { paddingHorizontal: Spacing.md },
   listContent: { paddingBottom: Spacing.md },
-  empty: { color: Colors.muted, textAlign: 'center', marginVertical: Spacing.lg },
+  empty: { color: c.muted, textAlign: 'center', marginVertical: Spacing.lg },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8 },
   avatar: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.md },
   rowInfo: { flex: 1 },
-  name: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  handleText: { fontSize: FontSizes.sm, color: Colors.muted },
+  name: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  handleText: { fontSize: FontSizes.sm, color: c.muted },
   badge: { borderRadius: Radius.full, paddingHorizontal: 8, paddingVertical: 2, borderWidth: 1 },
   badgeText: { fontSize: 10, fontWeight: '700' },
 });

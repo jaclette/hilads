@@ -1,7 +1,8 @@
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import type { StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, FontSizes, Gradients, Radius, Shadows } from '@/constants';
+import { FontSizes, Gradients, Radius, Shadows, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 // Shared primary CTA - gradient orange. Single source of truth for every
 // primary button on the app: Save profile, Create event, Join, etc. Disabled
@@ -36,6 +37,7 @@ export function PrimaryButton({
   labelStyle,
   accessibilityLabel,
 }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const isFab    = variant === 'fab';
   const inactive = disabled || loading;
 
@@ -89,7 +91,7 @@ export function PrimaryButton({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cta: {
     minHeight:    52,
     paddingHorizontal: 22,
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
   },
   ctaLabel: {
-    color:         Colors.white,
+    color:         c.white,
     fontSize:      FontSizes.md,
     fontWeight:    '700',
     letterSpacing: 0.2,
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
   },
   fabLabel: {
-    color:      Colors.white,
+    color:      c.white,
     fontSize:   FontSizes.md,
     fontWeight: '700',
   },

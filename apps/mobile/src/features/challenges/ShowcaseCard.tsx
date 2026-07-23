@@ -5,7 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { avatarColor } from '@/lib/avatarColors';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import type { ShowcaseItem } from '@/api/challenges';
 
 const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
@@ -21,6 +22,7 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
   onOpen:    () => void;
   onAvatar?: (userId: string) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const intl        = item.mode === 'international';
   const icon        = TYPE_ICON[item.challenge_type] ?? '🔥';
@@ -88,36 +90,36 @@ export function ShowcaseCard({ item, onOpen, onAvatar }: {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     marginHorizontal: Spacing.md,
     marginBottom:     Spacing.md,
     padding:          14,
-    backgroundColor:  Colors.bg2,
+    backgroundColor:  c.bg2,
     borderWidth:      StyleSheet.hairlineWidth,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     borderRadius:     14,
     gap:              10,
   },
   badgeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   modeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full, borderWidth: 1 },
   modeBadgeIntl:  { backgroundColor: 'rgba(56,189,248,0.10)', borderColor: 'rgba(56,189,248,0.35)' },
-  modeBadgeLocal: { backgroundColor: 'rgba(255,255,255,0.05)', borderColor: 'rgba(255,255,255,0.12)' },
+  modeBadgeLocal: { backgroundColor: c.overlayWeak, borderColor: c.overlayStrong },
   modeBadgeTextIntl:  { fontSize: 12, fontWeight: '700', color: '#38bdf8' },
-  modeBadgeTextLocal: { fontSize: 12, fontWeight: '700', color: Colors.muted },
+  modeBadgeTextLocal: { fontSize: 12, fontWeight: '700', color: c.muted },
   starsBadge: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(255,201,60,0.12)', borderColor: 'rgba(255,201,60,0.4)', borderWidth: 1, paddingHorizontal: 8, paddingVertical: 3, borderRadius: Radius.full },
   starsText:  { fontSize: 12, fontWeight: '800', color: '#FFC93C' },
 
   body:     { flexDirection: 'row', gap: 12 },
-  proof:    { width: 72, height: 72, borderRadius: 10, backgroundColor: Colors.bg },
+  proof:    { width: 72, height: 72, borderRadius: 10, backgroundColor: c.bg },
   bodyText: { flex: 1, gap: 6 },
-  title:    { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text },
-  city:     { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+  title:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  city:     { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 
   byRow:        { flexDirection: 'row', alignItems: 'center', gap: 6 },
   avatar:       { width: 22, height: 22, borderRadius: 11, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 11 },
-  byText:       { flex: 1, fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '600' },
+  byText:       { flex: 1, fontSize: FontSizes.sm, color: c.muted, fontWeight: '600' },
 
-  comment: { fontSize: FontSizes.sm, color: Colors.muted2, fontStyle: 'italic', lineHeight: FontSizes.sm * 1.35 },
+  comment: { fontSize: FontSizes.sm, color: c.muted2, fontStyle: 'italic', lineHeight: FontSizes.sm * 1.35 },
 });

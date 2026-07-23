@@ -8,9 +8,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authForgotPassword } from '@/api/auth';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 export default function ForgotPasswordScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('auth');
 
@@ -72,7 +76,7 @@ export default function ForgotPasswordScreen() {
                     value={email}
                     onChangeText={setEmail}
                     placeholder={t('forgotPassword.emailPlaceholder')}
-                    placeholderTextColor={Colors.muted2}
+                    placeholderTextColor={colors.muted2}
                     keyboardType="email-address"
                     autoCapitalize="none"
                     autoCorrect={false}
@@ -91,7 +95,7 @@ export default function ForgotPasswordScreen() {
                   disabled={loading || !email.trim()}
                 >
                   {loading
-                    ? <ActivityIndicator color={Colors.white} />
+                    ? <ActivityIndicator color={colors.white} />
                     : <Text style={styles.submitText}>{t('forgotPassword.submit')}</Text>
                   }
                 </TouchableOpacity>
@@ -104,14 +108,14 @@ export default function ForgotPasswordScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
   scroll:    { flexGrow: 1, paddingBottom: Spacing.xxl },
 
   header:   { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
   backBtn:  { padding: 4, alignSelf: 'flex-start' },
-  backIcon: { fontSize: 22, color: Colors.text },
+  backIcon: { fontSize: 22, color: c.text },
 
   body: {
     flex:              1,
@@ -119,25 +123,25 @@ const styles = StyleSheet.create({
     paddingTop:        Spacing.xl,
     gap:               Spacing.md,
   },
-  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: Colors.text },
-  subtitle: { fontSize: FontSizes.sm, color: Colors.muted, marginBottom: Spacing.sm },
+  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: c.text },
+  subtitle: { fontSize: FontSizes.sm, color: c.muted, marginBottom: Spacing.sm },
 
   field:  { gap: 6 },
-  label:  { fontSize: FontSizes.sm, color: Colors.muted, fontWeight: '500' },
+  label:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
   input: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.md,
     height:            48,
   },
 
   submitBtn: {
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderRadius:    Radius.lg,
     paddingVertical: Spacing.md,
     alignItems:      'center',
@@ -146,7 +150,7 @@ const styles = StyleSheet.create({
   },
   submitBtnDisabled: { opacity: 0.6 },
   submitText: {
-    color:              Colors.white,
+    color:              c.white,
     fontWeight:         '700',
     fontSize:           FontSizes.md,
     lineHeight:         FontSizes.md * 1.25,
@@ -159,10 +163,10 @@ const styles = StyleSheet.create({
     paddingTop:  Spacing.xl,
   },
   successIcon:  { fontSize: 48, marginBottom: Spacing.sm },
-  successTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: Colors.text },
+  successTitle: { fontSize: FontSizes.xl, fontWeight: '700', color: c.text },
   successBody: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     lineHeight: FontSizes.sm * 1.6,
   },

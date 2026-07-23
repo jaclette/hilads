@@ -18,7 +18,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { HiladsIcon } from '@/components/HiladsIcon';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 /**
  * ✏️  TUNE ME. Single source of truth for the brand block's look.
@@ -47,14 +48,14 @@ export const LOCKUP = {
   nameFontFamily: undefined as string | undefined,
   /** Name tracking. */
   nameLetterSpacing: 0.2,
-  /** Name colour. Full-opacity warm-white = visible. Colors.accent = orange. */
-  nameColor: Colors.text,
+  /** Name colour. Full-opacity warm-white = visible. colors.accent = orange. */
+  // nameColor is applied per-theme in the component (colors.text).
 
   // ── "Become local. Anywhere." tagline (line under the name) ─────────────
   /** Render the tagline under the name. */
   taglineFontSize: 11,
   taglineLineHeight: 14,
-  taglineColor: 'rgba(255,255,255,0.5)',
+  // taglineColor is applied per-theme in the component (colors.overlayStrong).
   taglineFontWeight: '400' as '400' | '500' | '600' | '700',
   taglineLetterSpacing: 0.2,
   /** Cap so a long locale can't blow up the header; raise if the line clips. */
@@ -80,6 +81,9 @@ interface Props {
 }
 
 export function BrandLockup({ iconSize, glow = false, tagline, style }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const sqSize = iconSize ?? LOCKUP.iconSize;
 
   // Glow wraps ONLY the square so the text doesn't pick up a red halo.
@@ -108,7 +112,7 @@ export function BrandLockup({ iconSize, glow = false, tagline, style }: Props) {
             fontWeight:    LOCKUP.nameFontWeight,
             fontFamily:    LOCKUP.nameFontFamily,
             letterSpacing: LOCKUP.nameLetterSpacing,
-            color:         LOCKUP.nameColor,
+            color:         colors.text,
             includeFontPadding: false,
           }}
           allowFontScaling={false}
@@ -121,7 +125,7 @@ export function BrandLockup({ iconSize, glow = false, tagline, style }: Props) {
             style={{
               fontSize:      LOCKUP.taglineFontSize,
               lineHeight:    LOCKUP.taglineLineHeight,
-              color:         LOCKUP.taglineColor,
+              color:         colors.overlayStrong,
               fontWeight:    LOCKUP.taglineFontWeight,
               letterSpacing: LOCKUP.taglineLetterSpacing,
               maxWidth:      LOCKUP.taglineMaxWidth,
@@ -136,7 +140,7 @@ export function BrandLockup({ iconSize, glow = false, tagline, style }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems:    'center',

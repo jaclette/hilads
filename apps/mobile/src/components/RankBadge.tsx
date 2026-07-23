@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * Rank badge for the versus-card avatars. Two tiers:
@@ -49,6 +50,8 @@ const PODIUM_NUMBER_COLOR: Record<1 | 2 | 3, string> = {
 };
 
 export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProps) {
+  const styles = useThemedStyles(makeStyles);
+
   if (rank == null || rank < 1) return null;
   const isPodium = rank <= 3;
   // Shrink the digit so 2 / 3 / 4-digit ranks all fit in the same disc.
@@ -122,7 +125,7 @@ export function RankBadge({ rank, size = 24, accessibilityLabel }: RankBadgeProp
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Outer wrap is the consistent stacking context the parent positions
   // absolutely. Tilt sits on this so both tiers rotate the same way.
   wrap: {
@@ -143,12 +146,12 @@ const styles = StyleSheet.create({
   },
   podiumSheen: {
     position:        'absolute',
-    backgroundColor: 'rgba(255,255,255,0.55)',
+    backgroundColor: c.overlayStrong,
   },
   neutralDisc: {
     // bg2 surface keeps the disc readable against light photo avatars
     // too; the orange border doubles as the "elite group" cue.
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1.5,
     borderColor:     'rgba(255,122,60,0.65)',
   },

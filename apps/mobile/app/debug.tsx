@@ -2,9 +2,12 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { DebugPanel } from '@/features/debug/DebugPanel';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 export default function DebugScreen() {
+  const styles = useThemedStyles(makeStyles);
+
   const router = useRouter();
 
   return (
@@ -20,8 +23,8 @@ export default function DebugScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   header: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -29,9 +32,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backBtn:  { padding: 4 },
-  backIcon: { fontSize: 22, color: Colors.text },
-  title:    { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
+  backIcon: { fontSize: 22, color: c.text },
+  title:    { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
 });

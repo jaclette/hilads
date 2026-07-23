@@ -8,11 +8,13 @@ import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
 import { clearIdentity } from '@/lib/identity';
 import { clearToken } from '@/services/session';
-import { Colors, FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION } from '@/constants';
+import { FontSizes, Spacing, Radius, API_URL, WS_URL, APP_VERSION, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 // ── Row ───────────────────────────────────────────────────────────────────────
 
 function Row({ label, value }: { label: string; value: string }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.row}>
       <Text style={styles.label}>{label}</Text>
@@ -24,6 +26,7 @@ function Row({ label, value }: { label: string; value: string }) {
 // ── Action button ─────────────────────────────────────────────────────────────
 
 function Action({ title, onPress, danger }: { title: string; onPress: () => void; danger?: boolean }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <TouchableOpacity
       style={[styles.action, danger && styles.actionDanger]}
@@ -38,6 +41,8 @@ function Action({ title, onPress, danger }: { title: string; onPress: () => void
 // ── Panel ─────────────────────────────────────────────────────────────────────
 
 export function DebugPanel() {
+  const styles = useThemedStyles(makeStyles);
+
   const { identity, sessionId, account, city, wsConnected, logout } = useApp();
 
   function handleForceReconnect() {
@@ -104,14 +109,14 @@ export function DebugPanel() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   content:   { padding: Spacing.md, gap: Spacing.sm },
 
   heading: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.8,
     marginTop:     Spacing.sm,
@@ -119,10 +124,10 @@ const styles = StyleSheet.create({
   },
 
   card: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     overflow:        'hidden',
   },
   row: {
@@ -132,17 +137,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
-  label: { fontSize: FontSizes.sm, color: Colors.muted, flexShrink: 0 },
-  value: { fontSize: FontSizes.xs, color: Colors.text, flex: 1, textAlign: 'right', marginLeft: Spacing.sm },
+  label: { fontSize: FontSizes.sm, color: c.muted, flexShrink: 0 },
+  value: { fontSize: FontSizes.xs, color: c.text, flex: 1, textAlign: 'right', marginLeft: Spacing.sm },
 
   actions: { gap: Spacing.sm },
   action: {
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     paddingVertical: Spacing.sm,
     alignItems:      'center',
   },
@@ -150,6 +155,6 @@ const styles = StyleSheet.create({
     borderColor:     'rgba(248,113,113,0.4)',
     backgroundColor: 'rgba(248,113,113,0.08)',
   },
-  actionText:       { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.text },
-  actionTextDanger: { color: Colors.red },
+  actionText:       { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
+  actionTextDanger: { color: c.red },
 });

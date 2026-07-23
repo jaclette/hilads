@@ -20,7 +20,8 @@ import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import type { Challenge, ChallengeType } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type Tab = 'open' | 'validated';
 type TypeFilter = 'all' | ChallengeType;
@@ -55,6 +56,9 @@ const PAGE = 5;
  * city instead of a route param).
  */
 export function ChallengesList({ channelId, headerExtra }: { channelId: string | null; headerExtra?: ReactNode }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { city, account } = useApp();
@@ -167,7 +171,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   const hasMoreLocal = visibleCount < data.length;
 
   if (!channelId) {
-    return <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>;
+    return <View style={styles.center}><ActivityIndicator color={colors.accent} size="large" /></View>;
   }
 
   // Most Local (headerExtra) + filters scroll WITH the feed - only the screen
@@ -257,7 +261,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
           if (hasMoreLocal) setVisibleCount(v => Math.min(v + PAGE, data.length));
         }}
         ListFooterComponent={hasMoreLocal ? (
-          <View style={styles.footer}><ActivityIndicator size="small" color={Colors.muted} /></View>
+          <View style={styles.footer}><ActivityIndicator size="small" color={colors.muted} /></View>
         ) : null}
         renderItem={({ item }) => (
           <View style={styles.cardWrap}>
@@ -279,7 +283,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
         )}
         ListEmptyComponent={
           loading
-            ? <View style={styles.center}><ActivityIndicator color={Colors.accent} size="large" /></View>
+            ? <View style={styles.center}><ActivityIndicator color={colors.accent} size="large" /></View>
             : (
               <View style={styles.empty}>
                 <Text style={styles.emptyEmoji}>{tab === 'open' ? '🔥' : '✓'}</Text>
@@ -326,7 +330,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
         }
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={Colors.accent} />
+          <RefreshControl refreshing={refreshing} onRefresh={() => load(true)} tintColor={colors.accent} />
         }
       />
 
@@ -350,7 +354,7 @@ export function ChallengesList({ channelId, headerExtra }: { channelId: string |
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   root: { flex: 1 },
 
   scoringRow: {
@@ -367,21 +371,21 @@ const styles = StyleSheet.create({
     paddingBottom:     Spacing.sm,
     gap:               Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   tabPill: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm - 2,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
   },
   tabPillActive: {
     borderColor:     '#FF7A3C',
     backgroundColor: 'rgba(255,122,60,0.10)',
   },
-  tabPillText:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  tabPillText:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
   tabPillTextActive: { color: '#FF7A3C' },
 
   typeChipsRow: {
@@ -397,8 +401,8 @@ const styles = StyleSheet.create({
     minHeight:         32,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderColor:       c.overlayStrong,
+    backgroundColor:   c.overlayWeak,
     alignItems:        'center',
     justifyContent:    'center',
   },
@@ -406,7 +410,7 @@ const styles = StyleSheet.create({
     borderColor:     'rgba(255,122,60,0.45)',
     backgroundColor: 'rgba(255,122,60,0.14)',
   },
-  typeChipText:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: Colors.muted, letterSpacing: -0.2 },
+  typeChipText:       { fontSize: 12, lineHeight: 16, fontWeight: '700', color: c.muted, letterSpacing: -0.2 },
   typeChipTextActive: { color: '#FF7A3C' },
 
   list: { flex: 1 },
@@ -416,15 +420,15 @@ const styles = StyleSheet.create({
   center: { justifyContent: 'center', alignItems: 'center', paddingVertical: Spacing.xl },
   empty:  { justifyContent: 'center', alignItems: 'center', padding: Spacing.xl, gap: Spacing.sm },
   emptyEmoji: { fontSize: 44 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
 
   inspirationBlock: {
     width:     '100%',
     marginTop: Spacing.lg,
     gap:       Spacing.sm,
   },
-  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, textAlign: 'left' },
-  inspirationSub:     { fontSize: 12, fontWeight: '600', color: Colors.muted, textAlign: 'left', marginBottom: 2 },
+  inspirationHeading: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, textAlign: 'left' },
+  inspirationSub:     { fontSize: 12, fontWeight: '600', color: c.muted, textAlign: 'left', marginBottom: 2 },
 
   createCta: {
     marginHorizontal: Spacing.md,
@@ -437,5 +441,5 @@ const styles = StyleSheet.create({
     borderWidth:      1,
     borderColor:      'rgba(255,122,60,0.35)',
   },
-  createCtaText: { color: Colors.accent, fontSize: 15, fontWeight: '800' },
+  createCtaText: { color: c.accent, fontSize: 15, fontWeight: '800' },
 });

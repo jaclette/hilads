@@ -1,7 +1,8 @@
 import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { countryToFlag } from '@/lib/countryFlag';
 import { avatarColor } from '@/lib/avatarColors';
 
@@ -49,6 +50,7 @@ export function AvatarWithFlag({
   countryCode,
   size = 72,
 }: AvatarWithFlagProps) {
+  const styles = useThemedStyles(makeStyles);
   const flag    = countryCode ? countryToFlag(countryCode) : '';
   const initial = (displayName ?? '?').slice(0, 1).toUpperCase();
   const fallbackBg = avatarColor(userId ?? displayName ?? '?');
@@ -102,7 +104,7 @@ export function AvatarWithFlag({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: {
     position: 'relative',
   },
@@ -125,9 +127,9 @@ const styles = StyleSheet.create({
     alignItems:     'center',
     justifyContent: 'center',
     overflow:       'hidden',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:    2,
-    borderColor:    Colors.bg2,
+    borderColor:    c.bg2,
   },
   flag: {
     textAlign: 'center',

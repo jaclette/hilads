@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { formatExpiresIn } from '@/lib/expiry';
 
@@ -37,6 +38,7 @@ export function TopicCard({
   // NOW feed only - viewer created this hangout (show "waiting" not "say hi to self").
   isHost?: boolean;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('common');
   const icon      = CATEGORY_ICONS[topic.category ?? 'general'] ?? '💬';
   const replies   = topic.message_count ?? 0;
@@ -87,7 +89,7 @@ export function TopicCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cardKindRow: { flexDirection: 'row', alignItems: 'center', marginBottom: -2 },
   kindBadgeTopic: {
     backgroundColor:   'rgba(255,122,60,0.12)',
@@ -97,23 +99,23 @@ const styles = StyleSheet.create({
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.22)',
   },
-  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: Colors.accent, letterSpacing: 0.5 },
+  kindBadgeTopicText: { fontSize: 9, fontWeight: '700', color: c.accent, letterSpacing: 0.5 },
 
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardIcon:     { fontSize: 16, lineHeight: 18 },
-  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
+  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 19 },
 
   topicCard: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
     borderColor:     'rgba(96,165,250,0.15)',
     padding:         Spacing.md,
     gap:             8,
   },
-  topicTitle:    { color: Colors.text },
-  topicDesc:     { fontSize: FontSizes.sm, color: Colors.muted, lineHeight: 20 },
-  topicLocation: { fontSize: FontSizes.sm, color: Colors.muted },
+  topicTitle:    { color: c.text },
+  topicDesc:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
+  topicLocation: { fontSize: FontSizes.sm, color: c.muted },
   topicMeta:     { flex: 1, fontSize: FontSizes.sm, color: '#60a5fa', fontWeight: '600' },
 
   activeNowBadge: {
@@ -128,13 +130,13 @@ const styles = StyleSheet.create({
   activeNowText: { fontSize: 10, fontWeight: '700', color: '#4ade80', letterSpacing: 0.3 },
 
   expiryBadge: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   c.overlay,
     borderRadius:      Radius.full,
     paddingHorizontal: 8,
     paddingVertical:   2,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
+    borderColor:       c.overlayStrong,
     marginLeft:        6,
   },
-  expiryText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
+  expiryText: { fontSize: 10, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
 });

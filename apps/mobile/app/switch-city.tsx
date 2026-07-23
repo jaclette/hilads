@@ -35,7 +35,8 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { track } from '@/services/analytics';
 import type { City } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // ── Flag emoji - mirrors web cityFlag() ──────────────────────────────────────
 
@@ -49,6 +50,7 @@ function cityFlag(countryCode?: string): string {
 // ── Live activity dot - mirrors web .activity-dot.live pulse animation ───────
 
 function ActivityDot({ live }: { live: boolean }) {
+  const styles = useThemedStyles(makeStyles);
   const scale = useState(() => new Animated.Value(1))[0];
 
   useEffect(() => {
@@ -75,6 +77,7 @@ function ActivityDot({ live }: { live: boolean }) {
 // ── City card - mirrors web renderCityRow() ───────────────────────────────────
 
 function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('cities');
   const flag = cityFlag(city.country);
   // Active city always counts as live - user is there, at least 1 person online
@@ -142,6 +145,9 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function SwitchCityScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router                                              = useRouter();
   const { t } = useTranslation('cities');
   // First-launch mode: routed here by useAppBoot when IP detection found no city.
@@ -277,7 +283,7 @@ export default function SwitchCityScreen() {
             activeOpacity={0.7}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <Ionicons name="chevron-back" size={22} color={Colors.text} />
+            <Ionicons name="chevron-back" size={22} color={colors.text} />
           </TouchableOpacity>
         )}
         <Text style={styles.headerTitle}>{isFirstTime ? t('firstTimeTitle') : t('title')}</Text>
@@ -290,13 +296,13 @@ export default function SwitchCityScreen() {
           <Ionicons
             name="search"
             size={16}
-            color={searchFocused ? Colors.accent : Colors.muted2}
+            color={searchFocused ? colors.accent : colors.muted2}
             style={styles.searchIcon}
           />
           <TextInput
             style={styles.searchInput}
             placeholder={t('searchPlaceholder')}
-            placeholderTextColor={Colors.muted2}
+            placeholderTextColor={colors.muted2}
             value={query}
             onChangeText={setQuery}
             onFocus={() => setSearchFocused(true)}
@@ -338,19 +344,19 @@ export default function SwitchCityScreen() {
           onPress={() => switchToCity(detectedCity)}
           activeOpacity={0.8}
         >
-          <Ionicons name="locate" size={18} color={Colors.accent} style={styles.backToLocationIcon} />
+          <Ionicons name="locate" size={18} color={colors.accent} style={styles.backToLocationIcon} />
           <View style={styles.backToLocationText}>
             <Text style={styles.backToLocationLabel}>{t('backToLocation')}</Text>
             <Text style={styles.backToLocationSub}>{localizeCityName(detectedCity.name)}</Text>
           </View>
-          <Ionicons name="chevron-forward" size={16} color={Colors.accent} />
+          <Ionicons name="chevron-forward" size={16} color={colors.accent} />
         </TouchableOpacity>
       )}
 
       {/* ── City list ── */}
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -375,7 +381,7 @@ export default function SwitchCityScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={() => load(filter, true)}
-              tintColor={Colors.accent}
+              tintColor={colors.accent}
             />
           }
           ListHeaderComponent={sectionLabel ? (
@@ -397,8 +403,8 @@ export default function SwitchCityScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex1:     { flex: 1 },
 
   // ── .page-header ─────────────────────────────────────────────────────────
@@ -410,9 +416,9 @@ const styles = StyleSheet.create({
     minHeight:         60,
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.05)',
+    borderBottomColor: c.overlayWeak,
   },
   // Web: .back-button - 46×46px pill, border rgba(255,255,255,0.1), bg rgba(255,255,255,0.05)
   backBtn: {
@@ -422,8 +428,8 @@ const styles = StyleSheet.create({
     height:          46,
     borderRadius:    13,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderColor:     c.overlayStrong,
+    backgroundColor: c.overlayWeak,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -431,7 +437,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize:      22,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.22,
   },
 
@@ -441,16 +447,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     backgroundColor:   'rgba(13,11,9,0.9)',
   },
   searchInner: {
     flexDirection:     'row',
     alignItems:        'center',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      14,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 14,
   },
   // Web: .city-search-input:focus { border-color: var(--accent) }
@@ -464,7 +470,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex:            1,
     paddingVertical: 13,
-    color:           Colors.text,
+    color:           c.text,
     fontSize:        FontSizes.md,
   },
 
@@ -477,27 +483,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   Spacing.sm,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   filterPill: {
     paddingHorizontal: 12,
     paddingVertical:   6,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.12)',
+    borderColor:       c.overlayStrong,
     backgroundColor:   'transparent',
   },
   filterPillActive: {
-    backgroundColor: Colors.accent,
-    borderColor:     Colors.accent,
+    backgroundColor: c.accent,
+    borderColor:     c.accent,
   },
   filterPillText: {
     fontSize:   FontSizes.sm,
     fontWeight: '500',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   filterPillTextActive: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '600',
   },
 
@@ -511,7 +517,7 @@ const styles = StyleSheet.create({
     fontWeight:        '700',
     letterSpacing:     1.1,
     textTransform:     'uppercase',
-    color:             Colors.muted,
+    color:             c.muted,
   },
 
   // ── Back to my location CTA ──────────────────────────────────────────────
@@ -533,28 +539,28 @@ const styles = StyleSheet.create({
   backToLocationLabel: {
     fontSize:    15,
     fontWeight:  '700',
-    color:       Colors.accent,
+    color:       c.accent,
     letterSpacing: -0.1,
   },
   backToLocationSub: {
     fontSize:   13,
     fontWeight: '500',
-    color:      Colors.muted,
+    color:      c.muted,
     marginTop:  1,
   },
 
   listContent: { paddingBottom: 24 },
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  emptyText: { fontSize: FontSizes.md, color: Colors.muted2, textAlign: 'center' },
+  emptyText: { fontSize: FontSizes.md, color: c.muted2, textAlign: 'center' },
   retryBtn: {
     marginTop:         16,
     paddingHorizontal: 24,
     paddingVertical:   10,
     borderRadius:      999,
-    backgroundColor:   Colors.accent2,
+    backgroundColor:   c.accent2,
   },
-  retryText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.white },
+  retryText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.white },
 
   // ── Card wrapper - positions accent bar as a sibling to the card ─────────
   // overflow: visible so the bar can bleed past the card's rounded corners
@@ -570,8 +576,8 @@ const styles = StyleSheet.create({
   card: {
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
     padding:           10,
     gap:               4,
     overflow:          'hidden',
@@ -583,7 +589,7 @@ const styles = StyleSheet.create({
   //                         ↑ dark shadow - NOT orange. Orange only on the inset left bar.
   // Gradient approximated as flat midpoint rgba(194,74,56,0.09)
   cardActive: {
-    // rgba(194,74,56,0.12) blended over Colors.bg2 (#161210) → warm dark red surface
+    // rgba(194,74,56,0.12) blended over c.bg2 (#161210) → warm dark red surface
     backgroundColor: '#211410',
     borderColor:     'rgba(194,74,56,0.22)',
   },
@@ -600,8 +606,8 @@ const styles = StyleSheet.create({
     width:           4,
     zIndex:          1,
     borderRadius:    2,
-    backgroundColor: Colors.accent,
-    shadowColor:     Colors.accent,
+    backgroundColor: c.accent,
+    shadowColor:     c.accent,
     shadowOffset:    { width: 0, height: 0 },
     shadowOpacity:   0.55,
     shadowRadius:    5,
@@ -628,12 +634,12 @@ const styles = StyleSheet.create({
     width:           7,
     height:          7,
     borderRadius:    3.5,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
     flexShrink:      0,
   },
   activityDotLive: {
-    backgroundColor: Colors.green,
-    shadowColor:     Colors.green,
+    backgroundColor: c.green,
+    shadowColor:     c.green,
     shadowOffset:    { width: 0, height: 0 },
     shadowOpacity:   0.6,
     shadowRadius:    4,
@@ -652,7 +658,7 @@ const styles = StyleSheet.create({
     flex:       1,
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
     lineHeight: 19,
     letterSpacing: -0.1,
   },
@@ -673,7 +679,7 @@ const styles = StyleSheet.create({
   hereBadgeText: {
     fontSize:      10,
     fontWeight:    '700',
-    color:         Colors.accent,
+    color:         c.accent,
     letterSpacing: 0.1,
   },
 
@@ -686,11 +692,11 @@ const styles = StyleSheet.create({
     flexWrap:      'wrap',
     gap:           10,
   },
-  statOnline: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.green },
+  statOnline: { fontSize: FontSizes.xs, fontWeight: '700', color: c.green },
   // Challenges = the headline feature → accent colour so it leads the eye.
-  statChallenges: { fontSize: FontSizes.xs, fontWeight: '800', color: Colors.accent },
-  statMembers: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
-  statEvents: { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.text },
+  statChallenges: { fontSize: FontSizes.xs, fontWeight: '800', color: c.accent },
+  statMembers: { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  statEvents: { fontSize: FontSizes.xs, fontWeight: '600', color: c.text },
   statTopics: { fontSize: FontSizes.xs, fontWeight: '600', color: '#60a5fa' },
-  statMsgs:   { fontSize: FontSizes.xs, fontWeight: '600', color: Colors.muted },
+  statMsgs:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
 });

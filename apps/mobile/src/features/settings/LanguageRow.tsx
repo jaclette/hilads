@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { setLocale, SUPPORTED, DEFAULT_LOCALE, type Locale } from '@/i18n';
 
 // Language names are always shown in their own language (not translated), the
@@ -61,6 +62,9 @@ const LANG_FLAGS: Record<Locale, string> = {
  * shows a flag beside each name.
  */
 export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean; trigger?: 'row' | 'flag' }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t, i18n } = useTranslation('common');
   const { height } = useWindowDimensions();
   const [open, setOpen] = useState(false);
@@ -81,14 +85,14 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
       accessibilityLabel={t('language')}
     >
       <Text style={styles.flagBtnEmoji}>{LANG_FLAGS[current]}</Text>
-      <Ionicons name="chevron-down" size={12} color={Colors.muted} />
+      <Ionicons name="chevron-down" size={12} color={colors.muted} />
     </TouchableOpacity>
   ) : (
     <TouchableOpacity style={styles.row} onPress={() => setOpen(true)} activeOpacity={0.7}>
-      <Ionicons name="language-outline" size={18} color={Colors.muted} />
+      <Ionicons name="language-outline" size={18} color={colors.muted} />
       <Text style={styles.label}>{t('language')}</Text>
       <Text style={styles.value}>{LANG_FLAGS[current]} {LANG_NAMES[current]}</Text>
-      <Ionicons name="chevron-forward" size={16} color={Colors.muted} />
+      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
     </TouchableOpacity>
   );
 
@@ -127,7 +131,7 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
                     <Text style={[styles.optionText, active && styles.optionTextActive]}>
                       {LANG_NAMES[code]}
                     </Text>
-                    {active && <Ionicons name="checkmark" size={18} color={Colors.accent} />}
+                    {active && <Ionicons name="checkmark" size={18} color={colors.accent} />}
                   </TouchableOpacity>
                 );
               })}
@@ -139,11 +143,11 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      Radius.lg,
     paddingHorizontal: Spacing.md,
     marginHorizontal:  Spacing.lg,
@@ -155,8 +159,8 @@ const styles = StyleSheet.create({
     gap:           Spacing.sm,
     paddingVertical: Spacing.md,
   },
-  label: { flex: 1, fontSize: FontSizes.md, color: Colors.text },
-  value: { fontSize: FontSizes.sm, color: Colors.muted },
+  label: { flex: 1, fontSize: FontSizes.md, color: c.text },
+  value: { fontSize: FontSizes.sm, color: c.muted },
 
   // Compact flag button (profile header)
   flagBtn: {
@@ -167,8 +171,8 @@ const styles = StyleSheet.create({
     paddingVertical:   5,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
   },
   flagBtnEmoji: { fontSize: 18, lineHeight: 22 },
 
@@ -183,16 +187,16 @@ const styles = StyleSheet.create({
     width:           '100%',
     maxWidth:        340,
     maxHeight:       '80%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     borderRadius:    Radius.lg,
     paddingVertical: Spacing.sm,
   },
   sheetTitle: {
     fontSize:      FontSizes.sm,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
     paddingHorizontal: Spacing.md,
@@ -208,6 +212,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   optionFlag:       { fontSize: 20, lineHeight: 24 },
-  optionText:       { flex: 1, fontSize: FontSizes.md, color: Colors.text },
-  optionTextActive: { color: Colors.accent, fontWeight: '700' },
+  optionText:       { flex: 1, fontSize: FontSizes.md, color: c.text },
+  optionTextActive: { color: c.accent, fontWeight: '700' },
 });

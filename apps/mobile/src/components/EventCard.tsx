@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import type { FeedItem, HiladsEvent } from '@/types';
-import { Colors, FontSizes, Radius } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { formatRecurrence } from '@/lib/recurrence';
 
@@ -64,6 +65,8 @@ type Props = {
 };
 
 export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, showDay = false }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('event');
   const recurLabel  = formatRecurrence(event);
   const isRecurring = !!(event.series_id ?? recurLabel);
@@ -128,12 +131,12 @@ export function EventCard({ event, tz, onPress, distanceLabel, onAvatarsPress, s
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     padding:         10,
     gap:             4,
   },
@@ -143,31 +146,31 @@ const styles = StyleSheet.create({
   },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardIcon:     { fontSize: 16, lineHeight: 18 },
-  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 19 },
-  goingCount:   { fontSize: FontSizes.xs, color: Colors.accent, fontWeight: '700', flexShrink: 0 },
-  cardMetaLine:     { fontSize: FontSizes.xs, color: Colors.muted, fontWeight: '600' },
-  cardMetaLineLive: { color: Colors.accent },
-  cardLocation:     { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 16 },
-  cardHost:         { fontSize: 11,           color: Colors.muted2, lineHeight: 14 },
+  cardTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 19 },
+  goingCount:   { fontSize: FontSizes.xs, color: c.accent, fontWeight: '700', flexShrink: 0 },
+  cardMetaLine:     { fontSize: FontSizes.xs, color: c.muted, fontWeight: '600' },
+  cardMetaLineLive: { color: c.accent },
+  cardLocation:     { fontSize: FontSizes.xs, color: c.muted, lineHeight: 16 },
+  cardHost:         { fontSize: 11,           color: c.muted2, lineHeight: 14 },
 
   kindBadgeEvent: {
-    backgroundColor:   'rgba(255,255,255,0.06)',
+    backgroundColor:   c.overlay,
     borderRadius:      Radius.full,
     paddingHorizontal: 7,
     paddingVertical:   1,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.14)',
+    borderColor:       c.overlayStrong,
   },
-  kindBadgeText: { fontSize: 9, fontWeight: '700', color: Colors.muted, letterSpacing: 0.5 },
+  kindBadgeText: { fontSize: 9, fontWeight: '700', color: c.muted, letterSpacing: 0.5 },
 
   publicBadge: {
-    backgroundColor:   'rgba(255,255,255,0.07)',
+    backgroundColor:   c.overlay,
     borderRadius:      Radius.full,
     paddingHorizontal: 8,
     paddingVertical:   2,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
+    borderColor:       c.overlayStrong,
     marginLeft:        6,
   },
-  publicBadgeText: { fontSize: 10, fontWeight: '700', color: Colors.muted, letterSpacing: 0.3 },
+  publicBadgeText: { fontSize: 10, fontWeight: '700', color: c.muted, letterSpacing: 0.3 },
 });

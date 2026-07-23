@@ -17,13 +17,17 @@ import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { fetchNotifications, markNotificationsRead } from '@/api/notifications';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 import { NotifRow, NotifSeparator } from '@/features/notifications/NotifRow';
 
 const PAGE_SIZE = 50;
 
 export default function NotificationsHistoryScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('notifications');
   const { account, setUnreadNotifications } = useApp();
@@ -106,7 +110,7 @@ export default function NotificationsHistoryScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={Colors.text} />
+          <Feather name="chevron-left" size={22} color={colors.text} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{t('allTitle')}</Text>
@@ -122,7 +126,7 @@ export default function NotificationsHistoryScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : notifications.length === 0 ? (
         <View style={styles.emptyWrap}>
@@ -147,7 +151,7 @@ export default function NotificationsHistoryScreen() {
           ListFooterComponent={
             loadingMore ? (
               <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={Colors.accent} />
+                <ActivityIndicator size="small" color={colors.accent} />
               </View>
             ) : null
           }
@@ -159,8 +163,8 @@ export default function NotificationsHistoryScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
 
   header: {
     flexDirection:     'row',
@@ -168,15 +172,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -185,7 +189,7 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     fontSize:      FontSizes.lg,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.4,
   },
   markReadBtn: {
@@ -196,7 +200,7 @@ const styles = StyleSheet.create({
   markReadText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
   },
 
   listContent:  { paddingTop: Spacing.xs, paddingBottom: Spacing.xxl },
@@ -205,6 +209,6 @@ const styles = StyleSheet.create({
   center:     { flex: 1, alignItems: 'center', justifyContent: 'center' },
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, paddingHorizontal: Spacing.xl },
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
 });

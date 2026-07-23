@@ -22,7 +22,8 @@ import {
   type NotificationPreferences,
 } from '@/api/notifications';
 import { socket } from '@/lib/socket';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 import { NotifRow, NotifSeparator } from '@/features/notifications/NotifRow';
 
@@ -41,6 +42,8 @@ function PrefRow({
   value: boolean;
   onChange: (v: boolean) => void;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.prefRow}>
       <View style={styles.prefText}>
@@ -50,9 +53,9 @@ function PrefRow({
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: Colors.bg3, true: Colors.accent }}
-        thumbColor={Colors.white}
-        ios_backgroundColor={Colors.bg3}
+        trackColor={{ false: colors.bg3, true: colors.accent }}
+        thumbColor={colors.white}
+        ios_backgroundColor={colors.bg3}
       />
     </View>
   );
@@ -61,6 +64,9 @@ function PrefRow({
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function NotificationsScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('notifications');
   const { account, setUnreadNotifications } = useApp();
@@ -187,7 +193,7 @@ export default function NotificationsScreen() {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={Colors.text} />
+          <Feather name="chevron-left" size={22} color={colors.text} />
         </TouchableOpacity>
 
         <Text style={styles.headerTitle}>{t('notifications', { ns: 'common' })}</Text>
@@ -209,7 +215,7 @@ export default function NotificationsScreen() {
         {/* ── Latest notifications (preview) ───────────────────────────── */}
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator color={Colors.accent} />
+            <ActivityIndicator color={colors.accent} />
           </View>
         ) : notifications.length === 0 ? (
           <View style={styles.emptyWrap}>
@@ -236,7 +242,7 @@ export default function NotificationsScreen() {
             activeOpacity={0.75}
           >
             <Text style={styles.seeAllText}>{t('seeAll')}</Text>
-            <Feather name="chevron-right" size={16} color={Colors.accent} />
+            <Feather name="chevron-right" size={16} color={colors.accent} />
           </TouchableOpacity>
         )}
 
@@ -279,8 +285,8 @@ export default function NotificationsScreen() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container:     { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container:     { flex: 1, backgroundColor: c.bg },
   flex:          { flex: 1 },
   scrollContent: { paddingBottom: Spacing.xxl },
 
@@ -290,15 +296,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -307,7 +313,7 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     fontSize:      FontSizes.lg,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.4,
   },
   markReadBtn: {
@@ -318,7 +324,7 @@ const styles = StyleSheet.create({
   markReadText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
   },
 
   notifList: { paddingTop: Spacing.xs },
@@ -335,21 +341,21 @@ const styles = StyleSheet.create({
     paddingVertical:   Spacing.md,
     borderRadius:      Radius.lg,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
   },
   seeAllText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
   },
 
   // ── Empty state ────────────────────────────────────────────────────────────
   center:     { paddingVertical: Spacing.xxl, alignItems: 'center' },
   emptyWrap:  { paddingVertical: Spacing.xxl, alignItems: 'center', gap: Spacing.sm },
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20, paddingHorizontal: Spacing.xl },
+  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20, paddingHorizontal: Spacing.xl },
 
   // ── Preferences ────────────────────────────────────────────────────────────
   prefSection: {
@@ -359,15 +365,15 @@ const styles = StyleSheet.create({
   prefSectionTitle: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0.8,
     marginBottom:  Spacing.sm,
   },
   prefCard: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     overflow:        'hidden',
   },
   prefRow: {
@@ -378,11 +384,11 @@ const styles = StyleSheet.create({
     gap:               Spacing.md,
   },
   prefText:  { flex: 1, gap: 3 },
-  prefLabel: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  prefSub:   { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 17 },
+  prefLabel: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  prefSub:   { fontSize: FontSizes.xs, color: c.muted, lineHeight: 17 },
   prefDivider: {
     height:           1,
-    backgroundColor:  Colors.border,
+    backgroundColor:  c.border,
     marginHorizontal: Spacing.md,
   },
 });

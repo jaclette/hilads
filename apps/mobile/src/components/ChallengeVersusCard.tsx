@@ -2,7 +2,8 @@ import { useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Easing } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { Challenge, ChallengeType, ChallengeAudience } from '@/types';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { countryToFlag } from '@/lib/countryFlag';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
@@ -71,6 +72,8 @@ export function ChallengeVersusCard({
   onAvatarPress,
   animated = true,
 }: ChallengeVersusCardProps) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const typeIcon         = TYPE_ICONS[challenge.challenge_type] ?? '🔥';
   // closed = completed (one-shot) OR manually validated/archived; both show the
@@ -187,7 +190,7 @@ export function ChallengeVersusCard({
                 text={challenge.title}
                 textStyle={styles.title}
                 style={styles.titleMarquee}
-                fadeColor={Colors.bg2}
+                fadeColor={colors.bg2}
                 active={animated}
               />
             </View>
@@ -211,7 +214,7 @@ export function ChallengeVersusCard({
                     preview={(challenge.participants_preview ?? []).slice(0, 4)}
                     total={participantCount}
                     size={34}
-                    borderColor={Colors.bg2}
+                    borderColor={colors.bg2}
                     onPress={onAvatarsPress}
                   />
                   {(!isGroupPhoto || submissionCount >= 1) ? (
@@ -248,7 +251,7 @@ export function ChallengeVersusCard({
                   preview={(challenge.participants_preview ?? []).slice(0, 4)}
                   total={participantCount}
                   size={34}
-                  borderColor={Colors.bg2}
+                  borderColor={colors.bg2}
                   onPress={onAvatarsPress}
                 />
                 {/* Photo: only show the count once ≥1 photo is in (never
@@ -363,7 +366,7 @@ export function ChallengeVersusCard({
           text={challenge.title}
           textStyle={styles.title}
           style={styles.titleMarquee}
-          fadeColor={Colors.bg2}
+          fadeColor={colors.bg2}
           active={animated}
         />
       </View>
@@ -500,6 +503,7 @@ function pickRank(
 function AvatarBadgeStack({
   rank, children,
 }: { rank: number | null; children: React.ReactNode }) {
+  const styles = useThemedStyles(makeStyles);
   if (rank == null) return <>{children}</>;
   return (
     <View style={styles.badgeStack}>
@@ -537,9 +541,9 @@ function FadeInAvatarSlot({ children }: { children: React.ReactNode }) {
 // Same warm orange tint as the previous flat card - keeps the brand
 // continuity. New section: the fixed-height versus row.
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
     borderColor:     'rgba(255,122,60,0.18)',
@@ -597,7 +601,7 @@ const styles = StyleSheet.create({
   // static ellipsis "..." that never reveals the end).
   groupHeader:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
   groupHeaderText: { flex: 1, minWidth: 0, gap: 3, justifyContent: 'center' },
-  groupSubtitle:   { fontSize: 12, fontWeight: '600', color: Colors.muted },
+  groupSubtitle:   { fontSize: 12, fontWeight: '600', color: c.muted },
 
   // Bottom group row: stack + count on the left, CTA / countdown on the right.
   groupBottomRow: {
@@ -608,8 +612,8 @@ const styles = StyleSheet.create({
     marginTop:        2,
   },
   groupStackWrap:  { flexDirection: 'row', alignItems: 'center', gap: 8, flexShrink: 1 },
-  groupCountText:  { fontSize: 13, fontWeight: '700', color: Colors.text },
-  groupEmptyText:  { flex: 1, fontSize: 13, fontWeight: '600', color: Colors.muted },
+  groupCountText:  { fontSize: 13, fontWeight: '700', color: c.text },
+  groupEmptyText:  { flex: 1, fontSize: 13, fontWeight: '600', color: c.muted },
 
   // Join CTA (meet, or photo with no deadline) - filled orange.
   joinPill: {
@@ -618,7 +622,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical:   8,
   },
-  joinPillText:    { fontSize: 13, fontWeight: '800', color: Colors.white },
+  joinPillText:    { fontSize: 13, fontWeight: '800', color: c.white },
 
   // "Be the first · +2" - amber-filled, the cold-start hook.
   beFirstPill: {
@@ -751,7 +755,7 @@ const styles = StyleSheet.create({
   versusGlyph: {
     fontSize:   28,
     lineHeight: 32,
-    color:      Colors.muted,
+    color:      c.muted,
   },
 
   titleRow:     { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -760,13 +764,13 @@ const styles = StyleSheet.create({
   // overflow so the scroll happens inside this box, not over the type
   // emoji or the card padding.
   titleMarquee: { flex: 1, height: 22 },
-  title:        { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22 },
+  title:        { fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 22 },
 
 
   byCreator: {
     fontSize:   12,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
 
   // Badge anchor sits relative to the avatar so the medal/pill floats

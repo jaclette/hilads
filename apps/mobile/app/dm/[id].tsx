@@ -35,7 +35,8 @@ import { track } from '@/services/analytics';
 import { linkifyText, extractFirstUrl } from '@/lib/linkify';
 import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 import * as Clipboard from 'expo-clipboard';
-import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
+import { FontSizes, Spacing, Radius, Gradients, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import { isSameDay, formatDateLabel, formatSmartTime } from '@/lib/messageTime';
 import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
@@ -49,6 +50,8 @@ import type { DmMessage, ReplyRef } from '@/types';
 // ── Date separator - reused from ChatMessage visual style ─────────────────────
 
 function DateSeparator({ label }: { label: string }) {
+  const sepStyles = useThemedStyles(makeSepStyles);
+  const sepStyles = useThemedStyles(makeSepStyles);
   return (
     <View style={sepStyles.row}>
       <View style={sepStyles.line} />
@@ -58,7 +61,7 @@ function DateSeparator({ label }: { label: string }) {
   );
 }
 
-const sepStyles = StyleSheet.create({
+const makeSepStyles = (c: ThemeColors) => StyleSheet.create({
   row: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -69,15 +72,15 @@ const sepStyles = StyleSheet.create({
   line: {
     flex:            1,
     height:          1,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
   },
   text: {
     fontSize:          FontSizes.xs,  // 13 - was 11 (Apple G4 floor)
     fontWeight:        '600',
-    color:             Colors.muted2,
+    color:             c.muted2,
     letterSpacing:     0.5,
     textTransform:     'uppercase',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     paddingHorizontal: 10,
     paddingVertical:   3,
     borderRadius:      999,
@@ -134,6 +137,8 @@ function openMaps(lat: number, lng: number, label: string) {
 }
 
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
+  const dmLocStyles = useThemedStyles(makeDmLocStyles);
+  const dmLocStyles = useThemedStyles(makeDmLocStyles);
   const { t } = useTranslation('chat');
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
@@ -176,7 +181,7 @@ function DmLocationBubble({ content, isMine }: { content: string; isMine: boolea
   return card;
 }
 
-const dmLocStyles = StyleSheet.create({
+const makeDmLocStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems:    'flex-start',
@@ -189,9 +194,9 @@ const dmLocStyles = StyleSheet.create({
     maxWidth:      260,
   },
   cardOther: {
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.06)',
+    borderColor:     c.overlay,
     borderBottomLeftRadius: 5,
   },
   cardMine: {
@@ -201,15 +206,21 @@ const dmLocStyles = StyleSheet.create({
   },
   icon:     { fontSize: 20, lineHeight: 26, flexShrink: 0 },
   body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:       { fontSize: 14, fontWeight: '700', color: Colors.text, lineHeight: 20 },
-  addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  line1:       { fontSize: 14, fontWeight: '700', color: c.text, lineHeight: 20 },
+  addr:        { fontSize: 12, color: c.muted2, lineHeight: 17 },
   textMine:    { color: '#fff' },
-  addrMine:    { color: 'rgba(255,255,255,0.65)' },
-  tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
-  tapHintMine: { color: 'rgba(255,255,255,0.65)' },
+  addrMine:    { color: c.overlayStrong },
+  tapHint:     { fontSize: FontSizes.xs, color: c.muted2, marginTop: 2 },
+  tapHintMine: { color: c.overlayStrong },
 });
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
+  const { colors } = useTheme();
+  const dmReplyStyles = useThemedStyles(makeDmReplyStyles);
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const dmReplyStyles = useThemedStyles(makeDmReplyStyles);
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('dm');
   const { account } = useApp();
@@ -279,7 +290,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
             isMine  ? bubbleMineShape    : bubbleOtherShape,
             { opacity: 0.6 },
           ]}>
-            <Text style={[styles.bubbleText, { fontStyle: 'italic', color: 'rgba(255,255,255,0.55)' }]}>
+            <Text style={[styles.bubbleText, { fontStyle: 'italic', color: colors.overlayStrong }]}>
               {i18n.t('messageDeleted', { ns: 'chat' })}
             </Text>
           </View>
@@ -333,7 +344,7 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
               <Text style={[styles.bubbleText, isMine && styles.bubbleTextMine]}>
                 {linkifyText(msg.content)}
                 {msg.edited_at && (
-                  <Text style={{ fontSize: 11, color: isMine ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.45)' }}>
+                  <Text style={{ fontSize: 11, color: isMine ? colors.overlayStrong : colors.overlayStrong }}>
                     {`  ${i18n.t('edited', { ns: 'chat' })}`}
                   </Text>
                 )}
@@ -382,6 +393,14 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 // ── Thread - rendered once conversationId is known ────────────────────────────
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
+  const { colors } = useTheme();
+  const dmComposerEditStyles = useThemedStyles(makeDmComposerEditStyles);
+  const dmComposerReplyStyles = useThemedStyles(makeDmComposerReplyStyles);
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const dmComposerEditStyles = useThemedStyles(makeDmComposerEditStyles);
+  const dmComposerReplyStyles = useThemedStyles(makeDmComposerReplyStyles);
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('dm');
   const { account } = useApp();
   const { messages, loading, loadingOlder, hasMore, sending, error, clearError, sendText, sendImage, loadOlder, setMessageReactions, editMessage, deleteMessage } = useDMThread(conversationId);
@@ -631,7 +650,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : (
         <FlatList
@@ -649,7 +668,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           ListFooterComponent={
             loadingOlder ? (
               <View style={styles.loadingOlderWrap}>
-                <ActivityIndicator size="small" color={Colors.muted} />
+                <ActivityIndicator size="small" color={colors.muted} />
               </View>
             ) : (!hasMore && !loading && messages.length > 0) ? (
               <View style={styles.loadingOlderWrap}>
@@ -759,7 +778,7 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           onFocus={() => { setFocused(true); setShowEmoji(false); }}
           onBlur={() => setFocused(false)}
           placeholder={t('messagePlaceholder', { name: displayName })}
-          placeholderTextColor={Colors.muted2}
+          placeholderTextColor={colors.muted2}
           multiline
           maxLength={1000}
           returnKeyType="send"
@@ -774,8 +793,8 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
           activeOpacity={0.8}
         >
           {sending
-            ? <ActivityIndicator size="small" color={Colors.white} />
-            : <Ionicons name="send" size={20} color={text.trim() ? '#fff' : Colors.muted2} />
+            ? <ActivityIndicator size="small" color={colors.white} />
+            : <Ionicons name="send" size={20} color={text.trim() ? '#fff' : colors.muted2} />
           }
         </TouchableOpacity>
       </View>
@@ -841,6 +860,10 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 //   User-profile flow: no conv param → id is a userId, call findOrCreateDM to get/create thread.
 
 export default function DMThreadScreen() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('dm');
   const { id, name, conv } = useLocalSearchParams<{ id: string; name?: string; conv?: string }>();
@@ -956,7 +979,7 @@ export default function DMThreadScreen() {
       {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={26} color={Colors.text} />
+          <Feather name="chevron-left" size={26} color={colors.text} />
         </TouchableOpacity>
 
         {/* Tap the avatar + name to open the other user's profile. */}
@@ -985,7 +1008,7 @@ export default function DMThreadScreen() {
           activeOpacity={0.7}
           accessibilityLabel={t('moreOptions')}
         >
-          <Ionicons name="ellipsis-horizontal" size={22} color={Colors.text} />
+          <Ionicons name="ellipsis-horizontal" size={22} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -1035,7 +1058,7 @@ export default function DMThreadScreen() {
         </View>
       ) : !conversationId ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} size="large" />
+          <ActivityIndicator color={colors.accent} size="large" />
         </View>
       ) : (
         <DMThread conversationId={conversationId} displayName={displayName} />
@@ -1047,7 +1070,7 @@ export default function DMThreadScreen() {
 // ── DM Reply quote styles ─────────────────────────────────────────────────────
 
 // DM bubbles: paddingHorizontal 18, paddingVertical 12 (see styles.bubble)
-const dmReplyStyles = StyleSheet.create({
+const makeDmReplyStyles = (c: ThemeColors) => StyleSheet.create({
   quote: {
     marginTop:    -12,
     marginLeft:   -18,
@@ -1061,41 +1084,41 @@ const dmReplyStyles = StyleSheet.create({
   quoteOther: {
     backgroundColor:   'rgba(0,0,0,0.12)',
     borderLeftColor:   'rgba(255,122,60,0.75)',
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: c.overlay,
     borderTopLeftRadius:  18,
     borderTopRightRadius: 18,
   },
   quoteMine: {
     backgroundColor:   'rgba(0,0,0,0.2)',
-    borderLeftColor:   'rgba(255,255,255,0.45)',
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderLeftColor:   c.overlayStrong,
+    borderBottomColor: c.overlayStrong,
     borderTopLeftRadius:  18,
     borderTopRightRadius: 18,
   },
   name:     { fontSize: FontSizes.xs, fontWeight: '700', color: '#FF7A3C', marginBottom: 2, lineHeight: 17 },
-  nameMine: { color: 'rgba(255,255,255,0.8)' },
-  text:     { fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 16 },
-  textMine: { color: 'rgba(255,255,255,0.55)' },
+  nameMine: { color: c.overlayStrong },
+  text:     { fontSize: 12, color: c.overlayStrong, lineHeight: 16 },
+  textMine: { color: c.overlayStrong },
 });
 
-const dmComposerReplyStyles = StyleSheet.create({
+const makeDmComposerReplyStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: 16,
     paddingVertical:   8,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderTopWidth:    1,
-    borderTopColor:    'rgba(255,255,255,0.08)',
+    borderTopColor:    c.overlay,
     gap:               10,
   },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
-  preview: { fontSize: 12, color: Colors.muted2 },
-  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: c.muted2 },
+  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
 });
 
-const dmComposerEditStyles = StyleSheet.create({
+const makeDmComposerEditStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -1108,8 +1131,8 @@ const dmComposerEditStyles = StyleSheet.create({
   },
   body:    { flex: 1, minWidth: 0 },
   name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
-  preview: { fontSize: 12, color: Colors.muted2 },
-  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+  preview: { fontSize: 12, color: c.muted2 },
+  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
 });
 
 // ── Styles ────────────────────────────────────────────────────────────────────
@@ -1117,8 +1140,8 @@ const dmComposerEditStyles = StyleSheet.create({
 const AVATAR_SIZE = 28;
 const SEND_BTN    = 48;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
   // ── Header ──────────────────────────────────────────────────────────────────
@@ -1128,16 +1151,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   10,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
     gap:               12,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -1157,20 +1180,20 @@ const styles = StyleSheet.create({
   headerName: {
     fontSize:      FontSizes.md,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
   headerSub: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
   headerMore: {
     width:           36,
     height:          36,
     borderRadius:    Radius.md,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -1179,7 +1202,7 @@ const styles = StyleSheet.create({
   // ── States ──────────────────────────────────────────────────────────────────
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   resolveErrorText: {
-    color:      Colors.muted,
+    color:      c.muted,
     fontSize:   FontSizes.sm,
     textAlign:  'center',
     paddingHorizontal: Spacing.xl,
@@ -1187,15 +1210,15 @@ const styles = StyleSheet.create({
   retryBtn: {
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.full,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
-  retryBtnText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '600' },
+  retryBtnText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '600' },
 
   errorBanner: {
-    backgroundColor:   Colors.accent2,
+    backgroundColor:   c.accent2,
     paddingHorizontal: Spacing.md,
     paddingVertical:   8,
   },
@@ -1208,7 +1231,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
+  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
 
   // ── Row wrapper ─────────────────────────────────────────────────────────────
   rowWrapper: {
@@ -1250,9 +1273,9 @@ const styles = StyleSheet.create({
   },
   // Received: warm dark surface with subtle border
   bubbleOther: {
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.06)',
+    borderColor:     c.overlay,
   },
   // "Tail" corner on first message of a received group
   bubbleOtherFirst: {
@@ -1260,8 +1283,8 @@ const styles = StyleSheet.create({
   },
   // Sent: brand orange - bright, unmistakably mine
   bubbleMine: {
-    backgroundColor: Colors.accent,
-    shadowColor:     Colors.accent,
+    backgroundColor: c.accent,
+    shadowColor:     c.accent,
     shadowOffset:    { width: 0, height: 3 },
     shadowOpacity:   0.35,
     shadowRadius:    8,
@@ -1279,7 +1302,7 @@ const styles = StyleSheet.create({
   },
   bubbleText: {
     fontSize:   15,
-    color:      Colors.text,
+    color:      c.text,
     lineHeight: 22,
   },
   bubbleTextMine: { color: '#fff', fontWeight: '500' },
@@ -1290,11 +1313,11 @@ const styles = StyleSheet.create({
   // DM message timestamps - was 11pt + #635650 (~2.4:1). Apple G4 floor.
   metaText: {
     fontSize: FontSizes.xs,
-    color:    Colors.muted2,
+    color:    c.muted2,
   },
   metaTextFailed: {
     fontSize: FontSizes.xs,
-    color:    Colors.red,
+    color:    c.red,
   },
 
   // ── Empty state ──────────────────────────────────────────────────────────────
@@ -1309,12 +1332,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize:   FontSizes.md,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
     textAlign:  'center',
   },
   emptySub: {
     fontSize:  FontSizes.sm,
-    color:     Colors.muted,
+    color:     c.muted,
     textAlign: 'center',
   },
 
@@ -1326,8 +1349,8 @@ const styles = StyleSheet.create({
     paddingVertical:   12,
     paddingBottom:     Platform.OS === 'android' ? 12 : 14,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
-    backgroundColor:   Colors.bg,
+    borderTopColor:    c.border,
+    backgroundColor:   c.bg,
     gap:               10,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -4 },
@@ -1361,15 +1384,15 @@ const styles = StyleSheet.create({
     borderRadius:    18,
     alignItems:      'center',
     justifyContent:  'center',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: c.overlayWeak,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.09)',
+    borderColor:     c.overlay,
     flexShrink:      0,
     opacity:         0.6,
   },
   emojiBtnActive: {
     opacity:         1,
-    backgroundColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: c.overlayStrong,
   },
   emojiBtnIcon: { fontSize: 18, lineHeight: 22 },
   input: {
@@ -1378,14 +1401,14 @@ const styles = StyleSheet.create({
     minWidth:          0,
     minHeight:         48,
     maxHeight:         130,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.full,
     borderWidth:       1.5,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 20,
     paddingTop:        13,
     paddingBottom:     13,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.sm,
     lineHeight:        22,
   },
@@ -1393,20 +1416,20 @@ const styles = StyleSheet.create({
     width:           SEND_BTN,
     height:          SEND_BTN,
     borderRadius:    Radius.full,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
-    shadowColor:     Colors.accent,
+    shadowColor:     c.accent,
     shadowOffset:    { width: 0, height: 4 },
     shadowOpacity:   0.5,
     shadowRadius:    10,
     elevation:       8,
   },
   sendBtnOff: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     shadowOpacity:   0,
     elevation:       0,
   },

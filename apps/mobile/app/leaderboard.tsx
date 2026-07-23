@@ -17,7 +17,8 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { cityDemonym } from '@/lib/cityDemonym';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
-import { Colors, FontSizes, Spacing, Radius, Gradients, buildLeaderboardUrl } from '@/constants';
+import { FontSizes, Spacing, Radius, Gradients, buildLeaderboardUrl, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useShareToCity } from '@/lib/useShareToCity';
 import { useShareToWorld } from '@/lib/useShareToWorld';
 import { buildRankShareMessage } from '@/lib/buildRankShareMessage';
@@ -39,6 +40,9 @@ const PAGE_SIZE = 50;
  * becomes a "Take a challenge to get on the board" nudge.
  */
 export default function LeaderboardScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account, city } = useApp();
@@ -174,7 +178,7 @@ export default function LeaderboardScreen() {
       )}
 
       {loading && !data ? (
-        <View style={styles.center}><ActivityIndicator color={Colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
       ) : error ? (
         <View style={styles.emptyWrap}>
           <Text style={styles.emptyEmoji}>🤷</Text>
@@ -193,7 +197,7 @@ export default function LeaderboardScreen() {
           // User rows always have user_id.
           keyExtractor={(e) => e.user_id ?? e.city_id ?? `r${e.rank}`}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.accent} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
           renderItem={({ item }) => {
             if (scope === 'cities') {
               const isMyCity = !!city?.channelId && item.city_id === `city_${city.channelId}`;
@@ -264,7 +268,7 @@ export default function LeaderboardScreen() {
                 <Text style={styles.unrankedCtaText}>
                   🔥 {t('leaderboard.me.unranked')}
                 </Text>
-                <Ionicons name="arrow-forward" size={18} color={Colors.white} />
+                <Ionicons name="arrow-forward" size={18} color={colors.white} />
               </LinearGradient>
             </TouchableOpacity>
           )}
@@ -292,10 +296,12 @@ export default function LeaderboardScreen() {
 function Header({
   title, onBack, t,
 }: { title: string; onBack: () => void; t: (k: string, opts?: { ns?: string }) => string }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.nav}>
       <TouchableOpacity style={styles.backPill} onPress={onBack} activeOpacity={0.75}>
-        <Ionicons name="chevron-back" size={18} color={Colors.text} />
+        <Ionicons name="chevron-back" size={18} color={colors.text} />
         <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
       </TouchableOpacity>
       <View style={styles.navCenter}>
@@ -324,6 +330,8 @@ function Selectors({
   onCityTap?: () => void;
   t: (k: string) => string;
 }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   // Primary toggle (city ⇄ world ⇄ cities) - custom layout instead of the
   // generic Segmented because the city pill carries a chevron when active
   // to signal it's tappable (opens the picker).
@@ -362,7 +370,7 @@ function Selectors({
               {cityLabel}
             </Text>
             {cityActive && (
-              <Ionicons name="chevron-down" size={14} color={Colors.white} style={{ marginLeft: 4 }} />
+              <Ionicons name="chevron-down" size={14} color={colors.white} style={{ marginLeft: 4 }} />
             )}
           </View>
         </TouchableOpacity>
@@ -436,6 +444,7 @@ function Segmented<T extends string>({
    *  Otherwise active is a flat lighter background (secondary toggle). */
   gradient?: boolean;
 }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.segWrap}>
       {items.map(it => {
@@ -489,6 +498,7 @@ function Row({
   onPress?: () => void;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const flag = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : null;
   return (
@@ -543,6 +553,7 @@ function CityRow({
   isMe:  boolean;
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-';
   return (
@@ -565,8 +576,8 @@ function CityRow({
 
 // ── Styles ───────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
   shareRankPill: {
     alignSelf: 'center', marginTop: Spacing.sm, marginBottom: Spacing.xs,
@@ -574,23 +585,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
     backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
   },
-  shareRankText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.accent },
+  shareRankText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.accent },
 
   nav: {
     flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: Colors.border,
+    borderBottomWidth: 1, borderBottomColor: c.border,
   },
   backPill: {
     flexDirection: 'row', alignItems: 'center', gap: 4,
     paddingHorizontal: 10, paddingVertical: 6,
     borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,255,255,0.07)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.10)',
+    backgroundColor: c.overlay,
+    borderWidth: 1, borderColor: c.overlayStrong,
   },
-  backPillText: { color: Colors.text, fontSize: FontSizes.sm, fontWeight: '700' },
+  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
   navCenter:    { flex: 1, alignItems: 'center' },
-  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
+  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 
   // Selectors
   selectorsWrap: {
@@ -601,7 +612,7 @@ const styles = StyleSheet.create({
   },
   segWrap: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
     borderRadius: Radius.full,
     padding: 4,
     gap: 4,
@@ -617,8 +628,8 @@ const styles = StyleSheet.create({
   // The city segment carries the longest content (flag + city name + chevron),
   // so give it more room than the fixed-label Cities / World segments.
   segItemCity: { flex: 1.9 },
-  segItemActiveFlat: { backgroundColor: 'rgba(255,255,255,0.10)' },
-  segText: { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  segItemActiveFlat: { backgroundColor: c.overlayStrong },
+  segText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
   // City segment: flag + name + chevron in a row. maxWidth caps the row to the
   // segment so the shrinkable name truncates instead of clipping flag/chevron.
   cityLabelRow: {
@@ -628,8 +639,8 @@ const styles = StyleSheet.create({
     maxWidth:      '100%',
   },
   cityName: { flexShrink: 1 },
-  segTextActiveFlat:    { color: Colors.text },
-  segTextActiveGradient:{ color: Colors.white, fontWeight: '800' },
+  segTextActiveFlat:    { color: c.text },
+  segTextActiveGradient:{ color: c.white, fontWeight: '800' },
 
   // List
   list: { paddingVertical: Spacing.sm },
@@ -640,7 +651,7 @@ const styles = StyleSheet.create({
   rowMe: {
     backgroundColor: 'rgba(255,122,60,0.08)',
   },
-  rank:  { width: 44, color: Colors.muted2, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'left' },
+  rank:  { width: 44, color: c.muted2, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'left' },
   rankMe: { color: '#FF7A3C' },
   avatar: {
     width: 40, height: 40, borderRadius: 20,
@@ -653,23 +664,23 @@ const styles = StyleSheet.create({
   cityFlagBox: {
     width: 40, height: 40, borderRadius: 20,
     alignItems: 'center', justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
+    backgroundColor: c.overlayWeak,
   },
   cityFlagText: { fontSize: 22, lineHeight: 26 },
   // PR13 - wrapper allowing the city subtitle to stack under the displayName.
   // Replaces the previous direct `name` flex layout when showCity is on.
   nameWrap: { flex: 1, minWidth: 0, gap: 1 },
-  name:     { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text },
-  citySub:  { fontSize: FontSizes.xs, color: Colors.muted2, fontWeight: '600' },
-  nameMe: { color: Colors.text, fontWeight: '800' },
-  points:   { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.muted },
+  name:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  citySub:  { fontSize: FontSizes.xs, color: c.muted2, fontWeight: '600' },
+  nameMe: { color: c.text, fontWeight: '800' },
+  points:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
   pointsMe: { color: '#FF7A3C', fontWeight: '800' },
-  sep: { height: 1, backgroundColor: Colors.border, marginLeft: Spacing.md + 44 + Spacing.md + 40 + Spacing.md },
+  sep: { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 44 + Spacing.md + 40 + Spacing.md },
 
   // Pinned caller row
   pinnedWrap: {
-    borderTopWidth: 1, borderTopColor: Colors.border,
-    backgroundColor: Colors.bg,
+    borderTopWidth: 1, borderTopColor: c.border,
+    backgroundColor: c.bg,
   },
   // Unranked CTA - replaces the previous muted-grey one-liner. Orange
   // gradient pill that nudges the unranked viewer straight into the
@@ -692,7 +703,7 @@ const styles = StyleSheet.create({
     elevation:         4,
   },
   unrankedCtaText: {
-    color:      Colors.white,
+    color:      c.white,
     fontSize:   FontSizes.md,
     fontWeight: '800',
     letterSpacing: -0.2,
@@ -701,6 +712,6 @@ const styles = StyleSheet.create({
 
   emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },
   emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  emptyBody:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
+  emptyBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 });

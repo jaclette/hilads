@@ -25,7 +25,8 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { BrandLockup } from '@/components/BrandLockup';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 interface Props {
   /** Optional nodes injected immediately to the left of the DM icon. */
@@ -33,6 +34,9 @@ interface Props {
 }
 
 export function AppHeader({ rightExtra }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('common');
   const {
@@ -58,7 +62,7 @@ export function AppHeader({ rightExtra }: Props) {
             onPress={() => router.push('/notifications' as never)}
             accessibilityLabel={t('notifications')}
           >
-            <Ionicons name="notifications-outline" size={22} color={Colors.text} />
+            <Ionicons name="notifications-outline" size={22} color={colors.text} />
             {unreadNotifications > 0 && (
               <View style={styles.iconBadge}>
                 <Text style={styles.iconBadgeText}>
@@ -75,7 +79,7 @@ export function AppHeader({ rightExtra }: Props) {
             onPress={() => setShowOnboarding(true)}
             accessibilityLabel={t('howItWorks')}
           >
-            <Ionicons name="help-circle-outline" size={23} color={Colors.muted} />
+            <Ionicons name="help-circle-outline" size={23} color={colors.muted} />
           </TouchableOpacity>
         )}
       </View>
@@ -101,7 +105,7 @@ export function AppHeader({ rightExtra }: Props) {
             }}
             accessibilityLabel={t('messages')}
           >
-            <Feather name="message-square" size={20} color={Colors.text} />
+            <Feather name="message-square" size={20} color={colors.text} />
             {unreadDMs > 0 && (
               <View style={styles.iconBadge}>
                 <Text style={styles.iconBadgeText}>
@@ -121,14 +125,14 @@ export function AppHeader({ rightExtra }: Props) {
 // Styles mirror chat.tsx's header top-bar so MY CITY and the other tabs match
 // pixel-for-pixel. Do not change these without updating the MY CITY context
 // sections below this component (city row, chips) which sit on the same rhythm.
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Header surface strip. No overflow:hidden here - clipping the wrapper
   // would clip the bell's notification badge (positioned top:-5/right:-5 to
   // overflow the icon).
   glowWrap: {
     // Match the page background (not the lighter bg2) so the header reads as
     // one seamless surface with the rest of the screen - no visible band/seam.
-    backgroundColor: Colors.bg,
+    backgroundColor: c.bg,
   },
   topBar: {
     flexDirection: 'row',
@@ -187,13 +191,13 @@ const styles = StyleSheet.create({
     borderRadius:      8,
     backgroundColor:   '#ef4444',
     borderWidth:       1.5,
-    borderColor:       Colors.bg,
+    borderColor:       c.bg,
     alignItems:        'center',
     justifyContent:    'center',
     paddingHorizontal: 3,
   },
   iconBadgeText: {
-    color:      Colors.white,
+    color:      c.white,
     fontSize:   9,
     fontWeight: '700',
     lineHeight: 11,
@@ -211,7 +215,7 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize:      11,
     lineHeight:    14,
-    color:         'rgba(255,255,255,0.5)',
+    color:         c.overlayStrong,
     fontWeight:    '400',
     letterSpacing: 0.2,
     maxWidth:      90,

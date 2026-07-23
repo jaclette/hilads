@@ -2,7 +2,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { ChallengeType } from '@/types';
 import type { InspirationExample } from '@/api/challenges';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
 import { countryToFlag } from '@/lib/countryFlag';
 
@@ -38,6 +39,7 @@ export function ExampleChallengeCard({
   /** Tap the button - create YOUR OWN challenge locally. */
   onCreate:    () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const typeIcon = TYPE_ICONS[example.challenge_type] ?? '🔥';
   const name     = example.creator_display_name || example.creator_username || '?';
@@ -95,12 +97,12 @@ export function ExampleChallengeCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.08)',
+    borderColor:     c.overlay,
     padding:         Spacing.md,
     gap:             10,
     width:           '100%',
@@ -128,10 +130,10 @@ const styles = StyleSheet.create({
 
   titleRow:   { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   titleEmoji: { fontSize: 20, lineHeight: 24 },
-  title:      { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22, textAlign: 'left' },
+  title:      { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 22, textAlign: 'left' },
 
   byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: Colors.muted },
+  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: c.muted },
 
   createBtn: {
     marginTop:        2,
@@ -143,5 +145,5 @@ const styles = StyleSheet.create({
     borderWidth:      1,
     borderColor:      'rgba(255,122,60,0.35)',
   },
-  createBtnText: { color: Colors.accent, fontSize: 14, fontWeight: '800' },
+  createBtnText: { color: c.accent, fontSize: 14, fontWeight: '800' },
 });

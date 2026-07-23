@@ -2,7 +2,8 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image } from 'expo-image';
 import type { ParticipantPreview } from '@/types';
-import { Colors } from '@/constants';
+import { type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 
 // Horizontal row of overlapping circular attendee avatars for event cards.
@@ -25,7 +26,11 @@ type Props = {
   onPress?:     () => void;
 };
 
-export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderColor = Colors.bg2, onPress }: Props) {
+export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderColor, onPress }: Props) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
+  const bc = borderColor ?? colors.bg2;
+
   const shown = preview.slice(0, MAX_SHOWN);
   if (total <= 0 || shown.length === 0) return null;
 
@@ -40,7 +45,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
       {shown.map((p, i) => (
         <View
           key={p.id}
-          style={[styles.avatar, dim, { marginLeft: i > 0 ? -OVERLAP : 0, borderColor, backgroundColor: avatarColor(p.id) }]}
+          style={[styles.avatar, dim, { marginLeft: i > 0 ? -OVERLAP : 0, borderColor: bc, backgroundColor: avatarColor(p.id) }]}
         >
           {p.thumbAvatarUrl ? (
             <Image
@@ -58,7 +63,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
         </View>
       ))}
       {overflow > 0 && (
-        <View style={[styles.avatar, styles.extra, dim, { marginLeft: -OVERLAP, borderColor }]}>
+        <View style={[styles.avatar, styles.extra, dim, { marginLeft: -OVERLAP, borderColor: bc }]}>
           <Text style={[styles.extraText, { fontSize: Math.round(size * 0.34) }]}>+{overflow}</Text>
         </View>
       )}
@@ -66,7 +71,7 @@ export function AttendeeAvatars({ preview, total, size = DEFAULT_SIZE, borderCol
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
   avatar: {
     alignItems:     'center',
@@ -75,6 +80,6 @@ const styles = StyleSheet.create({
     overflow:       'hidden',
   },
   letter:    { color: '#fff', fontWeight: '700' },
-  extra:     { backgroundColor: 'rgba(255,255,255,0.12)' },
-  extraText: { color: Colors.text, fontWeight: '700' },
+  extra:     { backgroundColor: c.overlayStrong },
+  extraText: { color: c.text, fontWeight: '700' },
 });

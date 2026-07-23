@@ -13,7 +13,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Slide {
   emoji: string;
@@ -53,6 +54,8 @@ interface Props {
 }
 
 export function ChallengeIntroCarousel({ visible, onClose, onCreateChallenge }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const insets    = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const { t }     = useTranslation('common');
@@ -132,10 +135,10 @@ export function ChallengeIntroCarousel({ visible, onClose, onCreateChallenge }: 
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   skip:      { position: 'absolute', right: 14, zIndex: 2, padding: 8 },
-  skipText:  { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '700' },
+  skipText:  { color: c.muted, fontSize: FontSizes.sm, fontWeight: '700' },
 
   track: { flex: 1 },
   slide: {
@@ -149,13 +152,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize:   FontSizes.xl,
     fontWeight: '800',
-    color:      Colors.text,
+    color:      c.text,
     textAlign:  'center',
   },
   body: {
     fontSize:   FontSizes.md,
     lineHeight: 24,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     maxWidth:   320,
   },
@@ -167,15 +170,15 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   dots: { flexDirection: 'row', gap: 8 },
-  dot:  { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: Colors.border },
-  dotActive: { width: 22, borderRadius: 4, backgroundColor: Colors.accent },
+  dot:  { width: 8, height: 8, borderRadius: Radius.full, backgroundColor: c.border },
+  dotActive: { width: 22, borderRadius: 4, backgroundColor: c.accent },
 
   nextBtn: {
     width:           '100%',
     maxWidth:        340,
     paddingVertical: 15,
     borderRadius:    14,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     alignItems:      'center',
   },
   nextBtnText: { color: '#fff', fontWeight: '800', fontSize: FontSizes.md },

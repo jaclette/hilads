@@ -16,7 +16,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Trans, useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const TERMS_URL   = 'https://hilads.live/terms';
 const PRIVACY_URL = 'https://hilads.live/privacy';
@@ -24,6 +25,7 @@ const PRIVACY_URL = 'https://hilads.live/privacy';
 // ── Reusable block: zero-tolerance text + ToS / Privacy links ─────────────────
 
 export function EulaCopyBlock() {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('auth');
   return (
     <View style={styles.copyBlock}>
@@ -51,6 +53,7 @@ interface CheckboxProps {
 }
 
 export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('auth');
   return (
     <TouchableOpacity
@@ -91,6 +94,8 @@ interface ModalProps {
 }
 
 export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProps) {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('auth');
   // Plain absolutely-positioned overlay rather than React Native's <Modal>.
   // The native <Modal transparent> on iPad in iPhone-compat mode renders in
@@ -149,7 +154,7 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Shared copy block
   copyBlock: {
     gap: Spacing.xs,
@@ -157,16 +162,16 @@ const styles = StyleSheet.create({
   zeroTolerance: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
     lineHeight: 20,
   },
   linksRow: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 20,
   },
   link: {
-    color:               Colors.accent,
+    color:               c.accent,
     textDecorationLine:  'underline',
     fontWeight:          '600',
   },
@@ -183,20 +188,20 @@ const styles = StyleSheet.create({
     height:          22,
     borderRadius:    Radius.sm,
     borderWidth:     2,
-    borderColor:     Colors.muted,
+    borderColor:     c.muted,
     alignItems:      'center',
     justifyContent:  'center',
     marginTop:       1,
     flexShrink:      0,
   },
   checkboxChecked: {
-    borderColor:     Colors.accent,
-    backgroundColor: Colors.accent,
+    borderColor:     c.accent,
+    backgroundColor: c.accent,
   },
   checkboxLabel: {
     flex:       1,
     fontSize:   FontSizes.sm,
-    color:      Colors.text,
+    color:      c.text,
     lineHeight: 20,
   },
 
@@ -209,7 +214,7 @@ const styles = StyleSheet.create({
     left:              0,
     right:             0,
     bottom:            0,
-    backgroundColor:   'rgba(0,0,0,0.85)',
+    backgroundColor:   c.scrim,
     paddingHorizontal: Spacing.lg,
     alignItems:        'center',
     justifyContent:    'center',
@@ -219,22 +224,22 @@ const styles = StyleSheet.create({
   modalCard: {
     width:           '100%',
     maxWidth:        420,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     padding:         Spacing.lg,
     gap:             Spacing.md,
   },
   modalTitle: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
   modalSub: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 20,
   },
   errorText: {
@@ -243,7 +248,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   acceptBtn: {
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     borderRadius:    Radius.md,
     paddingVertical: Spacing.md,
     alignItems:      'center',

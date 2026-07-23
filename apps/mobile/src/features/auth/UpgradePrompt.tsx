@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   title?:    string;
@@ -11,6 +12,7 @@ export function UpgradePrompt({
   title    = 'Create a free account',
   subtitle = 'Sign in to unlock direct messages, notifications, and a persistent identity.',
 }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
 
   return (
@@ -38,7 +40,7 @@ export function UpgradePrompt({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex:            1,
     justifyContent:  'center',
@@ -47,17 +49,17 @@ const styles = StyleSheet.create({
     gap:             Spacing.sm,
   },
   icon:      { fontSize: 40, marginBottom: Spacing.sm },
-  title:     { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.text, textAlign: 'center' },
-  subtitle:  { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20, marginBottom: Spacing.md },
+  title:     { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
+  subtitle:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20, marginBottom: Spacing.md },
 
   primaryBtn: {
     width:             '100%',
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     borderRadius:      Radius.lg,
     paddingVertical:   Spacing.md,
     alignItems:        'center',
   },
-  primaryText: { color: Colors.white, fontWeight: '700', fontSize: FontSizes.md },
+  primaryText: { color: c.white, fontWeight: '700', fontSize: FontSizes.md },
 
   secondaryBtn: {
     width:         '100%',
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     alignItems:    'center',
     borderWidth:   1,
-    borderColor:   Colors.border,
+    borderColor:   c.border,
   },
-  secondaryText: { color: Colors.text, fontWeight: '600', fontSize: FontSizes.md },
+  secondaryText: { color: c.text, fontWeight: '600', fontSize: FontSizes.md },
 });

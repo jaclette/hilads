@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import type { EventInspirationExample } from '@/api/events';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 import { AvatarWithFlag } from '@/components/AvatarWithFlag';
 
 /**
@@ -34,6 +35,7 @@ export function ExampleEventCard({
   /** Tap the button - create YOUR OWN locally. */
   onCreate:    () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('now');
   const isHangout = example.kind === 'hangout';
   const typeIcon  = isHangout ? '🗣️' : '🎉';
@@ -78,12 +80,12 @@ export function ExampleEventCard({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderRadius:    Radius.lg,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.08)',
+    borderColor:     c.overlay,
     padding:         Spacing.md,
     gap:             10,
     width:           '100%',
@@ -99,10 +101,10 @@ const styles = StyleSheet.create({
   },
   kindBadgeText: { fontSize: 9, fontWeight: '800', color: '#60a5fa', letterSpacing: 0.5 },
 
-  title: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.text, lineHeight: 22, textAlign: 'left' },
+  title: { fontSize: FontSizes.md, fontWeight: '700', color: c.text, lineHeight: 22, textAlign: 'left' },
 
   byRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
-  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: Colors.muted },
+  byText: { flex: 1, fontSize: 12, fontWeight: '600', color: c.muted },
 
   createBtn: {
     marginTop:        2,
@@ -114,5 +116,5 @@ const styles = StyleSheet.create({
     borderWidth:      1,
     borderColor:      'rgba(255,122,60,0.35)',
   },
-  createBtnText: { color: Colors.accent, fontSize: 14, fontWeight: '800' },
+  createBtnText: { color: c.accent, fontSize: 14, fontWeight: '800' },
 });

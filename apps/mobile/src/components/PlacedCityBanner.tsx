@@ -4,7 +4,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useApp } from '@/context/AppContext';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 // One-shot confirmation shown when the first-launch IP lookup auto-placed the
 // user in a city (useAppBoot → setJustPlacedCity). Dismissible; auto-hides after
@@ -12,6 +13,9 @@ import { Colors, FontSizes, Spacing, Radius } from '@/constants';
 const AUTO_DISMISS_MS = 6000;
 
 export function PlacedCityBanner() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('common');
   const insets = useSafeAreaInsets();
   const { justPlacedCity, setJustPlacedCity } = useApp();
@@ -27,7 +31,7 @@ export function PlacedCityBanner() {
   return (
     <View style={[styles.wrap, { top: insets.top + Spacing.sm }]} pointerEvents="box-none">
       <View style={styles.banner}>
-        <Ionicons name="location" size={16} color={Colors.accent} />
+        <Ionicons name="location" size={16} color={colors.accent} />
         <Text style={styles.text} numberOfLines={2}>
           {t('placedBanner', { city: justPlacedCity.name })}
         </Text>
@@ -37,14 +41,14 @@ export function PlacedCityBanner() {
           accessibilityRole="button"
           accessibilityLabel={t('close')}
         >
-          <Ionicons name="close" size={18} color={Colors.muted} />
+          <Ionicons name="close" size={18} color={colors.muted} />
         </Pressable>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: {
     position: 'absolute',
     left: Spacing.md,
@@ -60,9 +64,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: Radius.lg,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: Colors.border,
+    borderColor: c.border,
     shadowColor: '#000',
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -71,7 +75,7 @@ const styles = StyleSheet.create({
   },
   text: {
     flex: 1,
-    color: Colors.text,
+    color: c.text,
     fontSize: FontSizes.sm,
     lineHeight: FontSizes.sm * 1.35,
   },

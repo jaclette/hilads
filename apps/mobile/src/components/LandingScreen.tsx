@@ -33,7 +33,8 @@ import { saveIdentity } from '@/lib/identity';
 import { socket } from '@/lib/socket';
 import { avatarGradient } from '@/lib/avatarColors';
 import { track, setAnalyticsContext } from '@/services/analytics';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { HiladsIcon } from '@/components/HiladsIcon';
 import type { HiladsEvent } from '@/types';
 
@@ -104,6 +105,9 @@ function PulsingText({ text, style }: { text: string; style?: object }) {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router   = useRouter();
   const pathname = usePathname();
   const { t } = useTranslation('landing');
@@ -398,7 +402,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       value={nickname}
                       onChangeText={setNickname}
                       placeholder={t('namePlaceholder')}
-                      placeholderTextColor={Colors.muted2}
+                      placeholderTextColor={colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
                       autoCorrect={false}
@@ -425,7 +429,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       value={nickname}
                       onChangeText={setNickname}
                       placeholder={t('namePlaceholder')}
-                      placeholderTextColor={Colors.muted2}
+                      placeholderTextColor={colors.muted2}
                       maxLength={20}
                       autoCapitalize="words"
                       autoCorrect={false}
@@ -449,7 +453,7 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
                       style={styles.btn}
                     >
                       {joining ? (
-                        <ActivityIndicator color={Colors.white} size="small" />
+                        <ActivityIndicator color={colors.white} size="small" />
                       ) : (
                         <Text style={styles.btnText}>
                           {city ? t('joinCity', { city: city.name }) : t('joinChat')}
@@ -510,12 +514,12 @@ export function LandingScreen({ onRetryGeo }: { onRetryGeo?: () => void }) {
 
 const MONO = Platform.OS === 'ios' ? 'Courier' : 'monospace';
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── Screen - matches .ob-screen (centered, bg, radial glow approximated) ───
   screen: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.bg,
+    backgroundColor: c.bg,
     zIndex: 100,
   },
   // Top warm glow - approximate of radial-gradient ellipse at 50% -10%
@@ -581,7 +585,7 @@ const styles = StyleSheet.create({
   },
   cityFlagInline: {
     fontSize: 28,
-    color:    Colors.text,
+    color:    c.text,
   },
   // ob-tagline - bumped from 15/muted2 (~2.4:1) to 16/muted (~5.5:1) for
   // WCAG AA pass on the warm-near-black background. Apple G4 cited the
@@ -589,15 +593,15 @@ const styles = StyleSheet.create({
   tagline: {
     fontSize:   16,
     fontWeight: '400',
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     lineHeight: 22,
   },
   // ob-activity-block: single container for people + events signals
   activityBlock: {
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.09)',
+    borderColor:       c.overlay,
     borderRadius:      14,
     paddingHorizontal: 16,
     paddingVertical:   10,
@@ -606,7 +610,7 @@ const styles = StyleSheet.create({
   },
   activityLine: {
     fontSize:   13,   // 0.82rem
-    color:      Colors.muted2,
+    color:      c.muted2,
     lineHeight: 18,
     textAlign:  'center',
   },
@@ -625,18 +629,18 @@ const styles = StyleSheet.create({
     gap:               8,
     paddingHorizontal: 12,
     paddingVertical:   11,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderRadius:      8,
   },
   // ob-event-title: var(--text), truncated
   eventTitle: {
     flex:     1,
-    color:    Colors.text,
+    color:    c.text,
     fontSize: 13,
   },
   // ob-event-time: muted2, 0.78rem, no-wrap
   eventTime: {
-    color:      Colors.muted2,
+    color:      c.muted2,
     fontSize:   12,
     flexShrink: 0,
   },
@@ -644,16 +648,16 @@ const styles = StyleSheet.create({
   // ── Locating state ────────────────────────────────────────────────────────────
   locating: {
     fontSize:      14,
-    color:         Colors.muted2,
+    color:         c.muted2,
     fontFamily:    MONO,
     letterSpacing: 0.3,
   },
 
   // ── Geo denied / error ────────────────────────────────────────────────────────
   geoStatusBadge: {
-    backgroundColor:   'rgba(255,255,255,0.05)',
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.08)',
+    borderColor:       c.overlay,
     borderRadius:      Radius.full,
     paddingHorizontal: 10,
     paddingVertical:   4,
@@ -662,12 +666,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(245,158,11,0.08)',
     borderColor:     'rgba(245,158,11,0.2)',
   },
-  geoStatusText:     { fontSize: 12, color: Colors.muted2 },
+  geoStatusText:     { fontSize: 12, color: c.muted2 },
   geoStatusTextWarn: { color: '#f59e0b' },
   geoHeadline: {
     fontSize:      25,
     fontWeight:    '700',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.5,
     textAlign:     'center',
     lineHeight:    30,
@@ -678,7 +682,7 @@ const styles = StyleSheet.create({
   conceptSub: {
     fontSize:          14,
     fontWeight:        '600',
-    color:             Colors.muted,
+    color:             c.muted,
     textAlign:         'center',
     lineHeight:        20,
     marginTop:         10,
@@ -692,7 +696,7 @@ const styles = StyleSheet.create({
   // ob-label: 0.72rem=12px, muted2, uppercase, letter-spacing:0.07em, weight 600
   label: {
     fontSize:      12,
-    color:         Colors.muted2,
+    color:         c.muted2,
     textTransform: 'uppercase',
     letterSpacing: 1.0,
     fontWeight:    '600',
@@ -703,9 +707,9 @@ const styles = StyleSheet.create({
     flexDirection:     'row',
     alignItems:        'center',
     gap:               10,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     borderRadius:      14,
     paddingHorizontal: 14,
     paddingVertical:   10,
@@ -725,14 +729,14 @@ const styles = StyleSheet.create({
     elevation:      4,
   },
   avatarLetter: {
-    color:      Colors.white,
+    color:      c.white,
     fontSize:   14,
     fontWeight: '700',
   },
   // ob-input: transparent, no border, text, 1rem, weight 600
   input: {
     flex:       1,
-    color:      Colors.text,
+    color:      c.text,
     fontSize:   FontSizes.md,
     fontWeight: '600',
     padding:    0,
@@ -740,7 +744,7 @@ const styles = StyleSheet.create({
 
   errorText: {
     fontSize:  FontSizes.sm,
-    color:     Colors.red,
+    color:     c.red,
     textAlign: 'center',
   },
 
@@ -760,7 +764,7 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.45 },
   btnText: {
-    color:      Colors.white,
+    color:      c.white,
     fontWeight: '700',
     fontSize:   FontSizes.md,
   },
@@ -768,23 +772,23 @@ const styles = StyleSheet.create({
   // Geo escape / retry links
   geoEscapeBtn:  { alignItems: 'center', paddingVertical: 6, marginTop: 4 },
   geoEscapeText: {
-    color:               Colors.muted,
+    color:               c.muted,
     fontSize:            12,
     textDecorationLine:  'underline',
-    textDecorationColor: Colors.muted,
+    textDecorationColor: c.muted,
   },
   geoRetryBtn:  { alignItems: 'center', paddingVertical: 4 },
   geoRetryText: {
-    color:               Colors.muted2,
+    color:               c.muted2,
     fontSize:            13,
     textDecorationLine:  'underline',
-    textDecorationColor: Colors.muted2,
+    textDecorationColor: c.muted2,
   },
 
   // Small muted sub-label under the form (sans-serif, matches the rest of the app).
   hint: {
     fontSize:      13,
-    color:         Colors.muted2,
+    color:         c.muted2,
     textAlign:     'center',
   },
 
@@ -804,12 +808,12 @@ const styles = StyleSheet.create({
   jcDividerLine: {
     flex:            1,
     height:          1,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
   },
   // Web: .jc-auth-divider-text { font-size:0.72rem, color:--muted, letter-spacing:0.01em }
   jcDividerText: {
     fontSize:      12,
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.2,
   },
 
@@ -834,7 +838,7 @@ const styles = StyleSheet.create({
     justifyContent:    'center',
   },
   jcSignupText: {
-    color:      Colors.accent2,
+    color:      c.accent2,
     fontSize:   16,
     fontWeight: '600',
   },
@@ -845,14 +849,14 @@ const styles = StyleSheet.create({
     minHeight:         46,
     paddingHorizontal: 12,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.14)',
+    borderColor:       c.overlayStrong,
     borderRadius:      12,
     backgroundColor:   'transparent',
     alignItems:        'center',
     justifyContent:    'center',
   },
   jcSigninText: {
-    color:      Colors.muted,
+    color:      c.muted,
     fontSize:   16,
     fontWeight: '600',
   },
@@ -860,7 +864,7 @@ const styles = StyleSheet.create({
   // jc-auth-hint: 0.68rem=11px, --muted, centered
   jcHint: {
     fontSize:      11,
-    color:         Colors.muted,
+    color:         c.muted,
     textAlign:     'center',
     letterSpacing: 0.2,
   },

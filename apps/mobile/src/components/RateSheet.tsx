@@ -9,7 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { submitRating } from '@/api/challenges';
 import { ApiError } from '@/api/client';
 import { avatarColor } from '@/lib/avatarColors';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { RatePrompt } from '@/types';
 
 const COMMENT_MAX = 500;
@@ -31,6 +32,9 @@ type Props = {
  * on whether they've also rated (the trigger handles it server-side).
  */
 export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const { t } = useTranslation('challenge');
   const [stars,   setStars]   = useState(0);
   const [comment, setComment] = useState('');
@@ -111,7 +115,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
                 <Ionicons
                   name={n <= stars ? 'star' : 'star-outline'}
                   size={38}
-                  color={n <= stars ? '#FFC93C' : Colors.muted2}
+                  color={n <= stars ? '#FFC93C' : colors.muted2}
                 />
               </TouchableOpacity>
             ))}
@@ -123,7 +127,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
               value={comment}
               onChangeText={(v) => setComment(v.slice(0, COMMENT_MAX))}
               placeholder={t('ratePrompts.sheet.commentPlaceholder')}
-              placeholderTextColor={Colors.muted2}
+              placeholderTextColor={colors.muted2}
               multiline
               maxLength={COMMENT_MAX}
               editable={!busy}
@@ -141,7 +145,7 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
             activeOpacity={0.85}
           >
             {busy
-              ? <ActivityIndicator color={Colors.white} size="small" />
+              ? <ActivityIndicator color={colors.white} size="small" />
               : <Text style={styles.submitText}>{t('ratePrompts.sheet.submit')}</Text>}
           </TouchableOpacity>
 
@@ -154,11 +158,11 @@ export function RateSheet({ prompt, visible, onClose, onSubmitted }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.55)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
   kavWrap:  { flex: 1, justifyContent: 'flex-end' },
   sheet: {
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
     paddingBottom: Spacing.xl,
     paddingHorizontal: Spacing.md,
@@ -166,7 +170,7 @@ const styles = StyleSheet.create({
   },
   handle: {
     alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)', marginBottom: Spacing.md,
+    backgroundColor: c.overlayStrong, marginBottom: Spacing.md,
   },
 
   headerRow:     { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.md },
@@ -175,9 +179,9 @@ const styles = StyleSheet.create({
   avatarStar:    { backgroundColor: 'rgba(255,201,60,0.16)' },
   avatarStarText:{ fontSize: 24 },
   headerTextWrap:{ flex: 1, minWidth: 0 },
-  title:         { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, letterSpacing: -0.3 },
-  subtitle:      { fontSize: FontSizes.sm, color: Colors.muted, marginTop: 2 },
-  hint:          { fontSize: FontSizes.xs, color: Colors.muted2, marginBottom: Spacing.sm },
+  title:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  subtitle:      { fontSize: FontSizes.sm, color: c.muted, marginTop: 2 },
+  hint:          { fontSize: FontSizes.xs, color: c.muted2, marginBottom: Spacing.sm },
 
   starsRow:      { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: Spacing.md, paddingHorizontal: Spacing.sm },
   starTap:       { padding: 4 },
@@ -185,14 +189,14 @@ const styles = StyleSheet.create({
   commentWrap:   { marginBottom: Spacing.md },
   comment: {
     minHeight: 80,
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: c.overlayWeak,
+    borderWidth: 1, borderColor: c.overlay,
     borderRadius: Radius.md,
     padding: Spacing.sm,
-    color: Colors.text,
+    color: c.text,
     fontSize: FontSizes.md,
   },
-  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: Colors.muted2 },
+  charCount: { alignSelf: 'flex-end', marginTop: 4, fontSize: FontSizes.xs, color: c.muted2 },
 
   submit: {
     backgroundColor: '#FF7A3C',
@@ -201,8 +205,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitDisabled: { opacity: 0.4 },
-  submitText: { color: Colors.white, fontSize: FontSizes.md, fontWeight: '800' },
+  submitText: { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
 
   skip:     { paddingVertical: Spacing.sm, alignItems: 'center', marginTop: 4 },
-  skipText: { color: Colors.muted, fontSize: FontSizes.sm, fontWeight: '600' },
+  skipText: { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 });

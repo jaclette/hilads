@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Radius, Spacing } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 interface Props {
   visible: boolean;
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent, onSelectTopic }: Props) {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('now');
   const slideAnim   = useRef(new Animated.Value(300)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
@@ -141,10 +144,10 @@ export function CreateSheet({ visible, onClose, onSelectChallenge, onSelectEvent
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.65)',
+    backgroundColor: c.scrim,
   },
 
   sheet: {
@@ -152,11 +155,11 @@ const styles = StyleSheet.create({
     bottom:          0,
     left:            0,
     right:           0,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius:  24,
     borderTopRightRadius: 24,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     paddingBottom:   36,
     paddingTop:      12,
   },
@@ -166,14 +169,14 @@ const styles = StyleSheet.create({
     width:           40,
     height:          4,
     borderRadius:    2,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: c.overlayStrong,
     marginBottom:    20,
   },
 
   title: {
     fontSize:      FontSizes.xl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     textAlign:     'center',
     marginBottom:  Spacing.md,
     letterSpacing: -0.5,
@@ -181,10 +184,10 @@ const styles = StyleSheet.create({
 
   options: {
     marginHorizontal: Spacing.md,
-    backgroundColor:  Colors.bg3,
+    backgroundColor:  c.bg3,
     borderRadius:     Radius.lg,
     borderWidth:      1,
-    borderColor:      Colors.border,
+    borderColor:      c.border,
     overflow:         'hidden',
   },
 
@@ -222,24 +225,24 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontSize:   FontSizes.md,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
 
   optionSub: {
     fontSize: FontSizes.sm,
-    color:    Colors.muted,
+    color:    c.muted,
   },
 
   optionArrow: {
     fontSize:   22,
-    color:      Colors.muted2,
+    color:      c.muted2,
     fontWeight: '300',
     lineHeight: 28,
   },
 
   divider: {
     height:          1,
-    backgroundColor: Colors.border,
+    backgroundColor: c.border,
     marginHorizontal: Spacing.md,
   },
 
@@ -248,15 +251,15 @@ const styles = StyleSheet.create({
     marginHorizontal:  Spacing.md,
     paddingVertical:   Spacing.sm + 2,
     borderRadius:      Radius.lg,
-    backgroundColor:   Colors.bg3,
+    backgroundColor:   c.bg3,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     alignItems:        'center',
   },
 
   cancelText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
 });

@@ -1,7 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
-import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
+import { FontSizes, Spacing, Radius, Gradients, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 /**
  * Shared "lead with action" empty state for a city with ZERO challenges.
@@ -14,6 +15,8 @@ import { Colors, FontSizes, Spacing, Radius, Gradients } from '@/constants';
  * never hardcode a city name.
  */
 export function EmptyCityChallenges({ city, onCreate }: { city: string; onCreate: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+
   const { t } = useTranslation('challenge');
   return (
     <View style={styles.wrap}>
@@ -43,9 +46,9 @@ export function EmptyCityChallenges({ city, onCreate }: { city: string; onCreate
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: {
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.lg,
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.35)',
@@ -53,7 +56,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     alignItems:        'center',
     gap:               8,
-    shadowColor:   Colors.accent,
+    shadowColor:   c.accent,
     shadowOpacity: 0.22,
     shadowRadius:  14,
     shadowOffset:  { width: 0, height: 0 },
@@ -61,14 +64,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize:      FontSizes.lg,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     textAlign:     'center',
     letterSpacing: -0.2,
   },
   sub: {
     fontSize:   FontSizes.sm,
     fontWeight: '500',
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     lineHeight: 19,
   },

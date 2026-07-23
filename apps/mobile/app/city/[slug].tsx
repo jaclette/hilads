@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { fetchCityBySlug } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { socket } from '@/lib/socket';
-import { Colors } from '@/constants';
+import { useTheme } from '@/context/ThemeContext';
 
 /**
  * City deep link handler - https://hilads.live/city/{slug}
@@ -16,6 +16,7 @@ import { Colors } from '@/constants';
  * (switches city immediately when the app is already running).
  */
 export default function CityDeepLink() {
+  const { colors } = useTheme();
   const { slug } = useLocalSearchParams<{ slug: string }>();
   const router   = useRouter();
   const { joined, sessionId, identity, account, setCity } = useApp();
@@ -53,8 +54,8 @@ export default function CityDeepLink() {
   // Show a minimal loading indicator while resolving.
   // The BootScreen overlay covers this during cold start anyway.
   return (
-    <View style={{ flex: 1, backgroundColor: Colors.bg, alignItems: 'center', justifyContent: 'center' }}>
-      <ActivityIndicator color={Colors.accent} size="large" />
+    <View style={{ flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' }}>
+      <ActivityIndicator color={colors.accent} size="large" />
     </View>
   );
 }

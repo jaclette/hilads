@@ -12,7 +12,8 @@ import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { fetchChallengeShowcase, type ShowcaseItem } from '@/api/challenges';
 import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet';
-import { Colors, FontSizes, Spacing } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
 const MAX   = 3;  // 3 success slides + 1 trailing How-it-works slide
@@ -28,6 +29,8 @@ const W      = Dimensions.get('window').width - Spacing.md * 2;
 const HOWTO_ID = '__howto__';
 
 export function ShowcaseHeroCarousel({ onHowItWorks }: { onHowItWorks: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+
   const router = useRouter();
   const { t } = useTranslation('challenge');
   const { account } = useApp();
@@ -130,6 +133,7 @@ export function ShowcaseHeroCarousel({ onHowItWorks }: { onHowItWorks: () => voi
 }
 
 function HowItWorksSlide({ onOpen }: { onOpen: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   return (
     <TouchableOpacity style={[styles.slide, styles.howto]} activeOpacity={0.9} onPress={onOpen}>
@@ -142,6 +146,7 @@ function HowItWorksSlide({ onOpen }: { onOpen: () => void }) {
 }
 
 function Slide({ item, onOpen }: { item: ShowcaseItem; onOpen: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
   const intl     = item.mode === 'international';
   const icon     = TYPE_ICON[item.challenge_type] ?? '🔥';
@@ -178,20 +183,20 @@ function Slide({ item, onOpen }: { item: ShowcaseItem; onOpen: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap: { marginHorizontal: Spacing.md, marginBottom: Spacing.md },
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  headTitle: { fontSize: FontSizes.md, fontWeight: '800', color: Colors.text, letterSpacing: -0.2 },
+  headTitle: { fontSize: FontSizes.md, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
   seeAll: { fontSize: FontSizes.sm, fontWeight: '700', color: '#60a5fa' },
 
-  slide: { width: W, height: 168, borderRadius: 16, overflow: 'hidden', backgroundColor: Colors.bg2 },
+  slide: { width: W, height: 168, borderRadius: 16, overflow: 'hidden', backgroundColor: c.bg2 },
   howto: { justifyContent: 'center', alignItems: 'flex-start', padding: 16, gap: 5, backgroundColor: 'rgba(96,165,250,0.12)', borderWidth: 1, borderColor: 'rgba(96,165,250,0.28)' },
   howtoEmoji: { fontSize: 26 },
-  howtoTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text },
-  howtoSub:   { fontSize: 12.5, lineHeight: 17, color: Colors.muted, maxWidth: '92%' },
+  howtoTitle: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
+  howtoSub:   { fontSize: 12.5, lineHeight: 17, color: c.muted, maxWidth: '92%' },
   howtoCta:   { marginTop: 2, fontSize: 13, fontWeight: '800', color: '#60a5fa' },
   slideImg: { ...StyleSheet.absoluteFillObject, width: '100%', height: '100%' },
-  slideOverlay: { flex: 1, justifyContent: 'space-between', padding: 12, backgroundColor: 'rgba(0,0,0,0.34)' },
+  slideOverlay: { flex: 1, justifyContent: 'space-between', padding: 12, backgroundColor: c.scrim },
   slideOverlayFlat: { backgroundColor: 'rgba(255,201,60,0.06)' },
   slideTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pill: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
@@ -201,9 +206,9 @@ const styles = StyleSheet.create({
   starPill: { flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
   starText: { fontSize: 12, fontWeight: '800', color: '#FFC93C' },
   slideTitle: { fontSize: FontSizes.md, fontWeight: '800', color: '#fff', marginBottom: 3 },
-  slideMeta: { fontSize: FontSizes.xs, fontWeight: '600', color: 'rgba(255,255,255,0.82)' },
+  slideMeta: { fontSize: FontSizes.xs, fontWeight: '600', color: c.overlayStrong },
 
   dots: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, marginTop: 10 },
-  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: Colors.border },
+  dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: c.border },
   dotActive: { backgroundColor: '#FFC93C', width: 18 },
 });

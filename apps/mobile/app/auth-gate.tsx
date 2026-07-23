@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge' | 'accept_challenge';
 
@@ -36,6 +37,9 @@ const BENEFITS = [
 ] as const;
 
 export default function AuthGateScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('auth');
   const { reason, returnTo } = useLocalSearchParams<{ reason?: string; returnTo?: string }>();
@@ -53,7 +57,7 @@ export default function AuthGateScreen() {
 
       {/* Back */}
       <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-        <Ionicons name="chevron-back" size={20} color={Colors.text} />
+        <Ionicons name="chevron-back" size={20} color={colors.text} />
       </TouchableOpacity>
 
       <View style={styles.body}>
@@ -95,19 +99,19 @@ export default function AuthGateScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: {
     flex:            1,
-    backgroundColor: Colors.bg,
+    backgroundColor: c.bg,
   },
   backBtn: {
     margin:          Spacing.md,
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
     borderWidth:     1,
-    borderColor:     'rgba(255,255,255,0.10)',
+    borderColor:     c.overlayStrong,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -126,13 +130,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize:      FontSizes.xxl,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     textAlign:     'center',
     letterSpacing: -0.5,
   },
   subtitle: {
     fontSize:   FontSizes.md,
-    color:      Colors.muted,
+    color:      c.muted,
     textAlign:  'center',
     lineHeight: 22,
   },
@@ -156,17 +160,17 @@ const styles = StyleSheet.create({
   },
   benefitText: {
     fontSize:   FontSizes.md,
-    color:      Colors.text,
+    color:      c.text,
     fontWeight: '500',
   },
   primary: {
     alignSelf:         'stretch',
-    backgroundColor:   Colors.accent,
+    backgroundColor:   c.accent,
     borderRadius:      Radius.lg,
     paddingVertical:   16,
     alignItems:        'center',
     marginTop:         Spacing.sm,
-    shadowColor:       Colors.accent,
+    shadowColor:       c.accent,
     shadowOffset:      { width: 0, height: 4 },
     shadowOpacity:     0.35,
     shadowRadius:      10,
@@ -183,11 +187,11 @@ const styles = StyleSheet.create({
     paddingVertical:   16,
     alignItems:        'center',
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.15)',
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    borderColor:       c.overlayStrong,
+    backgroundColor:   c.overlayWeak,
   },
   secondaryText: {
-    color:      Colors.text,
+    color:      c.text,
     fontSize:   FontSizes.md,
     fontWeight: '600',
   },

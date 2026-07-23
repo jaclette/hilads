@@ -8,7 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { fetchGroupSubmissions, type ShowcaseItem, type GroupSubmission } from '@/api/challenges';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
 
 const TYPE_ICON: Record<string, string> = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' };
 
@@ -20,6 +21,7 @@ function PersonRow({ label, name, avatar, country, userId, onAvatar }: {
   userId: string | null;
   onAvatar?: (userId: string) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const flag = countryToFlag(country);
   const initial = (name ?? '?').charAt(0).toUpperCase();
   const tap = userId && onAvatar ? () => onAvatar(userId) : undefined;
@@ -47,6 +49,7 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
   onTry: (item: ShowcaseItem) => void;
   onAvatar?: (userId: string) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
 
   // Group photo-proof contests have many takers → many photos. Pull them all so
@@ -188,17 +191,17 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
   );
 }
 
-const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)' },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.scrim },
   sheet: {
     position: 'absolute', left: 0, right: 0, bottom: 0,
     maxHeight: '88%',
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderTopLeftRadius: 22, borderTopRightRadius: 22,
-    borderWidth: 1, borderColor: Colors.border,
+    borderWidth: 1, borderColor: c.border,
     paddingBottom: Spacing.lg,
   },
-  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: Colors.border, marginTop: 10, marginBottom: 6 },
+  handle: { alignSelf: 'center', width: 40, height: 4, borderRadius: 2, backgroundColor: c.border, marginTop: 10, marginBottom: 6 },
   scroll: { paddingHorizontal: Spacing.lg, paddingTop: Spacing.sm },
 
   proof: { width: '100%', height: 220, borderRadius: 14, marginBottom: 14, backgroundColor: '#000' },
@@ -225,24 +228,24 @@ const styles = StyleSheet.create({
   badges: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
   modePill: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: Radius.full },
   modeIntl: { backgroundColor: 'rgba(96,165,250,0.14)' },
-  modeLocal: { backgroundColor: 'rgba(255,255,255,0.06)' },
-  modeText: { fontSize: 12, fontWeight: '700', color: Colors.text },
+  modeLocal: { backgroundColor: c.overlay },
+  modeText: { fontSize: 12, fontWeight: '700', color: c.text },
   stars: { fontSize: 14, fontWeight: '800', color: '#FFC93C' },
 
-  title: { fontSize: FontSizes.lg, fontWeight: '800', color: Colors.text, marginBottom: 14, lineHeight: 24 },
-  city:  { fontSize: FontSizes.sm, fontWeight: '600', color: Colors.muted, marginTop: -8, marginBottom: 14 },
+  title: { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, marginBottom: 14, lineHeight: 24 },
+  city:  { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted, marginTop: -8, marginBottom: 14 },
 
   people: { gap: 8, marginBottom: 14 },
   person: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     paddingHorizontal: 10, paddingVertical: 8, borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.04)', borderWidth: 1, borderColor: 'rgba(255,255,255,0.06)',
+    backgroundColor: c.overlayWeak, borderWidth: 1, borderColor: c.overlay,
   },
   personAvatar: { width: 36, height: 36, borderRadius: 18 },
-  personAvatarFallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.12)' },
-  personInitial: { fontSize: 14, fontWeight: '700', color: Colors.text },
-  personLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: Colors.muted },
-  personName: { fontSize: 14, fontWeight: '600', color: Colors.text },
+  personAvatarFallback: { alignItems: 'center', justifyContent: 'center', backgroundColor: c.overlayStrong },
+  personInitial: { fontSize: 14, fontWeight: '700', color: c.text },
+  personLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: c.muted },
+  personName: { fontSize: 14, fontWeight: '600', color: c.text },
 
   noteBox: {
     padding: 12, borderRadius: 12, marginBottom: 8,
@@ -250,15 +253,15 @@ const styles = StyleSheet.create({
   },
   noteLabel: { fontSize: 11, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 0.4, color: '#FFC93C', marginBottom: 6 },
   noteQuote: { gap: 1 },
-  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: 'rgba(255,255,255,0.08)' },
-  noteWho: { fontSize: 12, fontWeight: '700', color: Colors.text },
-  noteRole: { fontSize: 10, fontWeight: '600', color: Colors.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
-  noteText: { fontSize: 14, lineHeight: 20, color: Colors.text, fontStyle: 'italic' },
+  noteQuoteDivider: { marginTop: 8, paddingTop: 8, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: c.overlay },
+  noteWho: { fontSize: 12, fontWeight: '700', color: c.text },
+  noteRole: { fontSize: 10, fontWeight: '600', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
+  noteText: { fontSize: 14, lineHeight: 20, color: c.text, fontStyle: 'italic' },
 
   tryBtn: {
     marginHorizontal: Spacing.lg, marginTop: Spacing.sm,
     paddingVertical: 15, borderRadius: 14, alignItems: 'center',
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
   tryText: { fontSize: FontSizes.md, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
 });

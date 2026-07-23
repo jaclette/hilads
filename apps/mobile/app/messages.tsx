@@ -29,7 +29,8 @@ import {
   type NotificationPreferences,
 } from '@/api/notifications';
 import { UpgradePrompt } from '@/features/auth/UpgradePrompt';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor } from '@/lib/avatarColors';
 import type { Conversation, HiladsEvent, EventChatPreview } from '@/types';
 
@@ -55,6 +56,7 @@ function relativeTime(raw?: string | null): string {
 // ── DM row ────────────────────────────────────────────────────────────────────
 
 function DMRow({ convo, onPress, onDelete }: { convo: Conversation; onPress: () => void; onDelete: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const { t }   = useTranslation('common');
   const name    = convo.other_display_name;
   const color   = avatarColor(name);
@@ -108,6 +110,7 @@ function EventRow({
   unread?: EventChatPreview;
   onPress: () => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('dm');
   const hasUnread = (unread?.count ?? 0) > 0;
   const preview   = unread?.preview
@@ -140,6 +143,7 @@ function EventRow({
 // ── Section header ────────────────────────────────────────────────────────────
 
 function SectionHeader({ title }: { title: string }) {
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -163,6 +167,7 @@ function FilterBar({
   eventsUnread: boolean;
   onSelect:     (f: FilterKey) => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('dm');
   return (
     <View style={styles.filterBar}>
@@ -188,6 +193,8 @@ function FilterBar({
 // ── Back button ───────────────────────────────────────────────────────────────
 
 function BackButton() {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   return (
     <TouchableOpacity
@@ -195,7 +202,7 @@ function BackButton() {
       onPress={() => router.canGoBack() ? router.back() : router.replace('/(tabs)/chat')}
       activeOpacity={0.7}
     >
-      <Feather name="chevron-left" size={22} color={Colors.text} />
+      <Feather name="chevron-left" size={22} color={colors.text} />
     </TouchableOpacity>
   );
 }
@@ -203,6 +210,9 @@ function BackButton() {
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function MessagesScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t } = useTranslation('dm');
   const { account, identity, eventChatPreviews, clearEventChatCounts, setUnreadDMs } = useApp();
@@ -320,7 +330,7 @@ export default function MessagesScreen() {
       {/* Content */}
       {initialLoading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={Colors.accent} />
+          <ActivityIndicator color={colors.accent} />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -349,7 +359,7 @@ export default function MessagesScreen() {
             <RefreshControl
               refreshing={loadingDMs || loadingEvts}
               onRefresh={reload}
-              tintColor={Colors.accent}
+              tintColor={colors.accent}
             />
           }
           contentContainerStyle={styles.listContent}
@@ -376,7 +386,7 @@ export default function MessagesScreen() {
           {showEvents && (
             loadingEvts && events.length === 0 ? (
               <View style={styles.sectionLoader}>
-                <ActivityIndicator color={Colors.accent} size="small" />
+                <ActivityIndicator color={colors.accent} size="small" />
               </View>
             ) : events.length > 0 ? (
               <>
@@ -435,6 +445,8 @@ export default function MessagesScreen() {
 function PrefRow({
   label, subtitle, value, onChange,
 }: { label: string; subtitle: string; value: boolean; onChange: (v: boolean) => void }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.prefRow}>
       <View style={styles.prefText}>
@@ -444,9 +456,9 @@ function PrefRow({
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: Colors.bg3, true: Colors.accent }}
-        thumbColor={Colors.white}
-        ios_backgroundColor={Colors.bg3}
+        trackColor={{ false: colors.bg3, true: colors.accent }}
+        thumbColor={colors.white}
+        ios_backgroundColor={colors.bg3}
       />
     </View>
   );
@@ -454,8 +466,8 @@ function PrefRow({
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container:   { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container:   { flex: 1, backgroundColor: c.bg },
   listContent: { paddingBottom: Spacing.xl },
 
   // ── Header ────────────────────────────────────────────────────────────────
@@ -465,15 +477,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical:   12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   backBtn: {
     width:           40,
     height:          40,
     borderRadius:    12,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
   },
@@ -482,7 +494,7 @@ const styles = StyleSheet.create({
     textAlign:     'center',
     fontSize:      FontSizes.lg,
     fontWeight:    '800',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.4,
   },
   markReadBtn: {
@@ -493,7 +505,7 @@ const styles = StyleSheet.create({
   markReadText: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.accent,
+    color:      c.accent,
   },
 
   // ── Filter pills ──────────────────────────────────────────────────────────
@@ -504,7 +516,7 @@ const styles = StyleSheet.create({
     paddingVertical:   10,
     gap:               8,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomColor: c.border,
   },
   pill: {
     flexDirection:     'row',
@@ -514,29 +526,29 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     borderRadius:      20,
     borderWidth:       1,
-    borderColor:       Colors.border,
-    backgroundColor:   Colors.bg2,
+    borderColor:       c.border,
+    backgroundColor:   c.bg2,
   },
   pillActive: {
-    borderColor:     Colors.accent,
-    backgroundColor: Colors.accent + '18',
+    borderColor:     c.accent,
+    backgroundColor: c.accent + '18',
   },
   pillLabel: {
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
   pillLabelActive: {
-    color: Colors.accent,
+    color: c.accent,
   },
   pillDot: {
     width:           6,
     height:          6,
     borderRadius:    3,
-    backgroundColor: Colors.muted,
+    backgroundColor: c.muted,
   },
   pillDotActive: {
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
 
   // ── Section header ────────────────────────────────────────────────────────
@@ -548,7 +560,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize:      FontSizes.xs,
     fontWeight:    '700',
-    color:         Colors.muted2,
+    color:         c.muted2,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },
@@ -587,9 +599,9 @@ const styles = StyleSheet.create({
     width:           52,
     height:          52,
     borderRadius:    16,
-    backgroundColor: Colors.bg3,
+    backgroundColor: c.bg3,
     borderWidth:     1,
-    borderColor:     Colors.border,
+    borderColor:     c.border,
     alignItems:      'center',
     justifyContent:  'center',
     flexShrink:      0,
@@ -603,27 +615,27 @@ const styles = StyleSheet.create({
     flex:       1,
     fontSize:   FontSizes.md,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
   },
-  rowNameUnread: { fontWeight: '800', color: Colors.white },
+  rowNameUnread: { fontWeight: '800', color: c.white },
 
   rowTime: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted2,
+    color:      c.muted2,
     flexShrink: 0,
   },
   rowPreview: {
     fontSize:   FontSizes.sm,
-    color:      Colors.muted,
+    color:      c.muted,
     lineHeight: 20,
   },
-  rowPreviewUnread: { color: Colors.text },
+  rowPreviewUnread: { color: c.text },
 
   unreadDot: {
     width:           10,
     height:          10,
     borderRadius:    5,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     flexShrink:      0,
   },
 
@@ -632,23 +644,23 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center',
     padding: Spacing.xl, gap: Spacing.sm,
   },
-  errorText:  { fontSize: FontSizes.sm, color: Colors.red },
+  errorText:  { fontSize: FontSizes.sm, color: c.red },
   retryBtn: {
     paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    backgroundColor: Colors.bg3, borderRadius: Radius.md,
+    backgroundColor: c.bg3, borderRadius: Radius.md,
   },
-  retryText:  { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
+  retryText:  { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
   emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  emptyTitle: { fontSize: FontSizes.md, fontWeight: '600', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
 
   // ── Preferences (envelope-scoped - DM, event-chat, city-chat) ────────────
   prefSection:      { marginTop: Spacing.xl, paddingHorizontal: Spacing.md },
-  prefSectionTitle: { fontSize: FontSizes.xs, fontWeight: '700', color: Colors.muted2, letterSpacing: 0.8, marginBottom: Spacing.sm },
-  prefCard:         { backgroundColor: Colors.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: Colors.border, overflow: 'hidden' },
+  prefSectionTitle: { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted2, letterSpacing: 0.8, marginBottom: Spacing.sm },
+  prefCard:         { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
   prefRow:          { flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.md, paddingVertical: Spacing.md, gap: Spacing.md },
   prefText:         { flex: 1, gap: 3 },
-  prefLabel:        { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text },
-  prefSub:          { fontSize: FontSizes.xs, color: Colors.muted, lineHeight: 17 },
-  prefDivider:      { height: 1, backgroundColor: Colors.border, marginHorizontal: Spacing.md },
+  prefLabel:        { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
+  prefSub:          { fontSize: FontSizes.xs, color: c.muted, lineHeight: 17 },
+  prefDivider:      { height: 1, backgroundColor: c.border, marginHorizontal: Spacing.md },
 });
