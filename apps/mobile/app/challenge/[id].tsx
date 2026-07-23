@@ -2,7 +2,7 @@ import { thumbUrl } from '@/lib/imageThumb';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
-  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList, Platform,
+  TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
   Keyboard,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -1710,9 +1710,13 @@ export default function ChallengeChatScreen() {
           via a non-tabs path, tabBarHeight=0 - no dead space. */}
       <KeyboardAvoidingView
         style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
-        // Android: rely on the window's adjustResize (no KAV behavior) - layering
-        // 'padding' on top left a black gap on interactive keyboard dismissal.
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        // 'padding' on BOTH platforms. Android used to rely on the window's
+        // adjustResize (behavior=undefined), but targetSdk 35+ forces edge-to-edge,
+        // which breaks adjustResize's keyboard inset → the composer stayed hidden
+        // behind the keyboard. RN's 'padding' uses keyboard events (not the window
+        // resize), so it's robust; the city chat uses the same. Any transient gap on
+        // interactive dismiss is now the light bg, not black.
+        behavior="padding"
       >
         {/* PR34 - show the chat for ALL participants once they're in the
             channel, including acceptors with phase='pending'. The pipeline
