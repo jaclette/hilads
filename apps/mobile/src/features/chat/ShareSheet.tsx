@@ -92,9 +92,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     backgroundColor: c.scrim,
   },
   sheet: {
-    backgroundColor:   '#1a1512',
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
-    borderTopColor:    c.overlay,
+    borderTopColor:    c.border,
     borderRadius:      20,
     paddingHorizontal: 16,
     paddingTop:        20,

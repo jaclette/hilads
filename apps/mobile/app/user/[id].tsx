@@ -859,7 +859,7 @@ export default function PublicProfileScreen() {
             activeOpacity={0.75}
             accessibilityLabel={t('moreOptions')}
           >
-            <Ionicons name="ellipsis-horizontal" size={20} color="rgba(255,255,255,0.55)" />
+            <Ionicons name="ellipsis-horizontal" size={20} color={colors.muted} />
           </TouchableOpacity>
         </View>
       )}
@@ -1396,7 +1396,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:               10,
     paddingHorizontal: Spacing.md,
     paddingTop:        12,
-    backgroundColor:   'rgba(14, 14, 16, 0.92)',
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
     borderTopColor:    c.border,
     flexShrink:        0,

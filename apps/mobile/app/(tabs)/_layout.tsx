@@ -8,6 +8,7 @@ import Svg, { Path, Circle } from 'react-native-svg';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
+import { useTheme } from '@/context/ThemeContext';
 import { Gradients } from '@/constants';
 import { OnboardingCarousel } from '@/features/onboarding/OnboardingCarousel';
 import { localizeCityName } from '@/i18n/cityName';
@@ -17,9 +18,10 @@ import { markOnboardingSeen } from '@/lib/onboarding';
 // Sourced from apps/web/src/index.css .bottom-nav / .bottom-nav-tab.
 // Keep these in sync with the web CSS - they're the canonical source.
 
-const ACTIVE_COLOR   = '#FF7A3C';                 // .bottom-nav-tab.active color
-const INACTIVE_COLOR = 'rgba(255,255,255,0.52)';  // .bottom-nav-tab color
-const BAR_BG         = '#141210';                 // opaque variant of rgba(20,18,16,0.96)
+const ACTIVE_COLOR   = '#FF7A3C';                 // .bottom-nav-tab.active color (energy orange, reads on both themes)
+// Inactive tab color + bar bg now come from the theme (colors.muted / colors.bg2)
+// so the bar is white on light and near-black on dark instead of a fixed dark.
+const BAR_BG         = '#141210';                 // static fallback base; overridden inline per-theme
 const BAR_BG_SOLID   = '#0d0b09';                 // --bg, matches the dot ring on web
 
 // Dot colors - --hot-dot / --green / --profile-dot
@@ -122,6 +124,7 @@ function NavIconParty({ color, size = 30 }: { color: string; size?: number }) {
 
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const { colors, theme } = useTheme(); // bar bg + inactive icon follow the theme
 
   // Hide the bar entirely while the keyboard is up so typing in chat gets a
   // focused, gap-free conversation. We UNMOUNT (return null) rather than just
@@ -145,11 +148,16 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   // "activity counter" pill inside the chat now carries that signal.
 
   return (
-    <View style={[styles.container, { paddingBottom: Math.max(10, insets.bottom) }]}>
+    <View style={[styles.container, {
+      backgroundColor: colors.bg2,               // white on light, near-black on dark
+      borderTopColor:  colors.separator,
+      shadowOpacity:   theme === 'dark' ? 0.5 : 0.08, // heavy dark bleed only makes sense on dark
+      paddingBottom:   Math.max(10, insets.bottom),
+    }]}>
       {TABS.map(tab => {
         const routeIndex = state.routes.findIndex(r => r.name === tab.name);
         const focused    = state.index === routeIndex;
-        const color      = focused ? ACTIVE_COLOR : INACTIVE_COLOR;
+        const color      = focused ? ACTIVE_COLOR : colors.muted;
 
         return (
           <Pressable

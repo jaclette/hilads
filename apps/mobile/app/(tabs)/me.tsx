@@ -1731,7 +1731,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stickyCta: {
     paddingHorizontal: Spacing.md,
     paddingTop:        12,
-    backgroundColor:   'rgba(14, 14, 16, 0.92)',
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
     borderTopColor:    c.border,
     gap:               2,

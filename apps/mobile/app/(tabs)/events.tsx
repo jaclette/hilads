@@ -850,7 +850,7 @@ export default function NowScreen() {
               accessibilityRole="button"
             >
               <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
-              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: colors.overlayStrong }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
+              <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: colors.muted2 }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
@@ -1041,7 +1041,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     bottom:            0,
     paddingHorizontal: Spacing.md,
     paddingTop:        10,
-    backgroundColor:   'rgba(14,14,16,0.92)',
+    backgroundColor:   c.bg2,
     borderTopWidth:    1,
     borderTopColor:    c.border,
   },
