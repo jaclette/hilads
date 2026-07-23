@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, fetchUserChallenges, deleteAccount, checkUsernameAvailability } from '../api'
 import { setLocale } from '../i18n'
+import { setTheme } from '../lib/theme'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import BackButton from './BackButton'
@@ -90,6 +91,12 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [uStatus,         setUStatus]         = useState('idle') // idle|checking|available|taken|invalid
   const [uReason,         setUReason]         = useState(null)
   const uTimer = useRef(null)
+  // Appearance toggle. Reflects the theme actually applied to <html> (set by
+  // lib/theme at boot); tapping persists + applies the choice instantly.
+  const [theme, setThemeChoice] = useState(
+    () => (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme')) || 'light',
+  )
+  const pickTheme = (t) => { setTheme(t); setThemeChoice(t) }
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   // Legend-only city picker. The "Home city" row is the ONLY surface
@@ -357,6 +364,32 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
                   <span className="profile-mode-btn-desc">{t(`modes.${m.key}Desc`)}</span>
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Appearance - light (default) / dark theme toggle. Stamps data-theme
+              on <html> via lib/theme and persists the choice. */}
+          <div className="profile-mode-section">
+            <span className="profile-mode-label">{t('profile:appearance', { defaultValue: 'Appearance' })}</span>
+            <div className="profile-mode-btns" role="group" aria-label={t('profile:appearance', { defaultValue: 'Appearance' })}>
+              <button
+                type="button"
+                className={`profile-mode-btn${theme !== 'dark' ? ' profile-mode-btn--on' : ''}`}
+                aria-pressed={theme !== 'dark'}
+                onClick={() => pickTheme('light')}
+              >
+                <span className="profile-mode-btn-emoji">☀️</span>
+                <span className="profile-mode-btn-name">{t('profile:themeLight', { defaultValue: 'Light' })}</span>
+              </button>
+              <button
+                type="button"
+                className={`profile-mode-btn${theme === 'dark' ? ' profile-mode-btn--on' : ''}`}
+                aria-pressed={theme === 'dark'}
+                onClick={() => pickTheme('dark')}
+              >
+                <span className="profile-mode-btn-emoji">🌙</span>
+                <span className="profile-mode-btn-name">{t('profile:themeDark', { defaultValue: 'Dark' })}</span>
+              </button>
             </div>
           </div>
 

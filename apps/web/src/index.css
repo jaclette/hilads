@@ -4,47 +4,12 @@
   padding: 0;
 }
 
-:root {
-  /* Dark palette (current default). Phase 3 flips the default to light and moves
-     these under :root[data-theme="dark"]; until then a data-theme="light" wrapper
-     (or the Me-screen toggle) re-themes any subtree via the block below. */
-  --bg: #0d0b09;
-  --surface: #161210;
-  --surface2: #1e1812;
-  --border: #272018;
-  --accent: #C24A38;
-  --accent2: #B87228;
-  --green: #3ddc84;
-  --hot-dot: #FF7A3C;
-  --profile-dot: #8B5CF6;
-  --text: #ede9e5;
-  --muted: #635650;
-  --muted2: #968880;
-  --mine-bg: #8C3427;
-  --other-bg: #1c1610;
-  --bg2: #1a1614;       /* elevated secondary surface (sheets/cards) — was never defined, so var(--bg2, …) hard-fell-back to dark and broke in light */
-  --text-muted: #968880;/* alias used across profile/vibe (= --muted2) — was undefined (7 uses) */
-  --hot-text: #FF7A3C;  /* bright orange used as TEXT — stays vivid on dark */
-  --mobile-tabbar-height: 4.875rem;
-
-  /* Semantic tokens — the vocabulary the app-shell migration (phase 3) routes the
-     scattered rgba(255,255,255,.x) overlays and dark glows through, so each has
-     ONE definition per theme instead of hundreds of literals. Dark values here. */
-  --separator: rgba(255, 255, 255, 0.08);
-  --overlay-weak: rgba(255, 255, 255, 0.04);
-  --overlay: rgba(255, 255, 255, 0.07);
-  --overlay-strong: rgba(255, 255, 255, 0.12);
-  --elevated: #1e1812;
-  --input-bg: #0d0b09;
-  --scrim: rgba(0, 0, 0, 0.6);
-  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-/* Light palette + semantic tokens. Themes the document root when the Me-screen
-   toggle sets data-theme="light" (phase 3), AND any element carrying
-   data-theme="light" (scoped use). Defined now as phase-2 groundwork; the
-   pre-auth funnel (currently light via its own .sl / .auth-page blocks) folds
-   into this in phase 3. */
+/* ── Theme tokens ────────────────────────────────────────────────────────────
+   LIGHT is the default (:root). DARK is opt-in via the Me-screen toggle, which
+   stamps data-theme="dark" on <html>. A data-theme="light" wrapper re-asserts
+   light inside a dark root (the pre-auth funnel: .sl / .auth-page). Everything is
+   consumed through var(), so a single flip re-themes the whole app. */
+:root,
 [data-theme="light"] {
   --bg: #FBF6F0;
   --surface: #FFFFFF;
@@ -73,6 +38,39 @@
   --scrim: rgba(28, 20, 14, 0.35);
   --card-shadow: 0 1px 2px rgba(28, 20, 14, 0.06), 0 8px 24px rgba(28, 20, 14, 0.08);
   color-scheme: light;
+
+  --mobile-tabbar-height: 4.875rem;  /* theme-independent */
+}
+
+/* DARK — the app's original look, now opt-in via the toggle. */
+[data-theme="dark"] {
+  --bg: #0d0b09;
+  --surface: #161210;
+  --surface2: #1e1812;
+  --border: #272018;
+  --accent: #C24A38;
+  --accent2: #B87228;
+  --green: #3ddc84;
+  --hot-dot: #FF7A3C;
+  --profile-dot: #8B5CF6;
+  --text: #ede9e5;
+  --muted: #635650;
+  --muted2: #968880;
+  --mine-bg: #8C3427;
+  --other-bg: #1c1610;
+  --bg2: #1a1614;
+  --text-muted: #968880;
+  --hot-text: #FF7A3C;  /* bright orange text stays vivid on dark */
+
+  --separator: rgba(255, 255, 255, 0.08);
+  --overlay-weak: rgba(255, 255, 255, 0.04);
+  --overlay: rgba(255, 255, 255, 0.07);
+  --overlay-strong: rgba(255, 255, 255, 0.12);
+  --elevated: #1e1812;
+  --input-bg: #0d0b09;
+  --scrim: rgba(0, 0, 0, 0.6);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  color-scheme: dark;
 }
 
 /* ── Phase 3: light-only tuning for shadows / bright-accent text that don't map

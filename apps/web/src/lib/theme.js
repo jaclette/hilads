@@ -3,23 +3,24 @@
 // which re-colors everything routed through the CSS custom-property tokens
 // (see :root and [data-theme="light"] in index.css).
 //
-// DEFAULT IS 'dark' until the in-app shell is migrated onto the token system
-// (phase 3). Flipping to 'light' before then would render the app's still-dark-
-// assuming surfaces on a light ground. setTheme() exists now so the Me-screen
-// toggle is a drop-in once phase 3 lands; it is intentionally not surfaced yet.
+// DEFAULT is 'light' — the app shell is fully token-routed (phase 3), so a new
+// visitor gets the warm daylight theme. Users who prefer the original night look
+// flip it from the Me screen (setTheme('dark')), which persists their choice.
 
 const KEY = 'hilads_theme'
-const DEFAULT = 'dark'
+const DEFAULT = 'light'
 
 export function getStoredTheme() {
   try { return localStorage.getItem(KEY) } catch { return null }
 }
 
-/** Set `data-theme` on <html>. Returns the applied value. */
+/** Set `data-theme` on <html> + sync the browser-chrome color. Returns the applied value. */
 export function applyTheme(theme) {
   const t = theme === 'light' ? 'light' : 'dark'
   if (typeof document !== 'undefined') {
     document.documentElement.setAttribute('data-theme', t)
+    const m = document.querySelector('meta[name="theme-color"]')
+    if (m) m.setAttribute('content', t === 'dark' ? '#0d0b09' : '#FBF6F0')
   }
   return t
 }

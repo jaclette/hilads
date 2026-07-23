@@ -6,7 +6,20 @@
     <title>Hilads - Challenges between locals &amp; travelers</title>
     <meta name="google-site-verification" content="2V6_2ikx5B9ubDRUj6-JME54cc0D2aUyF4g65XcQTYY" />
     <meta name="description" content="Locals challenge travelers, travelers challenge locals - take one on in any city and meet up to prove it. Plus live events, hangouts and city chat. No sign-up." />
-    <meta name="theme-color" content="#161210" />
+    <meta name="theme-color" content="#FBF6F0" />
+    <script>
+      /* Apply the saved theme before first paint so a dark-preferring user never
+         flashes the light default. Mirrors lib/theme.js (default = light). */
+      (function () {
+        try {
+          if (localStorage.getItem('hilads_theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            var m = document.querySelector('meta[name="theme-color"]');
+            if (m) m.setAttribute('content', '#0d0b09');
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
