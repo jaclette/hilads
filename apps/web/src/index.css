@@ -90,6 +90,7 @@
 [data-theme="light"] .me-card { box-shadow: 0 8px 24px rgba(28, 20, 14, 0.08); }
 [data-theme="light"] .profile-hero-mode--local { color: var(--accent); }
 [data-theme="light"] .vibe-star, [data-theme="light"] .vibe-star-btn { color: rgba(28, 20, 14, 0.18); }
+[data-theme="light"] .dm-reply-quote-name { color: var(--accent); } /* #FF7A3C on the sand bubble fails */
 
 /* Responsive root font-size. The app is ~74% rem-based, so scaling the root
    shrinks the bulk of the UI (headers, banners, names, chat text) on narrow
@@ -10555,7 +10556,7 @@ img.dm-header-avatar {
   border-bottom-left-radius: 5px;
   display: flex;
   flex-direction: column;
-  background: rgba(255,255,255,0.08);
+  background: var(--surface2);
   color: var(--text);
   font-size: 0.92rem;
   line-height: 1.45;
@@ -10574,14 +10575,14 @@ img.dm-header-avatar {
 .dm-bubble--deleted {
   opacity: 0.6;
   font-style: italic;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--muted);
 }
 .dm-bubble--me.dm-bubble--deleted {
   background: rgba(184, 114, 40, 0.45);
 }
 .dm-bubble .msg-edited-tag {
   font-size: 0.72rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--muted2);
   margin-left: 0.375rem;
 }
 .dm-bubble--me .msg-edited-tag {
@@ -10601,7 +10602,7 @@ img.dm-header-avatar {
   background: rgba(0, 0, 0, 0.12);
   border-left: 3px solid rgba(255, 122, 60, 0.75);
   border-radius: 18px 18px 0 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--separator);
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
@@ -10780,7 +10781,7 @@ img.dm-header-avatar {
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--separator);
   border-radius: 12px;
   color: var(--muted);
   cursor: pointer;
