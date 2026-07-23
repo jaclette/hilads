@@ -28,6 +28,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { fetchChannels, joinChannel } from '@/api/channels';
@@ -94,6 +95,15 @@ function CityCard({ city, isActive, onPress }: { city: City; isActive: boolean; 
         onPress={onPress}
         activeOpacity={0.75}
       >
+      {/* Warm accent gradient for the current city (web .city-row.active) -
+          sits behind the content, clipped by the card's overflow:hidden. */}
+      {isActive && (
+        <LinearGradient
+          colors={['rgba(194,74,56,0.12)', 'rgba(194,74,56,0.07)']}
+          style={styles.cardActiveGradient}
+          pointerEvents="none"
+        />
+      )}
       {/* ── Top row: dot + flag + name + "you're here" badge ── */}
       <View style={styles.cardTop}>
         <View style={styles.cardLeft}>
@@ -448,7 +458,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     paddingVertical:   12,
     borderBottomWidth: 1,
     borderBottomColor: c.border,
-    backgroundColor:   'rgba(13,11,9,0.9)',
+    backgroundColor:   c.bg,
   },
   searchInner: {
     flexDirection:     'row',
@@ -587,11 +597,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   //   border-color: rgba(194,74,56,0.22)
   //   box-shadow: 0 16px 30px rgba(0,0,0,0.18), inset 2px 0 0 var(--accent)
   //                         ↑ dark shadow - NOT orange. Orange only on the inset left bar.
-  // Gradient approximated as flat midpoint rgba(194,74,56,0.09)
+  // The gradient itself is a <LinearGradient> overlay in the JSX (same stops as
+  // web) so it reads as a warm peach on the light card instead of a flat dark red.
   cardActive: {
-    // rgba(194,74,56,0.12) blended over c.bg2 (#161210) → warm dark red surface
-    backgroundColor: '#211410',
-    borderColor:     'rgba(194,74,56,0.22)',
+    borderColor: 'rgba(194,74,56,0.22)',
+  },
+  cardActiveGradient: {
+    ...StyleSheet.absoluteFillObject,
   },
   // Web: inset 2px 0 0 var(--accent) via box-shadow - rendered as a sibling element
   // outside the card so it is never clipped by overflow: hidden on the card.
