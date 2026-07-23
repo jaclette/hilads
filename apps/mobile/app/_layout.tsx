@@ -14,7 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppProvider, useApp } from '@/context/AppContext';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 import { socket } from '@/lib/socket';
 import { useAppBoot } from '@/hooks/useAppBoot';
 import { useAppLifecycle } from '@/hooks/useAppLifecycle';
@@ -29,7 +29,6 @@ import { BootScreen } from '@/components/BootScreen';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
 import { track } from '@/services/analytics';
-import { Colors } from '@/constants';
 
 // ── Sentry - init before any render ──────────────────────────────────────────
 if (process.env.EXPO_PUBLIC_SENTRY_DSN) {
@@ -46,6 +45,7 @@ SplashScreen.preventAutoHideAsync();
 
 function RootLayoutInner() {
   const { booting, bootError, joined, account, city, sessionId, identity, setAccount, showAccountWelcome, setShowAccountWelcome } = useApp();
+  const { colors } = useTheme();
   const [eulaSubmitting, setEulaSubmitting] = useState(false);
   const [eulaError, setEulaError] = useState<string | null>(null);
 
@@ -153,7 +153,7 @@ function RootLayoutInner() {
       ) : (
         <>
           {/* Stack is always mounted so sign-in/sign-up routing works from LandingScreen */}
-          <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: Colors.bg } }}>
+          <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.bg } }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="event/create" />
             <Stack.Screen name="event/[id]" />
@@ -230,12 +230,20 @@ function RootLayoutInner() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <SafeAreaProvider style={{ backgroundColor: Colors.bg }}>
-        <AppProvider>
-          <StatusBar style="light" backgroundColor={Colors.bg} />
-          <RootLayoutInner />
-        </AppProvider>
-      </SafeAreaProvider>
+      <ThemedRoot />
     </ThemeProvider>
+  );
+}
+
+// Inside ThemeProvider so the root safe-area bg + status-bar style follow the theme.
+function ThemedRoot() {
+  const { theme, colors } = useTheme();
+  return (
+    <SafeAreaProvider style={{ backgroundColor: colors.bg }}>
+      <AppProvider>
+        <StatusBar style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.bg} />
+        <RootLayoutInner />
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }

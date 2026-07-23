@@ -6,7 +6,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import i18n from '@/i18n';
-import { Colors, FontSizes, Spacing, Radius } from '@/constants';
+import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 
 // ── Relative time ─────────────────────────────────────────────────────────────
@@ -29,6 +30,8 @@ export function relativeTime(raw?: string | null): string {
 // ── Notification icon ─────────────────────────────────────────────────────────
 
 export function NotifIcon({ type, unread }: { type: Notification['type']; unread: boolean }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   const iconName: React.ComponentProps<typeof Feather>['name'] =
     type === 'dm_message'      ? 'message-circle' :
     type === 'event_message'   ? 'message-square' :
@@ -41,9 +44,9 @@ export function NotifIcon({ type, unread }: { type: Notification['type']; unread
     type === 'profile_view'    ? 'eye'             :
     /* fallback */               'bell';
 
-  const color  = unread ? Colors.white : Colors.muted;
-  const bg     = unread ? 'rgba(255,122,60,0.15)' : Colors.bg3;
-  const border = unread ? 'rgba(255,122,60,0.3)'  : Colors.border;
+  const color  = unread ? colors.white : colors.muted;
+  const bg     = unread ? 'rgba(255,122,60,0.15)' : colors.bg3;
+  const border = unread ? 'rgba(255,122,60,0.3)'  : colors.border;
 
   return (
     <View style={[styles.notifIcon, { backgroundColor: bg, borderColor: border }]}>
@@ -55,6 +58,7 @@ export function NotifIcon({ type, unread }: { type: Notification['type']; unread
 // ── Notification row ──────────────────────────────────────────────────────────
 
 export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
   const unread = !notif.is_read;
   const time   = relativeTime(notif.created_at);
 
@@ -88,12 +92,13 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
 // ── Separator ─────────────────────────────────────────────────────────────────
 
 export function NotifSeparator() {
+  const styles = useThemedStyles(makeStyles);
   return <View style={styles.separator} />;
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-export const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
   notifRow: {
     flexDirection:     'row',
     alignItems:        'flex-start',
@@ -112,7 +117,7 @@ export const styles = StyleSheet.create({
     bottom:          12,
     width:           3,
     borderRadius:    2,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
   },
   notifIcon: {
     width:          44,
@@ -124,22 +129,22 @@ export const styles = StyleSheet.create({
     flexShrink:     0,
   },
   notifBody:        { flex: 1, gap: 4 },
-  notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.white, lineHeight: 20 },
-  notifTitleRead:   { color: Colors.muted, fontWeight: '500' },
-  notifPreview:     { fontSize: FontSizes.sm, color: Colors.text, lineHeight: 18 },
-  notifPreviewRead: { color: Colors.muted2 },
-  notifTime:        { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
+  notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.white, lineHeight: 20 },
+  notifTitleRead:   { color: c.muted, fontWeight: '500' },
+  notifPreview:     { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
+  notifPreviewRead: { color: c.muted2 },
+  notifTime:        { fontSize: FontSizes.xs, color: c.muted2, marginTop: 2 },
   unreadDot: {
     width:           10,
     height:          10,
     borderRadius:    5,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     marginTop:       6,
     flexShrink:      0,
   },
   separator: {
     height:           1,
-    backgroundColor:  Colors.border,
+    backgroundColor:  c.border,
     marginLeft:       Spacing.md + 44 + Spacing.sm,
   },
 });
