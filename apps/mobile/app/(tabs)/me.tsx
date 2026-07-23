@@ -127,7 +127,7 @@ function meBadgeColor(key: string): object { return ME_BADGE_COLOR[key] ?? ME_BA
 
 export default function MeScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
+  const { colors, theme, toggleTheme } = useTheme();
 
   const router  = useRouter();
   const { t }   = useTranslation('me');
@@ -1086,6 +1086,18 @@ export default function MeScreen() {
         {!isGuest && (
           <View style={styles.settingsCard}>
             <Text style={styles.settingsLabel}>{t('settings')}</Text>
+            {/* Appearance - instant light/dark theme toggle. */}
+            <TouchableOpacity
+              style={styles.settingsRow}
+              onPress={toggleTheme}
+              activeOpacity={0.7}
+            >
+              <Ionicons name={theme === 'dark' ? 'moon-outline' : 'sunny-outline'} size={18} color={colors.muted} />
+              <Text style={styles.settingsRowLabel}>{t('appearance', { defaultValue: 'Appearance' })}</Text>
+              <Text style={styles.settingsRowValue}>
+                {theme === 'dark' ? t('themeDark', { defaultValue: 'Dark' }) : t('themeLight', { defaultValue: 'Light' })}
+              </Text>
+            </TouchableOpacity>
             <TouchableOpacity
               style={styles.settingsRow}
               onPress={() => router.push('/blocked-users' as never)}
@@ -1603,6 +1615,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontSize:   FontSizes.md,
     fontWeight: '600',
     color:      c.text,
+  },
+  settingsRowValue: {
+    fontSize:   FontSizes.sm,
+    fontWeight: '700',
+    color:      c.accentText,
   },
 
   eventRow:       { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
