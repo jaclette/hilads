@@ -75,6 +75,10 @@
 [data-theme="light"] .bottom-nav { box-shadow: 0 -10px 30px rgba(28, 20, 14, 0.10); }
 [data-theme="light"] .bottom-nav-tab.active { color: var(--accent); } /* #FF7A3C fails on white */
 [data-theme="light"] .back-button { box-shadow: 0 2px 8px rgba(28, 20, 14, 0.08); }
+[data-theme="light"] .msg-avatar { box-shadow: 0 1px 3px rgba(28, 20, 14, 0.12); }
+[data-theme="light"] .msg-content { box-shadow: 0 1px 2px rgba(28, 20, 14, 0.06); }
+[data-theme="light"] .action-bubble { box-shadow: 0 4px 16px rgba(28, 20, 14, 0.10); }
+[data-theme="light"] .reaction-pill.self .reaction-count { color: var(--accent); }
 
 /* Responsive root font-size. The app is ~74% rem-based, so scaling the root
    shrinks the bulk of the UI (headers, banners, names, chat text) on narrow
@@ -3270,7 +3274,7 @@ html, body, #root {
 
 .msg-content {
   background: var(--other-bg);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--separator);
   border-radius: 4px 18px 18px 18px;
   padding: 0.4375rem 0.6875rem;
   font-size: 0.9rem;
@@ -3723,7 +3727,7 @@ html, body, #root {
    reads as "no longer here" without disturbing the surrounding rhythm. */
 .msg-content--deleted .msg-text {
   font-style: italic;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--muted);
 }
 
 .action-bubble-btn--danger {
@@ -3914,8 +3918,8 @@ html, body, #root {
 .action-bubble {
   position: fixed;
   z-index: 201;
-  background: rgba(36, 28, 24, 0.97);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--elevated);
+  border: 1px solid var(--separator);
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
   overflow: hidden;
@@ -3980,7 +3984,7 @@ html, body, #root {
   display: inline-flex;
   align-items: center;
   gap: 0.1875rem;
-  background: rgba(255, 255, 255, 0.07);
+  background: var(--overlay);
   border: 1.5px solid transparent;
   border-radius: 12px;
   padding: 0.125rem 0.5rem;
@@ -3988,13 +3992,13 @@ html, body, #root {
   cursor: pointer;
   transition: background 0.12s, border-color 0.12s;
 }
-.reaction-pill:hover  { background: rgba(255, 255, 255, 0.12); }
+.reaction-pill:hover  { background: var(--overlay-strong); }
 .reaction-pill.self   { background: rgba(255, 122, 60, 0.15); border-color: var(--hot-dot); }
 
 .reaction-count {
   font-size: 0.75rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--muted2);
 }
 .reaction-pill.self .reaction-count { color: var(--hot-dot); }
 
@@ -10752,7 +10756,7 @@ img.dm-header-avatar {
   gap: 0.5rem;
   padding: 0.625rem 0.75rem;
   padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgba(255,255,255,0.06);
+  border-top: 1px solid var(--separator);
   background: var(--bg);
   position: relative; /* anchors the @mention dropdown */
 }
@@ -10821,8 +10825,8 @@ img.dm-header-avatar {
 .dm-input {
   flex: 1;
   min-width: 0;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--overlay);
+  border: 1px solid var(--separator);
   border-radius: 20px;
   padding: 0.5625rem 1rem;
   color: var(--text);
