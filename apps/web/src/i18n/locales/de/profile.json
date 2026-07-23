@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "Noch keine Challenges - starte eine 🔥",
     "challenger": "Challenger"
-  }
+  },
+  "appearance": "Darstellung",
+  "themeLight": "Hell",
+  "themeDark": "Dunkel"
 }

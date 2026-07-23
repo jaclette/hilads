@@ -91,5 +91,8 @@
   "errorTitle": "Ошибка",
   "deleteAccountFail": "Не удалось удалить аккаунт. Попробуй ещё раз.",
   "tabChallenges": "Челленджи",
-  "noChallenges": "Пока нет челленджей - запусти один 🔥"
+  "noChallenges": "Пока нет челленджей - запусти один 🔥",
+  "appearance": "Оформление",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная"
 }

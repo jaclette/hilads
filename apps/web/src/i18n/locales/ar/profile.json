@@ -135,5 +135,8 @@
   "challenges": {
     "empty": "لا توجد تحديات بعد - أطلق واحداً 🔥",
     "challenger": "صاحب التحدّي"
-  }
+  },
+  "appearance": "المظهر",
+  "themeLight": "فاتح",
+  "themeDark": "داكن"
 }

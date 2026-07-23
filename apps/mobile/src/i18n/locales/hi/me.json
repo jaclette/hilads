@@ -89,5 +89,8 @@
   "errorTitle": "एरर",
   "deleteAccountFail": "अकाउंट डिलीट नहीं हो सका। दोबारा कोशिश करें।",
   "tabChallenges": "चैलेंजेस",
-  "noChallenges": "अभी कोई चैलेंज नहीं - एक लॉन्च करो 🔥"
+  "noChallenges": "अभी कोई चैलेंज नहीं - एक लॉन्च करो 🔥",
+  "appearance": "थीम",
+  "themeLight": "लाइट",
+  "themeDark": "डार्क"
 }

@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "Nog geen challenges - lanceer er een 🔥",
     "challenger": "Challenger"
-  }
+  },
+  "appearance": "Weergave",
+  "themeLight": "Licht",
+  "themeDark": "Donker"
 }

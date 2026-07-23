@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "No challenges yet - launch one 🔥",
     "challenger": "Challenger"
-  }
+  },
+  "appearance": "Appearance",
+  "themeLight": "Light",
+  "themeDark": "Dark"
 }

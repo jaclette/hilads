@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "ยังไม่มีชาเลนจ์ - เปิดสักอัน 🔥",
     "challenger": "ผู้ท้าทาย"
-  }
+  },
+  "appearance": "ธีม",
+  "themeLight": "สว่าง",
+  "themeDark": "มืด"
 }

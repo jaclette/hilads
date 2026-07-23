@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "まだチャレンジがありません - 立ち上げよう 🔥",
     "challenger": "出題者"
-  }
+  },
+  "appearance": "外観",
+  "themeLight": "ライト",
+  "themeDark": "ダーク"
 }

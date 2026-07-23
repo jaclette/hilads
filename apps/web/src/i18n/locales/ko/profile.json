@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "아직 챌린지가 없어요 - 하나 시작하세요 🔥",
     "challenger": "출제자"
-  }
+  },
+  "appearance": "테마",
+  "themeLight": "라이트",
+  "themeDark": "다크"
 }

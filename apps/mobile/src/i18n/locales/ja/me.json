@@ -89,5 +89,8 @@
   "errorTitle": "エラー",
   "deleteAccountFail": "アカウントを削除できませんでした。もう一度お試しください。",
   "tabChallenges": "チャレンジ",
-  "noChallenges": "まだチャレンジはありません - 始めよう 🔥"
+  "noChallenges": "まだチャレンジはありません - 始めよう 🔥",
+  "appearance": "外観",
+  "themeLight": "ライト",
+  "themeDark": "ダーク"
 }

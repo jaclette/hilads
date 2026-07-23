@@ -89,5 +89,8 @@
   "errorTitle": "Erro",
   "deleteAccountFail": "Não foi possível excluir a conta. Tente de novo.",
   "tabChallenges": "Desafios",
-  "noChallenges": "Nenhum desafio ainda - lance um 🔥"
+  "noChallenges": "Nenhum desafio ainda - lance um 🔥",
+  "appearance": "Aparência",
+  "themeLight": "Claro",
+  "themeDark": "Escuro"
 }

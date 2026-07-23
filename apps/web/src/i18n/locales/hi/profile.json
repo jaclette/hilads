@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "अभी कोई चुनौती नहीं - एक लॉन्च करो 🔥",
     "challenger": "चैलेंजर"
-  }
+  },
+  "appearance": "थीम",
+  "themeLight": "लाइट",
+  "themeDark": "डार्क"
 }

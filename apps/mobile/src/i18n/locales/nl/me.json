@@ -89,5 +89,8 @@
   "errorTitle": "Fout",
   "deleteAccountFail": "Kon account niet verwijderen. Probeer het opnieuw.",
   "tabChallenges": "Challenges",
-  "noChallenges": "Nog geen challenges - start er een 🔥"
+  "noChallenges": "Nog geen challenges - start er een 🔥",
+  "appearance": "Weergave",
+  "themeLight": "Licht",
+  "themeDark": "Donker"
 }

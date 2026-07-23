@@ -2,8 +2,6 @@ import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, fetchUserChallenges, deleteAccount, checkUsernameAvailability } from '../api'
-import { setLocale } from '../i18n'
-import { setTheme } from '../lib/theme'
 
 const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import BackButton from './BackButton'
@@ -14,6 +12,7 @@ import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { isLegend as accountIsLegend } from '../lib/canCreateEvent'
 import { localizeCityName } from '../i18n/cityName'
 import ProfileRankRow from './ProfileRankRow'
+import AppearanceLanguageCard from './AppearanceLanguageCard'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -60,49 +59,14 @@ const AMBASSADOR_PICKS = [
   { key: 'story',      emoji: '🎭', maxLen: 400 },
 ]
 
-// Endonyms - language names are shown in their OWN language, never translated.
-const LANGS = [
-  { code: 'en', flag: '🇬🇧', name: 'English'    },
-  { code: 'fr', flag: '🇫🇷', name: 'Français'   },
-  { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' },
-  { code: 'es', flag: '🇪🇸', name: 'Español'    },
-  { code: 'it', flag: '🇮🇹', name: 'Italiano'   },
-  { code: 'pt-br', flag: '🇧🇷', name: 'Português (Brasil)'   },
-  { code: 'pt-pt', flag: '🇵🇹', name: 'Português (Portugal)' },
-  { code: 'de',    flag: '🇩🇪', name: 'Deutsch'    },
-  { code: 'nl',    flag: '🇳🇱', name: 'Nederlands' },
-  { code: 'zh-hans', flag: '🇨🇳', name: '简体中文' },
-  { code: 'zh-hant', flag: '🇹🇼', name: '繁體中文' },
-  { code: 'ja',    flag: '🇯🇵', name: '日本語' },
-  { code: 'ko',    flag: '🇰🇷', name: '한국어' },
-  { code: 'fil',   flag: '🇵🇭', name: 'Filipino' },
-  { code: 'th',    flag: '🇹🇭', name: 'ไทย' },
-  { code: 'id',    flag: '🇮🇩', name: 'Bahasa Indonesia' },
-  { code: 'hi',    flag: '🇮🇳', name: 'हिन्दी' },
-  { code: 'ru',    flag: '🇷🇺', name: 'Русский' },
-  { code: 'ar',    flag: '🇸🇦', name: 'العربية' },
-]
-
 export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onOpenThreads, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange, onOpenLeaderboard }) {
-  const { t, i18n } = useTranslation(['profile', 'common'])
+  const { t } = useTranslation(['profile', 'common'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
   const [username,        setUsername]        = useState(account.username ?? '')
   const [uStatus,         setUStatus]         = useState('idle') // idle|checking|available|taken|invalid
   const [uReason,         setUReason]         = useState(null)
   const uTimer = useRef(null)
-  // Appearance toggle. Reflects the theme actually applied to <html> (set by
-  // lib/theme at boot); tapping persists + applies the choice instantly.
-  const [theme, setThemeChoice] = useState(
-    () => (typeof document !== 'undefined' && document.documentElement.getAttribute('data-theme')) || 'light',
-  )
-  // Local cache for instant boot (everyone) + DB for members (follows the account
-  // across devices; guests stay device-local).
-  const pickTheme = (t) => {
-    setTheme(t)
-    setThemeChoice(t)
-    if (account?.id) updateProfile({ theme: t }).catch(() => {})
-  }
   const [aboutMe,         setAboutMe]         = useState(account.about_me ?? '')
   const [homeCity,        setHomeCity]        = useState(account.home_city ?? '')
   // Legend-only city picker. The "Home city" row is the ONLY surface
@@ -118,7 +82,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [vibe,            setVibe]            = useState(account.vibe ?? 'chill')
   const [mode,            setMode]            = useState(account.mode ?? null)
   const [interests,       setInterests]       = useState(new Set(account.interests ?? []))
-  const [langOpen,        setLangOpen]        = useState(false)
   const [uploading,       setUploading]       = useState(false)
   const [saving,          setSaving]          = useState(false)
   const [saved,           setSaved]           = useState(false)
@@ -373,72 +336,9 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
 
-          {/* Appearance - light (default) / dark theme toggle. Stamps data-theme
-              on <html> via lib/theme and persists the choice. */}
-          <div className="profile-mode-section">
-            <span className="profile-mode-label">{t('profile:appearance', { defaultValue: 'Appearance' })}</span>
-            <div className="profile-mode-btns" role="group" aria-label={t('profile:appearance', { defaultValue: 'Appearance' })}>
-              <button
-                type="button"
-                className={`profile-mode-btn${theme !== 'dark' ? ' profile-mode-btn--on' : ''}`}
-                aria-pressed={theme !== 'dark'}
-                onClick={() => pickTheme('light')}
-              >
-                <span className="profile-mode-btn-emoji">☀️</span>
-                <span className="profile-mode-btn-name">{t('profile:themeLight', { defaultValue: 'Light' })}</span>
-              </button>
-              <button
-                type="button"
-                className={`profile-mode-btn${theme === 'dark' ? ' profile-mode-btn--on' : ''}`}
-                aria-pressed={theme === 'dark'}
-                onClick={() => pickTheme('dark')}
-              >
-                <span className="profile-mode-btn-emoji">🌙</span>
-                <span className="profile-mode-btn-name">{t('profile:themeDark', { defaultValue: 'Dark' })}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Language switcher - collapsed to the current language; tap to pick
-              from the full list (kept compact now that there are 19 locales). */}
-          <div className="profile-mode-section">
-            <span className="profile-mode-label">{t('common:language')}</span>
-            {(() => {
-              const cur = LANGS.find(l => l.code === i18n.language) || LANGS[0]
-              return (
-                <>
-                  <button
-                    type="button"
-                    className="profile-lang-trigger"
-                    onClick={() => setLangOpen(o => !o)}
-                    aria-expanded={langOpen}
-                  >
-                    <span className="profile-lang-trigger-flag">{cur.flag}</span>
-                    <span className="profile-lang-trigger-name">{cur.name}</span>
-                    <span className={`profile-lang-chevron${langOpen ? ' profile-lang-chevron--open' : ''}`} aria-hidden="true">▾</span>
-                  </button>
-                  {langOpen && (
-                    <div className="profile-lang-list" role="listbox">
-                      {LANGS.map(l => (
-                        <button
-                          key={l.code}
-                          type="button"
-                          role="option"
-                          aria-selected={i18n.language === l.code}
-                          className={`profile-lang-item${i18n.language === l.code ? ' profile-lang-item--on' : ''}`}
-                          onClick={() => { setLocale(l.code); setLangOpen(false) }}
-                        >
-                          <span className="profile-lang-item-flag">{l.flag}</span>
-                          <span className="profile-lang-item-name">{l.name}</span>
-                          {i18n.language === l.code && <span className="profile-lang-item-check" aria-hidden="true">✓</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )
-            })()}
-          </div>
+          {/* Appearance (theme) + Language — shared with the guest Me view
+              so members and guests get the identical pickers. */}
+          <AppearanceLanguageCard account={account} />
 
           {/* Filter pills */}
           <div className="profile-tabs">

@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "Sin retos aún - lanza uno 🔥",
     "challenger": "Retador"
-  }
+  },
+  "appearance": "Apariencia",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro"
 }

@@ -89,5 +89,8 @@
   "errorTitle": "Error",
   "deleteAccountFail": "Tidak bisa menghapus akun. Coba lagi.",
   "tabChallenges": "Tantangan",
-  "noChallenges": "Belum ada tantangan - luncurkan satu 🔥"
+  "noChallenges": "Belum ada tantangan - luncurkan satu 🔥",
+  "appearance": "Tampilan",
+  "themeLight": "Terang",
+  "themeDark": "Gelap"
 }

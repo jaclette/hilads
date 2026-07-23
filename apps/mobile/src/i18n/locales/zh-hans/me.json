@@ -89,5 +89,8 @@
   "errorTitle": "错误",
   "deleteAccountFail": "无法删除账户。请再试一次。",
   "tabChallenges": "挑战",
-  "noChallenges": "暂无挑战 - 发起一个 🔥"
+  "noChallenges": "暂无挑战 - 发起一个 🔥",
+  "appearance": "外观",
+  "themeLight": "浅色",
+  "themeDark": "深色"
 }

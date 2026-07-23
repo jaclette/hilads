@@ -133,5 +133,8 @@
   "challenges": {
     "empty": "Пока нет челленджей - запусти один 🔥",
     "challenger": "Челленджер"
-  }
+  },
+  "appearance": "Оформление",
+  "themeLight": "Светлая",
+  "themeDark": "Тёмная"
 }

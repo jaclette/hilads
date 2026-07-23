@@ -89,5 +89,8 @@
   "errorTitle": "오류",
   "deleteAccountFail": "계정을 삭제할 수 없었어요. 다시 시도해 주세요.",
   "tabChallenges": "챌린지",
-  "noChallenges": "아직 챌린지가 없어요 - 시작하세요 🔥"
+  "noChallenges": "아직 챌린지가 없어요 - 시작하세요 🔥",
+  "appearance": "테마",
+  "themeLight": "라이트",
+  "themeDark": "다크"
 }

@@ -93,5 +93,8 @@
   "errorTitle": "خطأ",
   "deleteAccountFail": "تعذّر حذف الحساب. حاول مرة أخرى.",
   "tabChallenges": "التحديات",
-  "noChallenges": "لا توجد تحديات بعد - أطلق واحدًا 🔥"
+  "noChallenges": "لا توجد تحديات بعد - أطلق واحدًا 🔥",
+  "appearance": "المظهر",
+  "themeLight": "فاتح",
+  "themeDark": "داكن"
 }

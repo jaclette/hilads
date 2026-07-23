@@ -89,5 +89,8 @@
   "deleteAccountBody": "Your profile, friends, and settings will be permanently removed.\n\nThis cannot be undone.",
   "deleteAccountConfirm": "Delete my account",
   "errorTitle": "Error",
-  "deleteAccountFail": "Could not delete account. Try again."
+  "deleteAccountFail": "Could not delete account. Try again.",
+  "appearance": "Appearance",
+  "themeLight": "Light",
+  "themeDark": "Dark"
 }

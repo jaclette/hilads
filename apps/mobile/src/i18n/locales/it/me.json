@@ -89,5 +89,8 @@
   "errorTitle": "Errore",
   "deleteAccountFail": "Impossibile eliminare l'account. Riprova.",
   "tabChallenges": "Sfide",
-  "noChallenges": "Nessuna sfida ancora - lanciane una 🔥"
+  "noChallenges": "Nessuna sfida ancora - lanciane una 🔥",
+  "appearance": "Aspetto",
+  "themeLight": "Chiaro",
+  "themeDark": "Scuro"
 }

@@ -1319,7 +1319,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   modeSectionLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '800',
-    color:         '#60a5fa',
+    color:         c.accentText,
     letterSpacing: 1,
   },
   modeSelectorRow: {
@@ -1338,8 +1338,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:               2,
   },
   modeBtnActive: {
-    borderColor:     '#60a5fa',
-    backgroundColor: 'rgba(96,165,250,0.16)',
+    borderColor:     c.accent,
+    backgroundColor: c.accent + '22',
   },
   modeBtnEmoji:  { fontSize: 22, lineHeight: 26 },
   modeBtnLabel: {
@@ -1347,7 +1347,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     fontWeight: '700',
     color:      c.muted,
   },
-  modeBtnLabelActive: { color: '#fff' },
+  modeBtnLabelActive: { color: c.accentText },
   modeBtnDesc: {
     fontSize:   FontSizes.xs,
     color:      c.muted2,

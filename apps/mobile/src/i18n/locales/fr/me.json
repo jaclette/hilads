@@ -89,5 +89,8 @@
   "deleteAccountBody": "Ton profil, tes amis et tes réglages seront définitivement supprimés.\n\nC'est irréversible.",
   "deleteAccountConfirm": "Supprimer mon compte",
   "errorTitle": "Erreur",
-  "deleteAccountFail": "Impossible de supprimer le compte. Réessaie."
+  "deleteAccountFail": "Impossible de supprimer le compte. Réessaie.",
+  "appearance": "Apparence",
+  "themeLight": "Clair",
+  "themeDark": "Sombre"
 }

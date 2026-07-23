@@ -89,5 +89,8 @@
   "errorTitle": "Error",
   "deleteAccountFail": "Hindi mabura ang account. Subukan ulit.",
   "tabChallenges": "Mga Challenge",
-  "noChallenges": "Walang challenge pa - maglunsad ng isa 🔥"
+  "noChallenges": "Walang challenge pa - maglunsad ng isa 🔥",
+  "appearance": "Anyo",
+  "themeLight": "Maliwanag",
+  "themeDark": "Madilim"
 }

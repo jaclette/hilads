@@ -89,5 +89,8 @@
   "errorTitle": "Error",
   "deleteAccountFail": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
   "tabChallenges": "Retos",
-  "noChallenges": "Aún no hay retos - lanza uno 🔥"
+  "noChallenges": "Aún no hay retos - lanza uno 🔥",
+  "appearance": "Apariencia",
+  "themeLight": "Claro",
+  "themeDark": "Oscuro"
 }

@@ -131,5 +131,8 @@
   "challenges": {
     "empty": "還沒有挑戰 - 發起一個 🔥",
     "challenger": "挑戰者"
-  }
+  },
+  "appearance": "外觀",
+  "themeLight": "淺色",
+  "themeDark": "深色"
 }

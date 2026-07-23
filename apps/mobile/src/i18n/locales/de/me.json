@@ -89,5 +89,8 @@
   "errorTitle": "Fehler",
   "deleteAccountFail": "Konto konnte nicht gelöscht werden. Versuche es erneut.",
   "tabChallenges": "Challenges",
-  "noChallenges": "Noch keine Challenges - starte eine 🔥"
+  "noChallenges": "Noch keine Challenges - starte eine 🔥",
+  "appearance": "Darstellung",
+  "themeLight": "Hell",
+  "themeDark": "Dunkel"
 }

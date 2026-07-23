@@ -89,5 +89,8 @@
   "errorTitle": "ข้อผิดพลาด",
   "deleteAccountFail": "ไม่สามารถลบบัญชีได้ ลองอีกครั้ง",
   "tabChallenges": "ชาเลนจ์",
-  "noChallenges": "ยังไม่มีชาเลนจ์ - เริ่มสักอันสิ 🔥"
+  "noChallenges": "ยังไม่มีชาเลนจ์ - เริ่มสักอันสิ 🔥",
+  "appearance": "ธีม",
+  "themeLight": "สว่าง",
+  "themeDark": "มืด"
 }

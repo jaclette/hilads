@@ -58,7 +58,7 @@ export default function SignUpScreen() {
   const [email,    setEmail]    = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [mode,     setMode]     = useState<string | null>(null);
+  const [mode,     setMode]     = useState<string | null>('local'); // Local pre-selected - most sign-ups are people who know their city
   const [eula,     setEula]     = useState(false);
   const [loading,  setLoading]  = useState(false);
   const [error,    setError]    = useState<string | null>(null);
@@ -401,16 +401,16 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   modeSection: {
     padding:         Spacing.md,
-    backgroundColor: 'rgba(96,165,250,0.06)',
+    backgroundColor: c.accent + '0F',
     borderRadius:    Radius.md,
     borderWidth:     1.5,
-    borderColor:     'rgba(96,165,250,0.22)',
+    borderColor:     c.accent + '38',
     gap:             10,
   },
   modeLabel: {
     fontSize:      FontSizes.xs,
     fontWeight:    '800',
-    color:         '#60a5fa',
+    color:         c.accentText,
     letterSpacing: 1,
   },
   modeRow: {
@@ -429,8 +429,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     gap:               3,
   },
   modeBtnActive: {
-    borderColor:     '#60a5fa',
-    backgroundColor: 'rgba(96,165,250,0.16)',
+    borderColor:     c.accent,
+    backgroundColor: c.accent + '22',
   },
   modeBtnEmoji: {
     fontSize:   26,
@@ -442,7 +442,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color:      c.muted,
   },
   modeBtnLabelActive: {
-    color: '#fff',
+    color: c.accentText,
   },
   modeBtnDesc: {
     fontSize:   FontSizes.xs,

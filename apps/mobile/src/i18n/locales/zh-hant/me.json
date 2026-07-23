@@ -89,5 +89,8 @@
   "errorTitle": "錯誤",
   "deleteAccountFail": "無法刪除帳號。請再試一次。",
   "tabChallenges": "挑戰",
-  "noChallenges": "尚無挑戰 - 發起一個 🔥"
+  "noChallenges": "尚無挑戰 - 發起一個 🔥",
+  "appearance": "外觀",
+  "themeLight": "淺色",
+  "themeDark": "深色"
 }
