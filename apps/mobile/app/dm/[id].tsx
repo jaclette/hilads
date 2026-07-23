@@ -51,7 +51,6 @@ import type { DmMessage, ReplyRef } from '@/types';
 
 function DateSeparator({ label }: { label: string }) {
   const sepStyles = useThemedStyles(makeSepStyles);
-  const sepStyles = useThemedStyles(makeSepStyles);
   return (
     <View style={sepStyles.row}>
       <View style={sepStyles.line} />
@@ -138,7 +137,6 @@ function openMaps(lat: number, lng: number, label: string) {
 
 function DmLocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
   const dmLocStyles = useThemedStyles(makeDmLocStyles);
-  const dmLocStyles = useThemedStyles(makeDmLocStyles);
   const { t } = useTranslation('chat');
   const { line1, place, lat, lng, addr } = parseDmLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
@@ -215,9 +213,6 @@ const makeDmLocStyles = (c: ThemeColors) => StyleSheet.create({
 });
 
 function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImagePress, onLongPress, onReplyQuotePress, isHighlighted, onReact }: RowProps) {
-  const { colors } = useTheme();
-  const dmReplyStyles = useThemedStyles(makeDmReplyStyles);
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const dmReplyStyles = useThemedStyles(makeDmReplyStyles);
   const styles = useThemedStyles(makeStyles);
@@ -393,10 +388,6 @@ function DmRow({ msg, isMine, isFirst, isLast, color, initial, dateLabel, onImag
 // ── Thread - rendered once conversationId is known ────────────────────────────
 
 function DMThread({ conversationId, displayName }: { conversationId: string; displayName: string }) {
-  const { colors } = useTheme();
-  const dmComposerEditStyles = useThemedStyles(makeDmComposerEditStyles);
-  const dmComposerReplyStyles = useThemedStyles(makeDmComposerReplyStyles);
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const dmComposerEditStyles = useThemedStyles(makeDmComposerEditStyles);
   const dmComposerReplyStyles = useThemedStyles(makeDmComposerReplyStyles);
@@ -860,8 +851,6 @@ function DMThread({ conversationId, displayName }: { conversationId: string; dis
 //   User-profile flow: no conv param → id is a userId, call findOrCreateDM to get/create thread.
 
 export default function DMThreadScreen() {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();

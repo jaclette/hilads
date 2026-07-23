@@ -36,7 +36,6 @@ const CONTEXT_BADGE_KEYS = new Set(['host']);
 
 function BadgePill({ badgeKey }: { badgeKey: string }) {
   const pillStyles = useThemedStyles(makePillStyles);
-  const pillStyles = useThemedStyles(makePillStyles);
   const { t } = useTranslation('common');
   const meta = BADGE_META[badgeKey as keyof typeof BADGE_META] ?? BADGE_META.regular;
   return (
@@ -63,7 +62,6 @@ const VIBE_META: Record<string, { emoji: string; label: string; color: string; b
 };
 
 function VibePill({ vibe }: { vibe?: string | null }) {
-  const pillStyles = useThemedStyles(makePillStyles);
   const pillStyles = useThemedStyles(makePillStyles);
   const { t } = useTranslation('common');
   if (!vibe) return null;
@@ -92,8 +90,6 @@ const VIBE_FILTERS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, emoji:
 function OnlineUserRow({ user, isMe, onPress, onDm }: {
   user: OnlineUser; isMe: boolean; onPress?: () => void; onDm: () => void;
 }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('here');
@@ -142,7 +138,6 @@ function OnlineUserRow({ user, isMe, onPress, onDm }: {
 
 function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
-  const styles = useThemedStyles(makeStyles);
   const initials = (member.displayName ?? '?').slice(0, 2).toUpperCase();
   const color    = avatarColor(member.displayName ?? '');
   return (
@@ -173,8 +168,6 @@ function CrewMemberRow({ member, onPress }: { member: CityMember; onPress: () =>
 // ── Screen ────────────────────────────────────────────────────────────────────
 
 export default function HereScreen() {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
