@@ -22,6 +22,7 @@
   --muted2: #968880;
   --mine-bg: #8C3427;
   --other-bg: #1c1610;
+  --bg2: #1a1614;       /* elevated secondary surface (sheets/cards) — was never defined, so var(--bg2, …) hard-fell-back to dark and broke in light */
   --mobile-tabbar-height: 4.875rem;
 
   /* Semantic tokens — the vocabulary the app-shell migration (phase 3) routes the
@@ -57,6 +58,7 @@
   --muted2: #6E5D4E;
   --mine-bg: #C24A38;
   --other-bg: #F1E9DF;
+  --bg2: #FFFFFF;
 
   --separator: #EADDD0;
   --overlay-weak: rgba(28, 20, 14, 0.03);
@@ -81,6 +83,8 @@
 [data-theme="light"] .reaction-pill.self .reaction-count { color: var(--accent); }
 [data-theme="light"] .send-error-toast { color: var(--accent); }
 [data-theme="light"] .topic-geohint { color: var(--accent); } /* #FF7A3C label fails on white */
+[data-theme="light"] .modal-panel { box-shadow: 0 24px 64px rgba(28, 20, 14, 0.14), 0 0 0 1px var(--separator); }
+[data-theme="light"] .share-sheet { box-shadow: 0 -8px 32px rgba(28, 20, 14, 0.12); }
 
 /* Responsive root font-size. The app is ~74% rem-based, so scaling the root
    shrinks the bulk of the UI (headers, banners, names, chat text) on narrow
@@ -4078,7 +4082,7 @@ html, body, #root {
   right: 0;
   z-index: 121;
   background: var(--bg2, #1a1512);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--separator);
   border-radius: 20px 20px 0 0;
   padding: 20px 16px max(env(safe-area-inset-bottom, 0px), 16px);
   animation: slideUp 0.22s cubic-bezier(0.32, 0.72, 0, 1);
@@ -9313,7 +9317,7 @@ img.pub-profile-avatar {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--scrim);
   /* Above full-page screens (200) and the mobile tab bar (300) so a modal
      opened from a screen (e.g. the members list from a NOW card) is visible. */
   z-index: 400;
@@ -9325,7 +9329,7 @@ img.pub-profile-avatar {
 
 .modal-panel {
   background: linear-gradient(180deg, var(--surface2) 0%, var(--surface) 56px);
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--separator);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 640px;
@@ -9354,7 +9358,7 @@ img.pub-profile-avatar {
 
   .modal-panel {
     border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--separator);
     max-width: 400px;
     background: linear-gradient(160deg, var(--surface2) 0%, var(--surface) 80px);
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(0, 0, 0, 0.3);
