@@ -50,7 +50,8 @@ import * as Clipboard from 'expo-clipboard';
 import { AppHeader } from '@/features/shell/AppHeader';
 import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
-import { Colors, FontSizes, Spacing, Radius, buildCityUrl } from '@/constants';
+import { FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { isSameDay, formatDateLabel, toMs } from '@/lib/messageTime';
 import { shareLink } from '@/lib/shareLink';
 import { hasSeenOnboarding } from '@/lib/onboarding';
@@ -69,6 +70,7 @@ interface BannerProps {
 }
 
 function EventBannerStrip({ title, eventId, onDismiss }: BannerProps) {
+  const styles  = useThemedStyles(makeStyles);
   const router  = useRouter();
   const { t }   = useTranslation('chat');
   const opacity = useRef(new Animated.Value(0)).current;
@@ -138,6 +140,9 @@ function cityShortName(name: string): string {
 // ChatInput uses elevation: 30 to render above the tab bar's upward shadow.
 
 export default function ChatTab() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+
   const router = useRouter();
   const { t, i18n } = useTranslation('chat');
   const {
@@ -1120,7 +1125,7 @@ export default function ChatTab() {
               }}
               accessibilityLabel={t('shareCity')}
             >
-              <Feather name="share" size={20} color={Colors.text} />
+              <Feather name="share" size={20} color={colors.text} />
             </TouchableOpacity>
           )}
         />
@@ -1140,7 +1145,7 @@ export default function ChatTab() {
             <Text style={[styles.scopeBtnText, channelScope === 'city' && styles.scopeBtnTextActive]} numberOfLines={1}>
               {flag ? `${flag} ` : ''}{localizeCityName(city.name)}
             </Text>
-            {channelScope === 'city' && <Ionicons name="chevron-down" size={15} color={Colors.bg} style={styles.scopeChevron} />}
+            {channelScope === 'city' && <Ionicons name="chevron-down" size={15} color={colors.bg} style={styles.scopeChevron} />}
             {channelScope === 'world' && cityUnread > 0 && (
               <Text style={styles.scopeBadge}>{cityUnread > 99 ? '99+' : cityUnread}</Text>
             )}
@@ -1343,7 +1348,7 @@ export default function ChatTab() {
         )}
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator color={Colors.accent} />
+            <ActivityIndicator color={colors.accent} />
           </View>
         ) : (
           <FlatList
@@ -1370,7 +1375,7 @@ export default function ChatTab() {
             ListFooterComponent={
               loadingOlder ? (
                 <View style={styles.loadingOlderWrap}>
-                  <ActivityIndicator size="small" color={Colors.muted} />
+                  <ActivityIndicator size="small" color={colors.muted} />
                 </View>
               ) : (!hasMore && !loading && messages.length > 0) ? (
                 <View style={styles.loadingOlderWrap}>
@@ -1487,7 +1492,7 @@ export default function ChatTab() {
           <View style={styles.waHeader}>
             <Text style={styles.waTitle}>{t('world.arrivalsTitle')}</Text>
             <TouchableOpacity onPress={() => setShowWorldArrivals(false)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="close" size={24} color={Colors.text} />
+              <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
           </View>
           {worldArrivals.length === 0 ? (
@@ -1536,8 +1541,8 @@ export default function ChatTab() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.bg },
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
   flex:      { flex: 1 },
 
   // ── Header container ───────────────────────────────────────────────────────
@@ -1550,9 +1555,9 @@ const styles = StyleSheet.create({
     paddingTop:        14,
     paddingBottom:     16,
     paddingHorizontal: 16,
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.06)',
+    borderBottomColor: c.overlay,
   },
 
   // ── Section 1: Top bar ─────────────────────────────────────────────────────
@@ -1607,13 +1612,13 @@ const styles = StyleSheet.create({
     borderRadius:      8,
     backgroundColor:   '#ef4444',
     borderWidth:       1.5,
-    borderColor:       Colors.bg2,
+    borderColor:       c.bg2,
     alignItems:        'center',
     justifyContent:    'center',
     paddingHorizontal: 2,
   },
   iconBadgeText: {
-    color:      Colors.white,
+    color:      c.white,
     fontSize:   9,
     fontWeight: '700',
     lineHeight: 11,
@@ -1623,7 +1628,7 @@ const styles = StyleSheet.create({
   headerTagline: {
     fontSize:      11,
     lineHeight:    14,   /* 11 × 1.3 ≈ 14 */
-    color:         'rgba(255,255,255,0.5)',
+    color:         c.overlayStrong,
     fontWeight:    '400',
     letterSpacing: 0.2,
     // Narrow enough to force "Become local. Anywhere." onto separate lines
@@ -1662,19 +1667,19 @@ const styles = StyleSheet.create({
     paddingVertical:   8,
     paddingHorizontal: 10,
     borderRadius:   999,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:    1,
-    borderColor:    Colors.border,
+    borderColor:    c.border,
   },
-  scopeBtnActive: { backgroundColor: Colors.text, borderColor: Colors.text },
-  scopeBtnText:   { color: Colors.text, fontSize: 13, fontWeight: '700' },
-  scopeBtnTextActive: { color: Colors.bg },
+  scopeBtnActive: { backgroundColor: c.text, borderColor: c.text },
+  scopeBtnText:   { color: c.text, fontSize: 13, fontWeight: '700' },
+  scopeBtnTextActive: { color: c.bg },
   scopeChevron:   { opacity: 0.7 },
   scopeBadge: {
     minWidth:   18,
     paddingHorizontal: 5,
     borderRadius: 999,
-    backgroundColor: Colors.accent,
+    backgroundColor: c.accent,
     color:      '#fff',
     fontSize:   11,
     fontWeight: '800',
@@ -1687,23 +1692,23 @@ const styles = StyleSheet.create({
     paddingVertical:   11,
     paddingHorizontal: 14,
     borderRadius:   14,
-    backgroundColor: Colors.bg2,
+    backgroundColor: c.bg2,
     borderWidth:    1,
-    borderColor:    Colors.accent2,
+    borderColor:    c.accent2,
   },
-  quietCardText: { color: Colors.text, fontSize: 14, fontWeight: '700', textAlign: 'center' },
+  quietCardText: { color: c.text, fontSize: 14, fontWeight: '700', textAlign: 'center' },
   // World arrivals sheet
-  waSheet:  { flex: 1, backgroundColor: Colors.bg },
-  waHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: Colors.border },
-  waTitle:  { color: Colors.text, fontSize: 17, fontWeight: '800' },
-  waEmpty:  { color: Colors.muted, textAlign: 'center', paddingVertical: 40 },
+  waSheet:  { flex: 1, backgroundColor: c.bg },
+  waHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: c.border },
+  waTitle:  { color: c.text, fontSize: 17, fontWeight: '800' },
+  waEmpty:  { color: c.muted, textAlign: 'center', paddingVertical: 40 },
   waRow:    { flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 16, paddingVertical: 10 },
   waAvatar: { width: 34, height: 34, borderRadius: 17 },
   waAvatarLetter: { color: '#fff', fontWeight: '700', fontSize: 14 },
-  waName:   { color: Colors.text, fontWeight: '700', fontSize: 15, flex: 1 },
+  waName:   { color: c.text, fontWeight: '700', fontSize: 15, flex: 1 },
   waMeta:   { alignItems: 'flex-end', marginLeft: 'auto' },
-  waCity:   { color: Colors.muted, fontSize: 13, fontWeight: '600' },
-  waTime:   { color: Colors.muted2, fontSize: 11, marginTop: 2 },
+  waCity:   { color: c.muted, fontSize: 13, fontWeight: '600' },
+  waTime:   { color: c.muted2, fontSize: 11, marginTop: 2 },
   citySelector: {
     flexDirection: 'row',
     alignItems:    'center',
@@ -1714,7 +1719,7 @@ const styles = StyleSheet.create({
     flexShrink:    1,
     fontSize:      22,
     fontWeight:    '600',
-    color:         Colors.text,
+    color:         c.text,
     letterSpacing: -0.3,
   },
   cityChevron: {
@@ -1726,14 +1731,14 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
     paddingHorizontal: 12,
     borderRadius:      999,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
   recentPillText: {
     fontSize:   12,
     fontWeight: '600',
-    color:      Colors.muted,
+    color:      c.muted,
   },
 
   // ── Hero challenge card - full width, orange-rimmed glow, two lines ──
@@ -1741,25 +1746,25 @@ const styles = StyleSheet.create({
     paddingVertical:   16,
     paddingHorizontal: 16,
     borderRadius:      Radius.lg,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderWidth:       1,
     borderColor:       'rgba(255,122,60,0.35)',
     gap:               4,
-    shadowColor:   Colors.accent,
+    shadowColor:   c.accent,
     shadowOpacity: 0.22,
     shadowRadius:  14,
     shadowOffset:  { width: 0, height: 0 },
     elevation:     6,
   },
   heroMain: {
-    color:         Colors.text,
+    color:         c.text,
     fontSize:      FontSizes.md,
     fontWeight:    '800',
     letterSpacing: 0.2,
     textTransform: 'uppercase',
   },
   heroSub: {
-    color:      Colors.muted,
+    color:      c.muted,
     fontSize:   FontSizes.xs,
     fontWeight: '500',
   },
@@ -1778,26 +1783,26 @@ const styles = StyleSheet.create({
   heroSlideAvatar: { width: 30, height: 30, borderRadius: 15 },
   heroSlideAvatarLetter: { alignItems: 'center', justifyContent: 'center' },
   heroSlideAvatarLetterText: { color: '#fff', fontWeight: '800', fontSize: 13 },
-  heroSlideOwner: { color: Colors.text, fontWeight: '800', fontSize: 14, flexShrink: 1, letterSpacing: -0.2 },
+  heroSlideOwner: { color: c.text, fontWeight: '800', fontSize: 14, flexShrink: 1, letterSpacing: -0.2 },
   heroSlideType:  { marginLeft: 'auto', borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3 },
   heroSlideTypeText: { color: '#fff', fontWeight: '800', fontSize: 10, letterSpacing: 0.4, textTransform: 'uppercase' },
   heroSlideTitleWrap: { alignSelf: 'stretch' },
-  heroSlideTitle: { color: Colors.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
+  heroSlideTitle: { color: c.text, fontWeight: '800', fontSize: 17, letterSpacing: -0.3 },
   heroSlideFoot:  { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  heroSlidePlace: { flex: 1, fontSize: 12.5, fontWeight: '700', color: Colors.text },
-  heroSlideArrow: { color: Colors.muted, fontWeight: '800', fontSize: 13 },
+  heroSlidePlace: { flex: 1, fontSize: 12.5, fontWeight: '700', color: c.text },
+  heroSlideArrow: { color: c.muted, fontWeight: '800', fontSize: 13 },
   heroSeeAll: {
-    width: 130, borderRadius: 18, borderWidth: 1.5, borderColor: Colors.accent,
+    width: 130, borderRadius: 18, borderWidth: 1.5, borderColor: c.accent,
     borderStyle: 'dashed', alignItems: 'center', justifyContent: 'center', gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.04)', paddingVertical: 14,
+    backgroundColor: c.overlayWeak, paddingVertical: 14,
   },
   heroSeeAllIcon:  { fontSize: 22 },
-  heroSeeAllText:  { color: Colors.text, fontWeight: '800', fontSize: 14 },
-  heroSeeAllArrow: { color: Colors.accent, fontWeight: '800', fontSize: 16 },
+  heroSeeAllText:  { color: c.text, fontWeight: '800', fontSize: 14 },
+  heroSeeAllArrow: { color: c.accent, fontWeight: '800', fontSize: 16 },
 
   // ── Error banner ─────────────────────────────────────────────────────────
-  errorBanner:     { backgroundColor: Colors.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  errorBannerText: { color: Colors.white, fontSize: FontSizes.xs, textAlign: 'center' },
+  errorBanner:     { backgroundColor: c.red, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  errorBannerText: { color: c.white, fontSize: FontSizes.xs, textAlign: 'center' },
 
   // ── Secondary pills - 3 equal-width, evenly spaced (nearby / Hi locals /
   // Hi later). 0-count pills get pillMuted (neutral border + muted text).
@@ -1811,27 +1816,27 @@ const styles = StyleSheet.create({
     justifyContent:    'center',
     paddingVertical:   9,
     paddingHorizontal: 6,
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     borderRadius:      Radius.md,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
   },
   pillAccent: {
     borderColor: 'rgba(255,122,60,0.30)',
   },
   pillMuted: {
-    borderColor: Colors.border,
+    borderColor: c.border,
   },
   pillText: {
     fontSize:   12,
     fontWeight: '700',
-    color:      Colors.text,
+    color:      c.text,
   },
   pillTextAccent: {
-    color: Colors.accent,
+    color: c.accent,
   },
   pillTextMuted: {
-    color: Colors.muted,
+    color: c.muted,
   },
 
   // ── Typing indicator bar ──────────────────────────────────────────────────
@@ -1842,7 +1847,7 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize:   FontSizes.xs,
-    color:      Colors.muted,
+    color:      c.muted,
     fontStyle:  'italic',
   },
   mentionNudge: {
@@ -1858,10 +1863,10 @@ const styles = StyleSheet.create({
     borderWidth:       1,
     borderColor:       'rgba(139,92,246,0.45)',
   },
-  mentionNudgeText:    { flex: 1, fontSize: FontSizes.sm, color: Colors.text, lineHeight: 18 },
+  mentionNudgeText:    { flex: 1, fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
   mentionNudgeBtn:     { backgroundColor: '#8B5CF6', borderRadius: 999, paddingHorizontal: 14, paddingVertical: 6 },
   mentionNudgeBtnText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
-  mentionNudgeDismiss: { color: Colors.muted, fontSize: 14, paddingHorizontal: 2 },
+  mentionNudgeDismiss: { color: c.muted, fontSize: 14, paddingHorizontal: 2 },
 
   // ── Messages ─────────────────────────────────────────────────────────────
   // web: .messages { padding: 22px 18px 14px; gap: 8px }
@@ -1879,8 +1884,8 @@ const styles = StyleSheet.create({
     gap:            8,
   },
   emptyIcon:  { fontSize: 36 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '600', color: Colors.text, textAlign: 'center' },
-  emptySub:   { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center' },
+  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '600', color: c.text, textAlign: 'center' },
+  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 
   // ── No city state ─────────────────────────────────────────────────────────
   noCityWrap: {
@@ -1890,20 +1895,20 @@ const styles = StyleSheet.create({
     padding:        Spacing.xl,
     gap:            8,
   },
-  noCityTitle:    { fontSize: FontSizes.md, fontWeight: '600', color: Colors.text, textAlign: 'center' },
-  noCitySubtitle: { fontSize: FontSizes.sm, color: Colors.muted, textAlign: 'center', lineHeight: 20 },
+  noCityTitle:    { fontSize: FontSizes.md, fontWeight: '600', color: c.text, textAlign: 'center' },
+  noCitySubtitle: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
   citiesBtn: {
     marginTop:         Spacing.lg,
     paddingHorizontal: Spacing.md,
     paddingVertical:   Spacing.sm,
-    backgroundColor:   Colors.accentDim,
+    backgroundColor:   c.accentDim,
     borderRadius:      999,
   },
-  citiesBtnText: { color: Colors.accent, fontWeight: '600', fontSize: FontSizes.sm },
+  citiesBtnText: { color: c.accent, fontWeight: '600', fontSize: FontSizes.sm },
 
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   loadingOlderWrap: { paddingVertical: 14, alignItems: 'center' },
-  beginningText: { fontSize: FontSizes.xs, color: Colors.muted2 },
+  beginningText: { fontSize: FontSizes.xs, color: c.muted2 },
 
   // ── EventBannerStrip ──────────────────────────────────────────────────────
   bannerStrip: {
@@ -1920,7 +1925,7 @@ const styles = StyleSheet.create({
     flex:       1,
     fontSize:   FontSizes.sm,
     fontWeight: '600',
-    color:      Colors.text,
+    color:      c.text,
   },
   bannerBtn: {
     backgroundColor:   'rgba(255,122,60,0.55)',
@@ -1931,5 +1936,5 @@ const styles = StyleSheet.create({
   },
   bannerBtnText: { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
   bannerDismiss: { flexShrink: 0, padding: 2 },
-  bannerDismissText: { fontSize: 13, color: Colors.muted2 },
+  bannerDismissText: { fontSize: 13, color: c.muted2 },
 });

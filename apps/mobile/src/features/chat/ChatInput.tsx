@@ -21,7 +21,8 @@ import * as Haptics from 'expo-haptics';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { requestFeatureLocation } from '@/lib/geoFeature';
-import { Colors, FontSizes } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import type { ReplyRef } from '@/types';
 import { AndroidCameraCapture } from './AndroidCameraCapture';
@@ -74,6 +75,10 @@ interface Props {
 }
 
 export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse = false, pickImageRef, onTypingStart, onTypingStop, replyingTo, onCancelReply, editing, onSubmitEdit, onCancelEdit, mentionContext, mentionChannelId, onFocus, onBlur, dismissOnSend = false }: Props) {
+  const styles      = useThemedStyles(makeStyles);
+  const replyStyles = useThemedStyles(makeReplyStyles);
+  const editStyles  = useThemedStyles(makeEditStyles);
+  const { colors }  = useTheme();
   const { t } = useTranslation('common');
   const { account, identity, onlineUsers } = useApp();
   // Presence mirror - read at suggest time so a guest joining/leaving doesn't
@@ -535,7 +540,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
         onChangeText={handleChangeText}
         onSelectionChange={({ nativeEvent: { selection } }) => { lastSel.current = selection; detectMention(selection.end); }}
         placeholder={placeholder ?? t('composer.placeholderDefault')}
-        placeholderTextColor={Colors.muted2}
+        placeholderTextColor={colors.muted2}
         multiline
         maxLength={1000}
         returnKeyType="send"
@@ -557,7 +562,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
       >
         <View style={styles.sendBtn}>
           {sending ? (
-            <ActivityIndicator size="small" color={Colors.white} />
+            <ActivityIndicator size="small" color={colors.white} />
           ) : (
             // Web: SendIcon SVG 20×20px, strokeWidth 2.5, color: #fff
             <Ionicons name="send" size={20} color="#fff" />
@@ -572,7 +577,7 @@ export function ChatInput({ sending, onSendText, onSendImage, placeholder, pulse
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   // ── Composer container - aligned with the DM composer's compact rhythm
   // (apps/mobile/app/dm/[id].tsx). Single source of truth for City + Event +
@@ -583,8 +588,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical:   12,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
-    backgroundColor:   'rgba(22, 18, 16, 0.99)',
+    borderTopColor:    c.border,
+    backgroundColor:   c.elevated,
     gap:               10,
     shadowColor:       '#000',
     shadowOffset:      { width: 0, height: -5 },
@@ -618,13 +623,13 @@ const styles = StyleSheet.create({
     minWidth:          0,
     minHeight:         48,
     maxHeight:         130,
-    backgroundColor:   Colors.bg,
+    backgroundColor:   c.bg,
     borderRadius:      999,
     borderWidth:       1,
-    borderColor:       Colors.border,
+    borderColor:       c.border,
     paddingHorizontal: 20,
     paddingVertical:   13,
-    color:             Colors.text,
+    color:             c.text,
     fontSize:          FontSizes.sm,
     lineHeight:        20,
   },
@@ -662,14 +667,14 @@ const styles = StyleSheet.create({
     alignItems:      'center',
     justifyContent:  'center',
     borderRadius:    18,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: c.overlayWeak,
     borderWidth:     1,
-    borderColor:     'rgba(255, 255, 255, 0.09)',
+    borderColor:     c.overlay,
     opacity:         0.6,
   },
   emojiBtnActive: {
     opacity:         1,
-    backgroundColor: 'rgba(255, 255, 255, 0.09)',
+    backgroundColor: c.overlay,
   },
   emojiBtnIcon: {
     fontSize:   18,
@@ -677,24 +682,24 @@ const styles = StyleSheet.create({
   },
 });
 
-const replyStyles = StyleSheet.create({
+const makeReplyStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:     'row',
     alignItems:        'center',
     paddingHorizontal: 16,
     paddingVertical:   8,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    backgroundColor:   c.overlayWeak,
     borderTopWidth:    1,
-    borderTopColor:    Colors.border,
+    borderTopColor:    c.border,
     gap:               10,
   },
   body:    { flex: 1, minWidth: 0 },
-  name:    { fontSize: 12, fontWeight: '700', color: Colors.accent, marginBottom: 2 },
-  preview: { fontSize: 12, color: Colors.muted2 },
-  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+  name:    { fontSize: 12, fontWeight: '700', color: c.accent, marginBottom: 2 },
+  preview: { fontSize: 12, color: c.muted2 },
+  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
 });
 
-const editStyles = StyleSheet.create({
+const makeEditStyles = (c: ThemeColors) => StyleSheet.create({
   strip: {
     flexDirection:     'row',
     alignItems:        'center',
@@ -707,6 +712,6 @@ const editStyles = StyleSheet.create({
   },
   body:    { flex: 1, minWidth: 0 },
   name:    { fontSize: 12, fontWeight: '700', color: '#FF7A3C', marginBottom: 2 },
-  preview: { fontSize: 12, color: Colors.muted2 },
-  close:   { fontSize: 16, color: Colors.muted2, fontWeight: '600' },
+  preview: { fontSize: 12, color: c.muted2 },
+  close:   { fontSize: 16, color: c.muted2, fontWeight: '600' },
 });

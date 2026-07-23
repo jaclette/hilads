@@ -23,7 +23,8 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
-import { Colors, FontSizes } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Image } from 'expo-image';
 import { avatarColor } from '@/lib/avatarColors';
 import { thumbUrl } from '@/lib/imageThumb';
@@ -73,6 +74,7 @@ function openMaps(lat: number, lng: number, label: string) {
 }
 
 function LocationBubble({ content, isMine }: { content: string; isMine: boolean }) {
+  const locStyles = useThemedStyles(makeLocStyles);
   const { line1, place, lat, lng, address } = parseLocation(content);
   const hasCoords = lat !== undefined && lng !== undefined;
   const card = (
@@ -97,7 +99,7 @@ function LocationBubble({ content, isMine }: { content: string; isMine: boolean 
   return card;
 }
 
-const locStyles = StyleSheet.create({
+const makeLocStyles = (c: ThemeColors) => StyleSheet.create({
   card: {
     flexDirection:     'row',
     alignItems:        'flex-start',
@@ -113,9 +115,9 @@ const locStyles = StyleSheet.create({
     maxWidth:          260,
   },
   cardOther: {
-    backgroundColor:     Colors.bg3,
+    backgroundColor:     c.bg3,
     borderWidth:         1,
-    borderColor:         'rgba(255,255,255,0.07)',
+    borderColor:         c.overlay,
     borderTopLeftRadius: 4,
   },
   cardMine: {
@@ -125,14 +127,14 @@ const locStyles = StyleSheet.create({
   icon:     { fontSize: 22, lineHeight: 28, flexShrink: 0 },
   // flex:1 + flexShrink:1 + minWidth:0: expand to fill card, allow shrink, never overflow
   body:     { flex: 1, flexShrink: 1, minWidth: 0, gap: 3 },
-  line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: Colors.text, lineHeight: 20 },
-  addr:        { fontSize: 12, color: Colors.muted2, lineHeight: 17 },
+  line1:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
+  addr:        { fontSize: 12, color: c.muted2, lineHeight: 17 },
   textMine:    { color: '#fff' },
-  addrMine:    { color: 'rgba(255,255,255,0.65)' },
+  addrMine:    { color: c.overlayStrong },
   // tapHint "Tap to open in maps" - bumped 11→13 and dropped opacity 0.6
   // (which used to compound on top of muted2 to ~1.4:1, well below WCAG).
-  tapHint:     { fontSize: FontSizes.xs, color: Colors.muted2, marginTop: 2 },
-  tapHintMine: { color: 'rgba(255,255,255,0.65)' },
+  tapHint:     { fontSize: FontSizes.xs, color: c.muted2, marginTop: 2 },
+  tapHintMine: { color: c.overlayStrong },
 });
 
 // ── System message text - mirrors web feedJoin variants ──────────────────────
@@ -264,6 +266,7 @@ function JoinRequestCard({ message, onResolve }: {
   message: Message;
   onResolve?: (requestId: string, action: 'accept' | 'reject') => void;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('chat');
   let data: { requestId?: string; requesterName?: string; status?: string; resolvedByName?: string } = {};
   try { data = JSON.parse(message.content ?? '{}'); } catch { /* malformed → render nothing */ }
@@ -313,6 +316,7 @@ function AnimatedEventPill({
   message: Message; index: number;
   autoDismiss?: boolean; onAutoDismiss?: (id: string) => void; reduceMotion?: boolean;
 }) {
+  const styles = useThemedStyles(makeStyles);
   const router  = useRouter();
   const { t }   = useTranslation('chat');
   const opacity = useRef(new Animated.Value(0)).current;
@@ -360,6 +364,8 @@ function AnimatedEventPill({
 // ── Date separator - centered pill between days ───────────────────────────────
 
 function DateSeparator({ label }: { label: string }) {
+  const { colors } = useTheme();
+  const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.dateSepRow}>
       <View style={styles.dateSepLine} />
@@ -382,7 +388,7 @@ function DateSeparator({ label }: { label: string }) {
 // ── Badge pill ────────────────────────────────────────────────────────────────
 
 const BADGE_CONFIG: Record<string, { bg: string; color: string }> = {
-  ghost: { bg: 'rgba(255,255,255,0.06)', color: '#666' },
+  ghost: { bg: 'rgba(128,128,128,0.16)', color: '#666' }, // static config — theme-neutral tint
   fresh: { bg: 'rgba(74,222,128,0.12)',  color: '#4ade80' },
   regular: { bg: 'rgba(96,165,250,0.12)',  color: '#60a5fa' },
   local: { bg: 'rgba(52,211,153,0.12)',  color: '#34d399' },
@@ -390,6 +396,7 @@ const BADGE_CONFIG: Record<string, { bg: string; color: string }> = {
 };
 
 function BadgePill({ badge }: { badge: { key: string; label: string } }) {
+  const badgeStyles = useThemedStyles(makeBadgeStyles);
   const { t } = useTranslation('common');
   const cfg = BADGE_CONFIG[badge.key] ?? BADGE_CONFIG.regular;
   return (
@@ -399,7 +406,7 @@ function BadgePill({ badge }: { badge: { key: string; label: string } }) {
   );
 }
 
-const badgeStyles = StyleSheet.create({
+const makeBadgeStyles = (c: ThemeColors) => StyleSheet.create({
   pill: {
     borderRadius:      20,
     paddingHorizontal: 6,
@@ -417,7 +424,7 @@ const badgeStyles = StyleSheet.create({
 // color used in the pipeline approved state).
 // PR23 - Spectator added: neutral slate palette so the badge reads "just
 // watching" without competing with the brand colors of the two protagonists.
-const roleStyles = StyleSheet.create({
+const makeRoleStyles = (c: ThemeColors) => StyleSheet.create({
   pill: {
     borderRadius:      999,
     paddingHorizontal: 7,
@@ -479,6 +486,8 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
   /** Other authors' home-country ISO-2 (World only) - drives the flag. */
   country?:      string | null;
 }) {
+  const roleStyles = useThemedStyles(makeRoleStyles);
+  const styles = useThemedStyles(makeStyles);
   const router  = useRouter();
   const { t }   = useTranslation('common');
   const { t: tChallenge } = useTranslation('challenge');
@@ -572,6 +581,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 // ── Component ─────────────────────────────────────────────────────────────────
 
 function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null, worldScope = false }: Props) {
+  const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('chat');
   const { account } = useApp();
@@ -1110,7 +1120,7 @@ export const ChatMessage = memo(ChatMessageInner);
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const styles = StyleSheet.create({
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
 
   bubbleWrap: {
     // No `position: 'relative'` here - that would anchor the ReactionBurstOverlay
@@ -1142,7 +1152,7 @@ const styles = StyleSheet.create({
     flexShrink:  1,
     fontSize:    16,
     fontWeight:  '600',
-    color:       Colors.text,
+    color:       c.text,
     lineHeight:  22,
     marginRight: 10,
     textAlign:   'center',
@@ -1177,7 +1187,7 @@ const styles = StyleSheet.create({
     flexShrink:  1,
     fontSize:    16,
     fontWeight:  '600',
-    color:       Colors.text,
+    color:       c.text,
     lineHeight:  22,
     marginRight: 10,
   },
@@ -1212,7 +1222,7 @@ const styles = StyleSheet.create({
     flexShrink:  1,
     fontSize:    16,
     fontWeight:  '600',
-    color:       Colors.text,
+    color:       c.text,
     lineHeight:  22,
     marginRight: 10,
   },
@@ -1233,12 +1243,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical:   2,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.10)',
+    borderColor:       c.overlayStrong,
   },
   challengeStatusPillText: {
     fontSize:      10,
     fontWeight:    '700',
-    color:         Colors.muted,
+    color:         c.muted,
     letterSpacing: 0.3,
   },
   challengeJoinText: {
@@ -1266,7 +1276,7 @@ const styles = StyleSheet.create({
     flexShrink:  1,
     fontSize:    16,
     fontWeight:  '600',
-    color:       Colors.text,
+    color:       c.text,
     lineHeight:  22,
     marginRight: 10,
   },
@@ -1293,7 +1303,7 @@ const styles = StyleSheet.create({
   },
   activityText: {
     fontSize:  13,
-    color:     Colors.muted2,
+    color:     c.muted2,
     textAlign: 'center',
   },
 
@@ -1317,7 +1327,7 @@ const styles = StyleSheet.create({
     flexShrink:  1,
     fontSize:    15,
     fontWeight:  '500',
-    color:       Colors.muted,
+    color:       c.muted,
     lineHeight:  20,
     marginRight: 10,
   },
@@ -1345,17 +1355,17 @@ const styles = StyleSheet.create({
   },
   systemTime: {
     fontSize:   10,
-    color:      Colors.muted2,
+    color:      c.muted2,
     opacity:    0.6,
   },
   systemText: {
     fontSize:          FontSizes.xs,   // 13 - smaller than the 15 message body
     fontStyle:         'italic',
     fontWeight:        '400',
-    color:             Colors.muted2,
-    backgroundColor:   'rgba(255,255,255,0.04)',
+    color:             c.muted2,
+    backgroundColor:   c.overlayWeak,
     borderWidth:       1,
-    borderColor:       'rgba(255,255,255,0.07)',
+    borderColor:       c.overlay,
     borderRadius:      14,
     paddingHorizontal: 13,
     paddingVertical:   5,
@@ -1413,9 +1423,9 @@ const styles = StyleSheet.create({
     paddingVertical:   6,
   },
   bubbleOther: {
-    backgroundColor:     Colors.bg3,
+    backgroundColor:     c.bg3,
     borderWidth:         1,
-    borderColor:         'rgba(255,255,255,0.05)',
+    borderColor:         c.overlayWeak,
     borderTopLeftRadius: 4,
   },
   bubbleMine: {
@@ -1427,7 +1437,7 @@ const styles = StyleSheet.create({
     shadowRadius:         6,
     elevation:            4,
   },
-  bubbleText:     { fontSize: 15,           color: Colors.text,  lineHeight: 20 },
+  bubbleText:     { fontSize: 15,           color: c.text,  lineHeight: 20 },
   bubbleTextMine: { color: '#fff' },
   sharedLinkCta: {
     alignSelf: 'flex-start', marginTop: 8,
@@ -1456,17 +1466,17 @@ const styles = StyleSheet.create({
   tombstoneText: {
     fontSize:   15,
     fontStyle:  'italic',
-    color:      'rgba(255,255,255,0.55)',
+    color:      c.overlayStrong,
     lineHeight: 20,
   },
   // "edited" suffix - small muted text appended after the message content. Kept
   // inline (inside the same <Text>) so it wraps naturally with the last word.
   editedTag: {
     fontSize: 11,
-    color:    'rgba(255,255,255,0.45)',
+    color:    c.overlayStrong,
   },
   editedTagMine: {
-    color: 'rgba(255,255,255,0.65)',
+    color: c.overlayStrong,
   },
   // @mention - inline highlight on a nested <Text> (no nested <View>, which can
   // render invisible on RN). Dark fill + white bold text reads on the dark
@@ -1497,16 +1507,16 @@ const styles = StyleSheet.create({
     paddingVertical:   12,
     gap:             10,
   },
-  joinReqText: { fontSize: FontSizes.sm, color: Colors.text, textAlign: 'center' },
+  joinReqText: { fontSize: FontSizes.sm, color: c.text, textAlign: 'center' },
   joinReqName: { fontWeight: '700' },
   joinReqBtns: { flexDirection: 'row', gap: 10 },
   joinReqBtn:  { flex: 1, paddingVertical: 9, borderRadius: 12, alignItems: 'center' },
-  joinReqAccept:     { backgroundColor: Colors.accent },
+  joinReqAccept:     { backgroundColor: c.accent },
   joinReqAcceptText: { color: '#fff', fontWeight: '700', fontSize: FontSizes.sm },
-  joinReqReject:     { backgroundColor: 'rgba(255,255,255,0.06)', borderWidth: 1, borderColor: Colors.border },
-  joinReqRejectText: { color: Colors.muted, fontWeight: '600', fontSize: FontSizes.sm },
+  joinReqReject:     { backgroundColor: c.overlay, borderWidth: 1, borderColor: c.border },
+  joinReqRejectText: { color: c.muted, fontWeight: '600', fontSize: FontSizes.sm },
   joinReqResolved:      { fontSize: FontSizes.xs, color: '#4ade80', fontWeight: '600', textAlign: 'center' },
-  joinReqResolvedMuted: { fontSize: FontSizes.xs, color: Colors.muted2, textAlign: 'center' },
+  joinReqResolvedMuted: { fontSize: FontSizes.xs, color: c.muted2, textAlign: 'center' },
 
   // Failed state
   bubbleFailed: {
@@ -1515,7 +1525,7 @@ const styles = StyleSheet.create({
   },
   failedLabel: {
     fontSize:   FontSizes.xs,
-    color:      Colors.red,
+    color:      c.red,
     marginTop:  4,
     marginLeft: 4,
   },
@@ -1531,15 +1541,15 @@ const styles = StyleSheet.create({
   dateSepLine: {
     flex:            1,
     height:          1,
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: c.overlay,
   },
   dateSepText: {
     fontSize:          FontSizes.xs,  // 13 - was 11 (Apple G4 floor)
     fontWeight:        '600',
-    color:             Colors.muted2,
+    color:             c.muted2,
     letterSpacing:     0.5,
     textTransform:     'uppercase',
-    backgroundColor:   Colors.bg2,
+    backgroundColor:   c.bg2,
     paddingHorizontal: 10,
     paddingVertical:   3,
     borderRadius:      999,
@@ -1552,7 +1562,7 @@ const styles = StyleSheet.create({
   timestamp: {
     fontSize:   FontSizes.xs,
     marginTop:  3,
-    color:      Colors.muted2,
+    color:      c.muted2,
   },
   timestampMine:  { textAlign: 'right',  paddingRight: 2 },
   timestampOther: { textAlign: 'left',   paddingLeft: 2 },
@@ -1574,14 +1584,14 @@ const styles = StyleSheet.create({
   replyQuoteOther: {
     backgroundColor:  'rgba(0,0,0,0.12)',
     borderLeftColor:  'rgba(255,122,60,0.75)',
-    borderBottomColor:'rgba(255,255,255,0.06)',
+    borderBottomColor:c.overlay,
     borderTopLeftRadius:  4,
     borderTopRightRadius: 16,
   },
   replyQuoteMine: {
     backgroundColor:  'rgba(0,0,0,0.2)',
-    borderLeftColor:  'rgba(255,255,255,0.45)',
-    borderBottomColor:'rgba(255,255,255,0.1)',
+    borderLeftColor:  c.overlayStrong,
+    borderBottomColor:c.overlayStrong,
     borderTopLeftRadius:  16,
     borderTopRightRadius: 4,
   },
@@ -1592,13 +1602,13 @@ const styles = StyleSheet.create({
     marginBottom: 2,
     lineHeight:   17,
   },
-  replyQuoteNameMine: { color: 'rgba(255,255,255,0.8)' },
+  replyQuoteNameMine: { color: c.overlayStrong },
   replyQuoteText: {
     fontSize:   12,
-    color:      Colors.muted2,
+    color:      c.muted2,
     lineHeight: 16,
   },
-  replyQuoteTextMine: { color: 'rgba(255,255,255,0.55)' },
+  replyQuoteTextMine: { color: c.overlayStrong },
 
   // ── .msg-image ────────────────────────────────────────────────────────────
   image: { width: 280, height: 240, marginTop: 2 },
