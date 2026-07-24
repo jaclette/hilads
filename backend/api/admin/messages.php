@@ -290,7 +290,7 @@ admin_nav('/admin/messages');
     // ── Default: per-city message activity over a date range ────────────────
     ?>
     <h1 class="page-title">Messages <span style="color:#555;font-size:14px;font-weight:400">moderation</span></h1>
-    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a channel by name, or browse city message activity over a date range — click a city to open and moderate its messages.</p>
+    <p style="color:#777;margin:-8px 0 16px;font-size:13px">Search a channel by name, or browse message activity over a date range — cities first, then Hi plan / Hi now / challenge channels. Click any row to open and moderate its messages.</p>
 
     <?= flash_html() ?>
 
@@ -448,6 +448,57 @@ admin_nav('/admin/messages');
             </table>
         </div>
     <?php endif; ?>
+
+    <?php
+    // ── Hi plan / Hi now / Challenge activity ───────────────────────────────
+    // The per-city breakdown above only covers type='city'. Event (Hi plan),
+    // topic (Hi now) and challenge channels are their OWN channels with their
+    // own messages, so surface the ones active in this range here too - same
+    // open-and-moderate flow (click "View messages" → single-channel view).
+    $subStmt = $pdo->prepare("
+        SELECT c.id, c.type, c.name,
+               COUNT(m.id)       AS cnt,
+               MAX(m.created_at) AS last_at
+        FROM channels c
+        JOIN messages m ON m.channel_id = c.id
+        WHERE c.type IN ('event','topic','challenge')
+          AND m.type IN ('text','image')
+          AND m.created_at >= :ds::timestamptz AND m.created_at < :de::timestamptz
+        GROUP BY c.id, c.type, c.name
+        ORDER BY cnt DESC, c.name ASC
+        LIMIT 200
+    ");
+    $subStmt->execute([':ds' => $ds, ':de' => $de]);
+    $subs     = $subStmt->fetchAll();
+    $subTotal = 0;
+    foreach ($subs as $r) { $subTotal += (int) $r['cnt']; }
+    ?>
+    <h2 class="page-title" style="font-size:18px;margin:28px 0 4px">Hi plan · Hi now · Challenges</h2>
+    <p style="color:#666;font-size:13px;margin:0 0 12px"><?= count($subs) ?> channels · <?= number_format($subTotal) ?> messages · <?= htmlspecialchars($rangeLabel, ENT_QUOTES) ?> (UTC+7)</p>
+    <div class="table-wrapper">
+        <table>
+            <thead>
+                <tr><th style="width:110px">Type</th><th>Name</th><th style="width:120px">Messages</th><th style="width:150px">Last activity</th><th style="width:130px">Actions</th></tr>
+            </thead>
+            <tbody>
+            <?php if (empty($subs)): ?>
+                <tr><td colspan="5" class="no-results">No Hi plan / Hi now / challenge messages in this range.</td></tr>
+            <?php else: foreach ($subs as $c):
+                $lastTs = $c['last_at'] ? strtotime($c['last_at']) : 0;
+                $tLabel = $TYPE_LABELS[$c['type']] ?? $c['type'];
+                $tBadge = $TYPE_BADGE[$c['type']] ?? '#666';
+                ?>
+                <tr>
+                    <td><span class="badge" style="background:<?= $tBadge ?>22;color:<?= $tBadge ?>;border:1px solid <?= $tBadge ?>55"><?= htmlspecialchars($tLabel, ENT_QUOTES) ?></span></td>
+                    <td class="td-clip" title="<?= htmlspecialchars($c['name'] ?? '', ENT_QUOTES) ?>"><strong><?= htmlspecialchars($c['name'] ?? '(untitled)', ENT_QUOTES) ?></strong></td>
+                    <td><strong style="color:#fff;font-size:15px"><?= number_format((int) $c['cnt']) ?></strong></td>
+                    <td style="color:#888;white-space:nowrap"><?= $lastTs ? date('M d, H:i', $lastTs) : '-' ?></td>
+                    <td><a href="/admin/messages?channel=<?= urlencode($c['id']) ?>&from=<?= urlencode($from) ?>&to=<?= urlencode($to) ?>" class="btn btn-primary btn-sm">View messages →</a></td>
+                </tr>
+            <?php endforeach; endif; ?>
+            </tbody>
+        </table>
+    </div>
 <?php endif; ?>
 </div>
 <?php
