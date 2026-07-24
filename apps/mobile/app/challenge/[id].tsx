@@ -1,18 +1,12 @@
 import { thumbUrl } from '@/lib/imageThumb';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, ActivityIndicator, Animated, Modal, LayoutAnimation,
   TouchableOpacity, StyleSheet, KeyboardAvoidingView, Alert, FlatList,
   Keyboard,
 } from 'react-native';
 import { Image } from 'expo-image';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-// Read the tab-bar height directly from the context to avoid the throw
-// useBottomTabBarHeight does when called outside a Tab Navigator. Expo Router
-// pushes /challenge/[id] on top of (tabs) but the parent (tabs) navigator
-// stays mounted and its tab bar overlaps the screen's bottom edge - we need
-// to know that height to keep our chat input above it.
-import { BottomTabBarHeightContext } from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -83,10 +77,6 @@ export default function ChallengeChatScreen() {
 
   const router = useRouter();
   const { t } = useTranslation('challenge');
-  const insets = useSafeAreaInsets();
-  // Tab-bar height when our screen is nested under (tabs); 0 otherwise so
-  // routes opened from elsewhere don't get phantom dead space at the bottom.
-  const tabBarHeight = useContext(BottomTabBarHeightContext) ?? 0;
   const { id, postCreate, reviewProof } = useLocalSearchParams<{ id: string; postCreate?: string; reviewProof?: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
@@ -1084,7 +1074,7 @@ export default function ChallengeChatScreen() {
     || (!!account?.id && participants.some(p => p.id === account.id)));
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Nav - web parity: back pill | centered title | large type emoji on
           the right. The emoji is sized to roughly match the back pill so the
           title stays visually centered; no need for a manual spacer. */}
@@ -1704,18 +1694,18 @@ export default function ChallengeChatScreen() {
           Mounts only when the viewer has an active acceptance for this
           challenge - acceptors see their own thread, creators see their
           most-recently-active acceptor's thread (server-ordered).
-          paddingBottom keeps the composer above the (tabs) bar that overlaps
-          this route's bottom edge (Expo Router quirk: parent tab bar isn't
-          unmounted when child routes are pushed). When this screen is reached
-          via a non-tabs path, tabBarHeight=0 - no dead space. */}
+
+          KAV is a bare styles.flex + behavior="padding" - IDENTICAL to the
+          working city chat. It must NOT carry its own paddingBottom: RN's
+          'padding' behavior overwrites the container's bottom padding with the
+          keyboard height, and on Android (edge-to-edge, targetSdk 35+) that
+          overwrite doesn't reliably reset on dismiss → stale padding (dead space
+          after closing) and a doubled inset that hid the composer on the 2nd open.
+          The home-indicator inset is handled by the SafeAreaView (edges bottom)
+          instead, so it never touches the KAV. (This route is a root-stack screen,
+          not inside the tabs, so there's no tab bar to clear here.) */}
       <KeyboardAvoidingView
-        style={[styles.flex, { paddingBottom: tabBarHeight || insets.bottom }]}
-        // 'padding' on BOTH platforms. Android used to rely on the window's
-        // adjustResize (behavior=undefined), but targetSdk 35+ forces edge-to-edge,
-        // which breaks adjustResize's keyboard inset → the composer stayed hidden
-        // behind the keyboard. RN's 'padding' uses keyboard events (not the window
-        // resize), so it's robust; the city chat uses the same. Any transient gap on
-        // interactive dismiss is now the light bg, not black.
+        style={styles.flex}
         behavior="padding"
       >
         {/* PR34 - show the chat for ALL participants once they're in the
