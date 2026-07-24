@@ -129,7 +129,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     flexShrink:     0,
   },
   notifBody:        { flex: 1, gap: 4 },
-  notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.white, lineHeight: 20 },
+  notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
   notifTitleRead:   { color: c.muted, fontWeight: '500' },
   notifPreview:     { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
   notifPreviewRead: { color: c.muted2 },
