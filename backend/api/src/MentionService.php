@@ -148,64 +148,18 @@ final class MentionService
     {
         $pdo = Database::pdo();
         if ($context === 'event') {
+            // Hi plan (event) chat is still scoped to its participants.
             $stmt = $pdo->prepare("SELECT DISTINCT user_id FROM event_participants WHERE channel_id = ? AND user_id IS NOT NULL");
             $stmt->execute([$channelId]);
-        } elseif ($context === 'topic') {
-            // Members of the hangout (topic_participants), not just posters - so a
-            // member who joined but hasn't messaged yet is still mentionable.
-            $stmt = $pdo->prepare("SELECT user_id FROM topic_participants WHERE topic_id = ?");
-            $stmt->execute([$channelId]);
-        } elseif ($context === 'challenge') {
-            // Mentionable in a challenge channel = the creator (challenger), any
-            // registered acceptor/joiner (challenge_participants), AND anyone who
-            // has posted a message here. Guests have no @handle, so user_id NOT
-            // NULL filters them out. Keep in sync with suggest('challenge').
-            $stmt = $pdo->prepare("
-                SELECT DISTINCT uid FROM (
-                    SELECT created_by AS uid FROM channel_challenges    WHERE channel_id = ? AND created_by IS NOT NULL
-                    UNION
-                    SELECT user_id   AS uid FROM challenge_participants WHERE channel_id = ? AND user_id   IS NOT NULL
-                    UNION
-                    SELECT user_id   AS uid FROM messages              WHERE channel_id = ? AND user_id   IS NOT NULL
-                ) t
-            ");
-            $stmt->execute([$channelId, $channelId, $channelId]);
-        } elseif ($context === 'world') {
-            // World channel: EVERYONE is mentionable (small global user base, by
-            // design). Registered users only - guests have no @handle. This is the
-            // allow-set for send-time sanitize; the actual push fan-out is bounded
-            // by how many @tokens the sender typed. Keep in sync with suggest('world').
-            $stmt = $pdo->prepare("
-                SELECT id FROM users
-                WHERE deleted_at IS NULL AND username IS NOT NULL
-            ");
-            $stmt->execute();
-        } else { // city
-            // PR29 - Mentionable in a city = ACTUAL members of that city only:
-            // current_city_id (the source of truth per the membership rule)
-            // OR an explicit row in user_city_memberships (legacy + the
-            // belt-and-braces upsert /me/city writes alongside current_city_id).
-            // The previous "OR posted recently in this channel" branch surfaced
-            // travellers who'd dropped a message but never became members -
-            // hence the bug where users like BigFatBison showed up as mention
-            // suggestions in Ho Chi Minh City despite not being a member.
-            // Travellers ARE city members of wherever they're currently in
-            // (current_city_id flips on geo arrival), so this gate doesn't
-            // exclude legitimate visitors.
-            $stmt = $pdo->prepare("
-                SELECT u.id
-                FROM users u
-                WHERE u.deleted_at IS NULL
-                  AND (
-                        u.current_city_id = ?
-                     OR EXISTS (
-                          SELECT 1 FROM user_city_memberships ucm
-                          WHERE ucm.channel_id = ? AND ucm.user_id = u.id
-                        )
-                  )
-            ");
-            $stmt->execute([$channelId, $channelId]);
+            return $stmt->fetchAll(\PDO::FETCH_COLUMN);
         }
+        // world / city / topic (Hi now) / challenge: ANY registered user is
+        // mentionable - you can tag whoever you want, not only the channel's
+        // participants/owner. Small global user base by design; the actual push
+        // fan-out is still bounded by how many @tokens the sender typed. Guests
+        // have no @handle → filtered out via username. Keep in sync with suggest().
+        $stmt = $pdo->prepare("SELECT id FROM users WHERE deleted_at IS NULL AND username IS NOT NULL");
+        $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_COLUMN);
     }
 
@@ -223,6 +177,7 @@ final class MentionService
         $cap  = self::MAX_SUGGESTIONS;          // int constant - safe to interpolate
 
         if ($context === 'event') {
+            // Hi plan (event) chat is still scoped to its participants.
             $sql = "
                 SELECT DISTINCT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
                 FROM event_participants ep
@@ -234,44 +189,10 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$channelId, $like, $excludeUserId, $excludeUserId];
-        } elseif ($context === 'topic') {
-            // Suggest the hangout's members (topic_participants) - same as an event
-            // suggests its participants - so you can tag anyone who's in it.
-            $sql = "
-                SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-                FROM topic_participants tp
-                JOIN users u ON u.id = tp.user_id
-                WHERE tp.topic_id = ?
-                  AND u.username IS NOT NULL AND u.deleted_at IS NULL
-                  AND lower(u.username) LIKE ?
-                  AND (CAST(? AS text) IS NULL OR u.id != ?)
-                ORDER BY u.username ASC
-                LIMIT $cap";
-            $params = [$channelId, $like, $excludeUserId, $excludeUserId];
-        } elseif ($context === 'challenge') {
-            // Suggest the challenge's creator (challenger), its registered
-            // acceptors/joiners (challenge_participants), and anyone who has
-            // posted a message in the channel. Guests are filtered out (no @
-            // handle). Keep in sync with mentionableUserIds('challenge') so a
-            // suggested handle is never stripped at send time.
-            $sql = "
-                SELECT DISTINCT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-                FROM users u
-                WHERE u.username IS NOT NULL AND u.deleted_at IS NULL
-                  AND lower(u.username) LIKE ?
-                  AND (CAST(? AS text) IS NULL OR u.id != ?)
-                  AND (
-                        u.id = (SELECT created_by FROM channel_challenges WHERE channel_id = ?)
-                     OR EXISTS (SELECT 1 FROM challenge_participants cp WHERE cp.channel_id = ? AND cp.user_id = u.id)
-                     OR EXISTS (SELECT 1 FROM messages m WHERE m.channel_id = ? AND m.user_id = u.id)
-                  )
-                ORDER BY u.username ASC
-                LIMIT $cap";
-            $params = [$like, $excludeUserId, $excludeUserId, $channelId, $channelId, $channelId];
-        } elseif ($context === 'world') {
-            // World channel: suggest ANY registered user (prefix match), capped.
-            // Mirrors mentionableUserIds('world') so a suggested handle is never
-            // stripped at send time.
+        } else {
+            // world / city / topic (Hi now) / challenge: suggest ANY registered
+            // user (prefix match), capped - tag whoever you want. Mirrors
+            // mentionableUserIds() so a suggested handle is never stripped at send.
             $sql = "
                 SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
                 FROM users u
@@ -281,28 +202,6 @@ final class MentionService
                 ORDER BY u.username ASC
                 LIMIT $cap";
             $params = [$like, $excludeUserId, $excludeUserId];
-        } else { // city - actual members of the city only
-            // PR29 - Mirror mentionableUserIds(): match on current_city_id
-            // OR an explicit user_city_memberships row. Previously the gate
-            // also fell through for "anyone who posted here in the last
-            // 30 days", which surfaced travellers / one-off posters as
-            // mention suggestions in a city they're not a member of.
-            $sql = "
-                SELECT u.id, u.username, u.display_name, u.profile_thumb_photo_url, u.profile_photo_url
-                FROM users u
-                WHERE u.username IS NOT NULL AND u.deleted_at IS NULL
-                  AND lower(u.username) LIKE ?
-                  AND (CAST(? AS text) IS NULL OR u.id != ?)
-                  AND (
-                        u.current_city_id = ?
-                     OR EXISTS (
-                          SELECT 1 FROM user_city_memberships ucm
-                          WHERE ucm.channel_id = ? AND ucm.user_id = u.id
-                        )
-                  )
-                ORDER BY u.username ASC
-                LIMIT $cap";
-            $params = [$like, $excludeUserId, $excludeUserId, $channelId, $channelId];
         }
 
         $stmt = $pdo->prepare($sql);

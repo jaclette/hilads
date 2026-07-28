@@ -243,9 +243,12 @@ class NotificationRepository
             'new_event'                       => isset($data['eventId']) ? "/event/{$data['eventId']}" : '/',
             'new_challenge',
             'campaign_challenge'              => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}" : '/',
-            // Mention deep-links to the message's context: event chat, pulse, or city chat.
-            'mention'                         => isset($data['eventId']) ? "/event/{$data['eventId']}"
-                                                : (isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/'),
+            // Mention deep-links to the message's context: challenge, Hi plan
+            // (event), Hi now (topic), or - for a city/world mention (channelId +
+            // scope, no per-message route) - the app home / current city chat.
+            'mention'                         => isset($data['challengeId']) ? "/challenge/{$data['challengeId']}"
+                                                : (isset($data['eventId']) ? "/event/{$data['eventId']}"
+                                                : (isset($data['topicId']) ? "/topic/{$data['topicId']}" : '/')),
             'channel_message', 'city_join'    => '/',
             'friend_request_received'         => '/friend-requests',
             'friend_request_accepted'         => isset($data['accepterUserId']) ? "/user/{$data['accepterUserId']}" : '/me',
