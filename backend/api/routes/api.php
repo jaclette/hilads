@@ -3740,15 +3740,20 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
         $bootstrapBlocks = viewerBlockSet($deferAuthUserId, $guestId);
         $messages        = filterByBlocks($messages, $bootstrapBlocks);
 
+        // Arrival avatars for the arrivals bar / sheet. Runs in lean mode too -
+        // the badge query below is skipped there, and web is always lean.
+        MessageRepository::attachJoinAvatars($messages);
+
         // ── q6: badge enrichment for message authors ──────────────────────────
         // Skipped in lean mode - web fetches badges via /message-badges after first render.
         // In all-guest rooms msgUserIds is empty → batchFull skips the query anyway.
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
-            // Include 'join' system messages so the arrivals list can show the
-            // arriver's avatar (they carry a userId for registered users).
-            if (($t === 'text' || $t === 'image' || ($t === 'system' && ($msg['event'] ?? '') === 'join')) && !empty($msg['userId'])) {
+            // Arrival ('join') rows are NOT collected here - their avatar comes
+            // from MessageRepository::attachJoinAvatars, which also runs in lean
+            // mode where this badge query is skipped entirely.
+            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
                 $msgUserIds[] = $msg['userId'];
             }
         }
@@ -3782,11 +3787,8 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     $msg['mode']           = null;
                     $msg['thumbAvatarUrl'] = null;
                 }
-            } elseif ($t === 'system' && ($msg['event'] ?? '') === 'join') {
-                // Arrival rows: attach the arriver's avatar thumb for the sheet.
-                $uid = $msg['userId'] ?? null;
-                $msg['thumbAvatarUrl'] = ($uid && isset($badgeMap[$uid])) ? ($badgeMap[$uid]['thumbAvatarUrl'] ?? null) : null;
             }
+            // Arrival rows already carry thumbAvatarUrl (attachJoinAvatars above).
         }
         unset($msg);
 
@@ -4298,6 +4300,11 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             viewerBlockSet($msgViewerUserId, isValidGuestId($msgViewerGuestId) ? $msgViewerGuestId : null)
         );
 
+        // Arrival avatars for the arrivals bar / sheet - lean mode included (web
+        // reloads the city feed through the lean path when toggling back from
+        // World, and skipping this is what left the sheet on letter avatars).
+        MessageRepository::attachJoinAvatars($messages);
+
         if ($lean) {
             // Ghost badges for all messages - client enriches deferred
             foreach ($messages as &$msg) {
@@ -4339,9 +4346,10 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         $msgUserIds = [];
         foreach ($messages as $msg) {
             $t = $msg['type'] ?? 'text';
-            // Include 'join' system messages so the arrivals list can show the
-            // arriver's avatar (they carry a userId for registered users).
-            if (($t === 'text' || $t === 'image' || ($t === 'system' && ($msg['event'] ?? '') === 'join')) && !empty($msg['userId'])) {
+            // Arrival ('join') rows are NOT collected here - their avatar comes
+            // from MessageRepository::attachJoinAvatars, which also runs in lean
+            // mode where this badge query is skipped entirely.
+            if (($t === 'text' || $t === 'image') && !empty($msg['userId'])) {
                 $msgUserIds[] = $msg['userId'];
             }
         }
@@ -4370,11 +4378,8 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                     $msg['mode']           = null;
                     $msg['thumbAvatarUrl'] = null;
                 }
-            } elseif ($t === 'system' && ($msg['event'] ?? '') === 'join') {
-                // Arrival rows: attach the arriver's avatar thumb for the sheet.
-                $uid = $msg['userId'] ?? null;
-                $msg['thumbAvatarUrl'] = ($uid && isset($badgeMap[$uid])) ? ($badgeMap[$uid]['thumbAvatarUrl'] ?? null) : null;
             }
+            // Arrival rows already carry thumbAvatarUrl (attachJoinAvatars above).
         }
         unset($msg);
 

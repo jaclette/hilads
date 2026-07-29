@@ -719,6 +719,12 @@ class NotificationRepository
             // BO can show where an arriving guest is connecting from.
             $country = Request::country();
             $joinMsg = MessageRepository::addJoinEvent($channelId, $arriverGuestId, $arriverNickname, $arriverUserId, $country, Request::ip(), Request::platform());
+            // Arrival avatar for the live row, same as the fetched ones carry -
+            // without it a real-time arrival showed a letter avatar in the
+            // arrivals sheet until the feed was refetched.
+            $joinMsgWrap = [$joinMsg];
+            MessageRepository::attachJoinAvatars($joinMsgWrap);
+            $joinMsg = $joinMsgWrap[0];
             // Broadcast over WS so clients already in the city see the line live.
             // Without this the join row is only written to the DB and appears for
             // others on their NEXT fetch (app restart) - chat messages broadcast,

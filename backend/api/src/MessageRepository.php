@@ -631,6 +631,55 @@ class MessageRepository
         return $result;
     }
 
+    // ── Arrival avatars ───────────────────────────────────────────────────────
+
+    /**
+     * Attach `thumbAvatarUrl` to every "X just landed" (system/join) row so the
+     * arrivals bar + sheet can show the arriver's photo.
+     *
+     * Deliberately independent of the badge enrichment: badges are skipped in
+     * lean mode (web bootstrap + the lean /messages fetch), and the client-side
+     * re-enrichment only covers SOME of the paths that rebuild the city feed
+     * (toggling back from World, tab-focus catch-up, exiting an event…), so
+     * arrivals kept falling back to letter avatars while World - which resolves
+     * them server-side - looked right. One batched PK lookup over the handful of
+     * distinct arrivers in a page; guests (no user_id) stay null.
+     *
+     * @param array $messages Reference - modified in place.
+     */
+    public static function attachJoinAvatars(array &$messages): void
+    {
+        $ids = [];
+        foreach ($messages as $msg) {
+            if (($msg['type'] ?? '') === 'system'
+                && ($msg['event'] ?? '') === 'join'
+                && !empty($msg['userId'])) {
+                $ids[$msg['userId']] = true;
+            }
+        }
+        if (empty($ids)) return;
+
+        $ids     = array_keys($ids);
+        $in      = implode(',', array_fill(0, count($ids), '?'));
+        $stmt    = Database::pdo()->prepare(
+            "SELECT id, profile_thumb_photo_url, profile_photo_url FROM users WHERE id IN ($in)"
+        );
+        $stmt->execute($ids);
+        $avatars = [];
+        foreach ($stmt->fetchAll(\PDO::FETCH_ASSOC) as $u) {
+            $avatars[$u['id']] = R2Uploader::thumbProxy(
+                $u['profile_thumb_photo_url'] ?? $u['profile_photo_url'] ?? null
+            );
+        }
+
+        foreach ($messages as &$msg) {
+            if (($msg['type'] ?? '') !== 'system' || ($msg['event'] ?? '') !== 'join') continue;
+            $uid = $msg['userId'] ?? null;
+            $msg['thumbAvatarUrl'] = ($uid && isset($avatars[$uid])) ? $avatars[$uid] : null;
+        }
+        unset($msg);
+    }
+
     // ── Reactions ─────────────────────────────────────────────────────────────
 
     /**

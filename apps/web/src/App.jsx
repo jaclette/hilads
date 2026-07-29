@@ -2920,7 +2920,9 @@ export default function App() {
             if (!item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
             // Arrival ("join") rows also show the arriver's avatar in the arrivals sheet.
-            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            // Server-side attachJoinAvatars already fills these in - never clobber a
+            // value it resolved, this is only a fallback.
+            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? item.thumbAvatarUrl ?? null }
             if (item.type !== 'message') return item
             return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
@@ -4046,7 +4048,9 @@ export default function App() {
             if (!item.userId || !badges[item.userId]) return item
             const b = badges[item.userId]
             // Arrival ("join") rows also show the arriver's avatar in the arrivals sheet.
-            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? null }
+            // Server-side attachJoinAvatars already fills these in - never clobber a
+            // value it resolved, this is only a fallback.
+            if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? item.thumbAvatarUrl ?? null }
             if (item.type !== 'message') return item
             return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
           }))
