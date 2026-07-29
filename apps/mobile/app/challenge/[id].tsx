@@ -130,6 +130,10 @@ export default function ChallengeChatScreen() {
   // conversation surface is part of the public detail page, no join
   // step. See challengeIsPublic below.
   const [iAmParticipant, setIAmParticipant] = useState<boolean | null>(null);
+  // Wider than iAmParticipant: on a public challenge, chatting subscribes you
+  // to the channel's pushes without any join row. Drives the notif pill so a
+  // talker can mute what they now receive.
+  const [iCanSubscribe, setICanSubscribe] = useState(false);
   const [joiningChannel, setJoiningChannel] = useState(false);
 
   // "How challenges work" carousel - same primitive the city chat
@@ -747,19 +751,27 @@ export default function ChallengeChatScreen() {
         : Promise.resolve({ messages: [], hasMore: false }),
     [id, iAmParticipant, challengeIsPublic],
   );
+  // Talking in a challenge channel subscribes you to it (backend fan-out
+  // counts message senders), so flip the pill on locally the moment the first
+  // message lands - no reload needed. Registered users only; guests get no push.
+  const markSubscribed = useCallback(<T,>(msg: T): T => {
+    if (account?.id) setICanSubscribe(true);
+    return msg;
+  }, [account?.id]);
+
   const postTextFn = useCallback(
     (content: string, replyToId?: string | null, mentions?: import('@/types').MentionRef[]): Promise<Message> =>
       id && senderId
-        ? sendChallengeMessage(id, senderId, senderNickname, content, replyToId ?? null, mentions)
+        ? sendChallengeMessage(id, senderId, senderNickname, content, replyToId ?? null, mentions).then(markSubscribed)
         : Promise.reject(new Error('No challenge channel')),
-    [id, senderId, senderNickname],
+    [id, senderId, senderNickname, markSubscribed],
   );
   const postImageFn = useCallback(
     (imageUrl: string): Promise<Message> =>
       id && senderId
-        ? sendChallengeImageMessage(id, senderId, senderNickname, imageUrl)
+        ? sendChallengeImageMessage(id, senderId, senderNickname, imageUrl).then(markSubscribed)
         : Promise.reject(new Error('No challenge channel')),
-    [id, senderId, senderNickname],
+    [id, senderId, senderNickname, markSubscribed],
   );
 
   const { messages, loading: msgsLoading, loadingOlder, hasMore, sending,
@@ -826,11 +838,12 @@ export default function ChallengeChatScreen() {
   // active-taker branches in the backend).
   const loadParticipation = useCallback(async () => {
     if (!id) { setIAmParticipant(null); return; }
-    if (!account?.id) { setIAmParticipant(false); return; }
+    if (!account?.id) { setIAmParticipant(false); setICanSubscribe(false); return; }
     try {
       const res = await fetchMyChallengeParticipation(id);
       setIAmParticipant(!!res?.isIn);
-    } catch { setIAmParticipant(false); }
+      setICanSubscribe(!!(res?.canSubscribe ?? res?.isIn));
+    } catch { setIAmParticipant(false); setICanSubscribe(false); }
   }, [id, account?.id]);
   useEffect(() => { loadParticipation(); }, [loadParticipation, myAcceptance?.id]);
 
@@ -1116,7 +1129,7 @@ export default function ChallengeChatScreen() {
               {/* Notifications pill - joined participants only. Lives next
                   to the creator name at the very top so subscription state
                   is visible without scrolling past the meta row. */}
-              {iAmParticipant === true && account?.id && (
+              {(iAmParticipant === true || iCanSubscribe) && account?.id && (
                 <ChallengeNotificationPill challengeId={id} currentUserId={account.id} />
               )}
             </View>

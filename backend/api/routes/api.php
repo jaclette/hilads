@@ -9520,11 +9520,14 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/notification-preference',
             'code'  => 'invalid_preference',
         ], 400);
     }
-    // Gate on participation (creator / active acceptor / explicit joiner). The
-    // repo UPSERT below materializes a participant row for implicit members
-    // (acceptors who never hit /join), so without this guard any authed user
-    // could silently "join" by toggling notifications.
-    if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)) {
+    // Gate on involvement: creator / active acceptor / explicit joiner, OR
+    // anyone who has talked in this channel (public challenges let people chat
+    // without a join row - they get the pushes, so they can mute them too).
+    // The repo UPSERT below materializes a participant row for implicit
+    // members, so without this guard any authed user could silently "join" by
+    // toggling notifications.
+    if (!ChallengeParticipantRepository::isParticipant($challengeId, $userId)
+        && !ChallengeParticipantRepository::hasPostedInChannel($challengeId, $userId)) {
         Response::json(['error' => 'Not a participant - join the challenge first.', 'code' => 'not_participant'], 403);
     }
     $ok = ChallengeParticipantRepository::setNotificationPreference($challengeId, $userId, $pref);
@@ -9548,10 +9551,16 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/participants/me', function
         Response::json(['isIn' => false, 'reason' => 'anon']);
     }
     $isIn = ChallengeParticipantRepository::isParticipant($challengeId, $userId);
+    // canSubscribe = who the challenge_message push fan-out reaches, i.e. the
+    // people the notifications pill must be visible to. Wider than isIn: on a
+    // public challenge you can chat without a join row, and talking here
+    // subscribes you. isIn still drives channel access / the Join CTA.
+    $canSubscribe = $isIn || ChallengeParticipantRepository::hasPostedInChannel($challengeId, $userId);
     Response::json([
         'isIn'                 => $isIn,
+        'canSubscribe'         => $canSubscribe,
         'isKicked'             => ChallengeParticipantRepository::isKicked($challengeId, $userId),
-        'notificationPreference' => $isIn
+        'notificationPreference' => $canSubscribe
             ? ChallengeParticipantRepository::getNotificationPreference($challengeId, $userId)
             : null,
     ]);

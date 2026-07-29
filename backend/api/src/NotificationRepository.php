@@ -464,6 +464,13 @@ class NotificationRepository
      *   - creator                          (channel_challenges.created_by)
      *   - active takers                    (challenge_acceptances where phase <> 'rejected')
      *   - explicit joiners / spectators    (challenge_participants where user_id IS NOT NULL)
+     *   - anyone who has TALKED here       (messages where user_id IS NOT NULL)
+     *
+     * The last leg is what makes a spectator "involved": public challenges let
+     * any registered user post WITHOUT a challenge_participants row (the
+     * isParticipant gate only fires on non-public visibility), so people who
+     * had a whole conversation in the channel were getting zero pushes. If you
+     * spoke here, you follow the thread. Rides idx_messages_channel_type_time.
      *
      * Per-channel toggle: challenge_participants.notification_preference. 'off'
      * suppresses; anything else (default 'milestones', 'all') allows the push.
@@ -480,10 +487,10 @@ class NotificationRepository
         array   $data,
         array   $excludeUserIds = []
     ): void {
-        // One round-trip: list every distinct user_id in any of the three
+        // One round-trip: list every distinct user_id in any of the four
         // roles whose challenge_participants.notification_preference is not
         // 'off'. LEFT JOIN so a missing row falls back to the default via
-        // COALESCE. $challengeId is bound four times - once for the
+        // COALESCE. $challengeId is bound five times - once for the
         // participants JOIN and once per UNION leg.
         $stmt = Database::pdo()->prepare("
             SELECT DISTINCT u.id
@@ -500,12 +507,16 @@ class NotificationRepository
                   UNION
                   SELECT user_id FROM challenge_participants
                   WHERE channel_id = ? AND user_id IS NOT NULL
+                  UNION
+                  SELECT user_id FROM messages
+                  WHERE channel_id = ? AND user_id IS NOT NULL
+                    AND type IN ('text', 'image')
               )
               AND COALESCE(cp.notification_preference, 'milestones') <> 'off'
               AND (CAST(? AS text) IS NULL OR u.id::text != CAST(? AS text))
         ");
         $stmt->execute([
-            $challengeId, $challengeId, $challengeId, $challengeId,
+            $challengeId, $challengeId, $challengeId, $challengeId, $challengeId,
             $excludeUserId, $excludeUserId,
         ]);
         $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);

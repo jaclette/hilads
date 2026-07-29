@@ -120,6 +120,26 @@ class ChallengeParticipantRepository
         return $stmt->rowCount() > 0;
     }
 
+    /**
+     * True if the user has ever spoken in this channel (text or image).
+     * On PUBLIC challenges anyone registered can post without a join row, and
+     * those talkers DO receive challenge_message pushes (see
+     * NotificationRepository::notifyChallengeChannelMessage) - so they must
+     * also be allowed to mute the channel. Read-access is NOT granted by this:
+     * isParticipant() stays the gate for private/friends-only channels.
+     * Rides idx_messages_channel_type_time - no new index.
+     */
+    public static function hasPostedInChannel(string $challengeId, string $userId): bool
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT 1 FROM messages
+            WHERE channel_id = ? AND user_id = ? AND type IN ('text', 'image')
+            LIMIT 1
+        ");
+        $stmt->execute([$challengeId, $userId]);
+        return (bool) $stmt->fetchColumn();
+    }
+
     public static function isKicked(string $challengeId, string $userId): bool
     {
         $stmt = Database::pdo()->prepare("

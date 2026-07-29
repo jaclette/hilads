@@ -183,6 +183,10 @@ export default function ChallengeChatPage({
   // sees the full chat. We don't try to be clever about the initial value -
   // a single GET /participants/me on mount resolves it.
   const [iAmParticipant, setIAmParticipant] = useState(null)
+  // Wider than iAmParticipant: on a public challenge, chatting subscribes you
+  // to the channel's pushes without any join row. Drives the notif toggle so a
+  // talker can mute what they now receive.
+  const [iCanSubscribe,  setICanSubscribe]  = useState(false)
   const [joiningChannel, setJoiningChannel] = useState(false)
   const [joinError,      setJoinError]      = useState(null)
 
@@ -491,11 +495,12 @@ export default function ChallengeChatPage({
   // fresh acceptance flips the gate without a manual refresh.
   const loadParticipation = useCallback(async () => {
     if (!id) { setIAmParticipant(null); return }
-    if (!account?.id) { setIAmParticipant(false); return }
+    if (!account?.id) { setIAmParticipant(false); setICanSubscribe(false); return }
     try {
       const res = await fetchMyChallengeParticipation(id)
       setIAmParticipant(!!res?.isIn)
-    } catch { setIAmParticipant(false) }
+      setICanSubscribe(!!(res?.canSubscribe ?? res?.isIn))
+    } catch { setIAmParticipant(false); setICanSubscribe(false) }
   }, [id, account?.id])
   useEffect(() => { loadParticipation() }, [loadParticipation, myAcceptance?.id, challenge?.created_by])
 
@@ -741,6 +746,9 @@ export default function ChallengeChatPage({
       const sent = await sendChallengeMessage(id, senderId, senderNickname, content, reply?.id ?? null, built.length ? built : undefined)
       setMessages(prev => prev.map(m => m.id === localId ? sent : m))
       knownIds.current.add(sent.id)
+      // Talking here subscribes you to the channel's pushes (backend fan-out
+      // counts message senders) - reveal the mute toggle right away.
+      if (account?.id) setICanSubscribe(true)
     } catch {
       setMessages(prev => prev.map(m => m.id === localId ? { ...m, status: 'failed' } : m))
     } finally { setSending(false) }
@@ -992,7 +1000,7 @@ export default function ChallengeChatPage({
               {/* Notifications pill - joined participants only. Lives next
                   to the creator name at the very top so subscription state
                   is visible without scrolling past the meta row. */}
-              {iAmParticipant === true && account?.id && (
+              {(iAmParticipant === true || iCanSubscribe) && account?.id && (
                 <ChallengeNotificationToggle
                   challengeId={challenge.id}
                   currentUserId={account.id}

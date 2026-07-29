@@ -2198,7 +2198,9 @@ export async function fetchChannelParticipants(challengeId) {
   return res.json()
 }
 
-// "Am I in?" probe. Returns { isIn, isKicked, notificationPreference }.
+// "Am I in?" probe. Returns { isIn, canSubscribe, isKicked, notificationPreference }.
+// canSubscribe is wider than isIn: it's true for anyone the challenge_message
+// push fan-out reaches, which includes people who only chatted in the channel.
 // Anon viewer always gets { isIn:false, reason:'anon' }.
 export async function fetchMyChallengeParticipation(challengeId) {
   const res = await fetch(`${BASE}/challenges/${encodeURIComponent(challengeId)}/participants/me`, {

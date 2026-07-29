@@ -31,7 +31,9 @@ export function ChallengeNotificationPill({
   const load = useCallback(async () => {
     if (!challengeId || !currentUserId) return;
     const res = await fetchMyChallengeParticipation(challengeId);
-    setPref((res?.notificationPreference as 'milestones' | 'all' | 'off') ?? 'milestones');
+    // null = server says this user has no subscription here (not involved) -
+    // stay hidden. Involved users always get a concrete preference back.
+    setPref((res?.notificationPreference as 'milestones' | 'all' | 'off') ?? null);
   }, [challengeId, currentUserId]);
 
   useEffect(() => { load(); }, [load]);

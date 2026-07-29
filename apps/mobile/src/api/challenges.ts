@@ -853,6 +853,8 @@ export async function fetchChannelParticipants(challengeId: string): Promise<{ m
 
 export interface MyParticipation {
   isIn:                   boolean;
+  /** Reached by the challenge_message push fan-out (isIn, or has chatted here). */
+  canSubscribe?:          boolean;
   isKicked?:              boolean;
   notificationPreference?: 'milestones' | 'all' | 'off' | null;
   reason?:                string;
