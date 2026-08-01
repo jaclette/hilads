@@ -148,6 +148,24 @@ function parseDeepLink() {
   return null
 }
 
+/**
+ * Deep links a visitor may enter on WITHOUT an account - we auto-create a guest
+ * session and join a city so they land on the content instead of LandingPage.
+ *
+ * 'challenges' and 'leaderboard' belong here: they render public city content,
+ * and their deep link only sets openScreenOnJoinRef, which is consumed inside
+ * handleJoin - so without an auto-join the flag is never read and the URL
+ * dead-ends on the landing page (what /challenges did for every logged-out
+ * visitor). conversations / notifications / friend-requests stay OFF this list
+ * on purpose: they're personal surfaces that need a real account.
+ */
+function isPublicEntryLink(link) {
+  return !!link && [
+    'city', 'event', 'topic', 'challenge', 'venue', 'past',
+    'challenges', 'leaderboard',
+  ].includes(link.type)
+}
+
 // Detect a shared INTERNAL Hilads link inside a chat message (leaderboard,
 // challenge, Hi plan/event, Hi now/topic) so we can hide the raw URL and render a
 // fun contextual CTA that opens it in-app. External links fall through to null
@@ -2081,6 +2099,15 @@ export default function App() {
               handleJoin(null)      // (status→onboarding) gets stuck on the spinner
               return
             }
+            // Signed in but no saved city (signed up on another device/browser):
+            // a public deep link must still resolve a city and join, or the URL
+            // dead-ends on LandingPage exactly like the logged-out case did.
+            if (isPublicEntryLink(parseDeepLink()) && !guestAutoJoinedRef.current) {
+              guestAutoJoinedRef.current = true
+              setRehydrating(false)
+              handleJoin(null)
+              return
+            }
           } else {
             // 401 - session expired; clear the flag so future mounts skip this call
             localStorage.removeItem(AUTH_FLAG_KEY)
@@ -2098,9 +2125,7 @@ export default function App() {
       // Auto-create a guest session in the background. LandingPage stays the
       // entry point only for direct hilads.live/ visits (the marketing path).
       const link = parseDeepLink()
-      const isPublicDeepLink =
-        link && (link.type === 'city' || link.type === 'event' || link.type === 'topic' || link.type === 'challenge' || link.type === 'venue' || link.type === 'past')
-      if (isPublicDeepLink && !guestAutoJoinedRef.current) {
+      if (isPublicEntryLink(link) && !guestAutoJoinedRef.current) {
         guestAutoJoinedRef.current = true
         // handleJoin awaits locPromiseRef.current (already set by the deep-link
         // resolver effect above), creates the guest session, joins the
