@@ -4,6 +4,7 @@ import { uploadFile } from '@/api/uploads';
 import { editMessage as apiEditMessage, deleteMessage as apiDeleteMessage } from '@/api/channels';
 import { useApp } from '@/context/AppContext';
 import { reactionEmitter } from '@/lib/reactionEmitter';
+import { promptPushAfterAction } from '@/services/push';
 import { filterBlocked } from '@/lib/blockFilter';
 import type { Message, Reaction, ReplyRef, ReactionType, MentionRef } from '@/types';
 
@@ -294,6 +295,19 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
     );
   }
 
+  // ── Guest push ask ─────────────────────────────────────────────────────────
+  // Sending a message is the guest's first real action, so it's where we ask for
+  // notification permission. Accounts already get asked at sign-in/sign-up; a
+  // guest had NO trigger at all, which left their device tokenless and invisible
+  // to admin "All installs (+guests)" broadcasts. Fire-and-forget - a failed or
+  // declined prompt must never touch the send result.
+  const maybeAskGuestForPush = useCallback(() => {
+    if (account?.id) return;                    // accounts: handled by usePushRegistration
+    const guestId = identity?.guestId;
+    if (!guestId) return;                       // no identity yet - next send retries
+    promptPushAfterAction(guestId).catch(() => {});
+  }, [account?.id, identity?.guestId]);
+
   // ── Send text (optimistic) ─────────────────────────────────────────────────
 
   const sendText = useCallback(async (content: string, replyTo?: ReplyRef | null, mentions?: MentionRef[]) => {
@@ -323,11 +337,12 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       const msg = await postTextFn(trimmed, replyTo?.id ?? null, mentions);
       reconcile(localId, msg);
       // sent_message is tracked server-side - no frontend duplicate
+      maybeAskGuestForPush();
     } catch {
       markFailed(localId);
       setError('Failed to send message');
     }
-  }, [postTextFn, identity, account, channelId]);
+  }, [postTextFn, identity, account, channelId, maybeAskGuestForPush]);
 
   // ── Send image (optimistic with local URI preview) ─────────────────────────
 
@@ -355,13 +370,14 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       const { url: imageUrl } = await uploadFile(localUri);
       const msg = await postImageFn(imageUrl);
       reconcile(localId, msg);
+      maybeAskGuestForPush();
     } catch (e) {
       markFailed(localId);
       setError(e instanceof Error ? e.message : 'Failed to send image');
     } finally {
       setSending(false);
     }
-  }, [postImageFn, identity, account]);
+  }, [postImageFn, identity, account, maybeAskGuestForPush]);
 
   function setMessageReactions(messageId: string, reactions: Reaction[]) {
     setMessages(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m));

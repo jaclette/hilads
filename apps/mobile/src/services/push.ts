@@ -246,6 +246,42 @@ export async function getSavedPushToken(): Promise<string | null> {
   return AsyncStorage.getItem(PUSH_TOKEN_KEY);
 }
 
+// ── Value-first ask (guests) ──────────────────────────────────────────────────
+
+// One attempt per app session - a guest who declines is never nagged again in
+// the same run, and a guest who accepts only re-syncs their token once.
+let promptedThisSession = false;
+
+/**
+ * Ask an unregistered guest for push permission after they DO something real
+ * (their first message). This is the "value-first moment" the boot-time
+ * registration defers to: usePushRegistration passes prompt:false for guests so
+ * a first launch never shows an unsolicited dialog, and sign-in/sign-up is the
+ * trigger for accounts - but a guest who never registers has no trigger at all,
+ * so their device never acquired a token and admin "All installs (+guests)"
+ * broadcasts reached nobody.
+ *
+ * Passing guestId is REQUIRED: POST /push/mobile-token 401s without a user or a
+ * guestId, and PushBroadcastService::guestTokens() only sees rows where
+ * guest_id IS NOT NULL.
+ *
+ * Silent no-op when permission was already refused - iOS grants one dialog and
+ * we don't spend it twice.
+ */
+export async function promptPushAfterAction(guestId?: string | null): Promise<void> {
+  if (promptedThisSession) return;
+  promptedThisSession = true;
+
+  const granted = await hasPushPermission();
+  if (!granted && (await hasBeenAsked())) {
+    console.log('[push-mobile] value-first ask skipped - already asked, not granted');
+    return;
+  }
+  // granted === true still runs: it re-registers the token, which restores a
+  // guest_id row on a device that dropped its token at logout.
+  await requestAndRegisterPush(guestId, { prompt: true });
+}
+
 // ── Unregister (logout) ───────────────────────────────────────────────────────
 
 export async function unregisterPushToken(): Promise<void> {
