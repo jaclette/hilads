@@ -1448,14 +1448,17 @@ export default function App() {
   // isn't showcase-eligible (private, or no approved proof yet), so the row is
   // never a dead tap.
   const [wonPreview, setWonPreview] = useState(null)
-  const openWonChallenge = useCallback(async (challengeId) => {
+  // Plain function, not useCallback - this file doesn't import it, and the
+  // handler isn't a dependency of anything memoized (matches
+  // tryShowcaseChallenge right above).
+  const openWonChallenge = async (challengeId) => {
     if (!challengeId) return
     const item = await fetchShowcaseItem(challengeId)
     if (item) { setWonPreview(item); return }
     fetchChallengeById(challengeId)
       .then(d => { if (d?.challenge) setActiveChallenge(d.challenge) })
       .catch(() => {})
-  }, [])
+  }
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
