@@ -58,6 +58,23 @@ export async function fetchChallengeShowcase(
   }
 }
 
+/**
+ * The showcase card for ONE challenge, or null when it isn't showcase-eligible
+ * (private, or no approved proof / rating yet). Powers the World "X won the
+ * challenge Y" line - tapping it opens the same preview as the carousel.
+ */
+export async function fetchShowcaseItem(challengeId: string): Promise<ShowcaseItem | null> {
+  if (!challengeId) return null;
+  try {
+    const data = await api.get<{ items: ShowcaseItem[] }>(
+      '/challenges/showcase', { params: { challengeId } },
+    );
+    return data.items?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export interface ChallengeExampleLine {
   kind:   'created' | 'winner' | 'present' | 'submission' | 'host';
   name?:  string;

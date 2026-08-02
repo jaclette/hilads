@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { countryToFlag } from '@/lib/countryFlag';
 import { ThumbImage } from '@/components/ThumbImage';
 import { fetchGroupSubmissions, type ShowcaseItem, type GroupSubmission } from '@/api/challenges';
+import { ImagePreviewModal } from '@/features/chat/ImagePreviewModal';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 
@@ -52,6 +53,9 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('challenge');
 
+  // Full-size proof viewer - the photo IS the story, a thumbnail-sized crop
+  // isn't enough. Same modal the chat feed opens (zoom + save).
+  const [fullUri, setFullUri]   = useState<string | null>(null);
   // Group photo-proof contests have many takers → many photos. Pull them all so
   // we can show a carousel (winner first, with a Winner pill). 1-1 challenges
   // return 0/1 and fall back to the single winning proof below.
@@ -108,7 +112,9 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
               >
                 {ordered.map((s, i) => (
                   <View key={s.id} style={{ width: carouselW }}>
-                    <ThumbImage uri={s.media_url} style={styles.carouselImg} />
+                    <Pressable onPress={() => setFullUri(s.media_url)}>
+                      <ThumbImage uri={s.media_url} style={styles.carouselImg} />
+                    </Pressable>
                     {winnerId && s.user_id === winnerId ? (
                       <View style={styles.winnerPill}><Text style={styles.winnerPillText}>🏆 {t('group.winnerTag')}</Text></View>
                     ) : null}
@@ -121,7 +127,9 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
               <View style={styles.counter}><Text style={styles.counterText}>{page + 1}/{ordered.length}</Text></View>
             </View>
           ) : hasProof ? (
-            <ThumbImage uri={item.proof_media_url!} style={styles.proof} />
+            <Pressable onPress={() => setFullUri(item.proof_media_url!)}>
+              <ThumbImage uri={item.proof_media_url!} style={styles.proof} />
+            </Pressable>
           ) : null}
 
           <View style={styles.badges}>
@@ -187,6 +195,10 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
           <Text style={styles.tryText}>🔥 {t('showcase.tryCta')}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Nested inside this Modal so it layers ABOVE the sheet - a sibling
+          Modal would fight it for the top of the stack on iOS. */}
+      <ImagePreviewModal uri={fullUri} onClose={() => setFullUri(null)} />
     </Modal>
   );
 }

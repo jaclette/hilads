@@ -1788,6 +1788,21 @@ export async function fetchChallengeShowcase({ cityId, limit = 30, before } = {}
   } catch { return { items: [], hasMore: false } }
 }
 
+// The showcase card for ONE challenge, or null when it isn't showcase-eligible
+// (private, or no approved proof / rating yet). Powers the World "X won the
+// challenge Y" line - tap opens the same preview the success carousel shows.
+export async function fetchShowcaseItem(challengeId) {
+  if (!challengeId) return null
+  try {
+    const res = await fetch(`${BASE}/challenges/showcase?challengeId=${encodeURIComponent(challengeId)}`, {
+      credentials: 'include',
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return data.items?.[0] ?? null
+  } catch { return null }
+}
+
 // 3 real resolved challenges + a who-earned-what point breakdown.
 export async function fetchChallengeExamples() {
   try {

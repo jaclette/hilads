@@ -705,7 +705,7 @@ class ChallengeRepository
      * avg stars, a comment preview (the longest visible note), and the approved
      * photo proof (international only). Cursor-paginated by completion time.
      */
-    public static function getShowcase(?string $cityId, int $limit = 30, ?int $before = null, float $minStars = 3.0): array
+    public static function getShowcase(?string $cityId, int $limit = 30, ?int $before = null, float $minStars = 3.0, ?string $challengeId = null): array
     {
         $limit    = max(1, min(50, $limit));
         $minStars = max(1.0, min(5.0, $minStars));
@@ -716,6 +716,16 @@ class ChallengeRepository
         if ($cityId !== null && $cityId !== '' && preg_match('/^city_\d+$/', $cityId)) {
             $cityClause      = ' AND (cc.city_id = :city OR cc.target_city_id = :city)';
             $params['city']  = $cityId;
+        }
+        // Single-challenge lookup: same three legs, same DTO, one row. Used when
+        // a surface knows the challenge id and wants the showcase card for it -
+        // e.g. tapping the World "X won the challenge Y" line. Applied to every
+        // leg so a group/meet win resolves too, and kept INSIDE the
+        // visibility='public' guard so a private win is never exposed.
+        $idClause = '';
+        if ($challengeId !== null && preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+            $idClause         = ' AND cc.channel_id = :chid';
+            $params['chid']   = $challengeId;
         }
         $beforeClause = '';
         if ($before !== null) {
@@ -774,7 +784,7 @@ class ChallengeRepository
                 WHERE p.acceptance_id = ac.acceptance_id AND p.status = 'approved'
                 ORDER BY p.submitted_at DESC LIMIT 1
             ) pr ON true
-            WHERE cc.visibility = 'public'$cityClause$beforeClause
+            WHERE cc.visibility = 'public'$cityClause$idClause$beforeClause
             -- Showcase prioritises challenges that have photo proof (more
             -- compelling for discovery), then most-recently completed.
             ORDER BY (pr.media_url IS NOT NULL) DESC, r.completed_at DESC
@@ -829,7 +839,7 @@ class ChallengeRepository
             WHERE cc.visibility = 'public'
               AND cc.challenge_format = 'group'
               AND cc.status = 'validated'
-              AND pr.media_url IS NOT NULL$cityClause$groupBefore
+              AND pr.media_url IS NOT NULL$cityClause$idClause$groupBefore
             ORDER BY cc.validated_at DESC
             LIMIT $limit
         ";
@@ -875,7 +885,7 @@ class ChallengeRepository
               AND cc.validation_method = 'meet'
               AND cc.status            = 'validated'
               AND cc.host_rating IS NOT NULL
-              AND cc.host_rating >= $minStarsSql$cityClause$groupBefore
+              AND cc.host_rating >= $minStarsSql$cityClause$idClause$groupBefore
             ORDER BY cc.validated_at DESC
             LIMIT $limit
         ";

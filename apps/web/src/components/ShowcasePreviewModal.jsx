@@ -1,6 +1,8 @@
 import { thumbUrl } from '../lib/imageThumb'
+import { useState } from 'react'
 import { createPortal } from 'react-dom'
 import ThumbImg from './ThumbImg'
+import Lightbox from './Lightbox'
 import { useTranslation } from 'react-i18next'
 import { countryToFlag } from '../lib/countryFlag'
 
@@ -33,6 +35,9 @@ function Person({ label, name, avatar, country, userId, onAvatar }) {
  */
 export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar }) {
   const { t } = useTranslation('challenge')
+  // The proof is the whole point of a success card - let it open full-size
+  // (same Lightbox the chat feed uses: pinch/zoom, download, share).
+  const [lightboxUrl, setLightboxUrl] = useState(null)
   if (!item) return null
 
   const intl     = item.mode === 'international'
@@ -48,11 +53,30 @@ export default function ShowcasePreviewModal({ item, onClose, onTry, onAvatar })
   // context) the sheet's bottom would hide behind the .bottom-nav (z-300).
   return createPortal((
     <div className="showcase-preview-backdrop" onClick={onClose}>
+      {/* Portal + stopPropagation: a React portal still bubbles through the
+          React tree, so without this a click inside the lightbox would also
+          hit the backdrop's onClose and dismiss the sheet underneath. The
+          wrapper carries the z-index because .lightbox-overlay (300) sits
+          BELOW .showcase-preview-backdrop (420) on its own. */}
+      {lightboxUrl && createPortal((
+        <div className="showcase-lightbox-layer" onClick={(e) => e.stopPropagation()}>
+          <Lightbox url={lightboxUrl} onClose={() => setLightboxUrl(null)} />
+        </div>
+      ), document.body)}
       <div className="showcase-preview" onClick={(e) => e.stopPropagation()}>
         <button type="button" className="showcase-preview-close" onClick={onClose} aria-label="Close">✕</button>
 
         <div className="showcase-preview-scroll">
-          {hasProof && <ThumbImg className="showcase-preview-proof" src={item.proof_media_url} alt="" />}
+          {hasProof && (
+            <button
+              type="button"
+              className="showcase-preview-proof-btn"
+              onClick={() => setLightboxUrl(item.proof_media_url)}
+              aria-label={t('showcase.openPhoto', { defaultValue: 'Open the photo' })}
+            >
+              <ThumbImg className="showcase-preview-proof" src={item.proof_media_url} alt="" />
+            </button>
+          )}
 
           <div className="showcase-badges">
             {intl

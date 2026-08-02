@@ -37,6 +37,8 @@ import { splitContentByMentions } from '@/lib/mentions';
 import { linkifyText, extractFirstUrl } from '@/lib/linkify';
 import { LinkPreviewCard } from '@/features/chat/LinkPreviewCard';
 import { parseSharedHiladsLink, sharedLinkRoute } from '@/lib/sharedLink';
+import { fetchShowcaseItem, type ShowcaseItem } from '@/api/challenges';
+import { ShowcasePreviewSheet } from '@/features/challenges/ShowcasePreviewSheet';
 
 // ── Location message helpers ──────────────────────────────────────────────────
 // Messages starting with '📍' are location shares sent by the LocationPicker.
@@ -611,6 +613,8 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
 
   // Image preview state - must be declared here (before early returns) per hooks rules
   const [previewUri, setPreviewUri] = useState<string | null>(null);
+  // Success preview for a World "X won the challenge Y" row (same hooks rule).
+  const [wonItem, setWonItem] = useState<ShowcaseItem | null>(null);
 
   // Inline handlers - mirrors DmRow pattern to avoid stale-closure issues.
   // onPress/onLongPress are undefined when no handler is provided so the
@@ -789,6 +793,11 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
     const isJoin   = message.event === 'join';
     const hasUser  = isJoin && !!message.userId;
     const hasGuest = isJoin && !message.userId && !!message.guestId;
+    // A World win announces a real success story - open the same preview the
+    // Success-challenges carousel shows (photo, challenger, taker, their notes).
+    const wonId = message.event === 'challenge_won'
+      ? (((message as { payload?: Record<string, string> }).payload ?? {}).challenge_id ?? null)
+      : null;
     const pill = (
       <Animated.View style={[styles.systemRow, animStyle]}>
         <Text style={styles.systemText}>{text}</Text>
@@ -805,7 +814,19 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         }
       : hasGuest
         ? () => router.push({ pathname: '/user/guest', params: { guestId: message.guestId!, nickname: message.nickname ?? '' } })
-        : null;
+        : wonId
+          ? () => {
+              // Not every win is showcase-eligible (private, or no approved
+              // proof yet) - fall back to the challenge so the row is never a
+              // dead tap.
+              fetchShowcaseItem(wonId)
+                .then(item => {
+                  if (item) setWonItem(item);
+                  else router.push({ pathname: '/challenge/[id]', params: { id: wonId } });
+                })
+                .catch(() => router.push({ pathname: '/challenge/[id]', params: { id: wonId } }));
+            }
+          : null;
     return (
       <>
         {dateLabel && <DateSeparator label={dateLabel} />}
@@ -814,6 +835,20 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             {pill}
           </TouchableOpacity>
         ) : pill}
+        <ShowcasePreviewSheet
+          item={wonItem}
+          onClose={() => setWonItem(null)}
+          onTry={(it) => {
+            setWonItem(null);
+            if (!account) { router.push('/auth-gate'); return; }
+            router.push({ pathname: '/challenge/create', params: { title: it.title, type: it.challenge_type } } as never);
+          }}
+          onAvatar={(uid) => {
+            setWonItem(null);
+            if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }
+            router.push({ pathname: '/user/[id]', params: { id: uid } });
+          }}
+        />
       </>
     );
   }

@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -65,6 +65,7 @@ import UpcomingEventsScreen from './components/UpcomingEventsScreen'
 import PastArchiveScreen from './components/PastArchiveScreen'
 import SuccessfulChallengesScreen from './components/SuccessfulChallengesScreen'
 import ShowcaseHero from './components/ShowcaseHero'
+import ShowcasePreviewModal from './components/ShowcasePreviewModal'
 import DirectMessageScreen from './components/DirectMessageScreen'
 import NotificationsScreen from './components/NotificationsScreen'
 import FriendRequestsScreen from './components/FriendRequestsScreen'
@@ -1442,6 +1443,19 @@ export default function App() {
     if (!account) { setGuestGate({ reason: 'create_challenge' }); return }
     setShowCreateChallenge(true)
   }
+  // World "🏆 X won the challenge Y" line → the same success preview the
+  // challenges carousel opens. Falls back to the challenge itself when the win
+  // isn't showcase-eligible (private, or no approved proof yet), so the row is
+  // never a dead tap.
+  const [wonPreview, setWonPreview] = useState(null)
+  const openWonChallenge = useCallback(async (challengeId) => {
+    if (!challengeId) return
+    const item = await fetchShowcaseItem(challengeId)
+    if (item) { setWonPreview(item); return }
+    fetchChallengeById(challengeId)
+      .then(d => { if (d?.challenge) setActiveChallenge(d.challenge) })
+      .catch(() => {})
+  }, [])
   const [createFromDrawer, setCreateFromDrawer] = useState(false)
   const [showEditEvent, setShowEditEvent] = useState(false)
   const [showEditPulse, setShowEditPulse] = useState(false)
@@ -5284,8 +5298,16 @@ export default function App() {
                 : item.subtype === 'new_user'
                   ? t('world.sys.newUser', { nickname: nick, city: p.city || '' })
                   : t('world.sys.challengeWon', { nickname: nick, city: p.city || '', challenge: p.challenge || '' })
+              const wonId = item.subtype === 'challenge_won' ? (p.challenge_id || null) : null
               return (
-                <div key={item.id} className="feed-world-sys">
+                <div
+                  key={item.id}
+                  className={`feed-world-sys${wonId ? ' feed-world-sys--tappable' : ''}`}
+                  onClick={wonId ? () => openWonChallenge(wonId) : undefined}
+                  role={wonId ? 'button' : undefined}
+                  tabIndex={wonId ? 0 : undefined}
+                  onKeyDown={wonId ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openWonChallenge(wonId) } } : undefined}
+                >
                   {text}
                   {item.createdAt && <span className="feed-join-time">{formatMsgTime(item.createdAt)}</span>}
                 </div>
@@ -6460,6 +6482,15 @@ export default function App() {
           onSelectChallenge={(challenge) => { setShowPastArchive(false); setActiveChallenge(challenge) }}
         />
       )}
+
+      {/* Success preview opened from the World "won the challenge" line.
+          Same component the challenges carousel uses. */}
+      <ShowcasePreviewModal
+        item={wonPreview}
+        onClose={() => setWonPreview(null)}
+        onTry={(item) => { setWonPreview(null); tryShowcaseChallenge(item) }}
+        onAvatar={(uid) => { setWonPreview(null); openProfile(uid, '') }}
+      />
 
       {showSuccessfulChallenges && (
         <SuccessfulChallengesScreen

@@ -1308,6 +1308,16 @@ html, body, #root {
 .showcase-hero-dot--on { width: 18px; background: #FFC93C; }
 
 /* ── Showcase preview modal ───────────────────────────────────────────────── */
+/* Lightbox opened FROM the success preview must clear the sheet:
+   .lightbox-overlay is z-300, the sheet backdrop below is z-420. The wrapper
+   is positioned so the overlay's own z-index is scoped inside it. */
+.showcase-lightbox-layer { position: fixed; inset: 0; z-index: 2100; }
+/* Proof photo acts as a button (opens the lightbox) - strip button chrome. */
+.showcase-preview-proof-btn {
+  display: block; width: 100%; padding: 0; border: none;
+  background: none; cursor: zoom-in;
+}
+
 .showcase-preview-backdrop {
   position: fixed; inset: 0; z-index: 420;
   background: rgba(0, 0, 0, 0.72);
@@ -7389,6 +7399,9 @@ img.pub-profile-avatar {
   text-align: center;
 }
 .feed-world-sys .feed-join-time { margin-left: 0.4rem; opacity: 0.6; }
+/* A win row opens the success preview - signal it's tappable. */
+.feed-world-sys--tappable { cursor: pointer; }
+.feed-world-sys--tappable:hover { background: var(--overlay); }
 /* Quiet-city → World nudge card, pinned at the top of a quiet city feed. */
 .feed-quiet-card {
   display: block;

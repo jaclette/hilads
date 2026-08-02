@@ -8620,8 +8620,25 @@ $router->add('GET', '/api/v1/challenges/showcase', function () {
     $limit     = isset($_GET['limit'])    ? (int) $_GET['limit']      : 30;
     $before    = isset($_GET['before'])   ? (int) $_GET['before']     : null;
     $minStars  = isset($_GET['minStars']) ? (float) $_GET['minStars'] : 3.0;
+
+    // ?challengeId=<hex16> - the showcase card for ONE challenge (the World
+    // "X won the challenge Y" line opens it). Drops the star floor to the
+    // minimum: the caller already knows this challenge was won, so a modest
+    // rating must not make the card un-openable. City / cursor are ignored -
+    // an id is absolute. Still public-only (enforced in the repo).
+    $challengeId = trim((string) ($_GET['challengeId'] ?? ''));
+    if ($challengeId !== '') {
+        if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
+            Response::json(['error' => 'Invalid challengeId'], 400);
+        }
+        $cityId   = null;
+        $before   = null;
+        $limit    = 1;
+        $minStars = 1.0;
+    }
+
     try {
-        $items = ChallengeRepository::getShowcase($cityId, $limit, $before, $minStars);
+        $items = ChallengeRepository::getShowcase($cityId, $limit, $before, $minStars, $challengeId ?: null);
         Response::json(['items' => $items, 'hasMore' => count($items) >= max(1, min(50, $limit))]);
     } catch (\Throwable $e) {
         error_log('[challenges] GET showcase failed: ' . $e->getMessage());
