@@ -162,7 +162,7 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
                 <div style={{
                   position: 'absolute', top: 14, left: '-50%', right: '50%', height: 2,
                   marginLeft: 15, marginRight: 15,
-                  background: connectorLit ? '#FF7A3C' : 'rgba(255,255,255,0.10)',
+                  background: connectorLit ? '#FF7A3C' : 'var(--border)',
                 }} />
               )}
               <div style={{
@@ -170,13 +170,13 @@ export default function ChallengePipeline({ acceptance, iAmCreator, myUserId = n
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 border: '1.5px solid',
                 ...(isReject ? {
-                  background: 'var(--bg-2, #1f1a17)', borderColor: 'rgba(255,255,255,0.20)', color: 'var(--muted, #b3b3b3)',
+                  background: 'var(--surface2, #1f1a17)', borderColor: 'var(--overlay-strong)', color: 'var(--muted, #b3b3b3)',
                 } : isDone ? {
                   background: '#FF7A3C', borderColor: '#FF7A3C', color: '#fff',
                 } : isActive ? {
                   background: 'rgba(255,122,60,0.15)', borderColor: '#FF7A3C', color: '#FF7A3C',
                 } : {
-                  background: 'var(--bg-2, #1f1a17)', borderColor: 'rgba(255,255,255,0.10)', color: 'var(--muted, #b3b3b3)',
+                  background: 'var(--surface2, #1f1a17)', borderColor: 'var(--border)', color: 'var(--muted, #b3b3b3)',
                 }),
                 position: 'relative', zIndex: 1, fontSize: 14,
               }}>

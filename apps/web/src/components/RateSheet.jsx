@@ -75,7 +75,7 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
       />
       <div style={{
         position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 9001,
-        background: 'var(--bg-2, #1a1a1a)',
+        background: 'var(--surface, #1a1a1a)',
         borderTopLeftRadius: 20, borderTopRightRadius: 20,
         padding: '12px 16px 28px',
         maxWidth: 600, margin: '0 auto',
@@ -83,7 +83,7 @@ export default function RateSheet({ prompt, visible, onClose, onSubmitted }) {
         <div style={{
           alignSelf: 'center', margin: '0 auto 12px',
           width: 40, height: 4, borderRadius: 2,
-          background: 'rgba(255,255,255,0.2)',
+          background: 'var(--overlay-strong)',
         }} />
 
         {/* Rate the CHALLENGE, not the person - a star, not an avatar. */}

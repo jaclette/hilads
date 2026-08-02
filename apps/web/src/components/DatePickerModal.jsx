@@ -128,15 +128,15 @@ export default function DatePickerModal({
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          background: 'var(--bg, #161210)', width: '100%', maxWidth: 480,
+          background: 'var(--surface, #161210)', width: '100%', maxWidth: 480,
           borderTopLeftRadius: 20, borderTopRightRadius: 20,
           maxHeight: '85vh', display: 'flex', flexDirection: 'column',
           paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 8px)',
         }}
       >
         <div style={{ padding: '8px 16px 0' }}>
-          <div style={{ width: 40, height: 4, background: 'rgba(255,255,255,0.20)', borderRadius: 2, margin: '0 auto 12px' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ width: 40, height: 4, background: 'var(--overlay-strong)', borderRadius: 2, margin: '0 auto 12px' }} />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 12, borderBottom: '1px solid var(--separator)' }}>
             <button type="button" onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--muted, #b3b3b3)', fontSize: 22, cursor: 'pointer' }}>×</button>
             <span style={{ fontSize: 16, fontWeight: 800, color: 'var(--text, #fff)' }}>{t('schedule.picker.title')}</span>
             <span style={{ width: 22 }} />
@@ -194,7 +194,7 @@ export default function DatePickerModal({
             placeholder={t('schedule.picker.wherePlaceholder')} maxLength={200}
             style={{
               width: '100%', boxSizing: 'border-box',
-              background: 'var(--bg-2, #1f1a17)', border: '1px solid rgba(255,255,255,0.10)',
+              background: 'var(--input-bg, #1f1a17)', border: '1px solid var(--border)',
               borderRadius: 10, padding: '10px 12px', color: 'var(--text, #fff)', fontSize: 14,
             }}
           />
@@ -224,9 +224,9 @@ const pillsRow  = { display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4
 const pillsGrid = { display: 'flex', flexWrap: 'wrap', gap: 8 }
 const pill = {
   padding: '8px 14px', borderRadius: 999,
-  background: 'var(--bg-2, #1f1a17)',
-  border: '1px solid rgba(255,255,255,0.10)',
-  color: 'var(--muted, #b3b3b3)', fontWeight: 600, fontSize: 13,
+  background: 'var(--surface2, #1f1a17)',
+  border: '1px solid var(--border)',
+  color: 'var(--text, #b3b3b3)', fontWeight: 600, fontSize: 13,
   cursor: 'pointer', whiteSpace: 'nowrap',
 }
 const pillSelected = {
@@ -243,11 +243,12 @@ const specificInput = {
   marginTop: 8,
   width: '100%',
   boxSizing: 'border-box',
-  background: 'var(--bg-2, #1f1a17)',
-  border: '1px solid rgba(255,255,255,0.10)',
+  background: 'var(--input-bg, #1f1a17)',
+  border: '1px solid var(--border)',
   borderRadius: 10,
   padding: '8px 10px',
   color: 'var(--text, #fff)',
   fontSize: 13,
-  colorScheme: 'dark',
+  // No colorScheme override: :root sets color-scheme per theme, so the native
+  // picker follows the app instead of being pinned dark on a cream sheet.
 }
