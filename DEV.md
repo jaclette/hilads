@@ -23,6 +23,10 @@ docker compose up -d
 
 # First time only: run migrations against the empty DB.
 docker compose exec api php migrate.php
+
+# Enable the repo's git hooks (pre-push lints apps/web). Per-clone, not
+# versioned in .git/config - so every fresh clone has to run this once.
+git config core.hooksPath .githooks
 ```
 
 You're up. Check:
@@ -134,14 +138,24 @@ rollback.
 # Backend tests
 docker compose exec api vendor/bin/phpunit --no-coverage
 
-# Web typecheck + build
+# Web lint + build (`npm run build` runs eslint first, so this covers both)
 cd apps/web && npm run build
+
+# Web lint on its own - fast, and the one gate that catches a missing import
+cd apps/web && npm run lint
 
 # Mobile typecheck (if touched)
 cd apps/mobile && npx tsc --noEmit
 ```
 
 No errors = green light to commit.
+
+**Why lint is a gate, not a nicety:** `vite build` bundles without resolving
+free identifiers, so a hook used without importing it (`useCallback` in
+App.jsx) builds green and white-screens every web user at runtime. `eslint
+no-undef` catches it in about a second. The `pre-push` hook runs it
+automatically whenever a push contains `apps/web` changes; `git push
+--no-verify` bypasses it.
 
 ---
 

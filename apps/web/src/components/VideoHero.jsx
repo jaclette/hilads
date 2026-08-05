@@ -41,7 +41,9 @@ export default function VideoHero({ onVisible, onPlay }) {
 
   return (
     <div ref={wrapRef} className="sl-video">
-      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+      {/* Decorative, muted, no audio track → no captions to provide. (Was an
+          eslint-disable for jsx-a11y/media-has-caption; that plugin isn't part
+          of the lint setup, so the directive only resolved to an unknown rule.) */}
       <video
         className="sl-video-el"
         src={MP4_SRC}
