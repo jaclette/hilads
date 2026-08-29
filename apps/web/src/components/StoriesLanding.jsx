@@ -17,6 +17,9 @@ import { FEATURED_CITY, MIN_LIVE_COUNT } from '../config/featuredCity'
  */
 
 const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
+// The hero clip is a cut of this track - the landing autoplays muted (browser
+// rule), so this is the only way to actually hear it.
+const FULL_SONG_URL = 'https://soundcloud.com/huynh-jacques/mo-t-hai-ba-dzo-em-o-i-1'
 const SCREENS = ['hook', 'live', 'how', 'proof', 'convert']
 const LAST = SCREENS.length - 1
 
@@ -199,6 +202,15 @@ export default function StoriesLanding({
             block, which now lives in the sticky header above). */}
         <p className="sl-concept-tagline">{t('stories.concept_tagline')}</p>
         <VideoHero onVisible={() => track('video_visible')} onPlay={() => track('video_played')} />
+        <a
+          className="sl-song"
+          href={FULL_SONG_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => track('full_song_clicked')}
+        >
+          🎧 {t('stories.fullSong')}
+        </a>
         <p className="sl-bridge"><Trans t={t} i18nKey="stories.screen1_invitation" components={{ hi: <span className="sl-bridge-accent" /> }} /></p>
         {hint}
       </section>

@@ -16082,6 +16082,32 @@ body.has-app-promo-banner .page-header {
 }
 .sl-video-el { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
 
+/* "Full song" link under the hero clip. The video autoplays MUTED (browser rule),
+   so this is the only path to the actual track - keep it visible, not a footnote.
+   Thumb-sized tap target (>=44px) per the mobile-first rule. */
+.sl-song {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.sl-song:active { transform: scale(0.97); background: var(--sand, #F3EAE0); }
+/* S1 now carries one extra row (the song link), so the clip gives back exactly
+   that row's height (44px + the 14px screen gap). Keeps S1's total height
+   identical to before the link existed - no new clipping on short viewports. */
+.sl-screen--hook .sl-video { max-height: calc(62dvh - 58px); }
+
 /* ── S2 live ── */
 .sl-headline {
   margin: 0;

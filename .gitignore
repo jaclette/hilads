@@ -49,3 +49,5 @@ package-lock.json
 .claude/settings.json
 # Landing hero video source (compressed output committed instead)
 apps/web/public/landing/randomwithmeal.mp4
+# Uncompressed video masters - kept out of public/ so Vite never copies them into dist/
+apps/web/landing-src/

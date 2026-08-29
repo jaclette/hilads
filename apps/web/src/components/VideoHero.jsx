@@ -3,16 +3,18 @@ import { useEffect, useRef } from 'react'
 /**
  * Screen 1 hook video for the stories landing.
  *
- * Self-hosted, ffmpeg-optimized MP4 (H.264, 576x1024, 15s, +faststart, no audio)
- * with a static poster so the first frame paints instantly on slow Instagram
+ * Self-hosted, ffmpeg-optimized MP4 (H.264, 720x1280, 27s, +faststart, low-bitrate
+ * AAC) with a static poster so the first frame paints instantly on slow Instagram
  * in-app webviews. muted + playsInline + preload="auto" = reliable autoplay in
  * in-app browsers. Nothing is overlaid on the <video> (all copy/CTAs live outside
  * this component), and the .sl-video wrapper carries a fixed 9:16 aspect-ratio +
  * dark background so the layout never jumps while the clip loads.
  */
 
-const MP4_SRC = '/landing/hero.mp4'
-const POSTER  = '/landing/hero-poster.jpg'
+// Hashed-in-name assets: a new clip gets a NEW filename so CDN/browser caches
+// can never serve the previous hero (public/ files are not content-hashed).
+const MP4_SRC = '/landing/hero-dzo.mp4'
+const POSTER  = '/landing/hero-dzo-poster.jpg'
 
 export default function VideoHero({ onVisible, onPlay }) {
   const wrapRef   = useRef(null)
