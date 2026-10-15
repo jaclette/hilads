@@ -85,6 +85,7 @@
     { "source": "/child-safety",         "destination": "/child-safety.html" },
     { "source": "/app",                  "destination": "/app.html" },
     { "source": "/join",                 "destination": "/join.html" },
+    { "source": "/today",                "destination": "/api/today" },
     { "source": "/.well-known/(.*)",     "destination": "/.well-known/$1" },
     { "source": "/event/:id",            "destination": "/api/prerender?type=event&id=:id" },
     { "source": "/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1" },
@@ -96,6 +97,7 @@
     { "source": "/cities",               "destination": "/api/cities-index" },
     { "source": "/",                     "destination": "/api/prerender?type=home" },
 
+    { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/today",               "destination": "/api/today?locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/event/:id",            "destination": "/api/prerender?type=event&id=:id&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/e/:id",                "destination": "/api/prerender?type=event&id=:id&shortlink=1&locale=:locale" },
     { "source": "/:locale(fr|vi|es|it|pt-br|pt-pt|de|nl|zh-hans|zh-hant|ja|ko|fil|th|id|hi|ru|ar)/challenge/:id",        "destination": "/api/prerender?type=challenge&id=:id&locale=:locale" },

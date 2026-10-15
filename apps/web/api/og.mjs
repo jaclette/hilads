@@ -3,6 +3,7 @@
  *
  *   GET /api/og?type=event&id=<16-hex>
  *   GET /api/og?type=city&slug=<kebab>
+ *   GET /api/og?type=today&d=<YYYY-MM-DD>   (the /today page's Daily Challenge)
  *   GET /api/og?ping=1     -> returns the build marker (deploy verification)
  *   GET /api/og?...&debug=1 -> returns the real error+stack on failure (not a 302)
  *
@@ -26,11 +27,11 @@
  * OG images are NOT an SEO ranking factor - impact is social-share previews only.
  */
 
-const API_BASE  = 'https://api.hilads.live';
+const API_BASE  = process.env.HILADS_API_BASE || 'https://api.hilads.live';  // override: local testing only
 const SITE_BASE = 'https://hilads.live';
 
 // Bump on each deploy so `?ping=1` confirms which build is actually live.
-const OG_BUILD = 'og-v5-mjs';
+const OG_BUILD = 'og-v6-mjs';
 
 // Brand tokens - kept in sync with apps/web/src/index.css :root vars.
 const BG     = '#0d0b09';
@@ -248,6 +249,36 @@ function ChallengeCard({ challenge, cityName, country, targetCityName, targetCou
   );
 }
 
+// ── Surface 4: Daily Challenge card (/today) ──────────────────────────────────
+function TodayCard({ challenge }) {
+  return h('div', {
+    style: {
+      width: W, height: H, display: 'flex', flexDirection: 'column',
+      background: `radial-gradient(ellipse 80% 50% at 50% 0%, rgba(194,74,56,0.18) 0%, transparent 60%), ${BG}`,
+      padding: 60, color: TEXT, position: 'relative',
+    },
+  },
+    h('div', { style: { display: 'flex', alignItems: 'center', gap: 18 } },
+      HiladsMark(72),
+      h('div', { style: { display: 'flex', fontSize: 22, color: MUTED2, fontWeight: 600 } }, 'hilads.live'),
+    ),
+    h('div', { style: { flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 24 } },
+      h('div', {
+        style: {
+          alignSelf: 'flex-start', display: 'flex', background: 'rgba(255,122,60,0.15)',
+          border: `1.5px solid ${ACCENT}`, borderRadius: 999, padding: '8px 20px',
+          fontSize: 24, fontWeight: 800, color: ACCENT, letterSpacing: 1,
+        },
+      }, '🔥 DAILY CHALLENGE'),
+      h('div', {
+        style: { display: 'flex', fontSize: 62, lineHeight: 1.08, fontWeight: 800, letterSpacing: -2, color: TEXT, maxHeight: 280, overflow: 'hidden' },
+      }, challenge.text),
+      h('div', { style: { display: 'flex', fontSize: 30, color: MUTED, fontWeight: 600 } }, 'One challenge, the whole world, 24 hours.'),
+    ),
+    URLFooter('/today'),
+  );
+}
+
 // ── Fallback (homepage / unknown surface) ─────────────────────────────────────
 function FallbackCard() {
   return h('div', {
@@ -323,6 +354,16 @@ export default async function handler(req, res) {
           });
           cacheMaxAge = 1800;  // 30 min - challenges churn slowly
         }
+      }
+    } else if (type === 'today') {
+      // d pins the date, so the image never changes once rendered: cache it a day.
+      const d = typeof req.query.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(req.query.d) ? req.query.d : null;
+      const data = await fetchJson(d
+        ? `${API_BASE}/api/v1/daily/challenges/${d}?limit=1`
+        : `${API_BASE}/api/v1/daily/today`);
+      if (data?.challenge?.text) {
+        element = TodayCard({ challenge: data.challenge });
+        cacheMaxAge = d ? 86400 : 300;
       }
     } else if (type === 'city' && slug && /^[a-z0-9-]{1,80}$/.test(slug)) {
       const cityData = await fetchJson(`${API_BASE}/api/v1/cities/by-slug/${encodeURIComponent(slug)}`);

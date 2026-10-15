@@ -699,9 +699,12 @@ function dedupeWeather(items) {
 const SELF_IDENTITY = { guestId: null, userId: null }
 
 // Daily Challenge card in the feed (read-only on web; the app holds the sheet
-// and the proof flow, so the CTA goes to /app → the store).
+// and the proof flow). The CTA goes to /today: the app opens on today's sheet
+// when installed, else the page offers the stores.
 function DailyFeedCard({ item, t }) {
   const p = item.payload || {}
+  const lang = i18n.language
+  const todayHref = SUPPORTED.includes(lang) && lang !== DEFAULT_LOCALE ? `/${lang}/today` : '/today'
   const time = item.createdAt ? formatMsgTime(item.createdAt) : null
   if (item.subtype === 'daily_challenge') {
     if (!p.text) return null
@@ -711,7 +714,7 @@ function DailyFeedCard({ item, t }) {
         <div className="feed-daily-text">{p.text}</div>
         {p.context && <div className="feed-daily-context">{p.context}</div>}
         {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
-        <a className="feed-daily-cta" href="/app">{t('daily.ctaApp')}</a>
+        <a className="feed-daily-cta" href={todayHref}>{t('daily.ctaApp')}</a>
         {time && <span className="feed-join-time">{time}</span>}
       </div>
     )
@@ -727,7 +730,7 @@ function DailyFeedCard({ item, t }) {
       <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-sub">🔥 {t('daily.kicker')} · {p.challengeText}</div>
-      <a className="feed-daily-cta feed-daily-cta--ghost" href="/app">{t('daily.ctaApp')}</a>
+      <a className="feed-daily-cta feed-daily-cta--ghost" href={todayHref}>{t('daily.ctaApp')}</a>
       {time && <span className="feed-join-time">{time}</span>}
     </div>
   )

@@ -13,7 +13,9 @@
           "/zh-hant/e/*", "/zh-hant/event/*", "/zh-hant/city/*", "/zh-hant/t/*", "/zh-hant/challenge/*",
           "/fil/e/*", "/fil/event/*", "/fil/city/*", "/fil/t/*", "/fil/challenge/*",
           "/challenges", "/??/challenges",
-          "/pt-br/challenges", "/pt-pt/challenges", "/zh-hans/challenges", "/zh-hant/challenges", "/fil/challenges"
+          "/pt-br/challenges", "/pt-pt/challenges", "/zh-hans/challenges", "/zh-hant/challenges", "/fil/challenges",
+          "/today", "/??/today",
+          "/pt-br/today", "/pt-pt/today", "/zh-hans/today", "/zh-hant/today", "/fil/today"
         ]
       }
     ]
