@@ -5,6 +5,7 @@ import { editMessage as apiEditMessage, deleteMessage as apiDeleteMessage } from
 import { useApp } from '@/context/AppContext';
 import { reactionEmitter } from '@/lib/reactionEmitter';
 import { promptPushAfterAction } from '@/services/push';
+import { emitDailyDropped, isDailyCard } from '@/lib/dailyEvents';
 import { filterBlocked } from '@/lib/blockFilter';
 import type { Message, Reaction, ReplyRef, ReactionType, MentionRef } from '@/types';
 
@@ -166,7 +167,17 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       // Use String() coercion to match - same fix as App.jsx:1452 on the webapp.
       const match = String(data.channelId) === channelId || data.eventId === channelId;
       if (match && data.message) {
-        addNew([data.message as Message]);
+        const msg = data.message as Message;
+        if (isDailyCard(msg)) {
+          if (msg.event === 'daily_challenge') emitDailyDropped();
+          // An approved edit re-sends the SAME card id with a new payload:
+          // replace it in place instead of deduping it out.
+          if (msg.id && seenIds.current.has(msg.id)) {
+            setMessages(prev => prev.map(m => (m.id === msg.id ? { ...m, ...msg } : m)));
+            return;
+          }
+        }
+        addNew([msg]);
       }
     }
     const off1 = socket.on('newMessage', handler);
@@ -203,11 +214,13 @@ export function useMessages({ channelId, loadFn, postTextFn, postImageFn, initia
       const incoming = String(data.channelId ?? '');
       const match = incoming === channelId || incoming === `city_${channelId}`;
       if (!match || !data.messageId) return;
-      setMessages(prev => prev.map(m =>
-        m.id === String(data.messageId)
-          ? { ...m, content: '', imageUrl: undefined, deletedAt: (data.deletedAt as number | undefined) ?? Math.floor(Date.now() / 1000) }
-          : m,
-      ));
+      setMessages(prev => prev.flatMap(m => {
+        if (m.id !== String(data.messageId)) return [m];
+        // A removed Daily card (proof deleted / rejected / removed) disappears,
+        // no "deleted" tombstone.
+        if (isDailyCard(m)) return [];
+        return [{ ...m, content: '', imageUrl: undefined, deletedAt: (data.deletedAt as number | undefined) ?? Math.floor(Date.now() / 1000) }];
+      }));
     }
     const off6 = socket.on('messageEdited', editHandler);
     const off7 = socket.on('messageDeleted', deleteHandler);

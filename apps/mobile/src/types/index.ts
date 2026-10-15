@@ -571,6 +571,7 @@ export interface Message {
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
+  payload?: Record<string, unknown> | null; // system cards: structured render data (World cards, Daily cards)
   editedAt?: number | null;       // unix seconds - present (truthy) if the message has been edited
   deletedAt?: number | null;      // unix seconds - present (truthy) for tombstoned messages (content blanked server-side)
   // Optimistic send state - absent on confirmed server messages

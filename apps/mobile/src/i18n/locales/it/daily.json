@@ -99,5 +99,26 @@
     "yes": "Sì, avvisami",
     "notNow": "Non ora",
     "openSettings": "Apri impostazioni"
+  },
+  "archive": {
+    "title": "Già completate",
+    "pickCity": "Scegli una città",
+    "worldSelection": "Selezione Mondo: questa città non è ancora attiva",
+    "empty": "Le prime Daily Challenge stanno arrivando.",
+    "proofs_one": "{{count}} prova",
+    "proofs_other": "{{count}} prove"
+  },
+  "report": {
+    "title": "Segnala questa prova",
+    "body": "Qual è il problema?",
+    "reasons": {
+      "inappropriate": "Inappropriata",
+      "person_without_consent": "Mostra qualcuno senza consenso",
+      "dangerous": "Pericolosa o illegale",
+      "spam": "Spam",
+      "other": "Altro"
+    },
+    "thanks": "Grazie - la controlleremo.",
+    "already": "Hai già segnalato questa prova."
   }
 }

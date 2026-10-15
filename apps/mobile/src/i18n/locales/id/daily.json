@@ -99,5 +99,26 @@
     "yes": "Ya, kabari aku",
     "notNow": "Nanti saja",
     "openSettings": "Buka pengaturan"
+  },
+  "archive": {
+    "title": "Sudah selesai",
+    "pickCity": "Pilih kota",
+    "worldSelection": "Pilihan Dunia: kota ini belum live",
+    "empty": "Daily Challenge pertama segera datang.",
+    "proofs_one": "{{count}} bukti",
+    "proofs_other": "{{count}} bukti"
+  },
+  "report": {
+    "title": "Laporkan bukti ini",
+    "body": "Apa masalahnya?",
+    "reasons": {
+      "inappropriate": "Tidak pantas",
+      "person_without_consent": "Menampilkan orang tanpa izin",
+      "dangerous": "Berbahaya atau ilegal",
+      "spam": "Spam",
+      "other": "Lainnya"
+    },
+    "thanks": "Makasih - kami akan cek.",
+    "already": "Kamu sudah melaporkan bukti ini."
   }
 }

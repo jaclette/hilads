@@ -48,7 +48,10 @@ import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
 import { AppHeader } from '@/features/shell/AppHeader';
-import { DailyHeroCard } from '@/features/daily/DailyHeroCard';
+import { DailyHeroCardView } from '@/features/daily/DailyHeroCard';
+import { DailyPinBar } from '@/features/daily/DailyPinBar';
+import { useDailyToday } from '@/hooks/useDaily';
+import { isDailyCard } from '@/lib/dailyEvents';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -223,6 +226,10 @@ export default function ChatTab() {
   const quietCardDismissed = useRef(false);
   const didAutoWorld = useRef(false);
   const activeChannelId = channelScope === 'world' ? 'world' : channelId;
+  // Today's Daily Challenge: one fetch shared by the city hero card, the World
+  // pin and the live-city flag (which channel opens first, twists on cards).
+  const daily = useDailyToday(city?.channelId);
+  const dailyLive = !!daily.data?.city?.isLive;
 
   // ── Leaderboard chip - caller's monthly city rank ─────────────────────────
   // One bounded fetch per city change. limit=1 to skip the list payload;
@@ -552,16 +559,17 @@ export default function ChatTab() {
     }
   }, [identity, channelId]);
 
-  // Auto-enter the World channel on open for every city EXCEPT Ho Chi Minh City,
-  // which has a real local user base worth landing in. Fires once per session,
-  // as soon as the resolved city is known.
+  // Auto-enter the World channel on open for every city that is NOT live: a
+  // live city (cities.force_live, from the Daily Challenge "today" call) has a
+  // local layer worth landing in. Fires once per session, as soon as the
+  // resolved city and its live flag are known (World if that call fails).
   useEffect(() => {
     if (didAutoWorld.current || !city?.name || !identity?.guestId) return;
+    if (!daily.data && !daily.error) return; // wait for the live flag
     didAutoWorld.current = true;
-    const norm = city.name.trim().toLowerCase();
-    if (norm === 'ho chi minh city' || norm === 'saigon') return;
+    if (daily.data?.city?.isLive) return;
     switchScope('world');
-  }, [city?.name, identity?.guestId, switchScope]);
+  }, [city?.name, identity?.guestId, switchScope, daily.data, daily.error]);
 
   // Keep World pills (online / arrivals) fresh - the aggregate is server-cached,
   // so a single fetch on entry can be stale. Re-poll every 30s while viewing World.
@@ -1029,6 +1037,7 @@ export default function ChatTab() {
         message={item}
         myGuestId={identity?.guestId}
         worldScope={channelScope === 'world'}
+        dailyLive={channelScope === 'city' && dailyLive}
         index={index}
         isGrouped={isGrouped}
         showTime={showTime}
@@ -1050,7 +1059,7 @@ export default function ChatTab() {
         reduceMotion={reduceMotion}
       />
     );
-  }, [allMessages, identity?.guestId, channelScope, highlightedMsgId, handlePromptCta,
+  }, [allMessages, identity?.guestId, channelScope, dailyLive, highlightedMsgId, handlePromptCta,
       handleMessageLongPress, scrollToMessage, handleReact, handleAutoDismiss, reduceMotion]);
 
   // No city yet - prompt to pick one
@@ -1243,7 +1252,7 @@ export default function ChatTab() {
         ) : (
         <>
         {/* ── HERO: today's Daily Challenge (full width). ── */}
-        <DailyHeroCard cityId={city.channelId} />
+        <DailyHeroCardView data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
 
         {/* ── Challenges + rank, just below the Daily card: same copy and
             behaviour as the former hero (see heroMain), as one compact row.
@@ -1337,6 +1346,9 @@ export default function ChatTab() {
         style={styles.flex}
         behavior="padding"
       >
+        {/* Today's Daily Challenge pinned on top of World (in a city channel
+            the Daily hero card above is the pin). */}
+        {channelScope === 'world' && !keyboardUp && <DailyPinBar data={daily.data} secondsLeft={daily.secondsLeft} />}
         {channelScope === 'city' && quietCardOpen && (
           <TouchableOpacity
             style={styles.quietCard}
@@ -1466,7 +1478,7 @@ export default function ChatTab() {
         // Edit is text-only (no image/location edits); Delete works for any owned bubble.
         onEdit={actionSheetMsg && isOwnMessage(actionSheetMsg) && actionSheetMsg.type === 'text' && !actionSheetMsg.deletedAt && actionSheetMsg.content && !actionSheetMsg.content.startsWith('📍')
           ? () => handleEdit(actionSheetMsg) : undefined}
-        onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt
+        onDelete={actionSheetMsg && isOwnMessage(actionSheetMsg) && !actionSheetMsg.deletedAt && !isDailyCard(actionSheetMsg)
           ? () => handleDelete(actionSheetMsg) : undefined}
         onClose={() => setActionSheetMsg(null)}
       />

@@ -99,5 +99,26 @@
     "yes": "Ja, laat het me weten",
     "notNow": "Niet nu",
     "openSettings": "Instellingen openen"
+  },
+  "archive": {
+    "title": "Al gedaan",
+    "pickCity": "Kies een stad",
+    "worldSelection": "Wereldselectie: deze stad is nog niet live",
+    "empty": "De eerste Daily Challenges komen eraan.",
+    "proofs_one": "{{count}} bewijs",
+    "proofs_other": "{{count}} bewijzen"
+  },
+  "report": {
+    "title": "Dit bewijs melden",
+    "body": "Wat is er mis mee?",
+    "reasons": {
+      "inappropriate": "Ongepast",
+      "person_without_consent": "Toont iemand zonder toestemming",
+      "dangerous": "Gevaarlijk of illegaal",
+      "spam": "Spam",
+      "other": "Iets anders"
+    },
+    "thanks": "Bedankt - we checken het.",
+    "already": "Je hebt dit bewijs al gemeld."
   }
 }

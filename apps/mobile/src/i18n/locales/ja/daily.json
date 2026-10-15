@@ -99,5 +99,26 @@
     "yes": "はい、通知する",
     "notNow": "今はしない",
     "openSettings": "設定を開く"
+  },
+  "archive": {
+    "title": "達成済み",
+    "pickCity": "都市を選ぶ",
+    "worldSelection": "世界セレクション: この都市はまだ公開されていません",
+    "empty": "最初の Daily Challenge がもうすぐ届きます。",
+    "proofs_one": "{{count}} 件の証明",
+    "proofs_other": "{{count}} 件の証明"
+  },
+  "report": {
+    "title": "この証明を報告",
+    "body": "どんな問題がありますか?",
+    "reasons": {
+      "inappropriate": "不適切",
+      "person_without_consent": "同意なしに人が写っている",
+      "dangerous": "危険または違法",
+      "spam": "スパム",
+      "other": "その他"
+    },
+    "thanks": "ありがとうございます - 確認します。",
+    "already": "この証明はすでに報告済みです。"
   }
 }

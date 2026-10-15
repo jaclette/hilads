@@ -309,5 +309,12 @@
     "arrivalsTitle": "Vừa đến",
     "arrivalsEmpty": "Chưa có ai vừa đến",
     "seeAll": "Xem tất cả"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Dân địa phương",
+    "traveler": "Du khách",
+    "ctaApp": "Tham gia challenge trong app"
   }
 }

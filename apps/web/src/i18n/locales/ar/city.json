@@ -334,5 +334,12 @@
     "arrivalsTitle": "الوافدون حديثًا",
     "arrivalsEmpty": "لا وافدين حديثًا",
     "seeAll": "عرض الكل"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "محلي",
+    "traveler": "مسافر",
+    "ctaApp": "خُض الـ challenge في التطبيق"
   }
 }

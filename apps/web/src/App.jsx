@@ -698,6 +698,41 @@ function dedupeWeather(items) {
 // there is exactly one active user per page session.
 const SELF_IDENTITY = { guestId: null, userId: null }
 
+// Daily Challenge card in the feed (read-only on web; the app holds the sheet
+// and the proof flow, so the CTA goes to /app → the store).
+function DailyFeedCard({ item, t }) {
+  const p = item.payload || {}
+  const time = item.createdAt ? formatMsgTime(item.createdAt) : null
+  if (item.subtype === 'daily_challenge') {
+    if (!p.text) return null
+    return (
+      <div className="feed-daily">
+        <div className="feed-daily-kicker">🔥 {t('daily.kicker')}</div>
+        <div className="feed-daily-text">{p.text}</div>
+        {p.context && <div className="feed-daily-context">{p.context}</div>}
+        {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
+        <a className="feed-daily-cta" href="/app">{t('daily.ctaApp')}</a>
+        {time && <span className="feed-join-time">{time}</span>}
+      </div>
+    )
+  }
+  if (!p.photoUrl) return null
+  const name = p.user?.displayName || p.user?.username || item.nickname || ''
+  return (
+    <div className="feed-daily feed-daily--proof">
+      <div className="feed-daily-author">
+        <strong>{name}</strong>
+        <span className="feed-daily-sub"> · {p.isLocal ? `🌍 ${t('daily.local')}` : `🧭 ${t('daily.traveler')}`}{p.city?.name ? ` · ${localizeCityName(p.city.name)}` : ''}</span>
+      </div>
+      <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
+      {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
+      <div className="feed-daily-sub">🔥 {t('daily.kicker')} · {p.challengeText}</div>
+      <a className="feed-daily-cta feed-daily-cta--ghost" href="/app">{t('daily.ctaApp')}</a>
+      {time && <span className="feed-join-time">{time}</span>}
+    </div>
+  )
+}
+
 // lastJoinAtRef: pass the component ref so join messages are throttled to 1 per 8s.
 // Returns null for suppressed joins - callers must filter nulls.
 function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
@@ -726,6 +761,11 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   if (m.type === 'system' && m.event === 'new_user') return null
   if (m.type === 'system' && (m.event === 'challenge_created' || m.event === 'challenge_won')) {
     return { type: 'world_system', subtype: m.event, id: m.id || `wsys_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, createdAt: m.createdAt }
+  }
+  // Daily Challenge cards (World + live city channels): read-only on web, the
+  // challenge and the proof flow live in the app.
+  if (m.type === 'system' && (m.event === 'daily_challenge' || m.event === 'daily_proof')) {
+    return { type: 'daily', subtype: m.event, id: m.id || `daily_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, userId: m.userId ?? null, createdAt: m.createdAt }
   }
   // Guard: any other system message that slips through has no nickname - skip it rather than crash.
   if (m.type === 'system') {
@@ -3088,6 +3128,12 @@ export default function App() {
         }
 
         const key = isEventMsg ? message.id : messageKey(message)
+        // An approved Daily proof edit re-sends the SAME card id: replace it in place.
+        if (key && knownIdsRef.current.has(key) && message.type === 'system' && message.event === 'daily_proof') {
+          const updated = toFeedItem(message, 0)
+          if (updated) setFeed(prev => prev.map(it => (it.id === message.id ? updated : it)))
+          return
+        }
         if (!key || knownIdsRef.current.has(key)) return
         knownIdsRef.current.add(key)
 
@@ -3230,7 +3276,7 @@ export default function App() {
 
       // Reaction updates - PHP sends "city_N" for city channels, plain eventId for events.
       socket.on('reactionUpdate', ({ channelId: ch, messageId, reactions }) => {
-        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}` || (String(ch) === 'world' && channelScopeRef.current === 'world')
         const isEventMatch = ch === activeEventIdRef.current
         if (!isCityMatch && !isEventMatch) return
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, reactions } : m))
@@ -3243,16 +3289,19 @@ export default function App() {
 
       // Edit / delete broadcasts - channel feed (city + event).
       socket.on('messageEdited', ({ channelId: ch, messageId, content, editedAt }) => {
-        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isCityMatch  = String(ch) === String(activeChannelRef.current) || String(ch) === `city_${activeChannelRef.current}` || (String(ch) === 'world' && channelScopeRef.current === 'world')
         const isEventMatch = ch === activeEventIdRef.current
         if (!isCityMatch && !isEventMatch) return
         setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content, editedAt: editedAt ?? Math.floor(Date.now() / 1000) } : m))
       })
       socket.on('messageDeleted', ({ channelId: ch, messageId, deletedAt }) => {
-        const isCityMatch  = String(ch) === `city_${activeChannelRef.current}`
+        const isCityMatch  = String(ch) === String(activeChannelRef.current) || String(ch) === `city_${activeChannelRef.current}` || (String(ch) === 'world' && channelScopeRef.current === 'world')
         const isEventMatch = ch === activeEventIdRef.current
         if (!isCityMatch && !isEventMatch) return
-        setFeed(prev => prev.map(m => m.id === messageId ? { ...m, content: '', imageUrl: undefined, deletedAt: deletedAt ?? Math.floor(Date.now() / 1000) } : m))
+        // A removed Daily card disappears (no "deleted" tombstone).
+        setFeed(prev => prev
+          .filter(m => !(m.id === messageId && m.type === 'daily'))
+          .map(m => m.id === messageId ? { ...m, content: '', imageUrl: undefined, deletedAt: deletedAt ?? Math.floor(Date.now() / 1000) } : m))
       })
       // DM edit / delete - feed holds both surfaces while a DM is open; match by id.
       socket.on('dmMessageEdited', ({ messageId, content, editedAt }) => {
@@ -5293,6 +5342,9 @@ export default function App() {
             </div>
           )}
           {feed.map((item, i) => {
+            if (item.type === 'daily') {
+              return <DailyFeedCard key={item.id} item={item} t={t} />
+            }
             if (item.type === 'world_system') {
               const p = item.payload || {}
               const nick = item.nickname || p.nickname || ''

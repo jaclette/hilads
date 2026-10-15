@@ -99,5 +99,26 @@
     "yes": "好的，通知我",
     "notNow": "以后再说",
     "openSettings": "打开设置"
+  },
+  "archive": {
+    "title": "往期挑战",
+    "pickCity": "选择城市",
+    "worldSelection": "世界精选：这座城市还没上线",
+    "empty": "第一批 Daily Challenge 马上就来。",
+    "proofs_one": "{{count}} 个证明",
+    "proofs_other": "{{count}} 个证明"
+  },
+  "report": {
+    "title": "举报这个证明",
+    "body": "有什么问题？",
+    "reasons": {
+      "inappropriate": "不当内容",
+      "person_without_consent": "未经同意拍到他人",
+      "dangerous": "危险或违法",
+      "spam": "Spam",
+      "other": "其他原因"
+    },
+    "thanks": "谢谢 - 我们会查看。",
+    "already": "你已经举报过这个证明了。"
   }
 }

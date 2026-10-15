@@ -309,5 +309,12 @@
     "mainRanked_other": "🔥 {{count}} challenges · 🏆 #{{rank}} in {{city}}",
     "mainTop_one": "🔥 {{count}} challenge · 🏆 #1 in {{city}}",
     "mainTop_other": "🔥 {{count}} challenges · 🏆 #1 in {{city}}"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Local",
+    "traveler": "Traveler",
+    "ctaApp": "Take the challenge in the app"
   }
 }

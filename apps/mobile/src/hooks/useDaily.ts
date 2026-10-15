@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { fetchDailySheet, fetchDailyToday } from '@/api/daily';
+import { fetchDailyArchive, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
-import type { DailyProof, DailySheet, DailyToday } from '@/types';
+import { onDailyDropped } from '@/lib/dailyEvents';
+import type { DailyArchiveItem, DailyProof, DailySheet, DailyToday } from '@/types';
 
 // Daily Challenge data hooks. Same plain useState/useEffect pattern as the rest
 // of the app (no query library). Today's data refreshes on screen focus, when
@@ -63,6 +64,7 @@ export function useDailyToday(cityId: string | null | undefined) {
     const sub = AppState.addEventListener('change', (s) => { if (s === 'active') load(); });
     return () => sub.remove();
   }, [load]);
+  useEffect(() => onDailyDropped(load), [load]);
 
   // A new challenge drops when the countdown ends: refetch a few seconds after.
   const left = useCountdown(data?.nextDropAt, data?.serverTime);
@@ -128,4 +130,47 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
   }, []);
 
   return { sheet, loading, loadingMore, error, reload: load, loadMore, setMyProof };
+}
+
+/** "Already done" archive of a city (World selection for a dead city), paged by date. */
+export function useDailyArchive(cityId: string | null | undefined) {
+  const { identity, account } = useApp();
+  const guestId = account ? null : identity?.guestId ?? null;
+  const [items, setItems]     = useState<DailyArchiveItem[]>([]);
+  const [scope, setScope]     = useState<'world' | 'city'>('city');
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const a = await fetchDailyArchive({ cityId, guestId, limit: 10 });
+      setItems(a.items);
+      setScope(a.scope);
+      setHasMore(a.hasMore);
+    } catch (err) {
+      console.warn('[daily] archive failed:', String(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [cityId, guestId]);
+
+  useEffect(() => { setLoading(true); setItems([]); load(); }, [load]);
+
+  const loadMore = useCallback(async () => {
+    const last = items[items.length - 1];
+    if (!hasMore || loadingMore || !last) return;
+    setLoadingMore(true);
+    try {
+      const a = await fetchDailyArchive({ cityId, guestId, limit: 10, before: last.challenge.date });
+      setItems(prev => [...prev, ...a.items.filter(i => !prev.some(p => p.challenge.id === i.challenge.id))]);
+      setHasMore(a.hasMore);
+    } catch (err) {
+      console.warn('[daily] archive more failed:', String(err));
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [items, hasMore, loadingMore, cityId, guestId]);
+
+  return { items, scope, hasMore, loading, loadingMore, loadMore, reload: load };
 }

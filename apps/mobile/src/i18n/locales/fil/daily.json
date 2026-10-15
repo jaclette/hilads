@@ -99,5 +99,26 @@
     "yes": "Oo, i-notify ako",
     "notNow": "Hindi muna",
     "openSettings": "Buksan ang settings"
+  },
+  "archive": {
+    "title": "Tapos na",
+    "pickCity": "Pumili ng city",
+    "worldSelection": "Mundo selection: hindi pa live ang city na ito",
+    "empty": "Parating na ang mga unang Daily Challenge.",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proof"
+  },
+  "report": {
+    "title": "I-report ang proof na ito",
+    "body": "Ano'ng problema dito?",
+    "reasons": {
+      "inappropriate": "Hindi angkop",
+      "person_without_consent": "May taong ipinakita nang walang pahintulot",
+      "dangerous": "Delikado o ilegal",
+      "spam": "Spam",
+      "other": "Iba pa"
+    },
+    "thanks": "Salamat - titingnan namin ito.",
+    "already": "Na-report mo na ang proof na ito."
   }
 }

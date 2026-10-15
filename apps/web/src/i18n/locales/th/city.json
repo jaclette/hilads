@@ -309,5 +309,12 @@
     "arrivalsTitle": "เพิ่งมาถึง",
     "arrivalsEmpty": "ยังไม่มีใครเพิ่งมา",
     "seeAll": "ดูทั้งหมด"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "คนท้องถิ่น",
+    "traveler": "นักเดินทาง",
+    "ctaApp": "รับ challenge ในแอป"
   }
 }

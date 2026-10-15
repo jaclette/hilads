@@ -16,8 +16,21 @@ function canonicalizeChallenge(p: string): string {
   return p.replace(/\/challenge\/(?:[a-z0-9-]+-)?([a-f0-9]{16})(\b|$)/i, '/challenge/$1$2');
 }
 
+// hilads.live/today (any locale) → today's Daily Challenge sheet. The app
+// route is /daily/[date]; source=link lets the sheet track daily_link_opened.
+function rewriteToday(prefix: string, pathOnly: string, suffix: string): string | null {
+  if (pathOnly !== '/today' && pathOnly !== '/today/') return null;
+  const extra = suffix.startsWith('?') ? '&' + suffix.slice(1) : '';
+  return `${prefix}/daily/today?source=link${extra}`;
+}
+
 export function redirectSystemPath({ path }: { path: string; initial: boolean }): string {
   try {
+    // hilads://today[?…] (custom scheme: "today" parses as the host, and the
+    // router reads the host as the first path segment → hilads://daily/today).
+    const custom = path.match(/^hilads:\/\/today\/?(?:\?(.*))?$/i);
+    if (custom) return `hilads://daily/today?source=link${custom[1] ? '&' + custom[1] : ''}`;
+
     // `path` may arrive as a full URL (https://hilads.live/fr/event/x?... or
     // hilads://…) or as a bare path (/fr/event/x). Peel off scheme+host if
     // present, and keep any query/hash to reattach after stripping the locale.
@@ -33,12 +46,13 @@ export function redirectSystemPath({ path }: { path: string; initial: boolean })
     const pathOnly = qIdx === -1 ? rest : rest.slice(0, qIdx);
     const suffix = qIdx === -1 ? '' : rest.slice(qIdx);
 
+
     const segments = pathOnly.split('/'); // ['', 'fr', 'event', 'abc']
     if (LOCALE_PREFIXES.includes(segments[1])) {
       const stripped = '/' + segments.slice(2).join('/');
-      return canonicalizeChallenge(prefix + stripped + suffix);
+      return rewriteToday(prefix, stripped, suffix) ?? canonicalizeChallenge(prefix + stripped + suffix);
     }
-    return canonicalizeChallenge(path);
+    return rewriteToday(prefix, pathOnly, suffix) ?? canonicalizeChallenge(path);
   } catch {
     // Never block a deep link on a parsing error - fall back to the raw path.
     return path;

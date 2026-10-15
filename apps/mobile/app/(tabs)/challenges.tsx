@@ -9,6 +9,7 @@ import { AppHeader } from '@/features/shell/AppHeader';
 import { ChallengesList } from '@/features/challenges/ChallengesList';
 import { MostLocalCard } from '@/features/challenges/MostLocalCard';
 import { ShowcaseHeroCarousel } from '@/features/challenges/ShowcaseHeroCarousel';
+import { DailyChallengesSection } from '@/features/daily/DailyChallengesSection';
 import { ChallengeIntroCarousel } from '@/features/onboarding/ChallengeIntroCarousel';
 import { localizeCityName } from '@/i18n/cityName';
 import { FontSizes, Spacing, type ThemeColors } from '@/constants';
@@ -69,6 +70,9 @@ export default function ChallengesTab() {
         channelId={city?.channelId ?? null}
         headerExtra={
           <>
+            {/* Today's Daily Challenge + "Already done" archive, above the
+                existing challenges (which keep their place below). */}
+            <DailyChallengesSection />
             <ShowcaseHeroCarousel onHowItWorks={() => setShowChallengeIntro(true)} />
             <MostLocalCard
               channelId={city?.channelId ?? null}

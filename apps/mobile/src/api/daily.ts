@@ -72,3 +72,10 @@ export async function sendDeviceTimezone(timezone: string, guestId?: string | nu
 export function dailyErrorCode(err: unknown): string | null {
   return err instanceof ApiError && typeof err.body?.code === 'string' ? err.body.code : null;
 }
+
+export type DailyReportReason = 'inappropriate' | 'person_without_consent' | 'dangerous' | 'spam' | 'other';
+
+/** Report a visible proof (guests pass their guestId). 409 = already reported. */
+export async function reportDailyProof(proofId: string, reasonCode: DailyReportReason, guestId?: string | null): Promise<void> {
+  await api.post(`/daily/proofs/${proofId}/report`, { reasonCode, guestId: guestId ?? undefined });
+}

@@ -309,5 +309,12 @@
     "arrivalsTitle": "Recente aankomsten",
     "arrivalsEmpty": "Geen recente aankomsten",
     "seeAll": "Alles bekijken"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Local",
+    "traveler": "Reiziger",
+    "ctaApp": "Doe de challenge in de app"
   }
 }

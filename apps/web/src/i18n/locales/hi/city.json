@@ -309,5 +309,12 @@
     "arrivalsTitle": "हाल की आमद",
     "arrivalsEmpty": "हाल में कोई नहीं आया",
     "seeAll": "सभी देखें"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "लोकल",
+    "traveler": "यात्री",
+    "ctaApp": "ऐप में challenge लें"
   }
 }

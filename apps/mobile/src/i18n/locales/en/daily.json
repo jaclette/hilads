@@ -99,5 +99,26 @@
     "yes": "Yes, notify me",
     "notNow": "Not now",
     "openSettings": "Open settings"
+  },
+  "archive": {
+    "title": "Already done",
+    "pickCity": "Choose a city",
+    "worldSelection": "World selection: this city is not live yet",
+    "empty": "The first Daily Challenges are on their way.",
+    "proofs_one": "{{count}} proof",
+    "proofs_other": "{{count}} proofs"
+  },
+  "report": {
+    "title": "Report this proof",
+    "body": "What's wrong with it?",
+    "reasons": {
+      "inappropriate": "Inappropriate",
+      "person_without_consent": "Shows someone without consent",
+      "dangerous": "Dangerous or illegal",
+      "spam": "Spam",
+      "other": "Something else"
+    },
+    "thanks": "Thanks - we will check it.",
+    "already": "You already reported this proof."
   }
 }

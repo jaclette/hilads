@@ -322,6 +322,12 @@ function resolveRoute(data: NotifData): string | null {
       if (data.challengeId) return `/challenge/${data.challengeId}`;
       return null;
 
+    case 'daily_morning':
+    case 'daily_reminder':
+    case 'daily_digest':
+      // Daily Challenge pushes (no challengeId on purpose) → today's sheet.
+      return '/daily/today?source=push';
+
     default:
       // Any other challenge_* notification that carries a challengeId still
       // opens the challenge rather than dead-ending.
@@ -403,6 +409,9 @@ export function NotificationHandler() {
       console.log('[push-nav] resolved route:', route ?? 'none - ignoring');
       if (!route) return;
       track('notification_opened', { type: data.type ?? 'unknown' });
+      if (typeof data.type === 'string' && data.type.startsWith('daily_')) {
+        track('daily_notification_opened', { type: data.type, challenge_date: (data as { date?: string }).date ?? null });
+      }
       if (bootingRef.current) {
         console.log('[push-nav] app still booting - storing route for deferred navigation:', route);
         pendingRoute.current = route;

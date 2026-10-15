@@ -323,5 +323,12 @@
     "arrivalsTitle": "Недавно прибыли",
     "arrivalsEmpty": "Пока никто не прибыл",
     "seeAll": "Показать все"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Местный",
+    "traveler": "Путешественник",
+    "ctaApp": "Принять challenge в приложении"
   }
 }

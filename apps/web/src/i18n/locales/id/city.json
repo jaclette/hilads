@@ -309,5 +309,12 @@
     "arrivalsTitle": "Baru tiba",
     "arrivalsEmpty": "Belum ada yang baru tiba",
     "seeAll": "Lihat semua"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Lokal",
+    "traveler": "Pelancong",
+    "ctaApp": "Ambil challenge-nya di app"
   }
 }

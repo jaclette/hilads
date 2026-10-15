@@ -11,27 +11,35 @@ import { formatCountdown, useDailyToday } from '@/hooks/useDaily';
 import { DailyStatusChip } from './DailyStatusChip';
 import { DailyPushBanner } from './DailyPushBanner';
 import { dailyTrackProps } from './track';
+import type { DailyToday } from '@/types';
 
 /**
  * MY CITY hero: today's Daily Challenge. Challenge text (English, as written),
  * the city's Local Twist when the city is live, a countdown to the next drop,
  * the proof count and the CTA - or my proof's status once I posted.
  */
-export function DailyHeroCard({ cityId }: { cityId: string }) {
+export function DailyHeroCard({ cityId, source = 'hero' }: { cityId: string; source?: string }) {
+  const daily = useDailyToday(cityId);
+  return <DailyHeroCardView data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} source={source} />;
+}
+
+/** The card itself, from already-fetched today data (the city chat shares one fetch with the pin). */
+export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' }: {
+  data: DailyToday | null; loading: boolean; secondsLeft: number | null; source?: string;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
   const { account } = useApp();
-  const { data, loading, secondsLeft } = useDailyToday(cityId);
   const tracked = useRef<string | null>(null);
 
   const challenge = data?.challenge ?? null;
   useEffect(() => {
     if (!challenge || tracked.current === challenge.id) return;
     tracked.current = challenge.id;
-    track('daily_challenge_viewed', { source: 'hero', ...dailyTrackProps(data, account?.mode) });
-  }, [challenge, data, account?.mode]);
+    track('daily_challenge_viewed', { source, ...dailyTrackProps(data, account?.mode) });
+  }, [challenge, data, account?.mode, source]);
 
   if (loading && !data) {
     return <View style={[styles.card, styles.placeholder]}><ActivityIndicator color={colors.accent} /></View>;

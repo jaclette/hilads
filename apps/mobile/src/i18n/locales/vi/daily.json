@@ -99,5 +99,26 @@
     "yes": "Có, báo cho tôi",
     "notNow": "Để sau",
     "openSettings": "Mở cài đặt"
+  },
+  "archive": {
+    "title": "Đã thực hiện",
+    "pickCity": "Chọn thành phố",
+    "worldSelection": "Lựa chọn Thế giới: thành phố này chưa hoạt động",
+    "empty": "Những Daily Challenge đầu tiên sắp tới rồi.",
+    "proofs_one": "{{count}} bằng chứng",
+    "proofs_other": "{{count}} bằng chứng"
+  },
+  "report": {
+    "title": "Báo cáo bằng chứng này",
+    "body": "Có vấn đề gì vậy?",
+    "reasons": {
+      "inappropriate": "Không phù hợp",
+      "person_without_consent": "Có người xuất hiện khi chưa đồng ý",
+      "dangerous": "Nguy hiểm hoặc phạm pháp",
+      "spam": "Spam",
+      "other": "Lý do khác"
+    },
+    "thanks": "Cảm ơn - bọn mình sẽ kiểm tra.",
+    "already": "Bạn đã báo cáo bằng chứng này rồi."
   }
 }

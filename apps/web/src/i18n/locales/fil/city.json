@@ -309,5 +309,12 @@
     "arrivalsTitle": "Kababa lang",
     "arrivalsEmpty": "Walang kababa lang",
     "seeAll": "Tingnan lahat"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "Local",
+    "traveler": "Biyahero",
+    "ctaApp": "Gawin ang challenge sa app"
   }
 }

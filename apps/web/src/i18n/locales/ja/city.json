@@ -309,5 +309,12 @@
     "arrivalsTitle": "最近の到着",
     "arrivalsEmpty": "最近の到着はありません",
     "seeAll": "すべて見る"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "ローカル",
+    "traveler": "旅行者",
+    "ctaApp": "アプリで challenge に参加する"
   }
 }

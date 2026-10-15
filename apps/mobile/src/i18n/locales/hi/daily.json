@@ -99,5 +99,26 @@
     "yes": "हाँ, मुझे बताएँ",
     "notNow": "अभी नहीं",
     "openSettings": "सेटिंग्स खोलें"
+  },
+  "archive": {
+    "title": "पहले से पूरे",
+    "pickCity": "शहर चुनें",
+    "worldSelection": "दुनिया की पसंद: यह शहर अभी लाइव नहीं है",
+    "empty": "पहले Daily Challenge जल्द आ रहे हैं।",
+    "proofs_one": "{{count}} प्रूफ",
+    "proofs_other": "{{count}} प्रूफ"
+  },
+  "report": {
+    "title": "इस प्रूफ की रिपोर्ट करें",
+    "body": "इसमें क्या गलत है?",
+    "reasons": {
+      "inappropriate": "अनुचित",
+      "person_without_consent": "किसी को बिना सहमति के दिखाता है",
+      "dangerous": "खतरनाक या गैरकानूनी",
+      "spam": "स्पैम",
+      "other": "कुछ और"
+    },
+    "thanks": "धन्यवाद - हम इसे जाँचेंगे।",
+    "already": "आप इस प्रूफ की रिपोर्ट पहले ही कर चुके हैं।"
   }
 }

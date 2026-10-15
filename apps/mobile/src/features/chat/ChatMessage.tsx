@@ -17,6 +17,8 @@ import { View, Text, TouchableOpacity, Pressable, StyleSheet, Animated, Platform
 import { ImagePreviewModal } from './ImagePreviewModal';
 import { MessageImage } from './MessageImage';
 import { ReactionPills } from './ReactionPills';
+import { DailyChannelCard } from '@/features/daily/DailyChannelCard';
+import { isDailyCard } from '@/lib/dailyEvents';
 import { ReactionBurstOverlay } from './ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { useRouter } from 'expo-router';
@@ -256,6 +258,8 @@ interface Props {
   roleBadge?:     'challenger' | 'taker' | 'spectator' | null;
   /** World channel: show the author line (name + home-flag) on own messages too. */
   worldScope?:    boolean;
+  /** City channel of a live city: Daily Challenge cards show the Local Twist. */
+  dailyLive?:     boolean;
 }
 
 // ── Join-request feed card (hangout request-to-join) ──────────────────────────
@@ -575,7 +579,7 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null, worldScope = false }: Props) {
+function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, showTime = false, dateLabel, onPromptCta, onLongPress, onReplyQuotePress, isHighlighted, onReact, onResolveJoinRequest, autoDismiss = false, onAutoDismiss, reduceMotion = false, roleBadge = null, worldScope = false, dailyLive = false }: Props) {
   const styles = useThemedStyles(makeStyles);
   const router = useRouter();
   const { t } = useTranslation('chat');
@@ -779,6 +783,16 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         <Animated.View style={animStyle}>
           <JoinRequestCard message={message} onResolve={onResolveJoinRequest} />
         </Animated.View>
+      </>
+    );
+  }
+
+  // ── Daily Challenge cards (system + daily_challenge / daily_proof) ─────────
+  if (isDailyCard(message)) {
+    return (
+      <>
+        {dateLabel && <DateSeparator label={dateLabel} />}
+        <DailyChannelCard message={message} isLive={dailyLive} onLongPress={onLongPress} onReact={onReact} />
       </>
     );
   }

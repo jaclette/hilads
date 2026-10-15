@@ -99,5 +99,26 @@
     "yes": "Oui, préviens-moi",
     "notNow": "Plus tard",
     "openSettings": "Ouvrir les réglages"
+  },
+  "archive": {
+    "title": "Déjà relevés",
+    "pickCity": "Choisir une ville",
+    "worldSelection": "Sélection Monde : cette ville n'est pas encore active",
+    "empty": "Les premiers Daily Challenges arrivent bientôt.",
+    "proofs_one": "{{count}} preuve",
+    "proofs_other": "{{count}} preuves"
+  },
+  "report": {
+    "title": "Signaler cette preuve",
+    "body": "Quel est le problème ?",
+    "reasons": {
+      "inappropriate": "Inappropriée",
+      "person_without_consent": "Montre quelqu'un sans son accord",
+      "dangerous": "Dangereuse ou illégale",
+      "spam": "Spam",
+      "other": "Autre chose"
+    },
+    "thanks": "Merci - on va vérifier.",
+    "already": "Tu as déjà signalé cette preuve."
   }
 }

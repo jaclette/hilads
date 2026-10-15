@@ -99,5 +99,26 @@
     "yes": "Ja, benachrichtige mich",
     "notNow": "Jetzt nicht",
     "openSettings": "Einstellungen öffnen"
+  },
+  "archive": {
+    "title": "Schon gemeistert",
+    "pickCity": "Stadt auswählen",
+    "worldSelection": "Welt-Auswahl: Diese Stadt ist noch nicht live",
+    "empty": "Die ersten Daily Challenges sind unterwegs.",
+    "proofs_one": "{{count}} Beweis",
+    "proofs_other": "{{count}} Beweise"
+  },
+  "report": {
+    "title": "Diesen Beweis melden",
+    "body": "Was stimmt damit nicht?",
+    "reasons": {
+      "inappropriate": "Unangemessen",
+      "person_without_consent": "Zeigt jemanden ohne Einverständnis",
+      "dangerous": "Gefährlich oder illegal",
+      "spam": "Spam",
+      "other": "Etwas anderes"
+    },
+    "thanks": "Danke - wir schauen es uns an.",
+    "already": "Du hast diesen Beweis schon gemeldet."
   }
 }

@@ -99,5 +99,26 @@
     "yes": "Sim, avisa-me",
     "notNow": "Agora não",
     "openSettings": "Abrir definições"
+  },
+  "archive": {
+    "title": "Já feitos",
+    "pickCity": "Escolhe uma cidade",
+    "worldSelection": "Seleção Mundo: esta cidade ainda não está ativa",
+    "empty": "Os primeiros Daily Challenges estão a caminho.",
+    "proofs_one": "{{count}} prova",
+    "proofs_other": "{{count}} provas"
+  },
+  "report": {
+    "title": "Denunciar esta prova",
+    "body": "Qual é o problema?",
+    "reasons": {
+      "inappropriate": "Inapropriada",
+      "person_without_consent": "Mostra alguém sem consentimento",
+      "dangerous": "Perigosa ou ilegal",
+      "spam": "Spam",
+      "other": "Outra coisa"
+    },
+    "thanks": "Obrigado - vamos verificar.",
+    "already": "Já denunciaste esta prova."
   }
 }

@@ -99,5 +99,26 @@
     "yes": "네, 알려주세요",
     "notNow": "나중에",
     "openSettings": "설정 열기"
+  },
+  "archive": {
+    "title": "이미 완료",
+    "pickCity": "도시 선택",
+    "worldSelection": "세계 셀렉션: 이 도시는 아직 오픈 전이에요",
+    "empty": "첫 Daily Challenge가 곧 찾아와요.",
+    "proofs_one": "인증 {{count}}개",
+    "proofs_other": "인증 {{count}}개"
+  },
+  "report": {
+    "title": "이 인증 신고하기",
+    "body": "어떤 문제가 있나요?",
+    "reasons": {
+      "inappropriate": "부적절해요",
+      "person_without_consent": "동의 없이 다른 사람이 나와요",
+      "dangerous": "위험하거나 불법이에요",
+      "spam": "스팸",
+      "other": "기타"
+    },
+    "thanks": "고마워요 - 확인해 볼게요.",
+    "already": "이미 신고한 인증이에요."
   }
 }

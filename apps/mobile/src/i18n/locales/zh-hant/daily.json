@@ -99,5 +99,26 @@
     "yes": "好，通知我",
     "notNow": "晚點再說",
     "openSettings": "開啟設定"
+  },
+  "archive": {
+    "title": "往期挑戰",
+    "pickCity": "選擇城市",
+    "worldSelection": "世界精選：這座城市還沒上線",
+    "empty": "第一批 Daily Challenge 馬上就來。",
+    "proofs_one": "{{count}} 個證明",
+    "proofs_other": "{{count}} 個證明"
+  },
+  "report": {
+    "title": "檢舉這個證明",
+    "body": "有什麼問題？",
+    "reasons": {
+      "inappropriate": "不當內容",
+      "person_without_consent": "未經同意拍到他人",
+      "dangerous": "危險或違法",
+      "spam": "Spam",
+      "other": "其他原因"
+    },
+    "thanks": "謝謝 - 我們會查看。",
+    "already": "你已經檢舉過這個證明了。"
   }
 }

@@ -111,5 +111,30 @@
     "yes": "نعم، أبلغني",
     "notNow": "ليس الآن",
     "openSettings": "فتح الإعدادات"
+  },
+  "archive": {
+    "title": "أُنجزت سابقًا",
+    "pickCity": "اختر مدينة",
+    "worldSelection": "مختارات العالم: هذه المدينة ليست مباشرة بعد",
+    "empty": "أول Daily Challenge في الطريق إليك.",
+    "proofs_zero": "{{count}} دليل",
+    "proofs_one": "{{count}} دليل",
+    "proofs_two": "{{count}} دليلان",
+    "proofs_few": "{{count}} أدلة",
+    "proofs_many": "{{count}} دليلًا",
+    "proofs_other": "{{count}} دليل"
+  },
+  "report": {
+    "title": "الإبلاغ عن هذا الدليل",
+    "body": "ما المشكلة فيه؟",
+    "reasons": {
+      "inappropriate": "غير لائق",
+      "person_without_consent": "يُظهر شخصًا دون موافقته",
+      "dangerous": "خطير أو غير قانوني",
+      "spam": "رسائل مزعجة",
+      "other": "سبب آخر"
+    },
+    "thanks": "شكرًا - سنراجعه.",
+    "already": "لقد أبلغت عن هذا الدليل من قبل."
   }
 }

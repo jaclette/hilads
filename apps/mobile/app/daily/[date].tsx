@@ -27,7 +27,7 @@ import type { DailyProof } from '@/types';
  * ?proof=<id> opens that proof on arrival.
  */
 export default function DailySheetScreen() {
-  const { date: dateParam, proof: proofParam } = useLocalSearchParams<{ date: string; proof?: string }>();
+  const { date: dateParam, proof: proofParam, source } = useLocalSearchParams<{ date: string; proof?: string; source?: string }>();
   const { city } = useApp();
   const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : null);
 
@@ -40,7 +40,7 @@ export default function DailySheetScreen() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;
-  return <Sheet date={date} openProofId={proofParam ?? null} />;
+  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} />;
 }
 
 function Loading() {
@@ -49,7 +49,7 @@ function Loading() {
   return <SafeAreaView style={[styles.container, styles.center]}><ActivityIndicator color={colors.accent} /></SafeAreaView>;
 }
 
-function Sheet({ date, openProofId }: { date: string; openProofId: string | null }) {
+function Sheet({ date, openProofId, source }: { date: string; openProofId: string | null; source: string | null }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
@@ -64,8 +64,10 @@ function Sheet({ date, openProofId }: { date: string; openProofId: string | null
   useEffect(() => {
     if (!sheet?.challenge || tracked.current) return;
     tracked.current = true;
-    track('daily_challenge_viewed', { source: openProofId ? 'proof_link' : 'sheet', ...dailyTrackProps(sheet, account?.mode) });
-  }, [sheet, openProofId, account?.mode]);
+    const props = dailyTrackProps(sheet, account?.mode);
+    track('daily_challenge_viewed', { source: source ?? (openProofId ? 'proof_link' : 'sheet'), ...props });
+    if (source === 'link') track('daily_link_opened', props);
+  }, [sheet, openProofId, source, account?.mode]);
 
   // ?proof=<id>: open it once (from the list, or fetched if not on this page).
   const opened = useRef(false);

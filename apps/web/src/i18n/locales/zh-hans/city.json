@@ -309,5 +309,12 @@
     "arrivalsTitle": "最近到达",
     "arrivalsEmpty": "暂无新到达",
     "seeAll": "查看全部"
+  },
+  "daily": {
+    "kicker": "Daily Challenge",
+    "localTwist": "Local Twist",
+    "local": "本地人",
+    "traveler": "旅行者",
+    "ctaApp": "在 app 里接受 challenge"
   }
 }
