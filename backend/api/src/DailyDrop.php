@@ -58,7 +58,16 @@ final class DailyDrop
         $steps = [];
         try {
             $yesterday     = (new DateTimeImmutable($date, new DateTimeZone('UTC')))->modify('-1 day')->format('Y-m-d');
-            $steps['close'] = self::closeChallenge($yesterday);
+            // Never blocks today's publish: a failed close is logged, alerted
+            // and re-run by hand (scripts/daily_close.php).
+            try {
+                $steps['close'] = self::closeChallenge($yesterday);
+            } catch (\Throwable $e) {
+                $steps['close'] = ['status' => 'failed', 'error' => $e->getMessage()];
+                error_log("[daily-drop] close of {$yesterday} failed: " . $e->getMessage());
+                self::alertAdmin('Daily Challenge: results failed',
+                    "Results and points of {$yesterday} failed: " . $e->getMessage() . " - re-run scripts/daily_close.php --date={$yesterday}");
+            }
 
             [$challenge, $source, $publishNote] = self::publish($date);
             $steps['publish'] = ['source' => $source, 'challengeId' => $challenge['id'] ?? null] + $publishNote;
@@ -95,12 +104,20 @@ final class DailyDrop
     }
 
     /**
-     * Closing step for the challenge that just ended. Extension point for
-     * phase 2 (prompt 11): results, points, streaks - each idempotent.
+     * Closing step for the challenge that just ended: results (World top 3,
+     * city ranks, best of each live city), then the close points. Both are
+     * idempotent, so a rerun or a takeover changes nothing. Runs before the
+     * publish step, so the new World card carries yesterday's top 3.
      */
-    public static function closeChallenge(string $date): string
+    public static function closeChallenge(string $date): array
     {
-        return 'phase 2';
+        $challenge = DailyChallengeRepository::findPublishedByDate($date);
+        if ($challenge === null) {
+            return ['status' => 'no_challenge'];
+        }
+        $plan   = DailyResults::compute($challenge['id']);
+        $points = DailyPoints::awardClose($challenge['id'], $plan);
+        return ['status' => 'closed', 'results' => $plan['counts'], 'points' => $points];
     }
 
     /**

@@ -65,6 +65,13 @@ final class DailyModerationService
         $after = DailyProofRepository::findById($proofId);
         DailyCards::postProof($after);
         DailyAdminService::audit('daily_proof.approve', 'daily_proof', $proofId, $before, $after);
+        // Proof + streak points (idempotent; an edit re-approved earns nothing new).
+        // Best effort: the close's safety pass catches a failure here.
+        try {
+            DailyPoints::awardProof($after);
+        } catch (\Throwable $e) {
+            error_log("[daily] points for proof {$proofId} failed: " . $e->getMessage());
+        }
         return $after;
     }
 

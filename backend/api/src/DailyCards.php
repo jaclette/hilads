@@ -122,7 +122,7 @@ final class DailyCards
     }
 
     /** Render data for a daily_challenge card. $twist only for live city channels. Pure. */
-    public static function challengePayload(array $challenge, ?array $twist): array
+    public static function challengePayload(array $challenge, ?array $twist, ?array $yesterday = null): array
     {
         $c = DailyChallengeRepository::formatChallenge($challenge);
         return [
@@ -132,7 +132,24 @@ final class DailyCards
             'context'       => $c['context'],
             'endsAt'        => $c['endsAt'],
             'twist'         => $twist,
-            'yesterdayTop3' => [], // filled from results in phase 2 (prompt 11)
+            'yesterday'     => $yesterday !== null ? ['date' => $yesterday['date'], 'text' => $yesterday['text']] : null,
+            'yesterdayTop3' => $yesterday['top3'] ?? [],
+        ];
+    }
+
+    /** Yesterday's challenge and its World top 3 (empty before results), for the World card. */
+    private static function yesterday(array $challenge): ?array
+    {
+        $date = (new DateTimeImmutable((string) $challenge['challenge_date'], new DateTimeZone('UTC')))
+            ->modify('-1 day')->format('Y-m-d');
+        $prev = DailyChallengeRepository::findPublishedByDate($date);
+        if ($prev === null) {
+            return null;
+        }
+        return [
+            'date' => $date,
+            'text' => DailyChallengeRepository::formatChallenge($prev)['text'],
+            'top3' => DailyResults::cardTop3($prev['id']),
         ];
     }
 
@@ -147,10 +164,12 @@ final class DailyCards
         $content  = "🔥 Today's Daily Challenge: " . (json_decode((string) $challenge['text_i18n'], true)['en'] ?? '');
         $channels = array_merge(['world'], DailyRules::liveCityIds());
         $posted   = 0;
+        $yesterday = self::yesterday($challenge);
 
         foreach ($channels as $dbChannel) {
             $twist   = $dbChannel === 'world' ? null : DailyChallengeRepository::twistFor($challenge['id'], $dbChannel);
-            $payload = self::challengePayload($challenge, $twist);
+            // Yesterday's top 3 rides on the World card only (SPEC 3.7).
+            $payload = self::challengePayload($challenge, $twist, $dbChannel === 'world' ? $yesterday : null);
             $insert  = Database::pdo()->prepare("
                 INSERT INTO messages (id, channel_id, type, event, user_id, nickname, content, payload)
                 VALUES (?, ?, 'system', 'daily_challenge', ?, 'Hilads', ?, ?::jsonb)

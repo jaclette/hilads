@@ -100,7 +100,8 @@ final class DailyChallengeRepository
     /**
      * Everything a screen needs about one date's challenge: the challenge,
      * timing, the city with its live flag, the twist (live cities only),
-     * counts and the viewer's own proof. $challenge null = nothing published.
+     * counts, and for a signed-in viewer their proof, votes and current streak.
+     * $challenge null = nothing published.
      */
     public static function header(string $date, ?string $cityId, ?array $viewer): array
     {
@@ -122,6 +123,8 @@ final class DailyChallengeRepository
             'twist'       => null,
             'counts'      => ['world' => 0, 'city' => $cityId !== null ? 0 : null],
             'myProof'     => null,
+            'myVotes'     => null,
+            'streak'      => $viewer !== null ? DailyResults::currentStreak($viewer['id']) : null,
         ];
         if ($challenge === null) {
             return $out;
@@ -134,6 +137,8 @@ final class DailyChallengeRepository
         if ($viewer !== null) {
             $mine = DailyProofRepository::findMine($challenge['id'], $viewer['id']);
             $out['myProof'] = $mine ? DailyProofRepository::format($mine, $viewer['id']) : null;
+            $votes = DailyVotes::mine($challenge['id'], $viewer['id']);
+            $out['myVotes'] = ['used' => $votes['used'], 'left' => $votes['left']];
         }
         return $out;
     }

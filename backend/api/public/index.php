@@ -98,6 +98,9 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
     require_once __DIR__ . '/../src/DailyPushes.php';
     require_once __DIR__ . '/../src/DailyDrop.php';
+    require_once __DIR__ . '/../src/DailyVotes.php';
+    require_once __DIR__ . '/../src/DailyResults.php';
+    require_once __DIR__ . '/../src/DailyPoints.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }
@@ -233,6 +236,9 @@ require_once __DIR__ . '/../src/DailyCards.php';
 require_once __DIR__ . '/../src/DailyModerationService.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyDrop.php';
+require_once __DIR__ . '/../src/DailyVotes.php';
+require_once __DIR__ . '/../src/DailyResults.php';
+require_once __DIR__ . '/../src/DailyPoints.php';
 
 $router = new Router();
 

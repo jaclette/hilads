@@ -71,3 +71,6 @@ require_once __DIR__ . '/../src/ModerationService.php';
 require_once __DIR__ . '/../src/DailyCards.php';
 require_once __DIR__ . '/../src/DailyModerationService.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
+require_once __DIR__ . '/../src/DailyVotes.php';
+require_once __DIR__ . '/../src/DailyResults.php';
+require_once __DIR__ . '/../src/DailyPoints.php';

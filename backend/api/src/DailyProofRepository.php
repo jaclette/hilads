@@ -18,11 +18,16 @@ final class DailyProofRepository
         SELECT p.*,
                dc.challenge_date,
                u.username, u.display_name, u.profile_photo_url,
-               ch.name AS city_name
+               ch.name AS city_name,
+               wr.rank AS world_rank, cr.rank AS city_rank
         FROM daily_proofs p
         JOIN daily_challenges dc ON dc.id = p.challenge_id
         JOIN users u             ON u.id  = p.user_id
         LEFT JOIN channels ch    ON ch.id = p.city_id
+        LEFT JOIN daily_results wr
+               ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
+        LEFT JOIN daily_results cr
+               ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
     ";
 
     /**
@@ -235,7 +240,11 @@ final class DailyProofRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    /** API shape. Owner-only fields (rejectionReason) need $viewerId to match. */
+    /**
+     * API shape. Owner-only fields (rejectionReason) need $viewerId to match.
+     * myVote comes from DailyVotes::annotate; the ranks exist once the
+     * challenge closed (worldRank: top 3 only).
+     */
     public static function format(array $row, ?string $viewerId = null): array
     {
         $isMine = $viewerId !== null && $viewerId === $row['user_id'];
@@ -268,6 +277,9 @@ final class DailyProofRepository
             'voteCount'        => (int) $row['vote_count'],
             'localVoteCount'   => $local,
             'validatedByLocal' => $local > 0,
+            'myVote'           => (bool) ($row['my_vote'] ?? false),
+            'worldRank'        => isset($row['world_rank']) ? (int) $row['world_rank'] : null,
+            'cityRank'         => isset($row['city_rank']) ? (int) $row['city_rank'] : null,
             'isMine'           => $isMine,
             'approvedAt'       => self::ts($row['approved_at']),
             'editedAt'         => self::ts($row['edited_at']),

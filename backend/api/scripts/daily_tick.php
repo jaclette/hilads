@@ -35,7 +35,8 @@ foreach ([
     'Database', 'Cache', 'Request', 'CityRepository', 'R2Uploader', 'ModerationService', 'DbRateLimiter',
     'NotificationI18n', 'BotAccountService', 'NotificationPreferencesRepository', 'PushService', 'MobilePushService',
     'NotificationRepository', 'DailyClock', 'DailyRules', 'DailyProofRepository', 'DailyChallengeRepository',
-    'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop',
+    'DailyAdminService', 'DailyCards', 'DailyPushes', 'DailyDrop', 'DailyVotes', 'DailyResults', 'DailyPoints',
+    'MonthlyRankService',
 ] as $class) {
     require_once __DIR__ . "/../src/{$class}.php";
 }

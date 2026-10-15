@@ -12561,9 +12561,10 @@ $router->add('GET', '/api/v1/me/score-celebration', function () {
             se.role,
             se.points,
             se.created_at,
-            cc.title AS challenge_title
+            COALESCE(cc.title, dc.text_i18n->>'en') AS challenge_title
         FROM score_events se
         LEFT JOIN channel_challenges cc ON cc.channel_id = se.challenge_id
+        LEFT JOIN daily_challenges dc   ON dc.id = se.daily_challenge_id
         WHERE se.user_id = :uid
           AND se.created_at > COALESCE(:wm::timestamptz, '-infinity'::timestamptz)
           AND se.kind NOT IN ('winner','present','present_host','present_host_base','photo_host','submission')
@@ -14290,11 +14291,14 @@ $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) 
     $rows  = DailyProofRepository::listApproved($id, $proofCity, $before, $limit);
     $out['scope']    = $scope;
     // hasMore and the cursor follow the unfiltered page; blocked authors are dropped after.
-    $visible         = filterByBlocks($rows, dailyBlocks($user), 'user_id', 'guest_id');
+    $blocks          = dailyBlocks($user);
+    $visible         = DailyVotes::annotate(filterByBlocks($rows, $blocks, 'user_id', 'guest_id'), $user['id'] ?? null);
     $out['proofs']   = array_map(fn(array $r) => DailyProofRepository::format($r, $user['id'] ?? null), $visible);
     $out['hasMore']  = count($rows) >= $limit;
     $out['nextBefore'] = $rows !== [] ? DailyProofRepository::ts(end($rows)['approved_at']) : null;
     $out['practical'] = DailyChallengeRepository::practical($id, $proofCity);
+    // Once closed: World top 3 and the city's best proof (null before the results).
+    $out['results']   = DailyResults::forSheet($id, $cityId, $user['id'] ?? null, $blocks['user_ids'] ?? []);
     Response::json($out);
 });
 
@@ -14337,7 +14341,91 @@ $router->add('GET', '/api/v1/daily/proofs/{id}', function (array $params) {
     if ($proof === null || (!$mine && $proof['moderation_status'] !== 'approved')) {
         Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
     }
+    $proof = DailyVotes::annotate([$proof], $user['id'] ?? null)[0];
     Response::json(['proof' => DailyProofRepository::format($proof, $user['id'] ?? null)]);
+});
+
+const DAILY_VOTE_ERRORS = [
+    'not_found'     => [404, 'Proof not found'],
+    'own_proof'     => [403, 'You cannot vote for your own proof.'],
+    'voting_closed' => [409, 'Voting closed with the challenge.'],
+    'vote_limit'    => [409, 'You already used your 3 votes for this challenge.'],
+];
+
+/**
+ * Shared by vote / unvote: auth, rate limit, load a proof the viewer can see
+ * (approved, author not blocked). Answers errors itself.
+ */
+function dailyVoteTarget(array $params): array
+{
+    $user = AuthService::requireAuth();
+    if (!DbRateLimiter::allow('daily_vote|' . $user['id'], 30, 600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $proof = preg_match('/^[a-f0-9]{16}$/', $params['id']) ? DailyProofRepository::findById($params['id']) : null;
+    if ($proof === null || in_array($proof['user_id'], dailyBlocks($user)['user_ids'] ?? [], true)) {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    return [$user, $proof];
+}
+
+/** Vote response: my state on the proof plus its fresh counts. */
+function dailyVoteResponse(array $proof, array $user): void
+{
+    $fresh = DailyProofRepository::findById($proof['id']) ?? $proof;
+    $mine  = DailyVotes::mine($proof['challenge_id'], $user['id']);
+    Response::json([
+        'voted'            => in_array($proof['id'], $mine['proofIds'], true),
+        'votesLeft'        => $mine['left'],
+        'voteCount'        => (int) $fresh['vote_count'],
+        'validatedByLocal' => (int) $fresh['local_vote_count'] > 0,
+    ]);
+}
+
+// POST /api/v1/daily/proofs/{id}/vote - vote for a proof (3 per challenge).
+// Voting twice for the same proof is a no-op.
+$router->add('POST', '/api/v1/daily/proofs/{id}/vote', function (array $params) {
+    [$user, $proof] = dailyVoteTarget($params);
+    try {
+        if (DailyVotes::cast($proof, $user) === 'voted') {
+            apiLog('daily', 'vote', ['proof' => $proof['id'], 'user' => $user['id']]);
+        }
+    } catch (InvalidArgumentException $e) {
+        [$status, $msg] = DAILY_VOTE_ERRORS[$e->getMessage()] ?? [400, 'Invalid vote'];
+        Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
+    }
+    dailyVoteResponse($proof, $user);
+});
+
+// DELETE /api/v1/daily/proofs/{id}/vote - withdraw my vote (gives it back), until the drop.
+$router->add('DELETE', '/api/v1/daily/proofs/{id}/vote', function (array $params) {
+    [$user, $proof] = dailyVoteTarget($params);
+    try {
+        DailyVotes::withdraw($proof, $user);
+    } catch (InvalidArgumentException $e) {
+        [$status, $msg] = DAILY_VOTE_ERRORS[$e->getMessage()] ?? [400, 'Invalid vote'];
+        Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
+    }
+    dailyVoteResponse($proof, $user);
+});
+
+// GET /api/v1/users/{userId}/daily - Daily Challenge profile stats: streaks,
+// challenges completed, best proofs. Same access rule as GET /users/{userId}.
+$router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
+    $userId = $params['userId'] ?? '';
+    if (!preg_match('/^[a-f0-9]{32}$/', $userId)) {
+        Response::json(['error' => 'Invalid userId'], 400);
+    }
+    $viewer = AuthService::currentUser();
+    if ($viewer === null) {
+        Response::json(['error' => 'PROFILE_LOCKED', 'message' => 'Profile access requires registration'], 403);
+    }
+    $user = UserRepository::findById($userId);
+    if ($user === null || !empty($user['deleted_at'])
+        || in_array($user['id'], viewerBlockSet($viewer['id'], null)['user_ids'], true)) {
+        Response::json(['error' => 'User not found'], 404);
+    }
+    Response::json(DailyResults::userStats($user['id'], $viewer['id']));
 });
 
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.
