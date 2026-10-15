@@ -852,45 +852,51 @@ function broadcastChallengeUpdated(channelId, challenge) {
 
 // ── Message broadcast ───────────────────────────────────────────────────────────
 
-// channelId is an integer for city channels, a hex string for event or topic channels.
-// Pushes a newMessage event to all connected clients in that room.
-function broadcastNewMessage(channelId, message) {
-  let room, kind
+// The one place that maps a PHP channelId to a room, shared by new messages,
+// reactions, edits and deletes:
+//   number or "city_N"  → city room
+//   "world"             → the World room
+//   any other string    → event / topic / challenge / challenge-thread room
+//                         (independent rooms: a user can sit in one of each,
+//                         auto-leave is per room type)
+// Returns { room, target } - room is undefined when nobody is in it.
+function resolveRoom(channelId) {
   if (typeof channelId === 'number') {
-    room = rooms.get(channelId); kind = 'city'
-  } else if (channelId === 'world') {
-    room = worldRoom; kind = 'world'
-  } else {
-    // String channelId - could be event/topic/challenge/challenge-thread room;
-    // check all four. Independent rooms because users can sit in one of each
-    // simultaneously (auto-leave is per-room-type).
-    if (eventRooms.has(channelId))                 { room = eventRooms.get(channelId);           kind = 'event' }
-    else if (topicRooms.has(channelId))            { room = topicRooms.get(channelId);           kind = 'topic' }
-    else if (challengeRooms.has(channelId))        { room = challengeRooms.get(channelId);       kind = 'challenge' }
-    else if (challengeThreadRooms.has(channelId))  { room = challengeThreadRooms.get(channelId); kind = 'challenge_thread' }
+    return { room: rooms.get(channelId), target: `city:${channelId}` }
   }
+  if (typeof channelId === 'string' && /^city_\d+$/.test(channelId)) {
+    return { room: rooms.get(parseInt(channelId.slice(5), 10)), target: `city:${channelId.slice(5)}` }
+  }
+  if (channelId === 'world') {
+    return { room: worldRoom, target: 'world' }
+  }
+  if (eventRooms.has(channelId))           return { room: eventRooms.get(channelId),           target: `event:${channelId}` }
+  if (topicRooms.has(channelId))           return { room: topicRooms.get(channelId),           target: `topic:${channelId}` }
+  if (challengeRooms.has(channelId))       return { room: challengeRooms.get(channelId),       target: `challenge:${channelId}` }
+  if (challengeThreadRooms.has(channelId)) return { room: challengeThreadRooms.get(channelId), target: `challenge_thread:${channelId}` }
+  return { room: undefined, target: `unknown:${channelId}` }
+}
+
+// Pushes a newMessage event to all connected clients in that room. City
+// channelIds arrive as integers; the payload keeps the channelId PHP sent.
+function broadcastNewMessage(channelId, message) {
+  const { room, target } = resolveRoom(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'newMessage', channelId, message })
   let recipients = 0
   for (const session of room.values()) {
     if (session.ws.readyState === 1 /* OPEN */) { session.ws.send(msg); recipients++ }
   }
-  console.log(`[WS][emit] event=newMessage target=${kind}:${channelId} recipients=${recipients}/${room.size}`)
+  console.log(`[WS][emit] event=newMessage target=${target} recipients=${recipients}/${room.size}`)
 }
 
 // ── Reaction broadcast ──────────────────────────────────────────────────────────
 
-// PHP sends channelId as "city_N" for city channels, plain eventId for event channels.
-// Pushes a reactionUpdate event so all room members see emoji counts instantly.
+// PHP sends channelId as "city_N" for city channels, "world" for World, the
+// raw id for event / topic / challenge rooms. Pushes a reactionUpdate event so
+// all room members see emoji counts instantly.
 function broadcastReactionUpdate(channelId, messageId, reactions) {
-  let room, target
-  if (typeof channelId === 'string' && channelId.startsWith('city_')) {
-    room = rooms.get(parseInt(channelId.slice(5), 10)); target = `city:${channelId.slice(5)}`
-  } else if (eventRooms.has(channelId)) {
-    room = eventRooms.get(channelId); target = `event:${channelId}`
-  } else {
-    room = topicRooms.get(channelId); target = `topic:${channelId}`
-  }
+  const { room, target } = resolveRoom(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'reactionUpdate', channelId, messageId, reactions })
   let recipients = 0
@@ -912,18 +918,12 @@ function broadcastDmReactionUpdate(conversationId, messageId, reactions) {
 }
 
 // ── Message edit / soft-delete broadcasts ────────────────────────────────────
-// channelId convention matches broadcastNewMessage: number = city room, string
-// = event/topic room. Clients listen for messageEdited / messageDeleted and
-// patch the message in place (or render the tombstone) without a refetch.
-
-function resolveChannelRoom(channelId) {
-  if (typeof channelId === 'number') return { room: rooms.get(channelId), target: `city:${channelId}` }
-  if (eventRooms.has(channelId))     return { room: eventRooms.get(channelId), target: `event:${channelId}` }
-  return { room: topicRooms.get(channelId), target: `topic:${channelId}` }
-}
+// Rooms resolve like every other channel broadcast (resolveRoom), World and
+// challenge rooms included. Clients listen for messageEdited / messageDeleted
+// and patch the message in place (or render the tombstone) without a refetch.
 
 function broadcastMessageEdited(channelId, messageId, content, editedAt) {
-  const { room, target } = resolveChannelRoom(channelId)
+  const { room, target } = resolveRoom(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'messageEdited', channelId, messageId, content, editedAt })
   let recipients = 0
@@ -934,7 +934,7 @@ function broadcastMessageEdited(channelId, messageId, content, editedAt) {
 }
 
 function broadcastMessageDeleted(channelId, messageId, deletedAt) {
-  const { room, target } = resolveChannelRoom(channelId)
+  const { room, target } = resolveRoom(channelId)
   if (!room) return
   const msg = JSON.stringify({ event: 'messageDeleted', channelId, messageId, deletedAt })
   let recipients = 0
@@ -993,6 +993,8 @@ httpServer.listen(PORT, '0.0.0.0', () => {
 
   // Self-ping every 5 minutes to prevent Render free-tier sleep (15 min inactivity threshold).
   // A local HTTP request to /health counts as activity and keeps the process warm.
+  // Not under test (NODE_ENV=test): the test process starts and stops the server itself.
+  if (process.env.NODE_ENV === 'test') return
   setInterval(() => {
     const req = httpGet(`http://localhost:${PORT}/health`, (res) => {
       console.log(`[keepalive] pinged /health → ${res.statusCode}`)
