@@ -54,6 +54,40 @@ class R2Uploader
     }
 
     /**
+     * Delete one object from R2. Best effort: a failure is logged, never thrown,
+     * so the caller's own delete still succeeds.
+     */
+    public static function delete(string $filename): void
+    {
+        try {
+            self::client()->deleteObject([
+                'Bucket' => getenv('R2_BUCKET'),
+                'Key'    => $filename,
+            ]);
+        } catch (\Throwable $e) {
+            // AwsException for remote errors, but the SDK throws plain
+            // exceptions for local ones (e.g. a missing bucket) - catch all.
+            $msg = $e instanceof AwsException ? ($e->getAwsErrorMessage() ?: $e->getMessage()) : $e->getMessage();
+            error_log('[hilads] R2 delete failed for ' . $filename . ': ' . $msg);
+        }
+    }
+
+    /**
+     * The object name of a URL produced by POST /uploads (R2_PUBLIC_URL +
+     * "/<32hex>.<jpg|png|webp>"), or null for anything else - external URLs,
+     * thumbnails, other buckets. Lets endpoints accept only our own uploads.
+     */
+    public static function ownUploadFilename(string $url): ?string
+    {
+        $base = rtrim((string) getenv('R2_PUBLIC_URL'), '/');
+        if ($base === '' || !str_starts_with($url, $base . '/')) {
+            return null;
+        }
+        $name = substr($url, strlen($base) + 1);
+        return preg_match('/^[a-f0-9]{32}\.(jpg|png|webp)$/', $name) ? $name : null;
+    }
+
+    /**
      * Rewrite an uploaded-image URL to point at the on-the-fly thumbnail proxy
      * (`/api/v1/img-thumb?f=…`) so feeds never serve the full original. This is
      * the server-side mirror of the client `thumbUrl()` helper - applying it at

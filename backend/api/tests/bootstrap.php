@@ -59,3 +59,15 @@ if (!class_exists('Database')) {
 
 // Load the class under test.
 require_once __DIR__ . '/../src/EventRepository.php';
+
+// Daily Challenge - pure helpers under test (no DB access in the tested paths).
+require_once __DIR__ . '/../src/R2Uploader.php';
+require_once __DIR__ . '/../src/ImageProcessor.php';
+require_once __DIR__ . '/../src/DailyClock.php';
+require_once __DIR__ . '/../src/DailyRules.php';
+require_once __DIR__ . '/../src/DailyProofRepository.php';
+require_once __DIR__ . '/../src/DailyAdminService.php';
+require_once __DIR__ . '/../src/ModerationService.php';
+require_once __DIR__ . '/../src/DailyCards.php';
+require_once __DIR__ . '/../src/DailyModerationService.php';
+require_once __DIR__ . '/../src/DailyPushes.php';

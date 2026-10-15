@@ -36,7 +36,9 @@ opcache.enable_cli=0" \
 # GD with JPEG/PNG/WebP support powers avatar thumbnail generation
 # (ImageProcessor::generateAvatarThumbnail). Without GD every upload
 # falls through to the COALESCE fallback and the client loads the
-# full 1-3 MB original on every card.
+# full 1-3 MB original on every card. exif lets ImageProcessor::stripMetadata
+# read a JPEG's orientation before re-encoding (uploads are stored without
+# EXIF/GPS).
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -48,7 +50,7 @@ RUN apt-get update && apt-get install -y \
     libwebp-dev \
     libfreetype6-dev \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
-    && docker-php-ext-install curl pdo_pgsql gd \
+    && docker-php-ext-install curl pdo_pgsql gd exif \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

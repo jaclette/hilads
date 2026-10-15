@@ -1666,8 +1666,8 @@ run($pdo, "
         id           TEXT        PRIMARY KEY,
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
-        role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host')),
+        role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker', 'daily')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1691,7 +1691,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -2531,6 +2531,391 @@ run($pdo, "
     BEFORE INSERT ON score_events
     FOR EACH ROW EXECUTE FUNCTION on_score_event_adjust()
 ", 'trg_score_event_adjust');
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DAILY CHALLENGE - see docs/daily-challenge/SPEC.md section 4
+// ══════════════════════════════════════════════════════════════════════════════
+// One universal challenge per date. challenge_date is the UTC date of its drop:
+// challenge D is live from D 02:00 UTC (DAILY_DROP_UTC) to D+1 02:00 UTC.
+
+// Challenges, scheduled or reserve. A reserve challenge has no date until the
+// drop publishes it (reserve used = is_reserve AND challenge_date IS NOT NULL).
+// Content is English in V1, stored as {"en": "..."} so translations fit later.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_challenges (
+        id             TEXT        PRIMARY KEY,
+        challenge_date DATE        UNIQUE,
+        is_reserve     BOOLEAN     NOT NULL DEFAULT false,
+        text_i18n      JSONB       NOT NULL,
+        context_i18n   JSONB       NOT NULL DEFAULT '{}'::jsonb,
+        status         TEXT        NOT NULL DEFAULT 'draft'
+                                   CHECK (status IN ('draft', 'scheduled', 'published')),
+        published_at   TIMESTAMPTZ,
+        created_by     TEXT,
+        updated_by     TEXT,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CONSTRAINT daily_challenges_text_en_check
+            CHECK (text_i18n->>'en' IS NOT NULL AND btrim(text_i18n->>'en') <> ''),
+        CONSTRAINT daily_challenges_published_date_check
+            CHECK (status <> 'published' OR challenge_date IS NOT NULL),
+        CONSTRAINT daily_challenges_dated_check
+            CHECK (is_reserve OR status = 'draft' OR challenge_date IS NOT NULL)
+    )
+", 'daily_challenges');
+// Next unused reserve challenge for the drop (oldest first).
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_challenges_reserve_unused
+            ON daily_challenges (created_at)
+            WHERE is_reserve AND challenge_date IS NULL AND status = 'scheduled'", 'idx_daily_challenges_reserve_unused');
+
+// Local Twists: the city version of a challenge, shown only in live cities.
+// Founder-written in V1 (status 'selected', moderation 'approved'); proposed by
+// locals in V1.1. At most one selected twist per (challenge, city).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_twists (
+        id                TEXT        PRIMARY KEY,
+        challenge_id      TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        city_id           TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        text              TEXT        NOT NULL,
+        author_user_id    TEXT        REFERENCES users(id) ON DELETE SET NULL,
+        author_credit     TEXT,
+        status            TEXT        NOT NULL DEFAULT 'proposed'
+                                      CHECK (status IN ('proposed', 'selected', 'rejected')),
+        moderation_status TEXT        NOT NULL DEFAULT 'pending'
+                                      CHECK (moderation_status IN ('pending', 'approved', 'rejected')),
+        created_by        TEXT,
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at        TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_twists');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_twists_selected
+            ON daily_twists (challenge_id, city_id) WHERE status = 'selected'", 'uq_daily_twists_selected');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_twists_challenge ON daily_twists (challenge_id)", 'idx_daily_twists_challenge');
+
+// Proofs: one per user per challenge. city_id and is_local are set server-side
+// (is_local is a snapshot taken at creation). Visible only once approved.
+// Owner delete removes the row (votes, results and points cascade); an admin
+// removal keeps it as 'removed' for the record, which also blocks a repost.
+// vote_count / local_vote_count are maintained by the daily_votes triggers below.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_proofs (
+        id                TEXT             PRIMARY KEY,
+        challenge_id      TEXT             NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        user_id           TEXT             NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        city_id           TEXT             REFERENCES channels(id) ON DELETE SET NULL,
+        photo_url         TEXT             NOT NULL,
+        caption           TEXT             CHECK (caption IS NULL OR char_length(caption) <= 140),
+        price_amount      NUMERIC(14,2)    CHECK (price_amount IS NULL OR price_amount >= 0),
+        price_currency    CHAR(3),
+        place_lat         DOUBLE PRECISION,
+        place_lng         DOUBLE PRECISION,
+        place_name        TEXT,
+        is_local          BOOLEAN          NOT NULL DEFAULT false,
+        moderation_status TEXT             NOT NULL DEFAULT 'pending'
+                                           CHECK (moderation_status IN ('pending', 'approved', 'rejected', 'removed')),
+        rejection_reason  TEXT,
+        vote_count        INT              NOT NULL DEFAULT 0,
+        local_vote_count  INT              NOT NULL DEFAULT 0,
+        approved_at       TIMESTAMPTZ,
+        moderated_at      TIMESTAMPTZ,
+        edited_at         TIMESTAMPTZ,
+        created_at        TIMESTAMPTZ      NOT NULL DEFAULT now(),
+        updated_at        TIMESTAMPTZ      NOT NULL DEFAULT now(),
+        UNIQUE (challenge_id, user_id),
+        CONSTRAINT daily_proofs_price_pair_check
+            CHECK ((price_amount IS NULL) = (price_currency IS NULL)),
+        CONSTRAINT daily_proofs_place_pair_check
+            CHECK ((place_lat IS NULL) = (place_lng IS NULL))
+    )
+", 'daily_proofs');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_city_approved
+            ON daily_proofs (challenge_id, city_id, approved_at DESC)
+            WHERE moderation_status = 'approved'", 'idx_daily_proofs_city_approved');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_approved
+            ON daily_proofs (challenge_id, approved_at DESC)
+            WHERE moderation_status = 'approved'", 'idx_daily_proofs_approved');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_pending
+            ON daily_proofs (created_at)
+            WHERE moderation_status = 'pending'", 'idx_daily_proofs_pending');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_user ON daily_proofs (user_id, created_at DESC)", 'idx_daily_proofs_user');
+
+// Votes (phase 2): 3 per voter per challenge, one per proof, never on one's own
+// proof. The cap is structural: each vote takes one of 3 slots and the slot is
+// unique per (challenge, voter), so concurrent requests can never make a 4th -
+// no advisory locks needed (the pooler runs in transaction mode). Withdrawing a
+// vote deletes the row and frees its slot. voter_is_local is a snapshot.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_votes (
+        id             BIGSERIAL   PRIMARY KEY,
+        challenge_id   TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        proof_id       TEXT        NOT NULL REFERENCES daily_proofs(id) ON DELETE CASCADE,
+        voter_user_id  TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        voter_is_local BOOLEAN     NOT NULL DEFAULT false,
+        vote_slot      SMALLINT    NOT NULL CHECK (vote_slot BETWEEN 1 AND 3),
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (proof_id, voter_user_id),
+        UNIQUE (challenge_id, voter_user_id, vote_slot)
+    )
+", 'daily_votes');
+
+// BEFORE INSERT: take challenge_id from the proof, refuse own or unapproved proofs.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_daily_vote_check() RETURNS TRIGGER AS \$\$
+    DECLARE
+        p RECORD;
+    BEGIN
+        SELECT challenge_id, user_id, moderation_status INTO p
+        FROM daily_proofs WHERE id = NEW.proof_id;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'daily_vote_proof_not_found';
+        END IF;
+        IF p.user_id = NEW.voter_user_id THEN
+            RAISE EXCEPTION 'daily_vote_own_proof';
+        END IF;
+        IF p.moderation_status <> 'approved' THEN
+            RAISE EXCEPTION 'daily_vote_proof_not_approved';
+        END IF;
+        NEW.challenge_id := p.challenge_id;
+        RETURN NEW;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_daily_vote_check');
+run($pdo, "DROP TRIGGER IF EXISTS trg_daily_vote_check ON daily_votes", 'drop trg_daily_vote_check');
+run($pdo, "
+    CREATE TRIGGER trg_daily_vote_check
+    BEFORE INSERT ON daily_votes
+    FOR EACH ROW EXECUTE FUNCTION on_daily_vote_check()
+", 'trg_daily_vote_check');
+
+// AFTER INSERT/DELETE: keep the proof's cached vote counts in step.
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_daily_vote_count() RETURNS TRIGGER AS \$\$
+    BEGIN
+        IF TG_OP = 'INSERT' THEN
+            UPDATE daily_proofs
+            SET vote_count       = vote_count + 1,
+                local_vote_count = local_vote_count + CASE WHEN NEW.voter_is_local THEN 1 ELSE 0 END
+            WHERE id = NEW.proof_id;
+            RETURN NEW;
+        END IF;
+        UPDATE daily_proofs
+        SET vote_count       = GREATEST(vote_count - 1, 0),
+            local_vote_count = GREATEST(local_vote_count - CASE WHEN OLD.voter_is_local THEN 1 ELSE 0 END, 0)
+        WHERE id = OLD.proof_id;
+        RETURN OLD;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_daily_vote_count');
+run($pdo, "DROP TRIGGER IF EXISTS trg_daily_vote_count ON daily_votes", 'drop trg_daily_vote_count');
+run($pdo, "
+    CREATE TRIGGER trg_daily_vote_count
+    AFTER INSERT OR DELETE ON daily_votes
+    FOR EACH ROW EXECUTE FUNCTION on_daily_vote_count()
+", 'trg_daily_vote_count');
+
+// Results (phase 2), computed at the drop that closes a challenge. scope is
+// 'world' (top 3) or a city channel id (every approved proof of that city,
+// ranked - rank 1 is the city's best proof). Rebuilt with delete + insert in
+// one transaction, so a rerun is idempotent.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_results (
+        challenge_id     TEXT        NOT NULL REFERENCES daily_challenges(id) ON DELETE CASCADE,
+        scope            TEXT        NOT NULL,
+        rank             SMALLINT    NOT NULL CHECK (rank >= 1),
+        proof_id         TEXT        NOT NULL REFERENCES daily_proofs(id) ON DELETE CASCADE,
+        vote_count       INT         NOT NULL DEFAULT 0,
+        local_vote_count INT         NOT NULL DEFAULT 0,
+        created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (challenge_id, scope, rank),
+        UNIQUE (challenge_id, scope, proof_id)
+    )
+", 'daily_results');
+
+// Drop run log: one row per date guarantees one drop per date. The drop claims
+// the date with INSERT ... ON CONFLICT DO NOTHING; a crashed 'running' row is
+// taken over after a timeout. steps records what each step did, for the logs.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_drop_runs (
+        challenge_date     DATE        PRIMARY KEY,
+        status             TEXT        NOT NULL DEFAULT 'running'
+                                       CHECK (status IN ('running', 'done', 'failed')),
+        daily_challenge_id TEXT        REFERENCES daily_challenges(id) ON DELETE SET NULL,
+        source             TEXT        CHECK (source IN ('scheduled', 'reserve', 'none')),
+        steps              JSONB       NOT NULL DEFAULT '{}'::jsonb,
+        attempts           INT         NOT NULL DEFAULT 1,
+        error              TEXT,
+        started_at         TIMESTAMPTZ NOT NULL DEFAULT now(),
+        finished_at        TIMESTAMPTZ
+    )
+", 'daily_drop_runs');
+
+// Daily Challenge push log, which doubles as the deferred push queue: the drop
+// queues one row per recipient with its send_at (user's local time), and the
+// tick sends due rows. recipient_key = 'u:<userId>' | 'g:<guestId>' (same
+// convention as channel_read_positions). The unique key prevents duplicates and,
+// with 3 types, caps Daily pushes at 3 per recipient per challenge date.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_push_log (
+        id             BIGSERIAL   PRIMARY KEY,
+        recipient_key  TEXT        NOT NULL,
+        user_id        TEXT        REFERENCES users(id) ON DELETE CASCADE,
+        guest_id       TEXT,
+        challenge_date DATE        NOT NULL,
+        type           TEXT        NOT NULL CHECK (type IN ('morning', 'reminder', 'digest')),
+        send_at        TIMESTAMPTZ NOT NULL,
+        status         TEXT        NOT NULL DEFAULT 'queued'
+                                   CHECK (status IN ('queued', 'sending', 'sent', 'skipped', 'failed')),
+        payload        JSONB       NOT NULL DEFAULT '{}'::jsonb,
+        sent_at        TIMESTAMPTZ,
+        error          TEXT,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+        UNIQUE (recipient_key, challenge_date, type)
+    )
+", 'daily_push_log');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_due
+            ON daily_push_log (send_at) WHERE status = 'queued'", 'idx_daily_push_log_due');
+
+// Content reports on proofs. user_reports allows one report per (reporter,
+// user) forever, so it cannot hold per-proof reports. reason_code is checked in
+// DailyModerationService. Guests can report (reporter_guest_id). Three open
+// reports from different people send an approved proof back to review.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_proof_reports (
+        id                BIGSERIAL   PRIMARY KEY,
+        proof_id          TEXT        NOT NULL REFERENCES daily_proofs(id) ON DELETE CASCADE,
+        reporter_user_id  TEXT        REFERENCES users(id) ON DELETE CASCADE,
+        reporter_guest_id TEXT,
+        reason_code       TEXT        NOT NULL,
+        details           TEXT,
+        status            TEXT        NOT NULL DEFAULT 'open'
+                                      CHECK (status IN ('open', 'reviewed', 'dismissed')),
+        created_at        TIMESTAMPTZ NOT NULL DEFAULT now(),
+        CONSTRAINT daily_proof_reports_reporter_check
+            CHECK (reporter_user_id IS NOT NULL OR reporter_guest_id IS NOT NULL)
+    )
+", 'daily_proof_reports');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proof_reports_reporter
+            ON daily_proof_reports (proof_id, COALESCE(reporter_user_id, '@g:' || reporter_guest_id))", 'uq_daily_proof_reports_reporter');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proof_reports_open
+            ON daily_proof_reports (proof_id) WHERE status = 'open'", 'idx_daily_proof_reports_open');
+
+// DB-backed rate limits (DbRateLimiter): the APCu limiter fails open on Render.
+// bucket_key is a sha256 of the limit key. Purged by POST /internal/cleanup.
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS rate_limit_buckets (
+        bucket_key   TEXT        PRIMARY KEY,
+        window_start TIMESTAMPTZ NOT NULL DEFAULT now(),
+        hits         INT         NOT NULL DEFAULT 1
+    )
+", 'rate_limit_buckets');
+
+// Back office audit log: who changed what. The back office has one shared
+// env-based login, so admin_username + admin_ip is the identity (as in
+// push_broadcasts).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS admin_audit_log (
+        id             BIGSERIAL   PRIMARY KEY,
+        admin_username TEXT        NOT NULL,
+        admin_ip       INET,
+        action         TEXT        NOT NULL,
+        entity_type    TEXT,
+        entity_id      TEXT,
+        before         JSONB,
+        after          JSONB,
+        created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'admin_audit_log');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_audit_log_entity
+            ON admin_audit_log (entity_type, entity_id, created_at DESC)", 'idx_admin_audit_log_entity');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_admin_audit_log_time ON admin_audit_log (created_at DESC)", 'idx_admin_audit_log_time');
+
+// Opt-out for every Daily Challenge push (morning, reminder, digest). On by default.
+run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS daily_challenge_push BOOLEAN NOT NULL DEFAULT TRUE", 'notification_preferences.daily_challenge_push');
+
+// Timezones: the device's IANA timezone, sent by the app at each launch.
+// Guest devices have no users row, so theirs lives on the push token.
+// Fallback is cities.timezone of current_city_id.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone TEXT", 'users.timezone');
+run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS timezone TEXT", 'mobile_push_tokens.timezone');
+
+// users.mode ('local' | 'exploring', self-declared) exists in production but was
+// never in this file. No-op there; makes a fresh database match.
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS mode TEXT", 'users.mode');
+
+// Admin switch that forces a city live. Not seeded: Saigon is switched on from
+// the back office, so a rerun never overrides the admin's choice.
+run($pdo, "ALTER TABLE cities ADD COLUMN IF NOT EXISTS force_live BOOLEAN NOT NULL DEFAULT false", 'cities.force_live');
+
+// Channel cards are messages with type='system', event='daily_challenge' |
+// 'daily_proof' and a JSON payload (the World card pattern). These unique
+// indexes make posting a card idempotent per channel. CONCURRENTLY so the build
+// never blocks writes on messages (run() uses autocommit, which it needs).
+run($pdo, "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_messages_daily_challenge
+            ON messages (channel_id, (payload->>'challengeId'))
+            WHERE event = 'daily_challenge'", 'uq_messages_daily_challenge');
+run($pdo, "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_messages_daily_proof
+            ON messages (channel_id, (payload->>'proofId'))
+            WHERE event = 'daily_proof'", 'uq_messages_daily_proof');
+
+// score_events for the Daily Challenge (phase 2). Daily points have no
+// challenge channel, so challenge_id becomes nullable and daily_* columns
+// reference what earned them (deleting a proof or twist cascades its points).
+// Role 'daily' and the daily_* kinds are in the CHECKs above.
+run($pdo, "ALTER TABLE score_events ALTER COLUMN challenge_id DROP NOT NULL", 'score_events.challenge_id nullable');
+run($pdo, "ALTER TABLE score_events ADD COLUMN IF NOT EXISTS daily_challenge_id TEXT REFERENCES daily_challenges(id) ON DELETE CASCADE", 'score_events.daily_challenge_id');
+run($pdo, "ALTER TABLE score_events ADD COLUMN IF NOT EXISTS daily_proof_id TEXT REFERENCES daily_proofs(id) ON DELETE CASCADE", 'score_events.daily_proof_id');
+run($pdo, "ALTER TABLE score_events ADD COLUMN IF NOT EXISTS daily_twist_id TEXT REFERENCES daily_twists(id) ON DELETE CASCADE", 'score_events.daily_twist_id');
+run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_role_check", 'score_events drop old role check');
+run($pdo, "ALTER TABLE score_events ADD CONSTRAINT score_events_role_check
+            CHECK (role IN ('challenger', 'taker', 'daily'))", 'score_events add role check');
+run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_source_check", 'score_events drop old source check');
+run($pdo, "ALTER TABLE score_events ADD CONSTRAINT score_events_source_check
+            CHECK (challenge_id IS NOT NULL OR daily_challenge_id IS NOT NULL)", 'score_events add source check');
+// Each Daily award at most once per (user, challenge, kind), even on reruns.
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_score_events_daily
+            ON score_events (user_id, daily_challenge_id, kind)
+            WHERE daily_challenge_id IS NOT NULL", 'uq_score_events_daily');
+
+// Reversal: trg_score_events_sync only adds on INSERT, so deleting a Daily row
+// takes its points back off the cached totals. Daily rows only - existing kinds
+// keep their behaviour (admin/scores_reset.php deletes first, then zeroes).
+run($pdo, "
+    CREATE OR REPLACE FUNCTION on_score_event_daily_reverse() RETURNS TRIGGER AS \$\$
+    BEGIN
+        UPDATE users
+        SET score_alltime = score_alltime - OLD.points,
+            score_month   = CASE
+                WHEN score_month_ref = OLD.month_ref THEN score_month - OLD.points
+                ELSE score_month
+            END
+        WHERE id = OLD.user_id;
+        RETURN OLD;
+    END;
+    \$\$ LANGUAGE plpgsql;
+", 'fn on_score_event_daily_reverse');
+run($pdo, "DROP TRIGGER IF EXISTS trg_score_event_daily_reverse ON score_events", 'drop trg_score_event_daily_reverse');
+run($pdo, "
+    CREATE TRIGGER trg_score_event_daily_reverse
+    AFTER DELETE ON score_events
+    FOR EACH ROW WHEN (OLD.daily_challenge_id IS NOT NULL)
+    EXECUTE FUNCTION on_score_event_daily_reverse()
+", 'trg_score_event_daily_reverse');
+
+// Daily point values (SPEC section 3.8, indicative). DO NOTHING, not DO UPDATE:
+// values tuned in production by SQL survive reruns. The streak bonus is per
+// consecutive day; its +20 cap is applied in code.
+run($pdo, "
+    INSERT INTO score_rules (kind, role, points) VALUES
+        ('daily_proof',     'daily', 10),
+        ('daily_streak',    'daily',  2),
+        ('daily_vote',      'daily',  2),
+        ('daily_top1',      'daily', 30),
+        ('daily_top2',      'daily', 20),
+        ('daily_top3',      'daily', 10),
+        ('daily_city_best', 'daily', 15),
+        ('daily_twist',     'daily', 15)
+    ON CONFLICT (kind, role) DO NOTHING
+", 'score_rules daily seed');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

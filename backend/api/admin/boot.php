@@ -142,6 +142,30 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/campaigns' || $uri === '/admin/campaigns/create') {
     require __DIR__ . '/campaign_create.php';
 
+// ── Daily Challenge back office ─────────────────────────────────────────────
+} elseif ($uri === '/admin/daily') {
+    require __DIR__ . '/daily.php';
+
+} elseif ($uri === '/admin/daily/today') {
+    require __DIR__ . '/daily_today.php';
+
+} elseif ($uri === '/admin/daily/reserve') {
+    require __DIR__ . '/daily_reserve.php';
+
+} elseif ($uri === '/admin/daily/import') {
+    require __DIR__ . '/daily_import.php';
+
+} elseif ($uri === '/admin/daily/log') {
+    require __DIR__ . '/daily_log.php';
+
+} elseif ($uri === '/admin/daily/new') {
+    $dailyId = null;
+    require __DIR__ . '/daily_edit.php';
+
+} elseif (preg_match('#^/admin/daily/([a-f0-9]{16})$#', $uri, $m)) {
+    $dailyId = $m[1];
+    require __DIR__ . '/daily_edit.php';
+
 } elseif ($uri === '/admin/challenges') {
     require __DIR__ . '/challenges.php';
 

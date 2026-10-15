@@ -1,0 +1,816 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Back office services for the Daily Challenge (pages in admin/, prompt 06,
+ * and the import CLI). Plain PHP, called directly - there is no admin API.
+ *
+ * Every change is written to admin_audit_log. The back office has one shared
+ * env login, so the actor is ADMIN_USERNAME + IP (or "cli" for scripts).
+ * Methods throw InvalidArgumentException with a short, admin-readable message
+ * when a request is refused.
+ */
+final class DailyAdminService
+{
+    public const TEXT_MAX    = 500;   // hard cap; the editor counts to 120
+    public const CONTEXT_MAX = 1000;
+    public const TWIST_MAX   = 280;
+
+    /** Set to 'cli' by scripts; null = the logged-in back office admin. */
+    public static ?string $actor = null;
+
+    // ── Challenges ───────────────────────────────────────────────────────────
+
+    /**
+     * $in: text (string, required), context (string|null), date (Y-m-d|null),
+     * status ('draft'|'scheduled'). A dated challenge must be for a future
+     * drop and its day must be free.
+     */
+    public static function createChallenge(array $in): array
+    {
+        $text    = self::cleanText($in['text'] ?? null, self::TEXT_MAX, 'Text');
+        $context = self::cleanOptional($in['context'] ?? null, self::CONTEXT_MAX, 'Context');
+        $date    = self::optionalDate($in['date'] ?? null);
+        $status  = self::editableStatus($in['status'] ?? 'draft');
+        if ($status === 'scheduled' && $date === null) {
+            throw new InvalidArgumentException('A scheduled challenge needs a date.');
+        }
+        if ($date !== null) {
+            self::assertFutureDate($date);
+            self::assertDateFree($date, null);
+        }
+
+        $id = bin2hex(random_bytes(8));
+        Database::pdo()->prepare("
+            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ")->execute([$id, $date, self::i18n($text), self::i18n($context), $status, self::actorName(), self::actorName()]);
+
+        $row = self::find($id);
+        self::audit('daily_challenge.create', 'daily_challenge', $id, null, $row);
+        return $row;
+    }
+
+    /**
+     * Edit text, context and (unless published) status. Editing a published
+     * challenge's text is allowed and logged - it is live everywhere.
+     * Dates change through moveChallenge().
+     */
+    public static function updateChallenge(string $id, array $in): array
+    {
+        $before = self::mustFind($id);
+        $sets = ['updated_at = now()', 'updated_by = ?'];
+        $args = [self::actorName()];
+
+        if (array_key_exists('text', $in)) {
+            $sets[] = 'text_i18n = ?';
+            $args[] = self::i18n(self::cleanText($in['text'], self::TEXT_MAX, 'Text'));
+        }
+        if (array_key_exists('context', $in)) {
+            $sets[] = 'context_i18n = ?';
+            $args[] = self::i18n(self::cleanOptional($in['context'], self::CONTEXT_MAX, 'Context'));
+        }
+        if (array_key_exists('status', $in) && $before['status'] !== 'published') {
+            $status = self::editableStatus($in['status']);
+            if ($status === 'scheduled' && $before['challenge_date'] === null && !$before['is_reserve']) {
+                throw new InvalidArgumentException('A scheduled challenge needs a date.');
+            }
+            $sets[] = 'status = ?';
+            $args[] = $status;
+        }
+        $args[] = $id;
+        Database::pdo()->prepare("UPDATE daily_challenges SET " . implode(', ', $sets) . " WHERE id = ?")->execute($args);
+
+        $after = self::find($id);
+        self::forgetCachedDate($after['challenge_date']);
+        self::audit('daily_challenge.update', 'daily_challenge', $id, $before, $after);
+        return $after;
+    }
+
+    /** Give a challenge a date and schedule it. */
+    public static function scheduleChallenge(string $id, string $date): array
+    {
+        $before = self::mustFind($id);
+        if ($before['status'] === 'published') {
+            throw new InvalidArgumentException('This challenge is already published.');
+        }
+        if ($before['is_reserve']) {
+            throw new InvalidArgumentException('Reserve challenges are published by the drop, not scheduled.');
+        }
+        self::assertValidDate($date);
+        self::assertFutureDate($date);
+        self::assertDateFree($date, $id);
+
+        Database::pdo()->prepare("
+            UPDATE daily_challenges SET challenge_date = ?, status = 'scheduled', updated_at = now(), updated_by = ?
+            WHERE id = ?
+        ")->execute([$date, self::actorName(), $id]);
+
+        $after = self::find($id);
+        self::audit('daily_challenge.schedule', 'daily_challenge', $id, $before, $after);
+        return $after;
+    }
+
+    /** Move an unpublished challenge to another free future date (keeps its status and twists). */
+    public static function moveChallenge(string $id, string $date): array
+    {
+        $before = self::mustFind($id);
+        if ($before['status'] === 'published') {
+            throw new InvalidArgumentException('A published challenge cannot be moved.');
+        }
+        if ($before['is_reserve']) {
+            throw new InvalidArgumentException('Reserve challenges have no date to move.');
+        }
+        self::assertValidDate($date);
+        self::assertFutureDate($date);
+        self::assertDateFree($date, $id);
+
+        Database::pdo()->prepare("
+            UPDATE daily_challenges SET challenge_date = ?, updated_at = now(), updated_by = ? WHERE id = ?
+        ")->execute([$date, self::actorName(), $id]);
+
+        $after = self::find($id);
+        self::audit('daily_challenge.move', 'daily_challenge', $id, $before, $after);
+        return $after;
+    }
+
+    /**
+     * Copy a challenge (text, context, selected twists) as a new draft, on
+     * $date if given (must be free and in the future) or undated.
+     */
+    public static function duplicateChallenge(string $id, ?string $date = null): array
+    {
+        $src = self::mustFind($id);
+        if ($date !== null) {
+            self::assertValidDate($date);
+            self::assertFutureDate($date);
+            self::assertDateFree($date, null);
+        }
+
+        $pdo   = Database::pdo();
+        $newId = bin2hex(random_bytes(8));
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare("
+                INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
+                SELECT ?, ?, text_i18n, context_i18n, 'draft', ?, ? FROM daily_challenges WHERE id = ?
+            ")->execute([$newId, $date, self::actorName(), self::actorName(), $id]);
+            $pdo->prepare("
+                INSERT INTO daily_twists (id, challenge_id, city_id, text, author_user_id, author_credit,
+                                          status, moderation_status, created_by)
+                SELECT encode(gen_random_bytes(8), 'hex'), ?, city_id, text, author_user_id, author_credit,
+                       'selected', 'approved', ?
+                FROM daily_twists WHERE challenge_id = ? AND status = 'selected'
+            ")->execute([$newId, self::actorName(), $id]);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        $row = self::find($newId);
+        self::audit('daily_challenge.duplicate', 'daily_challenge', $newId, ['from' => $src['id']], $row);
+        return $row;
+    }
+
+    /** Delete an unpublished challenge (its twists cascade). */
+    public static function deleteChallenge(string $id): void
+    {
+        $before = self::mustFind($id);
+        if ($before['status'] === 'published') {
+            throw new InvalidArgumentException('A published challenge cannot be deleted.');
+        }
+        Database::pdo()->prepare("DELETE FROM daily_challenges WHERE id = ?")->execute([$id]);
+        self::audit('daily_challenge.delete', 'daily_challenge', $id, $before, null);
+    }
+
+    // ── Reserve ──────────────────────────────────────────────────────────────
+
+    /** An evergreen challenge without a date, ready for a day with nothing scheduled. */
+    public static function createReserve(string $text, ?string $context = null): array
+    {
+        $text    = self::cleanText($text, self::TEXT_MAX, 'Text');
+        $context = self::cleanOptional($context, self::CONTEXT_MAX, 'Context');
+        $id      = bin2hex(random_bytes(8));
+        Database::pdo()->prepare("
+            INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, created_by, updated_by)
+            VALUES (?, true, ?, ?, 'scheduled', ?, ?)
+        ")->execute([$id, self::i18n($text), self::i18n($context), self::actorName(), self::actorName()]);
+
+        $row = self::find($id);
+        self::audit('daily_challenge.create_reserve', 'daily_challenge', $id, null, $row);
+        return $row;
+    }
+
+    /** Every reserve challenge, unused first (oldest first = next to be used), then used ones by date. */
+    public static function listReserve(): array
+    {
+        return Database::pdo()->query("
+            SELECT id, challenge_date, text_i18n, context_i18n, status, created_at,
+                   challenge_date IS NOT NULL AS used
+            FROM daily_challenges
+            WHERE is_reserve
+            ORDER BY (challenge_date IS NOT NULL), challenge_date DESC, created_at
+        ")->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // ── Calendar ─────────────────────────────────────────────────────────────
+
+    /**
+     * One entry per day from $from to $to (inclusive), with that day's
+     * challenge if any. state: empty | draft | scheduled | published | reserve_used.
+     */
+    public static function calendar(string $from, string $to): array
+    {
+        self::assertValidDate($from);
+        self::assertValidDate($to);
+        $stmt = Database::pdo()->prepare("
+            SELECT dc.*,
+                   (SELECT count(*) FROM daily_twists t
+                     WHERE t.challenge_id = dc.id AND t.status = 'selected') AS twist_count
+            FROM daily_challenges dc
+            WHERE dc.challenge_date BETWEEN ? AND ?
+        ");
+        $stmt->execute([$from, $to]);
+        $byDate = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $byDate[$row['challenge_date']] = $row;
+        }
+
+        $days = [];
+        $d    = new DateTimeImmutable($from, new DateTimeZone('UTC'));
+        $end  = new DateTimeImmutable($to, new DateTimeZone('UTC'));
+        for (; $d <= $end; $d = $d->modify('+1 day')) {
+            $key = $d->format('Y-m-d');
+            $row = $byDate[$key] ?? null;
+            $state = 'empty';
+            if ($row !== null) {
+                $state = DailyProofRepository::bool($row['is_reserve']) ? 'reserve_used' : $row['status'];
+            }
+            $days[] = ['date' => $key, 'state' => $state, 'challenge' => $row];
+        }
+        return $days;
+    }
+
+    /**
+     * Dates among the next $days drops with no scheduled or published
+     * challenge, counted after $afterDate (default: today's challenge date).
+     */
+    public static function gapsInNextDays(int $days = 3, ?string $afterDate = null): array
+    {
+        $first = (new DateTimeImmutable($afterDate ?? DailyClock::currentDate(), new DateTimeZone('UTC')))->modify('+1 day');
+        $last  = $first->modify('+' . ($days - 1) . ' days');
+        $gaps  = [];
+        foreach (self::calendar($first->format('Y-m-d'), $last->format('Y-m-d')) as $day) {
+            if (!in_array($day['state'], ['scheduled', 'published'], true)) {
+                $gaps[] = $day['date'];
+            }
+        }
+        return $gaps;
+    }
+
+    // ── Local Twists ─────────────────────────────────────────────────────────
+
+    /**
+     * Set or replace the selected twist of (challenge, city). Founder-written
+     * twists are approved directly. $cityId is a channel id ('city_N').
+     */
+    public static function setTwist(string $challengeId, string $cityId, string $text,
+                                    ?string $authorUserId = null, ?string $credit = null): array
+    {
+        self::mustFind($challengeId);
+        self::assertCity($cityId);
+        $text   = self::cleanText($text, self::TWIST_MAX, 'Twist');
+        if (ModerationService::check($text) !== null) {
+            throw new InvalidArgumentException('This twist was flagged by the text filter - please rephrase.');
+        }
+        $credit = self::cleanOptional($credit, 120, 'Credit');
+        if ($authorUserId !== null) {
+            $stmt = Database::pdo()->prepare("SELECT 1 FROM users WHERE id = ? AND deleted_at IS NULL");
+            $stmt->execute([$authorUserId]);
+            if (!$stmt->fetchColumn()) {
+                throw new InvalidArgumentException('Unknown author user.');
+            }
+        }
+
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $stmt = $pdo->prepare("
+                SELECT * FROM daily_twists
+                WHERE challenge_id = ? AND city_id = ? AND status = 'selected'
+                FOR UPDATE
+            ");
+            $stmt->execute([$challengeId, $cityId]);
+            $before = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+            if ($before !== null) {
+                $pdo->prepare("
+                    UPDATE daily_twists
+                    SET text = ?, author_user_id = ?, author_credit = ?, moderation_status = 'approved', updated_at = now()
+                    WHERE id = ?
+                ")->execute([$text, $authorUserId, $credit, $before['id']]);
+                $id = $before['id'];
+            } else {
+                $id = bin2hex(random_bytes(8));
+                $pdo->prepare("
+                    INSERT INTO daily_twists (id, challenge_id, city_id, text, author_user_id, author_credit,
+                                              status, moderation_status, created_by)
+                    VALUES (?, ?, ?, ?, ?, ?, 'selected', 'approved', ?)
+                ")->execute([$id, $challengeId, $cityId, $text, $authorUserId, $credit, self::actorName()]);
+            }
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        $after = self::findTwist($id);
+        self::audit('daily_twist.set', 'daily_twist', $id, $before, $after);
+        return $after;
+    }
+
+    /** setTwist() by challenge date. */
+    public static function setTwistForDate(string $date, string $cityId, string $text,
+                                           ?string $authorUserId = null, ?string $credit = null): array
+    {
+        self::assertValidDate($date);
+        $stmt = Database::pdo()->prepare("SELECT id FROM daily_challenges WHERE challenge_date = ?");
+        $stmt->execute([$date]);
+        $challengeId = $stmt->fetchColumn();
+        if ($challengeId === false) {
+            throw new InvalidArgumentException("No challenge on {$date}.");
+        }
+        return self::setTwist((string) $challengeId, $cityId, $text, $authorUserId, $credit);
+    }
+
+    /** Remove a twist (its points cascade and are reversed). */
+    public static function removeTwist(string $twistId): void
+    {
+        $before = self::findTwist($twistId);
+        if ($before === null) {
+            throw new InvalidArgumentException('Twist not found.');
+        }
+        Database::pdo()->prepare("DELETE FROM daily_twists WHERE id = ?")->execute([$twistId]);
+        self::audit('daily_twist.remove', 'daily_twist', $twistId, $before, null);
+    }
+
+    // ── Cities and proofs ────────────────────────────────────────────────────
+
+    public static function setForceLive(string $cityId, bool $live): void
+    {
+        self::assertCity($cityId);
+        $stmt = Database::pdo()->prepare("SELECT force_live FROM cities WHERE channel_id = ?");
+        $stmt->execute([$cityId]);
+        $before = DailyProofRepository::bool($stmt->fetchColumn());
+
+        Database::pdo()->prepare("UPDATE cities SET force_live = ? WHERE channel_id = ?")
+            ->execute([$live ? 'true' : 'false', $cityId]);
+        DailyRules::forgetLiveCities();
+        self::audit('city.force_live', 'city', $cityId, ['force_live' => $before], ['force_live' => $live]);
+    }
+
+    /**
+     * Admin removal: the proof stays for the record as 'removed' (never shown,
+     * blocks a repost), its points are taken back and its channel cards deleted.
+     */
+    public static function removeProof(string $proofId, ?string $reason = null): void
+    {
+        $before = DailyProofRepository::findById($proofId);
+        if ($before === null) {
+            throw new InvalidArgumentException('Proof not found.');
+        }
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $pdo->prepare("
+                UPDATE daily_proofs
+                SET moderation_status = 'removed', rejection_reason = ?, approved_at = NULL,
+                    moderated_at = now(), updated_at = now()
+                WHERE id = ?
+            ")->execute([self::cleanOptional($reason, 280, 'Reason'), $proofId]);
+            $pdo->prepare("DELETE FROM score_events WHERE daily_proof_id = ?")->execute([$proofId]);
+            $pdo->prepare("UPDATE daily_proof_reports SET status = 'reviewed' WHERE proof_id = ? AND status = 'open'")
+                ->execute([$proofId]);
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+        DailyCards::hideProof($proofId, $before['city_id']);
+        self::audit('daily_proof.remove', 'daily_proof', $proofId, $before, DailyProofRepository::findById($proofId));
+    }
+
+    // ── Import ───────────────────────────────────────────────────────────────
+
+    /**
+     * Validate an import document shaped like daily-challenges.example.json.
+     * Pure: $resolveCity maps a city slug to a channel id ('city_N') or null.
+     * Returns ['entries' => normalized entries, 'errors' => list of strings].
+     */
+    public static function validateImport(mixed $doc, callable $resolveCity): array
+    {
+        $errors  = [];
+        $entries = [];
+        if (!is_array($doc) || !isset($doc['challenges']) || !is_array($doc['challenges'])) {
+            return ['entries' => [], 'errors' => ['The file must contain a "challenges" array.']];
+        }
+
+        $seenDates = [];
+        foreach (array_values($doc['challenges']) as $i => $c) {
+            $label = '#' . ($i + 1);
+            if (!is_array($c)) {
+                $errors[] = "{$label}: not an object.";
+                continue;
+            }
+            $date    = $c['date'] ?? null;
+            $reserve = ($c['reserve'] ?? false) === true;
+            $text    = is_array($c['text'] ?? null) ? trim((string) ($c['text']['en'] ?? '')) : '';
+            $context = is_array($c['context'] ?? null) ? trim((string) ($c['context']['en'] ?? '')) : '';
+
+            if ($text === '') {
+                $errors[] = "{$label}: text.en is required.";
+            } elseif (mb_strlen($text) > self::TEXT_MAX) {
+                $errors[] = "{$label}: text.en is longer than " . self::TEXT_MAX . " characters.";
+            }
+            if (mb_strlen($context) > self::CONTEXT_MAX) {
+                $errors[] = "{$label}: context.en is too long.";
+            }
+            if ($reserve && $date !== null) {
+                $errors[] = "{$label}: a reserve challenge has no date.";
+            }
+            if (!$reserve) {
+                if (!is_string($date) || !DailyClock::isValidDate($date)) {
+                    $errors[] = "{$label}: date must be YYYY-MM-DD (or set \"reserve\": true).";
+                } elseif (isset($seenDates[$date])) {
+                    $errors[] = "{$label}: date {$date} appears twice in the file.";
+                } else {
+                    $seenDates[$date] = true;
+                }
+            }
+
+            $twists = [];
+            foreach (is_array($c['twists'] ?? null) ? $c['twists'] : [] as $j => $t) {
+                $tLabel = "{$label} twist " . ($j + 1);
+                $slug   = is_array($t) ? (string) ($t['city'] ?? '') : '';
+                $tText  = is_array($t) ? trim((string) ($t['text'] ?? '')) : '';
+                $cityId = $slug !== '' ? $resolveCity($slug) : null;
+                if ($cityId === null) {
+                    $errors[] = "{$tLabel}: unknown city \"{$slug}\".";
+                    continue;
+                }
+                if ($tText === '' || mb_strlen($tText) > self::TWIST_MAX) {
+                    $errors[] = "{$tLabel}: text is required (max " . self::TWIST_MAX . " characters).";
+                    continue;
+                }
+                if (ModerationService::check($tText) !== null) {
+                    $errors[] = "{$tLabel}: flagged by the text filter.";
+                    continue;
+                }
+                $credit = is_array($t) && is_string($t['credit'] ?? null) && trim($t['credit']) !== ''
+                    ? trim($t['credit']) : null;
+                $twists[] = ['cityId' => $cityId, 'text' => $tText, 'credit' => $credit];
+            }
+
+            $entries[] = [
+                'label'   => $label,
+                'date'    => $reserve ? null : $date,
+                'reserve' => $reserve,
+                'text'    => $text,
+                'context' => $context === '' ? null : $context,
+                'twists'  => $twists,
+            ];
+        }
+
+        return ['entries' => $entries, 'errors' => $errors];
+    }
+
+    /**
+     * Import a document. Nothing is written if any entry is invalid; with
+     * $dryRun nothing is written at all. A dated entry creates the day's
+     * challenge (scheduled), or updates it if not yet published; published
+     * days and past dates are skipped. Reserve entries are skipped when a
+     * reserve with the same English text exists. Returns a per-entry report.
+     */
+    public static function import(mixed $doc, bool $dryRun): array
+    {
+        $check = self::validateImport($doc, fn(string $slug): ?string => self::cityIdForSlug($slug));
+        if ($check['errors'] !== []) {
+            return ['ok' => false, 'dryRun' => $dryRun, 'errors' => $check['errors'], 'report' => []];
+        }
+
+        $pdo    = Database::pdo();
+        $report = [];
+        $today  = DailyClock::currentDate();
+        $pdo->beginTransaction();
+        try {
+            foreach ($check['entries'] as $e) {
+                if ($e['reserve']) {
+                    $stmt = $pdo->prepare("SELECT id FROM daily_challenges WHERE is_reserve AND text_i18n->>'en' = ?");
+                    $stmt->execute([$e['text']]);
+                    if ($stmt->fetchColumn() !== false) {
+                        $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => 'reserve already exists'];
+                        continue;
+                    }
+                    $id = bin2hex(random_bytes(8));
+                    $pdo->prepare("
+                        INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, created_by, updated_by)
+                        VALUES (?, true, ?, ?, 'scheduled', ?, ?)
+                    ")->execute([$id, self::i18n($e['text']), self::i18n($e['context']), self::actorName(), self::actorName()]);
+                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id];
+                } else {
+                    if ($e['date'] <= $today) {
+                        $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
+                        continue;
+                    }
+                    $stmt = $pdo->prepare("SELECT id, status FROM daily_challenges WHERE challenge_date = ? FOR UPDATE");
+                    $stmt->execute([$e['date']]);
+                    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
+                    if ($existing && $existing['status'] === 'published') {
+                        $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is already published"];
+                        continue;
+                    }
+                    if ($existing) {
+                        $id = $existing['id'];
+                        $pdo->prepare("
+                            UPDATE daily_challenges
+                            SET text_i18n = ?, context_i18n = ?, status = 'scheduled', updated_at = now(), updated_by = ?
+                            WHERE id = ?
+                        ")->execute([self::i18n($e['text']), self::i18n($e['context']), self::actorName(), $id]);
+                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date']];
+                    } else {
+                        $id = bin2hex(random_bytes(8));
+                        $pdo->prepare("
+                            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
+                            VALUES (?, ?, ?, ?, 'scheduled', ?, ?)
+                        ")->execute([$id, $e['date'], self::i18n($e['text']), self::i18n($e['context']), self::actorName(), self::actorName()]);
+                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date']];
+                    }
+                }
+
+                foreach ($e['twists'] as $t) {
+                    $stmt = $pdo->prepare("
+                        UPDATE daily_twists SET text = ?, author_credit = ?, moderation_status = 'approved', updated_at = now()
+                        WHERE challenge_id = ? AND city_id = ? AND status = 'selected'
+                    ");
+                    $stmt->execute([$t['text'], $t['credit'], $id, $t['cityId']]);
+                    if ($stmt->rowCount() === 0) {
+                        $pdo->prepare("
+                            INSERT INTO daily_twists (id, challenge_id, city_id, text, author_credit, status, moderation_status, created_by)
+                            VALUES (?, ?, ?, ?, ?, 'selected', 'approved', ?)
+                        ")->execute([bin2hex(random_bytes(8)), $id, $t['cityId'], $t['text'], $t['credit'], self::actorName()]);
+                    }
+                }
+            }
+
+            if ($dryRun) {
+                $pdo->rollBack();
+            } else {
+                $counts = array_count_values(array_column($report, 'action'));
+                self::audit('daily_challenge.import', 'daily_challenge', null, null, ['counts' => $counts]);
+                $pdo->commit();
+            }
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+
+        return ['ok' => true, 'dryRun' => $dryRun, 'errors' => [], 'report' => $report];
+    }
+
+    public static function cityIdForSlug(string $slug): ?string
+    {
+        $slug = DailyRules::slug($slug);
+        foreach (CityRepository::all() as $c) {
+            if (DailyRules::slug((string) $c['name']) === $slug) {
+                return 'city_' . $c['id'];
+            }
+        }
+        return null;
+    }
+
+    // ── Back office reads ────────────────────────────────────────────────────
+
+    /** Selected twists of a challenge with their author's username, keyed by city id ('city_N'). */
+    public static function twistsFor(string $challengeId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT t.*, u.username AS author_username
+            FROM daily_twists t
+            LEFT JOIN users u ON u.id = t.author_user_id
+            WHERE t.challenge_id = ? AND t.status = 'selected'
+        ");
+        $stmt->execute([$challengeId]);
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $out[$row['city_id']] = $row;
+        }
+        return $out;
+    }
+
+    /** Approved proofs per city and the pending count, for the today panel. */
+    public static function todayStats(string $challengeId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT city_id, count(*) FILTER (WHERE moderation_status = 'approved') AS approved,
+                   count(*) FILTER (WHERE moderation_status = 'pending') AS pending
+            FROM daily_proofs WHERE challenge_id = ? GROUP BY city_id
+        ");
+        $stmt->execute([$challengeId]);
+        $byCity   = [];
+        $approved = 0;
+        $pending  = 0;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $approved += (int) $r['approved'];
+            $pending  += (int) $r['pending'];
+            if ($r['city_id'] !== null && (int) $r['approved'] > 0) {
+                $byCity[$r['city_id']] = (int) $r['approved'];
+            }
+        }
+        arsort($byCity);
+        return ['approved' => $approved, 'pending' => $pending, 'byCity' => $byCity];
+    }
+
+    /** Latest audit entries, newest first, optionally for one entity type (and id). */
+    public static function listAuditLog(int $limit = 100, ?string $entityType = null, ?string $entityId = null): array
+    {
+        $where = [];
+        $args  = [];
+        if ($entityType !== null && $entityType !== '') {
+            $where[] = 'entity_type = ?';
+            $args[]  = $entityType;
+        }
+        if ($entityId !== null && $entityId !== '') {
+            $where[] = 'entity_id = ?';
+            $args[]  = $entityId;
+        }
+        $args[] = $limit;
+        $stmt = Database::pdo()->prepare(
+            "SELECT * FROM admin_audit_log" . ($where ? ' WHERE ' . implode(' AND ', $where) : '')
+            . " ORDER BY id DESC LIMIT ?"
+        );
+        $stmt->execute($args);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /** Resolve "@username" or "username" to a user id, or null. */
+    public static function userIdForUsername(string $username): ?string
+    {
+        $username = ltrim(trim($username), '@');
+        if ($username === '') {
+            return null;
+        }
+        $stmt = Database::pdo()->prepare("SELECT id FROM users WHERE lower(username) = lower(?) AND deleted_at IS NULL");
+        $stmt->execute([$username]);
+        $id = $stmt->fetchColumn();
+        return $id === false ? null : (string) $id;
+    }
+
+    // ── Internals ────────────────────────────────────────────────────────────
+
+    public static function find(string $id): ?array
+    {
+        $stmt = Database::pdo()->prepare("SELECT * FROM daily_challenges WHERE id = ?");
+        $stmt->execute([$id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            return null;
+        }
+        $row['is_reserve'] = DailyProofRepository::bool($row['is_reserve']);
+        return $row;
+    }
+
+    private static function mustFind(string $id): array
+    {
+        $row = self::find($id);
+        if ($row === null) {
+            throw new InvalidArgumentException('Challenge not found.');
+        }
+        return $row;
+    }
+
+    private static function findTwist(string $id): ?array
+    {
+        $stmt = Database::pdo()->prepare("SELECT * FROM daily_twists WHERE id = ?");
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    public static function audit(string $action, string $entityType, ?string $entityId, ?array $before, ?array $after): void
+    {
+        try {
+            Database::pdo()->prepare("
+                INSERT INTO admin_audit_log (admin_username, admin_ip, action, entity_type, entity_id, before, after)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ")->execute([
+                self::actorName(),
+                self::$actor === null ? self::actorIp() : null,
+                $action,
+                $entityType,
+                $entityId,
+                $before !== null ? json_encode($before, JSON_UNESCAPED_UNICODE) : null,
+                $after !== null ? json_encode($after, JSON_UNESCAPED_UNICODE) : null,
+            ]);
+        } catch (\Throwable $e) {
+            // The change itself succeeded; a lost log line must not undo it.
+            error_log("[daily-admin] audit log failed for {$action}: " . $e->getMessage());
+        }
+    }
+
+    /** Admin IP for the log. The admin bootstrap does not load Request, so fall back to REMOTE_ADDR. */
+    private static function actorIp(): ?string
+    {
+        $ip = class_exists('Request') ? Request::ip() : ($_SERVER['REMOTE_ADDR'] ?? null);
+        return is_string($ip) && filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
+    }
+
+    private static function actorName(): string
+    {
+        return self::$actor ?? (getenv('ADMIN_USERNAME') ?: 'admin');
+    }
+
+    private static function forgetCachedDate(?string $date): void
+    {
+        if ($date !== null && PHP_SAPI !== 'cli') {
+            @unlink(sys_get_temp_dir() . '/hilads_cache_' . md5('daily_challenge_v1_' . $date));
+        }
+    }
+
+    private static function i18n(?string $en): string
+    {
+        return json_encode($en === null ? new stdClass() : ['en' => $en], JSON_UNESCAPED_UNICODE);
+    }
+
+    private static function cleanText(mixed $v, int $max, string $field): string
+    {
+        $s = is_string($v) ? trim($v) : '';
+        if ($s === '') {
+            throw new InvalidArgumentException("{$field} is required.");
+        }
+        if (mb_strlen($s) > $max) {
+            throw new InvalidArgumentException("{$field} is longer than {$max} characters.");
+        }
+        return $s;
+    }
+
+    private static function cleanOptional(mixed $v, int $max, string $field): ?string
+    {
+        $s = is_string($v) ? trim($v) : '';
+        if ($s === '') {
+            return null;
+        }
+        if (mb_strlen($s) > $max) {
+            throw new InvalidArgumentException("{$field} is longer than {$max} characters.");
+        }
+        return $s;
+    }
+
+    private static function editableStatus(mixed $v): string
+    {
+        if (!in_array($v, ['draft', 'scheduled'], true)) {
+            throw new InvalidArgumentException('Status must be draft or scheduled.');
+        }
+        return $v;
+    }
+
+    private static function optionalDate(mixed $v): ?string
+    {
+        if ($v === null || $v === '') {
+            return null;
+        }
+        self::assertValidDate((string) $v);
+        return (string) $v;
+    }
+
+    private static function assertValidDate(string $date): void
+    {
+        if (!DailyClock::isValidDate($date)) {
+            throw new InvalidArgumentException('Date must be YYYY-MM-DD.');
+        }
+    }
+
+    /** Only future drops can be planned: today's challenge is already live (or handled by the drop). */
+    private static function assertFutureDate(string $date): void
+    {
+        if ($date <= DailyClock::currentDate()) {
+            throw new InvalidArgumentException("{$date} is not a future drop.");
+        }
+    }
+
+    private static function assertDateFree(string $date, ?string $exceptId): void
+    {
+        $stmt = Database::pdo()->prepare("SELECT id FROM daily_challenges WHERE challenge_date = ? AND id IS DISTINCT FROM ?");
+        $stmt->execute([$date, $exceptId]);
+        if ($stmt->fetchColumn() !== false) {
+            throw new InvalidArgumentException("{$date} already has a challenge.");
+        }
+    }
+
+    private static function assertCity(string $cityId): void
+    {
+        if (!preg_match('/^city_(\d+)$/', $cityId, $m) || CityRepository::findById((int) $m[1]) === null) {
+            throw new InvalidArgumentException('Unknown city.');
+        }
+    }
+}

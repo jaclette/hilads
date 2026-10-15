@@ -238,13 +238,15 @@ class MobilePushService
      * pref/cooldown/bell machinery. Used for guest-device broadcasts (admin
      * announcements to "all app installs") where the recipient has no users
      * row, no notification_preferences, and no bell history - just a device.
-     * Returns the number of tokens queued.
+     * Returns the number of tokens queued. $type lands in data.type (the app
+     * routes taps on it); Daily Challenge pushes pass their own.
      */
     public static function sendToTokens(
         array   $tokens,
         string  $title,
         ?string $body,
-        array   $data = []
+        array   $data = [],
+        string  $type = 'admin_announcement'
     ): int {
         $tokens = array_values(array_unique(array_filter(
             $tokens,
@@ -259,7 +261,7 @@ class MobilePushService
                 'to'         => $token,
                 'title'      => $title,
                 'body'       => $body ?? '',
-                'data'       => array_merge($data, ['type' => 'admin_announcement']),
+                'data'       => array_merge($data, ['type' => $type]),
                 'sound'      => 'default',
                 'channelId'  => 'default',
                 'richContent'    => $richImage !== null ? ['image' => $richImage] : null,
@@ -271,7 +273,7 @@ class MobilePushService
             self::$flushRegistered = true;
             register_shutdown_function([self::class, 'flush']);
         }
-        error_log('[push-send] queued admin_announcement for ' . count($tokens) . ' guest device(s)');
+        error_log("[push-send] queued {$type} for " . count($tokens) . ' device(s)');
         return count($tokens);
     }
 

@@ -87,6 +87,17 @@ if (str_starts_with($uri, '/admin')) {
     // Campaign auto-share posts a message as @hilads into the city / World channel.
     require_once __DIR__ . '/../src/MessageRepository.php';
     require_once __DIR__ . '/../src/WorldRepository.php';
+    require_once __DIR__ . '/../src/DailyClock.php';
+    require_once __DIR__ . '/../src/DailyRules.php';
+    require_once __DIR__ . '/../src/DailyProofRepository.php';
+    require_once __DIR__ . '/../src/DailyChallengeRepository.php';
+    require_once __DIR__ . '/../src/DailyAdminService.php';
+    require_once __DIR__ . '/../src/DbRateLimiter.php';
+    require_once __DIR__ . '/../src/DailyCards.php';
+    require_once __DIR__ . '/../src/DailyModerationService.php';
+    require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
+    require_once __DIR__ . '/../src/DailyPushes.php';
+    require_once __DIR__ . '/../src/DailyDrop.php';
     require_once __DIR__ . '/../admin/boot.php';
     exit;
 }
@@ -212,6 +223,16 @@ require_once __DIR__ . '/../src/UserBadgeService.php';
 require_once __DIR__ . '/../src/UserResource.php';
 require_once __DIR__ . '/../src/AnalyticsService.php';
 require_once __DIR__ . '/../src/MonthlyRankService.php';
+require_once __DIR__ . '/../src/DbRateLimiter.php';
+require_once __DIR__ . '/../src/DailyClock.php';
+require_once __DIR__ . '/../src/DailyRules.php';
+require_once __DIR__ . '/../src/DailyProofRepository.php';
+require_once __DIR__ . '/../src/DailyChallengeRepository.php';
+require_once __DIR__ . '/../src/DailyAdminService.php';
+require_once __DIR__ . '/../src/DailyCards.php';
+require_once __DIR__ . '/../src/DailyModerationService.php';
+require_once __DIR__ . '/../src/DailyPushes.php';
+require_once __DIR__ . '/../src/DailyDrop.php';
 
 $router = new Router();
 

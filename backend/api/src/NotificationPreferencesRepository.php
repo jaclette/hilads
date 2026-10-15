@@ -22,6 +22,7 @@ class NotificationPreferencesRepository
             'topic_reply_push'     => true,   // replies in topics I joined
             'new_topic_push'       => false,  // new topics in my city
             'admin_announcement_push' => true, // product announcements from /admin/push
+            'daily_challenge_push' => true,   // Daily Challenge morning/reminder/digest pushes
         ];
     }
 
@@ -31,7 +32,8 @@ class NotificationPreferencesRepository
             $stmt = Database::pdo()->prepare("
                 SELECT dm_push, event_message_push, event_join_push, new_event_push, new_challenge_push, mention_push,
                        channel_message_push, city_join_push, world_arrival_push, friend_request_push, vibe_received_push,
-                       profile_view_push, topic_reply_push, new_topic_push, admin_announcement_push
+                       profile_view_push, topic_reply_push, new_topic_push, admin_announcement_push,
+                       daily_challenge_push
                 FROM notification_preferences
                 WHERE user_id = ?
             ");
@@ -58,6 +60,7 @@ class NotificationPreferencesRepository
                 'topic_reply_push'     => (bool) ($row['topic_reply_push'] ?? true),
                 'new_topic_push'       => (bool) ($row['new_topic_push'] ?? false),
                 'admin_announcement_push' => (bool) ($row['admin_announcement_push'] ?? true),
+                'daily_challenge_push' => (bool) ($row['daily_challenge_push'] ?? true),
             ];
         } catch (\Throwable $e) {
             // Most likely cause: profile_view_push column not yet migrated in production.

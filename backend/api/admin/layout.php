@@ -249,6 +249,7 @@ function admin_nav(string $current = ''): void
             '/admin/topics'  => 'Hi now',
             '/admin/challenges' => 'Challenges',
             '/admin/campaigns'  => '⚡ Campaigns',
+            '/admin/daily'      => '🔥 Daily',
             '/admin/messages'=> 'Messages',
             '/admin/arrivals'=> 'Arrivals',
             '/admin/reports' => 'Reports',

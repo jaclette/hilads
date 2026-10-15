@@ -141,6 +141,7 @@ class NotificationRepository
             'new_topic_push'       => false,
             'join_request_push'    => true,
             'admin_announcement_push' => true,
+            'daily_challenge_push' => true,
         ];
     }
 

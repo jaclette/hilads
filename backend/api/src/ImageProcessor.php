@@ -108,4 +108,80 @@ class ImageProcessor
 
         return $tmpPath;
     }
+
+    /**
+     * Re-encode an uploaded image so NO metadata survives (EXIF, GPS, XMP,
+     * PNG text chunks): GD decodes to raw pixels and writes a fresh file in
+     * the same format. The JPEG EXIF orientation is applied first so the
+     * pixels end up upright once the tag is gone (needs the exif extension;
+     * without it the image is still stripped, just not rotated).
+     *
+     * Returns the path to a temporary file (caller MUST unlink it), or null
+     * on any failure with the reason in self::$lastError. Callers fail closed:
+     * an image that cannot be stripped is never stored.
+     */
+    public static function stripMetadata(string $srcPath, string $srcMime): ?string
+    {
+        self::$lastError = null;
+
+        if (!extension_loaded('gd')) {
+            self::$lastError = 'GD extension not loaded';
+            return null;
+        }
+
+        $img = match ($srcMime) {
+            'image/jpeg' => @imagecreatefromjpeg($srcPath),
+            'image/png'  => @imagecreatefrompng($srcPath),
+            'image/webp' => @imagecreatefromwebp($srcPath),
+            default      => null,
+        };
+        if (!$img) {
+            self::$lastError = "decode failed (mime={$srcMime}): " . (error_get_last()['message'] ?? 'unknown');
+            return null;
+        }
+
+        if ($srcMime === 'image/jpeg' && function_exists('exif_read_data')) {
+            $exif = @exif_read_data($srcPath);
+            $img  = self::applyOrientation($img, (int) ($exif['Orientation'] ?? 1));
+        }
+
+        if ($srcMime !== 'image/jpeg') {
+            imagealphablending($img, false);
+            imagesavealpha($img, true);
+        }
+
+        $tmpPath = tempnam(sys_get_temp_dir(), 'hilads_strip_');
+        $ok = match ($srcMime) {
+            'image/jpeg' => imagejpeg($img, $tmpPath, 88),
+            'image/png'  => imagepng($img, $tmpPath, 6),
+            'image/webp' => imagewebp($img, $tmpPath, 85),
+        };
+        imagedestroy($img);
+
+        if (!$ok) {
+            @unlink($tmpPath);
+            self::$lastError = "encode failed (mime={$srcMime})";
+            return null;
+        }
+
+        return $tmpPath;
+    }
+
+    /** Rotate/flip pixels per the EXIF Orientation tag (1 = already upright). */
+    private static function applyOrientation(\GdImage $img, int $orientation): \GdImage
+    {
+        // imagerotate() turns counter-clockwise: 270 = a quarter turn clockwise.
+        $rotate = fn(\GdImage $i, int $deg): \GdImage => imagerotate($i, $deg, 0) ?: $i;
+
+        switch ($orientation) {
+            case 2: imageflip($img, IMG_FLIP_HORIZONTAL); break;
+            case 3: $img = $rotate($img, 180); break;
+            case 4: imageflip($img, IMG_FLIP_VERTICAL); break;
+            case 5: $img = $rotate($img, 270); imageflip($img, IMG_FLIP_HORIZONTAL); break;
+            case 6: $img = $rotate($img, 270); break;
+            case 7: $img = $rotate($img, 270); imageflip($img, IMG_FLIP_VERTICAL); break;
+            case 8: $img = $rotate($img, 90); break;
+        }
+        return $img;
+    }
 }

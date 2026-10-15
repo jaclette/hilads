@@ -4092,6 +4092,13 @@ $router->add('GET', '/api/v1/world/messages', function () {
     $reactViewerUserId  = AuthService::currentUser()['id'] ?? null;
     MessageRepository::attachReactions($messages, $reactViewerGuestId ?: null, $reactViewerUserId);
 
+    // Block filter (Apple G1.2), same as city feeds - World had none, and Daily
+    // Challenge proof cards land here.
+    $messages = filterByBlocks(
+        $messages,
+        viewerBlockSet($reactViewerUserId, isValidGuestId($reactViewerGuestId) ? $reactViewerGuestId : null)
+    );
+
     Response::json(['messages' => $messages, 'hasMore' => $res['hasMore']]);
 });
 
@@ -4488,7 +4495,10 @@ $router->add('GET', '/api/v1/media/download', function () {
 // never drift apart.
 
 $router->add('POST', '/api/v1/uploads', function () {
-    enforceRateLimit('uploads', 20, 600);
+    // DB-backed: the APCu limiter fails open on Render (no APCu).
+    if (!DbRateLimiter::allow('uploads|' . Request::ip(), 20, 600)) {
+        Response::json(['error' => 'Too many uploads - slow down.', 'code' => 'rate_limited'], 429);
+    }
     $file = $_FILES['file'] ?? null;
 
     if ($file === null || $file['error'] !== UPLOAD_ERR_OK) {
@@ -4537,9 +4547,19 @@ $router->add('POST', '/api/v1/uploads', function () {
     $ext      = $allowed[$mimeType];
     $filename = bin2hex(random_bytes(16)) . '.' . $ext;
 
+    // Strip every byte of metadata (EXIF incl. GPS) by re-encoding. Fails
+    // closed: an image we cannot strip is never stored, so a photo can never
+    // leak where it was taken. The stripped file feeds the thumbnail too.
+    $cleanPath = ImageProcessor::stripMetadata($file['tmp_name'], $mimeType);
+    if ($cleanPath === null) {
+        error_log('[uploads] strip failed: ' . ImageProcessor::$lastError);
+        Response::json(['error' => 'Could not process this image', 'code' => 'image_processing_failed'], 422);
+    }
+
     try {
-        $url = R2Uploader::put($file['tmp_name'], $filename, $mimeType);
+        $url = R2Uploader::put($cleanPath, $filename, $mimeType);
     } catch (RuntimeException $e) {
+        @unlink($cleanPath);
         Response::json(['error' => $e->getMessage()], 500);
     }
 
@@ -4547,7 +4567,8 @@ $router->add('POST', '/api/v1/uploads', function () {
     // Max 400px longest side, JPEG 80%. If anything fails we return thumbUrl: null
     // and the client falls back to the full-size URL - no broken images.
     $thumbUrl = null;
-    $thumbTmp = ImageProcessor::generateAvatarThumbnail($file['tmp_name'], $mimeType);
+    $thumbTmp = ImageProcessor::generateAvatarThumbnail($cleanPath, $mimeType);
+    @unlink($cleanPath);
     if ($thumbTmp !== null) {
         try {
             // Name the thumb DETERMINISTICALLY from the full file's base
@@ -5928,13 +5949,21 @@ $router->add('POST', '/internal/cleanup', function () {
     ");
     $dmDeleted = $stmt->rowCount();
 
-    error_log("[cleanup] city_messages={$cityDeleted} event_channels={$eventChannelsDeleted} dm_messages={$dmDeleted}");
+    // 4. DB rate-limit buckets - every window is far shorter than a day
+    $stmt = $pdo->query("
+        DELETE FROM rate_limit_buckets
+        WHERE window_start < now() - INTERVAL '1 day'
+    ");
+    $rateBucketsDeleted = $stmt->rowCount();
+
+    error_log("[cleanup] city_messages={$cityDeleted} event_channels={$eventChannelsDeleted} dm_messages={$dmDeleted} rate_buckets={$rateBucketsDeleted}");
 
     Response::json([
         'ok'                    => true,
         'city_messages_deleted' => $cityDeleted,
         'event_channels_deleted'=> $eventChannelsDeleted,
         'dm_messages_deleted'   => $dmDeleted,
+        'rate_buckets_deleted'  => $rateBucketsDeleted,
     ]);
 });
 
@@ -7369,6 +7398,9 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     $locale   = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
     $guestId  = trim((string) ($body['guestId']  ?? ''));
     $userId   = $user['id'] ?? null;
+    // Device IANA timezone (Daily Challenge push timing); ignored when invalid.
+    $timezone = is_string($body['timezone'] ?? null) && DailyRules::isValidTimezone(trim($body['timezone']))
+        ? trim($body['timezone']) : null;
 
     if ($userId === null && $guestId === '') {
         error_log("[push-subscribe] REJECTED - no user and no guestId");
@@ -7398,16 +7430,17 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     try {
         $stmt = Database::pdo()->prepare("
-            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform, timezone)
+            VALUES (?, ?, ?, ?, ?)
             ON CONFLICT (token) DO UPDATE
                SET user_id      = EXCLUDED.user_id,
                    guest_id     = EXCLUDED.guest_id,
                    platform     = EXCLUDED.platform,
+                   timezone     = COALESCE(EXCLUDED.timezone, mobile_push_tokens.timezone),
                    last_used_at = now()
             RETURNING id
         ");
-        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform]);
+        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform, $timezone]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         error_log("[push-subscribe] upsert success for " . ($userId ?? 'guest:' . $guestId) . " row_id=" . ($row['id'] ?? '?'));
     } catch (\Throwable $e) {
@@ -14150,3 +14183,316 @@ $router->add('GET', '/internal/sentry-test', function () {
     Response::json(['ok' => true, 'message' => 'Sentry test event sent']);
 });
 // ── END TEMPORARY ─────────────────────────────────────────────────────────────
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DAILY CHALLENGE - docs/daily-challenge/API.md
+// ══════════════════════════════════════════════════════════════════════════════
+// One universal challenge per day, live from the daily drop (DAILY_DROP_UTC,
+// default 02:00) until the next. Reads are public (guests can view); posting a
+// proof needs an account (AUDIT Q4). Moderation, channel cards and the drop
+// cron come in later prompts.
+
+/** 'city_N' from ?cityId=N, else the viewer's current city, else null. */
+function dailyCityParam(?array $user): ?string
+{
+    if (isset($_GET['cityId'])) {
+        $n = filter_var($_GET['cityId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($n === false || CityRepository::findById($n) === null) {
+            Response::json(['error' => 'Unknown city', 'code' => 'invalid_city'], 400);
+        }
+        return 'city_' . $n;
+    }
+    $current = $user['current_city_id'] ?? null;
+    return is_string($current) && preg_match('/^city_\d+$/', $current) ? $current : null;
+}
+
+/** Load a proof the viewer owns, or answer 404/403. */
+function dailyOwnProof(string $proofId, array $user): array
+{
+    $proof = preg_match('/^[a-f0-9]{16}$/', $proofId) ? DailyProofRepository::findById($proofId) : null;
+    if ($proof === null) {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    if ($proof['user_id'] !== $user['id']) {
+        Response::json(['error' => 'Not your proof', 'code' => 'forbidden'], 403);
+    }
+    return $proof;
+}
+
+/**
+ * Gate a proof write: banned users are refused, the caption passes the text
+ * filter. Answers 403/422 itself.
+ */
+function dailyGateProofWrite(array $user, array $fields): void
+{
+    if (BanRepository::isBanned($user['guest_id'] ?? null, Request::ip())) {
+        Response::json(['error' => 'You can no longer post here.', 'code' => 'banned'], 403);
+    }
+    if (isset($fields['caption']) && ModerationService::check($fields['caption']) !== null) {
+        Response::json(['error' => 'Your caption was flagged by moderation - please rephrase.', 'code' => 'moderation_blocked'], 422);
+    }
+}
+
+/**
+ * After a proof is written it waits for review: alert the admin, or approve
+ * at once when DAILY_AUTO_APPROVE is on (local development). Returns the row.
+ */
+function dailyAfterProofWrite(string $proofId): array
+{
+    if (DailyModerationService::autoApproveEnabled()) {
+        DailyAdminService::$actor = 'auto-approve';
+        return DailyModerationService::approveProof($proofId);
+    }
+    DailyModerationService::alertAdminQueue();
+    return DailyProofRepository::findById($proofId);
+}
+
+/** Viewer's two-way block set, for guests too (?guestId=). */
+function dailyBlocks(?array $user): array
+{
+    $guestId = isValidGuestId($_GET['guestId'] ?? null) ? $_GET['guestId'] : null;
+    return viewerBlockSet($user['id'] ?? null, $user === null ? $guestId : null);
+}
+
+const DAILY_ERRORS = [
+    'invalid_photo'   => 'The photo must be uploaded through /api/v1/uploads.',
+    'invalid_caption' => 'The caption must be one sentence of at most 140 characters.',
+    'invalid_price'   => 'The price needs an amount and a 3-letter currency code.',
+    'invalid_place'   => 'The place needs a valid latitude and longitude.',
+];
+
+// GET /api/v1/daily/today?cityId= - today's challenge for the home card.
+$router->add('GET', '/api/v1/daily/today', function () {
+    $user = AuthService::currentUser();
+    Response::json(DailyChallengeRepository::header(DailyClock::currentDate(), dailyCityParam($user), $user));
+});
+
+// GET /api/v1/daily/challenges/{date}?scope=world|city&cityId=&before=&limit=
+// Challenge sheet: header + approved proofs (paged) + practical info.
+$router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) {
+    $date = $params['date'];
+    if (!DailyClock::isValidDate($date) || $date > DailyClock::currentDate()
+        || DailyChallengeRepository::findPublishedByDate($date) === null) {
+        Response::json(['error' => 'Challenge not found', 'code' => 'not_found'], 404);
+    }
+    $user   = AuthService::currentUser();
+    $cityId = dailyCityParam($user);
+    $scope  = ($_GET['scope'] ?? 'world') === 'city' ? 'city' : 'world';
+    if ($scope === 'city' && $cityId === null) {
+        Response::json(['error' => 'scope=city needs a city', 'code' => 'invalid_city'], 400);
+    }
+    $limit  = max(1, min(50, (int) ($_GET['limit'] ?? 20)));
+    $before = isset($_GET['before']) ? (int) $_GET['before'] : null;
+
+    $out   = DailyChallengeRepository::header($date, $cityId, $user);
+    $id    = $out['challenge']['id'];
+    $proofCity = $scope === 'city' ? $cityId : null;
+    $rows  = DailyProofRepository::listApproved($id, $proofCity, $before, $limit);
+    $out['scope']    = $scope;
+    // hasMore and the cursor follow the unfiltered page; blocked authors are dropped after.
+    $visible         = filterByBlocks($rows, dailyBlocks($user), 'user_id', 'guest_id');
+    $out['proofs']   = array_map(fn(array $r) => DailyProofRepository::format($r, $user['id'] ?? null), $visible);
+    $out['hasMore']  = count($rows) >= $limit;
+    $out['nextBefore'] = $rows !== [] ? DailyProofRepository::ts(end($rows)['approved_at']) : null;
+    $out['practical'] = DailyChallengeRepository::practical($id, $proofCity);
+    Response::json($out);
+});
+
+// GET /api/v1/daily/archive?cityId=&before=YYYY-MM-DD&limit= - "Already done".
+$router->add('GET', '/api/v1/daily/archive', function () {
+    $user   = AuthService::currentUser();
+    $before = $_GET['before'] ?? null;
+    if ($before !== null && !DailyClock::isValidDate((string) $before)) {
+        Response::json(['error' => 'before must be YYYY-MM-DD', 'code' => 'invalid_date'], 400);
+    }
+    $limit = max(1, min(30, (int) ($_GET['limit'] ?? 20)));
+    $out   = DailyChallengeRepository::archive(dailyCityParam($user), $before, $limit);
+    $blocked = array_flip(dailyBlocks($user)['user_ids'] ?? []);
+    foreach ($out['items'] as &$item) {
+        if ($item['bestProof'] !== null && isset($blocked[$item['bestProof']['user']['id']])) {
+            $item['bestProof'] = null;
+        }
+    }
+    unset($item);
+    Response::json($out);
+});
+
+// GET /api/v1/daily/live-cities - live cities (for the archive city picker).
+$router->add('GET', '/api/v1/daily/live-cities', function () {
+    $items = [];
+    foreach (DailyRules::liveCityIds() as $cityId) {
+        $city = CityRepository::findById((int) substr($cityId, 5));
+        if ($city !== null) {
+            $items[] = ['id' => $city['id'], 'name' => $city['name']];
+        }
+    }
+    Response::json(['items' => $items]);
+});
+
+// GET /api/v1/daily/proofs/{id} - one proof: approved, or any status for its owner.
+$router->add('GET', '/api/v1/daily/proofs/{id}', function (array $params) {
+    $user  = AuthService::currentUser();
+    $proof = preg_match('/^[a-f0-9]{16}$/', $params['id']) ? DailyProofRepository::findById($params['id']) : null;
+    $mine  = $proof !== null && $user !== null && $proof['user_id'] === $user['id'];
+    if ($proof === null || (!$mine && $proof['moderation_status'] !== 'approved')) {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    Response::json(['proof' => DailyProofRepository::format($proof, $user['id'] ?? null)]);
+});
+
+// POST /api/v1/daily/proofs - publish my proof for today's challenge.
+$router->add('POST', '/api/v1/daily/proofs', function () {
+    $user = AuthService::requireAuth();
+    if (!DbRateLimiter::allow('daily_proof|' . $user['id'], 10, 3600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    [$fields, $err] = DailyProofRepository::validateInput(Request::json() ?? [], false);
+    if ($err !== null) {
+        Response::json(['error' => DAILY_ERRORS[$err], 'code' => $err], 422);
+    }
+    dailyGateProofWrite($user, $fields);
+    $challenge = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
+    if ($challenge === null) {
+        Response::json(['error' => 'There is no active challenge right now.', 'code' => 'no_active_challenge'], 409);
+    }
+    $proof = DailyProofRepository::create($user, $challenge, $fields);
+    if ($proof === null) {
+        Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
+    }
+    $proof = dailyAfterProofWrite($proof['id']);
+    apiLog('daily', 'proof created', ['proof' => $proof['id'], 'user' => $user['id'], 'challenge' => $challenge['id']]);
+    Response::json(['proof' => DailyProofRepository::format($proof, $user['id'])], 201);
+});
+
+// PATCH /api/v1/daily/proofs/{id} - edit my proof while its challenge is active.
+// Any edit sends it back to moderation.
+$router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
+    $user  = AuthService::requireAuth();
+    $proof = dailyOwnProof($params['id'], $user);
+    if ($proof['moderation_status'] === 'removed') {
+        Response::json(['error' => 'This proof was removed by a moderator.', 'code' => 'forbidden'], 403);
+    }
+    if (!DailyClock::isActive((string) $proof['challenge_date'])) {
+        Response::json(['error' => 'This challenge is closed.', 'code' => 'challenge_closed'], 409);
+    }
+    if (!DbRateLimiter::allow('daily_proof|' . $user['id'], 10, 3600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    [$fields, $err] = DailyProofRepository::validateInput(Request::json() ?? [], true);
+    if ($err !== null) {
+        Response::json(['error' => DAILY_ERRORS[$err], 'code' => $err], 422);
+    }
+    dailyGateProofWrite($user, $fields);
+    // The approved card (if any) keeps its last approved content until the
+    // edit is approved, then it is updated in place.
+    DailyProofRepository::update($proof['id'], $fields);
+    $updated = dailyAfterProofWrite($proof['id']);
+    if (isset($fields['photo_url']) && $fields['photo_url'] !== $proof['photo_url']) {
+        dailyDeletePhoto($proof['photo_url']);
+    }
+    Response::json(['proof' => DailyProofRepository::format($updated, $user['id'])]);
+});
+
+// DELETE /api/v1/daily/proofs/{id} - delete my proof, any time. Votes, results
+// and points go with it; the photo is deleted from storage.
+$router->add('DELETE', '/api/v1/daily/proofs/{id}', function (array $params) {
+    $user  = AuthService::requireAuth();
+    $proof = dailyOwnProof($params['id'], $user);
+    DailyCards::hideProof($proof['id'], $proof['city_id']);
+    DailyProofRepository::delete($proof['id']);
+    dailyDeletePhoto($proof['photo_url']);
+    apiLog('daily', 'proof deleted', ['proof' => $proof['id'], 'user' => $user['id']]);
+    Response::json(['ok' => true]);
+});
+
+// POST /api/v1/daily/proofs/{id}/report {reasonCode, details?, guestId?}
+// Report a visible proof. Guests can report. Three open reports from different
+// people send the proof back to review (hidden) until an admin decides.
+$router->add('POST', '/api/v1/daily/proofs/{id}/report', function (array $params) {
+    $user    = AuthService::currentUser();
+    $body    = Request::json() ?? [];
+    $guestId = $user === null && isValidGuestId($body['guestId'] ?? null) ? $body['guestId'] : null;
+    if ($user === null && $guestId === null) {
+        Response::json(['error' => 'Identity required'], 401);
+    }
+    $proof = preg_match('/^[a-f0-9]{16}$/', $params['id']) ? DailyProofRepository::findById($params['id']) : null;
+    if ($proof === null || $proof['moderation_status'] !== 'approved') {
+        Response::json(['error' => 'Proof not found', 'code' => 'not_found'], 404);
+    }
+    if (!DbRateLimiter::allow('daily_report|' . ($user['id'] ?? $guestId), 5, 3600)) {
+        Response::json(['error' => 'Too many reports - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    try {
+        $result = DailyModerationService::report(
+            $proof, $user['id'] ?? null, $guestId,
+            (string) ($body['reasonCode'] ?? ''),
+            is_string($body['details'] ?? null) ? $body['details'] : null,
+        );
+    } catch (InvalidArgumentException $e) {
+        $map = [
+            'invalid_reason'  => 'reasonCode must be one of: ' . implode(', ', DailyModerationService::REPORT_REASONS),
+            'own_proof'       => 'You cannot report your own proof.',
+            'invalid_details' => 'Details are limited to 500 characters.',
+        ];
+        Response::json(['error' => $map[$e->getMessage()] ?? 'Invalid report', 'code' => $e->getMessage()], 422);
+    }
+    if ($result === 'already_reported') {
+        Response::json(['error' => 'You already reported this proof.', 'code' => 'already_reported'], 409);
+    }
+    apiLog('daily', 'proof reported', ['proof' => $proof['id'], 'result' => $result]);
+    Response::json(['ok' => true], 201);
+});
+
+/** Delete an uploaded photo and its thumbnail from R2 (best effort). */
+function dailyDeletePhoto(string $url): void
+{
+    $name = R2Uploader::ownUploadFilename($url);
+    if ($name === null) {
+        return;
+    }
+    R2Uploader::delete($name);
+    R2Uploader::delete('thumb_' . pathinfo($name, PATHINFO_FILENAME) . '.jpg');
+}
+
+// POST /api/v1/daily/device {timezone, guestId?, pushToken?} - the device's IANA
+// timezone, sent at each launch so Daily pushes land at the user's local time.
+// Registered users: users.timezone. Guests have no users row, so theirs lives on
+// their push token. Writes only when the value changed.
+$router->add('POST', '/api/v1/daily/device', function () {
+    $user  = AuthService::currentUser();
+    $body  = Request::json() ?? [];
+    $tz    = is_string($body['timezone'] ?? null) ? trim($body['timezone']) : '';
+    $token = is_string($body['pushToken'] ?? null) ? trim($body['pushToken']) : '';
+    if (!DailyRules::isValidTimezone($tz)) {
+        Response::json(['error' => 'Unknown timezone', 'code' => 'invalid_timezone'], 422);
+    }
+    $pdo     = Database::pdo();
+    $updated = 0;
+    if ($user !== null) {
+        $stmt = $pdo->prepare("UPDATE users SET timezone = ? WHERE id = ? AND timezone IS DISTINCT FROM ?");
+        $stmt->execute([$tz, $user['id'], $tz]);
+        $updated += $stmt->rowCount();
+    }
+    if (str_starts_with($token, 'ExponentPushToken[')) {
+        $stmt = $pdo->prepare("UPDATE mobile_push_tokens SET timezone = ? WHERE token = ? AND timezone IS DISTINCT FROM ?");
+        $stmt->execute([$tz, $token, $tz]);
+        $updated += $stmt->rowCount();
+    }
+    Response::json(['ok' => true, 'updated' => $updated > 0]);
+});
+
+// GET /internal/daily-tick?key=MIGRATION_KEY - the Daily Challenge scheduler
+// tick, called every 5 minutes by cron-job.org (AUDIT Q6). Runs the drop when
+// it is due (once per date) and sends due pushes. Safe to call any time.
+$router->add('GET', '/internal/daily-tick', function () {
+    $expectedKey = getenv('MIGRATION_KEY') ?: null;
+    if ($expectedKey === null) {
+        Response::json(['error' => 'Not found'], 404);
+    }
+    if (!hash_equals($expectedKey, (string) ($_GET['key'] ?? ''))) {
+        Response::json(['error' => 'Forbidden'], 403);
+    }
+    ignore_user_abort(true);
+    set_time_limit(120);
+    Response::json(DailyDrop::tick());
+});
