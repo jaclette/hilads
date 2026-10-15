@@ -753,3 +753,106 @@ export interface WsMessage {
   channelId?: string;
   [key: string]: unknown;
 }
+
+// ── Daily Challenge (docs/daily-challenge/API.md) ─────────────────────────────
+// Content (text, context, twist) is English in V1 and shown as written.
+
+export interface DailyChallenge {
+  id:       string;
+  date:     string;          // YYYY-MM-DD, the UTC date of its drop
+  text:     string;
+  context:  string | null;
+  startsAt: number;          // unix seconds
+  endsAt:   number;
+  isActive: boolean;
+}
+
+export interface DailyPerson {
+  id:          string;
+  username:    string | null;
+  displayName: string | null;
+  photoUrl:    string | null;
+}
+
+export interface DailyTwist {
+  id:     string | null;
+  text:   string;
+  author: DailyPerson | null;
+  credit: string | null;
+}
+
+export type DailyProofStatus = 'pending' | 'approved' | 'rejected' | 'removed';
+
+export interface DailyProof {
+  id:               string;
+  challengeId:      string;
+  date:             string;
+  user:             DailyPerson;
+  city:             { id: number; name: string } | null;
+  isLocal:          boolean;
+  photoUrl:         string;
+  thumbUrl:         string | null;
+  caption:          string | null;
+  price:            { amount: number; currency: string } | null;
+  place:            { lat: number; lng: number; name: string | null } | null;
+  status:           DailyProofStatus;
+  rejectionReason:  string | null;
+  voteCount:        number;
+  localVoteCount:   number;
+  validatedByLocal: boolean;
+  isMine:           boolean;
+  approvedAt:       number | null;
+  editedAt:         number | null;
+  createdAt:        number | null;
+}
+
+export interface DailyToday {
+  challenge:   DailyChallenge | null;
+  nextDropAt:  number;
+  secondsLeft: number;
+  serverTime:  number;
+  city:        { id: number; name: string | null; isLive: boolean } | null;
+  twist:       DailyTwist | null;
+  counts:      { world: number; city: number | null };
+  myProof:     DailyProof | null;
+}
+
+export interface DailyPriceRange {
+  currency: string;
+  min:      number;
+  max:      number;
+  count?:   number;
+}
+
+export interface DailySheet extends DailyToday {
+  scope:      'world' | 'city';
+  proofs:     DailyProof[];
+  hasMore:    boolean;
+  nextBefore: number | null;
+  practical: {
+    priceRanges: DailyPriceRange[];
+    places:      { proofId: string; lat: number; lng: number; name: string | null }[];
+  };
+}
+
+export interface DailyArchiveItem {
+  challenge:    DailyChallenge;
+  bestProof:    DailyProof | null;
+  twist:        DailyTwist | null;
+  priceRange:   DailyPriceRange | null;
+  counts:       { world: number; city: number | null };
+  pinnedPlaces: number;
+}
+
+export interface DailyArchive {
+  scope:   'world' | 'city';
+  items:   DailyArchiveItem[];
+  hasMore: boolean;
+}
+
+export interface DailyProofInput {
+  photoUrl?: string;
+  caption?:  string | null;
+  price?:    { amount: number; currency: string } | null;
+  place?:    { lat: number; lng: number; name?: string | null } | null;
+}

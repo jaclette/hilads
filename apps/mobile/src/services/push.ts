@@ -12,11 +12,13 @@
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Alert, Linking, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api, getAuthToken } from '@/api/client';
 import { API_URL } from '@/constants';
 import i18n from '@/i18n';
+import { deviceTimezone } from '@/lib/deviceTimezone';
+import { track } from '@/services/analytics';
 
 const PUSH_TOKEN_KEY = 'hilads_push_token';
 const PUSH_ASKED_KEY = 'hilads_push_asked';
@@ -282,6 +284,52 @@ export async function promptPushAfterAction(guestId?: string | null): Promise<vo
   await requestAndRegisterPush(guestId, { prompt: true });
 }
 
+// ── Daily Challenge ask (in context only, AUDIT Q9) ───────────────────────────
+
+export type DailyPushResult = 'granted' | 'denied' | 'dismissed' | 'already';
+
+/**
+ * Ask for push in a Daily Challenge context (after the first posted proof, or
+ * from the banner on the Daily card). An in-app pre-prompt comes first so the
+ * single iOS system dialog is only spent on a "yes". If the user already
+ * refused at the system level, offer the phone settings instead.
+ * Tracks daily_push_permission { result, source }.
+ */
+export async function askDailyPush(source: 'first_proof' | 'banner', guestId?: string | null): Promise<DailyPushResult> {
+  const t = (key: string) => i18n.t(key, { ns: 'daily' });
+  if (await hasPushPermission()) {
+    await requestAndRegisterPush(guestId, { prompt: false }).catch(() => null);
+    return 'already';
+  }
+  const perm = await Notifications.getPermissionsAsync();
+  const blocked = perm.status === 'denied' && perm.canAskAgain === false;
+
+  const choice = await new Promise<boolean>((resolve) => {
+    Alert.alert(
+      t('push.askTitle'),
+      blocked ? t('push.askBodyBlocked') : t('push.askBody'),
+      [
+        { text: t('push.notNow'), style: 'cancel', onPress: () => resolve(false) },
+        { text: blocked ? t('push.openSettings') : t('push.yes'), onPress: () => resolve(true) },
+      ],
+      { cancelable: true, onDismiss: () => resolve(false) },
+    );
+  });
+
+  let result: DailyPushResult;
+  if (!choice) {
+    result = 'dismissed';
+  } else if (blocked) {
+    Linking.openSettings().catch(() => {});
+    result = 'denied';
+  } else {
+    await requestAndRegisterPush(guestId, { prompt: true }).catch(() => null);
+    result = (await hasPushPermission()) ? 'granted' : 'denied';
+  }
+  track('daily_push_permission', { result, source, blocked });
+  return result;
+}
+
 // ── Unregister (logout) ───────────────────────────────────────────────────────
 
 export async function unregisterPushToken(): Promise<void> {
@@ -304,7 +352,8 @@ async function registerTokenWithBackend(token: string, guestId?: string | null):
   const fullUrl   = `${API_URL}/push/mobile-token`;
   // guestId lets the backend store the token for an unregistered device (and is
   // harmless for logged-in users - it just records which guest session backs them).
-  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined });
+  // timezone: the device's IANA zone, so Daily Challenge pushes land at local time.
+  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined, timezone: deviceTimezone() ?? undefined });
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',

@@ -1,8 +1,11 @@
 /**
  * Global push registration hook - always mounted in the root layout.
  *
- * Triggers push token registration whenever an authenticated account becomes
- * available, regardless of HOW it was obtained:
+ * Registers the device's push token whenever an account or guest identity
+ * becomes available - SILENTLY: it never shows the system permission dialog
+ * (AUDIT Q9: ask in context only - after a Daily proof, from the Daily card
+ * banner, or after a guest's first message). It registers a token only when
+ * permission is already granted. Triggers, regardless of how the account came:
  *   - app boot with a restored session (SecureStore token)
  *   - fresh sign-in
  *   - fresh sign-up
@@ -27,13 +30,10 @@ export function usePushRegistration(): void {
   useEffect(() => {
     const guestId = identity?.guestId ?? null;
     // Registration key: the account when signed in (so a different login
-    // re-registers), else the guest device. A signed-in account may prompt for
-    // permission (the ask always follows a real action - sign-in/sign-up - or is
-    // a no-op for a restored session that already decided). A guest never
-    // prompts: we only register a token if permission was already granted, so a
-    // first launch never shows an unsolicited system dialog (product rule: no
-    // boot prompts). A guest who later grants via a value-first moment gets their
-    // token registered then.
+    // re-registers), else the guest device. Never prompts (AUDIT Q9): sign-in
+    // and sign-up no longer trigger the system dialog; the ask happens in
+    // context (askDailyPush / promptPushAfterAction), which registers the token
+    // then.
     const isAccount = !!account?.id;
     const key = isAccount ? `user:${account!.id}` : (guestId ? `guest:${guestId}` : null);
 
@@ -41,11 +41,9 @@ export function usePushRegistration(): void {
     if (!key || lastRegisteredFor.current === key) return;
 
     // Always pass guestId so the token row carries the device's guest session
-    // (alongside user_id when signed in). `prompt` is only enabled for a signed-in
-    // account - guests register silently (already-granted only), never prompting
-    // at boot. NOTE: guard is set ONLY after success so a failed attempt retries
-    // on the next trigger.
-    requestAndRegisterPush(guestId, { prompt: isAccount })
+    // (alongside user_id when signed in). NOTE: guard is set ONLY after success
+    // so a failed attempt retries on the next trigger.
+    requestAndRegisterPush(guestId, { prompt: false })
       .then(() => { lastRegisteredFor.current = key; })
       .catch(err => {
         console.warn('[push-reg] registration failed - will retry on next trigger:', String(err));

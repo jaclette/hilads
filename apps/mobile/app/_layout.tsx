@@ -24,6 +24,7 @@ import { useGlobalNotifications } from '@/hooks/useGlobalNotifications';
 import { useEventChatNotifications } from '@/hooks/useEventChatNotifications';
 import { useGlobalDmNotifications } from '@/hooks/useGlobalDmNotifications';
 import { usePushRegistration } from '@/hooks/usePushRegistration';
+import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
@@ -121,6 +122,7 @@ function RootLayoutInner() {
   useEventChatNotifications();     // always-on unread event chat badge + preview updates
   useGlobalDmNotifications();      // always-on unread DM badge + global conversation rooms
   usePushRegistration();           // register push token whenever an account is available
+  useDeviceTimezone();             // device IANA timezone → backend (Daily pushes at local time)
   useGpsCityCorrection();          // fix an IP-mislocated city when precise GPS becomes available
 
   // Re-assert WS presence with the correct identity whenever it becomes known.

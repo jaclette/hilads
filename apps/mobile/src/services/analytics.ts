@@ -66,7 +66,12 @@ export type AnalyticsEvent =
   | 'world_channel_viewed'
   | 'quiet_city_card_shown'
   | 'quiet_city_card_tapped'
-  | 'system_message_generated';
+  | 'system_message_generated'
+  // Daily Challenge (props: challenge_date, city, is_local + per-event fields).
+  | 'daily_challenge_viewed'
+  | 'daily_proof_started'
+  | 'daily_proof_posted'
+  | 'daily_push_permission';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;
 

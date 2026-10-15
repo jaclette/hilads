@@ -48,7 +48,7 @@ import { MessageActionSheet } from '@/features/chat/MessageActionSheet';
 import { ArrivalsSheet } from '@/features/chat/ArrivalsSheet';
 import * as Clipboard from 'expo-clipboard';
 import { AppHeader } from '@/features/shell/AppHeader';
-import { EmptyCityChallenges } from '@/components/EmptyCityChallenges';
+import { DailyHeroCard } from '@/features/daily/DailyHeroCard';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { FontSizes, Spacing, Radius, buildCityUrl, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
@@ -1242,25 +1242,30 @@ export default function ChatTab() {
           </>
         ) : (
         <>
-        {/* ── HERO: challenges + rank. Full-width, tappable → challenges list.
-            Subtitle + copy adapt to the count / rank state (see heroMain).
-            Zero-challenge cities lead with ACTION via the shared
-            EmptyCityChallenges (same component the challenge tab uses). ── */}
+        {/* ── HERO: today's Daily Challenge (full width). ── */}
+        <DailyHeroCard cityId={city.channelId} />
+
+        {/* ── Challenges + rank, just below the Daily card: same copy and
+            behaviour as the former hero (see heroMain), as one compact row.
+            Zero-challenge cities get a one-line "be the first" → create. ── */}
         {challengeCount === 0 ? (
-          <EmptyCityChallenges
-            city={localizeCityName(city.name)}
-            onCreate={() => router.push('/challenge/create' as never)}
-          />
+          <TouchableOpacity
+            style={styles.heroRow}
+            onPress={() => router.push('/challenge/create' as never)}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+          >
+            <Text style={styles.heroRowText} numberOfLines={1}>🔥 {t('cityRowEmpty', { ns: 'daily', city: cityShort })}</Text>
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity
-            style={styles.hero}
+            style={styles.heroRow}
             onPress={() => router.push('/(tabs)/challenges' as never)}
-            activeOpacity={0.85}
+            activeOpacity={0.8}
             accessibilityRole="button"
-            accessibilityLabel={heroMain}
+            accessibilityLabel={`${heroMain} ${heroSub}`}
           >
-            <Text style={styles.heroMain} numberOfLines={2}>{heroMain}</Text>
-            <Text style={styles.heroSub} numberOfLines={1}>{heroSub}</Text>
+            <Text style={styles.heroRowText} numberOfLines={1}>{heroMain}</Text>
           </TouchableOpacity>
         )}
 
@@ -1767,6 +1772,20 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     color:      c.muted,
     fontSize:   FontSizes.xs,
     fontWeight: '500',
+  },
+  // Challenges + rank row under the Daily card (the former hero, compact).
+  heroRow: {
+    paddingVertical:   9,
+    paddingHorizontal: 12,
+    borderRadius:      Radius.md,
+    backgroundColor:   c.bg2,
+    borderWidth:       1,
+    borderColor:       c.border,
+  },
+  heroRowText: {
+    color:      c.text,
+    fontSize:   FontSizes.xs,
+    fontWeight: '700',
   },
 
   // ── World hero: carousel of recent international challenges ──────────────────
