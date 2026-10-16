@@ -14369,6 +14369,24 @@ $router->add('GET', '/api/v1/daily/proofs/state', function () {
     ]);
 });
 
+// GET /api/v1/daily/leaderboard - provisional ranking of the active challenge
+// (World top 10, top 3 of each live city, my rank). Polled every 30 s by the
+// app: the ranking is cached and shared (DailyLeaderboard), and an ETag answers
+// 304 when nothing changed.
+$router->add('GET', '/api/v1/daily/leaderboard', function () {
+    $user = AuthService::currentUser();
+    $out  = DailyLeaderboard::forViewer($user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? []);
+    $body = json_encode($out, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    $etag = '"' . md5($body) . '"';
+    header('ETag: ' . $etag);
+    header('Cache-Control: private, no-cache');
+    if (trim((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')) === $etag) {
+        http_response_code(304);
+        exit;
+    }
+    Response::json($out, 200, $body);
+});
+
 // GET /api/v1/daily/proofs/{id} - one proof: approved, or any status for its owner.
 $router->add('GET', '/api/v1/daily/proofs/{id}', function (array $params) {
     $user  = AuthService::currentUser();

@@ -7,7 +7,8 @@ declare(strict_types=1);
  *
  * An external pinger (cron-job.org, AUDIT Q6) calls GET /internal/daily-tick
  * every 5 minutes. Each tick runs the drop of today's challenge date if it has
- * not completed yet, then sends the pushes that are due. The drop time lives in
+ * not completed yet, queues the top 10 pushes (V2-01), then sends the pushes
+ * that are due. The drop time lives in
  * DailyClock (DAILY_DROP_UTC), not in the pinger: the first tick after 02:00
  * UTC runs it, and a late or repeated tick is harmless.
  *
@@ -37,6 +38,12 @@ final class DailyDrop
         } catch (\Throwable $e) {
             error_log('[daily-drop] tick drop failed: ' . $e->getMessage());
             $out['drop'] = ['status' => 'error', 'error' => $e->getMessage()];
+        }
+        try {
+            $out['top10'] = DailyLeaderboard::queueTop10($now);
+        } catch (\Throwable $e) {
+            error_log('[daily-push] tick top10 failed: ' . $e->getMessage());
+            $out['top10'] = ['status' => 'error', 'error' => $e->getMessage()];
         }
         try {
             $out['pushes'] = DailyPushes::sendDue($now);

@@ -240,6 +240,17 @@ final class DailyPushes
         return ['title' => 'Daily Challenge', 'body' => implode(' ', $parts), 'data' => self::data($date)];
     }
 
+    /** The top 10 push, with the proof's current World rank (shared on ties). */
+    public static function top10Message(string $date, int $rank, string $locale = 'en'): array
+    {
+        return [
+            'title' => 'Daily Challenge',
+            'body'  => DailyPushText::render('top10', $locale, ['rank' => $rank])
+                       ?? "You're in today's top 10! 🏆 Your proof is #{$rank} in the world right now.",
+            'data'  => self::data($date),
+        ];
+    }
+
     // ── Test push ────────────────────────────────────────────────────────────
 
     /**
@@ -348,6 +359,30 @@ final class DailyPushes
             if ($at < $end) {
                 // Text built at send time (votes and completions so far).
                 $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'digest', $at, $u['tz'],
+                           ['data' => self::data($date), 'locale' => $u['locale']]];
+            }
+        }
+        return self::insert($rows);
+    }
+
+    /**
+     * Top 10 push (V2-01) for proof authors who entered the World top 10:
+     * right away in their daytime (09:00-21:00 local), else at the next 09:00
+     * local, and not at all if that is after the end. Once per user per
+     * challenge (unique key), so the tick can call it every time.
+     */
+    public static function queueTop10(string $date, array $userIds, DateTimeImmutable $now): int
+    {
+        if ($userIds === []) {
+            return 0;
+        }
+        [, $end] = DailyClock::window($date);
+        $rows = [];
+        foreach (self::userRecipients(array_values(array_unique($userIds))) as $u) {
+            $at = self::morningSendAt($now, $u['tz']);
+            if ($at < $end) {
+                // Text built at send time (the rank then).
+                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'top10', $at, $u['tz'],
                            ['data' => self::data($date), 'locale' => $u['locale']]];
             }
         }
@@ -469,6 +504,15 @@ final class DailyPushes
                     $reason = 'no_news';
                 } else {
                     $msg = $digest + ['deferred' => !empty($msg['deferred']), 'locale' => $msg['locale'] ?? 'en'];
+                }
+            } elseif ($row['type'] === 'top10') {
+                if (!DailyClock::isActive((string) $row['challenge_date'], $now)) {
+                    $reason = 'expired';
+                } elseif (($rank = DailyLeaderboard::top10RankOf((string) $row['challenge_date'], (string) $row['user_id'])) === null) {
+                    $reason = 'left_top10';
+                } else {
+                    $msg = self::top10Message((string) $row['challenge_date'], $rank, (string) ($msg['locale'] ?? 'en'))
+                           + ['locale' => $msg['locale'] ?? 'en'];
                 }
             }
             if ($reason === null && ($alreadySent[$capKey] ?? 0) >= self::CAP_PER_DAY) {

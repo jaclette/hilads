@@ -13,7 +13,7 @@ declare(strict_types=1);
 final class DailyPushText
 {
     public const KEYS = ['frame', 'world', 'city_best', 'city_rank', 'votes', 'winner', 'winner_nocity',
-                         'reminder', 'digest_votes', 'digest_twist', 'picked_tomorrow', 'picked_today'];
+                         'reminder', 'digest_votes', 'digest_twist', 'picked_tomorrow', 'picked_today', 'top10'];
 
     private const T = [
         'fr' => [
@@ -29,6 +29,7 @@ final class DailyPushText
             'digest_twist' => "Ont relevé ton Local Twist : {n}.",
             'picked_tomorrow' => "Ton Local Twist a été choisi pour le Daily Challenge de demain à {city} 🎉",
             'picked_today' => "Ton Local Twist a été choisi pour le Daily Challenge du jour à {city} 🎉",
+            'top10' => "Tu es dans le top 10 du jour ! 🏆 Ta preuve est #{rank} dans le monde en ce moment.",
         ],
         'vi' => [
             'frame' => "Daily Challenge hôm nay: {text}",
@@ -43,6 +44,7 @@ final class DailyPushText
             'digest_twist' => "Số người đã làm Local Twist của bạn: {n}.",
             'picked_tomorrow' => "Local Twist của bạn đã được chọn cho Daily Challenge ngày mai ở {city} 🎉",
             'picked_today' => "Local Twist của bạn đã được chọn cho Daily Challenge hôm nay ở {city} 🎉",
+            'top10' => "Bạn đang trong top 10 hôm nay! 🏆 Bằng chứng của bạn đang đứng #{rank} thế giới.",
         ],
         'es' => [
             'frame' => "Daily Challenge de hoy: {text}",
@@ -57,6 +59,7 @@ final class DailyPushText
             'digest_twist' => "Completaron tu Local Twist: {n}.",
             'picked_tomorrow' => "Tu Local Twist fue elegido para el Daily Challenge de mañana en {city} 🎉",
             'picked_today' => "Tu Local Twist fue elegido para el Daily Challenge de hoy en {city} 🎉",
+            'top10' => "¡Estás en el top 10 de hoy! 🏆 Tu prueba va #{rank} en el mundo ahora mismo.",
         ],
         'it' => [
             'frame' => "Daily Challenge di oggi: {text}",
@@ -71,6 +74,7 @@ final class DailyPushText
             'digest_twist' => "Hanno completato il tuo Local Twist: {n}.",
             'picked_tomorrow' => "Il tuo Local Twist è stato scelto per il Daily Challenge di domani a {city} 🎉",
             'picked_today' => "Il tuo Local Twist è stato scelto per il Daily Challenge di oggi a {city} 🎉",
+            'top10' => "Sei nella top 10 di oggi! 🏆 La tua prova è #{rank} nel mondo in questo momento.",
         ],
         'pt-br' => [
             'frame' => "Daily Challenge de hoje: {text}",
@@ -85,6 +89,7 @@ final class DailyPushText
             'digest_twist' => "Completaram seu Local Twist: {n}.",
             'picked_tomorrow' => "Seu Local Twist foi escolhido para o Daily Challenge de amanhã em {city} 🎉",
             'picked_today' => "Seu Local Twist foi escolhido para o Daily Challenge de hoje em {city} 🎉",
+            'top10' => "Você está no top 10 de hoje! 🏆 Sua prova está em #{rank} no mundo agora.",
         ],
         'pt-pt' => [
             'frame' => "Daily Challenge de hoje: {text}",
@@ -99,6 +104,7 @@ final class DailyPushText
             'digest_twist' => "Completaram o teu Local Twist: {n}.",
             'picked_tomorrow' => "O teu Local Twist foi escolhido para o Daily Challenge de amanhã em {city} 🎉",
             'picked_today' => "O teu Local Twist foi escolhido para o Daily Challenge de hoje em {city} 🎉",
+            'top10' => "Estás no top 10 de hoje! 🏆 A tua prova está em #{rank} no mundo neste momento.",
         ],
         'de' => [
             'frame' => "Daily Challenge von heute: {text}",
@@ -113,6 +119,7 @@ final class DailyPushText
             'digest_twist' => "Haben deinen Local Twist gemacht: {n}.",
             'picked_tomorrow' => "Dein Local Twist wurde für die Daily Challenge von morgen in {city} gewählt 🎉",
             'picked_today' => "Dein Local Twist wurde für die heutige Daily Challenge in {city} gewählt 🎉",
+            'top10' => "Du bist in den Top 10 von heute! 🏆 Dein Beweis ist gerade #{rank} weltweit.",
         ],
         'nl' => [
             'frame' => "Daily Challenge van vandaag: {text}",
@@ -127,6 +134,7 @@ final class DailyPushText
             'digest_twist' => "Deden je Local Twist: {n}.",
             'picked_tomorrow' => "Je Local Twist is gekozen voor de Daily Challenge van morgen in {city} 🎉",
             'picked_today' => "Je Local Twist is gekozen voor de Daily Challenge van vandaag in {city} 🎉",
+            'top10' => "Je staat in de top 10 van vandaag! 🏆 Je bewijs staat nu #{rank} wereldwijd.",
         ],
         'zh-hans' => [
             'frame' => "今天的 Daily Challenge：{text}",
@@ -141,6 +149,7 @@ final class DailyPushText
             'digest_twist' => "完成你的 Local Twist 的人数：{n}。",
             'picked_tomorrow' => "你的 Local Twist 被选为明天{city}的 Daily Challenge 🎉",
             'picked_today' => "你的 Local Twist 被选为今天{city}的 Daily Challenge 🎉",
+            'top10' => "你进入了今天的前 10 名！🏆 你的证明目前位列全球第 {rank}。",
         ],
         'zh-hant' => [
             'frame' => "今天的 Daily Challenge：{text}",
@@ -155,6 +164,7 @@ final class DailyPushText
             'digest_twist' => "完成你的 Local Twist 的人數：{n}。",
             'picked_tomorrow' => "你的 Local Twist 被選為明天{city}的 Daily Challenge 🎉",
             'picked_today' => "你的 Local Twist 被選為今天{city}的 Daily Challenge 🎉",
+            'top10' => "你進入了今天的前 10 名！🏆 你的證明目前位列全球第 {rank}。",
         ],
         'ja' => [
             'frame' => "今日の Daily Challenge：{text}",
@@ -169,6 +179,7 @@ final class DailyPushText
             'digest_twist' => "あなたの Local Twist を達成した人：{n}。",
             'picked_tomorrow' => "あなたの Local Twist が明日の {city} の Daily Challenge に選ばれました 🎉",
             'picked_today' => "あなたの Local Twist が今日の {city} の Daily Challenge に選ばれました 🎉",
+            'top10' => "今日のトップ10入り！🏆 あなたの証明は今、世界 #{rank}。",
         ],
         'ko' => [
             'frame' => "오늘의 Daily Challenge: {text}",
@@ -183,6 +194,7 @@ final class DailyPushText
             'digest_twist' => "내 Local Twist를 완료한 사람: {n}.",
             'picked_tomorrow' => "내 Local Twist가 내일 {city} Daily Challenge에 선택됐어요 🎉",
             'picked_today' => "내 Local Twist가 오늘 {city} Daily Challenge에 선택됐어요 🎉",
+            'top10' => "오늘의 톱 10에 들었어요! 🏆 내 인증이 지금 세계 #{rank} 순위예요.",
         ],
         'fil' => [
             'frame' => "Daily Challenge ngayon: {text}",
@@ -197,6 +209,7 @@ final class DailyPushText
             'digest_twist' => "Gumawa ng Local Twist mo: {n}.",
             'picked_tomorrow' => "Napili ang Local Twist mo para sa Daily Challenge bukas sa {city} 🎉",
             'picked_today' => "Napili ang Local Twist mo para sa Daily Challenge ngayon sa {city} 🎉",
+            'top10' => "Nasa top 10 ka ngayong araw! 🏆 #{rank} sa mundo ang proof mo ngayon.",
         ],
         'th' => [
             'frame' => "Daily Challenge วันนี้: {text}",
@@ -211,6 +224,7 @@ final class DailyPushText
             'digest_twist' => "คนที่ทำ Local Twist ของคุณ: {n}",
             'picked_tomorrow' => "Local Twist ของคุณถูกเลือกสำหรับ Daily Challenge พรุ่งนี้ใน {city} 🎉",
             'picked_today' => "Local Twist ของคุณถูกเลือกสำหรับ Daily Challenge วันนี้ใน {city} 🎉",
+            'top10' => "คุณติดท็อป 10 ของวันนี้! 🏆 หลักฐานของคุณอยู่อันดับ #{rank} ของโลกตอนนี้",
         ],
         'id' => [
             'frame' => "Daily Challenge hari ini: {text}",
@@ -225,6 +239,7 @@ final class DailyPushText
             'digest_twist' => "Yang menyelesaikan Local Twist-mu: {n}.",
             'picked_tomorrow' => "Local Twist-mu terpilih untuk Daily Challenge besok di {city} 🎉",
             'picked_today' => "Local Twist-mu terpilih untuk Daily Challenge hari ini di {city} 🎉",
+            'top10' => "Kamu masuk top 10 hari ini! 🏆 Buktimu sekarang peringkat #{rank} di dunia.",
         ],
         'hi' => [
             'frame' => "आज का Daily Challenge: {text}",
@@ -239,6 +254,7 @@ final class DailyPushText
             'digest_twist' => "आपका Local Twist पूरा करने वाले: {n}।",
             'picked_tomorrow' => "आपका Local Twist {city} में कल के Daily Challenge के लिए चुना गया 🎉",
             'picked_today' => "आपका Local Twist {city} में आज के Daily Challenge के लिए चुना गया 🎉",
+            'top10' => "आप आज के टॉप 10 में हैं! 🏆 आपका प्रूफ अभी दुनिया में #{rank} है।",
         ],
         'ru' => [
             'frame' => "Daily Challenge дня: {text}",
@@ -253,6 +269,7 @@ final class DailyPushText
             'digest_twist' => "Выполнили твой Local Twist: {n}.",
             'picked_tomorrow' => "Твой Local Twist выбран для завтрашнего Daily Challenge в {city} 🎉",
             'picked_today' => "Твой Local Twist выбран для сегодняшнего Daily Challenge в {city} 🎉",
+            'top10' => "Ты в топ-10 сегодня! 🏆 Твоё доказательство сейчас #{rank} в мире.",
         ],
         'ar' => [
             'frame' => "Daily Challenge اليوم: {text}",
@@ -267,6 +284,7 @@ final class DailyPushText
             'digest_twist' => "أنجزوا Local Twist الخاص بك: {n}.",
             'picked_tomorrow' => "اختير Local Twist الخاص بك لـ Daily Challenge الغد في {city} 🎉",
             'picked_today' => "اختير Local Twist الخاص بك لـ Daily Challenge اليوم في {city} 🎉",
+            'top10' => "أنت ضمن أفضل 10 اليوم! 🏆 دليلك الآن #{rank} في العالم.",
         ],
     ];
 

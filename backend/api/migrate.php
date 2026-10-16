@@ -2798,6 +2798,12 @@ run($pdo, "UPDATE daily_push_log SET local_day = (COALESCE(sent_at, send_at) AT 
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_sent_day
             ON daily_push_log (recipient_key, local_day) WHERE status = 'sent'", 'idx_daily_push_log_sent_day');
 
+// V2-01: the "You're in today's top 10!" push. Reversal: the same constraint
+// without 'top10' (after deleting the top10 rows).
+run($pdo, "ALTER TABLE daily_push_log DROP CONSTRAINT IF EXISTS daily_push_log_type_check", 'drop daily_push_log_type_check');
+run($pdo, "ALTER TABLE daily_push_log ADD CONSTRAINT daily_push_log_type_check
+            CHECK (type IN ('morning', 'reminder', 'digest', 'top10'))", 'daily_push_log_type_check (top10)');
+
 // Content reports on proofs. user_reports allows one report per (reporter,
 // user) forever, so it cannot hold per-proof reports. reason_code is checked in
 // DailyModerationService. Guests can report (reporter_guest_id). Three open

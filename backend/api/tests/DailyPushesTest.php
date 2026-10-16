@@ -199,4 +199,13 @@ final class DailyPushesTest extends TestCase
         $this->assertSame('1 person completed your Local Twist.', DailyPushes::digestMessage('2026-11-02', 0, 1)['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0));
     }
+
+    public function testTop10Text(): void
+    {
+        $m = DailyPushes::top10Message('2026-11-02', 4);
+        $this->assertSame("You're in today's top 10! 🏆 Your proof is #4 in the world right now.", $m['body']);
+        $this->assertSame('2026-11-02', $m['data']['date']);
+        $this->assertSame('Tu es dans le top 10 du jour ! 🏆 Ta preuve est #4 dans le monde en ce moment.',
+                          DailyPushes::top10Message('2026-11-02', 4, 'fr')['body']);
+    }
 }
