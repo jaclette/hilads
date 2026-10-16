@@ -835,6 +835,7 @@ export interface DailyProof {
   user:             DailyPerson;
   city:             { id: number; name: string } | null;
   isLocal:          boolean;
+  isEarly?:         boolean;          // posted within 3h of the author's start time (speed bonus)
   photoUrl:         string;
   thumbUrl:         string | null;
   caption:          string | null;
@@ -871,6 +872,8 @@ export interface DailyToday {
   tomorrow?:  { date: string; theme: DailyTheme | null } | null;
   /** My Local Pass progress in this city (signed in, with a city). */
   localPass?: DailyLocalPassProgress | null;
+  /** Speed bonus window (signed in, no proof yet, still open): post before `until` for the bonus. */
+  early?: { startsAt: number; until: number } | null;
 }
 
 export type DailyTwistProposalStatus = 'pending' | 'picked' | 'not_picked';

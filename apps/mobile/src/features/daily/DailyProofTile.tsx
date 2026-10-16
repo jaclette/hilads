@@ -6,6 +6,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
+import { EarlyBadge } from './EarlyBadge';
 import type { DailyProof } from '@/types';
 
 export const MEDALS = ['🥇', '🥈', '🥉'];
@@ -29,6 +30,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
           {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
         </Text>
         {proof.validatedByLocal && <Text style={styles.badge} numberOfLines={1}>✓ {t('validatedByLocal')}</Text>}
+        {proof.isEarly && <EarlyBadge />}
         {!!proof.caption && <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>}
         <View style={styles.voteRow}>
           <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="tile" />

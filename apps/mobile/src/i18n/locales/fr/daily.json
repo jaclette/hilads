@@ -316,5 +316,9 @@
       "twist_not_allowed": "Seuls les locaux d'une ville live peuvent ajouter un Local Twist.",
       "moderation_blocked": "Ta proposition a été bloquée par la modération. Reformule-la."
     }
+  },
+  "early": {
+    "badge": "En avance",
+    "hint": "Bonus rapidité : poste avant {{time}}"
   }
 }

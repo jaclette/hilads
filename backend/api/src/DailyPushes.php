@@ -40,6 +40,13 @@ final class DailyPushes
     public const REMIND_BEFORE = 3 * 3600;  // reminder at least 3h before the end
     public const ACTIVE_DAYS   = 7;     // reminder: app opened in the last 7 days
     public const DEEP_LINK     = 'https://hilads.live/today';
+    public const EARLY_WINDOW  = 3 * 3600;  // speed bonus: posted within 3h of the user's start time (V2-07)
+    // The morning push's signature sound (V2-07): the file bundled in the app
+    // (assets/sounds, app.json expo-notifications "sounds") and, on Android, the
+    // channel created with it (src/services/push.ts). A channel's sound can't
+    // change once created: a new sound needs a new file name AND a new channel id.
+    public const SIGNATURE_SOUND   = 'daily_signature.wav';
+    public const SIGNATURE_CHANNEL = 'daily_challenge_v1';
 
     // ── Pure helpers (unit-tested) ────────────────────────────────────────────
 
@@ -60,6 +67,28 @@ final class DailyPushes
             $nine = $nine->modify('+1 day');
         }
         return $nine->setTimezone(new DateTimeZone('UTC'));
+    }
+
+    /**
+     * A user's start time for a challenge date (V2-07 speed bonus): the
+     * morning push rule applied to the drop - the drop if it falls in their
+     * daytime, else the next 09:00 local.
+     */
+    public static function startAt(string $date, string $timezone): DateTimeImmutable
+    {
+        return self::morningSendAt(DailyClock::dropAt($date), $timezone);
+    }
+
+    /** End of the speed bonus window: the start time + 3h. */
+    public static function earlyUntil(string $date, string $timezone): DateTimeImmutable
+    {
+        return self::startAt($date, $timezone)->modify('+' . self::EARLY_WINDOW . ' seconds');
+    }
+
+    /** True when a proof posted at $postedAt is early for $date in $timezone. */
+    public static function isEarly(string $date, string $timezone, DateTimeImmutable $postedAt): bool
+    {
+        return $postedAt <= self::earlyUntil($date, $timezone);
     }
 
     /**
@@ -290,7 +319,8 @@ final class DailyPushes
             return 0;
         }
         $msg = self::morningMessage($challenge);
-        $n   = MobilePushService::sendToTokens($tokens, $msg['title'], $msg['body'], $msg['data'] + ['test' => true], 'daily_morning');
+        $n   = MobilePushService::sendToTokens($tokens, $msg['title'], $msg['body'], $msg['data'] + ['test' => true], 'daily_morning',
+                                               self::SIGNATURE_SOUND, self::SIGNATURE_CHANNEL);
         MobilePushService::flush();
         return $n;
     }
@@ -575,8 +605,13 @@ final class DailyPushes
                 continue;
             }
             $data = ($msg['data'] ?? self::data((string) $row['challenge_date'])) + ['dailyPushId' => (int) $row['id']];
+            // The morning push alone carries the signature sound (V2-07), including its author
+            // version (proposal_day); every other Daily push keeps the default.
+            $signature = $row['type'] === 'morning' || $row['type'] === 'proposal_day';
             MobilePushService::sendToTokens($tokensByKey[$row['recipient_key']], (string) ($msg['title'] ?? 'Daily Challenge'),
-                                            (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type']);
+                                            (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type'],
+                                            $signature ? self::SIGNATURE_SOUND : 'default',
+                                            $signature ? self::SIGNATURE_CHANNEL : 'default');
             $alreadySent[$capKey] = ($alreadySent[$capKey] ?? 0) + 1;
             $sent[] = [$row['id'], $day, $msg];
         }
@@ -743,6 +778,21 @@ final class DailyPushes
      * $userIds, and only those whose app opened since $activeSince.
      * Returns [{id, tz, locale}].
      */
+    /** A user's timezone, picked like the pushes': device > a token's > current city's > UTC. */
+    public static function userTimezone(string $userId): string
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT u.timezone AS user_tz, ci.timezone AS city_tz,
+                   (SELECT max(t.timezone) FROM mobile_push_tokens t WHERE t.user_id = u.id) AS token_tz
+            FROM users u
+            LEFT JOIN cities ci ON ci.channel_id = u.current_city_id
+            WHERE u.id = ?
+        ");
+        $stmt->execute([$userId]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        return self::pickTimezone($r['user_tz'] ?? null, $r['token_tz'] ?? null, $r['city_tz'] ?? null);
+    }
+
     private static function userRecipients(?array $userIds = null, ?DateTimeImmutable $activeSince = null): array
     {
         $where = 'user_id IS NOT NULL';

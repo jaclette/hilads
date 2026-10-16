@@ -13,7 +13,8 @@ declare(strict_types=1);
  *
  * When:
  * - approval of a proof: daily_proof, and daily_streak = 2 per consecutive
- *   day after the first, capped at +20 (day 1 +0, day 2 +2, day 11+ +20);
+ *   day after the first, capped at +20 (day 1 +0, day 2 +2, day 11+ +20),
+ *   and early_proof (+5) for a proof posted early (V2-07);
  * - the close (next drop): daily_vote (at least one vote standing at the close),
  *   daily_top1/2/3, daily_city_best, daily_twist (twist author), plus a safety
  *   pass for approved proofs that missed their approval award.
@@ -67,6 +68,12 @@ final class DailyPoints
         if ($bonus > 0 && self::insert($proof['user_id'], $proof['challenge_id'], 'daily_streak', $bonus,
                                        $proof['city_id'], $proof['id'], null)) {
             $awarded[] = 'daily_streak';
+        }
+        // Speed bonus (V2-07): posted within 3h of the user's start time.
+        if (DailyProofRepository::bool($proof['is_early'] ?? false)
+            && self::insert($proof['user_id'], $proof['challenge_id'], 'early_proof', self::rule('early_proof'),
+                            $proof['city_id'], $proof['id'], null)) {
+            $awarded[] = 'early_proof';
         }
         if ($awarded !== [] && $recalcRanks) {
             MonthlyRankService::recalcAfterScoreChange($proof['user_id']);

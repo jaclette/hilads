@@ -239,14 +239,18 @@ class MobilePushService
      * announcements to "all app installs") where the recipient has no users
      * row, no notification_preferences, and no bell history - just a device.
      * Returns the number of tokens queued. $type lands in data.type (the app
-     * routes taps on it); Daily Challenge pushes pass their own.
+     * routes taps on it); Daily Challenge pushes pass their own. $sound /
+     * $channelId override the default sound and Android channel (the Daily
+     * morning push's signature sound, V2-07).
      */
     public static function sendToTokens(
         array   $tokens,
         string  $title,
         ?string $body,
         array   $data = [],
-        string  $type = 'admin_announcement'
+        string  $type = 'admin_announcement',
+        string  $sound = 'default',
+        string  $channelId = 'default'
     ): int {
         $tokens = array_values(array_unique(array_filter(
             $tokens,
@@ -262,8 +266,8 @@ class MobilePushService
                 'title'      => $title,
                 'body'       => $body ?? '',
                 'data'       => array_merge($data, ['type' => $type]),
-                'sound'      => 'default',
-                'channelId'  => 'default',
+                'sound'      => $sound,
+                'channelId'  => $channelId,
                 'richContent'    => $richImage !== null ? ['image' => $richImage] : null,
                 'mutableContent' => $richImage !== null ? true : null, // iOS NSE trigger
             ], static fn($v) => $v !== null);

@@ -316,5 +316,9 @@
       "twist_not_allowed": "Ang mga local lang ng live na lungsod ang makakapagdagdag ng Local Twist.",
       "moderation_blocked": "Na-block ng moderation ang mungkahi mo. Pakiulit sa ibang salita."
     }
+  },
+  "early": {
+    "badge": "Maaga",
+    "hint": "Bonus sa pagiging maaga: mag-post bago mag-{{time}}"
   }
 }

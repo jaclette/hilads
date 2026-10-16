@@ -9,6 +9,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { formatAmount } from './currency';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
+import { EarlyBadge } from './EarlyBadge';
 import { MEDALS } from './DailyProofTile';
 import type { DailyProof } from '@/types';
 
@@ -32,6 +33,7 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
               {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
             </Text>
             {proof.user.localPass && <LocalPassBadge label onDark />}
+            {proof.isEarly && <EarlyBadge onDark />}
           </View>
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <Text style={styles.badge}>

@@ -316,5 +316,9 @@
       "twist_not_allowed": "Hanya warga lokal kota yang live yang bisa menambah Local Twist.",
       "moderation_blocked": "Usulanmu diblokir moderasi. Tulis ulang ya."
     }
+  },
+  "early": {
+    "badge": "Awal",
+    "hint": "Bonus cepat: posting sebelum {{time}}"
   }
 }

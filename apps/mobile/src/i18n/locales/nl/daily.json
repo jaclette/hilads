@@ -316,5 +316,9 @@
       "twist_not_allowed": "Alleen locals van een live stad kunnen een Local Twist toevoegen.",
       "moderation_blocked": "Je voorstel is door de moderatie geblokkeerd. Herformuleer het."
     }
+  },
+  "early": {
+    "badge": "Vroeg",
+    "hint": "Vroegbonus: post vóór {{time}}"
   }
 }

@@ -122,8 +122,8 @@ final class DailyProofRepository
         $stmt = Database::pdo()->prepare("
             INSERT INTO daily_proofs (
                 id, challenge_id, user_id, city_id, photo_url, caption,
-                price_amount, price_currency, place_lat, place_lng, place_name, is_local
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (challenge_id, user_id) DO NOTHING
             RETURNING id
         ");
@@ -140,6 +140,9 @@ final class DailyProofRepository
             $fields['place_lng'] ?? null,
             $fields['place_name'] ?? null,
             DailyRules::isLocalFor($user['mode'] ?? null, $user['home_city'] ?? null, $cityName) ? 'true' : 'false',
+            // Speed bonus (V2-07): set once, here; an edit never changes it.
+            DailyPushes::isEarly((string) $challenge['challenge_date'], DailyPushes::userTimezone($user['id']),
+                                 new DateTimeImmutable('now')) ? 'true' : 'false',
         ]);
         $id = $stmt->fetchColumn();
         return $id === false ? null : self::findById((string) $id);
@@ -268,6 +271,7 @@ final class DailyProofRepository
             ],
             'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $row['city_name']] : null,
             'isLocal'          => self::bool($row['is_local']),
+            'isEarly'          => self::bool($row['is_early'] ?? false),
             'photoUrl'         => $row['photo_url'],
             'thumbUrl'         => R2Uploader::thumbProxy($row['photo_url']),
             'caption'          => $row['caption'],

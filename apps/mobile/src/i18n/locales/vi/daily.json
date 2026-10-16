@@ -314,5 +314,9 @@
       "twist_not_allowed": "Chỉ người địa phương của thành phố đang live mới thêm được Local Twist.",
       "moderation_blocked": "Đề xuất bị bộ lọc kiểm duyệt chặn. Hãy viết lại."
     }
+  },
+  "early": {
+    "badge": "Sớm",
+    "hint": "Thưởng nhanh tay: đăng trước {{time}}"
   }
 }

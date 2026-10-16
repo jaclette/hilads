@@ -46,6 +46,9 @@ console.log('[push-mobile] PROJECT_ID =', PROJECT_ID);
 // _layout.tsx) so it can apply per-screen suppression logic. Do not set it
 // here - only one handler is active at a time and the last call wins.
 
+/** Android channel of the Daily Challenge morning push (permanent id, see setupNotificationChannel). */
+export const DAILY_CHANNEL_ID = 'daily_challenge_v1';
+
 export async function setupNotificationChannel(): Promise<void> {
   if (Platform.OS !== 'android') return;
   console.log('[push-mobile] setupNotificationChannel');
@@ -57,6 +60,21 @@ export async function setupNotificationChannel(): Promise<void> {
     showBadge:        true,
   });
   console.log('[push-mobile] Android channel "default" configured');
+
+  // Daily Challenge morning push (V2-07): its own channel with the signature
+  // sound (assets/sounds/daily_signature.wav, bundled by the expo-notifications
+  // plugin in app.json). Android never lets an app change a channel's sound
+  // once created, so the id is permanent: a new sound needs a new file name
+  // AND a new id (daily_challenge_v2, also in DailyPushes::SIGNATURE_CHANNEL),
+  // and the old channel deleted here with deleteNotificationChannelAsync.
+  await Notifications.setNotificationChannelAsync(DAILY_CHANNEL_ID, {
+    name:             'Daily Challenge',
+    importance:       Notifications.AndroidImportance.HIGH,
+    sound:            'daily_signature.wav',
+    vibrationPattern: [0, 250, 250, 250],
+    lightColor:       '#FF7A3C',
+    showBadge:        true,
+  });
 }
 
 // ── Interactive notification categories (Accept / Decline action buttons) ──────

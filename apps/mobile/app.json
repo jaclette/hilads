@@ -801,7 +801,7 @@
           "icon": "./assets/notification-icon.png",
           "color": "#FF7A3C",
           "defaultChannel": "default",
-          "sounds": []
+          "sounds": ["./assets/sounds/daily_signature.wav"]
         }
       ],
       [

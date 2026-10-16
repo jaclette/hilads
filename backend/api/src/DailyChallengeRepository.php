@@ -189,6 +189,8 @@ final class DailyChallengeRepository
             'streak'      => $viewer !== null ? DailyResults::currentStreak($viewer['id']) : null,
             // Tomorrow's theme as a teaser; never its text.
             'tomorrow'    => self::tomorrow(DailyClock::currentDate($now)),
+            // Speed bonus window (V2-07): until when my proof would be early (signed in, not posted yet, still open).
+            'early'       => null,
             // My Local Pass progress in this city (signed in, with a city).
             'localPass'   => $viewer !== null && $cityId !== null ? DailyLocalPass::progressIn($viewer['id'], $cityId) : null,
         ];
@@ -205,6 +207,14 @@ final class DailyChallengeRepository
             $out['myProof'] = $mine ? DailyProofRepository::format($mine, $viewer['id']) : null;
             $votes = DailyVotes::mine($challenge['id'], $viewer['id']);
             $out['myVotes'] = ['used' => $votes['used'], 'left' => $votes['left']];
+            if ($mine === null) {
+                $tz    = DailyPushes::userTimezone($viewer['id']);
+                $until = DailyPushes::earlyUntil((string) $challenge['challenge_date'], $tz);
+                if ($now < $until) {
+                    $out['early'] = ['startsAt' => DailyPushes::startAt((string) $challenge['challenge_date'], $tz)->getTimestamp(),
+                                     'until'    => $until->getTimestamp()];
+                }
+            }
         }
         return $out;
     }

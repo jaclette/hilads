@@ -115,6 +115,13 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
         )}
       </View>
 
+      {/* Re-rendered every second by the countdown, so it disappears when the window ends. */}
+      {!myProof && data?.early && data.early.until * 1000 > Date.now() && (
+        <Text style={styles.early}>
+          ⚡ {t('early.hint', { time: new Date(data.early.until * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+        </Text>
+      )}
+
       {data && <DailyTop3 today={data} source={source} trackProps={dailyTrackProps(data, account?.mode)} />}
 
       {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
@@ -160,6 +167,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kicker:     { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
   countdown:  { fontSize: 12, fontWeight: '700', color: c.muted },
   countdownWarn: { color: c.warning },
+  early:      { fontSize: 12, fontWeight: '800', color: c.warning },
   text:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
   theme:      { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.text, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden' },
   propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8 },

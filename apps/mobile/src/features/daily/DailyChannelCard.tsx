@@ -15,6 +15,7 @@ import { dailyErrorCode, reportDailyProof, type DailyReportReason } from '@/api/
 import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
+import { EarlyBadge } from './EarlyBadge';
 import { MEDALS } from './DailyProofTile';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
@@ -38,6 +39,7 @@ type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
   user: DailyPerson; isLocal: boolean; city: { id: number; name: string } | null;
   photoUrl: string; thumbUrl: string | null; caption: string | null;
+  isEarly?: boolean;
 };
 
 const REPORT_REASONS: DailyReportReason[] = ['inappropriate', 'person_without_consent', 'dangerous', 'spam', 'other'];
@@ -202,6 +204,7 @@ function ProofCard({ message, reactions, time, longPress }: {
         <View style={styles.voteRow}>
           <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} />
           {vote?.validatedByLocal && <Text style={styles.badge} numberOfLines={1}>✓ {t('validatedByLocal')}</Text>}
+          {p.isEarly && <EarlyBadge />}
         </View>
         <Text style={styles.proofOf} numberOfLines={1}>🔥 {t('kicker')} · {p.challengeText}</Text>
       </TouchableOpacity>

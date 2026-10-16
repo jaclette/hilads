@@ -36,6 +36,7 @@ final class DailyCards
                 'localPass'   => DailyProofRepository::bool($proof['author_local_pass'] ?? false),
             ],
             'isLocal'       => DailyProofRepository::bool($proof['is_local']),
+            'isEarly'       => DailyProofRepository::bool($proof['is_early'] ?? false),
             'city'          => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name']] : null,
             'photoUrl'      => $proof['photo_url'],
             'thumbUrl'      => R2Uploader::thumbProxy($proof['photo_url']),

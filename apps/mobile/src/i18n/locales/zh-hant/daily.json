@@ -314,5 +314,9 @@
       "twist_not_allowed": "只有正在 live 的城市的在地人才能加入 Local Twist。",
       "moderation_blocked": "你的提議被審核擋下了，請換個說法。"
     }
+  },
+  "early": {
+    "badge": "搶先",
+    "hint": "搶先獎勵：{{time}} 前發布"
   }
 }

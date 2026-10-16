@@ -314,5 +314,9 @@
       "twist_not_allowed": "live 중인 도시의 현지인만 Local Twist를 추가할 수 있어요.",
       "moderation_blocked": "제안이 모더레이션에 걸렸어요. 다르게 써 주세요."
     }
+  },
+  "early": {
+    "badge": "빠름",
+    "hint": "빠른 보너스: {{time}} 전에 올리기"
   }
 }

@@ -208,4 +208,20 @@ final class DailyPushesTest extends TestCase
         $this->assertSame('Tu es dans le top 10 du jour ! 🏆 Ta preuve est #4 dans le monde en ce moment.',
                           DailyPushes::top10Message('2026-11-02', 4, 'fr')['body']);
     }
+
+    public function testSpeedBonusWindowFollowsTheMorningPushRule(): void
+    {
+        // Drop 02:00 UTC. Saigon (09:00 local): start = the drop, bonus until 05:00 UTC (12:00 local).
+        $this->assertSame('2026-11-02 05:00', DailyPushes::earlyUntil('2026-11-02', 'Asia/Ho_Chi_Minh')->format('Y-m-d H:i'));
+        // Paris (03:00 local, CET): start = 09:00 local = 08:00 UTC, bonus until 11:00 UTC.
+        $this->assertSame('2026-11-02 08:00', DailyPushes::startAt('2026-11-02', 'Europe/Paris')->format('Y-m-d H:i'));
+        $this->assertSame('2026-11-02 11:00', DailyPushes::earlyUntil('2026-11-02', 'Europe/Paris')->format('Y-m-d H:i'));
+        // New York (21:00 local, EST): start = next day 09:00 local = 14:00 UTC, until 17:00 UTC.
+        $this->assertSame('2026-11-02 17:00', DailyPushes::earlyUntil('2026-11-02', 'America/New_York')->format('Y-m-d H:i'));
+
+        $this->assertTrue(DailyPushes::isEarly('2026-11-02', 'Europe/Paris', self::utc('2026-11-02 03:00')));   // night, before the start
+        $this->assertTrue(DailyPushes::isEarly('2026-11-02', 'Europe/Paris', self::utc('2026-11-02 11:00')));   // last second
+        $this->assertFalse(DailyPushes::isEarly('2026-11-02', 'Europe/Paris', self::utc('2026-11-02 11:01')));
+        $this->assertFalse(DailyPushes::isEarly('2026-11-02', 'Asia/Ho_Chi_Minh', self::utc('2026-11-02 05:30')));
+    }
 }

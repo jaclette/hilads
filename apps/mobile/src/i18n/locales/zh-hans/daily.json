@@ -314,5 +314,9 @@
       "twist_not_allowed": "只有正在 live 的城市的本地人才能添加 Local Twist。",
       "moderation_blocked": "你的提议被审核拦截了，请换个说法。"
     }
+  },
+  "early": {
+    "badge": "抢先",
+    "hint": "抢先奖励：{{time}} 前发布"
   }
 }

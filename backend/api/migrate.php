@@ -1667,7 +1667,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker', 'daily')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected', 'early_proof')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1691,7 +1691,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected', 'early_proof'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -3036,6 +3036,16 @@ run($pdo, "
 ", 'daily_rejection_templates seed');
 run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('proposal_selected', 'daily', 25)
             ON CONFLICT (kind, role) DO NOTHING", 'score_rules proposal_selected');
+
+// V2-07: speed bonus (SPEC 8.5). A proof posted within 3 hours of the user's
+// start time (the morning push rule: the drop if it is 09:00-21:00 local, else
+// 09:00 local) is early: set when first posted, never changed by an edit. Its
+// bonus (early_proof, proof-linked like the proof points) is awarded at approval.
+// Reversal: ALTER TABLE daily_proofs DROP COLUMN is_early;
+// DELETE FROM score_events WHERE kind = 'early_proof'; DELETE FROM score_rules WHERE kind = 'early_proof';
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_early BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_early');
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('early_proof', 'daily', 5)
+            ON CONFLICT (kind, role) DO NOTHING", 'score_rules early_proof');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

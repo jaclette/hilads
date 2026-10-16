@@ -316,5 +316,9 @@
       "twist_not_allowed": "Local Twist を追加できるのは live 中の街の地元の人だけです。",
       "moderation_blocked": "提案がモデレーションでブロックされました。言い換えてください。"
     }
+  },
+  "early": {
+    "badge": "早い",
+    "hint": "早めボーナス：{{time}} までに投稿"
   }
 }
