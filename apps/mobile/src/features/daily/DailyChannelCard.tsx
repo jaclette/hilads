@@ -55,6 +55,8 @@ interface Props {
  * Daily Challenge cards in World and city chats (system messages):
  *   daily_challenge - the day's challenge (+ the Local Twist in live cities;
  *                     yesterday's top 3 on the World card)
+ *   daily_proof_group - flood control (V2-08): the hour's extra proofs in one card
+ *                     (photo strip, count, cities), opening a gallery of exactly those
  *   daily_proof     - an approved proof: photo, author with Local/Traveler, city,
  *                     caption, live vote count / my vote / local badge (votes store)
  * Tap opens the challenge sheet; long-press opens the usual action sheet
@@ -119,7 +121,56 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
     );
   }
 
+  if (message.event === 'daily_proof_group') {
+    return <GroupCard message={message} reactions={reactions} time={time} longPress={longPress} />;
+  }
+
   return <ProofCard message={message} reactions={reactions} time={time} longPress={longPress} />;
+}
+
+type GroupPayload = {
+  hour: string; proofIds: string[]; count: number; cities: string[];
+  proofs: { proofId: string; date: string; thumbUrl: string | null; city: { id: number; name: string } | null }[];
+};
+
+/** The hour's extra proofs of a busy channel (V2-08): a photo strip, the count and cities; opens their gallery. */
+function GroupCard({ message, reactions, time, longPress }: {
+  message: Message; reactions: ReactNode; time: string | null; longPress?: () => void;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const router = useRouter();
+  const p = (message.payload ?? {}) as Partial<GroupPayload>;
+  if (!p.proofIds?.length || !p.proofs?.length) return null;
+  const count  = p.count ?? p.proofIds.length;
+  const cities = (p.cities ?? []).map(c => localizeCityName(c));
+  // Same rule as the server's fallback line: two cities, then "and N more" proofs.
+  const named  = cities.slice(0, 2);
+  const more   = count - named.length;
+  const where  = named.length === 0 ? '' : more > 0 ? t('group.citiesMore', { cities: named.join(', '), n: more }) : named.join(', ');
+  const shown  = p.proofs.slice(0, 4);
+  const open = () => router.push(`/daily/gallery?ids=${p.proofIds!.join(',')}&date=${p.proofs![0].date}` as never);
+  return (
+    <View style={styles.wrap}>
+      <TouchableOpacity style={styles.card} onPress={open} onLongPress={longPress} activeOpacity={0.9} accessibilityRole="button"
+        accessibilityLabel={`${t('group.title', { n: count })}. ${where}`}>
+        <Text style={styles.kicker}>📸 {t('group.title', { n: count })}</Text>
+        {!!where && <Text style={styles.sub} numberOfLines={1}>{where}</Text>}
+        <View style={styles.strip}>
+          {shown.map((e, i) => (
+            <View key={e.proofId} style={styles.stripCell}>
+              {e.thumbUrl ? <Image source={{ uri: e.thumbUrl }} style={styles.stripPhoto} contentFit="cover" transition={150} /> : <View style={styles.stripPhoto} />}
+              {i === shown.length - 1 && count > shown.length && (
+                <View style={styles.stripMore}><Text style={styles.stripMoreText}>+{count - shown.length + 1}</Text></View>
+              )}
+            </View>
+          ))}
+        </View>
+      </TouchableOpacity>
+      {reactions}
+      {time && <Text style={styles.time}>{time}</Text>}
+    </View>
+  );
 }
 
 /** "Proposed by <name> · <city>" (V2-05); the name opens the author's profile. */
@@ -241,6 +292,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },
   voteRow:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
   badge:         { flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.green },
+  strip:         { flexDirection: 'row', gap: 6 },
+  stripCell:     { flex: 1, aspectRatio: 1 },
+  stripPhoto:    { width: '100%', height: '100%', borderRadius: Radius.md, backgroundColor: c.bg3 },
+  stripMore:     { ...StyleSheet.absoluteFillObject, borderRadius: Radius.md, backgroundColor: c.scrim, alignItems: 'center', justifyContent: 'center' },
+  stripMoreText: { color: c.white, fontSize: FontSizes.md, fontWeight: '900' },
   proposedBy:    { alignSelf: 'flex-start' },
   proposedByText:{ fontSize: 12, fontWeight: '700', color: c.accentText },
   top3:          { borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8, gap: 6 },

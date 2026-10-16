@@ -320,5 +320,10 @@
   "early": {
     "badge": "In anticipo",
     "hint": "Bonus velocità: pubblica prima delle {{time}}"
+  },
+  "group": {
+    "title": "Nuove prove: {{n}}",
+    "citiesMore": "{{cities}} e altre {{n}}",
+    "galleryTitle": "Nuove prove"
   }
 }

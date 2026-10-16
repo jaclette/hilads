@@ -320,5 +320,10 @@
   "early": {
     "badge": "Maaga",
     "hint": "Bonus sa pagiging maaga: mag-post bago mag-{{time}}"
+  },
+  "group": {
+    "title": "Mga bagong proof: {{n}}",
+    "citiesMore": "{{cities}} at {{n}} pa",
+    "galleryTitle": "Mga bagong proof"
   }
 }

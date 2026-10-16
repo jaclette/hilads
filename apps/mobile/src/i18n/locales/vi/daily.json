@@ -318,5 +318,10 @@
   "early": {
     "badge": "Sớm",
     "hint": "Thưởng nhanh tay: đăng trước {{time}}"
+  },
+  "group": {
+    "title": "Bằng chứng mới: {{n}}",
+    "citiesMore": "{{cities}} và {{n}} nữa",
+    "galleryTitle": "Bằng chứng mới"
   }
 }

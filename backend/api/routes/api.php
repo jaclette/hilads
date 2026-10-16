@@ -14422,6 +14422,22 @@ $router->add('GET', '/api/v1/daily/leaderboard', function () {
     Response::json($out, 200, $body);
 });
 
+// GET /api/v1/daily/proofs?ids=a,b,c - up to 50 approved proofs in that order
+// (the gallery of a daily_proof_group card, V2-08). Blocked authors left out.
+$router->add('GET', '/api/v1/daily/proofs', function () {
+    $user = AuthService::currentUser();
+    $ids  = array_values(array_unique(array_filter(
+        explode(',', (string) ($_GET['ids'] ?? '')),
+        static fn(string $id): bool => (bool) preg_match('/^[a-f0-9]{16}$/', $id),
+    )));
+    if ($ids === [] || count($ids) > 50) {
+        Response::json(['error' => 'ids must list 1 to 50 proof ids', 'code' => 'invalid_ids'], 400);
+    }
+    $rows = DailyVotes::annotate(filterByBlocks(DailyProofRepository::findApprovedMany($ids), dailyBlocks($user), 'user_id', 'guest_id'),
+                                 $user['id'] ?? null);
+    Response::json(['items' => array_map(fn(array $r) => DailyProofRepository::format($r, $user['id'] ?? null), $rows)]);
+});
+
 // GET /api/v1/daily/proofs/{id} - one proof: approved, or any status for its owner.
 $router->add('GET', '/api/v1/daily/proofs/{id}', function (array $params) {
     $user  = AuthService::currentUser();

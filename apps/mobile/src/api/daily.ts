@@ -135,6 +135,13 @@ export async function unvoteDailyProof(proofId: string): Promise<DailyVoteResult
   return api.delete<DailyVoteResult>(`/daily/proofs/${proofId}/vote`);
 }
 
+/** Up to 50 approved proofs in the order given (a group card's gallery). */
+export async function fetchDailyProofsByIds(ids: string[], guestId?: string | null): Promise<DailyProof[]> {
+  return (await api.get<{ items: DailyProof[] }>('/daily/proofs', {
+    params: { ids: ids.join(','), guestId: guestId ?? undefined, locale: locale() },
+  })).items;
+}
+
 /** Live vote state of up to 50 proofs (channel cards), plus my votes left today. */
 export async function fetchDailyProofStates(ids: string[], guestId?: string | null): Promise<{
   items: Record<string, DailyVoteState>; myVotes: { used: number; left: number } | null;

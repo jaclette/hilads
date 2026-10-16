@@ -344,5 +344,10 @@
   "early": {
     "badge": "مبكر",
     "hint": "مكافأة السرعة: انشر قبل {{time}}"
+  },
+  "group": {
+    "title": "أدلة جديدة: {{n}}",
+    "citiesMore": "{{cities}} و{{n}} أخرى",
+    "galleryTitle": "أدلة جديدة"
   }
 }

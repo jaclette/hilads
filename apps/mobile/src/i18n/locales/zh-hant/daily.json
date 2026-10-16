@@ -318,5 +318,10 @@
   "early": {
     "badge": "搶先",
     "hint": "搶先獎勵：{{time}} 前發布"
+  },
+  "group": {
+    "title": "新的證明：{{n}}",
+    "citiesMore": "{{cities}} 等另外 {{n}} 個",
+    "galleryTitle": "新的證明"
   }
 }

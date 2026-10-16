@@ -318,5 +318,10 @@
   "early": {
     "badge": "เร็ว",
     "hint": "โบนัสความเร็ว: โพสต์ก่อน {{time}}"
+  },
+  "group": {
+    "title": "หลักฐานใหม่: {{n}}",
+    "citiesMore": "{{cities}} และอีก {{n}}",
+    "galleryTitle": "หลักฐานใหม่"
   }
 }

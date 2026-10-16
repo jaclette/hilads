@@ -318,5 +318,10 @@
   "early": {
     "badge": "빠름",
     "hint": "빠른 보너스: {{time}} 전에 올리기"
+  },
+  "group": {
+    "title": "새 인증: {{n}}",
+    "citiesMore": "{{cities}} 외 {{n}}개",
+    "galleryTitle": "새 인증"
   }
 }

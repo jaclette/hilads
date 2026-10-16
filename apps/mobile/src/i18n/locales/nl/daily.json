@@ -320,5 +320,10 @@
   "early": {
     "badge": "Vroeg",
     "hint": "Vroegbonus: post vóór {{time}}"
+  },
+  "group": {
+    "title": "Nieuwe bewijzen: {{n}}",
+    "citiesMore": "{{cities}} en nog {{n}}",
+    "galleryTitle": "Nieuwe bewijzen"
   }
 }

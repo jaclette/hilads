@@ -15,7 +15,8 @@ export function onDailyDropped(fn: Listener): () => void {
   return () => { listeners.delete(fn); };
 }
 
-/** True for the Daily Challenge system cards (daily_challenge / daily_proof). */
+/** True for the Daily Challenge system cards (daily_challenge / daily_proof / daily_proof_group). */
 export function isDailyCard(m: { type?: string; event?: string }): boolean {
-  return m.type === 'system' && (m.event === 'daily_challenge' || m.event === 'daily_proof');
+  return m.type === 'system'
+    && (m.event === 'daily_challenge' || m.event === 'daily_proof' || m.event === 'daily_proof_group');
 }

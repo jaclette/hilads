@@ -320,5 +320,10 @@
   "early": {
     "badge": "Early",
     "hint": "Early bonus: post before {{time}}"
+  },
+  "group": {
+    "title": "New proofs: {{n}}",
+    "citiesMore": "{{cities}} and {{n}} more",
+    "galleryTitle": "New proofs"
   }
 }

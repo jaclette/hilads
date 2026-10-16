@@ -320,5 +320,10 @@
   "early": {
     "badge": "Awal",
     "hint": "Bonus cepat: posting sebelum {{time}}"
+  },
+  "group": {
+    "title": "Bukti baru: {{n}}",
+    "citiesMore": "{{cities}} dan {{n}} lainnya",
+    "galleryTitle": "Bukti baru"
   }
 }

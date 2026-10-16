@@ -320,5 +320,10 @@
   "early": {
     "badge": "早い",
     "hint": "早めボーナス：{{time}} までに投稿"
+  },
+  "group": {
+    "title": "新しい証明：{{n}}",
+    "citiesMore": "{{cities}} ほか {{n}} 件",
+    "galleryTitle": "新しい証明"
   }
 }

@@ -13,11 +13,20 @@ declare(strict_types=1);
  * Re-approval after an edit updates the card in place (same id); delete,
  * reject and removal delete it.
  *
+ * Flood control (V2-08): a channel gets at most FLOOD_PER_HOUR individual
+ * proof cards per clock hour (UTC). Further proofs that hour join one
+ * daily_proof_group card for (channel, hour), updated in place as proofs
+ * arrive or leave ("8 new proofs: Saigon, Lisbon and 6 more"); it is deleted
+ * when its last proof goes. A proof never moves: once on its own card or in a
+ * group, a re-approval updates it there.
+ *
  * Lives in src/ (not routes/) so the back office can call it too.
  */
 final class DailyCards
 {
-    public const EVENT_PROOF = 'daily_proof';
+    public const EVENT_PROOF    = 'daily_proof';
+    public const EVENT_GROUP    = 'daily_proof_group';
+    public const FLOOD_PER_HOUR = 6;   // individual proof cards per channel and clock hour
 
     /** Render data for a daily_proof card, from a DailyProofRepository row. Pure. */
     public static function proofPayload(array $proof, string $challengeText): array
@@ -51,9 +60,74 @@ final class DailyCards
         return "📸 {$name} completed today's Daily Challenge";
     }
 
+    // ── Flood control: pure helpers (unit-tested) ──────────────────────────────
+
+    /** The clock hour (UTC) a card belongs to: "2026-11-02T09". */
+    public static function hourBucket(DateTimeImmutable $at): string
+    {
+        return $at->setTimezone(new DateTimeZone('UTC'))->format('Y-m-d\TH');
+    }
+
+    /** One proof inside a group card. Pure. */
+    public static function groupEntry(array $proof): array
+    {
+        $cityId = $proof['city_id'] !== null ? (int) substr((string) $proof['city_id'], 5) : null;
+        return [
+            'proofId'  => $proof['id'],
+            'date'     => $proof['challenge_date'],
+            'thumbUrl' => R2Uploader::thumbProxy($proof['photo_url']),
+            'user'     => ['id' => $proof['user_id'], 'username' => $proof['username'], 'displayName' => $proof['display_name']],
+            'city'     => $cityId !== null ? ['id' => $cityId, 'name' => $proof['city_name']] : null,
+            'isLocal'  => DailyProofRepository::bool($proof['is_local']),
+        ];
+    }
+
+    /** Group card payload from its entries (oldest first): proof ids, count, distinct cities. Pure. */
+    public static function groupPayload(string $hour, array $entries): array
+    {
+        $cities = [];
+        foreach ($entries as $e) {
+            if ($e['city'] !== null && !in_array($e['city']['name'], $cities, true)) {
+                $cities[] = $e['city']['name'];
+            }
+        }
+        return [
+            'hour'     => $hour,
+            'proofIds' => array_column($entries, 'proofId'),
+            'proofs'   => array_values($entries),
+            'count'    => count($entries),
+            'cities'   => $cities,
+        ];
+    }
+
+    /** English fallback line: "📸 8 new proofs: Saigon, Lisbon and 6 more". Pure. */
+    public static function groupContent(array $payload): string
+    {
+        $n     = (int) $payload['count'];
+        $named = array_slice($payload['cities'], 0, 2);
+        $more  = $n - count($named);
+        $where = $named === [] ? '' : ': ' . implode(', ', $named) . ($more > 0 ? " and {$more} more" : '');
+        return "📸 {$n} new " . ($n === 1 ? 'proof' : 'proofs') . $where;
+    }
+
+    /** Add (or replace) a proof's entry, keeping the order. Pure. */
+    public static function withEntry(array $entries, array $entry): array
+    {
+        foreach ($entries as $i => $e) {
+            if ($e['proofId'] === $entry['proofId']) {
+                $entries[$i] = $entry;
+                return array_values($entries);
+            }
+        }
+        $entries[] = $entry;
+        return array_values($entries);
+    }
+
     /**
      * Post (or update in place) the cards of an approved proof: World, plus
-     * the city channel when the city is live. Idempotent per channel.
+     * the city channel when the city is live. Idempotent per channel. Past
+     * FLOOD_PER_HOUR cards in a channel this hour, the proof joins the hour's
+     * group card instead (V2-08).
      */
     public static function postProof(array $proof): void
     {
@@ -90,6 +164,14 @@ final class DailyCards
                 $id        = $existing['id'];
                 $createdAt = (int) $existing['created_at'];
             } else {
+                // Flood control (V2-08): already in a group, or past the hour's cards → the group card.
+                if (self::updateInGroup($dbChannel, $proof)) {
+                    continue;
+                }
+                if (self::cardsThisHour($dbChannel) >= self::FLOOD_PER_HOUR) {
+                    self::addToGroup($dbChannel, $proof);
+                    continue;
+                }
                 $insert = $pdo->prepare("
                     INSERT INTO messages (id, channel_id, type, event, user_id, nickname, content, payload)
                     VALUES (?, ?, 'system', 'daily_proof', ?, ?, ?, ?::jsonb)
@@ -180,7 +262,7 @@ final class DailyCards
      */
     public static function postChallenge(array $challenge): int
     {
-        $hilads   = md5('hilads-admin'); // seeded brand account (migrate.php)
+        $hilads   = self::hiladsId();
         $content  = "🔥 Today's Daily Challenge: " . (json_decode((string) $challenge['text_i18n'], true)['en'] ?? '');
         $channels = array_merge(['world'], DailyRules::liveCityIds());
         $posted   = 0;
@@ -221,18 +303,175 @@ final class DailyCards
         return $posted;
     }
 
-    /** Delete every card of a proof (reactions cascade) and tell connected clients. */
+    /**
+     * Delete every card of a proof (reactions cascade), take it out of any
+     * group card (deleting a group left empty), and tell connected clients.
+     */
     public static function hideProof(string $proofId, ?string $cityId): void
     {
         $pdo = Database::pdo();
         foreach (self::cardRows($proofId, $cityId) as $row) {
             $pdo->prepare("DELETE FROM messages WHERE id = ?")->execute([$row['id']]);
-            self::postToWs('/broadcast/message-deleted', [
-                'channelId' => self::clientChannel($row['channel_id']),
-                'messageId' => $row['id'],
-                'deletedAt' => time(),
-            ]);
+            self::broadcastDeleted($row['channel_id'], $row['id']);
         }
+        foreach (array_filter(['world', $cityId]) as $dbChannel) {
+            $pdo->beginTransaction();
+            try {
+                $group = self::lockGroupWith($dbChannel, $proofId);
+                if ($group === null) {
+                    $pdo->commit();
+                    continue;
+                }
+                $entries = array_values(array_filter($group['entries'], static fn(array $e): bool => $e['proofId'] !== $proofId));
+                if ($entries === []) {
+                    $pdo->prepare("DELETE FROM messages WHERE id = ?")->execute([$group['id']]);
+                    $pdo->commit();
+                    self::broadcastDeleted($dbChannel, $group['id']);
+                    continue;
+                }
+                $payload = self::saveGroup($group['id'], $group['hour'], $entries);
+                $pdo->commit();
+                self::broadcastGroup($dbChannel, $group['id'], $payload, $group['created_at']);
+            } catch (\Throwable $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
+        }
+    }
+
+    // ── Flood control (V2-08) ────────────────────────────────────────────────
+
+    /** Individual proof cards posted in a channel since the start of this clock hour (UTC). */
+    private static function cardsThisHour(string $dbChannel): int
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT count(*) FROM messages
+            WHERE channel_id = ? AND event = 'daily_proof'
+              AND created_at >= date_trunc('hour', now() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC'
+        ");
+        $stmt->execute([$dbChannel]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /** Add a proof to this hour's group card of a channel (created on first use). */
+    private static function addToGroup(string $dbChannel, array $proof): void
+    {
+        $hour  = self::hourBucket(new DateTimeImmutable('now'));
+        $entry = self::groupEntry($proof);
+        $pdo   = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $payload = self::groupPayload($hour, [$entry]);
+            $insert  = $pdo->prepare("
+                INSERT INTO messages (id, channel_id, type, event, user_id, nickname, content, payload)
+                VALUES (?, ?, 'system', 'daily_proof_group', ?, 'Hilads', ?, ?::jsonb)
+                ON CONFLICT DO NOTHING
+                RETURNING id, EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at
+            ");
+            $insert->execute([bin2hex(random_bytes(8)), $dbChannel, self::hiladsId(), self::groupContent($payload),
+                              json_encode($payload, JSON_UNESCAPED_UNICODE)]);
+            $row = $insert->fetch(PDO::FETCH_ASSOC);
+            if ($row === false) {
+                // The hour's group exists: add to it under a row lock.
+                $stmt = $pdo->prepare("
+                    SELECT id, payload, EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at FROM messages
+                    WHERE channel_id = ? AND event = 'daily_proof_group' AND payload->>'hour' = ?
+                    FOR UPDATE
+                ");
+                $stmt->execute([$dbChannel, $hour]);
+                $g       = $stmt->fetch(PDO::FETCH_ASSOC);
+                $entries = json_decode((string) $g['payload'], true)['proofs'] ?? [];
+                $payload = self::saveGroup($g['id'], $hour, self::withEntry($entries, $entry));
+                $row     = $g;
+            }
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+        self::broadcastGroup($dbChannel, $row['id'], $payload, (int) $row['created_at']);
+    }
+
+    /** Re-approval of a proof already in a group card: update its entry there. True when it was in one. */
+    private static function updateInGroup(string $dbChannel, array $proof): bool
+    {
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $group = self::lockGroupWith($dbChannel, $proof['id']);
+            if ($group === null) {
+                $pdo->commit();
+                return false;
+            }
+            $payload = self::saveGroup($group['id'], $group['hour'], self::withEntry($group['entries'], self::groupEntry($proof)));
+            $pdo->commit();
+        } catch (\Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+        self::broadcastGroup($dbChannel, $group['id'], $payload, $group['created_at']);
+        return true;
+    }
+
+    /** The group card of a channel holding a proof, locked: {id, hour, entries, created_at}, or null. Call in a transaction. */
+    private static function lockGroupWith(string $dbChannel, string $proofId): ?array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT id, payload, EXTRACT(EPOCH FROM created_at)::INTEGER AS created_at FROM messages
+            WHERE channel_id = ? AND event = 'daily_proof_group' AND payload->'proofIds' @> jsonb_build_array(?::text)
+            FOR UPDATE
+        ");
+        $stmt->execute([$dbChannel, $proofId]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$r) {
+            return null;
+        }
+        $payload = json_decode((string) $r['payload'], true) ?: [];
+        return ['id' => $r['id'], 'hour' => (string) ($payload['hour'] ?? ''), 'entries' => $payload['proofs'] ?? [],
+                'created_at' => (int) $r['created_at']];
+    }
+
+    /** Write a group card's payload and fallback line. Returns the payload. */
+    private static function saveGroup(string $id, string $hour, array $entries): array
+    {
+        $payload = self::groupPayload($hour, $entries);
+        Database::pdo()->prepare("UPDATE messages SET payload = ?::jsonb, content = ? WHERE id = ?")
+            ->execute([json_encode($payload, JSON_UNESCAPED_UNICODE), self::groupContent($payload), $id]);
+        return $payload;
+    }
+
+    /** Same id on every update: clients replace the card. */
+    private static function broadcastGroup(string $dbChannel, string $id, array $payload, int $createdAt): void
+    {
+        self::postToWs('/broadcast/message', [
+            'channelId' => self::clientChannel($dbChannel),
+            'message'   => [
+                'id'        => $id,
+                'type'      => 'system',
+                'event'     => self::EVENT_GROUP,
+                'guestId'   => null,
+                'userId'    => self::hiladsId(),
+                'nickname'  => 'Hilads',
+                'content'   => self::groupContent($payload),
+                'payload'   => $payload,
+                'createdAt' => $createdAt,
+            ],
+        ]);
+    }
+
+    private static function broadcastDeleted(string $dbChannel, string $id): void
+    {
+        self::postToWs('/broadcast/message-deleted', [
+            'channelId' => self::clientChannel($dbChannel),
+            'messageId' => $id,
+            'deletedAt' => time(),
+        ]);
+    }
+
+    /** The seeded @hilads brand account (migrate.php) that posts Daily cards. */
+    private static function hiladsId(): string
+    {
+        return md5('hilads-admin');
     }
 
     /** Card rows of a proof in World and its city (both lookups use the unique index). */

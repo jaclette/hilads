@@ -320,5 +320,10 @@
   "early": {
     "badge": "Früh",
     "hint": "Früh-Bonus: poste vor {{time}}"
+  },
+  "group": {
+    "title": "Neue Beweise: {{n}}",
+    "citiesMore": "{{cities}} und {{n}} weitere",
+    "galleryTitle": "Neue Beweise"
   }
 }

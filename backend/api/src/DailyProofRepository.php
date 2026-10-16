@@ -187,6 +187,21 @@ final class DailyProofRepository
         return $row ?: null;
     }
 
+    /** Approved proofs by id, in the order given (unknown or unapproved left out). */
+    public static function findApprovedMany(array $ids): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        $stmt = Database::pdo()->prepare(self::SELECT . " WHERE p.id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'");
+        $stmt->execute([implode(',', $ids)]);
+        $byId = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $byId[$r['id']] = $r;
+        }
+        return array_values(array_filter(array_map(static fn(string $id): ?array => $byId[$id] ?? null, $ids)));
+    }
+
     public static function findMine(string $challengeId, string $userId): ?array
     {
         $stmt = Database::pdo()->prepare(self::SELECT . " WHERE p.challenge_id = ? AND p.user_id = ?");

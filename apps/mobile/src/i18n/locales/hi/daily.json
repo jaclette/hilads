@@ -320,5 +320,10 @@
   "early": {
     "badge": "जल्दी",
     "hint": "जल्दी बोनस: {{time}} से पहले पोस्ट करें"
+  },
+  "group": {
+    "title": "नए प्रूफ: {{n}}",
+    "citiesMore": "{{cities}} और {{n}} और",
+    "galleryTitle": "नए प्रूफ"
   }
 }

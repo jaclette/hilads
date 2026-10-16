@@ -2889,6 +2889,10 @@ run($pdo, "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_messages_daily_chal
 run($pdo, "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_messages_daily_proof
             ON messages (channel_id, (payload->>'proofId'))
             WHERE event = 'daily_proof'", 'uq_messages_daily_proof');
+// V2-08: one flood-control group card per (channel, clock hour).
+run($pdo, "CREATE UNIQUE INDEX CONCURRENTLY IF NOT EXISTS uq_messages_daily_proof_group
+            ON messages (channel_id, (payload->>'hour'))
+            WHERE event = 'daily_proof_group'", 'uq_messages_daily_proof_group');
 
 // score_events for the Daily Challenge (phase 2). Daily points have no
 // challenge channel, so challenge_id becomes nullable and daily_* columns
