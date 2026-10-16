@@ -14297,7 +14297,7 @@ $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) 
     $out['hasMore']  = count($rows) >= $limit;
     $out['nextBefore'] = $rows !== [] ? DailyProofRepository::ts(end($rows)['approved_at']) : null;
     $out['practical'] = DailyChallengeRepository::practical($id, $proofCity);
-    // Once closed: World top 3 and the city's best proof (null before the results).
+    // Once closed: World top 3, the city's best proof, every live city's best (null before the results).
     $out['results']   = DailyResults::forSheet($id, $cityId, $user['id'] ?? null, $blocks['user_ids'] ?? []);
     Response::json($out);
 });
@@ -14331,6 +14331,29 @@ $router->add('GET', '/api/v1/daily/live-cities', function () {
         }
     }
     Response::json(['items' => $items]);
+});
+
+// GET /api/v1/daily/proofs/state?ids=a,b,c - live vote state of up to 50
+// approved proofs (channel cards carry a snapshot), plus my votes left today.
+$router->add('GET', '/api/v1/daily/proofs/state', function () {
+    $user = AuthService::currentUser();
+    $ids  = array_values(array_unique(array_filter(
+        explode(',', (string) ($_GET['ids'] ?? '')),
+        static fn(string $id): bool => (bool) preg_match('/^[a-f0-9]{16}$/', $id),
+    )));
+    if ($ids === [] || count($ids) > 50) {
+        Response::json(['error' => 'ids must list 1 to 50 proof ids', 'code' => 'invalid_ids'], 400);
+    }
+    $myVotes = null;
+    if ($user !== null) {
+        $today   = DailyChallengeRepository::findPublishedByDate(DailyClock::currentDate());
+        $mine    = $today !== null ? DailyVotes::mine($today['id'], $user['id']) : null;
+        $myVotes = $mine !== null ? ['used' => $mine['used'], 'left' => $mine['left']] : null;
+    }
+    Response::json([
+        'items'   => (object) DailyVotes::states($ids, $user['id'] ?? null, dailyBlocks($user)['user_ids'] ?? []),
+        'myVotes' => $myVotes,
+    ]);
 });
 
 // GET /api/v1/daily/proofs/{id} - one proof: approved, or any status for its owner.

@@ -86,4 +86,16 @@ final class DailyResultsTest extends TestCase
         $this->assertSame(1, DailyVotes::freeSlot([2, 3]));   // a withdrawn vote frees its slot
         $this->assertNull(DailyVotes::freeSlot([1, 2, 3]));
     }
+
+    public function testVoteState(): void
+    {
+        $row = ['user_id' => 'u1', 'vote_count' => '4', 'local_vote_count' => '1', 'challenge_date' => '2026-11-02', 'my_vote' => 't'];
+        $during = new DateTimeImmutable('2026-11-02 12:00', new DateTimeZone('UTC'));
+        $after  = new DateTimeImmutable('2026-11-03 02:30', new DateTimeZone('UTC'));
+        $this->assertSame(['voteCount' => 4, 'validatedByLocal' => true, 'myVote' => true, 'isMine' => false, 'votingOpen' => true],
+            DailyVotes::stateOf($row, 'u2', $during));
+        $s = DailyVotes::stateOf(['local_vote_count' => '0', 'my_vote' => 'f'] + $row, 'u1', $after);
+        $this->assertSame([false, false, true, false], [$s['validatedByLocal'], $s['myVote'], $s['isMine'], $s['votingOpen']]);
+        $this->assertFalse(DailyVotes::stateOf($row, null, $during)['isMine']);
+    }
 }

@@ -120,5 +120,39 @@
     },
     "thanks": "Danke - wir schauen es uns an.",
     "already": "Du hast diesen Beweis schon gemeldet."
-  }
+  },
+  "vote": {
+    "vote": "Abstimmen",
+    "withdraw": "Stimme zurückziehen",
+    "yours": "Dein Beweis",
+    "noneLeftTitle": "Keine Stimmen mehr",
+    "noneLeft": "Du hast heute deine 3 Stimmen genutzt. Zieh eine zurück, um für diesen Beweis zu stimmen.",
+    "left_one": "Noch {{count}} Stimme",
+    "left_other": "Noch {{count}} Stimmen",
+    "errors": {
+      "vote_limit": "Du hast heute schon deine 3 Stimmen genutzt.",
+      "voting_closed": "Die Abstimmung endete mit der Challenge.",
+      "rate_limited": "Zu viele Versuche - warte kurz.",
+      "own_proof": "Du kannst nicht für deinen eigenen Beweis stimmen.",
+      "not_found": "Dieser Beweis ist nicht mehr verfügbar.",
+      "generic": "Etwas ist schiefgelaufen. Versuch es nochmal."
+    }
+  },
+  "results": {
+    "title": "Ergebnisse",
+    "yesterdayTop3": "Top 3 von gestern",
+    "worldRank": "#{{rank}} weltweit",
+    "bestInCities": "Das Beste jeder Live-Stadt",
+    "bestIn": "Bester in {{city}}",
+    "none": "Keine Stimmen bei dieser Challenge, also kein Podium."
+  },
+  "profile": {
+    "streak": "Aktuelle Serie",
+    "bestStreak": "Beste Serie",
+    "completed": "Geschafft",
+    "bestProofs": "Beste Beweise",
+    "emptyMine": "Deine Serie beginnt mit der heutigen Challenge."
+  },
+  "streak_one": "{{count}} Tag in Folge",
+  "streak_other": "{{count}} Tage in Folge"
 }

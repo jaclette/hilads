@@ -40,6 +40,7 @@ import { ProfileRankRow } from '@/components/ProfileRankRow';
 import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
+import { DailyProfileStats } from '@/features/daily/DailyProfileStats';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -574,6 +575,8 @@ export default function PublicProfileScreen() {
                 : challenges.filter(c => (c.mode ?? 'local') === challengeSubTab);
               return (
                 <>
+                  {!!id && <DailyProfileStats userId={id} isMe={id === account?.id} />}
+
                   {/* Mode sub-tabs - All / Local / International. */}
                   <View style={styles.profileSubTabsRow}>
                     {(['all', 'local', 'international'] as const).map(key => {

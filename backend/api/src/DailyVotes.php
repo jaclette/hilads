@@ -118,6 +118,49 @@ final class DailyVotes
         return $rows;
     }
 
+    /**
+     * Live vote state of a proof row for a viewer: {voteCount, validatedByLocal,
+     * myVote, isMine, votingOpen}. Row needs user_id, vote_count,
+     * local_vote_count, challenge_date and my_vote. Pure (given the clock).
+     */
+    public static function stateOf(array $row, ?string $viewerId, ?DateTimeImmutable $now = null): array
+    {
+        return [
+            'voteCount'        => (int) $row['vote_count'],
+            'validatedByLocal' => (int) $row['local_vote_count'] > 0,
+            'myVote'           => DailyProofRepository::bool($row['my_vote'] ?? false),
+            'isMine'           => $viewerId !== null && $viewerId === $row['user_id'],
+            'votingOpen'       => DailyClock::isActive((string) $row['challenge_date'], $now),
+        ];
+    }
+
+    /**
+     * Vote state of several approved proofs (channel cards), keyed by proof id.
+     * Unknown, unapproved and blocked authors' proofs are left out. One query.
+     */
+    public static function states(array $ids, ?string $viewerId, array $blockedUserIds): array
+    {
+        if ($ids === []) {
+            return [];
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT p.id, p.user_id, p.vote_count, p.local_vote_count, dc.challenge_date,
+                   (v.proof_id IS NOT NULL) AS my_vote
+            FROM daily_proofs p
+            JOIN daily_challenges dc ON dc.id = p.challenge_id
+            LEFT JOIN daily_votes v ON v.proof_id = p.id AND v.voter_user_id = ?
+            WHERE p.id = ANY (string_to_array(?, ',')) AND p.moderation_status = 'approved'
+        ");
+        $stmt->execute([$viewerId ?? '', implode(',', $ids)]);
+        $out = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            if (!in_array($r['user_id'], $blockedUserIds, true)) {
+                $out[$r['id']] = self::stateOf($r, $viewerId);
+            }
+        }
+        return $out;
+    }
+
     private static function guard(array $proof, array $user): void
     {
         if ($proof['moderation_status'] !== 'approved') {

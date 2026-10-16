@@ -120,5 +120,39 @@
     },
     "thanks": "Gracias - lo revisaremos.",
     "already": "Ya reportaste esta prueba."
-  }
+  },
+  "vote": {
+    "vote": "Votar",
+    "withdraw": "Quitar mi voto",
+    "yours": "Tu prueba",
+    "noneLeftTitle": "Sin votos",
+    "noneLeft": "Ya usaste tus 3 votos de hoy. Quita uno para votar por esta prueba.",
+    "left_one": "Te queda {{count}} voto",
+    "left_other": "Te quedan {{count}} votos",
+    "errors": {
+      "vote_limit": "Ya usaste tus 3 votos de hoy.",
+      "voting_closed": "La votación cerró con el reto.",
+      "rate_limited": "Demasiados intentos - espera un momento.",
+      "own_proof": "No puedes votar por tu propia prueba.",
+      "not_found": "Esta prueba ya no está disponible.",
+      "generic": "Algo salió mal. Inténtalo de nuevo."
+    }
+  },
+  "results": {
+    "title": "Resultados",
+    "yesterdayTop3": "Top 3 de ayer",
+    "worldRank": "#{{rank}} en el mundo",
+    "bestInCities": "Lo mejor de cada ciudad en vivo",
+    "bestIn": "La mejor en {{city}}",
+    "none": "No hubo votos en este reto, así que no hay podio."
+  },
+  "profile": {
+    "streak": "Racha actual",
+    "bestStreak": "Mejor racha",
+    "completed": "Completados",
+    "bestProofs": "Mejores pruebas",
+    "emptyMine": "Tu racha empieza con el reto de hoy."
+  },
+  "streak_one": "Racha de {{count}} día",
+  "streak_other": "Racha de {{count}} días"
 }

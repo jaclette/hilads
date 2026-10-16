@@ -187,7 +187,10 @@ final class DailyResults
         return $id !== false ? DailyProofRepository::findById($id) : null;
     }
 
-    /** Sheet payload once closed: {world: [proofs], cityBest: proof|null}, or null before the results. */
+    /**
+     * Sheet payload once closed: {world: [proofs], cityBest: proof|null (the
+     * requested city), cities: [best proof of each live city]}, or null before the results.
+     */
     public static function forSheet(string $challengeId, ?string $cityId, ?string $viewerId, array $blockedUserIds): ?array
     {
         if (!self::exist($challengeId)) {
@@ -198,9 +201,17 @@ final class DailyResults
         $world   = array_values(array_filter(DailyVotes::annotate(self::worldTop3($challengeId), $viewerId), $visible));
         $best    = self::cityBest($challengeId, $cityId);
         $best    = $best !== null && $visible($best) ? DailyVotes::annotate([$best], $viewerId)[0] : null;
+        $cities = [];
+        foreach (DailyRules::liveCityIds() as $liveId) {
+            $b = $liveId === $cityId ? $best : self::cityBest($challengeId, $liveId);
+            if ($b !== null && $visible($b)) {
+                $cities[] = $fmt($liveId === $cityId ? $b : DailyVotes::annotate([$b], $viewerId)[0]);
+            }
+        }
         return [
             'world'    => array_map($fmt, $world),
             'cityBest' => $best !== null ? $fmt($best) : null,
+            'cities'   => $cities,
         ];
     }
 

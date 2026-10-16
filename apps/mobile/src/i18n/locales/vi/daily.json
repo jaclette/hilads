@@ -120,5 +120,37 @@
     },
     "thanks": "Cảm ơn - bọn mình sẽ kiểm tra.",
     "already": "Bạn đã báo cáo bằng chứng này rồi."
-  }
+  },
+  "vote": {
+    "vote": "Bình chọn",
+    "withdraw": "Rút bình chọn",
+    "yours": "Bằng chứng của bạn",
+    "noneLeftTitle": "Hết lượt bình chọn",
+    "noneLeft": "Bạn đã dùng hết 3 lượt bình chọn hôm nay. Rút một lượt để bình chọn cho bằng chứng này.",
+    "left_other": "Còn {{count}} lượt",
+    "errors": {
+      "vote_limit": "Bạn đã dùng hết 3 lượt bình chọn hôm nay.",
+      "voting_closed": "Bình chọn đã đóng cùng thử thách.",
+      "rate_limited": "Thử quá nhiều lần - đợi một chút.",
+      "own_proof": "Bạn không thể bình chọn cho bằng chứng của mình.",
+      "not_found": "Bằng chứng này không còn nữa.",
+      "generic": "Đã có lỗi. Thử lại nhé."
+    }
+  },
+  "results": {
+    "title": "Kết quả",
+    "yesterdayTop3": "Top 3 hôm qua",
+    "worldRank": "#{{rank}} thế giới",
+    "bestInCities": "Hay nhất ở mỗi thành phố đang live",
+    "bestIn": "Hay nhất ở {{city}}",
+    "none": "Thử thách này không có bình chọn nên không có bục vinh danh."
+  },
+  "profile": {
+    "streak": "Chuỗi hiện tại",
+    "bestStreak": "Chuỗi dài nhất",
+    "completed": "Đã hoàn thành",
+    "bestProofs": "Bằng chứng hay nhất",
+    "emptyMine": "Chuỗi của bạn bắt đầu với thử thách hôm nay."
+  },
+  "streak_other": "Chuỗi {{count}} ngày"
 }

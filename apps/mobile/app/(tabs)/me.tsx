@@ -50,6 +50,7 @@ import { PrimaryButton } from '@/components/PrimaryButton';
 import { ProfileRankRow } from '@/components/ProfileRankRow';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 import { formatRecurrence } from '@/lib/recurrence';
+import { DailyProfileStats } from '@/features/daily/DailyProfileStats';
 
 // ── Constants - must match backend allowed lists ──────────────────────────────
 
@@ -785,6 +786,8 @@ export default function MeScreen() {
             : myChallenges.filter(c => (c.mode ?? 'local') === challengeSubTab);
           return (
           <>
+            {account?.id && <DailyProfileStats userId={account.id} isMe />}
+
             {/* PR2: entry-point to per-acceptance threads. Sits above the
                 list of created/accepted challenges so the user finds their
                 1:1 conversations quickly. */}

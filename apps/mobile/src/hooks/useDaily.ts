@@ -4,6 +4,7 @@ import { useFocusEffect } from 'expo-router';
 import { fetchDailyArchive, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
+import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
 import type { DailyArchiveItem, DailyProof, DailySheet, DailyToday } from '@/types';
 
 // Daily Challenge data hooks. Same plain useState/useEffect pattern as the rest
@@ -48,7 +49,9 @@ export function useDailyToday(cityId: string | null | undefined) {
 
   const load = useCallback(async () => {
     try {
-      setData(await fetchDailyToday(cityId));
+      const d = await fetchDailyToday(cityId);
+      setData(d);
+      if (d.challenge?.isActive) seedVotesLeft(d.myVotes?.left ?? null);
       setError(false);
     } catch (err) {
       console.warn('[daily] today failed:', String(err));
@@ -94,6 +97,7 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
   const load = useCallback(async () => {
     try {
       const s = await fetchDailySheet(date, { scope, cityId, guestId });
+      seedSheet(s);
       setSheet(s);
       setError(null);
     } catch (err) {
@@ -112,6 +116,7 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
     setLoadingMore(true);
     try {
       const next = await fetchDailySheet(date, { scope, cityId, guestId, before: sheet.nextBefore });
+      seedProofs(next.proofs, !!next.challenge?.isActive);
       setSheet(prev => prev ? {
         ...prev,
         proofs:     [...prev.proofs, ...next.proofs.filter(p => !prev.proofs.some(q => q.id === p.id))],
@@ -130,6 +135,13 @@ export function useDailySheet(date: string, scope: 'world' | 'city', cityId: str
   }, []);
 
   return { sheet, loading, loadingMore, error, reload: load, loadMore, setMyProof };
+}
+
+/** Share a sheet's vote state with every proof card (votes store). */
+function seedSheet(s: DailySheet) {
+  const open = !!s.challenge?.isActive;
+  seedProofs([...s.proofs, s.myProof, ...(s.results?.world ?? []), ...(s.results?.cities ?? []), s.results?.cityBest], open);
+  if (open) seedVotesLeft(s.myVotes?.left ?? null);
 }
 
 /** "Already done" archive of a city (World selection for a dead city), paged by date. */

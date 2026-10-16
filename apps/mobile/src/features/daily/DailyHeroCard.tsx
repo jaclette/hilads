@@ -16,7 +16,8 @@ import type { DailyToday } from '@/types';
 /**
  * MY CITY hero: today's Daily Challenge. Challenge text (English, as written),
  * the city's Local Twist when the city is live, a countdown to the next drop,
- * the proof count and the CTA - or my proof's status once I posted.
+ * the proof count and the CTA - or my proof's status once I posted. My
+ * streak shows from 2 days on.
  */
 export function DailyHeroCard({ cityId, source = 'hero' }: { cityId: string; source?: string }) {
   const daily = useDailyToday(cityId);
@@ -76,6 +77,10 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
 
       <Text style={styles.text} numberOfLines={3}>{challenge.text}</Text>
 
+      {(data?.streak ?? 0) >= 2 && (
+        <Text style={styles.streak}>🔥 {t('streak', { count: data!.streak! })}</Text>
+      )}
+
       {data?.twist && city?.isLive && (
         <View style={styles.twist}>
           <Text style={styles.twistLabel}>📍 {t('twistIn', { city: localizeCityName(city.name ?? '') })}</Text>
@@ -122,6 +127,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kicker:     { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
   countdown:  { fontSize: 12, fontWeight: '700', color: c.muted },
   text:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
+  streak:     { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.accentText, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
   twist:      { backgroundColor: c.bg3, borderRadius: Radius.md, paddingVertical: 8, paddingHorizontal: 10, gap: 2 },
   twistLabel: { fontSize: 11, fontWeight: '800', color: c.accentText, textTransform: 'uppercase', letterSpacing: 0.4 },
   twistText:  { fontSize: FontSizes.sm, color: c.text },

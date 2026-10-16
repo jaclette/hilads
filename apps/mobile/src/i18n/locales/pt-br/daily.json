@@ -120,5 +120,39 @@
     },
     "thanks": "Valeu - vamos verificar.",
     "already": "Você já denunciou esta prova."
-  }
+  },
+  "vote": {
+    "vote": "Votar",
+    "withdraw": "Tirar meu voto",
+    "yours": "Sua prova",
+    "noneLeftTitle": "Sem votos",
+    "noneLeft": "Você já usou seus 3 votos hoje. Tire um para votar nesta prova.",
+    "left_one": "Resta {{count}} voto",
+    "left_other": "Restam {{count}} votos",
+    "errors": {
+      "vote_limit": "Você já usou seus 3 votos hoje.",
+      "voting_closed": "A votação fechou com o desafio.",
+      "rate_limited": "Muitas tentativas - espere um pouco.",
+      "own_proof": "Você não pode votar na sua própria prova.",
+      "not_found": "Esta prova não está mais disponível.",
+      "generic": "Algo deu errado. Tente de novo."
+    }
+  },
+  "results": {
+    "title": "Resultados",
+    "yesterdayTop3": "Top 3 de ontem",
+    "worldRank": "#{{rank}} no mundo",
+    "bestInCities": "O melhor de cada cidade ao vivo",
+    "bestIn": "Melhor em {{city}}",
+    "none": "Nenhum voto neste desafio, então não tem pódio."
+  },
+  "profile": {
+    "streak": "Sequência atual",
+    "bestStreak": "Melhor sequência",
+    "completed": "Concluídos",
+    "bestProofs": "Melhores provas",
+    "emptyMine": "Sua sequência começa com o desafio de hoje."
+  },
+  "streak_one": "{{count}} dia seguido",
+  "streak_other": "{{count}} dias seguidos"
 }

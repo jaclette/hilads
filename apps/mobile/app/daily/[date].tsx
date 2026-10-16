@@ -13,7 +13,7 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
 import { formatCountdown, useCountdown, useDailySheet } from '@/hooks/useDaily';
-import { DailyProofTile } from '@/features/daily/DailyProofTile';
+import { DailyProofTile, MEDALS } from '@/features/daily/DailyProofTile';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
@@ -23,7 +23,8 @@ import type { DailyProof } from '@/types';
 /**
  * Daily Challenge sheet (/daily/today or /daily/YYYY-MM-DD). Challenge,
  * context, Local Twist and its author, my proof, practical info from approved
- * proofs, and the proofs with World / City tabs (City only for live cities).
+ * proofs, the results once closed (World top 3, best of each live city), and
+ * the proofs with World / City tabs (City only for live cities).
  * ?proof=<id> opens that proof on arrival.
  */
 export default function DailySheetScreen() {
@@ -173,6 +174,24 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
           )}
         </View>
 
+        {sheet.results && (
+          <View style={styles.practical}>
+            <Text style={styles.sectionTitle}>🏆 {t('results.title')}</Text>
+            {sheet.results.world.length === 0 && sheet.results.cities.length === 0 && (
+              <Text style={styles.hint}>{t('results.none')}</Text>
+            )}
+            {sheet.results.world.map((p, i) => (
+              <ResultRow key={p.id} proof={p} label={MEDALS[i]} onPress={() => setViewing(p)} />
+            ))}
+            {sheet.results.cities.length > 0 && (
+              <Text style={[styles.sectionTitle, styles.resultsSub]}>{t('results.bestInCities')}</Text>
+            )}
+            {sheet.results.cities.map(p => (
+              <ResultRow key={`c${p.id}`} proof={p} label="📍" city onPress={() => setViewing(p)} />
+            ))}
+          </View>
+        )}
+
         {(priceRange || places.length > 0) && (
           <View style={styles.practical}>
             <Text style={styles.sectionTitle}>{t('practicalTitle')}</Text>
@@ -258,6 +277,28 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
   );
 }
 
+/** One results line: medal (or pin), thumb, author · city (or "Best in <city>"), votes. */
+function ResultRow({ proof, label, city = false, onPress }: { proof: DailyProof; label: string; city?: boolean; onPress: () => void }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const name = proof.user.displayName || proof.user.username || '';
+  const cityName = proof.city ? localizeCityName(proof.city.name) : '';
+  return (
+    <TouchableOpacity style={styles.resultRow} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label} ${name}`}>
+      <Text style={styles.resultLabel}>{label}</Text>
+      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.resultThumb} contentFit="cover" />
+      <View style={styles.resultBody}>
+        <Text style={styles.resultName} numberOfLines={1}>{city ? t('results.bestIn', { city: cityName }) : name}</Text>
+        <Text style={styles.resultSub} numberOfLines={1}>
+          {city ? name : cityName}
+          {proof.validatedByLocal ? ` · ✓ ${t('validatedByLocal')}` : ''}
+        </Text>
+      </View>
+      <Text style={styles.resultVotes}>♥ {proof.voteCount}</Text>
+    </TouchableOpacity>
+  );
+}
+
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:   { flex: 1, backgroundColor: c.bg },
   center:      { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: Spacing.md },
@@ -305,4 +346,12 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emptyTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   empty:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   more:        { marginVertical: 16 },
+  resultsSub:  { marginTop: 8 },
+  resultRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 },
+  resultLabel: { fontSize: 20, width: 26, textAlign: 'center' },
+  resultThumb: { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
+  resultBody:  { flex: 1, gap: 1 },
+  resultName:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  resultSub:   { fontSize: 12, color: c.muted },
+  resultVotes: { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

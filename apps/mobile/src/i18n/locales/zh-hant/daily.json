@@ -120,5 +120,37 @@
     },
     "thanks": "謝謝 - 我們會查看。",
     "already": "你已經檢舉過這個證明了。"
-  }
+  },
+  "vote": {
+    "vote": "投票",
+    "withdraw": "撤回投票",
+    "yours": "你的證明",
+    "noneLeftTitle": "沒有票了",
+    "noneLeft": "你今天的 3 票已用完。撤回一票即可為這則證明投票。",
+    "left_other": "還剩 {{count}} 票",
+    "errors": {
+      "vote_limit": "你今天的 3 票已經用完了。",
+      "voting_closed": "挑戰結束，投票已關閉。",
+      "rate_limited": "嘗試次數太多 - 請稍等。",
+      "own_proof": "不能為自己的證明投票。",
+      "not_found": "這則證明已無法查看。",
+      "generic": "出錯了，請再試一次。"
+    }
+  },
+  "results": {
+    "title": "結果",
+    "yesterdayTop3": "昨天的前三名",
+    "worldRank": "全球第 {{rank}}",
+    "bestInCities": "每個直播城市的最佳",
+    "bestIn": "{{city}}最佳",
+    "none": "這個挑戰沒有投票，所以沒有頒獎台。"
+  },
+  "profile": {
+    "streak": "目前連續",
+    "bestStreak": "最長連續",
+    "completed": "已完成",
+    "bestProofs": "最佳證明",
+    "emptyMine": "從今天的挑戰開始你的連續紀錄。"
+  },
+  "streak_other": "連續 {{count}} 天"
 }

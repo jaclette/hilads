@@ -120,5 +120,39 @@
     },
     "thanks": "Thanks - we will check it.",
     "already": "You already reported this proof."
-  }
+  },
+  "vote": {
+    "vote": "Vote",
+    "withdraw": "Remove my vote",
+    "yours": "Your proof",
+    "noneLeftTitle": "No votes left",
+    "noneLeft": "You used your 3 votes today. Remove one to vote for this proof.",
+    "left_one": "{{count}} vote left",
+    "left_other": "{{count}} votes left",
+    "errors": {
+      "vote_limit": "You already used your 3 votes today.",
+      "voting_closed": "Voting closed with the challenge.",
+      "rate_limited": "Too many tries - wait a moment.",
+      "own_proof": "You can't vote for your own proof.",
+      "not_found": "This proof is no longer available.",
+      "generic": "Something went wrong. Try again."
+    }
+  },
+  "results": {
+    "title": "Results",
+    "yesterdayTop3": "Yesterday's top 3",
+    "worldRank": "#{{rank}} in the world",
+    "bestInCities": "Best in each live city",
+    "bestIn": "Best in {{city}}",
+    "none": "No votes on this challenge, so no podium."
+  },
+  "profile": {
+    "streak": "Current streak",
+    "bestStreak": "Best streak",
+    "completed": "Completed",
+    "bestProofs": "Best proofs",
+    "emptyMine": "Your streak starts with today's challenge."
+  },
+  "streak_one": "{{count}}-day streak",
+  "streak_other": "{{count}}-day streak"
 }

@@ -120,5 +120,39 @@
     },
     "thanks": "Makasih - kami akan cek.",
     "already": "Kamu sudah melaporkan bukti ini."
-  }
+  },
+  "vote": {
+    "vote": "Pilih",
+    "withdraw": "Tarik pilihanku",
+    "yours": "Buktimu",
+    "noneLeftTitle": "Suara habis",
+    "noneLeft": "Kamu sudah memakai 3 suaramu hari ini. Tarik satu untuk memilih bukti ini.",
+    "left_one": "Sisa {{count}} suara",
+    "left_other": "Sisa {{count}} suara",
+    "errors": {
+      "vote_limit": "Kamu sudah memakai 3 suaramu hari ini.",
+      "voting_closed": "Pemungutan suara ditutup bersama tantangannya.",
+      "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
+      "own_proof": "Kamu tidak bisa memilih buktimu sendiri.",
+      "not_found": "Bukti ini sudah tidak tersedia.",
+      "generic": "Ada yang salah. Coba lagi."
+    }
+  },
+  "results": {
+    "title": "Hasil",
+    "yesterdayTop3": "Top 3 kemarin",
+    "worldRank": "#{{rank}} di dunia",
+    "bestInCities": "Terbaik di tiap kota live",
+    "bestIn": "Terbaik di {{city}}",
+    "none": "Tidak ada suara di tantangan ini, jadi tidak ada podium."
+  },
+  "profile": {
+    "streak": "Streak saat ini",
+    "bestStreak": "Streak terbaik",
+    "completed": "Selesai",
+    "bestProofs": "Bukti terbaik",
+    "emptyMine": "Streak-mu dimulai dengan tantangan hari ini."
+  },
+  "streak_one": "Streak {{count}} hari",
+  "streak_other": "Streak {{count}} hari"
 }

@@ -120,5 +120,39 @@
     },
     "thanks": "ありがとうございます - 確認します。",
     "already": "この証明はすでに報告済みです。"
-  }
+  },
+  "vote": {
+    "vote": "投票する",
+    "withdraw": "投票を取り消す",
+    "yours": "あなたの証明",
+    "noneLeftTitle": "投票が残っていません",
+    "noneLeft": "今日の3票を使い切りました。この証明に投票するには1票取り消してください。",
+    "left_one": "残り{{count}}票",
+    "left_other": "残り{{count}}票",
+    "errors": {
+      "vote_limit": "今日の3票はもう使い切りました。",
+      "voting_closed": "チャレンジの終了とともに投票は締め切られました。",
+      "rate_limited": "試行が多すぎます - 少し待ってください。",
+      "own_proof": "自分の証明には投票できません。",
+      "not_found": "この証明はもう表示できません。",
+      "generic": "問題が発生しました。もう一度お試しください。"
+    }
+  },
+  "results": {
+    "title": "結果",
+    "yesterdayTop3": "昨日のトップ3",
+    "worldRank": "世界 #{{rank}}",
+    "bestInCities": "ライブ都市ごとのベスト",
+    "bestIn": "{{city}} のベスト",
+    "none": "このチャレンジには投票がなかったので、表彰台はありません。"
+  },
+  "profile": {
+    "streak": "現在の連続記録",
+    "bestStreak": "最長記録",
+    "completed": "達成数",
+    "bestProofs": "ベスト証明",
+    "emptyMine": "今日のチャレンジから連続記録が始まります。"
+  },
+  "streak_one": "{{count}}日連続",
+  "streak_other": "{{count}}日連続"
 }

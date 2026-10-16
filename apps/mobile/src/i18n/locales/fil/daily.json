@@ -120,5 +120,39 @@
     },
     "thanks": "Salamat - titingnan namin ito.",
     "already": "Na-report mo na ang proof na ito."
-  }
+  },
+  "vote": {
+    "vote": "Bumoto",
+    "withdraw": "Bawiin ang boto ko",
+    "yours": "Proof mo",
+    "noneLeftTitle": "Wala ka nang boto",
+    "noneLeft": "Nagamit mo na ang 3 boto mo ngayon. Bawiin ang isa para iboto ang proof na ito.",
+    "left_one": "{{count}} boto na lang",
+    "left_other": "{{count}} boto na lang",
+    "errors": {
+      "vote_limit": "Nagamit mo na ang 3 boto mo ngayon.",
+      "voting_closed": "Sarado na ang botohan kasabay ng challenge.",
+      "rate_limited": "Masyadong maraming subok - maghintay sandali.",
+      "own_proof": "Hindi mo puwedeng iboto ang sarili mong proof.",
+      "not_found": "Wala na ang proof na ito.",
+      "generic": "May nagkamali. Subukan ulit."
+    }
+  },
+  "results": {
+    "title": "Resulta",
+    "yesterdayTop3": "Top 3 kahapon",
+    "worldRank": "#{{rank}} sa mundo",
+    "bestInCities": "Pinakamahusay sa bawat live na lungsod",
+    "bestIn": "Pinakamahusay sa {{city}}",
+    "none": "Walang boto sa challenge na ito, kaya walang podium."
+  },
+  "profile": {
+    "streak": "Kasalukuyang streak",
+    "bestStreak": "Pinakamahabang streak",
+    "completed": "Natapos",
+    "bestProofs": "Pinakamahuhusay na proof",
+    "emptyMine": "Nagsisimula ang streak mo sa challenge ngayon."
+  },
+  "streak_one": "{{count}} araw na sunod",
+  "streak_other": "{{count}} araw na sunod"
 }

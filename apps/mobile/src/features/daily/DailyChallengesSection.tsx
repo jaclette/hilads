@@ -95,6 +95,11 @@ function ArchiveCard({ item, cityLabel }: { item: DailyArchiveItem; cityLabel: s
         <Text style={styles.date}>{item.challenge.date}</Text>
         <Text style={styles.text} numberOfLines={3}>{item.challenge.text}</Text>
         {item.twist && <Text style={styles.twist} numberOfLines={2}>📍 {item.twist.text}</Text>}
+        {item.bestProof && item.bestProof.voteCount > 0 && (
+          <Text style={styles.best} numberOfLines={1}>
+            🏆 {item.bestProof.user.displayName || item.bestProof.user.username} · ♥ {item.bestProof.voteCount}
+          </Text>
+        )}
         <Text style={styles.meta} numberOfLines={1}>
           {t('archive.proofs', { count })}
           {item.priceRange ? ` · 💸 ${formatAmount(item.priceRange.min, i18n.language)}${item.priceRange.max !== item.priceRange.min ? `-${formatAmount(item.priceRange.max, i18n.language)}` : ''} ${item.priceRange.currency}` : ''}
@@ -125,4 +130,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:          { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   twist:         { fontSize: 12, color: c.accentText },
   meta:          { fontSize: 11, color: c.muted },
+  best:          { fontSize: 12, fontWeight: '700', color: c.text },
 });

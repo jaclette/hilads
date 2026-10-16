@@ -7,9 +7,11 @@ import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { formatAmount } from './currency';
+import { DailyVoteButton } from './DailyVoteButton';
+import { MEDALS } from './DailyProofTile';
 import type { DailyProof } from '@/types';
 
-/** Full-screen photo of one proof with its author, caption, price and place. */
+/** Full-screen photo of one proof with its author, caption, price, place, local badge and vote. */
 export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null; onClose: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
@@ -27,6 +29,13 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
             {name} · {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
             {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
           </Text>
+          {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
+            <Text style={styles.badge}>
+              {proof.worldRank !== null && proof.worldRank <= 3 ? `${MEDALS[proof.worldRank - 1]} ${t('results.worldRank', { rank: proof.worldRank })}` : ''}
+              {proof.worldRank !== null && proof.worldRank <= 3 && proof.validatedByLocal ? '  ·  ' : ''}
+              {proof.validatedByLocal ? `✓ ${t('validatedByLocal')}` : ''}
+            </Text>
+          )}
           {!!proof.caption && <Text style={styles.caption}>{proof.caption}</Text>}
           {(proof.price || proof.place) && (
             <Text style={styles.extra}>
@@ -34,6 +43,9 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
               {proof.price && proof.place ? '   ' : ''}
               {proof.place ? `📍 ${proof.place.name || t('unnamedPlace')}` : ''}
             </Text>
+          )}
+          {proof.status === 'approved' && (
+            <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="viewer" />
           )}
         </View>
       </SafeAreaView>
@@ -50,4 +62,5 @@ const makeStyles = (_c: ThemeColors) => StyleSheet.create({
   name:    { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
   caption: { color: '#fff', fontSize: FontSizes.sm },
   extra:   { color: '#ccc', fontSize: FontSizes.xs },
+  badge:   { color: '#7ee2a8', fontSize: FontSizes.xs, fontWeight: '700' },
 });

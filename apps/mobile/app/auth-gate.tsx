@@ -16,7 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
-type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge' | 'accept_challenge' | 'daily_proof';
+type GateReason = 'view_profile' | 'create_event' | 'send_dm' | 'join_hangout' | 'create_hangout' | 'create_challenge' | 'accept_challenge' | 'daily_proof' | 'daily_vote';
 
 const GATE_EMOJI: Record<GateReason, string> = {
   view_profile:    '👻',
@@ -26,6 +26,7 @@ const GATE_EMOJI: Record<GateReason, string> = {
   create_challenge: '🔥',
   accept_challenge: '🤝',
   daily_proof:     '🔥',
+  daily_vote:      '❤️',
   send_dm:         '💬',
 };
 

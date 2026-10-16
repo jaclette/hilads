@@ -4,9 +4,12 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
+import { DailyVoteButton } from './DailyVoteButton';
 import type { DailyProof } from '@/types';
 
-/** One proof in the sheet grid: photo, author with Local/Traveler, city, caption. */
+export const MEDALS = ['🥇', '🥈', '🥉'];
+
+/** One proof in the sheet grid: photo (medal if World top 3), author with Local/Traveler, city, caption, vote. */
 export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('daily');
@@ -14,6 +17,7 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
   return (
     <TouchableOpacity style={styles.tile} onPress={onPress} activeOpacity={0.85} accessibilityRole="button" accessibilityLabel={`${name} ${proof.caption ?? ''}`}>
       <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
+      {proof.worldRank !== null && proof.worldRank <= 3 && <Text style={styles.medal}>{MEDALS[proof.worldRank - 1]}</Text>}
       <View style={styles.meta}>
         <Text style={styles.name} numberOfLines={1}>{name}</Text>
         <Text style={styles.sub} numberOfLines={1}>
@@ -22,6 +26,9 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
         </Text>
         {proof.validatedByLocal && <Text style={styles.badge} numberOfLines={1}>✓ {t('validatedByLocal')}</Text>}
         {!!proof.caption && <Text style={styles.caption} numberOfLines={2}>{proof.caption}</Text>}
+        <View style={styles.voteRow}>
+          <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="tile" />
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -35,4 +42,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   sub:     { fontSize: 11, color: c.muted },
   badge:   { fontSize: 11, fontWeight: '700', color: c.green },
   caption: { fontSize: FontSizes.xs, color: c.text, marginTop: 2 },
+  medal:   { position: 'absolute', top: 6, left: 6, fontSize: 22 },
+  voteRow: { marginTop: 4 },
 });

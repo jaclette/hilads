@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Alert, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
@@ -12,11 +13,20 @@ import { formatSmartTime } from '@/lib/messageTime';
 import { track } from '@/services/analytics';
 import { dailyErrorCode, reportDailyProof, type DailyReportReason } from '@/api/daily';
 import { ReactionPills } from '@/features/chat/ReactionPills';
+import { DailyVoteButton } from './DailyVoteButton';
+import { MEDALS } from './DailyProofTile';
+import { useVoteState } from './votes';
 import type { DailyPerson, DailyTwist, Message } from '@/types';
 
+type TopProof = {
+  rank: number; proofId: string; thumbUrl: string | null; user: DailyPerson;
+  city: { id: number; name: string } | null; isLocal: boolean; voteCount: number;
+};
 type ChallengePayload = {
   challengeId: string; date: string; text: string; context: string | null;
   twist: DailyTwist | null;
+  yesterday?: { date: string; text: string } | null;   // World card only
+  yesterdayTop3?: TopProof[];
 };
 type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
@@ -35,17 +45,18 @@ interface Props {
 
 /**
  * Daily Challenge cards in World and city chats (system messages):
- *   daily_challenge - the day's challenge (+ the Local Twist in live cities)
- *   daily_proof     - an approved proof: photo, author with Local/Traveler, city, caption
+ *   daily_challenge - the day's challenge (+ the Local Twist in live cities;
+ *                     yesterday's top 3 on the World card)
+ *   daily_proof     - an approved proof: photo, author with Local/Traveler, city,
+ *                     caption, live vote count / my vote / local badge (votes store)
  * Tap opens the challenge sheet; long-press opens the usual action sheet
  * (react, reply); reactions show under the card like on any message.
  */
 export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Props) {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const router = useRouter();
-  const { account, city, identity } = useApp();
+  const { city } = useApp();
   const time = message.createdAt ? formatSmartTime(message.createdAt) : null;
   const longPress = onLongPress ? () => onLongPress(message) : undefined;
   const reactions = message.reactions && message.reactions.length > 0 && onReact
@@ -72,6 +83,22 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
             </View>
           )}
           <View style={styles.cta}><Text style={styles.ctaText}>{t('cta')}</Text></View>
+          {p.yesterday && p.yesterdayTop3 && p.yesterdayTop3.length > 0 && (
+            <View style={styles.top3}>
+              <Text style={styles.top3Title}>🏆 {t('results.yesterdayTop3')}</Text>
+              {p.yesterdayTop3.map(r => (
+                <TouchableOpacity key={r.proofId} style={styles.topRow} onPress={() => router.push(`/daily/${p.yesterday!.date}?proof=${r.proofId}` as never)} accessibilityRole="button">
+                  <Text style={styles.topMedal}>{MEDALS[r.rank - 1] ?? `${r.rank}`}</Text>
+                  {r.thumbUrl ? <Image source={{ uri: r.thumbUrl }} style={styles.topThumb} contentFit="cover" /> : <View style={[styles.topThumb, styles.avatarEmpty]} />}
+                  <Text style={styles.topName} numberOfLines={1}>
+                    {r.user.displayName || r.user.username}
+                    {r.city ? <Text style={styles.sub}> · {localizeCityName(r.city.name)}</Text> : null}
+                  </Text>
+                  <Text style={styles.topVotes}>♥ {r.voteCount}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </TouchableOpacity>
         {reactions}
         {time && <Text style={styles.time}>{time}</Text>}
@@ -79,7 +106,19 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
     );
   }
 
+  return <ProofCard message={message} reactions={reactions} time={time} longPress={longPress} />;
+}
+
+function ProofCard({ message, reactions, time, longPress }: {
+  message: Message; reactions: ReactNode; time: string | null; longPress?: () => void;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { t } = useTranslation('daily');
+  const router = useRouter();
+  const { account, identity } = useApp();
   const p = (message.payload ?? {}) as Partial<ProofPayload>;
+  const vote = useVoteState(p.proofId, account ? null : identity?.guestId ?? null);
   if (!p.date || !p.proofId || !p.photoUrl) return null;
   const name = p.user?.displayName || p.user?.username || message.nickname || '';
   const open = () => router.push(`/daily/${p.date}?proof=${p.proofId}` as never);
@@ -124,6 +163,10 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
         </View>
         <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
         {!!p.caption && <Text style={styles.caption}>{p.caption}</Text>}
+        <View style={styles.voteRow}>
+          <DailyVoteButton proofId={p.proofId} date={p.date} cityName={p.city?.name ?? null} />
+          {vote?.validatedByLocal && <Text style={styles.badge} numberOfLines={1}>✓ {t('validatedByLocal')}</Text>}
+        </View>
         <Text style={styles.proofOf} numberOfLines={1}>🔥 {t('kicker')} · {p.challengeText}</Text>
       </TouchableOpacity>
       {reactions}
@@ -156,4 +199,13 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   caption:       { fontSize: FontSizes.sm, color: c.text },
   proofOf:       { fontSize: 11, color: c.muted },
   time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },
+  voteRow:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  badge:         { flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.green },
+  top3:          { borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8, gap: 6 },
+  top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
+  topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  topMedal:      { fontSize: 18, width: 24 },
+  topThumb:      { width: 32, height: 32, borderRadius: Radius.sm, backgroundColor: c.bg3 },
+  topName:       { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  topVotes:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
 });

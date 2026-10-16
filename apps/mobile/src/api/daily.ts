@@ -5,6 +5,8 @@ import type {
   DailyProofInput,
   DailySheet,
   DailyToday,
+  DailyUserStats,
+  DailyVoteState,
 } from '@/types';
 
 // Daily Challenge API (docs/daily-challenge/API.md). City ids are the integer
@@ -78,4 +80,33 @@ export type DailyReportReason = 'inappropriate' | 'person_without_consent' | 'da
 /** Report a visible proof (guests pass their guestId). 409 = already reported. */
 export async function reportDailyProof(proofId: string, reasonCode: DailyReportReason, guestId?: string | null): Promise<void> {
   await api.post(`/daily/proofs/${proofId}/report`, { reasonCode, guestId: guestId ?? undefined });
+}
+
+export interface DailyVoteResult {
+  voted:            boolean;
+  votesLeft:        number;
+  voteCount:        number;
+  validatedByLocal: boolean;
+}
+
+/** Vote for a proof (3 per challenge). Voting twice is a no-op. */
+export async function voteDailyProof(proofId: string): Promise<DailyVoteResult> {
+  return api.post<DailyVoteResult>(`/daily/proofs/${proofId}/vote`, {});
+}
+
+/** Withdraw my vote (gives it back) while the challenge is open. */
+export async function unvoteDailyProof(proofId: string): Promise<DailyVoteResult> {
+  return api.delete<DailyVoteResult>(`/daily/proofs/${proofId}/vote`);
+}
+
+/** Live vote state of up to 50 proofs (channel cards), plus my votes left today. */
+export async function fetchDailyProofStates(ids: string[], guestId?: string | null): Promise<{
+  items: Record<string, DailyVoteState>; myVotes: { used: number; left: number } | null;
+}> {
+  return api.get('/daily/proofs/state', { params: { ids: ids.join(','), guestId: guestId ?? undefined } });
+}
+
+/** Daily Challenge profile stats (signed-in viewers only). */
+export async function fetchUserDaily(userId: string): Promise<DailyUserStats> {
+  return api.get<DailyUserStats>(`/users/${userId}/daily`);
 }

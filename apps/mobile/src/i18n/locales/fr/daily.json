@@ -120,5 +120,39 @@
     },
     "thanks": "Merci - on va vérifier.",
     "already": "Tu as déjà signalé cette preuve."
-  }
+  },
+  "vote": {
+    "vote": "Voter",
+    "withdraw": "Retirer mon vote",
+    "yours": "Ta preuve",
+    "noneLeftTitle": "Plus de votes",
+    "noneLeft": "Tu as utilisé tes 3 votes aujourd'hui. Retires-en un pour voter pour cette preuve.",
+    "left_one": "{{count}} vote restant",
+    "left_other": "{{count}} votes restants",
+    "errors": {
+      "vote_limit": "Tu as déjà utilisé tes 3 votes aujourd'hui.",
+      "voting_closed": "Les votes sont clos avec le défi.",
+      "rate_limited": "Trop de tentatives - attends un peu.",
+      "own_proof": "Tu ne peux pas voter pour ta propre preuve.",
+      "not_found": "Cette preuve n'est plus disponible.",
+      "generic": "Quelque chose n'a pas marché. Réessaie."
+    }
+  },
+  "results": {
+    "title": "Résultats",
+    "yesterdayTop3": "Le top 3 d'hier",
+    "worldRank": "#{{rank}} dans le monde",
+    "bestInCities": "Le meilleur de chaque ville live",
+    "bestIn": "Meilleure à {{city}}",
+    "none": "Aucun vote sur ce défi, donc pas de podium."
+  },
+  "profile": {
+    "streak": "Série en cours",
+    "bestStreak": "Meilleure série",
+    "completed": "Réalisés",
+    "bestProofs": "Meilleures preuves",
+    "emptyMine": "Ta série commence avec le défi d'aujourd'hui."
+  },
+  "streak_one": "{{count}} jour de suite",
+  "streak_other": "{{count}} jours de suite"
 }

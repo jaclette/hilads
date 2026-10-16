@@ -801,6 +801,9 @@ export interface DailyProof {
   voteCount:        number;
   localVoteCount:   number;
   validatedByLocal: boolean;
+  myVote:           boolean;          // the viewer voted for it
+  worldRank:        number | null;    // 1-3 once the challenge closed
+  cityRank:         number | null;    // rank within its city once closed
   isMine:           boolean;
   approvedAt:       number | null;
   editedAt:         number | null;
@@ -816,6 +819,8 @@ export interface DailyToday {
   twist:       DailyTwist | null;
   counts:      { world: number; city: number | null };
   myProof:     DailyProof | null;
+  myVotes:     { used: number; left: number } | null;   // signed in, with a challenge
+  streak:      number | null;                           // signed in
 }
 
 export interface DailyPriceRange {
@@ -834,6 +839,28 @@ export interface DailySheet extends DailyToday {
     priceRanges: DailyPriceRange[];
     places:      { proofId: string; lat: number; lng: number; name: string | null }[];
   };
+  /** Once the challenge closed (computed at the next drop), else null. */
+  results: {
+    world:    DailyProof[];          // top 3, rank 1 first
+    cityBest: DailyProof | null;     // the requested city's best
+    cities:   DailyProof[];          // best proof of each live city
+  } | null;
+}
+
+/** Live vote state of a proof (GET /daily/proofs/state). */
+export interface DailyVoteState {
+  voteCount:        number;
+  validatedByLocal: boolean;
+  myVote:           boolean;
+  isMine:           boolean;
+  votingOpen:       boolean;
+}
+
+export interface DailyUserStats {
+  currentStreak: number;
+  bestStreak:    number;
+  completed:     number;
+  bestProofs:    DailyProof[];
 }
 
 export interface DailyArchiveItem {

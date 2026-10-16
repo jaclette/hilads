@@ -120,5 +120,39 @@
     },
     "thanks": "Bedankt - we checken het.",
     "already": "Je hebt dit bewijs al gemeld."
-  }
+  },
+  "vote": {
+    "vote": "Stemmen",
+    "withdraw": "Mijn stem intrekken",
+    "yours": "Jouw bewijs",
+    "noneLeftTitle": "Geen stemmen meer",
+    "noneLeft": "Je hebt je 3 stemmen van vandaag gebruikt. Trek er een in om op dit bewijs te stemmen.",
+    "left_one": "Nog {{count}} stem",
+    "left_other": "Nog {{count}} stemmen",
+    "errors": {
+      "vote_limit": "Je hebt je 3 stemmen van vandaag al gebruikt.",
+      "voting_closed": "Stemmen is gesloten met de challenge.",
+      "rate_limited": "Te veel pogingen - wacht even.",
+      "own_proof": "Je kunt niet op je eigen bewijs stemmen.",
+      "not_found": "Dit bewijs is niet meer beschikbaar.",
+      "generic": "Er ging iets mis. Probeer opnieuw."
+    }
+  },
+  "results": {
+    "title": "Resultaten",
+    "yesterdayTop3": "Top 3 van gisteren",
+    "worldRank": "#{{rank}} ter wereld",
+    "bestInCities": "Het beste van elke live stad",
+    "bestIn": "Beste in {{city}}",
+    "none": "Geen stemmen op deze challenge, dus geen podium."
+  },
+  "profile": {
+    "streak": "Huidige reeks",
+    "bestStreak": "Beste reeks",
+    "completed": "Voltooid",
+    "bestProofs": "Beste bewijzen",
+    "emptyMine": "Je reeks begint met de challenge van vandaag."
+  },
+  "streak_one": "{{count}} dag op rij",
+  "streak_other": "{{count}} dagen op rij"
 }
