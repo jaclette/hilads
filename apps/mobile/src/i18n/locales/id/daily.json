@@ -215,5 +215,20 @@
     "titleWorld": "Tempat yang disematkan di seluruh dunia",
     "seeProof": "Lihat bukti",
     "openChallenge": "Buka challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Sementara sampai drop berikutnya",
+    "finalIn": "Final dalam {{time}}",
+    "official": "Podium resmi",
+    "minProofs": "Top 10 dibuka saat ada {{min}} bukti. Sejauh ini: {{n}}.",
+    "noVotes": "Belum ada suara. Pilih bukti favoritmu!",
+    "me": "Kamu: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} di {{city}}",
+    "noProof": "Posting buktimu agar masuk peringkat.",
+    "pending": "Buktimu masuk peringkat setelah disetujui.",
+    "cityTop": "Top 3 di {{city}}",
+    "compactTitle": "Top 3 saat ini",
+    "seeAll": "Top 10 ›"
   }
 }

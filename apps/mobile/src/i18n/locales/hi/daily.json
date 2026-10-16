@@ -215,5 +215,20 @@
     "titleWorld": "दुनिया भर में पिन की गई जगहें",
     "seeProof": "प्रूफ देखें",
     "openChallenge": "challenge खोलें"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "अगले drop तक अस्थायी",
+    "finalIn": "{{time}} में फ़ाइनल",
+    "official": "आधिकारिक पोडियम",
+    "minProofs": "{{min}} प्रूफ होने पर Top 10 खुलेगा। अभी तक: {{n}}।",
+    "noVotes": "अभी कोई वोट नहीं। अपने पसंदीदा प्रूफ को वोट करें!",
+    "me": "आप: #{{rank}} · ♥ {{votes}}",
+    "meCity": "{{city}} में #{{rank}}",
+    "noProof": "रैंक पाने के लिए अपना प्रूफ पोस्ट करें।",
+    "pending": "मंज़ूरी के बाद आपका प्रूफ रैंक होगा।",
+    "cityTop": "{{city}} के Top 3",
+    "compactTitle": "अभी के Top 3",
+    "seeAll": "Top 10 ›"
   }
 }

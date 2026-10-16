@@ -215,5 +215,20 @@
     "titleWorld": "世界中のピン留めされた場所",
     "seeProof": "証明を見る",
     "openChallenge": "challenge を開く"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "次のドロップまでは暫定",
+    "finalIn": "確定まで {{time}}",
+    "official": "公式表彰台",
+    "minProofs": "Top 10 は証明が {{min}} 件で公開。現在：{{n}} 件。",
+    "noVotes": "まだ投票がありません。好きな証明に投票しよう！",
+    "me": "あなた：#{{rank}} · ♥ {{votes}}",
+    "meCity": "{{city}}で #{{rank}}",
+    "noProof": "証明を投稿してランキングに参加しよう。",
+    "pending": "証明は承認後にランキングに入ります。",
+    "cityTop": "{{city}}の Top 3",
+    "compactTitle": "今の Top 3",
+    "seeAll": "Top 10 ›"
   }
 }

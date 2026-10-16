@@ -215,5 +215,20 @@
     "titleWorld": "Mga naka-pin na lugar sa mundo",
     "seeProof": "Tingnan ang proof",
     "openChallenge": "Buksan ang challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Pansamantala hanggang sa drop",
+    "finalIn": "Pinal sa loob ng {{time}}",
+    "official": "Opisyal na podium",
+    "minProofs": "Magbubukas ang Top 10 sa {{min}} proof. Sa ngayon: {{n}}.",
+    "noVotes": "Wala pang boto. Bumoto sa mga paborito mong proof!",
+    "me": "Ikaw: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} sa {{city}}",
+    "noProof": "I-post ang proof mo para ma-rank.",
+    "pending": "Mara-rank ang proof mo kapag naaprubahan na.",
+    "cityTop": "Top 3 sa {{city}}",
+    "compactTitle": "Top 3 ngayon",
+    "seeAll": "Top 10 ›"
   }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
+import { AppState } from 'react-native';
 import { dailyErrorCode, fetchDailyProofStates, unvoteDailyProof, voteDailyProof } from '@/api/daily';
 import type { DailyProof, DailyVoteState } from '@/types';
 
@@ -7,8 +8,11 @@ import type { DailyProof, DailyVoteState } from '@/types';
 // screens already load (sheet, today); channel cards, whose payload is a
 // snapshot from approval, ask for the live state in batches
 // (GET /daily/proofs/state). Votes are optimistic with rollback.
+// Counts stay live: every 30 s, proofs on screen whose voting is still open are
+// asked again (one batched call), only while the app is in the foreground.
 
 const STALE_MS = 60_000;
+const REFRESH_MS = 30_000;
 const BATCH_MS = 250;
 const BATCH_MAX = 50;
 
@@ -71,9 +75,9 @@ let timer: ReturnType<typeof setTimeout> | null = null;
 let batchGuestId: string | null = null;
 
 /** Ask for a proof's live state unless it is fresh. Batched. */
-export function requestVoteState(proofId: string, guestId?: string | null) {
+export function requestVoteState(proofId: string, guestId?: string | null, maxAge = STALE_MS) {
   const s = states.get(proofId);
-  if (s && Date.now() - s.at < STALE_MS) return;
+  if (s && Date.now() - s.at < maxAge) return;
   pending.add(proofId);
   batchGuestId = guestId ?? null;
   if (!timer) timer = setTimeout(flush, BATCH_MS);
@@ -97,11 +101,43 @@ async function flush() {
   }
 }
 
+// ── Live refresh of the proofs on screen ───────────────────────────────────
+
+const watched = new Map<string, number>();   // proof id → mounted cards showing it
+let refreshTimer: ReturnType<typeof setInterval> | null = null;
+
+function watchProof(proofId: string) {
+  watched.set(proofId, (watched.get(proofId) ?? 0) + 1);
+  refreshTimer ??= setInterval(refreshWatched, REFRESH_MS);
+}
+
+function unwatchProof(proofId: string) {
+  const n = (watched.get(proofId) ?? 1) - 1;
+  if (n <= 0) watched.delete(proofId); else watched.set(proofId, n);
+  if (watched.size === 0 && refreshTimer) {
+    clearInterval(refreshTimer);
+    refreshTimer = null;
+  }
+}
+
+function refreshWatched() {
+  if (AppState.currentState !== 'active') return;
+  for (const id of watched.keys()) {
+    if (states.get(id)?.votingOpen === false) continue;   // closed: the count is final
+    requestVoteState(id, batchGuestId, REFRESH_MS - 1000);
+  }
+}
+
 // ── Hooks ──────────────────────────────────────────────────────────────────
 
 export function useVoteState(proofId: string | null | undefined, guestId?: string | null): DailyVoteState | null {
   useSyncExternalStore(subscribe, () => version);
-  useEffect(() => { if (proofId) requestVoteState(proofId, guestId); }, [proofId, guestId]);
+  useEffect(() => {
+    if (!proofId) return;
+    requestVoteState(proofId, guestId);
+    watchProof(proofId);
+    return () => unwatchProof(proofId);
+  }, [proofId, guestId]);
   return proofId ? states.get(proofId) ?? null : null;
 }
 

@@ -215,5 +215,20 @@
     "titleWorld": "Pinned places around the world",
     "seeProof": "See the proof",
     "openChallenge": "Open the challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Provisional until the drop",
+    "finalIn": "Final in {{time}}",
+    "official": "Official podium",
+    "minProofs": "The Top 10 opens at {{min}} proofs. So far: {{n}}.",
+    "noVotes": "No votes yet. Vote for your favorite proofs!",
+    "me": "You: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} in {{city}}",
+    "noProof": "Post your proof to get ranked.",
+    "pending": "Your proof gets ranked once approved.",
+    "cityTop": "Top 3 in {{city}}",
+    "compactTitle": "Top 3 right now",
+    "seeAll": "Top 10 ›"
   }
 }

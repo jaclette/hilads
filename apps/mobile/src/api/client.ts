@@ -20,6 +20,8 @@ export function getAuthToken(): string | null {
 
 interface FetchOptions extends RequestInit {
   params?: Record<string, string | number | undefined>;
+  /** Read response headers (e.g. ETag) before the body is parsed. */
+  onHeaders?: (headers: Headers) => void;
 }
 
 export class ApiError extends Error {
@@ -33,7 +35,7 @@ async function request<T = unknown>(
   path: string,
   options: FetchOptions = {},
 ): Promise<T> {
-  const { params, headers: extraHeaders, ...rest } = options;
+  const { params, headers: extraHeaders, onHeaders, ...rest } = options;
 
   // Build URL with optional query params
   let url = `${API_URL}${path}`;
@@ -100,6 +102,8 @@ async function request<T = unknown>(
     if (match) authToken = match[1];
   }
 
+  onHeaders?.(res.headers);
+
   if (res.status === 204) return undefined as T;
 
   const body = await res.json().catch(() => ({}));
@@ -115,6 +119,17 @@ async function request<T = unknown>(
 export const api = {
   get: <T>(path: string, options?: FetchOptions) =>
     request<T>(path, { method: 'GET', ...options }),
+
+  /** GET with If-None-Match; a 304 throws ApiError(304). Returns the new ETag. */
+  getWithEtag: async <T>(path: string, etag: string | null, options?: FetchOptions) => {
+    let next: string | null = null;
+    const data = await request<T>(path, {
+      method: 'GET', ...options,
+      headers: etag ? { 'If-None-Match': etag } : undefined,
+      onHeaders: h => { next = h.get('etag'); },
+    });
+    return { data, etag: next as string | null };
+  },
 
   post: <T>(path: string, body?: unknown, options?: FetchOptions) =>
     request<T>(path, {

@@ -12,14 +12,16 @@ import { DailyStatusChip } from './DailyStatusChip';
 import { DailyPushBanner } from './DailyPushBanner';
 import { dailyTrackProps } from './track';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
+import { DailyTop3 } from './DailyTop3';
 import type { DailyToday } from '@/types';
 
 /**
  * MY CITY hero: today's Daily Challenge. Challenge text (English, as written),
  * the city's Local Twist when the city is live, a countdown to the next drop,
  * the proof count and the CTA - or my proof's status once I posted. My
- * streak shows from 2 days on. Locals of a live city get a line to propose
- * tomorrow's Local Twist (or see their proposal's status).
+ * streak shows from 2 days on. A live top 3 shows once the challenge is ranked.
+ * Locals of a live city get a line to propose tomorrow's Local Twist (or see
+ * their proposal's status).
  */
 export function DailyHeroCard({ cityId, source = 'hero' }: { cityId: string; source?: string }) {
   const daily = useDailyToday(cityId);
@@ -105,6 +107,8 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
           </TouchableOpacity>
         )}
       </View>
+
+      {data && <DailyTop3 today={data} source={source} trackProps={dailyTrackProps(data, account?.mode)} />}
 
       {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
         <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/twist' as never)} accessibilityRole="button">

@@ -327,6 +327,10 @@ function resolveRoute(data: NotifData): string | null {
       // Daily Challenge pushes (no challengeId on purpose) → today's sheet.
       return '/daily/today?source=push';
 
+    case 'daily_top10':
+      // My proof entered today's top 10 → the sheet's Top 10 tab.
+      return '/daily/today?source=push&tab=top10';
+
     case 'daily_twist_picked':
       // My Local Twist proposal was picked → its status screen.
       return '/daily/twist';

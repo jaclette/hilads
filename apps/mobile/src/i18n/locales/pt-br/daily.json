@@ -215,5 +215,20 @@
     "titleWorld": "Lugares marcados pelo mundo",
     "seeProof": "Ver a prova",
     "openChallenge": "Abrir o challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Provisório até o drop",
+    "finalIn": "Final em {{time}}",
+    "official": "Pódio oficial",
+    "minProofs": "O Top 10 abre com {{min}} provas. Até agora: {{n}}.",
+    "noVotes": "Ainda sem votos. Vote nas suas provas favoritas!",
+    "me": "Você: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} em {{city}}",
+    "noProof": "Publique sua prova para entrar no ranking.",
+    "pending": "Sua prova entra no ranking depois de aprovada.",
+    "cityTop": "Top 3 em {{city}}",
+    "compactTitle": "Top 3 agora",
+    "seeAll": "Top 10 ›"
   }
 }

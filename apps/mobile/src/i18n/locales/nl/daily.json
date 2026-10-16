@@ -215,5 +215,20 @@
     "titleWorld": "Vastgezette plekken wereldwijd",
     "seeProof": "Bekijk het bewijs",
     "openChallenge": "Open de challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Voorlopig tot de drop",
+    "finalIn": "Definitief over {{time}}",
+    "official": "Officieel podium",
+    "minProofs": "De Top 10 opent bij {{min}} bewijzen. Tot nu toe: {{n}}.",
+    "noVotes": "Nog geen stemmen. Stem op je favoriete bewijzen!",
+    "me": "Jij: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} in {{city}}",
+    "noProof": "Plaats je bewijs om in de ranglijst te komen.",
+    "pending": "Je bewijs komt in de ranglijst zodra het is goedgekeurd.",
+    "cityTop": "Top 3 in {{city}}",
+    "compactTitle": "Top 3 op dit moment",
+    "seeAll": "Top 10 ›"
   }
 }

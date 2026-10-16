@@ -215,5 +215,20 @@
     "titleWorld": "Lugares fijados en el mundo",
     "seeProof": "Ver la prueba",
     "openChallenge": "Abrir el challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Provisional hasta el drop",
+    "finalIn": "Definitivo en {{time}}",
+    "official": "Podio oficial",
+    "minProofs": "El Top 10 se abre con {{min}} pruebas. Por ahora: {{n}}.",
+    "noVotes": "Aún no hay votos. ¡Vota por tus pruebas favoritas!",
+    "me": "Tú: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} en {{city}}",
+    "noProof": "Publica tu prueba para entrar en el ranking.",
+    "pending": "Tu prueba entrará en el ranking cuando se apruebe.",
+    "cityTop": "Top 3 en {{city}}",
+    "compactTitle": "Top 3 ahora mismo",
+    "seeAll": "Top 10 ›"
   }
 }

@@ -215,5 +215,20 @@
     "titleWorld": "Lieux épinglés dans le monde",
     "seeProof": "Voir la preuve",
     "openChallenge": "Ouvrir le challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Provisoire jusqu'au drop",
+    "finalIn": "Définitif dans {{time}}",
+    "official": "Podium officiel",
+    "minProofs": "Le Top 10 s'ouvre à {{min}} preuves. Pour l'instant : {{n}}.",
+    "noVotes": "Pas encore de votes. Vote pour tes preuves préférées !",
+    "me": "Toi : #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} à {{city}}",
+    "noProof": "Poste ta preuve pour être classé.",
+    "pending": "Ta preuve sera classée une fois approuvée.",
+    "cityTop": "Top 3 à {{city}}",
+    "compactTitle": "Top 3 en ce moment",
+    "seeAll": "Top 10 ›"
   }
 }

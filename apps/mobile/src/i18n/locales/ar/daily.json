@@ -239,5 +239,20 @@
     "titleWorld": "الأماكن المثبّتة حول العالم",
     "seeProof": "عرض الدليل",
     "openChallenge": "فتح الـ challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "مؤقت حتى الـ drop القادم",
+    "finalIn": "نهائي خلال {{time}}",
+    "official": "منصة التتويج الرسمية",
+    "minProofs": "يُفتح Top 10 عند {{min}} أدلة. حتى الآن: {{n}}.",
+    "noVotes": "لا أصوات بعد. صوّت لأدلتك المفضلة!",
+    "me": "أنت: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} في {{city}}",
+    "noProof": "انشر دليلك لتدخل الترتيب.",
+    "pending": "سيدخل دليلك الترتيب بعد الموافقة عليه.",
+    "cityTop": "Top 3 في {{city}}",
+    "compactTitle": "Top 3 الآن",
+    "seeAll": "Top 10 ›"
   }
 }

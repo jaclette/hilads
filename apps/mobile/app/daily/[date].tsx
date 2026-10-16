@@ -13,7 +13,8 @@ import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
 import { formatCountdown, useCountdown, useDailySheet } from '@/hooks/useDaily';
-import { DailyProofTile, MEDALS } from '@/features/daily/DailyProofTile';
+import { DailyProofTile } from '@/features/daily/DailyProofTile';
+import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
@@ -25,12 +26,13 @@ import type { DailyProof } from '@/types';
 /**
  * Daily Challenge sheet (/daily/today or /daily/YYYY-MM-DD). Challenge,
  * context, Local Twist and its author, my proof, practical info from approved
- * proofs, the results once closed (World top 3, best of each live city), and
- * the proofs with World / City tabs (City only for live cities).
- * ?proof=<id> opens that proof on arrival.
+ * proofs, and tabs: the proofs (World / City, City only for live cities) and
+ * the Top 10 (live leaderboard while active, the official podium once closed;
+ * closed sheets open on it). ?proof=<id> opens that proof on arrival;
+ * ?tab=top10 opens the Top 10 tab (top 10 push, hero card's top 3).
  */
 export default function DailySheetScreen() {
-  const { date: dateParam, proof: proofParam, source } = useLocalSearchParams<{ date: string; proof?: string; source?: string }>();
+  const { date: dateParam, proof: proofParam, source, tab } = useLocalSearchParams<{ date: string; proof?: string; source?: string; tab?: string }>();
   const { city } = useApp();
   const [date, setDate] = useState<string | null>(dateParam && dateParam !== 'today' ? dateParam : null);
 
@@ -43,7 +45,7 @@ export default function DailySheetScreen() {
   }, [date, city?.channelId]);
 
   if (!date) return <Loading />;
-  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} />;
+  return <Sheet date={date} openProofId={proofParam ?? null} source={source ?? null} initialTab={tab === 'top10' ? 'top10' : null} />;
 }
 
 function Loading() {
@@ -52,13 +54,18 @@ function Loading() {
   return <SafeAreaView style={[styles.container, styles.center]}><ActivityIndicator color={colors.accent} /></SafeAreaView>;
 }
 
-function Sheet({ date, openProofId, source }: { date: string; openProofId: string | null; source: string | null }) {
+type Tab = 'world' | 'city' | 'top10';
+
+function Sheet({ date, openProofId, source, initialTab }: {
+  date: string; openProofId: string | null; source: string | null; initialTab: 'top10' | null;
+}) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { city, account } = useApp();
-  const [scope, setScope] = useState<'world' | 'city'>('world');
+  const [scope, setScope] = useState<'world' | 'city'>('world');   // proofs shown by the World / City tabs
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'world');
   const [viewing, setViewing] = useState<DailyProof | null>(null);
   const { sheet, loading, loadingMore, error, reload, loadMore, setMyProof } = useDailySheet(date, scope, city?.channelId);
   const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null, sheet?.serverTime);
@@ -82,6 +89,26 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
     if (local) { setViewing(local); return; }
     fetchDailyProof(openProofId).then(setViewing).catch(() => {});
   }, [openProofId, sheet]);
+
+  // A closed challenge opens on its podium (Top 10 tab), once.
+  const tabDefaulted = useRef(initialTab !== null);
+  useEffect(() => {
+    if (!sheet?.challenge || tabDefaulted.current) return;
+    tabDefaulted.current = true;
+    if (!sheet.challenge.isActive) setTab('top10');
+  }, [sheet]);
+
+  const selectTab = (next: Tab) => {
+    setTab(next);
+    if (next !== 'top10') setScope(next);
+  };
+
+  const openProofById = useCallback((proofId: string) => {
+    const known = [...(sheet?.proofs ?? []), sheet?.myProof, ...(sheet?.results?.world ?? []), ...(sheet?.results?.cities ?? [])]
+      .find(p => p?.id === proofId);
+    if (known) { setViewing(known); return; }
+    fetchDailyProof(proofId).then(setViewing).catch(() => {});
+  }, [sheet]);
 
   const isLive = !!sheet?.city?.isLive;
   const cityName = sheet?.city?.name ? localizeCityName(sheet.city.name) : '';
@@ -180,24 +207,6 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
           )}
         </View>
 
-        {sheet.results && (
-          <View style={styles.practical}>
-            <Text style={styles.sectionTitle}>🏆 {t('results.title')}</Text>
-            {sheet.results.world.length === 0 && sheet.results.cities.length === 0 && (
-              <Text style={styles.hint}>{t('results.none')}</Text>
-            )}
-            {sheet.results.world.map((p, i) => (
-              <ResultRow key={p.id} proof={p} label={MEDALS[i]} onPress={() => setViewing(p)} />
-            ))}
-            {sheet.results.cities.length > 0 && (
-              <Text style={[styles.sectionTitle, styles.resultsSub]}>{t('results.bestInCities')}</Text>
-            )}
-            {sheet.results.cities.map(p => (
-              <ResultRow key={`c${p.id}`} proof={p} label="📍" city onPress={() => setViewing(p)} />
-            ))}
-          </View>
-        )}
-
         {(priceRange || places.length > 0) && (
           <View style={styles.practical}>
             <Text style={styles.sectionTitle}>{t('practicalTitle')}</Text>
@@ -235,18 +244,18 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
           </View>
         )}
 
-        {isLive && (
-          <View style={styles.tabs}>
-            {(['world', 'city'] as const).map(s => (
-              <TouchableOpacity key={s} style={[styles.tab, scope === s && styles.tabActive]} onPress={() => setScope(s)} accessibilityRole="tab" accessibilityState={{ selected: scope === s }}>
-                <Text style={[styles.tabText, scope === s && styles.tabTextActive]}>{s === 'world' ? `🌍 ${t('tabWorld')}` : `🏙️ ${cityName}`}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        )}
+        <View style={styles.tabs}>
+          {(isLive ? ['world', 'city', 'top10'] as const : ['world', 'top10'] as const).map(k => (
+            <TouchableOpacity key={k} style={[styles.tab, tab === k && styles.tabActive]} onPress={() => selectTab(k)} accessibilityRole="tab" accessibilityState={{ selected: tab === k }}>
+              <Text style={[styles.tabText, tab === k && styles.tabTextActive]} numberOfLines={1}>
+                {k === 'world' ? `🌍 ${t('tabWorld')}` : k === 'city' ? `🏙️ ${cityName}` : `🏆 ${t('leaderboard.tab')}`}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     );
-  }, [sheet, challenge, myProof, isLive, cityName, scope, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date]);
+  }, [sheet, challenge, myProof, isLive, cityName, scope, tab, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -269,49 +278,34 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
         </View>
       ) : (
         <FlatList
-          data={sheet!.proofs}
+          data={tab === 'top10' ? [] : sheet!.proofs}
           keyExtractor={p => p.id}
           numColumns={2}
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.list}
           ListHeaderComponent={header}
           renderItem={({ item }) => <DailyProofTile proof={item} onPress={() => setViewing(item)} />}
-          onEndReached={loadMore}
+          onEndReached={tab === 'top10' ? undefined : loadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.accent} style={styles.more} /> : null}
-          ListEmptyComponent={
+          ListEmptyComponent={tab === 'top10' ? (
+            <DailyLeaderboardPanel
+              sheet={sheet!}
+              secondsLeft={secondsLeft}
+              source={source === 'push' && initialTab ? 'push' : 'sheet_tab'}
+              onOpenProof={openProofById}
+            />
+          ) : (
             <View style={styles.emptyWrap}>
               <Text style={styles.emptyTitle}>✨ {t('beFirst')}</Text>
               <Text style={styles.empty}>{t('beFirstSub')}</Text>
             </View>
-          }
+          )}
         />
       )}
 
       <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
     </SafeAreaView>
-  );
-}
-
-/** One results line: medal (or pin), thumb, author · city (or "Best in <city>"), votes. */
-function ResultRow({ proof, label, city = false, onPress }: { proof: DailyProof; label: string; city?: boolean; onPress: () => void }) {
-  const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
-  const name = proof.user.displayName || proof.user.username || '';
-  const cityName = proof.city ? localizeCityName(proof.city.name) : '';
-  return (
-    <TouchableOpacity style={styles.resultRow} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label} ${name}`}>
-      <Text style={styles.resultLabel}>{label}</Text>
-      <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.resultThumb} contentFit="cover" />
-      <View style={styles.resultBody}>
-        <Text style={styles.resultName} numberOfLines={1}>{city ? t('results.bestIn', { city: cityName }) : name}</Text>
-        <Text style={styles.resultSub} numberOfLines={1}>
-          {city ? name : cityName}
-          {proof.validatedByLocal ? ` · ✓ ${t('validatedByLocal')}` : ''}
-        </Text>
-      </View>
-      <Text style={styles.resultVotes}>♥ {proof.voteCount}</Text>
-    </TouchableOpacity>
   );
 }
 
@@ -365,12 +359,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   mapPreview:  { height: 150, borderRadius: Radius.md, overflow: 'hidden', marginVertical: 6, backgroundColor: c.bg3 },
   mapCta:      { position: 'absolute', right: 8, bottom: 8, backgroundColor: c.bg2, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: c.border },
   mapCtaText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
-  resultsSub:  { marginTop: 8 },
-  resultRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 },
-  resultLabel: { fontSize: 20, width: 26, textAlign: 'center' },
-  resultThumb: { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
-  resultBody:  { flex: 1, gap: 1 },
-  resultName:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  resultSub:   { fontSize: 12, color: c.muted },
-  resultVotes: { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

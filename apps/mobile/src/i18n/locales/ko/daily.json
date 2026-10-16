@@ -213,5 +213,20 @@
     "titleWorld": "전 세계의 고정된 장소",
     "seeProof": "인증 보기",
     "openChallenge": "challenge 열기"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "다음 드롭 전까지 임시 순위",
+    "finalIn": "{{time}} 후 확정",
+    "official": "공식 시상대",
+    "minProofs": "인증이 {{min}}개가 되면 Top 10이 열려요. 현재: {{n}}개.",
+    "noVotes": "아직 투표가 없어요. 마음에 드는 인증에 투표해 보세요!",
+    "me": "나: #{{rank}} · ♥ {{votes}}",
+    "meCity": "{{city}} #{{rank}}",
+    "noProof": "인증을 올리면 순위에 들어가요.",
+    "pending": "인증이 승인되면 순위에 들어가요.",
+    "cityTop": "{{city}} Top 3",
+    "compactTitle": "지금 Top 3",
+    "seeAll": "Top 10 ›"
   }
 }

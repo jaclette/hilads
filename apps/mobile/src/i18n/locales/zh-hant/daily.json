@@ -213,5 +213,20 @@
     "titleWorld": "全球已標記的地點",
     "seeProof": "查看證明",
     "openChallenge": "打開 challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "在下次發布前為暫時排名",
+    "finalIn": "{{time}} 後定榜",
+    "official": "官方頒獎台",
+    "minProofs": "滿 {{min}} 個證明後開放 Top 10。目前：{{n}}。",
+    "noVotes": "還沒有投票。為你喜歡的證明投票吧！",
+    "me": "你：#{{rank}} · ♥ {{votes}}",
+    "meCity": "{{city}} #{{rank}}",
+    "noProof": "發布你的證明即可參與排名。",
+    "pending": "你的證明通過審核後會參與排名。",
+    "cityTop": "{{city}} Top 3",
+    "compactTitle": "目前 Top 3",
+    "seeAll": "Top 10 ›"
   }
 }

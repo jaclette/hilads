@@ -213,5 +213,20 @@
     "titleWorld": "全球已标记的地点",
     "seeProof": "查看证明",
     "openChallenge": "打开 challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "在下次发布前为临时排名",
+    "finalIn": "{{time}} 后定榜",
+    "official": "官方领奖台",
+    "minProofs": "满 {{min}} 个证明后开放 Top 10。目前：{{n}}。",
+    "noVotes": "还没有投票。为你喜欢的证明投票吧！",
+    "me": "你：#{{rank}} · ♥ {{votes}}",
+    "meCity": "{{city}} #{{rank}}",
+    "noProof": "发布你的证明即可参与排名。",
+    "pending": "你的证明通过审核后会参与排名。",
+    "cityTop": "{{city}} Top 3",
+    "compactTitle": "当前 Top 3",
+    "seeAll": "Top 10 ›"
   }
 }

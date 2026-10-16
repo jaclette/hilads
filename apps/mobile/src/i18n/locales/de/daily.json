@@ -215,5 +215,20 @@
     "titleWorld": "Markierte Orte weltweit",
     "seeProof": "Beweis ansehen",
     "openChallenge": "Challenge öffnen"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Vorläufig bis zum Drop",
+    "finalIn": "Endgültig in {{time}}",
+    "official": "Offizielles Podium",
+    "minProofs": "Die Top 10 starten ab {{min}} Beweisen. Bisher: {{n}}.",
+    "noVotes": "Noch keine Stimmen. Stimm für deine Lieblingsbeweise ab!",
+    "me": "Du: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} in {{city}}",
+    "noProof": "Poste deinen Beweis, um gerankt zu werden.",
+    "pending": "Dein Beweis wird nach der Freigabe gerankt.",
+    "cityTop": "Top 3 in {{city}}",
+    "compactTitle": "Top 3 gerade",
+    "seeAll": "Top 10 ›"
   }
 }

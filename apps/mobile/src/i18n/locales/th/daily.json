@@ -213,5 +213,20 @@
     "titleWorld": "สถานที่ที่ปักหมุดทั่วโลก",
     "seeProof": "ดูหลักฐาน",
     "openChallenge": "เปิด challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "ผลชั่วคราวจนถึงรอบ drop",
+    "finalIn": "สรุปผลใน {{time}}",
+    "official": "โพเดียมอย่างเป็นทางการ",
+    "minProofs": "Top 10 จะเปิดเมื่อมีหลักฐาน {{min}} รายการ ตอนนี้: {{n}}",
+    "noVotes": "ยังไม่มีโหวต โหวตให้หลักฐานที่คุณชอบเลย!",
+    "me": "คุณ: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} ใน {{city}}",
+    "noProof": "โพสต์หลักฐานของคุณเพื่อติดอันดับ",
+    "pending": "หลักฐานของคุณจะติดอันดับเมื่อได้รับอนุมัติ",
+    "cityTop": "Top 3 ใน {{city}}",
+    "compactTitle": "Top 3 ตอนนี้",
+    "seeAll": "Top 10 ›"
   }
 }

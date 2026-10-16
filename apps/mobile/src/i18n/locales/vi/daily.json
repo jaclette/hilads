@@ -213,5 +213,20 @@
     "titleWorld": "Địa điểm đã ghim trên thế giới",
     "seeProof": "Xem bằng chứng",
     "openChallenge": "Mở challenge"
+  },
+  "leaderboard": {
+    "tab": "Top 10",
+    "provisional": "Tạm thời cho đến lượt drop",
+    "finalIn": "Chốt sau {{time}}",
+    "official": "Bục vinh quang chính thức",
+    "minProofs": "Top 10 mở khi có {{min}} bằng chứng. Hiện có: {{n}}.",
+    "noVotes": "Chưa có bình chọn. Hãy bình chọn cho bằng chứng bạn thích!",
+    "me": "Bạn: #{{rank}} · ♥ {{votes}}",
+    "meCity": "#{{rank}} ở {{city}}",
+    "noProof": "Đăng bằng chứng để được xếp hạng.",
+    "pending": "Bằng chứng của bạn sẽ được xếp hạng sau khi duyệt.",
+    "cityTop": "Top 3 ở {{city}}",
+    "compactTitle": "Top 3 lúc này",
+    "seeAll": "Top 10 ›"
   }
 }
