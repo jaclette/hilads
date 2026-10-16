@@ -40,6 +40,9 @@ web-build/
 # Package managers
 # =========================
 package-lock.json
+# EAS Build uploads by these rules: the mobile lockfile must be uploaded, or the
+# build resolves fresh dependency versions with yarn.
+!apps/mobile/package-lock.json
 
 # =========================
 # Logs
