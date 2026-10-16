@@ -7433,21 +7433,25 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     $allowed = ['android', 'ios', 'unknown'];
     if (!in_array($platform, $allowed, true)) $platform = 'unknown';
+    // Android channel the app created for Daily pushes (signature sound); absent = unchanged.
+    $dailyChannel = is_string($body['dailyChannel'] ?? null) && preg_match('/^[a-z0-9_]{1,40}$/', trim($body['dailyChannel']))
+        ? trim($body['dailyChannel']) : null;
 
     try {
         $stmt = Database::pdo()->prepare("
-            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform, timezone, locale)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform, timezone, locale, daily_channel)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (token) DO UPDATE
-               SET user_id      = EXCLUDED.user_id,
-                   guest_id     = EXCLUDED.guest_id,
-                   platform     = EXCLUDED.platform,
-                   timezone     = COALESCE(EXCLUDED.timezone, mobile_push_tokens.timezone),
-                   locale       = COALESCE(EXCLUDED.locale, mobile_push_tokens.locale),
-                   last_used_at = now()
+               SET user_id       = EXCLUDED.user_id,
+                   guest_id      = EXCLUDED.guest_id,
+                   platform      = EXCLUDED.platform,
+                   timezone      = COALESCE(EXCLUDED.timezone, mobile_push_tokens.timezone),
+                   locale        = COALESCE(EXCLUDED.locale, mobile_push_tokens.locale),
+                   daily_channel = COALESCE(EXCLUDED.daily_channel, mobile_push_tokens.daily_channel),
+                   last_used_at  = now()
             RETURNING id
         ");
-        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform, $timezone, $locale]);
+        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform, $timezone, $locale, $dailyChannel]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         error_log("[push-subscribe] upsert success for " . ($userId ?? 'guest:' . $guestId) . " row_id=" . ($row['id'] ?? '?'));
     } catch (\Throwable $e) {
@@ -14785,6 +14789,13 @@ $router->add('POST', '/api/v1/daily/device', function () {
         $stmt = $pdo->prepare("UPDATE mobile_push_tokens SET timezone = ? WHERE token = ? AND timezone IS DISTINCT FROM ?");
         $stmt->execute([$tz, $token, $tz]);
         $updated += $stmt->rowCount();
+        // The Android channel the app created for Daily pushes (signature sound).
+        $channel = is_string($body['dailyChannel'] ?? null) ? trim($body['dailyChannel']) : '';
+        if (preg_match('/^[a-z0-9_]{1,40}$/', $channel)) {
+            $stmt = $pdo->prepare("UPDATE mobile_push_tokens SET daily_channel = ? WHERE token = ? AND daily_channel IS DISTINCT FROM ?");
+            $stmt->execute([$channel, $token, $channel]);
+            $updated += $stmt->rowCount();
+        }
     }
     Response::json(['ok' => true, 'updated' => $updated > 0]);
 });

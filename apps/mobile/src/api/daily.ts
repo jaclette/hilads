@@ -101,9 +101,15 @@ export async function deleteDailyProof(id: string): Promise<void> {
   await api.delete(`/daily/proofs/${id}`);
 }
 
-/** The device's IANA timezone, sent at each launch (Daily pushes at local time). */
-export async function sendDeviceTimezone(timezone: string, guestId?: string | null, pushToken?: string | null): Promise<void> {
-  await api.post('/daily/device', { timezone, guestId: guestId ?? undefined, pushToken: pushToken ?? undefined });
+/**
+ * The device's IANA timezone, sent at each launch (Daily pushes at local time),
+ * with the Android channel this build created for Daily pushes (signature sound).
+ */
+export async function sendDeviceTimezone(timezone: string, guestId?: string | null, pushToken?: string | null,
+                                         dailyChannel?: string | null): Promise<void> {
+  await api.post('/daily/device', {
+    timezone, guestId: guestId ?? undefined, pushToken: pushToken ?? undefined, dailyChannel: dailyChannel ?? undefined,
+  });
 }
 
 /** The API's machine error code ("already_posted", "moderation_blocked"…), if any. */

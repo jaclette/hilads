@@ -200,9 +200,11 @@ class MobilePushService
                 ? $data['imageUrl'] : null;
 
             // Daily Challenge pushes sent through here ("Local Twist picked") use the
-            // Daily signature sound and Android channel, like the Daily push queue.
+            // Daily signature sound and Android channel on devices that can take them,
+            // like the Daily push queue.
             $daily = str_starts_with($type, 'daily_') && $type !== 'daily_admin' && $type !== 'daily_moderation'
                      && class_exists('DailyPushes');
+            $signature = $daily ? array_flip(self::splitForDailySound($tokens, DailyPushes::SIGNATURE_CHANNEL)[0]) : [];
 
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => array_filter([
@@ -210,8 +212,8 @@ class MobilePushService
                 'title'      => $title,
                 'body'       => $body ?? '',
                 'data'       => array_merge($data, ['type' => $type]),
-                'sound'      => $daily ? DailyPushes::SIGNATURE_SOUND : 'default',
-                'channelId'  => $daily ? DailyPushes::SIGNATURE_CHANNEL : 'default', // Android channels defined in push.ts
+                'sound'      => isset($signature[$token]) ? DailyPushes::SIGNATURE_SOUND : 'default',
+                'channelId'  => isset($signature[$token]) ? DailyPushes::SIGNATURE_CHANNEL : 'default', // Android channels defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
                 'priority'   => $isActionable ? 'high' : null,
                 // Android big-picture. On iOS, mutableContent lets the
@@ -236,6 +238,32 @@ class MobilePushService
         } catch (\Throwable $e) {
             error_log("[push-send] EXCEPTION for user=$userId type=$type: " . $e->getMessage() . "\n" . $e->getTraceAsString());
         }
+    }
+
+    /**
+     * Split Expo tokens for a Daily push: those that can get the signature
+     * sound and the Daily channel, and the others. iOS always can (a build
+     * without the file plays the default sound). Android only once the app
+     * declared it has that channel (mobile_push_tokens.daily_channel): Android
+     * does not display a push sent to a channel the phone doesn't have.
+     * Returns [signature[], plain[]].
+     */
+    public static function splitForDailySound(array $tokens, string $channel): array
+    {
+        if ($tokens === []) {
+            return [[], []];
+        }
+        $stmt = Database::pdo()->prepare("
+            SELECT token FROM mobile_push_tokens
+            WHERE token = ANY (string_to_array(?, '|')) AND (platform = 'ios' OR daily_channel = ?)
+        ");
+        $stmt->execute([implode('|', $tokens), $channel]);
+        $ok = array_flip($stmt->fetchAll(\PDO::FETCH_COLUMN));
+        $signature = $plain = [];
+        foreach ($tokens as $t) {
+            if (isset($ok[$t])) { $signature[] = $t; } else { $plain[] = $t; }
+        }
+        return [$signature, $plain];
     }
 
     /**

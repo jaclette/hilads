@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
+import { Platform } from 'react-native';
 import { useApp } from '@/context/AppContext';
 import { sendDeviceTimezone } from '@/api/daily';
-import { getSavedPushToken } from '@/services/push';
+import { DAILY_CHANNEL_ID, getSavedPushToken } from '@/services/push';
 import { deviceTimezone } from '@/lib/deviceTimezone';
 
 /**
@@ -21,7 +22,7 @@ export function useDeviceTimezone(): void {
     if (!key || !tz || sentFor.current === key) return;
     sentFor.current = key;
     getSavedPushToken()
-      .then(token => sendDeviceTimezone(tz, guestId, token))
+      .then(token => sendDeviceTimezone(tz, guestId, token, Platform.OS === 'android' ? DAILY_CHANNEL_ID : null))
       .catch(err => { console.warn('[daily] timezone send failed:', String(err)); sentFor.current = null; });
   }, [account?.id, identity?.guestId]);
 }

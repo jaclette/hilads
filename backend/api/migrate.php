@@ -2870,6 +2870,12 @@ run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS timezone TEXT
 // The device's app language (one of the 19 locales), for guests' Daily pushes (prompt 15);
 // registered users keep theirs on users.locale.
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS locale TEXT", 'mobile_push_tokens.locale');
+// V2-07 fix: the Android notification channel the app declared it created for
+// Daily pushes (POST /daily/device, dailyChannel). Android drops a push sent to a
+// channel the phone doesn't have, so only these Android devices get the Daily
+// channel and its signature sound; others keep the default channel.
+// Reversal: ALTER TABLE mobile_push_tokens DROP COLUMN daily_channel;
+run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS daily_channel TEXT", 'mobile_push_tokens.daily_channel');
 
 // users.mode ('local' | 'exploring', self-declared) exists in production but was
 // never in this file. No-op there; makes a fresh database match.

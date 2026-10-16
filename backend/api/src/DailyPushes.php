@@ -319,8 +319,7 @@ final class DailyPushes
             return 0;
         }
         $msg = self::morningMessage($challenge);
-        $n   = MobilePushService::sendToTokens($tokens, $msg['title'], $msg['body'], $msg['data'] + ['test' => true], 'daily_morning',
-                                               self::SIGNATURE_SOUND, self::SIGNATURE_CHANNEL);
+        $n   = self::sendToDevices($tokens, $msg['title'], $msg['body'], $msg['data'] + ['test' => true], 'daily_morning');
         MobilePushService::flush();
         return $n;
     }
@@ -605,11 +604,8 @@ final class DailyPushes
                 continue;
             }
             $data = ($msg['data'] ?? self::data((string) $row['challenge_date'])) + ['dailyPushId' => (int) $row['id']];
-            // Every Daily push carries the signature sound (V2-07, the founder's choice: all of
-            // them, not only the morning push). Other Hilads pushes keep the default.
-            MobilePushService::sendToTokens($tokensByKey[$row['recipient_key']], (string) ($msg['title'] ?? 'Daily Challenge'),
-                                            (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type'],
-                                            self::SIGNATURE_SOUND, self::SIGNATURE_CHANNEL);
+            self::sendToDevices($tokensByKey[$row['recipient_key']], (string) ($msg['title'] ?? 'Daily Challenge'),
+                                (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type']);
             $alreadySent[$capKey] = ($alreadySent[$capKey] ?? 0) + 1;
             $sent[] = [$row['id'], $day, $msg];
         }
@@ -776,6 +772,26 @@ final class DailyPushes
      * $userIds, and only those whose app opened since $activeSince.
      * Returns [{id, tz, locale}].
      */
+    /**
+     * Send a Daily push to devices with the signature sound (V2-07, the
+     * founder's choice: every Daily push) where the device can take it - iOS,
+     * and Android once the app declared the Daily channel - and the default
+     * sound and channel elsewhere. Other Hilads pushes keep the default.
+     * Returns the number of devices.
+     */
+    public static function sendToDevices(array $tokens, string $title, string $body, array $data, string $type): int
+    {
+        [$signature, $plain] = MobilePushService::splitForDailySound($tokens, self::SIGNATURE_CHANNEL);
+        $n = 0;
+        if ($signature !== []) {
+            $n += MobilePushService::sendToTokens($signature, $title, $body, $data, $type, self::SIGNATURE_SOUND, self::SIGNATURE_CHANNEL);
+        }
+        if ($plain !== []) {
+            $n += MobilePushService::sendToTokens($plain, $title, $body, $data, $type);
+        }
+        return $n;
+    }
+
     /** A user's timezone, picked like the pushes': device > a token's > current city's > UTC. */
     public static function userTimezone(string $userId): string
     {

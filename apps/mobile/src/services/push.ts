@@ -371,7 +371,13 @@ async function registerTokenWithBackend(token: string, guestId?: string | null):
   // guestId lets the backend store the token for an unregistered device (and is
   // harmless for logged-in users - it just records which guest session backs them).
   // timezone: the device's IANA zone, so Daily Challenge pushes land at local time.
-  const payload   = JSON.stringify({ token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined, timezone: deviceTimezone() ?? undefined });
+  // dailyChannel (Android): this build created the Daily channel, so the server may
+  // send Daily pushes on it (with the signature sound) - Android drops a push sent
+  // to a channel the phone doesn't have.
+  const payload   = JSON.stringify({
+    token, platform: Platform.OS, locale: i18n.language, guestId: guestId ?? undefined, timezone: deviceTimezone() ?? undefined,
+    dailyChannel: Platform.OS === 'android' ? DAILY_CHANNEL_ID : undefined,
+  });
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
