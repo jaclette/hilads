@@ -788,6 +788,19 @@ export default function MeScreen() {
           <>
             {account?.id && <DailyProfileStats userId={account.id} isMe />}
 
+            {/* Daily Challenge proposals (V2-06): my challenge and Local Twist proposals with their status. */}
+            <TouchableOpacity
+              style={styles.friendReqRow}
+              onPress={() => router.push('/daily/proposals' as never)}
+              activeOpacity={0.7}
+            >
+              <View style={styles.friendReqIcon}>
+                <Ionicons name="bulb-outline" size={18} color={colors.accent} />
+              </View>
+              <Text style={styles.friendReqLabel}>{t('propose.mineTitle', { ns: 'daily' })}</Text>
+              <Ionicons name="chevron-forward" size={16} color={colors.muted} />
+            </TouchableOpacity>
+
             {/* PR2: entry-point to per-acceptance threads. Sits above the
                 list of created/accepted challenges so the user finds their
                 1:1 conversations quickly. */}

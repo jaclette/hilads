@@ -13,6 +13,12 @@ export const THEME_EMOJI: Record<DailyThemeKey, string> = {
   traditions:   '🏮',
 };
 
+/** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
+export const THEME_NAMES: Record<DailyThemeKey, string> = {
+  language: 'Language', street_food: 'Street food', coffee: 'Coffee', market: 'Market',
+  night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
+};
+
 /** ISO weekday (1 = Monday) of each theme's default day, in weekly order. */
 export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
   language: 1, street_food: 2, coffee: 3, market: 4, night_out: 5, neighborhood: 6, traditions: 7,

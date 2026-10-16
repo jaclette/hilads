@@ -118,7 +118,14 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
       {data && <DailyTop3 today={data} source={source} trackProps={dailyTrackProps(data, account?.mode)} />}
 
       {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
-        <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/twist' as never)} accessibilityRole="button">
+        <TouchableOpacity
+          style={styles.propose}
+          onPress={() => {
+            track('daily_proposal_started', { entry: 'twist_hero', type: 'twist', city: city?.name ?? null });
+            router.push('/daily/twist' as never);
+          }}
+          accessibilityRole="button"
+        >
           <Text style={styles.proposeText} numberOfLines={2}>
             🌱 {data.twistProposal.status
               ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })

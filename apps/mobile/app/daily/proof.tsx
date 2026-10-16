@@ -37,6 +37,8 @@ function parseAmount(raw: string): number | null {
   return Number(normalized);
 }
 const FIRST_PROOF_KEY = 'hilads_daily_first_proof_done';
+const PROPOSE_NUDGE_KEY = 'hilads_daily_propose_nudge_at';
+const PROPOSE_NUDGE_EVERY_MS = 7 * 24 * 3600 * 1000;
 
 type Photo = { uri: string; mime: string | null; remoteUrl: string | null };
 type Pin = { lat: number; lng: number; name: string | null };
@@ -158,18 +160,23 @@ export default function DailyProofScreen() {
       });
 
       if (original) { router.back(); return; }
-      Alert.alert(t('proof.sentTitle'), t('proof.sentBody'), [{
-        text: t('proof.ok'),
-        onPress: async () => {
-          // In-context push ask after the first proof (AUDIT Q9), once.
-          const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
-          if (!done) {
-            await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
-            await askDailyPush('first_proof', identity?.guestId);
-          }
-          router.replace('/daily/today' as never);
-        },
-      }]);
+      // In-context push ask after the first proof (AUDIT Q9), once, then go on.
+      const afterProof = async (next: string) => {
+        const done = await AsyncStorage.getItem(FIRST_PROOF_KEY).catch(() => null);
+        if (!done) {
+          await AsyncStorage.setItem(FIRST_PROOF_KEY, '1').catch(() => {});
+          await askDailyPush('first_proof', identity?.guestId);
+        }
+        router.replace(next as never);
+      };
+      // "Propose a challenge" nudge (V2-06), at most once a week.
+      const lastNudge = Number(await AsyncStorage.getItem(PROPOSE_NUDGE_KEY).catch(() => null)) || 0;
+      const nudge = Date.now() - lastNudge > PROPOSE_NUDGE_EVERY_MS;
+      if (nudge) AsyncStorage.setItem(PROPOSE_NUDGE_KEY, String(Date.now())).catch(() => {});
+      Alert.alert(t('proof.sentTitle'), t('proof.sentBody'), [
+        ...(nudge ? [{ text: `💡 ${t('propose.cta')}`, onPress: () => afterProof('/daily/propose?source=after_proof') }] : []),
+        { text: t('proof.ok'), onPress: () => afterProof('/daily/today') },
+      ]);
     } catch (err) {
       const code = dailyErrorCode(err);
       Alert.alert(code ? t(`errors.${code}`, { defaultValue: t('errors.generic') }) : t('errors.generic'));

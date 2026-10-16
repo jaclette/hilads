@@ -6,6 +6,7 @@ import type {
   DailyGuide,
   DailyLeaderboard,
   DailyPlacePin,
+  DailyProposal,
   DailyProof,
   DailyProofInput,
   DailySheet,
@@ -152,6 +153,21 @@ export async function fetchDailyLeaderboard(etag: string | null, guestId?: strin
     if (err instanceof ApiError && err.status === 304) return null;
     throw err;
   }
+}
+
+/** Propose a Daily Challenge (signed in; one pending at a time). */
+export async function proposeChallenge(input: { text: string; theme: string; why?: string; twistText?: string }): Promise<DailyProposal> {
+  return (await api.post<{ proposal: DailyProposal }>('/daily/proposals', input)).proposal;
+}
+
+/** My challenge and Local Twist proposals, newest first. */
+export async function fetchMyProposals(): Promise<{ items: DailyProposal[]; maxPending: number }> {
+  return api.get('/daily/proposals/mine', { params: { locale: locale() } });
+}
+
+/** Withdraw my pending challenge proposal. */
+export async function withdrawProposal(id: string): Promise<void> {
+  await api.delete(`/daily/proposals/${id}`);
 }
 
 /** Daily Challenge profile stats (signed-in viewers only). */

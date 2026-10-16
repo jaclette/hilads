@@ -22,6 +22,7 @@ import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { DailyPlacesMap } from '@/features/daily/DailyPlacesMap';
 import { themeLabel } from '@/features/daily/themes';
+import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import type { DailyProof } from '@/types';
 
 /**
@@ -164,6 +165,7 @@ function Sheet({ date, openProofId, source, initialTab }: {
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>
           )}
           <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
+          {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
 
           {sheet.twist && isLive && (
             <View style={styles.twist}>

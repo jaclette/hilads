@@ -331,6 +331,20 @@ function resolveRoute(data: NotifData): string | null {
       // My proof entered today's top 10 → the sheet's Top 10 tab.
       return '/daily/today?source=push&tab=top10';
 
+    case 'daily_proposal_approved':
+      // My challenge proposal was approved (V2-05) → its status.
+      return '/daily/proposals';
+
+    case 'daily_proposal_day':
+      // Today is my challenge → today's sheet.
+      return '/daily/today?source=push';
+
+    case 'daily_proposal_result': {
+      // How many completed my challenge → that day's sheet.
+      const day = (data as { date?: string }).date;
+      return day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? `/daily/${day}?source=push` : '/daily/today?source=push';
+    }
+
     case 'daily_twist_picked':
       // My Local Twist proposal was picked → its status screen.
       return '/daily/twist';

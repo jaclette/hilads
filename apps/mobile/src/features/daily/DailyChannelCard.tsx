@@ -31,6 +31,8 @@ type ChallengePayload = {
   yesterdayTop3?: TopProof[];
   /** The founder's translations by locale (English is text/context/twist). */
   translations?: Record<string, { text?: string; context?: string; twist?: string }>;
+  /** The user whose proposal became this challenge (V2-05). */
+  proposedBy?: { user: DailyPerson; city: { id: number; name: string | null } | null } | null;
 };
 type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
@@ -84,6 +86,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
           <Text style={styles.challengeText}>{tr?.text ?? p.text}</Text>
           {!!p.context && <Text style={styles.context} numberOfLines={3}>{tr?.context ?? p.context}</Text>}
           <OriginalToggle translated={translated} showingOriginal={showOriginal} onPress={toggleOriginal} />
+          {p.proposedBy && <ProposedBy credit={p.proposedBy} />}
           {isLive && p.twist && (
             <View style={styles.twist}>
               <Text style={styles.twistLabel}>📍 {t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
@@ -115,6 +118,28 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
   }
 
   return <ProofCard message={message} reactions={reactions} time={time} longPress={longPress} />;
+}
+
+/** "Proposed by <name> · <city>" (V2-05); the name opens the author's profile. */
+export function ProposedBy({ credit }: { credit: NonNullable<ChallengePayload['proposedBy']> }) {
+  const styles = useThemedStyles(makeStyles);
+  const { t } = useTranslation('daily');
+  const router = useRouter();
+  const { account } = useApp();
+  const name = credit.user.displayName || credit.user.username || '';
+  const open = () => {
+    if (!canAccessProfile(account)) { router.push('/auth-gate?reason=view_profile' as never); return; }
+    router.push(`/user/${credit.user.id}` as never);
+  };
+  return (
+    <TouchableOpacity onPress={open} hitSlop={6} accessibilityRole="button" style={styles.proposedBy}>
+      <Text style={styles.proposedByText} numberOfLines={1}>
+        💡 {credit.city?.name
+          ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
+          : t('propose.proposedBy', { name })}
+      </Text>
+    </TouchableOpacity>
+  );
 }
 
 function ProofCard({ message, reactions, time, longPress }: {
@@ -213,6 +238,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   time:          { fontSize: 11, color: c.muted, marginTop: 4, alignSelf: 'flex-start' },
   voteRow:       { flexDirection: 'row', alignItems: 'center', gap: 10 },
   badge:         { flexShrink: 1, fontSize: 12, fontWeight: '700', color: c.green },
+  proposedBy:    { alignSelf: 'flex-start' },
+  proposedByText:{ fontSize: 12, fontWeight: '700', color: c.accentText },
   top3:          { borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8, gap: 6 },
   top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },

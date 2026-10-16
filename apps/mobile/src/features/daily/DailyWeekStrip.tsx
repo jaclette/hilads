@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
+import { useApp } from '@/context/AppContext';
 import { useDailyCalendar } from '@/hooks/useDaily';
 import { THEME_EMOJI, addDays, ymd } from './themes';
 import type { DailyCalendar } from '@/types';
@@ -12,13 +13,15 @@ type Day = DailyCalendar['days'][number];
 
 /**
  * The week strip of the CHALLENGES screen (SPEC 8.4): 5 past days (done or
- * not), today highlighted, tomorrow with only its theme. A past day opens its
- * sheet; "Calendar" opens the month calendar.
+ * not), today highlighted, tomorrow with only its theme, then "Propose a
+ * challenge" (V2-06). A past day opens its sheet; "Calendar" opens the month
+ * calendar.
  */
 export function DailyWeekStrip() {
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
+  const { account } = useApp();
   // Fetch a little around the phone's date; the server's `today` picks the window.
   const now = ymd(new Date());
   const cal = useDailyCalendar(addDays(now, -7), addDays(now, 2));
@@ -76,7 +79,16 @@ export function DailyWeekStrip() {
             </TouchableOpacity>
           );
         })}
-        {/* V2-06: the "Propose a challenge" slot goes here, at the end of the strip. */}
+        <TouchableOpacity
+          style={[styles.cell, styles.cellPropose]}
+          onPress={() => router.push((account ? '/daily/propose?source=week_strip'
+            : '/auth-gate?reason=create_challenge&returnTo=%2Fdaily%2Fpropose%3Fsource%3Dweek_strip') as never)}
+          accessibilityRole="button"
+          accessibilityLabel={t('propose.cta')}
+        >
+          <Text style={styles.emoji}>💡</Text>
+          <Text style={styles.proposeText} numberOfLines={2} adjustsFontSizeToFit>{t('propose.short')}</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -92,6 +104,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   cellToday:    { borderColor: c.accent, borderWidth: 2, backgroundColor: c.accentDim },
   cellTomorrow: { borderStyle: 'dashed' },
   cellNone:     { opacity: 0.45 },
+  cellPropose:  { justifyContent: 'center', borderColor: c.accent, borderStyle: 'dashed' },
+  proposeText:  { fontSize: 11, fontWeight: '800', color: c.accentText, textAlign: 'center' },
   weekday:      { fontSize: 12, fontWeight: '700', color: c.muted, textTransform: 'capitalize' },
   weekdayToday: { color: c.accentText, fontWeight: '800' },
   emoji:        { fontSize: 18 },

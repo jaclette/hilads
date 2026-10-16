@@ -771,6 +771,23 @@ export interface DailyChallenge {
   endsAt:   number;
   isActive: boolean;
   theme?:   DailyTheme | null; // one of the 7 weekly themes (English name)
+  /** The user whose proposal became this challenge (V2-05), with their city then. */
+  proposedBy?: { user: DailyPerson; city: { id: number; name: string | null } | null } | null;
+}
+
+/** One of my proposals (GET /daily/proposals/mine): a challenge or tomorrow's Local Twist. */
+export interface DailyProposal {
+  id:              string;
+  type:            'challenge' | 'twist';
+  text:            string;
+  theme:           DailyTheme | null;
+  why:             string | null;
+  twistText:       string | null;
+  city:            { id: number; name: string | null } | null;
+  status:          'pending' | 'scheduled' | 'published' | 'reserve' | 'rejected' | 'approved' | 'picked' | 'not_picked';
+  date:            string | null;
+  rejectionReason: string | null;
+  createdAt:       number | null;
 }
 
 /** A weekly theme (V2-03). Names are English content. */
