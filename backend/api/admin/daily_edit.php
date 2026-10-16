@@ -29,10 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Not daily_action: on a refusal the form re-renders with what was typed.
         try {
             $row = $isReserve
-                ? DailyAdminService::createReserve((string) ($p['text'] ?? ''), (string) ($p['context'] ?? ''))
+                ? DailyAdminService::createReserve((string) ($p['text'] ?? ''), (string) ($p['context'] ?? ''), (string) ($p['theme'] ?? ''))
                 : DailyAdminService::createChallenge([
                     'text' => $p['text'] ?? '', 'context' => $p['context'] ?? '',
                     'date' => $p['date'] ?? '', 'status' => $p['status'] ?? 'draft',
+                    'theme' => $p['theme'] ?? '',
                 ]);
             flash_set('success', 'Saved.');
             admin_redirect('/admin/daily/' . $row['id']);
@@ -55,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
             if (!$isReserve && !$isPublished && $newDate !== '' && $newDate !== $challenge['challenge_date']) {
                 DailyAdminService::moveChallenge($challenge['id'], $newDate);
             }
-            $fields = ['text' => $p['text'] ?? '', 'context' => $p['context'] ?? ''];
+            $fields = ['text' => $p['text'] ?? '', 'context' => $p['context'] ?? '', 'theme' => $p['theme'] ?? ''];
             if (!$isReserve && !$isPublished) {
                 $fields['status'] = $p['status'] ?? 'draft';
             }
@@ -136,6 +137,7 @@ $text    = $isNew ? (string) ($posted['text'] ?? '') : daily_text($challenge['te
 $context = $isNew ? (string) ($posted['context'] ?? '') : daily_text($challenge['context_i18n']);
 $date    = $isNew ? (string) ($posted['date'] ?? $_GET['date'] ?? '') : (string) ($challenge['challenge_date'] ?? '');
 $status  = $isNew ? (string) ($posted['status'] ?? 'scheduled') : $challenge['status'];
+$theme   = $isNew ? (DailyThemes::normalize($posted['theme'] ?? null)) : ($challenge['theme'] ?? null);
 $lastDuplicate = $_SESSION['daily_last_duplicate'] ?? null;
 unset($_SESSION['daily_last_duplicate']);
 
@@ -183,6 +185,11 @@ daily_styles();
                     <p class="daily-muted" style="margin-bottom:12px">Reserve: no date. The drop publishes the oldest unused reserve on a day with nothing scheduled.
                         <?= !$isNew && $challenge['challenge_date'] ? '<br>Used on ' . dh($challenge['challenge_date']) . '.' : '' ?></p>
                 <?php endif; ?>
+                <div class="form-group">
+                    <label>Theme</label>
+                    <?= daily_theme_select($theme, $date, !$isReserve && !$isPublished) ?>
+                    <div class="hint"><?= $isReserve ? 'Weekday default: the theme of the day it is used.' : 'Defaults to the theme of the date\'s weekday.' ?></div>
+                </div>
                 <div class="form-group">
                     <label>Challenge (English)</label>
                     <textarea name="text" id="dc-text" rows="3" required><?= dh($text) ?></textarea>
@@ -397,6 +404,18 @@ daily_styles();
     }
     [text, ctx, twist].forEach(function (el) { if (el) el.addEventListener('input', render); });
     render();
+
+    // Theme follows the date's weekday until picked by hand.
+    var theme = document.getElementById('dc-theme'), date = document.querySelector('input[name="date"]');
+    if (theme && date && theme.dataset.followDate) {
+        theme.addEventListener('change', function () { delete theme.dataset.followDate; });
+        date.addEventListener('change', function () {
+            if (!theme.dataset.followDate || !date.value) return;
+            var dow = new Date(date.value + 'T00:00:00Z').getUTCDay() || 7;
+            var opt = theme.querySelector('option[data-weekday="' + dow + '"]');
+            if (opt) theme.value = opt.value;
+        });
+    }
 })();
 </script>
 <?php admin_foot();

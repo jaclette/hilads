@@ -144,6 +144,20 @@ final class DailyPoints
         return $counts;
     }
 
+    /**
+     * The Local Pass award (V2-03), once per user (one pass per city, the
+     * challenge whose proof completed it). Not proof-linked: deleting a proof
+     * never takes it back.
+     */
+    public static function awardLocalPass(string $userId, string $challengeId, string $cityId): bool
+    {
+        $awarded = self::insert($userId, $challengeId, 'local_pass', self::rule('local_pass'), $cityId, null, null);
+        if ($awarded) {
+            MonthlyRankService::recalcAfterScoreChange($userId);
+        }
+        return $awarded;
+    }
+
     /** One award row. True when it was inserted now (false: already awarded, admin, or 0 points). */
     private static function insert(string $userId, string $challengeId, string $kind, int $points,
                                    ?string $cityId, ?string $proofId, ?string $twistId): bool

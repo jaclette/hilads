@@ -49,7 +49,7 @@ daily_styles();
 
     <div class="table-wrapper">
         <table>
-            <thead><tr><th>Date</th><th>Live (Saigon)</th><th>State</th><th>Challenge</th><th>Translations</th><th>Twists</th><th>Drop</th><th></th></tr></thead>
+            <thead><tr><th>Date</th><th>Live (Saigon)</th><th>State</th><th>Theme</th><th>Challenge</th><th>Translations</th><th>Twists</th><th>Drop</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($days as $day):
                 $c       = $day['challenge'];
@@ -62,6 +62,7 @@ daily_styles();
                     <td class="td-mono"><?= dh($day['date']) ?><?= $isToday ? ' <span class="badge badge-live">today</span>' : '' ?></td>
                     <td class="daily-muted"><?= dh(daily_window_label($day['date'])) ?></td>
                     <td><?= daily_state_badge($day['state']) ?></td>
+                    <td class="daily-muted"><?= dh(daily_theme_label($c['theme'] ?? null, $day['date'])) ?><?= $c === null ? ' <span style="opacity:.6">(default)</span>' : '' ?></td>
                     <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?></td>
                     <td><?php if ($c):
                             $tr = DailyI18n::translated(json_decode((string) $c['text_i18n'], true) ?: []); ?>

@@ -14,7 +14,7 @@ final class DailyChallengeRepository
     {
         return Cache::remember('daily_challenge_v1_' . $date, 60, function () use ($date): ?array {
             $stmt = Database::pdo()->prepare("
-                SELECT id, challenge_date, text_i18n, context_i18n, published_at
+                SELECT id, challenge_date, text_i18n, context_i18n, theme, published_at
                 FROM daily_challenges
                 WHERE challenge_date = ? AND status = 'published'
             ");
@@ -187,6 +187,10 @@ final class DailyChallengeRepository
             'myProof'     => null,
             'myVotes'     => null,
             'streak'      => $viewer !== null ? DailyResults::currentStreak($viewer['id']) : null,
+            // Tomorrow's theme as a teaser; never its text.
+            'tomorrow'    => self::tomorrow(DailyClock::currentDate($now)),
+            // My Local Pass progress in this city (signed in, with a city).
+            'localPass'   => $viewer !== null && $cityId !== null ? DailyLocalPass::progressIn($viewer['id'], $cityId) : null,
         ];
         if ($challenge === null) {
             return $out;
@@ -205,13 +209,27 @@ final class DailyChallengeRepository
         return $out;
     }
 
+    /** Tomorrow's date and theme (the scheduled challenge's, else its weekday's). Cached 60 s. */
+    public static function tomorrow(string $today): array
+    {
+        $date = (new DateTimeImmutable($today, new DateTimeZone('UTC')))->modify('+1 day')->format('Y-m-d');
+        $row  = Cache::remember('daily_tomorrow_theme_v1_' . $date, 60, function () use ($date): array {
+            $stmt = Database::pdo()->prepare("
+                SELECT theme FROM daily_challenges WHERE challenge_date = ? AND status IN ('scheduled', 'published')
+            ");
+            $stmt->execute([$date]);
+            return ['theme' => $stmt->fetchColumn() ?: null];
+        });
+        return ['date' => $date, 'theme' => DailyThemes::format($row['theme'] ?? null, $date)];
+    }
+
     /**
      * Past challenges (before today's), newest first, as informative cards for
      * a city. A dead city (or none) gets the World selection: best proof from
      * anywhere, no twist. Best proof = stored result rank 1 once results exist
-     * (phase 2), else most votes, then latest approval.
+     * (phase 2), else most votes, then latest approval. $theme filters by theme key.
      */
-    public static function archive(?string $cityId, ?string $beforeDate, int $limit): array
+    public static function archive(?string $cityId, ?string $beforeDate, int $limit, ?string $theme = null): array
     {
         $isLive = DailyRules::isLive($cityId);
         $scope  = $isLive ? $cityId : 'world';
@@ -225,7 +243,7 @@ final class DailyChallengeRepository
         // In World scope the proof filters below compare city_id to NULL,
         // which the "? IS NULL OR ..." guard turns into "every city".
         $stmt = Database::pdo()->prepare("
-            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n,
+            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme,
                    best.id AS best_proof_id,
                    tw.text AS twist_text, tw.text_i18n AS twist_i18n, tw.author_credit AS twist_credit,
                    tu.id AS twist_user_id, tu.username AS twist_username,
@@ -267,6 +285,7 @@ final class DailyChallengeRepository
                 WHERE p.challenge_id = dc.id AND p.moderation_status = 'approved'
             ) stats ON true
             WHERE dc.status = 'published' AND dc.challenge_date < :before
+              AND (CAST(:theme1 AS TEXT) IS NULL OR dc.theme = :theme2)
             ORDER BY dc.challenge_date DESC
             LIMIT :lim
         ");
@@ -276,6 +295,7 @@ final class DailyChallengeRepository
             'city4' => $cityArg, 'city5' => $cityArg, 'city6' => $cityArg ?? '',
             'city7' => $cityArg, 'city8' => $cityArg,
             'before' => $before,
+            'theme1' => $theme, 'theme2' => $theme,
             'lim'    => $limit,
         ]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -312,6 +332,98 @@ final class DailyChallengeRepository
     }
 
     /**
+     * City guide (V2-03): one entry per theme, in weekly order, over past
+     * published challenges - challengesDone (with at least one approved proof
+     * in scope), proofs, bestPhotos (top 3 by votes), priceRange (most common
+     * currency) and pinnedPlaces. A dead city (or none) gets the World
+     * selection, like the archive. The shared part is cached 5 minutes; blocked
+     * authors are filtered per viewer.
+     */
+    public static function guide(?string $cityId, array $blockedUserIds = []): array
+    {
+        $isLive = DailyRules::isLive($cityId);
+        $scope  = $isLive ? (string) $cityId : null;
+        $today  = DailyClock::currentDate();
+        $data   = Cache::remember('daily_guide_v1_' . ($scope ?? 'world') . '_' . $today, 300, function () use ($scope, $today): array {
+            $pdo   = Database::pdo();
+            $from  = "
+                FROM daily_proofs p
+                JOIN daily_challenges dc ON dc.id = p.challenge_id
+                WHERE dc.status = 'published' AND dc.challenge_date < :today AND dc.theme IS NOT NULL
+                  AND p.moderation_status = 'approved'
+                  AND (CAST(:city1 AS TEXT) IS NULL OR p.city_id = :city2)
+            ";
+            $args  = ['today' => $today, 'city1' => $scope, 'city2' => $scope];
+
+            $stmt = $pdo->prepare("
+                SELECT dc.theme, count(DISTINCT dc.id) AS challenges, count(*) AS proofs,
+                       count(*) FILTER (WHERE p.place_lat IS NOT NULL) AS pinned
+                {$from}
+                GROUP BY dc.theme
+            ");
+            $stmt->execute($args);
+            $agg = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $agg[$r['theme']] = $r;
+            }
+
+            $stmt = $pdo->prepare("
+                SELECT DISTINCT ON (theme) theme, currency, min_amount, max_amount
+                FROM (
+                    SELECT dc.theme, p.price_currency AS currency, min(p.price_amount) AS min_amount,
+                           max(p.price_amount) AS max_amount, count(*) AS n
+                    {$from} AND p.price_amount IS NOT NULL
+                    GROUP BY dc.theme, p.price_currency
+                ) x
+                ORDER BY theme, n DESC, currency
+            ");
+            $stmt->execute($args);
+            $prices = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $prices[$r['theme']] = ['currency' => $r['currency'], 'min' => (float) $r['min_amount'], 'max' => (float) $r['max_amount']];
+            }
+
+            // A few extra per theme, so blocked authors can be dropped per viewer.
+            $stmt = $pdo->prepare("
+                SELECT theme, id, user_id, photo_url, vote_count, challenge_date FROM (
+                    SELECT dc.theme, p.id, p.user_id, p.photo_url, p.vote_count, dc.challenge_date,
+                           row_number() OVER (PARTITION BY dc.theme ORDER BY p.vote_count DESC, p.approved_at DESC) AS rn
+                    {$from}
+                ) x
+                WHERE rn <= 6
+                ORDER BY theme, rn
+            ");
+            $stmt->execute($args);
+            $photos = [];
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $photos[$r['theme']][] = $r;
+            }
+            return ['agg' => $agg, 'prices' => $prices, 'photos' => $photos];
+        }) ?? ['agg' => [], 'prices' => [], 'photos' => []];
+
+        $blocked = array_flip($blockedUserIds);
+        $themes  = [];
+        foreach (DailyThemes::keys() as $key) {
+            $a = $data['agg'][$key] ?? null;
+            $best = array_values(array_filter($data['photos'][$key] ?? [], static fn(array $r): bool => !isset($blocked[$r['user_id']])));
+            $themes[] = [
+                'theme'          => DailyThemes::format($key, null),
+                'challengesDone' => (int) ($a['challenges'] ?? 0),
+                'proofs'         => (int) ($a['proofs'] ?? 0),
+                'bestPhotos'     => array_map(static fn(array $r): array => [
+                    'proofId'   => $r['id'],
+                    'date'      => $r['challenge_date'],
+                    'thumbUrl'  => R2Uploader::thumbProxy($r['photo_url']),
+                    'voteCount' => (int) $r['vote_count'],
+                ], array_slice($best, 0, 3)),
+                'priceRange'     => $data['prices'][$key] ?? null,
+                'pinnedPlaces'   => (int) ($a['pinned'] ?? 0),
+            ];
+        }
+        return ['scope' => $isLive ? 'city' : 'world', 'themes' => $themes];
+    }
+
+    /**
      * Challenge object in $locale (default: the request's, DailyI18n::current).
      * text/context are translated when the founder wrote a translation;
      * original {text, context} and lang are then set (else null).
@@ -338,6 +450,7 @@ final class DailyChallengeRepository
             'startsAt' => $start->getTimestamp(),
             'endsAt'   => $end->getTimestamp(),
             'isActive' => DailyClock::isActive($date, $now),
+            'theme'    => DailyThemes::format($row['theme'] ?? null, $date),
         ];
     }
 

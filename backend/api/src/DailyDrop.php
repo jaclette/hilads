@@ -196,8 +196,9 @@ final class DailyDrop
             return [$row, $source, ['alreadyPublished' => true]];
         }
         if ($row && $row['status'] === 'scheduled') {
-            $pdo->prepare("UPDATE daily_challenges SET status = 'published', published_at = now(), updated_at = now() WHERE id = ?")
-                ->execute([$row['id']]);
+            $pdo->prepare("UPDATE daily_challenges SET status = 'published', published_at = now(), updated_at = now(),
+                                                       theme = COALESCE(theme, ?) WHERE id = ?")
+                ->execute([DailyThemes::forDate($date), $row['id']]);
             $find->execute([$date]);
             return [$find->fetch(PDO::FETCH_ASSOC), 'scheduled', []];
         }
@@ -210,7 +211,8 @@ final class DailyDrop
 
         $stmt = $pdo->prepare("
             UPDATE daily_challenges
-            SET challenge_date = ?, status = 'published', published_at = now(), updated_at = now(), updated_by = 'drop'
+            SET challenge_date = ?, status = 'published', published_at = now(), updated_at = now(), updated_by = 'drop',
+                theme = COALESCE(theme, ?)
             WHERE id = (
                 SELECT id FROM daily_challenges
                 WHERE is_reserve AND challenge_date IS NULL AND status = 'scheduled'
@@ -220,7 +222,7 @@ final class DailyDrop
             )
             RETURNING *
         ");
-        $stmt->execute([$date]);
+        $stmt->execute([$date, DailyThemes::forDate($date)]);
         $reserve = $stmt->fetch(PDO::FETCH_ASSOC);
         return $reserve ? [$reserve, 'reserve', $notes] : [null, 'none', $notes];
     }

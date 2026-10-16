@@ -273,7 +273,10 @@ final class DailyResults
         return self::countStreaks($dates, $done, DailyClock::currentDate())[0];
     }
 
-    /** Profile stats: currentStreak, bestStreak, completed, bestProofs (up to 6). */
+    /**
+     * Profile stats: currentStreak, bestStreak, completed, bestProofs (up to
+     * 6), localPasses and localPassProgress (V2-03).
+     */
     public static function userStats(string $userId, ?string $viewerId): array
     {
         [$dates, $done] = self::history($userId);
@@ -296,6 +299,7 @@ final class DailyResults
             $stmt->fetchAll(PDO::FETCH_COLUMN),
         )));
 
+        $passes = DailyLocalPass::forUser($userId);
         return [
             'currentStreak' => $current,
             'bestStreak'    => $best,
@@ -304,6 +308,8 @@ final class DailyResults
                 static fn(array $r): array => DailyProofRepository::format($r, $viewerId),
                 DailyVotes::annotate($rows, $viewerId),
             ),
+            'localPasses'       => $passes['passes'],
+            'localPassProgress' => $passes['progress'],
         ];
     }
 }

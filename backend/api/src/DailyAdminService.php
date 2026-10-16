@@ -24,8 +24,9 @@ final class DailyAdminService
 
     /**
      * $in: text (string, required), context (string|null), date (Y-m-d|null),
-     * status ('draft'|'scheduled'). A dated challenge must be for a future
-     * drop and its day must be free.
+     * status ('draft'|'scheduled'), theme (key or name; default: the date's
+     * weekday theme). A dated challenge must be for a future drop and its day
+     * must be free.
      */
     public static function createChallenge(array $in): array
     {
@@ -33,6 +34,7 @@ final class DailyAdminService
         $context = self::cleanOptional($in['context'] ?? null, self::CONTEXT_MAX, 'Context');
         $date    = self::optionalDate($in['date'] ?? null);
         $status  = self::editableStatus($in['status'] ?? 'draft');
+        $theme   = self::theme($in['theme'] ?? null) ?? ($date !== null ? DailyThemes::forDate($date) : null);
         if ($status === 'scheduled' && $date === null) {
             throw new InvalidArgumentException('A scheduled challenge needs a date.');
         }
@@ -43,9 +45,9 @@ final class DailyAdminService
 
         $id = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
-            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        ")->execute([$id, $date, self::i18n($text), self::i18n($context), $status, self::actorName(), self::actorName()]);
+            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme, created_by, updated_by)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ")->execute([$id, $date, self::i18n($text), self::i18n($context), $status, $theme, self::actorName(), self::actorName()]);
 
         $row = self::find($id);
         self::audit('daily_challenge.create', 'daily_challenge', $id, null, $row);
@@ -53,8 +55,9 @@ final class DailyAdminService
     }
 
     /**
-     * Edit text, context and (unless published) status. Editing a published
-     * challenge's text is allowed and logged - it is live everywhere.
+     * Edit text, context, theme and (unless published) status. Editing a
+     * published challenge's text is allowed and logged - it is live everywhere.
+     * An empty theme goes back to the date's weekday theme.
      * Dates change through moveChallenge().
      */
     public static function updateChallenge(string $id, array $in): array
@@ -76,6 +79,11 @@ final class DailyAdminService
                 $sets[] = "context_i18n = context_i18n || jsonb_build_object('en', ?::text)";
                 $args[] = $ctx;
             }
+        }
+        if (array_key_exists('theme', $in)) {
+            $sets[] = 'theme = ?';
+            $args[] = self::theme($in['theme'])
+                ?? ($before['challenge_date'] !== null ? DailyThemes::forDate((string) $before['challenge_date']) : null);
         }
         if (array_key_exists('status', $in) && $before['status'] !== 'published') {
             $status = self::editableStatus($in['status']);
@@ -156,9 +164,10 @@ final class DailyAdminService
         self::assertDateFree($date, $id);
 
         Database::pdo()->prepare("
-            UPDATE daily_challenges SET challenge_date = ?, status = 'scheduled', updated_at = now(), updated_by = ?
+            UPDATE daily_challenges SET challenge_date = ?, status = 'scheduled', theme = COALESCE(theme, ?),
+                                        updated_at = now(), updated_by = ?
             WHERE id = ?
-        ")->execute([$date, self::actorName(), $id]);
+        ")->execute([$date, DailyThemes::forDate($date), self::actorName(), $id]);
 
         $after = self::find($id);
         self::audit('daily_challenge.schedule', 'daily_challenge', $id, $before, $after);
@@ -180,8 +189,9 @@ final class DailyAdminService
         self::assertDateFree($date, $id);
 
         Database::pdo()->prepare("
-            UPDATE daily_challenges SET challenge_date = ?, updated_at = now(), updated_by = ? WHERE id = ?
-        ")->execute([$date, self::actorName(), $id]);
+            UPDATE daily_challenges SET challenge_date = ?, theme = COALESCE(theme, ?), updated_at = now(), updated_by = ?
+            WHERE id = ?
+        ")->execute([$date, DailyThemes::forDate($date), self::actorName(), $id]);
 
         $after = self::find($id);
         self::audit('daily_challenge.move', 'daily_challenge', $id, $before, $after);
@@ -206,8 +216,8 @@ final class DailyAdminService
         $pdo->beginTransaction();
         try {
             $pdo->prepare("
-                INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
-                SELECT ?, ?, text_i18n, context_i18n, 'draft', ?, ? FROM daily_challenges WHERE id = ?
+                INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme, created_by, updated_by)
+                SELECT ?, ?, text_i18n, context_i18n, 'draft', theme, ?, ? FROM daily_challenges WHERE id = ?
             ")->execute([$newId, $date, self::actorName(), self::actorName(), $id]);
             $pdo->prepare("
                 INSERT INTO daily_twists (id, challenge_id, city_id, text, text_i18n, author_user_id, author_credit,
@@ -240,16 +250,20 @@ final class DailyAdminService
 
     // ── Reserve ──────────────────────────────────────────────────────────────
 
-    /** An evergreen challenge without a date, ready for a day with nothing scheduled. */
-    public static function createReserve(string $text, ?string $context = null): array
+    /**
+     * An evergreen challenge without a date, ready for a day with nothing
+     * scheduled. Without a theme it takes the theme of the day it is used.
+     */
+    public static function createReserve(string $text, ?string $context = null, ?string $theme = null): array
     {
         $text    = self::cleanText($text, self::TEXT_MAX, 'Text');
         $context = self::cleanOptional($context, self::CONTEXT_MAX, 'Context');
+        $theme   = self::theme($theme);
         $id      = bin2hex(random_bytes(8));
         Database::pdo()->prepare("
-            INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, created_by, updated_by)
-            VALUES (?, true, ?, ?, 'scheduled', ?, ?)
-        ")->execute([$id, self::i18n($text), self::i18n($context), self::actorName(), self::actorName()]);
+            INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, theme, created_by, updated_by)
+            VALUES (?, true, ?, ?, 'scheduled', ?, ?, ?)
+        ")->execute([$id, self::i18n($text), self::i18n($context), $theme, self::actorName(), self::actorName()]);
 
         $row = self::find($id);
         self::audit('daily_challenge.create_reserve', 'daily_challenge', $id, null, $row);
@@ -260,7 +274,7 @@ final class DailyAdminService
     public static function listReserve(): array
     {
         return Database::pdo()->query("
-            SELECT id, challenge_date, text_i18n, context_i18n, status, created_at,
+            SELECT id, challenge_date, text_i18n, context_i18n, status, theme, created_at,
                    challenge_date IS NOT NULL AS used
             FROM daily_challenges
             WHERE is_reserve
@@ -481,6 +495,11 @@ final class DailyAdminService
             $reserve = ($c['reserve'] ?? false) === true;
             $text    = is_array($c['text'] ?? null) ? trim((string) ($c['text']['en'] ?? '')) : '';
             $context = is_array($c['context'] ?? null) ? trim((string) ($c['context']['en'] ?? '')) : '';
+            $theme   = DailyThemes::normalize($c['theme'] ?? null);
+            if (($c['theme'] ?? null) !== null && $theme === null) {
+                $errors[] = "{$label}: unknown theme \"" . (is_scalar($c['theme']) ? $c['theme'] : '') . "\" (one of: "
+                          . implode(', ', array_map([DailyThemes::class, 'name'], DailyThemes::keys())) . ").";
+            }
 
             if ($text === '') {
                 $errors[] = "{$label}: text.en is required.";
@@ -552,6 +571,9 @@ final class DailyAdminService
                 'reserve' => $reserve,
                 'text'    => $text,
                 'context' => $context === '' ? null : $context,
+                // Missing: the date's weekday theme (a reserve gets one when used).
+                'theme'   => $theme ?? (!$reserve && is_string($date) && DailyClock::isValidDate($date) ? DailyThemes::forDate($date) : null),
+                'themeGiven' => $theme !== null,
                 'twists'  => $twists,
                 'textTranslations'    => $textTr,
                 'contextTranslations' => $ctxTr,
@@ -591,11 +613,11 @@ final class DailyAdminService
                     }
                     $id = bin2hex(random_bytes(8));
                     $pdo->prepare("
-                        INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, created_by, updated_by)
-                        VALUES (?, true, ?, ?, 'scheduled', ?, ?)
+                        INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, theme, created_by, updated_by)
+                        VALUES (?, true, ?, ?, 'scheduled', ?, ?, ?)
                     ")->execute([$id, self::importI18n($e['text'], $e['textTranslations']),
-                                 self::importI18n($e['context'], $e['contextTranslations']), self::actorName(), self::actorName()]);
-                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'missingLocales' => $e['missingLocales']];
+                                 self::importI18n($e['context'], $e['contextTranslations']), $e['theme'], self::actorName(), self::actorName()]);
+                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'theme' => $e['theme'], 'missingLocales' => $e['missingLocales']];
                 } else {
                     if ($e['date'] <= $today) {
                         $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
@@ -615,22 +637,25 @@ final class DailyAdminService
                             UPDATE daily_challenges
                             SET text_i18n = CASE WHEN ? THEN ?::jsonb ELSE text_i18n || jsonb_build_object('en', ?::text) END,
                                 context_i18n = CASE WHEN ? THEN ?::jsonb ELSE (context_i18n - 'en') || ?::jsonb END,
-                                status = 'scheduled', updated_at = now(), updated_by = ?
+                                status = 'scheduled',
+                                theme = CASE WHEN ? THEN ? ELSE COALESCE(theme, ?) END,
+                                updated_at = now(), updated_by = ?
                             WHERE id = ?
                         ")->execute([
                             $e['textTranslations'] !== [] ? 'true' : 'false', self::importI18n($e['text'], $e['textTranslations']), $e['text'],
                             $e['contextTranslations'] !== [] ? 'true' : 'false', self::importI18n($e['context'], $e['contextTranslations']), self::i18n($e['context']),
+                            $e['themeGiven'] ? 'true' : 'false', $e['theme'], $e['theme'],
                             self::actorName(), $id,
                         ]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date'], 'missingLocales' => $e['missingLocales']];
+                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'missingLocales' => $e['missingLocales']];
                     } else {
                         $id = bin2hex(random_bytes(8));
                         $pdo->prepare("
-                            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
-                            VALUES (?, ?, ?, ?, 'scheduled', ?, ?)
+                            INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, theme, created_by, updated_by)
+                            VALUES (?, ?, ?, ?, 'scheduled', ?, ?, ?)
                         ")->execute([$id, $e['date'], self::importI18n($e['text'], $e['textTranslations']),
-                                     self::importI18n($e['context'], $e['contextTranslations']), self::actorName(), self::actorName()]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date'], 'missingLocales' => $e['missingLocales']];
+                                     self::importI18n($e['context'], $e['contextTranslations']), $e['theme'], self::actorName(), self::actorName()]);
+                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date'], 'theme' => $e['theme'], 'missingLocales' => $e['missingLocales']];
                     }
                 }
 
@@ -845,6 +870,19 @@ final class DailyAdminService
     private static function i18n(?string $en): string
     {
         return json_encode($en === null ? new stdClass() : ['en' => $en], JSON_UNESCAPED_UNICODE);
+    }
+
+    /** A theme key from a form or import value; null when empty. Throws on an unknown theme. */
+    private static function theme(mixed $v): ?string
+    {
+        if ($v === null || (is_string($v) && trim($v) === '')) {
+            return null;
+        }
+        $key = DailyThemes::normalize($v);
+        if ($key === null) {
+            throw new InvalidArgumentException('Unknown theme.');
+        }
+        return $key;
     }
 
     private static function cleanText(mixed $v, int $max, string $field): string

@@ -42,6 +42,7 @@ require_once __DIR__ . '/../src/DailyProofRepository.php';
 require_once __DIR__ . '/../src/ModerationService.php';
 require_once __DIR__ . '/../src/DailyAdminService.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
+require_once __DIR__ . '/../src/DailyThemes.php';
 
 $raw = @file_get_contents($files[0]);
 if ($raw === false) {

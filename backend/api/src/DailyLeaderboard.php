@@ -191,7 +191,7 @@ final class DailyLeaderboard
      */
     private static function snapshot(string $challengeId): array
     {
-        return Cache::remember('daily_leaderboard_v1_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
+        return Cache::remember('daily_leaderboard_v2_' . $challengeId, self::CACHE_TTL, function () use ($challengeId): array {
             $pdo  = Database::pdo();
             $stmt = $pdo->prepare("SELECT count(*) FROM daily_proofs WHERE challenge_id = ? AND moderation_status = 'approved'");
             $stmt->execute([$challengeId]);
@@ -199,10 +199,12 @@ final class DailyLeaderboard
 
             $stmt = $pdo->prepare("
                 SELECT p.id, p.user_id, p.city_id, p.vote_count, p.local_vote_count, p.approved_at, p.is_local,
-                       p.photo_url, u.username, u.display_name, u.profile_photo_url, ch.name AS city_name
+                       p.photo_url, u.username, u.display_name, u.profile_photo_url, ch.name AS city_name,
+                       (lp.user_id IS NOT NULL) AS author_local_pass
                 FROM daily_proofs p
                 JOIN users u          ON u.id  = p.user_id
                 LEFT JOIN channels ch ON ch.id = p.city_id
+                LEFT JOIN daily_local_passes lp ON lp.user_id = p.user_id AND lp.city_id = p.city_id
                 WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.vote_count >= 1
             ");
             $stmt->execute([$challengeId]);
@@ -222,6 +224,7 @@ final class DailyLeaderboard
                 'username'    => $r['username'],
                 'displayName' => $r['display_name'],
                 'photoUrl'    => R2Uploader::thumbProxy($r['profile_photo_url']),
+                'localPass'   => DailyProofRepository::bool($r['author_local_pass'] ?? false),
             ],
             'city'      => $r['city_id'] !== null
                 ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name']]

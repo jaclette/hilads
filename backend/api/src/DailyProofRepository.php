@@ -19,7 +19,8 @@ final class DailyProofRepository
                dc.challenge_date,
                u.username, u.display_name, u.profile_photo_url,
                ch.name AS city_name,
-               wr.rank AS world_rank, cr.rank AS city_rank
+               wr.rank AS world_rank, cr.rank AS city_rank,
+               (lp.user_id IS NOT NULL) AS author_local_pass
         FROM daily_proofs p
         JOIN daily_challenges dc ON dc.id = p.challenge_id
         JOIN users u             ON u.id  = p.user_id
@@ -28,6 +29,8 @@ final class DailyProofRepository
                ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
         LEFT JOIN daily_results cr
                ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
+        LEFT JOIN daily_local_passes lp
+               ON lp.user_id = p.user_id AND lp.city_id = p.city_id
     ";
 
     /**
@@ -260,6 +263,8 @@ final class DailyProofRepository
                 'username'    => $row['username'],
                 'displayName' => $row['display_name'],
                 'photoUrl'    => R2Uploader::thumbProxy($row['profile_photo_url']),
+                // Holds the Local Pass of the proof's city (V2-03).
+                'localPass'   => self::bool($row['author_local_pass'] ?? false),
             ],
             'city'             => $cityId !== null ? ['id' => $cityId, 'name' => $row['city_name']] : null,
             'isLocal'          => self::bool($row['is_local']),

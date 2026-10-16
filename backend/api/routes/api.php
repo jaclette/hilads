@@ -3780,6 +3780,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     // Small proxied avatar thumbnail so the native app can show
                     // the sender's photo (web fetches this via /message-badges).
                     $msg['thumbAvatarUrl'] = $b['thumbAvatarUrl'] ?? null;
+                    $msg['localPass']      = $b['localPass'] ?? false;
                 } else {
                     $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge']   = null;
@@ -4378,6 +4379,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                     $msg['vibe']           = $entry['vibe'] ?? 'chill';
                     $msg['mode']           = $entry['mode'] ?? 'exploring';
                     $msg['thumbAvatarUrl'] = $entry['thumbAvatarUrl'] ?? null;
+                    $msg['localPass']      = $entry['localPass'] ?? false;
                 } else {
                     $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
                     $msg['contextBadge']   = null;
@@ -6695,6 +6697,9 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     }
 
     $message = enrichBroadcastMessage($message, $msgSender ?? null);
+    // City channel: the author's Local Pass of this city (V2-03), like on history.
+    $message['localPass'] = !empty($msgSender['id'])
+        && DailyLocalPass::holdersIn([$msgSender['id']], 'city_' . $channelId) !== [];
     broadcastMessageToWs($channelId, $message);
 
     // Notify registered users currently online in this city - non-fatal side effect.
@@ -14315,7 +14320,14 @@ $router->add('GET', '/api/v1/daily/archive', function () {
         Response::json(['error' => 'before must be YYYY-MM-DD', 'code' => 'invalid_date'], 400);
     }
     $limit = max(1, min(30, (int) ($_GET['limit'] ?? 20)));
-    $out   = DailyChallengeRepository::archive(dailyCityParam($user), $before, $limit);
+    $theme = null;
+    if (isset($_GET['theme']) && $_GET['theme'] !== '') {
+        $theme = DailyThemes::normalize($_GET['theme']);
+        if ($theme === null) {
+            Response::json(['error' => 'Unknown theme', 'code' => 'invalid_theme'], 400);
+        }
+    }
+    $out   = DailyChallengeRepository::archive(dailyCityParam($user), $before, $limit, $theme);
     $blocked = array_flip(dailyBlocks($user)['user_ids'] ?? []);
     foreach ($out['items'] as &$item) {
         if ($item['bestProof'] !== null && isset($blocked[$item['bestProof']['user']['id']])) {
@@ -14323,6 +14335,16 @@ $router->add('GET', '/api/v1/daily/archive', function () {
         }
     }
     unset($item);
+    Response::json($out);
+});
+
+// GET /api/v1/daily/guide?cityId= - city guide: one summary per weekly theme
+// (a dead city gets the World selection), plus my Local Pass progress there.
+$router->add('GET', '/api/v1/daily/guide', function () {
+    $user   = AuthService::currentUser();
+    $cityId = dailyCityParam($user);
+    $out    = DailyChallengeRepository::guide($cityId, dailyBlocks($user)['user_ids'] ?? []);
+    $out['localPass'] = $user !== null && $cityId !== null ? DailyLocalPass::progressIn($user['id'], $cityId) : null;
     Response::json($out);
 });
 

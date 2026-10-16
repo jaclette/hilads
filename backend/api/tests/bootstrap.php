@@ -79,3 +79,5 @@ require_once __DIR__ . '/../src/DailyVotes.php';
 require_once __DIR__ . '/../src/DailyResults.php';
 require_once __DIR__ . '/../src/DailyPoints.php';
 require_once __DIR__ . '/../src/DailyLeaderboard.php';
+require_once __DIR__ . '/../src/DailyThemes.php';
+require_once __DIR__ . '/../src/DailyLocalPass.php';

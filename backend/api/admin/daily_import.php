@@ -50,11 +50,12 @@ daily_styles();
             <?php else: ?>
                 <h3 style="margin-bottom:8px">Dry run - nothing written yet</h3>
                 <div class="table-wrapper"><table>
-                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th><th>Translations</th></tr></thead>
+                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th><th>Theme</th><th>Translations</th></tr></thead>
                     <tbody>
                     <?php foreach ($result['report'] as $line): ?>
                         <tr><td><?= dh($line['entry']) ?></td><td><?= dh($line['action']) ?></td>
                             <td class="daily-muted"><?= dh($line['reason'] ?? ($line['date'] ?? '')) ?></td>
+                            <td class="daily-muted"><?= isset($line['theme']) ? dh(DailyThemes::name($line['theme'])) : (($line['action'] ?? '') === 'create_reserve' ? 'weekday default' : '') ?></td>
                             <td class="daily-muted"><?php $miss = $line['missingLocales'] ?? null; ?>
                                 <?= $miss === null ? '' : ($miss === [] ? '18/18' : dh((18 - count($miss)) . '/18 · missing ' . implode(', ', $miss))) ?></td></tr>
                     <?php endforeach; ?>
@@ -75,7 +76,7 @@ daily_styles();
         <input type="hidden" name="step" value="check">
         <div class="form-group"><label>JSON file</label><input type="file" name="file" accept="application/json,.json"></div>
         <div class="form-group"><label>…or paste JSON</label><textarea name="json" rows="10" style="font-family:monospace"><?= dh($json) ?></textarea>
-            <div class="hint">Dated entries create or update that day (published days and past dates are skipped); reserve entries skip texts already in the reserve; twist cities are city slugs such as ho-chi-minh-city. Nothing is written if any entry is invalid.</div></div>
+            <div class="hint">Dated entries create or update that day (published days and past dates are skipped); reserve entries skip texts already in the reserve; twist cities are city slugs such as ho-chi-minh-city; <code>theme</code> is one of <?= dh(implode(', ', array_map([DailyThemes::class, 'name'], DailyThemes::keys()))) ?> (default: the date's weekday theme). Nothing is written if any entry is invalid.</div></div>
         <div class="form-actions"><button class="btn btn-primary" type="submit">Check (dry run)</button></div>
     </form>
 </div>

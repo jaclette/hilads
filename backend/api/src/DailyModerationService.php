@@ -62,6 +62,12 @@ final class DailyModerationService
             throw $e;
         }
 
+        // Local Pass first (V2-03), so the card of the proof that completes it shows it.
+        try {
+            DailyLocalPass::checkAfterApproval(DailyProofRepository::findById($proofId));
+        } catch (\Throwable $e) {
+            error_log("[daily] local pass for proof {$proofId} failed: " . $e->getMessage());
+        }
         $after = DailyProofRepository::findById($proofId);
         DailyCards::postProof($after);
         DailyAdminService::audit('daily_proof.approve', 'daily_proof', $proofId, $before, $after);

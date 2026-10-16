@@ -1667,7 +1667,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker', 'daily')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1691,7 +1691,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -2948,6 +2948,35 @@ run($pdo, "
         ('daily_twist',     'daily', 15)
     ON CONFLICT (kind, role) DO NOTHING
 ", 'score_rules daily seed');
+
+// V2-03: weekly themes and the Local Pass (SPEC 8.2, 8.3).
+// theme = a DailyThemes key. Dated challenges get the theme of their weekday
+// (Monday language ... Sunday traditions, ISO day of week - same table as
+// DailyThemes::THEMES); undated reserves get one when the drop publishes them.
+// Reversal: DROP TABLE daily_local_passes; ALTER TABLE daily_challenges DROP COLUMN theme;
+// DELETE FROM score_events WHERE kind = 'local_pass'; DELETE FROM score_rules WHERE kind = 'local_pass';
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS theme TEXT", 'daily_challenges.theme');
+run($pdo, "
+    UPDATE daily_challenges SET theme = CASE extract(isodow FROM challenge_date)::int
+        WHEN 1 THEN 'language' WHEN 2 THEN 'street_food' WHEN 3 THEN 'coffee' WHEN 4 THEN 'market'
+        WHEN 5 THEN 'night_out' WHEN 6 THEN 'neighborhood' ELSE 'traditions' END
+    WHERE theme IS NULL AND challenge_date IS NOT NULL
+", 'daily_challenges.theme backfill');
+
+// One Local Pass per (user, city), earned once with an approved proof in all 7
+// themes there; never taken back. daily_challenge_id = the challenge whose
+// proof completed it (its score_events row hangs on it, not on the proof).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_local_passes (
+        user_id            TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        city_id            TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
+        daily_challenge_id TEXT        REFERENCES daily_challenges(id) ON DELETE SET NULL,
+        earned_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (user_id, city_id)
+    )
+", 'daily_local_passes');
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('local_pass', 'daily', 50)
+            ON CONFLICT (kind, role) DO NOTHING", 'score_rules local_pass');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

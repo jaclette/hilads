@@ -174,6 +174,7 @@ final class UserBadgeService
              WHERE u.id IN ($in)"
         );
         $stmt->execute([$channelKey, ...$userIds]);
+        $passes = $cityChannelId > 0 ? DailyLocalPass::holdersIn($userIds, $channelKey) : [];
 
         $result = [];
         foreach ($stmt->fetchAll() as $row) {
@@ -193,6 +194,8 @@ final class UserBadgeService
                 'vibe'           => $row['vibe'] ?? 'chill',
                 'mode'           => $row['mode'] ?? null,
                 'is_ambassador'  => $isAmbassador,
+                // Holds this city's Daily Challenge Local Pass (V2-03).
+                'localPass'      => isset($passes[$uid]),
                 // Small proxied thumbnail (never the full image) for the chat
                 // message avatar. Prefer a pre-generated thumb; else proxy the full
                 // photo through /img-thumb (≤400px) so we never ship a 100KB+ avatar.

@@ -45,6 +45,33 @@ function daily_state_badge(string $state): string
  * (InvalidArgumentException) → error flash + redirect. Keeps every POST
  * handler a one-liner and post/redirect/get.
  */
+/** Theme label for a stored theme (or the date's weekday theme). */
+function daily_theme_label(?string $theme, ?string $date): string
+{
+    $t = DailyThemes::format($theme, $date);
+    return $t === null ? '' : $t['name'];
+}
+
+/**
+ * Theme <select>: the 7 themes, preselected with $theme, else the weekday
+ * theme of $date. With data-weekday-default, the editor's script follows the
+ * date field until the admin picks a theme by hand. An empty value = the
+ * weekday default.
+ */
+function daily_theme_select(?string $theme, ?string $date, bool $followDate = false): string
+{
+    $selected = DailyThemes::effective($theme, $date !== '' ? $date : null);
+    $days     = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
+    $html     = '<select name="theme" id="dc-theme"' . ($followDate && $theme === null ? ' data-follow-date="1"' : '') . '>';
+    $html    .= '<option value=""' . ($selected === null ? ' selected' : '') . '>Weekday default</option>';
+    foreach (DailyThemes::all() as $t) {
+        $html .= '<option value="' . dh($t['key']) . '" data-weekday="' . $t['weekday'] . '"'
+               . ($selected === $t['key'] ? ' selected' : '') . '>'
+               . dh($t['name']) . ' (' . $days[$t['weekday']] . ')</option>';
+    }
+    return $html . '</select>';
+}
+
 function daily_action(callable $fn, string $successMessage, string $redirect): never
 {
     try {
