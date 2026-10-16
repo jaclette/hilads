@@ -7334,8 +7334,8 @@ $router->add('POST', '/api/v1/push/subscribe', function () {
     }
 
     // Remember the browser language so notifications (push + bell) are localized.
-    $locale = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
-    if (in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
+    $locale = trim((string) ($body['locale'] ?? '')) !== '' ? DailyI18n::normalize((string) $body['locale']) : null;
+    if ($locale !== null) {
         try {
             Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
                 ->execute([$locale, $user['id']]);
@@ -7395,7 +7395,8 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     $token    = trim((string) ($body['token']    ?? ''));
     $platform = trim((string) ($body['platform'] ?? 'unknown'));
-    $locale   = strtolower(substr(trim((string) ($body['locale'] ?? '')), 0, 2));
+    // The app's language (19 locales; "pt-BR", "zh-Hant" … normalized), or null when absent.
+    $locale   = trim((string) ($body['locale'] ?? '')) !== '' ? DailyI18n::normalize((string) $body['locale']) : null;
     $guestId  = trim((string) ($body['guestId']  ?? ''));
     $userId   = $user['id'] ?? null;
     // Device IANA timezone (Daily Challenge push timing); ignored when invalid.
@@ -7410,8 +7411,8 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
     error_log("[push-subscribe] user=" . ($userId ?? 'guest') . " guest=" . ($guestId ?: '-') . " platform=$platform token=$token locale=$locale");
 
     // Remember the device language so notifications (push + bell) are localized.
-    // Registered users only - guests have no users row to store locale on.
-    if ($userId !== null && in_array($locale, ['en', 'fr', 'vi', 'es'], true)) {
+    // Guests have no users row: theirs is kept on the token row (below).
+    if ($userId !== null && $locale !== null) {
         try {
             Database::pdo()->prepare("UPDATE users SET locale = ? WHERE id = ?")
                 ->execute([$locale, $userId]);
@@ -7430,17 +7431,18 @@ $router->add('POST', '/api/v1/push/mobile-token', function () {
 
     try {
         $stmt = Database::pdo()->prepare("
-            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform, timezone)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO mobile_push_tokens (user_id, guest_id, token, platform, timezone, locale)
+            VALUES (?, ?, ?, ?, ?, ?)
             ON CONFLICT (token) DO UPDATE
                SET user_id      = EXCLUDED.user_id,
                    guest_id     = EXCLUDED.guest_id,
                    platform     = EXCLUDED.platform,
                    timezone     = COALESCE(EXCLUDED.timezone, mobile_push_tokens.timezone),
+                   locale       = COALESCE(EXCLUDED.locale, mobile_push_tokens.locale),
                    last_used_at = now()
             RETURNING id
         ");
-        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform, $timezone]);
+        $stmt->execute([$userId, ($guestId !== '' ? $guestId : null), $token, $platform, $timezone, $locale]);
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
         error_log("[push-subscribe] upsert success for " . ($userId ?? 'guest:' . $guestId) . " row_id=" . ($row['id'] ?? '?'));
     } catch (\Throwable $e) {

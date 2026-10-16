@@ -201,5 +201,9 @@
       "not_local": "Alleen locals van {{city}} kunnen de Local Twist voorstellen. Zet je modus op Local in je profiel.",
       "no_challenge": "De challenge van morgen is nog niet klaar. Kom later terug."
     }
+  },
+  "translation": {
+    "seeOriginal": "Origineel tonen",
+    "seeTranslation": "Vertaling tonen"
   }
 }

@@ -2599,6 +2599,10 @@ run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS proposed_at TIMESTA
 run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_twists_proposal
             ON daily_twists (challenge_id, author_user_id) WHERE proposed_at IS NOT NULL", 'uq_daily_twists_proposal');
 
+// Hand-written translations of a twist (prompt 15): {"fr": "...", "_src": "<English at save time>"};
+// daily_twists.text stays the English original.
+run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS text_i18n JSONB NOT NULL DEFAULT '{}'::jsonb", 'daily_twists.text_i18n');
+
 // Proofs: one per user per challenge. city_id and is_local are set server-side
 // (is_local is a snapshot taken at creation). Visible only once approved.
 // Owner delete removes the row (votes, results and points cascade); an admin
@@ -2856,6 +2860,9 @@ run($pdo, "ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS daily_c
 // Fallback is cities.timezone of current_city_id.
 run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS timezone TEXT", 'users.timezone');
 run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS timezone TEXT", 'mobile_push_tokens.timezone');
+// The device's app language (one of the 19 locales), for guests' Daily pushes (prompt 15);
+// registered users keep theirs on users.locale.
+run($pdo, "ALTER TABLE mobile_push_tokens ADD COLUMN IF NOT EXISTS locale TEXT", 'mobile_push_tokens.locale');
 
 // users.mode ('local' | 'exploring', self-declared) exists in production but was
 // never in this file. No-op there; makes a fresh database match.

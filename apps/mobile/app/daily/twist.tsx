@@ -16,6 +16,7 @@ import {
   dailyErrorCode, editTwistProposal, fetchTwistProposal, proposeTwist, withdrawTwistProposal,
 } from '@/api/daily';
 import { formatCountdown, useCountdown } from '@/hooks/useDaily';
+import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import type { DailyTwistProposalScreen, DailyTwistProposalStatus } from '@/types';
 
 /**
@@ -38,6 +39,7 @@ export default function DailyTwistScreen() {
   const [text, setText]       = useState('');
   const [sending, setSending] = useState(false);
   const left = useCountdown(data?.open ? data.closesAt : null, null);
+  const [showOriginal, toggleOriginal] = useOriginal();
 
   useEffect(() => {
     if (!account) router.replace('/auth-gate?reason=daily_proof' as never);
@@ -133,8 +135,11 @@ export default function DailyTwistScreen() {
           <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
             <View style={styles.card}>
               <Text style={styles.kicker}>🔥 {t('twist.tomorrow')}</Text>
-              <Text style={styles.challenge}>{data.challenge?.text}</Text>
-              {!!data.challenge?.context && <Text style={styles.context}>{data.challenge.context}</Text>}
+              <Text style={styles.challenge}>{showOriginal && data.challenge?.original ? data.challenge.original.text : data.challenge?.text}</Text>
+              {!!data.challenge?.context && (
+                <Text style={styles.context}>{showOriginal && data.challenge.original ? data.challenge.original.context : data.challenge.context}</Text>
+              )}
+              <OriginalToggle translated={!!data.challenge?.original} showingOriginal={showOriginal} onPress={toggleOriginal} />
             </View>
 
             <Text style={styles.intro}>{t('twist.intro', { city: cityName })}</Text>

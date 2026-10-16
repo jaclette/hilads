@@ -49,7 +49,7 @@ daily_styles();
 
     <div class="table-wrapper">
         <table>
-            <thead><tr><th>Date</th><th>Live (Saigon)</th><th>State</th><th>Challenge</th><th>Twists</th><th>Drop</th><th></th></tr></thead>
+            <thead><tr><th>Date</th><th>Live (Saigon)</th><th>State</th><th>Challenge</th><th>Translations</th><th>Twists</th><th>Drop</th><th></th></tr></thead>
             <tbody>
             <?php foreach ($days as $day):
                 $c       = $day['challenge'];
@@ -63,6 +63,10 @@ daily_styles();
                     <td class="daily-muted"><?= dh(daily_window_label($day['date'])) ?></td>
                     <td><?= daily_state_badge($day['state']) ?></td>
                     <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?></td>
+                    <td><?php if ($c):
+                            $tr = DailyI18n::translated(json_decode((string) $c['text_i18n'], true) ?: []); ?>
+                            <span style="color:<?= count($tr) === 18 ? '#86efac' : (count($tr) === 0 ? '#f87171' : '#fcd34d') ?>"><?= count($tr) ?>/18</span>
+                        <?php endif; ?></td>
                     <td><?= $c ? (int) $c['twist_count'] : '' ?><?= !empty($proposalCounts[$day['date']]) ? ' <span class="badge" style="background:#4a3410;color:#fcd34d">' . (int) $proposalCounts[$day['date']] . ' proposed</span>' : '' ?></td>
                     <td class="daily-muted">
                         <?php if ($run): ?>

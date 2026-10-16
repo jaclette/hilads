@@ -13,6 +13,7 @@ import { useDailyArchive } from '@/hooks/useDaily';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
 import { DailyHeroCard } from './DailyHeroCard';
 import { formatAmount } from './currency';
+import { OriginalToggle, useOriginal } from './OriginalToggle';
 import type { DailyArchiveItem } from '@/types';
 
 /**
@@ -80,6 +81,7 @@ function ArchiveCard({ item, cityLabel }: { item: DailyArchiveItem; cityLabel: s
   const styles = useThemedStyles(makeStyles);
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
+  const [showOriginal, toggleOriginal] = useOriginal();
   const photo = item.bestProof ? (item.bestProof.thumbUrl ?? item.bestProof.photoUrl) : null;
   const count = cityLabel !== null ? (item.counts.city ?? 0) : item.counts.world;
   const open = () => {
@@ -93,8 +95,9 @@ function ArchiveCard({ item, cityLabel }: { item: DailyArchiveItem; cityLabel: s
         : <View style={[styles.photo, styles.photoEmpty]}><Text style={styles.photoEmptyText}>🔥</Text></View>}
       <View style={styles.body}>
         <Text style={styles.date}>{item.challenge.date}</Text>
-        <Text style={styles.text} numberOfLines={3}>{item.challenge.text}</Text>
-        {item.twist && <Text style={styles.twist} numberOfLines={2}>📍 {item.twist.text}</Text>}
+        <Text style={styles.text} numberOfLines={3}>{showOriginal && item.challenge.original ? item.challenge.original.text : item.challenge.text}</Text>
+        {item.twist && <Text style={styles.twist} numberOfLines={2}>📍 {showOriginal && item.twist.originalText ? item.twist.originalText : item.twist.text}</Text>}
+        <OriginalToggle translated={!!item.challenge.original || !!item.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
         {item.bestProof && item.bestProof.voteCount > 0 && (
           <Text style={styles.best} numberOfLines={1}>
             🏆 {item.bestProof.user.displayName || item.bestProof.user.username} · ♥ {item.bestProof.voteCount}

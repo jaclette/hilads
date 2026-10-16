@@ -78,6 +78,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
         'remove_twist' => daily_action(fn() => DailyAdminService::removeTwist((string) ($p['twist_id'] ?? '')),
             'Twist removed.', $self . '#twists'),
 
+        'save_translations' => daily_action(function () use ($p, $id) {
+            $row  = DailyAdminService::setChallengeTranslations($id, (array) ($p['tr_text'] ?? []), (array) ($p['tr_context'] ?? []));
+            $text = json_decode((string) $row['text_i18n'], true) ?: [];
+            $warn = daily_brand_warnings((string) ($text['en'] ?? ''), $text);
+            return 'Translations saved (' . count(DailyI18n::translated($text)) . '/18).'
+                . ($warn !== '' ? " Check brand terms (they stay in English): {$warn}." : '');
+        }, 'Translations saved.', $self . '#translations'),
+
+        'save_twist_translations' => daily_action(function () use ($p) {
+            $row  = DailyAdminService::setTwistTranslations((string) ($p['twist_id'] ?? ''), (array) ($p['tr_twist'] ?? []));
+            $map  = json_decode((string) $row['text_i18n'], true) ?: [];
+            $warn = daily_brand_warnings((string) $row['text'], $map);
+            return 'Twist translations saved (' . count(DailyI18n::translated($map)) . '/18).'
+                . ($warn !== '' ? " Check brand terms (they stay in English): {$warn}." : '');
+        }, 'Twist translations saved.', $self . '#twists'),
+
         'pick_twist' => daily_action(fn() => DailyTwistProposals::pick((string) ($p['twist_id'] ?? '')),
             'Twist picked.', $self . '#twists'),
 
@@ -188,7 +204,38 @@ daily_styles();
                 <div class="form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
             </form>
 
-            <?php if (!$isNew): ?>
+            <?php if (!$isNew):
+                $trText = json_decode((string) $challenge['text_i18n'], true) ?: [];
+                $trCtx  = json_decode((string) $challenge['context_i18n'], true) ?: [];
+                $trDone = DailyI18n::translated($trText);
+            ?>
+                <form method="POST" action="<?= dh($self) ?>" class="form-card" id="translations">
+                    <?= csrf_input() ?>
+                    <input type="hidden" name="action" value="save_translations">
+                    <h3 style="margin-bottom:4px">Translations <span class="daily-muted">(<?= count($trDone) ?>/18)</span></h3>
+                    <p class="daily-muted" style="margin-bottom:8px">Shown to users in their app language; an empty language falls back to English.
+                        Keep in English: <?= dh(implode(', ', DailyI18n::BRAND_TERMS)) ?>.</p>
+                    <?php if (DailyI18n::isStale($trText, $text)): ?>
+                        <div class="warning-box" style="margin-bottom:8px">The English changed since these translations were saved: review them.</div>
+                    <?php endif; ?>
+                    <?php if (($w = daily_brand_warnings($text, $trText)) !== ''): ?>
+                        <div class="warning-box" style="margin-bottom:8px">Brand terms missing: <?= dh($w) ?></div>
+                    <?php endif; ?>
+                    <table class="daily-tr">
+                        <?php foreach (daily_locale_names() as $loc => $name): ?>
+                            <tr>
+                                <td class="lang"><?= dh($name) ?><br><span class="td-mono"><?= dh($loc) ?></span>
+                                    <?= DailyI18n::pick($trText, $loc) === null ? '<br><span class="missing">missing</span>' : '' ?></td>
+                                <td>
+                                    <textarea name="tr_text[<?= dh($loc) ?>]" rows="2" placeholder="Challenge"><?= dh($trText[$loc] ?? '') ?></textarea>
+                                    <textarea name="tr_context[<?= dh($loc) ?>]" rows="2" placeholder="Context (optional)" style="margin-top:4px"><?= dh($trCtx[$loc] ?? '') ?></textarea>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </table>
+                    <div class="form-actions"><button class="btn btn-primary" type="submit">Save translations</button></div>
+                </form>
+
                 <div class="form-card" id="twists">
                     <h3 style="margin-bottom:6px">Local Twists</h3>
                     <?php if ($liveCities === []): ?>
@@ -217,6 +264,22 @@ daily_styles();
                                     <input type="hidden" name="twist_id" value="<?= dh($t['id']) ?>">
                                     <button class="btn btn-danger btn-sm" type="submit">Remove twist</button>
                                 </form>
+                                <?php $twTr = json_decode((string) ($t['text_i18n'] ?? '{}'), true) ?: []; ?>
+                                <details style="margin-top:8px" <?= DailyI18n::isStale($twTr, (string) $t['text']) ? 'open' : '' ?>>
+                                    <summary class="daily-muted" style="cursor:pointer">Translations (<?= count(DailyI18n::translated($twTr)) ?>/18)<?= DailyI18n::isStale($twTr, (string) $t['text']) ? ' · English changed, review them' : '' ?></summary>
+                                    <form method="POST" action="<?= dh($self) ?>" style="margin-top:6px">
+                                        <?= csrf_input() ?>
+                                        <input type="hidden" name="action" value="save_twist_translations">
+                                        <input type="hidden" name="twist_id" value="<?= dh($t['id']) ?>">
+                                        <table class="daily-tr">
+                                            <?php foreach (daily_locale_names() as $loc => $name): ?>
+                                                <tr><td class="lang"><?= dh($name) ?></td>
+                                                    <td><input type="text" name="tr_twist[<?= dh($loc) ?>]" value="<?= dh($twTr[$loc] ?? '') ?>" maxlength="<?= DailyAdminService::TWIST_MAX ?>"></td></tr>
+                                            <?php endforeach; ?>
+                                        </table>
+                                        <div class="form-actions"><button class="btn btn-primary btn-sm" type="submit">Save twist translations</button></div>
+                                    </form>
+                                </details>
                             <?php endif; ?>
                             <?php $others = array_values(array_filter($otherTwists[$cityId] ?? [], fn($o) => $o['status'] !== 'selected')); ?>
                             <?php if ($others !== []): ?>

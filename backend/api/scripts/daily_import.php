@@ -41,6 +41,7 @@ require_once __DIR__ . '/../src/DailyRules.php';
 require_once __DIR__ . '/../src/DailyProofRepository.php';
 require_once __DIR__ . '/../src/ModerationService.php';
 require_once __DIR__ . '/../src/DailyAdminService.php';
+require_once __DIR__ . '/../src/DailyI18n.php';
 
 $raw = @file_get_contents($files[0]);
 if ($raw === false) {
@@ -64,6 +65,10 @@ if (!$result['ok']) {
 }
 foreach ($result['report'] as $line) {
     $detail = $line['reason'] ?? trim(($line['date'] ?? '') . ' ' . ($line['id'] ?? ''));
+    if (isset($line['missingLocales'])) {
+        $detail .= $line['missingLocales'] === [] ? '  translations 18/18'
+            : '  translations ' . (18 - count($line['missingLocales'])) . '/18 (missing ' . implode(', ', $line['missingLocales']) . ')';
+    }
     printf("  %-6s %-15s %s\n", $line['entry'], $line['action'], $detail);
 }
 $counts = array_count_values(array_column($result['report'], 'action'));

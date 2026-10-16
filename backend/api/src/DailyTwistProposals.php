@@ -106,10 +106,7 @@ final class DailyTwistProposals
             'open'      => $reason === null && self::isOpen($date, $now),
             'city'      => $ctx['city'],
             'reason'    => $reason ?? (self::isOpen($date, $now) ? null : 'closed'),
-            'challenge' => $showChallenge ? [
-                'text'    => json_decode((string) $ctx['challenge']['text_i18n'], true)['en'] ?? '',
-                'context' => json_decode((string) $ctx['challenge']['context_i18n'], true)['en'] ?? null,
-            ] : null,
+            'challenge' => $showChallenge ? self::challengeText($ctx['challenge']) : null,
             'proposal'  => $proposal !== null ? self::format($proposal) : null,
             'maxLength' => DailyAdminService::TWIST_MAX,
         ];
@@ -248,12 +245,18 @@ final class DailyTwistProposals
 
         if ($after['proposed_at'] !== null && $after['author_user_id'] !== null) {
             try {
-                $when = DailyClock::isActive((string) $after['challenge_date']) ? "today's" : "tomorrow's";
+                $today = DailyClock::isActive((string) $after['challenge_date']);
+                $when  = $today ? "today's" : "tomorrow's";
+                $stmt  = Database::pdo()->prepare("SELECT locale FROM users WHERE id = ?");
+                $stmt->execute([$after['author_user_id']]);
+                $body  = DailyPushText::render($today ? 'picked_today' : 'picked_tomorrow',
+                                               DailyI18n::normalize($stmt->fetchColumn() ?: null), ['city' => $after['city_name']])
+                         ?? "Your Local Twist was picked for {$when} Daily Challenge in {$after['city_name']} 🎉";
                 NotificationRepository::createUnchecked(
                     $after['author_user_id'],
                     'daily_twist_picked',
                     'Daily Challenge',
-                    "Your Local Twist was picked for {$when} Daily Challenge in {$after['city_name']} 🎉",
+                    $body,
                     ['date' => $after['challenge_date'], 'cityId' => $after['city_id']],
                     'en',
                 );
@@ -303,6 +306,13 @@ final class DailyTwistProposals
             'reason'    => self::ineligibility($user['mode'] ?? null, $user['home_city'] ?? null, $cityName,
                                                DailyRules::isLive($cityId), $challenge !== null),
         ];
+    }
+
+    /** Tomorrow's challenge text and context in the viewer's language, with the English original when translated. */
+    private static function challengeText(array $row): array
+    {
+        $c = DailyChallengeRepository::formatChallenge($row);
+        return ['text' => $c['text'], 'context' => $c['context'], 'original' => $c['original'], 'lang' => $c['lang']];
     }
 
     private static function guardWrite(array $user, string $date, DateTimeImmutable $now): array

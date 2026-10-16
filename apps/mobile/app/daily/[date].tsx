@@ -18,6 +18,7 @@ import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
+import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import type { DailyProof } from '@/types';
 
 /**
@@ -61,6 +62,7 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
   const { sheet, loading, loadingMore, error, reload, loadMore, setMyProof } = useDailySheet(date, scope, city?.channelId);
   const secondsLeft = useCountdown(sheet?.challenge?.isActive ? sheet.challenge.endsAt : null, sheet?.serverTime);
   const tracked = useRef(false);
+  const [showOriginal, toggleOriginal] = useOriginal();
 
   useEffect(() => {
     if (!sheet?.challenge || tracked.current) return;
@@ -127,13 +129,16 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
               {challenge.isActive && secondsLeft !== null ? `⏱ ${t('timeLeft', { time: formatCountdown(secondsLeft) })}` : t('closed')}
             </Text>
           </View>
-          <Text style={styles.text}>{challenge.text}</Text>
-          {!!challenge.context && <Text style={styles.context}>{challenge.context}</Text>}
+          <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
+          {!!challenge.context && (
+            <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>
+          )}
+          <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
 
           {sheet.twist && isLive && (
             <View style={styles.twist}>
               <Text style={styles.twistLabel}>📍 {t('twistIn', { city: cityName })}</Text>
-              <Text style={styles.twistText}>{sheet.twist.text}</Text>
+              <Text style={styles.twistText}>{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</Text>
               {sheet.twist.author ? (
                 <TouchableOpacity style={styles.author} onPress={() => goProfile(sheet.twist!.author!.id)} accessibilityRole="button">
                   {sheet.twist.author.photoUrl
@@ -230,7 +235,7 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
         )}
       </View>
     );
-  }, [sheet, challenge, myProof, isLive, cityName, scope, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload]);
+  }, [sheet, challenge, myProof, isLive, cityName, scope, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>

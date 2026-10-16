@@ -76,6 +76,12 @@ final class DailyDrop
             ")->execute([$challenge['id'] ?? null, $source, $date]);
 
             if ($challenge !== null) {
+                // Hand-written translations (prompt 15): a soft warning only, English always works.
+                $translated = DailyI18n::translated(json_decode((string) $challenge['text_i18n'], true) ?: []);
+                $steps['translations'] = count($translated);
+                if ($translated === []) {
+                    self::alertAdmin('Daily Challenge: not translated', "Today's challenge ({$date}) has no translations: everyone sees it in English.");
+                }
                 DailyRules::forgetLiveCities();
                 $steps['cards']  = ['posted' => DailyCards::postChallenge($challenge), 'liveCities' => count(DailyRules::liveCityIds())];
                 $steps['pushes'] = DailyPushes::queueMorning($challenge, $now);

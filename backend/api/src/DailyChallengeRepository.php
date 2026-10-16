@@ -25,10 +25,10 @@ final class DailyChallengeRepository
     }
 
     /** Selected, approved twist of (challenge, city) with its author, or null. */
-    public static function twistFor(string $challengeId, string $cityId): ?array
+    public static function twistFor(string $challengeId, string $cityId, ?string $locale = null): ?array
     {
         $stmt = Database::pdo()->prepare("
-            SELECT t.id, t.text, t.author_credit, t.author_user_id,
+            SELECT t.id, t.text, t.text_i18n, t.author_credit, t.author_user_id,
                    u.username, u.display_name, u.profile_photo_url
             FROM daily_twists t
             LEFT JOIN users u ON u.id = t.author_user_id
@@ -37,7 +37,15 @@ final class DailyChallengeRepository
         ");
         $stmt->execute([$challengeId, $cityId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        return $row ? self::formatTwist($row) : null;
+        return $row ? self::formatTwist($row, $locale) : null;
+    }
+
+    /** A twist's translations map (text_i18n), for the channel cards. */
+    public static function twistI18n(string $twistId): array
+    {
+        $stmt = Database::pdo()->prepare("SELECT text_i18n FROM daily_twists WHERE id = ?");
+        $stmt->execute([$twistId]);
+        return json_decode((string) ($stmt->fetchColumn() ?: '{}'), true) ?: [];
     }
 
     /** Approved proof counts, World and (when given) city. */
@@ -165,7 +173,7 @@ final class DailyChallengeRepository
         $stmt = Database::pdo()->prepare("
             SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n,
                    best.id AS best_proof_id,
-                   tw.text AS twist_text, tw.author_credit AS twist_credit,
+                   tw.text AS twist_text, tw.text_i18n AS twist_i18n, tw.author_credit AS twist_credit,
                    tu.id AS twist_user_id, tu.username AS twist_username,
                    tu.display_name AS twist_display_name, tu.profile_photo_url AS twist_photo,
                    price.currency, price.min_amount, price.max_amount,
@@ -225,7 +233,7 @@ final class DailyChallengeRepository
                 'challenge'    => self::formatChallenge($r),
                 'bestProof'    => $best ? DailyProofRepository::format($best) : null,
                 'twist'        => $r['twist_text'] !== null ? self::formatTwist([
-                    'id' => null, 'text' => $r['twist_text'], 'author_credit' => $r['twist_credit'],
+                    'id' => null, 'text' => $r['twist_text'], 'text_i18n' => $r['twist_i18n'], 'author_credit' => $r['twist_credit'],
                     'author_user_id' => $r['twist_user_id'], 'username' => $r['twist_username'],
                     'display_name' => $r['twist_display_name'], 'profile_photo_url' => $r['twist_photo'],
                 ]) : null,
@@ -249,28 +257,45 @@ final class DailyChallengeRepository
         ];
     }
 
-    public static function formatChallenge(array $row, ?DateTimeImmutable $now = null): array
+    /**
+     * Challenge object in $locale (default: the request's, DailyI18n::current).
+     * text/context are translated when the founder wrote a translation;
+     * original {text, context} and lang are then set (else null).
+     */
+    public static function formatChallenge(array $row, ?DateTimeImmutable $now = null, ?string $locale = null): array
     {
         $date = (string) $row['challenge_date'];
         [$start, $end] = DailyClock::window($date);
+        $locale  = $locale ?? DailyI18n::current();
         $text    = json_decode((string) $row['text_i18n'], true) ?: [];
         $context = json_decode((string) ($row['context_i18n'] ?? '{}'), true) ?: [];
+        $enText  = (string) ($text['en'] ?? '');
+        $enCtx   = ($context['en'] ?? '') !== '' ? (string) $context['en'] : null;
+        $tText   = DailyI18n::pick($text, $locale);
+        $tCtx    = $enCtx !== null ? DailyI18n::pick($context, $locale) : null;
+        $isTranslated = $tText !== null;
         return [
             'id'       => $row['id'],
             'date'     => $date,
-            'text'     => $text['en'] ?? '',
-            'context'  => ($context['en'] ?? '') !== '' ? $context['en'] : null,
+            'text'     => $tText ?? $enText,
+            'context'  => $isTranslated ? ($tCtx ?? $enCtx) : $enCtx,
+            'original' => $isTranslated ? ['text' => $enText, 'context' => $enCtx] : null,
+            'lang'     => $isTranslated ? $locale : null,
             'startsAt' => $start->getTimestamp(),
             'endsAt'   => $end->getTimestamp(),
             'isActive' => DailyClock::isActive($date, $now),
         ];
     }
 
-    private static function formatTwist(array $row): array
+    private static function formatTwist(array $row, ?string $locale = null): array
     {
+        $i18n = json_decode((string) ($row['text_i18n'] ?? '{}'), true) ?: [];
+        [$text, $original] = DailyI18n::localize($i18n, (string) $row['text'], $locale ?? DailyI18n::current());
         return [
             'id'     => $row['id'],
-            'text'   => $row['text'],
+            'text'   => $text,
+            'originalText' => $original,
+            'lang'   => $original !== null ? ($locale ?? DailyI18n::current()) : null,
             'author' => $row['author_user_id'] !== null ? [
                 'id'          => $row['author_user_id'],
                 'username'    => $row['username'],

@@ -199,5 +199,9 @@
       "not_local": "Chỉ người địa phương ở {{city}} mới đề xuất được Local Twist. Hãy chọn chế độ Local trong hồ sơ.",
       "no_challenge": "Thử thách ngày mai chưa sẵn sàng. Quay lại sau nhé."
     }
+  },
+  "translation": {
+    "seeOriginal": "Xem bản gốc",
+    "seeTranslation": "Xem bản dịch"
   }
 }

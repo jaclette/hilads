@@ -11,6 +11,7 @@ import { formatCountdown, useDailyToday } from '@/hooks/useDaily';
 import { DailyStatusChip } from './DailyStatusChip';
 import { DailyPushBanner } from './DailyPushBanner';
 import { dailyTrackProps } from './track';
+import { OriginalToggle, useOriginal } from './OriginalToggle';
 import type { DailyToday } from '@/types';
 
 /**
@@ -35,6 +36,7 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
   const router = useRouter();
   const { account } = useApp();
   const tracked = useRef<string | null>(null);
+  const [showOriginal, toggleOriginal] = useOriginal();
 
   const challenge = data?.challenge ?? null;
   useEffect(() => {
@@ -76,7 +78,8 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
         {secondsLeft !== null && <Text style={styles.countdown}>⏱ {t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>}
       </View>
 
-      <Text style={styles.text} numberOfLines={3}>{challenge.text}</Text>
+      <Text style={styles.text} numberOfLines={3}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
+      <OriginalToggle translated={!!challenge.original || !!data?.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
 
       {(data?.streak ?? 0) >= 2 && (
         <Text style={styles.streak}>🔥 {t('streak', { count: data!.streak! })}</Text>
@@ -85,7 +88,7 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
       {data?.twist && city?.isLive && (
         <View style={styles.twist}>
           <Text style={styles.twistLabel}>📍 {t('twistIn', { city: localizeCityName(city.name ?? '') })}</Text>
-          <Text style={styles.twistText} numberOfLines={2}>{data.twist.text}</Text>
+          <Text style={styles.twistText} numberOfLines={2}>{showOriginal && data.twist.originalText ? data.twist.originalText : data.twist.text}</Text>
         </View>
       )}
 

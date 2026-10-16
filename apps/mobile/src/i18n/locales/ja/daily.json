@@ -201,5 +201,9 @@
       "not_local": "{{city}} のローカルだけが Local Twist を提案できます。プロフィールでモードを Local にしてください。",
       "no_challenge": "明日のチャレンジはまだ準備中です。また後で来てください。"
     }
+  },
+  "translation": {
+    "seeOriginal": "原文を見る",
+    "seeTranslation": "翻訳を見る"
   }
 }

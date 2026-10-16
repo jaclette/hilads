@@ -121,10 +121,25 @@ final class DailyCards
         }
     }
 
-    /** Render data for a daily_challenge card. $twist only for live city channels. Pure. */
-    public static function challengePayload(array $challenge, ?array $twist, ?array $yesterday = null): array
+    /**
+     * Render data for a daily_challenge card, in English, plus the founder's
+     * translations ({locale: {text, context, twist}}) so each app shows its
+     * language. $twist only for live city channels, with its text_i18n map. Pure.
+     */
+    public static function challengePayload(array $challenge, ?array $twist, ?array $yesterday = null, array $twistI18n = []): array
     {
-        $c = DailyChallengeRepository::formatChallenge($challenge);
+        $c = DailyChallengeRepository::formatChallenge($challenge, null, 'en');
+        $text    = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        $context = json_decode((string) ($challenge['context_i18n'] ?? '{}'), true) ?: [];
+        $translations = [];
+        foreach (DailyI18n::others() as $l) {
+            $t  = DailyI18n::pick($text, $l);
+            $cx = $c['context'] !== null ? DailyI18n::pick($context, $l) : null;
+            $tw = $twist !== null ? DailyI18n::pick($twistI18n, $l) : null;
+            if ($t !== null || $tw !== null) {
+                $translations[$l] = array_filter(['text' => $t, 'context' => $cx, 'twist' => $tw], static fn($v) => $v !== null);
+            }
+        }
         return [
             'challengeId'   => $c['id'],
             'date'          => $c['date'],
@@ -134,6 +149,7 @@ final class DailyCards
             'twist'         => $twist,
             'yesterday'     => $yesterday !== null ? ['date' => $yesterday['date'], 'text' => $yesterday['text']] : null,
             'yesterdayTop3' => $yesterday['top3'] ?? [],
+            'translations'  => (object) $translations,
         ];
     }
 
@@ -148,7 +164,7 @@ final class DailyCards
         }
         return [
             'date' => $date,
-            'text' => DailyChallengeRepository::formatChallenge($prev)['text'],
+            'text' => DailyChallengeRepository::formatChallenge($prev, null, 'en')['text'],
             'top3' => DailyResults::cardTop3($prev['id']),
         ];
     }
@@ -167,9 +183,10 @@ final class DailyCards
         $yesterday = self::yesterday($challenge);
 
         foreach ($channels as $dbChannel) {
-            $twist   = $dbChannel === 'world' ? null : DailyChallengeRepository::twistFor($challenge['id'], $dbChannel);
+            $twist   = $dbChannel === 'world' ? null : DailyChallengeRepository::twistFor($challenge['id'], $dbChannel, 'en');
             // Yesterday's top 3 rides on the World card only (SPEC 3.7).
-            $payload = self::challengePayload($challenge, $twist, $dbChannel === 'world' ? $yesterday : null);
+            $payload = self::challengePayload($challenge, $twist, $dbChannel === 'world' ? $yesterday : null,
+                                              $twist !== null ? DailyChallengeRepository::twistI18n((string) $twist['id']) : []);
             $insert  = Database::pdo()->prepare("
                 INSERT INTO messages (id, channel_id, type, event, user_id, nickname, content, payload)
                 VALUES (?, ?, 'system', 'daily_challenge', ?, 'Hilads', ?, ?::jsonb)

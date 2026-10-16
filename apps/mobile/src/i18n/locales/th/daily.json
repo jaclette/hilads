@@ -199,5 +199,9 @@
       "not_local": "เฉพาะคนท้องถิ่น {{city}} เท่านั้นที่เสนอ Local Twist ได้ ตั้งโหมดเป็น Local ในโปรไฟล์",
       "no_challenge": "ชาเลนจ์พรุ่งนี้ยังไม่พร้อม กลับมาใหม่ทีหลัง"
     }
+  },
+  "translation": {
+    "seeOriginal": "ดูต้นฉบับ",
+    "seeTranslation": "ดูคำแปล"
   }
 }

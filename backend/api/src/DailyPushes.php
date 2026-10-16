@@ -18,6 +18,11 @@ declare(strict_types=1);
  *   (Local Twist authors); votes received and twist completions, computed at
  *   send time, skipped when there is no news.
  *
+ * Language (prompt 15): the recipient's (users.locale, a guest token's
+ * locale). Fixed phrases come from DailyPushText; the morning push carries the
+ * founder's translation of the challenge, and is all English when that
+ * translation is missing. Reminder and digest store the locale in payload.
+ *
  * Cap: 3 Daily pushes per recipient per LOCAL day (local_day), checked when
  * sending. A digest over the cap waits for 09:00 the next local day, once;
  * a morning push or a reminder over the cap is skipped (they are tied to the
@@ -120,9 +125,13 @@ final class DailyPushes
      * Yesterday's outcome sentence for the morning push, or null.
      * $mine (an approved proof): worldRank, cityRank, cityBest, votes, cityName.
      * $winner (World rank 1, for voters without a proof): name, cityName, votes.
+     * Other locales use the DailyPushText phrases ("#2", no plurals).
      */
-    public static function outcomeLine(?array $mine, ?array $winner): ?string
+    public static function outcomeLine(?array $mine, ?array $winner, string $locale = 'en'): ?string
     {
+        if ($locale !== 'en' && DailyPushText::has($locale)) {
+            return self::outcomeLineIn($locale, $mine, $winner);
+        }
         if ($mine !== null) {
             if ($mine['worldRank'] !== null) {
                 return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['worldRank']) . ' in the world 🏆';
@@ -143,11 +152,55 @@ final class DailyPushes
         return null;
     }
 
-    /** The morning push message for a challenge, with an optional outcome sentence first. */
-    public static function morningMessage(array $challenge, ?string $outcome = null): array
+    /** outcomeLine() in a non-English locale. */
+    private static function outcomeLineIn(string $l, ?array $mine, ?array $winner): ?string
     {
-        $text = json_decode((string) $challenge['text_i18n'], true)['en'] ?? '';
+        if ($mine !== null) {
+            if ($mine['worldRank'] !== null) {
+                return DailyPushText::render('world', $l, ['rank' => $mine['worldRank']]);
+            }
+            if ($mine['cityBest'] && $mine['cityName'] !== null) {
+                return DailyPushText::render('city_best', $l, ['city' => $mine['cityName']]);
+            }
+            if ($mine['cityRank'] !== null && $mine['cityName'] !== null) {
+                return DailyPushText::render('city_rank', $l, ['rank' => $mine['cityRank'], 'city' => $mine['cityName']]);
+            }
+            return (int) $mine['votes'] > 0 ? DailyPushText::render('votes', $l, ['n' => (int) $mine['votes']]) : null;
+        }
+        if ($winner !== null) {
+            return $winner['cityName'] !== null
+                ? DailyPushText::render('winner', $l, ['name' => $winner['name'], 'city' => $winner['cityName'], 'n' => (int) $winner['votes']])
+                : DailyPushText::render('winner_nocity', $l, ['name' => $winner['name'], 'n' => (int) $winner['votes']]);
+        }
+        return null;
+    }
+
+    /**
+     * The language a recipient's morning push goes out in: theirs when the
+     * founder translated today's challenge into it, else English (never a mix).
+     */
+    public static function morningLocale(array $challenge, string $locale): string
+    {
+        if ($locale === 'en' || !DailyPushText::has($locale)) {
+            return 'en';
+        }
+        $i18n = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        return DailyI18n::pick($i18n, $locale) !== null ? $locale : 'en';
+    }
+
+    /**
+     * The morning push message for a challenge, with an optional outcome
+     * sentence first. $locale must come from morningLocale() (translated text exists).
+     */
+    public static function morningMessage(array $challenge, ?string $outcome = null, string $locale = 'en'): array
+    {
+        $i18n = json_decode((string) $challenge['text_i18n'], true) ?: [];
+        $text = $i18n['en'] ?? '';
         $body = "Today's Daily Challenge: {$text}";
+        $translated = $locale !== 'en' ? DailyI18n::pick($i18n, $locale) : null;
+        if ($translated !== null && DailyPushText::has($locale)) {
+            $body = (string) DailyPushText::render('frame', $locale, ['text' => $translated]);
+        }
         return [
             'title' => 'Daily Challenge',
             'body'  => $outcome !== null ? "{$outcome} {$body}" : $body,
@@ -158,25 +211,28 @@ final class DailyPushes
     }
 
     /** The reminder, with the hours left at send time (rounded down, at least 1). */
-    public static function reminderMessage(string $date, int $secondsLeft): array
+    public static function reminderMessage(string $date, int $secondsLeft, string $locale = 'en'): array
     {
         $hours = max(1, intdiv($secondsLeft, 3600));
         return [
             'title' => 'Daily Challenge',
-            'body'  => "Only {$hours}h left for today's Daily Challenge.",
+            'body'  => DailyPushText::render('reminder', $locale, ['h' => $hours])
+                       ?? "Only {$hours}h left for today's Daily Challenge.",
             'data'  => self::data($date),
         ];
     }
 
     /** The digest, or null when there is nothing to tell. */
-    public static function digestMessage(string $date, int $votes, int $twistCompletions): ?array
+    public static function digestMessage(string $date, int $votes, int $twistCompletions, string $locale = 'en'): ?array
     {
         $parts = [];
         if ($votes > 0) {
-            $parts[] = self::plural($votes, 'person', 'people') . ' voted for your proof.';
+            $parts[] = DailyPushText::render('digest_votes', $locale, ['n' => $votes])
+                       ?? self::plural($votes, 'person', 'people') . ' voted for your proof.';
         }
         if ($twistCompletions > 0) {
-            $parts[] = self::plural($twistCompletions, 'person', 'people') . ' completed your Local Twist.';
+            $parts[] = DailyPushText::render('digest_twist', $locale, ['n' => $twistCompletions])
+                       ?? self::plural($twistCompletions, 'person', 'people') . ' completed your Local Twist.';
         }
         if ($parts === []) {
             return null;
@@ -223,26 +279,28 @@ final class DailyPushes
         $users       = self::userRecipients();
         $withOutcome = 0;
         foreach ($users as $u) {
-            $line         = $outcomes[$u['id']] ?? null;
+            $loc          = self::morningLocale($challenge, $u['locale']);
+            $o            = $outcomes[$u['id']] ?? null;
+            $line         = $o !== null ? self::outcomeLine($o['mine'], $o['winner'], $loc) : null;
             $withOutcome += $line !== null ? 1 : 0;
             $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'morning',
-                       self::morningSendAt($now, $u['tz']), $u['tz'], self::morningMessage($challenge, $line)];
+                       self::morningSendAt($now, $u['tz']), $u['tz'], self::morningMessage($challenge, $line, $loc)];
         }
 
         // Guest devices: tokens without an account, unless that guest id
         // already belongs to an account (that person is covered above).
         $guests = $pdo->query("
-            SELECT t.guest_id, max(t.timezone) AS token_tz
+            SELECT t.guest_id, max(t.timezone) AS token_tz, max(t.locale) AS token_locale
             FROM mobile_push_tokens t
             WHERE t.user_id IS NULL AND t.guest_id IS NOT NULL
               AND NOT EXISTS (SELECT 1 FROM users u WHERE u.guest_id = t.guest_id)
             GROUP BY t.guest_id
         ")->fetchAll(PDO::FETCH_ASSOC);
-        $plain = self::morningMessage($challenge);
         foreach ($guests as $g) {
             $tz     = self::pickTimezone($g['token_tz']);
+            $loc    = self::morningLocale($challenge, DailyI18n::normalize($g['token_locale']));
             $rows[] = ['g:' . $g['guest_id'], null, $g['guest_id'], $date, 'morning',
-                       self::morningSendAt($now, $tz), $tz, $plain];
+                       self::morningSendAt($now, $tz), $tz, self::morningMessage($challenge, null, $loc)];
         }
 
         $later = count(array_filter($rows, static fn(array $r): bool => $r[5] > $now));
@@ -263,7 +321,8 @@ final class DailyPushes
             $at = self::reminderSendAt($start, $end, $u['tz']);
             if ($at !== null && $at > $now) {
                 // Text built at send time (hours left).
-                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'reminder', $at, $u['tz'], ['data' => self::data($date)]];
+                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'reminder', $at, $u['tz'],
+                           ['data' => self::data($date), 'locale' => $u['locale']]];
             }
         }
         return ['active' => count($users), 'queued' => self::insert($rows)];
@@ -288,7 +347,8 @@ final class DailyPushes
             }
             if ($at < $end) {
                 // Text built at send time (votes and completions so far).
-                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'digest', $at, $u['tz'], ['data' => self::data($date)]];
+                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'digest', $at, $u['tz'],
+                           ['data' => self::data($date), 'locale' => $u['locale']]];
             }
         }
         return self::insert($rows);
@@ -399,15 +459,16 @@ final class DailyPushes
                 } elseif (isset($facts['posted'][$fk])) {
                     $reason = 'done';
                 } else {
-                    $msg = self::reminderMessage((string) $row['challenge_date'], DailyClock::secondsLeft($now));
+                    $msg = self::reminderMessage((string) $row['challenge_date'], DailyClock::secondsLeft($now),
+                                                 (string) ($msg['locale'] ?? 'en')) + ['locale' => $msg['locale'] ?? 'en'];
                 }
             } elseif ($row['type'] === 'digest') {
                 $digest = self::digestMessage((string) $row['challenge_date'],
-                                              $facts['votes'][$fk] ?? 0, $facts['twist'][$fk] ?? 0);
+                                              $facts['votes'][$fk] ?? 0, $facts['twist'][$fk] ?? 0, (string) ($msg['locale'] ?? 'en'));
                 if ($digest === null) {
                     $reason = 'no_news';
                 } else {
-                    $msg = $digest + ['deferred' => !empty($msg['deferred'])];
+                    $msg = $digest + ['deferred' => !empty($msg['deferred']), 'locale' => $msg['locale'] ?? 'en'];
                 }
             }
             if ($reason === null && ($alreadySent[$capKey] ?? 0) >= self::CAP_PER_DAY) {
@@ -526,8 +587,9 @@ final class DailyPushes
     }
 
     /**
-     * Outcome sentences of yesterday's challenge for the morning of $date,
-     * keyed by user id: approved proofs' authors, then voters (the winner line).
+     * Yesterday's outcome for the morning of $date, keyed by user id:
+     * {mine, winner} for outcomeLine() - approved proofs' authors (mine), then
+     * voters without a sentence of their own (winner).
      */
     private static function outcomes(string $date): array
     {
@@ -552,16 +614,16 @@ final class DailyPushes
         $stmt->execute([$prev['id']]);
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $p) {
             $cityRank = $p['city_rank'] !== null ? (int) $p['city_rank'] : null;
-            $line = self::outcomeLine([
+            $mine = [
                 'worldRank' => $p['world_rank'] !== null ? (int) $p['world_rank'] : null,
                 'cityRank'  => $cityRank,
                 'cityBest'  => $cityRank === 1 && (int) $p['vote_count'] >= DailyResults::MIN_VOTES_TO_WIN
                                && isset($live[$p['city_id']]),
                 'votes'     => (int) $p['vote_count'],
                 'cityName'  => $p['city_name'],
-            ], null);
-            if ($line !== null) {
-                $out[$p['user_id']] = $line;
+            ];
+            if (self::outcomeLine($mine, null) !== null) {
+                $out[$p['user_id']] = ['mine' => $mine, 'winner' => null];
             }
         }
 
@@ -576,11 +638,11 @@ final class DailyPushes
         $stmt->execute([$prev['id']]);
         $w = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($w) {
-            $line = self::outcomeLine(null, ['name' => $w['display_name'], 'cityName' => $w['city_name'], 'votes' => (int) $w['vote_count']]);
+            $winner = ['name' => $w['display_name'], 'cityName' => $w['city_name'], 'votes' => (int) $w['vote_count']];
             $stmt = $pdo->prepare("SELECT DISTINCT voter_user_id FROM daily_votes WHERE challenge_id = ?");
             $stmt->execute([$prev['id']]);
             foreach ($stmt->fetchAll(PDO::FETCH_COLUMN) as $voterId) {
-                $out[$voterId] ??= $line;
+                $out[$voterId] ??= ['mine' => null, 'winner' => $winner];
             }
         }
         return $out;
@@ -590,7 +652,7 @@ final class DailyPushes
      * Registered users with a device and the Daily toggle on, with their
      * timezone (device > a token's > current city's > UTC). Optionally only
      * $userIds, and only those whose app opened since $activeSince.
-     * Returns [{id, tz}].
+     * Returns [{id, tz, locale}].
      */
     private static function userRecipients(?array $userIds = null, ?DateTimeImmutable $activeSince = null): array
     {
@@ -614,7 +676,7 @@ final class DailyPushes
                 FROM mobile_push_tokens WHERE {$where}
                 GROUP BY user_id {$having}
             )
-            SELECT u.id, u.timezone AS user_tz, ut.token_tz, ci.timezone AS city_tz
+            SELECT u.id, u.timezone AS user_tz, u.locale, ut.token_tz, ci.timezone AS city_tz
             FROM ut
             JOIN users u ON u.id = ut.user_id AND u.deleted_at IS NULL
             LEFT JOIN cities ci ON ci.channel_id = u.current_city_id
@@ -624,7 +686,8 @@ final class DailyPushes
         $stmt->execute($args);
         $out = [];
         foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $u) {
-            $out[] = ['id' => $u['id'], 'tz' => self::pickTimezone($u['user_tz'], $u['token_tz'], $u['city_tz'])];
+            $out[] = ['id' => $u['id'], 'tz' => self::pickTimezone($u['user_tz'], $u['token_tz'], $u['city_tz']),
+                      'locale' => DailyI18n::normalize($u['locale'])];
         }
         return $out;
     }

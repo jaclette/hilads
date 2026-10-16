@@ -199,5 +199,9 @@
       "not_local": "{{city}} 로컬만 Local Twist를 제안할 수 있어요. 프로필에서 모드를 Local로 바꾸세요.",
       "no_challenge": "내일 챌린지가 아직 준비되지 않았어요. 나중에 다시 오세요."
     }
+  },
+  "translation": {
+    "seeOriginal": "원문 보기",
+    "seeTranslation": "번역 보기"
   }
 }

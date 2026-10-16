@@ -199,5 +199,9 @@
       "not_local": "只有 {{city}} 的在地人可以提議 Local Twist。請在個人檔案中將模式設為 Local。",
       "no_challenge": "明天的挑戰還沒準備好，稍後再來。"
     }
+  },
+  "translation": {
+    "seeOriginal": "查看原文",
+    "seeTranslation": "查看譯文"
   }
 }

@@ -63,13 +63,19 @@ final class DailyAdminService
         $sets = ['updated_at = now()', 'updated_by = ?'];
         $args = [self::actorName()];
 
+        // Only the English changes; translations stay (the editor flags them as older).
         if (array_key_exists('text', $in)) {
-            $sets[] = 'text_i18n = ?';
-            $args[] = self::i18n(self::cleanText($in['text'], self::TEXT_MAX, 'Text'));
+            $sets[] = "text_i18n = text_i18n || jsonb_build_object('en', ?::text)";
+            $args[] = self::cleanText($in['text'], self::TEXT_MAX, 'Text');
         }
         if (array_key_exists('context', $in)) {
-            $sets[] = 'context_i18n = ?';
-            $args[] = self::i18n(self::cleanOptional($in['context'], self::CONTEXT_MAX, 'Context'));
+            $ctx = self::cleanOptional($in['context'], self::CONTEXT_MAX, 'Context');
+            if ($ctx === null) {
+                $sets[] = "context_i18n = context_i18n - 'en'";
+            } else {
+                $sets[] = "context_i18n = context_i18n || jsonb_build_object('en', ?::text)";
+                $args[] = $ctx;
+            }
         }
         if (array_key_exists('status', $in) && $before['status'] !== 'published') {
             $status = self::editableStatus($in['status']);
@@ -85,6 +91,53 @@ final class DailyAdminService
         $after = self::find($id);
         self::forgetCachedDate($after['challenge_date']);
         self::audit('daily_challenge.update', 'daily_challenge', $id, $before, $after);
+        return $after;
+    }
+
+    /**
+     * Save the hand-written translations of a challenge: $text and $context
+     * are {locale: string} maps for the 18 other locales; an empty or absent
+     * locale removes that translation. Stamps _src with the current English.
+     */
+    public static function setChallengeTranslations(string $id, array $text, array $context): array
+    {
+        $before  = self::mustFind($id);
+        $textMap = json_decode((string) $before['text_i18n'], true) ?: [];
+        $ctxMap  = json_decode((string) $before['context_i18n'], true) ?: [];
+        $newText = DailyI18n::merge($textMap, (string) ($textMap['en'] ?? ''),
+                                    DailyI18n::clean($text, self::TEXT_MAX, 'Text'));
+        $newCtx  = DailyI18n::merge($ctxMap, (string) ($ctxMap['en'] ?? ''),
+                                    DailyI18n::clean($context, self::CONTEXT_MAX, 'Context'));
+        if (($ctxMap['en'] ?? null) === null) {
+            unset($newCtx['en']);
+        }
+        Database::pdo()->prepare("
+            UPDATE daily_challenges SET text_i18n = ?::jsonb, context_i18n = ?::jsonb, updated_at = now(), updated_by = ?
+            WHERE id = ?
+        ")->execute([json_encode($newText, JSON_UNESCAPED_UNICODE), json_encode((object) $newCtx, JSON_UNESCAPED_UNICODE),
+                     self::actorName(), $id]);
+        $after = self::find($id);
+        self::forgetCachedDate($after['challenge_date']);
+        self::audit('daily_challenge.translations', 'daily_challenge', $id,
+                    ['text_i18n' => $before['text_i18n'], 'context_i18n' => $before['context_i18n']],
+                    ['text_i18n' => $after['text_i18n'], 'context_i18n' => $after['context_i18n']]);
+        return $after;
+    }
+
+    /** Save the hand-written translations of a twist ({locale: string}; empty removes). */
+    public static function setTwistTranslations(string $twistId, array $text): array
+    {
+        $before = self::findTwist($twistId);
+        if ($before === null) {
+            throw new InvalidArgumentException('Twist not found.');
+        }
+        $map = DailyI18n::merge([], (string) $before['text'], DailyI18n::clean($text, self::TWIST_MAX, 'Twist'));
+        unset($map['en']);   // daily_twists.text holds the English
+        Database::pdo()->prepare("UPDATE daily_twists SET text_i18n = ?::jsonb, updated_at = now() WHERE id = ?")
+            ->execute([json_encode((object) $map, JSON_UNESCAPED_UNICODE), $twistId]);
+        $after = self::findTwist($twistId);
+        self::audit('daily_twist.translations', 'daily_twist', $twistId,
+                    ['text_i18n' => $before['text_i18n']], ['text_i18n' => $after['text_i18n']]);
         return $after;
     }
 
@@ -157,9 +210,9 @@ final class DailyAdminService
                 SELECT ?, ?, text_i18n, context_i18n, 'draft', ?, ? FROM daily_challenges WHERE id = ?
             ")->execute([$newId, $date, self::actorName(), self::actorName(), $id]);
             $pdo->prepare("
-                INSERT INTO daily_twists (id, challenge_id, city_id, text, author_user_id, author_credit,
+                INSERT INTO daily_twists (id, challenge_id, city_id, text, text_i18n, author_user_id, author_credit,
                                           status, moderation_status, created_by)
-                SELECT encode(gen_random_bytes(8), 'hex'), ?, city_id, text, author_user_id, author_credit,
+                SELECT encode(gen_random_bytes(8), 'hex'), ?, city_id, text, text_i18n, author_user_id, author_credit,
                        'selected', 'approved', ?
                 FROM daily_twists WHERE challenge_id = ? AND status = 'selected'
             ")->execute([$newId, self::actorName(), $id]);
@@ -450,11 +503,31 @@ final class DailyAdminService
                 }
             }
 
+            // Translations: any of the app's other locales next to "en".
+            $textTr = $ctxTr = [];
+            try {
+                $textTr = DailyI18n::clean($c['text'] ?? null, self::TEXT_MAX, "{$label}: text");
+                $ctxTr  = DailyI18n::clean($c['context'] ?? null, self::CONTEXT_MAX, "{$label}: context");
+            } catch (InvalidArgumentException $e) {
+                $errors[] = $e->getMessage();
+            }
+
             $twists = [];
             foreach (is_array($c['twists'] ?? null) ? $c['twists'] : [] as $j => $t) {
                 $tLabel = "{$label} twist " . ($j + 1);
                 $slug   = is_array($t) ? (string) ($t['city'] ?? '') : '';
-                $tText  = is_array($t) ? trim((string) ($t['text'] ?? '')) : '';
+                // "text": "English" or {"en": "...", "fr": "...", ...}
+                $tRaw   = is_array($t) ? ($t['text'] ?? '') : '';
+                $tText  = trim((string) (is_array($tRaw) ? ($tRaw['en'] ?? '') : $tRaw));
+                $tTr    = [];
+                if (is_array($tRaw)) {
+                    try {
+                        $tTr = DailyI18n::clean($tRaw, self::TWIST_MAX, $tLabel);
+                    } catch (InvalidArgumentException $e) {
+                        $errors[] = $e->getMessage();
+                        continue;
+                    }
+                }
                 $cityId = $slug !== '' ? $resolveCity($slug) : null;
                 if ($cityId === null) {
                     $errors[] = "{$tLabel}: unknown city \"{$slug}\".";
@@ -470,7 +543,7 @@ final class DailyAdminService
                 }
                 $credit = is_array($t) && is_string($t['credit'] ?? null) && trim($t['credit']) !== ''
                     ? trim($t['credit']) : null;
-                $twists[] = ['cityId' => $cityId, 'text' => $tText, 'credit' => $credit];
+                $twists[] = ['cityId' => $cityId, 'text' => $tText, 'credit' => $credit, 'translations' => $tTr];
             }
 
             $entries[] = [
@@ -480,6 +553,9 @@ final class DailyAdminService
                 'text'    => $text,
                 'context' => $context === '' ? null : $context,
                 'twists'  => $twists,
+                'textTranslations'    => $textTr,
+                'contextTranslations' => $ctxTr,
+                'missingLocales'      => array_values(array_diff(DailyI18n::others(), array_keys($textTr))),
             ];
         }
 
@@ -517,8 +593,9 @@ final class DailyAdminService
                     $pdo->prepare("
                         INSERT INTO daily_challenges (id, is_reserve, text_i18n, context_i18n, status, created_by, updated_by)
                         VALUES (?, true, ?, ?, 'scheduled', ?, ?)
-                    ")->execute([$id, self::i18n($e['text']), self::i18n($e['context']), self::actorName(), self::actorName()]);
-                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id];
+                    ")->execute([$id, self::importI18n($e['text'], $e['textTranslations']),
+                                 self::importI18n($e['context'], $e['contextTranslations']), self::actorName(), self::actorName()]);
+                    $report[] = ['entry' => $e['label'], 'action' => 'create_reserve', 'id' => $id, 'missingLocales' => $e['missingLocales']];
                 } else {
                     if ($e['date'] <= $today) {
                         $report[] = ['entry' => $e['label'], 'action' => 'skip', 'reason' => "{$e['date']} is not a future drop"];
@@ -533,33 +610,43 @@ final class DailyAdminService
                     }
                     if ($existing) {
                         $id = $existing['id'];
+                        // Without translations in the file, the stored ones are kept.
                         $pdo->prepare("
                             UPDATE daily_challenges
-                            SET text_i18n = ?, context_i18n = ?, status = 'scheduled', updated_at = now(), updated_by = ?
+                            SET text_i18n = CASE WHEN ? THEN ?::jsonb ELSE text_i18n || jsonb_build_object('en', ?::text) END,
+                                context_i18n = CASE WHEN ? THEN ?::jsonb ELSE (context_i18n - 'en') || ?::jsonb END,
+                                status = 'scheduled', updated_at = now(), updated_by = ?
                             WHERE id = ?
-                        ")->execute([self::i18n($e['text']), self::i18n($e['context']), self::actorName(), $id]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date']];
+                        ")->execute([
+                            $e['textTranslations'] !== [] ? 'true' : 'false', self::importI18n($e['text'], $e['textTranslations']), $e['text'],
+                            $e['contextTranslations'] !== [] ? 'true' : 'false', self::importI18n($e['context'], $e['contextTranslations']), self::i18n($e['context']),
+                            self::actorName(), $id,
+                        ]);
+                        $report[] = ['entry' => $e['label'], 'action' => 'update', 'id' => $id, 'date' => $e['date'], 'missingLocales' => $e['missingLocales']];
                     } else {
                         $id = bin2hex(random_bytes(8));
                         $pdo->prepare("
                             INSERT INTO daily_challenges (id, challenge_date, text_i18n, context_i18n, status, created_by, updated_by)
                             VALUES (?, ?, ?, ?, 'scheduled', ?, ?)
-                        ")->execute([$id, $e['date'], self::i18n($e['text']), self::i18n($e['context']), self::actorName(), self::actorName()]);
-                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date']];
+                        ")->execute([$id, $e['date'], self::importI18n($e['text'], $e['textTranslations']),
+                                     self::importI18n($e['context'], $e['contextTranslations']), self::actorName(), self::actorName()]);
+                        $report[] = ['entry' => $e['label'], 'action' => 'create', 'id' => $id, 'date' => $e['date'], 'missingLocales' => $e['missingLocales']];
                     }
                 }
 
                 foreach ($e['twists'] as $t) {
+                    $tI18n = $t['translations'] !== [] ? self::twistI18nJson($t['text'], $t['translations']) : null;
                     $stmt = $pdo->prepare("
-                        UPDATE daily_twists SET text = ?, author_credit = ?, moderation_status = 'approved', updated_at = now()
+                        UPDATE daily_twists SET text = ?, author_credit = ?, moderation_status = 'approved', updated_at = now(),
+                                                text_i18n = COALESCE(?::jsonb, text_i18n)
                         WHERE challenge_id = ? AND city_id = ? AND status = 'selected'
                     ");
-                    $stmt->execute([$t['text'], $t['credit'], $id, $t['cityId']]);
+                    $stmt->execute([$t['text'], $t['credit'], $tI18n, $id, $t['cityId']]);
                     if ($stmt->rowCount() === 0) {
                         $pdo->prepare("
-                            INSERT INTO daily_twists (id, challenge_id, city_id, text, author_credit, status, moderation_status, created_by)
-                            VALUES (?, ?, ?, ?, ?, 'selected', 'approved', ?)
-                        ")->execute([bin2hex(random_bytes(8)), $id, $t['cityId'], $t['text'], $t['credit'], self::actorName()]);
+                            INSERT INTO daily_twists (id, challenge_id, city_id, text, text_i18n, author_credit, status, moderation_status, created_by)
+                            VALUES (?, ?, ?, ?, ?::jsonb, ?, 'selected', 'approved', ?)
+                        ")->execute([bin2hex(random_bytes(8)), $id, $t['cityId'], $t['text'], $tI18n ?? '{}', $t['credit'], self::actorName()]);
                     }
                 }
             }
@@ -735,6 +822,24 @@ final class DailyAdminService
         if ($date !== null && PHP_SAPI !== 'cli') {
             @unlink(sys_get_temp_dir() . '/hilads_cache_' . md5('daily_challenge_v1_' . $date));
         }
+    }
+
+    /** text_i18n JSON for an imported text with its translations (stamped _src). */
+    private static function importI18n(?string $en, array $translations): string
+    {
+        $map = DailyI18n::merge([], $en ?? '', $translations);
+        if ($en === null) {
+            unset($map['en']);   // no English context: translations only
+        }
+        return json_encode((object) $map, JSON_UNESCAPED_UNICODE);
+    }
+
+    /** daily_twists.text_i18n JSON: translations only, stamped _src with the English. */
+    private static function twistI18nJson(string $en, array $translations): string
+    {
+        $map = DailyI18n::merge([], $en, $translations);
+        unset($map['en']);
+        return json_encode((object) $map, JSON_UNESCAPED_UNICODE);
     }
 
     private static function i18n(?string $en): string

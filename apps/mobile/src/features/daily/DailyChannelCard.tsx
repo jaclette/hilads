@@ -16,6 +16,7 @@ import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
 import { MEDALS } from './DailyProofTile';
 import { useVoteState } from './votes';
+import { OriginalToggle, useOriginal } from './OriginalToggle';
 import type { DailyPerson, DailyTwist, Message } from '@/types';
 
 type TopProof = {
@@ -27,6 +28,8 @@ type ChallengePayload = {
   twist: DailyTwist | null;
   yesterday?: { date: string; text: string } | null;   // World card only
   yesterdayTop3?: TopProof[];
+  /** The founder's translations by locale (English is text/context/twist). */
+  translations?: Record<string, { text?: string; context?: string; twist?: string }>;
 };
 type ProofPayload = {
   proofId: string; challengeId: string; date: string; challengeText: string;
@@ -54,9 +57,10 @@ interface Props {
  */
 export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Props) {
   const styles = useThemedStyles(makeStyles);
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { city } = useApp();
+  const [showOriginal, toggleOriginal] = useOriginal();
   const time = message.createdAt ? formatSmartTime(message.createdAt) : null;
   const longPress = onLongPress ? () => onLongPress(message) : undefined;
   const reactions = message.reactions && message.reactions.length > 0 && onReact
@@ -66,6 +70,8 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
   if (message.event === 'daily_challenge') {
     const p = (message.payload ?? {}) as Partial<ChallengePayload>;
     if (!p.date || !p.text) return null;
+    const tr = showOriginal ? undefined : p.translations?.[i18n.language];
+    const translated = !!p.translations?.[i18n.language];
     const open = () => {
       track('daily_challenge_viewed', { source: 'channel_card', challenge_date: p.date ?? null, city: city?.name ?? null });
       router.push(`/daily/${p.date}` as never);
@@ -74,12 +80,13 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
       <View style={styles.wrap}>
         <TouchableOpacity style={[styles.card, styles.challengeCard]} onPress={open} onLongPress={longPress} activeOpacity={0.85} accessibilityRole="button">
           <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
-          <Text style={styles.challengeText}>{p.text}</Text>
-          {!!p.context && <Text style={styles.context} numberOfLines={3}>{p.context}</Text>}
+          <Text style={styles.challengeText}>{tr?.text ?? p.text}</Text>
+          {!!p.context && <Text style={styles.context} numberOfLines={3}>{tr?.context ?? p.context}</Text>}
+          <OriginalToggle translated={translated} showingOriginal={showOriginal} onPress={toggleOriginal} />
           {isLive && p.twist && (
             <View style={styles.twist}>
               <Text style={styles.twistLabel}>📍 {t('twistIn', { city: localizeCityName(city?.name ?? '') })}</Text>
-              <Text style={styles.twistText}>{p.twist.text}</Text>
+              <Text style={styles.twistText}>{tr?.twist ?? p.twist.text}</Text>
             </View>
           )}
           <View style={styles.cta}><Text style={styles.ctaText}>{t('cta')}</Text></View>

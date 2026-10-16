@@ -201,5 +201,9 @@
       "not_local": "Solo los locales de {{city}} pueden proponer su Local Twist. Cambia tu modo a Local en tu perfil.",
       "no_challenge": "El challenge de mañana aún no está listo. Vuelve más tarde."
     }
+  },
+  "translation": {
+    "seeOriginal": "Ver original",
+    "seeTranslation": "Ver traducción"
   }
 }

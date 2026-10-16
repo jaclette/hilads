@@ -50,11 +50,13 @@ daily_styles();
             <?php else: ?>
                 <h3 style="margin-bottom:8px">Dry run - nothing written yet</h3>
                 <div class="table-wrapper"><table>
-                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th></tr></thead>
+                    <thead><tr><th>Entry</th><th>Action</th><th>Detail</th><th>Translations</th></tr></thead>
                     <tbody>
                     <?php foreach ($result['report'] as $line): ?>
                         <tr><td><?= dh($line['entry']) ?></td><td><?= dh($line['action']) ?></td>
-                            <td class="daily-muted"><?= dh($line['reason'] ?? ($line['date'] ?? '')) ?></td></tr>
+                            <td class="daily-muted"><?= dh($line['reason'] ?? ($line['date'] ?? '')) ?></td>
+                            <td class="daily-muted"><?php $miss = $line['missingLocales'] ?? null; ?>
+                                <?= $miss === null ? '' : ($miss === [] ? '18/18' : dh((18 - count($miss)) . '/18 · missing ' . implode(', ', $miss))) ?></td></tr>
                     <?php endforeach; ?>
                     </tbody>
                 </table></div>

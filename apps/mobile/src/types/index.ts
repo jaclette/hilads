@@ -763,6 +763,9 @@ export interface DailyChallenge {
   date:     string;          // YYYY-MM-DD, the UTC date of its drop
   text:     string;
   context:  string | null;
+  /** Set when text/context are the founder's translation in the viewer's language. */
+  original?: { text: string; context: string | null } | null;
+  lang?:     string | null;
   startsAt: number;          // unix seconds
   endsAt:   number;
   isActive: boolean;
@@ -778,6 +781,9 @@ export interface DailyPerson {
 export interface DailyTwist {
   id:     string | null;
   text:   string;
+  /** The English when text is a translation. */
+  originalText?: string | null;
+  lang?:   string | null;
   author: DailyPerson | null;
   credit: string | null;
 }
@@ -844,7 +850,7 @@ export interface DailyTwistProposalScreen {
   city:      { id: number; name: string } | null;
   /** Why I can't propose now: no_city, city_not_live, not_local, no_challenge, closed. */
   reason:    string | null;
-  challenge: { text: string; context: string | null } | null;
+  challenge: { text: string; context: string | null; original?: { text: string; context: string | null } | null } | null;
   proposal:  DailyTwistProposal | null;
   maxLength: number;
 }

@@ -1,3 +1,4 @@
+import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
   DailyArchive,
@@ -12,7 +13,13 @@ import type {
 } from '@/types';
 
 // Daily Challenge API (docs/daily-challenge/API.md). City ids are the integer
-// form the API uses (City.channelId is that integer as a string).
+// form the API uses (City.channelId is that integer as a string). Reads send
+// the UI language (`locale`): the API returns the founder's translations of
+// challenges and twists in it, with the English original alongside.
+
+function locale(): string {
+  return i18n.language || 'en';
+}
 
 function cityParam(cityId?: string | number | null): number | undefined {
   const n = Number(cityId);
@@ -20,7 +27,7 @@ function cityParam(cityId?: string | number | null): number | undefined {
 }
 
 export async function fetchDailyToday(cityId?: string | number | null): Promise<DailyToday> {
-  return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId) } });
+  return api.get<DailyToday>('/daily/today', { params: { cityId: cityParam(cityId), locale: locale() } });
 }
 
 export async function fetchDailySheet(
@@ -34,6 +41,7 @@ export async function fetchDailySheet(
       before:  opts.before ?? undefined,
       limit:   opts.limit ?? 20,
       guestId: opts.guestId ?? undefined,
+      locale:  locale(),
     },
   });
 }
@@ -47,12 +55,13 @@ export async function fetchDailyArchive(
       before:  opts.before ?? undefined,
       limit:   opts.limit ?? 20,
       guestId: opts.guestId ?? undefined,
+      locale:  locale(),
     },
   });
 }
 
 export async function fetchDailyProof(id: string): Promise<DailyProof> {
-  return (await api.get<{ proof: DailyProof }>(`/daily/proofs/${id}`)).proof;
+  return (await api.get<{ proof: DailyProof }>(`/daily/proofs/${id}`, { params: { locale: locale() } })).proof;
 }
 
 export async function createDailyProof(input: DailyProofInput): Promise<DailyProof> {
@@ -110,12 +119,12 @@ export async function fetchDailyProofStates(ids: string[], guestId?: string | nu
 
 /** Daily Challenge profile stats (signed-in viewers only). */
 export async function fetchUserDaily(userId: string): Promise<DailyUserStats> {
-  return api.get<DailyUserStats>(`/users/${userId}/daily`);
+  return api.get<DailyUserStats>(`/users/${userId}/daily`, { params: { locale: locale() } });
 }
 
 /** Tomorrow's Local Twist proposal screen (signed in). */
 export async function fetchTwistProposal(): Promise<DailyTwistProposalScreen> {
-  return api.get<DailyTwistProposalScreen>('/daily/twist-proposal');
+  return api.get<DailyTwistProposalScreen>('/daily/twist-proposal', { params: { locale: locale() } });
 }
 
 /** Propose tomorrow's Local Twist for my city (locals of a live city, one per day). */

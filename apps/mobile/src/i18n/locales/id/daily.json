@@ -201,5 +201,9 @@
       "not_local": "Hanya warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
       "no_challenge": "Challenge besok belum siap. Kembali nanti."
     }
+  },
+  "translation": {
+    "seeOriginal": "Lihat asli",
+    "seeTranslation": "Lihat terjemahan"
   }
 }

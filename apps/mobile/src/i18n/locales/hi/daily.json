@@ -201,5 +201,9 @@
       "not_local": "सिर्फ़ {{city}} के लोकल ही इसका Local Twist सुझा सकते हैं। प्रोफ़ाइल में मोड Local चुनें।",
       "no_challenge": "कल का challenge अभी तैयार नहीं है। बाद में आएं।"
     }
+  },
+  "translation": {
+    "seeOriginal": "मूल देखें",
+    "seeTranslation": "अनुवाद देखें"
   }
 }

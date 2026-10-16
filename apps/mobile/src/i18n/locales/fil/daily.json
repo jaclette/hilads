@@ -201,5 +201,9 @@
       "not_local": "Mga local ng {{city}} lang ang puwedeng magmungkahi ng Local Twist nito. Gawing Local ang mode mo sa profile.",
       "no_challenge": "Hindi pa handa ang challenge bukas. Bumalik mamaya."
     }
+  },
+  "translation": {
+    "seeOriginal": "Tingnan ang orihinal",
+    "seeTranslation": "Tingnan ang salin"
   }
 }

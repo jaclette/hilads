@@ -225,5 +225,9 @@
       "not_local": "يمكن لسكان {{city}} فقط اقتراح Local Twist الخاص بها. اختر وضع Local في ملفك.",
       "no_challenge": "تحدي الغد ليس جاهزًا بعد. عد لاحقًا."
     }
+  },
+  "translation": {
+    "seeOriginal": "عرض الأصل",
+    "seeTranslation": "عرض الترجمة"
   }
 }
