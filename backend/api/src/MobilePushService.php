@@ -199,14 +199,19 @@ class MobilePushService
             $richImage = (isset($data['imageUrl']) && is_string($data['imageUrl']) && $data['imageUrl'] !== '')
                 ? $data['imageUrl'] : null;
 
+            // Daily Challenge pushes sent through here ("Local Twist picked") use the
+            // Daily signature sound and Android channel, like the Daily push queue.
+            $daily = str_starts_with($type, 'daily_') && $type !== 'daily_admin' && $type !== 'daily_moderation'
+                     && class_exists('DailyPushes');
+
             // 4. Build Expo push payload (one message per device)
             $payload = array_map(fn($token) => array_filter([
                 'to'         => $token,
                 'title'      => $title,
                 'body'       => $body ?? '',
                 'data'       => array_merge($data, ['type' => $type]),
-                'sound'      => 'default',
-                'channelId'  => 'default', // Android channel defined in push.ts
+                'sound'      => $daily ? DailyPushes::SIGNATURE_SOUND : 'default',
+                'channelId'  => $daily ? DailyPushes::SIGNATURE_CHANNEL : 'default', // Android channels defined in push.ts
                 'categoryId' => $category, // null → dropped by array_filter
                 'priority'   => $isActionable ? 'high' : null,
                 // Android big-picture. On iOS, mutableContent lets the

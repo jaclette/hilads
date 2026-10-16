@@ -41,7 +41,7 @@ final class DailyPushes
     public const ACTIVE_DAYS   = 7;     // reminder: app opened in the last 7 days
     public const DEEP_LINK     = 'https://hilads.live/today';
     public const EARLY_WINDOW  = 3 * 3600;  // speed bonus: posted within 3h of the user's start time (V2-07)
-    // The morning push's signature sound (V2-07): the file bundled in the app
+    // The Daily Challenge signature sound, on every Daily push (V2-07): the file bundled in the app
     // (assets/sounds, app.json expo-notifications "sounds") and, on Android, the
     // channel created with it (src/services/push.ts). A channel's sound can't
     // change once created: a new sound needs a new file name AND a new channel id.
@@ -605,13 +605,11 @@ final class DailyPushes
                 continue;
             }
             $data = ($msg['data'] ?? self::data((string) $row['challenge_date'])) + ['dailyPushId' => (int) $row['id']];
-            // The morning push alone carries the signature sound (V2-07), including its author
-            // version (proposal_day); every other Daily push keeps the default.
-            $signature = $row['type'] === 'morning' || $row['type'] === 'proposal_day';
+            // Every Daily push carries the signature sound (V2-07, the founder's choice: all of
+            // them, not only the morning push). Other Hilads pushes keep the default.
             MobilePushService::sendToTokens($tokensByKey[$row['recipient_key']], (string) ($msg['title'] ?? 'Daily Challenge'),
                                             (string) ($msg['body'] ?? ''), $data, 'daily_' . $row['type'],
-                                            $signature ? self::SIGNATURE_SOUND : 'default',
-                                            $signature ? self::SIGNATURE_CHANNEL : 'default');
+                                            self::SIGNATURE_SOUND, self::SIGNATURE_CHANNEL);
             $alreadySent[$capKey] = ($alreadySent[$capKey] ?? 0) + 1;
             $sent[] = [$row['id'], $day, $msg];
         }
