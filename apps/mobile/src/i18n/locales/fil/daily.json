@@ -230,5 +230,39 @@
     "cityTop": "Top 3 sa {{city}}",
     "compactTitle": "Top 3 ngayon",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "Ngayong linggo",
+    "calendar": "Kalendaryo",
+    "today": "Ngayon",
+    "tomorrow": "Bukas",
+    "done": "Tapos na",
+    "pending": "Hinihintay ang review",
+    "missed": "Hindi nagawa",
+    "none": "Walang challenge"
+  },
+  "calendar": {
+    "title": "Aking Daily Challenges",
+    "streak": "Kasalukuyang streak",
+    "best": "Pinakamahabang streak",
+    "monthDone": "Natapos ngayong buwan: {{n}}",
+    "legendDone": "Tapos na",
+    "legendPending": "Hinihintay ang review",
+    "prev": "Nakaraang buwan",
+    "next": "Susunod na buwan"
+  },
+  "guide": {
+    "title": "Gabay sa lungsod",
+    "all": "Lahat",
+    "emptyCity": "Wala pang {{theme}} challenge sa {{city}}. Susunod: {{day}}.",
+    "emptyWorld": "Wala pang {{theme}} challenge. Susunod: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} tema",
+    "earned": "Nakuha na",
+    "hint": "Tapusin ang lahat ng 7 tema sa {{city}} para makuha ang Local Pass nito.",
+    "profileTitle": "Local Passes",
+    "badgeA11y": "May Local Pass"
   }
 }

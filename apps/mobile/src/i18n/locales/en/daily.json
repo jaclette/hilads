@@ -230,5 +230,39 @@
     "cityTop": "Top 3 in {{city}}",
     "compactTitle": "Top 3 right now",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "This week",
+    "calendar": "Calendar",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "done": "Completed",
+    "pending": "Waiting for review",
+    "missed": "Not done",
+    "none": "No challenge"
+  },
+  "calendar": {
+    "title": "My Daily Challenges",
+    "streak": "Current streak",
+    "best": "Best streak",
+    "monthDone": "Completed this month: {{n}}",
+    "legendDone": "Completed",
+    "legendPending": "Waiting for review",
+    "prev": "Previous month",
+    "next": "Next month"
+  },
+  "guide": {
+    "title": "City guide",
+    "all": "All",
+    "emptyCity": "No {{theme}} challenge in {{city}} yet. Next one on {{day}}.",
+    "emptyWorld": "No {{theme}} challenge yet. Next one on {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} themes",
+    "earned": "Earned",
+    "hint": "Complete all 7 themes in {{city}} to earn its Local Pass.",
+    "profileTitle": "Local Passes",
+    "badgeA11y": "Local Pass holder"
   }
 }

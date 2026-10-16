@@ -8,6 +8,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { formatAmount } from './currency';
 import { DailyVoteButton } from './DailyVoteButton';
+import { LocalPassBadge } from './LocalPassBadge';
 import { MEDALS } from './DailyProofTile';
 import type { DailyProof } from '@/types';
 
@@ -25,10 +26,13 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
         </TouchableOpacity>
         <Image source={{ uri: proof.photoUrl }} style={styles.photo} contentFit="contain" />
         <View style={styles.meta}>
-          <Text style={styles.name}>
-            {name} · {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
-            {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
-          </Text>
+          <View style={styles.nameRow}>
+            <Text style={styles.name}>
+              {name} · {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
+              {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
+            </Text>
+            {proof.user.localPass && <LocalPassBadge label onDark />}
+          </View>
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
             <Text style={styles.badge}>
               {proof.worldRank !== null && proof.worldRank <= 3 ? `${MEDALS[proof.worldRank - 1]} ${t('results.worldRank', { rank: proof.worldRank })}` : ''}
@@ -59,6 +63,7 @@ const makeStyles = (_c: ThemeColors) => StyleSheet.create({
   close:   { position: 'absolute', top: 54, right: 16, zIndex: 2, padding: 8 },
   photo:   { flex: 1 },
   meta:    { padding: 16, gap: 6 },
+  nameRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
   name:    { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
   caption: { color: '#fff', fontSize: FontSizes.sm },
   extra:   { color: '#ccc', fontSize: FontSizes.xs },

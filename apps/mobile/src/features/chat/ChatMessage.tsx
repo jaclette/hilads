@@ -23,6 +23,7 @@ import { ReactionBurstOverlay } from './ReactionBurstOverlay';
 import { reactionEmitter, EMOJI_TO_TYPE } from '@/lib/reactionEmitter';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LocalPassBadge } from '@/features/daily/LocalPassBadge';
 import i18n from '@/i18n';
 import * as Haptics from 'expo-haptics';
 import { FontSizes, type ThemeColors } from '@/constants';
@@ -468,7 +469,8 @@ const MODE_EMOJI: Record<string, string> = {
 
 // ── SenderMeta ────────────────────────────────────────────────────────────────
 
-function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope, thumbAvatarUrl, country }: {
+function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, contextBadge, vibe, mode, roleBadge, isMine, worldScope, thumbAvatarUrl, country, localPass = false }: {
+  localPass?:   boolean;
   nickname:     string;
   color:        string;
   initial:      string;
@@ -542,6 +544,8 @@ function SenderMeta({ nickname, color, initial, userId, guestId, primaryBadge, c
         </Text>
       ) : null; })()}
       {contextBadge?.key === 'host' && <BadgePill badge={contextBadge} />}
+      {/* Holds this city's Daily Challenge Local Pass (city chats only). */}
+      {localPass && <LocalPassBadge />}
       {roleBadge && (
         <View style={[
           roleStyles.pill,
@@ -907,6 +911,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
                 vibe={message.vibe}
                 mode={message.mode} isMine={isMine} worldScope={worldScope}
                 thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
+                localPass={!worldScope && !!message.localPass}
               />
             )}
             <View style={styles.bubbleWrap}>
@@ -954,6 +959,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
               vibe={message.vibe}
               mode={message.mode} isMine={isMine} worldScope={worldScope}
               thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
+              localPass={!worldScope && !!message.localPass}
             />
           )}
           {/* Wrap image + reactions so pills stay visually attached to the bubble */}
@@ -1029,6 +1035,7 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
             vibe={message.vibe}
             mode={message.mode} isMine={isMine} worldScope={worldScope}
             thumbAvatarUrl={message.thumbAvatarUrl} country={message.country}
+            localPass={!worldScope && !!message.localPass}
           />
         )}
 

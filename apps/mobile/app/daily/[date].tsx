@@ -12,7 +12,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { track } from '@/services/analytics';
 import { deleteDailyProof, fetchDailyProof, fetchDailyToday } from '@/api/daily';
-import { formatCountdown, useCountdown, useDailySheet } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours, useCountdown, useDailySheet } from '@/hooks/useDaily';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
 import { DailyLeaderboardPanel } from '@/features/daily/DailyLeaderboardPanel';
 import { DailyProofViewer } from '@/features/daily/DailyProofViewer';
@@ -21,6 +21,7 @@ import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { DailyPlacesMap } from '@/features/daily/DailyPlacesMap';
+import { themeLabel } from '@/features/daily/themes';
 import type { DailyProof } from '@/types';
 
 /**
@@ -153,10 +154,11 @@ function Sheet({ date, openProofId, source, initialTab }: {
         <View style={styles.card}>
           <View style={styles.topRow}>
             <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
-            <Text style={styles.countdown}>
+            <Text style={[styles.countdown, challenge.isActive && isFinalHours(secondsLeft) && styles.countdownWarn]}>
               {challenge.isActive && secondsLeft !== null ? `⏱ ${t('timeLeft', { time: formatCountdown(secondsLeft) })}` : t('closed')}
             </Text>
           </View>
+          {!!challenge.theme && <Text style={styles.theme}>{themeLabel(challenge.theme)}</Text>}
           <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
           {!!challenge.context && (
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>
@@ -323,7 +325,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   topRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
   kicker:      { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
   countdown:   { fontSize: 12, fontWeight: '700', color: c.muted },
+  countdownWarn:{ color: c.warning },
   text:        { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 26 },
+  theme:       { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.text, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden' },
   context:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
   twist:       { backgroundColor: c.bg3, borderRadius: Radius.md, padding: 10, gap: 4 },
   twistLabel:  { fontSize: 11, fontWeight: '800', color: c.accentText, textTransform: 'uppercase', letterSpacing: 0.4 },

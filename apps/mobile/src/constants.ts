@@ -115,6 +115,7 @@ export const Colors = {
   // Semantic
   green:    '#3ddc84',   // web --green  (online / live)
   red:      '#f87171',
+  warning:  '#F5A524',   // amber - time running out (Daily countdown, last 3h)
   violet:   '#8B5CF6',   // web --profile-dot (member badge)
   white:    '#ffffff',
 
@@ -153,6 +154,7 @@ export const LightColors: ThemeColors = {
   accent3:  '#B87228',
   green:    '#17864C',   // darkened so it reads as text/dots on white
   red:      '#C0264A',
+  warning:  '#B45309',   // amber, dark enough to read as text on cream
   violet:   '#7C4DE0',
   white:    '#ffffff',
   accentText: '#C24A38', // readable deep orange as text on cream

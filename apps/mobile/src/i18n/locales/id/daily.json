@@ -230,5 +230,39 @@
     "cityTop": "Top 3 di {{city}}",
     "compactTitle": "Top 3 saat ini",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "Minggu ini",
+    "calendar": "Kalender",
+    "today": "Hari ini",
+    "tomorrow": "Besok",
+    "done": "Selesai",
+    "pending": "Menunggu ditinjau",
+    "missed": "Belum dikerjakan",
+    "none": "Tidak ada challenge"
+  },
+  "calendar": {
+    "title": "Daily Challenges saya",
+    "streak": "Streak saat ini",
+    "best": "Streak terbaik",
+    "monthDone": "Selesai bulan ini: {{n}}",
+    "legendDone": "Selesai",
+    "legendPending": "Menunggu ditinjau",
+    "prev": "Bulan sebelumnya",
+    "next": "Bulan berikutnya"
+  },
+  "guide": {
+    "title": "Panduan kota",
+    "all": "Semua",
+    "emptyCity": "Belum ada challenge {{theme}} di {{city}}. Berikutnya: {{day}}.",
+    "emptyWorld": "Belum ada challenge {{theme}}. Berikutnya: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} tema",
+    "earned": "Didapat",
+    "hint": "Selesaikan ke-7 tema di {{city}} untuk mendapat Local Pass-nya.",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Pemilik Local Pass"
   }
 }

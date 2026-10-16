@@ -242,5 +242,39 @@
     "cityTop": "Top 3 в {{city}}",
     "compactTitle": "Top 3 сейчас",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "Эта неделя",
+    "calendar": "Календарь",
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "done": "Выполнено",
+    "pending": "На проверке",
+    "missed": "Не сделано",
+    "none": "Нет challenge"
+  },
+  "calendar": {
+    "title": "Мои Daily Challenges",
+    "streak": "Текущая серия",
+    "best": "Лучшая серия",
+    "monthDone": "Выполнено в этом месяце: {{n}}",
+    "legendDone": "Выполнено",
+    "legendPending": "На проверке",
+    "prev": "Предыдущий месяц",
+    "next": "Следующий месяц"
+  },
+  "guide": {
+    "title": "Гид по городу",
+    "all": "Все",
+    "emptyCity": "В {{city}} пока нет challenge «{{theme}}». Следующий: {{day}}.",
+    "emptyWorld": "Пока нет challenge «{{theme}}». Следующий: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "Тем: {{done}}/{{total}}",
+    "earned": "Получен",
+    "hint": "Выполни все 7 тем в {{city}}, чтобы получить его Local Pass.",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Есть Local Pass"
   }
 }

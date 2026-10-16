@@ -2,6 +2,8 @@ import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
   DailyArchive,
+  DailyCalendar,
+  DailyGuide,
   DailyLeaderboard,
   DailyPlacePin,
   DailyProof,
@@ -49,17 +51,28 @@ export async function fetchDailySheet(
 }
 
 export async function fetchDailyArchive(
-  opts: { cityId?: string | number | null; before?: string | null; limit?: number; guestId?: string | null } = {},
+  opts: { cityId?: string | number | null; before?: string | null; limit?: number; guestId?: string | null; theme?: string | null } = {},
 ): Promise<DailyArchive> {
   return api.get<DailyArchive>('/daily/archive', {
     params: {
       cityId:  cityParam(opts.cityId),
+      theme:   opts.theme ?? undefined,
       before:  opts.before ?? undefined,
       limit:   opts.limit ?? 20,
       guestId: opts.guestId ?? undefined,
       locale:  locale(),
     },
   });
+}
+
+/** Week strip / month calendar: days from..to (at most 62) with my status, and my streak. */
+export async function fetchDailyCalendar(from: string, to: string): Promise<DailyCalendar> {
+  return api.get<DailyCalendar>('/daily/calendar', { params: { from, to } });
+}
+
+/** City guide: one summary per weekly theme, plus my Local Pass progress in that city. */
+export async function fetchDailyGuide(cityId?: string | number | null, guestId?: string | null): Promise<DailyGuide> {
+  return api.get<DailyGuide>('/daily/guide', { params: { cityId: cityParam(cityId), guestId: guestId ?? undefined } });
 }
 
 /** "Already done" map: pinned places of past challenges for a city (World selection for a dead city). */

@@ -254,5 +254,39 @@
     "cityTop": "Top 3 في {{city}}",
     "compactTitle": "Top 3 الآن",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "هذا الأسبوع",
+    "calendar": "التقويم",
+    "today": "اليوم",
+    "tomorrow": "غدًا",
+    "done": "مكتمل",
+    "pending": "بانتظار المراجعة",
+    "missed": "لم يُنجز",
+    "none": "لا يوجد challenge"
+  },
+  "calendar": {
+    "title": "Daily Challenges الخاصة بي",
+    "streak": "السلسلة الحالية",
+    "best": "أفضل سلسلة",
+    "monthDone": "المكتمل هذا الشهر: {{n}}",
+    "legendDone": "مكتمل",
+    "legendPending": "بانتظار المراجعة",
+    "prev": "الشهر السابق",
+    "next": "الشهر التالي"
+  },
+  "guide": {
+    "title": "دليل المدينة",
+    "all": "الكل",
+    "emptyCity": "لا يوجد challenge {{theme}} في {{city}} بعد. القادم: {{day}}.",
+    "emptyWorld": "لا يوجد challenge {{theme}} بعد. القادم: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} مواضيع",
+    "earned": "تم الحصول عليه",
+    "hint": "أكمل المواضيع السبعة في {{city}} لتحصل على Local Pass الخاص بها.",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "حامل Local Pass"
   }
 }

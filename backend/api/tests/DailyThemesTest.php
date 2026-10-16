@@ -51,4 +51,21 @@ final class DailyThemesTest extends TestCase
         $this->assertCount(1, $r['errors']);
         $this->assertStringContainsString('#4: unknown theme "Brunch"', $r['errors'][0]);
     }
+
+    public function testCalendarDays(): void
+    {
+        $days = DailyChallengeRepository::calendarDays('2026-11-02', '2026-11-05', [
+            ['challenge_date' => '2026-11-02', 'theme' => 'coffee', 'status' => 'published', 'my_status' => 'approved'],
+            ['challenge_date' => '2026-11-03', 'theme' => null, 'status' => 'published', 'my_status' => null],
+            ['challenge_date' => '2026-11-05', 'theme' => 'market', 'status' => 'scheduled', 'my_status' => null],
+        ]);
+        $this->assertCount(4, $days);
+        $this->assertSame(['date' => '2026-11-02', 'theme' => ['key' => 'coffee', 'name' => 'Coffee'], 'published' => true, 'myStatus' => 'approved'], $days[0]);
+        $this->assertSame('street_food', $days[1]['theme']['key']);   // Tuesday default
+        $this->assertFalse($days[2]['published']);                    // nothing that day
+        $this->assertSame('coffee', $days[2]['theme']['key']);
+        $this->assertFalse($days[3]['published']);                    // scheduled: theme only
+        $this->assertSame('market', $days[3]['theme']['key']);
+        $this->assertNull($days[3]['myStatus']);
+    }
 }

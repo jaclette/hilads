@@ -228,5 +228,39 @@
     "cityTop": "Top 3 ใน {{city}}",
     "compactTitle": "Top 3 ตอนนี้",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "สัปดาห์นี้",
+    "calendar": "ปฏิทิน",
+    "today": "วันนี้",
+    "tomorrow": "พรุ่งนี้",
+    "done": "ทำแล้ว",
+    "pending": "รอตรวจสอบ",
+    "missed": "ยังไม่ได้ทำ",
+    "none": "ไม่มี challenge"
+  },
+  "calendar": {
+    "title": "Daily Challenges ของฉัน",
+    "streak": "สตรีคปัจจุบัน",
+    "best": "สตรีคที่ดีที่สุด",
+    "monthDone": "ทำสำเร็จเดือนนี้: {{n}}",
+    "legendDone": "ทำแล้ว",
+    "legendPending": "รอตรวจสอบ",
+    "prev": "เดือนก่อน",
+    "next": "เดือนถัดไป"
+  },
+  "guide": {
+    "title": "คู่มือเมือง",
+    "all": "ทั้งหมด",
+    "emptyCity": "ยังไม่มี challenge {{theme}} ใน {{city}} ครั้งถัดไป: {{day}}",
+    "emptyWorld": "ยังไม่มี challenge {{theme}} ครั้งถัดไป: {{day}}"
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} ธีม",
+    "earned": "ได้รับแล้ว",
+    "hint": "ทำครบทั้ง 7 ธีมใน {{city}} เพื่อรับ Local Pass ของเมือง",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "มี Local Pass"
   }
 }

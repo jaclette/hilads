@@ -230,5 +230,39 @@
     "cityTop": "{{city}} के Top 3",
     "compactTitle": "अभी के Top 3",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "इस हफ़्ते",
+    "calendar": "कैलेंडर",
+    "today": "आज",
+    "tomorrow": "कल",
+    "done": "पूरा किया",
+    "pending": "समीक्षा बाकी",
+    "missed": "नहीं किया",
+    "none": "कोई challenge नहीं"
+  },
+  "calendar": {
+    "title": "मेरे Daily Challenges",
+    "streak": "मौजूदा स्ट्रीक",
+    "best": "सबसे लंबी स्ट्रीक",
+    "monthDone": "इस महीने पूरे किए: {{n}}",
+    "legendDone": "पूरा किया",
+    "legendPending": "समीक्षा बाकी",
+    "prev": "पिछला महीना",
+    "next": "अगला महीना"
+  },
+  "guide": {
+    "title": "शहर गाइड",
+    "all": "सभी",
+    "emptyCity": "{{city}} में अभी कोई {{theme}} challenge नहीं। अगला: {{day}}।",
+    "emptyWorld": "अभी कोई {{theme}} challenge नहीं। अगला: {{day}}।"
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} थीम",
+    "earned": "मिल गया",
+    "hint": "{{city}} में सभी 7 थीम पूरी करें और उसका Local Pass पाएँ।",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Local Pass धारक"
   }
 }

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
-import { formatCountdown } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours } from '@/hooks/useDaily';
 import type { DailyToday } from '@/types';
 
 /**
@@ -27,7 +27,7 @@ export function DailyPinBar({ data, secondsLeft }: { data: DailyToday | null; se
       <Text style={styles.text} numberOfLines={1}>
         <Text style={styles.kicker}>{t('kicker')} · </Text>{challenge.text}
       </Text>
-      {secondsLeft !== null && <Text style={styles.time}>{formatCountdown(secondsLeft)}</Text>}
+      {secondsLeft !== null && <Text style={[styles.time, isFinalHours(secondsLeft) && styles.timeWarn]}>{formatCountdown(secondsLeft)}</Text>}
     </TouchableOpacity>
   );
 }
@@ -38,4 +38,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   text:   { flex: 1, fontSize: FontSizes.xs, color: c.text, fontWeight: '600' },
   kicker: { color: c.accentText, fontWeight: '800' },
   time:   { fontSize: 11, color: c.muted, fontWeight: '700' },
+  timeWarn: { color: c.warning },
 });

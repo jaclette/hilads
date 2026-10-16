@@ -7,12 +7,14 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
-import { formatCountdown, useDailyToday } from '@/hooks/useDaily';
+import { formatCountdown, isFinalHours, useDailyToday } from '@/hooks/useDaily';
 import { DailyStatusChip } from './DailyStatusChip';
 import { DailyPushBanner } from './DailyPushBanner';
 import { dailyTrackProps } from './track';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { DailyTop3 } from './DailyTop3';
+import { themeLabel } from './themes';
+import { trackLocalPassEarned } from './localPassTracking';
 import type { DailyToday } from '@/types';
 
 /**
@@ -46,6 +48,7 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
     tracked.current = challenge.id;
     track('daily_challenge_viewed', { source, ...dailyTrackProps(data, account?.mode) });
   }, [challenge, data, account?.mode, source]);
+  useEffect(() => { trackLocalPassEarned(data?.localPass, account?.id); }, [data?.localPass, account?.id]);
 
   if (loading && !data) {
     return <View style={[styles.card, styles.placeholder]}><ActivityIndicator color={colors.accent} /></View>;
@@ -77,8 +80,12 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
     <TouchableOpacity style={styles.card} onPress={openSheet} activeOpacity={0.9} accessibilityRole="button" accessibilityLabel={`${t('kicker')}: ${challenge.text}`}>
       <View style={styles.topRow}>
         <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
-        {secondsLeft !== null && <Text style={styles.countdown}>⏱ {t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>}
+        {secondsLeft !== null && (
+          <Text style={[styles.countdown, isFinalHours(secondsLeft) && styles.countdownWarn]}>⏱ {t('timeLeft', { time: formatCountdown(secondsLeft) })}</Text>
+        )}
       </View>
+
+      {!!challenge.theme && <Text style={styles.theme}>{themeLabel(challenge.theme)}</Text>}
 
       <Text style={styles.text} numberOfLines={3}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
       <OriginalToggle translated={!!challenge.original || !!data?.twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
@@ -145,7 +152,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   topRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   kicker:     { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
   countdown:  { fontSize: 12, fontWeight: '700', color: c.muted },
+  countdownWarn: { color: c.warning },
   text:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
+  theme:      { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.text, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden' },
   propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8 },
   proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.accentText },
   proposeArrow:{ fontSize: FontSizes.md, fontWeight: '800', color: c.accentText },

@@ -11,6 +11,7 @@ import { formatCountdown } from '@/hooks/useDaily';
 import { MEDALS } from './DailyProofTile';
 import { dailyTrackProps } from './track';
 import { useDailyLeaderboard } from './leaderboard';
+import { LocalPassBadge } from './LocalPassBadge';
 import type { DailyLeaderboardEntry, DailyProof, DailySheet } from '@/types';
 
 interface Props {
@@ -126,7 +127,10 @@ function EntryRow({ entry, mine, hideCity = false, onPress }: {
         ? <Image source={{ uri: entry.thumbUrl }} style={styles.thumb} contentFit="cover" />
         : <View style={styles.thumb} />}
       <View style={styles.body}>
-        <Text style={styles.name} numberOfLines={1}>{name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          {entry.user.localPass && <LocalPassBadge />}
+        </View>
         <Text style={styles.rowSub} numberOfLines={1}>
           {entry.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
           {!hideCity && entry.city ? ` · ${localizeCityName(entry.city.name)}` : ''}
@@ -176,7 +180,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rank:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text, width: 34, textAlign: 'center' },
   thumb:   { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
   body:    { flex: 1, gap: 1 },
-  name:    { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  name:    { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   rowSub:  { fontSize: 12, color: c.muted },
   votes:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

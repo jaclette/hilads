@@ -14,6 +14,7 @@ import { track } from '@/services/analytics';
 import { dailyErrorCode, reportDailyProof, type DailyReportReason } from '@/api/daily';
 import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
+import { LocalPassBadge } from './LocalPassBadge';
 import { MEDALS } from './DailyProofTile';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
@@ -157,7 +158,10 @@ function ProofCard({ message, reactions, time, longPress }: {
               ? <Image source={{ uri: p.user.photoUrl }} style={styles.avatar} />
               : <View style={[styles.avatar, styles.avatarEmpty]}><Text style={styles.avatarLetter}>{name.slice(0, 1).toUpperCase()}</Text></View>}
             <View style={styles.flex}>
-              <Text style={styles.name} numberOfLines={1}>{name}</Text>
+              <View style={styles.nameRow}>
+                <Text style={styles.name} numberOfLines={1}>{name}</Text>
+                {p.user?.localPass && <LocalPassBadge />}
+              </View>
               <Text style={styles.sub} numberOfLines={1}>
                 {p.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
                 {p.city ? ` · ${localizeCityName(p.city.name)}` : ''}
@@ -200,7 +204,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   avatar:        { width: 30, height: 30, borderRadius: 15 },
   avatarEmpty:   { backgroundColor: c.bg3, alignItems: 'center', justifyContent: 'center' },
   avatarLetter:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
-  name:          { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  nameRow:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  name:          { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   sub:           { fontSize: 11, color: c.muted },
   photo:         { width: '100%', aspectRatio: 4 / 3, borderRadius: Radius.md, backgroundColor: c.bg3 },
   caption:       { fontSize: FontSizes.sm, color: c.text },

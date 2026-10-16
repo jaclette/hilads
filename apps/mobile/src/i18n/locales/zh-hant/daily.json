@@ -228,5 +228,39 @@
     "cityTop": "{{city}} Top 3",
     "compactTitle": "目前 Top 3",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "本週",
+    "calendar": "日曆",
+    "today": "今天",
+    "tomorrow": "明天",
+    "done": "已完成",
+    "pending": "等待審核",
+    "missed": "未完成",
+    "none": "沒有 challenge"
+  },
+  "calendar": {
+    "title": "我的 Daily Challenges",
+    "streak": "目前連續",
+    "best": "最佳連續",
+    "monthDone": "本月完成：{{n}}",
+    "legendDone": "已完成",
+    "legendPending": "等待審核",
+    "prev": "上個月",
+    "next": "下個月"
+  },
+  "guide": {
+    "title": "城市指南",
+    "all": "全部",
+    "emptyCity": "{{city}} 還沒有 {{theme}} challenge。下一次：{{day}}。",
+    "emptyWorld": "還沒有 {{theme}} challenge。下一次：{{day}}。"
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} 個主題",
+    "earned": "已獲得",
+    "hint": "在 {{city}} 完成全部 7 個主題即可獲得它的 Local Pass。",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "擁有 Local Pass"
   }
 }

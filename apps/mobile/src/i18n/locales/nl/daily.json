@@ -230,5 +230,39 @@
     "cityTop": "Top 3 in {{city}}",
     "compactTitle": "Top 3 op dit moment",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "Deze week",
+    "calendar": "Kalender",
+    "today": "Vandaag",
+    "tomorrow": "Morgen",
+    "done": "Gedaan",
+    "pending": "Wacht op controle",
+    "missed": "Niet gedaan",
+    "none": "Geen challenge"
+  },
+  "calendar": {
+    "title": "Mijn Daily Challenges",
+    "streak": "Huidige reeks",
+    "best": "Beste reeks",
+    "monthDone": "Deze maand gedaan: {{n}}",
+    "legendDone": "Gedaan",
+    "legendPending": "Wacht op controle",
+    "prev": "Vorige maand",
+    "next": "Volgende maand"
+  },
+  "guide": {
+    "title": "Stadsgids",
+    "all": "Alle",
+    "emptyCity": "Nog geen {{theme}}-challenge in {{city}}. De volgende: {{day}}.",
+    "emptyWorld": "Nog geen {{theme}}-challenge. De volgende: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} thema's",
+    "earned": "Behaald",
+    "hint": "Doe alle 7 thema's in {{city}} om de Local Pass van de stad te halen.",
+    "profileTitle": "Local Passes",
+    "badgeA11y": "Heeft de Local Pass"
   }
 }

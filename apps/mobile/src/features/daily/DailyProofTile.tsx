@@ -5,6 +5,7 @@ import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { DailyVoteButton } from './DailyVoteButton';
+import { LocalPassBadge } from './LocalPassBadge';
 import type { DailyProof } from '@/types';
 
 export const MEDALS = ['🥇', '🥈', '🥉'];
@@ -19,7 +20,10 @@ export function DailyProofTile({ proof, onPress }: { proof: DailyProof; onPress:
       <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.photo} contentFit="cover" transition={150} />
       {proof.worldRank !== null && proof.worldRank <= 3 && <Text style={styles.medal}>{MEDALS[proof.worldRank - 1]}</Text>}
       <View style={styles.meta}>
-        <Text style={styles.name} numberOfLines={1}>{name}</Text>
+        <View style={styles.nameRow}>
+          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          {proof.user.localPass && <LocalPassBadge />}
+        </View>
         <Text style={styles.sub} numberOfLines={1}>
           {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
           {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
@@ -38,7 +42,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   tile:    { flex: 1, backgroundColor: c.bg2, borderRadius: Radius.md, borderWidth: 1, borderColor: c.border, overflow: 'hidden' },
   photo:   { width: '100%', aspectRatio: 1, backgroundColor: c.bg3 },
   meta:    { padding: 8, gap: 2 },
-  name:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  name:    { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
   sub:     { fontSize: 11, color: c.muted },
   badge:   { fontSize: 11, fontWeight: '700', color: c.green },
   caption: { fontSize: FontSizes.xs, color: c.text, marginTop: 2 },

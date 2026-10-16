@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState } from 'react-native';
 import { useFocusEffect } from 'expo-router';
-import { fetchDailyArchive, fetchDailySheet, fetchDailyToday } from '@/api/daily';
+import { fetchDailyArchive, fetchDailyCalendar, fetchDailyGuide, fetchDailySheet, fetchDailyToday } from '@/api/daily';
 import { useApp } from '@/context/AppContext';
 import { onDailyDropped } from '@/lib/dailyEvents';
 import { seedProofs, seedVotesLeft } from '@/features/daily/votes';
-import type { DailyArchiveItem, DailyProof, DailySheet, DailyToday } from '@/types';
+import type { DailyArchiveItem, DailyCalendar, DailyGuide, DailyProof, DailySheet, DailyToday } from '@/types';
 
 // Daily Challenge data hooks. Same plain useState/useEffect pattern as the rest
 // of the app (no query library). Today's data refreshes on screen focus, when
@@ -30,6 +30,13 @@ export function useCountdown(nextDropAt: number | null | undefined, serverTime: 
   }, [nextDropAt, serverTime]);
 
   return left;
+}
+
+/** The countdown turns to the warning color in the last 3 hours before the drop (SPEC 8.4). */
+export const COUNTDOWN_WARNING_SECONDS = 3 * 3600;
+
+export function isFinalHours(seconds: number | null): boolean {
+  return seconds !== null && seconds <= COUNTDOWN_WARNING_SECONDS;
 }
 
 /** "6h 12m" / "12m" / "45s" - compact, locale-neutral. */
@@ -144,8 +151,8 @@ function seedSheet(s: DailySheet) {
   if (open) seedVotesLeft(s.myVotes?.left ?? null);
 }
 
-/** "Already done" archive of a city (World selection for a dead city), paged by date. */
-export function useDailyArchive(cityId: string | null | undefined) {
+/** "Already done" archive of a city (World selection for a dead city), paged by date; `theme` filters. */
+export function useDailyArchive(cityId: string | null | undefined, theme: string | null = null) {
   const { identity, account } = useApp();
   const guestId = account ? null : identity?.guestId ?? null;
   const [items, setItems]     = useState<DailyArchiveItem[]>([]);
@@ -156,7 +163,7 @@ export function useDailyArchive(cityId: string | null | undefined) {
 
   const load = useCallback(async () => {
     try {
-      const a = await fetchDailyArchive({ cityId, guestId, limit: 10 });
+      const a = await fetchDailyArchive({ cityId, guestId, theme, limit: 10 });
       setItems(a.items);
       setScope(a.scope);
       setHasMore(a.hasMore);
@@ -165,7 +172,7 @@ export function useDailyArchive(cityId: string | null | undefined) {
     } finally {
       setLoading(false);
     }
-  }, [cityId, guestId]);
+  }, [cityId, guestId, theme]);
 
   useEffect(() => { setLoading(true); setItems([]); load(); }, [load]);
 
@@ -174,7 +181,7 @@ export function useDailyArchive(cityId: string | null | undefined) {
     if (!hasMore || loadingMore || !last) return;
     setLoadingMore(true);
     try {
-      const a = await fetchDailyArchive({ cityId, guestId, limit: 10, before: last.challenge.date });
+      const a = await fetchDailyArchive({ cityId, guestId, theme, limit: 10, before: last.challenge.date });
       setItems(prev => [...prev, ...a.items.filter(i => !prev.some(p => p.challenge.id === i.challenge.id))]);
       setHasMore(a.hasMore);
     } catch (err) {
@@ -182,7 +189,52 @@ export function useDailyArchive(cityId: string | null | undefined) {
     } finally {
       setLoadingMore(false);
     }
-  }, [items, hasMore, loadingMore, cityId, guestId]);
+  }, [items, hasMore, loadingMore, cityId, guestId, theme]);
 
   return { items, scope, hasMore, loading, loadingMore, loadMore, reload: load };
+}
+
+/**
+ * Days from..to (Y-m-d, at most 62) with my status, and my streak. Refreshed on
+ * focus. The response's `today` is the server's challenge date.
+ */
+export function useDailyCalendar(from: string, to: string) {
+  const { account } = useApp();
+  const [data, setData]       = useState<DailyCalendar | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      setData(await fetchDailyCalendar(from, to));
+    } catch (err) {
+      console.warn('[daily] calendar failed:', String(err));
+    } finally {
+      setLoading(false);
+    }
+  // account: my statuses change when I sign in or out
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [from, to, account?.id]);
+
+  useEffect(() => { setLoading(true); load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+  return { data, loading, reload: load };
+}
+
+/** City guide (one summary per theme) and my Local Pass progress in that city. */
+export function useDailyGuide(cityId: string | null | undefined) {
+  const { identity, account } = useApp();
+  const guestId = account ? null : identity?.guestId ?? null;
+  const [guide, setGuide] = useState<DailyGuide | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      setGuide(await fetchDailyGuide(cityId, guestId));
+    } catch (err) {
+      console.warn('[daily] guide failed:', String(err));
+    }
+  }, [cityId, guestId]);
+
+  useEffect(() => { setGuide(null); load(); }, [load]);
+  useFocusEffect(useCallback(() => { load(); }, [load]));
+  return guide;
 }

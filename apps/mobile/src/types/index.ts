@@ -568,6 +568,7 @@ export interface Message {
   mode?: string;                  // user's current mode (local/exploring)
   thumbAvatarUrl?: string | null; // sender's small proxied avatar (other authors)
   country?: string | null;        // sender's home-country ISO-2 (World flag)
+  localPass?: boolean;            // city chat: the sender holds this city's Daily Challenge Local Pass
   replyTo?: ReplyRef;             // snapshot of the message this is a reply to
   mentions?: MentionRef[];        // @mentions resolved to current usernames by the backend
   reactions?: Reaction[];         // emoji reactions (empty array = none)
@@ -769,6 +770,25 @@ export interface DailyChallenge {
   startsAt: number;          // unix seconds
   endsAt:   number;
   isActive: boolean;
+  theme?:   DailyTheme | null; // one of the 7 weekly themes (English name)
+}
+
+/** A weekly theme (V2-03). Names are English content. */
+export interface DailyTheme {
+  key:  DailyThemeKey;
+  name: string;
+}
+
+export type DailyThemeKey = 'language' | 'street_food' | 'coffee' | 'market' | 'night_out' | 'neighborhood' | 'traditions';
+
+/** My Local Pass progress in a city. */
+export interface DailyLocalPassProgress {
+  city:      { id: number; name: string | null };
+  done:      number;
+  total:     number;
+  themes:    DailyThemeKey[];
+  earned:    boolean;
+  earnedAt?: number | null;
 }
 
 export interface DailyPerson {
@@ -776,6 +796,7 @@ export interface DailyPerson {
   username:    string | null;
   displayName: string | null;
   photoUrl:    string | null;
+  localPass?:  boolean;   // holds the Local Pass of the proof's city
 }
 
 export interface DailyTwist {
@@ -829,6 +850,10 @@ export interface DailyToday {
   streak:      number | null;                           // signed in
   /** Locals of a live city with a challenge tomorrow: proposing tomorrow's Local Twist. */
   twistProposal?: { date: string; open: boolean; closesAt: number; status: DailyTwistProposalStatus | null } | null;
+  /** Tomorrow's theme as a teaser (never its text). */
+  tomorrow?:  { date: string; theme: DailyTheme | null } | null;
+  /** My Local Pass progress in this city (signed in, with a city). */
+  localPass?: DailyLocalPassProgress | null;
 }
 
 export type DailyTwistProposalStatus = 'pending' | 'picked' | 'not_picked';
@@ -930,6 +955,29 @@ export interface DailyUserStats {
   bestStreak:    number;
   completed:     number;
   bestProofs:    DailyProof[];
+  localPasses?:       { city: { id: number; name: string | null }; earnedAt: number }[];
+  localPassProgress?: DailyLocalPassProgress[];
+}
+
+/** GET /daily/calendar: per day, its theme, whether it was published and my proof's status. */
+export interface DailyCalendar {
+  today:  string;
+  days:   { date: string; theme: DailyTheme | null; published: boolean; myStatus: DailyProofStatus | null }[];
+  streak: { current: number; best: number } | null;
+}
+
+/** GET /daily/guide: one summary per theme for a city (World selection for a dead city). */
+export interface DailyGuide {
+  scope:  'world' | 'city';
+  themes: {
+    theme:          DailyTheme;
+    challengesDone: number;
+    proofs:         number;
+    bestPhotos:     { proofId: string; date: string; thumbUrl: string | null; voteCount: number }[];
+    priceRange:     DailyPriceRange | null;
+    pinnedPlaces:   number;
+  }[];
+  localPass: DailyLocalPassProgress | null;
 }
 
 export interface DailyArchiveItem {

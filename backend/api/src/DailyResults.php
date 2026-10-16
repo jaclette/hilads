@@ -266,6 +266,13 @@ final class DailyResults
         return self::countStreaks($dates, $done, null)[0];
     }
 
+    /** [current, best] streak of a user. */
+    public static function streaks(string $userId): array
+    {
+        [$dates, $done] = self::history($userId);
+        return self::countStreaks($dates, $done, DailyClock::currentDate());
+    }
+
     /** Current streak only (cheap enough for the today header). */
     public static function currentStreak(string $userId): int
     {

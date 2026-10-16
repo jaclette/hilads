@@ -228,5 +228,39 @@
     "cityTop": "Top 3 ở {{city}}",
     "compactTitle": "Top 3 lúc này",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "Tuần này",
+    "calendar": "Lịch",
+    "today": "Hôm nay",
+    "tomorrow": "Ngày mai",
+    "done": "Đã hoàn thành",
+    "pending": "Đang chờ duyệt",
+    "missed": "Chưa làm",
+    "none": "Không có challenge"
+  },
+  "calendar": {
+    "title": "Daily Challenges của tôi",
+    "streak": "Chuỗi hiện tại",
+    "best": "Chuỗi dài nhất",
+    "monthDone": "Hoàn thành tháng này: {{n}}",
+    "legendDone": "Đã hoàn thành",
+    "legendPending": "Đang chờ duyệt",
+    "prev": "Tháng trước",
+    "next": "Tháng sau"
+  },
+  "guide": {
+    "title": "Cẩm nang thành phố",
+    "all": "Tất cả",
+    "emptyCity": "Chưa có challenge {{theme}} ở {{city}}. Lần tới: {{day}}.",
+    "emptyWorld": "Chưa có challenge {{theme}}. Lần tới: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} chủ đề",
+    "earned": "Đã đạt",
+    "hint": "Hoàn thành đủ 7 chủ đề ở {{city}} để nhận Local Pass của thành phố.",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Có Local Pass"
   }
 }

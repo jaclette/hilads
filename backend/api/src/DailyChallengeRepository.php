@@ -424,6 +424,52 @@ final class DailyChallengeRepository
     }
 
     /**
+     * Days from $from to $to (inclusive), for the week strip and the month
+     * calendar: [{date, theme, published, myStatus}]. Pure. $rows are the
+     * challenges of the range with challenge_date, theme, status and my
+     * proof's status (my_status). Future days carry their theme (a teaser),
+     * never a text.
+     */
+    public static function calendarDays(string $from, string $to, array $rows): array
+    {
+        $byDate = [];
+        foreach ($rows as $r) {
+            $byDate[(string) $r['challenge_date']] = $r;
+        }
+        $days = [];
+        $end  = new DateTimeImmutable($to, new DateTimeZone('UTC'));
+        for ($d = new DateTimeImmutable($from, new DateTimeZone('UTC')); $d <= $end; $d = $d->modify('+1 day')) {
+            $key = $d->format('Y-m-d');
+            $r   = $byDate[$key] ?? null;
+            $days[] = [
+                'date'      => $key,
+                'theme'     => DailyThemes::format($r['theme'] ?? null, $key),
+                'published' => $r !== null && $r['status'] === 'published',
+                'myStatus'  => $r !== null && $r['status'] === 'published' ? ($r['my_status'] ?? null) : null,
+            ];
+        }
+        return $days;
+    }
+
+    /** The calendar of a range (at most 62 days) for a viewer (null = guest). */
+    public static function calendar(string $from, string $to, ?string $viewerId): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT dc.challenge_date, dc.theme, dc.status, p.moderation_status AS my_status
+            FROM daily_challenges dc
+            LEFT JOIN daily_proofs p ON p.challenge_id = dc.id AND p.user_id = ?
+            WHERE dc.challenge_date BETWEEN ? AND ? AND dc.status IN ('scheduled', 'published')
+        ");
+        $stmt->execute([$viewerId ?? '', $from, $to]);
+        $streaks = $viewerId !== null ? DailyResults::streaks($viewerId) : null;
+        return [
+            'today'  => DailyClock::currentDate(),
+            'days'   => self::calendarDays($from, $to, $stmt->fetchAll(PDO::FETCH_ASSOC)),
+            'streak' => $streaks !== null ? ['current' => $streaks[0], 'best' => $streaks[1]] : null,
+        ];
+    }
+
+    /**
      * Challenge object in $locale (default: the request's, DailyI18n::current).
      * text/context are translated when the founder wrote a translation;
      * original {text, context} and lang are then set (else null).

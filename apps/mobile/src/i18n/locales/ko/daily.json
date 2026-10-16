@@ -228,5 +228,39 @@
     "cityTop": "{{city}} Top 3",
     "compactTitle": "지금 Top 3",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "이번 주",
+    "calendar": "캘린더",
+    "today": "오늘",
+    "tomorrow": "내일",
+    "done": "완료",
+    "pending": "검토 대기 중",
+    "missed": "미완료",
+    "none": "challenge 없음"
+  },
+  "calendar": {
+    "title": "내 Daily Challenges",
+    "streak": "현재 연속 기록",
+    "best": "최고 연속 기록",
+    "monthDone": "이번 달 완료: {{n}}",
+    "legendDone": "완료",
+    "legendPending": "검토 대기 중",
+    "prev": "이전 달",
+    "next": "다음 달"
+  },
+  "guide": {
+    "title": "도시 가이드",
+    "all": "전체",
+    "emptyCity": "{{city}}에는 아직 {{theme}} challenge가 없어요. 다음: {{day}}.",
+    "emptyWorld": "아직 {{theme}} challenge가 없어요. 다음: {{day}}."
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} 테마",
+    "earned": "획득",
+    "hint": "{{city}}에서 7개 테마를 모두 완료하면 Local Pass를 받아요.",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Local Pass 보유자"
   }
 }

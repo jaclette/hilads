@@ -8,12 +8,14 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
 import { MEDALS } from './DailyProofTile';
+import { localizeCityName } from '@/i18n/cityName';
 import type { DailyProof, DailyUserStats } from '@/types';
 
 /**
  * Daily Challenge stats on a profile (Challenges tab): current streak, best
- * streak, challenges completed, best proofs. Hidden on someone else's
- * profile until they completed one; on mine it nudges to start.
+ * streak, challenges completed, best proofs, Local Passes earned (and, on
+ * mine, my progress toward the next ones). Hidden on someone else's profile
+ * until they completed one; on mine it nudges to start.
  */
 export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: boolean }) {
   const styles = useThemedStyles(makeStyles);
@@ -31,6 +33,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
   }, [userId]);
 
   if (!stats || (stats.completed === 0 && !isMe)) return null;
+  const inProgress = (stats.localPassProgress ?? []).filter(p => !p.earned).slice(0, 3);
 
   return (
     <View style={styles.card}>
@@ -49,6 +52,23 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
             <Stat value={stats.bestStreak} label={t('profile.bestStreak')} />
             <Stat value={stats.completed} label={t('profile.completed', { count: stats.completed })} />
           </View>
+          {((stats.localPasses?.length ?? 0) > 0 || (isMe && inProgress.length > 0)) && (
+            <>
+              <Text style={styles.subTitle}>🎫 {t('localPass.profileTitle')}</Text>
+              <View style={styles.passes}>
+                {stats.localPasses?.map(p => (
+                  <View key={`p${p.city.id}`} style={[styles.pass, styles.passEarned]}>
+                    <Text style={styles.passText}>🎫 {localizeCityName(p.city.name ?? '')} · ✓ {t('localPass.earned')}</Text>
+                  </View>
+                ))}
+                {isMe && inProgress.map(p => (
+                  <View key={`g${p.city.id}`} style={styles.pass}>
+                    <Text style={styles.passText}>{localizeCityName(p.city.name ?? '')} · {t('localPass.progress', { done: p.done, total: p.total })}</Text>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
           {stats.bestProofs.length > 0 && (
             <>
               <Text style={styles.subTitle}>{t('profile.bestProofs')}</Text>
@@ -93,4 +113,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   thumbs:    { gap: 8 },
   thumb:     { width: 72, height: 72, borderRadius: Radius.sm, backgroundColor: c.bg3 },
   medal:     { position: 'absolute', top: 2, left: 4, fontSize: 16 },
+  passes:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  pass:      { borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg3, paddingHorizontal: 10, paddingVertical: 5 },
+  passEarned:{ borderColor: c.accent, backgroundColor: c.accentDim },
+  passText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
 });

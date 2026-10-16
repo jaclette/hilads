@@ -14338,6 +14338,19 @@ $router->add('GET', '/api/v1/daily/archive', function () {
     Response::json($out);
 });
 
+// GET /api/v1/daily/calendar?from=&to= - week strip and month calendar: per day
+// its theme, whether it was published and my proof's status, plus my streak.
+$router->add('GET', '/api/v1/daily/calendar', function () {
+    $user = AuthService::currentUser();
+    $from = (string) ($_GET['from'] ?? '');
+    $to   = (string) ($_GET['to'] ?? '');
+    if (!DailyClock::isValidDate($from) || !DailyClock::isValidDate($to) || $from > $to
+        || (new DateTimeImmutable($from))->diff(new DateTimeImmutable($to))->days > 61) {
+        Response::json(['error' => 'from and to must be YYYY-MM-DD, at most 62 days apart', 'code' => 'invalid_range'], 400);
+    }
+    Response::json(DailyChallengeRepository::calendar($from, $to, $user['id'] ?? null));
+});
+
 // GET /api/v1/daily/guide?cityId= - city guide: one summary per weekly theme
 // (a dead city gets the World selection), plus my Local Pass progress there.
 $router->add('GET', '/api/v1/daily/guide', function () {

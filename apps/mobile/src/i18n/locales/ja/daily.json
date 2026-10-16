@@ -230,5 +230,39 @@
     "cityTop": "{{city}}の Top 3",
     "compactTitle": "今の Top 3",
     "seeAll": "Top 10 ›"
+  },
+  "week": {
+    "title": "今週",
+    "calendar": "カレンダー",
+    "today": "今日",
+    "tomorrow": "明日",
+    "done": "達成",
+    "pending": "審査待ち",
+    "missed": "未達成",
+    "none": "challenge なし"
+  },
+  "calendar": {
+    "title": "私の Daily Challenges",
+    "streak": "現在の連続記録",
+    "best": "最高の連続記録",
+    "monthDone": "今月の達成：{{n}}",
+    "legendDone": "達成",
+    "legendPending": "審査待ち",
+    "prev": "前の月",
+    "next": "次の月"
+  },
+  "guide": {
+    "title": "シティガイド",
+    "all": "すべて",
+    "emptyCity": "{{city}} の {{theme}} challenge はまだありません。次回：{{day}}。",
+    "emptyWorld": "{{theme}} challenge はまだありません。次回：{{day}}。"
+  },
+  "localPass": {
+    "name": "Local Pass",
+    "progress": "{{done}}/{{total}} テーマ",
+    "earned": "獲得済み",
+    "hint": "{{city}} で 7 つのテーマをすべて達成すると Local Pass がもらえます。",
+    "profileTitle": "Local Pass",
+    "badgeA11y": "Local Pass 保持者"
   }
 }
