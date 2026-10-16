@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "मूल देखें",
     "seeTranslation": "अनुवाद देखें"
+  },
+  "map": {
+    "see": "मैप देखें",
+    "button": "मैप",
+    "empty": "अभी तक कोई पिन की गई जगह नहीं।",
+    "titleChallenge": "पिन की गई जगहें",
+    "titleCity": "{{city}} में पिन की गई जगहें",
+    "titleWorld": "दुनिया भर में पिन की गई जगहें",
+    "seeProof": "प्रूफ देखें",
+    "openChallenge": "challenge खोलें"
   }
 }

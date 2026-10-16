@@ -131,7 +131,7 @@
     "left_other": "Sisa {{count}} suara",
     "errors": {
       "vote_limit": "Kamu sudah memakai 3 suaramu hari ini.",
-      "voting_closed": "Pemungutan suara ditutup bersama tantangannya.",
+      "voting_closed": "Pemungutan suara ditutup bersama challenge-nya.",
       "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
       "own_proof": "Kamu tidak bisa memilih buktimu sendiri.",
       "not_found": "Bukti ini sudah tidak tersedia.",
@@ -144,14 +144,14 @@
     "worldRank": "#{{rank}} di dunia",
     "bestInCities": "Terbaik di tiap kota live",
     "bestIn": "Terbaik di {{city}}",
-    "none": "Tidak ada suara di tantangan ini, jadi tidak ada podium."
+    "none": "Tidak ada suara di challenge ini, jadi tidak ada podium."
   },
   "profile": {
     "streak": "Streak saat ini",
     "bestStreak": "Streak terbaik",
     "completed": "Selesai",
     "bestProofs": "Bukti terbaik",
-    "emptyMine": "Streak-mu dimulai dengan tantangan hari ini."
+    "emptyMine": "Streak-mu dimulai dengan challenge hari ini."
   },
   "streak_one": "Streak {{count}} hari",
   "streak_other": "Streak {{count}} hari",
@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "Lihat asli",
     "seeTranslation": "Lihat terjemahan"
+  },
+  "map": {
+    "see": "Lihat peta",
+    "button": "Peta",
+    "empty": "Belum ada tempat yang disematkan.",
+    "titleChallenge": "Tempat yang disematkan",
+    "titleCity": "Tempat yang disematkan di {{city}}",
+    "titleWorld": "Tempat yang disematkan di seluruh dunia",
+    "seeProof": "Lihat bukti",
+    "openChallenge": "Buka challenge"
   }
 }

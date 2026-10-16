@@ -19,6 +19,7 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
+import { DailyPlacesMap } from '@/features/daily/DailyPlacesMap';
 import type { DailyProof } from '@/types';
 
 /**
@@ -211,6 +212,16 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
             {places.length > 0 && (
               <>
                 <Text style={styles.practicalLine}>📍 {t('places', { count: places.length })}</Text>
+                <TouchableOpacity
+                  style={styles.mapPreview}
+                  onPress={() => router.push(`/daily/places?date=${date}&scope=${scope}&source=sheet` as never)}
+                  activeOpacity={0.9}
+                  accessibilityRole="button"
+                  accessibilityLabel={t('map.see')}
+                >
+                  <DailyPlacesMap key={`${scope}:${places.map(p => p.proofId).join(',')}`} pins={places} interactive={false} />
+                  <View style={styles.mapCta}><Text style={styles.mapCtaText}>🗺️ {t('map.see')}</Text></View>
+                </TouchableOpacity>
                 {places.slice(0, 5).map(p => (
                   <TouchableOpacity key={p.proofId} onPress={() => {
                     const proof = sheet.proofs.find(x => x.id === p.proofId);
@@ -235,7 +246,7 @@ function Sheet({ date, openProofId, source }: { date: string; openProofId: strin
         )}
       </View>
     );
-  }, [sheet, challenge, myProof, isLive, cityName, scope, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal]);
+  }, [sheet, challenge, myProof, isLive, cityName, scope, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -351,6 +362,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   emptyTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   empty:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
   more:        { marginVertical: 16 },
+  mapPreview:  { height: 150, borderRadius: Radius.md, overflow: 'hidden', marginVertical: 6, backgroundColor: c.bg3 },
+  mapCta:      { position: 'absolute', right: 8, bottom: 8, backgroundColor: c.bg2, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6, borderWidth: 1, borderColor: c.border },
+  mapCtaText:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   resultsSub:  { marginTop: 8 },
   resultRow:   { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4 },
   resultLabel: { fontSize: 20, width: 26, textAlign: 'center' },

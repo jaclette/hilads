@@ -2,6 +2,7 @@ import i18n from '@/i18n';
 import { api, ApiError } from './client';
 import type {
   DailyArchive,
+  DailyPlacePin,
   DailyProof,
   DailyProofInput,
   DailySheet,
@@ -57,6 +58,15 @@ export async function fetchDailyArchive(
       guestId: opts.guestId ?? undefined,
       locale:  locale(),
     },
+  });
+}
+
+/** "Already done" map: pinned places of past challenges for a city (World selection for a dead city). */
+export async function fetchDailyPlaces(
+  opts: { cityId?: string | number | null; limit?: number; guestId?: string | null } = {},
+): Promise<{ scope: 'world' | 'city'; items: DailyPlacePin[] }> {
+  return api.get('/daily/places', {
+    params: { cityId: cityParam(opts.cityId), limit: opts.limit ?? 200, guestId: opts.guestId ?? undefined, locale: locale() },
   });
 }
 

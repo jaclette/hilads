@@ -33,6 +33,7 @@ export function DailyChallengesSection() {
   const cityId   = picked?.channelId ?? city?.channelId ?? null;
   const cityName = picked?.name ?? city?.name ?? '';
   const archive  = useDailyArchive(cityId);
+  const router   = useRouter();
 
   return (
     <View style={styles.wrap}>
@@ -40,10 +41,21 @@ export function DailyChallengesSection() {
 
       <View style={styles.headRow}>
         <Text style={styles.title}>{t('archive.title')}</Text>
-        <TouchableOpacity style={styles.cityChip} onPress={() => setPickerOpen(true)} accessibilityRole="button" accessibilityLabel={t('archive.pickCity')}>
-          <Text style={styles.cityChipText} numberOfLines={1}>📍 {localizeCityName(cityName)}</Text>
-          <Ionicons name="chevron-down" size={14} color={colors.text} />
-        </TouchableOpacity>
+        <View style={styles.headActions}>
+          {archive.items.some(i => i.pinnedPlaces > 0) && (
+            <TouchableOpacity
+              style={styles.cityChip}
+              onPress={() => router.push(`/daily/places?cityId=${cityId ?? ''}&cityName=${encodeURIComponent(cityName)}&source=archive` as never)}
+              accessibilityRole="button"
+            >
+              <Text style={styles.cityChipText}>🗺️ {t('map.button')}</Text>
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity style={styles.cityChip} onPress={() => setPickerOpen(true)} accessibilityRole="button" accessibilityLabel={t('archive.pickCity')}>
+            <Text style={styles.cityChipText} numberOfLines={1}>📍 {localizeCityName(cityName)}</Text>
+            <Ionicons name="chevron-down" size={14} color={colors.text} />
+          </TouchableOpacity>
+        </View>
       </View>
       {archive.scope === 'world' && archive.items.length > 0 && (
         <Text style={styles.scopeNote}>🌍 {t('archive.worldSelection')}</Text>
@@ -117,6 +129,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:          { gap: 10, marginBottom: 14 },
   headRow:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginTop: 6 },
   title:         { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
+  headActions:   { flexDirection: 'row', gap: 6, flexShrink: 1 },
   cityChip:      { flexDirection: 'row', alignItems: 'center', gap: 4, maxWidth: 200, paddingHorizontal: 10, paddingVertical: 6, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg2 },
   cityChipText:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.text, flexShrink: 1 },
   scopeNote:     { fontSize: 12, color: c.muted },

@@ -131,7 +131,7 @@
     "left_other": "残り{{count}}票",
     "errors": {
       "vote_limit": "今日の3票はもう使い切りました。",
-      "voting_closed": "チャレンジの終了とともに投票は締め切られました。",
+      "voting_closed": "challenge の終了とともに投票は締め切られました。",
       "rate_limited": "試行が多すぎます - 少し待ってください。",
       "own_proof": "自分の証明には投票できません。",
       "not_found": "この証明はもう表示できません。",
@@ -144,21 +144,21 @@
     "worldRank": "世界 #{{rank}}",
     "bestInCities": "ライブ都市ごとのベスト",
     "bestIn": "{{city}} のベスト",
-    "none": "このチャレンジには投票がなかったので、表彰台はありません。"
+    "none": "このchallenge には投票がなかったので、表彰台はありません。"
   },
   "profile": {
     "streak": "現在の連続記録",
     "bestStreak": "最長記録",
     "completed": "達成数",
     "bestProofs": "ベスト証明",
-    "emptyMine": "今日のチャレンジから連続記録が始まります。"
+    "emptyMine": "今日のchallenge から連続記録が始まります。"
   },
   "streak_one": "{{count}}日連続",
   "streak_other": "{{count}}日連続",
   "twist": {
     "title": "Local Twist を提案",
     "tomorrow": "明日の Daily Challenge",
-    "intro": "あなたは {{city}} のローカルです。明日のチャレンジを {{city}} 流にこなす方法を提案しましょう。選ばれるとあなたの名前で公開されます。",
+    "intro": "あなたは {{city}} のローカルです。明日のchallenge を {{city}} 流にこなす方法を提案しましょう。選ばれるとあなたの名前で公開されます。",
     "closesIn": "提案の締め切りまで {{time}}",
     "closed": "明日の提案は締め切られました。",
     "yours": "あなたの提案",
@@ -175,8 +175,8 @@
       "not_picked": "選ばれませんでした"
     },
     "statusHint": {
-      "pending": "明日のチャレンジの前に、各都市で1つの twist が選ばれます。",
-      "picked": "明日の {{city}} のチャレンジとともにあなたの名前で公開されます。ポイントは締め切り時に付与されます。",
+      "pending": "明日のchallenge の前に、各都市で1つの twist が選ばれます。",
+      "picked": "明日の {{city}} のchallenge とともにあなたの名前で公開されます。ポイントは締め切り時に付与されます。",
       "not_picked": "今回は別の twist が選ばれました。また明日挑戦しよう！"
     },
     "heroCta": "明日の Local Twist を提案 · {{time}} まで",
@@ -185,7 +185,7 @@
       "no_city": "Local Twist を提案するには都市を設定してください。",
       "city_not_live": "Local Twist はライブ都市でのみ提案できます。",
       "not_local": "{{city}} のローカルだけが Local Twist を提案できます。プロフィールでモードを Local にしてください。",
-      "no_challenge": "明日のチャレンジはまだ準備中です。また後で来てください。"
+      "no_challenge": "明日のchallenge はまだ準備中です。また後で来てください。"
     },
     "errors": {
       "already_proposed": "明日の Local Twist はすでに提案済みです。",
@@ -199,11 +199,21 @@
       "no_city": "Local Twist を提案するには都市を設定してください。",
       "city_not_live": "Local Twist はライブ都市でのみ提案できます。",
       "not_local": "{{city}} のローカルだけが Local Twist を提案できます。プロフィールでモードを Local にしてください。",
-      "no_challenge": "明日のチャレンジはまだ準備中です。また後で来てください。"
+      "no_challenge": "明日のchallenge はまだ準備中です。また後で来てください。"
     }
   },
   "translation": {
     "seeOriginal": "原文を見る",
     "seeTranslation": "翻訳を見る"
+  },
+  "map": {
+    "see": "地図を見る",
+    "button": "地図",
+    "empty": "ピン留めされた場所はまだありません。",
+    "titleChallenge": "ピン留めされた場所",
+    "titleCity": "{{city}} のピン留めされた場所",
+    "titleWorld": "世界中のピン留めされた場所",
+    "seeProof": "証明を見る",
+    "openChallenge": "challenge を開く"
   }
 }

@@ -160,4 +160,16 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('1 person voted for your proof.', DailyPushes::digestMessage('2026-11-02', 1, 0, 'en')['body']);
         $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0, 'fr'));
     }
+
+    public function testMapPin(): void
+    {
+        putenv('R2_PUBLIC_URL=https://media.test');
+        $pin = DailyChallengeRepository::formatPin([
+            'id' => 'p1', 'user_id' => 'u1', 'place_lat' => '10.78', 'place_lng' => '106.7', 'place_name' => null,
+            'photo_url' => 'https://media.test/' . str_repeat('a', 32) . '.jpg', 'username' => 'anh', 'display_name' => 'Anh',
+        ]);
+        $this->assertSame(['p1', 10.78, 106.7, null, ['id' => 'u1', 'username' => 'anh', 'displayName' => 'Anh']],
+                          [$pin['proofId'], $pin['lat'], $pin['lng'], $pin['name'], $pin['user']]);
+        $this->assertArrayHasKey('thumbUrl', $pin);
+    }
 }

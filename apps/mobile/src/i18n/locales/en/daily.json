@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "See original",
     "seeTranslation": "See translation"
+  },
+  "map": {
+    "see": "See the map",
+    "button": "Map",
+    "empty": "No pinned places yet.",
+    "titleChallenge": "Pinned places",
+    "titleCity": "Pinned places in {{city}}",
+    "titleWorld": "Pinned places around the world",
+    "seeProof": "See the proof",
+    "openChallenge": "Open the challenge"
   }
 }

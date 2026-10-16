@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "Tingnan ang orihinal",
     "seeTranslation": "Tingnan ang salin"
+  },
+  "map": {
+    "see": "Tingnan ang mapa",
+    "button": "Mapa",
+    "empty": "Wala pang naka-pin na lugar.",
+    "titleChallenge": "Mga naka-pin na lugar",
+    "titleCity": "Mga naka-pin na lugar sa {{city}}",
+    "titleWorld": "Mga naka-pin na lugar sa mundo",
+    "seeProof": "Tingnan ang proof",
+    "openChallenge": "Buksan ang challenge"
   }
 }

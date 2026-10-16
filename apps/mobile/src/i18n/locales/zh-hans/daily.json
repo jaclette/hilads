@@ -130,7 +130,7 @@
     "left_other": "还剩 {{count}} 票",
     "errors": {
       "vote_limit": "你今天的 3 票已经用完了。",
-      "voting_closed": "挑战结束，投票已关闭。",
+      "voting_closed": "challenge 结束，投票已关闭。",
       "rate_limited": "尝试次数太多 - 请稍等。",
       "own_proof": "不能给自己的证明投票。",
       "not_found": "这条证明已不可用。",
@@ -143,20 +143,20 @@
     "worldRank": "全球第 {{rank}}",
     "bestInCities": "每个直播城市的最佳",
     "bestIn": "{{city}}最佳",
-    "none": "这个挑战没有投票，所以没有领奖台。"
+    "none": "这个 challenge 没有投票，所以没有领奖台。"
   },
   "profile": {
     "streak": "当前连续",
     "bestStreak": "最长连续",
     "completed": "已完成",
     "bestProofs": "最佳证明",
-    "emptyMine": "从今天的挑战开始你的连续记录。"
+    "emptyMine": "从今天的 challenge 开始你的连续记录。"
   },
   "streak_other": "连续 {{count}} 天",
   "twist": {
     "title": "提议 Local Twist",
     "tomorrow": "明天的 Daily Challenge",
-    "intro": "你是 {{city}} 的本地人：提议如何用 {{city}} 的方式完成明天的挑战。被选中后会署上你的名字发布。",
+    "intro": "你是 {{city}} 的本地人：提议如何用 {{city}} 的方式完成明天的 challenge。被选中后会署上你的名字发布。",
     "closesIn": "距离截止还有 {{time}}",
     "closed": "明天的提议已截止。",
     "yours": "你的提议",
@@ -173,8 +173,8 @@
       "not_picked": "未选中"
     },
     "statusHint": {
-      "pending": "明天的挑战开始前，每个城市会选出一个 twist。",
-      "picked": "它会随明天 {{city}} 的挑战以你的名字发布。积分在结束时发放。",
+      "pending": "明天的 challenge 开始前，每个城市会选出一个 twist。",
+      "picked": "它会随明天 {{city}} 的 challenge 以你的名字发布。积分在结束时发放。",
       "not_picked": "这次选了别的 twist。明天再试试！"
     },
     "heroCta": "提议明天的 Local Twist · 截止 {{time}}",
@@ -183,7 +183,7 @@
       "no_city": "设置你的城市才能提议 Local Twist。",
       "city_not_live": "只有直播城市可以提议 Local Twist。",
       "not_local": "只有 {{city}} 的本地人可以提议 Local Twist。请在个人资料中将模式设为 Local。",
-      "no_challenge": "明天的挑战还没准备好，稍后再来。"
+      "no_challenge": "明天的 challenge 还没准备好，稍后再来。"
     },
     "errors": {
       "already_proposed": "你已经提议过明天的 Local Twist。",
@@ -197,11 +197,21 @@
       "no_city": "设置你的城市才能提议 Local Twist。",
       "city_not_live": "只有直播城市可以提议 Local Twist。",
       "not_local": "只有 {{city}} 的本地人可以提议 Local Twist。请在个人资料中将模式设为 Local。",
-      "no_challenge": "明天的挑战还没准备好，稍后再来。"
+      "no_challenge": "明天的 challenge 还没准备好，稍后再来。"
     }
   },
   "translation": {
     "seeOriginal": "查看原文",
     "seeTranslation": "查看译文"
+  },
+  "map": {
+    "see": "查看地图",
+    "button": "地图",
+    "empty": "还没有标记的地点。",
+    "titleChallenge": "已标记的地点",
+    "titleCity": "{{city}}已标记的地点",
+    "titleWorld": "全球已标记的地点",
+    "seeProof": "查看证明",
+    "openChallenge": "打开 challenge"
   }
 }

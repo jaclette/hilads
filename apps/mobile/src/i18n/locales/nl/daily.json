@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "Origineel tonen",
     "seeTranslation": "Vertaling tonen"
+  },
+  "map": {
+    "see": "Bekijk de kaart",
+    "button": "Kaart",
+    "empty": "Nog geen vastgezette plekken.",
+    "titleChallenge": "Vastgezette plekken",
+    "titleCity": "Vastgezette plekken in {{city}}",
+    "titleWorld": "Vastgezette plekken wereldwijd",
+    "seeProof": "Bekijk het bewijs",
+    "openChallenge": "Open de challenge"
   }
 }

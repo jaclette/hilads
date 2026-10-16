@@ -151,7 +151,7 @@
     "left_other": "بقي {{count}} صوت",
     "errors": {
       "vote_limit": "استخدمت أصواتك الثلاثة اليوم بالفعل.",
-      "voting_closed": "أُغلق التصويت مع انتهاء التحدي.",
+      "voting_closed": "أُغلق التصويت مع انتهاء الـ challenge.",
       "rate_limited": "محاولات كثيرة - انتظر قليلًا.",
       "own_proof": "لا يمكنك التصويت لدليلك.",
       "not_found": "هذا الدليل لم يعد متاحًا.",
@@ -164,14 +164,14 @@
     "worldRank": "#{{rank}} في العالم",
     "bestInCities": "الأفضل في كل مدينة مباشرة",
     "bestIn": "الأفضل في {{city}}",
-    "none": "لا أصوات في هذا التحدي، لذا لا منصة تتويج."
+    "none": "لا أصوات في هذا الـ challenge، لذا لا منصة تتويج."
   },
   "profile": {
     "streak": "السلسلة الحالية",
     "bestStreak": "أفضل سلسلة",
     "completed": "المنجزة",
     "bestProofs": "أفضل الأدلة",
-    "emptyMine": "تبدأ سلسلتك مع تحدي اليوم."
+    "emptyMine": "تبدأ سلسلتك مع challenge اليوم."
   },
   "streak_zero": "{{count}} يوم متتالٍ",
   "streak_one": "يوم متتالٍ واحد",
@@ -182,7 +182,7 @@
   "twist": {
     "title": "اقترح Local Twist",
     "tomorrow": "Daily Challenge الغد",
-    "intro": "أنت من سكان {{city}}: اقترح كيف يُنجز تحدي الغد على طريقة {{city}}. إذا اختير، يُنشر باسمك.",
+    "intro": "أنت من سكان {{city}}: اقترح كيف يُنجز challenge الغد على طريقة {{city}}. إذا اختير، يُنشر باسمك.",
     "closesIn": "تُغلق الاقتراحات بعد {{time}}",
     "closed": "أُغلقت اقتراحات الغد.",
     "yours": "اقتراحك",
@@ -199,8 +199,8 @@
       "not_picked": "لم يُختر"
     },
     "statusHint": {
-      "pending": "يُختار twist واحد لكل مدينة قبل تحدي الغد.",
-      "picked": "سيُنشر مع تحدي الغد في {{city}} باسمك. تحصل على النقاط عند الإغلاق.",
+      "pending": "يُختار twist واحد لكل مدينة قبل challenge الغد.",
+      "picked": "سيُنشر مع challenge الغد في {{city}} باسمك. تحصل على النقاط عند الإغلاق.",
       "not_picked": "اختير twist آخر هذه المرة. حاول غدًا!"
     },
     "heroCta": "اقترح Local Twist الغد · حتى {{time}}",
@@ -209,7 +209,7 @@
       "no_city": "حدّد مدينتك لتقترح Local Twist.",
       "city_not_live": "تُقترح Local Twists في المدن المباشرة فقط.",
       "not_local": "يمكن لسكان {{city}} فقط اقتراح Local Twist الخاص بها. اختر وضع Local في ملفك.",
-      "no_challenge": "تحدي الغد ليس جاهزًا بعد. عد لاحقًا."
+      "no_challenge": "challenge الغد ليس جاهزًا بعد. عد لاحقًا."
     },
     "errors": {
       "already_proposed": "اقترحت Local Twist للغد بالفعل.",
@@ -223,11 +223,21 @@
       "no_city": "حدّد مدينتك لتقترح Local Twist.",
       "city_not_live": "تُقترح Local Twists في المدن المباشرة فقط.",
       "not_local": "يمكن لسكان {{city}} فقط اقتراح Local Twist الخاص بها. اختر وضع Local في ملفك.",
-      "no_challenge": "تحدي الغد ليس جاهزًا بعد. عد لاحقًا."
+      "no_challenge": "challenge الغد ليس جاهزًا بعد. عد لاحقًا."
     }
   },
   "translation": {
     "seeOriginal": "عرض الأصل",
     "seeTranslation": "عرض الترجمة"
+  },
+  "map": {
+    "see": "عرض الخريطة",
+    "button": "خريطة",
+    "empty": "لا توجد أماكن مثبّتة بعد.",
+    "titleChallenge": "الأماكن المثبّتة",
+    "titleCity": "الأماكن المثبّتة في {{city}}",
+    "titleWorld": "الأماكن المثبّتة حول العالم",
+    "seeProof": "عرض الدليل",
+    "openChallenge": "فتح الـ challenge"
   }
 }

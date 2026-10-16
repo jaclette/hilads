@@ -130,7 +130,7 @@
     "left_other": "{{count}}표 남음",
     "errors": {
       "vote_limit": "오늘 3표를 이미 모두 사용했어요.",
-      "voting_closed": "챌린지가 끝나서 투표가 마감됐어요.",
+      "voting_closed": "challenge가 끝나서 투표가 마감됐어요.",
       "rate_limited": "시도가 너무 많아요 - 잠시 기다려 주세요.",
       "own_proof": "내 인증에는 투표할 수 없어요.",
       "not_found": "이 인증은 더 이상 볼 수 없어요.",
@@ -143,20 +143,20 @@
     "worldRank": "세계 #{{rank}}",
     "bestInCities": "라이브 도시별 베스트",
     "bestIn": "{{city}} 베스트",
-    "none": "이 챌린지에는 투표가 없어서 시상대가 없어요."
+    "none": "이 challenge에는 투표가 없어서 시상대가 없어요."
   },
   "profile": {
     "streak": "현재 연속 기록",
     "bestStreak": "최고 연속 기록",
     "completed": "완료",
     "bestProofs": "베스트 인증",
-    "emptyMine": "오늘의 챌린지로 연속 기록을 시작하세요."
+    "emptyMine": "오늘의 challenge로 연속 기록을 시작하세요."
   },
   "streak_other": "{{count}}일 연속",
   "twist": {
     "title": "Local Twist 제안하기",
     "tomorrow": "내일의 Daily Challenge",
-    "intro": "{{city}} 로컬이시네요: 내일 챌린지를 {{city}} 스타일로 하는 법을 제안해 주세요. 선택되면 내 이름으로 공개돼요.",
+    "intro": "{{city}} 로컬이시네요: 내일 challenge를 {{city}} 스타일로 하는 법을 제안해 주세요. 선택되면 내 이름으로 공개돼요.",
     "closesIn": "제안 마감까지 {{time}}",
     "closed": "내일 제안이 마감됐어요.",
     "yours": "내 제안",
@@ -173,8 +173,8 @@
       "not_picked": "선택되지 않음"
     },
     "statusHint": {
-      "pending": "내일 챌린지 전에 도시마다 twist 하나가 선택돼요.",
-      "picked": "내일 {{city}} 챌린지와 함께 내 이름으로 공개돼요. 포인트는 마감 때 받아요.",
+      "pending": "내일 challenge 전에 도시마다 twist 하나가 선택돼요.",
+      "picked": "내일 {{city}} challenge와 함께 내 이름으로 공개돼요. 포인트는 마감 때 받아요.",
       "not_picked": "이번에는 다른 twist가 선택됐어요. 내일 다시 도전하세요!"
     },
     "heroCta": "내일의 Local Twist 제안 · {{time}}까지",
@@ -183,7 +183,7 @@
       "no_city": "Local Twist를 제안하려면 도시를 설정하세요.",
       "city_not_live": "Local Twist는 라이브 도시에서만 제안할 수 있어요.",
       "not_local": "{{city}} 로컬만 Local Twist를 제안할 수 있어요. 프로필에서 모드를 Local로 바꾸세요.",
-      "no_challenge": "내일 챌린지가 아직 준비되지 않았어요. 나중에 다시 오세요."
+      "no_challenge": "내일 challenge가 아직 준비되지 않았어요. 나중에 다시 오세요."
     },
     "errors": {
       "already_proposed": "내일 Local Twist를 이미 제안했어요.",
@@ -197,11 +197,21 @@
       "no_city": "Local Twist를 제안하려면 도시를 설정하세요.",
       "city_not_live": "Local Twist는 라이브 도시에서만 제안할 수 있어요.",
       "not_local": "{{city}} 로컬만 Local Twist를 제안할 수 있어요. 프로필에서 모드를 Local로 바꾸세요.",
-      "no_challenge": "내일 챌린지가 아직 준비되지 않았어요. 나중에 다시 오세요."
+      "no_challenge": "내일 challenge가 아직 준비되지 않았어요. 나중에 다시 오세요."
     }
   },
   "translation": {
     "seeOriginal": "원문 보기",
     "seeTranslation": "번역 보기"
+  },
+  "map": {
+    "see": "지도 보기",
+    "button": "지도",
+    "empty": "아직 고정된 장소가 없어요.",
+    "titleChallenge": "고정된 장소",
+    "titleCity": "{{city}}의 고정된 장소",
+    "titleWorld": "전 세계의 고정된 장소",
+    "seeProof": "인증 보기",
+    "openChallenge": "challenge 열기"
   }
 }

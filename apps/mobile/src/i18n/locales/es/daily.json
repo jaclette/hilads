@@ -131,7 +131,7 @@
     "left_other": "Te quedan {{count}} votos",
     "errors": {
       "vote_limit": "Ya usaste tus 3 votos de hoy.",
-      "voting_closed": "La votación cerró con el reto.",
+      "voting_closed": "La votación cerró con el challenge.",
       "rate_limited": "Demasiados intentos - espera un momento.",
       "own_proof": "No puedes votar por tu propia prueba.",
       "not_found": "Esta prueba ya no está disponible.",
@@ -144,14 +144,14 @@
     "worldRank": "#{{rank}} en el mundo",
     "bestInCities": "Lo mejor de cada ciudad en vivo",
     "bestIn": "La mejor en {{city}}",
-    "none": "No hubo votos en este reto, así que no hay podio."
+    "none": "No hubo votos en este challenge, así que no hay podio."
   },
   "profile": {
     "streak": "Racha actual",
     "bestStreak": "Mejor racha",
     "completed": "Completados",
     "bestProofs": "Mejores pruebas",
-    "emptyMine": "Tu racha empieza con el reto de hoy."
+    "emptyMine": "Tu racha empieza con el challenge de hoy."
   },
   "streak_one": "Racha de {{count}} día",
   "streak_other": "Racha de {{count}} días",
@@ -205,5 +205,15 @@
   "translation": {
     "seeOriginal": "Ver original",
     "seeTranslation": "Ver traducción"
+  },
+  "map": {
+    "see": "Ver el mapa",
+    "button": "Mapa",
+    "empty": "Aún no hay lugares fijados.",
+    "titleChallenge": "Lugares fijados",
+    "titleCity": "Lugares fijados en {{city}}",
+    "titleWorld": "Lugares fijados en el mundo",
+    "seeProof": "Ver la prueba",
+    "openChallenge": "Abrir el challenge"
   }
 }

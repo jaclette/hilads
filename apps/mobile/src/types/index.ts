@@ -869,7 +869,7 @@ export interface DailySheet extends DailyToday {
   nextBefore: number | null;
   practical: {
     priceRanges: DailyPriceRange[];
-    places:      { proofId: string; lat: number; lng: number; name: string | null }[];
+    places:      DailyPlacePin[];
   };
   /** Once the challenge closed (computed at the next drop), else null. */
   results: {
@@ -877,6 +877,19 @@ export interface DailySheet extends DailyToday {
     cityBest: DailyProof | null;     // the requested city's best
     cities:   DailyProof[];          // best proof of each live city
   } | null;
+}
+
+/** A place a user explicitly pinned on their approved proof (never from photo metadata). */
+export interface DailyPlacePin {
+  proofId:  string;
+  lat:      number;
+  lng:      number;
+  name:     string | null;
+  thumbUrl: string | null;
+  user:     { id: string; username: string | null; displayName: string | null };
+  /** "Already done" map only: the challenge it was posted for. */
+  date?:          string;
+  challengeText?: string;
 }
 
 /** Live vote state of a proof (GET /daily/proofs/state). */

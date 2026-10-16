@@ -66,7 +66,7 @@ final class DailyChallengeRepository
      * Practical info from approved proofs: price ranges per currency (most
      * used first; the app shows the first) and up to 50 pinned places.
      */
-    public static function practical(string $challengeId, ?string $cityId): array
+    public static function practical(string $challengeId, ?string $cityId, array $blockedUserIds = []): array
     {
         $cityFilter = $cityId !== null ? " AND city_id = ?" : "";
         $args = $cityId !== null ? [$challengeId, $cityId] : [$challengeId];
@@ -87,22 +87,76 @@ final class DailyChallengeRepository
             'count'    => (int) $r['n'],
         ], $stmt->fetchAll(PDO::FETCH_ASSOC));
 
+        // Places users explicitly pinned on their proof (never derived from photo metadata).
         $stmt = $pdo->prepare("
-            SELECT id, place_lat, place_lng, place_name
-            FROM daily_proofs
-            WHERE challenge_id = ? AND moderation_status = 'approved' AND place_lat IS NOT NULL{$cityFilter}
-            ORDER BY approved_at DESC
+            SELECT p.id, p.user_id, p.place_lat, p.place_lng, p.place_name, p.photo_url,
+                   u.username, u.display_name
+            FROM daily_proofs p
+            JOIN users u ON u.id = p.user_id
+            WHERE p.challenge_id = ? AND p.moderation_status = 'approved' AND p.place_lat IS NOT NULL"
+            . str_replace('city_id', 'p.city_id', $cityFilter) . "
+            ORDER BY p.approved_at DESC
             LIMIT 50
         ");
         $stmt->execute($args);
-        $places = array_map(fn(array $r): array => [
-            'proofId' => $r['id'],
-            'lat'     => (float) $r['place_lat'],
-            'lng'     => (float) $r['place_lng'],
-            'name'    => $r['place_name'],
-        ], $stmt->fetchAll(PDO::FETCH_ASSOC));
+        $places = [];
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            if (!in_array($r['user_id'], $blockedUserIds, true)) {
+                $places[] = self::formatPin($r);
+            }
+        }
 
         return ['priceRanges' => $prices, 'places' => $places];
+    }
+
+    /**
+     * Pinned places of past challenges ("Already done" map), newest first: a
+     * live city's, or the World selection for a dead city (or none), like the
+     * archive. Approved proofs with an explicit pin only; blocked authors left out.
+     */
+    public static function places(?string $cityId, int $limit, array $blockedUserIds = []): array
+    {
+        $isLive = DailyRules::isLive($cityId);
+        $stmt   = Database::pdo()->prepare("
+            SELECT p.id, p.user_id, p.place_lat, p.place_lng, p.place_name, p.photo_url,
+                   u.username, u.display_name, dc.challenge_date, dc.text_i18n
+            FROM daily_proofs p
+            JOIN daily_challenges dc ON dc.id = p.challenge_id
+            JOIN users u ON u.id = p.user_id
+            WHERE p.moderation_status = 'approved' AND p.place_lat IS NOT NULL
+              AND dc.status = 'published' AND dc.challenge_date < ?
+              AND (CAST(? AS TEXT) IS NULL OR p.city_id = ?)
+            ORDER BY dc.challenge_date DESC, p.approved_at DESC
+            LIMIT ?
+        ");
+        $city = $isLive ? $cityId : null;
+        $stmt->execute([DailyClock::currentDate(), $city, $city, $limit]);
+        $items  = [];
+        $locale = DailyI18n::current();
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            if (in_array($r['user_id'], $blockedUserIds, true)) {
+                continue;
+            }
+            $text = json_decode((string) $r['text_i18n'], true) ?: [];
+            $items[] = self::formatPin($r) + [
+                'date'          => (string) $r['challenge_date'],
+                'challengeText' => DailyI18n::localize($text, (string) ($text['en'] ?? ''), $locale)[0],
+            ];
+        }
+        return ['scope' => $isLive ? 'city' : 'world', 'items' => $items];
+    }
+
+    /** One map pin: proof id, coordinates, place name, photo thumb, author. Pure. */
+    public static function formatPin(array $r): array
+    {
+        return [
+            'proofId'  => $r['id'],
+            'lat'      => (float) $r['place_lat'],
+            'lng'      => (float) $r['place_lng'],
+            'name'     => $r['place_name'],
+            'thumbUrl' => R2Uploader::thumbProxy($r['photo_url']),
+            'user'     => ['id' => $r['user_id'], 'username' => $r['username'], 'displayName' => $r['display_name']],
+        ];
     }
 
     /**

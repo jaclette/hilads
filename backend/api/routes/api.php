@@ -14301,7 +14301,7 @@ $router->add('GET', '/api/v1/daily/challenges/{date}', function (array $params) 
     $out['proofs']   = array_map(fn(array $r) => DailyProofRepository::format($r, $user['id'] ?? null), $visible);
     $out['hasMore']  = count($rows) >= $limit;
     $out['nextBefore'] = $rows !== [] ? DailyProofRepository::ts(end($rows)['approved_at']) : null;
-    $out['practical'] = DailyChallengeRepository::practical($id, $proofCity);
+    $out['practical'] = DailyChallengeRepository::practical($id, $proofCity, $blocks['user_ids'] ?? []);
     // Once closed: World top 3, the city's best proof, every live city's best (null before the results).
     $out['results']   = DailyResults::forSheet($id, $cityId, $user['id'] ?? null, $blocks['user_ids'] ?? []);
     Response::json($out);
@@ -14324,6 +14324,14 @@ $router->add('GET', '/api/v1/daily/archive', function () {
     }
     unset($item);
     Response::json($out);
+});
+
+// GET /api/v1/daily/places?cityId=&limit= - "Already done" map: pinned places of
+// past challenges (a live city's, else the World selection), newest first.
+$router->add('GET', '/api/v1/daily/places', function () {
+    $user  = AuthService::currentUser();
+    $limit = max(1, min(300, (int) ($_GET['limit'] ?? 200)));
+    Response::json(DailyChallengeRepository::places(dailyCityParam($user), $limit, dailyBlocks($user)['user_ids'] ?? []));
 });
 
 // GET /api/v1/daily/live-cities - live cities (for the archive city picker).
