@@ -14,7 +14,7 @@ final class DailyChallengeRepository
     {
         return Cache::remember('daily_challenge_v1_' . $date, 60, function () use ($date): ?array {
             $stmt = Database::pdo()->prepare("
-                SELECT id, challenge_date, text_i18n, context_i18n, theme, published_at
+                SELECT id, challenge_date, text_i18n, context_i18n, theme, proposed_by_user_id, published_at
                 FROM daily_challenges
                 WHERE challenge_date = ? AND status = 'published'
             ");
@@ -243,7 +243,7 @@ final class DailyChallengeRepository
         // In World scope the proof filters below compare city_id to NULL,
         // which the "? IS NULL OR ..." guard turns into "every city".
         $stmt = Database::pdo()->prepare("
-            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme,
+            SELECT dc.id, dc.challenge_date, dc.text_i18n, dc.context_i18n, dc.theme, dc.proposed_by_user_id,
                    best.id AS best_proof_id,
                    tw.text AS twist_text, tw.text_i18n AS twist_i18n, tw.author_credit AS twist_credit,
                    tu.id AS twist_user_id, tu.username AS twist_username,
@@ -497,7 +497,39 @@ final class DailyChallengeRepository
             'endsAt'   => $end->getTimestamp(),
             'isActive' => DailyClock::isActive($date, $now),
             'theme'    => DailyThemes::format($row['theme'] ?? null, $date),
+            'proposedBy' => self::credit($row['id'], $row['proposed_by_user_id'] ?? null),
         ];
+    }
+
+    /** @var array<string, ?array> challenge id => credit, per request */
+    private static array $credits = [];
+
+    /**
+     * "Proposed by <name> · <city>" of a challenge from a user's proposal
+     * (V2-05): {user, city}, or null. One small lookup per proposed challenge.
+     */
+    public static function credit(string $challengeId, ?string $userId): ?array
+    {
+        if ($userId === null || $userId === '') {
+            return null;
+        }
+        if (!array_key_exists($challengeId, self::$credits)) {
+            $stmt = Database::pdo()->prepare("
+                SELECT u.id, u.username, u.display_name, u.profile_photo_url, p.city_id, ch.name AS city_name
+                FROM users u
+                LEFT JOIN daily_proposals p ON p.created_challenge_id = ?
+                LEFT JOIN channels ch       ON ch.id = p.city_id
+                WHERE u.id = ? AND u.deleted_at IS NULL
+            ");
+            $stmt->execute([$challengeId, $userId]);
+            $r = $stmt->fetch(PDO::FETCH_ASSOC);
+            self::$credits[$challengeId] = $r ? [
+                'user' => ['id' => $r['id'], 'username' => $r['username'], 'displayName' => $r['display_name'],
+                           'photoUrl' => R2Uploader::thumbProxy($r['profile_photo_url'])],
+                'city' => $r['city_id'] !== null ? ['id' => (int) substr((string) $r['city_id'], 5), 'name' => $r['city_name']] : null,
+            ] : null;
+        }
+        return self::$credits[$challengeId];
     }
 
     private static function formatTwist(array $row, ?string $locale = null): array

@@ -240,6 +240,29 @@ final class DailyPushes
         return ['title' => 'Daily Challenge', 'body' => implode(' ', $parts), 'data' => self::data($date)];
     }
 
+    /** Proposal approved (V2-05, English): its date, or the reserve. */
+    public static function proposalApprovedMessage(?string $date): array
+    {
+        $body = $date !== null
+            ? 'Your challenge goes live on ' . (new DateTimeImmutable($date, new DateTimeZone('UTC')))->format('l, F j') . '.'
+            : 'Your challenge is in the reserve: it goes live on a day with nothing planned.';
+        return ['title' => 'Daily Challenge', 'body' => $body, 'data' => self::data($date ?? DailyClock::currentDate())];
+    }
+
+    /** The author's morning push on the day of their challenge (V2-05, English). */
+    public static function proposalDayMessage(string $date): array
+    {
+        return ['title' => 'Daily Challenge', 'body' => 'Today, everyone is doing your challenge.', 'data' => self::data($date)];
+    }
+
+    /** The morning after (V2-05, English): how many completed it. */
+    public static function proposalResultMessage(string $date, int $completed): array
+    {
+        return ['title' => 'Daily Challenge',
+                'body'  => self::plural($completed, 'person', 'people') . ' completed your challenge.',
+                'data'  => self::data($date)];
+    }
+
     /** The top 10 push, with the proof's current World rank (shared on ties). */
     public static function top10Message(string $date, int $rank, string $locale = 'en'): array
     {
@@ -289,7 +312,14 @@ final class DailyPushes
 
         $users       = self::userRecipients();
         $withOutcome = 0;
+        $author      = $challenge['proposed_by_user_id'] ?? null;
         foreach ($users as $u) {
+            if ($u['id'] === $author) {
+                // V2-05: the author of today's challenge gets this instead of the usual morning push.
+                $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'proposal_day',
+                           self::morningSendAt($now, $u['tz']), $u['tz'], self::proposalDayMessage($date) + ['locale' => 'en']];
+                continue;
+            }
             $loc          = self::morningLocale($challenge, $u['locale']);
             $o            = $outcomes[$u['id']] ?? null;
             $line         = $o !== null ? self::outcomeLine($o['mine'], $o['winner'], $loc) : null;
@@ -361,6 +391,21 @@ final class DailyPushes
                 $rows[] = ['u:' . $u['id'], $u['id'], null, $date, 'digest', $at, $u['tz'],
                            ['data' => self::data($date), 'locale' => $u['locale']]];
             }
+        }
+        return self::insert($rows);
+    }
+
+    /**
+     * One push to one registered user (V2-05 proposal pushes): right away in
+     * their daytime, else at 09:00 local. $message is sent as stored. Once per
+     * (user, date, type). Returns rows queued (0 without a device or the toggle).
+     */
+    public static function queueFor(string $type, string $userId, string $date, array $message, DateTimeImmutable $now): int
+    {
+        $rows = [];
+        foreach (self::userRecipients([$userId]) as $u) {
+            $rows[] = ['u:' . $u['id'], $u['id'], null, $date, $type, self::morningSendAt($now, $u['tz']), $u['tz'],
+                       $message + ['locale' => 'en']];
         }
         return self::insert($rows);
     }

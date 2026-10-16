@@ -1667,7 +1667,7 @@ run($pdo, "
         user_id      TEXT        NOT NULL REFERENCES users(id)    ON DELETE CASCADE,
         challenge_id TEXT        NOT NULL REFERENCES channels(id) ON DELETE CASCADE,
         role         TEXT        NOT NULL CHECK (role IN ('challenger', 'taker', 'daily')),
-        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass')),
+        kind         TEXT        NOT NULL CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected')),
         points       INT         NOT NULL,
         city_id      TEXT        REFERENCES channels(id) ON DELETE SET NULL,
         month_ref    TEXT        NOT NULL,
@@ -1691,7 +1691,7 @@ run($pdo, "ALTER TABLE score_events DROP CONSTRAINT IF EXISTS score_events_kind_
 run($pdo, "
     ALTER TABLE score_events
     ADD CONSTRAINT score_events_kind_check
-    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass'))
+    CHECK (kind IN ('accepted', 'meetup', 'debrief', 'ghost', 'date_locked', 'meet_bonus', 'challenge_created', 'challenge_first_taken', 'join', 'present', 'present_host', 'present_host_base', 'submission', 'winner', 'photo_host', 'daily_proof', 'daily_streak', 'daily_vote', 'daily_top1', 'daily_top2', 'daily_top3', 'daily_city_best', 'daily_twist', 'local_pass', 'proposal_selected'))
 ", 'score_events add new kind check');
 
 // ── GROUP CHALLENGE — Phase 2: join spark (+2, immediate, once per user) ──────
@@ -2802,7 +2802,8 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_sent_day
 // without 'top10' (after deleting the top10 rows).
 run($pdo, "ALTER TABLE daily_push_log DROP CONSTRAINT IF EXISTS daily_push_log_type_check", 'drop daily_push_log_type_check');
 run($pdo, "ALTER TABLE daily_push_log ADD CONSTRAINT daily_push_log_type_check
-            CHECK (type IN ('morning', 'reminder', 'digest', 'top10'))", 'daily_push_log_type_check (top10)');
+            CHECK (type IN ('morning', 'reminder', 'digest', 'top10', 'proposal_approved', 'proposal_day', 'proposal_result'))",
+    'daily_push_log_type_check');
 
 // Content reports on proofs. user_reports allows one report per (reporter,
 // user) forever, so it cannot hold per-proof reports. reason_code is checked in
@@ -2977,6 +2978,64 @@ run($pdo, "
 ", 'daily_local_passes');
 run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('local_pass', 'daily', 50)
             ON CONFLICT (kind, role) DO NOTHING", 'score_rules local_pass');
+
+// V2-05: challenge proposals (SPEC 8.6). Anyone registered proposes a Daily
+// Challenge (English, 120 chars, a theme, a short why, an optional Local Twist
+// for their city when they are a local of a live city); the founder approves it
+// from the back office inbox (dated or to the reserve) or rejects it with a
+// reason. Twist proposals for tomorrow stay in daily_twists (prompt 14).
+// At most one pending proposal per user (DailyProposals::MAX_PENDING).
+// Reversal: DROP TABLE daily_proposals, daily_rejection_templates;
+// ALTER TABLE daily_challenges DROP COLUMN proposed_by_user_id; ALTER TABLE daily_twists DROP COLUMN rejection_reason;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_proposals (
+        id                   TEXT        PRIMARY KEY,
+        user_id              TEXT        NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        city_id              TEXT        REFERENCES channels(id) ON DELETE SET NULL,
+        text                 TEXT        NOT NULL,
+        why                  TEXT,
+        theme                TEXT        NOT NULL,
+        twist_text           TEXT,
+        status               TEXT        NOT NULL DEFAULT 'pending'
+                                         CHECK (status IN ('pending', 'approved', 'rejected')),
+        rejection_reason     TEXT,
+        created_challenge_id TEXT        REFERENCES daily_challenges(id) ON DELETE SET NULL,
+        moderation_status    TEXT        NOT NULL DEFAULT 'pending'
+                                         CHECK (moderation_status IN ('pending', 'approved', 'rejected')),
+        reviewed_at          TIMESTAMPTZ,
+        created_at           TIMESTAMPTZ NOT NULL DEFAULT now(),
+        updated_at           TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_proposals');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proposals_user ON daily_proposals (user_id, created_at DESC)", 'idx_daily_proposals_user');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proposals_pending ON daily_proposals (created_at) WHERE status = 'pending'", 'idx_daily_proposals_pending');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proposals_challenge ON daily_proposals (created_challenge_id)
+            WHERE created_challenge_id IS NOT NULL", 'uq_daily_proposals_challenge');
+run($pdo, "ALTER TABLE daily_challenges ADD COLUMN IF NOT EXISTS proposed_by_user_id TEXT REFERENCES users(id) ON DELETE SET NULL",
+    'daily_challenges.proposed_by_user_id');
+run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS rejection_reason TEXT", 'daily_twists.rejection_reason');
+
+// Rejection reasons the founder picks from (editable in the inbox).
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS daily_rejection_templates (
+        id         BIGSERIAL   PRIMARY KEY,
+        text       TEXT        NOT NULL,
+        position   INT         NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+", 'daily_rejection_templates');
+run($pdo, "
+    INSERT INTO daily_rejection_templates (text, position)
+    SELECT v.text, v.position FROM (VALUES
+        ('Too close to a challenge we already have.', 1),
+        ('Not doable in most cities.', 2),
+        ('It has to be safe and legal everywhere.', 3),
+        ('Please write it in English, as one short sentence.', 4)
+    ) AS v(text, position)
+    WHERE NOT EXISTS (SELECT 1 FROM daily_rejection_templates)
+", 'daily_rejection_templates seed');
+run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('proposal_selected', 'daily', 25)
+            ON CONFLICT (kind, role) DO NOTHING", 'score_rules proposal_selected');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by

@@ -94,6 +94,16 @@ final class DailyDrop
                 $steps['pushes'] = DailyPushes::queueMorning($challenge, $now);
                 $steps['reminders'] = DailyPushes::queueReminders((string) $challenge['challenge_date'], $now);
                 $steps['twistDigests'] = DailyPushes::queueTwistDigests($challenge, $now);
+                // V2-05: a proposed challenge pays its author when it goes live.
+                if (!empty($challenge['proposed_by_user_id'])) {
+                    $steps['proposalPoints'] = DailyPoints::awardProposal($challenge['proposed_by_user_id'], $challenge['id']);
+                }
+            }
+            // V2-05: yesterday's author learns how many completed their challenge.
+            try {
+                $steps['proposalResult'] = DailyProposals::queueResult($yesterday, $now);
+            } catch (\Throwable $e) {
+                error_log("[daily-drop] proposal result of {$yesterday} failed: " . $e->getMessage());
             }
             if ($source === 'reserve') {
                 self::alertAdmin('Daily Challenge: reserve used', "Nothing was scheduled for {$date}; a reserve challenge went live.");

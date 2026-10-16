@@ -147,6 +147,7 @@ final class DailyCards
             'text'          => $c['text'],
             'context'       => $c['context'],
             'theme'         => $c['theme'],
+            'proposedBy'    => $c['proposedBy'],
             'endsAt'        => $c['endsAt'],
             'twist'         => $twist,
             'yesterday'     => $yesterday !== null ? ['date' => $yesterday['date'], 'text' => $yesterday['text']] : null,

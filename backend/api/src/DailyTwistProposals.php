@@ -198,6 +198,24 @@ final class DailyTwistProposals
     }
 
     /** Proposal counts per challenge date (calendar badges). */
+    /** Locals' proposals still waiting for a pick, on challenges not live yet (Proposals inbox, V2-05). */
+    public static function listPending(int $limit = 100): array
+    {
+        $stmt = Database::pdo()->prepare("
+            SELECT t.id, t.text, t.proposed_at, t.city_id, ch.name AS city_name, u.username, u.display_name,
+                   dc.id AS challenge_id, dc.challenge_date::text AS challenge_date, dc.text_i18n
+            FROM daily_twists t
+            JOIN daily_challenges dc ON dc.id = t.challenge_id
+            LEFT JOIN channels ch    ON ch.id = t.city_id
+            LEFT JOIN users u        ON u.id = t.author_user_id
+            WHERE t.proposed_at IS NOT NULL AND t.status = 'proposed' AND dc.challenge_date > ?
+            ORDER BY dc.challenge_date, t.proposed_at
+            LIMIT ?
+        ");
+        $stmt->execute([DailyClock::currentDate(), $limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public static function countsByDate(string $from, string $to): array
     {
         $stmt = Database::pdo()->prepare("
@@ -267,8 +285,8 @@ final class DailyTwistProposals
         return $after;
     }
 
-    /** Reject a proposal that is not the selected twist. */
-    public static function reject(string $twistId): void
+    /** Reject a proposal that is not the selected twist, with an optional reason its author sees (V2-05). */
+    public static function reject(string $twistId, ?string $reason = null): void
     {
         $before = self::findRow($twistId);
         if ($before === null) {
@@ -278,8 +296,9 @@ final class DailyTwistProposals
             throw new InvalidArgumentException('Pick another twist before rejecting the selected one.');
         }
         Database::pdo()->prepare("
-            UPDATE daily_twists SET status = 'rejected', moderation_status = 'rejected', updated_at = now() WHERE id = ?
-        ")->execute([$twistId]);
+            UPDATE daily_twists SET status = 'rejected', moderation_status = 'rejected', rejection_reason = ?, updated_at = now()
+            WHERE id = ?
+        ")->execute([$reason !== null && trim($reason) !== '' ? mb_substr(trim($reason), 0, 280) : null, $twistId]);
         DailyAdminService::audit('daily_twist.reject', 'daily_twist', $twistId, $before, self::findRow($twistId));
     }
 

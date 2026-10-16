@@ -103,6 +103,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DailyLeaderboard.php';
     require_once __DIR__ . '/../src/DailyThemes.php';
     require_once __DIR__ . '/../src/DailyLocalPass.php';
+    require_once __DIR__ . '/../src/DailyProposals.php';
     require_once __DIR__ . '/../src/DailyDrop.php';
     require_once __DIR__ . '/../src/DailyVotes.php';
     require_once __DIR__ . '/../src/DailyResults.php';
@@ -247,6 +248,7 @@ require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyLeaderboard.php';
 require_once __DIR__ . '/../src/DailyThemes.php';
 require_once __DIR__ . '/../src/DailyLocalPass.php';
+require_once __DIR__ . '/../src/DailyProposals.php';
 require_once __DIR__ . '/../src/DailyDrop.php';
 require_once __DIR__ . '/../src/DailyVotes.php';
 require_once __DIR__ . '/../src/DailyResults.php';

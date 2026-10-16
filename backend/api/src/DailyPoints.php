@@ -158,7 +158,17 @@ final class DailyPoints
         return $awarded;
     }
 
-    /** One award row. True when it was inserted now (false: already awarded, admin, or 0 points). */
+    /** Points for the author of a proposed challenge, when it goes live (V2-05). Once per challenge. */
+    public static function awardProposal(string $userId, string $challengeId): bool
+    {
+        $awarded = self::insert($userId, $challengeId, 'proposal_selected', self::rule('proposal_selected'), null, null, null);
+        if ($awarded) {
+            MonthlyRankService::recalcAfterScoreChange($userId);
+        }
+        return $awarded;
+    }
+
+        /** One award row. True when it was inserted now (false: already awarded, admin, or 0 points). */
     private static function insert(string $userId, string $challengeId, string $kind, int $points,
                                    ?string $cityId, ?string $proofId, ?string $twistId): bool
     {

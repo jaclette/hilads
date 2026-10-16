@@ -152,6 +152,9 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/daily/reserve') {
     require __DIR__ . '/daily_reserve.php';
 
+} elseif ($uri === '/admin/daily/proposals') {
+    require __DIR__ . '/daily_proposals.php';
+
 } elseif ($uri === '/admin/daily/import') {
     require __DIR__ . '/daily_import.php';
 

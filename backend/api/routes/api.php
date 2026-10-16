@@ -14581,6 +14581,57 @@ $router->add('DELETE', '/api/v1/daily/twist-proposal', function () {
     Response::json(['ok' => true]);
 });
 
+const DAILY_PROPOSAL_ERRORS = [
+    'invalid_text'       => [422, 'The challenge must be 1 to ' . DailyProposals::TEXT_MAX . ' characters.'],
+    'invalid_theme'      => [422, 'Pick one of the 7 themes.'],
+    'invalid_why'        => [422, 'Keep the why under ' . DailyProposals::WHY_MAX . ' characters.'],
+    'invalid_twist'      => [422, 'The Local Twist must be at most ' . DailyAdminService::TWIST_MAX . ' characters.'],
+    'twist_not_allowed'  => [403, 'Only locals of a live city can add a Local Twist.'],
+    'moderation_blocked' => [422, 'Your proposal was flagged by moderation - please rephrase.'],
+    'pending_exists'     => [409, 'You already have a proposal waiting for review.'],
+    'not_found'          => [404, 'Proposal not found.'],
+    'not_editable'       => [409, 'This proposal was already reviewed.'],
+];
+
+/** Run a proposal action and answer its InvalidArgumentException codes. */
+function dailyProposalAction(callable $fn): mixed
+{
+    try {
+        return $fn();
+    } catch (InvalidArgumentException $e) {
+        [$status, $msg] = DAILY_PROPOSAL_ERRORS[$e->getMessage()] ?? [400, 'Invalid request'];
+        Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
+    }
+}
+
+// POST /api/v1/daily/proposals {text, theme, why?, twistText?} - propose a Daily
+// Challenge (registered users, one pending at a time). Reviewed in the back office.
+$router->add('POST', '/api/v1/daily/proposals', function () {
+    $user = AuthService::requireAuth();
+    if (BanRepository::isBanned($user['guest_id'] ?? null, Request::ip())) {
+        Response::json(['error' => 'You can no longer post here.', 'code' => 'banned'], 403);
+    }
+    if (!DbRateLimiter::allow('daily_proposal|' . $user['id'], 10, 3600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    $proposal = dailyProposalAction(fn() => DailyProposals::propose($user, Request::json() ?? []));
+    apiLog('daily', 'challenge proposed', ['proposal' => $proposal['id'], 'user' => $user['id']]);
+    Response::json(['proposal' => $proposal], 201);
+});
+
+// GET /api/v1/daily/proposals/mine - my challenge and Local Twist proposals with their status.
+$router->add('GET', '/api/v1/daily/proposals/mine', function () {
+    $user = AuthService::requireAuth();
+    Response::json(['items' => DailyProposals::mine($user['id']), 'maxPending' => DailyProposals::MAX_PENDING]);
+});
+
+// DELETE /api/v1/daily/proposals/{id} - withdraw my proposal while it is pending.
+$router->add('DELETE', '/api/v1/daily/proposals/{id}', function (array $params) {
+    $user = AuthService::requireAuth();
+    dailyProposalAction(fn() => DailyProposals::withdraw($user, (string) $params['id']));
+    Response::json(['ok' => true]);
+});
+
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.
 $router->add('POST', '/api/v1/daily/proofs', function () {
     $user = AuthService::requireAuth();

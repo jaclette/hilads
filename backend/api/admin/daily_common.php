@@ -112,6 +112,7 @@ function daily_subnav(string $current): void
         '/admin/daily'         => '📅 Calendar',
         '/admin/daily/today'   => '🔥 Today',
         '/admin/daily/reserve' => '🧺 Reserve',
+        '/admin/daily/proposals' => '💡 Proposals',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
     ];
