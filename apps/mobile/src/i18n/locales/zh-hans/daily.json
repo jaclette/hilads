@@ -152,5 +152,52 @@
     "bestProofs": "最佳证明",
     "emptyMine": "从今天的挑战开始你的连续记录。"
   },
-  "streak_other": "连续 {{count}} 天"
+  "streak_other": "连续 {{count}} 天",
+  "twist": {
+    "title": "提议 Local Twist",
+    "tomorrow": "明天的 Daily Challenge",
+    "intro": "你是 {{city}} 的本地人：提议如何用 {{city}} 的方式完成明天的挑战。被选中后会署上你的名字发布。",
+    "closesIn": "距离截止还有 {{time}}",
+    "closed": "明天的提议已截止。",
+    "yours": "你的提议",
+    "label": "你的 {{city}} Local Twist",
+    "placeholder": "例如：早上8点前吃 Cơm tấm，点 sườn bì chả。",
+    "hint": "一条只有本地人知道的小贴士，用英文写。发布前会经过审核。",
+    "submit": "提交我的 twist",
+    "withdraw": "撤回",
+    "withdrawTitle": "撤回你的提议？",
+    "withdrawBody": "截止前你可以重新提议。",
+    "status": {
+      "pending": "审核中",
+      "picked": "已选中 🎉",
+      "not_picked": "未选中"
+    },
+    "statusHint": {
+      "pending": "明天的挑战开始前，每个城市会选出一个 twist。",
+      "picked": "它会随明天 {{city}} 的挑战以你的名字发布。积分在结束时发放。",
+      "not_picked": "这次选了别的 twist。明天再试试！"
+    },
+    "heroCta": "提议明天的 Local Twist · 截止 {{time}}",
+    "heroStatus": "你明天的 Local Twist：{{status}}",
+    "reasons": {
+      "no_city": "设置你的城市才能提议 Local Twist。",
+      "city_not_live": "只有直播城市可以提议 Local Twist。",
+      "not_local": "只有 {{city}} 的本地人可以提议 Local Twist。请在个人资料中将模式设为 Local。",
+      "no_challenge": "明天的挑战还没准备好，稍后再来。"
+    },
+    "errors": {
+      "already_proposed": "你已经提议过明天的 Local Twist。",
+      "closed": "明天的提议已截止。",
+      "invalid_text": "请写 1 到 280 个字符。",
+      "moderation_blocked": "你的 twist 被过滤器标记了，请重新表述。",
+      "not_editable": "这个提议已无法修改。",
+      "not_found": "没有可修改的提议。",
+      "rate_limited": "尝试次数太多 - 请稍等。",
+      "banned": "你不能再在这里发布内容。",
+      "no_city": "设置你的城市才能提议 Local Twist。",
+      "city_not_live": "只有直播城市可以提议 Local Twist。",
+      "not_local": "只有 {{city}} 的本地人可以提议 Local Twist。请在个人资料中将模式设为 Local。",
+      "no_challenge": "明天的挑战还没准备好，稍后再来。"
+    }
+  }
 }

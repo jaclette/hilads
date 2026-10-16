@@ -17,7 +17,8 @@ import type { DailyToday } from '@/types';
  * MY CITY hero: today's Daily Challenge. Challenge text (English, as written),
  * the city's Local Twist when the city is live, a countdown to the next drop,
  * the proof count and the CTA - or my proof's status once I posted. My
- * streak shows from 2 days on.
+ * streak shows from 2 days on. Locals of a live city get a line to propose
+ * tomorrow's Local Twist (or see their proposal's status).
  */
 export function DailyHeroCard({ cityId, source = 'hero' }: { cityId: string; source?: string }) {
   const daily = useDailyToday(cityId);
@@ -30,7 +31,7 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
 }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  const { t } = useTranslation('daily');
+  const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const { account } = useApp();
   const tracked = useRef<string | null>(null);
@@ -102,6 +103,17 @@ export function DailyHeroCardView({ data, loading, secondsLeft, source = 'hero' 
         )}
       </View>
 
+      {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
+        <TouchableOpacity style={styles.propose} onPress={() => router.push('/daily/twist' as never)} accessibilityRole="button">
+          <Text style={styles.proposeText} numberOfLines={2}>
+            🌱 {data.twistProposal.status
+              ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })
+              : t('twist.heroCta', { time: new Date(data.twistProposal.closesAt * 1000).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }) })}
+          </Text>
+          <Text style={styles.proposeArrow}>›</Text>
+        </TouchableOpacity>
+      )}
+
       <DailyPushBanner />
     </TouchableOpacity>
   );
@@ -127,6 +139,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   kicker:     { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
   countdown:  { fontSize: 12, fontWeight: '700', color: c.muted },
   text:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text, lineHeight: 22 },
+  propose:     { flexDirection: 'row', alignItems: 'center', gap: 8, borderTopWidth: 1, borderTopColor: c.border, paddingTop: 8 },
+  proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.accentText },
+  proposeArrow:{ fontSize: FontSizes.md, fontWeight: '800', color: c.accentText },
   streak:     { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.accentText, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
   twist:      { backgroundColor: c.bg3, borderRadius: Radius.md, paddingVertical: 8, paddingHorizontal: 10, gap: 2 },
   twistLabel: { fontSize: 11, fontWeight: '800', color: c.accentText, textTransform: 'uppercase', letterSpacing: 0.4 },

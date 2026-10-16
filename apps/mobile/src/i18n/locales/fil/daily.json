@@ -154,5 +154,52 @@
     "emptyMine": "Nagsisimula ang streak mo sa challenge ngayon."
   },
   "streak_one": "{{count}} araw na sunod",
-  "streak_other": "{{count}} araw na sunod"
+  "streak_other": "{{count}} araw na sunod",
+  "twist": {
+    "title": "Magmungkahi ng Local Twist",
+    "tomorrow": "Ang Daily Challenge bukas",
+    "intro": "Local ka ng {{city}}: imungkahi kung paano gawin ang challenge bukas sa paraang {{city}}. Kapag napili, ilalabas ito kasama ang pangalan mo.",
+    "closesIn": "Magsasara ang mga mungkahi sa loob ng {{time}}",
+    "closed": "Sarado na ang mga mungkahi para bukas.",
+    "yours": "Ang mungkahi mo",
+    "label": "Ang {{city}} Local Twist mo",
+    "placeholder": "hal. Cơm tấm bago mag-8am, umorder ng sườn bì chả.",
+    "hint": "Isang tip na mga local lang ang nakakaalam, sa English. Sinusuri ito bago ilabas.",
+    "submit": "Imungkahi ang twist ko",
+    "withdraw": "Bawiin",
+    "withdrawTitle": "Bawiin ang mungkahi mo?",
+    "withdrawBody": "Puwede kang magmungkahi ulit hangga't bukas pa.",
+    "status": {
+      "pending": "Sinusuri",
+      "picked": "Napili 🎉",
+      "not_picked": "Hindi napili"
+    },
+    "statusHint": {
+      "pending": "Isang twist bawat lungsod ang pinipili bago ang challenge bukas.",
+      "picked": "Ilalabas ito kasama ang challenge bukas sa {{city}}, may pangalan mo. May points ka sa pagsasara.",
+      "not_picked": "Ibang twist ang napili ngayon. Subukan ulit bukas!"
+    },
+    "heroCta": "Imungkahi ang Local Twist bukas · hanggang {{time}}",
+    "heroStatus": "Ang Local Twist mo para bukas: {{status}}",
+    "reasons": {
+      "no_city": "Itakda ang lungsod mo para magmungkahi ng Local Twist.",
+      "city_not_live": "Sa mga live na lungsod lang puwedeng magmungkahi ng Local Twist.",
+      "not_local": "Mga local ng {{city}} lang ang puwedeng magmungkahi ng Local Twist nito. Gawing Local ang mode mo sa profile.",
+      "no_challenge": "Hindi pa handa ang challenge bukas. Bumalik mamaya."
+    },
+    "errors": {
+      "already_proposed": "Nakapagmungkahi ka na ng Local Twist para bukas.",
+      "closed": "Sarado na ang mga mungkahi para bukas.",
+      "invalid_text": "Sumulat ng 1 hanggang 280 character.",
+      "moderation_blocked": "Na-flag ang twist mo - pakisulat ulit.",
+      "not_editable": "Hindi na mababago ang mungkahing ito.",
+      "not_found": "Walang mungkahing babaguhin.",
+      "rate_limited": "Sobrang daming try - maghintay sandali.",
+      "banned": "Hindi ka na puwedeng mag-post dito.",
+      "no_city": "Itakda ang lungsod mo para magmungkahi ng Local Twist.",
+      "city_not_live": "Sa mga live na lungsod lang puwedeng magmungkahi ng Local Twist.",
+      "not_local": "Mga local ng {{city}} lang ang puwedeng magmungkahi ng Local Twist nito. Gawing Local ang mode mo sa profile.",
+      "no_challenge": "Hindi pa handa ang challenge bukas. Bumalik mamaya."
+    }
+  }
 }

@@ -95,6 +95,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DbRateLimiter.php';
     require_once __DIR__ . '/../src/DailyCards.php';
     require_once __DIR__ . '/../src/DailyModerationService.php';
+    require_once __DIR__ . '/../src/DailyTwistProposals.php';
     require_once __DIR__ . '/../src/NotificationPreferencesRepository.php';
     require_once __DIR__ . '/../src/DailyPushes.php';
     require_once __DIR__ . '/../src/DailyDrop.php';
@@ -234,6 +235,7 @@ require_once __DIR__ . '/../src/DailyChallengeRepository.php';
 require_once __DIR__ . '/../src/DailyAdminService.php';
 require_once __DIR__ . '/../src/DailyCards.php';
 require_once __DIR__ . '/../src/DailyModerationService.php';
+require_once __DIR__ . '/../src/DailyTwistProposals.php';
 require_once __DIR__ . '/../src/DailyPushes.php';
 require_once __DIR__ . '/../src/DailyDrop.php';
 require_once __DIR__ . '/../src/DailyVotes.php';

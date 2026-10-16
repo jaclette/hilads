@@ -97,6 +97,8 @@ export default function NotificationsHistoryScreen() {
       router.push('/(tabs)/me' as never);
     } else if (notif.type === 'profile_view' && notif.data?.viewerId) {
       if (canAccessProfile(account)) router.push(`/user/${notif.data.viewerId}` as never);
+    } else if (notif.type === 'daily_twist_picked') {
+      router.push('/daily/twist' as never);
     }
   }, [router, account, setUnreadNotifications]);
 

@@ -154,5 +154,52 @@
     "emptyMine": "A tua série começa com o desafio de hoje."
   },
   "streak_one": "{{count}} dia seguido",
-  "streak_other": "{{count}} dias seguidos"
+  "streak_other": "{{count}} dias seguidos",
+  "twist": {
+    "title": "Propor um Local Twist",
+    "tomorrow": "O Daily Challenge de amanhã",
+    "intro": "És local de {{city}}: sugere como fazer o challenge de amanhã à maneira de {{city}}. Se for escolhido, sai com o teu nome.",
+    "closesIn": "As propostas fecham dentro de {{time}}",
+    "closed": "As propostas para amanhã estão fechadas.",
+    "yours": "A tua proposta",
+    "label": "O teu Local Twist de {{city}}",
+    "placeholder": "ex.: Cơm tấm antes das 8h, pede sườn bì chả.",
+    "hint": "Uma dica que só os locais conhecem, em inglês. É revista antes de ser publicada.",
+    "submit": "Propor o meu twist",
+    "withdraw": "Retirar",
+    "withdrawTitle": "Retirar a tua proposta?",
+    "withdrawBody": "Podes propor outra até as propostas fecharem.",
+    "status": {
+      "pending": "Em revisão",
+      "picked": "Escolhido 🎉",
+      "not_picked": "Não escolhido"
+    },
+    "statusHint": {
+      "pending": "É escolhido um twist por cidade antes do challenge de amanhã.",
+      "picked": "Sai com o challenge de amanhã em {{city}}, com o teu nome. Ganhas pontos no fecho.",
+      "not_picked": "Desta vez foi escolhido outro twist. Tenta outra vez amanhã!"
+    },
+    "heroCta": "Propõe o Local Twist de amanhã · até às {{time}}",
+    "heroStatus": "O teu Local Twist para amanhã: {{status}}",
+    "reasons": {
+      "no_city": "Define a tua cidade para propor um Local Twist.",
+      "city_not_live": "Os Local Twists só são propostos em cidades em direto.",
+      "not_local": "Só os locais de {{city}} podem propor o Local Twist. Muda o teu modo para Local no perfil.",
+      "no_challenge": "O challenge de amanhã ainda não está pronto. Volta mais tarde."
+    },
+    "errors": {
+      "already_proposed": "Já propuseste um Local Twist para amanhã.",
+      "closed": "As propostas para amanhã estão fechadas.",
+      "invalid_text": "Escreve entre 1 e 280 caracteres.",
+      "moderation_blocked": "O teu twist foi assinalado - reformula-o.",
+      "not_editable": "Esta proposta já não pode ser alterada.",
+      "not_found": "Nenhuma proposta para alterar.",
+      "rate_limited": "Demasiadas tentativas - espera um pouco.",
+      "banned": "Já não podes publicar aqui.",
+      "no_city": "Define a tua cidade para propor um Local Twist.",
+      "city_not_live": "Os Local Twists só são propostos em cidades em direto.",
+      "not_local": "Só os locais de {{city}} podem propor o Local Twist. Muda o teu modo para Local no perfil.",
+      "no_challenge": "O challenge de amanhã ainda não está pronto. Volta mais tarde."
+    }
+  }
 }

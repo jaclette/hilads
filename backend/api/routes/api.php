@@ -14265,7 +14265,10 @@ const DAILY_ERRORS = [
 // GET /api/v1/daily/today?cityId= - today's challenge for the home card.
 $router->add('GET', '/api/v1/daily/today', function () {
     $user = AuthService::currentUser();
-    Response::json(DailyChallengeRepository::header(DailyClock::currentDate(), dailyCityParam($user), $user));
+    $out  = DailyChallengeRepository::header(DailyClock::currentDate(), dailyCityParam($user), $user);
+    // Locals of a live city: tomorrow's Local Twist proposal (entry point on the hero card).
+    $out['twistProposal'] = $user !== null ? DailyTwistProposals::summaryFor($user) : null;
+    Response::json($out);
 });
 
 // GET /api/v1/daily/challenges/{date}?scope=world|city&cityId=&before=&limit=
@@ -14449,6 +14452,70 @@ $router->add('GET', '/api/v1/users/{userId}/daily', function (array $params) {
         Response::json(['error' => 'User not found'], 404);
     }
     Response::json(DailyResults::userStats($user['id'], $viewer['id']));
+});
+
+const DAILY_TWIST_ERRORS = [
+    'no_city'            => [409, 'Set your city first.'],
+    'city_not_live'      => [409, 'Local Twists are only proposed in live cities.'],
+    'not_local'          => [403, 'Only locals of this city can propose its Local Twist.'],
+    'no_challenge'       => [409, "Tomorrow's challenge is not scheduled yet."],
+    'closed'             => [409, 'Proposals for tomorrow are closed.'],
+    'already_proposed'   => [409, 'You already proposed a Local Twist for tomorrow.'],
+    'invalid_text'       => [422, 'The twist must be 1 to ' . DailyAdminService::TWIST_MAX . ' characters.'],
+    'moderation_blocked' => [422, 'Your twist was flagged by moderation - please rephrase.'],
+    'not_found'          => [404, 'No proposal to change.'],
+    'not_editable'       => [409, 'This proposal can no longer be changed.'],
+];
+
+/** Run a twist proposal action and answer its InvalidArgumentException codes. */
+function dailyTwistAction(callable $fn): mixed
+{
+    try {
+        return $fn();
+    } catch (InvalidArgumentException $e) {
+        [$status, $msg] = DAILY_TWIST_ERRORS[$e->getMessage()] ?? [400, 'Invalid request'];
+        Response::json(['error' => $msg, 'code' => $e->getMessage()], $status);
+    }
+}
+
+/** Auth, ban check and rate limit for twist proposal writes. */
+function dailyTwistWriter(): array
+{
+    $user = AuthService::requireAuth();
+    if (BanRepository::isBanned($user['guest_id'] ?? null, Request::ip())) {
+        Response::json(['error' => 'You can no longer post here.', 'code' => 'banned'], 403);
+    }
+    if (!DbRateLimiter::allow('daily_twist|' . $user['id'], 10, 3600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    return $user;
+}
+
+// GET /api/v1/daily/twist-proposal - tomorrow's Local Twist proposal screen:
+// window, my city, whether I can propose, tomorrow's challenge (locals of a live city), my proposal.
+$router->add('GET', '/api/v1/daily/twist-proposal', function () {
+    Response::json(DailyTwistProposals::forViewer(AuthService::requireAuth()));
+});
+
+// POST /api/v1/daily/twist-proposal {text} - propose tomorrow's Local Twist for my city (one per day).
+$router->add('POST', '/api/v1/daily/twist-proposal', function () {
+    $user     = dailyTwistWriter();
+    $proposal = dailyTwistAction(fn() => DailyTwistProposals::propose($user, Request::json()['text'] ?? null));
+    apiLog('daily', 'twist proposed', ['twist' => $proposal['id'], 'user' => $user['id']]);
+    Response::json(['proposal' => $proposal], 201);
+});
+
+// PATCH /api/v1/daily/twist-proposal {text} - edit it while open and not picked.
+$router->add('PATCH', '/api/v1/daily/twist-proposal', function () {
+    $user = dailyTwistWriter();
+    Response::json(['proposal' => dailyTwistAction(fn() => DailyTwistProposals::edit($user, Request::json()['text'] ?? null))]);
+});
+
+// DELETE /api/v1/daily/twist-proposal - withdraw it while open and not picked.
+$router->add('DELETE', '/api/v1/daily/twist-proposal', function () {
+    $user = dailyTwistWriter();
+    dailyTwistAction(fn() => DailyTwistProposals::withdraw($user));
+    Response::json(['ok' => true]);
 });
 
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.

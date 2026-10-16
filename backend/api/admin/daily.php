@@ -27,6 +27,7 @@ $unusedReserve = (int) Database::pdo()->query(
     "SELECT count(*) FROM daily_challenges WHERE is_reserve AND challenge_date IS NULL AND status = 'scheduled'"
 )->fetchColumn();
 $gaps = DailyAdminService::gapsInNextDays(7);
+$proposalCounts = DailyTwistProposals::countsByDate($from, $to);
 
 admin_head('Daily Challenge');
 admin_nav('/admin/daily');
@@ -62,7 +63,7 @@ daily_styles();
                     <td class="daily-muted"><?= dh(daily_window_label($day['date'])) ?></td>
                     <td><?= daily_state_badge($day['state']) ?></td>
                     <td class="td-clip" style="max-width:420px"><?= $c ? dh(mb_strimwidth(daily_text($c['text_i18n']), 0, 90, '…')) : '<span class="daily-muted">-</span>' ?></td>
-                    <td><?= $c ? (int) $c['twist_count'] : '' ?></td>
+                    <td><?= $c ? (int) $c['twist_count'] : '' ?><?= !empty($proposalCounts[$day['date']]) ? ' <span class="badge" style="background:#4a3410;color:#fcd34d">' . (int) $proposalCounts[$day['date']] . ' proposed</span>' : '' ?></td>
                     <td class="daily-muted">
                         <?php if ($run): ?>
                             <?= dh($run['status']) ?><?= $run['source'] ? ' · ' . dh($run['source']) : '' ?><?= $run['error'] ? ' · <span style="color:#f87171">' . dh(mb_strimwidth($run['error'], 0, 60, '…')) . '</span>' : '' ?>

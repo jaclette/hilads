@@ -327,6 +327,10 @@ function resolveRoute(data: NotifData): string | null {
       // Daily Challenge pushes (no challengeId on purpose) → today's sheet.
       return '/daily/today?source=push';
 
+    case 'daily_twist_picked':
+      // My Local Twist proposal was picked → its status screen.
+      return '/daily/twist';
+
     case 'daily_digest': {
       // The digest can arrive the day after (cap reached) → its own date.
       const date = (data as { date?: string }).date;

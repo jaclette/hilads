@@ -154,5 +154,52 @@
     "emptyMine": "आपकी स्ट्रीक आज के challenge से शुरू होती है।"
   },
   "streak_one": "{{count}} दिन की स्ट्रीक",
-  "streak_other": "{{count}} दिन की स्ट्रीक"
+  "streak_other": "{{count}} दिन की स्ट्रीक",
+  "twist": {
+    "title": "Local Twist सुझाएं",
+    "tomorrow": "कल का Daily Challenge",
+    "intro": "आप {{city}} के लोकल हैं: सुझाएं कि कल का challenge {{city}} के अंदाज़ में कैसे करें। चुने जाने पर यह आपके नाम से लाइव होगा।",
+    "closesIn": "सुझाव {{time}} में बंद होंगे",
+    "closed": "कल के सुझाव बंद हो गए हैं।",
+    "yours": "आपका सुझाव",
+    "label": "{{city}} के लिए आपका Local Twist",
+    "placeholder": "जैसे: सुबह 8 बजे से पहले Cơm tấm, sườn bì chả मांगें।",
+    "hint": "एक टिप जो सिर्फ़ लोकल जानते हैं, अंग्रेज़ी में। लाइव होने से पहले इसकी जांच होती है।",
+    "submit": "मेरा twist सुझाएं",
+    "withdraw": "वापस लें",
+    "withdrawTitle": "अपना सुझाव वापस लें?",
+    "withdrawBody": "सुझाव बंद होने तक आप फिर से सुझा सकते हैं।",
+    "status": {
+      "pending": "समीक्षा में",
+      "picked": "चुना गया 🎉",
+      "not_picked": "नहीं चुना गया"
+    },
+    "statusHint": {
+      "pending": "कल के challenge से पहले हर शहर के लिए एक twist चुना जाता है।",
+      "picked": "यह कल के challenge के साथ {{city}} में आपके नाम से लाइव होगा। क्लोज़ पर आपको पॉइंट्स मिलेंगे।",
+      "not_picked": "इस बार कोई और twist चुना गया। कल फिर कोशिश करें!"
+    },
+    "heroCta": "कल का Local Twist सुझाएं · {{time}} तक",
+    "heroStatus": "कल के लिए आपका Local Twist: {{status}}",
+    "reasons": {
+      "no_city": "Local Twist सुझाने के लिए अपना शहर चुनें।",
+      "city_not_live": "Local Twist सिर्फ़ लाइव शहरों में सुझाए जाते हैं।",
+      "not_local": "सिर्फ़ {{city}} के लोकल ही इसका Local Twist सुझा सकते हैं। प्रोफ़ाइल में मोड Local चुनें।",
+      "no_challenge": "कल का challenge अभी तैयार नहीं है। बाद में आएं।"
+    },
+    "errors": {
+      "already_proposed": "आप कल के लिए Local Twist पहले ही सुझा चुके हैं।",
+      "closed": "कल के सुझाव बंद हो गए हैं।",
+      "invalid_text": "1 से 280 अक्षर लिखें।",
+      "moderation_blocked": "आपका twist फ़्लैग हुआ - कृपया दोबारा लिखें।",
+      "not_editable": "यह सुझाव अब बदला नहीं जा सकता।",
+      "not_found": "बदलने के लिए कोई सुझाव नहीं।",
+      "rate_limited": "बहुत ज़्यादा कोशिशें - थोड़ा रुकें।",
+      "banned": "आप अब यहाँ पोस्ट नहीं कर सकते।",
+      "no_city": "Local Twist सुझाने के लिए अपना शहर चुनें।",
+      "city_not_live": "Local Twist सिर्फ़ लाइव शहरों में सुझाए जाते हैं।",
+      "not_local": "सिर्फ़ {{city}} के लोकल ही इसका Local Twist सुझा सकते हैं। प्रोफ़ाइल में मोड Local चुनें।",
+      "no_challenge": "कल का challenge अभी तैयार नहीं है। बाद में आएं।"
+    }
+  }
 }

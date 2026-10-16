@@ -154,5 +154,52 @@
     "emptyMine": "Je reeks begint met de challenge van vandaag."
   },
   "streak_one": "{{count}} dag op rij",
-  "streak_other": "{{count}} dagen op rij"
+  "streak_other": "{{count}} dagen op rij",
+  "twist": {
+    "title": "Stel een Local Twist voor",
+    "tomorrow": "De Daily Challenge van morgen",
+    "intro": "Je bent local in {{city}}: stel voor hoe je de challenge van morgen op de manier van {{city}} doet. Wordt hij gekozen, dan verschijnt hij met je naam.",
+    "closesIn": "Voorstellen sluiten over {{time}}",
+    "closed": "Voorstellen voor morgen zijn gesloten.",
+    "yours": "Jouw voorstel",
+    "label": "Jouw Local Twist voor {{city}}",
+    "placeholder": "bv. Cơm tấm vóór 8 uur, vraag om sườn bì chả.",
+    "hint": "Een tip die alleen locals kennen, in het Engels. Hij wordt gecontroleerd voor publicatie.",
+    "submit": "Mijn twist voorstellen",
+    "withdraw": "Intrekken",
+    "withdrawTitle": "Je voorstel intrekken?",
+    "withdrawBody": "Je kunt opnieuw voorstellen tot de voorstellen sluiten.",
+    "status": {
+      "pending": "In beoordeling",
+      "picked": "Gekozen 🎉",
+      "not_picked": "Niet gekozen"
+    },
+    "statusHint": {
+      "pending": "Per stad wordt één twist gekozen voor de challenge van morgen.",
+      "picked": "Hij verschijnt met de challenge van morgen in {{city}}, met je naam. Je verdient punten bij de afsluiting.",
+      "not_picked": "Deze keer is een andere twist gekozen. Probeer het morgen weer!"
+    },
+    "heroCta": "Stel de Local Twist van morgen voor · tot {{time}}",
+    "heroStatus": "Jouw Local Twist voor morgen: {{status}}",
+    "reasons": {
+      "no_city": "Stel je stad in om een Local Twist voor te stellen.",
+      "city_not_live": "Local Twists worden alleen in live steden voorgesteld.",
+      "not_local": "Alleen locals van {{city}} kunnen de Local Twist voorstellen. Zet je modus op Local in je profiel.",
+      "no_challenge": "De challenge van morgen is nog niet klaar. Kom later terug."
+    },
+    "errors": {
+      "already_proposed": "Je hebt al een Local Twist voor morgen voorgesteld.",
+      "closed": "Voorstellen voor morgen zijn gesloten.",
+      "invalid_text": "Schrijf 1 tot 280 tekens.",
+      "moderation_blocked": "Je twist is gemarkeerd - herformuleer hem.",
+      "not_editable": "Dit voorstel kan niet meer worden gewijzigd.",
+      "not_found": "Geen voorstel om te wijzigen.",
+      "rate_limited": "Te veel pogingen - wacht even.",
+      "banned": "Je kunt hier niet meer posten.",
+      "no_city": "Stel je stad in om een Local Twist voor te stellen.",
+      "city_not_live": "Local Twists worden alleen in live steden voorgesteld.",
+      "not_local": "Alleen locals van {{city}} kunnen de Local Twist voorstellen. Zet je modus op Local in je profiel.",
+      "no_challenge": "De challenge van morgen is nog niet klaar. Kom later terug."
+    }
+  }
 }

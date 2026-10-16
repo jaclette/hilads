@@ -74,6 +74,7 @@ export type AnalyticsEvent =
   | 'daily_push_permission'
   | 'daily_notification_opened'
   | 'daily_vote_cast'
+  | 'daily_twist_proposed'
   | 'daily_link_opened';
 
 type Payload = Record<string, string | number | boolean | undefined | null>;

@@ -152,5 +152,52 @@
     "bestProofs": "베스트 인증",
     "emptyMine": "오늘의 챌린지로 연속 기록을 시작하세요."
   },
-  "streak_other": "{{count}}일 연속"
+  "streak_other": "{{count}}일 연속",
+  "twist": {
+    "title": "Local Twist 제안하기",
+    "tomorrow": "내일의 Daily Challenge",
+    "intro": "{{city}} 로컬이시네요: 내일 챌린지를 {{city}} 스타일로 하는 법을 제안해 주세요. 선택되면 내 이름으로 공개돼요.",
+    "closesIn": "제안 마감까지 {{time}}",
+    "closed": "내일 제안이 마감됐어요.",
+    "yours": "내 제안",
+    "label": "{{city}} Local Twist",
+    "placeholder": "예: 아침 8시 전 Cơm tấm, sườn bì chả 주문하기.",
+    "hint": "로컬만 아는 팁 하나를 영어로 적어 주세요. 공개 전에 검토돼요.",
+    "submit": "twist 제안하기",
+    "withdraw": "철회",
+    "withdrawTitle": "제안을 철회할까요?",
+    "withdrawBody": "마감 전까지 다시 제안할 수 있어요.",
+    "status": {
+      "pending": "검토 중",
+      "picked": "선택됨 🎉",
+      "not_picked": "선택되지 않음"
+    },
+    "statusHint": {
+      "pending": "내일 챌린지 전에 도시마다 twist 하나가 선택돼요.",
+      "picked": "내일 {{city}} 챌린지와 함께 내 이름으로 공개돼요. 포인트는 마감 때 받아요.",
+      "not_picked": "이번에는 다른 twist가 선택됐어요. 내일 다시 도전하세요!"
+    },
+    "heroCta": "내일의 Local Twist 제안 · {{time}}까지",
+    "heroStatus": "내일의 내 Local Twist: {{status}}",
+    "reasons": {
+      "no_city": "Local Twist를 제안하려면 도시를 설정하세요.",
+      "city_not_live": "Local Twist는 라이브 도시에서만 제안할 수 있어요.",
+      "not_local": "{{city}} 로컬만 Local Twist를 제안할 수 있어요. 프로필에서 모드를 Local로 바꾸세요.",
+      "no_challenge": "내일 챌린지가 아직 준비되지 않았어요. 나중에 다시 오세요."
+    },
+    "errors": {
+      "already_proposed": "내일 Local Twist를 이미 제안했어요.",
+      "closed": "내일 제안이 마감됐어요.",
+      "invalid_text": "1~280자로 적어 주세요.",
+      "moderation_blocked": "twist가 신고 필터에 걸렸어요 - 다시 적어 주세요.",
+      "not_editable": "이 제안은 더 이상 바꿀 수 없어요.",
+      "not_found": "바꿀 제안이 없어요.",
+      "rate_limited": "시도가 너무 많아요 - 잠시 기다려 주세요.",
+      "banned": "여기에 더 이상 게시할 수 없어요.",
+      "no_city": "Local Twist를 제안하려면 도시를 설정하세요.",
+      "city_not_live": "Local Twist는 라이브 도시에서만 제안할 수 있어요.",
+      "not_local": "{{city}} 로컬만 Local Twist를 제안할 수 있어요. 프로필에서 모드를 Local로 바꾸세요.",
+      "no_challenge": "내일 챌린지가 아직 준비되지 않았어요. 나중에 다시 오세요."
+    }
+  }
 }

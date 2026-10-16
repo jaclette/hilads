@@ -154,5 +154,52 @@
     "emptyMine": "Streak-mu dimulai dengan tantangan hari ini."
   },
   "streak_one": "Streak {{count}} hari",
-  "streak_other": "Streak {{count}} hari"
+  "streak_other": "Streak {{count}} hari",
+  "twist": {
+    "title": "Usulkan Local Twist",
+    "tomorrow": "Daily Challenge besok",
+    "intro": "Kamu warga lokal {{city}}: usulkan cara menjalani challenge besok ala {{city}}. Kalau terpilih, tayang dengan namamu.",
+    "closesIn": "Usulan ditutup dalam {{time}}",
+    "closed": "Usulan untuk besok sudah ditutup.",
+    "yours": "Usulanmu",
+    "label": "Local Twist {{city}} darimu",
+    "placeholder": "mis. Cơm tấm sebelum jam 8, minta sườn bì chả.",
+    "hint": "Satu tips yang cuma diketahui warga lokal, dalam bahasa Inggris. Dicek sebelum tayang.",
+    "submit": "Usulkan twist-ku",
+    "withdraw": "Tarik",
+    "withdrawTitle": "Tarik usulanmu?",
+    "withdrawBody": "Kamu bisa mengusulkan lagi sampai usulan ditutup.",
+    "status": {
+      "pending": "Ditinjau",
+      "picked": "Terpilih 🎉",
+      "not_picked": "Tidak terpilih"
+    },
+    "statusHint": {
+      "pending": "Satu twist per kota dipilih sebelum challenge besok.",
+      "picked": "Tayang bersama challenge besok di {{city}} dengan namamu. Poin didapat saat penutupan.",
+      "not_picked": "Kali ini twist lain yang terpilih. Coba lagi besok!"
+    },
+    "heroCta": "Usulkan Local Twist besok · sampai {{time}}",
+    "heroStatus": "Local Twist-mu untuk besok: {{status}}",
+    "reasons": {
+      "no_city": "Atur kotamu untuk mengusulkan Local Twist.",
+      "city_not_live": "Local Twist hanya diusulkan di kota live.",
+      "not_local": "Hanya warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
+      "no_challenge": "Challenge besok belum siap. Kembali nanti."
+    },
+    "errors": {
+      "already_proposed": "Kamu sudah mengusulkan Local Twist untuk besok.",
+      "closed": "Usulan untuk besok sudah ditutup.",
+      "invalid_text": "Tulis 1 sampai 280 karakter.",
+      "moderation_blocked": "Twist-mu ditandai - tolong tulis ulang.",
+      "not_editable": "Usulan ini sudah tidak bisa diubah.",
+      "not_found": "Tidak ada usulan untuk diubah.",
+      "rate_limited": "Terlalu banyak percobaan - tunggu sebentar.",
+      "banned": "Kamu tidak bisa posting di sini lagi.",
+      "no_city": "Atur kotamu untuk mengusulkan Local Twist.",
+      "city_not_live": "Local Twist hanya diusulkan di kota live.",
+      "not_local": "Hanya warga lokal {{city}} yang bisa mengusulkan Local Twist-nya. Ubah mode ke Local di profilmu.",
+      "no_challenge": "Challenge besok belum siap. Kembali nanti."
+    }
+  }
 }

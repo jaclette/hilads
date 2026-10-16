@@ -78,6 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
         'remove_twist' => daily_action(fn() => DailyAdminService::removeTwist((string) ($p['twist_id'] ?? '')),
             'Twist removed.', $self . '#twists'),
 
+        'pick_twist' => daily_action(fn() => DailyTwistProposals::pick((string) ($p['twist_id'] ?? '')),
+            'Twist picked.', $self . '#twists'),
+
+        'reject_twist' => daily_action(fn() => DailyTwistProposals::reject((string) ($p['twist_id'] ?? '')),
+            'Proposal rejected.', $self . '#twists'),
+
         'duplicate' => daily_action(function () use ($p, $id) {
             $date = trim((string) ($p['date'] ?? ''));
             $row  = DailyAdminService::duplicateChallenge($id, $date !== '' ? $date : null);
@@ -123,6 +129,8 @@ foreach (DailyRules::liveCityIds() as $cityId) {
     if ($city) $liveCities[$cityId] = $city['name'];
 }
 $twists = $isNew ? [] : DailyAdminService::twistsFor($challenge['id']);
+// Every other twist per city: locals' proposals and the founder's earlier twists (pickable).
+$otherTwists = $isNew ? [] : DailyTwistProposals::listForChallenge($challenge['id']);
 
 $title = $isNew ? ($isReserve ? 'New reserve challenge' : 'New challenge') : ($isReserve ? 'Reserve challenge' : 'Challenge ' . $date);
 admin_head($title);
@@ -209,6 +217,38 @@ daily_styles();
                                     <input type="hidden" name="twist_id" value="<?= dh($t['id']) ?>">
                                     <button class="btn btn-danger btn-sm" type="submit">Remove twist</button>
                                 </form>
+                            <?php endif; ?>
+                            <?php $others = array_values(array_filter($otherTwists[$cityId] ?? [], fn($o) => $o['status'] !== 'selected')); ?>
+                            <?php if ($others !== []): ?>
+                                <div class="daily-muted" style="margin:10px 0 4px">Proposals and earlier twists (<?= count($others) ?>)</div>
+                                <div class="table-wrapper"><table class="daily-stack"><tbody>
+                                    <?php foreach ($others as $o): ?>
+                                        <tr>
+                                            <td style="width:150px">
+                                                <?php if ($o['proposed_at'] !== null): ?>
+                                                    @<?= dh($o['username'] ?? '?') ?><br>
+                                                    <span class="daily-muted"><?= dh(date('D H:i', strtotime((string) $o['proposed_at']))) ?></span>
+                                                <?php else: ?>
+                                                    <span class="daily-muted">your twist</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= dh($o['text']) ?></td>
+                                            <td style="width:90px"><?= daily_state_badge($o['status'] === 'rejected' ? 'rejected' : 'pending') ?></td>
+                                            <td style="width:170px; white-space:nowrap">
+                                                <form method="POST" action="<?= dh($self) ?>" style="display:inline">
+                                                    <?= csrf_input() ?><input type="hidden" name="action" value="pick_twist"><input type="hidden" name="twist_id" value="<?= dh($o['id']) ?>">
+                                                    <button class="btn btn-primary btn-sm" type="submit">Pick</button>
+                                                </form>
+                                                <?php if ($o['status'] !== 'rejected'): ?>
+                                                    <form method="POST" action="<?= dh($self) ?>" style="display:inline" onsubmit="return confirm('Reject this proposal?')">
+                                                        <?= csrf_input() ?><input type="hidden" name="action" value="reject_twist"><input type="hidden" name="twist_id" value="<?= dh($o['id']) ?>">
+                                                        <button class="btn btn-secondary btn-sm" type="submit">Reject</button>
+                                                    </form>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody></table></div>
                             <?php endif; ?>
                         </div>
                     <?php endforeach; ?>

@@ -152,5 +152,52 @@
     "bestProofs": "Bằng chứng hay nhất",
     "emptyMine": "Chuỗi của bạn bắt đầu với thử thách hôm nay."
   },
-  "streak_other": "Chuỗi {{count}} ngày"
+  "streak_other": "Chuỗi {{count}} ngày",
+  "twist": {
+    "title": "Đề xuất Local Twist",
+    "tomorrow": "Daily Challenge ngày mai",
+    "intro": "Bạn là người địa phương ở {{city}}: hãy gợi ý cách làm thử thách ngày mai theo kiểu {{city}}. Nếu được chọn, nó sẽ lên sóng với tên bạn.",
+    "closesIn": "Đóng đề xuất sau {{time}}",
+    "closed": "Đã đóng đề xuất cho ngày mai.",
+    "yours": "Đề xuất của bạn",
+    "label": "Local Twist {{city}} của bạn",
+    "placeholder": "VD: Cơm tấm trước 8 giờ sáng, gọi sườn bì chả.",
+    "hint": "Một mẹo chỉ người địa phương biết, viết bằng tiếng Anh. Sẽ được kiểm tra trước khi lên sóng.",
+    "submit": "Gửi đề xuất",
+    "withdraw": "Rút lại",
+    "withdrawTitle": "Rút lại đề xuất?",
+    "withdrawBody": "Bạn có thể đề xuất lại cho đến khi đóng.",
+    "status": {
+      "pending": "Đang duyệt",
+      "picked": "Được chọn 🎉",
+      "not_picked": "Không được chọn"
+    },
+    "statusHint": {
+      "pending": "Mỗi thành phố chọn một twist trước thử thách ngày mai.",
+      "picked": "Nó sẽ lên sóng cùng thử thách ngày mai ở {{city}} với tên bạn. Bạn nhận điểm khi kết thúc.",
+      "not_picked": "Lần này một twist khác được chọn. Thử lại ngày mai nhé!"
+    },
+    "heroCta": "Đề xuất Local Twist ngày mai · đến {{time}}",
+    "heroStatus": "Local Twist ngày mai của bạn: {{status}}",
+    "reasons": {
+      "no_city": "Chọn thành phố của bạn để đề xuất Local Twist.",
+      "city_not_live": "Local Twist chỉ được đề xuất ở thành phố đang live.",
+      "not_local": "Chỉ người địa phương ở {{city}} mới đề xuất được Local Twist. Hãy chọn chế độ Local trong hồ sơ.",
+      "no_challenge": "Thử thách ngày mai chưa sẵn sàng. Quay lại sau nhé."
+    },
+    "errors": {
+      "already_proposed": "Bạn đã đề xuất Local Twist cho ngày mai rồi.",
+      "closed": "Đã đóng đề xuất cho ngày mai.",
+      "invalid_text": "Viết từ 1 đến 280 ký tự.",
+      "moderation_blocked": "Twist của bạn bị gắn cờ - hãy viết lại.",
+      "not_editable": "Đề xuất này không thể sửa nữa.",
+      "not_found": "Không có đề xuất để sửa.",
+      "rate_limited": "Thử quá nhiều lần - đợi một chút nhé.",
+      "banned": "Bạn không thể đăng ở đây nữa.",
+      "no_city": "Chọn thành phố của bạn để đề xuất Local Twist.",
+      "city_not_live": "Local Twist chỉ được đề xuất ở thành phố đang live.",
+      "not_local": "Chỉ người địa phương ở {{city}} mới đề xuất được Local Twist. Hãy chọn chế độ Local trong hồ sơ.",
+      "no_challenge": "Thử thách ngày mai chưa sẵn sàng. Quay lại sau nhé."
+    }
+  }
 }

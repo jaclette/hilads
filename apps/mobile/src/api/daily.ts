@@ -5,6 +5,8 @@ import type {
   DailyProofInput,
   DailySheet,
   DailyToday,
+  DailyTwistProposal,
+  DailyTwistProposalScreen,
   DailyUserStats,
   DailyVoteState,
 } from '@/types';
@@ -109,4 +111,24 @@ export async function fetchDailyProofStates(ids: string[], guestId?: string | nu
 /** Daily Challenge profile stats (signed-in viewers only). */
 export async function fetchUserDaily(userId: string): Promise<DailyUserStats> {
   return api.get<DailyUserStats>(`/users/${userId}/daily`);
+}
+
+/** Tomorrow's Local Twist proposal screen (signed in). */
+export async function fetchTwistProposal(): Promise<DailyTwistProposalScreen> {
+  return api.get<DailyTwistProposalScreen>('/daily/twist-proposal');
+}
+
+/** Propose tomorrow's Local Twist for my city (locals of a live city, one per day). */
+export async function proposeTwist(text: string): Promise<DailyTwistProposal> {
+  return (await api.post<{ proposal: DailyTwistProposal }>('/daily/twist-proposal', { text })).proposal;
+}
+
+/** Edit my proposal while open and not picked. */
+export async function editTwistProposal(text: string): Promise<DailyTwistProposal> {
+  return (await api.patch<{ proposal: DailyTwistProposal }>('/daily/twist-proposal', { text })).proposal;
+}
+
+/** Withdraw my proposal while open and not picked. */
+export async function withdrawTwistProposal(): Promise<void> {
+  await api.delete('/daily/twist-proposal');
 }

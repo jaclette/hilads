@@ -178,5 +178,52 @@
   "streak_two": "يومان متتاليان",
   "streak_few": "{{count}} أيام متتالية",
   "streak_many": "{{count}} يومًا متتاليًا",
-  "streak_other": "{{count}} يوم متتالٍ"
+  "streak_other": "{{count}} يوم متتالٍ",
+  "twist": {
+    "title": "اقترح Local Twist",
+    "tomorrow": "Daily Challenge الغد",
+    "intro": "أنت من سكان {{city}}: اقترح كيف يُنجز تحدي الغد على طريقة {{city}}. إذا اختير، يُنشر باسمك.",
+    "closesIn": "تُغلق الاقتراحات بعد {{time}}",
+    "closed": "أُغلقت اقتراحات الغد.",
+    "yours": "اقتراحك",
+    "label": "Local Twist الخاص بك لـ {{city}}",
+    "placeholder": "مثال: Cơm tấm قبل 8 صباحًا، واطلب sườn bì chả.",
+    "hint": "نصيحة لا يعرفها إلا السكان، بالإنجليزية. تُراجع قبل النشر.",
+    "submit": "اقترح الـ twist",
+    "withdraw": "سحب",
+    "withdrawTitle": "سحب اقتراحك؟",
+    "withdrawBody": "يمكنك الاقتراح مجددًا حتى إغلاق الاقتراحات.",
+    "status": {
+      "pending": "قيد المراجعة",
+      "picked": "تم اختياره 🎉",
+      "not_picked": "لم يُختر"
+    },
+    "statusHint": {
+      "pending": "يُختار twist واحد لكل مدينة قبل تحدي الغد.",
+      "picked": "سيُنشر مع تحدي الغد في {{city}} باسمك. تحصل على النقاط عند الإغلاق.",
+      "not_picked": "اختير twist آخر هذه المرة. حاول غدًا!"
+    },
+    "heroCta": "اقترح Local Twist الغد · حتى {{time}}",
+    "heroStatus": "Local Twist الخاص بك للغد: {{status}}",
+    "reasons": {
+      "no_city": "حدّد مدينتك لتقترح Local Twist.",
+      "city_not_live": "تُقترح Local Twists في المدن المباشرة فقط.",
+      "not_local": "يمكن لسكان {{city}} فقط اقتراح Local Twist الخاص بها. اختر وضع Local في ملفك.",
+      "no_challenge": "تحدي الغد ليس جاهزًا بعد. عد لاحقًا."
+    },
+    "errors": {
+      "already_proposed": "اقترحت Local Twist للغد بالفعل.",
+      "closed": "أُغلقت اقتراحات الغد.",
+      "invalid_text": "اكتب من 1 إلى 280 حرفًا.",
+      "moderation_blocked": "تم الإبلاغ عن الـ twist - أعد صياغته.",
+      "not_editable": "لم يعد بالإمكان تعديل هذا الاقتراح.",
+      "not_found": "لا يوجد اقتراح لتعديله.",
+      "rate_limited": "محاولات كثيرة جدًا - انتظر قليلًا.",
+      "banned": "لم يعد بإمكانك النشر هنا.",
+      "no_city": "حدّد مدينتك لتقترح Local Twist.",
+      "city_not_live": "تُقترح Local Twists في المدن المباشرة فقط.",
+      "not_local": "يمكن لسكان {{city}} فقط اقتراح Local Twist الخاص بها. اختر وضع Local في ملفك.",
+      "no_challenge": "تحدي الغد ليس جاهزًا بعد. عد لاحقًا."
+    }
+  }
 }

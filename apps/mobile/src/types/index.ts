@@ -725,7 +725,7 @@ export interface Notification {
     | 'dm_message' | 'event_message' | 'event_join' | 'new_event'
     | 'channel_message' | 'city_join'
     | 'friend_request_received' | 'friend_request_accepted' | 'friend_added' // friend_added kept for legacy rows
-    | 'vibe_received' | 'profile_view';
+    | 'vibe_received' | 'profile_view' | 'daily_twist_picked';
   title: string;
   body: string;
   data: {
@@ -821,6 +821,32 @@ export interface DailyToday {
   myProof:     DailyProof | null;
   myVotes:     { used: number; left: number } | null;   // signed in, with a challenge
   streak:      number | null;                           // signed in
+  /** Locals of a live city with a challenge tomorrow: proposing tomorrow's Local Twist. */
+  twistProposal?: { date: string; open: boolean; closesAt: number; status: DailyTwistProposalStatus | null } | null;
+}
+
+export type DailyTwistProposalStatus = 'pending' | 'picked' | 'not_picked';
+
+export interface DailyTwistProposal {
+  id:        string;
+  text:      string;
+  status:    DailyTwistProposalStatus;
+  createdAt: number | null;
+  editedAt:  number | null;
+}
+
+/** GET /daily/twist-proposal: tomorrow's proposal screen. */
+export interface DailyTwistProposalScreen {
+  date:      string;
+  opensAt:   number;
+  closesAt:  number;
+  open:      boolean;
+  city:      { id: number; name: string } | null;
+  /** Why I can't propose now: no_city, city_not_live, not_local, no_challenge, closed. */
+  reason:    string | null;
+  challenge: { text: string; context: string | null } | null;
+  proposal:  DailyTwistProposal | null;
+  maxLength: number;
 }
 
 export interface DailyPriceRange {

@@ -2592,6 +2592,13 @@ run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_twists_selected
             ON daily_twists (challenge_id, city_id) WHERE status = 'selected'", 'uq_daily_twists_selected');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_twists_challenge ON daily_twists (challenge_id)", 'idx_daily_twists_challenge');
 
+// Local Twists proposed by locals (phase 3): proposed_at marks a proposal
+// (founder twists keep it NULL). One proposal per local per challenge.
+// Manual reversal: DROP INDEX uq_daily_twists_proposal; ALTER TABLE daily_twists DROP COLUMN proposed_at;
+run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS proposed_at TIMESTAMPTZ", 'daily_twists.proposed_at');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_twists_proposal
+            ON daily_twists (challenge_id, author_user_id) WHERE proposed_at IS NOT NULL", 'uq_daily_twists_proposal');
+
 // Proofs: one per user per challenge. city_id and is_local are set server-side
 // (is_local is a snapshot taken at creation). Visible only once approved.
 // Owner delete removes the row (votes, results and points cascade); an admin
