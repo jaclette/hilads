@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "本地人",
     "traveler": "旅行者",
-    "ctaApp": "在 app 里接受 challenge"
+    "ctaApp": "在 app 里接受 challenge",
+    "localPass": "Local Pass",
+    "early": "抢先",
+    "proposedBy": "由 {{name}} 提议",
+    "proposedByCity": "由 {{name}} · {{city}} 提议",
+    "groupTitle": "新的证明：{{n}}",
+    "groupCitiesMore": "{{cities}} 等另外 {{n}} 个"
   }
 }

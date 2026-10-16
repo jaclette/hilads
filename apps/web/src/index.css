@@ -28,6 +28,7 @@
   --bg2: #FFFFFF;
   --text-muted: #6E5D4E;
   --hot-text: #C24A38;  /* readable deep orange as text on cream */
+  --warning: #B45309;   /* amber as text on cream (Daily: Early badge) */
 
   --separator: #EADDD0;
   --overlay-weak: rgba(28, 20, 14, 0.03);
@@ -61,6 +62,7 @@
   --bg2: #1a1614;
   --text-muted: #968880;
   --hot-text: #FF7A3C;  /* bright orange text stays vivid on dark */
+  --warning: #F5A524;   /* amber on dark */
 
   --separator: rgba(255, 255, 255, 0.08);
   --overlay-weak: rgba(255, 255, 255, 0.04);
@@ -7426,6 +7428,15 @@ img.pub-profile-avatar {
 .feed-daily-cta { align-self: flex-start; margin-top: 0.2rem; padding: 0.4rem 0.9rem; border-radius: 999px; background: var(--hot-dot); color: #fff; font-size: 0.8rem; font-weight: 800; text-decoration: none; }
 .feed-daily-cta--ghost { background: transparent; color: var(--hot-text); border: 1px solid var(--hot-dot); }
 .feed-daily .feed-join-time { opacity: 0.6; font-size: 0.7rem; color: var(--muted2); }
+/* V2: theme chip, "Proposed by", Local Pass / Early badges, the hour's group card. */
+.feed-daily-theme { align-self: flex-start; padding: 0.15rem 0.6rem; border-radius: 999px; background: var(--surface2); color: var(--text); font-size: 0.75rem; font-weight: 800; }
+.feed-daily-by { color: var(--hot-text); font-size: 0.78rem; font-weight: 700; }
+.feed-daily-pass { margin-left: 0.3rem; padding: 0 0.35rem; border-radius: 999px; background: rgba(255, 122, 60, 0.15); font-size: 0.7rem; }
+.feed-daily-early { margin-left: 0.4rem; padding: 0 0.4rem; border-radius: 999px; border: 1px solid var(--warning); color: var(--warning); font-size: 0.68rem; font-weight: 800; }
+.feed-daily-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.35rem; }
+.feed-daily-strip-cell { position: relative; aspect-ratio: 1; border-radius: 10px; overflow: hidden; background: var(--surface2); }
+.feed-daily-strip-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.feed-daily-strip-more { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.55); color: #fff; font-weight: 900; }
 /* Quiet-city → World nudge card, pinned at the top of a quiet city feed. */
 .feed-quiet-card {
   display: block;

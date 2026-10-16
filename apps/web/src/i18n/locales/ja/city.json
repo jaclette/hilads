@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "ローカル",
     "traveler": "旅行者",
-    "ctaApp": "アプリで challenge に参加する"
+    "ctaApp": "アプリで challenge に参加する",
+    "localPass": "Local Pass",
+    "early": "早い",
+    "proposedBy": "{{name}} の提案",
+    "proposedByCity": "{{name}} · {{city}} の提案",
+    "groupTitle": "新しい証明：{{n}}",
+    "groupCitiesMore": "{{cities}} ほか {{n}} 件"
   }
 }

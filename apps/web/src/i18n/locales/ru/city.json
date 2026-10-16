@@ -329,6 +329,12 @@
     "localTwist": "Local Twist",
     "local": "Местный",
     "traveler": "Путешественник",
-    "ctaApp": "Принять challenge в приложении"
+    "ctaApp": "Принять challenge в приложении",
+    "localPass": "Local Pass",
+    "early": "Рано",
+    "proposedBy": "Предложил(а) {{name}}",
+    "proposedByCity": "Предложил(а) {{name}} · {{city}}",
+    "groupTitle": "Новые доказательства: {{n}}",
+    "groupCitiesMore": "{{cities}} и ещё {{n}}"
   }
 }

@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Lokal",
     "traveler": "Pelancong",
-    "ctaApp": "Ambil challenge-nya di app"
+    "ctaApp": "Ambil challenge-nya di app",
+    "localPass": "Local Pass",
+    "early": "Awal",
+    "proposedBy": "Diusulkan oleh {{name}}",
+    "proposedByCity": "Diusulkan oleh {{name}} · {{city}}",
+    "groupTitle": "Bukti baru: {{n}}",
+    "groupCitiesMore": "{{cities}} dan {{n}} lainnya"
   }
 }

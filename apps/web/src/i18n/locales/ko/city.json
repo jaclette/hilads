@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "로컬",
     "traveler": "여행자",
-    "ctaApp": "앱에서 challenge 참여하기"
+    "ctaApp": "앱에서 challenge 참여하기",
+    "localPass": "Local Pass",
+    "early": "빠름",
+    "proposedBy": "{{name}}님의 제안",
+    "proposedByCity": "{{name}} · {{city}}의 제안",
+    "groupTitle": "새 인증: {{n}}",
+    "groupCitiesMore": "{{cities}} 외 {{n}}개"
   }
 }

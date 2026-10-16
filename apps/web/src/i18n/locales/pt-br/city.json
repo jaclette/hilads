@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Viajante",
-    "ctaApp": "Aceite o challenge no app"
+    "ctaApp": "Aceite o challenge no app",
+    "localPass": "Local Pass",
+    "early": "Adiantado",
+    "proposedBy": "Proposto por {{name}}",
+    "proposedByCity": "Proposto por {{name}} · {{city}}",
+    "groupTitle": "Novas provas: {{n}}",
+    "groupCitiesMore": "{{cities}} e mais {{n}}"
   }
 }

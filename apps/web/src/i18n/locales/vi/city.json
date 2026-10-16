@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Dân địa phương",
     "traveler": "Du khách",
-    "ctaApp": "Tham gia challenge trong app"
+    "ctaApp": "Tham gia challenge trong app",
+    "localPass": "Local Pass",
+    "early": "Sớm",
+    "proposedBy": "Đề xuất bởi {{name}}",
+    "proposedByCity": "Đề xuất bởi {{name}} · {{city}}",
+    "groupTitle": "Bằng chứng mới: {{n}}",
+    "groupCitiesMore": "{{cities}} và {{n}} nữa"
   }
 }

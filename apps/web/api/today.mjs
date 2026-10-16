@@ -14,15 +14,22 @@
  * twist depends on the visitor's city, so the browser adds it after load
  * (/api/geo → /api/daily-today, itself cached per city).
  *
+ * V2: the challenge's theme (server-rendered), and in the browser "Proposed
+ * by", tomorrow's theme (a teaser, never its text) and the live top 3 (fetched
+ * from the public API, hidden until the challenge is ranked).
+ *
  * Standalone and light (no fonts, no app bundle), same daylight style as
  * /join. UI strings: the path locale, else (bare /today) the browser language.
  * The challenge text itself is English.
  */
 
-import { fetchDailyToday, cacheSeconds, cacheHeader } from './_daily.mjs'
+import { API_BASE, fetchDailyToday, cacheSeconds, cacheHeader } from './_daily.mjs'
 import { TODAY_STRINGS } from './_today-i18n.mjs'
 
 const SITE = 'https://hilads.live'
+const THEME_EMOJI = {
+  language: '🗣️', street_food: '🍜', coffee: '☕', market: '🧺', night_out: '🌙', neighborhood: '🏘️', traditions: '🏮',
+}
 const LOCALES = Object.keys(TODAY_STRINGS)
 
 function esc(s) {
@@ -44,6 +51,9 @@ export function renderToday(data, locale, prefixed) {
   const boot = {
     challenge: c || null,
     nextDropAt: (data && data.nextDropAt) || null,
+    tomorrow: (data && data.tomorrow) || null,
+    themeEmoji: THEME_EMOJI,
+    api: API_BASE,
     locale,
     // Bare /today: the browser language may pick another locale client-side.
     strings: prefixed ? { [locale]: S } : TODAY_STRINGS,
@@ -116,6 +126,17 @@ export function renderToday(data, locale, prefixed) {
     .twist .t-title{ font-size:12.5px; font-weight:800; color:var(--accent2); letter-spacing:.2px; }
     .twist .t-text{ margin-top:4px; font-size:15px; font-weight:600; line-height:1.4; }
     .twist .t-by{ margin-top:4px; font-size:12px; color:var(--muted); }
+    .theme{ font-size:13px; font-weight:800; color:var(--text); background:var(--surface2); border-radius:999px; padding:5px 12px; }
+    .by{ margin:0; font-size:13px; font-weight:700; color:var(--accent); }
+    .tomorrow{ font-size:13px; color:var(--muted); }
+    .top3{ width:100%; display:flex; flex-direction:column; gap:8px; padding:14px; border-radius:18px; background:var(--surface); border:1px solid var(--line); }
+    .top3 .t3-title{ font-size:13px; font-weight:800; text-align:start; }
+    .top3 .row{ display:flex; align-items:center; gap:10px; text-align:start; }
+    .top3 .medal{ font-size:20px; width:26px; text-align:center; }
+    .top3 img, .top3 .ph{ width:42px; height:42px; border-radius:10px; object-fit:cover; background:var(--surface2); flex:0 0 auto; }
+    .top3 .who{ flex:1; min-width:0; font-size:14px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .top3 .who small{ font-weight:500; color:var(--muted); }
+    .top3 .votes{ font-size:13px; font-weight:800; }
     .timer{ font-size:14px; font-weight:700; color:var(--text); background:var(--surface2); border-radius:999px; padding:7px 14px; font-variant-numeric:tabular-nums; }
     .pitch{ margin:0; max-width:22em; color:var(--text); opacity:.82; font-size:15px; line-height:1.5; }
     .ctas{ width:100%; max-width:360px; display:flex; flex-direction:column; gap:11px; }
@@ -164,15 +185,23 @@ export function renderToday(data, locale, prefixed) {
 
     <section class="card">
       <div class="kicker">🔥 Daily Challenge</div>
+      ${c && c.theme ? `<div class="theme">${THEME_EMOJI[c.theme.key] || '•'} ${esc(c.theme.name)}</div>` : ''}
       ${c
         ? `<h1>${esc(c.text)}</h1>${c.context ? `\n      <p class="ctx">${esc(c.context)}</p>` : ''}`
         : `<h1 data-k="nothingLive">${esc(S.nothingLive)}</h1>`}
+      <p class="by" id="by" hidden></p>
       <div class="twist" id="twist" hidden>
         <div class="t-title" id="twist-title"></div>
         <div class="t-text" id="twist-text"></div>
         <div class="t-by" id="twist-by" hidden></div>
       </div>
       <div class="timer" id="timer" hidden></div>
+      <div class="tomorrow" id="tomorrow" hidden></div>
+    </section>
+
+    <section class="top3" id="top3" hidden>
+      <div class="t3-title" id="top3-title"></div>
+      <div id="top3-rows"></div>
     </section>
 
     <p class="pitch" data-k="pitch">${esc(S.pitch)}</p>
@@ -304,6 +333,43 @@ export function renderToday(data, locale, prefixed) {
       }).catch(function () { opened_(); });
     }
     setTimeout(opened_, C ? 2500 : 0);
+
+    /* ── V2: "Proposed by", tomorrow's theme, the live top 3 ─────────────── */
+    if (C && C.proposedBy && C.proposedBy.name) {
+      $('by').textContent = '💡 ' + (C.proposedBy.city
+        ? fmt(S.proposedByCity, { name: C.proposedBy.name, city: C.proposedBy.city })
+        : fmt(S.proposedBy, { name: C.proposedBy.name }));
+      $('by').hidden = false;
+    }
+    if (B.tomorrow && B.tomorrow.theme) {
+      $('tomorrow').textContent = fmt(S.tomorrow, { theme: (B.themeEmoji[B.tomorrow.theme.key] || '') + ' ' + B.tomorrow.theme.name });
+      $('tomorrow').hidden = false;
+    }
+    var MEDALS = ['🥇', '🥈', '🥉'];
+    function top3(){
+      if (!C || document.visibilityState === 'hidden') return;
+      fetch(B.api + '/api/v1/daily/leaderboard').then(function (r) { return r.ok ? r.json() : null; }).then(function (lb) {
+        var rows = lb && lb.ranked && lb.date === C.date ? (lb.world || []).slice(0, 3) : [];
+        if (!rows.length) { $('top3').hidden = true; return; }
+        $('top3-title').textContent = '🏆 ' + S.top3;
+        var box = $('top3-rows'); box.textContent = '';
+        rows.forEach(function (e) {
+          var row = document.createElement('div'); row.className = 'row';
+          var m = document.createElement('span'); m.className = 'medal'; m.textContent = MEDALS[e.rank - 1] || ('#' + e.rank);
+          var img = document.createElement(e.thumbUrl ? 'img' : 'span');
+          if (e.thumbUrl) { img.src = e.thumbUrl; img.alt = ''; img.loading = 'lazy'; } else { img.className = 'ph'; }
+          var who = document.createElement('span'); who.className = 'who';
+          who.textContent = (e.user && (e.user.displayName || e.user.username)) || '';
+          if (e.city && e.city.name) { var sm = document.createElement('small'); sm.textContent = ' · ' + e.city.name; who.appendChild(sm); }
+          var v = document.createElement('span'); v.className = 'votes'; v.textContent = '♥ ' + e.voteCount;
+          row.appendChild(m); row.appendChild(img); row.appendChild(who); row.appendChild(v);
+          box.appendChild(row);
+        });
+        $('top3').hidden = false;
+      }).catch(function () {});
+    }
+    top3();
+    setInterval(top3, 60000);
 
     /* ── CTA tracking (fire, then navigate after a beat so it flushes) ────── */
     function wire(id, target){

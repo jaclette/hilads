@@ -698,21 +698,61 @@ function dedupeWeather(items) {
 // there is exactly one active user per page session.
 const SELF_IDENTITY = { guestId: null, userId: null }
 
+// Weekly themes (V2-03): names are English content from the API; emoji here.
+const DAILY_THEME_EMOJI = {
+  language: '🗣️', street_food: '🍜', coffee: '☕', market: '🧺', night_out: '🌙', neighborhood: '🏘️', traditions: '🏮',
+}
+
 // Daily Challenge card in the feed (read-only on web; the app holds the sheet
 // and the proof flow). The CTA goes to /today: the app opens on today's sheet
-// when installed, else the page offers the stores.
+// when installed, else the page offers the stores. Shows V2 details too: the
+// theme and "Proposed by" on the challenge, Local Pass / Early on proofs, and
+// the hour's group card of a busy channel (photo strip, count, cities).
 function DailyFeedCard({ item, t }) {
   const p = item.payload || {}
   const lang = i18n.language
   const todayHref = SUPPORTED.includes(lang) && lang !== DEFAULT_LOCALE ? `/${lang}/today` : '/today'
   const time = item.createdAt ? formatMsgTime(item.createdAt) : null
+  if (item.subtype === 'daily_proof_group') {
+    const proofs = Array.isArray(p.proofs) ? p.proofs : []
+    if (proofs.length === 0) return null
+    const count = p.count || proofs.length
+    // Same rule as the server's fallback line: two cities, then "and N more" proofs.
+    const named = (p.cities || []).slice(0, 2).map(c => localizeCityName(c))
+    const more = count - named.length
+    const where = named.length === 0 ? '' : more > 0 ? t('daily.groupCitiesMore', { cities: named.join(', '), n: more }) : named.join(', ')
+    const shown = proofs.slice(0, 4)
+    return (
+      <div className="feed-daily feed-daily--proof">
+        <div className="feed-daily-kicker">📸 {t('daily.groupTitle', { n: count })}</div>
+        {where && <div className="feed-daily-sub">{where}</div>}
+        <div className="feed-daily-strip">
+          {shown.map((e, i) => (
+            <div key={e.proofId} className="feed-daily-strip-cell">
+              {e.thumbUrl ? <img src={e.thumbUrl} alt="" loading="lazy" /> : <span />}
+              {i === shown.length - 1 && count > shown.length && <span className="feed-daily-strip-more">+{count - shown.length + 1}</span>}
+            </div>
+          ))}
+        </div>
+        <a className="feed-daily-cta feed-daily-cta--ghost" href={todayHref}>{t('daily.ctaApp')}</a>
+        {time && <span className="feed-join-time">{time}</span>}
+      </div>
+    )
+  }
   if (item.subtype === 'daily_challenge') {
     if (!p.text) return null
+    const by = p.proposedBy?.user ? (p.proposedBy.user.displayName || p.proposedBy.user.username || '') : null
     return (
       <div className="feed-daily">
         <div className="feed-daily-kicker">🔥 {t('daily.kicker')}</div>
+        {p.theme?.name && <span className="feed-daily-theme">{DAILY_THEME_EMOJI[p.theme.key] || '•'} {p.theme.name}</span>}
         <div className="feed-daily-text">{p.text}</div>
         {p.context && <div className="feed-daily-context">{p.context}</div>}
+        {by && (
+          <div className="feed-daily-by">💡 {p.proposedBy.city?.name
+            ? t('daily.proposedByCity', { name: by, city: localizeCityName(p.proposedBy.city.name) })
+            : t('daily.proposedBy', { name: by })}</div>
+        )}
         {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
         <a className="feed-daily-cta" href={todayHref}>{t('daily.ctaApp')}</a>
         {time && <span className="feed-join-time">{time}</span>}
@@ -725,7 +765,9 @@ function DailyFeedCard({ item, t }) {
     <div className="feed-daily feed-daily--proof">
       <div className="feed-daily-author">
         <strong>{name}</strong>
+        {p.user?.localPass && <span className="feed-daily-pass" title={t('daily.localPass')}>🎫</span>}
         <span className="feed-daily-sub"> · {p.isLocal ? `🌍 ${t('daily.local')}` : `🧭 ${t('daily.traveler')}`}{p.city?.name ? ` · ${localizeCityName(p.city.name)}` : ''}</span>
+        {p.isEarly && <span className="feed-daily-early">⚡ {t('daily.early')}</span>}
       </div>
       <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
@@ -767,7 +809,7 @@ function toFeedItem(m, staggerDelay, lastJoinAtRef = null) {
   }
   // Daily Challenge cards (World + live city channels): read-only on web, the
   // challenge and the proof flow live in the app.
-  if (m.type === 'system' && (m.event === 'daily_challenge' || m.event === 'daily_proof')) {
+  if (m.type === 'system' && (m.event === 'daily_challenge' || m.event === 'daily_proof' || m.event === 'daily_proof_group')) {
     return { type: 'daily', subtype: m.event, id: m.id || `daily_${m.createdAt}`, payload: m.payload || {}, nickname: m.nickname, userId: m.userId ?? null, createdAt: m.createdAt }
   }
   // Guard: any other system message that slips through has no nickname - skip it rather than crash.
@@ -3009,7 +3051,7 @@ export default function App() {
             // value it resolved, this is only a fallback.
             if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? item.thumbAvatarUrl ?? null }
             if (item.type !== 'message') return item
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null, localPass: !!b.localPass }
           }))
         })
       }
@@ -3131,8 +3173,10 @@ export default function App() {
         }
 
         const key = isEventMsg ? message.id : messageKey(message)
-        // An approved Daily proof edit re-sends the SAME card id: replace it in place.
-        if (key && knownIdsRef.current.has(key) && message.type === 'system' && message.event === 'daily_proof') {
+        // An approved Daily proof edit, or a proof group card growing (V2-08), re-sends
+        // the SAME card id: replace it in place.
+        if (key && knownIdsRef.current.has(key) && message.type === 'system'
+            && (message.event === 'daily_proof' || message.event === 'daily_proof_group')) {
           const updated = toFeedItem(message, 0)
           if (updated) setFeed(prev => prev.map(it => (it.id === message.id ? updated : it)))
           return
@@ -3992,7 +4036,7 @@ export default function App() {
             setFeed(prev => prev.map(item => {
               if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
               const b = badges[item.userId]
-              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
+              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null, localPass: !!b.localPass }
             }))
           }).catch(() => {})
         }
@@ -4024,7 +4068,7 @@ export default function App() {
             setFeed(prev => prev.map(item => {
               if (item.type !== 'message' || !item.userId || !badges[item.userId]) return item
               const b = badges[item.userId]
-              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
+              return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null, localPass: !!b.localPass }
             }))
           }).catch(() => {})
         }
@@ -4146,7 +4190,7 @@ export default function App() {
             // value it resolved, this is only a fallback.
             if (item.type === 'activity' && item.subtype === 'join') return { ...item, thumbAvatarUrl: b.thumbAvatarUrl ?? item.thumbAvatarUrl ?? null }
             if (item.type !== 'message') return item
-            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null }
+            return { ...item, primaryBadge: b.primaryBadge, contextBadge: b.contextBadge, vibe: b.vibe ?? null, mode: b.mode ?? null, thumbAvatarUrl: b.thumbAvatarUrl ?? null, country: b.country ?? null, localPass: !!b.localPass }
           }))
         })
       }
@@ -5620,6 +5664,10 @@ export default function App() {
                         : (() => { const m = item.mode || (isMine ? account?.mode : null) || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
                       {item.contextBadge?.key === 'host' && (
                         <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
+                      )}
+                      {/* Daily Challenge Local Pass of this city (city chats only). */}
+                      {channelScope !== 'world' && item.localPass && (
+                        <span className="feed-daily-pass" title={t('daily.localPass')}>🎫</span>
                       )}
                     </div>
                   )}

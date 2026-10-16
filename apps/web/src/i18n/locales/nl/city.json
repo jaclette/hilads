@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Reiziger",
-    "ctaApp": "Doe de challenge in de app"
+    "ctaApp": "Doe de challenge in de app",
+    "localPass": "Local Pass",
+    "early": "Vroeg",
+    "proposedBy": "Voorgesteld door {{name}}",
+    "proposedByCity": "Voorgesteld door {{name}} · {{city}}",
+    "groupTitle": "Nieuwe bewijzen: {{n}}",
+    "groupCitiesMore": "{{cities}} en nog {{n}}"
   }
 }

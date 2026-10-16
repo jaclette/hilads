@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Biyahero",
-    "ctaApp": "Gawin ang challenge sa app"
+    "ctaApp": "Gawin ang challenge sa app",
+    "localPass": "Local Pass",
+    "early": "Maaga",
+    "proposedBy": "Mungkahi ni {{name}}",
+    "proposedByCity": "Mungkahi ni {{name}} · {{city}}",
+    "groupTitle": "Mga bagong proof: {{n}}",
+    "groupCitiesMore": "{{cities}} at {{n}} pa"
   }
 }

@@ -18,7 +18,17 @@ function trim(j) {
   const c = j.challenge
   const tw = j.twist
   return {
-    challenge: c && c.text ? { date: c.date, text: c.text, context: c.context || null, endsAt: c.endsAt } : null,
+    challenge: c && c.text ? {
+      date: c.date, text: c.text, context: c.context || null, endsAt: c.endsAt,
+      // V2: the weekly theme and the user whose proposal it was.
+      theme: c.theme && c.theme.key ? { key: c.theme.key, name: c.theme.name } : null,
+      proposedBy: c.proposedBy && c.proposedBy.user ? {
+        name: c.proposedBy.user.displayName || c.proposedBy.user.username || null,
+        city: (c.proposedBy.city && c.proposedBy.city.name) || null,
+      } : null,
+    } : null,
+    // Tomorrow's theme as a teaser (never its text).
+    tomorrow: j.tomorrow && j.tomorrow.theme ? { date: j.tomorrow.date, theme: { key: j.tomorrow.theme.key, name: j.tomorrow.theme.name } } : null,
     nextDropAt: Number.isFinite(j.nextDropAt) ? j.nextDropAt : null,
     city: j.city ? { id: j.city.id, name: j.city.name || null, isLive: !!j.city.isLive } : null,
     twist: tw && tw.text

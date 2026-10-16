@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Viajero",
-    "ctaApp": "Acepta el challenge en la app"
+    "ctaApp": "Acepta el challenge en la app",
+    "localPass": "Local Pass",
+    "early": "Temprano",
+    "proposedBy": "Propuesto por {{name}}",
+    "proposedByCity": "Propuesto por {{name}} · {{city}}",
+    "groupTitle": "Nuevas pruebas: {{n}}",
+    "groupCitiesMore": "{{cities}} y {{n}} más"
   }
 }

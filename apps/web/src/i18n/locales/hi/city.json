@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "लोकल",
     "traveler": "यात्री",
-    "ctaApp": "ऐप में challenge लें"
+    "ctaApp": "ऐप में challenge लें",
+    "localPass": "Local Pass",
+    "early": "जल्दी",
+    "proposedBy": "{{name}} का सुझाव",
+    "proposedByCity": "{{name}} · {{city}} का सुझाव",
+    "groupTitle": "नए प्रूफ: {{n}}",
+    "groupCitiesMore": "{{cities}} और {{n}} और"
   }
 }

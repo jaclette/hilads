@@ -315,6 +315,12 @@
     "localTwist": "Local Twist",
     "local": "Local",
     "traveler": "Traveler",
-    "ctaApp": "Take the challenge in the app"
+    "ctaApp": "Take the challenge in the app",
+    "localPass": "Local Pass",
+    "early": "Early",
+    "proposedBy": "Proposed by {{name}}",
+    "proposedByCity": "Proposed by {{name}} · {{city}}",
+    "groupTitle": "New proofs: {{n}}",
+    "groupCitiesMore": "{{cities}} and {{n}} more"
   }
 }

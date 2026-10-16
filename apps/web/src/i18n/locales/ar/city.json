@@ -340,6 +340,12 @@
     "localTwist": "Local Twist",
     "local": "محلي",
     "traveler": "مسافر",
-    "ctaApp": "خُض الـ challenge في التطبيق"
+    "ctaApp": "خُض الـ challenge في التطبيق",
+    "localPass": "Local Pass",
+    "early": "مبكر",
+    "proposedBy": "اقترحه {{name}}",
+    "proposedByCity": "اقترحه {{name}} · {{city}}",
+    "groupTitle": "أدلة جديدة: {{n}}",
+    "groupCitiesMore": "{{cities}} و{{n}} أخرى"
   }
 }
