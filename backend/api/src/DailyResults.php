@@ -223,38 +223,6 @@ final class DailyResults
         return $out;
     }
 
-    /**
-     * A user's outcome for a closed challenge, for the morning push (prompt 12):
-     * posted, proofId, worldRank, cityRank, cityBest, votesCast, points.
-     */
-    public static function outcomeFor(string $userId, string $challengeId): array
-    {
-        $pdo   = Database::pdo();
-        $proof = DailyProofRepository::findMine($challengeId, $userId);
-        $posted = $proof !== null && $proof['moderation_status'] === 'approved';
-
-        $stmt = $pdo->prepare("SELECT count(*) FROM daily_votes WHERE challenge_id = ? AND voter_user_id = ?");
-        $stmt->execute([$challengeId, $userId]);
-        $votes = (int) $stmt->fetchColumn();
-
-        $stmt = $pdo->prepare("SELECT COALESCE(sum(points), 0) FROM score_events WHERE user_id = ? AND daily_challenge_id = ?");
-        $stmt->execute([$userId, $challengeId]);
-        $points = (int) $stmt->fetchColumn();
-
-        $worldRank = $posted && $proof['world_rank'] !== null ? (int) $proof['world_rank'] : null;
-        $cityRank  = $posted && $proof['city_rank'] !== null ? (int) $proof['city_rank'] : null;
-        return [
-            'posted'    => $posted,
-            'proofId'   => $posted ? $proof['id'] : null,
-            'worldRank' => $worldRank,
-            'cityRank'  => $cityRank,
-            'cityBest'  => $cityRank === 1 && (int) $proof['vote_count'] >= self::MIN_VOTES_TO_WIN
-                           && DailyRules::isLive($proof['city_id']),
-            'votesCast' => $votes,
-            'points'    => $points,
-        ];
-    }
-
     // ── Streaks and profile stats ────────────────────────────────────────────
 
     /** Published dates (ascending, up to $upTo) and the dates the user completed. */

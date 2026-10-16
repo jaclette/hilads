@@ -79,6 +79,8 @@ final class DailyDrop
                 DailyRules::forgetLiveCities();
                 $steps['cards']  = ['posted' => DailyCards::postChallenge($challenge), 'liveCities' => count(DailyRules::liveCityIds())];
                 $steps['pushes'] = DailyPushes::queueMorning($challenge, $now);
+                $steps['reminders'] = DailyPushes::queueReminders((string) $challenge['challenge_date'], $now);
+                $steps['twistDigests'] = DailyPushes::queueTwistDigests($challenge, $now);
             }
             if ($source === 'reserve') {
                 self::alertAdmin('Daily Challenge: reserve used', "Nothing was scheduled for {$date}; a reserve challenge went live.");

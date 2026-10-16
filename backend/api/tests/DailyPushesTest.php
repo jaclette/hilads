@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
 
-/** Morning push timing: at the drop in local daytime (09:00-21:00), else at the next 09:00 local. */
+/** Daily push timing (morning, reminder, digest), local days and texts. */
 final class DailyPushesTest extends TestCase
 {
     private static function utc(string $s): DateTimeImmutable
@@ -73,5 +73,130 @@ final class DailyPushesTest extends TestCase
         $this->assertSame("Today's Daily Challenge: Eat what locals eat", $m['body']);
         $this->assertSame('https://hilads.live/today', $m['data']['deepLink']);
         $this->assertArrayNotHasKey('challengeId', $m['data']);
+    }
+
+    // ── Reminder and digest timing (challenge 2026-11-02: 02:00 UTC to 02:00 UTC) ──
+
+    private static function window(): array
+    {
+        return [self::utc('2026-11-02 02:00'), self::utc('2026-11-03 02:00')];
+    }
+
+    private static function reminder(string $tz): ?string
+    {
+        [$start, $end] = self::window();
+        return DailyPushes::reminderSendAt($start, $end, $tz)?->format('Y-m-d H:i');
+    }
+
+    private static function digest(string $tz): string
+    {
+        [$start, $end] = self::window();
+        return DailyPushes::digestSendAt($start, $end, $tz)->format('Y-m-d H:i');
+    }
+
+    public function testReminderTimes(): void
+    {
+        $this->assertSame('2026-11-02 14:00', self::reminder('Asia/Ho_Chi_Minh'));    // 21:00 local
+        $this->assertSame('2026-11-02 20:00', self::reminder('Europe/Paris'));        // 21:00 local
+        $this->assertSame('2026-11-02 23:00', self::reminder('America/Los_Angeles')); // 15:00 local, end 18:00
+        $this->assertSame('2026-11-02 23:00', self::reminder('Pacific/Auckland'));    // 12:00 local, end 15:00
+        $this->assertSame('2026-11-02 21:00', self::reminder('UTC'));
+    }
+
+    public function testReminderIsAlwaysDaytimeAndThreeHoursBeforeTheEnd(): void
+    {
+        [$start, $end] = self::window();
+        foreach (DateTimeZone::listIdentifiers() as $tz) {
+            $at = DailyPushes::reminderSendAt($start, $end, $tz);
+            $this->assertNotNull($at, $tz);
+            $this->assertGreaterThanOrEqual($start, $at, $tz);
+            $this->assertLessThanOrEqual($end->modify('-3 hours'), $at, $tz);
+            $local = $at->setTimezone(new DateTimeZone($tz))->format('H:i');
+            $this->assertTrue($local >= '09:00' && $local <= '21:00', "$tz $local");
+        }
+    }
+
+    public function testDigestTimes(): void
+    {
+        $this->assertSame('2026-11-02 13:00', self::digest('Asia/Ho_Chi_Minh'));    // 20:00 local
+        $this->assertSame('2026-11-02 19:00', self::digest('Europe/Paris'));        // 20:00 local
+        $this->assertSame('2026-11-02 11:00', self::digest('Asia/Tokyo'));          // 20:00 local
+        $this->assertSame('2026-11-03 01:00', self::digest('America/Los_Angeles')); // 1h before the end (17:00)
+        $this->assertSame('2026-11-03 01:00', self::digest('Pacific/Auckland'));    // 1h before the end (14:00)
+    }
+
+    public function testDigestIsAlwaysDaytimeAndInsideTheChallenge(): void
+    {
+        [$start, $end] = self::window();
+        foreach (DateTimeZone::listIdentifiers() as $tz) {
+            $at = DailyPushes::digestSendAt($start, $end, $tz);
+            $this->assertGreaterThanOrEqual($start->modify('+6 hours'), $at, $tz);
+            $this->assertLessThanOrEqual($end->modify('-1 hour'), $at, $tz);
+            $local = $at->setTimezone(new DateTimeZone($tz))->format('H:i');
+            $this->assertTrue($local >= '09:00' && $local <= '20:00', "$tz $local");
+        }
+    }
+
+    public function testLocalDay(): void
+    {
+        $at = self::utc('2026-11-02 23:30');
+        $this->assertSame('2026-11-03', DailyPushes::localDay($at, 'Asia/Ho_Chi_Minh'));
+        $this->assertSame('2026-11-02', DailyPushes::localDay($at, 'America/New_York'));
+        $this->assertSame('2026-11-02', DailyPushes::localDay($at, 'Not/AZone'));
+    }
+
+    // ── Texts ──────────────────────────────────────────────────────────────────
+
+    public function testOrdinals(): void
+    {
+        $got = array_map([DailyPushes::class, 'ordinal'], [1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 101, 111, 112]);
+        $this->assertSame(['1st', '2nd', '3rd', '4th', '11th', '12th', '13th', '21st', '22nd', '23rd', '101st', '111th', '112th'], $got);
+    }
+
+    private static function mine(array $o): array
+    {
+        return $o + ['worldRank' => null, 'cityRank' => null, 'cityBest' => false, 'votes' => 0, 'cityName' => 'Ho Chi Minh City'];
+    }
+
+    public function testOutcomeLines(): void
+    {
+        $this->assertSame('Yesterday your proof ranked 2nd in the world 🏆',
+            DailyPushes::outcomeLine(self::mine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9]), null));
+        $this->assertSame('Yesterday your proof was the best in Ho Chi Minh City 🔥',
+            DailyPushes::outcomeLine(self::mine(['cityRank' => 1, 'cityBest' => true, 'votes' => 3]), null));
+        $this->assertSame('Yesterday your proof ranked 4th in Ho Chi Minh City.',
+            DailyPushes::outcomeLine(self::mine(['cityRank' => 4, 'votes' => 1]), null));
+        $this->assertSame('Yesterday your proof got 1 vote.',
+            DailyPushes::outcomeLine(self::mine(['cityName' => null, 'votes' => 1]), null));
+        $this->assertNull(DailyPushes::outcomeLine(self::mine(['cityName' => null]), null));
+
+        $winner = ['name' => 'Anh', 'cityName' => 'Ho Chi Minh City', 'votes' => 14];
+        $this->assertSame("Yesterday's winner: Anh in Ho Chi Minh City, 14 votes.", DailyPushes::outcomeLine(null, $winner));
+        $this->assertSame("Yesterday's winner: Anh, 1 vote.", DailyPushes::outcomeLine(null, ['cityName' => null, 'votes' => 1] + $winner));
+        $this->assertNull(DailyPushes::outcomeLine(null, null));
+    }
+
+    public function testMorningMessageWithOutcome(): void
+    {
+        $m = DailyPushes::morningMessage(['text_i18n' => '{"en":"Eat what locals eat"}', 'challenge_date' => '2026-11-02'],
+                                         "Yesterday's winner: Anh, 14 votes.");
+        $this->assertSame("Yesterday's winner: Anh, 14 votes. Today's Daily Challenge: Eat what locals eat", $m['body']);
+    }
+
+    public function testReminderMessage(): void
+    {
+        $m = DailyPushes::reminderMessage('2026-11-02', 6 * 3600 + 59 * 60);
+        $this->assertSame("Only 6h left for today's Daily Challenge.", $m['body']);
+        $this->assertSame(['date' => '2026-11-02', 'deepLink' => 'https://hilads.live/today'], $m['data']);
+        $this->assertSame("Only 1h left for today's Daily Challenge.", DailyPushes::reminderMessage('2026-11-02', 600)['body']);
+    }
+
+    public function testDigestMessage(): void
+    {
+        $this->assertSame('3 people voted for your proof. 5 people completed your Local Twist.',
+            DailyPushes::digestMessage('2026-11-02', 3, 5)['body']);
+        $this->assertSame('1 person voted for your proof.', DailyPushes::digestMessage('2026-11-02', 1, 0)['body']);
+        $this->assertSame('1 person completed your Local Twist.', DailyPushes::digestMessage('2026-11-02', 0, 1)['body']);
+        $this->assertNull(DailyPushes::digestMessage('2026-11-02', 0, 0));
     }
 }

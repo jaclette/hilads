@@ -2752,8 +2752,8 @@ run($pdo, "
 // Daily Challenge push log, which doubles as the deferred push queue: the drop
 // queues one row per recipient with its send_at (user's local time), and the
 // tick sends due rows. recipient_key = 'u:<userId>' | 'g:<guestId>' (same
-// convention as channel_read_positions). The unique key prevents duplicates and,
-// with 3 types, caps Daily pushes at 3 per recipient per challenge date.
+// convention as channel_read_positions). The unique key prevents duplicates
+// (one push of each type per recipient and challenge date).
 run($pdo, "
     CREATE TABLE IF NOT EXISTS daily_push_log (
         id             BIGSERIAL   PRIMARY KEY,
@@ -2774,6 +2774,18 @@ run($pdo, "
 ", 'daily_push_log');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_due
             ON daily_push_log (send_at) WHERE status = 'queued'", 'idx_daily_push_log_due');
+
+// The cap of 3 Daily pushes counts per recipient per LOCAL day (prompt 12): one
+// local day can hold today's reminder and digest plus tomorrow's morning push.
+// local_day = the recipient's date when the push goes out (set when queued,
+// corrected when sent); timezone = the zone it was computed in. Older rows get
+// their UTC send date.
+run($pdo, "ALTER TABLE daily_push_log ADD COLUMN IF NOT EXISTS local_day DATE", 'daily_push_log.local_day');
+run($pdo, "ALTER TABLE daily_push_log ADD COLUMN IF NOT EXISTS timezone TEXT", 'daily_push_log.timezone');
+run($pdo, "UPDATE daily_push_log SET local_day = (COALESCE(sent_at, send_at) AT TIME ZONE 'UTC')::date
+            WHERE local_day IS NULL", 'daily_push_log.local_day backfill');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_push_log_sent_day
+            ON daily_push_log (recipient_key, local_day) WHERE status = 'sent'", 'idx_daily_push_log_sent_day');
 
 // Content reports on proofs. user_reports allows one report per (reporter,
 // user) forever, so it cannot hold per-proof reports. reason_code is checked in

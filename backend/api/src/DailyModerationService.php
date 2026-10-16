@@ -72,6 +72,14 @@ final class DailyModerationService
         } catch (\Throwable $e) {
             error_log("[daily] points for proof {$proofId} failed: " . $e->getMessage());
         }
+        // Evening digest of the votes it gets (idempotent; none once the challenge closed).
+        try {
+            if (DailyClock::isActive((string) $after['challenge_date'])) {
+                DailyPushes::queueDigests((string) $after['challenge_date'], [$after['user_id']], new DateTimeImmutable('now'));
+            }
+        } catch (\Throwable $e) {
+            error_log("[daily] digest for proof {$proofId} failed: " . $e->getMessage());
+        }
         return $after;
     }
 

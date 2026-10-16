@@ -324,9 +324,14 @@ function resolveRoute(data: NotifData): string | null {
 
     case 'daily_morning':
     case 'daily_reminder':
-    case 'daily_digest':
       // Daily Challenge pushes (no challengeId on purpose) → today's sheet.
       return '/daily/today?source=push';
+
+    case 'daily_digest': {
+      // The digest can arrive the day after (cap reached) → its own date.
+      const date = (data as { date?: string }).date;
+      return date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? `/daily/${date}?source=push` : '/daily/today?source=push';
+    }
 
     default:
       // Any other challenge_* notification that carries a challengeId still
