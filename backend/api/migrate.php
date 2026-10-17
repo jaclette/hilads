@@ -3091,6 +3091,11 @@ run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS place_id TEXT REFER
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS distance_m INT CHECK (distance_m >= 0)", 'daily_proofs.distance_m');
 run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_place ON daily_proofs (place_id) WHERE place_id IS NOT NULL", 'idx_daily_proofs_place');
 
+// V3-03: dish tags of a Local Twist ("cơm tấm, sườn"), set in the back office.
+// The spots posted on that day in that city show them (Spots::tagsOf).
+// Reversal: ALTER TABLE daily_twists DROP COLUMN dish_tags;
+run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS dish_tags TEXT", 'daily_twists.dish_tags');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

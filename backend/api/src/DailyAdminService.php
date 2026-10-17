@@ -342,9 +342,11 @@ final class DailyAdminService
     /**
      * Set or replace the selected twist of (challenge, city). Founder-written
      * twists are approved directly. $cityId is a channel id ('city_N').
+     * $dishTags ("cơm tấm, sườn", V3-03): null keeps the current tags.
      */
     public static function setTwist(string $challengeId, string $cityId, string $text,
-                                    ?string $authorUserId = null, ?string $credit = null): array
+                                    ?string $authorUserId = null, ?string $credit = null,
+                                    ?string $dishTags = null): array
     {
         self::mustFind($challengeId);
         self::assertCity($cityId);
@@ -353,6 +355,7 @@ final class DailyAdminService
             throw new InvalidArgumentException('This twist was flagged by the text filter - please rephrase.');
         }
         $credit = self::cleanOptional($credit, 120, 'Credit');
+        $tags   = $dishTags === null ? null : implode(', ', Spots::parseTags($dishTags));
         if ($authorUserId !== null) {
             $stmt = Database::pdo()->prepare("SELECT 1 FROM users WHERE id = ? AND deleted_at IS NULL");
             $stmt->execute([$authorUserId]);
@@ -375,17 +378,18 @@ final class DailyAdminService
             if ($before !== null) {
                 $pdo->prepare("
                     UPDATE daily_twists
-                    SET text = ?, author_user_id = ?, author_credit = ?, moderation_status = 'approved', updated_at = now()
+                    SET text = ?, author_user_id = ?, author_credit = ?, moderation_status = 'approved',
+                        dish_tags = CASE WHEN ?::boolean THEN NULLIF(?, '') ELSE dish_tags END, updated_at = now()
                     WHERE id = ?
-                ")->execute([$text, $authorUserId, $credit, $before['id']]);
+                ")->execute([$text, $authorUserId, $credit, $tags !== null ? 'true' : 'false', (string) $tags, $before['id']]);
                 $id = $before['id'];
             } else {
                 $id = bin2hex(random_bytes(8));
                 $pdo->prepare("
                     INSERT INTO daily_twists (id, challenge_id, city_id, text, author_user_id, author_credit,
-                                              status, moderation_status, created_by)
-                    VALUES (?, ?, ?, ?, ?, ?, 'selected', 'approved', ?)
-                ")->execute([$id, $challengeId, $cityId, $text, $authorUserId, $credit, self::actorName()]);
+                                              status, moderation_status, created_by, dish_tags)
+                    VALUES (?, ?, ?, ?, ?, ?, 'selected', 'approved', ?, NULLIF(?, ''))
+                ")->execute([$id, $challengeId, $cityId, $text, $authorUserId, $credit, self::actorName(), (string) $tags]);
             }
             $pdo->commit();
         } catch (\Throwable $e) {

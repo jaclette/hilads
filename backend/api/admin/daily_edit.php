@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$isNew) {
                 }
             }
             DailyAdminService::setTwist($id, (string) ($p['city_id'] ?? ''), (string) ($p['twist_text'] ?? ''),
-                                        $authorId, (string) ($p['credit'] ?? ''));
+                                        $authorId, (string) ($p['credit'] ?? ''), (string) ($p['dish_tags'] ?? ''));
         }, 'Twist saved.', $self . '#twists'),
 
         'remove_twist' => daily_action(fn() => DailyAdminService::removeTwist((string) ($p['twist_id'] ?? '')),
@@ -261,6 +261,7 @@ daily_styles();
                                 <div class="daily-inline">
                                     <input type="text" name="author_username" placeholder="author @username" value="<?= dh($t['author_username'] ?? '') ?>">
                                     <input type="text" name="credit" placeholder="or free-text credit" value="<?= dh($t['author_credit'] ?? '') ?>">
+                                    <input type="text" name="dish_tags" placeholder="dish tags: cơm tấm, sườn" title="Shown on the spots posted that day in this city (max 5, comma-separated)" value="<?= dh($t['dish_tags'] ?? '') ?>">
                                     <button class="btn btn-primary btn-sm" type="submit">Save twist</button>
                                 </div>
                             </form>

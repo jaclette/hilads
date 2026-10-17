@@ -14689,6 +14689,134 @@ $router->add('GET', '/api/v1/daily/places/nearby', function () {
     ]);
 });
 
+// ── Spots and the map (V3-03) ────────────────────────────────────────────────
+// Read-only and open to guests, rate-limited per IP. Spots carry the place's
+// position; proofs their challenge date, never a time of day (SPEC 9.4).
+
+/** Per-IP limit shared by the spot and map reads; answers 429 itself. */
+function spotsRateLimit(): void
+{
+    if (!DbRateLimiter::allow('spots|' . Request::ip(), 300, 600)) {
+        Response::json(['error' => 'Too many requests - slow down.', 'code' => 'rate_limited'], 429);
+    }
+}
+
+/** The spot scope of a request: ?bbox= wins over ?cityId=. Answers 400 when neither is valid. */
+function spotsScope(?string $cityId): array
+{
+    if (isset($_GET['bbox'])) {
+        $bbox = Spots::parseBbox((string) $_GET['bbox']);
+        if ($bbox === null) {
+            Response::json(['error' => 'bbox must be minLng,minLat,maxLng,maxLat', 'code' => 'invalid_bbox'], 400);
+        }
+        return ['bbox' => $bbox];
+    }
+    if ($cityId === null) {
+        Response::json(['error' => 'Give a cityId or a bbox', 'code' => 'invalid_scope'], 400);
+    }
+    return ['cityId' => $cityId];
+}
+
+/** ?theme= as a theme key, null when absent; answers 400 when unknown. */
+function spotsTheme(): ?string
+{
+    if (!isset($_GET['theme']) || $_GET['theme'] === '' || $_GET['theme'] === 'all') {
+        return null;
+    }
+    $theme = DailyThemes::normalize((string) $_GET['theme']);
+    if ($theme === null) {
+        Response::json(['error' => 'Unknown theme', 'code' => 'invalid_theme'], 400);
+    }
+    return $theme;
+}
+
+// GET /api/v1/map?cityId=|bbox=minLng,minLat,maxLng,maxLat&theme= - spots (most
+// voted first, at most Spots::PIN_LIMIT) and, with a cityId, its Hi plans as
+// dated pins. Clustering is done by the app.
+$router->add('GET', '/api/v1/map', function () {
+    spotsRateLimit();
+    $cityId = isset($_GET['cityId']) ? dailyCityParam(null) : null;
+    $scope  = spotsScope($cityId);
+    $theme  = spotsTheme();
+    $spots  = Spots::find($scope + ($theme !== null ? ['theme' => $theme] : []));
+    $plans  = $cityId !== null ? Spots::plans((int) substr($cityId, 5)) : [];
+    if (isset($scope['bbox'])) {
+        [$minLng, $minLat, $maxLng, $maxLat] = $scope['bbox'];
+        $plans = array_values(array_filter($plans, static fn(array $p): bool =>
+            $p['lat'] >= $minLat && $p['lat'] <= $maxLat && $p['lng'] >= $minLng && $p['lng'] <= $maxLng));
+    }
+    Response::json([
+        'spots'     => array_slice($spots, 0, Spots::PIN_LIMIT),
+        'truncated' => count($spots) > Spots::PIN_LIMIT,
+        'plans'     => $plans,
+    ]);
+});
+
+// GET /api/v1/spots/search?q=&cityId=|bbox= - spots whose name or dish tags
+// match (accent and case insensitive), most voted first.
+$router->add('GET', '/api/v1/spots/search', function () {
+    spotsRateLimit();
+    $q = trim((string) ($_GET['q'] ?? ''));
+    if (mb_strlen($q) < 2 || mb_strlen($q) > 60) {
+        Response::json(['error' => 'Search with 2 to 60 characters', 'code' => 'invalid_query'], 400);
+    }
+    $scope = spotsScope(isset($_GET['cityId']) ? dailyCityParam(null) : null);
+    $hits  = array_values(array_filter(Spots::find($scope), static fn(array $s): bool => Spots::matches($s, $q)));
+    Response::json(['items' => array_slice($hits, 0, Spots::SEARCH_LIMIT)]);
+});
+
+// GET /api/v1/spots/near?lat=&lng=&cityId= - the nearest spots (Today's "Spots
+// near you"). Without a position, the city centre is used. When the city has
+// none, the nearest spots anywhere come back with fallback: true.
+$router->add('GET', '/api/v1/spots/near', function () {
+    spotsRateLimit();
+    $cityId = isset($_GET['cityId']) ? dailyCityParam(null) : null;
+    if (isset($_GET['lat']) || isset($_GET['lng'])) {
+        [$in, $err] = Places::parseProofInput(['position' => ['lat' => $_GET['lat'] ?? null, 'lng' => $_GET['lng'] ?? null]]);
+        if ($err !== null) {
+            Response::json(['error' => 'lat and lng must be valid coordinates', 'code' => 'invalid_position'], 400);
+        }
+        [$lat, $lng] = [$in['lat'], $in['lng']];
+    } elseif ($cityId !== null) {
+        $city = CityRepository::findById((int) substr($cityId, 5));
+        [$lat, $lng] = [(float) $city['lat'], (float) $city['lng']];
+    } else {
+        Response::json(['error' => 'Give lat and lng, or a cityId', 'code' => 'invalid_scope'], 400);
+    }
+    // Rounded to about 100 m: enough to order by distance, and it shares the cache.
+    $near     = [round($lat, 3), round($lng, 3)];
+    $fallback = false;
+    $spots    = $cityId !== null ? Spots::find(['cityId' => $cityId, 'near' => $near, 'limit' => Spots::NEAR_LIMIT]) : [];
+    if ($spots === []) {
+        $spots    = Spots::find(['near' => $near, 'limit' => Spots::NEAR_LIMIT]);
+        $fallback = $cityId !== null && $spots !== [];
+    }
+    foreach ($spots as &$s) {
+        $s['distanceM'] = Places::distanceM($lat, $lng, $s['lat'], $s['lng']);
+    }
+    unset($s);
+    Response::json(['items' => $spots, 'fallback' => $fallback]);
+});
+
+// GET /api/v1/spots/{id}?offset= - a spot: stats, tags, its city ranking (top 3,
+// week and all time), its photos (approved proofs, most voted first, paged)
+// and the latest captions. A merged spot answers with the spot it went into.
+$router->add('GET', '/api/v1/spots/{id}', function (array $params) {
+    spotsRateLimit();
+    $spot = preg_match('/^[a-f0-9]{16}$/', (string) $params['id']) ? Spots::findOne((string) $params['id']) : null;
+    if ($spot === null) {
+        Response::json(['error' => 'Spot not found', 'code' => 'not_found'], 404);
+    }
+    $offset  = max(0, (int) ($_GET['offset'] ?? 0));
+    $blocked = dailyBlocks(AuthService::currentUser())['user_ids'];
+    Response::json([
+        'spot'     => $spot,
+        'ranking'  => Spots::ranking($spot),
+        'photos'   => Spots::photos($spot['id'], $offset, $blocked),
+        'captions' => Spots::captions($spot['id'], $blocked),
+    ]);
+});
+
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.
 $router->add('POST', '/api/v1/daily/proofs', function () {
     $user = AuthService::requireAuth();

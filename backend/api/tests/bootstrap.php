@@ -72,6 +72,7 @@ require_once __DIR__ . '/../src/DailyCards.php';
 require_once __DIR__ . '/../src/DailyChallengeRepository.php';
 require_once __DIR__ . '/../src/DailyModerationService.php';
 require_once __DIR__ . '/../src/Places.php';
+require_once __DIR__ . '/../src/Spots.php';
 require_once __DIR__ . '/../src/DailyTwistProposals.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
 require_once __DIR__ . '/../src/DailyPushText.php';
