@@ -215,5 +215,30 @@
   },
   "delete": "Tanggalin",
   "deleteConversationTitle": "Tanggalin ang usapan?",
-  "deleteConversationBody": "Aalisin ito sa iyong mga mensahe. Lalabas ulit kung magme-message sila muli."
+  "deleteConversationBody": "Aalisin ito sa iyong mga mensahe. Lalabas ulit kung magme-message sila muli.",
+  "tabs": {
+    "today": "Ngayon",
+    "map": "Mapa",
+    "chat": "Chat",
+    "passport": "Pasaporte"
+  },
+  "scope": {
+    "title": "Ipakita",
+    "world": "Mundo",
+    "pickCity": "Pumili ng lungsod",
+    "citySub": "Ang challenge, mga proof at spot ng lungsod mo",
+    "worldSub": "Mga proof at spot mula sa lahat ng lungsod",
+    "changeCity": "Palitan ang lungsod",
+    "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
+  },
+  "notificationsUnread_one": "Mga notification, {{count}} hindi pa nababasa",
+  "notificationsUnread_other": "Mga notification, {{count}} hindi pa nababasa",
+  "update": {
+    "availableBody": "May bagong bersyon ng Hilads.",
+    "cta": "I-update",
+    "later": "Mamaya",
+    "requiredTitle": "I-update ang Hilads",
+    "requiredBody": "Hindi na suportado ang bersyong ito. I-update ang app para patuloy na magamit ang Hilads."
+  },
+  "mapSoon": "Malapit nang dumating ang mapa ng mga spot."
 }

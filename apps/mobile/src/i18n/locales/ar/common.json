@@ -219,5 +219,34 @@
   },
   "delete": "حذف",
   "deleteConversationTitle": "حذف المحادثة؟",
-  "deleteConversationBody": "ستُزال من رسائلك، وستظهر مجددًا إذا راسلوك مرة أخرى."
+  "deleteConversationBody": "ستُزال من رسائلك، وستظهر مجددًا إذا راسلوك مرة أخرى.",
+  "tabs": {
+    "today": "اليوم",
+    "map": "الخريطة",
+    "chat": "الدردشة",
+    "passport": "الجواز"
+  },
+  "scope": {
+    "title": "عرض",
+    "world": "العالم",
+    "pickCity": "اختر مدينة",
+    "citySub": "الـ challenge والإثباتات والأماكن في مدينتك",
+    "worldSub": "الإثباتات والأماكن من كل المدن",
+    "changeCity": "غيّر المدينة",
+    "a11y": "يُعرض {{scope}}. اضغط للتغيير"
+  },
+  "notificationsUnread_zero": "الإشعارات، لا شيء غير مقروء",
+  "notificationsUnread_one": "الإشعارات، إشعار واحد غير مقروء",
+  "notificationsUnread_two": "الإشعارات، إشعاران غير مقروءين",
+  "notificationsUnread_few": "الإشعارات، {{count}} إشعارات غير مقروءة",
+  "notificationsUnread_many": "الإشعارات، {{count}} إشعارًا غير مقروء",
+  "notificationsUnread_other": "الإشعارات، {{count}} إشعار غير مقروء",
+  "update": {
+    "availableBody": "إصدار جديد من Hilads جاهز.",
+    "cta": "تحديث",
+    "later": "لاحقًا",
+    "requiredTitle": "حدّث Hilads",
+    "requiredBody": "لم يعد هذا الإصدار مدعومًا. حدّث التطبيق لمواصلة استخدام Hilads."
+  },
+  "mapSoon": "خريطة الأماكن قادمة قريبًا."
 }

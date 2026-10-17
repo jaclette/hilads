@@ -215,5 +215,30 @@
   },
   "delete": "Verwijderen",
   "deleteConversationTitle": "Gesprek verwijderen?",
-  "deleteConversationBody": "Het wordt uit je berichten verwijderd en verschijnt weer als ze je opnieuw berichten."
+  "deleteConversationBody": "Het wordt uit je berichten verwijderd en verschijnt weer als ze je opnieuw berichten.",
+  "tabs": {
+    "today": "Vandaag",
+    "map": "Kaart",
+    "chat": "Chat",
+    "passport": "Paspoort"
+  },
+  "scope": {
+    "title": "Tonen",
+    "world": "Wereld",
+    "pickCity": "Kies een stad",
+    "citySub": "De challenge, bewijzen en spots van jouw stad",
+    "worldSub": "Bewijzen en spots uit alle steden",
+    "changeCity": "Stad wijzigen",
+    "a11y": "Toont {{scope}}. Tik om te wijzigen"
+  },
+  "notificationsUnread_one": "Meldingen, {{count}} ongelezen",
+  "notificationsUnread_other": "Meldingen, {{count}} ongelezen",
+  "update": {
+    "availableBody": "Er is een nieuwe versie van Hilads.",
+    "cta": "Updaten",
+    "later": "Later",
+    "requiredTitle": "Update Hilads",
+    "requiredBody": "Deze versie wordt niet meer ondersteund. Update de app om Hilads te blijven gebruiken."
+  },
+  "mapSoon": "De kaart met spots komt binnenkort."
 }

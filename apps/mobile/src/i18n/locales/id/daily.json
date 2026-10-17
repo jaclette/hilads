@@ -325,5 +325,29 @@
     "title": "Bukti baru: {{n}}",
     "citiesMore": "{{cities}} dan {{n}} lainnya",
     "galleryTitle": "Bukti baru"
+  },
+  "today": {
+    "early": "Bonus cepat sampai {{time}}",
+    "tomorrow": "Besok: {{theme}}",
+    "top3": "Top 3 saat ini",
+    "seeTop10": "Lihat top 10",
+    "latest": "Bukti terbaru hari ini",
+    "seeAll": "Lihat semua",
+    "spotsTitle": "Spot di dekatmu",
+    "openMap": "Buka peta",
+    "spotsFallback": "Belum ada spot di kotamu. Yang terdekat:",
+    "spotsEmpty": "Belum ada spot di sini. Ikuti challenge hari ini untuk menaruh spot pertama di peta.",
+    "seeMine": "Lihat buktimu",
+    "votes_one": "{{count}} suara",
+    "votes_other": "{{count}} suara",
+    "day": {
+      "done": "selesai",
+      "pending": "sedang ditinjau",
+      "missed": "terlewat",
+      "today": "hari ini",
+      "tomorrow": "besok",
+      "later": "segera",
+      "none": "tanpa bukti"
+    }
   }
 }

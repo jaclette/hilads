@@ -217,5 +217,32 @@
   },
   "delete": "Удалить",
   "deleteConversationTitle": "Удалить переписку?",
-  "deleteConversationBody": "Она исчезнет из ваших сообщений и появится снова, если вам напишут."
+  "deleteConversationBody": "Она исчезнет из ваших сообщений и появится снова, если вам напишут.",
+  "tabs": {
+    "today": "Сегодня",
+    "map": "Карта",
+    "chat": "Чат",
+    "passport": "Паспорт"
+  },
+  "scope": {
+    "title": "Показать",
+    "world": "Мир",
+    "pickCity": "Выбери город",
+    "citySub": "Challenge, доказательства и места твоего города",
+    "worldSub": "Доказательства и места из всех городов",
+    "changeCity": "Сменить город",
+    "a11y": "Показано: {{scope}}. Нажми, чтобы сменить"
+  },
+  "notificationsUnread_one": "Уведомления, {{count}} непрочитанное",
+  "notificationsUnread_few": "Уведомления, {{count}} непрочитанных",
+  "notificationsUnread_many": "Уведомления, {{count}} непрочитанных",
+  "notificationsUnread_other": "Уведомления, {{count}} непрочитанных",
+  "update": {
+    "availableBody": "Готова новая версия Hilads.",
+    "cta": "Обновить",
+    "later": "Позже",
+    "requiredTitle": "Обнови Hilads",
+    "requiredBody": "Эта версия больше не поддерживается. Обнови приложение, чтобы продолжать пользоваться Hilads."
+  },
+  "mapSoon": "Карта мест скоро появится."
 }

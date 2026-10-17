@@ -215,5 +215,30 @@
   },
   "delete": "ลบ",
   "deleteConversationTitle": "ลบการสนทนา?",
-  "deleteConversationBody": "จะถูกลบออกจากข้อความของคุณ และจะปรากฏอีกครั้งหากมีการส่งข้อความหาคุณ"
+  "deleteConversationBody": "จะถูกลบออกจากข้อความของคุณ และจะปรากฏอีกครั้งหากมีการส่งข้อความหาคุณ",
+  "tabs": {
+    "today": "วันนี้",
+    "map": "แผนที่",
+    "chat": "แชท",
+    "passport": "พาสปอร์ต"
+  },
+  "scope": {
+    "title": "แสดง",
+    "world": "ทั่วโลก",
+    "pickCity": "เลือกเมือง",
+    "citySub": "challenge หลักฐาน และสปอตในเมืองของคุณ",
+    "worldSub": "หลักฐานและสปอตจากทุกเมือง",
+    "changeCity": "เปลี่ยนเมือง",
+    "a11y": "กำลังแสดง {{scope}} แตะเพื่อเปลี่ยน"
+  },
+  "notificationsUnread_one": "การแจ้งเตือน ยังไม่อ่าน {{count}} รายการ",
+  "notificationsUnread_other": "การแจ้งเตือน ยังไม่อ่าน {{count}} รายการ",
+  "update": {
+    "availableBody": "Hilads เวอร์ชันใหม่พร้อมแล้ว",
+    "cta": "อัปเดต",
+    "later": "ไว้ทีหลัง",
+    "requiredTitle": "อัปเดต Hilads",
+    "requiredBody": "เวอร์ชันนี้ไม่รองรับแล้ว อัปเดตแอปเพื่อใช้ Hilads ต่อ"
+  },
+  "mapSoon": "แผนที่สปอตกำลังจะมาเร็วๆ นี้"
 }

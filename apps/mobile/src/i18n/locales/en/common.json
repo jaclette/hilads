@@ -215,5 +215,30 @@
   },
   "delete": "Delete",
   "deleteConversationTitle": "Delete conversation?",
-  "deleteConversationBody": "It will be removed from your messages. It reappears if they message you again."
+  "deleteConversationBody": "It will be removed from your messages. It reappears if they message you again.",
+  "tabs": {
+    "today": "Today",
+    "map": "Map",
+    "chat": "Chat",
+    "passport": "Passport"
+  },
+  "scope": {
+    "title": "Show",
+    "world": "World",
+    "pickCity": "Pick a city",
+    "citySub": "Your city's challenge, proofs and spots",
+    "worldSub": "Proofs and spots from every city",
+    "changeCity": "Change city",
+    "a11y": "Showing {{scope}}. Tap to change"
+  },
+  "notificationsUnread_one": "Notifications, {{count}} unread",
+  "notificationsUnread_other": "Notifications, {{count}} unread",
+  "update": {
+    "availableBody": "A new version of Hilads is ready.",
+    "cta": "Update",
+    "later": "Later",
+    "requiredTitle": "Update Hilads",
+    "requiredBody": "This version is no longer supported. Update the app to keep using Hilads."
+  },
+  "mapSoon": "The map of spots is coming soon."
 }

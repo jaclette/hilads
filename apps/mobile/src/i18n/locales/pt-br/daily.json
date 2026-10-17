@@ -325,5 +325,29 @@
     "title": "Novas provas: {{n}}",
     "citiesMore": "{{cities}} e mais {{n}}",
     "galleryTitle": "Novas provas"
+  },
+  "today": {
+    "early": "Bônus de rapidez até {{time}}",
+    "tomorrow": "Amanhã: {{theme}}",
+    "top3": "Top 3 agora",
+    "seeTop10": "Ver o top 10",
+    "latest": "As últimas provas de hoje",
+    "seeAll": "Ver tudo",
+    "spotsTitle": "Spots perto de você",
+    "openMap": "Abrir o mapa",
+    "spotsFallback": "Ainda não há spots na sua cidade. Os mais próximos:",
+    "spotsEmpty": "Ainda não há nenhum spot aqui. Aceite o challenge de hoje para colocar o primeiro no mapa.",
+    "seeMine": "Ver sua prova",
+    "votes_one": "{{count}} voto",
+    "votes_other": "{{count}} votos",
+    "day": {
+      "done": "feito",
+      "pending": "em análise",
+      "missed": "perdido",
+      "today": "hoje",
+      "tomorrow": "amanhã",
+      "later": "em breve",
+      "none": "sem prova"
+    }
   }
 }

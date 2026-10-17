@@ -132,6 +132,20 @@ export const Colors = {
   scrim:         'rgba(0,0,0,0.6)',
   elevated:      '#1e1812',
   inputBg:       '#0d0b09',
+
+  // V3 tokens (SPEC 9.11; dark values derived from this palette).
+  primary:       '#D9622A',   // buttons, pins, active (white text on it)
+  primaryText:   '#FF8A50',   // primary as text / links on the dark ground
+  primaryTint:   '#3A2216',   // chip / active tab ground
+  primaryOnTint: '#FFB48A',   // text on primaryTint
+  line:          '#272018',   // borders
+  ticketLine:    '#4A3426',   // Daily Challenge ticket border + perforation
+  caramel:       '#C98A45',   // own messages, plan pins
+  localBg:       '#12301F',   // "validated by a local" badge
+  localText:     '#7FD9A4',
+  travelerBg:    '#17263A',   // Traveler label
+  travelerText:  '#9DBDF0',
+  gold:          '#D9AE52',   // Local Pass seal
 } as const;
 
 // A theme is the full color set; both palettes share these keys.
@@ -140,16 +154,16 @@ export type ThemeColors = Record<keyof typeof Colors, string>;
 // ── Light palette (daylight) — same keys as Colors, light values. The
 // ThemeContext swaps between the two; migrated screens read from context. ──────
 export const LightColors: ThemeColors = {
-  bg:       '#FBF6F0',   // warm cream ground
-  bg2:      '#FFFFFF',   // surface / cards
+  bg:       '#FBF5EE',   // ground (SPEC 9.11)
+  bg2:      '#FFFFFF',   // card / surface
   bg3:      '#F3EAE0',   // sand inset
-  border:   '#EADDD0',   // warm hairline
-  text:     '#241A12',   // warm near-black
-  muted:    '#6E5D4E',   // secondary (AA on cream)
-  muted2:   '#6E5D4E',   // tertiary
+  border:   '#EADCCD',   // line (SPEC 9.11)
+  text:     '#2A1C13',   // ink (SPEC 9.11)
+  muted:    '#6F5B4D',   // muted ink (SPEC 9.11)
+  muted2:   '#6F5B4D',   // tertiary
   mutedDim: '#9A8877',   // disabled-only
-  accent:   '#FF7A3C',   // FILL / FAB / active — brand energy (never text on white)
-  accentDim:'rgba(255,122,60,0.15)',
+  accent:   '#C9501A',   // primary (SPEC 9.11): white text on it passes 4.5:1
+  accentDim:'rgba(201,80,26,0.12)',
   accent2:  '#C24A38',   // deep CTA orange
   accent3:  '#B87228',
   green:    '#17864C',   // darkened so it reads as text/dots on white
@@ -158,13 +172,27 @@ export const LightColors: ThemeColors = {
   violet:   '#7C4DE0',
   white:    '#ffffff',
   accentText: '#C24A38', // readable deep orange as text on cream
-  separator:     '#EADDD0',
+  separator:     '#EADCCD',
   overlayWeak:   'rgba(28,20,14,0.03)',
   overlay:       'rgba(28,20,14,0.05)',
   overlayStrong: 'rgba(28,20,14,0.08)',
   scrim:         'rgba(28,20,14,0.35)',
   elevated:      '#FFFFFF',
   inputBg:       '#FFFFFF',
+
+  // V3 tokens (SPEC 9.11).
+  primary:       '#C9501A',
+  primaryText:   '#C9501A',
+  primaryTint:   '#FFE6D8',
+  primaryOnTint: '#8A3A12',
+  line:          '#EADCCD',
+  ticketLine:    '#E8CDB8',
+  caramel:       '#9C5F22',
+  localBg:       '#E3F0E8',
+  localText:     '#23603F',
+  travelerBg:    '#E4ECF7',
+  travelerText:  '#2F5E9E',
+  gold:          '#B98A2E',
 };
 
 export type ThemeName = 'light' | 'dark';

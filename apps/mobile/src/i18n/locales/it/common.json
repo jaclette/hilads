@@ -215,5 +215,30 @@
   },
   "delete": "Elimina",
   "deleteConversationTitle": "Eliminare la conversazione?",
-  "deleteConversationBody": "Verrà rimossa dai tuoi messaggi. Riapparirà se ti scrivono di nuovo."
+  "deleteConversationBody": "Verrà rimossa dai tuoi messaggi. Riapparirà se ti scrivono di nuovo.",
+  "tabs": {
+    "today": "Oggi",
+    "map": "Mappa",
+    "chat": "Chat",
+    "passport": "Passaporto"
+  },
+  "scope": {
+    "title": "Mostra",
+    "world": "Mondo",
+    "pickCity": "Scegli una città",
+    "citySub": "Il challenge, le prove e gli spot della tua città",
+    "worldSub": "Prove e spot di tutte le città",
+    "changeCity": "Cambia città",
+    "a11y": "Mostra {{scope}}. Tocca per cambiare"
+  },
+  "notificationsUnread_one": "Notifiche, {{count}} da leggere",
+  "notificationsUnread_other": "Notifiche, {{count}} da leggere",
+  "update": {
+    "availableBody": "È pronta una nuova versione di Hilads.",
+    "cta": "Aggiorna",
+    "later": "Più tardi",
+    "requiredTitle": "Aggiorna Hilads",
+    "requiredBody": "Questa versione non è più supportata. Aggiorna l'app per continuare a usare Hilads."
+  },
+  "mapSoon": "La mappa degli spot arriva presto."
 }

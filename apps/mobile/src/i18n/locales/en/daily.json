@@ -325,5 +325,29 @@
     "title": "New proofs: {{n}}",
     "citiesMore": "{{cities}} and {{n}} more",
     "galleryTitle": "New proofs"
+  },
+  "today": {
+    "early": "Early bonus until {{time}}",
+    "tomorrow": "Tomorrow: {{theme}}",
+    "top3": "Top 3 right now",
+    "seeTop10": "See top 10",
+    "latest": "Today's latest proofs",
+    "seeAll": "See all",
+    "spotsTitle": "Spots near you",
+    "openMap": "Open map",
+    "spotsFallback": "No spot in your city yet. The nearest ones:",
+    "spotsEmpty": "No spot here yet. Take today's challenge to put the first one on the map.",
+    "seeMine": "See your proof",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes",
+    "day": {
+      "done": "done",
+      "pending": "waiting for review",
+      "missed": "missed",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "later": "coming up",
+      "none": "no proof"
+    }
   }
 }

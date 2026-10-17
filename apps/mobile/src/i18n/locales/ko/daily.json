@@ -323,5 +323,29 @@
     "title": "새 인증: {{n}}",
     "citiesMore": "{{cities}} 외 {{n}}개",
     "galleryTitle": "새 인증"
+  },
+  "today": {
+    "early": "{{time}}까지 얼리 보너스",
+    "tomorrow": "내일: {{theme}}",
+    "top3": "지금 TOP 3",
+    "seeTop10": "TOP 10 보기",
+    "latest": "오늘의 최신 인증",
+    "seeAll": "모두 보기",
+    "spotsTitle": "내 근처 스팟",
+    "openMap": "지도 열기",
+    "spotsFallback": "아직 내 도시에 스팟이 없어요. 가장 가까운 스팟:",
+    "spotsEmpty": "아직 여기에 스팟이 없어요. 오늘의 challenge에 참여해 첫 스팟을 지도에 올려 보세요.",
+    "seeMine": "내 인증 보기",
+    "votes_one": "{{count}}표",
+    "votes_other": "{{count}}표",
+    "day": {
+      "done": "완료",
+      "pending": "검토 중",
+      "missed": "놓침",
+      "today": "오늘",
+      "tomorrow": "내일",
+      "later": "예정",
+      "none": "인증 없음"
+    }
   }
 }

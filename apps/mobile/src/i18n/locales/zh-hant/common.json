@@ -215,5 +215,30 @@
   },
   "delete": "刪除",
   "deleteConversationTitle": "刪除對話？",
-  "deleteConversationBody": "它會從你的訊息中移除。如果對方再次傳訊給你，它會重新出現。"
+  "deleteConversationBody": "它會從你的訊息中移除。如果對方再次傳訊給你，它會重新出現。",
+  "tabs": {
+    "today": "今天",
+    "map": "地圖",
+    "chat": "聊天",
+    "passport": "護照"
+  },
+  "scope": {
+    "title": "顯示",
+    "world": "世界",
+    "pickCity": "選擇城市",
+    "citySub": "你所在城市的 challenge、證明和地點",
+    "worldSub": "所有城市的證明和地點",
+    "changeCity": "更換城市",
+    "a11y": "正在顯示{{scope}}。點按以更換"
+  },
+  "notificationsUnread_one": "通知，{{count}} 則未讀",
+  "notificationsUnread_other": "通知，{{count}} 則未讀",
+  "update": {
+    "availableBody": "Hilads 新版本已就緒。",
+    "cta": "更新",
+    "later": "稍後",
+    "requiredTitle": "更新 Hilads",
+    "requiredBody": "此版本已不再支援。請更新 App 以繼續使用 Hilads。"
+  },
+  "mapSoon": "地點地圖即將推出。"
 }

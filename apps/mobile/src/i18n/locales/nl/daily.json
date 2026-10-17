@@ -325,5 +325,29 @@
     "title": "Nieuwe bewijzen: {{n}}",
     "citiesMore": "{{cities}} en nog {{n}}",
     "galleryTitle": "Nieuwe bewijzen"
+  },
+  "today": {
+    "early": "Vroegbonus tot {{time}}",
+    "tomorrow": "Morgen: {{theme}}",
+    "top3": "Top 3 op dit moment",
+    "seeTop10": "Bekijk de top 10",
+    "latest": "De nieuwste bewijzen van vandaag",
+    "seeAll": "Alles bekijken",
+    "spotsTitle": "Spots bij jou in de buurt",
+    "openMap": "Kaart openen",
+    "spotsFallback": "Nog geen spots in jouw stad. De dichtstbijzijnde:",
+    "spotsEmpty": "Hier is nog geen spot. Doe de challenge van vandaag en zet de eerste op de kaart.",
+    "seeMine": "Bekijk je bewijs",
+    "votes_one": "{{count}} stem",
+    "votes_other": "{{count}} stemmen",
+    "day": {
+      "done": "gedaan",
+      "pending": "wordt gecontroleerd",
+      "missed": "gemist",
+      "today": "vandaag",
+      "tomorrow": "morgen",
+      "later": "binnenkort",
+      "none": "geen bewijs"
+    }
   }
 }

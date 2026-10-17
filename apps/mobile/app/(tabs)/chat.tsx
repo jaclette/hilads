@@ -24,6 +24,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { consumeCityFeedRefresh } from '@/lib/cityFeedRefresh';
 import { consumeWorldScopeOpen } from '@/lib/worldScopeOpen';
+import { useScope } from '@/context/ScopeContext';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
 import { Ionicons } from '@expo/vector-icons';
@@ -212,7 +213,8 @@ export default function ChatTab() {
   // channelScope toggles the FEED between the city and the global World channel.
   // City presence/typing stay on the city (channelId unchanged); World is an
   // overlay feed on activeChannelId. Unread badges are symmetric.
-  const [channelScope, setChannelScope] = useState<'city' | 'world'>('city');
+  // App-wide scope (header selector, SPEC 9.1): shared with Today and Map.
+  const { scope: channelScope, setScope: setChannelScope } = useScope();
   const [worldUnread,  setWorldUnread]  = useState(0);
   const [cityUnread,   setCityUnread]   = useState(0);
   // Total city members - gates the header pill: with <2 nearby we show a
@@ -543,9 +545,16 @@ export default function ChatTab() {
     initialData: chatBootstrap ? { messages: chatBootstrap.messages, hasMore: chatBootstrap.hasMore } : undefined,
   });
 
-  // Toggle the feed between the city and the global World channel.
+  // Toggle the feed between the city and the global World channel. The scope is
+  // app-wide (header selector too), so what entering a scope does runs in the
+  // effect below, whoever switched it.
   const switchScope = useCallback((scope: 'city' | 'world') => {
     setChannelScope(scope);
+  }, [setChannelScope]);
+  const firstScope = useRef(true);
+  useEffect(() => {
+    if (firstScope.current) { firstScope.current = false; return; }
+    const scope = channelScope;
     if (scope === 'world') {
       track('world_channel_viewed');
       setWorldUnread(0);
@@ -557,7 +566,7 @@ export default function ChatTab() {
       setCityUnread(0);
       if (identity?.guestId && channelId) markChannelRead(channelId, identity.guestId);
     }
-  }, [identity, channelId]);
+  }, [channelScope]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-enter the World channel on open for every city that is NOT live: a
   // live city (cities.force_live, from the Daily Challenge "today" call) has a
@@ -1119,6 +1128,7 @@ export default function ChatTab() {
         {/* ── Section 1: App header - persistent across all 4 tabs ── */}
         {/* Share lives here (MY-CITY-only) as a tab-specific extra. */}
         <AppHeader
+          messages
           rightExtra={city && (
             <TouchableOpacity
               style={styles.iconBtn}
@@ -1221,7 +1231,7 @@ export default function ChatTab() {
                   <TouchableOpacity
                     style={styles.heroSeeAll}
                     activeOpacity={0.85}
-                    onPress={() => router.push({ pathname: '/(tabs)/challenges', params: { mode: 'worldwide' } } as never)}
+                    onPress={() => router.push('/(tabs)/today' as never)}
                   >
                     <Text style={styles.heroSeeAllIcon}>🌍</Text>
                     <Text style={styles.heroSeeAllText}>{t('world.seeAll', { defaultValue: 'See all' })}</Text>
@@ -1269,7 +1279,7 @@ export default function ChatTab() {
         ) : (
           <TouchableOpacity
             style={styles.heroRow}
-            onPress={() => router.push('/(tabs)/challenges' as never)}
+            onPress={() => router.push('/(tabs)/today' as never)}
             activeOpacity={0.8}
             accessibilityRole="button"
             accessibilityLabel={`${heroMain} ${heroSub}`}

@@ -215,5 +215,30 @@
   },
   "delete": "삭제",
   "deleteConversationTitle": "대화를 삭제할까요?",
-  "deleteConversationBody": "메시지 목록에서 제거됩니다. 상대가 다시 메시지를 보내면 다시 표시됩니다."
+  "deleteConversationBody": "메시지 목록에서 제거됩니다. 상대가 다시 메시지를 보내면 다시 표시됩니다.",
+  "tabs": {
+    "today": "오늘",
+    "map": "지도",
+    "chat": "채팅",
+    "passport": "여권"
+  },
+  "scope": {
+    "title": "보기",
+    "world": "전 세계",
+    "pickCity": "도시 선택",
+    "citySub": "내 도시의 challenge, 인증, 스팟",
+    "worldSub": "모든 도시의 인증과 스팟",
+    "changeCity": "도시 변경",
+    "a11y": "{{scope}} 보는 중. 눌러서 변경"
+  },
+  "notificationsUnread_one": "알림, 읽지 않음 {{count}}개",
+  "notificationsUnread_other": "알림, 읽지 않음 {{count}}개",
+  "update": {
+    "availableBody": "Hilads 새 버전이 준비됐어요.",
+    "cta": "업데이트",
+    "later": "나중에",
+    "requiredTitle": "Hilads 업데이트",
+    "requiredBody": "이 버전은 더 이상 지원되지 않아요. Hilads를 계속 쓰려면 앱을 업데이트하세요."
+  },
+  "mapSoon": "스팟 지도가 곧 나와요."
 }

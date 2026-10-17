@@ -215,5 +215,30 @@
   },
   "delete": "Hapus",
   "deleteConversationTitle": "Hapus percakapan?",
-  "deleteConversationBody": "Akan dihapus dari pesanmu. Muncul lagi kalau mereka mengirim pesan lagi."
+  "deleteConversationBody": "Akan dihapus dari pesanmu. Muncul lagi kalau mereka mengirim pesan lagi.",
+  "tabs": {
+    "today": "Hari ini",
+    "map": "Peta",
+    "chat": "Chat",
+    "passport": "Paspor"
+  },
+  "scope": {
+    "title": "Tampilkan",
+    "world": "Dunia",
+    "pickCity": "Pilih kota",
+    "citySub": "Challenge, bukti, dan spot di kotamu",
+    "worldSub": "Bukti dan spot dari semua kota",
+    "changeCity": "Ganti kota",
+    "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
+  },
+  "notificationsUnread_one": "Notifikasi, {{count}} belum dibaca",
+  "notificationsUnread_other": "Notifikasi, {{count}} belum dibaca",
+  "update": {
+    "availableBody": "Versi baru Hilads sudah siap.",
+    "cta": "Perbarui",
+    "later": "Nanti",
+    "requiredTitle": "Perbarui Hilads",
+    "requiredBody": "Versi ini sudah tidak didukung. Perbarui aplikasi untuk terus memakai Hilads."
+  },
+  "mapSoon": "Peta spot segera hadir."
 }

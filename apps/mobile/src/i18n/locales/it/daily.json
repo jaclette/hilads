@@ -325,5 +325,29 @@
     "title": "Nuove prove: {{n}}",
     "citiesMore": "{{cities}} e altre {{n}}",
     "galleryTitle": "Nuove prove"
+  },
+  "today": {
+    "early": "Bonus velocità fino alle {{time}}",
+    "tomorrow": "Domani: {{theme}}",
+    "top3": "Top 3 in questo momento",
+    "seeTop10": "Vedi la top 10",
+    "latest": "Le ultime prove di oggi",
+    "seeAll": "Vedi tutto",
+    "spotsTitle": "Spot vicino a te",
+    "openMap": "Apri la mappa",
+    "spotsFallback": "Ancora nessuno spot nella tua città. I più vicini:",
+    "spotsEmpty": "Ancora nessuno spot qui. Accetta il challenge di oggi per mettere il primo sulla mappa.",
+    "seeMine": "Vedi la tua prova",
+    "votes_one": "{{count}} voto",
+    "votes_other": "{{count}} voti",
+    "day": {
+      "done": "fatto",
+      "pending": "in revisione",
+      "missed": "mancato",
+      "today": "oggi",
+      "tomorrow": "domani",
+      "later": "in arrivo",
+      "none": "nessuna prova"
+    }
   }
 }

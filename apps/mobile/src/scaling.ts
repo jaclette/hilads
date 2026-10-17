@@ -1,5 +1,6 @@
 /**
- * Global responsive down-scaling for narrow phones.
+ * Global style patch: responsive down-scaling for narrow phones, and the app
+ * font (Be Vietnam Pro) on every text style.
  *
  * The app is authored in fixed dp for a large phone (~448dp / Pixel 8 Pro).
  * dp is the SAME physical size on every device, so on a narrower phone the same
@@ -42,21 +43,50 @@ const SCALE_KEYS = [
   'gap', 'rowGap', 'columnGap',
 ] as const;
 
+// App font (SPEC 9.11): Be Vietnam Pro, one embedded family per weight (expo-font
+// plugin in app.json). Every text style without its own fontFamily gets the
+// family matching its fontWeight, and loses fontWeight (Android would otherwise
+// fake-bold an already bold family). Styles with a fontFamily (monospace...)
+// are left alone.
+const FONT_BY_WEIGHT: Record<string, string> = {
+  '100': 'BeVietnamPro-Regular', '200': 'BeVietnamPro-Regular', '300': 'BeVietnamPro-Regular',
+  '400': 'BeVietnamPro-Regular', normal: 'BeVietnamPro-Regular',
+  '500': 'BeVietnamPro-Medium',
+  '600': 'BeVietnamPro-SemiBold',
+  '700': 'BeVietnamPro-Bold', bold: 'BeVietnamPro-Bold',
+  '800': 'BeVietnamPro-ExtraBold', '900': 'BeVietnamPro-ExtraBold',
+};
+
+/** The Be Vietnam Pro family for a fontWeight (Regular when unset). */
+export function appFont(weight?: string | number): string {
+  return FONT_BY_WEIGHT[String(weight ?? '400')] ?? 'BeVietnamPro-Regular';
+}
+
 type AnyStyles = Record<string, Record<string, unknown>>;
 
-function installScaling(): void {
-  const create = StyleSheet.create as unknown as ((s: AnyStyles) => AnyStyles) & { __scaled?: boolean };
-  if (SCREEN_SCALE >= 1 || create.__scaled) return; // no-op on big screens / already patched
+function applyFont(rule: Record<string, unknown>): void {
+  if (rule.fontFamily !== undefined || (rule.fontSize === undefined && rule.fontWeight === undefined)) return;
+  rule.fontFamily = appFont(rule.fontWeight as string | undefined);
+  delete rule.fontWeight;
+}
 
+function installStylePatch(): void {
+  const create = StyleSheet.create as unknown as ((s: AnyStyles) => AnyStyles) & { __scaled?: boolean };
+  if (create.__scaled) return; // already patched (Fast Refresh)
+
+  const scale = SCREEN_SCALE < 1; // no size change on reference-width+ screens
   const original = create.bind(StyleSheet) as (s: AnyStyles) => AnyStyles;
   const patched = ((styles: AnyStyles) => {
     for (const name in styles) {
       const rule = styles[name];
       if (rule && typeof rule === 'object') {
-        for (const key of SCALE_KEYS) {
-          const v = rule[key];
-          if (typeof v === 'number') rule[key] = Math.round(v * SCREEN_SCALE);
+        if (scale) {
+          for (const key of SCALE_KEYS) {
+            const v = rule[key];
+            if (typeof v === 'number') rule[key] = Math.round(v * SCREEN_SCALE);
+          }
         }
+        applyFont(rule);
       }
     }
     return original(styles);
@@ -65,4 +95,4 @@ function installScaling(): void {
   (StyleSheet as unknown as { create: unknown }).create = patched;
 }
 
-installScaling();
+installStylePatch();

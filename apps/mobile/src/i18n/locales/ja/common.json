@@ -215,5 +215,30 @@
   },
   "delete": "削除",
   "deleteConversationTitle": "会話を削除しますか？",
-  "deleteConversationBody": "メッセージ一覧から削除されます。相手が再度メッセージを送ると再表示されます。"
+  "deleteConversationBody": "メッセージ一覧から削除されます。相手が再度メッセージを送ると再表示されます。",
+  "tabs": {
+    "today": "今日",
+    "map": "マップ",
+    "chat": "チャット",
+    "passport": "パスポート"
+  },
+  "scope": {
+    "title": "表示",
+    "world": "世界",
+    "pickCity": "都市を選ぶ",
+    "citySub": "あなたの都市の challenge、プルーフ、スポット",
+    "worldSub": "すべての都市のプルーフとスポット",
+    "changeCity": "都市を変更",
+    "a11y": "{{scope}}を表示中。タップで変更"
+  },
+  "notificationsUnread_one": "通知、未読 {{count}} 件",
+  "notificationsUnread_other": "通知、未読 {{count}} 件",
+  "update": {
+    "availableBody": "Hilads の新しいバージョンがあります。",
+    "cta": "アップデート",
+    "later": "あとで",
+    "requiredTitle": "Hilads をアップデート",
+    "requiredBody": "このバージョンはサポートが終了しました。Hilads を使い続けるにはアプリをアップデートしてください。"
+  },
+  "mapSoon": "スポットのマップは近日公開です。"
 }

@@ -349,5 +349,33 @@
     "title": "أدلة جديدة: {{n}}",
     "citiesMore": "{{cities}} و{{n}} أخرى",
     "galleryTitle": "أدلة جديدة"
+  },
+  "today": {
+    "early": "مكافأة السرعة حتى {{time}}",
+    "tomorrow": "غدًا: {{theme}}",
+    "top3": "أفضل 3 الآن",
+    "seeTop10": "عرض أفضل 10",
+    "latest": "أحدث إثباتات اليوم",
+    "seeAll": "عرض الكل",
+    "spotsTitle": "أماكن قريبة منك",
+    "openMap": "افتح الخريطة",
+    "spotsFallback": "لا توجد أماكن في مدينتك بعد. الأقرب:",
+    "spotsEmpty": "لا يوجد مكان هنا بعد. خُض الـ challenge اليوم لتضع أول مكان على الخريطة.",
+    "seeMine": "عرض إثباتك",
+    "votes_zero": "لا أصوات",
+    "votes_one": "صوت واحد",
+    "votes_two": "صوتان",
+    "votes_few": "{{count}} أصوات",
+    "votes_many": "{{count}} صوتًا",
+    "votes_other": "{{count}} صوت",
+    "day": {
+      "done": "تم",
+      "pending": "قيد المراجعة",
+      "missed": "فائت",
+      "today": "اليوم",
+      "tomorrow": "غدًا",
+      "later": "قريبًا",
+      "none": "لا إثبات"
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { Platform } from 'react-native';
 import { API_URL } from '@/constants';
+import { APP_BUILD_VERSION } from '@/lib/appVersion';
 
 // ── Token store ───────────────────────────────────────────────────────────────
 // React Native fetch doesn't handle cookies automatically.
@@ -52,6 +53,8 @@ async function request<T = unknown>(
     // Lets the backend stamp arrivals with the originating platform (BO column).
     // Platform.OS is 'ios' | 'android' on native; harmless elsewhere.
     'X-Platform': Platform.OS,
+    // V3-04: the app version, for GET /app/config's update prompts and server-side gating.
+    'X-App-Version': APP_BUILD_VERSION,
     ...(extraHeaders as Record<string, string>),
   };
 

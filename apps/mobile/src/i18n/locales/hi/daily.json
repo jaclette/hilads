@@ -325,5 +325,29 @@
     "title": "नए प्रूफ: {{n}}",
     "citiesMore": "{{cities}} और {{n}} और",
     "galleryTitle": "नए प्रूफ"
+  },
+  "today": {
+    "early": "{{time}} तक अर्ली बोनस",
+    "tomorrow": "कल: {{theme}}",
+    "top3": "अभी के टॉप 3",
+    "seeTop10": "टॉप 10 देखें",
+    "latest": "आज के नए सबूत",
+    "seeAll": "सब देखें",
+    "spotsTitle": "तुम्हारे पास के स्पॉट",
+    "openMap": "मैप खोलें",
+    "spotsFallback": "तुम्हारे शहर में अभी कोई स्पॉट नहीं है। सबसे पास वाले:",
+    "spotsEmpty": "यहाँ अभी कोई स्पॉट नहीं है। आज का challenge लो और पहला स्पॉट मैप पर लगाओ।",
+    "seeMine": "अपना सबूत देखें",
+    "votes_one": "{{count}} वोट",
+    "votes_other": "{{count}} वोट",
+    "day": {
+      "done": "पूरा",
+      "pending": "जाँच में",
+      "missed": "छूट गया",
+      "today": "आज",
+      "tomorrow": "कल",
+      "later": "जल्द",
+      "none": "कोई सबूत नहीं"
+    }
   }
 }

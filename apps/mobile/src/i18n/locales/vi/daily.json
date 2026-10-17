@@ -323,5 +323,29 @@
     "title": "Bằng chứng mới: {{n}}",
     "citiesMore": "{{cities}} và {{n}} nữa",
     "galleryTitle": "Bằng chứng mới"
+  },
+  "today": {
+    "early": "Thưởng sớm đến {{time}}",
+    "tomorrow": "Ngày mai: {{theme}}",
+    "top3": "Top 3 lúc này",
+    "seeTop10": "Xem top 10",
+    "latest": "Bằng chứng mới nhất hôm nay",
+    "seeAll": "Xem tất cả",
+    "spotsTitle": "Spot gần bạn",
+    "openMap": "Mở bản đồ",
+    "spotsFallback": "Thành phố của bạn chưa có spot. Gần nhất:",
+    "spotsEmpty": "Ở đây chưa có spot. Nhận challenge hôm nay để đặt spot đầu tiên lên bản đồ.",
+    "seeMine": "Xem bằng chứng của bạn",
+    "votes_one": "{{count}} phiếu",
+    "votes_other": "{{count}} phiếu",
+    "day": {
+      "done": "đã xong",
+      "pending": "đang chờ duyệt",
+      "missed": "bỏ lỡ",
+      "today": "hôm nay",
+      "tomorrow": "ngày mai",
+      "later": "sắp tới",
+      "none": "chưa có bằng chứng"
+    }
   }
 }

@@ -215,5 +215,30 @@
   },
   "delete": "Xóa",
   "deleteConversationTitle": "Xóa cuộc trò chuyện?",
-  "deleteConversationBody": "Nó sẽ bị xóa khỏi tin nhắn của bạn và xuất hiện lại nếu họ nhắn cho bạn."
+  "deleteConversationBody": "Nó sẽ bị xóa khỏi tin nhắn của bạn và xuất hiện lại nếu họ nhắn cho bạn.",
+  "tabs": {
+    "today": "Hôm nay",
+    "map": "Bản đồ",
+    "chat": "Chat",
+    "passport": "Hộ chiếu"
+  },
+  "scope": {
+    "title": "Hiển thị",
+    "world": "Thế giới",
+    "pickCity": "Chọn thành phố",
+    "citySub": "Challenge, bằng chứng và spot của thành phố bạn",
+    "worldSub": "Bằng chứng và spot từ mọi thành phố",
+    "changeCity": "Đổi thành phố",
+    "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
+  },
+  "notificationsUnread_one": "Thông báo, {{count}} chưa đọc",
+  "notificationsUnread_other": "Thông báo, {{count}} chưa đọc",
+  "update": {
+    "availableBody": "Đã có phiên bản Hilads mới.",
+    "cta": "Cập nhật",
+    "later": "Để sau",
+    "requiredTitle": "Cập nhật Hilads",
+    "requiredBody": "Phiên bản này không còn được hỗ trợ. Hãy cập nhật ứng dụng để tiếp tục dùng Hilads."
+  },
+  "mapSoon": "Bản đồ các spot sắp ra mắt."
 }

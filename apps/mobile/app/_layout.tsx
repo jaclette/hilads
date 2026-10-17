@@ -28,6 +28,8 @@ import { useDeviceTimezone } from '@/hooks/useDeviceTimezone';
 import { useGpsCityCorrection } from '@/hooks/useGpsCityCorrection';
 import { BootScreen } from '@/components/BootScreen';
 import { PlacedCityBanner } from '@/components/PlacedCityBanner';
+import { UpdateGate } from '@/features/shell/UpdateGate';
+import { ScopeProvider } from '@/context/ScopeContext';
 import { NotificationHandler } from '@/features/notifications/NotificationHandler';
 import { track } from '@/services/analytics';
 
@@ -202,6 +204,8 @@ function RootLayoutInner() {
               the first-time picker in useAppBoot - no LandingScreen overlay, no
               GPS prompt. A one-shot banner confirms the auto-placement. */}
           <PlacedCityBanner />
+          {/* "Update available" banner / blocking "Update required" (GET /app/config, V3-04). */}
+          <UpdateGate />
         </>
       )}
 
@@ -257,7 +261,9 @@ function ThemedRoot() {
     <SafeAreaProvider style={{ backgroundColor: colors.bg }}>
       <AppProvider>
         <StatusBar style={theme === 'dark' ? 'light' : 'dark'} backgroundColor={colors.bg} />
-        <RootLayoutInner />
+        <ScopeProvider>
+          <RootLayoutInner />
+        </ScopeProvider>
       </AppProvider>
     </SafeAreaProvider>
   );

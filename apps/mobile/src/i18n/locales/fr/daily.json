@@ -325,5 +325,29 @@
     "title": "Nouvelles preuves : {{n}}",
     "citiesMore": "{{cities}} et {{n}} de plus",
     "galleryTitle": "Nouvelles preuves"
+  },
+  "today": {
+    "early": "Bonus de rapidité jusqu'à {{time}}",
+    "tomorrow": "Demain : {{theme}}",
+    "top3": "Top 3 en ce moment",
+    "seeTop10": "Voir le top 10",
+    "latest": "Les dernières preuves du jour",
+    "seeAll": "Tout voir",
+    "spotsTitle": "Spots près de toi",
+    "openMap": "Ouvrir la carte",
+    "spotsFallback": "Pas encore de spot dans ta ville. Les plus proches :",
+    "spotsEmpty": "Pas encore de spot ici. Relève le challenge du jour pour poser le premier sur la carte.",
+    "seeMine": "Voir ta preuve",
+    "votes_one": "{{count}} vote",
+    "votes_other": "{{count}} votes",
+    "day": {
+      "done": "fait",
+      "pending": "en cours de validation",
+      "missed": "manqué",
+      "today": "aujourd'hui",
+      "tomorrow": "demain",
+      "later": "à venir",
+      "none": "pas de preuve"
+    }
   }
 }

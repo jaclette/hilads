@@ -810,7 +810,18 @@
           "locationWhenInUsePermission": "Hilads uses your location to find your city."
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/BeVietnamPro-Regular.ttf",
+            "./assets/fonts/BeVietnamPro-Medium.ttf",
+            "./assets/fonts/BeVietnamPro-SemiBold.ttf",
+            "./assets/fonts/BeVietnamPro-Bold.ttf",
+            "./assets/fonts/BeVietnamPro-ExtraBold.ttf"
+          ]
+        }
+      ],
       "expo-asset",
       "@sentry/react-native",
       "expo-localization"

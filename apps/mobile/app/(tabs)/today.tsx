@@ -1,0 +1,57 @@
+import { useCallback, useState } from 'react';
+import { RefreshControl, ScrollView, View, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { useApp } from '@/context/AppContext';
+import { useDailyToday } from '@/hooks/useDaily';
+import { AppHeader } from '@/features/shell/AppHeader';
+import { DailyPushBanner } from '@/features/daily/DailyPushBanner';
+import { TodayTicket } from '@/features/today/TodayTicket';
+import { TodayWeek } from '@/features/today/TodayWeek';
+import { TodayTop3 } from '@/features/today/TodayTop3';
+import { SpotsNear } from '@/features/today/SpotsNear';
+
+/**
+ * TODAY, the home (SPEC 9.3, today.html): the Daily Challenge ticket, the week
+ * strip, the live top 3 (or today's latest proofs) and Spots near you. Never
+ * empty: without local activity it still shows the challenge, World proofs and
+ * the nearest spots anywhere.
+ */
+export default function TodayScreen() {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const { city } = useApp();
+  const daily = useDailyToday(city?.channelId);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setRefreshKey(k => k + 1);
+    await daily.reload();
+    setRefreshing(false);
+  }, [daily]);
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+      <View style={styles.header}><AppHeader /></View>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
+      >
+        <TodayTicket data={daily.data} loading={daily.loading} secondsLeft={daily.secondsLeft} />
+        <DailyPushBanner />
+        <TodayWeek today={daily.data} />
+        <TodayTop3 today={daily.data} />
+        <SpotsNear cityId={city?.channelId ?? null} refreshKey={refreshKey} />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
+
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  container: { flex: 1, backgroundColor: c.bg },
+  header:    { paddingHorizontal: Spacing.md, backgroundColor: c.bg },
+  content:   { paddingHorizontal: Spacing.md, paddingTop: 4, paddingBottom: Spacing.xl, gap: 14 },
+});

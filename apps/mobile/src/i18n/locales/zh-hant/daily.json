@@ -323,5 +323,29 @@
     "title": "新的證明：{{n}}",
     "citiesMore": "{{cities}} 等另外 {{n}} 個",
     "galleryTitle": "新的證明"
+  },
+  "today": {
+    "early": "早鳥獎勵至 {{time}}",
+    "tomorrow": "明天：{{theme}}",
+    "top3": "目前前三名",
+    "seeTop10": "查看前十名",
+    "latest": "今天的最新證明",
+    "seeAll": "查看全部",
+    "spotsTitle": "你附近的地點",
+    "openMap": "打開地圖",
+    "spotsFallback": "你的城市還沒有地點。最近的是：",
+    "spotsEmpty": "這裡還沒有地點。參加今天的 challenge，把第一個地點放到地圖上。",
+    "seeMine": "查看你的證明",
+    "votes_one": "{{count}} 票",
+    "votes_other": "{{count}} 票",
+    "day": {
+      "done": "已完成",
+      "pending": "審核中",
+      "missed": "錯過",
+      "today": "今天",
+      "tomorrow": "明天",
+      "later": "即將到來",
+      "none": "無證明"
+    }
   }
 }

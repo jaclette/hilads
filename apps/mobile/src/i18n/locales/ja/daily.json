@@ -325,5 +325,29 @@
     "title": "新しい証明：{{n}}",
     "citiesMore": "{{cities}} ほか {{n}} 件",
     "galleryTitle": "新しい証明"
+  },
+  "today": {
+    "early": "早割ボーナスは {{time}} まで",
+    "tomorrow": "明日：{{theme}}",
+    "top3": "いまのトップ3",
+    "seeTop10": "トップ10を見る",
+    "latest": "今日の最新プルーフ",
+    "seeAll": "すべて見る",
+    "spotsTitle": "近くのスポット",
+    "openMap": "マップを開く",
+    "spotsFallback": "あなたの都市にはまだスポットがありません。最寄りのスポット：",
+    "spotsEmpty": "ここにはまだスポットがありません。今日の challenge に参加して、最初のスポットをマップに置こう。",
+    "seeMine": "自分のプルーフを見る",
+    "votes_one": "{{count}} 票",
+    "votes_other": "{{count}} 票",
+    "day": {
+      "done": "完了",
+      "pending": "確認中",
+      "missed": "未達成",
+      "today": "今日",
+      "tomorrow": "明日",
+      "later": "予定",
+      "none": "プルーフなし"
+    }
   }
 }

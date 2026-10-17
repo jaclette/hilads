@@ -325,5 +325,29 @@
     "title": "Neue Beweise: {{n}}",
     "citiesMore": "{{cities}} und {{n}} weitere",
     "galleryTitle": "Neue Beweise"
+  },
+  "today": {
+    "early": "Frühbonus bis {{time}}",
+    "tomorrow": "Morgen: {{theme}}",
+    "top3": "Top 3 gerade",
+    "seeTop10": "Top 10 ansehen",
+    "latest": "Die neuesten Beweise von heute",
+    "seeAll": "Alle ansehen",
+    "spotsTitle": "Spots in deiner Nähe",
+    "openMap": "Karte öffnen",
+    "spotsFallback": "Noch kein Spot in deiner Stadt. Die nächsten:",
+    "spotsEmpty": "Hier gibt es noch keinen Spot. Nimm die Challenge von heute an und setz den ersten auf die Karte.",
+    "seeMine": "Deinen Beweis ansehen",
+    "votes_one": "{{count}} Stimme",
+    "votes_other": "{{count}} Stimmen",
+    "day": {
+      "done": "erledigt",
+      "pending": "wird geprüft",
+      "missed": "verpasst",
+      "today": "heute",
+      "tomorrow": "morgen",
+      "later": "demnächst",
+      "none": "kein Beweis"
+    }
   }
 }
