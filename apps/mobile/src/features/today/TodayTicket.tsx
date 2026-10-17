@@ -10,6 +10,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { isFinalHours } from '@/hooks/useDaily';
 import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
+import { ProposedBy } from '@/features/daily/DailyChannelCard';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
@@ -18,7 +19,7 @@ import type { DailyToday } from '@/types';
 
 /**
  * Today's Daily Challenge as a ticket (SPEC 9.3, today.html): kicker and theme
- * chip, the challenge, the time left and the early-bonus hint, a perforated
+ * chip, the challenge (with its "Proposed by" credit), the time left and the early-bonus hint, a perforated
  * divider, the Local Twist in live cities, and "Take the challenge" (or my
  * proof's status), then tomorrow's Local Twist proposal for locals. Tapping the card opens the challenge sheet.
  */
@@ -78,6 +79,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
         </View>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
+        {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
         <View style={styles.metaRow}>
           {secondsLeft !== null && (
             <View style={styles.metaItem}>
