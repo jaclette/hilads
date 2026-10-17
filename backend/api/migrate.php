@@ -3096,6 +3096,27 @@ run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_place ON daily_proofs (pl
 // Reversal: ALTER TABLE daily_twists DROP COLUMN dish_tags;
 run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS dish_tags TEXT", 'daily_twists.dish_tags');
 
+// V3-04: weekly Most Local (SPEC 9.8). counts_weekly marks the score kinds of
+// the weekly ranking (the Daily Challenge kinds); change the list with SQL, no
+// code change. Seeded once: a later manual change is never overwritten.
+// hidden_from_rankings leaves an account out of every ranking (set for the
+// admin @hilads account, seeded once too).
+// Reversal: ALTER TABLE score_rules DROP COLUMN counts_weekly;
+// ALTER TABLE users DROP COLUMN hidden_from_rankings;
+run($pdo, "ALTER TABLE score_rules ADD COLUMN IF NOT EXISTS counts_weekly BOOLEAN NOT NULL DEFAULT false", 'score_rules.counts_weekly');
+run($pdo, "
+    UPDATE score_rules SET counts_weekly = true
+    WHERE role = 'daily'
+      AND kind IN ('daily_proof', 'daily_streak', 'early_proof', 'daily_vote', 'daily_top1', 'daily_top2',
+                   'daily_top3', 'daily_city_best', 'daily_twist', 'proposal_selected', 'local_pass')
+      AND NOT EXISTS (SELECT 1 FROM score_rules WHERE counts_weekly)
+", 'score_rules.counts_weekly seed');
+run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS hidden_from_rankings BOOLEAN NOT NULL DEFAULT false", 'users.hidden_from_rankings');
+run($pdo, "
+    UPDATE users SET hidden_from_rankings = true
+    WHERE is_admin AND NOT EXISTS (SELECT 1 FROM users WHERE hidden_from_rankings)
+", 'users.hidden_from_rankings seed');
+
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
 // route-level recalc hooks fired after each scoring action. If any

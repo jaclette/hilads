@@ -273,11 +273,17 @@ class AuthService
     }
 
     /** Returns the current user or sends a 401 and exits. */
-    public static function requireAuth(): array
+    /**
+     * The signed-in user, or a 401 the app turns into its sign-up prompt:
+     * code 'signup_required' and, when given, the action that needs it
+     * ('proof', 'vote', 'plan', 'proposal'; V3-04).
+     */
+    public static function requireAuth(?string $action = null): array
     {
         $user = self::currentUser();
         if ($user === null) {
-            Response::json(['error' => 'Authentication required'], 401);
+            Response::json(['error' => 'Authentication required', 'code' => 'signup_required']
+                + ($action !== null ? ['action' => $action] : []), 401);
         }
 
         return $user;

@@ -5231,7 +5231,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
 
     // Event creation requires a registered account - guests may browse and chat
     // but cannot host events.
-    $authUser     = AuthService::requireAuth();
+    $authUser     = AuthService::requireAuth('plan');
     $userId       = $authUser['id'];
     $isAmbassador = (bool) ($authUser['_is_ambassador'] ?? false);
 
@@ -5427,7 +5427,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/event-series', function (arra
     // Recurring events are for registered users only
     $authUser = AuthService::currentUser();
     if ($authUser === null) {
-        Response::json(['error' => 'Login required to create recurring events'], 401);
+        Response::json(['error' => 'Login required to create recurring events', 'code' => 'signup_required', 'action' => 'plan'], 401);
     }
 
     $body = Request::json();
@@ -8632,11 +8632,24 @@ $router->add('GET', '/api/v1/challenges/examples', function () {
     }
 });
 
+/**
+ * User challenge creation is retired (SPEC 9.10). Behind CHALLENGE_CREATION_CLOSED,
+ * switched on when 1.8.0 ships: creating, restarting or relaunching a challenge
+ * is refused with a sentence older apps show as is. Open challenges stay completable.
+ */
+function challengeCreationGate(): void
+{
+    if (AppConfig::challengeCreationClosed()) {
+        Response::json(['error' => AppConfig::CHALLENGE_CLOSED_MESSAGE, 'code' => 'challenge_creation_closed'], 403);
+    }
+}
+
 // Create a new challenge. Requires a registered account - guests may browse,
 // accept, and chat but cannot author challenges (same rule as events).
 // Rate-limit: 5 challenges per hour per city (challenges are persistent, so
 // stricter than topics' 3/5min but more lenient than events' 1/day).
 $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array $params) {
+    challengeCreationGate();
     $channelId = filter_var($params['channelId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
     if ($channelId === false) {
         Response::json(['error' => 'Invalid channelId'], 400);
@@ -11094,6 +11107,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/abandon', function (arr
 // challenge, then pushes + WS-resets the removed taker. Creator-only; 409 if
 // there's no active taker to remove.
 $router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array $params) {
+    challengeCreationGate();
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
         Response::json(['error' => 'Invalid challengeId'], 400);
@@ -11162,6 +11176,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array
 // originally set (new deadline = now + original duration). "Ended" is derived
 // purely from meet_at < now, so this makes it live again. Creator-only.
 $router->add('POST', '/api/v1/challenges/{challengeId}/relaunch', function (array $params) {
+    challengeCreationGate();
     $challengeId = $params['challengeId'] ?? '';
     if (!preg_match('/^[a-f0-9]{16}$/', $challengeId)) {
         Response::json(['error' => 'Invalid challengeId'], 400);
@@ -12863,7 +12878,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
                 -- Zero-point users (incl. the @hilads admin) are shown too, ranked
                 -- last. Pagination bounds the volume; page 1 still shows top scorers.
-                WHERE u.deleted_at IS NULL
+                WHERE u.deleted_at IS NULL AND NOT u.hidden_from_rankings
                 ORDER BY u.score_alltime DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
@@ -12873,7 +12888,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             $me = $pdo->prepare("
                 SELECT u.score_alltime AS my_points,
                        (SELECT COUNT(*) FROM users u2
-                          WHERE u2.deleted_at IS NULL
+                          WHERE u2.deleted_at IS NULL AND NOT u2.hidden_from_rankings
                             AND (u2.score_alltime > u.score_alltime
                                  OR (u2.score_alltime = u.score_alltime AND u2.id < u.id))) + 1 AS my_rank
                 FROM users u
@@ -12894,7 +12909,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-                WHERE u.deleted_at IS NULL
+                WHERE u.deleted_at IS NULL AND NOT u.hidden_from_rankings
                 ORDER BY (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
             ");
@@ -12908,7 +12923,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
 
             $me2 = $pdo->prepare("
                 SELECT COUNT(*) + 1 FROM users
-                WHERE deleted_at IS NULL
+                WHERE deleted_at IS NULL AND NOT hidden_from_rankings
                   AND ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) > :mine
                        OR ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) = :mine AND id < :uid))
             ");
@@ -12932,7 +12947,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-                WHERE u.deleted_at      IS NULL
+                WHERE u.deleted_at      IS NULL AND NOT u.hidden_from_rankings
                   AND u.current_city_id IS NOT NULL
                   AND u.score_alltime   > 0
                 GROUP BY u.current_city_id, city_ch.name, city_meta.country
@@ -12959,7 +12974,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                     SELECT COALESCE(SUM(score_alltime), 0) AS total
                     FROM users
                     WHERE current_city_id = :city
-                      AND deleted_at      IS NULL
+                      AND deleted_at      IS NULL AND NOT hidden_from_rankings
                       AND score_alltime   > 0
                 ");
                 $tot->execute([':city' => $myCityId]);
@@ -12970,7 +12985,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                         WITH city_totals AS (
                             SELECT current_city_id, SUM(score_alltime) AS pts
                             FROM users
-                            WHERE deleted_at      IS NULL
+                            WHERE deleted_at      IS NULL AND NOT hidden_from_rankings
                               AND current_city_id IS NOT NULL
                               AND score_alltime   > 0
                             GROUP BY current_city_id
@@ -12992,7 +13007,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-                WHERE u.deleted_at      IS NULL
+                WHERE u.deleted_at      IS NULL AND NOT u.hidden_from_rankings
                   AND u.current_city_id IS NOT NULL
                   AND u.score_month_ref = :month
                   AND u.score_month     > 0
@@ -13016,7 +13031,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                     SELECT COALESCE(SUM(score_month), 0) AS total
                     FROM users
                     WHERE current_city_id = :city
-                      AND deleted_at      IS NULL
+                      AND deleted_at      IS NULL AND NOT hidden_from_rankings
                       AND score_month_ref = :month
                       AND score_month     > 0
                 ");
@@ -13028,7 +13043,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                         WITH city_totals AS (
                             SELECT current_city_id, SUM(score_month) AS pts
                             FROM users
-                            WHERE deleted_at      IS NULL
+                            WHERE deleted_at      IS NULL AND NOT hidden_from_rankings
                               AND current_city_id IS NOT NULL
                               AND score_month_ref = :month
                               AND score_month     > 0
@@ -13063,7 +13078,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
                 -- City members with 0 points are shown too (ranked last).
-                WHERE u.deleted_at      IS NULL
+                WHERE u.deleted_at      IS NULL AND NOT u.hidden_from_rankings
                   AND u.current_city_id = :city
                 ORDER BY u.score_alltime DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
@@ -13083,7 +13098,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             if ($inThisCity) {
                 $me2 = $pdo->prepare("
                     SELECT COUNT(*) + 1 FROM users
-                    WHERE deleted_at      IS NULL
+                    WHERE deleted_at      IS NULL AND NOT hidden_from_rankings
                       AND current_city_id = :city
                       AND (score_alltime > :mine OR (score_alltime = :mine AND id < :uid))
                 ");
@@ -13101,7 +13116,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
                 FROM users u
                 LEFT JOIN channels city_ch   ON city_ch.id           = u.current_city_id
                 LEFT JOIN cities   city_meta ON city_meta.channel_id = u.current_city_id
-                WHERE u.deleted_at      IS NULL
+                WHERE u.deleted_at      IS NULL AND NOT u.hidden_from_rankings
                   AND u.current_city_id = :city
                 ORDER BY (CASE WHEN u.score_month_ref = :month THEN u.score_month ELSE 0 END) DESC, u.id ASC
                 LIMIT :limit OFFSET :offset
@@ -13122,7 +13137,7 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             if ($inThisCity) {
                 $me2 = $pdo->prepare("
                     SELECT COUNT(*) + 1 FROM users
-                    WHERE deleted_at      IS NULL
+                    WHERE deleted_at      IS NULL AND NOT hidden_from_rankings
                       AND current_city_id = :city
                       AND ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) > :mine
                            OR ((CASE WHEN score_month_ref = :month THEN score_month ELSE 0 END) = :mine AND id < :uid))
@@ -13179,6 +13194,71 @@ $router->add('GET', '/api/v1/leaderboard', function () {
             'points'  => $myPoints,
         ],
     ]);
+});
+
+// GET /api/v1/leaderboard/week?scope=city|world&cityId=&limit=&offset= - weekly
+// Most Local (V3-04, SPEC 9.8): points of the current Monday-to-Sunday week
+// (by challenge date) from the score kinds with score_rules.counts_weekly, in
+// the city where they were earned. Users without points this week are not
+// listed. Open to guests (no `me` rank for them).
+$router->add('GET', '/api/v1/leaderboard/week', function () {
+    spotsRateLimit();
+    $user  = AuthService::currentUser();
+    $scope = ($_GET['scope'] ?? 'city') === 'world' ? 'world' : 'city';
+    $cityId = null;
+    if ($scope === 'city') {
+        $cityId = dailyCityParam($user);
+        if ($cityId === null) {
+            Response::json(['error' => 'Give a cityId', 'code' => 'invalid_city'], 400);
+        }
+    }
+    $limit  = max(1, min(100, (int) ($_GET['limit'] ?? 50)));
+    $offset = max(0, (int) ($_GET['offset'] ?? 0));
+    [$from, $to] = Spots::week(DailyClock::currentDate());
+
+    $entries = [];
+    foreach (WeeklyLeaderboard::rows($cityId, $from, $to, $limit, $offset) as $i => $r) {
+        $entries[] = [
+            'rank'           => $offset + $i + 1,
+            'user_id'        => $r['id'],
+            'displayName'    => $r['display_name'],
+            'thumbAvatarUrl' => R2Uploader::thumbProxy($r['profile_thumb_photo_url']),
+            'points'         => (int) $r['points'],
+            'cityName'       => $r['city_name'],
+            'cityCountry'    => $r['city_country'],
+        ];
+    }
+    $me = $user !== null ? WeeklyLeaderboard::mine($user['id'], $cityId, $from, $to) : ['rank' => null, 'points' => 0];
+    Response::json([
+        'scope'   => $scope,
+        'period'  => 'week',
+        'city_id' => $cityId !== null ? (int) substr($cityId, 5) : null,
+        'week'    => ['from' => $from, 'to' => $to],
+        'limit'   => $limit,
+        'offset'  => $offset,
+        'entries' => $entries,
+        'me'      => ['user_id' => $user['id'] ?? null] + $me,
+    ]);
+});
+
+// GET /api/v1/app/config - versions and switches for the app (V3-04). From
+// 1.8.0 the app reads it at launch and on foreground: below latestVersion an
+// "Update available" banner, below minVersion a blocking "Update required".
+$router->add('GET', '/api/v1/app/config', function () {
+    header('Cache-Control: public, max-age=300');
+    Response::json(AppConfig::payload());
+});
+
+// GET /api/v1/channels/{cityId}/people - the Chat people row (V3-04, SPEC 9.6):
+// {nearby, hiNow, arrivalsWeek, tonight: [{id, title, startsAt, going}], min}.
+// Counts below PeopleCounts::MIN are null. Open to guests, cached 30 s.
+$router->add('GET', '/api/v1/channels/{cityId}/people', function (array $params) {
+    spotsRateLimit();
+    $n = filter_var($params['cityId'], FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+    if ($n === false || CityRepository::findById($n) === null) {
+        Response::json(['error' => 'Unknown city', 'code' => 'invalid_city'], 404);
+    }
+    Response::json(PeopleCounts::forCity($n));
 });
 
 // GET /api/v1/challenges/{challengeId}/acceptances
@@ -14484,7 +14564,7 @@ const DAILY_VOTE_ERRORS = [
  */
 function dailyVoteTarget(array $params): array
 {
-    $user = AuthService::requireAuth();
+    $user = AuthService::requireAuth('vote');
     if (!DbRateLimiter::allow('daily_vote|' . $user['id'], 30, 600)) {
         Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
     }
@@ -14581,7 +14661,7 @@ function dailyTwistAction(callable $fn): mixed
 /** Auth, ban check and rate limit for twist proposal writes. */
 function dailyTwistWriter(): array
 {
-    $user = AuthService::requireAuth();
+    $user = AuthService::requireAuth('proposal');
     if (BanRepository::isBanned($user['guest_id'] ?? null, Request::ip())) {
         Response::json(['error' => 'You can no longer post here.', 'code' => 'banned'], 403);
     }
@@ -14644,7 +14724,7 @@ function dailyProposalAction(callable $fn): mixed
 // POST /api/v1/daily/proposals {text, theme, why?, twistText?} - propose a Daily
 // Challenge (registered users, one pending at a time). Reviewed in the back office.
 $router->add('POST', '/api/v1/daily/proposals', function () {
-    $user = AuthService::requireAuth();
+    $user = AuthService::requireAuth('proposal');
     if (BanRepository::isBanned($user['guest_id'] ?? null, Request::ip())) {
         Response::json(['error' => 'You can no longer post here.', 'code' => 'banned'], 403);
     }
@@ -14674,7 +14754,7 @@ $router->add('DELETE', '/api/v1/daily/proposals/{id}', function (array $params) 
 // plus my own places in review). Places only, never a person; the position is
 // neither stored nor logged.
 $router->add('GET', '/api/v1/daily/places/nearby', function () {
-    $user = AuthService::requireAuth();
+    $user = AuthService::requireAuth('proof');
     if (!DbRateLimiter::allow('daily_nearby|' . $user['id'], 60, 600)) {
         Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
     }
@@ -14819,7 +14899,7 @@ $router->add('GET', '/api/v1/spots/{id}', function (array $params) {
 
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.
 $router->add('POST', '/api/v1/daily/proofs', function () {
-    $user = AuthService::requireAuth();
+    $user = AuthService::requireAuth('proof');
     if (!DbRateLimiter::allow('daily_proof|' . $user['id'], 10, 3600)) {
         Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
     }
@@ -14850,7 +14930,7 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
 // PATCH /api/v1/daily/proofs/{id} - edit my proof while its challenge is active.
 // Any edit sends it back to moderation.
 $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
-    $user  = AuthService::requireAuth();
+    $user  = AuthService::requireAuth('proof');
     $proof = dailyOwnProof($params['id'], $user);
     if ($proof['moderation_status'] === 'removed') {
         Response::json(['error' => 'This proof was removed by a moderator.', 'code' => 'forbidden'], 403);
