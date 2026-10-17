@@ -1,54 +1,66 @@
-import { Modal, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Modal, Text, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { formatAmount } from './currency';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
-import { MEDALS } from './DailyProofTile';
+import { RankMedal } from './RankMedal';
+import { Chip, IconButton, ModeLabel } from '@/ui';
 import type { DailyProof } from '@/types';
 
 /** Full-screen photo of one proof with its author, caption, price, place, local badge and vote. */
 export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null; onClose: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   if (!proof) return null;
   const name = proof.user.displayName || proof.user.username || '';
   return (
     <Modal visible animationType="fade" onRequestClose={onClose} presentationStyle="fullScreen">
       <SafeAreaView style={styles.wrap}>
-        <TouchableOpacity style={styles.close} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="close" size={26} color="#fff" />
-        </TouchableOpacity>
+        <IconButton icon="close" tone="onPhoto" onPress={onClose} label={t('back')} style={styles.close} />
         <Image source={{ uri: proof.photoUrl }} style={styles.photo} contentFit="contain" />
         <View style={styles.meta}>
           <View style={styles.nameRow}>
-            <Text style={styles.name}>
-              {name} · {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
-              {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
-            </Text>
+            <Text style={styles.name}>{name}</Text>
+            <ModeLabel mode={proof.isLocal ? 'local' : 'traveler'} label={proof.isLocal ? t('local') : t('traveler')} />
             {proof.user.localPass && <LocalPassBadge label onDark />}
             {proof.isEarly && <EarlyBadge onDark />}
           </View>
+          {proof.city && <Text style={styles.extra}>{localizeCityName(proof.city.name)}</Text>}
           {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
-            <Text style={styles.badge}>
-              {proof.worldRank !== null && proof.worldRank <= 3 ? `${MEDALS[proof.worldRank - 1]} ${t('results.worldRank', { rank: proof.worldRank })}` : ''}
-              {proof.worldRank !== null && proof.worldRank <= 3 && proof.validatedByLocal ? '  ·  ' : ''}
-              {proof.validatedByLocal ? `✓ ${t('validatedByLocal')}` : ''}
-            </Text>
+            <View style={styles.nameRow}>
+              {proof.worldRank !== null && proof.worldRank <= 3 && (
+                <View style={styles.rankRow}>
+                  <RankMedal rank={proof.worldRank} size={22} />
+                  <Text style={styles.rankText}>{t('results.worldRank', { rank: proof.worldRank })}</Text>
+                </View>
+              )}
+              {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
+            </View>
           )}
           {!!proof.caption && <Text style={styles.caption}>{proof.caption}</Text>}
           {(proof.price || proof.place) && (
-            <Text style={styles.extra}>
-              {proof.price ? `💸 ${formatAmount(proof.price.amount, i18n.language)} ${proof.price.currency}` : ''}
-              {proof.price && proof.place ? '   ' : ''}
-              {proof.place ? `📍 ${proof.place.name || t('unnamedPlace')}` : ''}
-            </Text>
+            <View style={styles.nameRow}>
+              {proof.price && (
+                <View style={styles.extraRow}>
+                  <Ionicons name="cash-outline" size={15} color={colors.onCaramelMuted} />
+                  <Text style={styles.extra}>{formatAmount(proof.price.amount, i18n.language)} {proof.price.currency}</Text>
+                </View>
+              )}
+              {proof.place && (
+                <View style={styles.extraRow}>
+                  <Ionicons name="location-outline" size={15} color={colors.onCaramelMuted} />
+                  <Text style={styles.extra}>{proof.place.name || t('unnamedPlace')}</Text>
+                </View>
+              )}
+            </View>
           )}
           {proof.status === 'approved' && (
             <DailyVoteButton proofId={proof.id} date={proof.date} cityName={proof.city?.name ?? null} variant="viewer" />
@@ -59,15 +71,17 @@ export function DailyProofViewer({ proof, onClose }: { proof: DailyProof | null;
   );
 }
 
-// A photo viewer is dark in both themes, like every photo lightbox.
-const makeStyles = (_c: ThemeColors) => StyleSheet.create({
-  wrap:    { flex: 1, backgroundColor: '#000' },
-  close:   { position: 'absolute', top: 54, right: 16, zIndex: 2, padding: 8 },
-  photo:   { flex: 1 },
-  meta:    { padding: 16, gap: 6 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
-  name:    { color: '#fff', fontSize: FontSizes.sm, fontWeight: '700' },
-  caption: { color: '#fff', fontSize: FontSizes.sm },
-  extra:   { color: '#ccc', fontSize: FontSizes.xs },
-  badge:   { color: '#7ee2a8', fontSize: FontSizes.xs, fontWeight: '700' },
+// A photo viewer is dark in both themes, like every photo lightbox (fixed photo tokens).
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  wrap:     { flex: 1, backgroundColor: c.photoScrim },
+  close:    { position: 'absolute', top: 54, right: 16, zIndex: 2 },
+  photo:    { flex: 1 },
+  meta:     { padding: 16, gap: 8 },
+  nameRow:  { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6 },
+  name:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
+  rankRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  rankText: { color: c.white, fontSize: FontSizes.xs, fontWeight: '700' },
+  caption:  { color: c.white, fontSize: FontSizes.sm, fontWeight: '400' },
+  extraRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  extra:    { color: c.onCaramelMuted, fontSize: FontSizes.xs, fontWeight: '500' },
 });

@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Modal, View, Text, TextInput, FlatList, TouchableOpacity,
-  StyleSheet, Pressable, ActivityIndicator,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { fetchChannels } from '@/api/channels';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { EmptyState, Sheet, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { City } from '@/types';
 
@@ -70,97 +68,62 @@ export function LeaderboardCityPickerSheet({
   }, [cities, query]);
 
   return (
-    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={styles.sheet}>
-        <View style={styles.handle} />
+    <Sheet visible={visible} onClose={onClose} closeLabel={t('cancel', { ns: 'common' })} style={styles.sheet}>
+      <TextField
+        variant="search"
+        value={query}
+        onChangeText={setQuery}
+        onClear={() => setQuery('')}
+        clearLabel={t('clear', { ns: 'common' })}
+        placeholder={t('leaderboard.cityPicker.searchPlaceholder', { defaultValue: 'Search cities…' })}
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="search"
+      />
 
-        <View style={styles.header}>
-          <Ionicons name="search" size={18} color={colors.muted2} />
-          <TextInput
-            style={styles.search}
-            value={query}
-            onChangeText={setQuery}
-            placeholder={t('leaderboard.cityPicker.searchPlaceholder', { defaultValue: 'Search cities…' })}
-            placeholderTextColor={colors.muted2}
-            autoCapitalize="none"
-            autoCorrect={false}
-            returnKeyType="search"
-          />
-          <TouchableOpacity onPress={onClose} hitSlop={12} accessibilityLabel={t('cancel', { ns: 'common' })}>
-            <Ionicons name="close" size={22} color={colors.muted} />
-          </TouchableOpacity>
-        </View>
-
-        {loading ? (
-          <View style={styles.empty}><ActivityIndicator color={colors.accent} /></View>
-        ) : filtered.length === 0 ? (
-          <View style={styles.empty}>
-            <Text style={styles.emptyText}>
-              {t('leaderboard.cityPicker.empty', { defaultValue: 'No cities match.' })}
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            data={filtered}
-            keyExtractor={(c) => c.channelId}
-            keyboardShouldPersistTaps="handled"
-            renderItem={({ item }) => {
-              const isSelected = item.channelId === selectedChannelId;
-              const flag = countryToFlag(item.country);
-              return (
-                <TouchableOpacity
-                  style={[styles.row, isSelected && styles.rowSelected]}
-                  onPress={() => onSelect(item.channelId, item)}
-                  activeOpacity={0.7}
-                >
-                  <Text style={styles.flag}>{flag || '🌍'}</Text>
-                  <Text style={[styles.cityName, isSelected && styles.cityNameSelected]} numberOfLines={1}>
-                    {localizeCityName(item.name)}
-                  </Text>
-                  {isSelected && <Ionicons name="checkmark" size={18} color="#FF7A3C" />}
-                </TouchableOpacity>
-              );
-            }}
-            ItemSeparatorComponent={() => <View style={styles.sep} />}
-          />
-        )}
-      </View>
-    </Modal>
+      {loading ? (
+        <View style={styles.empty}><ActivityIndicator color={colors.primary} /></View>
+      ) : filtered.length === 0 ? (
+        <EmptyState body={t('leaderboard.cityPicker.empty', { defaultValue: 'No cities match.' })} />
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(c) => c.channelId}
+          keyboardShouldPersistTaps="handled"
+          style={styles.list}
+          renderItem={({ item }) => {
+            const isSelected = item.channelId === selectedChannelId;
+            const flag = countryToFlag(item.country);
+            return (
+              <TouchableOpacity
+                style={styles.row}
+                onPress={() => onSelect(item.channelId, item)}
+                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isSelected }}
+              >
+                {flag ? <Text style={styles.flag}>{flag}</Text> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
+                <Text style={[styles.cityName, isSelected && styles.cityNameSelected]} numberOfLines={1}>
+                  {localizeCityName(item.name)}
+                </Text>
+                {isSelected && <Ionicons name="checkmark" size={20} color={colors.primaryText} />}
+              </TouchableOpacity>
+            );
+          }}
+          ItemSeparatorComponent={() => <View style={styles.sep} />}
+        />
+      )}
+    </Sheet>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
-  sheet: {
-    position: 'absolute', left: 0, right: 0, bottom: 0,
-    maxHeight: '70%',
-    backgroundColor: c.bg2,
-    borderTopLeftRadius: Radius.lg, borderTopRightRadius: Radius.lg,
-    paddingBottom: Spacing.xl,
-  },
-  handle: {
-    alignSelf: 'center', width: 40, height: 4, borderRadius: 2,
-    backgroundColor: c.overlayStrong, marginTop: 8, marginBottom: 8,
-  },
-  header: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.sm,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.border,
-  },
-  search: {
-    flex: 1, fontSize: FontSizes.md, color: c.text,
-    paddingVertical: Spacing.xs,
-  },
-  empty: { padding: Spacing.lg, alignItems: 'center' },
-  emptyText: { color: c.muted, fontSize: FontSizes.sm },
-  row: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
-  },
-  rowSelected: { backgroundColor: 'rgba(255,122,60,0.10)' },
-  flag: { fontSize: 22 },
-  cityName: { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  cityNameSelected: { color: '#FF7A3C' },
-  sep: { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 22 + Spacing.md },
+  sheet:            { maxHeight: '75%' },
+  list:             { flexGrow: 0 },
+  empty:            { padding: Spacing.lg, alignItems: 'center' },
+  row:              { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
+  flag:             { fontSize: 22 },
+  cityName:         { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.text },
+  cityNameSelected: { color: c.primaryText },
+  sep:              { height: 1, backgroundColor: c.line, marginLeft: 34 },
 });

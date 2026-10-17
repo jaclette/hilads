@@ -4,9 +4,9 @@
  */
 
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import i18n from '@/i18n';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 
@@ -32,25 +32,21 @@ export function relativeTime(raw?: string | null): string {
 export function NotifIcon({ type, unread }: { type: Notification['type']; unread: boolean }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  const iconName: React.ComponentProps<typeof Feather>['name'] =
-    type === 'dm_message'      ? 'message-circle' :
-    type === 'event_message'   ? 'message-square' :
-    type === 'event_join'      ? 'users'           :
-    type === 'new_event'       ? 'zap'             :
-    type === 'channel_message' ? 'hash'            :
-    type === 'city_join'       ? 'user-plus'       :
-    type === 'friend_added'    ? 'user-plus'       :
-    type === 'vibe_received'   ? 'star'            :
-    type === 'profile_view'    ? 'eye'             :
-    /* fallback */               'bell';
-
-  const color  = unread ? colors.white : colors.muted;
-  const bg     = unread ? 'rgba(255,122,60,0.15)' : colors.bg3;
-  const border = unread ? 'rgba(255,122,60,0.3)'  : colors.border;
+  const iconName: React.ComponentProps<typeof Ionicons>['name'] =
+    type === 'dm_message'      ? 'chatbubble-outline'   :
+    type === 'event_message'   ? 'chatbox-outline'      :
+    type === 'event_join'      ? 'people-outline'       :
+    type === 'new_event'       ? 'flash-outline'        :
+    type === 'channel_message' ? 'chatbubbles-outline'  :
+    type === 'city_join'       ? 'person-add-outline'   :
+    type === 'friend_added'    ? 'person-add-outline'   :
+    type === 'vibe_received'   ? 'star-outline'         :
+    type === 'profile_view'    ? 'eye-outline'          :
+    /* fallback */               'notifications-outline';
 
   return (
-    <View style={[styles.notifIcon, { backgroundColor: bg, borderColor: border }]}>
-      <Feather name={iconName} size={20} color={color} />
+    <View style={[styles.notifIcon, unread && styles.notifIconUnread]}>
+      <Ionicons name={iconName} size={20} color={unread ? colors.primaryOnTint : colors.muted} />
     </View>
   );
 }
@@ -67,8 +63,8 @@ export function NotifRow({ notif, onPress }: { notif: Notification; onPress: () 
       style={[styles.notifRow, unread && styles.notifRowUnread]}
       onPress={onPress}
       activeOpacity={0.7}
+      accessibilityRole="button"
     >
-      {unread && <View style={styles.accentBar} />}
 
       <NotifIcon type={notif.type} unread={unread} />
 
@@ -99,52 +95,17 @@ export function NotifSeparator() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  notifRow: {
-    flexDirection:     'row',
-    alignItems:        'flex-start',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    gap:               Spacing.sm,
-    position:          'relative',
-  },
-  notifRowUnread: {
-    backgroundColor: 'rgba(255,122,60,0.04)',
-  },
-  accentBar: {
-    position:        'absolute',
-    left:            0,
-    top:             12,
-    bottom:          12,
-    width:           3,
-    borderRadius:    2,
-    backgroundColor: c.accent,
-  },
-  notifIcon: {
-    width:          44,
-    height:         44,
-    borderRadius:   Radius.md,
-    borderWidth:    1,
-    alignItems:     'center',
-    justifyContent: 'center',
-    flexShrink:     0,
-  },
-  notifBody:        { flex: 1, gap: 4 },
+  notifRow:         { flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal: Spacing.md, paddingVertical: 14, gap: 12 },
+  notifRowUnread:   { backgroundColor: c.bg2 },
+  notifIcon:        { width: 44, height: 44, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2,
+                      alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  notifIconUnread:  { borderColor: c.primaryTint, backgroundColor: c.primaryTint },
+  notifBody:        { flex: 1, gap: 3 },
   notifTitle:       { fontSize: FontSizes.sm, fontWeight: '700', color: c.text, lineHeight: 20 },
   notifTitleRead:   { color: c.muted, fontWeight: '500' },
-  notifPreview:     { fontSize: FontSizes.sm, color: c.text, lineHeight: 18 },
-  notifPreviewRead: { color: c.muted2 },
-  notifTime:        { fontSize: FontSizes.xs, color: c.muted2, marginTop: 2 },
-  unreadDot: {
-    width:           10,
-    height:          10,
-    borderRadius:    5,
-    backgroundColor: c.accent,
-    marginTop:       6,
-    flexShrink:      0,
-  },
-  separator: {
-    height:           1,
-    backgroundColor:  c.border,
-    marginLeft:       Spacing.md + 44 + Spacing.sm,
-  },
+  notifPreview:     { fontSize: FontSizes.sm, fontWeight: '400', color: c.text, lineHeight: 18 },
+  notifPreviewRead: { color: c.muted },
+  notifTime:        { fontSize: FontSizes.xs, fontWeight: '500', color: c.muted, marginTop: 2 },
+  unreadDot:        { width: 10, height: 10, borderRadius: Radius.full, backgroundColor: c.primary, marginTop: 6, flexShrink: 0 },
+  separator:        { height: 1, backgroundColor: c.line, marginLeft: Spacing.md + 44 + 12 },
 });

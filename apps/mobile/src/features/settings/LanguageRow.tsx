@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { setLocale, SUPPORTED, DEFAULT_LOCALE, type Locale } from '@/i18n';
+import { ListRow, Sheet } from '@/ui';
 
 // Language names are always shown in their own language (not translated), the
 // standard convention so a user can recognize their language regardless of the
@@ -54,14 +55,10 @@ const LANG_FLAGS: Record<Locale, string> = {
 };
 
 /**
- * Language picker. `trigger` chooses the affordance:
- *   - 'row'  (default) - a settings-style row (flag + "Language" + current value).
- *   - 'flag' - a compact flag button, used in the profile header.
- * Both open the same modal list. `card` wraps the row in a standalone card
- * (guest layout). The list scales to any number of locales (scrollable) and
- * shows a flag beside each name.
+ * The Language row of Settings: opens a sheet listing every locale, each name
+ * in its own language with its flag; the current one is checked.
  */
-export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean; trigger?: 'row' | 'flag' }) {
+export function LanguageRow({ divider = false }: { divider?: boolean }) {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
 
@@ -77,141 +74,42 @@ export function LanguageRow({ card = false, trigger = 'row' }: { card?: boolean;
     if (code !== current) void setLocale(code);
   }
 
-  const triggerEl = trigger === 'flag' ? (
-    <TouchableOpacity
-      style={styles.flagBtn}
-      onPress={() => setOpen(true)}
-      activeOpacity={0.7}
-      accessibilityLabel={t('language')}
-    >
-      <Text style={styles.flagBtnEmoji}>{LANG_FLAGS[current]}</Text>
-      <Ionicons name="chevron-down" size={12} color={colors.muted} />
-    </TouchableOpacity>
-  ) : (
-    <TouchableOpacity style={styles.row} onPress={() => setOpen(true)} activeOpacity={0.7}>
-      <Ionicons name="language-outline" size={18} color={colors.muted} />
-      <Text style={styles.label}>{t('language')}</Text>
-      <Text style={styles.value}>{LANG_FLAGS[current]} {LANG_NAMES[current]}</Text>
-      <Ionicons name="chevron-forward" size={16} color={colors.muted} />
-    </TouchableOpacity>
-  );
-
   return (
     <>
-      {card ? <View style={styles.card}>{triggerEl}</View> : triggerEl}
-      <Modal
-        transparent
-        visible={open}
-        animationType="fade"
-        statusBarTranslucent
-        onRequestClose={() => setOpen(false)}
-      >
-        <View style={styles.modalRoot}>
-          <Pressable style={StyleSheet.absoluteFill} onPress={() => setOpen(false)} />
-          <View style={styles.sheet}>
-            <Text style={styles.sheetTitle}>{t('language')}</Text>
-            {/* Numeric maxHeight gives the ScrollView a definite bound so it
-                sizes to content and scrolls - a percentage/auto height collapses
-                it to zero inside this content-sized sheet (RN flexShrink defaults to 0). */}
-            <ScrollView
-              style={{ maxHeight: height * 0.6 }}
-              contentContainerStyle={styles.sheetListContent}
-              showsVerticalScrollIndicator={false}
-            >
-              {SUPPORTED.map((code) => {
-                const active = code === current;
-                return (
-                  <TouchableOpacity
-                    key={code}
-                    style={styles.option}
-                    activeOpacity={0.7}
-                    onPress={() => choose(code)}
-                  >
-                    <Text style={styles.optionFlag}>{LANG_FLAGS[code]}</Text>
-                    <Text style={[styles.optionText, active && styles.optionTextActive]}>
-                      {LANG_NAMES[code]}
-                    </Text>
-                    {active && <Ionicons name="checkmark" size={18} color={colors.accent} />}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      <ListRow icon="language-outline" title={t('language')} value={`${LANG_FLAGS[current]} ${LANG_NAMES[current]}`}
+               divider={divider} onPress={() => setOpen(true)} />
+      <Sheet visible={open} onClose={() => setOpen(false)} closeLabel={t('close')}>
+        <Text style={styles.sheetTitle} accessibilityRole="header">{t('language')}</Text>
+        {/* Numeric maxHeight gives the ScrollView a definite bound so it
+            sizes to content and scrolls inside the content-sized sheet. */}
+        <ScrollView style={{ maxHeight: height * 0.6 }} showsVerticalScrollIndicator={false}>
+          {SUPPORTED.map((code) => {
+            const active = code === current;
+            return (
+              <TouchableOpacity
+                key={code}
+                style={styles.option}
+                activeOpacity={0.7}
+                onPress={() => choose(code)}
+                accessibilityRole="button"
+                accessibilityState={{ selected: active }}
+              >
+                <Text style={styles.optionFlag}>{LANG_FLAGS[code]}</Text>
+                <Text style={[styles.optionText, active && styles.optionTextActive]}>{LANG_NAMES[code]}</Text>
+                {active && <Ionicons name="checkmark" size={20} color={colors.primaryText} />}
+              </TouchableOpacity>
+            );
+          })}
+        </ScrollView>
+      </Sheet>
     </>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  card: {
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      Radius.lg,
-    paddingHorizontal: Spacing.md,
-    marginHorizontal:  Spacing.lg,
-    marginTop:         Spacing.md,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    gap:           Spacing.sm,
-    paddingVertical: Spacing.md,
-  },
-  label: { flex: 1, fontSize: FontSizes.md, color: c.text },
-  value: { fontSize: FontSizes.sm, color: c.muted },
-
-  // Compact flag button (profile header)
-  flagBtn: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               3,
-    paddingHorizontal: 8,
-    paddingVertical:   5,
-    borderRadius:      Radius.full,
-    borderWidth:       1,
-    borderColor:       c.border,
-    backgroundColor:   c.bg2,
-  },
-  flagBtnEmoji: { fontSize: 18, lineHeight: 22 },
-
-  modalRoot: {
-    flex:            1,
-    justifyContent:  'center',
-    alignItems:      'center',
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    padding:         Spacing.xl,
-  },
-  sheet: {
-    width:           '100%',
-    maxWidth:        340,
-    maxHeight:       '80%',
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    borderRadius:    Radius.lg,
-    paddingVertical: Spacing.sm,
-  },
-  sheetTitle: {
-    fontSize:      FontSizes.sm,
-    fontWeight:    '700',
-    color:         c.muted,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.sm,
-    paddingBottom:     Spacing.xs,
-  },
-  sheetListContent: { paddingBottom: Spacing.xs },
-  option: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               Spacing.sm,
-    paddingVertical:   Spacing.md,
-    paddingHorizontal: Spacing.md,
-  },
+  sheetTitle:       { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, paddingVertical: 4 },
+  option:           { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52 },
   optionFlag:       { fontSize: 20, lineHeight: 24 },
-  optionText:       { flex: 1, fontSize: FontSizes.md, color: c.text },
-  optionTextActive: { color: c.accent, fontWeight: '700' },
+  optionText:       { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text },
+  optionTextActive: { color: c.primaryText, fontWeight: '700' },
 });

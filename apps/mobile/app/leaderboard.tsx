@@ -3,21 +3,19 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View, Text, FlatList, ActivityIndicator, TouchableOpacity, StyleSheet, RefreshControl,
 } from 'react-native';
-import { Image } from 'expo-image';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { fetchLeaderboard } from '@/api/leaderboard';
-import { avatarColor } from '@/lib/avatarColors';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { countryToFlag } from '@/lib/countryFlag';
 import { localizeCityName } from '@/i18n/cityName';
 import { cityDemonym } from '@/lib/cityDemonym';
 import { LeaderboardCityPickerSheet } from '@/features/challenge/LeaderboardCityPickerSheet';
-import { FontSizes, Spacing, Radius, Gradients, buildLeaderboardUrl, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Spacing, Radius, buildLeaderboardUrl, type ThemeColors } from '@/constants';
+import { RankMedal } from '@/features/daily/RankMedal';
+import { Avatar, Button, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useShareToCity } from '@/lib/useShareToCity';
 import { useShareToWorld } from '@/lib/useShareToWorld';
@@ -149,12 +147,8 @@ export default function LeaderboardScreen() {
   }, [rankShare, scope, shareToWorld, shareToCity]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <Header
-        title={headerTitle}
-        onBack={() => router.back()}
-        t={t}
-      />
+    <Screen>
+      <ScreenHeader title={headerTitle} compact />
 
       <Selectors
         scope={scope}      onScope={setScope}
@@ -166,29 +160,19 @@ export default function LeaderboardScreen() {
       />
 
       {rankShare && (
-        <TouchableOpacity
-          style={styles.shareRankPill}
-          onPress={onShareRank}
-          activeOpacity={0.85}
-          accessibilityRole="button"
-          accessibilityLabel={t('leaderboard.share.cta')}
-        >
-          <Text style={styles.shareRankText} numberOfLines={1}>📣 {t('leaderboard.share.cta')}</Text>
-        </TouchableOpacity>
+        <Button variant="secondary" size="sm" icon="megaphone-outline" label={t('leaderboard.share.cta')} onPress={onShareRank}
+                style={styles.shareRank} />
       )}
 
       {loading && !data ? (
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : error ? (
         <View style={styles.emptyWrap}>
-          <Text style={styles.emptyEmoji}>🤷</Text>
-          <Text style={styles.emptyBody}>{error}</Text>
+          <EmptyState icon="cloud-offline-outline" body={error} />
         </View>
       ) : entries.length === 0 ? (
         <View style={styles.emptyWrap}>
-          <Text style={styles.emptyEmoji}>🥇</Text>
-          <Text style={styles.emptyTitle}>{t('leaderboard.empty.title')}</Text>
-          <Text style={styles.emptyBody}>{t('leaderboard.empty.body')}</Text>
+          <EmptyState icon="trophy-outline" title={t('leaderboard.empty.title')} body={t('leaderboard.empty.body')} />
         </View>
       ) : (
         <FlatList
@@ -197,7 +181,7 @@ export default function LeaderboardScreen() {
           // User rows always have user_id.
           keyExtractor={(e) => e.user_id ?? e.city_id ?? `r${e.rank}`}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
           renderItem={({ item }) => {
             if (scope === 'cities') {
               const isMyCity = !!city?.channelId && item.city_id === `city_${city.channelId}`;
@@ -253,24 +237,8 @@ export default function LeaderboardScreen() {
               t={t}
             />
           ) : (
-            <TouchableOpacity
-              activeOpacity={0.85}
-              onPress={() => router.navigate('/(tabs)/today' as never)}
-              accessibilityRole="button"
-              accessibilityLabel={t('leaderboard.me.unranked')}
-            >
-              <LinearGradient
-                colors={Gradients.primary.colors}
-                start={Gradients.primary.start}
-                end={Gradients.primary.end}
-                style={styles.unrankedCta}
-              >
-                <Text style={styles.unrankedCtaText}>
-                  🔥 {t('leaderboard.me.unranked')}
-                </Text>
-                <Ionicons name="arrow-forward" size={18} color={colors.white} />
-              </LinearGradient>
-            </TouchableOpacity>
+            <Button icon="flame-outline" label={t('leaderboard.me.unranked')} onPress={() => router.navigate('/(tabs)/today' as never)}
+                    style={styles.unrankedCta} />
           )}
         </View>
       )}
@@ -287,30 +255,11 @@ export default function LeaderboardScreen() {
         }}
         onClose={() => setCityPickerOpen(false)}
       />
-    </SafeAreaView>
+    </Screen>
   );
 }
 
-// ── Header + selectors ───────────────────────────────────────────────────────
-
-function Header({
-  title, onBack, t,
-}: { title: string; onBack: () => void; t: (k: string, opts?: { ns?: string }) => string }) {
-  const { colors } = useTheme();
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <View style={styles.nav}>
-      <TouchableOpacity style={styles.backPill} onPress={onBack} activeOpacity={0.75}>
-        <Ionicons name="chevron-back" size={18} color={colors.text} />
-        <Text style={styles.backPillText}>{t('back', { ns: 'common' })}</Text>
-      </TouchableOpacity>
-      <View style={styles.navCenter}>
-        <Text style={styles.navTitle} numberOfLines={1}>{title}</Text>
-      </View>
-      <View style={{ width: 70 }} />
-    </View>
-  );
-}
+// ── Selectors ────────────────────────────────────────────────────────────────
 
 function Selectors({
   scope, onScope, period, onPeriod, cityLabel, cityCountry, onCityTap, t,
@@ -320,164 +269,47 @@ function Selectors({
   period: LeaderboardPeriod;
   onPeriod: (v: LeaderboardPeriod) => void;
   cityLabel: string;
-  /** ISO-2 country code for the displayed city - drives the flag emoji
-   *  prefix. Null when neither the picker nor the user's current city
-   *  resolves a country (rare; geolocation usually populates it). */
+  /** ISO-2 country code for the displayed city - drives the flag prefix.
+   *  Null when neither the picker nor the user's current city resolves a
+   *  country (rare; geolocation usually populates it). */
   cityCountry: string | null;
-  /** Provided when scope='city' - tapping the city segment opens the picker.
-   *  When scope='world', undefined and the tap behaves like a normal scope
-   *  switch (back to city). */
+  /** Provided when scope='city' - opens the city picker. */
   onCityTap?: () => void;
   t: (k: string) => string;
 }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(makeStyles);
-  // Primary toggle (city ⇄ world ⇄ cities) - custom layout instead of the
-  // generic Segmented because the city pill carries a chevron when active
-  // to signal it's tappable (opens the picker).
-  const cityActive   = scope === 'city';
-  const worldActive  = scope === 'world';
-  const citiesActive = scope === 'cities';
-  const cityFlag     = cityCountry ? countryToFlag(cityCountry) : '';
+  const cityFlag = cityCountry ? countryToFlag(cityCountry) : '';
   return (
     <View style={styles.selectorsWrap}>
-      <View style={styles.segWrap}>
-        <TouchableOpacity
-          style={[styles.segItem, styles.segItemCity]}
-          onPress={() => (cityActive && onCityTap ? onCityTap() : onScope('city'))}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityState={{ selected: cityActive }}
-        >
-          {cityActive && (
-            <LinearGradient
-              colors={Gradients.primary.colors}
-              start={Gradients.primary.start}
-              end={Gradients.primary.end}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-          {/* Flag + chevron never shrink; the city NAME truncates so a long
-              name (e.g. "Ho Chi Minh City") can't push them out of view. */}
-          <View style={styles.cityLabelRow}>
-            {cityFlag ? (
-              <Text style={[styles.segText, cityActive && styles.segTextActiveGradient]}>{cityFlag} </Text>
-            ) : null}
-            <Text
-              style={[styles.segText, cityActive && styles.segTextActiveGradient, styles.cityName]}
-              numberOfLines={1}
-            >
-              {cityLabel}
-            </Text>
-            {cityActive && (
-              <Ionicons name="chevron-down" size={14} color={colors.white} style={{ marginLeft: 4 }} />
-            )}
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.segItem}
-          onPress={() => onScope('cities')}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityState={{ selected: citiesActive }}
-        >
-          {citiesActive && (
-            <LinearGradient
-              colors={Gradients.primary.colors}
-              start={Gradients.primary.start}
-              end={Gradients.primary.end}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-          <Text
-            style={[styles.segText, citiesActive && styles.segTextActiveGradient]}
-            numberOfLines={1}
-          >
-            🏙️ {t('leaderboard.scope.cities')}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.segItem}
-          onPress={() => onScope('world')}
-          activeOpacity={0.8}
-          accessibilityRole="button"
-          accessibilityState={{ selected: worldActive }}
-        >
-          {worldActive && (
-            <LinearGradient
-              colors={Gradients.primary.colors}
-              start={Gradients.primary.start}
-              end={Gradients.primary.end}
-              style={StyleSheet.absoluteFill}
-            />
-          )}
-          <Text
-            style={[styles.segText, worldActive && styles.segTextActiveGradient]}
-            numberOfLines={1}
-          >
-            🌐 {t('leaderboard.scope.world')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Segmented
-        items={[
-          { value: 'month',   label: t('leaderboard.period.month') },
-          { value: 'alltime', label: t('leaderboard.period.alltime') },
+      {/* Scope: My city ⇄ Cities ⇄ World. Tapping "My city" again opens the picker. */}
+      <Segmented<LeaderboardScope>
+        options={[
+          { key: 'city',   label: t('leaderboard.scope.city') },
+          { key: 'cities', label: t('leaderboard.scope.cities') },
+          { key: 'world',  label: t('leaderboard.scope.world') },
         ]}
-        active={period}
-        onChange={(v) => onPeriod(v as LeaderboardPeriod)}
+        value={scope}
+        onChange={(v) => (v === 'city' && scope === 'city' && onCityTap ? onCityTap() : onScope(v))}
       />
-    </View>
-  );
-}
 
-function Segmented<T extends string>({
-  items, active, onChange, gradient = false,
-}: {
-  items:  Array<{ value: T; label: string }>;
-  active: T;
-  onChange: (v: T) => void;
-  /** When true, the active pill renders the orange gradient (primary toggle).
-   *  Otherwise active is a flat lighter background (secondary toggle). */
-  gradient?: boolean;
-}) {
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <View style={styles.segWrap}>
-      {items.map(it => {
-        const isActive = it.value === active;
-        return (
-          <TouchableOpacity
-            key={it.value}
-            style={[styles.segItem, isActive && (gradient ? null : styles.segItemActiveFlat)]}
-            onPress={() => onChange(it.value)}
-            activeOpacity={0.8}
-            accessibilityRole="button"
-            accessibilityState={{ selected: isActive }}
-          >
-            {isActive && gradient && (
-              <LinearGradient
-                colors={Gradients.primary.colors}
-                start={Gradients.primary.start}
-                end={Gradients.primary.end}
-                style={StyleSheet.absoluteFill}
-              />
-            )}
-            <Text
-              style={[
-                styles.segText,
-                isActive && (gradient ? styles.segTextActiveGradient : styles.segTextActiveFlat),
-              ]}
-              numberOfLines={1}
-            >
-              {it.label}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+      {/* The city being shown (My city scope): tap to pick another one. */}
+      {onCityTap && (
+        <TouchableOpacity style={styles.cityPick} onPress={onCityTap} activeOpacity={0.8} accessibilityRole="button" accessibilityLabel={cityLabel}>
+          {cityFlag ? <Text style={styles.cityFlag}>{cityFlag}</Text> : <Ionicons name="location-outline" size={16} color={colors.muted} />}
+          <Text style={styles.cityPickText} numberOfLines={1}>{cityLabel}</Text>
+          <Ionicons name="chevron-down" size={16} color={colors.muted} />
+        </TouchableOpacity>
+      )}
+
+      <Segmented<LeaderboardPeriod>
+        options={[
+          { key: 'month',   label: t('leaderboard.period.month') },
+          { key: 'alltime', label: t('leaderboard.period.alltime') },
+        ]}
+        value={period}
+        onChange={onPeriod}
+      />
     </View>
   );
 }
@@ -510,20 +342,8 @@ function Row({
       accessibilityRole="button"
       accessibilityLabel={entry.displayName}
     >
-      <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
-      <View style={[styles.avatar, { backgroundColor: avatarColor(entry.user_id ?? entry.displayName ?? '?') }]}>
-        {entry.thumbAvatarUrl ? (
-          <Image
-            source={{ uri: thumbUrl(entry.thumbAvatarUrl) ?? undefined }}
-            style={StyleSheet.absoluteFill}
-            cachePolicy="memory-disk"
-            contentFit="cover"
-            transition={120}
-          />
-        ) : (
-          <Text style={styles.avatarLetter}>{(entry.displayName?.[0] ?? '?').toUpperCase()}</Text>
-        )}
-      </View>
+      <RankMedal rank={entry.rank} size={30} style={styles.rank} />
+      <Avatar uri={entry.thumbAvatarUrl ? thumbUrl(entry.thumbAvatarUrl) : null} name={entry.displayName || '?'} size={40} fallback="color" />
       <View style={styles.nameWrap}>
         <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
           {entry.displayName}
@@ -554,13 +374,14 @@ function CityRow({
   t: (k: string, opts?: Record<string, unknown>) => string;
 }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const flag      = entry.cityCountry ? countryToFlag(entry.cityCountry) : '';
   const cityLabel = entry.cityName ? localizeCityName(entry.cityName) : '-';
   return (
     <View style={[styles.row, isMe && styles.rowMe]}>
-      <Text style={[styles.rank, isMe && styles.rankMe]}>#{entry.rank}</Text>
+      <RankMedal rank={entry.rank} size={30} style={styles.rank} />
       <View style={styles.cityFlagBox}>
-        <Text style={styles.cityFlagText}>{flag || '🏳️'}</Text>
+        {flag ? <Text style={styles.cityFlagText}>{flag}</Text> : <Ionicons name="globe-outline" size={20} color={colors.muted} />}
       </View>
       <View style={styles.nameWrap}>
         <Text style={[styles.name, isMe && styles.nameMe]} numberOfLines={1}>
@@ -577,141 +398,38 @@ function CityRow({
 // ── Styles ───────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  shareRankPill: {
-    alignSelf: 'center', marginTop: Spacing.sm, marginBottom: Spacing.xs,
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    paddingHorizontal: 14, paddingVertical: 8, borderRadius: Radius.full,
-    backgroundColor: 'rgba(255,122,60,0.14)', borderWidth: 1, borderColor: 'rgba(255,122,60,0.5)',
-  },
-  shareRankText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.accent },
-
-  nav: {
-    flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm,
-    borderBottomWidth: 1, borderBottomColor: c.border,
-  },
-  backPill: {
-    flexDirection: 'row', alignItems: 'center', gap: 4,
-    paddingHorizontal: 10, paddingVertical: 6,
-    borderRadius: Radius.full,
-    backgroundColor: c.overlay,
-    borderWidth: 1, borderColor: c.overlayStrong,
-  },
-  backPillText: { color: c.text, fontSize: FontSizes.sm, fontWeight: '700' },
-  navCenter:    { flex: 1, alignItems: 'center' },
-  navTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
+  shareRank: { alignSelf: 'center', marginBottom: Spacing.xs },
 
   // Selectors
-  selectorsWrap: {
-    paddingHorizontal: Spacing.md,
-    paddingTop:    Spacing.sm,
-    paddingBottom: Spacing.sm,
-    gap: Spacing.sm,
-  },
-  segWrap: {
-    flexDirection: 'row',
-    backgroundColor: c.overlayWeak,
-    borderRadius: Radius.full,
-    padding: 4,
-    gap: 4,
-  },
-  segItem: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderRadius: Radius.full,
-    overflow: 'hidden',
-    alignItems: 'center', justifyContent: 'center',
-  },
-  // The city segment carries the longest content (flag + city name + chevron),
-  // so give it more room than the fixed-label Cities / World segments.
-  segItemCity: { flex: 1.9 },
-  segItemActiveFlat: { backgroundColor: c.overlayStrong },
-  segText: { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
-  // City segment: flag + name + chevron in a row. maxWidth caps the row to the
-  // segment so the shrinkable name truncates instead of clipping flag/chevron.
-  cityLabelRow: {
-    flexDirection: 'row',
-    alignItems:    'center',
-    justifyContent:'center',
-    maxWidth:      '100%',
-  },
-  cityName: { flexShrink: 1 },
-  segTextActiveFlat:    { color: c.text },
-  segTextActiveGradient:{ color: c.white, fontWeight: '800' },
+  selectorsWrap: { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, paddingBottom: Spacing.sm, gap: Spacing.sm },
+  cityPick:      { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44, maxWidth: '100%',
+                   paddingHorizontal: 14, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  cityFlag:      { fontSize: 16 },
+  cityPickText:  { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
 
   // List
-  list: { paddingVertical: Spacing.sm },
-  row: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm + 2,
-  },
-  rowMe: {
-    backgroundColor: 'rgba(255,122,60,0.08)',
-  },
-  rank:  { width: 44, color: c.muted2, fontSize: FontSizes.md, fontWeight: '800', textAlign: 'left' },
-  rankMe: { color: '#FF7A3C' },
-  avatar: {
-    width: 40, height: 40, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center',
-    overflow: 'hidden',
-  },
-  avatarLetter: { color: '#fff', fontWeight: '700', fontSize: 16 },
-  // Cities-scope: a flag glyph slots into the avatar position. Same 40×40
+  list:   { paddingVertical: Spacing.sm },
+  row:    { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, paddingHorizontal: Spacing.md, paddingVertical: 8 },
+  rowMe:  { backgroundColor: c.primaryTint },
+  rank:   { width: 36 },
+  // Cities-scope: a flag slots into the avatar position. Same 40×40
   // footprint so the row geometry doesn't drift between scopes.
-  cityFlagBox: {
-    width: 40, height: 40, borderRadius: 20,
-    alignItems: 'center', justifyContent: 'center',
-    backgroundColor: c.overlayWeak,
-  },
+  cityFlagBox:  { width: 40, height: 40, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center', backgroundColor: c.bg2,
+                  borderWidth: Border, borderColor: c.line },
   cityFlagText: { fontSize: 22, lineHeight: 26 },
   // PR13 - wrapper allowing the city subtitle to stack under the displayName.
-  // Replaces the previous direct `name` flex layout when showCity is on.
   nameWrap: { flex: 1, minWidth: 0, gap: 1 },
   name:     { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  citySub:  { fontSize: FontSizes.xs, color: c.muted2, fontWeight: '600' },
-  nameMe: { color: c.text, fontWeight: '800' },
+  citySub:  { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  nameMe:   { color: c.primaryOnTint, fontWeight: '800' },
   points:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.muted },
-  pointsMe: { color: '#FF7A3C', fontWeight: '800' },
-  sep: { height: 1, backgroundColor: c.border, marginLeft: Spacing.md + 44 + Spacing.md + 40 + Spacing.md },
+  pointsMe: { color: c.primaryOnTint, fontWeight: '800' },
+  sep:      { height: 1, backgroundColor: c.line, marginLeft: Spacing.md + 36 + 12 + 40 + 12 },
 
   // Pinned caller row
-  pinnedWrap: {
-    borderTopWidth: 1, borderTopColor: c.border,
-    backgroundColor: c.bg,
-  },
-  // Unranked CTA - replaces the previous muted-grey one-liner. Orange
-  // gradient pill that nudges the unranked viewer straight into the
-  // create-challenge flow. Branded primary gradient (#C24A38 → #B87228),
-  // arrow on the right so the affordance reads as "go do this".
-  unrankedCta: {
-    marginHorizontal:  Spacing.md,
-    marginVertical:    Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   14,
-    borderRadius:      Radius.full,
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               10,
-    shadowColor:       '#C24A38',
-    shadowOpacity:     0.35,
-    shadowRadius:      12,
-    shadowOffset:      { width: 0, height: 4 },
-    elevation:         4,
-  },
-  unrankedCtaText: {
-    color:      c.white,
-    fontSize:   FontSizes.md,
-    fontWeight: '800',
-    letterSpacing: -0.2,
-    textAlign:  'center',
-  },
+  pinnedWrap:  { borderTopWidth: Border, borderTopColor: c.line, backgroundColor: c.bg },
+  unrankedCta: { marginHorizontal: Spacing.md, marginVertical: Spacing.sm },
 
-  emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: Spacing.lg, gap: 12 },
-  emptyEmoji: { fontSize: 48 },
-  emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: c.text, textAlign: 'center' },
-  emptyBody:  { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
+  emptyWrap: { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
 });

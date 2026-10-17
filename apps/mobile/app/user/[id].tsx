@@ -41,6 +41,7 @@ import { fetchReportStatus, type ExistingReport } from '@/api/reports';
 import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
 import { DailyProfileStats } from '@/features/daily/DailyProfileStats';
+import { VIBE_ICONS } from '@/features/profile/vibes';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -94,10 +95,6 @@ const HANGOUT_ICONS: Record<string, IconName> = {
 
 const CHALLENGE_ICONS: Record<string, IconName> = {
   food: 'restaurant-outline', place: 'location-outline', culture: 'color-palette-outline', help: 'hand-left-outline',
-};
-
-const VIBE_ICONS: Record<string, IconName> = {
-  party: 'sparkles-outline', board_games: 'dice-outline', coffee: 'cafe-outline', music: 'headset-outline', food: 'restaurant-outline', chill: 'leaf-outline',
 };
 
 // ── Screen ────────────────────────────────────────────────────────────────────

@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -20,8 +19,9 @@ import { DailyStatusChip } from '@/features/daily/DailyStatusChip';
 import { formatAmount } from '@/features/daily/currency';
 import { dailyTrackProps } from '@/features/daily/track';
 import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
-import { themeLabel } from '@/features/daily/themes';
+import { THEME_ICON } from '@/features/today/format';
 import { ProposedBy } from '@/features/daily/DailyChannelCard';
+import { Avatar, Button, Card, Chip, EmptyState, Screen, ScreenHeader, Segmented } from '@/ui';
 import type { DailyProof } from '@/types';
 
 /**
@@ -52,7 +52,7 @@ export default function DailySheetScreen() {
 function Loading() {
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
-  return <SafeAreaView style={[styles.container, styles.center]}><ActivityIndicator color={colors.accent} /></SafeAreaView>;
+  return <Screen><View style={styles.center}><ActivityIndicator color={colors.primary} /></View></Screen>;
 }
 
 type Tab = 'world' | 'city' | 'top10';
@@ -151,14 +151,22 @@ function Sheet({ date, openProofId, source, initialTab }: {
     const places = sheet.practical.places;
     return (
       <View style={styles.headerWrap}>
-        <View style={styles.card}>
+        <Card variant="ticket" style={styles.card}>
           <View style={styles.topRow}>
-            <Text style={styles.kicker}>🔥 {t('kicker')}</Text>
-            <Text style={[styles.countdown, challenge.isActive && isFinalHours(secondsLeft) && styles.countdownWarn]}>
-              {challenge.isActive && secondsLeft !== null ? `⏱ ${t('timeLeft', { time: formatCountdown(secondsLeft) })}` : t('closed')}
-            </Text>
+            <View style={styles.iconRow}>
+              <Ionicons name="flame" size={14} color={colors.primaryText} />
+              <Text style={styles.kicker}>{t('kicker')}</Text>
+            </View>
+            <View style={styles.iconRow}>
+              {challenge.isActive && secondsLeft !== null && (
+                <Ionicons name="time-outline" size={14} color={isFinalHours(secondsLeft) ? colors.warning : colors.muted} />
+              )}
+              <Text style={[styles.countdown, challenge.isActive && isFinalHours(secondsLeft) && styles.countdownWarn]}>
+                {challenge.isActive && secondsLeft !== null ? t('timeLeft', { time: formatCountdown(secondsLeft) }) : t('closed')}
+              </Text>
+            </View>
           </View>
-          {!!challenge.theme && <Text style={styles.theme}>{themeLabel(challenge.theme)}</Text>}
+          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={challenge.theme.name} style={styles.theme} />}
           <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
           {!!challenge.context && (
             <Text style={styles.context}>{showOriginal && challenge.original ? challenge.original.context : challenge.context}</Text>
@@ -168,13 +176,14 @@ function Sheet({ date, openProofId, source, initialTab }: {
 
           {sheet.twist && isLive && (
             <View style={styles.twist}>
-              <Text style={styles.twistLabel}>📍 {t('twistIn', { city: cityName })}</Text>
+              <View style={styles.iconRow}>
+                <Ionicons name="location-outline" size={14} color={colors.primaryText} />
+                <Text style={styles.twistLabel}>{t('twistIn', { city: cityName })}</Text>
+              </View>
               <Text style={styles.twistText}>{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</Text>
               {sheet.twist.author ? (
                 <TouchableOpacity style={styles.author} onPress={() => goProfile(sheet.twist!.author!.id)} accessibilityRole="button">
-                  {sheet.twist.author.photoUrl
-                    ? <Image source={{ uri: sheet.twist.author.photoUrl }} style={styles.avatar} />
-                    : <View style={[styles.avatar, styles.avatarEmpty]} />}
+                  <Avatar uri={sheet.twist.author.photoUrl} name={sheet.twist.author.displayName || sheet.twist.author.username || '?'} size={24} />
                   <Text style={styles.authorText}>{t('twistBy', { name: sheet.twist.author.displayName || sheet.twist.author.username })}</Text>
                 </TouchableOpacity>
               ) : !!sheet.twist.credit && (
@@ -193,89 +202,80 @@ function Sheet({ date, openProofId, source, initialTab }: {
                 {!!myProof.rejectionReason && <Text style={styles.reason}>{t('reasonLabel', { reason: myProof.rejectionReason })}</Text>}
                 <View style={styles.mineActions}>
                   {challenge.isActive && myProof.status !== 'removed' && (
-                    <TouchableOpacity onPress={() => router.push(`/daily/proof?edit=${myProof.id}` as never)} accessibilityRole="button">
-                      <Text style={styles.link}>{myProof.status === 'rejected' ? t('fixIt') : t('edit')}</Text>
-                    </TouchableOpacity>
+                    <Button variant="link" label={myProof.status === 'rejected' ? t('fixIt') : t('edit')}
+                            onPress={() => router.push(`/daily/proof?edit=${myProof.id}` as never)} />
                   )}
-                  <TouchableOpacity onPress={onDelete} accessibilityRole="button">
-                    <Text style={[styles.link, styles.linkDanger]}>{t('delete')}</Text>
+                  <TouchableOpacity style={styles.deleteBtn} onPress={onDelete} accessibilityRole="button">
+                    <Text style={styles.linkDanger}>{t('delete')}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           ) : challenge.isActive && (
-            <TouchableOpacity style={styles.cta} onPress={onCta} activeOpacity={0.85} accessibilityRole="button">
-              <Text style={styles.ctaText}>{t('cta')}</Text>
-            </TouchableOpacity>
+            <Button icon="camera-outline" label={t('cta')} onPress={onCta} />
           )}
-        </View>
+        </Card>
 
         {(priceRange || places.length > 0) && (
-          <View style={styles.practical}>
+          <Card style={styles.practical}>
             <Text style={styles.sectionTitle}>{t('practicalTitle')}</Text>
             {priceRange && (
+              <View style={styles.iconRow}>
+              <Ionicons name="cash-outline" size={16} color={colors.muted} />
               <Text style={styles.practicalLine}>
-                💸 {priceRange.min === priceRange.max
+                {priceRange.min === priceRange.max
                   ? t('priceOne', { amount: formatAmount(priceRange.min, i18n.language), currency: priceRange.currency })
                   : t('priceRange', { min: formatAmount(priceRange.min, i18n.language), max: formatAmount(priceRange.max, i18n.language), currency: priceRange.currency })}
                 {priceRange.count ? ` · ${t('priceFrom', { count: priceRange.count })}` : ''}
               </Text>
+              </View>
             )}
             {places.length > 0 && (
               <>
-                <Text style={styles.practicalLine}>📍 {t('places', { count: places.length })}</Text>
-                <TouchableOpacity
-                  style={styles.mapCta}
-                  onPress={() => router.push('/(tabs)/map?source=sheet' as never)}
-                  activeOpacity={0.85}
-                  accessibilityRole="button"
-                >
-                  <Text style={styles.mapCtaText}>{t('map.see')}</Text>
-                </TouchableOpacity>
+                <View style={styles.iconRow}>
+                  <Ionicons name="location-outline" size={16} color={colors.muted} />
+                  <Text style={styles.practicalLine}>{t('places', { count: places.length })}</Text>
+                </View>
+                <Button variant="secondary" size="sm" icon="map-outline" label={t('map.see')}
+                        onPress={() => router.push('/(tabs)/map?source=sheet' as never)} style={styles.mapCta} />
                 {places.slice(0, 5).map(p => (
                   <TouchableOpacity key={p.proofId} onPress={() => {
                     const proof = sheet.proofs.find(x => x.id === p.proofId);
                     if (proof) setViewing(proof); else fetchDailyProof(p.proofId).then(setViewing).catch(() => {});
-                  }}>
-                    <Text style={styles.place} numberOfLines={1}>· {p.name || t('unnamedPlace')}</Text>
+                  }} style={styles.placeRow} accessibilityRole="button">
+                    <Text style={styles.place} numberOfLines={1}>{p.name || t('unnamedPlace')}</Text>
+                    <Ionicons name="chevron-forward" size={14} color={colors.muted} />
                   </TouchableOpacity>
                 ))}
               </>
             )}
-          </View>
+          </Card>
         )}
 
-        <View style={styles.tabs}>
-          {(isLive ? ['world', 'city', 'top10'] as const : ['world', 'top10'] as const).map(k => (
-            <TouchableOpacity key={k} style={[styles.tab, tab === k && styles.tabActive]} onPress={() => selectTab(k)} accessibilityRole="tab" accessibilityState={{ selected: tab === k }}>
-              <Text style={[styles.tabText, tab === k && styles.tabTextActive]} numberOfLines={1}>
-                {k === 'world' ? `🌍 ${t('tabWorld')}` : k === 'city' ? `🏙️ ${cityName}` : `🏆 ${t('leaderboard.tab')}`}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Segmented<Tab>
+          options={(isLive ? ['world', 'city', 'top10'] as const : ['world', 'top10'] as const).map(k => ({
+            key: k, label: k === 'world' ? t('tabWorld') : k === 'city' ? cityName : t('leaderboard.tab'),
+          }))}
+          value={tab}
+          onChange={selectTab}
+        />
       </View>
     );
   }, [sheet, challenge, myProof, isLive, cityName, scope, tab, secondsLeft, styles, t, i18n.language, router, goProfile, account, setMyProof, reload, showOriginal, toggleOriginal, date]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.navTitle}>{t('kicker')}</Text>
-        <Text style={styles.navDate}>{challenge?.date ?? ''}</Text>
-      </View>
+    <Screen>
+      <ScreenHeader title={t('kicker')} right={<Text style={styles.navDate}>{challenge?.date ?? ''}</Text>} />
 
       {loading && !sheet ? (
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : error || !challenge ? (
         <View style={styles.center}>
-          <Text style={styles.empty}>{error === 'failed' ? t('loadFailed') : t('notFound')}</Text>
-          {error === 'failed' && (
-            <TouchableOpacity onPress={reload}><Text style={styles.link}>{t('retry')}</Text></TouchableOpacity>
-          )}
+          <EmptyState
+            icon={error === 'failed' ? 'cloud-offline-outline' : 'calendar-clear-outline'}
+            body={error === 'failed' ? t('loadFailed') : t('notFound')}
+            action={error === 'failed' ? <Button variant="secondary" size="sm" label={t('retry')} onPress={reload} /> : undefined}
+          />
         </View>
       ) : (
         <FlatList
@@ -288,7 +288,7 @@ function Sheet({ date, openProofId, source, initialTab }: {
           renderItem={({ item }) => <DailyProofTile proof={item} onPress={() => setViewing(item)} />}
           onEndReached={tab === 'top10' ? undefined : loadMore}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.accent} style={styles.more} /> : null}
+          ListFooterComponent={loadingMore ? <ActivityIndicator color={colors.primary} style={styles.more} /> : null}
           ListEmptyComponent={tab === 'top10' ? (
             <DailyLeaderboardPanel
               sheet={sheet!}
@@ -297,68 +297,50 @@ function Sheet({ date, openProofId, source, initialTab }: {
               onOpenProof={openProofById}
             />
           ) : (
-            <View style={styles.emptyWrap}>
-              <Text style={styles.emptyTitle}>✨ {t('beFirst')}</Text>
-              <Text style={styles.empty}>{t('beFirstSub')}</Text>
-            </View>
+            <EmptyState icon="camera-outline" title={t('beFirst')} body={t('beFirstSub')} />
           )}
         />
       )}
 
       <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:   { flex: 1, backgroundColor: c.bg },
-  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: Spacing.md },
-  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  back:        { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  navDate:     { fontSize: FontSizes.xs, color: c.muted },
-  list:        { paddingHorizontal: Spacing.md, paddingBottom: 40, gap: 10 },
-  row:         { gap: 10 },
-  headerWrap:  { gap: 12, marginBottom: 4 },
-  card:        { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: 'rgba(255,122,60,0.45)', padding: 16, gap: 10 },
-  topRow:      { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
-  kicker:      { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.accentText },
-  countdown:   { fontSize: 12, fontWeight: '700', color: c.muted },
+  center:       { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: Spacing.md },
+  navDate:      { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  list:         { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm, paddingBottom: 40, gap: 10 },
+  row:          { gap: 10 },
+  headerWrap:   { gap: 12, marginBottom: 4 },
+  card:         { padding: 16, gap: 10 },
+  topRow:       { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 8 },
+  iconRow:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  kicker:       { fontSize: 12, fontWeight: '800', letterSpacing: 0.6, textTransform: 'uppercase', color: c.primaryText },
+  countdown:    { fontSize: 12, fontWeight: '700', color: c.muted },
   countdownWarn:{ color: c.warning },
-  text:        { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 26 },
-  theme:       { alignSelf: 'flex-start', fontSize: 12, fontWeight: '800', color: c.text, backgroundColor: c.bg3, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden' },
-  context:     { fontSize: FontSizes.sm, color: c.muted, lineHeight: 20 },
-  twist:       { backgroundColor: c.bg3, borderRadius: Radius.md, padding: 10, gap: 4 },
-  twistLabel:  { fontSize: 11, fontWeight: '800', color: c.accentText, textTransform: 'uppercase', letterSpacing: 0.4 },
-  twistText:   { fontSize: FontSizes.sm, color: c.text },
-  author:      { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
-  avatar:      { width: 20, height: 20, borderRadius: 10 },
-  avatarEmpty: { backgroundColor: c.border },
-  authorText:  { fontSize: FontSizes.xs, color: c.muted, fontWeight: '600' },
-  mine:        { flexDirection: 'row', gap: 12, backgroundColor: c.bg3, borderRadius: Radius.md, padding: 10 },
-  mineThumb:   { width: 72, height: 72, borderRadius: Radius.sm, backgroundColor: c.border },
-  mineBody:    { flex: 1, gap: 4 },
-  mineTitle:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  mineActions: { flexDirection: 'row', gap: 16, marginTop: 2 },
-  hint:        { fontSize: 12, color: c.muted },
-  reason:      { fontSize: 12, color: c.red, fontWeight: '600' },
-  link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.accentText },
-  linkDanger:  { color: c.red },
-  cta:         { backgroundColor: c.accent, borderRadius: Radius.full, paddingVertical: 13, alignItems: 'center' },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  practical:   { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, padding: 14, gap: 4 },
-  sectionTitle:{ fontSize: FontSizes.sm, fontWeight: '800', color: c.text, marginBottom: 2 },
-  practicalLine:{ fontSize: FontSizes.sm, color: c.text },
-  place:       { fontSize: FontSizes.xs, color: c.muted, paddingLeft: 18 },
-  tabs:        { flexDirection: 'row', gap: 8 },
-  tab:         { flex: 1, paddingVertical: 10, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg2, alignItems: 'center' },
-  tabActive:   { backgroundColor: c.accent, borderColor: c.accent },
-  tabText:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  tabTextActive:{ color: c.white },
-  emptyWrap:   { alignItems: 'center', paddingVertical: 30, gap: 6 },
-  emptyTitle:  { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  empty:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  more:        { marginVertical: 16 },
-  mapCta:      { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginVertical: 6, backgroundColor: c.bg2, borderRadius: Radius.full, paddingHorizontal: 16, borderWidth: 1.5, borderColor: c.line },
-  mapCtaText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
+  text:         { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, lineHeight: 26 },
+  theme:        { alignSelf: 'flex-start' },
+  context:      { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, lineHeight: 20 },
+  twist:        { backgroundColor: c.primaryTint, borderRadius: Radius.button, padding: 12, gap: 6 },
+  twistLabel:   { fontSize: 12, fontWeight: '800', color: c.primaryOnTint },
+  twistText:    { fontSize: FontSizes.sm, fontWeight: '500', color: c.text },
+  author:       { flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 32 },
+  authorText:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  mine:         { flexDirection: 'row', gap: 12, backgroundColor: c.bg, borderRadius: Radius.button, borderWidth: Border, borderColor: c.line, padding: 10 },
+  mineThumb:    { width: 72, height: 72, borderRadius: 12, backgroundColor: c.bg3 },
+  mineBody:     { flex: 1, gap: 4 },
+  mineTitle:    { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
+  mineActions:  { flexDirection: 'row', alignItems: 'center', gap: 20 },
+  deleteBtn:    { minHeight: 44, justifyContent: 'center' },
+  linkDanger:   { fontSize: FontSizes.sm, fontWeight: '700', color: c.red },
+  hint:         { fontSize: 12, fontWeight: '500', color: c.muted },
+  reason:       { fontSize: 12, fontWeight: '600', color: c.red },
+  practical:    { padding: 14, gap: 6 },
+  sectionTitle: { fontSize: 15, fontWeight: '800', color: c.text },
+  practicalLine:{ flex: 1, fontSize: FontSizes.sm, fontWeight: '500', color: c.text },
+  mapCta:       { alignSelf: 'flex-start', marginVertical: 4 },
+  placeRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 36, paddingLeft: 22 },
+  place:        { flexShrink: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.muted },
+  more:         { marginVertical: 16 },
 });

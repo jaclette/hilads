@@ -6,14 +6,9 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View, Text, TouchableOpacity, Switch,
-  ActivityIndicator, StyleSheet, ScrollView,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, Switch, ActivityIndicator, StyleSheet, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import {
@@ -22,7 +17,8 @@ import {
   type NotificationPreferences,
 } from '@/api/notifications';
 import { socket } from '@/lib/socket';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Button, Card, EmptyState, Screen, ScreenHeader, SectionTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 import { NotifRow, NotifSeparator } from '@/features/notifications/NotifRow';
@@ -53,7 +49,7 @@ function PrefRow({
       <Switch
         value={value}
         onValueChange={onChange}
-        trackColor={{ false: colors.bg3, true: colors.accent }}
+        trackColor={{ false: colors.bg3, true: colors.primary }}
         thumbColor={colors.white}
         ios_backgroundColor={colors.bg3}
       />
@@ -190,24 +186,11 @@ export default function NotificationsScreen() {
   const hasUnread = notifications.some(n => !n.is_read);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={colors.text} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>{t('notifications', { ns: 'common' })}</Text>
-
-        {hasUnread ? (
-          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.markReadBtn} />
-        )}
-      </View>
+    <Screen>
+      <ScreenHeader
+        title={t('notifications', { ns: 'common' })}
+        right={hasUnread ? <Button variant="link" label={t('markAllRead')} onPress={markAllRead} /> : undefined}
+      />
 
       <ScrollView
         style={styles.flex}
@@ -217,14 +200,10 @@ export default function NotificationsScreen() {
         {/* ── Latest notifications (preview) ───────────────────────────── */}
         {loading ? (
           <View style={styles.center}>
-            <ActivityIndicator color={colors.accent} />
+            <ActivityIndicator color={colors.primary} />
           </View>
         ) : notifications.length === 0 ? (
-          <View style={styles.emptyWrap}>
-            <Text style={styles.emptyIcon}>🔔</Text>
-            <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
-            <Text style={styles.emptySub}>{t('emptySub')}</Text>
-          </View>
+          <EmptyState icon="notifications-outline" title={t('emptyTitle')} body={t('emptySub')} />
         ) : (
           <View style={styles.notifList}>
             {notifications.map((n, i) => (
@@ -238,21 +217,14 @@ export default function NotificationsScreen() {
 
         {/* ── See all CTA ──────────────────────────────────────────────── */}
         {!loading && (
-          <TouchableOpacity
-            style={styles.seeAllBtn}
-            onPress={() => router.push('/notifications-history' as never)}
-            activeOpacity={0.75}
-          >
-            <Text style={styles.seeAllText}>{t('seeAll')}</Text>
-            <Feather name="chevron-right" size={16} color={colors.accent} />
-          </TouchableOpacity>
+          <Button variant="secondary" label={t('seeAll')} onPress={() => router.push('/notifications-history' as never)} style={styles.seeAllBtn} />
         )}
 
         {/* ── Notification Preferences ─────────────────────────────────── */}
         <View style={styles.prefSection}>
-          <Text style={styles.prefSectionTitle}>{t('prefTitle')}</Text>
+          <SectionTitle title={t('prefTitle')} />
 
-          <View style={styles.prefCard}>
+          <Card style={styles.prefCard}>
             {/* DM, event-chat, and city-chat toggles live on the Messages screen
                 now - they govern the envelope icon's behaviour, not the bell. */}
             <PrefRow label={t('pref.mentionLabel')} subtitle={t('pref.mentionSub')} value={prefs.mention_push} onChange={v => togglePref('mention_push', v)} />
@@ -278,119 +250,28 @@ export default function NotificationsScreen() {
             <PrefRow label={t('pref.newTopicLabel')} subtitle={t('pref.newTopicSub')} value={prefs.new_topic_push} onChange={v => togglePref('new_topic_push', v)} />
             <View style={styles.prefDivider} />
             <PrefRow label={t('pref.announceLabel')} subtitle={t('pref.announceSub')} value={prefs.admin_announcement_push} onChange={v => togglePref('admin_announcement_push', v)} />
-          </View>
+          </Card>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:     { flex: 1, backgroundColor: c.bg },
   flex:          { flex: 1 },
   scrollContent: { paddingBottom: Spacing.xxl },
-
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  headerTitle: {
-    flex:          1,
-    textAlign:     'center',
-    fontSize:      FontSizes.lg,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.4,
-  },
-  markReadBtn: {
-    width:          80,
-    alignItems:     'flex-end',
-    justifyContent: 'center',
-  },
-  markReadText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.accent,
-  },
-
-  notifList: { paddingTop: Spacing.xs },
-
-  // ── See all CTA ────────────────────────────────────────────────────────────
-  seeAllBtn: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    justifyContent:    'center',
-    gap:               6,
-    marginHorizontal:  Spacing.md,
-    marginTop:         Spacing.sm,
-    marginBottom:      Spacing.xs,
-    paddingVertical:   Spacing.md,
-    borderRadius:      Radius.lg,
-    borderWidth:       1,
-    borderColor:       c.border,
-    backgroundColor:   c.bg2,
-  },
-  seeAllText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.accent,
-  },
-
-  // ── Empty state ────────────────────────────────────────────────────────────
-  center:     { paddingVertical: Spacing.xxl, alignItems: 'center' },
-  emptyWrap:  { paddingVertical: Spacing.xxl, alignItems: 'center', gap: Spacing.sm },
-  emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20, paddingHorizontal: Spacing.xl },
+  notifList:     { paddingTop: Spacing.xs },
+  seeAllBtn:     { marginHorizontal: Spacing.md, marginTop: Spacing.sm },
+  center:        { paddingVertical: Spacing.xxl, alignItems: 'center' },
 
   // ── Preferences ────────────────────────────────────────────────────────────
-  prefSection: {
-    marginTop:         Spacing.xl,
-    paddingHorizontal: Spacing.md,
-  },
-  prefSectionTitle: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '700',
-    color:         c.muted2,
-    letterSpacing: 0.8,
-    marginBottom:  Spacing.sm,
-  },
-  prefCard: {
-    backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     c.border,
-    overflow:        'hidden',
-  },
-  prefRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.md,
-    gap:               Spacing.md,
-  },
-  prefText:  { flex: 1, gap: 3 },
-  prefLabel: { fontSize: FontSizes.md, fontWeight: '600', color: c.text },
-  prefSub:   { fontSize: FontSizes.xs, color: c.muted, lineHeight: 17 },
-  prefDivider: {
-    height:           1,
-    backgroundColor:  c.border,
-    marginHorizontal: Spacing.md,
-  },
+  prefSection: { marginTop: Spacing.xl, paddingHorizontal: Spacing.md, gap: Spacing.sm },
+  prefCard:    { overflow: 'hidden' },
+  prefRow:     { flexDirection: 'row', alignItems: 'center', minHeight: 60, paddingHorizontal: 14, paddingVertical: 12, gap: Spacing.md },
+  prefText:    { flex: 1, gap: 3 },
+  prefLabel:   { fontSize: 15, fontWeight: '700', color: c.text },
+  prefSub:     { fontSize: FontSizes.xs, fontWeight: '400', color: c.muted, lineHeight: 17 },
+  prefDivider: { height: 1, backgroundColor: c.line },
 });

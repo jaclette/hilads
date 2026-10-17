@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ActivityIndicator, FlatList, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Spacing } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { useApp } from '@/context/AppContext';
 import { fetchDailyProofsByIds } from '@/api/daily';
 import { DailyProofTile } from '@/features/daily/DailyProofTile';
@@ -40,23 +39,17 @@ export default function DailyGalleryScreen() {
   }, [ids, guestId]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.navTitle} numberOfLines={1}>📸 {t('group.galleryTitle')}</Text>
-        {!!date && (
-          <TouchableOpacity onPress={() => router.push(`/daily/${date}` as never)} hitSlop={8} accessibilityRole="button">
-            <Text style={styles.link}>🔥 {t('kicker')} ›</Text>
-          </TouchableOpacity>
-        )}
-      </View>
+    <Screen>
+      <ScreenHeader
+        title={t('group.galleryTitle')}
+        compact
+        right={date ? <Button variant="link" icon="flame-outline" label={t('kicker')} onPress={() => router.push(`/daily/${date}` as never)} /> : undefined}
+      />
 
       {failed ? (
-        <View style={styles.center}><Text style={styles.muted}>{t('loadFailed')}</Text></View>
+        <View style={styles.center}><EmptyState icon="images-outline" body={t('loadFailed')} /></View>
       ) : !proofs ? (
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : (
         <FlatList
           data={proofs}
@@ -65,22 +58,16 @@ export default function DailyGalleryScreen() {
           columnWrapperStyle={styles.row}
           contentContainerStyle={styles.list}
           renderItem={({ item }) => <DailyProofTile proof={item} onPress={() => setViewing(item)} />}
-          ListEmptyComponent={<Text style={styles.muted}>{t('notFound')}</Text>}
+          ListEmptyComponent={<EmptyState icon="images-outline" body={t('notFound')} />}
         />
       )}
       <DailyProofViewer proof={viewing} onClose={() => setViewing(null)} />
-    </SafeAreaView>
+    </Screen>
   );
 }
 
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  center:    { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.md },
-  nav:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  back:      { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  navTitle:  { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  link:      { fontSize: FontSizes.xs, fontWeight: '800', color: c.accentText },
-  muted:     { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  list:      { padding: Spacing.md, gap: 10, paddingBottom: 40 },
-  row:       { gap: 10 },
+const makeStyles = () => StyleSheet.create({
+  center: { flex: 1, justifyContent: 'center', padding: Spacing.md },
+  list:   { padding: Spacing.md, paddingTop: Spacing.sm, gap: 10, paddingBottom: 40 },
+  row:    { gap: 10 },
 });

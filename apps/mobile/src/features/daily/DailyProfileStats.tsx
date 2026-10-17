@@ -9,7 +9,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button } from '@/ui';
 import { fetchUserDaily } from '@/api/daily';
 import { DailyProofViewer } from './DailyProofViewer';
-import { MEDALS } from './DailyProofTile';
+import { RankMedal } from './RankMedal';
 import { localizeCityName } from '@/i18n/cityName';
 import type { DailyProof, DailyUserStats } from '@/types';
 
@@ -84,7 +84,7 @@ export function DailyProfileStats({ userId, isMe }: { userId: string; isMe: bool
                 {stats.bestProofs.map(p => (
                   <TouchableOpacity key={p.id} onPress={() => setViewing(p)} accessibilityRole="button" accessibilityLabel={p.caption ?? t('kicker')}>
                     <Image source={{ uri: p.thumbUrl ?? p.photoUrl }} style={styles.thumb} contentFit="cover" />
-                    {p.worldRank !== null && p.worldRank <= 3 && <Text style={styles.medal}>{MEDALS[p.worldRank - 1]}</Text>}
+                    {p.worldRank !== null && p.worldRank <= 3 && <RankMedal rank={p.worldRank} size={22} style={styles.medal} />}
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -120,7 +120,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   subTitle:  { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
   thumbs:    { gap: 8 },
   thumb:     { width: 72, height: 72, borderRadius: 12, backgroundColor: c.bg3 },
-  medal:     { position: 'absolute', top: 2, left: 4, fontSize: 16 },
+  medal:     { position: 'absolute', top: 4, left: 4 },
   passes:    { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   pass:      { flexDirection: 'row', alignItems: 'center', gap: 4, height: 28, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line,
                backgroundColor: c.bg2, paddingHorizontal: 10 },

@@ -1,17 +1,7 @@
-import type { DailyTheme, DailyThemeKey } from '@/types';
+import type { DailyThemeKey } from '@/types';
 
 // Weekly themes (V2-03). Names come from the API (English content); the app
-// only adds an emoji per theme and the weekday each one falls on by default.
-
-export const THEME_EMOJI: Record<DailyThemeKey, string> = {
-  language:     '🗣️',
-  street_food:  '🍜',
-  coffee:       '☕',
-  market:       '🧺',
-  night_out:    '🌙',
-  neighborhood: '🏘️',
-  traditions:   '🏮',
-};
+// adds the weekday each one falls on by default (icons: features/today/format).
 
 /** English names (the API's DailyThemes), for screens that pick a theme before any payload. */
 export const THEME_NAMES: Record<DailyThemeKey, string> = {
@@ -25,11 +15,6 @@ export const THEME_WEEKDAY: Record<DailyThemeKey, number> = {
 };
 
 export const THEME_KEYS = Object.keys(THEME_WEEKDAY) as DailyThemeKey[];
-
-/** "🍜 Street food" (empty for no theme). */
-export function themeLabel(theme: DailyTheme | null | undefined): string {
-  return theme ? `${THEME_EMOJI[theme.key] ?? '•'} ${theme.name}` : '';
-}
 
 /** The next date (after `today`, Y-m-d) on the theme's weekday, as a localized weekday name. */
 export function nextThemeDay(key: DailyThemeKey, today: string, locale: string): string {

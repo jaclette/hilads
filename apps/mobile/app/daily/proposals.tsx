@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { Button, Card, Chip, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { fetchMyProposals, withdrawProposal } from '@/api/daily';
-import { themeLabel } from '@/features/daily/themes';
+import { THEME_ICON } from '@/features/today/format';
 import type { DailyProposal } from '@/types';
 
 /**
@@ -61,41 +61,35 @@ export default function DailyProposalsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.navTitle} numberOfLines={1}>💡 {t('propose.mineTitle')}</Text>
-      </View>
+    <Screen>
+      <ScreenHeader title={t('propose.mineTitle')} />
 
       {failed && !items ? (
         <View style={styles.center}>
-          <Text style={styles.muted}>{t('loadFailed')}</Text>
-          <TouchableOpacity onPress={load}><Text style={styles.link}>{t('retry')}</Text></TouchableOpacity>
+          <EmptyState icon="cloud-offline-outline" body={t('loadFailed')}
+                      action={<Button variant="secondary" size="sm" label={t('retry')} onPress={load} />} />
         </View>
       ) : !items ? (
-        <View style={styles.center}><ActivityIndicator color={colors.accent} /></View>
+        <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : (
         <FlatList
           data={items}
           keyExtractor={p => `${p.type}:${p.id}`}
           contentContainerStyle={styles.list}
           ListHeaderComponent={
-            <TouchableOpacity style={styles.cta} onPress={propose} accessibilityRole="button">
-              <Text style={styles.ctaText}>💡 {t('propose.cta')}</Text>
-            </TouchableOpacity>
+            <Button icon="bulb-outline" label={t('propose.cta')} onPress={propose} style={styles.cta} />
           }
-          ListEmptyComponent={<Text style={styles.empty}>{t('propose.empty')}</Text>}
+          ListEmptyComponent={<EmptyState icon="bulb-outline" body={t('propose.empty')} />}
           renderItem={({ item }) => <ProposalRow item={item} onWithdraw={() => withdraw(item)} />}
         />
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t, i18n } = useTranslation('daily');
   const router = useRouter();
   const date = item.date
@@ -106,56 +100,61 @@ function ProposalRow({ item, onWithdraw }: { item: DailyProposal; onWithdraw: ()
   const canOpen = !!item.date && (item.status === 'published' || item.status === 'picked');
   return (
     <TouchableOpacity
-      style={styles.card}
       onPress={canOpen ? () => router.push(`/daily/${item.date}` as never) : undefined}
       disabled={!canOpen}
       activeOpacity={0.85}
       accessibilityRole={canOpen ? 'button' : undefined}
     >
-      <View style={styles.cardHead}>
-        <Text style={styles.type}>{item.type === 'twist' ? `📍 ${t('propose.typeTwist')}` : `💡 ${t('propose.typeChallenge')}`}</Text>
-        <Text style={[styles.status, tone === 'ok' && styles.statusOk, tone === 'wait' && styles.statusWait, tone === 'off' && styles.statusOff]}>
-          {t(`propose.status.${item.status}`, { date })}
-        </Text>
-      </View>
-      <Text style={styles.text}>{item.text}</Text>
-      <Text style={styles.meta} numberOfLines={1}>
-        {[themeLabel(item.theme), item.city ? localizeCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}
-      </Text>
-      {!!item.twistText && <Text style={styles.twist}>📍 {item.twistText}</Text>}
-      {!!item.rejectionReason && <Text style={styles.reason}>{t('propose.reason', { reason: item.rejectionReason })}</Text>}
-      {item.type === 'challenge' && item.status === 'pending' && (
-        <TouchableOpacity onPress={onWithdraw} hitSlop={8} accessibilityRole="button" style={styles.withdraw}>
-          <Text style={styles.withdrawText}>{t('propose.withdraw')}</Text>
-        </TouchableOpacity>
-      )}
+      <Card style={styles.card}>
+        <View style={styles.cardHead}>
+          <View style={styles.iconRow}>
+            <Ionicons name={item.type === 'twist' ? 'location-outline' : 'bulb-outline'} size={14} color={colors.muted} />
+            <Text style={styles.type}>{item.type === 'twist' ? t('propose.typeTwist') : t('propose.typeChallenge')}</Text>
+          </View>
+          <Text style={[styles.status, tone === 'ok' && styles.statusOk, tone === 'wait' && styles.statusWait, tone === 'off' && styles.statusOff]}>
+            {t(`propose.status.${item.status}`, { date })}
+          </Text>
+        </View>
+        <Text style={styles.text}>{item.text}</Text>
+        {(item.theme || item.city) && (
+          <View style={styles.iconRow}>
+            {item.theme && <Chip icon={THEME_ICON[item.theme.key] ?? 'pricetag-outline'} label={item.theme.name} />}
+            {item.city && <Text style={styles.meta} numberOfLines={1}>{localizeCityName(item.city.name ?? '')}</Text>}
+          </View>
+        )}
+        {!!item.twistText && (
+          <View style={styles.iconRow}>
+            <Ionicons name="location-outline" size={14} color={colors.primaryText} />
+            <Text style={styles.twist}>{item.twistText}</Text>
+          </View>
+        )}
+        {!!item.rejectionReason && <Text style={styles.reason}>{t('propose.reason', { reason: item.rejectionReason })}</Text>}
+        {item.type === 'challenge' && item.status === 'pending' && (
+          <TouchableOpacity onPress={onWithdraw} accessibilityRole="button" style={styles.withdraw}>
+            <Text style={styles.withdrawText}>{t('propose.withdraw')}</Text>
+          </TouchableOpacity>
+        )}
+      </Card>
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:   { flex: 1, backgroundColor: c.bg },
-  center:      { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 10, padding: Spacing.md },
-  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  back:        { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  list:        { padding: Spacing.md, gap: 10, paddingBottom: 40 },
-  cta:         { backgroundColor: c.accent, borderRadius: Radius.full, paddingVertical: 13, alignItems: 'center', marginBottom: 4 },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  empty:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 24 },
-  muted:       { fontSize: FontSizes.sm, color: c.muted },
-  link:        { fontSize: FontSizes.sm, fontWeight: '800', color: c.accentText },
-  card:        { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, padding: 12, gap: 6 },
+  center:      { flex: 1, justifyContent: 'center', padding: Spacing.md },
+  list:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: 10, paddingBottom: 40 },
+  cta:         { marginBottom: 4 },
+  card:        { padding: 14, gap: 8 },
   cardHead:    { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
+  iconRow:     { flexDirection: 'row', alignItems: 'center', gap: 6, flexShrink: 1 },
   type:        { fontSize: 12, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
-  status:      { fontSize: 12, fontWeight: '800', borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 3, overflow: 'hidden' },
-  statusOk:    { color: c.green, backgroundColor: c.bg3 },
-  statusWait:  { color: c.warning, backgroundColor: c.bg3 },
+  status:      { fontSize: 12, fontWeight: '800', borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
+  statusOk:    { color: c.localText, backgroundColor: c.localBg },
+  statusWait:  { color: c.primaryOnTint, backgroundColor: c.primaryTint },
   statusOff:   { color: c.muted, backgroundColor: c.bg3 },
   text:        { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  meta:        { fontSize: 12, color: c.muted },
-  twist:       { fontSize: FontSizes.xs, color: c.accentText },
+  meta:        { flexShrink: 1, fontSize: 12, fontWeight: '500', color: c.muted },
+  twist:       { flex: 1, fontSize: FontSizes.xs, fontWeight: '600', color: c.primaryText },
   reason:      { fontSize: FontSizes.xs, color: c.red, fontWeight: '600' },
-  withdraw:    { alignSelf: 'flex-start', marginTop: 2 },
-  withdrawText:{ fontSize: FontSizes.xs, fontWeight: '800', color: c.red },
+  withdraw:    { alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center' },
+  withdrawText:{ fontSize: FontSizes.sm, fontWeight: '800', color: c.red },
 });

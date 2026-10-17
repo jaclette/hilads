@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { track } from '@/services/analytics';
@@ -36,7 +36,7 @@ export function DailyVoteButton({ proofId, date, cityName = null, variant = 'car
   const [busy, setBusy] = useState(false);
 
   const onDark = variant === 'viewer';
-  const iconColor = state?.myVote ? colors.accent : onDark ? '#fff' : colors.muted;
+  const iconColor = state?.myVote ? colors.primaryText : onDark ? colors.white : colors.muted;
   const canVote = !!state && state.votingOpen && !state.isMine;
 
   const onPress = async () => {
@@ -88,14 +88,14 @@ export function DailyVoteButton({ proofId, date, cityName = null, variant = 'car
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  btn:       { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', minHeight: 36, paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  btn:       { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', minHeight: 36, paddingHorizontal: 12, paddingVertical: 6, borderRadius: Radius.full, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
   btnTile:   { paddingHorizontal: 8, paddingVertical: 4, gap: 4 },
-  btnDark:   { backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.25)' },
+  btnDark:   { backgroundColor: c.photoControl, borderColor: c.photoControl },
   btnOn:     { borderColor: c.primary, backgroundColor: c.primaryTint },
   count:     { fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   countTile: { fontSize: FontSizes.xs },
-  white:     { color: '#fff' },
+  white:     { color: c.white },
   subWrap:   { flexShrink: 1 },
   sub:       { fontSize: 11, fontWeight: '600', color: c.muted },
-  subDark:   { color: '#ddd' },
+  subDark:   { color: c.onCaramelMuted },
 });

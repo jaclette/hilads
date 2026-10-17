@@ -1,14 +1,16 @@
 import { useEffect, useRef } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { formatCountdown } from '@/hooks/useDaily';
-import { MEDALS } from './DailyProofTile';
+import { RankMedal } from './RankMedal';
+import { Chip, EmptyState, ModeLabel } from '@/ui';
 import { dailyTrackProps } from './track';
 import { useDailyLeaderboard } from './leaderboard';
 import { LocalPassBadge } from './LocalPassBadge';
@@ -50,17 +52,17 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
     const results = sheet.results;
     return (
       <View style={styles.section}>
-        <Text style={styles.title}>🏆 {t('leaderboard.official')}</Text>
+        <Title icon="trophy-outline" text={t('leaderboard.official')} />
         {!results || (results.world.length === 0 && results.cities.length === 0) ? (
           <Text style={styles.muted}>{t('results.none')}</Text>
         ) : (
           <>
             {results.world.map((p, i) => (
-              <ResultRow key={p.id} proof={p} label={MEDALS[i]} onPress={() => onOpenProof(p.id)} />
+              <ResultRow key={p.id} proof={p} rank={i + 1} onPress={() => onOpenProof(p.id)} />
             ))}
-            {results.cities.length > 0 && <Text style={[styles.title, styles.sub]}>{t('results.bestInCities')}</Text>}
+            {results.cities.length > 0 && <Title icon="location-outline" text={t('results.bestInCities')} sub />}
             {results.cities.map(p => (
-              <ResultRow key={`c${p.id}`} proof={p} label="📍" city onPress={() => onOpenProof(p.id)} />
+              <ResultRow key={`c${p.id}`} proof={p} city onPress={() => onOpenProof(p.id)} />
             ))}
           </>
         )}
@@ -71,7 +73,7 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
   const myProof = sheet.myProof;
   return (
     <View style={styles.section}>
-      <Text style={styles.title}>🏆 {t('leaderboard.tab')}</Text>
+      <Title icon="trophy-outline" text={t('leaderboard.tab')} />
       <Text style={styles.muted}>
         {t('leaderboard.provisional')}
         {secondsLeft !== null ? ` · ${t('leaderboard.finalIn', { time: formatCountdown(secondsLeft) })}` : ''}
@@ -89,11 +91,11 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
       )}
 
       {!board ? (
-        <ActivityIndicator color={colors.accent} style={styles.loader} />
+        <ActivityIndicator color={colors.primary} style={styles.loader} />
       ) : !board.ranked ? (
-        <Text style={styles.empty}>🔥 {t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })}</Text>
+        <EmptyState icon="flame-outline" body={t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })} />
       ) : board.world.length === 0 ? (
-        <Text style={styles.empty}>♥ {t('leaderboard.noVotes')}</Text>
+        <EmptyState icon="heart-outline" body={t('leaderboard.noVotes')} />
       ) : (
         <>
           {board.world.map(e => (
@@ -101,7 +103,7 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
           ))}
           {board.cities.map(c => (
             <View key={c.city.id} style={styles.city}>
-              <Text style={[styles.title, styles.sub]}>📍 {t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</Text>
+              <Title icon="location-outline" text={t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })} sub />
               {c.entries.map(e => (
                 <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onPress={() => onOpenProof(e.proofId)} />
               ))}
@@ -113,7 +115,31 @@ export function DailyLeaderboardPanel({ sheet, secondsLeft, source, onOpenProof 
   );
 }
 
-/** One leaderboard line: medal or #rank, photo, name · city, votes. */
+/** A section title with its stroke icon. */
+function Title({ icon, text, sub = false }: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string; sub?: boolean }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  return (
+    <View style={[styles.titleRow, sub && styles.sub]}>
+      <Ionicons name={icon} size={16} color={colors.primaryText} />
+      <Text style={styles.title} accessibilityRole="header">{text}</Text>
+    </View>
+  );
+}
+
+/** Votes with a heart. */
+function Votes({ count }: { count: number }) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  return (
+    <View style={styles.votesRow}>
+      <Ionicons name="heart" size={13} color={colors.muted} />
+      <Text style={styles.votes}>{count}</Text>
+    </View>
+  );
+}
+
+/** One leaderboard line: rank seal, photo, name · city, votes. */
 function EntryRow({ entry, mine, hideCity = false, onPress }: {
   entry: DailyLeaderboardEntry; mine: boolean; hideCity?: boolean; onPress: () => void;
 }) {
@@ -122,7 +148,7 @@ function EntryRow({ entry, mine, hideCity = false, onPress }: {
   const name = entry.user.displayName || entry.user.username || '';
   return (
     <TouchableOpacity style={[styles.row, mine && styles.rowMine]} onPress={onPress} accessibilityRole="button" accessibilityLabel={`#${entry.rank} ${name}`}>
-      <Text style={styles.rank}>{entry.rank <= 3 ? MEDALS[entry.rank - 1] : `#${entry.rank}`}</Text>
+      <RankMedal rank={entry.rank} size={28} style={styles.rank} />
       {entry.thumbUrl
         ? <Image source={{ uri: entry.thumbUrl }} style={styles.thumb} contentFit="cover" />
         : <View style={styles.thumb} />}
@@ -131,57 +157,63 @@ function EntryRow({ entry, mine, hideCity = false, onPress }: {
           <Text style={styles.name} numberOfLines={1}>{name}</Text>
           {entry.user.localPass && <LocalPassBadge />}
         </View>
-        <Text style={styles.rowSub} numberOfLines={1}>
-          {entry.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
-          {!hideCity && entry.city ? ` · ${localizeCityName(entry.city.name)}` : ''}
-        </Text>
+        <View style={styles.labels}>
+          <ModeLabel mode={entry.isLocal ? 'local' : 'traveler'} label={entry.isLocal ? t('local') : t('traveler')} />
+          {!hideCity && entry.city && <Text style={styles.rowSub} numberOfLines={1}>{localizeCityName(entry.city.name)}</Text>}
+        </View>
       </View>
-      <Text style={styles.votes}>♥ {entry.voteCount}</Text>
+      <Votes count={entry.voteCount} />
     </TouchableOpacity>
   );
 }
 
-/** One official results line: medal (or pin), photo, author · city (or "Best in <city>"), votes. */
-function ResultRow({ proof, label, city = false, onPress }: { proof: DailyProof; label: string; city?: boolean; onPress: () => void }) {
+/** One official results line: rank seal (or pin), photo, author · city (or "Best in <city>"), votes. */
+function ResultRow({ proof, rank, city = false, onPress }: { proof: DailyProof; rank?: number; city?: boolean; onPress: () => void }) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('daily');
   const name = proof.user.displayName || proof.user.username || '';
   const cityName = proof.city ? localizeCityName(proof.city.name) : '';
   return (
-    <TouchableOpacity style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label} ${name}`}>
-      <Text style={styles.rank}>{label}</Text>
+    <TouchableOpacity style={styles.row} onPress={onPress} accessibilityRole="button" accessibilityLabel={rank ? `#${rank} ${name}` : name}>
+      {rank
+        ? <RankMedal rank={rank} size={28} style={styles.rank} />
+        : <View style={styles.rank}><Ionicons name="location-outline" size={18} color={colors.primaryText} /></View>}
       <Image source={{ uri: proof.thumbUrl ?? proof.photoUrl }} style={styles.thumb} contentFit="cover" />
       <View style={styles.body}>
         <Text style={styles.name} numberOfLines={1}>{city ? t('results.bestIn', { city: cityName }) : name}</Text>
-        <Text style={styles.rowSub} numberOfLines={1}>
-          {city ? name : cityName}
-          {proof.validatedByLocal ? ` · ✓ ${t('validatedByLocal')}` : ''}
-        </Text>
+        <View style={styles.labels}>
+          <Text style={styles.rowSub} numberOfLines={1}>{city ? name : cityName}</Text>
+          {proof.validatedByLocal && <Chip tone="local" icon="checkmark" label={t('validatedByLocal')} />}
+        </View>
       </View>
-      <Text style={styles.votes}>♥ {proof.voteCount}</Text>
+      <Votes count={proof.voteCount} />
     </TouchableOpacity>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  section: { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, padding: 14, gap: 6 },
-  title:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  sub:     { marginTop: 8 },
-  muted:   { fontSize: 12, color: c.muted },
-  hint:    { fontSize: 12, color: c.muted },
-  me:      { backgroundColor: c.bg3, borderRadius: Radius.md, borderWidth: 1, borderColor: c.accent, paddingVertical: 8, paddingHorizontal: 10, gap: 2, marginVertical: 4 },
-  meText:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.text },
-  meSub:   { fontSize: 12, fontWeight: '600', color: c.accentText },
-  loader:  { marginVertical: 20 },
-  empty:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', paddingVertical: 18 },
-  city:    { gap: 6 },
-  row:     { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 4, paddingHorizontal: 4, borderRadius: Radius.md, borderWidth: 1, borderColor: 'transparent' },
-  rowMine: { borderColor: c.accent, backgroundColor: c.bg3 },
-  rank:    { fontSize: FontSizes.md, fontWeight: '800', color: c.text, width: 34, textAlign: 'center' },
-  thumb:   { width: 44, height: 44, borderRadius: Radius.sm, backgroundColor: c.bg3 },
-  body:    { flex: 1, gap: 1 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  name:    { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
-  rowSub:  { fontSize: 12, color: c.muted },
-  votes:   { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
+  section:  { backgroundColor: c.bg2, borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, padding: 14, gap: 8 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  title:    { fontSize: 15, fontWeight: '800', color: c.text },
+  sub:      { marginTop: 8 },
+  muted:    { fontSize: 12, fontWeight: '500', color: c.muted },
+  hint:     { fontSize: 12, fontWeight: '500', color: c.muted },
+  me:       { backgroundColor: c.primaryTint, borderRadius: Radius.button, paddingVertical: 10, paddingHorizontal: 12, gap: 2, marginVertical: 4 },
+  meText:   { fontSize: FontSizes.sm, fontWeight: '800', color: c.primaryOnTint },
+  meSub:    { fontSize: 12, fontWeight: '600', color: c.primaryOnTint },
+  loader:   { marginVertical: 20 },
+  city:     { gap: 6 },
+  row:      { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 56, paddingVertical: 4, paddingHorizontal: 6, borderRadius: Radius.button,
+              borderWidth: Border, borderColor: 'transparent' },
+  rowMine:  { borderColor: c.primary, backgroundColor: c.primaryTint },
+  rank:     { width: 32, alignItems: 'center', justifyContent: 'center' },
+  thumb:    { width: 44, height: 44, borderRadius: 10, backgroundColor: c.bg3 },
+  body:     { flex: 1, gap: 3 },
+  nameRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  name:     { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
+  labels:   { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: 6 },
+  rowSub:   { flexShrink: 1, fontSize: 12, fontWeight: '500', color: c.muted },
+  votesRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  votes:    { fontSize: FontSizes.xs, fontWeight: '800', color: c.text },
 });

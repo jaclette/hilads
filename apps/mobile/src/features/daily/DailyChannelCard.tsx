@@ -16,7 +16,7 @@ import { ReactionPills } from '@/features/chat/ReactionPills';
 import { DailyVoteButton } from './DailyVoteButton';
 import { LocalPassBadge } from './LocalPassBadge';
 import { EarlyBadge } from './EarlyBadge';
-import { MEDALS } from './DailyProofTile';
+import { RankMedal } from './RankMedal';
 import { useVoteState } from './votes';
 import { OriginalToggle, useOriginal } from './OriginalToggle';
 import { THEME_ICON } from '@/features/today/format';
@@ -114,7 +114,7 @@ export function DailyChannelCard({ message, isLive, onLongPress, onReact }: Prop
               </View>
               {p.yesterdayTop3.map(r => (
                 <TouchableOpacity key={r.proofId} style={styles.topRow} onPress={() => router.push(`/daily/${p.yesterday!.date}?proof=${r.proofId}` as never)} accessibilityRole="button">
-                  <Text style={styles.topMedal}>{MEDALS[r.rank - 1] ?? `${r.rank}`}</Text>
+                  <RankMedal rank={r.rank} size={24} />
                   {r.thumbUrl ? <Image source={{ uri: r.thumbUrl }} style={styles.topThumb} contentFit="cover" /> : <View style={[styles.topThumb, styles.avatarEmpty]} />}
                   <Text style={styles.topName} numberOfLines={1}>
                     {r.user.displayName || r.user.username}
@@ -351,7 +351,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   more:          { width: 44, height: 44, marginRight: -10, marginTop: -10, alignItems: 'center', justifyContent: 'center' },
   top3Title:     { fontSize: 11, fontWeight: '800', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   topRow:        { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  topMedal:      { fontSize: 18, width: 24 },
   topThumb:      { width: 32, height: 32, borderRadius: Radius.sm, backgroundColor: c.bg3 },
   topName:       { flex: 1, fontSize: FontSizes.sm, fontWeight: '700', color: c.text },
   topVotes:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },

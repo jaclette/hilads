@@ -6,18 +6,14 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import {
-  View, Text, TouchableOpacity,
-  ActivityIndicator, StyleSheet, FlatList,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ActivityIndicator, StyleSheet, FlatList } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Feather } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { canAccessProfile } from '@/lib/profileAccess';
 import { fetchNotifications, markNotificationsRead } from '@/api/notifications';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { Spacing } from '@/constants';
+import { Button, EmptyState, Screen, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import type { Notification } from '@/types';
 import { NotifRow, NotifSeparator } from '@/features/notifications/NotifRow';
@@ -107,34 +103,19 @@ export default function NotificationsHistoryScreen() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          <Feather name="chevron-left" size={22} color={colors.text} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>{t('allTitle')}</Text>
-
-        {hasUnread ? (
-          <TouchableOpacity onPress={markAllRead} activeOpacity={0.7} style={styles.markReadBtn}>
-            <Text style={styles.markReadText}>{t('markAllRead')}</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.markReadBtn} />
-        )}
-      </View>
+    <Screen>
+      <ScreenHeader
+        title={t('allTitle')}
+        right={hasUnread ? <Button variant="link" label={t('markAllRead')} onPress={markAllRead} /> : undefined}
+      />
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator color={colors.accent} />
+          <ActivityIndicator color={colors.primary} />
         </View>
       ) : notifications.length === 0 ? (
-        <View style={styles.emptyWrap}>
-          <Text style={styles.emptyIcon}>🔔</Text>
-          <Text style={styles.emptyTitle}>{t('emptyTitle')}</Text>
-          <Text style={styles.emptySub}>{t('emptySub')}</Text>
+        <View style={styles.center}>
+          <EmptyState icon="notifications-outline" title={t('emptyTitle')} body={t('emptySub')} />
         </View>
       ) : (
         <FlatList
@@ -153,64 +134,20 @@ export default function NotificationsHistoryScreen() {
           ListFooterComponent={
             loadingMore ? (
               <View style={styles.footerLoader}>
-                <ActivityIndicator size="small" color={colors.accent} />
+                <ActivityIndicator size="small" color={colors.primary} />
               </View>
             ) : null
           }
         />
       )}
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 
-const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-
-  header: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   12,
-    borderBottomWidth: 1,
-    borderBottomColor: c.border,
-  },
-  backBtn: {
-    width:           40,
-    height:          40,
-    borderRadius:    12,
-    backgroundColor: c.bg2,
-    borderWidth:     1,
-    borderColor:     c.border,
-    alignItems:      'center',
-    justifyContent:  'center',
-  },
-  headerTitle: {
-    flex:          1,
-    textAlign:     'center',
-    fontSize:      FontSizes.lg,
-    fontWeight:    '800',
-    color:         c.text,
-    letterSpacing: -0.4,
-  },
-  markReadBtn: {
-    width:          80,
-    alignItems:     'flex-end',
-    justifyContent: 'center',
-  },
-  markReadText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '600',
-    color:      c.accent,
-  },
-
+const makeStyles = () => StyleSheet.create({
   listContent:  { paddingTop: Spacing.xs, paddingBottom: Spacing.xxl },
   footerLoader: { paddingVertical: Spacing.lg, alignItems: 'center' },
-
-  center:     { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  emptyWrap:  { flex: 1, alignItems: 'center', justifyContent: 'center', gap: Spacing.sm, paddingHorizontal: Spacing.xl },
-  emptyIcon:  { fontSize: 40, marginBottom: Spacing.sm },
-  emptyTitle: { fontSize: FontSizes.md, fontWeight: '700', color: c.text },
-  emptySub:   { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', lineHeight: 20 },
+  center:       { flex: 1, justifyContent: 'center', paddingHorizontal: Spacing.lg },
 });

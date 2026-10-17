@@ -1,19 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAvoidingView, Platform, ScrollView, Text, View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Button, Card, Chip, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { track } from '@/services/analytics';
 import { dailyErrorCode, proposeChallenge } from '@/api/daily';
 import { useDailyToday } from '@/hooks/useDaily';
-import { THEME_EMOJI, THEME_KEYS, THEME_NAMES } from '@/features/daily/themes';
+import { THEME_KEYS, THEME_NAMES } from '@/features/daily/themes';
+import { THEME_ICON } from '@/features/today/format';
 import type { DailyThemeKey } from '@/types';
 
 const TEXT_MAX  = 120;
@@ -82,35 +81,30 @@ export default function DailyProposeScreen() {
 
   if (sent) {
     return (
-      <SafeAreaView style={[styles.container, styles.center]}>
-        <Text style={styles.sentEmoji}>💡</Text>
-        <Text style={styles.sentTitle}>{t('propose.sentTitle')}</Text>
-        <Text style={styles.sentBody}>{t('propose.sentBody')}</Text>
-        <TouchableOpacity style={styles.cta} onPress={() => router.replace('/daily/proposals' as never)} accessibilityRole="button">
-          <Text style={styles.ctaText}>{t('propose.seeMine')}</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
+      <Screen>
+        <View style={styles.center}>
+          <EmptyState
+            icon="bulb-outline"
+            title={t('propose.sentTitle')}
+            body={t('propose.sentBody')}
+            action={<Button label={t('propose.seeMine')} onPress={() => router.replace('/daily/proposals' as never)} style={styles.stretch} />}
+          />
+        </View>
+      </Screen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-          <Ionicons name="chevron-back" size={20} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.navTitle} numberOfLines={1}>💡 {t('propose.title')}</Text>
-      </View>
+    <Screen>
+      <ScreenHeader title={t('propose.title')} />
 
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView contentContainerStyle={styles.body} keyboardShouldPersistTaps="handled">
-          <Text style={styles.label}>{t('propose.textLabel')}</Text>
-          <TextInput
-            style={[styles.input, styles.inputTall]}
+          <TextField
+            label={t('propose.textLabel')}
             value={text}
             onChangeText={setText}
             placeholder={t('propose.textPlaceholder')}
-            placeholderTextColor={colors.mutedDim}
             multiline
             maxLength={TEXT_MAX + 20}
             autoCapitalize="sentences"
@@ -122,108 +116,76 @@ export default function DailyProposeScreen() {
           <Text style={styles.label}>{t('propose.themeLabel')}</Text>
           <View style={styles.themes}>
             {THEME_KEYS.map(k => (
-              <TouchableOpacity
-                key={k}
-                style={[styles.chip, theme === k && styles.chipOn]}
-                onPress={() => setTheme(k)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: theme === k }}
-              >
-                <Text style={[styles.chipText, theme === k && styles.chipTextOn]}>{THEME_EMOJI[k]} {THEME_NAMES[k]}</Text>
-              </TouchableOpacity>
+              <Chip key={k} variant="filter" label={THEME_NAMES[k]} selected={theme === k} onPress={() => setTheme(k)} />
             ))}
           </View>
 
-          <Text style={styles.label}>{t('propose.whyLabel')}</Text>
-          <TextInput
-            style={styles.input}
+          <TextField
+            label={t('propose.whyLabel')}
             value={why}
             onChangeText={setWhy}
             placeholder={t('propose.whyPlaceholder')}
-            placeholderTextColor={colors.mutedDim}
             multiline
             maxLength={WHY_MAX}
           />
 
           {canTwist && (
             <>
-              <Text style={styles.label}>📍 {t('propose.twistLabel', { city: cityName })}</Text>
-              <TextInput
-                style={styles.input}
+              <TextField
+                label={t('propose.twistLabel', { city: cityName })}
                 value={twist}
                 onChangeText={setTwist}
                 placeholder={t('propose.twistPlaceholder', { city: cityName })}
-                placeholderTextColor={colors.mutedDim}
                 multiline
                 maxLength={TWIST_MAX}
               />
             </>
           )}
 
-          <View style={styles.rules}>
+          <Card style={styles.rules}>
             <Text style={styles.rulesTitle}>{t('propose.rulesTitle')}</Text>
             {[1, 2, 3, 4, 5].map(i => (
-              <Text key={i} style={styles.rule}>✓ {t(`propose.rule${i}`)}</Text>
+              <View key={i} style={styles.ruleRow}>
+                <Ionicons name="checkmark" size={16} color={colors.localText} />
+                <Text style={styles.rule}>{t(`propose.rule${i}`)}</Text>
+              </View>
             ))}
             <Text style={styles.reviewed}>{t('propose.reviewed')}</Text>
-          </View>
+          </Card>
 
           {error === 'pending_exists' ? (
             <View style={styles.errorBox}>
               <Text style={styles.errorText}>{t('propose.pendingExists')}</Text>
-              <TouchableOpacity onPress={() => router.replace('/daily/proposals' as never)} accessibilityRole="button">
-                <Text style={styles.link}>{t('propose.seeMine')} ›</Text>
-              </TouchableOpacity>
+              <Button variant="link" label={t('propose.seeMine')} onPress={() => router.replace('/daily/proposals' as never)} style={styles.linkBtn} />
             </View>
           ) : error ? (
             <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
           ) : null}
 
-          <TouchableOpacity
-            style={[styles.cta, !canSend && styles.ctaOff]}
-            onPress={submit}
-            disabled={!canSend}
-            accessibilityRole="button"
-            accessibilityState={{ disabled: !canSend, busy: sending }}
-          >
-            <Text style={styles.ctaText}>{sending ? '…' : t('propose.submit')}</Text>
-          </TouchableOpacity>
+          <Button label={t('propose.submit')} onPress={submit} disabled={!canSend && !sending} loading={sending} style={styles.cta} />
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </Screen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container:   { flex: 1, backgroundColor: c.bg },
   flex:        { flex: 1 },
-  center:      { alignItems: 'center', justifyContent: 'center', padding: Spacing.lg, gap: 12 },
-  nav:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 10 },
-  back:        { width: 36, height: 36, borderRadius: Radius.full, backgroundColor: c.bg2, borderWidth: 1, borderColor: c.border, alignItems: 'center', justifyContent: 'center' },
-  navTitle:    { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  body:        { padding: Spacing.md, gap: 8, paddingBottom: 48 },
-  label:       { fontSize: FontSizes.sm, fontWeight: '800', color: c.text, marginTop: 8 },
-  input:       { backgroundColor: c.inputBg, borderRadius: Radius.md, borderWidth: 1, borderColor: c.border, color: c.text, fontSize: FontSizes.sm, paddingHorizontal: 12, paddingVertical: 10, minHeight: 48, textAlignVertical: 'top' },
-  inputTall:   { minHeight: 84, fontSize: FontSizes.md, fontWeight: '700' },
+  center:      { flex: 1, justifyContent: 'center', padding: Spacing.lg },
+  stretch:     { alignSelf: 'stretch', marginTop: Spacing.sm },
+  body:        { padding: Spacing.md, paddingTop: Spacing.sm, gap: 10, paddingBottom: 48 },
+  label:       { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted, marginTop: 4 },
   counter:     { alignSelf: 'flex-end', fontSize: 12, color: c.muted, fontWeight: '700' },
   counterNear: { color: c.warning },
   counterOver: { color: c.red },
   themes:      { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip:        { paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.full, borderWidth: 1, borderColor: c.border, backgroundColor: c.bg2 },
-  chipOn:      { backgroundColor: c.accent, borderColor: c.accent },
-  chipText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.text },
-  chipTextOn:  { color: c.white },
-  rules:       { backgroundColor: c.bg2, borderRadius: Radius.lg, borderWidth: 1, borderColor: c.border, padding: 12, gap: 4, marginTop: 12 },
-  rulesTitle:  { fontSize: FontSizes.sm, fontWeight: '800', color: c.text, marginBottom: 2 },
-  rule:        { fontSize: FontSizes.xs, color: c.text },
-  reviewed:    { fontSize: 12, color: c.muted, marginTop: 6 },
-  errorBox:    { backgroundColor: c.bg2, borderRadius: Radius.md, borderWidth: 1, borderColor: c.red, padding: 10, gap: 6 },
+  rules:       { padding: 14, gap: 6, marginTop: 8 },
+  rulesTitle:  { fontSize: 15, fontWeight: '800', color: c.text, marginBottom: 2 },
+  ruleRow:     { flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  rule:        { flex: 1, fontSize: FontSizes.xs, fontWeight: '500', color: c.text },
+  reviewed:    { fontSize: 12, fontWeight: '500', color: c.muted, marginTop: 4 },
+  errorBox:    { borderRadius: Radius.button, borderWidth: 1.5, borderColor: c.red, padding: 12, gap: 4 },
   errorText:   { fontSize: FontSizes.xs, color: c.red, fontWeight: '600' },
-  link:        { fontSize: FontSizes.sm, fontWeight: '800', color: c.accentText },
-  cta:         { backgroundColor: c.accent, borderRadius: Radius.full, paddingVertical: 14, paddingHorizontal: 24, alignItems: 'center', marginTop: 12 },
-  ctaOff:      { opacity: 0.45 },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '800' },
-  sentEmoji:   { fontSize: 48 },
-  sentTitle:   { fontSize: FontSizes.lg, fontWeight: '900', color: c.text },
-  sentBody:    { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
+  linkBtn:     { alignSelf: 'flex-start' },
+  cta:         { marginTop: 8 },
 });
