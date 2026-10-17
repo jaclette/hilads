@@ -269,7 +269,7 @@ final class DailyTwistProposals
                 $stmt->execute([$after['author_user_id']]);
                 $body  = DailyPushText::render($today ? 'picked_today' : 'picked_tomorrow',
                                                DailyI18n::normalize($stmt->fetchColumn() ?: null), ['city' => $after['city_name']])
-                         ?? "Your Local Twist was picked for {$when} Daily Challenge in {$after['city_name']} 🎉";
+                         ?? "Your Local Twist was picked for {$when} Daily Challenge in {$after['city_name']}";
                 NotificationRepository::createUnchecked(
                     $after['author_user_id'],
                     'daily_twist_picked',

@@ -117,7 +117,7 @@ function enrichBroadcastMessage(array $message, ?array $senderUser): array
         $message['mode']         = $senderUser['mode'] ?? 'exploring';
         $message['vibe']         = $senderUser['vibe'] ?? null;
     } else {
-        $message['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+        $message['primaryBadge'] = ['key' => 'ghost', 'label' => 'Ghost'];
         $message['mode']         = null;
         $message['vibe']         = null;
     }
@@ -1854,7 +1854,7 @@ $router->add('GET', '/api/v1/users/{userId}', function (array $params) {
                     NotificationRepository::create(
                         $targetId,
                         'profile_view',
-                        "👀 {$viewerName} checked your profile",
+                        "{$viewerName} checked your profile",
                         null,
                         ['viewerId' => $viewerId, 'viewerName' => $viewerName, 'senderUserId' => $viewerId]
                     );
@@ -2012,7 +2012,7 @@ $router->add('POST', '/api/v1/users/{userId}/friends', function (array $params) 
         NotificationRepository::create(
             $targetId,
             'friend_request_accepted',
-            "{$accepterName} accepted your friend request 🎉",
+            "{$accepterName} accepted your friend request",
             null,
             [
                 'accepterUserId' => $viewer['id'],
@@ -2136,7 +2136,7 @@ $router->add('POST', '/api/v1/friend-requests/{id}/accept', function (array $par
     NotificationRepository::create(
         $req['sender_id'],
         'friend_request_accepted',
-        "{$accepterName} accepted your friend request 🎉",
+        "{$accepterName} accepted your friend request",
         null,
         [
             'accepterUserId' => $viewer['id'],
@@ -2330,7 +2330,7 @@ $router->add('POST', '/api/v1/users/{userId}/vibes', function (array $params) {
         NotificationRepository::create(
             $targetId,
             'vibe_received',
-            "{$actorName} sent you a vibe ✨",
+            "{$actorName} sent you a vibe",
             null,
             [
                 'actorId'   => $viewer['id'],
@@ -3782,7 +3782,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/bootstrap', function (array $
                     $msg['thumbAvatarUrl'] = $b['thumbAvatarUrl'] ?? null;
                     $msg['localPass']      = $b['localPass'] ?? false;
                 } else {
-                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => 'Ghost'];
                     $msg['contextBadge']   = null;
                     $msg['vibe']           = null;
                     $msg['mode']           = null;
@@ -4318,7 +4318,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
             foreach ($messages as &$msg) {
                 $t = $msg['type'] ?? 'text';
                 if ($t === 'text' || $t === 'image') {
-                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => 'Ghost'];
                     $msg['contextBadge'] = null;
                     $msg['vibe']         = null;
                     $msg['mode']         = null;
@@ -4381,7 +4381,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
                     $msg['thumbAvatarUrl'] = $entry['thumbAvatarUrl'] ?? null;
                     $msg['localPass']      = $entry['localPass'] ?? false;
                 } else {
-                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['primaryBadge']   = ['key' => 'ghost', 'label' => 'Ghost'];
                     $msg['contextBadge']   = null;
                     $msg['vibe']           = null;
                     $msg['mode']           = null;
@@ -4395,7 +4395,7 @@ $router->add('GET', '/api/v1/channels/{channelId}/messages', function (array $pa
         foreach ($onlineUsers as &$u) {
             $uid = $u['userId'] ?? null;
             if (empty($uid)) {
-                $u['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                $u['primaryBadge'] = ['key' => 'ghost', 'label' => 'Ghost'];
                 $u['contextBadge'] = null;
             } elseif (isset($badgeMap[$uid])) {
                 $entry = $badgeMap[$uid];
@@ -5262,7 +5262,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/events', function (array $par
             $cityChannelId,
             $authUser['id'] ?? null,
             'new_event',
-            '🔥 New event in ' . $cityName,
+            'New event in ' . $cityName,
             $notifBody,
             ['eventId' => $event['id'], 'channelId' => $cityChannelId, 'cityName' => $cityName, 'channelSlug' => strtolower(preg_replace('/[^a-z0-9]+/i', '-', $cityName)), 'senderUserId' => $authUser['id'] ?? null]
         );
@@ -6449,7 +6449,7 @@ $router->add('POST', '/api/v1/events/{eventId}/participants/toggle', function (a
                 $eventId,
                 $currentUser['id'],
                 'event_join',
-                "👋 {$joinerName} joined {$eventTitle}",
+                "{$joinerName} joined {$eventTitle}",
                 null,
                 ['eventId' => $eventId, 'senderUserId' => $currentUser['id'], 'senderName' => $joinerName, 'eventTitle' => $eventTitle]
             );
@@ -6649,7 +6649,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
                 $msgCityChannelId,
                 $msgSenderUserId,
                 'city_here',
-                '📢 ' . $nickname . ' tagged everyone',
+                $nickname . ' tagged everyone',
                 $msgPreview,
                 ['channelId' => $msgCityChannelId, 'senderName' => $nickname, 'senderUserId' => $msgSenderUserId],
                 mentionUserIds($mentions ?? [])
@@ -7896,7 +7896,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/join-requests/{requestId}/resolve
             $title = TopicRepository::findById($topicId)['title'] ?? 'the hangout';
             NotificationRepository::create(
                 $resolved['requester_id'], 'join_request_accepted',
-                "You're in! 🎉", $name . ' added you to ' . $title,
+                "You're in!", $name . ' added you to ' . $title,
                 ['topicId' => $topicId, 'topicTitle' => $title, 'name' => $name],
             );
         } catch (\Throwable $e) {
@@ -8916,7 +8916,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
                     $targetCityId,
                     $userId, // exclude the creator
                     'challenge_international_target',
-                    "🌐 New cross-city challenge",
+                    "New cross-city challenge",
                     'Someone in ' . ($originCity['name'] ?? 'another city')
                         . ' wants a taker in ' . ($targetCity['name'] ?? 'your city'),
                     [
@@ -8947,7 +8947,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/challenges', function (array 
                     'city_' . $channelId,
                     $userId, // exclude the creator
                     'new_challenge',
-                    '🔥 New challenge in ' . ($cityRow['name'] ?? 'your city'),
+                    'New challenge in ' . ($cityRow['name'] ?? 'your city'),
                     $challenge['title'] ?? null,
                     [
                         'challengeId'    => $challenge['id'],
@@ -9208,7 +9208,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/validate', function (arra
             $challengeId,
             $userId,                  // exclude the creator
             'challenge_validated',
-            "🎉 Challenge validated",
+            "Challenge validated",
             "{$creatorName} validated \"{$updated['title']}\"",
             [
                 'challengeId' => $challengeId,
@@ -9826,7 +9826,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
             NotificationRepository::create(
                 $rateeId,
                 'challenge_rated_complete',
-                "⭐ {$callerName} rated you",
+                "{$callerName} rated you",
                 "Mutual rating done - your points just landed for \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challengeId,
@@ -9895,7 +9895,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/ratings', function (array
             NotificationRepository::create(
                 $rateeId,
                 'rating_received',
-                "⭐ {$callerName} rated you",
+                "{$callerName} rated you",
                 "Your turn to rate them back",
                 [
                     'challengeId'    => $challengeId,
@@ -10624,7 +10624,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
                 NotificationRepository::create(
                     $challenge['created_by'],
                     'challenge_group_join',
-                    '🙌 New joiner',
+                    'New joiner',
                     "{$acceptorName} joined your challenge \"{$challenge['title']}\"",
                     [
                         'challengeId'    => $challengeId,
@@ -10784,7 +10784,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/accept', function (array 
     try {
         if (!empty($challenge['created_by'])) {
             $acceptorName = $authUser['display_name'] ?? 'Someone';
-            $title = $autoApproved ? "🤝 Challenge accepted" : "🤝 New take-on request";
+            $title = $autoApproved ? "Challenge accepted" : "New take-on request";
             $body  = $isInternational
                 ? "{$acceptorName} accepted \"{$challenge['title']}\". Wait for the proof."
                 : ($invited
@@ -10887,7 +10887,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
         $creatorName = $authUser['display_name'] ?? 'The creator';
         $sysMsg = MessageRepository::addSystemMessage(
             $acceptance['thread_channel_id'],
-            "✅ {$creatorName} accepted your take-on - let's plan the meet-up!",
+            "{$creatorName} accepted your take-on - let's plan the meet-up!",
         );
         broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
     } catch (\Throwable $e) {
@@ -10935,7 +10935,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-takeon', functi
             NotificationRepository::create(
                 $acceptance['acceptor_user_id'],
                 'challenge_takeon_approved',
-                "✅ Take-on accepted",
+                "Take-on accepted",
                 "{$creatorName} accepted your take-on of \"{$challenge['title']}\". Time to plan!",
                 [
                     'challengeId'    => $acceptance['challenge_id'],
@@ -10985,7 +10985,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
         $creatorName = $authUser['display_name'] ?? 'The creator';
         $sysMsg = MessageRepository::addSystemMessage(
             $acceptance['thread_channel_id'],
-            "✕ {$creatorName} declined your take-on.",
+            "{$creatorName} declined your take-on.",
         );
         broadcastMessageToWs($acceptance['thread_channel_id'], $sysMsg);
     } catch (\Throwable $e) {
@@ -11013,7 +11013,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/reject-takeon', functio
             NotificationRepository::create(
                 $acceptance['acceptor_user_id'],
                 'challenge_takeon_rejected',
-                "✕ Take-on declined",
+                "Take-on declined",
                 "{$creatorName} declined your take-on of \"{$challenge['title']}\".",
                 [
                     'challengeId'    => $acceptance['challenge_id'],
@@ -11089,7 +11089,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/abandon', function (arr
             NotificationRepository::create(
                 $creatorId,
                 'challenge_acceptor_left',
-                '👋 Taker left',
+                'Taker left',
                 "{$acceptorName} left the challenge \"{$challengeTitle}\"",
                 $data,
             );
@@ -11159,7 +11159,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/restart', function (array
             NotificationRepository::create(
                 $takerId,
                 'challenge_restarted',
-                '🔄 Challenge restarted',
+                'Challenge restarted',
                 "{$creatorName} restarted \"{$challengeTitle}\" - the take-on was reset",
                 $data,
             );
@@ -11369,7 +11369,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/propose-date', function
             NotificationRepository::create(
                 $otherUserId,
                 'challenge_date_proposed',
-                '📅 New date proposed',
+                'New date proposed',
                 "{$proposerName} proposed a date for \"{$challengeTitle}\"",
                 [
                     'challengeId'    => $acceptance['challenge_id'],
@@ -11540,7 +11540,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-date', function
             NotificationRepository::create(
                 $proposerId,
                 'challenge_date_approved',
-                '✅ Date approved',
+                'Date approved',
                 "{$approverName} approved your date for \"{$challengeTitle}\"",
                 [
                     'challengeId'    => $acceptance['challenge_id'],
@@ -11615,7 +11615,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/approve-challenge', fun
         NotificationRepository::create(
             $acceptance['acceptor_user_id'],
             'challenge_verdict_approved',
-            '🎉 Challenge accomplished',
+            'Challenge accomplished',
             "{$creatorName} marked \"{$title}\" as done",
             [
                 'acceptanceId'    => $acceptanceId,
@@ -11910,7 +11910,7 @@ $router->add('POST', '/api/v1/acceptances/{acceptanceId}/submit-proof', function
             NotificationRepository::create(
                 $challenge['created_by'],
                 'challenge_proof_submitted',
-                "📸 New proof to review",
+                "New proof to review",
                 "{$acceptorName} sent proof for \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challenge['id'],
@@ -11993,7 +11993,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/approve', function (array $params
             NotificationRepository::create(
                 $acceptance['acceptor_user_id'],
                 'challenge_proof_approved',
-                "🎉 Proof approved",
+                "Proof approved",
                 "{$creatorName} approved your proof for \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challenge['id'],
@@ -12096,7 +12096,7 @@ $router->add('POST', '/api/v1/proofs/{proofId}/reject', function (array $params)
             NotificationRepository::create(
                 $acceptance['acceptor_user_id'],
                 'challenge_proof_rejected',
-                "✕ Proof rejected",
+                "Proof rejected",
                 $body,
                 [
                     'challengeId'     => $challenge['id'],
@@ -13348,7 +13348,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/invite', function (array 
             NotificationRepository::create(
                 $inviteeId,
                 'challenge_invitation',
-                "🔥 {$inviterName} challenges you",
+                "{$inviterName} challenges you",
                 $title,
                 [
                     'challengeId'   => $challengeId,
@@ -13485,7 +13485,7 @@ $router->add('POST', '/api/v1/invitations/{invitationId}/accept', function (arra
             NotificationRepository::create(
                 $challenge['created_by'],
                 'challenge_takeon_request',
-                "🤝 Challenge accepted",
+                "Challenge accepted",
                 "{$acceptorName} accepted your challenge \"{$challenge['title']}\"",
                 [
                     'challengeId'    => $challengeId,
@@ -13686,7 +13686,7 @@ $router->add('GET', '/api/v1/challenges/{challengeId}/messages', function (array
                     // No user row resolved → ghost (anonymous or deleted).
                     $msg['mode']         = null;
                     $msg['vibe']         = null;
-                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => '👻 Ghost'];
+                    $msg['primaryBadge'] = ['key' => 'ghost', 'label' => 'Ghost'];
                     $msg['contextBadge'] = null;
                     $msg['thumbAvatarUrl'] = null;
                 }
@@ -14097,7 +14097,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/privacy/vote', function (
                 NotificationRepository::create(
                     $otherId,
                     'challenge_privacy_vote',
-                    $vote === 'agreed' ? '🔒 Go private?' : '🔓 Stays public',
+                    $vote === 'agreed' ? 'Go private?' : 'Stays public',
                     $body,
                     [
                         'challengeId' => $challengeId,

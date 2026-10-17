@@ -160,9 +160,9 @@ final class DailyPushesTest extends TestCase
 
     public function testOutcomeLines(): void
     {
-        $this->assertSame('Yesterday your proof ranked 2nd in the world 🏆',
+        $this->assertSame('Yesterday your proof ranked 2nd in the world.',
             DailyPushes::outcomeLine(self::mine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9]), null));
-        $this->assertSame('Yesterday your proof was the best in Ho Chi Minh City 🔥',
+        $this->assertSame('Yesterday your proof was the best in Ho Chi Minh City.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 1, 'cityBest' => true, 'votes' => 3]), null));
         $this->assertSame('Yesterday your proof ranked 4th in Ho Chi Minh City.',
             DailyPushes::outcomeLine(self::mine(['cityRank' => 4, 'votes' => 1]), null));
@@ -203,9 +203,9 @@ final class DailyPushesTest extends TestCase
     public function testTop10Text(): void
     {
         $m = DailyPushes::top10Message('2026-11-02', 4);
-        $this->assertSame("You're in today's top 10! 🏆 Your proof is #4 in the world right now.", $m['body']);
+        $this->assertSame("You're in today's top 10! Your proof is #4 in the world right now.", $m['body']);
         $this->assertSame('2026-11-02', $m['data']['date']);
-        $this->assertSame('Tu es dans le top 10 du jour ! 🏆 Ta preuve est #4 dans le monde en ce moment.',
+        $this->assertSame('Tu es dans le top 10 du jour ! Ta preuve est #4 dans le monde en ce moment.',
                           DailyPushes::top10Message('2026-11-02', 4, 'fr')['body']);
     }
 

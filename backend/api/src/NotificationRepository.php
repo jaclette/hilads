@@ -593,8 +593,8 @@ class NotificationRepository
     ): void {
         $type  = $format === 'meet' ? 'challenge_group_result_meet' : 'challenge_group_result_photo';
         $title = $format === 'meet'
-            ? "🎉 {$challengerName} validated the meet"
-            : "🏆 {$challengerName} chose the winning photo";
+            ? "{$challengerName} validated the meet"
+            : "{$challengerName} chose the winning photo";
         // Lead the body with the challenge name so the recipient knows WHICH
         // challenge resolved (was missing - just said "Tap to see who won").
         $ctitle = isset($data['challengeTitle']) ? trim((string) $data['challengeTitle']) : '';
@@ -762,7 +762,7 @@ class NotificationRepository
             $cityChannelId,
             $arriverUserId,
             'city_join',
-            '👀 Someone arrived in ' . ($cityName ?? 'your city'),
+            'Someone arrived in ' . ($cityName ?? 'your city'),
             $arriverNickname . ' just landed',
             ['channelId' => $cityChannelId, 'arriverName' => $arriverNickname, 'cityName' => $cityName ?? 'your city'],
         );
@@ -1005,7 +1005,7 @@ class NotificationRepository
             $userIds = $stmt->fetchAll(\PDO::FETCH_COLUMN);
             if (empty($userIds)) return;
 
-            $title = '🌍 New arrival';
+            $title = 'New arrival';
             $body  = $arriverNickname . ' just landed in ' . $cityName;
             $data  = ['scope' => 'world', 'nickname' => $arriverNickname, 'cityName' => $cityName];
 

@@ -163,10 +163,10 @@ final class DailyPushes
         }
         if ($mine !== null) {
             if ($mine['worldRank'] !== null) {
-                return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['worldRank']) . ' in the world 🏆';
+                return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['worldRank']) . ' in the world.';
             }
             if ($mine['cityBest'] && $mine['cityName'] !== null) {
-                return "Yesterday your proof was the best in {$mine['cityName']} 🔥";
+                return "Yesterday your proof was the best in {$mine['cityName']}.";
             }
             if ($mine['cityRank'] !== null && $mine['cityName'] !== null) {
                 return 'Yesterday your proof ranked ' . self::ordinal((int) $mine['cityRank']) . " in {$mine['cityName']}.";
@@ -298,7 +298,7 @@ final class DailyPushes
         return [
             'title' => 'Daily Challenge',
             'body'  => DailyPushText::render('top10', $locale, ['rank' => $rank])
-                       ?? "You're in today's top 10! 🏆 Your proof is #{$rank} in the world right now.",
+                       ?? "You're in today's top 10! Your proof is #{$rank} in the world right now.",
             'data'  => self::data($date),
         ];
     }

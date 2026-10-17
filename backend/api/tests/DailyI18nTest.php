@@ -145,8 +145,8 @@ final class DailyI18nTest extends TestCase
         $this->assertSame('fr', DailyPushes::morningLocale($c, 'fr'));
         $this->assertSame('en', DailyPushes::morningLocale($c, 'vi'));   // not translated: all English, no mix
         $line = DailyPushes::outcomeLine(['worldRank' => 2, 'cityRank' => 1, 'cityBest' => true, 'votes' => 9, 'cityName' => 'Paris'], null, 'fr');
-        $this->assertSame('Hier, ta preuve était #2 dans le monde 🏆', $line);
-        $this->assertSame('Hier, ta preuve était #2 dans le monde 🏆 Daily Challenge du jour : Mange',
+        $this->assertSame('Hier, ta preuve était #2 dans le monde.', $line);
+        $this->assertSame('Hier, ta preuve était #2 dans le monde. Daily Challenge du jour : Mange',
                           DailyPushes::morningMessage($c, $line, 'fr')['body']);
         $this->assertSame("Today's Daily Challenge: Eat", DailyPushes::morningMessage($c, null, 'en')['body']);
         $this->assertSame("Gagnant d'hier : Anh · ♥ 1.",
