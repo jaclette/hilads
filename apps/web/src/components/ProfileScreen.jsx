@@ -9,6 +9,8 @@ import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { isLegend as accountIsLegend } from '../lib/canCreateEvent'
 import { localizeCityName } from '../i18n/cityName'
 import AppearanceLanguageCard from './AppearanceLanguageCard'
+import Icon from './Icon'
+import { VIBE_ICONS } from '../lib/icons'
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -20,20 +22,13 @@ function avatarColors(name) {
   return AVATAR_PALETTES[hash % AVATAR_PALETTES.length]
 }
 
-// Labels resolved via i18n at render - these arrays hold only stable keys + emoji.
+// Labels resolved via i18n at render - these arrays hold only stable keys + icons.
 const MODES = [
-  { key: 'local',     emoji: '🌍' },
-  { key: 'exploring', emoji: '🧭' },
+  { key: 'local',     icon: 'location-outline' },
+  { key: 'exploring', icon: 'compass-outline' },
 ]
 
-const VIBES = [
-  { key: 'party',       emoji: '🔥' },
-  { key: 'board_games', emoji: '🎲' },
-  { key: 'coffee',      emoji: '☕' },
-  { key: 'music',       emoji: '🎧' },
-  { key: 'food',        emoji: '🍜' },
-  { key: 'chill',       emoji: '🧘' },
-]
+const VIBES = ['party', 'board_games', 'coffee', 'music', 'food', 'chill'].map(key => ({ key, icon: VIBE_ICONS[key] }))
 
 const INTERESTS = [
   'drinks', 'party', 'nightlife', 'music', 'live music',
@@ -47,10 +42,10 @@ const INTERESTS = [
 
 
 const AMBASSADOR_PICKS = [
-  { key: 'restaurant', emoji: '🍜', maxLen: 200 },
-  { key: 'spot',       emoji: '🗺️', maxLen: 200 },
-  { key: 'tip',        emoji: '💡', maxLen: 300 },
-  { key: 'story',      emoji: '🎭', maxLen: 400 },
+  { key: 'restaurant', icon: 'restaurant-outline', maxLen: 200 },
+  { key: 'spot',       icon: 'map-outline',        maxLen: 200 },
+  { key: 'tip',        icon: 'bulb-outline',       maxLen: 300 },
+  { key: 'story',      icon: 'book-outline',       maxLen: 400 },
 ]
 
 /**
@@ -250,7 +245,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                     {(username || account.username || account.display_name || '?')[0].toUpperCase()}
                   </span>
               }
-              <span className="profile-photo-badge">{uploading ? '…' : '📷'}</span>
+              <span className="profile-photo-badge" style={{ color: 'var(--primary-text)' }}>{uploading ? '…' : <Icon name="camera-outline" size={15} />}</span>
             </button>
             <input
               ref={fileRef}
@@ -266,12 +261,12 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                   <span className={`badge-pill badge-pill--${account.primaryBadge.key}`}>{badgeLabel(account.primaryBadge.key)}</span>
                 )}
                 {homeCity && (
-                  <span className="profile-identity-city">📍 {homeCity}</span>
+                  <span className="profile-identity-city" style={{ display: 'inline-flex', alignItems: 'center', gap: 3 }}><Icon name="location-outline" size={12} />{homeCity}</span>
                 )}
               </div>
               {vibe && VIBES.find(v => v.key === vibe) && (
-                <p className="profile-identity-vibe">
-                  {VIBES.find(v => v.key === vibe).emoji} {t(`vibes.${vibe}`)}
+                <p className="profile-identity-vibe" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <Icon name={VIBES.find(v => v.key === vibe).icon} size={13} />{t(`vibes.${vibe}`)}
                 </p>
               )}
             </div>
@@ -288,7 +283,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                   className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
                   onClick={() => setMode(mode === m.key ? null : m.key)}
                 >
-                  <span className="profile-mode-btn-emoji">{m.emoji}</span>
+                  <span className="profile-mode-btn-emoji"><Icon name={m.icon} size={26} /></span>
                   <span className="profile-mode-btn-name">{t(`modes.${m.key}`)}</span>
                   <span className="profile-mode-btn-desc">{t(`modes.${m.key}Desc`)}</span>
                 </button>
@@ -400,8 +395,9 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                       type="button"
                       className={`vibe-chip${vibe === v.key ? ' vibe-chip--on' : ''}`}
                       onClick={() => setVibe(v.key)}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
                     >
-                      {v.emoji} {t(`vibes.${v.key}`)}
+                      <Icon name={v.icon} size={15} />{t(`vibes.${v.key}`)}
                     </button>
                   ))}
                 </div>
@@ -433,11 +429,11 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
                 <p style={{ fontSize: '0.8rem', color: 'var(--muted)', margin: '-4px 0 8px' }}>
                   {t('ambassador.subtitle')}
                 </p>
-                {AMBASSADOR_PICKS.map(({ key, emoji, maxLen }) => {
+                {AMBASSADOR_PICKS.map(({ key, icon, maxLen }) => {
                   const [val, set] = pickState[key]
                   return (
                     <div key={key} className="modal-field">
-                      <label className="modal-label">{emoji} {t(`ambassador.${key}`)}</label>
+                      <label className="modal-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name={icon} size={15} />{t(`ambassador.${key}`)}</label>
                       <textarea
                         className="modal-input"
                         value={val}
@@ -481,7 +477,7 @@ export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDe
       {showDeleteConfirm && (
         <div className="delete-account-overlay" onClick={() => !deleteLoading && setShowDeleteConfirm(false)}>
           <div className="delete-account-sheet" onClick={e => e.stopPropagation()}>
-            <p className="delete-account-icon">⚠️</p>
+            <p className="delete-account-icon" style={{ color: 'var(--warning)' }}><Icon name="warning-outline" size={32} /></p>
             <h3 className="delete-account-title">{t('delete.title')}</h3>
             <p className="delete-account-body">
               {t('delete.body')}

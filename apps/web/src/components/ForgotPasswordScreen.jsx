@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { authForgotPassword } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 export default function ForgotPasswordScreen({ onBack }) {
   const [email,   setEmail]   = useState('')
@@ -33,7 +34,7 @@ export default function ForgotPasswordScreen({ onBack }) {
       <div className="page-body page-body--centered">
         {sent ? (
           <div className="auth-success">
-            <p className="auth-success-icon">✉️</p>
+            <p className="auth-success-icon" style={{ color: 'var(--primary-text)' }}><Icon name="mail-outline" size={40} /></p>
             <p className="auth-success-title">Check your inbox</p>
             <p className="auth-success-body">
               If an account exists for this email, we've sent a reset link.

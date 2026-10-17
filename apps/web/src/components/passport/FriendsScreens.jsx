@@ -5,6 +5,18 @@ import { fetchIncomingFriendRequestCount, fetchMySpots, fetchUserFriends, fetchU
 import { localizeCityName } from '../../i18n/cityName'
 import { thumbUrl } from '../../lib/imageThumb'
 import { THEME_NAMES } from '../map/spotsShared'
+import Icon from '../Icon'
+
+/** Star rating as star icons: `on` filled (gold), the rest up to `of` outlined. */
+function Stars({ on, of = 0, size }) {
+  const n = Math.max(0, Math.round(on ?? 0))
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 1, verticalAlign: 'middle' }}>
+      {Array.from({ length: n }, (_, i) => <Icon key={`on${i}`} name="star" size={size} />)}
+      {Array.from({ length: Math.max(0, of - n) }, (_, i) => <Icon key={`off${i}`} name="star-outline" size={size} style={{ color: 'var(--line)' }} />)}
+    </span>
+  )
+}
 
 const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 
@@ -31,7 +43,6 @@ export function FriendsScreen({ account, onBack, onOpenRequests, onOpenProfile }
       .catch(() => setVibes({ items: [], score: null, count: 0 }))
   }, [account.id])
 
-  const stars = (n) => '★'.repeat(Math.round(n ?? 0))
   return (
     <div className="full-page dc-page">
       <div className="page-header">
@@ -40,9 +51,10 @@ export function FriendsScreen({ account, onBack, onOpenRequests, onOpenProfile }
       </div>
       <div className="page-body dc-body">
         <button type="button" className="pp-row pp-row--card" onClick={onOpenRequests}>
-          <span className="pp-row-label">👤+ {t('friendRequests')}</span>
+          <Icon name="person-add-outline" size={20} />
+          <span className="pp-row-label">{t('friendRequests')}</span>
           {requests > 0 && <span className="chat-scope-badge">{requests > 9 ? '9+' : requests}</span>}
-          <span aria-hidden="true">›</span>
+          <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
         </button>
 
         <p className="dc-section">{t('myFriends')}</p>
@@ -53,7 +65,7 @@ export function FriendsScreen({ account, onBack, onOpenRequests, onOpenProfile }
             <button key={f.id} type="button" className="pp-person" onClick={() => onOpenProfile(f.id, f.displayName)}>
               <Avatar name={f.displayName} photo={f.thumbAvatarUrl ?? f.avatarUrl} />
               <span className="pp-person-name">{f.displayName}</span>
-              <span aria-hidden="true">›</span>
+              <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
             </button>
           ))}
         </div>
@@ -64,7 +76,7 @@ export function FriendsScreen({ account, onBack, onOpenRequests, onOpenProfile }
             <>
               {vibes.count > 0 && (
                 <div className="pp-vibe-score">
-                  <span className="pp-stars">{stars(vibes.score)}<span className="pp-stars-off">{'★'.repeat(5 - Math.round(vibes.score ?? 0))}</span></span>
+                  <span className="pp-stars"><Stars on={vibes.score} of={5} size={22} /></span>
                   <span className="dc-muted">{t('vibeScore', { score: vibes.score?.toFixed(1) })} · {t('vibeBasis', { count: vibes.count })}</span>
                 </div>
               )}
@@ -73,7 +85,7 @@ export function FriendsScreen({ account, onBack, onOpenRequests, onOpenProfile }
                 <div key={v.id} className="pp-person">
                   <Avatar name={v.authorName} photo={v.authorPhoto} />
                   <span className="pp-vibe-body">
-                    <span className="pp-person-name">{v.authorName} <span className="pp-stars pp-stars--small">{'★'.repeat(v.rating)}</span></span>
+                    <span className="pp-person-name">{v.authorName} <span className="pp-stars pp-stars--small"><Stars on={v.rating} size={12} /></span></span>
                     {v.message && <span className="dc-line">{v.message}</span>}
                   </span>
                 </div>
@@ -99,7 +111,7 @@ export function MySpotsScreen({ onBack, onOpenSpot }) {
       </div>
       <div className="page-body dc-body">
         {spots === null ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
-        : spots.length === 0 ? <div className="dc-center"><span className="dc-big-emoji">📍</span><p className="dc-muted">{t('passport.noSpots')}</p></div>
+        : spots.length === 0 ? <div className="dc-center"><span className="dc-big-emoji" style={{ color: 'var(--muted2)' }}><Icon name="location-outline" size={32} /></span><p className="dc-muted">{t('passport.noSpots')}</p></div>
         : spots.map(s => (
           <button key={s.id} type="button" className="pp-spot" onClick={() => onOpenSpot(s.id)}>
             {s.cover?.thumbUrl ? <img src={s.cover.thumbUrl} alt="" /> : <span className="pp-spot-img" />}
@@ -107,7 +119,7 @@ export function MySpotsScreen({ onBack, onOpenSpot }) {
               <span className="pp-person-name">{s.name}</span>
               <span className="dc-muted">{[s.city?.name ? localizeCityName(s.city.name) : null, s.themes.map(k => THEME_NAMES[k]).join(', ')].filter(Boolean).join(' · ')}</span>
             </span>
-            <span aria-hidden="true">›</span>
+            <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
           </button>
         ))}
       </div>

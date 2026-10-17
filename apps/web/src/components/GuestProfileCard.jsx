@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import BackButton from './BackButton'
 import { localizeCityName } from '../i18n/cityName'
 import { submitReport, fetchReportStatus, DuplicateReportError } from '../api'
+import Icon from './Icon'
 
 // ── Avatar palette - mirrors App.jsx / PublicProfileScreen ────────────────────
 
@@ -95,14 +96,14 @@ export default function GuestProfileCard({ guestId, nickname, cityName, account,
             {initial}
           </span>
           <div className="pub-profile-name">{name}</div>
-          <div className="guest-profile-badge">👻 Ghost</div>
+          <div className="guest-profile-badge">Ghost</div>
           {cityName && (
             <div className="guest-profile-city">Visiting {localizeCityName(cityName)}</div>
           )}
         </div>
 
         <p className="guest-profile-note">
-          Floating around as a ghost 👻
+          Floating around as a ghost
         </p>
 
         {/* Report a guest - the only moderation action available on a ghost
@@ -112,8 +113,9 @@ export default function GuestProfileCard({ guestId, nickname, cityName, account,
             className="pub-profile-report-btn"
             onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
             title={t('actions.reportTitle')}
+            aria-label={t('actions.reportTitle')}
           >
-            🚩
+            <Icon name="flag-outline" size={18} />
           </button>
         </div>
 

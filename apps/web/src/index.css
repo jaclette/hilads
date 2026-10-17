@@ -12130,6 +12130,7 @@ img.dm-header-avatar {
   background: var(--surface2);
   border: 1px solid var(--border);
   cursor: pointer;
+  color: var(--text);
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -13115,6 +13116,7 @@ body.has-app-promo-banner .page-header {
 .challenge-badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.25rem;
   padding: 0.1875rem 0.5625rem;
   border-radius: 999px;
   font-size: 0.6875rem;
@@ -13685,6 +13687,9 @@ body.has-app-promo-banner .page-header {
   color: var(--muted, #9a9088);
 }
 .challenge-group-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
   border-radius: 999px;
   padding: 0.5rem 1rem;
   font-size: 0.8rem;
@@ -16545,6 +16550,8 @@ body.has-app-promo-banner .page-header {
 .dc-tile-photo { position: relative; }
 .dc-tile-photo img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; background: var(--surface2); }
 .dc-tile-medal { position: absolute; top: 6px; left: 6px; font-size: 22px; }
+.dc-medal { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; border-radius: 50%; font-size: 13px; font-weight: 800; line-height: 1; background: var(--primary-tint); color: var(--primary-on-tint); }
+.dc-medal--gold { background: var(--gold); color: var(--surface); }
 .dc-tile-meta { padding: 8px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
 .dc-tile-name { font-size: 12px; font-weight: 700; color: var(--text); }
 .dc-tile-sub { font-size: 11px; color: var(--muted2); }
@@ -16771,3 +16778,6 @@ body.has-app-promo-banner .page-header {
 .su-notnow { align-self: center; min-height: 44px; color: var(--muted2); }
 .first-launch { margin: 2px 0 0; font-size: 1.15rem; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
 .su-auth { position: fixed; inset: 0; z-index: 1150; }
+
+/* Stroke icons (components/Icon.jsx): sit on the text baseline, never shrink in a flex row. */
+.icon { flex-shrink: 0; vertical-align: -0.15em; }

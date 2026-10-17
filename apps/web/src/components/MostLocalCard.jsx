@@ -2,6 +2,7 @@ import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchLeaderboard } from '../api'
+import Icon from './Icon'
 
 // Mirrors LeaderboardPage's avatar palette so the podium matches the full screen.
 const AVATAR_PALETTES = [
@@ -24,7 +25,7 @@ function PodiumSlot({ entry, first, onAvatarClick }) {
   )
   return (
     <div className={`mlp-slot${first ? ' mlp-slot--first' : ''}`}>
-      {first && <span className="mlp-crown" aria-hidden="true">👑</span>}
+      {first && <span className="mlp-crown" aria-hidden="true" style={{ color: 'var(--gold)' }}><Icon name="trophy-outline" size={18} /></span>}
       {onAvatarClick && entry.user_id ? (
         <button
           type="button"
@@ -79,7 +80,7 @@ export default function MostLocalCard({ channelId, onSeeAll, onAvatarClick }) {
   return (
     <div className="most-local-card">
       <div className="most-local-head">
-        <span className="most-local-title">🏆 {t('mostLocal')}</span>
+        <span className="most-local-title" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{t('mostLocal')}</span>
         <button type="button" className="most-local-seeall" onClick={onSeeAll}>{t('seeAll')} ›</button>
       </div>
 

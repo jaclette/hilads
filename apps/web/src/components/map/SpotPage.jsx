@@ -4,7 +4,11 @@ import BackButton from '../BackButton'
 import { fetchSpot } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { THEME_NAMES, THEME_EMOJI, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import { THEME_NAMES, APP_STORE, PLAY_STORE, deviceStore, directionsUrl, formatPriceRange } from './spotsShared'
+import Icon from '../Icon'
+import { THEME_ICON } from '../../lib/icons'
+
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
 /** The ranking line ("Top voted this week in Saigon"), week first. */
 function rankingLine(t, ranking) {
@@ -63,16 +67,19 @@ export default function SpotPage({ spotId, onBack }) {
           <>
             <h1 className="wm-spot-name">{spot.name}</h1>
             <p className="wm-spot-meta">
-              {[spot.city?.name ? localizeCityName(spot.city.name) : null, spot.themes.map(k => `${THEME_EMOJI[k]} ${THEME_NAMES[k]}`).join(' · ')].filter(Boolean).join(' · ')}
+              {spot.city?.name ? localizeCityName(spot.city.name) : null}
+              {spot.themes.map((k, i) => (
+                <span key={k} style={ROW}>{(i > 0 || spot.city?.name) && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={14} />{THEME_NAMES[k]}</span>
+              ))}
             </p>
-            {rank && <p className="wm-spot-rank">🏆 {rank}</p>}
+            {rank && <p className="wm-spot-rank" style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Icon name="trophy-outline" size={16} />{rank}</p>}
             <p className="wm-spot-meta">
               {t('map.proofs', { count: spot.proofCount })} · {t('map.votes', { count: spot.votes })}
               {price ? ` · ${t('map.pricePaid', { price })}` : ''}
             </p>
             {(spot.validatedByLocal || spot.tags.length > 0) && (
               <div className="wm-spot-tags">
-                {spot.validatedByLocal && <span className="wm-tag wm-tag--local">✓ {t('map.validated')}</span>}
+                {spot.validatedByLocal && <span className="wm-tag wm-tag--local" style={ROW}><Icon name="checkmark" size={14} />{t('map.validated')}</span>}
                 {spot.tags.map(tag => <span key={tag} className="wm-tag">{tag}</span>)}
               </div>
             )}
@@ -80,11 +87,11 @@ export default function SpotPage({ spotId, onBack }) {
             <div className="wm-spot-actions">
               <a className="wm-btn wm-btn--ghost" href={directionsUrl(spot.lat, spot.lng)} target="_blank" rel="noopener noreferrer"
                  onClick={() => track('web_spot_directions', { spot: spot.id })}>
-                🧭 {t('map.directions')}
+                <Icon name="navigate-outline" size={18} />{t('map.directions')}
               </a>
               <a className="wm-btn" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
                  onClick={() => track('web_app_map_card_clicked', { store: store ?? 'ios', placement: 'spot' })}>
-                📸 {t('spot.proofInApp')}
+                <Icon name="camera-outline" size={18} />{t('spot.proofInApp')}
               </a>
             </div>
             {!store && (
@@ -101,7 +108,7 @@ export default function SpotPage({ spotId, onBack }) {
                       <img src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
                       <figcaption>
                         <span>{p.user.displayName || p.user.username}{p.isLocal ? ` · ${t('spot.local')}` : ''}</span>
-                        <span>❤️ {p.voteCount}</span>
+                        <span style={ROW}><Icon name="heart" size={12} />{p.voteCount}</span>
                       </figcaption>
                     </figure>
                   ))}

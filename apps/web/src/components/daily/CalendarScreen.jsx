@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import BackButton from '../BackButton'
 import { fetchDailyCalendar } from '../../api'
-import { THEME_EMOJI } from '../map/spotsShared'
+import Icon from '../Icon'
+import { THEME_ICON } from '../../lib/icons'
 import { useDaily, useDc } from './dailyShared'
 
 /** YYYY-MM-DD of a Date in UTC. */
@@ -41,19 +42,19 @@ export default function CalendarScreen({ onBack }) {
     <div className="full-page dc-page">
       <div className="page-header">
         <BackButton onClick={onBack} />
-        <span className="page-title">📅 {t('calendar.title')}</span>
+        <span className="page-title">{t('calendar.title')}</span>
       </div>
       <div className="page-body dc-body">
         {data?.streak && (
           <div className="dc-stats">
-            <div className="dc-stat"><span className="dc-stat-value">🔥 {data.streak.current}</span><span className="dc-muted">{t('calendar.streak')}</span></div>
-            <div className="dc-stat"><span className="dc-stat-value">🔥 {data.streak.best}</span><span className="dc-muted">{t('calendar.best')}</span></div>
+            <div className="dc-stat"><span className="dc-stat-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="flame-outline" size={20} style={{ color: 'var(--primary-text)' }} />{data.streak.current}</span><span className="dc-muted">{t('calendar.streak')}</span></div>
+            <div className="dc-stat"><span className="dc-stat-value" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon name="flame-outline" size={20} style={{ color: 'var(--primary-text)' }} />{data.streak.best}</span><span className="dc-muted">{t('calendar.best')}</span></div>
           </div>
         )}
         <div className="dc-month">
-          <button type="button" className="v3-round" onClick={() => shift(-1)} aria-label={t('calendar.prev')}>‹</button>
+          <button type="button" className="v3-round" onClick={() => shift(-1)} aria-label={t('calendar.prev')}><Icon name="chevron-back" size={20} /></button>
           <span className="dc-section">{title}</span>
-          <button type="button" className="v3-round" onClick={() => shift(1)} disabled={month >= thisMonth} aria-label={t('calendar.next')}>›</button>
+          <button type="button" className="v3-round" onClick={() => shift(1)} disabled={month >= thisMonth} aria-label={t('calendar.next')}><Icon name="chevron-forward" size={20} /></button>
         </div>
         <div className="dc-cal">
           {weekdays.map((w, i) => <span key={`w${i}`} className="dc-cal-weekday">{w}</span>)}
@@ -68,7 +69,7 @@ export default function CalendarScreen({ onBack }) {
                 <span className={`dc-cal-dot${done ? ' dc-cal-dot--done' : ''}${pending ? ' dc-cal-dot--pending' : ''}${d.date === today ? ' dc-cal-dot--today' : ''}${off ? ' dc-cal-dot--off' : ''}`}>
                   {Number(d.date.slice(8))}
                 </span>
-                <span className={`dc-cal-emoji${off ? ' dc-cal-emoji--off' : ''}`}>{d.theme ? THEME_EMOJI[d.theme.key] : ''}</span>
+                <span className={`dc-cal-emoji${off ? ' dc-cal-emoji--off' : ''}`}>{d.theme && THEME_ICON[d.theme.key] ? <Icon name={THEME_ICON[d.theme.key]} size={13} /> : null}</span>
               </button>
             )
           })}

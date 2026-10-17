@@ -7,9 +7,12 @@ import BackButton from '../BackButton'
 import SpotPage from './SpotPage'
 import { fetchMap, searchSpots } from '../../api'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, THEME_NAMES, THEME_EMOJI, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins } from './spotsShared'
+import { THEME_KEYS, THEME_NAMES, CITY_ZOOM, MIN_ZOOM, mapTiles, clusterPins } from './spotsShared'
+import Icon, { iconHtml } from '../Icon'
+import { THEME_ICON } from '../../lib/icons'
 
 const IDLE_MS = 350
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 // The camera stays around the city (like the app): about 110 km each way.
 const CITY_SPAN = 1
 // Within this distance of the city centre, "where I am" just moves the camera;
@@ -25,7 +28,7 @@ function km(a, b) {
 
 const spotIcon = (spot) => L.divIcon({
   className: 'wm-pin-wrap',
-  html: `<span class="wm-pin">${THEME_EMOJI[spot.themes?.[0]] || '📍'}</span>`,
+  html: `<span class="wm-pin" style="color: var(--primary)">${iconHtml(THEME_ICON[spot.themes?.[0]] || 'location-outline', 20)}</span>`,
   iconSize: [40, 40], iconAnchor: [20, 20],
 })
 const clusterIcon = (n) => L.divIcon({
@@ -40,7 +43,7 @@ const meIcon = L.divIcon({
 })
 const planIcon = () => L.divIcon({
   className: 'wm-pin-wrap',
-  html: '<span class="wm-plan">🎉</span>',
+  html: `<span class="wm-plan" style="color: var(--accent2)">${iconHtml('calendar-outline', 18)}</span>`,
   iconSize: [36, 36], iconAnchor: [18, 18],
 })
 
@@ -205,7 +208,7 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
 
       <div className="wm-top">
         <div className="wm-search">
-          <span aria-hidden="true">🔎</span>
+          <Icon name="search-outline" size={18} style={{ color: 'var(--muted2)' }} />
           <input
             type="search"
             value={query}
@@ -213,14 +216,14 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
             placeholder={t('map.search')}
             aria-label={t('map.searchA11y')}
           />
-          {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}>✕</button>}
+          {query && <button type="button" className="wm-search-clear" onClick={() => setQuery('')} aria-label={t('map.clearSearch')}><Icon name="close" size={18} /></button>}
         </div>
         {results === null ? (
           <div className="wm-chips" role="toolbar">
             <button type="button" className={`wm-chip${theme === null ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(null)}>{t('map.all')}</button>
             {THEME_KEYS.map(k => (
-              <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} onClick={() => pickTheme(k)}>
-                {THEME_EMOJI[k]} {THEME_NAMES[k]}
+              <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => pickTheme(k)}>
+                <Icon name={THEME_ICON[k]} size={15} />{THEME_NAMES[k]}
               </button>
             ))}
           </div>
@@ -273,17 +276,19 @@ export default function MapScreen({ channelId, cityName, onClose, onOpenPlan, in
         )}
         {selected && (
           <div className="wm-sheet">
-            <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}>✕</button>
+            <button type="button" className="wm-sheet-close" onClick={() => setSelected(null)} aria-label={t('map.closeSpot')}><Icon name="close" size={20} /></button>
             <button type="button" className="wm-sheet-body" onClick={() => setOpenSpotId(selected.id)}>
               {selected.cover?.thumbUrl ? <img className="wm-sheet-photo" src={selected.cover.thumbUrl} alt="" /> : <span className="wm-sheet-photo" />}
               <span className="wm-sheet-info">
                 <span className="wm-sheet-title">{selected.name}</span>
                 <span className="wm-sheet-meta">
-                  {selected.themes.map(k => `${THEME_EMOJI[k]} ${THEME_NAMES[k]}`).join(' · ')}
+                  {selected.themes.map((k, i) => (
+                    <span key={k} style={ROW}>{i > 0 && ' · '}<Icon name={THEME_ICON[k] ?? 'pricetag-outline'} size={13} />{THEME_NAMES[k]}</span>
+                  ))}
                 </span>
                 <span className="wm-sheet-meta">
                   {t('map.proofs', { count: selected.proofCount })} · {t('map.votes', { count: selected.votes })}
-                  {selected.validatedByLocal ? ` · ✓ ${t('map.validated')}` : ''}
+                  {selected.validatedByLocal && <> · <span style={ROW}><Icon name="checkmark" size={13} />{t('map.validated')}</span></>}
                 </span>
               </span>
             </button>

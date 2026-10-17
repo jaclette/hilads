@@ -1,9 +1,10 @@
+import Icon from './Icon'
 export default function DeleteAccountPage() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
         <a href="/" style={styles.logo}>
-          <div style={styles.logoMark}>🌍</div>
+          <div style={styles.logoMark}><Icon name="earth-outline" size={20} /></div>
           <span style={styles.logoName}>Hilads</span>
         </a>
 
@@ -70,6 +71,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '18px',
+    color: '#f0ece6',
   },
   logoName: {
     fontSize: '20px',

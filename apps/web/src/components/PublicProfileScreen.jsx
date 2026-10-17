@@ -5,11 +5,12 @@ import i18n from '../i18n'
 import { localizeCityName } from '../i18n/cityName'
 import { fetchPublicProfile, fetchUserEvents, fetchUserHangouts, fetchUserChallenges, fetchUserFriends, sendFriendRequest, acceptFriendRequest, cancelFriendRequest, removeFriend, fetchUserVibes, postVibe, submitReport, fetchReportStatus, DuplicateReportError } from '../api'
 
-const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import { cityFlag } from '../cityMeta'
 import { badgeLabel } from '../badgeMeta'
 import BackButton from './BackButton'
 import ProfileRankRow from './ProfileRankRow'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS, TOPIC_ICONS, VIBE_ICONS, eventIcon } from '../lib/icons'
 
 // ── Avatar palette ────────────────────────────────────────────────────────────
 
@@ -27,38 +28,28 @@ function avatarColors(name) {
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const BADGE_MICROCOPY = {
-  ghost:   'Just browsing 👀',
-  fresh:   'Just landed 👶',
+  ghost:   'Just browsing',
+  fresh:   'Just landed',
   regular: 'Shows up often',
-  host:    'Makes it happen 🔥',
+  host:    'Makes it happen',
 }
 
 const MODE_META = {
-  local:     { emoji: '🌍', label: 'Local'     },
-  exploring: { emoji: '🧭', label: 'Exploring' },
+  local:     { icon: 'location-outline', label: 'Local'     },
+  exploring: { icon: 'compass-outline',  label: 'Exploring' },
 }
 
 const VIBE_META = {
-  party:       { emoji: '🔥', label: 'Party'       },
-  board_games: { emoji: '🎲', label: 'Board Games' },
-  coffee:      { emoji: '☕', label: 'Coffee'       },
-  music:       { emoji: '🎧', label: 'Music'        },
-  food:        { emoji: '🍜', label: 'Food'         },
-  chill:       { emoji: '🧘', label: 'Chill'        },
+  party:       { icon: VIBE_ICONS.party,       label: 'Party'       },
+  board_games: { icon: VIBE_ICONS.board_games, label: 'Board Games' },
+  coffee:      { icon: VIBE_ICONS.coffee,      label: 'Coffee'       },
+  music:       { icon: VIBE_ICONS.music,       label: 'Music'        },
+  food:        { icon: VIBE_ICONS.food,        label: 'Food'         },
+  chill:       { icon: VIBE_ICONS.chill,       label: 'Chill'        },
 }
-
-const EVENT_ICONS = {
-  drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',
-  'live music': '🎸', culture: '🏛', art: '🎨', food: '🍴',
-  coffee: '☕', sport: '⚽', meetup: '👋', other: '📌',
-}
-
-function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
-// Type emoji for challenge cards - mirrors the rest of the app.
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 export default function PublicProfileScreen({ userId, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge, onOpenLeaderboard }) {
   const { t } = useTranslation('publicProfile')
@@ -398,14 +389,14 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
               <div className="pub-profile-identity-cards">
                 {vibe && (
                   <div className="pub-profile-identity-card">
-                    <span className="pub-profile-identity-card-icon">{VIBE_META[vibe].emoji}</span>
+                    <span className="pub-profile-identity-card-icon" style={{ color: 'var(--primary-text)' }}><Icon name={VIBE_META[vibe].icon} size={24} /></span>
                     <span className="pub-profile-identity-card-title">{t(`vibes.${vibe}`)}</span>
                     <span className="pub-profile-identity-card-sub">{t(`vibeTaglines.${vibe}`)}</span>
                   </div>
                 )}
                 {mode && (
                   <div className="pub-profile-identity-card">
-                    <span className="pub-profile-identity-card-icon">{MODE_META[mode].emoji}</span>
+                    <span className="pub-profile-identity-card-icon" style={{ color: mode === 'local' ? 'var(--local-text)' : 'var(--traveler-text)' }}><Icon name={MODE_META[mode].icon} size={24} /></span>
                     <span className="pub-profile-identity-card-title">{t(`modes.${mode}`)}</span>
                     <span className="pub-profile-identity-card-sub">
                       {mode === 'local'
@@ -461,10 +452,10 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                   {/* Mode sub-tabs - All / Local / International. */}
                   <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '0 0 8px' }}>
                     {[
-                      { key: 'all',           emoji: '✨' },
-                      { key: 'local',         emoji: '🏙️' },
-                      { key: 'international', emoji: '🌐' },
-                    ].map(({ key, emoji }) => (
+                      { key: 'all',           icon: 'sparkles-outline' },
+                      { key: 'local',         icon: 'location-outline' },
+                      { key: 'international', icon: 'globe-outline' },
+                    ].map(({ key, icon }) => (
                       <button
                         key={key}
                         type="button"
@@ -473,7 +464,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                         className={`challenge-type-chip${challengeSubTab === key ? ' challenge-type-chip--active' : ''}`}
                         onClick={() => setChallengeSubTab(key)}
                       >
-                        <span aria-hidden="true">{emoji}</span>
+                        <Icon name={icon} size={15} />
                         <span>{key === 'all'
                           ? t('modeFilter.all', { ns: 'challenge' })
                           : t(`mode.${key}`,    { ns: 'challenge' })}</span>
@@ -490,10 +481,10 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                           onClick={() => onOpenChallenge ? onOpenChallenge(c) : undefined}
                           style={{ cursor: onOpenChallenge ? 'pointer' : 'default' }}
                         >
-                          <span className="pub-profile-event-icon">{CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'}</span>
+                          <span className="pub-profile-event-icon"><Icon name={CHALLENGE_TYPE_ICONS[c.challenge_type] ?? 'flame-outline'} size={20} /></span>
                           <div className="pub-profile-event-info">
                             <span className="pub-profile-event-title">
-                              {(c.mode ?? 'local') === 'international' ? '🌐 ' : ''}{c.title}
+                              {(c.mode ?? 'local') === 'international' && <Icon name="globe-outline" size={14} style={{ marginRight: 4 }} />}{c.title}
                             </span>
                             {c.status === 'validated' && (
                               <span className="pub-profile-event-live">{t('validatedBadge', { ns: 'challenge' })}</span>
@@ -519,7 +510,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                         onClick={() => onOpenHangout ? onOpenHangout(h) : undefined}
                         style={{ cursor: onOpenHangout ? 'pointer' : 'default' }}
                       >
-                        <span className="pub-profile-event-icon">{HANGOUT_ICONS[h.category] ?? '💬'}</span>
+                        <span className="pub-profile-event-icon"><Icon name={TOPIC_ICONS[h.category] ?? 'chatbubble-outline'} size={20} /></span>
                         <div className="pub-profile-event-info">
                           <span className="pub-profile-event-title">{h.title}</span>
                           {h.is_owner && <span className="profile-host-tag">{t('host')}</span>}
@@ -538,7 +529,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                       const isLive = ev.starts_at <= now && ev.expires_at > now
                       return (
                         <div key={ev.id} className="pub-profile-event-row">
-                          <span className="pub-profile-event-icon">{eventIcon(ev.event_type)}</span>
+                          <span className="pub-profile-event-icon"><Icon name={eventIcon(ev.event_type)} size={20} /></span>
                           <div className="pub-profile-event-info">
                             <span className="pub-profile-event-title">{ev.title}</span>
                             {isLive && <span className="pub-profile-event-live">{t('live')}</span>}
@@ -592,7 +583,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                   <div className="pub-profile-vibe-score">
                     <div className="pub-profile-vibe-stars">
                       {[1,2,3,4,5].map(s => (
-                        <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
+                        <span key={s} className={s <= Math.round(vibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}><Icon name="star" size={22} /></span>
                       ))}
                     </div>
                     <span className="pub-profile-vibe-avg">{t('vibesTab.score', { score: vibeScore?.toFixed(1) })}</span>
@@ -610,7 +601,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                       <div className="pub-profile-vibe-form">
                         <div className="pub-profile-vibe-form-stars">
                           {[1,2,3,4,5].map(s => (
-                            <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)}>★</button>
+                            <button key={s} className={`vibe-star-btn${vibeRating >= s ? ' on' : ''}`} onClick={() => setVibeRating(s)} aria-label={`${s}/5`}><Icon name="star" size={28} /></button>
                           ))}
                         </div>
                         <textarea
@@ -652,7 +643,7 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
                             <div className="pub-profile-vibe-content">
                               <div className="pub-profile-vibe-header">
                                 <span className="pub-profile-vibe-author">{v.authorName}</span>
-                                <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
+                                <span className="pub-profile-vibe-rating" style={{ display: 'inline-flex', gap: 1 }}>{Array.from({ length: v.rating }, (_, i) => <Icon key={i} name="star" size={12} />)}</span>
                               </div>
                               {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
                             </div>
@@ -749,8 +740,9 @@ export default function PublicProfileScreen({ userId, account, guest, onBack, on
             className="pub-profile-report-btn"
             onClick={() => { setShowReportForm(f => !f); setReportSent(false); setReportError(null) }}
             title={t('actions.reportTitle')}
+            aria-label={t('actions.reportTitle')}
           >
-            🚩
+            <Icon name="flag-outline" size={18} />
           </button>
         </div>
       )}

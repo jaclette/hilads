@@ -3,13 +3,17 @@ import { useTranslation } from 'react-i18next'
 import { fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { THEME_EMOJI, APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
+import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
+import { THEME_ICON } from '../../lib/icons'
+import Icon from '../Icon'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, personName, seedProofs, seedVotesLeft,
   StatusChip, OriginalToggle, useOriginal, ProposedBy,
 } from '../daily/dailyShared'
 import { useLeaderboard } from '../daily/ChallengeScreen'
 import { ymd } from '../daily/CalendarScreen'
+
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
 const addDays = (date, n) => ymd(new Date(Date.parse(`${date}T12:00:00Z`) + n * 86400000))
 
@@ -97,7 +101,7 @@ function Ticket({ data, loading }) {
   if (!challenge) {
     return (
       <div className="today-ticket today-top">
-        <span className="today-kicker">🔥 {t('kicker')}</span>
+        <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
         <p className="today-text">{t('nothingLive')}</p>
         {data?.secondsLeft != null && <p className="today-meta">{t('nextIn', { time: formatCountdown(data.secondsLeft) })}</p>}
       </div>
@@ -117,15 +121,15 @@ function Ticket({ data, loading }) {
          aria-label={`${t('kicker')}: ${challenge.text}`}>
       <div className="today-top">
         <div className="today-head">
-          <span className="today-kicker">🔥 {t('kicker')}</span>
-          {challenge.theme && <span className="today-chip">{THEME_EMOJI[challenge.theme.key] || '•'} {challenge.theme.name}</span>}
+          <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
+          {challenge.theme && <span className="today-chip" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{challenge.theme.name}</span>}
         </div>
         <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
         {challenge.proposedBy && <ProposedBy credit={challenge.proposedBy} />}
         <div className="today-meta-row">
           {secondsLeft !== null && (
-            <span className={`today-meta${isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`}>⏱ {t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
+            <span className={`today-meta${isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`} style={ROW}><Icon name="time-outline" size={14} />{t('timeLeft', { time: formatCountdown(secondsLeft) })}</span>
           )}
           {earlyUntil && <span className="today-early">{t('today.early', { time: timeOf(earlyUntil) })}</span>}
         </div>
@@ -155,13 +159,13 @@ function Ticket({ data, loading }) {
             track('daily_proposal_started', { entry: 'twist_hero', type: 'twist', platform_surface: 'web' })
             openDaily('twist')
           }}>
-            <span aria-hidden="true">🌱</span>
+            <Icon name="leaf-outline" size={18} />
             <span className="today-propose-text">
               {data.twistProposal.status
                 ? t('twist.heroStatus', { status: t(`twist.status.${data.twistProposal.status}`) })
                 : t('twist.heroCta', { time: timeOf(data.twistProposal.closesAt) })}
             </span>
-            <span aria-hidden="true">›</span>
+            <Icon name="chevron-forward" size={16} />
           </button>
         )}
       </div>
@@ -207,8 +211,9 @@ function Week({ today }) {
   return (
     <div className="week">
       <div className="week-head">
-        <button type="button" className="week-streak" onClick={() => (account ? openDaily('calendar') : needAccount('view_profile'))}>
-          🔥 {streak ? t('streak', { count: streak }) : t('week.title')}
+        <button type="button" className="week-streak" style={ROW} onClick={() => (account ? openDaily('calendar') : needAccount('view_profile'))}>
+          <Icon name="flame-outline" size={17} style={{ color: 'var(--primary-text)' }} />
+          {streak ? t('streak', { count: streak }) : t('week.title')}
         </button>
         {tomorrowTheme && <span className="week-tomorrow">{t('today.tomorrow', { theme: tomorrowTheme.name })}</span>}
       </div>
@@ -223,13 +228,16 @@ function Week({ today }) {
                     disabled={state === 'tomorrow' || state === 'later'} aria-label={`${weekday}: ${t(`today.day.${state}`)}`}>
               <span className={`week-weekday${state === 'today' ? ' week-weekday--today' : ''}`}>{weekday}</span>
               <span className={`week-dot week-dot--${state}`}>
-                {state === 'done' ? '✓' : state === 'pending' ? '⏳' : state === 'missed' ? '✕' : (theme ? THEME_EMOJI[theme] : '')}
+                {state === 'done' ? <Icon name="checkmark" size={18} />
+                  : state === 'pending' ? <Icon name="hourglass-outline" size={17} />
+                  : state === 'missed' ? <Icon name="close" size={17} />
+                  : theme && THEME_ICON[theme] ? <Icon name={THEME_ICON[theme]} size={17} /> : null}
               </span>
             </button>
           )
         })}
       </div>
-      <button type="button" className="week-propose" onClick={propose}>💡 {t('propose.cta')}</button>
+      <button type="button" className="week-propose" style={ROW} onClick={propose}><Icon name="bulb-outline" size={16} />{t('propose.cta')}</button>
     </div>
   )
 }
@@ -345,7 +353,7 @@ function SpotsNear() {
       </div>
       {fallback && spots.length > 0 && <p className="dc-muted">{t('today.spotsFallback')}</p>}
       {spots.length === 0 ? (
-        <button type="button" className="spots-empty" onClick={() => openSpot(null)}>📍 {t('today.spotsEmpty')}</button>
+        <button type="button" className="spots-empty" onClick={() => openSpot(null)}><Icon name="location-outline" size={18} style={{ color: 'var(--primary-text)' }} />{t('today.spotsEmpty')}</button>
       ) : (
         <div className="spots-row">
           {spots.map(s => (
@@ -353,9 +361,9 @@ function SpotsNear() {
               {s.cover?.thumbUrl || s.cover?.photoUrl ? <img src={s.cover.thumbUrl || s.cover.photoUrl} alt="" loading="lazy" /> : <span className="spot-card-img" />}
               <span className="spot-card-body">
                 <span className="spot-card-name">{s.name}</span>
-                <span className="dc-muted">
-                  {s.distanceM !== undefined ? `📍 ${distance(s.distanceM, i18n.language)}` : ''}
-                  {s.themes?.[0] ? ` ${THEME_EMOJI[s.themes[0]]}` : ''}
+                <span className="dc-muted" style={ROW}>
+                  {s.distanceM !== undefined && <><Icon name="location-outline" size={13} />{distance(s.distanceM, i18n.language)}</>}
+                  {s.themes?.[0] && THEME_ICON[s.themes[0]] ? <Icon name={THEME_ICON[s.themes[0]]} size={13} /> : null}
                 </span>
               </span>
             </button>

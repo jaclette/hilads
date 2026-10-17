@@ -6,13 +6,18 @@ import {
 } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
-import { THEME_KEYS, THEME_NAMES, THEME_EMOJI } from '../map/spotsShared'
+import { THEME_KEYS, THEME_NAMES } from '../map/spotsShared'
+import { THEME_ICON } from '../../lib/icons'
+import Icon from '../Icon'
 import { useDaily, useDc, useCountdown, formatCountdown, useOriginal, OriginalToggle } from './dailyShared'
 
 // Proposals on the web (W2, the app's daily/propose, daily/twist and
 // daily/proposals): signed-in only, same API and rules as the app.
 
 const TEXT_MAX  = 120
+
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const LINE = { display: 'flex', alignItems: 'flex-start', gap: 6 }
 const WHY_MAX   = 200
 const TWIST_MAX = 280
 
@@ -76,9 +81,9 @@ export function ProposeScreen({ source = null, onBack }) {
 
   if (sent) {
     return (
-      <Page title={`💡 ${t('propose.title')}`} onBack={onBack}>
+      <Page title={t('propose.title')} onBack={onBack}>
         <div className="dc-center">
-          <span className="dc-big-emoji">💡</span>
+          <span className="dc-big-emoji" style={{ color: 'var(--primary-text)' }}><Icon name="bulb-outline" size={44} /></span>
           <p className="dc-empty-title">{t('propose.sentTitle')}</p>
           <p className="dc-muted">{t('propose.sentBody')}</p>
           <button type="button" className="today-cta dc-full" onClick={() => { onBack(); openDaily('proposals') }}>{t('propose.seeMine')}</button>
@@ -88,7 +93,7 @@ export function ProposeScreen({ source = null, onBack }) {
   }
 
   return (
-    <Page title={`💡 ${t('propose.title')}`} onBack={onBack}>
+    <Page title={t('propose.title')} onBack={onBack}>
       <label className="dc-label" htmlFor="dc-text">{t('propose.textLabel')}</label>
       <textarea id="dc-text" className="dc-input dc-input--tall" value={text} onChange={e => setText(e.target.value)}
                 placeholder={t('propose.textPlaceholder')} maxLength={TEXT_MAX + 20} />
@@ -97,8 +102,8 @@ export function ProposeScreen({ source = null, onBack }) {
       <span className="dc-label">{t('propose.themeLabel')}</span>
       <div className="dc-chips">
         {THEME_KEYS.map(k => (
-          <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} onClick={() => setTheme(k)} aria-pressed={theme === k}>
-            {THEME_EMOJI[k]} {THEME_NAMES[k]}
+          <button key={k} type="button" className={`wm-chip${theme === k ? ' wm-chip--on' : ''}`} style={ROW} onClick={() => setTheme(k)} aria-pressed={theme === k}>
+            <Icon name={THEME_ICON[k]} size={15} />{THEME_NAMES[k]}
           </button>
         ))}
       </div>
@@ -108,7 +113,7 @@ export function ProposeScreen({ source = null, onBack }) {
 
       {canTwist && (
         <>
-          <label className="dc-label" htmlFor="dc-twist">📍 {t('propose.twistLabel', { city: cityName })}</label>
+          <label className="dc-label" htmlFor="dc-twist" style={ROW}><Icon name="location-outline" size={15} />{t('propose.twistLabel', { city: cityName })}</label>
           <textarea id="dc-twist" className="dc-input" value={twist} onChange={e => setTwist(e.target.value)}
                     placeholder={t('propose.twistPlaceholder', { city: cityName })} maxLength={TWIST_MAX} />
         </>
@@ -116,7 +121,7 @@ export function ProposeScreen({ source = null, onBack }) {
 
       <div className="dc-rules">
         <p className="dc-section">{t('propose.rulesTitle')}</p>
-        {[1, 2, 3, 4, 5].map(i => <p key={i} className="dc-line">✓ {t(`propose.rule${i}`)}</p>)}
+        {[1, 2, 3, 4, 5].map(i => <p key={i} className="dc-line" style={LINE}><Icon name="checkmark" size={16} style={{ color: 'var(--green)', marginTop: 2 }} /><span>{t(`propose.rule${i}`)}</span></p>)}
         <p className="dc-muted">{t('propose.reviewed')}</p>
       </div>
 
@@ -186,23 +191,24 @@ export function TwistScreen({ onBack }) {
   const blocked = data?.reason && data.reason !== 'closed' ? data.reason : null
 
   return (
-    <Page title={`🌱 ${t('twist.title')}`} onBack={onBack}>
+    <Page title={t('twist.title')} onBack={onBack}>
       {!data && !failed ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
       : failed ? (
         <div className="dc-center"><p className="dc-muted">{t('loadFailed')}</p><button type="button" className="dc-link" onClick={load}>{t('retry')}</button></div>
       ) : blocked ? (
-        <div className="dc-center"><p className="dc-empty-title">🌱 {t('twist.title')}</p><p className="dc-muted">{t(`twist.reasons.${blocked}`, { city: cityName, defaultValue: t('errors.generic') })}</p></div>
+        <div className="dc-center"><Icon name="leaf-outline" size={30} style={{ color: 'var(--muted2)' }} /><p className="dc-empty-title">{t('twist.title')}</p><p className="dc-muted">{t(`twist.reasons.${blocked}`, { city: cityName, defaultValue: t('errors.generic') })}</p></div>
       ) : (
         <>
           <div className="dc-card">
-            <span className="today-kicker">🔥 {t('twist.tomorrow')}</span>
+            <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('twist.tomorrow')}</span>
             <p className="today-text">{showOriginal && data.challenge?.original ? data.challenge.original.text : data.challenge?.text}</p>
             {data.challenge?.context && <p className="dc-context">{showOriginal && data.challenge.original ? data.challenge.original.context : data.challenge.context}</p>}
             <OriginalToggle translated={!!data.challenge?.original} showingOriginal={showOriginal} onClick={toggleOriginal} />
           </div>
           <p className="dc-line">{t('twist.intro', { city: cityName })}</p>
-          <p className={`dc-countdown${data.open ? '' : ' dc-countdown--warn'}`}>
-            {data.open && left !== null ? `⏱ ${t('twist.closesIn', { time: formatCountdown(left) })}` : t('twist.closed')}
+          <p className={`dc-countdown${data.open ? '' : ' dc-countdown--warn'}`} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            {data.open && left !== null && <Icon name="time-outline" size={14} />}
+            {data.open && left !== null ? t('twist.closesIn', { time: formatCountdown(left) }) : t('twist.closed')}
           </p>
 
           {proposal && !editing && (
@@ -271,8 +277,8 @@ export function ProposalsScreen({ onBack }) {
   }
 
   return (
-    <Page title={`💡 ${t('propose.mineTitle')}`} onBack={onBack}>
-      <button type="button" className="today-cta dc-full" onClick={() => openDaily('propose', { source: 'my_proposals' })}>💡 {t('propose.cta')}</button>
+    <Page title={t('propose.mineTitle')} onBack={onBack}>
+      <button type="button" className="today-cta dc-full" style={{ gap: 8 }} onClick={() => openDaily('propose', { source: 'my_proposals' })}><Icon name="bulb-outline" size={18} />{t('propose.cta')}</button>
       {failed && !items ? (
         <div className="dc-center"><p className="dc-muted">{t('loadFailed')}</p><button type="button" className="dc-link" onClick={load}>{t('retry')}</button></div>
       ) : !items ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
@@ -287,12 +293,12 @@ export function ProposalsScreen({ onBack }) {
           <div key={`${item.type}:${item.id}`} className={`dc-practical${canOpen ? ' dc-clickable' : ''}`}
                onClick={canOpen ? () => openDaily('challenge', { date: item.date }) : undefined}>
             <div className="dc-card-top">
-              <span className="dc-section">{item.type === 'twist' ? `📍 ${t('propose.typeTwist')}` : `💡 ${t('propose.typeChallenge')}`}</span>
+              <span className="dc-section" style={ROW}><Icon name={item.type === 'twist' ? 'location-outline' : 'bulb-outline'} size={15} />{item.type === 'twist' ? t('propose.typeTwist') : t('propose.typeChallenge')}</span>
               <span className={`dc-status dc-status--${tone}`}>{t(`propose.status.${item.status}`, { date })}</span>
             </div>
             <p className="dc-line">{item.text}</p>
             <p className="dc-muted">{[item.theme?.name, item.city ? localizeCityName(item.city.name ?? '') : ''].filter(Boolean).join(' · ')}</p>
-            {item.twistText && <p className="dc-line">📍 {item.twistText}</p>}
+            {item.twistText && <p className="dc-line" style={LINE}><Icon name="location-outline" size={15} style={{ marginTop: 3 }} /><span>{item.twistText}</span></p>}
             {item.rejectionReason && <p className="dc-reason">{t('propose.reason', { reason: item.rejectionReason })}</p>}
             {item.type === 'challenge' && item.status === 'pending' && (
               <button type="button" className="dc-link dc-link--danger" onClick={(e) => { e.stopPropagation(); withdraw(item) }}>{t('propose.withdraw')}</button>

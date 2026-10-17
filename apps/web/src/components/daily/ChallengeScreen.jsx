@@ -6,10 +6,15 @@ import { track } from '../../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore } from '../map/spotsShared'
 import {
   useDaily, useDc, useCountdown, formatCountdown, isFinalHours, formatAmount, personName, seedProofs, seedVotesLeft,
-  MEDALS, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer,
+  RankMedal, RoleLabel, LocalPassBadge, StatusChip, OriginalToggle, useOriginal, ProposedBy, ProofTile, ProofViewer,
 } from './dailyShared'
+import Icon from '../Icon'
+import { THEME_ICON } from '../../lib/icons'
 
 const POLL_MS = 30_000
+
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
+const LINE = { display: 'flex', alignItems: 'center', gap: 6 }
 
 /** Provisional leaderboard of the active challenge, polled every 30 s while shown. */
 export function useLeaderboard(active) {
@@ -145,12 +150,13 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
           <>
             <div className="dc-card">
               <div className="dc-card-top">
-                <span className="today-kicker">🔥 {t('kicker')}</span>
-                <span className={`dc-countdown${challenge.isActive && isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`}>
-                  {challenge.isActive && secondsLeft !== null ? `⏱ ${t('timeLeft', { time: formatCountdown(secondsLeft) })}` : t('closed')}
+                <span className="today-kicker" style={ROW}><Icon name="flame-outline" size={14} />{t('kicker')}</span>
+                <span className={`dc-countdown${challenge.isActive && isFinalHours(secondsLeft) ? ' dc-countdown--warn' : ''}`} style={ROW}>
+                  {challenge.isActive && secondsLeft !== null && <Icon name="time-outline" size={14} />}
+                  {challenge.isActive && secondsLeft !== null ? t('timeLeft', { time: formatCountdown(secondsLeft) }) : t('closed')}
                 </span>
               </div>
-              {challenge.theme && <span className="today-chip dc-theme">{challenge.theme.name}</span>}
+              {challenge.theme && <span className="today-chip dc-theme" style={ROW}><Icon name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} />{challenge.theme.name}</span>}
               <p className="today-text">{showOriginal && challenge.original ? challenge.original.text : challenge.text}</p>
               {challenge.context && <p className="dc-context">{showOriginal && challenge.original ? challenge.original.context : challenge.context}</p>}
               <OriginalToggle translated={!!challenge.original || !!sheet.twist?.originalText} showingOriginal={showOriginal} onClick={toggleOriginal} />
@@ -158,7 +164,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
 
               {sheet.twist && isLive && (
                 <div className="dc-twist">
-                  <span className="dc-twist-label">📍 {t('twistIn', { city: cityName })}</span>
+                  <span className="dc-twist-label" style={ROW}><Icon name="location-outline" size={14} />{t('twistIn', { city: cityName })}</span>
                   <span className="dc-twist-text">{showOriginal && sheet.twist.originalText ? sheet.twist.originalText : sheet.twist.text}</span>
                   {sheet.twist.author ? (
                     <button type="button" className="dc-author" onClick={() => goProfile(sheet.twist.author.id, personName(sheet.twist.author))}>
@@ -192,7 +198,7 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
             <div className="dc-tabs" role="tablist">
               {(isLive ? ['world', 'city', 'top10'] : ['world', 'top10']).map(k => (
                 <button key={k} type="button" role="tab" aria-selected={tab === k} className={`dc-tab${tab === k ? ' dc-tab--on' : ''}`} onClick={() => selectTab(k)}>
-                  {k === 'world' ? `🌍 ${t('tabWorld')}` : k === 'city' ? `🏙️ ${cityName}` : `🏆 ${t('leaderboard.tab')}`}
+                  {k === 'world' ? t('tabWorld') : k === 'city' ? cityName : t('leaderboard.tab')}
                 </button>
               ))}
             </div>
@@ -201,7 +207,8 @@ function Sheet({ date, proofId = null, tab: initialTab = null, source = null, on
               <LeaderboardPanel sheet={sheet} secondsLeft={secondsLeft} onOpenProof={openProof} />
             ) : sheet.proofs.length === 0 ? (
               <div className="dc-center">
-                <p className="dc-empty-title">✨ {t('beFirst')}</p>
+                <Icon name="camera-outline" size={30} style={{ color: 'var(--muted2)' }} />
+                <p className="dc-empty-title">{t('beFirst')}</p>
                 <p className="dc-muted">{t('beFirstSub')}</p>
               </div>
             ) : (
@@ -234,16 +241,17 @@ function Practical({ sheet, onOpenProof, onOpenSpot }) {
     <div className="dc-practical">
       <p className="dc-section">{t('practicalTitle')}</p>
       {range && (
-        <p className="dc-line">
-          💸 {range.min === range.max
+        <p className="dc-line" style={LINE}>
+          <Icon name="cash-outline" size={16} style={{ color: 'var(--muted2)' }} />
+          <span>{range.min === range.max
             ? t('priceOne', { amount: formatAmount(range.min, i18n.language), currency: range.currency })
             : t('priceRange', { min: formatAmount(range.min, i18n.language), max: formatAmount(range.max, i18n.language), currency: range.currency })}
-          {range.count ? ` · ${t('priceFrom', { count: range.count })}` : ''}
+          {range.count ? ` · ${t('priceFrom', { count: range.count })}` : ''}</span>
         </p>
       )}
       {places.length > 0 && (
         <>
-          <p className="dc-line">📍 {t('places', { count: places.length })}</p>
+          <p className="dc-line" style={LINE}><Icon name="location-outline" size={16} style={{ color: 'var(--muted2)' }} />{t('places', { count: places.length })}</p>
           <button type="button" className="dc-pill-btn" onClick={() => onOpenSpot(null)}>{t('map.see')}</button>
           {places.slice(0, 5).map(p => (
             <button key={p.proofId} type="button" className="dc-place" onClick={() => onOpenProof(p.proofId)}>· {p.name || t('unnamedPlace')}</button>
@@ -265,12 +273,12 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
     const r = sheet.results
     return (
       <div className="dc-board">
-        <p className="dc-section">🏆 {t('leaderboard.official')}</p>
+        <p className="dc-section" style={LINE}><Icon name="trophy-outline" size={16} />{t('leaderboard.official')}</p>
         {!r || (r.world.length === 0 && r.cities.length === 0) ? <p className="dc-muted">{t('results.none')}</p> : (
           <>
-            {r.world.map((p, i) => <ResultRow key={p.id} proof={p} label={MEDALS[i]} onOpen={() => onOpenProof(p.id)} />)}
+            {r.world.map((p, i) => <ResultRow key={p.id} proof={p} label={<RankMedal rank={i + 1} />} onOpen={() => onOpenProof(p.id)} />)}
             {r.cities.length > 0 && <p className="dc-section">{t('results.bestInCities')}</p>}
-            {r.cities.map(p => <ResultRow key={`c${p.id}`} proof={p} label="📍" onOpen={() => onOpenProof(p.id)} />)}
+            {r.cities.map(p => <ResultRow key={`c${p.id}`} proof={p} label={<Icon name="location-outline" size={18} />} onOpen={() => onOpenProof(p.id)} />)}
           </>
         )}
       </div>
@@ -280,7 +288,7 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
   const myProof = sheet.myProof
   return (
     <div className="dc-board">
-      <p className="dc-section">🏆 {t('leaderboard.tab')}</p>
+      <p className="dc-section" style={LINE}><Icon name="trophy-outline" size={16} />{t('leaderboard.tab')}</p>
       <p className="dc-muted">
         {t('leaderboard.provisional')}
         {secondsLeft !== null ? ` · ${t('leaderboard.finalIn', { time: formatCountdown(secondsLeft) })}` : ''}
@@ -296,14 +304,14 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
         <p className="dc-muted">{myProof?.status === 'pending' ? t('leaderboard.pending') : !myProof ? t('leaderboard.noProof') : ''}</p>
       )}
       {!board ? <div className="dc-center"><span className="wm-spinner" aria-hidden="true" /></div>
-      : !board.ranked ? <p className="dc-empty-title">🔥 {t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })}</p>
-      : board.world.length === 0 ? <p className="dc-empty-title">♥ {t('leaderboard.noVotes')}</p>
+      : !board.ranked ? <p className="dc-empty-title" style={LINE}><Icon name="flame-outline" size={18} />{t('leaderboard.minProofs', { min: board.minProofs, n: board.approvedCount })}</p>
+      : board.world.length === 0 ? <p className="dc-empty-title" style={LINE}><Icon name="heart-outline" size={18} />{t('leaderboard.noVotes')}</p>
       : (
         <>
           {board.world.map(e => <EntryRow key={e.proofId} entry={e} mine={e.proofId === board.me?.proofId} onOpen={() => onOpenProof(e.proofId)} />)}
           {board.cities.map(c => (
             <div key={c.city.id}>
-              <p className="dc-section">📍 {t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</p>
+              <p className="dc-section" style={LINE}><Icon name="location-outline" size={16} />{t('leaderboard.cityTop', { city: localizeCityName(c.city.name) })}</p>
               {c.entries.map(e => <EntryRow key={`${c.city.id}:${e.proofId}`} entry={e} mine={e.proofId === board.me?.proofId} hideCity onOpen={() => onOpenProof(e.proofId)} />)}
             </div>
           ))}
@@ -314,25 +322,23 @@ function LeaderboardPanel({ sheet, secondsLeft, onOpenProof }) {
 }
 
 function EntryRow({ entry, mine, hideCity = false, onOpen }) {
-  const { t } = useDc()
   return (
     <button type="button" className={`dc-row${mine ? ' dc-row--mine' : ''}`} onClick={onOpen}>
-      <span className="dc-rank">{entry.rank <= 3 ? MEDALS[entry.rank - 1] : `#${entry.rank}`}</span>
+      <span className="dc-rank">{entry.rank <= 3 ? <RankMedal rank={entry.rank} /> : `#${entry.rank}`}</span>
       {entry.thumbUrl ? <img className="dc-row-thumb" src={entry.thumbUrl} alt="" /> : <span className="dc-row-thumb" />}
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(entry.user)} {entry.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
-          {entry.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
+          <RoleLabel isLocal={entry.isLocal} />
           {!hideCity && entry.city ? ` · ${localizeCityName(entry.city.name)}` : ''}
         </span>
       </span>
-      <span className="dc-row-votes">♥ {entry.voteCount}</span>
+      <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{entry.voteCount}</span>
     </button>
   )
 }
 
 function ResultRow({ proof, label, onOpen }) {
-  const { t } = useDc()
   return (
     <button type="button" className="dc-row" onClick={onOpen}>
       <span className="dc-rank">{label}</span>
@@ -340,11 +346,11 @@ function ResultRow({ proof, label, onOpen }) {
       <span className="dc-row-body">
         <span className="dc-row-name">{personName(proof.user)} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-muted">
-          {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
+          <RoleLabel isLocal={proof.isLocal} />
           {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
         </span>
       </span>
-      <span className="dc-row-votes">♥ {proof.voteCount}</span>
+      <span className="dc-row-votes" style={ROW}><Icon name="heart" size={14} />{proof.voteCount}</span>
     </button>
   )
 }

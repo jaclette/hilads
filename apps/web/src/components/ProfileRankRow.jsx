@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import RankBadge from './RankBadge'
 import { countryToFlag } from '../lib/countryFlag'
+import Icon from './Icon'
 
 /**
  * Monthly rank section for profile screens (own + other-user).
@@ -20,7 +21,7 @@ export default function ProfileRankRow({ rank, cityName, cityCountry, onOpenLead
   const { city, global, score_month: score, has_city: hasCity, top_n: topN } = rank
   if (!hasCity && score === 0 && global == null) return null
 
-  const flag = cityCountry ? countryToFlag(cityCountry) : '📍'
+  const flag = cityCountry ? countryToFlag(cityCountry) : <Icon name="location-outline" size={16} />
 
   const cityLine =
     !hasCity || !cityName
@@ -56,7 +57,7 @@ export default function ProfileRankRow({ rank, cityName, cityCountry, onOpenLead
         className={`profile-rank-row-line${onOpenLeaderboard ? ' profile-rank-row-line--tappable' : ''}`}
         onClick={onOpenLeaderboard ? () => onOpenLeaderboard('world') : undefined}
       >
-        <span className="profile-rank-row-emoji">🌐</span>
+        <span className="profile-rank-row-emoji"><Icon name="globe-outline" size={16} /></span>
         <span className="profile-rank-row-badge">
           {global != null ? <RankBadge rank={global} size={22} /> : null}
         </span>

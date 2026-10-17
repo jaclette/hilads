@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { track } from '../lib/analytics'
 import { APP_STORE, PLAY_STORE, deviceStore } from './map/spotsShared'
+import Icon from './Icon'
 
 /**
  * "See the spots on the map" (SPEC 9.10, web with 1.8.0): where the web used to
@@ -17,7 +18,7 @@ export default function AppMapCard({ city, placement, compact = false, onOpenMap
 
   return (
     <div className={`app-map-card${compact ? ' app-map-card--compact' : ''}`}>
-      {!compact && <span className="amc-icon" aria-hidden="true">🗺️</span>}
+      {!compact && <span className="amc-icon" aria-hidden="true" style={{ color: 'var(--primary-text)' }}><Icon name="map-outline" size={30} /></span>}
       <p className="amc-title">{city ? t('appMap.titleCity', { city }) : t('appMap.title')}</p>
       {!compact && <p className="amc-body">{t('appMap.body')}</p>}
       {onOpenMap && (

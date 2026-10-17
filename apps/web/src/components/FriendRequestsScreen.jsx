@@ -4,6 +4,7 @@ import {
   acceptFriendRequest, declineFriendRequest, cancelFriendRequest,
 } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 const AVATAR_BG = ['#7c6aff', '#ff6a9f', '#22d3ee', '#4ade80', '#fb923c', '#f472b6', '#818cf8', '#2dd4bf']
 function avatarBg(name) {
@@ -118,7 +119,7 @@ export default function FriendRequestsScreen({ onBack, onViewProfile, wsClient }
         <div className="friend-req-empty">Loading…</div>
       ) : list.length === 0 ? (
         <div className="friend-req-empty">
-          <div className="friend-req-empty-emoji">{tab === 'incoming' ? '👋' : '✉️'}</div>
+          <div className="friend-req-empty-emoji" style={{ color: 'var(--muted2)' }}><Icon name={tab === 'incoming' ? 'person-add-outline' : 'paper-plane-outline'} size={32} /></div>
           <div className="friend-req-empty-title">
             {tab === 'incoming' ? 'No friend requests yet' : "You haven't sent any"}
           </div>

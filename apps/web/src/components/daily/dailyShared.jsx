@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { voteDailyProof, unvoteDailyProof, reportDailyProof } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
+import Icon from '../Icon'
 
 // Shared pieces of the web Daily Challenge screens (W2, ports of the app's
 // features/daily): the screens' context, the app's strings (challenge.json →
@@ -24,7 +25,31 @@ export function useDc() {
   return useTranslation('challenge', { keyPrefix: 'dc' })
 }
 
-export const MEDALS = ['🥇', '🥈', '🥉']
+const INLINE = { display: 'inline-flex', alignItems: 'center', gap: 4 }
+
+/**
+ * A rank in a round seal: #1 on gold, #2 and #3 on the primary tint, the rest
+ * as a plain "#n" (the app's RankMedal; replaces the medal emoji).
+ */
+export function RankMedal({ rank, size = 26 }) {
+  if (rank > 3) return <span>#{rank}</span>
+  return (
+    <span className={`dc-medal${rank === 1 ? ' dc-medal--gold' : ''}`} style={{ width: size, height: size }} aria-label={`#${rank}`}>
+      {rank}
+    </span>
+  )
+}
+
+/** "Local" / "Traveler" with its icon (location / compass, as in the app). */
+export function RoleLabel({ isLocal }) {
+  const { t } = useDc()
+  return (
+    <span style={INLINE}>
+      <Icon name={isLocal ? 'location-outline' : 'compass-outline'} size={13} />
+      {isLocal ? t('local') : t('traveler')}
+    </span>
+  )
+}
 
 export const COUNTDOWN_WARNING_SECONDS = 3 * 3600
 export const isFinalHours = (s) => s !== null && s <= COUNTDOWN_WARNING_SECONDS
@@ -60,20 +85,20 @@ export const personName = (p) => p?.displayName || p?.username || ''
 
 export function LocalPassBadge({ label = false, onDark = false }) {
   const { t } = useDc()
-  return <span className={`dc-pass${onDark ? ' dc-pass--dark' : ''}`} aria-label={t('localPass.badgeA11y')}>🎫{label ? ` ${t('localPass.name')}` : ''}</span>
+  return <span className={`dc-pass${onDark ? ' dc-pass--dark' : ''}`} aria-label={t('localPass.badgeA11y')} style={INLINE}><Icon name="ticket-outline" size={12} />{label ? t('localPass.name') : null}</span>
 }
 
 export function EarlyBadge({ onDark = false }) {
   const { t } = useDc()
-  return <span className={`dc-early${onDark ? ' dc-early--dark' : ''}`}>⚡ {t('early.badge')}</span>
+  return <span className={`dc-early${onDark ? ' dc-early--dark' : ''}`} style={INLINE}><Icon name="flash-outline" size={11} />{t('early.badge')}</span>
 }
 
 /** "In review" / "Published" / "Not published" / "Removed" for my proof. */
 export function StatusChip({ status }) {
   const { t } = useDc()
   const tone = status === 'approved' ? 'ok' : status === 'pending' ? 'wait' : 'bad'
-  const icon = status === 'approved' ? '✅' : status === 'pending' ? '⏳' : '⚠️'
-  return <span className={`dc-status dc-status--${tone}`}>{icon} {t(`status.${status}`)}</span>
+  const icon = status === 'approved' ? 'checkmark-circle-outline' : status === 'pending' ? 'hourglass-outline' : 'warning-outline'
+  return <span className={`dc-status dc-status--${tone}`} style={INLINE}><Icon name={icon} size={13} />{t(`status.${status}`)}</span>
 }
 
 export function useOriginal() {
@@ -102,8 +127,9 @@ export function ProposedBy({ credit }) {
     openProfile(credit.user.id, name)
   }
   return (
-    <button type="button" className="dc-proposed" onClick={open}>
-      💡 {credit.city?.name
+    <button type="button" className="dc-proposed" onClick={open} style={INLINE}>
+      <Icon name="bulb-outline" size={14} />
+      {credit.city?.name
         ? t('propose.proposedByCity', { name, city: localizeCityName(credit.city.name) })
         : t('propose.proposedBy', { name })}
     </button>
@@ -187,7 +213,7 @@ export function VoteButton({ proof, variant = 'tile' }) {
       <button type="button" onClick={click} disabled={!state || (!!account && !canVote)}
               className={`dc-vote dc-vote--${variant}${state?.myVote ? ' dc-vote--on' : ''}`}
               aria-pressed={!!state?.myVote} aria-label={state?.myVote ? t('vote.withdraw') : t('vote.vote')}>
-        <span aria-hidden="true">{state?.myVote ? '♥' : '♡'}</span>
+        <Icon name={state?.myVote ? 'heart' : 'heart-outline'} size={variant === 'tile' ? 14 : 16} />
         {state && <span className="dc-vote-count">{state.voteCount}</span>}
         {sub && variant !== 'tile' && <span className="dc-vote-sub">{sub}</span>}
       </button>
@@ -204,15 +230,15 @@ export function ProofTile({ proof, onOpen }) {
     <div className="dc-tile" role="button" tabIndex={0} onClick={onOpen} onKeyDown={(e) => { if (e.key === 'Enter') onOpen() }}>
       <div className="dc-tile-photo">
         <img src={proof.thumbUrl || proof.photoUrl} alt={proof.caption || ''} loading="lazy" />
-        {proof.worldRank !== null && proof.worldRank <= 3 && <span className="dc-tile-medal">{MEDALS[proof.worldRank - 1]}</span>}
+        {proof.worldRank !== null && proof.worldRank <= 3 && <span className="dc-tile-medal"><RankMedal rank={proof.worldRank} /></span>}
       </div>
       <div className="dc-tile-meta">
         <span className="dc-tile-name">{name} {proof.user.localPass && <LocalPassBadge />}</span>
         <span className="dc-tile-sub">
-          {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
+          <RoleLabel isLocal={proof.isLocal} />
           {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
         </span>
-        {proof.validatedByLocal && <span className="dc-tile-badge">✓ {t('validatedByLocal')}</span>}
+        {proof.validatedByLocal && <span className="dc-tile-badge" style={INLINE}><Icon name="checkmark" size={12} />{t('validatedByLocal')}</span>}
         {proof.isEarly && <EarlyBadge />}
         {proof.caption && <span className="dc-tile-caption">{proof.caption}</span>}
         <VoteButton proof={proof} variant="tile" />
@@ -246,29 +272,31 @@ export function ProofViewer({ proof, onClose }) {
   // #root is the desktop column, so the viewer stays inside it.
   return createPortal(
     <div className="dc-viewer" role="dialog" aria-modal="true">
-      <button type="button" className="dc-viewer-close" onClick={onClose} aria-label={t('back')}>✕</button>
+      <button type="button" className="dc-viewer-close" onClick={onClose} aria-label={t('back')}><Icon name="close" size={22} /></button>
       <img className="dc-viewer-photo" src={proof.photoUrl} alt={proof.caption || ''} />
       <div className="dc-viewer-meta">
         <div className="dc-viewer-name">
-          {name} · {proof.isLocal ? `🌍 ${t('local')}` : `🧭 ${t('traveler')}`}
+          {name} · <RoleLabel isLocal={proof.isLocal} />
           {proof.city ? ` · ${localizeCityName(proof.city.name)}` : ''}
           {proof.user.localPass && <LocalPassBadge label onDark />}
           {proof.isEarly && <EarlyBadge onDark />}
         </div>
         {(proof.validatedByLocal || (proof.worldRank !== null && proof.worldRank <= 3)) && (
           <div className="dc-viewer-badge">
-            {proof.worldRank !== null && proof.worldRank <= 3 ? `${MEDALS[proof.worldRank - 1]} ${t('results.worldRank', { rank: proof.worldRank })}` : ''}
+            {proof.worldRank !== null && proof.worldRank <= 3 && (
+              <span style={INLINE}><RankMedal rank={proof.worldRank} size={20} />{t('results.worldRank', { rank: proof.worldRank })}</span>
+            )}
             {proof.worldRank !== null && proof.worldRank <= 3 && proof.validatedByLocal ? '  ·  ' : ''}
-            {proof.validatedByLocal ? `✓ ${t('validatedByLocal')}` : ''}
+            {proof.validatedByLocal && <span style={INLINE}><Icon name="checkmark" size={13} />{t('validatedByLocal')}</span>}
           </div>
         )}
         {proof.caption && <p className="dc-viewer-caption">{proof.caption}</p>}
         {(proof.price || proof.place || proof.spot) && (
           <p className="dc-viewer-extra">
-            {proof.price ? `💸 ${formatAmount(proof.price.amount, i18n.language)} ${proof.price.currency}   ` : ''}
+            {proof.price && <span style={{ ...INLINE, marginRight: 12 }}><Icon name="cash-outline" size={13} />{formatAmount(proof.price.amount, i18n.language)} {proof.price.currency}</span>}
             {proof.spot ? (
-              <button type="button" className="dc-viewer-spot" onClick={() => { onClose(); openSpot(proof.spot.id) }}>📍 {proof.spot.name}</button>
-            ) : proof.place ? `📍 ${proof.place.name || t('unnamedPlace')}` : ''}
+              <button type="button" className="dc-viewer-spot" style={INLINE} onClick={() => { onClose(); openSpot(proof.spot.id) }}><Icon name="location-outline" size={13} />{proof.spot.name}</button>
+            ) : proof.place ? <span style={INLINE}><Icon name="location-outline" size={13} />{proof.place.name || t('unnamedPlace')}</span> : ''}
           </p>
         )}
         <div className="dc-viewer-actions">

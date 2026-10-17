@@ -2,10 +2,11 @@ import { useState, useRef, useEffect } from 'react'
 import { useTranslation, Trans } from 'react-i18next'
 import { authSignup, authLogin, checkUsernameAvailability } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 const MODES = [
-  { key: 'local',     emoji: '🌍' },
-  { key: 'exploring', emoji: '🧭' },
+  { key: 'local',     icon: 'location-outline' },
+  { key: 'exploring', icon: 'compass-outline' },
 ]
 
 export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, onForgotPassword, initialTab = 'signup' }) {
@@ -127,7 +128,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                       className={`profile-mode-btn${mode === m.key ? ' profile-mode-btn--on' : ''}`}
                       onClick={() => setMode(m.key)}
                     >
-                      <span className="profile-mode-btn-emoji">{m.emoji}</span>
+                      <span className="profile-mode-btn-emoji"><Icon name={m.icon} size={26} /></span>
                       <span className="profile-mode-btn-name">{t(`modes.${m.key}`)}</span>
                       <span className="profile-mode-btn-desc">{t(`modes.${m.key}Desc`)}</span>
                     </button>
@@ -178,7 +179,7 @@ export default function AuthScreen({ guestId, guestNickname, onSuccess, onBack, 
                 aria-pressed={showPassword}
                 tabIndex={-1}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? <Icon name="eye-off-outline" size={20} /> : <Icon name="eye-outline" size={20} />}
               </button>
             </div>
           </div>

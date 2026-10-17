@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { authValidateResetToken, authResetPassword } from '../api'
+import Icon from './Icon'
 
 export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) {
   const [valid,    setValid]    = useState(null)  // null=checking, true, false
@@ -50,7 +51,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
       <div className="full-page">
         <div className="page-body page-body--centered">
           <div className="auth-success">
-            <p className="auth-success-icon">⚠️</p>
+            <p className="auth-success-icon" style={{ color: 'var(--warning)' }}><Icon name="warning-outline" size={40} /></p>
             <p className="auth-success-title">Link expired</p>
             <p className="auth-success-body">
               This reset link is invalid or expired.
@@ -70,7 +71,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
       <div className="full-page">
         <div className="page-body page-body--centered">
           <div className="auth-success">
-            <p className="auth-success-icon">✅</p>
+            <p className="auth-success-icon" style={{ color: 'var(--green)' }}><Icon name="checkmark-circle-outline" size={40} /></p>
             <p className="auth-success-title">Password updated</p>
             <p className="auth-success-body">Your password has been updated. You are now signed in.</p>
           </div>
@@ -107,7 +108,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
                 aria-pressed={showPassword}
                 tabIndex={-1}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? <Icon name="eye-off-outline" size={20} /> : <Icon name="eye-outline" size={20} />}
               </button>
             </div>
           </div>
@@ -131,7 +132,7 @@ export default function ResetPasswordScreen({ token, onSuccess, onRequestNew }) 
                 aria-pressed={showPassword}
                 tabIndex={-1}
               >
-                {showPassword ? '🙈' : '👁️'}
+                {showPassword ? <Icon name="eye-off-outline" size={20} /> : <Icon name="eye-outline" size={20} />}
               </button>
             </div>
           </div>

@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { fetchDailyToday, fetchLeaderboard, fetchMyProposals, fetchMySpots, fetchUserDaily, fetchUserFriends, fetchWeeklyRank } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { thumbUrl } from '../../lib/imageThumb'
-import { THEME_KEYS, THEME_NAMES, THEME_EMOJI } from '../map/spotsShared'
+import { THEME_KEYS, THEME_NAMES } from '../map/spotsShared'
+import { THEME_ICON } from '../../lib/icons'
+import Icon from '../Icon'
 
 // Each stamp sits at its own slight angle, like a real passport (passport.html).
 const ROTATION = [-6, 5, -3, 7, -5, 4, -7]
@@ -13,6 +15,8 @@ const POINTS = [
   ['proof', 10], ['early', 5], ['streak', 2], ['vote', 2],
   ['top', '30 / 20 / 10'], ['cityBest', 15], ['twist', 15], ['proposal', 25], ['localPass', 50],
 ]
+
+const ROW = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 
 const usePp = () => useTranslation('profile', { keyPrefix: 'pp' })
 
@@ -97,11 +101,11 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
 
         <div className="pp-cards">
           <div className="pp-card">
-            <span className="pp-card-title">🔥 {tc('dc.streak', { count: streak })}</span>
+            <span className="pp-card-title" style={ROW}><Icon name="flame-outline" size={18} />{tc('dc.streak', { count: streak })}</span>
             <span className="dc-muted">{t('passport.best', { count: stats?.bestStreak ?? 0 })}</span>
           </div>
           <div className="pp-card">
-            <span className="pp-card-title">🏆 {counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
+            <span className="pp-card-title" style={ROW}><Icon name="trophy-outline" size={18} />{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</span>
             <span className="dc-muted pp-ellipsis">{city ? t('passport.mostLocalIn', { city }) : t('passport.mostLocalWorld')}</span>
           </div>
         </div>
@@ -124,7 +128,7 @@ export default function PassportScreen({ account, guestName, guestMode, cityId, 
                onClick={() => onOpen('alltime')} />
         </div>
 
-        <button type="button" className="dc-link pp-help" onClick={() => setHelp(true)}>ⓘ {t('passport.howPoints')}</button>
+        <button type="button" className="dc-link pp-help" style={ROW} onClick={() => setHelp(true)}><Icon name="information-circle-outline" size={16} />{t('passport.howPoints')}</button>
       </div>
       {help && <PointsSheet onClose={() => setHelp(false)} />}
     </div>
@@ -143,7 +147,7 @@ function Identity({ name, photo, mode, city }) {
         <span className="pp-name">{name}</span>
         <div className="pp-chips">
           {mode && <span className={`pp-chip ${local ? 'pp-chip--local' : 'pp-chip--traveler'}`}>{t(`mode.${local ? 'local' : 'exploring'}.label`)}</span>}
-          {city && <span className="pp-chip pp-chip--city">📍 {city}</span>}
+          {city && <span className="pp-chip pp-chip--city" style={{ ...ROW, gap: 4 }}><Icon name="location-outline" size={13} />{city}</span>}
         </div>
       </div>
     </div>
@@ -173,16 +177,16 @@ function CityPage({ cityName, themes, earned, todayTheme, tomorrowTheme }) {
           return (
             <div key={k} className="pp-cell">
               {stamped ? (
-                <span className="pp-stamp" style={{ transform: `rotate(${ROTATION[i]}deg)` }}><span className="pp-stamp-inner">{THEME_EMOJI[k]}</span></span>
+                <span className="pp-stamp" style={{ transform: `rotate(${ROTATION[i]}deg)` }}><span className="pp-stamp-inner" style={{ color: 'var(--primary)' }}><Icon name={THEME_ICON[k]} size={22} /></span></span>
               ) : (
-                <span className={`pp-empty${next ? ' pp-empty--next' : ''}`}>{THEME_EMOJI[k]}</span>
+                <span className={`pp-empty${next ? ' pp-empty--next' : ''}`} style={{ color: next ? 'var(--primary)' : 'var(--muted2)' }}><Icon name={THEME_ICON[k]} size={22} /></span>
               )}
               <span className={`pp-label${!stamped && !next ? ' pp-label--off' : ''}${next ? ' pp-label--next' : ''}`}>{THEME_NAMES[k]}</span>
             </div>
           )
         })}
         <div className="pp-cell">
-          <span className={`pp-seal${earned ? ' pp-seal--on' : ''}`}>🎗️</span>
+          <span className={`pp-seal${earned ? ' pp-seal--on' : ''}`} style={{ color: 'var(--gold)' }}><Icon name={earned ? 'ribbon' : 'ribbon-outline'} size={24} /></span>
           <span className="pp-label pp-label--seal">{t('passport.localPass')}</span>
         </div>
       </div>
@@ -195,7 +199,7 @@ function Row({ label, value, onClick }) {
     <button type="button" className="pp-row" onClick={onClick}>
       <span className="pp-row-label">{label}</span>
       <span className="pp-row-value">{value}</span>
-      <span aria-hidden="true">›</span>
+      <Icon name="chevron-forward" size={18} style={{ color: 'var(--muted2)' }} />
     </button>
   )
 }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { setLocale } from '../i18n'
 import { setTheme } from '../lib/theme'
 import { updateProfile } from '../api'
+import Icon from './Icon'
 
 // Language list (19 locales), shared by the Me screen for members + guests.
 const LANGS = [
@@ -59,7 +60,7 @@ export default function AppearanceLanguageCard({ account = null }) {
             aria-pressed={theme !== 'dark'}
             onClick={() => pickTheme('light')}
           >
-            <span className="profile-mode-btn-emoji">☀️</span>
+            <span className="profile-mode-btn-emoji"><Icon name="sunny-outline" size={26} /></span>
             <span className="profile-mode-btn-name">{t('profile:themeLight', { defaultValue: 'Light' })}</span>
           </button>
           <button
@@ -68,7 +69,7 @@ export default function AppearanceLanguageCard({ account = null }) {
             aria-pressed={theme === 'dark'}
             onClick={() => pickTheme('dark')}
           >
-            <span className="profile-mode-btn-emoji">🌙</span>
+            <span className="profile-mode-btn-emoji"><Icon name="moon-outline" size={26} /></span>
             <span className="profile-mode-btn-name">{t('profile:themeDark', { defaultValue: 'Dark' })}</span>
           </button>
         </div>
@@ -85,7 +86,7 @@ export default function AppearanceLanguageCard({ account = null }) {
         >
           <span className="profile-lang-trigger-flag">{cur.flag}</span>
           <span className="profile-lang-trigger-name">{cur.name}</span>
-          <span className={`profile-lang-chevron${langOpen ? ' profile-lang-chevron--open' : ''}`} aria-hidden="true">▾</span>
+          <span className={`profile-lang-chevron${langOpen ? ' profile-lang-chevron--open' : ''}`} aria-hidden="true"><Icon name="chevron-down" size={16} /></span>
         </button>
         {langOpen && (
           <div className="profile-lang-list" role="listbox">
@@ -100,7 +101,7 @@ export default function AppearanceLanguageCard({ account = null }) {
               >
                 <span className="profile-lang-item-flag">{l.flag}</span>
                 <span className="profile-lang-item-name">{l.name}</span>
-                {i18n.language === l.code && <span className="profile-lang-item-check" aria-hidden="true">✓</span>}
+                {i18n.language === l.code && <span className="profile-lang-item-check" aria-hidden="true"><Icon name="checkmark" size={18} /></span>}
               </button>
             ))}
           </div>
