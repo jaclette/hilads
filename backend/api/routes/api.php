@@ -14837,6 +14837,19 @@ $router->add('GET', '/api/v1/map', function () {
     ]);
 });
 
+// GET /api/v1/me/spots - the spots where I have an approved proof (Passport's
+// "My spots", V3-10), most voted first. Signed in.
+$router->add('GET', '/api/v1/me/spots', function () {
+    $user = AuthService::requireAuth();
+    $stmt = Database::pdo()->prepare("
+        SELECT DISTINCT place_id FROM daily_proofs
+        WHERE user_id = ? AND moderation_status = 'approved' AND place_id IS NOT NULL
+    ");
+    $stmt->execute([$user['id']]);
+    $ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    Response::json(['items' => $ids === [] ? [] : Spots::find(['ids' => $ids])]);
+});
+
 // GET /api/v1/spots/search?q=&cityId=|bbox= - spots whose name or dish tags
 // match (accent and case insensitive), most voted first.
 $router->add('GET', '/api/v1/spots/search', function () {
