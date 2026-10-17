@@ -626,7 +626,7 @@ export default function ChatTab() {
   const reduceMotion = useReducedMotion();
 
   // Arrivals - extracted from the same `messages` stream and shown in the
-  // dedicated ArrivalsBar / ArrivalsSheet, NOT in the main feed. Newest-first
+  // people row / ArrivalsSheet, NOT in the main feed. Newest-first
   // to match the sheet's display order.
   const arrivals = useMemo<Message[]>(
     () => messages.filter(m => m.type === 'system' && m.event === 'join'),
@@ -635,7 +635,7 @@ export default function ChatTab() {
   const [arrivalsSheetOpen, setArrivalsSheetOpen] = useState(false);
 
   // Unified feed - weather, joins, AND city-activity pills excluded.
-  // Weather renders in the header; joins render in the ArrivalsBar; the
+  // Weather renders in the header; joins render in the people row; the
   // events / hangouts / challenges that used to appear-and-disappear as
   // inline cards are now folded into a single persistent count pill
   // above the feed (see CityActivityCountPill below). Tapping that pill

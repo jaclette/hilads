@@ -1,0 +1,56 @@
+import { ActivityIndicator, Text, TouchableOpacity, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Border, FontSizes, Radius, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+
+type IconName = React.ComponentProps<typeof Ionicons>['name'];
+
+/**
+ * V3 button (SPEC 9.11): primary = flat primary fill, secondary = card with a
+ * line border, link = primary text. md is 48 high, sm 44; radius 16 (14 sm).
+ */
+export function Button({ label, onPress, variant = 'primary', size = 'md', icon, loading = false, disabled = false, style, accessibilityLabel }: {
+  label: string;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary' | 'link';
+  size?: 'md' | 'sm';
+  icon?: IconName;
+  loading?: boolean;
+  disabled?: boolean;
+  style?: StyleProp<ViewStyle>;
+  accessibilityLabel?: string;
+}) {
+  const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
+  const color = variant === 'primary' ? colors.white : variant === 'secondary' ? colors.text : colors.primaryText;
+  return (
+    <TouchableOpacity
+      style={[styles.base, variant !== 'link' && (size === 'sm' ? styles.sm : styles.md), styles[variant], disabled && styles.disabled, style]}
+      onPress={onPress}
+      disabled={disabled || loading}
+      activeOpacity={0.85}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ disabled: disabled || loading, busy: loading }}
+    >
+      {loading ? <ActivityIndicator color={color} /> : (
+        <>
+          {icon && <Ionicons name={icon} size={variant === 'link' ? 20 : 18} color={color} />}
+          <Text style={[styles.label, size === 'sm' || variant === 'link' ? styles.labelSm : null, { color }]} numberOfLines={1}>{label}</Text>
+        </>
+      )}
+    </TouchableOpacity>
+  );
+}
+
+const makeStyles = (c: ThemeColors) => StyleSheet.create({
+  base:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minHeight: 44 },
+  md:        { minHeight: 48, borderRadius: Radius.button, paddingHorizontal: 16 },
+  sm:        { minHeight: 44, borderRadius: 14, paddingHorizontal: 14 },
+  primary:   { backgroundColor: c.primary },
+  secondary: { backgroundColor: c.bg2, borderWidth: Border, borderColor: c.line },
+  link:      {},
+  disabled:  { opacity: 0.5 },
+  label:     { fontSize: FontSizes.md, fontWeight: '700' },
+  labelSm:   { fontSize: FontSizes.sm, fontWeight: '700' },
+});

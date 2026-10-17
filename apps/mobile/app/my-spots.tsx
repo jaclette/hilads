@@ -12,6 +12,7 @@ import { localizeCityName } from '@/i18n/cityName';
 import { fetchMySpots } from '@/api/passport';
 import { THEME_NAMES } from '@/features/daily/themes';
 import type { Spot } from '@/api/spots';
+import { Card, EmptyState, ScreenHeader } from '@/ui';
 
 /** My spots (V3-10, from Passport): the spots where I have an approved proof. */
 export default function MySpotsScreen() {
@@ -29,12 +30,7 @@ export default function MySpotsScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back', { ns: 'common' })}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>{t('passport.mySpots')}</Text>
-      </View>
+      <ScreenHeader title={t('passport.mySpots')} />
       {spots === null ? (
         <View style={styles.center}><ActivityIndicator color={colors.primary} /></View>
       ) : (
@@ -42,14 +38,10 @@ export default function MySpotsScreen() {
           data={spots}
           keyExtractor={s => s.id}
           contentContainerStyle={styles.list}
-          ListEmptyComponent={
-            <View style={styles.empty}>
-              <Ionicons name="location-outline" size={30} color={colors.primaryText} />
-              <Text style={styles.emptyText}>{t('passport.noSpots')}</Text>
-            </View>
-          }
+          ListEmptyComponent={<EmptyState icon="location-outline" body={t('passport.noSpots')} />}
           renderItem={({ item: s }) => (
-            <TouchableOpacity style={styles.row} onPress={() => router.push(`/spot/${s.id}` as never)} accessibilityRole="button">
+            <TouchableOpacity onPress={() => router.push(`/spot/${s.id}` as never)} accessibilityRole="button">
+              <Card style={styles.row}>
               {s.cover.thumbUrl ? <Image source={{ uri: s.cover.thumbUrl }} style={styles.photo} contentFit="cover" /> : <View style={styles.photo} />}
               <View style={styles.info}>
                 <Text style={styles.name} numberOfLines={1}>{s.name}</Text>
@@ -58,6 +50,7 @@ export default function MySpotsScreen() {
                 </Text>
               </View>
               <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+              </Card>
             </TouchableOpacity>
           )}
         />
@@ -69,15 +62,10 @@ export default function MySpotsScreen() {
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
   center:    { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  nav:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  back:      { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  title:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   list:      { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  row:       { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 10 },
   photo:     { width: 56, height: 56, borderRadius: 12, backgroundColor: c.primaryTint },
   info:      { flex: 1, gap: 2 },
   name:      { fontSize: 15, fontWeight: '700', color: c.text },
   meta:      { fontSize: FontSizes.xs, color: c.muted },
-  empty:     { alignItems: 'center', gap: 10, paddingVertical: Spacing.xl },
-  emptyText: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
 });

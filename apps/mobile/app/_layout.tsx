@@ -169,7 +169,7 @@ function RootLayoutInner() {
         <BootScreen error={bootError} onRetry={bootError ? retry : undefined} />
       ) : (
         <>
-          {/* Stack is always mounted so sign-in/sign-up routing works from LandingScreen */}
+          {/* Stack is always mounted so sign-in/sign-up routing works at any time */}
           <Stack screenOptions={{ headerShown: false, animation: 'slide_from_right', contentStyle: { backgroundColor: colors.bg } }}>
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="event/create" />
@@ -206,7 +206,7 @@ function RootLayoutInner() {
             />
           </Stack>
           {/* First-launch guests are auto-joined to their IP city or routed to
-              the first-time picker in useAppBoot - no LandingScreen overlay, no
+              the first-time picker in useAppBoot - no landing overlay, no
               GPS prompt. A one-shot banner confirms the auto-placement. */}
           <PlacedCityBanner />
           {/* "Update available" banner / blocking "Update required" (GET /app/config, V3-04). */}

@@ -10,6 +10,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useScope } from '@/context/ScopeContext';
 import { fetchSpotsNear, type Spot } from '@/api/spots';
 import { compactPrice, distance } from './format';
+import { SectionTitle } from '@/ui';
 
 /**
  * Spots near you (SPEC 9.3): the 2-3 nearest spots, linking to the Map. Uses
@@ -51,12 +52,7 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
   if (spots === null) return null;
   return (
     <View style={styles.wrap}>
-      <View style={styles.head}>
-        <Text style={styles.title}>{t('today.spotsTitle')}</Text>
-        <TouchableOpacity onPress={() => openMap()} hitSlop={8} accessibilityRole="button">
-          <Text style={styles.link}>{t('today.openMap')}</Text>
-        </TouchableOpacity>
-      </View>
+      <SectionTitle title={t('today.spotsTitle')} action={{ label: t('today.openMap'), onPress: () => openMap() }} />
       {fallback && spots.length > 0 && <Text style={styles.note}>{t('today.spotsFallback')}</Text>}
       {spots.length === 0 ? (
         <TouchableOpacity style={styles.empty} onPress={() => openMap()} accessibilityRole="button">
@@ -93,9 +89,6 @@ export function SpotsNear({ cityId, refreshKey }: { cityId: string | null; refre
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   wrap:      { gap: 8 },
-  head:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  title:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text },
-  link:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
   note:      { fontSize: 12, color: c.muted },
   cards:     { gap: 10 },
   card:      { width: 150, backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line, borderRadius: 16, overflow: 'hidden' },

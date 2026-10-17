@@ -29,6 +29,7 @@ import { FontSizes, Spacing, Radius, APP_VERSION, type ThemeColors } from '@/con
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { avatarColor as avatarBg } from '@/lib/avatarColors';
 import { PrimaryButton } from '@/components/PrimaryButton';
+import { ScreenHeader } from '@/ui';
 import { LanguageRow } from '@/features/settings/LanguageRow';
 
 // ── Constants - must match backend allowed lists ──────────────────────────────
@@ -284,12 +285,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={styles.container} edges={['top']}>
 
       {/* Back + title (Settings opens from the Passport gear, SPEC 9.7). */}
-      <View style={styles.settingsNav}>
-        <TouchableOpacity style={styles.settingsBack} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back', { ns: 'common' })}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.settingsNavTitle}>{t('settings')}</Text>
-      </View>
+      <ScreenHeader title={t('settings')} />
 
       {/* ══ SCROLLABLE CONTENT ═══════════════════════════════════════════════ */}
       {/* Identity block (avatar + mode + filter pills) now lives INSIDE the
@@ -676,9 +672,6 @@ export default function SettingsScreen() {
 // ── Styles ────────────────────────────────────────────────────────────────────
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  settingsNav:      { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  settingsBack:     { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  settingsNavTitle: { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   container:  { flex: 1, backgroundColor: c.bg },
   scrollView: { flex: 1 },
 

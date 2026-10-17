@@ -13,6 +13,7 @@ import { directionsUrl, openMapsUrl } from '@/lib/directions';
 import { fetchSpot, type SpotDetail, type SpotPhoto } from '@/api/spots';
 import { THEME_NAMES } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice } from '@/features/today/format';
+import { Button, Chip, ScreenHeader, SectionTitle } from '@/ui';
 
 /**
  * A spot (SPEC 9.5): its proofs' photos, themes, price range paid, proof
@@ -52,14 +53,7 @@ export default function SpotScreen() {
       .catch(() => setNext(offset));
   }, [next, data, guestId]);
 
-  const nav = (
-    <View style={styles.nav}>
-      <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back')}>
-        <Ionicons name="chevron-back" size={22} color={colors.text} />
-      </TouchableOpacity>
-      <Text style={styles.navTitle} numberOfLines={1}>{data?.spot.name ?? ''}</Text>
-    </View>
-  );
+  const nav = <ScreenHeader compact title={data?.spot.name ?? ''} />;
 
   if (failed) {
     return <SafeAreaView style={styles.container} edges={['top']}>{nav}<View style={styles.center}><Text style={styles.muted}>{t('spot.notFound')}</Text></View></SafeAreaView>;
@@ -93,46 +87,30 @@ export default function SpotScreen() {
         </View>
       )}
       <View style={styles.chips}>
-        {spot.themes.map(k => (
-          <View key={k} style={styles.chip}>
-            <Ionicons name={THEME_ICON[k]} size={14} color={colors.primaryOnTint} />
-            <Text style={styles.chipText}>{THEME_NAMES[k]}</Text>
-          </View>
-        ))}
-        {spot.validatedByLocal && (
-          <View style={[styles.chip, styles.localChip]}>
-            <Ionicons name="checkmark-circle-outline" size={14} color={colors.localText} />
-            <Text style={[styles.chipText, styles.localText]}>{t('map.validated')}</Text>
-          </View>
-        )}
+        {spot.themes.map(k => <Chip key={k} icon={THEME_ICON[k]} label={THEME_NAMES[k]} />)}
+        {spot.validatedByLocal && <Chip tone="local" icon="checkmark-circle-outline" label={t('map.validated')} />}
       </View>
       <Text style={styles.stats}>
         {t('map.proofs', { count: spot.proofCount })} · {t('today.votes', { count: spot.votes })}{price ? ` · ${t('map.pricePaid', { price })}` : ''}
       </Text>
       {spot.tags.length > 0 && (
         <View style={styles.chips}>
-          {spot.tags.map(tag => <Text key={tag} style={styles.tag}>{tag}</Text>)}
+          {spot.tags.map(tag => <Chip key={tag} variant="outline" label={tag} />)}
         </View>
       )}
       <View style={styles.actions}>
-        <TouchableOpacity style={[styles.btn, styles.primary]} onPress={() => openMapsUrl(directionsUrl(spot.lat, spot.lng, spot.name))} accessibilityRole="button">
-          <Ionicons name="navigate-outline" size={18} color={colors.white} />
-          <Text style={styles.primaryText}>{t('map.directions')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, styles.secondary]} onPress={() => router.push(`/(tabs)/map?spot=${spot.id}&source=spot` as never)} accessibilityRole="button">
-          <Ionicons name="map-outline" size={18} color={colors.text} />
-          <Text style={styles.secondaryText}>{t('spot.seeOnMap')}</Text>
-        </TouchableOpacity>
+        <Button icon="navigate-outline" label={t('map.directions')} onPress={() => openMapsUrl(directionsUrl(spot.lat, spot.lng, spot.name))} style={styles.btn} />
+        <Button variant="secondary" icon="map-outline" label={t('spot.seeOnMap')} onPress={() => router.push(`/(tabs)/map?spot=${spot.id}&source=spot` as never)} style={styles.btn} />
       </View>
       {captions.length > 0 && (
         <View style={styles.captions}>
-          <Text style={styles.section}>{t('spot.captions')}</Text>
+          <SectionTitle title={t('spot.captions')} style={styles.section} />
           {captions.map((c, i) => (
             <Text key={i} style={styles.caption}>“{c.text}”{c.username ? <Text style={styles.muted}>  @{c.username}</Text> : null}</Text>
           ))}
         </View>
       )}
-      <Text style={styles.section}>{t('spot.photos')}</Text>
+      <SectionTitle title={t('spot.photos')} style={styles.section} />
     </View>
   );
 
@@ -187,9 +165,6 @@ function PhotoViewer({ photo, onClose }: { photo: SpotPhoto | null; onClose: () 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:     { flex: 1, backgroundColor: c.bg },
   center:        { flex: 1, alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
-  nav:           { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  back:          { width: 44, height: 44, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  navTitle:      { flex: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   list:          { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl },
   header:        { gap: 10, paddingBottom: 10 },
   cover:         { height: 200, borderRadius: 22, backgroundColor: c.primaryTint },
@@ -198,20 +173,11 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   rank:          { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.primaryTint, borderRadius: Radius.full, paddingHorizontal: 12, paddingVertical: 6 },
   rankText:      { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryOnTint },
   chips:         { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip:          { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 28, paddingHorizontal: 10, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  chipText:      { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
-  localChip:     { backgroundColor: c.localBg },
-  localText:     { color: c.localText },
   stats:         { fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  tag:           { fontSize: FontSizes.xs, fontWeight: '600', color: c.text, borderWidth: 1.5, borderColor: c.line, borderRadius: Radius.full, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
   actions:       { flexDirection: 'row', gap: 10, marginTop: 4 },
-  btn:           { flex: 1, minHeight: 48, borderRadius: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
-  primary:       { backgroundColor: c.primary },
-  primaryText:   { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:     { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  secondaryText: { color: c.text, fontSize: FontSizes.md, fontWeight: '700' },
+  btn:           { flex: 1 },
   captions:      { gap: 6, marginTop: 4 },
-  section:       { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 6 },
+  section:       { marginTop: 6 },
   caption:       { fontSize: FontSizes.sm, color: c.text },
   row:           { gap: 8, marginBottom: 8 },
   tile:          { borderRadius: 12, backgroundColor: c.bg3 },

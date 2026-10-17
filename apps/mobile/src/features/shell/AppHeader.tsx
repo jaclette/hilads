@@ -8,16 +8,16 @@
  */
 
 import React, { useState } from 'react';
-import { Modal, Pressable, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScope, type Scope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { IconButton, Sheet } from '@/ui';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
@@ -65,27 +65,14 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
       {rightExtra}
 
       {messages && account && (
-        <TouchableOpacity
-          style={styles.round}
-          onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }}
-          accessibilityRole="button"
-          accessibilityLabel={t('messages')}
-        >
-          <Ionicons name="paper-plane-outline" size={20} color={colors.text} />
-          {unreadDMs > 0 && <View style={styles.dot} />}
-        </TouchableOpacity>
+        <IconButton icon="paper-plane-outline" iconSize={20} label={t('messages')} badge={unreadDMs > 0}
+                    onPress={() => { setUnreadDMs(0); clearEventChatCounts(); router.push('/messages'); }} />
       )}
 
       {account ? (
-        <TouchableOpacity
-          style={styles.round}
-          onPress={() => router.push('/notifications' as never)}
-          accessibilityRole="button"
-          accessibilityLabel={unreadNotifications > 0 ? t('notificationsUnread', { count: unreadNotifications }) : t('notifications')}
-        >
-          <Ionicons name="notifications-outline" size={21} color={colors.text} />
-          {unreadNotifications > 0 && <View style={styles.dot} />}
-        </TouchableOpacity>
+        <IconButton icon="notifications-outline" iconSize={21} badge={unreadNotifications > 0}
+                    label={unreadNotifications > 0 ? t('notificationsUnread', { count: unreadNotifications }) : t('notifications')}
+                    onPress={() => router.push('/notifications' as never)} />
       ) : (
         <TouchableOpacity
           style={styles.signUp}
@@ -116,7 +103,6 @@ function ScopeSheet({ visible, scope, cityName, onPick, onChangeCity, onClose }:
   const styles = useThemedStyles(makeStyles);
   const { colors } = useTheme();
   const { t } = useTranslation('common');
-  const insets = useSafeAreaInsets();
 
   const Row = ({ icon, title, sub, active, onPress }: {
     icon: React.ComponentProps<typeof Ionicons>['name']; title: string; sub?: string; active?: boolean; onPress: () => void;
@@ -133,18 +119,14 @@ function ScopeSheet({ visible, scope, cityName, onPick, onChangeCity, onClose }:
   );
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable style={styles.scrim} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('close')} />
-      <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.md }]}>
-        <View style={styles.grabber} />
-        <Text style={styles.sheetTitle}>{t('scope.title')}</Text>
-        <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} sub={t('scope.citySub')}
-             active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
-        <Row icon="globe-outline" title={t('scope.world')} sub={t('scope.worldSub')}
-             active={scope === 'world'} onPress={() => onPick('world')} />
-        <Row icon="swap-horizontal-outline" title={t('scope.changeCity')} onPress={onChangeCity} />
-      </View>
-    </Modal>
+    <Sheet visible={visible} onClose={onClose} closeLabel={t('close')} style={styles.sheet}>
+      <Text style={styles.sheetTitle}>{t('scope.title')}</Text>
+      <Row icon="location-outline" title={cityName ?? t('scope.pickCity')} sub={t('scope.citySub')}
+           active={scope === 'city' && !!cityName} onPress={() => onPick('city')} />
+      <Row icon="globe-outline" title={t('scope.world')} sub={t('scope.worldSub')}
+           active={scope === 'world'} onPress={() => onPick('world')} />
+      <Row icon="swap-horizontal-outline" title={t('scope.changeCity')} onPress={onChangeCity} />
+    </Sheet>
   );
 }
 
@@ -158,13 +140,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   scopeText:      { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
   signUp:         { height: 44, paddingHorizontal: 16, borderRadius: Radius.full, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
   signUpText:     { color: c.white, fontSize: 14, fontWeight: '700' },
-  round:          { width: 44, height: 44, borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2,
-                    alignItems: 'center', justifyContent: 'center' },
-  dot:            { position: 'absolute', top: 9, right: 10, width: 9, height: 9, borderRadius: Radius.full, backgroundColor: c.primary,
-                    borderWidth: 2, borderColor: c.bg2 },
-  scrim:          { flex: 1, backgroundColor: c.scrim },
-  sheet:          { backgroundColor: c.bg2, borderTopLeftRadius: 22, borderTopRightRadius: 22, paddingHorizontal: Spacing.md, paddingTop: 8, gap: 6 },
-  grabber:        { alignSelf: 'center', width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
+  sheet:          { gap: 6 },
   sheetTitle:     { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginBottom: 4 },
   row:            { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 12, paddingVertical: 10, borderRadius: 16 },
   rowActive:      { backgroundColor: c.primaryTint },

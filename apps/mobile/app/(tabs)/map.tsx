@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Keyboard, ScrollView, Text, TextInput, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, Keyboard, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Location from 'expo-location';
@@ -21,6 +21,7 @@ import { THEME_ICON } from '@/features/today/format';
 import { SpotSheet } from '@/features/map/SpotSheet';
 import { EmptyCity } from '@/features/map/EmptyCity';
 import type { DailyThemeKey } from '@/types';
+import { Chip, IconButton, TextField } from '@/ui';
 
 const PLACE_THEMES = THEME_KEYS.filter(k => k !== 'language');
 const IDLE_DEBOUNCE_MS = 400;
@@ -246,23 +247,16 @@ export default function MapScreen() {
 
       {/* Top overlay: search + theme chips. */}
       <View style={[styles.top, { paddingTop: insets.top + 10 }]} pointerEvents="box-none">
-        <View style={styles.search}>
-          <Ionicons name="search-outline" size={20} color={colors.muted} />
-          <TextInput
-            style={styles.searchInput}
-            value={query}
-            onChangeText={setQuery}
-            placeholder={t('map.search')}
-            placeholderTextColor={colors.muted}
-            returnKeyType="search"
-            accessibilityLabel={t('map.searchA11y')}
-          />
-          {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('map.clearSearch')}>
-              <Ionicons name="close-circle" size={20} color={colors.muted} />
-            </TouchableOpacity>
-          )}
-        </View>
+        <TextField
+          variant="search"
+          value={query}
+          onChangeText={setQuery}
+          placeholder={t('map.search')}
+          returnKeyType="search"
+          accessibilityLabel={t('map.searchA11y')}
+          onClear={() => setQuery('')}
+          clearLabel={t('map.clearSearch')}
+        />
         {results !== null && (
           <View style={styles.results}>
             {results.length === 0 ? <Text style={styles.resultEmpty}>{t('map.noResults')}</Text> : results.slice(0, 6).map(s => (
@@ -278,9 +272,9 @@ export default function MapScreen() {
           </View>
         )}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} keyboardShouldPersistTaps="handled">
-          <Chip label={t('map.all')} active={themeFilter === null} onPress={() => pickTheme(null)} />
+          <Chip variant="filter" label={t('map.all')} selected={themeFilter === null} onPress={() => pickTheme(null)} />
           {PLACE_THEMES.map(k => (
-            <Chip key={k} label={THEME_NAMES[k]} active={themeFilter === k} today={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
+            <Chip key={k} variant="filter" label={THEME_NAMES[k]} selected={themeFilter === k} badge={k === todayTheme ? t('map.today') : null} onPress={() => pickTheme(k)} />
           ))}
         </ScrollView>
       </View>
@@ -290,9 +284,7 @@ export default function MapScreen() {
       {/* Bottom: notice, locate-me, then the selected spot or the empty city. */}
       <View style={styles.bottom} pointerEvents="box-none">
         {notice && <Text style={styles.notice}>{notice}</Text>}
-        <TouchableOpacity style={styles.locate} onPress={locate} accessibilityRole="button" accessibilityLabel={t('map.locate')}>
-          <Ionicons name="locate-outline" size={22} color={colors.text} />
-        </TouchableOpacity>
+        <IconButton icon="locate-outline" label={t('map.locate')} onPress={locate} style={styles.locate} />
         {selected ? (
           <SpotSheet
             spot={selected}
@@ -306,16 +298,6 @@ export default function MapScreen() {
         ) : null}
       </View>
     </View>
-  );
-}
-
-function Chip({ label, active, today, onPress }: { label: string; active: boolean; today?: string | null; onPress: () => void }) {
-  const styles = useThemedStyles(makeStyles);
-  return (
-    <TouchableOpacity style={[styles.chip, active && styles.chipOn]} onPress={onPress} accessibilityRole="button" accessibilityState={{ selected: active }}>
-      <Text style={[styles.chipText, active && styles.chipTextOn]}>{label}</Text>
-      {!!today && <Text style={[styles.chipToday, active && styles.chipTodayOn]}>{today}</Text>}
-    </TouchableOpacity>
   );
 }
 
@@ -343,9 +325,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   center:        { alignItems: 'center', justifyContent: 'center', padding: Spacing.lg },
   muted:         { fontSize: FontSizes.md, color: c.muted, textAlign: 'center' },
   top:           { position: 'absolute', left: 0, right: 0, top: 0, paddingHorizontal: Spacing.md, gap: 10 },
-  search:        { flexDirection: 'row', alignItems: 'center', gap: 10, height: 48, paddingHorizontal: 16, borderRadius: Radius.full,
-                   borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  searchInput:   { flex: 1, fontSize: 15, fontWeight: '500', color: c.text, paddingVertical: 0 },
   results:       { backgroundColor: c.bg2, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, paddingVertical: 4 },
   result:        { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 48, paddingHorizontal: 14 },
   resultBody:    { flex: 1 },
@@ -353,18 +332,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   resultTags:    { fontSize: 12, color: c.muted },
   resultEmpty:   { fontSize: FontSizes.sm, color: c.muted, padding: 14 },
   chips:         { gap: 8, paddingRight: Spacing.md },
-  chip:          { height: 38, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14, borderRadius: Radius.full,
-                   borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  chipOn:        { backgroundColor: c.primary, borderColor: c.primary },
-  chipText:      { fontSize: FontSizes.sm, fontWeight: '600', color: c.text },
-  chipTextOn:    { fontWeight: '700', color: c.white },
-  chipToday:     { fontSize: 11, fontWeight: '700', color: c.primaryOnTint, backgroundColor: c.primaryTint, borderRadius: Radius.full,
-                   paddingHorizontal: 7, paddingVertical: 2, overflow: 'hidden' },
-  chipTodayOn:   { color: c.primary, backgroundColor: c.white },
   loading:       { position: 'absolute', alignSelf: 'center' },
   bottom:        { position: 'absolute', left: 8, right: 8, bottom: 12, gap: 10 },
-  locate:        { alignSelf: 'flex-end', marginRight: 8, width: 44, height: 44, borderRadius: Radius.full, borderWidth: 1.5,
-                   borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
+  locate:        { alignSelf: 'flex-end', marginRight: 8 },
   notice:        { alignSelf: 'center', fontSize: FontSizes.xs, color: c.text, backgroundColor: c.bg2, borderRadius: Radius.full,
                    paddingHorizontal: 14, paddingVertical: 8, overflow: 'hidden', borderWidth: 1, borderColor: c.line },
   selectedWrap:  { alignItems: 'center', gap: 6 },

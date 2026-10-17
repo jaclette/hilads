@@ -7,6 +7,7 @@ import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { THEME_NAMES } from '@/features/daily/themes';
 import { THEME_ICON, compactPrice, distance } from '@/features/today/format';
 import type { Spot } from '@/api/spots';
+import { Button } from '@/ui';
 
 /**
  * The selected spot's card at the bottom of the map (map.html): photo, name,
@@ -58,13 +59,8 @@ export function SpotSheet({ spot, distanceM, onOpen, onDirections, onClose }: {
       </TouchableOpacity>
       {!!spot.cover.caption && <Text style={styles.caption} numberOfLines={2}>“{spot.cover.caption}”</Text>}
       <View style={styles.actions}>
-        <TouchableOpacity style={[styles.btn, styles.primary]} onPress={onOpen} accessibilityRole="button">
-          <Text style={styles.primaryText}>{t('map.openSpot')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, styles.secondary]} onPress={onDirections} accessibilityRole="button">
-          <Ionicons name="navigate-outline" size={18} color={colors.text} />
-          <Text style={styles.secondaryText}>{t('map.directions')}</Text>
-        </TouchableOpacity>
+        <Button label={t('map.openSpot')} onPress={onOpen} style={styles.btn} />
+        <Button variant="secondary" icon="navigate-outline" label={t('map.directions')} onPress={onDirections} style={styles.btn} />
       </View>
     </View>
   );
@@ -85,9 +81,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   badgeText:    { fontSize: 12, fontWeight: '700', color: c.localText },
   caption:      { fontSize: FontSizes.sm, fontStyle: 'italic', color: c.text },
   actions:      { flexDirection: 'row', gap: 10 },
-  btn:          { flex: 1, minHeight: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 6 },
-  primary:      { backgroundColor: c.primary },
-  primaryText:  { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:    { backgroundColor: c.bg2, borderWidth: 1.5, borderColor: c.line },
-  secondaryText:{ color: c.text, fontSize: FontSizes.md, fontWeight: '700' },
+  btn:          { flex: 1 },
 });

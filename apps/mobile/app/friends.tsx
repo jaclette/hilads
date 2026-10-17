@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Image } from 'expo-image';
-import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Avatar, EmptyState, ListRow, RowGroup, ScreenHeader, SectionTitle } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { fetchUserFriends, fetchUserVibes, type UserVibe } from '@/api/users';
 import { fetchIncomingFriendRequestCount } from '@/api/friendRequests';
 import { thumbUrl } from '@/lib/imageThumb';
-import { avatarColor } from '@/lib/avatarColors';
 import { socket } from '@/lib/socket';
 import type { UserDTO } from '@/types';
 
@@ -39,42 +37,27 @@ export default function FriendsScreen() {
     return () => { offReceived(); offCancelled(); };
   }, [account, router]);
 
-  const Avatar = ({ name, photo }: { name: string; photo?: string | null }) => photo
-    ? <Image source={{ uri: thumbUrl(photo) }} style={styles.avatar} contentFit="cover" />
-    : <View style={[styles.avatar, { backgroundColor: avatarColor(name) }]}><Text style={styles.initial}>{(name || '?')[0].toUpperCase()}</Text></View>;
+  const avatar = (name: string, photo?: string | null) => <Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={36} fallback="color" />;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <View style={styles.nav}>
-        <TouchableOpacity style={styles.back} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('back', { ns: 'common' })}>
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>{t('tabFriends')}</Text>
-      </View>
+      <ScreenHeader title={t('tabFriends')} />
       <ScrollView contentContainerStyle={styles.body}>
-        <TouchableOpacity style={styles.row} onPress={() => router.push('/friend-requests' as never)} accessibilityRole="button">
-          <Ionicons name="person-add-outline" size={20} color={colors.primaryText} />
-          <Text style={styles.rowLabel}>{t('friendRequests')}</Text>
-          {requests > 0 && <View style={styles.badge}><Text style={styles.badgeText}>{requests > 9 ? '9+' : requests}</Text></View>}
-          <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-        </TouchableOpacity>
+        <ListRow icon="person-add-outline" title={t('friendRequests')} badge={requests} onPress={() => router.push('/friend-requests' as never)}
+                 style={styles.requests} />
 
-        <Text style={styles.section}>{t('myFriends')}</Text>
-        <View style={styles.card}>
+        <SectionTitle title={t('myFriends')} style={styles.section} />
+        <RowGroup>
           {friends === null ? <ActivityIndicator color={colors.primary} style={styles.pad} />
-            : friends.length === 0 ? <Text style={styles.empty}>{t('noFriends')}</Text>
+            : friends.length === 0 ? <EmptyState body={t('noFriends')} />
             : friends.map((f, i) => (
-              <TouchableOpacity key={f.id} style={[styles.person, i > 0 && styles.divider]} accessibilityRole="button"
-                                onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id, name: f.displayName } } as never)}>
-                <Avatar name={f.displayName} photo={f.thumbAvatarUrl ?? f.avatarUrl} />
-                <Text style={styles.name} numberOfLines={1}>{f.displayName}</Text>
-                <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-              </TouchableOpacity>
+              <ListRow key={f.id} divider={i > 0} style={styles.person} leading={avatar(f.displayName, f.thumbAvatarUrl ?? f.avatarUrl)} title={f.displayName}
+                       onPress={() => router.push({ pathname: '/user/[id]', params: { id: f.id, name: f.displayName } } as never)} />
             ))}
-        </View>
+        </RowGroup>
 
-        <Text style={styles.section}>{t('vibesReceived')}</Text>
-        <View style={styles.card}>
+        <SectionTitle title={t('vibesReceived')} style={styles.section} />
+        <RowGroup>
           {vibes === null ? <ActivityIndicator color={colors.primary} style={styles.pad} /> : (
             <>
               {vibes.count > 0 && (
@@ -84,10 +67,10 @@ export default function FriendsScreen() {
                 </View>
               )}
               {vibes.items.length === 0 ? (
-                <Text style={styles.empty}>{t('noVibes')}{'\n'}{t('noVibesSub')}</Text>
+                <EmptyState body={`${t('noVibes')}\n${t('noVibesSub')}`} />
               ) : vibes.items.map((v, i) => (
-                <View key={v.id} style={[styles.person, (i > 0 || vibes.count > 0) && styles.divider]}>
-                  <Avatar name={v.authorName} photo={v.authorPhoto} />
+                <View key={v.id} style={[styles.vibeRow, (i > 0 || vibes.count > 0) && styles.divider]}>
+                  {avatar(v.authorName, v.authorPhoto)}
                   <View style={styles.vibeBody}>
                     <Text style={styles.name} numberOfLines={1}>{v.authorName} <Text style={styles.vibeStars}>{'★'.repeat(v.rating)}</Text></Text>
                     {!!v.message && <Text style={styles.vibeMsg}>{v.message}</Text>}
@@ -96,7 +79,7 @@ export default function FriendsScreen() {
               ))}
             </>
           )}
-        </View>
+        </RowGroup>
       </ScrollView>
     </SafeAreaView>
   );
@@ -104,22 +87,13 @@ export default function FriendsScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: c.bg },
-  nav:       { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
-  back:      { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  title:     { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   body:      { padding: Spacing.md, gap: 10, paddingBottom: Spacing.xl },
-  row:       { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 54, paddingHorizontal: 14, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
-  rowLabel:  { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
-  badge:     { minWidth: 22, height: 22, borderRadius: 11, paddingHorizontal: 6, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  badgeText: { color: c.white, fontSize: 12, fontWeight: '800' },
-  section:   { fontSize: FontSizes.md, fontWeight: '800', color: c.text, marginTop: 8 },
-  card:      { borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
+  requests:  { borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
+  section:   { marginTop: 8 },
   pad:       { paddingVertical: Spacing.md },
-  empty:     { fontSize: FontSizes.sm, color: c.muted, padding: 14, textAlign: 'center' },
-  person:    { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 8 },
+  person:    { minHeight: 56, paddingVertical: 8 },
+  vibeRow:   { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 8 },
   divider:   { borderTopWidth: 1, borderTopColor: c.line },
-  avatar:    { width: 36, height: 36, borderRadius: Radius.full, alignItems: 'center', justifyContent: 'center' },
-  initial:   { color: '#fff', fontSize: FontSizes.sm, fontWeight: '800' },
   name:      { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },
   score:     { alignItems: 'center', gap: 4, padding: 14 },
   stars:     { fontSize: 22, color: c.gold },

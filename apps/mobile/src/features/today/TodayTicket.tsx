@@ -3,7 +3,7 @@ import { ActivityIndicator, Text, TouchableOpacity, View, StyleSheet } from 'rea
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -15,6 +15,7 @@ import { OriginalToggle, useOriginal } from '@/features/daily/OriginalToggle';
 import { dailyTrackProps } from '@/features/daily/track';
 import { trackLocalPassEarned } from '@/features/daily/localPassTracking';
 import { THEME_ICON, clock } from './format';
+import { Button, Chip } from '@/ui';
 import type { DailyToday } from '@/types';
 
 /**
@@ -70,12 +71,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
       <View style={styles.top}>
         <View style={styles.headRow}>
           <Kicker />
-          {!!challenge.theme && (
-            <View style={styles.chip}>
-              <Ionicons name={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} size={14} color={colors.primaryOnTint} />
-              <Text style={styles.chipText}>{challenge.theme.name}</Text>
-            </View>
-          )}
+          {!!challenge.theme && <Chip icon={THEME_ICON[challenge.theme.key] ?? 'pricetag-outline'} label={challenge.theme.name} />}
         </View>
         <Text style={styles.text}>{showOriginal && challenge.original ? challenge.original.text : challenge.text}</Text>
         <OriginalToggle translated={!!challenge.original || !!twist?.originalText} showingOriginal={showOriginal} onPress={toggleOriginal} />
@@ -112,9 +108,7 @@ export function TodayTicket({ data, loading, secondsLeft }: { data: DailyToday |
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity style={styles.cta} onPress={onCta} activeOpacity={0.85} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('cta')}</Text>
-          </TouchableOpacity>
+          <Button label={t('cta')} onPress={onCta} />
         )}
         {/* Locals of a live city: tomorrow's Local Twist proposal (SPEC 8.6). */}
         {data?.twistProposal && (data.twistProposal.open || data.twistProposal.status) && (
@@ -153,7 +147,7 @@ function Kicker() {
 }
 
 /** The ticket's perforated divider: a dashed line between two round cut-outs. */
-function Perforation() {
+export function Perforation() {
   const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.perf} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
@@ -175,8 +169,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   headRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
   kicker:      { flexDirection: 'row', alignItems: 'center', gap: 6 },
   kickerText:  { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  chip:        { flexDirection: 'row', alignItems: 'center', gap: 5, minHeight: 28, paddingHorizontal: 10, borderRadius: Radius.full, backgroundColor: c.primaryTint },
-  chipText:    { fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryOnTint },
   text:        { fontSize: FontSizes.lg, lineHeight: 25, fontWeight: '800', color: c.text, letterSpacing: -0.2 },
   metaRow:     { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', columnGap: 14, rowGap: 4 },
   metaItem:    { flexDirection: 'row', alignItems: 'center', gap: 5 },
@@ -196,8 +188,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   proposeText: { flex: 1, fontSize: FontSizes.xs, fontWeight: '700', color: c.primaryText },
   twistLabel:  { fontSize: FontSizes.xs, fontWeight: '700', color: c.muted },
   twistText:   { fontSize: 15, lineHeight: 22, fontWeight: '500', color: c.text },
-  cta:         { minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  ctaText:     { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
   mine:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, minHeight: 44 },
   link:        { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
 });

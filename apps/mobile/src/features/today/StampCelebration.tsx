@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Modal, Pressable, Text, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Animated, Easing, Modal, Pressable, Text, View, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { track } from '@/services/analytics';
 import { THEME_NAMES } from '@/features/daily/themes';
 import { THEME_ICON } from './format';
 import type { DailyLocalPassProgress, DailyThemeKey } from '@/types';
+import { Button } from '@/ui';
 
 const KEY = (userId: string, cityId: number) => `hilads_stamps_v1_${userId}_${cityId}`;
 
@@ -73,9 +74,7 @@ export function StampCelebration({ progress, userId }: { progress: DailyLocalPas
           </Animated.View>
           <Text style={styles.title}>{t('stamp.title', { theme: THEME_NAMES[stamp.theme] })}</Text>
           <Text style={styles.body}>{t('stamp.body', { city: stamp.city })}</Text>
-          <TouchableOpacity style={styles.cta} onPress={close} accessibilityRole="button">
-            <Text style={styles.ctaText}>{t('stamp.ok')}</Text>
-          </TouchableOpacity>
+          <Button label={t('stamp.ok')} onPress={close} style={styles.cta} />
         </View>
       </Pressable>
     </Modal>
@@ -94,6 +93,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   stampCity:  { fontSize: 12, fontWeight: '600', color: c.primary },
   title:      { fontSize: FontSizes.lg, fontWeight: '800', color: c.text, textAlign: 'center' },
   body:       { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center' },
-  cta:        { alignSelf: 'stretch', minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center', marginTop: 6 },
-  ctaText:    { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
+  cta:        { alignSelf: 'stretch', marginTop: 6 },
 });

@@ -220,11 +220,19 @@ export const FontSizes = {
 } as const;
 
 export const Radius = {
-  sm:   6,
-  md:   10,
-  lg:   18,   // bumped to match web 18px card radius
-  full: 999,
+  sm:     6,
+  md:     10,
+  lg:     18,   // bumped to match web 18px card radius
+  full:   999,
+  // V3 (SPEC 9.11): cards 18-22, buttons 16, chips full.
+  button: 16,
+  card:   18,
+  ticket: 22,
+  sheet:  22,
 } as const;
+
+/** V3 border width for cards, chips, inputs and round buttons. */
+export const Border = 1.5;
 
 export const Spacing = {
   xs:   5,

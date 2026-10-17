@@ -59,7 +59,7 @@ export default function SignInScreen() {
       // ── Pre-join city restore ─────────────────────────────────────────────
       // If the user came from the landing screen (joined=false) and geo already
       // resolved a city, complete the join flow they were about to do before
-      // going to auth. This mirrors LandingScreen.handleJoin() exactly.
+      // going to auth.
       if (!joined && detectedCity && identity && sessionId) {
         const nickname = user.display_name;
         try {

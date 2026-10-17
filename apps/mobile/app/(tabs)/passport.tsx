@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { Avatar, Button, Card, IconButton, ListRow, ModeLabel, RowGroup, ScreenHeader } from '@/ui';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { localizeCityName } from '@/i18n/cityName';
@@ -59,12 +59,8 @@ export default function PassportScreen() {
   }, [account, cityKey]));
 
   const header = (
-    <View style={styles.header}>
-      <Text style={styles.title}>{t('passport.title')}</Text>
-      <TouchableOpacity style={styles.round} onPress={() => router.push('/settings' as never)} accessibilityRole="button" accessibilityLabel={t('settings')}>
-        <Ionicons name="settings-outline" size={21} color={colors.text} />
-      </TouchableOpacity>
-    </View>
+    <ScreenHeader variant="tab" title={t('passport.title')}
+                  right={<IconButton icon="settings-outline" iconSize={21} label={t('settings')} onPress={() => router.push('/settings' as never)} />} />
   );
 
   if (!account) {
@@ -73,16 +69,12 @@ export default function PassportScreen() {
         {header}
         <ScrollView contentContainerStyle={styles.body}>
           <Identity name={identity?.nickname ?? '-'} photo={null} mode={identity?.mode ?? null} cityName={cityName} />
-          <View style={styles.guest}>
+          <Card variant="ticket" style={styles.guest}>
             <Text style={styles.guestTitle}>{t('passport.guestTitle')}</Text>
             <Text style={styles.guestBody}>{t('passport.guestBody')}</Text>
-            <TouchableOpacity style={styles.cta} onPress={() => router.push('/sign-up' as never)} accessibilityRole="button">
-              <Text style={styles.ctaText}>{t('passport.signUp')}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/sign-in' as never)} accessibilityRole="button" style={styles.secondary}>
-              <Text style={styles.link}>{t('passport.signIn')}</Text>
-            </TouchableOpacity>
-          </View>
+            <Button label={t('passport.signUp')} onPress={() => router.push('/sign-up' as never)} />
+            <Button variant="link" label={t('passport.signIn')} onPress={() => router.push('/sign-in' as never)} style={styles.center} />
+          </Card>
         </ScrollView>
       </SafeAreaView>
     );
@@ -111,20 +103,20 @@ export default function PassportScreen() {
         />
 
         <View style={styles.cards}>
-          <View style={styles.card}>
+          <Card style={styles.card}>
             <View style={styles.cardHead}>
               <Ionicons name="flame-outline" size={18} color={colors.text} />
               <Text style={styles.cardTitle}>{t('streak', { ns: 'daily', count: streak })}</Text>
             </View>
             <Text style={styles.cardSub}>{t('passport.best', { count: stats?.bestStreak ?? 0 })}</Text>
-          </View>
-          <View style={styles.card}>
+          </Card>
+          <Card style={styles.card}>
             <View style={styles.cardHead}>
               <Ionicons name="trophy-outline" size={18} color={colors.text} />
               <Text style={styles.cardTitle}>{counts.week ? t('passport.weekRank', { rank: counts.week }) : t('passport.weekNone')}</Text>
             </View>
             <Text style={styles.cardSub} numberOfLines={1}>{cityName ? t('passport.mostLocalIn', { city: cityName }) : t('passport.mostLocalWorld')}</Text>
-          </View>
+          </Card>
         </View>
 
         {progress.length > 1 ? (
@@ -140,19 +132,16 @@ export default function PassportScreen() {
                     todayTheme={todayTheme} tomorrowTheme={tomorrow} />
         ) : null}
 
-        <View style={styles.rows}>
-          <Row label={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
-          <Row label={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onPress={() => router.push('/daily/proposals' as never)} />
-          <Row label={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onPress={() => router.push('/friends' as never)} />
-          <Row last label={t('passport.mostLocalAllTime')}
-               value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
-               onPress={() => router.push(`/leaderboard?scope=${cityKey ? 'city' : 'world'}&period=alltime` as never)} />
-        </View>
+        <RowGroup>
+          <ListRow title={t('passport.mySpots')} value={counts.spots !== null ? String(counts.spots) : ''} onPress={() => router.push('/my-spots' as never)} />
+          <ListRow divider title={t('passport.myProposals')} value={counts.proposals ? t('passport.inReview', { count: counts.proposals }) : ''} onPress={() => router.push('/daily/proposals' as never)} />
+          <ListRow divider title={t('passport.friends')} value={counts.friends !== null ? String(counts.friends) : ''} onPress={() => router.push('/friends' as never)} />
+          <ListRow divider title={t('passport.mostLocalAllTime')}
+                   value={counts.alltime ? (cityName ? t('passport.allTimeRank', { rank: counts.alltime, city: cityName }) : `#${counts.alltime}`) : ''}
+                   onPress={() => router.push(`/leaderboard?scope=${cityKey ? 'city' : 'world'}&period=alltime` as never)} />
+        </RowGroup>
 
-        <TouchableOpacity style={styles.help} onPress={() => setHelp(true)} accessibilityRole="button">
-          <Ionicons name="help-circle-outline" size={20} color={colors.primaryText} />
-          <Text style={styles.link}>{t('passport.howPoints')}</Text>
-        </TouchableOpacity>
+        <Button variant="link" icon="help-circle-outline" label={t('passport.howPoints')} onPress={() => setHelp(true)} style={styles.center} />
       </ScrollView>
       <PointsHelpSheet visible={help} onClose={() => setHelp(false)} />
     </SafeAreaView>
@@ -166,17 +155,11 @@ function Identity({ name, photo, mode, cityName }: { name: string; photo: string
   const local = mode === 'local';
   return (
     <View style={styles.identity}>
-      {photo
-        ? <Image source={{ uri: thumbUrl(photo) }} style={styles.avatar} contentFit="cover" />
-        : <View style={[styles.avatar, styles.avatarEmpty]}><Text style={styles.initial}>{(name.replace('@', '') || '?')[0].toUpperCase()}</Text></View>}
+      <Avatar uri={photo ? thumbUrl(photo) : null} name={name} size={64} ring />
       <View style={styles.identityBody}>
         <Text style={styles.name} numberOfLines={1}>{name}</Text>
         <View style={styles.chips}>
-          {mode && (
-            <View style={[styles.chip, local ? styles.chipLocal : styles.chipTraveler]}>
-              <Text style={[styles.chipText, local ? styles.chipLocalText : styles.chipTravelerText]}>{t(`mode.${local ? 'local' : 'exploring'}.label`)}</Text>
-            </View>
-          )}
+          {mode && <ModeLabel mode={local ? 'local' : 'traveler'} label={t(`mode.${local ? 'local' : 'exploring'}.label`)} />}
           {cityName && (
             <View style={[styles.chip, styles.chipCity]}>
               <Ionicons name="location-outline" size={13} color={colors.muted} />
@@ -189,59 +172,24 @@ function Identity({ name, photo, mode, cityName }: { name: string; photo: string
   );
 }
 
-function Row({ label, value, onPress, last = false }: { label: string; value: string; onPress: () => void; last?: boolean }) {
-  const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
-  return (
-    <TouchableOpacity style={[styles.row, !last && styles.rowLine]} onPress={onPress} accessibilityRole="button" accessibilityLabel={`${label} ${value}`}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      <View style={styles.rowRight}>
-        <Text style={styles.rowValue} numberOfLines={1}>{value}</Text>
-        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
-      </View>
-    </TouchableOpacity>
-  );
-}
-
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   container:      { flex: 1, backgroundColor: c.bg },
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6 },
-  title:          { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
-  round:          { width: 44, height: 44, borderRadius: 22, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
   body:           { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xl, gap: 14 },
   identity:       { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  avatar:         { width: 64, height: 64, borderRadius: 32, borderWidth: 2.5, borderColor: c.primary },
-  avatarEmpty:    { backgroundColor: c.primaryTint, alignItems: 'center', justifyContent: 'center' },
-  initial:        { fontSize: 24, fontWeight: '800', color: c.primaryOnTint },
   identityBody:   { flex: 1, gap: 6 },
   name:           { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   chips:          { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   chip:           { flexDirection: 'row', alignItems: 'center', gap: 4, height: 26, paddingHorizontal: 10, borderRadius: Radius.full },
-  chipText:       { fontSize: 12, fontWeight: '700' },
-  chipLocal:      { backgroundColor: c.primaryTint },
-  chipLocalText:  { color: c.primaryOnTint },
-  chipTraveler:   { backgroundColor: c.travelerBg },
-  chipTravelerText: { color: c.travelerText },
   chipCity:       { backgroundColor: c.bg3, maxWidth: 200 },
   chipCityText:   { fontSize: 12, fontWeight: '600', color: c.muted },
   cards:          { flexDirection: 'row', gap: 10 },
-  card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
+  card:           { flex: 1, paddingHorizontal: 14, paddingVertical: 12, gap: 3 },
   cardHead:       { flexDirection: 'row', alignItems: 'center', gap: 6 },
   cardTitle:      { flexShrink: 1, fontSize: FontSizes.md, fontWeight: '800', color: c.text },
   cardSub:        { fontSize: FontSizes.xs, color: c.muted },
   pages:          { gap: 10 },
-  rows:           { borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, overflow: 'hidden' },
-  row:            { minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingHorizontal: 14 },
-  rowLine:        { borderBottomWidth: 1, borderBottomColor: c.line },
-  rowLabel:       { fontSize: 15, fontWeight: '700', color: c.text },
-  rowRight:       { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 6 },
-  rowValue:       { flexShrink: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.muted },
-  help:           { alignSelf: 'center', flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44 },
-  link:           { fontSize: FontSizes.sm, fontWeight: '700', color: c.primaryText },
-  guest:          { gap: 10, padding: 16, borderRadius: 20, borderWidth: 1.5, borderColor: c.ticketLine, backgroundColor: c.bg2 },
+  center:         { alignSelf: 'center' },
+  guest:          { gap: 10, padding: 16, borderRadius: 20 },
   guestTitle:     { fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   guestBody:      { fontSize: FontSizes.sm, color: c.muted },
-  cta:            { minHeight: 48, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  ctaText:        { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:      { alignSelf: 'center', minHeight: 44, justifyContent: 'center' },
 });
