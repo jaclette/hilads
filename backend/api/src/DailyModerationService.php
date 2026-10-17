@@ -62,6 +62,8 @@ final class DailyModerationService
             throw $e;
         }
 
+        // Its place in review becomes a spot (V3-02).
+        Places::approveForProof(DailyProofRepository::findById($proofId) ?? []);
         // Local Pass first (V2-03), so the card of the proof that completes it shows it.
         try {
             DailyLocalPass::checkAfterApproval(DailyProofRepository::findById($proofId));
@@ -119,6 +121,7 @@ final class DailyModerationService
         }
 
         DailyCards::hideProof($proofId, $before['city_id']);
+        Places::rejectIfOrphan($before['place_id'] ?? null);
         $after = DailyProofRepository::findById($proofId);
         DailyAdminService::audit('daily_proof.reject', 'daily_proof', $proofId, $before, $after);
         return $after;

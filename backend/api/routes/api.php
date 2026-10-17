@@ -5738,75 +5738,6 @@ $router->add('POST', '/internal/geocode-backfill', function () {
     ]);
 });
 
-// ── Internal: seed recurring venue events via Google Places ──────────────────
-// Protected by X-Api-Key header matching MIGRATION_KEY env var.
-// Supports dryRun=true for safe previewing before any DB writes.
-
-$router->add('POST', '/internal/seed-recurring-venues', function () {
-    $expectedKey = getenv('MIGRATION_KEY') ?: null;
-    if ($expectedKey === null) {
-        Response::json(['error' => 'Not found'], 404);
-    }
-
-    // Accept key via header (preferred) or query param (legacy compat)
-    $providedKey = $_SERVER['HTTP_X_API_KEY']
-        ?? $_SERVER['HTTP_X_API_Key']
-        ?? ($_GET['key'] ?? '');
-
-    if (!is_string($providedKey) || !hash_equals($expectedKey, $providedKey)) {
-        Response::json(['error' => 'Forbidden'], 403);
-    }
-
-    $body = Request::json();
-    if ($body === null) {
-        Response::json(['error' => 'Invalid JSON body'], 400);
-    }
-
-    // ── Parse + validate inputs ───────────────────────────────────────────────
-
-    $rawCityIds = $body['cityIds'] ?? null;
-    if (!is_array($rawCityIds) || empty($rawCityIds)) {
-        Response::json(['error' => 'cityIds must be a non-empty array of integers'], 400);
-    }
-
-    $cityIds = array_values(array_filter(array_map('intval', $rawCityIds), fn($id) => $id > 0));
-    if (empty($cityIds)) {
-        Response::json(['error' => 'cityIds must contain at least one valid positive integer'], 400);
-    }
-
-    if (count($cityIds) > 50) {
-        Response::json(['error' => 'Max 50 cities per request'], 400);
-    }
-
-    $dryRun     = isset($body['dryRun']) && $body['dryRun'] === true;
-    $limits     = $body['limitPerCategory'] ?? [];
-    $barsLimit  = isset($limits['bars'])   ? max(1, min(10, (int) $limits['bars']))   : 4;
-    $coffeeLimit= isset($limits['coffee']) ? max(1, min(10, (int) $limits['coffee'])) : 2;
-
-    // ── Run ───────────────────────────────────────────────────────────────────
-
-    error_log("[seed-recurring-venues] cities=" . implode(',', $cityIds)
-        . " dryRun=" . ($dryRun ? 'true' : 'false')
-        . " bars={$barsLimit} coffee={$coffeeLimit}");
-
-    try {
-        $result = VenueSeeder::run($cityIds, $dryRun, $barsLimit, $coffeeLimit);
-    } catch (RuntimeException $e) {
-        error_log("[seed-recurring-venues] fatal: " . $e->getMessage());
-        Response::json(['error' => $e->getMessage()], 500);
-    }
-
-    Response::json([
-        'ok'      => empty($result['errors']),
-        'dry_run' => $dryRun,
-        'created' => $result['created'],
-        'skipped' => $result['skipped'],
-        'errors'  => $result['errors'],
-        'cities'  => $result['cities'],
-        'preview' => $result['preview'] ?? null,
-    ]);
-});
-
 // ── Internal: seed static curated venues ──────────────────────────────────────
 // Reads venues_seed.php (static array) and upserts them as recurring event series.
 // Idempotent - safe to run repeatedly. Protected by X-Api-Key or ?key= query param.
@@ -14273,6 +14204,92 @@ const DAILY_ERRORS = [
     'invalid_place'   => 'The place needs a valid latitude and longitude.',
 ];
 
+// V3-02 place errors: [status, message].
+const DAILY_PLACE_ERRORS = [
+    'place_required'     => [422, 'Pick the place of your proof, or add a new one.'],
+    'place_not_allowed'  => [422, 'This challenge has no place.'],
+    'place_not_found'    => [404, 'That place is not available.'],
+    'invalid_place'      => [422, 'Pick an existing place or add a new one, not both.'],
+    'invalid_place_name' => [422, 'The place name must be 1 to ' . Places::NAME_MAX . ' characters.'],
+    'place_name_blocked' => [422, 'That place name was flagged by moderation - please rephrase.'],
+    'invalid_position'   => [422, 'Your position is needed to post this proof.'],
+    'too_far'            => [422, 'You are too far from this place to post a proof for it.'],
+];
+
+/**
+ * The place columns of a proof write (V3-02). The V3 format (spotId |
+ * newPlace, position) is checked against the challenge's theme, then the
+ * distance check runs; a new place is only marked here (_new_place) and
+ * written by dailyCommitPlace once the proof can be created. The 1.7.1 pin
+ * (place: {lat, lng, name}) keeps working and is marked _legacy_pin.
+ * Answers 4xx itself.
+ */
+function dailyPlaceFields(array $user, array $challenge, array $body, array $fields): array
+{
+    $theme = DailyThemes::effective($challenge['theme'] ?? null, (string) $challenge['challenge_date']);
+
+    if (!Places::usesNewFormat($body)) {
+        if (array_key_exists('place_lat', $fields)) {
+            $fields['place_id']   = null;
+            $fields['distance_m'] = null;
+            if ($fields['place_lat'] !== null && Places::isPlaceTheme($theme)) {
+                $fields['_legacy_pin'] = true;
+            }
+        }
+        return $fields;
+    }
+
+    $fail = static function (string $code, array $extra = []): never {
+        [$status, $msg] = DAILY_PLACE_ERRORS[$code] ?? [422, 'Invalid place'];
+        Response::json(['error' => $msg, 'code' => $code] + $extra, $status);
+    };
+    [$in, $err] = Places::parseProofInput($body);
+    if ($err !== null) {
+        $fail($err);
+    }
+    $err = Places::checkForTheme($theme, $in);
+    if ($err !== null) {
+        $fail($err);
+    }
+
+    // The V3 format owns the place columns: a legacy pin in the same body is ignored.
+    $fields = array_merge($fields, ['place_id' => null, 'distance_m' => null,
+                                    'place_lat' => null, 'place_lng' => null, 'place_name' => null]);
+    if ($in['spotId'] === null && $in['newName'] === null) {
+        return $fields;   // Language: no place
+    }
+    try {
+        $r = Places::resolveForProof($in, $user['id']);
+    } catch (PlaceTooFarException $e) {
+        $fail('too_far', ['distanceM' => $e->distanceM, 'radiusM' => Places::PROOF_RADIUS_M]);
+    } catch (InvalidArgumentException $e) {
+        $fail($e->getMessage());
+    }
+    if ($r['place'] !== null) {
+        return array_merge($fields, Places::proofFields($r['place'], $r['distanceM']));
+    }
+    $fields['_new_place'] = ['name' => $r['newName'], 'lat' => $in['lat'], 'lng' => $in['lng']];
+    return $fields;
+}
+
+/** Write the new place marked by dailyPlaceFields (in review) and return the proof columns. */
+function dailyCommitPlace(array $user, array $fields): array
+{
+    $cityId = is_string($user['current_city_id'] ?? null) && preg_match('/^city_\d+$/', $user['current_city_id'])
+        ? $user['current_city_id'] : null;
+    if (isset($fields['_new_place'])) {
+        $n     = $fields['_new_place'];
+        $place = Places::create($n['name'], $n['lat'], $n['lng'], $cityId, $user['id']);
+        // The device position is the place: distance 0.
+        $fields = array_merge($fields, Places::proofFields($place, 0));
+    }
+    if (isset($fields['_legacy_pin'])) {
+        $fields['place_id'] = Places::fromLegacyPin($fields, $cityId, $user['id']);
+    }
+    unset($fields['_new_place'], $fields['_legacy_pin']);
+    return $fields;
+}
+
 // GET /api/v1/daily/today?cityId= - today's challenge for the home card.
 $router->add('GET', '/api/v1/daily/today', function () {
     $user = AuthService::currentUser();
@@ -14652,6 +14669,26 @@ $router->add('DELETE', '/api/v1/daily/proposals/{id}', function (array $params) 
     Response::json(['ok' => true]);
 });
 
+// GET /api/v1/daily/places/nearby?lat=&lng= - the proof's place step (V3-02):
+// Hilads places within Places::NEARBY_RADIUS_M, nearest first (approved spots,
+// plus my own places in review). Places only, never a person; the position is
+// neither stored nor logged.
+$router->add('GET', '/api/v1/daily/places/nearby', function () {
+    $user = AuthService::requireAuth();
+    if (!DbRateLimiter::allow('daily_nearby|' . $user['id'], 60, 600)) {
+        Response::json(['error' => 'Too many tries - slow down.', 'code' => 'rate_limited'], 429);
+    }
+    [$in, $err] = Places::parseProofInput(['position' => ['lat' => $_GET['lat'] ?? null, 'lng' => $_GET['lng'] ?? null]]);
+    $err ??= $in['lat'] === null ? 'invalid_position' : null;
+    if ($err !== null) {
+        Response::json(['error' => DAILY_PLACE_ERRORS[$err][1], 'code' => $err], 422);
+    }
+    Response::json([
+        'items'   => Places::nearby($in['lat'], $in['lng'], $user['id']),
+        'radiusM' => Places::NEARBY_RADIUS_M,
+    ]);
+});
+
 // POST /api/v1/daily/proofs - publish my proof for today's challenge.
 $router->add('POST', '/api/v1/daily/proofs', function () {
     $user = AuthService::requireAuth();
@@ -14667,7 +14704,13 @@ $router->add('POST', '/api/v1/daily/proofs', function () {
     if ($challenge === null) {
         Response::json(['error' => 'There is no active challenge right now.', 'code' => 'no_active_challenge'], 409);
     }
-    $proof = DailyProofRepository::create($user, $challenge, $fields);
+    $fields = dailyPlaceFields($user, $challenge, Request::json() ?? [], $fields);
+    // Checked before a new place is written, so a refused proof leaves no place behind.
+    if (DailyProofRepository::findMine($challenge['id'], $user['id']) !== null) {
+        Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
+    }
+    $fields = dailyCommitPlace($user, $fields);
+    $proof  = DailyProofRepository::create($user, $challenge, $fields);
     if ($proof === null) {
         Response::json(['error' => 'You already posted a proof for this challenge.', 'code' => 'already_posted'], 409);
     }
@@ -14695,9 +14738,17 @@ $router->add('PATCH', '/api/v1/daily/proofs/{id}', function (array $params) {
         Response::json(['error' => DAILY_ERRORS[$err], 'code' => $err], 422);
     }
     dailyGateProofWrite($user, $fields);
+    $challenge = DailyChallengeRepository::findPublishedByDate((string) $proof['challenge_date']);
+    if ($challenge === null) {
+        Response::json(['error' => 'This challenge is closed.', 'code' => 'challenge_closed'], 409);
+    }
+    $fields = dailyCommitPlace($user, dailyPlaceFields($user, $challenge, Request::json() ?? [], $fields));
     // The approved card (if any) keeps its last approved content until the
     // edit is approved, then it is updated in place.
     DailyProofRepository::update($proof['id'], $fields);
+    if (array_key_exists('place_id', $fields) && $fields['place_id'] !== $proof['place_id']) {
+        Places::rejectIfOrphan($proof['place_id']);   // a new place left behind in review
+    }
     $updated = dailyAfterProofWrite($proof['id']);
     if (isset($fields['photo_url']) && $fields['photo_url'] !== $proof['photo_url']) {
         dailyDeletePhoto($proof['photo_url']);

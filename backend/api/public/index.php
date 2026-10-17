@@ -95,6 +95,7 @@ if (str_starts_with($uri, '/admin')) {
     require_once __DIR__ . '/../src/DbRateLimiter.php';
     require_once __DIR__ . '/../src/DailyCards.php';
     require_once __DIR__ . '/../src/DailyModerationService.php';
+    require_once __DIR__ . '/../src/Places.php';
     require_once __DIR__ . '/../src/DailyTwistProposals.php';
     require_once __DIR__ . '/../src/DailyI18n.php';
     require_once __DIR__ . '/../src/DailyPushText.php';
@@ -199,8 +200,6 @@ require_once __DIR__ . '/../src/EventSeriesRepository.php';
 require_once __DIR__ . '/../src/EventRedirectRepository.php';
 require_once __DIR__ . '/../src/LinkPreviewService.php';
 require_once __DIR__ . '/../src/Geocoder.php';
-require_once __DIR__ . '/../src/PlacesService.php';
-require_once __DIR__ . '/../src/VenueSeeder.php';
 require_once __DIR__ . '/../src/ParticipantRepository.php';
 require_once __DIR__ . '/../src/TopicRepository.php';
 // ChallengeAcceptanceRepository loads first because ChallengeRepository's
@@ -241,6 +240,7 @@ require_once __DIR__ . '/../src/DailyChallengeRepository.php';
 require_once __DIR__ . '/../src/DailyAdminService.php';
 require_once __DIR__ . '/../src/DailyCards.php';
 require_once __DIR__ . '/../src/DailyModerationService.php';
+require_once __DIR__ . '/../src/Places.php';
 require_once __DIR__ . '/../src/DailyTwistProposals.php';
 require_once __DIR__ . '/../src/DailyI18n.php';
 require_once __DIR__ . '/../src/DailyPushText.php';

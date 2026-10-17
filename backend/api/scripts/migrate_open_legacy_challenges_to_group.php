@@ -33,7 +33,7 @@ declare(strict_types=1);
 
 $dryRun = in_array('--dry', $argv, true);
 
-// ── .env + PDO (same pattern as migrate.php / backfill_venue_geo.php) ─────────
+// ── .env + PDO (same pattern as migrate.php) ─────────────────────────────────────────
 
 $envFile = __DIR__ . '/../.env';
 if (file_exists($envFile)) {

@@ -60,7 +60,11 @@ $proofCell = function (array $r) use ($cityName): string {
         . ($r['edited_at'] ? ' <span class="badge" style="background:#3f3f46;color:#ddd">edited</span>' : '')
         . '<div style="margin-top:4px">' . ($r['caption'] !== null ? dh($r['caption']) : '<span class="daily-muted">no caption</span>') . '</div>'
         . ($r['price_amount'] !== null ? '<div class="daily-muted">' . dh(rtrim(rtrim((string) $r['price_amount'], '0'), '.') . ' ' . $r['price_currency']) . '</div>' : '')
-        . ($r['place_lat'] !== null ? '<div class="daily-muted">📍 ' . dh($r['place_name'] ?: ($r['place_lat'] . ', ' . $r['place_lng'])) . '</div>' : '')
+        . (($r['place_id'] ?? null) !== null
+            ? '<div class="daily-muted">📍 ' . dh((string) $r['spot_name'])
+              . (($r['spot_status'] ?? null) === 'pending' ? ' <strong>· new place</strong>' : '')
+              . ($r['distance_m'] !== null ? ' · ' . (int) $r['distance_m'] . ' m' : '') . '</div>'
+            : ($r['place_lat'] !== null ? '<div class="daily-muted">📍 ' . dh($r['place_name'] ?: ($r['place_lat'] . ', ' . $r['place_lng'])) . '</div>' : ''))
         . '<div class="daily-muted">' . dh($r['challenge_date']) . ' · posted ' . dh(date('j M H:i', strtotime($r['created_at']))) . '</div>'
         . '</div></div>';
 };

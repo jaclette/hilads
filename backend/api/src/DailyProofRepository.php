@@ -20,7 +20,8 @@ final class DailyProofRepository
                u.username, u.display_name, u.profile_photo_url,
                ch.name AS city_name,
                wr.rank AS world_rank, cr.rank AS city_rank,
-               (lp.user_id IS NOT NULL) AS author_local_pass
+               (lp.user_id IS NOT NULL) AS author_local_pass,
+               pl.name AS spot_name, pl.status AS spot_status
         FROM daily_proofs p
         JOIN daily_challenges dc ON dc.id = p.challenge_id
         JOIN users u             ON u.id  = p.user_id
@@ -31,6 +32,7 @@ final class DailyProofRepository
                ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
         LEFT JOIN daily_local_passes lp
                ON lp.user_id = p.user_id AND lp.city_id = p.city_id
+        LEFT JOIN places pl      ON pl.id = p.place_id
     ";
 
     /**
@@ -122,8 +124,9 @@ final class DailyProofRepository
         $stmt = Database::pdo()->prepare("
             INSERT INTO daily_proofs (
                 id, challenge_id, user_id, city_id, photo_url, caption,
-                price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early,
+                place_id, distance_m
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT (challenge_id, user_id) DO NOTHING
             RETURNING id
         ");
@@ -143,6 +146,8 @@ final class DailyProofRepository
             // Speed bonus (V2-07): set once, here; an edit never changes it.
             DailyPushes::isEarly((string) $challenge['challenge_date'], DailyPushes::userTimezone($user['id']),
                                  new DateTimeImmutable('now')) ? 'true' : 'false',
+            $fields['place_id'] ?? null,
+            $fields['distance_m'] ?? null,
         ]);
         $id = $stmt->fetchColumn();
         return $id === false ? null : self::findById((string) $id);
@@ -151,7 +156,8 @@ final class DailyProofRepository
     /** Apply an edit and send the proof back to moderation. */
     public static function update(string $id, array $fields): ?array
     {
-        $allowed = ['photo_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name'];
+        $allowed = ['photo_url', 'caption', 'price_amount', 'price_currency', 'place_lat', 'place_lng', 'place_name',
+                    'place_id', 'distance_m'];
         $sets = [];
         $args = [];
         foreach ($allowed as $col) {
@@ -295,6 +301,10 @@ final class DailyProofRepository
                 : null,
             'place'            => $row['place_lat'] !== null
                 ? ['lat' => (float) $row['place_lat'], 'lng' => (float) $row['place_lng'], 'name' => $row['place_name']]
+                : null,
+            // V3-02: the Hilads place (spot) the proof is attached to.
+            'spot'             => ($row['place_id'] ?? null) !== null
+                ? ['id' => $row['place_id'], 'name' => $row['spot_name'], 'inReview' => ($row['spot_status'] ?? null) === 'pending']
                 : null,
             'status'           => $row['moderation_status'],
             'rejectionReason'  => $isMine ? $row['rejection_reason'] : null,

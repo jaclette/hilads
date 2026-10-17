@@ -645,10 +645,8 @@ run($pdo, "ALTER TABLE users ADD COLUMN IF NOT EXISTS pending_city_first_seen_at
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'user'", 'event_series.source');
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS source_key TEXT", 'event_series.source_key');
 run($pdo, "ALTER TABLE event_series ALTER COLUMN created_by DROP NOT NULL", 'event_series.created_by nullable');
-// Venue geocoordinates - captured from Google Places API on seeding so we
-// can emit schema.org GeoCoordinates in venue JSON-LD (unlocks the map rich
-// result). Nullable so legacy rows stay valid; backfill via
-// scripts/backfill_venue_geo.php when ready.
+// Venue geocoordinates for schema.org GeoCoordinates in venue JSON-LD. The
+// Google-seeded venues that filled them are gone (V3-02, scripts/places_migrate.php).
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS lat DOUBLE PRECISION", 'event_series.lat');
 run($pdo, "ALTER TABLE event_series ADD COLUMN IF NOT EXISTS lng DOUBLE PRECISION", 'event_series.lng');
 
@@ -3056,6 +3054,42 @@ run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('proposal_select
 run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_early BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_early');
 run($pdo, "INSERT INTO score_rules (kind, role, points) VALUES ('early_proof', 'daily', 5)
             ON CONFLICT (kind, role) DO NOTHING", 'score_rules early_proof');
+
+// V3-02: Hilads places (SPEC 9.4 / 9.12). Our own places, no third-party
+// places API: the first proof at a location creates the place (a name typed by
+// the user + the device position, moderated); a place with an approved proof
+// is a spot. A proof keeps only its distance to the place (distance_m).
+// Reversal: ALTER TABLE daily_proofs DROP COLUMN place_id, DROP COLUMN distance_m;
+// DROP TABLE place_tags; DROP TABLE places;
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS places (
+        id          TEXT             PRIMARY KEY,
+        city_id     TEXT             REFERENCES channels(id) ON DELETE SET NULL,
+        name        TEXT             NOT NULL CHECK (char_length(name) BETWEEN 1 AND 80),
+        lat         DOUBLE PRECISION NOT NULL CHECK (lat BETWEEN -90 AND 90),
+        lng         DOUBLE PRECISION NOT NULL CHECK (lng BETWEEN -180 AND 180),
+        created_by  TEXT             REFERENCES users(id) ON DELETE SET NULL,
+        status      TEXT             NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+        hidden      BOOLEAN          NOT NULL DEFAULT false,
+        merged_into TEXT             REFERENCES places(id) ON DELETE SET NULL,
+        created_at  TIMESTAMPTZ      NOT NULL DEFAULT now(),
+        updated_at  TIMESTAMPTZ      NOT NULL DEFAULT now()
+    )
+", 'places');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_places_geo ON places (lat, lng) WHERE merged_into IS NULL", 'idx_places_geo');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_places_city ON places (city_id, status)", 'idx_places_city');
+run($pdo, "
+    CREATE TABLE IF NOT EXISTS place_tags (
+        place_id   TEXT        NOT NULL REFERENCES places(id) ON DELETE CASCADE,
+        tag        TEXT        NOT NULL CHECK (char_length(tag) BETWEEN 1 AND 60),
+        source     TEXT        NOT NULL DEFAULT 'admin' CHECK (source IN ('admin', 'twist')),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+        PRIMARY KEY (place_id, tag)
+    )
+", 'place_tags');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS place_id TEXT REFERENCES places(id) ON DELETE SET NULL", 'daily_proofs.place_id');
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS distance_m INT CHECK (distance_m >= 0)", 'daily_proofs.distance_m');
+run($pdo, "CREATE INDEX IF NOT EXISTS idx_daily_proofs_place ON daily_proofs (place_id) WHERE place_id IS NOT NULL", 'idx_daily_proofs_place');
 
 // ── Self-heal monthly rank columns ────────────────────────────────────────
 // The denormalised users.monthly_rank_* columns are kept fresh by
