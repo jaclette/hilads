@@ -353,7 +353,7 @@ final class Places
     }
 
     /** An approved place (or the user's own in review) with the same name within DEDUP_RADIUS_M. */
-    private static function findTwin(string $name, float $lat, float $lng, ?string $userId): ?array
+    public static function findTwin(string $name, float $lat, float $lng, ?string $userId): ?array
     {
         [$minLat, $maxLat, $minLng, $maxLng] = self::boundingBox($lat, $lng, self::DEDUP_RADIUS_M);
         $stmt = Database::pdo()->prepare("

@@ -3103,6 +3103,24 @@ run($pdo, "ALTER TABLE daily_twists ADD COLUMN IF NOT EXISTS dish_tags TEXT", 'd
 // admin @hilads account, seeded once too).
 // Reversal: ALTER TABLE score_rules DROP COLUMN counts_weekly;
 // ALTER TABLE users DROP COLUMN hidden_from_rankings;
+// V3-05: seed spots. The founder seeds spots from the back office with real,
+// approved proofs (is_seed) attached to a hidden per-theme 'seed' challenge
+// (no date, never published): they count for the spot, not for the game
+// (no points, cards, stamps, gallery). One proof per user per challenge does
+// not apply to seeds.
+// Reversal: DELETE FROM daily_proofs WHERE is_seed; DELETE FROM daily_challenges WHERE status = 'seed';
+// then restore the two checks and UNIQUE (challenge_id, user_id), and drop is_seed.
+run($pdo, "ALTER TABLE daily_proofs ADD COLUMN IF NOT EXISTS is_seed BOOLEAN NOT NULL DEFAULT false", 'daily_proofs.is_seed');
+run($pdo, "CREATE UNIQUE INDEX IF NOT EXISTS uq_daily_proofs_challenge_user ON daily_proofs (challenge_id, user_id) WHERE NOT is_seed",
+    'uq_daily_proofs_challenge_user');
+run($pdo, "ALTER TABLE daily_proofs DROP CONSTRAINT IF EXISTS daily_proofs_challenge_id_user_id_key", 'daily_proofs unique -> partial');
+run($pdo, "ALTER TABLE daily_challenges DROP CONSTRAINT IF EXISTS daily_challenges_status_check", 'daily_challenges status check drop');
+run($pdo, "ALTER TABLE daily_challenges ADD CONSTRAINT daily_challenges_status_check
+            CHECK (status IN ('draft', 'scheduled', 'published', 'seed'))", 'daily_challenges status check + seed');
+run($pdo, "ALTER TABLE daily_challenges DROP CONSTRAINT IF EXISTS daily_challenges_dated_check", 'daily_challenges dated check drop');
+run($pdo, "ALTER TABLE daily_challenges ADD CONSTRAINT daily_challenges_dated_check
+            CHECK (is_reserve OR status IN ('draft', 'seed') OR challenge_date IS NOT NULL)", 'daily_challenges dated check + seed');
+
 run($pdo, "ALTER TABLE score_rules ADD COLUMN IF NOT EXISTS counts_weekly BOOLEAN NOT NULL DEFAULT false", 'score_rules.counts_weekly');
 run($pdo, "
     UPDATE score_rules SET counts_weekly = true

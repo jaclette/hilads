@@ -127,7 +127,7 @@ final class DailyProofRepository
                 price_amount, price_currency, place_lat, place_lng, place_name, is_local, is_early,
                 place_id, distance_m
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ON CONFLICT (challenge_id, user_id) DO NOTHING
+            ON CONFLICT (challenge_id, user_id) WHERE NOT is_seed DO NOTHING
             RETURNING id
         ");
         $stmt->execute([

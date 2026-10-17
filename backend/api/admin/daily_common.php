@@ -72,6 +72,27 @@ function daily_theme_select(?string $theme, ?string $date, bool $followDate = fa
     return $html . '</select>';
 }
 
+/** OpenStreetMap link to a position. */
+function daily_osm_link(float $lat, float $lng): string
+{
+    $q = sprintf('mlat=%.6F&mlon=%.6F#map=18/%.6F/%.6F', $lat, $lng, $lat, $lng);
+    return '<a href="https://www.openstreetmap.org/?' . $q . '" target="_blank" rel="noopener">'
+         . sprintf('%.5F, %.5F', $lat, $lng) . ' ↗</a>';
+}
+
+/** Badge for a place's status (V3-05), plus hidden / merged. */
+function daily_place_badges(array $p): string
+{
+    $html = daily_state_badge($p['status'] === 'pending' ? 'pending' : $p['status']);
+    if (DailyProofRepository::bool($p['hidden'] ?? false)) {
+        $html .= ' <span class="badge" style="background:#3f3f46;color:#d4d4d8">hidden</span>';
+    }
+    if (($p['merged_into'] ?? null) !== null) {
+        $html .= ' <span class="badge" style="background:#3f3f46;color:#d4d4d8">merged</span>';
+    }
+    return $html;
+}
+
 function daily_action(callable $fn, string $successMessage, string $redirect): never
 {
     try {
@@ -113,6 +134,7 @@ function daily_subnav(string $current): void
         '/admin/daily/today'   => '🔥 Today',
         '/admin/daily/reserve' => '🧺 Reserve',
         '/admin/daily/proposals' => '💡 Proposals',
+        '/admin/daily/spots'   => '📍 Spots',
         '/admin/daily/import'  => '⬆️ Import',
         '/admin/daily/log'     => '📜 Log',
     ];

@@ -1,6 +1,7 @@
 <?php
 /**
- * V3-02 places migration (SPEC 9.5 / 9.10).
+ * V3-02 places migration (SPEC 9.5 / 9.10). The logic lives in PlacesMigration
+ * (also run from the back office: /admin/daily/spots/migration, V3-05).
  *
  *   php scripts/places_migrate.php            # dry run: report only, writes nothing
  *   php scripts/places_migrate.php --apply    # do it
@@ -56,124 +57,36 @@ try {
 }
 
 require_once __DIR__ . '/../src/Places.php';
+require_once __DIR__ . '/../src/PlacesMigration.php';
 
 echo $apply ? "== APPLY ==\n\n" : "== DRY RUN (nothing is written; add --apply) ==\n\n";
+$r = PlacesMigration::run($pdo, $apply);
 
-// ── 1. V1 pins → places ──────────────────────────────────────────────────────
-
-$pins = $pdo->query("
-    SELECT id, city_id, user_id, place_lat AS lat, place_lng AS lng, place_name AS name
-    FROM daily_proofs
-    WHERE place_lat IS NOT NULL AND place_id IS NULL AND moderation_status = 'approved'
-    ORDER BY approved_at, id
-")->fetchAll();
-$unnamed = array_values(array_filter($pins, static fn(array $p): bool =>
-    trim((string) $p['name']) === '' || $p['city_id'] === null));
-$groups  = Places::groupPins($pins);
-
-/** An existing place with the same name within the group radius, else null. */
-$existing = static function (array $g) use ($pdo): ?string {
-    [$minLat, $maxLat, $minLng, $maxLng] = Places::boundingBox($g['lat'], $g['lng'], Places::PIN_GROUP_RADIUS_M);
-    $stmt = $pdo->prepare("
-        SELECT id, name, lat, lng FROM places
-        WHERE city_id = ? AND merged_into IS NULL AND status <> 'rejected'
-          AND lat BETWEEN ? AND ? AND lng BETWEEN ? AND ?
-    ");
-    $stmt->execute([$g['city_id'], $minLat, $maxLat, $minLng, $maxLng]);
-    foreach ($stmt->fetchAll() as $r) {
-        if (Places::normalizeName($r['name']) === Places::normalizeName($g['name'])
-            && Places::distanceM($g['lat'], $g['lng'], (float) $r['lat'], (float) $r['lng']) <= Places::PIN_GROUP_RADIUS_M) {
-            return $r['id'];
-        }
-    }
-    return null;
-};
-
-echo "1. V1 pins: " . count($pins) . " approved pinned proofs without a place, "
-   . count($groups) . " places, " . count($unnamed) . " skipped (no name or no city)\n";
-$created = $joined = 0;
-foreach ($groups as $g) {
-    $target = $existing($g);
-    printf("   %s %-40s %s  %.5f,%.5f  %d proof(s)\n", $target ? 'JOIN' : 'NEW ',
-        mb_strimwidth($g['name'], 0, 40, '…'), $g['city_id'], $g['lat'], $g['lng'], count($g['pins']));
-    if (!$apply) {
-        $target ? $joined++ : $created++;
-        continue;
-    }
-    $pdo->beginTransaction();
-    try {
-        if ($target === null) {
-            $target = bin2hex(random_bytes(8));
-            $pdo->prepare("
-                INSERT INTO places (id, city_id, name, lat, lng, created_by, status)
-                VALUES (?, ?, ?, ?, ?, ?, 'approved')
-            ")->execute([$target, $g['city_id'], $g['name'], $g['lat'], $g['lng'], $g['created_by']]);
-            $created++;
-        } else {
-            $pdo->prepare("UPDATE places SET status = 'approved', updated_at = now() WHERE id = ? AND status = 'pending'")
-                ->execute([$target]);
-            $joined++;
-        }
-        $pdo->prepare("UPDATE daily_proofs SET place_id = ? WHERE id = ANY (string_to_array(?, ',')) AND place_id IS NULL")
-            ->execute([$target, implode(',', $g['pins'])]);
-        $pdo->commit();
-    } catch (Throwable $e) {
-        $pdo->rollBack();
-        echo "   ERROR: " . $e->getMessage() . "\n";
-    }
+$new = count(array_filter($r['pins']['groups'], static fn(array $g): bool => $g['action'] === 'new'));
+echo "1. V1 pins: {$r['pins']['total']} approved pinned proofs without a place, " . count($r['pins']['groups'])
+   . " places, " . count($r['pins']['skipped']) . " skipped\n";
+foreach ($r['pins']['groups'] as $g) {
+    printf("   %s %-40s %s  %.5f,%.5f  %d proof(s)\n", $g['action'] === 'new' ? 'NEW ' : 'JOIN',
+        mb_strimwidth($g['name'], 0, 40, '…'), $g['city_id'], $g['lat'], $g['lng'], $g['proofs']);
 }
-foreach ($unnamed as $p) {
-    printf("   SKIP proof %s (%s)\n", $p['id'], $p['city_id'] === null ? 'no city' : 'no name');
+foreach ($r['pins']['skipped'] as $p) {
+    echo "   SKIP proof {$p['id']} ({$p['why']})\n";
 }
-echo "   => " . ($apply ? '' : 'would ') . "create {$created} place(s), join {$joined} existing\n\n";
+echo "   => " . ($apply ? '' : 'would ') . "create {$new} place(s), join " . (count($r['pins']['groups']) - $new) . " existing\n\n";
 
-// ── 2. Validated user challenges with a venue (report only) ──────────────────
-
-$challenges = $pdo->query("
-    SELECT cc.channel_id, cc.city_id, cc.title, cc.venue, cc.venue_lat, cc.venue_lng, cc.validated_at
-    FROM channel_challenges cc
-    WHERE cc.status = 'validated' AND cc.venue IS NOT NULL AND btrim(cc.venue) <> ''
-    ORDER BY cc.validated_at DESC NULLS LAST
-")->fetchAll();
-echo "2. Validated challenges with a venue (review by hand in the back office): " . count($challenges) . "\n";
-foreach ($challenges as $c) {
-    printf("   %s %s  \"%s\" @ %s%s\n", $c['channel_id'], $c['city_id'], mb_strimwidth((string) $c['title'], 0, 50, '…'),
-        mb_strimwidth((string) $c['venue'], 0, 50, '…'),
-        $c['venue_lat'] !== null ? sprintf('  (%.5f,%.5f)', $c['venue_lat'], $c['venue_lng']) : '');
+echo "2. Validated challenges with a venue (seed the ones worth it from the back office): " . count($r['challenges']) . "\n";
+foreach ($r['challenges'] as $c) {
+    printf("   %s %s  \"%s\" @ %s\n", $c['channel_id'], $c['city_id'], mb_strimwidth((string) $c['title'], 0, 50, '…'),
+        mb_strimwidth((string) $c['venue'], 0, 50, '…'));
 }
-echo "\n";
-
-// ── 3. Google-seeded venues: delete ──────────────────────────────────────────
-
-$series = $pdo->query("
-    SELECT id, city_id, title FROM event_series WHERE source_key LIKE 'places:v1:%' ORDER BY city_id, title
-")->fetchAll();
-$seriesIds = array_column($series, 'id');
-$channels  = [];
-if ($seriesIds !== []) {
-    $stmt = $pdo->prepare("SELECT channel_id FROM channel_events WHERE series_id = ANY (string_to_array(?, ','))");
-    $stmt->execute([implode(',', $seriesIds)]);
-    $channels = $stmt->fetchAll(PDO::FETCH_COLUMN);
-}
-echo "3. Google-seeded venues: " . count($series) . " series, " . count($channels) . " event channel(s)\n";
-foreach ($series as $v) {
+echo "\n3. Google-seeded venues: " . count($r['google']['series']) . " series, {$r['google']['channels']} event channel(s)\n";
+foreach ($r['google']['series'] as $v) {
     printf("   DELETE %s %s  %s\n", $v['id'], $v['city_id'], mb_strimwidth((string) $v['title'], 0, 60, '…'));
 }
-if ($apply && $seriesIds !== []) {
-    $pdo->beginTransaction();
-    try {
-        if ($channels !== []) {
-            $pdo->prepare("DELETE FROM channels WHERE id = ANY (string_to_array(?, ','))")->execute([implode(',', $channels)]);
-        }
-        $pdo->prepare("DELETE FROM event_series WHERE id = ANY (string_to_array(?, ','))")->execute([implode(',', $seriesIds)]);
-        $pdo->commit();
-        echo "   => deleted\n";
-    } catch (Throwable $e) {
-        $pdo->rollBack();
-        echo "   ERROR (nothing deleted): " . $e->getMessage() . "\n";
-    }
-} else {
-    echo "   => " . ($apply ? 'nothing to delete' : 'would delete them') . "\n";
+echo "   => " . ($r['google']['series'] === [] ? 'nothing to delete'
+    : ($r['google']['deleted'] ? 'deleted' : ($apply ? 'nothing deleted' : 'would delete them'))) . "\n";
+foreach ($r['errors'] as $e) {
+    echo "ERROR: {$e}\n";
 }
-
 echo "\nDone.\n";
+exit($r['errors'] === [] ? 0 : 1);

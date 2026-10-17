@@ -294,7 +294,7 @@ final class DailyResults
             FROM daily_proofs p
             LEFT JOIN daily_results wr ON wr.challenge_id = p.challenge_id AND wr.scope = 'world' AND wr.proof_id = p.id
             LEFT JOIN daily_results cr ON cr.challenge_id = p.challenge_id AND cr.scope = p.city_id AND cr.proof_id = p.id
-            WHERE p.user_id = ? AND p.moderation_status = 'approved'
+            WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed
             ORDER BY wr.rank NULLS LAST,
                      (cr.rank = 1 AND p.vote_count >= ?) DESC NULLS LAST,
                      p.vote_count DESC, p.approved_at DESC

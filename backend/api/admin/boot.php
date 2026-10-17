@@ -155,6 +155,22 @@ if ($uri === '/admin' || $uri === '/admin/') {
 } elseif ($uri === '/admin/daily/proposals') {
     require __DIR__ . '/daily_proposals.php';
 
+} elseif ($uri === '/admin/daily/spots') {
+    require __DIR__ . '/daily_spots.php';
+
+} elseif ($uri === '/admin/daily/spots/review') {
+    require __DIR__ . '/daily_spots_review.php';
+
+} elseif ($uri === '/admin/daily/spots/new') {
+    require __DIR__ . '/daily_spot_new.php';
+
+} elseif ($uri === '/admin/daily/spots/migration') {
+    require __DIR__ . '/daily_spots_migration.php';
+
+} elseif (preg_match('#^/admin/daily/spots/([a-f0-9]{16})$#', $uri, $m)) {
+    $spotId = $m[1];
+    require __DIR__ . '/daily_spot.php';
+
 } elseif ($uri === '/admin/daily/import') {
     require __DIR__ . '/daily_import.php';
 

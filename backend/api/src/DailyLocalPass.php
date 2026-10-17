@@ -76,7 +76,7 @@ final class DailyLocalPass
             SELECT DISTINCT dc.theme, dc.challenge_date
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
-            WHERE p.user_id = ? AND p.city_id = ? AND p.moderation_status = 'approved'
+            WHERE p.user_id = ? AND p.city_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed
         ");
         $stmt->execute([$userId, $cityId]);
         return self::themesOf($stmt->fetchAll(PDO::FETCH_ASSOC));
@@ -113,7 +113,7 @@ final class DailyLocalPass
             FROM daily_proofs p
             JOIN daily_challenges dc ON dc.id = p.challenge_id
             JOIN channels ch         ON ch.id = p.city_id
-            WHERE p.user_id = ? AND p.moderation_status = 'approved'
+            WHERE p.user_id = ? AND p.moderation_status = 'approved' AND NOT p.is_seed
         ");
         $stmt->execute([$userId]);
         $byCity = [];
