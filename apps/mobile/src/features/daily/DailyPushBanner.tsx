@@ -4,10 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { useApp } from '@/context/AppContext';
 import { askDailyPush, hasPushPermission } from '@/services/push';
+import { Button } from '@/ui';
 
 const DISMISSED_KEY = 'hilads_daily_push_banner_dismissed_at';
 const DISMISS_FOR_MS = 7 * 24 * 3600 * 1000;
@@ -45,20 +46,18 @@ export function DailyPushBanner() {
 
   return (
     <View style={styles.banner}>
-      <Text style={styles.text} numberOfLines={2}>🔔 {t('push.bannerTitle')}</Text>
-      <TouchableOpacity style={styles.cta} onPress={onTurnOn} activeOpacity={0.8} accessibilityRole="button">
-        <Text style={styles.ctaText}>{t('push.bannerCta')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={onDismiss} hitSlop={10} accessibilityRole="button" accessibilityLabel={t('push.notNow')}>
-        <Ionicons name="close" size={16} color={colors.muted} />
+      <Ionicons name="notifications-outline" size={18} color={colors.primaryText} />
+      <Text style={styles.text} numberOfLines={2}>{t('push.bannerTitle')}</Text>
+      <Button variant="secondary" size="sm" label={t('push.bannerCta')} onPress={onTurnOn} />
+      <TouchableOpacity style={styles.close} onPress={onDismiss} accessibilityRole="button" accessibilityLabel={t('push.notNow')}>
+        <Ionicons name="close" size={18} color={colors.muted} />
       </TouchableOpacity>
     </View>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  banner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.border },
+  banner:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: c.line },
   text:    { flex: 1, fontSize: FontSizes.xs, color: c.text, fontWeight: '600' },
-  cta:     { borderRadius: Radius.full, borderWidth: 1, borderColor: c.accent, paddingHorizontal: 12, paddingVertical: 6 },
-  ctaText: { fontSize: FontSizes.xs, fontWeight: '700', color: c.accentText },
+  close:   { width: 44, height: 44, marginRight: -12, alignItems: 'center', justifyContent: 'center' },
 });

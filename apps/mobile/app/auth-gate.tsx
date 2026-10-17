@@ -10,10 +10,11 @@ import { View, Text, TouchableOpacity, Pressable, StyleSheet } from 'react-nativ
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles } from '@/context/ThemeContext';
 import { track } from '@/services/analytics';
 import { authQuery } from '@/lib/authReturn';
+import { BrandMark, Button } from '@/ui';
 
 const REASONS = [
   'view_profile', 'create_event', 'send_dm', 'join_hangout', 'create_hangout',
@@ -40,18 +41,12 @@ export default function AuthGateScreen() {
       <Pressable style={styles.scrim} onPress={() => router.back()} accessibilityRole="button" accessibilityLabel={t('sheet.notNow')} />
       <SafeAreaView edges={['bottom']} style={styles.sheet}>
         <View style={styles.handle} />
-        <View style={styles.mark} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Text style={styles.markText}>Hi</Text>
-        </View>
+        <BrandMark size="lg" />
         <Text style={styles.title} accessibilityRole="header">{t(`sheet.reason.${gateReason}`)}</Text>
         <Text style={styles.subtitle}>{t('sheet.comeBack')}</Text>
 
-        <TouchableOpacity style={styles.primary} onPress={() => go('/sign-up')} activeOpacity={0.85} accessibilityRole="button">
-          <Text style={styles.primaryText}>{t('sheet.signUp')}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.secondary} onPress={() => go('/sign-in')} activeOpacity={0.8} accessibilityRole="button">
-          <Text style={styles.secondaryText}>{t('sheet.haveAccount')}</Text>
-        </TouchableOpacity>
+        <Button label={t('sheet.signUp')} onPress={() => go('/sign-up')} style={styles.stretch} />
+        <Button variant="secondary" label={t('sheet.haveAccount')} onPress={() => go('/sign-in')} style={styles.stretch} />
         <TouchableOpacity style={styles.notNow} onPress={() => router.back()} accessibilityRole="button">
           <Text style={styles.notNowText}>{t('sheet.notNow')}</Text>
         </TouchableOpacity>
@@ -62,17 +57,12 @@ export default function AuthGateScreen() {
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   root:          { flex: 1, justifyContent: 'flex-end' },
-  scrim:         { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.45)' },
-  sheet:         { backgroundColor: c.bg, borderTopLeftRadius: 28, borderTopRightRadius: 28, paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: Spacing.md, alignItems: 'center', gap: 12 },
-  handle:        { width: 40, height: 5, borderRadius: 3, backgroundColor: c.line, marginBottom: 6 },
-  mark:          { width: 52, height: 52, borderRadius: 16, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  markText:      { color: c.white, fontSize: 22, fontWeight: '800', letterSpacing: -0.5 },
+  scrim:         { ...StyleSheet.absoluteFillObject, backgroundColor: c.scrim },
+  sheet:         { backgroundColor: c.bg, borderTopLeftRadius: Radius.sheet, borderTopRightRadius: Radius.sheet, paddingHorizontal: Spacing.lg, paddingTop: 10, paddingBottom: Spacing.md, alignItems: 'center', gap: 12 },
+  handle:        { width: 40, height: 5, borderRadius: Radius.full, backgroundColor: c.line, marginBottom: 6 },
   title:         { fontSize: FontSizes.xl, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.3 },
   subtitle:      { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginBottom: 4 },
-  primary:       { alignSelf: 'stretch', minHeight: 54, borderRadius: 18, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  primaryText:   { color: c.white, fontSize: FontSizes.md, fontWeight: '700' },
-  secondary:     { alignSelf: 'stretch', minHeight: 54, borderRadius: 18, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2, alignItems: 'center', justifyContent: 'center' },
-  secondaryText: { color: c.text, fontSize: FontSizes.md, fontWeight: '700' },
+  stretch:       { alignSelf: 'stretch' },
   notNow:        { minHeight: 44, justifyContent: 'center', paddingHorizontal: 16 },
   notNowText:    { color: c.muted, fontSize: FontSizes.sm, fontWeight: '600' },
 });

@@ -17,7 +17,7 @@ import { useScope, type Scope } from '@/context/ScopeContext';
 import { localizeCityName } from '@/i18n/cityName';
 import { FontSizes, Radius, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
-import { IconButton, Sheet } from '@/ui';
+import { BrandMark, IconButton, Sheet } from '@/ui';
 
 interface Props {
   /** Optional nodes injected before the messages / bell buttons. */
@@ -46,9 +46,7 @@ export function AppHeader({ rightExtra, messages = false }: Props) {
 
   return (
     <View style={styles.bar}>
-      <View style={styles.mark} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-        <Text style={styles.markText}>Hi</Text>
-      </View>
+      <BrandMark />
 
       <TouchableOpacity
         style={styles.scope}
@@ -133,8 +131,6 @@ function ScopeSheet({ visible, scope, cityName, onPick, onChangeCity, onClose }:
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // No horizontal padding: each tab's header container sets it.
   bar:            { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 10, paddingBottom: 6 },
-  mark:           { width: 40, height: 40, borderRadius: 12, backgroundColor: c.primary, alignItems: 'center', justifyContent: 'center' },
-  markText:       { color: c.white, fontSize: 17, fontWeight: '800' },
   scope:          { flex: 1, height: 44, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 14,
                     borderRadius: Radius.full, borderWidth: 1.5, borderColor: c.line, backgroundColor: c.bg2 },
   scopeText:      { flex: 1, fontSize: 15, fontWeight: '700', color: c.text },

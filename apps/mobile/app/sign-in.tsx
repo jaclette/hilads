@@ -1,11 +1,5 @@
 import { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity,
-  ActivityIndicator, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { authLogin } from '@/api/auth';
@@ -15,13 +9,14 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { safeReturnTo, authQuery } from '@/lib/authReturn';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles, useTheme } from '@/context/ThemeContext';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles } from '@/context/ThemeContext';
+import { Button, TextField } from '@/ui';
+import { AuthScreen, PasswordEye } from '@/features/auth/AuthScreen';
 
 
 export default function SignInScreen() {
   const styles = useThemedStyles(makeStyles);
-  const { colors } = useTheme();
 
   const router = useRouter();
   const { t } = useTranslation('auth');
@@ -102,176 +97,46 @@ export default function SignInScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-              <Text style={styles.backIcon}>←</Text>
-            </TouchableOpacity>
-          </View>
+    <AuthScreen title={t('signIn.title')} subtitle={t('signIn.subtitle')} error={error}>
+      <TextField
+        label={t('signIn.email')}
+        value={email}
+        onChangeText={setEmail}
+        placeholder={t('signIn.emailPlaceholder')}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete="email"
+        editable={!loading}
+      />
+      <TextField
+        label={t('signIn.password')}
+        value={password}
+        onChangeText={setPassword}
+        placeholder="••••••••"
+        secureTextEntry={!showPassword}
+        autoComplete="password"
+        editable={!loading}
+        onSubmitEditing={handleSignIn}
+        returnKeyType="done"
+        right={<PasswordEye shown={showPassword} onPress={() => setShowPassword(v => !v)} />}
+      />
 
-          <View style={styles.body}>
-            <Text style={styles.title}>{t('signIn.title')}</Text>
-            <Text style={styles.subtitle}>{t('signIn.subtitle')}</Text>
+      <Button label={t('signIn.submit')} onPress={handleSignIn} loading={loading} style={styles.submit} />
+      <Button variant="link" label={t('signIn.forgot')} onPress={() => router.push('/forgot-password')} />
 
-            {error && <Text style={styles.error}>{error}</Text>}
-
-            <View style={styles.field}>
-              <Text style={styles.label}>{t('signIn.email')}</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder={t('signIn.emailPlaceholder')}
-                placeholderTextColor={colors.muted2}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                editable={!loading}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>{t('signIn.password')}</Text>
-              {/* PR32 - show/hide eye toggle. secureTextEntry disables the
-                  password mask when false; the input keeps the same
-                  autoComplete contract so iOS / Android password managers
-                  still recognise it. */}
-              <View style={styles.passwordWrap}>
-                <TextInput
-                  style={[styles.input, styles.passwordInput]}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder="••••••••"
-                  placeholderTextColor={colors.muted2}
-                  secureTextEntry={!showPassword}
-                  autoComplete="password"
-                  editable={!loading}
-                  onSubmitEditing={handleSignIn}
-                  returnKeyType="done"
-                />
-                <TouchableOpacity
-                  style={styles.passwordToggle}
-                  onPress={() => setShowPassword(v => !v)}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  <Ionicons
-                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                    size={20}
-                    color={colors.muted2}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <TouchableOpacity
-              style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
-              onPress={handleSignIn}
-              activeOpacity={0.85}
-              disabled={loading}
-            >
-              {loading
-                ? <ActivityIndicator color={colors.white} />
-                : <Text style={styles.submitText}>{t('signIn.submit')}</Text>
-              }
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.push('/forgot-password')} activeOpacity={0.7}>
-              <Text style={styles.forgotText}>{t('signIn.forgot')}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.replace(`/sign-up${authQuery(returnTo, action)}` as never)} activeOpacity={0.7}>
-              <Text style={styles.switchText}>
-                {t('signIn.noAccount')} <Text style={styles.switchLink}>{t('signIn.createOne')}</Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <TouchableOpacity style={styles.switch} onPress={() => router.replace(`/sign-up${authQuery(returnTo, action)}` as never)} accessibilityRole="button">
+        <Text style={styles.switchText}>
+          {t('signIn.noAccount')} <Text style={styles.switchLink}>{t('signIn.createOne')}</Text>
+        </Text>
+      </TouchableOpacity>
+    </AuthScreen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  flex:      { flex: 1 },
-  scroll:    { flexGrow: 1, paddingBottom: Spacing.xxl },
-
-  header:   { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
-  backBtn:  { padding: 4, alignSelf: 'flex-start' },
-  backIcon: { fontSize: 22, color: c.text },
-
-  body: {
-    flex:              1,
-    paddingHorizontal: Spacing.lg,
-    paddingTop:        Spacing.xl,
-    gap:               Spacing.md,
-  },
-  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: c.text },
-  subtitle: { fontSize: FontSizes.sm,  color: c.muted, marginBottom: Spacing.sm },
-
-  error: {
-    fontSize:          FontSizes.sm,
-    color:             c.red,
-    backgroundColor:   'rgba(248,113,113,0.1)',
-    borderRadius:      Radius.md,
-    padding:           Spacing.sm,
-  },
-
-  field:  { gap: 6 },
-  label:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
-  input: {
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    color:             c.text,
-    fontSize:          FontSizes.md,
-    height:            48,
-  },
-  // PR32 - password input wrapper. The TextInput keeps its full styling;
-  // we just add right padding so the value doesn't slide under the toggle.
-  passwordWrap:    { position: 'relative' },
-  passwordInput:   { paddingRight: 44 },
-  passwordToggle: {
-    position:       'absolute',
-    right:          8,
-    top:            8,
-    width:          32,
-    height:         32,
-    alignItems:     'center',
-    justifyContent: 'center',
-    borderRadius:   8,
-  },
-
-  submitBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    Radius.lg,
-    paddingVertical: Spacing.md,
-    alignItems:      'center',
-    justifyContent:  'center',
-    marginTop:       Spacing.sm,
-  },
-  submitBtnDisabled: { opacity: 0.6 },
-  submitText: {
-    color:              c.white,
-    fontWeight:         '700',
-    fontSize:           FontSizes.md,
-    lineHeight:         FontSizes.md * 1.25,
-    includeFontPadding: false,
-  },
-
-  forgotText: { fontSize: FontSizes.sm, color: c.muted2, textAlign: 'center' },
-  switchText: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginTop: Spacing.sm },
-  switchLink: { color: c.accent, fontWeight: '600' },
+  submit:     { marginTop: Spacing.sm },
+  switch:     { minHeight: 44, justifyContent: 'center' },
+  switchText: { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, textAlign: 'center' },
+  switchLink: { fontWeight: '700', color: c.primaryText },
 });

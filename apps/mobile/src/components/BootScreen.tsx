@@ -1,7 +1,8 @@
-import { View, Text, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useTheme, useThemedStyles } from '@/context/ThemeContext';
+import { BrandMark, Button } from '@/ui';
 
 interface Props {
   error:    string | null;
@@ -14,20 +15,17 @@ export function BootScreen({ error, onRetry }: Props) {
   const styles = useThemedStyles(makeStyles);
   return (
     <View style={styles.container}>
+      <BrandMark size="lg" />
       <Text style={styles.logo}>Hilads</Text>
       <Text style={styles.tagline}>{t('firstLaunch')}</Text>
       {error ? (
         <>
           <Text style={styles.errorText}>{error}</Text>
           <Text style={styles.errorHint}>{t('connectionHint')}</Text>
-          {onRetry && (
-            <TouchableOpacity style={styles.retryBtn} onPress={onRetry} activeOpacity={0.8}>
-              <Text style={styles.retryText}>{t('retry')}</Text>
-            </TouchableOpacity>
-          )}
+          {onRetry && <Button label={t('retry')} onPress={onRetry} style={styles.retry} />}
         </>
       ) : (
-        <ActivityIndicator color={colors.accent} size="large" style={styles.spinner} />
+        <ActivityIndicator color={colors.primary} size="large" style={styles.spinner} />
       )}
     </View>
   );
@@ -44,8 +42,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   logo: {
     fontSize:      40,
     fontWeight:    '800',
-    color:         c.accentText,   // bright #FF7A3C fails as text on cream → accentText
+    color:         c.primaryText,
     letterSpacing: -1,
+    marginTop:     Spacing.md,
   },
   // SPEC 9.9: the line under the logo on launch.
   tagline: {
@@ -69,16 +68,5 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     textAlign: 'center',
     marginTop: Spacing.sm,
   },
-  retryBtn: {
-    marginTop:         Spacing.lg,
-    backgroundColor:   c.accent,
-    borderRadius:      Radius.lg,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical:   Spacing.sm,
-  },
-  retryText: {
-    color:      c.white,
-    fontWeight: '700',
-    fontSize:   FontSizes.sm,
-  },
+  retry: { marginTop: Spacing.lg, minWidth: 160 },
 });

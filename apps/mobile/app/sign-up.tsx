@@ -1,10 +1,5 @@
 import { useState, useRef } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity,
-  ActivityIndicator, StyleSheet, KeyboardAvoidingView,
-  Platform, ScrollView,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -15,14 +10,12 @@ import { socket } from '@/lib/socket';
 import { saveIdentity } from '@/lib/identity';
 import { safeReturnTo, authQuery } from '@/lib/authReturn';
 import { track, identifyUser, setAnalyticsContext } from '@/services/analytics';
-import { FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
+import { FontSizes, Spacing, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { EulaCheckbox, EulaCopyBlock } from '@/features/auth/EulaPromptModal';
-
-const MODES = [
-  { key: 'local',     emoji: '🌍' },
-  { key: 'exploring', emoji: '🧭' },
-] as const;
+import { AuthScreen, PasswordEye } from '@/features/auth/AuthScreen';
+import { ModePicker } from '@/features/profile/ModePicker';
+import { Button, TextField } from '@/ui';
 
 
 export default function SignUpScreen() {
@@ -149,295 +142,79 @@ export default function SignUpScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      >
-        <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          {/* Header */}
-          <View style={styles.header}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn} activeOpacity={0.7}>
-              <Text style={styles.backIcon}>←</Text>
-            </TouchableOpacity>
-          </View>
+    <AuthScreen title={t('signUp.title')} subtitle={t('signUp.subtitle')} error={error}>
+      <View style={styles.field}>
+        <TextField
+          label={t('signUp.username')}
+          prefix="@"
+          value={username}
+          onChangeText={handleUsernameChange}
+          placeholder={t('signUp.usernamePlaceholder')}
+          autoCapitalize="none"
+          autoCorrect={false}
+          maxLength={20}
+          editable={!loading}
+          right={
+            uStatus === 'checking' ? <ActivityIndicator size="small" color={colors.muted} />
+            : uStatus === 'available' ? <Ionicons name="checkmark-circle-outline" size={22} color={colors.green} />
+            : uStatus === 'taken' || uStatus === 'invalid' ? <Ionicons name="close-circle-outline" size={22} color={colors.red} />
+            : null
+          }
+        />
+        {uStatus === 'available' && <Text style={styles.uOkHint}>{t('signUp.available', { username })}</Text>}
+        {(uStatus === 'taken' || uStatus === 'invalid') && uReason && <Text style={styles.uBadHint}>{uReason}</Text>}
+      </View>
 
-          <View style={styles.body}>
-            <Text style={styles.title}>{t('signUp.title')}</Text>
-            <Text style={styles.subtitle}>{t('signUp.subtitle')}</Text>
+      <ModePicker value={mode === 'local' || mode === 'exploring' ? mode : null} onChange={setMode} disabled={loading} />
 
-            {error && <Text style={styles.error}>{error}</Text>}
+      <TextField
+        label={t('signUp.email')}
+        value={email}
+        onChangeText={setEmail}
+        placeholder={t('signUp.emailPlaceholder')}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        autoCorrect={false}
+        autoComplete="email"
+        editable={!loading}
+      />
+      <TextField
+        label={t('signUp.password')}
+        value={password}
+        onChangeText={setPassword}
+        placeholder={t('signUp.passwordPlaceholder')}
+        secureTextEntry={!showPassword}
+        autoComplete="new-password"
+        editable={!loading}
+        onSubmitEditing={handleSignUp}
+        returnKeyType="done"
+        right={<PasswordEye shown={showPassword} onPress={() => setShowPassword(v => !v)} />}
+      />
 
-            <View style={styles.field}>
-              <Text style={styles.label}>{t('signUp.username')}</Text>
-              <View style={styles.usernameRow}>
-                <Text style={styles.usernameAt}>@</Text>
-                <TextInput
-                  style={styles.usernameInput}
-                  value={username}
-                  onChangeText={handleUsernameChange}
-                  placeholder={t('signUp.usernamePlaceholder')}
-                  placeholderTextColor={colors.muted2}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  maxLength={20}
-                  editable={!loading}
-                />
-                {uStatus === 'checking' && <ActivityIndicator size="small" color={colors.muted} />}
-                {uStatus === 'available' && <Text style={styles.uOk}>✓</Text>}
-                {(uStatus === 'taken' || uStatus === 'invalid') && <Text style={styles.uBad}>✗</Text>}
-              </View>
-              {uStatus === 'available' && <Text style={styles.uOkHint}>{t('signUp.available', { username })}</Text>}
-              {(uStatus === 'taken' || uStatus === 'invalid') && uReason && (
-                <Text style={styles.uBadHint}>{uReason}</Text>
-              )}
-            </View>
+      {/* EULA - Apple G1.2 requires explicit acceptance before account creation. */}
+      <View style={styles.eula}>
+        <EulaCopyBlock />
+        <EulaCheckbox checked={eula} onToggle={() => setEula(v => !v)} disabled={loading} />
+      </View>
 
-            {/* Mode selector */}
-            <View style={styles.modeSection}>
-              <Text style={styles.modeLabel}>{t('modeHeading', { ns: 'common' })}</Text>
-              <View style={styles.modeRow}>
-                {MODES.map(m => {
-                  const active = mode === m.key;
-                  return (
-                    <TouchableOpacity
-                      key={m.key}
-                      style={[styles.modeBtn, active && styles.modeBtnActive]}
-                      onPress={() => setMode(m.key)}
-                      activeOpacity={0.75}
-                      disabled={loading}
-                    >
-                      <Text style={styles.modeBtnEmoji}>{m.emoji}</Text>
-                      <Text style={[styles.modeBtnLabel, active && styles.modeBtnLabelActive]}>{t(`mode.${m.key}.label`, { ns: 'common' })}</Text>
-                      <Text style={styles.modeBtnDesc}>{t(`mode.${m.key}.desc`, { ns: 'common' })}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            </View>
+      <Button label={t('signUp.submit')} onPress={handleSignUp} loading={loading} disabled={!eula} style={styles.submit} />
 
-            <View style={styles.field}>
-              <Text style={styles.label}>{t('signUp.email')}</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder={t('signUp.emailPlaceholder')}
-                placeholderTextColor={colors.muted2}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-                autoComplete="email"
-                editable={!loading}
-              />
-            </View>
-
-            <View style={styles.field}>
-              <Text style={styles.label}>{t('signUp.password')}</Text>
-              {/* PR32 - show/hide eye toggle (parity with sign-in). */}
-              <View style={styles.passwordWrap}>
-                <TextInput
-                  style={[styles.input, styles.passwordInput]}
-                  value={password}
-                  onChangeText={setPassword}
-                  placeholder={t('signUp.passwordPlaceholder')}
-                  placeholderTextColor={colors.muted2}
-                  secureTextEntry={!showPassword}
-                  autoComplete="new-password"
-                  editable={!loading}
-                  onSubmitEditing={handleSignUp}
-                  returnKeyType="done"
-                />
-                <TouchableOpacity
-                  style={styles.passwordToggle}
-                  onPress={() => setShowPassword(v => !v)}
-                  hitSlop={8}
-                  accessibilityRole="button"
-                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  <Ionicons
-                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                    size={20}
-                    color={colors.muted2}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* EULA - Apple G1.2 requires explicit acceptance before account creation. */}
-            <View style={styles.eulaSection}>
-              <EulaCopyBlock />
-              <EulaCheckbox checked={eula} onToggle={() => setEula(v => !v)} disabled={loading} />
-            </View>
-
-            <TouchableOpacity
-              style={[styles.submitBtn, (loading || !eula) && styles.submitBtnDisabled]}
-              onPress={handleSignUp}
-              activeOpacity={0.85}
-              disabled={loading || !eula}
-            >
-              {loading
-                ? <ActivityIndicator color={colors.white} />
-                : <Text style={styles.submitText}>{t('signUp.submit')}</Text>
-              }
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.replace(`/sign-in${authQuery(returnTo, action)}` as never)} activeOpacity={0.7}>
-              <Text style={styles.switchText}>
-                {t('signUp.haveAccount')} <Text style={styles.switchLink}>{t('signUp.signInLink')}</Text>
-              </Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      <TouchableOpacity style={styles.switch} onPress={() => router.replace(`/sign-in${authQuery(returnTo, action)}` as never)} accessibilityRole="button">
+        <Text style={styles.switchText}>
+          {t('signUp.haveAccount')} <Text style={styles.switchLink}>{t('signUp.signInLink')}</Text>
+        </Text>
+      </TouchableOpacity>
+    </AuthScreen>
   );
 }
 
 const makeStyles = (c: ThemeColors) => StyleSheet.create({
-  container: { flex: 1, backgroundColor: c.bg },
-  flex:      { flex: 1 },
-  scroll:    { flexGrow: 1 },
-
-  header:   { paddingHorizontal: Spacing.md, paddingTop: Spacing.sm },
-  backBtn:  { padding: 4, alignSelf: 'flex-start' },
-  backIcon: { fontSize: 22, color: c.text },
-
-  body: {
-    flex:              1,
-    paddingHorizontal: Spacing.lg,
-    paddingTop:        Spacing.xl,
-    gap:               Spacing.md,
-  },
-  title:    { fontSize: FontSizes.xxl, fontWeight: '700', color: c.text },
-  subtitle: { fontSize: FontSizes.sm,  color: c.muted, marginBottom: Spacing.sm },
-
-  error: {
-    fontSize:        FontSizes.sm,
-    color:           c.red,
-    backgroundColor: 'rgba(248,113,113,0.1)',
-    borderRadius:    Radius.md,
-    padding:         Spacing.sm,
-  },
-
-  field:  { gap: 6 },
-  label:  { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
-  input: {
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      Radius.md,
-    paddingHorizontal: Spacing.md,
-    paddingVertical:   Spacing.sm,
-    color:             c.text,
-    fontSize:          FontSizes.md,
-    height:            48,
-  },
-  passwordWrap:    { position: 'relative' },
-  passwordInput:   { paddingRight: 44 },
-  passwordToggle: {
-    position:       'absolute',
-    right:          8,
-    top:            8,
-    width:          32,
-    height:         32,
-    alignItems:     'center',
-    justifyContent: 'center',
-    borderRadius:   8,
-  },
-
-  usernameRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    gap:               6,
-    backgroundColor:   c.bg2,
-    borderWidth:       1,
-    borderColor:       c.border,
-    borderRadius:      Radius.md,
-    paddingHorizontal: Spacing.md,
-    height:            48,
-  },
-  usernameAt:    { fontSize: FontSizes.md, color: c.muted2, fontWeight: '600' },
-  usernameInput: { flex: 1, color: c.text, fontSize: FontSizes.md, height: 48 },
-  uOk:           { color: '#4ade80', fontSize: FontSizes.md, fontWeight: '700' },
-  uBad:          { color: c.red, fontSize: FontSizes.md, fontWeight: '700' },
-  uOkHint:       { fontSize: FontSizes.xs, color: '#4ade80' },
-  uBadHint:      { fontSize: FontSizes.xs, color: c.red },
-
-  eulaSection: {
-    marginTop: Spacing.sm,
-    gap:       Spacing.sm,
-  },
-
-  submitBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    Radius.lg,
-    paddingVertical: Spacing.md,
-    alignItems:      'center',
-    justifyContent:  'center',
-    marginTop:       Spacing.sm,
-  },
-  submitBtnDisabled: { opacity: 0.6 },
-  submitText: {
-    color:              c.white,
-    fontWeight:         '700',
-    fontSize:           FontSizes.md,
-    lineHeight:         FontSizes.md * 1.25,
-    includeFontPadding: false,
-  },
-
-  switchText: { fontSize: FontSizes.sm, color: c.muted, textAlign: 'center', marginTop: Spacing.sm },
-  switchLink: { color: c.accent, fontWeight: '600' },
-
-  modeSection: {
-    padding:         Spacing.md,
-    backgroundColor: c.accent + '0F',
-    borderRadius:    Radius.md,
-    borderWidth:     1.5,
-    borderColor:     c.accent + '38',
-    gap:             10,
-  },
-  modeLabel: {
-    fontSize:      FontSizes.xs,
-    fontWeight:    '800',
-    color:         c.accentText,
-    letterSpacing: 1,
-  },
-  modeRow: {
-    flexDirection: 'row',
-    gap:           8,
-  },
-  modeBtn: {
-    flex:              1,
-    paddingVertical:   16,
-    paddingHorizontal: 8,
-    borderRadius:      Radius.md,
-    borderWidth:       1.5,
-    borderColor:       c.border,
-    backgroundColor:   'transparent',
-    alignItems:        'center',
-    gap:               3,
-  },
-  modeBtnActive: {
-    borderColor:     c.accent,
-    backgroundColor: c.accent + '22',
-  },
-  modeBtnEmoji: {
-    fontSize:   26,
-    lineHeight: 30,
-  },
-  modeBtnLabel: {
-    fontSize:   FontSizes.md,
-    fontWeight: '700',
-    color:      c.muted,
-  },
-  modeBtnLabelActive: {
-    color: c.accentText,
-  },
-  modeBtnDesc: {
-    fontSize:   FontSizes.xs,
-    color:      c.muted2,
-    textAlign:  'center',
-    lineHeight: 16,
-  },
+  field:      { gap: 6 },
+  uOkHint:    { fontSize: FontSizes.xs, fontWeight: '600', color: c.green },
+  uBadHint:   { fontSize: FontSizes.xs, fontWeight: '600', color: c.red },
+  eula:       { gap: Spacing.sm, marginTop: Spacing.xs },
+  submit:     { marginTop: Spacing.sm },
+  switch:     { minHeight: 44, justifyContent: 'center' },
+  switchText: { fontSize: FontSizes.sm, fontWeight: '400', color: c.muted, textAlign: 'center' },
+  switchLink: { fontWeight: '700', color: c.primaryText },
 });

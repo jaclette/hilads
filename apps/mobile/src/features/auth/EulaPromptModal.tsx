@@ -16,8 +16,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Trans, useTranslation } from 'react-i18next';
-import { FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { Border, FontSizes, Radius, Spacing, type ThemeColors } from '@/constants';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 
 const TERMS_URL   = 'https://hilads.live/terms';
 const PRIVACY_URL = 'https://hilads.live/privacy';
@@ -54,6 +54,7 @@ interface CheckboxProps {
 
 export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
   const { t } = useTranslation('auth');
   return (
     <TouchableOpacity
@@ -66,7 +67,7 @@ export function EulaCheckbox({ checked, onToggle, disabled }: CheckboxProps) {
     >
       <View style={[styles.checkbox, checked && styles.checkboxChecked]}>
         {checked
-          ? <Ionicons name="checkmark" size={14} color="#fff" />
+          ? <Ionicons name="checkmark" size={16} color={colors.white} />
           : null
         }
       </View>
@@ -95,6 +96,7 @@ interface ModalProps {
 
 export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProps) {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
 
   const { t } = useTranslation('auth');
   // Plain absolutely-positioned overlay rather than React Native's <Modal>.
@@ -143,7 +145,7 @@ export function EulaPromptModal({ visible, loading, error, onAccept }: ModalProp
           accessibilityLabel={t('eula.accept')}
         >
           {loading
-            ? <ActivityIndicator color="#fff" />
+            ? <ActivityIndicator color={colors.white} />
             : <Text style={styles.acceptBtnText}>{t('eula.accept')}</Text>
           }
         </Pressable>
@@ -171,7 +173,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     lineHeight: 20,
   },
   link: {
-    color:               c.accent,
+    color:               c.primaryText,
     textDecorationLine:  'underline',
     fontWeight:          '600',
   },
@@ -182,21 +184,23 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     alignItems:    'flex-start',
     gap:           Spacing.sm,
     paddingVertical: Spacing.xs,
+    minHeight:     44,
   },
   checkbox: {
-    width:           22,
-    height:          22,
-    borderRadius:    Radius.sm,
+    width:           24,
+    height:          24,
+    borderRadius:    7,
     borderWidth:     2,
     borderColor:     c.muted,
+    backgroundColor: c.bg2,
     alignItems:      'center',
     justifyContent:  'center',
     marginTop:       1,
     flexShrink:      0,
   },
   checkboxChecked: {
-    borderColor:     c.accent,
-    backgroundColor: c.accent,
+    borderColor:     c.primary,
+    backgroundColor: c.primary,
   },
   checkboxLabel: {
     flex:       1,
@@ -225,9 +229,9 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     width:           '100%',
     maxWidth:        420,
     backgroundColor: c.bg2,
-    borderRadius:    Radius.lg,
-    borderWidth:     1,
-    borderColor:     c.border,
+    borderRadius:    Radius.ticket,
+    borderWidth:     Border,
+    borderColor:     c.line,
     padding:         Spacing.lg,
     gap:             Spacing.md,
   },
@@ -244,13 +248,14 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   },
   errorText: {
     fontSize:   FontSizes.sm,
-    color:      '#ff6b6b',
+    fontWeight: '600',
+    color:      c.red,
     lineHeight: 18,
   },
   acceptBtn: {
-    backgroundColor: c.accent,
-    borderRadius:    Radius.md,
-    paddingVertical: Spacing.md,
+    backgroundColor: c.primary,
+    borderRadius:    Radius.button,
+    minHeight:       48,
     alignItems:      'center',
     justifyContent:  'center',
     marginTop:       Spacing.sm,
@@ -262,7 +267,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     opacity: 0.85,
   },
   acceptBtnText: {
-    color:      '#fff',
+    color:      c.white,
     fontSize:   FontSizes.md,
     fontWeight: '700',
     lineHeight: FontSizes.md * 1.25,

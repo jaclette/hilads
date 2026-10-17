@@ -32,7 +32,8 @@ export function ScreenHeader({ title, variant = 'back', right, onBack, compact =
   return (
     <View style={styles.back}>
       <IconButton icon="chevron-back" onPress={onBack ?? (() => router.back())} label={t('back')} />
-      <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header">{title}</Text>
+      {title ? <Text style={[styles.title, compact && styles.titleCompact]} numberOfLines={1} accessibilityRole="header">{title}</Text>
+             : <View style={styles.spacer} />}
       {right}
     </View>
   );
@@ -42,6 +43,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   back:         { flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: Spacing.md, paddingVertical: 8 },
   title:        { flex: 1, fontSize: FontSizes.lg, fontWeight: '800', color: c.text },
   titleCompact: { fontSize: FontSizes.md, fontWeight: '800' },
+  spacer:       { flex: 1 },
   tab:          { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: Spacing.md, paddingTop: 10, paddingBottom: 6 },
   tabTitle:     { fontSize: 26, fontWeight: '800', color: c.text, letterSpacing: -0.3 },
 });
