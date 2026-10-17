@@ -255,7 +255,7 @@ export default function LeaderboardScreen() {
           ) : (
             <TouchableOpacity
               activeOpacity={0.85}
-              onPress={() => router.push('/challenge/create')}
+              onPress={() => router.navigate('/(tabs)/today' as never)}
               accessibilityRole="button"
               accessibilityLabel={t('leaderboard.me.unranked')}
             >

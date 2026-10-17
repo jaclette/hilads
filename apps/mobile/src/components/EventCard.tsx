@@ -7,9 +7,7 @@ import { useThemedStyles } from '@/context/ThemeContext';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { formatRecurrence } from '@/lib/recurrence';
 
-// Shared compact event card - used by the Now feed (tabs/now.tsx) and the
-// See-what's-coming screen (upcoming-events.tsx). Keep the two screens visually
-// identical by editing this one place.
+// Compact event card for the Hi now list ((tabs)/events.tsx).
 
 const EVENT_ICONS: Record<string, string> = {
   drinks: '🍺', party: '🎉', nightlife: '🌙', music: '🎵',

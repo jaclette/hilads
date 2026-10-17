@@ -32,7 +32,6 @@ import i18n from '@/i18n';
 import { AttendeeAvatars } from '@/components/AttendeeAvatars';
 import { ChallengePipeline } from '@/features/challenge/ChallengePipeline';
 import { CampaignCelebration } from '@/features/challenge/CampaignCelebration';
-import { ScoringInfoButton } from '@/components/ScoringInfoButton';
 import { ThreadScheduleBlock } from '@/features/challenge/ThreadScheduleBlock';
 import { DatePickerModal } from '@/features/challenge/DatePickerModal';
 import { ChallengeProofBlock } from '@/features/challenge/ChallengeProofBlock';
@@ -75,7 +74,7 @@ export default function ChallengeChatScreen() {
 
   const router = useRouter();
   const { t } = useTranslation('challenge');
-  const { id, postCreate, reviewProof } = useLocalSearchParams<{ id: string; postCreate?: string; reviewProof?: string }>();
+  const { id, reviewProof } = useLocalSearchParams<{ id: string; reviewProof?: string }>();
   const { identity, account, sessionId } = useApp();
   const nickname = account?.display_name ?? identity?.nickname ?? '';
 
@@ -93,8 +92,7 @@ export default function ChallengeChatScreen() {
   // city members and label them by city name without re-querying.
   const [challengeCityName,    setChallengeCityName]    = useState<string | null>(null);
   const [challengeCityChannel, setChallengeCityChannel] = useState<string | null>(null);
-  // Post-create sheet: visible when /challenge/:id?postCreate=1 (the create
-  // form navigates there on success). Owner-only.
+  // Invite sheet (city members / share), opened by the owner's invite CTA.
   const [postCreateOpen, setPostCreateOpen] = useState(false);
   const [participants,     setParticipants]     = useState<UserDTO[]>([]);
   const [membersOpen,      setMembersOpen]      = useState(false);
@@ -295,40 +293,7 @@ export default function ChallengeChatScreen() {
     loadMyAcceptance();
   }, [loadChallenge, loadParticipants, loadMyAcceptance]);
 
-  // Post-create modal: fired by the create form via ?postCreate=1. We wait
-  // until the challenge has loaded so the modal knows the audience/city, then
-  // strip the param from the URL so a back-nav doesn't re-open it.
-  useEffect(() => {
-    if (postCreate === '1' && challenge && !challengeLoading) {
-      setPostCreateOpen(true);
-      // Replace URL to drop the trigger so a refresh / back-nav doesn't re-fire.
-      router.setParams({ postCreate: undefined } as never);
-    }
-  }, [postCreate, challenge, challengeLoading, router]);
-
   // ── Owner actions ───────────────────────────────────────────────────────────
-
-  const handleEdit = useCallback(() => {
-    if (!challenge) return;
-    router.push({
-      pathname: '/challenge/create',
-      params: {
-        editId:              challenge.id,
-        title:               challenge.title,
-        type:                challenge.challenge_type,
-        audience:            challenge.audience,
-        returnClause:        challenge.return_clause ?? '',
-        // International fields - empty string when the challenge is Local so
-        // the form's defaults kick in. The create form ignores them on Local
-        // edits regardless (server enforces too).
-        mode:                challenge.mode ?? 'local',
-        targetCityChannelId: challenge.target_city_id
-          ? String(challenge.target_city_id).replace(/^city_/, '')
-          : '',
-        proofRequirements:   challenge.proof_requirements ?? '',
-      },
-    } as never);
-  }, [challenge, router]);
 
   const handleDelete = useCallback(() => {
     if (!identity) return;
@@ -411,7 +376,7 @@ export default function ChallengeChatScreen() {
   }, [id, identity, challenge, t]);
 
   // Owner-only "Manage challenge" modal - opens from the inline pill in
-  // the meta row. Bundles Edit / Close (lifecycle) / Delete.
+  // the meta row. Bundles Close (lifecycle) / Delete.
   const [manageOpen, setManageOpen] = useState(false);
   // International proof-spec popin - tapping the pipeline's "Waiting for
   // the proof" pill opens this read-only sheet.
@@ -1299,7 +1264,7 @@ export default function ChallengeChatScreen() {
             </TouchableOpacity>
           )}
           {/* Manage challenge - creator-only pill. Opens a modal with
-              Edit / Close challenge / Delete to keep the meta row tight. */}
+              Close challenge / Delete to keep the meta row tight. */}
           {isOwner && challenge && (
             <TouchableOpacity
               style={styles.sharePillInline}
@@ -1316,14 +1281,6 @@ export default function ChallengeChatScreen() {
         </View>
         </View>
 
-        {/* Scoring info - small (i) button. For GROUP rows it lives inline in
-            the deadline/meet card (below); legacy rows keep it here. */}
-        {!isGroup && (
-          <View style={styles.scoringInfoRow}>
-            <ScoringInfoButton />
-          </View>
-        )}
-
         {/* ── GROUP CHALLENGE (Phase 4): meet/contest info + join / resolve ──
             Replaces the legacy accept→date→rate pipeline for group rows.
             MEET → date + place + "validate who showed up".
@@ -1338,7 +1295,6 @@ export default function ChallengeChatScreen() {
                     ? `⏳ ${t('group.deadlinePrefix', { defaultValue: 'Submit by' })} ${meetSummary ?? ''}`
                     : `📅 ${meetSummary ?? ''}${isGroupMeet && challenge.venue ? `   ·   📍 ${challenge.venue}` : ''}`}
                 </Text>
-                <ScoringInfoButton size={20} />
               </View>
             ) : null}
             {isValidated ? null /* status now shown as a pill in the header */ : isOwner ? (
@@ -1514,10 +1470,9 @@ export default function ChallengeChatScreen() {
             the members strip and the chat with a glitchy clipped top
             edge on intl creator views, and the same share affordance
             already lives in the meta row (the "↗ Share" pill).
-            ChallengePostCreateSheet stays mounted; the post-create
-            handler still opens it once right after creation. */}
+            ChallengePostCreateSheet stays mounted for the owner's invite CTA. */}
 
-        {/* Edit / Close challenge / Delete moved into the Manage modal
+        {/* Close challenge / Delete moved into the Manage modal
             opened from the inline pill in the meta row. */}
 
       </View>
@@ -2054,7 +2009,7 @@ export default function ChallengeChatScreen() {
         />
       )}
 
-      {/* Manage challenge modal - Edit / Close / Delete bundled. */}
+      {/* Manage challenge modal - Close / Delete bundled. */}
       {challenge && (
         <Modal
           visible={manageOpen && isOwner}
@@ -2065,14 +2020,6 @@ export default function ChallengeChatScreen() {
           <TouchableOpacity style={styles.modalBackdrop} activeOpacity={1} onPress={() => setManageOpen(false)} />
           <View style={styles.manageSheet}>
             <Text style={styles.manageTitle}>{t('manage.title')}</Text>
-            <TouchableOpacity
-              style={styles.manageRow}
-              onPress={() => { setManageOpen(false); handleEdit(); }}
-              activeOpacity={0.75}
-            >
-              <Ionicons name="create-outline" size={18} color={colors.text} />
-              <Text style={styles.manageRowText}>{t('editTitle')}</Text>
-            </TouchableOpacity>
             <TouchableOpacity
               style={styles.manageRow}
               onPress={() => { setManageOpen(false); handleToggleStatus(); }}
@@ -2199,7 +2146,7 @@ export default function ChallengeChatScreen() {
         </Modal>
       )}
 
-      {/* Post-create "seed it" sheet - first opens with two CTAs (invite city
+      {/* Invite "seed it" sheet - first opens with two CTAs (invite city
           members / share externally), then morphs into a multi-select picker. */}
       <ChallengePostCreateSheet
         visible={postCreateOpen}
@@ -2439,17 +2386,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   // Detail block - wraps the collapsible content below the always-visible
   // hero row. LayoutAnimation handles the height transition.
   detailsBlock: { },
-
-  // Right-aligned thin row above the pipeline that holds the (i) scoring-
-  // info button. paddingHorizontal matches the pipeline's so the icon
-  // aligns with the rightmost pipeline node.
-  scoringInfoRow: {
-    flexDirection:     'row',
-    justifyContent:    'flex-end',
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.sm,
-    paddingBottom:     Spacing.xs,
-  },
 
   // Group challenge block (meet info + join / validate).
   groupBlock:     { paddingHorizontal: Spacing.md, paddingTop: Spacing.xs, gap: 6 },

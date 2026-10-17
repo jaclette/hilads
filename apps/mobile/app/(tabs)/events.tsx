@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   View, Text, FlatList, StyleSheet, ScrollView,
   ActivityIndicator, TouchableOpacity, RefreshControl,
-  type ViewToken,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,25 +15,14 @@ import { haversineMeters, formatDistance } from '@/lib/distance';
 import { MembersSheet } from '@/components/MembersSheet';
 import { fetchCanCreateEvent, fetchEventParticipants, fetchEventInspiration, type EventInspirationExample } from '@/api/events';
 import { ExampleEventCard } from '@/components/ExampleEventCard';
-import { fetchCityChallenges } from '@/api/challenges';
 import { socket } from '@/lib/socket';
 import { track } from '@/services/analytics';
-import { canAccessProfile } from '@/lib/profileAccess';
-import { ScoringInfoButton } from '@/components/ScoringInfoButton';
-import type { FeedItem, HiladsEvent, UserDTO, Challenge } from '@/types';
+import type { FeedItem, HiladsEvent, UserDTO } from '@/types';
 import { FontSizes, Spacing, Radius, Gradients, Shadows, type ThemeColors } from '@/constants';
 import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { AppHeader } from '@/features/shell/AppHeader';
-import { CreateSheet } from '@/components/CreateSheet';
 import { EventCard } from '@/components/EventCard';
 import { TopicCard } from '@/components/TopicCard';
-import { ChallengeVersusCard } from '@/components/ChallengeVersusCard';
-import { LinearGradient } from 'expo-linear-gradient';
-
-// Cap the inline challenge strip shown on NOW. The full list lives at
-// /challenge/all behind the "See all" CTA. Spec: "Show maximum 5 défis,
-// sorted by most recent."
-const NOW_CHALLENGES_CAP = 5;
 
 // ── Empty state ───────────────────────────────────────────────────────────────
 
@@ -56,7 +44,7 @@ function EmptyState({ city }: { city?: string }) {
 function FilterEmptyState({
   filter, city, userMode, onStartPulse,
 }: {
-  filter:        'all' | 'challenges' | 'events' | 'topics';
+  filter:        'all' | 'events' | 'topics';
   city?:         string;
   userMode?:     string | null;
   onStartPulse?: () => void;
@@ -64,17 +52,6 @@ function FilterEmptyState({
   const styles = useThemedStyles(makeStyles);
   const { t } = useTranslation('now');
   if (filter === 'all') return <EmptyState city={city} />;
-  if (filter === 'challenges') {
-    return (
-      <View style={styles.empty}>
-        <Text style={styles.emptyEmoji}>🔥</Text>
-        <Text style={styles.emptyTitle}>{t('noChallenges')}</Text>
-        <Text style={styles.emptySub}>
-          {city ? t('noChallengesCity', { city }) : t('noChallengesGeneric')}
-        </Text>
-      </View>
-    );
-  }
   if (filter === 'events' && userMode === 'local') {
     return (
       <View style={styles.empty}>
@@ -137,8 +114,7 @@ export default function NowScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('now');
-  // Measured height of the sticky bottom CTA bar (Hi now / Hi plan / See
-  // what's coming + archive link). The list reserves exactly this much so the
+  // Measured height of the sticky bottom CTA bar (Hi now / Hi plan). The list reserves exactly this much so the
   // last event never hides behind it. Sensible default until first layout.
   const [bottomBarH, setBottomBarH] = useState(170);
   const { city, identity, account, booting, blockedSet } = useApp();
@@ -146,7 +122,6 @@ export default function NowScreen() {
 
   const [items,         setItems]         = useState<FeedItem[]>([]);
   const [publicEvents,  setPublicEvents]  = useState<FeedItem[]>([]);
-  const [challenges,    setChallenges]    = useState<Challenge[]>([]);
   const [loading,       setLoading]       = useState(true);
   const [refreshing,    setRefreshing]    = useState(false);
   const [error,         setError]         = useState<string | null>(null);
@@ -155,30 +130,11 @@ export default function NowScreen() {
   const [eventInspiration,     setEventInspiration]     = useState<EventInspirationExample[]>([]);
   const [eventInspirationCity, setEventInspirationCity] = useState<string | null>(null);
   const inspirationTriedRef = useRef(false);
-  // Events tab → always the events view. Challenges moved to their own tab and
-  // Hangouts are dormant, so the memos below (which key off `filter`) naturally
-  // yield events-only: no challenges strip, no topic rows. Held in (never-set)
+  // Always the events view: hangouts are dormant, so the memos below (which
+  // key off `filter`) yield events only, no topic rows. Held in (never-set)
   // state so its type stays the wide union — a plain `const … = 'events'` would
   // be narrowed to the literal and trip TS's no-overlap check in those guards.
-  const [filter] = useState<'all' | 'challenges' | 'events' | 'topics'>('events');
-  // Set of currently-visible challenge ids - drives the open-slot pulse
-  // animation on ChallengeVersusCard. Updated by FlatList's
-  // onViewableItemsChanged so off-screen cards stop redrawing and entry-
-  // level Android doesn't burn battery on a long scroll. The ref keeps
-  // the latest viewability config stable across re-renders (RN errors if
-  // it changes between renders).
-  const [visibleChallengeIds, setVisibleChallengeIds] = useState<Set<string>>(() => new Set());
-  const viewabilityConfigRef = useRef({ itemVisiblePercentThreshold: 10 });
-  const onViewableItemsChangedRef = useRef(({ viewableItems }: { viewableItems: ViewToken[] }) => {
-    const next = new Set<string>();
-    for (const v of viewableItems) {
-      const item = v.item as { kind?: string; challenge?: { id?: string } } | null;
-      if (item?.kind === 'challenge' && item.challenge?.id) {
-        next.add(item.challenge.id);
-      }
-    }
-    setVisibleChallengeIds(next);
-  });
+  const [filter] = useState<'all' | 'events' | 'topics'>('events');
   // Viewer coords for NOW distance display. Read ONCE from the OS cache on load /
   // pull-to-refresh (getLastKnownPositionAsync - no watcher, no permission prompt;
   // permission was already requested at boot). null → no usable location → cards
@@ -229,23 +185,9 @@ export default function NowScreen() {
   // Topics (pulses) have no 1/day rule, so Start-a-pulse pushes directly.
   // Events go through the fetchCanCreateEvent preflight landed in commit
   // e0274e4; server still enforces the limit on POST.
-  // Both creation flows now flow through the CreateSheet picker (one + button
-  // instead of two side-by-side CTAs). Routing + analytics are unchanged.
-  const [showCreateSheet, setShowCreateSheet] = useState(false);
-
   function handleStartPulse() {
     if (!account) { router.push('/auth-gate?reason=create_hangout'); return; }
     router.push('/topic/create');
-  }
-  function handleCreateChallenge() {
-    // Challenges allow guests (mirrors events, not hangouts). Server enforces
-    // the 5/hour rate limit per city. `as never` because expo-router's typed
-    // routes haven't picked up the new app/challenge/create.tsx yet.
-    router.push('/challenge/create' as never);
-  }
-  function handleSeeAllChallenges() {
-    if (!city) return;
-    router.push(`/challenge/all?channelId=${city.channelId}` as never);
   }
   async function handleHostSpot() {
     if (!city) return;
@@ -254,19 +196,6 @@ export default function NowScreen() {
       if (!r.canCreate) { router.push('/event/limit-reached' as never); return; }
     } catch { /* optimistic open - server safety net catches the race */ }
     router.push('/event/create');
-  }
-  function handleSeeUpcoming() {
-    if (!city) return;
-    router.push(
-      `/upcoming-events?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}`,
-    );
-  }
-  function handleSeePast() {
-    if (!city) return;
-    track('past_archive_opened', { channelId: city.channelId });
-    router.push(
-      `/past?channelId=${city.channelId}&timezone=${encodeURIComponent(city.timezone ?? 'UTC')}&city=${encodeURIComponent(city.name ?? '')}`,
-    );
   }
 
   // Stable ref for WS participant count patches
@@ -311,17 +240,10 @@ export default function NowScreen() {
     else setLoading(true);
     setError(null);
     try {
-      // Parallel - challenges are a sibling fetch (no backend change needed to
-      // unify /now). Failure of either is non-fatal; the other section still
-      // renders. fetchCityChallenges already catches + returns [] on failure.
-      const [{ items: nowData, publicEvents: pubData }, chData] = await Promise.all([
-        fetchNowFeed(city.channelId, identity?.guestId),
-        fetchCityChallenges(city.channelId, 50),
-      ]);
-      console.log('[NowScreen] fetch done -', nowData.length, 'items,', pubData.length, 'public events,', chData.length, 'challenges');
+      const { items: nowData, publicEvents: pubData } = await fetchNowFeed(city.channelId, identity?.guestId);
+      console.log('[NowScreen] fetch done -', nowData.length, 'items,', pubData.length, 'public events');
       setItems(applyCountCache(nowData));
       setPublicEvents(pubData);
-      setChallenges(chData);
     } catch (err) {
       console.warn('[NowScreen] fetch error:', err);
       setError(t('loadError'));
@@ -435,32 +357,6 @@ export default function NowScreen() {
     return off;
   }, [city]);
 
-  // New challenge created in this city - server pushes new_challenge via WS.
-  // Append at the head of the local list (backend sorts by created_at DESC so
-  // a fresh one is always first). Same defensive city-room match as events.
-  useEffect(() => {
-    const off = socket.on('new_challenge', (data: Record<string, unknown>) => {
-      const ch = data.challenge as Challenge | undefined;
-      if (!ch?.id || !city || String(data.channelId) !== String(city.channelId)) return;
-      setChallenges(prev => prev.some(c => c.id === ch.id) ? prev : [ch, ...prev]);
-    });
-    return off;
-  }, [city]);
-
-  // Challenge validated by its creator - flip the badge live + remove from the
-  // active strip (the See-all-past screen picks it up via its own fetch).
-  useEffect(() => {
-    const off = socket.on('challenge_validated', (data: Record<string, unknown>) => {
-      const ch = data.challenge as Challenge | undefined;
-      if (!ch?.id || !city || String(data.channelId) !== String(city.channelId)) return;
-      // Validated challenges leave the active feed but the channel still
-      // exists - when we ship the detail screen in Phase 5 the user can still
-      // open the chat. Here we just drop them from the strip.
-      setChallenges(prev => prev.filter(c => c.id !== ch.id));
-    });
-    return off;
-  }, [city]);
-
   // Filter + flat-list memos. These MUST run on every render, so they live
   // ABOVE the early returns below - otherwise when `city` flips null→set the
   // hook count changes and React throws "Rendered more hooks than during the
@@ -521,37 +417,13 @@ export default function NowScreen() {
     });
   }, [items, filter, blockedSet, distanceById]);
 
-  // Top 5 challenges for the inline strip. Backend hands them back open
-  // status + most-recent first. We re-sort to put LOCAL ahead of
-  // INTERNATIONAL while keeping the recent-first order stable within
-  // each bucket - matches the web filteredChallenges memo so the two
-  // platforms agree on which rows lead the strip.
-  const topChallenges = useMemo(
-    () => {
-      if (filter === 'events' || filter === 'topics') return [];
-      const sorted = [...challenges].sort((a, b) => {
-        const am = (a.mode ?? 'local') === 'international' ? 1 : 0;
-        const bm = (b.mode ?? 'local') === 'international' ? 1 : 0;
-        return am - bm;
-      });
-      return sorted.slice(0, NOW_CHALLENGES_CAP);
-    },
-    [challenges, filter],
-  );
-
-  // Note: see_all_challenges carries an explicit `label?: undefined` to keep
-  // TS's array-literal type inference aligned with the section/see_all rows.
-  // Without it, the discriminated union inference adds it implicitly and
-  // mismatches the explicit annotation.
   const listData = useMemo<Array<
     FeedItem
     | { kind: 'section'; label: string }
-    | { kind: 'challenge'; challenge: Challenge }
-    | { kind: 'see_all_challenges'; label?: undefined }
     | (HiladsEvent & { kind: 'public_event' })
   >>(
     () => {
-      const showPublic = filter !== 'topics' && filter !== 'challenges' && publicEvents.length > 0;
+      const showPublic = filter !== 'topics' && publicEvents.length > 0;
       // Public events are distance-sorted within their section too (nearest →
       // farthest; no-coord last), consistent with the main feed.
       const sortedPublic = [...publicEvents].sort((a, b) => {
@@ -563,28 +435,17 @@ export default function NowScreen() {
         if (aHas && bHas && aDist !== bDist) return aDist! - bDist!;
         return 0;
       });
-      const challengesBlock = topChallenges.length > 0
-        ? [
-            { kind: 'section' as const, label: t('challengesSection') },
-            ...topChallenges.map(c => ({ kind: 'challenge' as const, challenge: c })),
-            // See-all CTA only when there are more challenges than the cap.
-            ...(challenges.length > NOW_CHALLENGES_CAP
-              ? [{ kind: 'see_all_challenges' as const }]
-              : []),
-          ]
-        : [];
       return [
-        ...challengesBlock,
         ...filteredItems,
         ...(showPublic
           ? [
               { kind: 'section' as const, label: t('publicEventsSection', { ns: 'common' }) },
-              ...sortedPublic.map(e => ({ ...e, kind: 'public_event' as const })),
+              ...sortedPublic.map(e => ({ ...e, kind: 'public_event' as const }) as HiladsEvent & { kind: 'public_event' }),
             ]
           : []),
       ];
     },
-    [filteredItems, topChallenges, challenges.length, publicEvents, filter, distanceById, t],
+    [filteredItems, publicEvents, filter, distanceById, t],
   );
 
   // Inspiration "idea book" for the genuine zero-activity empty state. Re-armed
@@ -707,74 +568,13 @@ export default function NowScreen() {
       ) : (
         <FlatList
           data={listData}
-          keyExtractor={(item, idx) =>
-            item.kind === 'challenge'           ? `challenge-${item.challenge.id}`
-              : item.kind === 'see_all_challenges' ? `see-all-challenges-${idx}`
-              : 'id' in item                       ? item.id
-              :                                      `section-${idx}`}
+          keyExtractor={(item, idx) => ('id' in item ? item.id : `section-${idx}`)}
           removeClippedSubviews
           maxToRenderPerBatch={6}
           windowSize={5}
-          viewabilityConfig={viewabilityConfigRef.current}
-          onViewableItemsChanged={onViewableItemsChangedRef.current}
           renderItem={({ item }) => {
             if (item.kind === 'section') {
-              // The Challenges section header carries the scoring-info (i)
-              // button on the right - same affordance as on the channel
-              // pipeline, so the user can learn the points rules from
-              // either entry point without hunting through settings.
-              const isChallenges = item.label === t('challengesSection');
-              return isChallenges ? (
-                <View style={styles.sectionRow}>
-                  <Text style={[styles.sectionLabel, styles.sectionLabelFlex]}>{item.label}</Text>
-                  <ScoringInfoButton />
-                </View>
-              ) : (
-                <Text style={styles.sectionLabel}>{item.label}</Text>
-              );
-            }
-            if (item.kind === 'challenge') {
-              const ch = item.challenge;
-              return (
-                <ChallengeVersusCard
-                  challenge={ch}
-                  animated={visibleChallengeIds.has(ch.id)}
-                  onPress={() => {
-                    track('challenge_opened', { challengeId: ch.id });
-                    router.push(`/challenge/${ch.id}` as never);
-                  }}
-                  onAvatarsPress={() => {
-                    track('challenge_opened', { challengeId: ch.id, via: 'avatars' });
-                    router.push(`/challenge/${ch.id}` as never);
-                  }}
-                  onAcceptPress={() => {
-                    // Open-slot shortcut. Lands on the challenge channel -
-                    // the accept-challenge CTA there is already the
-                    // primary one and runs the same guest gate / auth
-                    // flow we'd otherwise duplicate here.
-                    track('challenge_opened', { challengeId: ch.id, via: 'open_slot' });
-                    router.push(`/challenge/${ch.id}` as never);
-                  }}
-                  onAvatarPress={(uid) => {
-                    // Profile gate - ghost users can't open registered
-                    // profiles. Identical guard as the chat surface so
-                    // a guest tapping an avatar lands on /auth-gate
-                    // instead of a 404.
-                    if (!canAccessProfile(account)) {
-                      router.push('/auth-gate' as never);
-                      return;
-                    }
-                    router.push({ pathname: '/user/[id]', params: { id: uid } });
-                  }}
-                />
-              );
-            }
-            if (item.kind === 'see_all_challenges') {
-              return (
-                <TouchableOpacity style={styles.seeAllRow} activeOpacity={0.7} onPress={handleSeeAllChallenges}>
-                  <Text style={styles.seeAllText}>{t('seeAllChallenges')}</Text>
-                </TouchableOpacity>
-              );
+              return <Text style={styles.sectionLabel}>{item.label}</Text>;
             }
             if (item.kind === 'topic') {
               const topicMeters = distanceById.get(item.id);
@@ -824,8 +624,7 @@ export default function NowScreen() {
         />
       )}
 
-      {/* Hi Local → two create CTAs side by side: "Hi now" (spontaneous hangout)
-          + "Hi later" (planned event). "See what's coming" below. */}
+      {/* Two create CTAs: "Hi now" (spontaneous hangout) and "Hi later" (planned event). */}
       {city && (
         <View
           style={[styles.bottomActions, { paddingBottom: 10 + insets.bottom }]}
@@ -841,7 +640,7 @@ export default function NowScreen() {
             <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextNow]}>🗣️ {t('hiNow')}</Text>
             <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: 'rgba(255,122,60,0.75)' }]}>{t('hiNowHint', { defaultValue: 'hang out now' })}</Text>
           </TouchableOpacity>
-          {/* Line 2: Hi later + See what's coming, side by side. */}
+          {/* Line 2: Hi later. */}
           <View style={styles.hilocalRow}>
             <TouchableOpacity
               style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
@@ -852,24 +651,7 @@ export default function NowScreen() {
               <Text numberOfLines={1} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🎉 {t('hiLater')}</Text>
               <Text numberOfLines={1} style={[styles.hilocalCtaSub, { color: colors.muted2 }]}>{t('hiLaterHint', { defaultValue: 'plan an event' })}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.hilocalCta, styles.hilocalCtaFlex, styles.hilocalCtaLater]}
-              activeOpacity={0.85}
-              onPress={handleSeeUpcoming}
-              accessibilityRole="button"
-            >
-              <Text numberOfLines={2} style={[styles.hilocalCtaText, styles.hilocalCtaTextLater]}>🔮 {t('seeComing')}</Text>
-            </TouchableOpacity>
           </View>
-          {/* Discreet archive entry - muted text link under the upcoming pill. */}
-          <TouchableOpacity
-            style={styles.pastLink}
-            activeOpacity={0.6}
-            onPress={handleSeePast}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <Text style={styles.pastLinkText}>{t('seeHappened')}</Text>
-          </TouchableOpacity>
         </View>
       )}
 
@@ -969,39 +751,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
     textTransform:     'uppercase',
     color:             c.muted,
   },
-  // Row wrapper for section headers that need a trailing element (e.g. the
-  // scoring-info (i) button next to "CHALLENGES"). Keeps padding identical
-  // to .sectionLabel so the row aligns with plain-text sections above/below.
-  sectionRow: {
-    flexDirection:     'row',
-    alignItems:        'center',
-    paddingHorizontal: Spacing.md,
-    paddingTop:        Spacing.md,
-    paddingBottom:     Spacing.sm,
-    gap:               Spacing.sm,
-  },
-  // When .sectionLabel sits inside .sectionRow, its outer paddings already
-  // come from the row - zero them on the Text so the label hugs the row.
-  sectionLabelFlex: {
-    flex:              1,
-    paddingHorizontal: 0,
-    paddingTop:        0,
-    paddingBottom:     0,
-  },
-  // "See all challenges →" row that sits at the end of the inline strip.
-  seeAllRow: {
-    alignSelf:         'flex-end',
-    paddingHorizontal: Spacing.sm,
-    paddingVertical:   Spacing.xs,
-    marginTop:         Spacing.xs,
-  },
-  seeAllText: {
-    fontSize:   FontSizes.sm,
-    fontWeight: '700',
-    color:      '#FF7A3C',
-    letterSpacing: 0.2,
-  },
-
   // paddingBottom reserves room for the sticky single-row bottomActions block
   // (one row of ~56px + safe-area). Smaller than before since we collapsed
   // the two-row layout into one.
@@ -1108,8 +857,6 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   upcomingCtaText:  { flex: 1, fontSize: FontSizes.md, fontWeight: '700', color: c.accent },
 
   // Discreet archive entry - muted, left-aligned under the upcoming pill.
-  pastLink:     { alignSelf: 'flex-start', paddingTop: 6, paddingBottom: 2 },
-  pastLinkText: { fontSize: FontSizes.sm, color: c.muted, fontWeight: '500' },
 
   // Circular + button on the right - opens CreateSheet picker. Background is a
   // 135° orange gradient (LinearGradient absolute child); shadow uses the

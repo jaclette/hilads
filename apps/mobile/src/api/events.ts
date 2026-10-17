@@ -69,50 +69,6 @@ export async function fetchPublicCityEvents(channelId: string): Promise<HiladsEv
   }
 }
 
-// All Hilads + public events for the next N days - powers the Upcoming screen.
-// Generates missing series occurrences server-side so days 2-7 are always populated.
-//
-// Pass { from, to } (YYYY-MM-DD, both inclusive) to fetch a specific range
-// instead of N days from now - used by the calendar-strip filter on the
-// upcoming screen. When { from, to } is supplied, days is ignored.
-export async function fetchUpcomingEvents(
-  channelId: string,
-  opts: { days?: number; from?: string; to?: string } = {},
-): Promise<HiladsEvent[]> {
-  const params: Record<string, string | number> = {};
-  if (opts.from && opts.to) {
-    params.from = opts.from;
-    params.to   = opts.to;
-  } else {
-    params.days = opts.days ?? 7;
-  }
-  const data = await api.get<{ events: Record<string, unknown>[] }>(
-    `/channels/${channelId}/events/upcoming`,
-    { params },
-  );
-  return (data.events ?? []).map(e => ({
-    ...e,
-    event_type: (e.event_type ?? e.type) as HiladsEvent['event_type'],
-    source_type: (e.source_type ?? e.source ?? 'hilads') as HiladsEvent['source_type'],
-  })) as HiladsEvent[];
-}
-
-/**
- * Per-day event counts for the calendar-strip's dot indicators on the upcoming
- * screen. Returns {} when nothing is scheduled in the range.
- */
-export async function fetchCalendarSummary(
-  channelId: string,
-  from: string,
-  to: string,
-): Promise<Record<string, number>> {
-  const data = await api.get<{ summary: Record<string, number> }>(
-    `/channels/${channelId}/events/calendar-summary`,
-    { params: { from, to } },
-  );
-  return data.summary ?? {};
-}
-
 export async function fetchMyEvents(guestId: string): Promise<HiladsEvent[]> {
   const data = await api.get<{ events: HiladsEvent[] }>('/users/me/events', {
     params: { guestId },

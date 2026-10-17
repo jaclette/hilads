@@ -857,11 +857,6 @@ function ChatMessageInner({ message, myGuestId, isGrouped = false, index = 0, sh
         <ShowcasePreviewSheet
           item={wonItem}
           onClose={() => setWonItem(null)}
-          onTry={(it) => {
-            setWonItem(null);
-            if (!account) { router.push('/auth-gate'); return; }
-            router.push({ pathname: '/challenge/create', params: { title: it.title, type: it.challenge_type } } as never);
-          }}
           onAvatar={(uid) => {
             setWonItem(null);
             if (!canAccessProfile(account)) { router.push('/auth-gate'); return; }

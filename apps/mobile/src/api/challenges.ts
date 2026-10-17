@@ -2,7 +2,6 @@ import { api, ApiError } from './client';
 import type {
   Challenge,
   ChallengeType,
-  ChallengeAudience,
   ChallengeAcceptance,
   ChallengeThreadSummary,
   AcceptFailureCode,
@@ -40,24 +39,6 @@ export interface ShowcaseItem {
   completed_at:               number;
 }
 
-/** Public showcase of completed, well-rated challenges (global or a city). */
-export async function fetchChallengeShowcase(
-  opts: { cityId?: number | null; limit?: number; before?: number | null } = {},
-): Promise<{ items: ShowcaseItem[]; hasMore: boolean }> {
-  const params: Record<string, number> = {};
-  if (opts.cityId) params.cityId = opts.cityId;
-  if (opts.limit)  params.limit  = opts.limit;
-  if (opts.before) params.before = opts.before;
-  try {
-    const data = await api.get<{ items: ShowcaseItem[]; hasMore: boolean }>(
-      '/challenges/showcase', { params },
-    );
-    return { items: data.items ?? [], hasMore: !!data.hasMore };
-  } catch {
-    return { items: [], hasMore: false };
-  }
-}
-
 /**
  * The showcase card for ONE challenge, or null when it isn't showcase-eligible
  * (private, or no approved proof / rating yet). Powers the World "X won the
@@ -91,53 +72,6 @@ export interface ChallengeExample {
   lines:       ChallengeExampleLine[];
 }
 
-/** 3 real resolved challenges + a who-earned-what point breakdown. */
-export async function fetchChallengeExamples(): Promise<ChallengeExample[]> {
-  try {
-    const data = await api.get<{ examples: ChallengeExample[] }>('/challenges/examples');
-    return data.examples ?? [];
-  } catch {
-    return [];
-  }
-}
-
-/** Active (status='open') challenges for a city. NOW feed reads the top 5. */
-export async function fetchCityChallenges(
-  channelId: string,
-  limit = 50,
-): Promise<Challenge[]> {
-  try {
-    const data = await api.get<{ challenges: Challenge[] }>(
-      `/channels/${channelId}/challenges`,
-      { params: { limit } },
-    );
-    return data.challenges ?? [];
-  } catch (err) {
-    console.warn('[fetchCityChallenges] failed:', err);
-    return [];
-  }
-}
-
-/** Validated (archived) challenges - feeds the "See past challenges" CTA. */
-export async function fetchValidatedChallenges(
-  channelId: string,
-  opts: { limit?: number; before?: number } = {},
-): Promise<Challenge[]> {
-  try {
-    const params: Record<string, number> = {};
-    if (opts.limit)  params.limit  = opts.limit;
-    if (opts.before) params.before = opts.before;
-    const data = await api.get<{ challenges: Challenge[] }>(
-      `/channels/${channelId}/challenges/validated`,
-      { params },
-    );
-    return data.challenges ?? [];
-  } catch (err) {
-    console.warn('[fetchValidatedChallenges] failed:', err);
-    return [];
-  }
-}
-
 /** One inert example for the zero-challenge empty state. No challenge id by
  *  design - these are read-only inspiration, never takeable. */
 export interface InspirationExample {
@@ -156,24 +90,6 @@ export interface ChallengeInspiration {
   city:     string | null;   // source city name (for the small "by … · city" line)
   cityId:   string | null;
   examples: InspirationExample[];
-}
-
-/**
- * Up to 3 example challenges from the most-active OTHER city, for the
- * zero-challenge empty state. Read-only "idea book" - the payload carries no
- * challenge id, so there is no way to open or take these from the client.
- * Returns an empty list (block renders nothing) when no other city qualifies
- * or on any error.
- */
-export async function fetchChallengeInspiration(excludeChannelId: string): Promise<ChallengeInspiration> {
-  try {
-    return await api.get<ChallengeInspiration>('/challenges/inspiration', {
-      params: { excludeChannelId },
-    });
-  } catch (err) {
-    console.warn('[fetchChallengeInspiration] failed:', err);
-    return { city: null, cityId: null, examples: [] };
-  }
 }
 
 export async function fetchChallengeById(challengeId: string): Promise<{
@@ -231,37 +147,6 @@ export interface InternationalChallengeFields {
   venue?:                string | null;
   venueLat?:             number | null;
   venueLng?:             number | null;
-}
-
-export async function createChallenge(
-  channelId: string,
-  guestId: string,
-  nickname: string | null,
-  title: string,
-  challengeType: ChallengeType,
-  audience: ChallengeAudience,
-  returnClause: string | null,
-  intl: InternationalChallengeFields = {},
-): Promise<Challenge> {
-  return api.post<Challenge>(`/channels/${channelId}/challenges`, {
-    guestId,
-    nickname,
-    title,
-    challengeType,
-    audience,
-    returnClause,
-    mode:                intl.mode ?? 'local',
-    targetCityChannelId: intl.targetCityChannelId ?? null,
-    proofRequirements:   intl.proofRequirements ?? null,
-    validationMethod:    intl.validationMethod ?? null,
-    visibility:          intl.visibility ?? 'public',
-    format:              intl.format ?? 'legacy',
-    meetAt:              intl.meetAt ?? null,
-    meetEndsAt:          intl.meetEndsAt ?? null,
-    venue:               intl.venue ?? null,
-    venueLat:            intl.venueLat ?? null,
-    venueLng:            intl.venueLng ?? null,
-  });
 }
 
 /** GROUP challenges: the challenger validates who was present at the meet.
@@ -333,43 +218,6 @@ export async function fetchGroupSubmissions(
   challengeId: string,
 ): Promise<{ submissions: GroupSubmission[]; winnerUserId: string | null }> {
   return api.get(`/challenges/${challengeId}/submissions`);
-}
-
-/** Owner-only edit of a challenge's title / type / audience / return clause.
- *  Status is not editable here - use validateChallenge(). max_participants
- *  is no longer accepted (1:1 model). Mode is also not editable - delete +
- *  recreate is the expected path. International edit can re-target the city
- *  and revise the proof requirements. */
-export async function updateChallenge(
-  challengeId: string,
-  guestId: string,
-  title: string,
-  challengeType: ChallengeType,
-  audience: ChallengeAudience,
-  returnClause: string | null,
-  intl: Omit<InternationalChallengeFields, 'mode'> = {},
-): Promise<Challenge> {
-  return api.put<Challenge>(`/challenges/${challengeId}`, {
-    guestId,
-    title,
-    challengeType,
-    audience,
-    returnClause,
-    targetCityChannelId: intl.targetCityChannelId ?? null,
-    proofRequirements:   intl.proofRequirements ?? null,
-    // null = don't change. 'public' | 'friends' only at input; the mutual
-    // privacy flow is the only path to 'private'.
-    visibility:          intl.visibility ?? null,
-    // null = don't change. Local rows can flip meet ⇄ photo_proof (swaps the
-    // pipeline); the server forces 'photo_proof' on International.
-    validationMethod:    intl.validationMethod ?? null,
-  });
-}
-
-/** Flip users.has_seen_public_optin to TRUE so the first-time public modal
- *  stops showing for this user. One-shot endpoint, idempotent. */
-export async function dismissPublicOptin(): Promise<{ ok: boolean; hasSeenPublicOptin: boolean }> {
-  return api.post<{ ok: boolean; hasSeenPublicOptin: boolean }>(`/me/dismiss-public-optin`, {});
 }
 
 /** Owner-only soft-delete. */

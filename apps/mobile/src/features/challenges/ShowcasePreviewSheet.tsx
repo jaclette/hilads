@@ -41,13 +41,11 @@ function PersonRow({ label, name, avatar, country, userId, onAvatar }: {
 
 /**
  * Tapping a showcase card opens this preview (NOT the challenge): a bigger
- * photo, who the challenger + taker were, the appreciation note, and a
- * "Try this challenge" CTA that seeds a fresh challenge from the same idea.
+ * photo, who the challenger + taker were, and the appreciation note.
  */
-export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
+export function ShowcasePreviewSheet({ item, onClose, onAvatar }: {
   item: ShowcaseItem | null;
   onClose: () => void;
-  onTry: (item: ShowcaseItem) => void;
   onAvatar?: (userId: string) => void;
 }) {
   const styles = useThemedStyles(makeStyles);
@@ -190,10 +188,6 @@ export function ShowcasePreviewSheet({ item, onClose, onTry, onAvatar }: {
             </View>
           ) : null}
         </ScrollView>
-
-        <TouchableOpacity style={styles.tryBtn} onPress={() => onTry(item)} activeOpacity={0.9}>
-          <Text style={styles.tryText}>🔥 {t('showcase.tryCta')}</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Nested inside this Modal so it layers ABOVE the sheet - a sibling
@@ -269,11 +263,4 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   noteWho: { fontSize: 12, fontWeight: '700', color: c.text },
   noteRole: { fontSize: 10, fontWeight: '600', color: c.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   noteText: { fontSize: 14, lineHeight: 20, color: c.text, fontStyle: 'italic' },
-
-  tryBtn: {
-    marginHorizontal: Spacing.lg, marginTop: Spacing.sm,
-    paddingVertical: 15, borderRadius: 14, alignItems: 'center',
-    backgroundColor: c.accent,
-  },
-  tryText: { fontSize: FontSizes.md, fontWeight: '800', color: '#fff', letterSpacing: 0.2 },
 });
