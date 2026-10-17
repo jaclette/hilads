@@ -134,5 +134,73 @@
   },
   "appearance": "外観",
   "themeLight": "ライト",
-  "themeDark": "ダーク"
+  "themeDark": "ダーク",
+  "pp": {
+    "passport": {
+      "title": "パスポート",
+      "weekRank": "今週 {{rank}} 位",
+      "weekNone": "今週はまだランク外",
+      "mostLocalIn": "{{city}}の Most Local",
+      "mostLocalWorld": "世界の Most Local",
+      "hintToday": "今日の challenge で{{theme}}のスタンプをもらおう。",
+      "hintTomorrow": "明日：{{theme}}",
+      "hintPass": "Local Pass 獲得。ここのテーマを全部達成。",
+      "localPass": "Local Pass",
+      "mySpots": "マイスポット",
+      "myProposals": "自分の提案",
+      "friends": "友達",
+      "mostLocalAllTime": "歴代 Most Local",
+      "allTimeRank": "{{city}}で {{rank}} 位",
+      "howPoints": "ポイントの仕組み",
+      "gotIt": "了解",
+      "close": "閉じる",
+      "noSpots": "スポットはまだありません。場所でのプルーフがここに表示されます。",
+      "pageA11y": "{{city}}：スタンプ {{count}} 個",
+      "guestTitle": "パスポートを始めよう",
+      "guestBody": "登録すると、各都市でテーマごとにスタンプを集めて Local Pass を目指せます。",
+      "signUp": "登録する",
+      "signIn": "アカウントを持っている",
+      "best_one": "最高：{{count}} 日",
+      "best_other": "最高：{{count}} 日",
+      "stamps_one": "スタンプ {{count}}/7",
+      "stamps_other": "スタンプ {{count}}/7",
+      "inReview_one": "{{count}} 件確認中",
+      "inReview_other": "{{count}} 件確認中"
+    },
+    "points": {
+      "title": "ポイントのもらい方",
+      "intro": "Daily Challenge のポイントは週間 Most Local に入ります。すべてのポイントは歴代ランキングに入ります。",
+      "proof": "承認されたプルーフ",
+      "early": "早めのプルーフ（最初の3時間）",
+      "streak": "連続記録の毎日",
+      "vote": "投票（challenge ごと）",
+      "top": "その日の世界トップ3",
+      "cityBest": "都市のベストプルーフ",
+      "twist": "Local Twist が採用",
+      "proposal": "challenge の提案が採用",
+      "localPass": "Local Pass（1都市でスタンプ7個）",
+      "weekly": "週間 Most Local は毎週月曜にリセットされます。"
+    },
+    "tabFriends": "友達",
+    "friendRequests": "友達リクエスト",
+    "myFriends": "マイフレンド",
+    "noFriends": "まだ友達はいません。プロフィールから追加しましょう。",
+    "vibesReceived": "受け取った vibes",
+    "vibeScore": "vibe スコア {{score}}",
+    "noVibes": "まだ vibes はありません。",
+    "noVibesSub": "誰かがノートを残すとスコアが表示されます ✨",
+    "settings": "設定",
+    "vibeBasis_one": "{{count}}件の vibe に基づく",
+    "vibeBasis_other": "{{count}}件の vibe に基づく",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "この街を知っている"
+      },
+      "exploring": {
+        "label": "探索中",
+        "desc": "この街を探検中"
+      }
+    }
+  }
 }

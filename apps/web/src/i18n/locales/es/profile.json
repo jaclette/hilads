@@ -134,5 +134,73 @@
   },
   "appearance": "Apariencia",
   "themeLight": "Claro",
-  "themeDark": "Oscuro"
+  "themeDark": "Oscuro",
+  "pp": {
+    "passport": {
+      "title": "Pasaporte",
+      "weekRank": "N.º {{rank}} esta semana",
+      "weekNone": "Aún sin puesto esta semana",
+      "mostLocalIn": "Most Local en {{city}}",
+      "mostLocalWorld": "Most Local en el mundo",
+      "hintToday": "Haz el challenge de hoy para conseguir tu sello de {{theme}}.",
+      "hintTomorrow": "Mañana: {{theme}}",
+      "hintPass": "Local Pass conseguido. Todos los temas hechos aquí.",
+      "localPass": "Local Pass",
+      "mySpots": "Mis spots",
+      "myProposals": "Mis propuestas",
+      "friends": "Amigos",
+      "mostLocalAllTime": "Most Local de todos los tiempos",
+      "allTimeRank": "N.º {{rank}} en {{city}}",
+      "howPoints": "Cómo funcionan los puntos",
+      "gotIt": "Entendido",
+      "close": "Cerrar",
+      "noSpots": "Aún no hay spots. Tus pruebas en lugares los añaden aquí.",
+      "pageA11y": "{{city}}: {{count}} sellos",
+      "guestTitle": "Empieza tu pasaporte",
+      "guestBody": "Regístrate para conseguir un sello por tema en cada ciudad y ganar el Local Pass.",
+      "signUp": "Registrarme",
+      "signIn": "Ya tengo cuenta",
+      "best_one": "Récord: {{count}} día",
+      "best_other": "Récord: {{count}} días",
+      "stamps_one": "{{count}} de 7 sellos",
+      "stamps_other": "{{count}} de 7 sellos",
+      "inReview_one": "{{count}} en revisión",
+      "inReview_other": "{{count}} en revisión"
+    },
+    "points": {
+      "title": "Cómo ganar puntos",
+      "intro": "Los puntos del Daily Challenge cuentan en el Most Local semanal. Todos los puntos cuentan en el histórico.",
+      "proof": "Prueba aprobada",
+      "early": "Prueba temprana (primeras 3 horas)",
+      "streak": "Cada día de tu racha",
+      "vote": "Votar (por challenge)",
+      "top": "Top 3 mundial del día",
+      "cityBest": "Mejor prueba de tu ciudad",
+      "twist": "Tu Local Twist elegido",
+      "proposal": "Tu propuesta de challenge elegida",
+      "localPass": "Local Pass (los 7 sellos de una ciudad)",
+      "weekly": "El Most Local semanal se reinicia cada lunes."
+    },
+    "tabFriends": "Amigos",
+    "friendRequests": "Solicitudes de amistad",
+    "myFriends": "MIS AMIGOS",
+    "noFriends": "Aún no tienes amigos. Añade desde los perfiles.",
+    "vibesReceived": "VIBES RECIBIDOS",
+    "vibeScore": "{{score}} en puntuación vibe",
+    "noVibes": "Aún no hay vibes.",
+    "noVibesSub": "Tu puntuación aparecerá cuando la gente te deje una nota ✨",
+    "settings": "AJUSTES",
+    "vibeBasis_one": "basado en {{count}} vibe",
+    "vibeBasis_other": "basado en {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Conoces esta ciudad"
+      },
+      "exploring": {
+        "label": "Explorando",
+        "desc": "La estás descubriendo"
+      }
+    }
+  }
 }

@@ -134,5 +134,73 @@
   },
   "appearance": "Anyo",
   "themeLight": "Maliwanag",
-  "themeDark": "Madilim"
+  "themeDark": "Madilim",
+  "pp": {
+    "passport": {
+      "title": "Pasaporte",
+      "weekRank": "#{{rank}} ngayong linggo",
+      "weekNone": "Wala pang ranggo ngayong linggo",
+      "mostLocalIn": "Most Local sa {{city}}",
+      "mostLocalWorld": "Most Local sa buong mundo",
+      "hintToday": "Gawin ang challenge ngayon para makuha ang {{theme}} na tatak.",
+      "hintTomorrow": "Bukas: {{theme}}",
+      "hintPass": "Nakuha ang Local Pass. Tapos na ang lahat ng tema dito.",
+      "localPass": "Local Pass",
+      "mySpots": "Mga spot ko",
+      "myProposals": "Mga mungkahi ko",
+      "friends": "Mga kaibigan",
+      "mostLocalAllTime": "Most Local sa lahat ng panahon",
+      "allTimeRank": "#{{rank}} sa {{city}}",
+      "howPoints": "Paano gumagana ang points",
+      "gotIt": "Sige",
+      "close": "Isara",
+      "noSpots": "Wala pang spot. Dito lalabas ang mga proof mo sa mga lugar.",
+      "pageA11y": "{{city}}: {{count}} tatak",
+      "guestTitle": "Simulan ang pasaporte mo",
+      "guestBody": "Mag-sign up para mangolekta ng tatak sa bawat tema sa bawat lungsod at makuha ang Local Pass.",
+      "signUp": "Mag-sign up",
+      "signIn": "May account na ako",
+      "best_one": "Pinakamahaba: {{count}} araw",
+      "best_other": "Pinakamahaba: {{count}} araw",
+      "stamps_one": "{{count}} sa 7 tatak",
+      "stamps_other": "{{count}} sa 7 tatak",
+      "inReview_one": "{{count}} sinusuri",
+      "inReview_other": "{{count}} sinusuri"
+    },
+    "points": {
+      "title": "Paano kumita ng points",
+      "intro": "Bumibilang sa lingguhang Most Local ang points ng Daily Challenge. Lahat ng points ay bumibilang sa lahat ng panahon.",
+      "proof": "Naaprubahang proof",
+      "early": "Maagang proof (unang 3 oras)",
+      "streak": "Bawat araw ng streak mo",
+      "vote": "Pagboto (bawat challenge)",
+      "top": "World top 3 ng araw",
+      "cityBest": "Pinakamahusay na proof sa lungsod mo",
+      "twist": "Napiling Local Twist mo",
+      "proposal": "Napiling challenge na mungkahi mo",
+      "localPass": "Local Pass (lahat ng 7 tatak sa isang lungsod)",
+      "weekly": "Nagsisimula ulit ang lingguhang Most Local tuwing Lunes."
+    },
+    "tabFriends": "Mga Kaibigan",
+    "friendRequests": "Mga friend request",
+    "myFriends": "AKING MGA KAIBIGAN",
+    "noFriends": "Wala ka pang kaibigan. Magdagdag mula sa mga profile.",
+    "vibesReceived": "MGA NATANGGAP NA VIBES",
+    "vibeScore": "{{score}} vibe score",
+    "noVibes": "Wala pang vibes.",
+    "noVibesSub": "Lalabas ang iyong score kapag may nag-iwan sa iyo ng note ✨",
+    "settings": "MGA SETTING",
+    "vibeBasis_one": "batay sa {{count}} vibe",
+    "vibeBasis_other": "batay sa {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Kabisado mo ang lungsod na ito"
+      },
+      "exploring": {
+        "label": "Nag-eexplore",
+        "desc": "Nadiskubre mo pa lang ito"
+      }
+    }
+  }
 }

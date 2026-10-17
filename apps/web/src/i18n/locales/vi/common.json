@@ -189,5 +189,6 @@
     "changeCity": "Đổi thành phố",
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
-  "signUp": "Đăng ký"
+  "signUp": "Đăng ký",
+  "settings": "CÀI ĐẶT"
 }

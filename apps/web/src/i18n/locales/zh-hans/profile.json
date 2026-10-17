@@ -134,5 +134,73 @@
   },
   "appearance": "外观",
   "themeLight": "浅色",
-  "themeDark": "深色"
+  "themeDark": "深色",
+  "pp": {
+    "passport": {
+      "title": "护照",
+      "weekRank": "本周第 {{rank}} 名",
+      "weekNone": "本周尚未上榜",
+      "mostLocalIn": "{{city}} Most Local",
+      "mostLocalWorld": "全球 Most Local",
+      "hintToday": "完成今天的 challenge，获得{{theme}}印章。",
+      "hintTomorrow": "明天：{{theme}}",
+      "hintPass": "已获得 Local Pass。这里的所有主题都完成了。",
+      "localPass": "Local Pass",
+      "mySpots": "我的地点",
+      "myProposals": "我的提议",
+      "friends": "好友",
+      "mostLocalAllTime": "Most Local 历史榜",
+      "allTimeRank": "{{city}}第 {{rank}} 名",
+      "howPoints": "积分规则",
+      "gotIt": "知道了",
+      "close": "关闭",
+      "noSpots": "还没有地点。你在地点的证明会出现在这里。",
+      "pageA11y": "{{city}}：{{count}} 枚印章",
+      "guestTitle": "开始你的护照",
+      "guestBody": "注册后可在每个城市收集每个主题的印章，并赢得 Local Pass。",
+      "signUp": "注册",
+      "signIn": "我有账号",
+      "best_one": "最佳：{{count}} 天",
+      "best_other": "最佳：{{count}} 天",
+      "stamps_one": "7 枚中的 {{count}} 枚",
+      "stamps_other": "7 枚中的 {{count}} 枚",
+      "inReview_one": "{{count}} 个审核中",
+      "inReview_other": "{{count}} 个审核中"
+    },
+    "points": {
+      "title": "如何获得积分",
+      "intro": "Daily Challenge 积分计入每周 Most Local。所有积分都计入历史榜。",
+      "proof": "证明通过",
+      "early": "早鸟证明（前 3 小时）",
+      "streak": "连续打卡的每一天",
+      "vote": "投票（每个 challenge）",
+      "top": "当天全球前三",
+      "cityBest": "你所在城市的最佳证明",
+      "twist": "你的 Local Twist 被选中",
+      "proposal": "你的 challenge 提议被选中",
+      "localPass": "Local Pass（集齐一个城市的 7 枚印章）",
+      "weekly": "每周 Most Local 每周一重置。"
+    },
+    "tabFriends": "好友",
+    "friendRequests": "好友请求",
+    "myFriends": "我的好友",
+    "noFriends": "还没有好友。去个人资料里添加一些吧。",
+    "vibesReceived": "收到的 VIBES",
+    "vibeScore": "{{score}} vibe 分数",
+    "noVibes": "还没有 vibes。",
+    "noVibesSub": "当有人给你留言后，你的分数就会显示出来 ✨",
+    "settings": "设置",
+    "vibeBasis_one": "基于 {{count}} 个 vibe",
+    "vibeBasis_other": "基于 {{count}} 个 vibe",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "你熟悉这座城市"
+      },
+      "exploring": {
+        "label": "探索中",
+        "desc": "你正在发现它"
+      }
+    }
+  }
 }

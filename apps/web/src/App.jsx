@@ -17,6 +17,8 @@ import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
 import { APP_STORE, PLAY_STORE, deviceStore } from './components/map/spotsShared'
 import TodayScreen from './components/today/TodayScreen'
+import PassportScreen from './components/passport/PassportScreen'
+import { FriendsScreen, MySpotsScreen } from './components/passport/FriendsScreens'
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
@@ -1024,6 +1026,9 @@ export default function App() {
   const openDaily  = (name, params = {}) => setDailyStack(st => [...st, { name, params }])
   const closeDaily = () => setDailyStack(st => st.slice(0, -1))
   const [mapSpotId, setMapSpotId] = useState(null)
+  // Passport (W4): Settings behind the gear, and the screens behind its rows.
+  const [showSettings, setShowSettings] = useState(false)
+  const [passportSub, setPassportSub] = useState(null) // 'spots' | 'friends' | null
   useEffect(() => {
     fetchAppConfig().then(c => setCreationClosed(!!c.challengeCreationClosed)).catch(() => {})
   }, [])
@@ -3756,6 +3761,8 @@ export default function App() {
   // bottom-nav tabs actually swap screens instead of staying buried under
   // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
   function dismissFullPageOverlays() {
+    setShowSettings(false)
+    setPassportSub(null)
     setShowMap(false)
     setShowToday(false)
     setDailyStack([])
@@ -6939,15 +6946,39 @@ export default function App() {
         />
       )}
 
-      {showProfileDrawer && !showAuthScreen && account && (
+      {showProfileDrawer && !showAuthScreen && !showSettings && (
+        <PassportScreen
+          account={account}
+          guestName={activeNickname}
+          guestMode={loadIdentity()?.mode ?? null}
+          cityId={channelId}
+          cityName={city}
+          onSettings={() => setShowSettings(true)}
+          onSignUp={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}
+          onSignIn={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}
+          onOpen={(row) => {
+            if (row === 'proposals') openDaily('proposals')
+            else if (row === 'alltime') { setLeaderboardScope(channelId ? 'city' : 'world'); setLeaderboardPeriod('alltime'); setShowLeaderboard(true) }
+            else setPassportSub(row)
+          }}
+        />
+      )}
+      {showProfileDrawer && passportSub === 'spots' && (
+        <MySpotsScreen onBack={() => setPassportSub(null)} onOpenSpot={(id) => { goToMapTab(); setMapSpotId(id) }} />
+      )}
+      {showProfileDrawer && passportSub === 'friends' && account && (
+        <FriendsScreen
+          account={account}
+          onBack={() => setPassportSub(null)}
+          onOpenRequests={() => { setShowProfileDrawer(false); setShowFriendRequests(true) }}
+          onOpenProfile={(uid, name) => { setShowProfileDrawer(false); openProfile(uid, name) }}
+        />
+      )}
+
+      {showProfileDrawer && !showAuthScreen && showSettings && account && (
         <ProfileScreen
           account={account}
-          onOpenLeaderboard={openLeaderboardFromProfile}
-          myEvents={myEventsLoaded ? myEvents : null}
-          myFriends={myFriendsLoaded ? myFriends : null}
-          friendRequestCount={friendReqCount}
-          onOpenFriendRequests={() => { setShowProfileDrawer(false); setShowFriendRequests(true) }}
-          cityTimezone={cityTimezone}
+          onBack={() => setShowSettings(false)}
           city={city}
           cityChannelId={channelId}
           onCityChange={async (newChannelId) => {
@@ -6966,25 +6997,7 @@ export default function App() {
               console.warn('[profile] setCurrentCity failed:', e)
             }
           }}
-          tabMode
-          renderAppHeader={renderAppHeader}
           onSave={setAccount}
-          onViewFriend={(uid, nickname) => {
-            setShowProfileDrawer(false)
-            openProfile(uid, nickname)
-          }}
-          onSelectEvent={(ev) => { setShowProfileDrawer(false); handleSelectEvent(ev) }}
-          onOpenHangout={(h) => { setShowProfileDrawer(false); openHangout(h) }}
-          onOpenChallenge={(c) => { setShowProfileDrawer(false); setActiveChallenge(c) }}
-          onOpenThreads={() => { setShowProfileDrawer(false); setShowThreadsList(true) }}
-          onDeleteEvent={async (ev) => {
-            try {
-              await deleteEvent(ev.id, guest?.guestId ?? '')
-              setMyEvents(prev => prev.filter(e => e.id !== ev.id))
-              setEvents(prev => prev.filter(e => e.id !== ev.id))
-              if (activeEvent?.id === ev.id) handleBackToCity()
-            } catch (_) {}
-          }}
           onSignOut={() => {
             track('auth_logout')
             resetAnalytics()
@@ -7045,13 +7058,11 @@ export default function App() {
         />
       )}
 
-      {showProfileDrawer && !showAuthScreen && !account && (
-        <div className="full-page full-page--tab">
-          <div className="tab-app-header">
-            {renderAppHeader()}
-          </div>
+      {showProfileDrawer && !showAuthScreen && showSettings && !account && (
+        <div className="full-page">
           <div className="page-header">
-            <span className="page-title">Me</span>
+            <BackButton onClick={() => setShowSettings(false)} />
+            <span className="page-title">{t('settings', { ns: 'common' })}</span>
           </div>
           <div className="page-body me-page-body" ref={meGuestBodyRef}>
             <>

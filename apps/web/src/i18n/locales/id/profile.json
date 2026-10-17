@@ -134,5 +134,73 @@
   },
   "appearance": "Tampilan",
   "themeLight": "Terang",
-  "themeDark": "Gelap"
+  "themeDark": "Gelap",
+  "pp": {
+    "passport": {
+      "title": "Paspor",
+      "weekRank": "#{{rank}} minggu ini",
+      "weekNone": "Belum ada peringkat minggu ini",
+      "mostLocalIn": "Most Local di {{city}}",
+      "mostLocalWorld": "Most Local sedunia",
+      "hintToday": "Ikuti challenge hari ini untuk dapat stempel {{theme}}.",
+      "hintTomorrow": "Besok: {{theme}}",
+      "hintPass": "Local Pass didapat. Semua tema di sini selesai.",
+      "localPass": "Local Pass",
+      "mySpots": "Spot saya",
+      "myProposals": "Usulan saya",
+      "friends": "Teman",
+      "mostLocalAllTime": "Most Local sepanjang masa",
+      "allTimeRank": "#{{rank}} di {{city}}",
+      "howPoints": "Cara kerja poin",
+      "gotIt": "Oke",
+      "close": "Tutup",
+      "noSpots": "Belum ada spot. Buktimu di berbagai tempat akan muncul di sini.",
+      "pageA11y": "{{city}}: {{count}} stempel",
+      "guestTitle": "Mulai paspormu",
+      "guestBody": "Daftar untuk mengumpulkan stempel tiap tema di setiap kota dan dapatkan Local Pass.",
+      "signUp": "Daftar",
+      "signIn": "Saya sudah punya akun",
+      "best_one": "Terbaik: {{count}} hari",
+      "best_other": "Terbaik: {{count}} hari",
+      "stamps_one": "{{count}} dari 7 stempel",
+      "stamps_other": "{{count}} dari 7 stempel",
+      "inReview_one": "{{count}} ditinjau",
+      "inReview_other": "{{count}} ditinjau"
+    },
+    "points": {
+      "title": "Cara dapat poin",
+      "intro": "Poin Daily Challenge masuk ke Most Local mingguan. Semua poin masuk ke peringkat sepanjang masa.",
+      "proof": "Bukti disetujui",
+      "early": "Bukti cepat (3 jam pertama)",
+      "streak": "Setiap hari dalam streak",
+      "vote": "Memberi suara (per challenge)",
+      "top": "Top 3 dunia hari itu",
+      "cityBest": "Bukti terbaik di kotamu",
+      "twist": "Local Twist-mu terpilih",
+      "proposal": "Usulan challenge-mu terpilih",
+      "localPass": "Local Pass (7 stempel di satu kota)",
+      "weekly": "Most Local mingguan diulang setiap Senin."
+    },
+    "tabFriends": "Teman",
+    "friendRequests": "Permintaan pertemanan",
+    "myFriends": "TEMANKU",
+    "noFriends": "Belum ada teman. Tambah dari profil orang.",
+    "vibesReceived": "VIBES YANG DITERIMA",
+    "vibeScore": "{{score}} vibe score",
+    "noVibes": "Belum ada vibes.",
+    "noVibesSub": "Skormu akan muncul begitu ada yang meninggalkan catatan ✨",
+    "settings": "PENGATURAN",
+    "vibeBasis_one": "berdasarkan {{count}} vibe",
+    "vibeBasis_other": "berdasarkan {{count}} vibe",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Kamu kenal kota ini"
+      },
+      "exploring": {
+        "label": "Menjelajah",
+        "desc": "Kamu sedang menjelajahinya"
+      }
+    }
+  }
 }

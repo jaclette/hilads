@@ -1,17 +1,13 @@
 import { thumbUrl } from '../lib/imageThumb'
 import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { updateProfile, uploadImage, fetchUserVibes, fetchUserHangouts, fetchUserChallenges, deleteAccount, checkUsernameAvailability } from '../api'
+import { updateProfile, uploadImage, deleteAccount, checkUsernameAvailability } from '../api'
 
-const HANGOUT_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
 import BackButton from './BackButton'
-import { EVENT_ICONS } from '../cityMeta'
-import { getTimeLabel, formatTime } from '../eventUtils'
 import { badgeLabel } from '../badgeMeta'
 import LeaderboardCityPickerModal from './LeaderboardCityPickerModal'
 import { isLegend as accountIsLegend } from '../lib/canCreateEvent'
 import { localizeCityName } from '../i18n/cityName'
-import ProfileRankRow from './ProfileRankRow'
 import AppearanceLanguageCard from './AppearanceLanguageCard'
 
 const AVATAR_PALETTES = [
@@ -48,9 +44,7 @@ const INTERESTS = [
 
 // Challenges placed before Hangouts/Events to mirror the NOW filter ordering
 // - challenges are the primary entity now.
-const PROFILE_TABS = ['interests', 'challenges', 'hangouts', 'events', 'friends', 'vibes']
 
-const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 const AMBASSADOR_PICKS = [
   { key: 'restaurant', emoji: '🍜', maxLen: 200 },
@@ -59,7 +53,13 @@ const AMBASSADOR_PICKS = [
   { key: 'story',      emoji: '🎭', maxLen: 400 },
 ]
 
-export default function ProfileScreen({ account, myEvents, myFriends, cityTimezone, friendRequestCount = 0, onOpenFriendRequests, onSave, onBack, onViewFriend, onSelectEvent, onDeleteEvent, onOpenHangout, onOpenChallenge, onOpenThreads, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange, onOpenLeaderboard }) {
+/**
+ * Settings (W4, behind Passport's gear, like the app's settings screen):
+ * photo, username, about, interests, age, vibe, mode, home city (Legends),
+ * appearance and language, save, sign out, delete account. Friends and vibes
+ * live in Passport → Friends now.
+ */
+export default function ProfileScreen({ account, onSave, onBack, onSignOut, onDeleteAccount, tabMode = false, renderAppHeader, city, cityChannelId, onCityChange }) {
   const { t } = useTranslation(['profile', 'common'])
   const [photoUrl,        setPhotoUrl]        = useState(account.profile_photo_url ?? null)
   const [thumbPhotoUrl,   setThumbPhotoUrl]   = useState(account.thumbAvatarUrl ?? account.profile_photo_url ?? null)
@@ -86,7 +86,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
   const [saving,          setSaving]          = useState(false)
   const [saved,           setSaved]           = useState(false)
   const [error,           setError]           = useState(null)
-  const [activeTab,       setActiveTab]       = useState('interests')
   const [pickRestaurant,  setPickRestaurant]  = useState(account.ambassadorPicks?.restaurant ?? '')
   const [pickSpot,        setPickSpot]        = useState(account.ambassadorPicks?.spot ?? '')
   const [pickTip,         setPickTip]         = useState(account.ambassadorPicks?.tip ?? '')
@@ -101,39 +100,10 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
     story:      [pickStory,      setPickStory],
   }
 
-  const [myReceivedVibes, setMyReceivedVibes] = useState([])
-  const [myVibeScore,     setMyVibeScore]     = useState(null)
-  const [myVibeCount,     setMyVibeCount]     = useState(0)
-  const [vibesLoading,    setVibesLoading]    = useState(true)
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleteError,       setDeleteError]       = useState(null)
   const [deleteLoading,     setDeleteLoading]     = useState(false)
-  const [myHangouts,        setMyHangouts]        = useState([])
-  const [myChallenges,      setMyChallenges]      = useState([])
-  const [challengeSubTab,   setChallengeSubTab]   = useState('all') // 'all' | 'local' | 'international'
-
-  useEffect(() => {
-    if (!account?.id) { setMyHangouts([]); return }
-    fetchUserHangouts(account.id).then(data => setMyHangouts(data.hangouts ?? [])).catch(() => {})
-  }, [account?.id])
-
-  useEffect(() => {
-    if (!account?.id) { setMyChallenges([]); return }
-    fetchUserChallenges(account.id).then(data => setMyChallenges(data.challenges ?? [])).catch(() => {})
-  }, [account?.id])
-
-  useEffect(() => {
-    if (!account?.id) { setVibesLoading(false); return }
-    fetchUserVibes(account.id)
-      .then(data => {
-        setMyReceivedVibes(data.vibes ?? [])
-        setMyVibeScore(data.score)
-        setMyVibeCount(data.count ?? 0)
-      })
-      .catch(() => {})
-      .finally(() => setVibesLoading(false))
-  }, [account?.id])
 
   function toggleInterest(i) {
     setInterests(prev => {
@@ -256,7 +226,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
       )}
       <div className="page-header">
         {onBack && <BackButton onClick={onBack} />}
-        <span className="page-title">{t('pageTitle')}</span>
+        <span className="page-title">{t('settings', { ns: 'common' })}</span>
       </div>
 
       {/* ══ SCROLLABLE CONTENT ══════════════════════════════════════════════ */}
@@ -307,17 +277,7 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
             </div>
           </div>
 
-          {/* Monthly rank - between identity header and mode selector so
-              it sits in the visible top area without crowding the
-              identity row itself. Hides when there's nothing to show. */}
-          <ProfileRankRow
-            rank={account.monthly_rank ?? null}
-            cityName={account.current_city?.name ?? null}
-            cityCountry={account.current_city?.country ?? null}
-            onOpenLeaderboard={onOpenLeaderboard}
-          />
-
-          {/* Mode selector */}
+                    {/* Mode selector */}
           <div className="profile-mode-section">
             <span className="profile-mode-label">{t('mode')}</span>
             <div className="profile-mode-btns">
@@ -340,22 +300,10 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
               so members and guests get the identical pickers. */}
           <AppearanceLanguageCard account={account} />
 
-          {/* Filter pills */}
-          <div className="profile-tabs">
-            {PROFILE_TABS.map(key => (
-              <button
-                key={key}
-                className={`profile-tab-pill${activeTab === key ? ' profile-tab-pill--active' : ''}`}
-                onClick={() => setActiveTab(key)}
-              >
-                {t(`tabs.${key}`)}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* ── Tab: Interests ── */}
-        {activeTab === 'interests' && (
+        {(
           <>
             <div className="profile-card profile-fields">
               <div className="modal-field">
@@ -508,239 +456,6 @@ export default function ProfileScreen({ account, myEvents, myFriends, cityTimezo
           </>
         )}
 
-        {/* ── Tab: Challenges (created + accepted) ── */}
-        {activeTab === 'challenges' && (() => {
-          const filteredChallenges = challengeSubTab === 'all'
-            ? myChallenges
-            : myChallenges.filter(c => (c.mode ?? 'local') === challengeSubTab)
-          return (
-            <div className="profile-card">
-              {/* PR2 - entry-point to per-acceptance threads */}
-              {/* PR52 - explicit text color (var(--text)); the inherited
-                  user-agent <button> color rendered as solid black on
-                  the dark surface, making the title invisible. */}
-              {onOpenThreads && (
-                <button
-                  type="button"
-                  className="my-event-row-body"
-                  onClick={onOpenThreads}
-                  style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', gap: 10, padding: '12px 0', marginBottom: 8, borderBottom: '1px solid rgba(255,255,255,0.06)', color: 'var(--text)' }}
-                >
-                  <span style={{ fontSize: 18 }}>💬</span>
-                  <span style={{ flex: 1, textAlign: 'left', fontWeight: 700, color: 'var(--text)' }}>{t('threads.title', { ns: 'challenge' })}</span>
-                  <span style={{ color: 'var(--muted, #b3b3b3)' }}>›</span>
-                </button>
-              )}
-
-              {/* Mode sub-tabs - All / Local / International. */}
-              <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })} style={{ padding: '4px 0 8px' }}>
-                {[
-                  { key: 'all',           emoji: '✨' },
-                  { key: 'local',         emoji: '🏙️' },
-                  { key: 'international', emoji: '🌐' },
-                ].map(({ key, emoji }) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    aria-selected={challengeSubTab === key}
-                    className={`challenge-type-chip${challengeSubTab === key ? ' challenge-type-chip--active' : ''}`}
-                    onClick={() => setChallengeSubTab(key)}
-                  >
-                    <span aria-hidden="true">{emoji}</span>
-                    <span>{key === 'all'
-                      ? t('modeFilter.all', { ns: 'challenge' })
-                      : t(`mode.${key}`,    { ns: 'challenge' })}</span>
-                  </button>
-                ))}
-              </div>
-
-              {filteredChallenges.length === 0
-                ? <p className="profile-tab-empty">{t('challenges.empty')}</p>
-                : filteredChallenges.map(c => (
-                    <div key={c.id} className="my-event-row">
-                      <button className="my-event-row-body" onClick={() => onOpenChallenge?.(c)}>
-                        <span className="my-event-title">
-                          {CHALLENGE_TYPE_ICONS[c.challenge_type] ?? '🔥'} {c.title}
-                        </span>
-                        <span className="my-event-meta">
-                          {(c.mode ?? 'local') === 'international'
-                            ? `🌐 ${t('mode.international', { ns: 'challenge' })}`
-                            : (c.audience === 'locals'
-                                ? t('forLocals',    { ns: 'challenge' })
-                                : t('forExplorers', { ns: 'challenge' }))}
-                        </span>
-                        <span className={`my-event-badge ${c.status === 'validated' ? 'my-event-badge--recurring' : 'my-event-badge--open'}`}>
-                          {c.status === 'validated'
-                            ? t('validatedBadge', { ns: 'challenge' })
-                            : t('openBadge',      { ns: 'challenge' })}
-                        </span>
-                        {c.is_owner && <span className="profile-host-tag">{t('challenges.challenger')}</span>}
-                      </button>
-                    </div>
-                  ))
-              }
-            </div>
-          )
-        })()}
-
-        {/* ── Tab: Hangouts ── */}
-        {activeTab === 'hangouts' && (
-          <div className="profile-card">
-            {myHangouts.length === 0
-              ? <p className="profile-tab-empty">{t('hangouts.empty')}</p>
-              : myHangouts.map(h => (
-                  <div key={h.id} className="my-event-row">
-                    <button className="my-event-row-body" onClick={() => onOpenHangout?.(h)}>
-                      <span className="my-event-title">{HANGOUT_ICONS[h.category] ?? '💬'} {h.title}</span>
-                      {h.is_owner && <span className="profile-host-tag">{t('hangouts.host')}</span>}
-                    </button>
-                  </div>
-                ))
-            }
-          </div>
-        )}
-
-        {/* ── Tab: Events (Going + Hosting) ── */}
-        {activeTab === 'events' && (() => {
-          const gid        = account.guest_id
-          const goingEvts  = (myEvents ?? []).filter(ev => ev.guest_id !== gid)
-          const hostingEvts = (myEvents ?? []).filter(ev => ev.guest_id === gid)
-          const renderRow  = (ev, canDelete) => {
-            const now    = Date.now() / 1000
-            const isLive = ev.starts_at <= now && ev.expires_at > now
-            const tz     = cityTimezone || 'UTC'
-            return (
-              <div key={ev.id} className="my-event-row">
-                <button className="my-event-row-body" onClick={() => onSelectEvent?.(ev)}>
-                  <span className="my-event-title">{EVENT_ICONS[ev.type] ?? '📌'} {ev.title}</span>
-                  <span className="my-event-meta">
-                    {ev.recurrence_label
-                      ? ev.recurrence_label
-                      : getTimeLabel(ev.starts_at, tz) + (ev.ends_at ? ` → ${formatTime(ev.ends_at, tz)}` : '')}
-                  </span>
-                  <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (ev.recurrence_label ? ' my-event-badge--recurring' : '')}`}>
-                    {isLive ? t('events.live') : (ev.recurrence_label ? t('events.recurring') : t('events.upcoming'))}
-                  </span>
-                </button>
-                {canDelete && (
-                  <button className="my-event-delete" onClick={() => onDeleteEvent?.(ev)} aria-label={t('events.deleteEvent')}>✕</button>
-                )}
-              </div>
-            )
-          }
-          return (
-            <div className="profile-card">
-              <p className="me-section-label">{t('events.going')}</p>
-              {goingEvts.length === 0
-                ? <p className="profile-tab-empty">{t('events.goingEmpty')}</p>
-                : goingEvts.map(ev => renderRow(ev, false))
-              }
-              <p className="me-section-label" style={{ marginTop: 16 }}>{t('events.hosting')}</p>
-              {hostingEvts.length === 0
-                ? <p className="profile-tab-empty">{t('events.hostingEmpty')}</p>
-                : hostingEvts.map(ev => renderRow(ev, true))
-              }
-            </div>
-          )
-        })()}
-
-        {/* ── Tab: Friends ── */}
-        {activeTab === 'friends' && (
-          <>
-          <button
-            type="button"
-            className="me-friend-req-row"
-            onClick={() => onOpenFriendRequests?.()}
-          >
-            <span className="me-friend-req-icon">👤+</span>
-            <span className="me-friend-req-label">{t('friends.requests')}</span>
-            {friendRequestCount > 0 && (
-              <span className="me-friend-req-badge">{friendRequestCount > 9 ? '9+' : friendRequestCount}</span>
-            )}
-            <span className="me-friend-req-chev">›</span>
-          </button>
-          <div className="profile-card">
-            <p className="me-section-label">{t('friends.mine')}</p>
-            {myFriends === null || myFriends.length === 0 ? (
-              <p className="profile-tab-empty">{t('friends.empty')}</p>
-            ) : (
-              myFriends.map(f => {
-                const [fc1, fc2] = avatarColors(f.displayName || '?')
-                return (
-                  <div
-                    key={f.id}
-                    className="my-friend-row"
-                    onClick={() => onViewFriend?.(f.id, f.displayName)}
-                    style={{ cursor: onViewFriend ? 'pointer' : 'default' }}
-                  >
-                    {f.avatarUrl
-                      ? <img className="my-friend-avatar" src={thumbUrl(f.thumbAvatarUrl ?? f.avatarUrl)} alt={f.displayName} />
-                      : <span className="my-friend-avatar my-friend-avatar--initials" style={{ background: `linear-gradient(135deg, ${fc1}, ${fc2})` }}>
-                          {(f.displayName || '?')[0].toUpperCase()}
-                        </span>
-                    }
-                    <div className="my-friend-info">
-                      <span className="my-friend-name">{f.displayName}</span>
-                      {f.badges?.[0] && <span className="my-friend-badge">{badgeLabel(f.badges[0])}</span>}
-                    </div>
-                  </div>
-                )
-              })
-            )}
-          </div>
-          </>
-        )}
-
-        {/* ── Tab: Vibes ── */}
-        {activeTab === 'vibes' && !vibesLoading && (
-          <div className="profile-card">
-            <p className="me-section-label">{t('vibesTab.received')}</p>
-            {myVibeCount > 0 && (
-              <div className="pub-profile-vibe-score">
-                <div className="pub-profile-vibe-stars">
-                  {[1,2,3,4,5].map(s => (
-                    <span key={s} className={s <= Math.round(myVibeScore) ? 'vibe-star vibe-star--on' : 'vibe-star'}>★</span>
-                  ))}
-                </div>
-                <span className="pub-profile-vibe-avg">{t('vibesTab.score', { score: myVibeScore?.toFixed(1) })}</span>
-                <span className="pub-profile-vibe-count">{t('vibesTab.basedOn', { count: myVibeCount })}</span>
-              </div>
-            )}
-            {myReceivedVibes.length > 0 ? (
-              <div className="pub-profile-vibes">
-                {myReceivedVibes.map(v => {
-                  const [vc1, vc2] = avatarColors(v.authorName || '?')
-                  return (
-                    <div key={v.id} className="pub-profile-vibe-row">
-                      {v.authorPhoto
-                        ? <img className="pub-profile-vibe-avatar" src={v.authorPhoto} alt={v.authorName} />
-                        : <span className="pub-profile-vibe-avatar pub-profile-vibe-avatar--initials" style={{ background: `linear-gradient(135deg, ${vc1}, ${vc2})` }}>
-                            {(v.authorName || '?')[0].toUpperCase()}
-                          </span>
-                      }
-                      <div className="pub-profile-vibe-content">
-                        <div className="pub-profile-vibe-header">
-                          <span className="pub-profile-vibe-author">{v.authorName}</span>
-                          <span className="pub-profile-vibe-rating">{'★'.repeat(v.rating)}</span>
-                        </div>
-                        {v.message && <p className="pub-profile-vibe-msg">{v.message}</p>}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="pub-profile-vibes-empty">
-                <p>{t('vibesTab.empty')}</p>
-                <p>{t('vibesTab.emptyHint')}</p>
-              </div>
-            )}
-          </div>
-        )}
-        {activeTab === 'vibes' && vibesLoading && (
-          <p className="conv-loading">{t('common:loading')}</p>
-        )}
 
       </div>
 

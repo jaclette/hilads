@@ -189,5 +189,6 @@
     "changeCity": "Trocar de cidade",
     "a11y": "Mostrando {{scope}}. Toque para trocar"
   },
-  "signUp": "Cadastrar"
+  "signUp": "Cadastrar",
+  "settings": "CONFIGURAÇÕES"
 }

@@ -189,5 +189,6 @@
     "changeCity": "Ganti kota",
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
-  "signUp": "Daftar"
+  "signUp": "Daftar",
+  "settings": "PENGATURAN"
 }

@@ -2485,3 +2485,21 @@ export function fetchPeopleCounts(cityId) {
 export function fetchDailyProofStates(ids) {
   return daily('GET', '/daily/proofs/state', { params: { ids: ids.join(',') } })
 }
+
+// ── Passport (W4, like the app's Passport tab) ─────────────────────────────
+
+/** Daily Challenge profile stats: streaks, completed, Local Pass progress per city. */
+export function fetchUserDaily(userId, locale) {
+  return daily('GET', `/users/${encodeURIComponent(userId)}/daily`, { params: { locale } })
+}
+
+/** GET /me/spots: the spots where I have an approved proof. */
+export async function fetchMySpots() {
+  return (await daily('GET', '/me/spots')).items ?? []
+}
+
+/** My weekly Most Local rank (GET /leaderboard/week); rank null without points this week. */
+export async function fetchWeeklyRank(cityId) {
+  const params = cityId ? { scope: 'city', cityId: cityNum(cityId), limit: 1 } : { scope: 'world', limit: 1 }
+  return (await daily('GET', '/leaderboard/week', { params })).me
+}

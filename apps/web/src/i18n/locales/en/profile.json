@@ -134,5 +134,73 @@
   },
   "appearance": "Appearance",
   "themeLight": "Light",
-  "themeDark": "Dark"
+  "themeDark": "Dark",
+  "pp": {
+    "passport": {
+      "title": "Passport",
+      "weekRank": "#{{rank}} this week",
+      "weekNone": "No rank yet this week",
+      "mostLocalIn": "Most Local in {{city}}",
+      "mostLocalWorld": "Most Local worldwide",
+      "hintToday": "Do today's challenge to get your {{theme}} stamp.",
+      "hintTomorrow": "Tomorrow: {{theme}}",
+      "hintPass": "Local Pass earned. Every theme done here.",
+      "localPass": "Local Pass",
+      "mySpots": "My spots",
+      "myProposals": "My proposals",
+      "friends": "Friends",
+      "mostLocalAllTime": "Most Local, all time",
+      "allTimeRank": "#{{rank}} in {{city}}",
+      "howPoints": "How points work",
+      "gotIt": "Got it",
+      "close": "Close",
+      "noSpots": "No spot yet. Your proofs at places put them here.",
+      "pageA11y": "{{city}}: {{count}} stamps",
+      "guestTitle": "Start your passport",
+      "guestBody": "Sign up to collect a stamp for each theme in every city, and earn the Local Pass.",
+      "signUp": "Sign up",
+      "signIn": "I have an account",
+      "best_one": "Best: {{count}} day",
+      "best_other": "Best: {{count}} days",
+      "stamps_one": "{{count}} of 7 stamps",
+      "stamps_other": "{{count}} of 7 stamps",
+      "inReview_one": "{{count}} in review",
+      "inReview_other": "{{count}} in review"
+    },
+    "points": {
+      "title": "How to earn points",
+      "intro": "Daily Challenge points count in the weekly Most Local. All points count all time.",
+      "proof": "Approved proof",
+      "early": "Early proof (first 3 hours)",
+      "streak": "Each day of your streak",
+      "vote": "Voting (per challenge)",
+      "top": "World top 3 of the day",
+      "cityBest": "Best proof of your city",
+      "twist": "Your Local Twist picked",
+      "proposal": "Your challenge proposal picked",
+      "localPass": "Local Pass (all 7 stamps in a city)",
+      "weekly": "The weekly Most Local resets every Monday."
+    },
+    "tabFriends": "Friends",
+    "friendRequests": "Friend requests",
+    "myFriends": "MY FRIENDS",
+    "noFriends": "No friends yet. Add some from profiles.",
+    "vibesReceived": "VIBES RECEIVED",
+    "vibeScore": "{{score}} vibe score",
+    "noVibes": "No vibes yet.",
+    "noVibesSub": "Your score will appear once people leave you a note ✨",
+    "settings": "SETTINGS",
+    "vibeBasis_one": "based on {{count}} vibe",
+    "vibeBasis_other": "based on {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "You know this city"
+      },
+      "exploring": {
+        "label": "Exploring",
+        "desc": "You're discovering it"
+      }
+    }
+  }
 }

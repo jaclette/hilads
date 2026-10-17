@@ -189,5 +189,6 @@
     "changeCity": "Change city",
     "a11y": "Showing {{scope}}. Tap to change"
   },
-  "signUp": "Sign up"
+  "signUp": "Sign up",
+  "settings": "SETTINGS"
 }

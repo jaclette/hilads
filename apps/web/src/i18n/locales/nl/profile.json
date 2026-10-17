@@ -134,5 +134,73 @@
   },
   "appearance": "Weergave",
   "themeLight": "Licht",
-  "themeDark": "Donker"
+  "themeDark": "Donker",
+  "pp": {
+    "passport": {
+      "title": "Paspoort",
+      "weekRank": "Nr. {{rank}} deze week",
+      "weekNone": "Deze week nog geen plek",
+      "mostLocalIn": "Most Local in {{city}}",
+      "mostLocalWorld": "Most Local wereldwijd",
+      "hintToday": "Doe de challenge van vandaag voor je stempel {{theme}}.",
+      "hintTomorrow": "Morgen: {{theme}}",
+      "hintPass": "Local Pass behaald. Alle thema's hier gedaan.",
+      "localPass": "Local Pass",
+      "mySpots": "Mijn spots",
+      "myProposals": "Mijn voorstellen",
+      "friends": "Vrienden",
+      "mostLocalAllTime": "Most Local aller tijden",
+      "allTimeRank": "Nr. {{rank}} in {{city}}",
+      "howPoints": "Zo werken punten",
+      "gotIt": "Begrepen",
+      "close": "Sluiten",
+      "noSpots": "Nog geen spots. Je bewijzen op plekken zetten ze hier.",
+      "pageA11y": "{{city}}: {{count}} stempels",
+      "guestTitle": "Begin je paspoort",
+      "guestBody": "Meld je aan voor een stempel per thema in elke stad en verdien de Local Pass.",
+      "signUp": "Aanmelden",
+      "signIn": "Ik heb een account",
+      "best_one": "Record: {{count}} dag",
+      "best_other": "Record: {{count}} dagen",
+      "stamps_one": "{{count}} van 7 stempels",
+      "stamps_other": "{{count}} van 7 stempels",
+      "inReview_one": "{{count}} in controle",
+      "inReview_other": "{{count}} in controle"
+    },
+    "points": {
+      "title": "Zo verdien je punten",
+      "intro": "Daily Challenge-punten tellen voor de wekelijkse Most Local. Alle punten tellen voor de ranglijst aller tijden.",
+      "proof": "Goedgekeurd bewijs",
+      "early": "Vroeg bewijs (eerste 3 uur)",
+      "streak": "Elke dag van je reeks",
+      "vote": "Stemmen (per challenge)",
+      "top": "Wereld top 3 van de dag",
+      "cityBest": "Beste bewijs van je stad",
+      "twist": "Je Local Twist gekozen",
+      "proposal": "Je challenge-voorstel gekozen",
+      "localPass": "Local Pass (alle 7 stempels van een stad)",
+      "weekly": "De wekelijkse Most Local begint elke maandag opnieuw."
+    },
+    "tabFriends": "Vrienden",
+    "friendRequests": "Vriendverzoeken",
+    "myFriends": "MIJN VRIENDEN",
+    "noFriends": "Nog geen vrienden. Voeg er toe vanuit profielen.",
+    "vibesReceived": "ONTVANGEN VIBES",
+    "vibeScore": "{{score}} vibescore",
+    "noVibes": "Nog geen vibes.",
+    "noVibesSub": "Je score verschijnt zodra mensen je een notitie achterlaten ✨",
+    "settings": "INSTELLINGEN",
+    "vibeBasis_one": "gebaseerd op {{count}} vibe",
+    "vibeBasis_other": "gebaseerd op {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Je kent deze stad"
+      },
+      "exploring": {
+        "label": "Verkennen",
+        "desc": "Je bent hem aan het ontdekken"
+      }
+    }
+  }
 }

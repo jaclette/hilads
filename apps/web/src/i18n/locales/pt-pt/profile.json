@@ -134,5 +134,73 @@
   },
   "appearance": "Aparência",
   "themeLight": "Claro",
-  "themeDark": "Escuro"
+  "themeDark": "Escuro",
+  "pp": {
+    "passport": {
+      "title": "Passaporte",
+      "weekRank": "N.º {{rank}} esta semana",
+      "weekNone": "Ainda sem posição esta semana",
+      "mostLocalIn": "Most Local em {{city}}",
+      "mostLocalWorld": "Most Local no mundo",
+      "hintToday": "Faz o challenge de hoje para ganhares o carimbo de {{theme}}.",
+      "hintTomorrow": "Amanhã: {{theme}}",
+      "hintPass": "Local Pass conquistado. Todos os temas feitos aqui.",
+      "localPass": "Local Pass",
+      "mySpots": "Os meus spots",
+      "myProposals": "As minhas propostas",
+      "friends": "Amigos",
+      "mostLocalAllTime": "Most Local de sempre",
+      "allTimeRank": "N.º {{rank}} em {{city}}",
+      "howPoints": "Como funcionam os pontos",
+      "gotIt": "Percebi",
+      "close": "Fechar",
+      "noSpots": "Ainda sem spots. As tuas provas em locais põem-nos aqui.",
+      "pageA11y": "{{city}}: {{count}} carimbos",
+      "guestTitle": "Começa o teu passaporte",
+      "guestBody": "Regista-te para ganhares um carimbo por tema em cada cidade e conquistares o Local Pass.",
+      "signUp": "Registar",
+      "signIn": "Já tenho conta",
+      "best_one": "Recorde: {{count}} dia",
+      "best_other": "Recorde: {{count}} dias",
+      "stamps_one": "{{count}} de 7 carimbos",
+      "stamps_other": "{{count}} de 7 carimbos",
+      "inReview_one": "{{count}} em revisão",
+      "inReview_other": "{{count}} em revisão"
+    },
+    "points": {
+      "title": "Como ganhar pontos",
+      "intro": "Os pontos do Daily Challenge contam no Most Local da semana. Todos os pontos contam no ranking de sempre.",
+      "proof": "Prova aprovada",
+      "early": "Prova rápida (primeiras 3 horas)",
+      "streak": "Cada dia da tua sequência",
+      "vote": "Votar (por challenge)",
+      "top": "Top 3 mundial do dia",
+      "cityBest": "Melhor prova da tua cidade",
+      "twist": "O teu Local Twist escolhido",
+      "proposal": "A tua proposta de challenge escolhida",
+      "localPass": "Local Pass (os 7 carimbos de uma cidade)",
+      "weekly": "O Most Local da semana recomeça todas as segundas."
+    },
+    "tabFriends": "Amigos",
+    "friendRequests": "Pedidos de amizade",
+    "myFriends": "OS MEUS AMIGOS",
+    "noFriends": "Ainda não tens amigos. Adiciona a partir dos perfis.",
+    "vibesReceived": "VIBES RECEBIDOS",
+    "vibeScore": "{{score}} em pontuação vibe",
+    "noVibes": "Ainda não há vibes.",
+    "noVibesSub": "A tua pontuação aparecerá quando as pessoas te deixarem uma nota ✨",
+    "settings": "DEFINIÇÕES",
+    "vibeBasis_one": "com base em {{count}} vibe",
+    "vibeBasis_other": "com base em {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Conheces esta cidade"
+      },
+      "exploring": {
+        "label": "A explorar",
+        "desc": "Estás a descobri-la"
+      }
+    }
+  }
 }

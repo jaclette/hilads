@@ -189,5 +189,6 @@
     "changeCity": "Cambiar de ciudad",
     "a11y": "Mostrando {{scope}}. Toca para cambiar"
   },
-  "signUp": "Registrarme"
+  "signUp": "Registrarme",
+  "settings": "AJUSTES"
 }

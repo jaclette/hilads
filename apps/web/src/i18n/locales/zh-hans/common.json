@@ -189,5 +189,6 @@
     "changeCity": "更换城市",
     "a11y": "正在显示{{scope}}。点按以更换"
   },
-  "signUp": "注册"
+  "signUp": "注册",
+  "settings": "设置"
 }

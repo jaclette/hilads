@@ -134,5 +134,73 @@
   },
   "appearance": "Apparence",
   "themeLight": "Clair",
-  "themeDark": "Sombre"
+  "themeDark": "Sombre",
+  "pp": {
+    "passport": {
+      "title": "Passeport",
+      "weekRank": "N°{{rank}} cette semaine",
+      "weekNone": "Pas encore classé cette semaine",
+      "mostLocalIn": "Most Local à {{city}}",
+      "mostLocalWorld": "Most Local dans le monde",
+      "hintToday": "Relève le challenge du jour pour obtenir ton tampon {{theme}}.",
+      "hintTomorrow": "Demain : {{theme}}",
+      "hintPass": "Local Pass obtenu. Tous les thèmes faits ici.",
+      "localPass": "Local Pass",
+      "mySpots": "Mes spots",
+      "myProposals": "Mes propositions",
+      "friends": "Amis",
+      "mostLocalAllTime": "Most Local, de tous les temps",
+      "allTimeRank": "N°{{rank}} à {{city}}",
+      "howPoints": "Comment marchent les points",
+      "gotIt": "Compris",
+      "close": "Fermer",
+      "noSpots": "Pas encore de spot. Tes preuves dans des lieux les ajoutent ici.",
+      "pageA11y": "{{city}} : {{count}} tampons",
+      "guestTitle": "Commence ton passeport",
+      "guestBody": "Inscris-toi pour récolter un tampon par thème dans chaque ville, et décrocher le Local Pass.",
+      "signUp": "S'inscrire",
+      "signIn": "J'ai un compte",
+      "best_one": "Record : {{count}} jour",
+      "best_other": "Record : {{count}} jours",
+      "stamps_one": "{{count}} tampon sur 7",
+      "stamps_other": "{{count}} tampons sur 7",
+      "inReview_one": "{{count}} en validation",
+      "inReview_other": "{{count}} en validation"
+    },
+    "points": {
+      "title": "Comment gagner des points",
+      "intro": "Les points du Daily Challenge comptent dans le Most Local de la semaine. Tous les points comptent dans le classement de tous les temps.",
+      "proof": "Preuve validée",
+      "early": "Preuve rapide (3 premières heures)",
+      "streak": "Chaque jour de ta série",
+      "vote": "Votes (par challenge)",
+      "top": "Top 3 mondial du jour",
+      "cityBest": "Meilleure preuve de ta ville",
+      "twist": "Ton Local Twist choisi",
+      "proposal": "Ta proposition de challenge choisie",
+      "localPass": "Local Pass (les 7 tampons d'une ville)",
+      "weekly": "Le Most Local de la semaine repart à zéro chaque lundi."
+    },
+    "tabFriends": "Amis",
+    "friendRequests": "Demandes d'ami",
+    "myFriends": "MES AMIS",
+    "noFriends": "Pas encore d'amis. Ajoutes-en depuis les profils.",
+    "vibesReceived": "VIBES REÇUS",
+    "vibeScore": "{{score}} en score vibe",
+    "noVibes": "Pas encore de vibes.",
+    "noVibesSub": "Ton score apparaîtra quand des gens te laisseront une note ✨",
+    "settings": "RÉGLAGES",
+    "vibeBasis_one": "basé sur {{count}} vibe",
+    "vibeBasis_other": "basé sur {{count}} vibes",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "Tu connais cette ville"
+      },
+      "exploring": {
+        "label": "Voyageur",
+        "desc": "Tu la découvres"
+      }
+    }
+  }
 }

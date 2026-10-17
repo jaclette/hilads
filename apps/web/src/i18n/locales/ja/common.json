@@ -189,5 +189,6 @@
     "changeCity": "都市を変更",
     "a11y": "{{scope}}を表示中。タップで変更"
   },
-  "signUp": "登録する"
+  "signUp": "登録する",
+  "settings": "設定"
 }

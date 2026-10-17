@@ -134,5 +134,73 @@
   },
   "appearance": "ธีม",
   "themeLight": "สว่าง",
-  "themeDark": "มืด"
+  "themeDark": "มืด",
+  "pp": {
+    "passport": {
+      "title": "พาสปอร์ต",
+      "weekRank": "อันดับ {{rank}} สัปดาห์นี้",
+      "weekNone": "สัปดาห์นี้ยังไม่มีอันดับ",
+      "mostLocalIn": "Most Local ใน{{city}}",
+      "mostLocalWorld": "Most Local ทั่วโลก",
+      "hintToday": "ทำ challenge วันนี้เพื่อรับตราประทับ {{theme}}",
+      "hintTomorrow": "พรุ่งนี้: {{theme}}",
+      "hintPass": "ได้ Local Pass แล้ว ทำครบทุกธีมที่นี่",
+      "localPass": "Local Pass",
+      "mySpots": "สปอตของฉัน",
+      "myProposals": "ข้อเสนอของฉัน",
+      "friends": "เพื่อน",
+      "mostLocalAllTime": "Most Local ตลอดกาล",
+      "allTimeRank": "อันดับ {{rank}} ใน{{city}}",
+      "howPoints": "วิธีนับคะแนน",
+      "gotIt": "เข้าใจแล้ว",
+      "close": "ปิด",
+      "noSpots": "ยังไม่มีสปอต หลักฐานของคุณตามสถานที่จะมาอยู่ที่นี่",
+      "pageA11y": "{{city}}: ตราประทับ {{count}} ดวง",
+      "guestTitle": "เริ่มพาสปอร์ตของคุณ",
+      "guestBody": "สมัครเพื่อสะสมตราประทับทุกธีมในทุกเมือง และรับ Local Pass",
+      "signUp": "สมัคร",
+      "signIn": "ฉันมีบัญชีแล้ว",
+      "best_one": "ดีที่สุด: {{count}} วัน",
+      "best_other": "ดีที่สุด: {{count}} วัน",
+      "stamps_one": "ตราประทับ {{count}}/7",
+      "stamps_other": "ตราประทับ {{count}}/7",
+      "inReview_one": "รอตรวจ {{count}}",
+      "inReview_other": "รอตรวจ {{count}}"
+    },
+    "points": {
+      "title": "วิธีรับคะแนน",
+      "intro": "คะแนน Daily Challenge นับใน Most Local รายสัปดาห์ ทุกคะแนนนับในอันดับตลอดกาล",
+      "proof": "หลักฐานผ่านการอนุมัติ",
+      "early": "หลักฐานเร็ว (3 ชั่วโมงแรก)",
+      "streak": "ทุกวันของสถิติต่อเนื่อง",
+      "vote": "การโหวต (ต่อ challenge)",
+      "top": "3 อันดับแรกของโลกในวันนั้น",
+      "cityBest": "หลักฐานยอดเยี่ยมของเมือง",
+      "twist": "Local Twist ของคุณถูกเลือก",
+      "proposal": "ข้อเสนอ challenge ของคุณถูกเลือก",
+      "localPass": "Local Pass (ครบ 7 ตราในเมืองเดียว)",
+      "weekly": "Most Local รายสัปดาห์เริ่มใหม่ทุกวันจันทร์"
+    },
+    "tabFriends": "เพื่อน",
+    "friendRequests": "คำขอเป็นเพื่อน",
+    "myFriends": "เพื่อนของฉัน",
+    "noFriends": "ยังไม่มีเพื่อน เพิ่มได้จากโปรไฟล์",
+    "vibesReceived": "VIBE ที่ได้รับ",
+    "vibeScore": "{{score}} คะแนน vibe",
+    "noVibes": "ยังไม่มี vibe",
+    "noVibesSub": "คะแนนของคุณจะปรากฏเมื่อมีคนฝากโน้ตให้คุณ ✨",
+    "settings": "การตั้งค่า",
+    "vibeBasis_one": "จาก {{count}} vibe",
+    "vibeBasis_other": "จาก {{count}} vibe",
+    "mode": {
+      "local": {
+        "label": "Local",
+        "desc": "คุณรู้จักเมืองนี้"
+      },
+      "exploring": {
+        "label": "กำลังสำรวจ",
+        "desc": "คุณกำลังสำรวจมันอยู่"
+      }
+    }
+  }
 }
