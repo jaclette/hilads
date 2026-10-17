@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "メッセージを読み込めませんでした。",
     "beginning": "会話のはじまり",
-    "photo": "📷 写真",
+    "photo": "写真",
     "unavailable": "元のメッセージは利用できません",
     "tapMaps": "タップして地図で開く",
     "composer": "メッセージ…",

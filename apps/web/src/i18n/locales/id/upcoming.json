@@ -8,7 +8,7 @@
   "emptyTitle": "Tidak ada yang dijadwalkan",
   "emptySub": "Belum ada acara di hari ini.",
   "public": "Publik",
-  "going_one": "🙌 {{count}} ikut",
-  "going_other": "🙌 {{count}} ikut",
-  "liveNow": "🔥 Live sekarang"
+  "going_one": "{{count}} ikut",
+  "going_other": "{{count}} ikut",
+  "liveNow": "Live sekarang"
 }

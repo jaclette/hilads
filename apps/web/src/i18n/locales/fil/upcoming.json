@@ -8,7 +8,7 @@
   "emptyTitle": "Walang nakaiskedyul",
   "emptySub": "Wala pang event sa araw na ito.",
   "public": "Public",
-  "going_one": "🙌 {{count}} sasama",
-  "going_other": "🙌 {{count}} sasama",
-  "liveNow": "🔥 Live ngayon"
+  "going_one": "{{count}} sasama",
+  "going_other": "{{count}} sasama",
+  "liveNow": "Live ngayon"
 }

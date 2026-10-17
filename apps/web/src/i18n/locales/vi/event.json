@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Rủ thêm người ✨",
-    "linkCopied": "Đã sao chép liên kết ✨",
+    "bringPeople": "Rủ thêm người",
+    "linkCopied": "Đã sao chép liên kết",
     "vibeTitle": "Chia sẻ vibe này",
     "eventAria": "Chia sẻ sự kiện"
   },
@@ -16,7 +16,7 @@
     "cancel": "Hủy",
     "deleting": "Đang xóa…",
     "confirm": "Xóa",
-    "button": "🗑 Xóa sự kiện"
+    "button": "Xóa sự kiện"
   },
   "quickStart": "Bắt đầu nhanh",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Ngày",
   "today": "Hôm nay",
   "tomorrow": "Ngày mai",
-  "todayHint": "Tổ chức hôm nay giúp bạn được chú ý nhất 🔥",
+  "todayHint": "Tổ chức hôm nay giúp bạn được chú ý nhất",
   "starts": "Bắt đầu",
   "ends": "Kết thúc",
   "repeat": "Lặp lại",
@@ -79,9 +79,9 @@
     "saving": "Đang lưu…",
     "creating": "Đang tạo…",
     "saveChanges": "Lưu thay đổi",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Mỗi ngày",

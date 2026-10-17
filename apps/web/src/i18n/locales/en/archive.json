@@ -2,9 +2,9 @@
   "title": "What happened",
   "filters": {
     "all": "All",
-    "events": "🎉 Events",
-    "pulses": "🗣️ Hangouts",
-    "challenges": "🔥 Challenges"
+    "events": "Events",
+    "pulses": "Hangouts",
+    "challenges": "Challenges"
   },
   "range": {
     "recent": "Recent",
@@ -18,11 +18,11 @@
     "apply": "Apply"
   },
   "public": "Public",
-  "went_one": "🙌 {{count}} went",
-  "went_other": "🙌 {{count}} went",
+  "went_one": "{{count}} went",
+  "went_other": "{{count}} went",
   "hangoutTag": "Hangout",
-  "replies_one": "💬 {{count}} reply",
-  "replies_other": "💬 {{count}} replies",
+  "replies_one": "{{count}} reply",
+  "replies_other": "{{count}} replies",
   "noReplies": "No replies",
   "error": "Couldn't load the archive",
   "retry": "Retry",

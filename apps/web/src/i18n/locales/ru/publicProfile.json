@@ -3,10 +3,10 @@
   "loading": "Загрузка…",
   "loadError": "Не удалось загрузить профиль.",
   "badgeMicro": {
-    "ghost": "Просто смотрю 👀",
-    "fresh": "Только приехал 👶",
+    "ghost": "Просто смотрю",
+    "fresh": "Только приехал",
     "regular": "Часто бывает здесь",
-    "host": "Делает движ 🔥"
+    "host": "Делает движ"
   },
   "modes": {
     "local": "Местный",
@@ -41,16 +41,16 @@
     "events": "Hi plan",
     "friends": "Друзья",
     "vibes": "Vibes",
-    "picks": "Рекомендации 👑",
+    "picks": "Рекомендации",
     "challenges": "Челленджи"
   },
   "host": "Организатор",
-  "live": "В ЭФИРЕ",
+  "live": "В эфире",
   "empty": {
     "hangouts": "Пока нет тусовок",
     "events": "Пока нет событий",
     "friends": "Пока нет друзей",
-    "challenges": "Пока нет челленджей - запусти один 🔥"
+    "challenges": "Пока нет челленджей - запусти один"
   },
   "vibesTab": {
     "score": "vibe-рейтинг {{score}}",
@@ -58,28 +58,28 @@
     "basedOn_few": "на основе {{count}} vibes",
     "basedOn_many": "на основе {{count}} vibes",
     "basedOn_other": "на основе {{count}} vibes",
-    "updateNote": "✏️ Изменить заметку ({{rating}}★)",
-    "leaveNote": "⭐ Оставить заметку",
+    "updateNote": "Изменить заметку ({{rating}}★)",
+    "leaveNote": "Оставить заметку",
     "placeholder": "Скажи что-нибудь приятное… (по желанию)",
     "cancel": "Отмена",
     "sending": "Отправка…",
-    "sendNote": "Отправить заметку ✨",
+    "sendNote": "Отправить заметку",
     "notesLabel": "Заметки · {{count}}",
     "emptyTitle": "Пока нет заметок",
-    "emptySub": "Оставь заметку первым ✨"
+    "emptySub": "Оставь заметку первым"
   },
   "picks": {
-    "restaurant": "ЛЮБИМЫЙ РЕСТОРАН",
-    "spot": "СКРЫТАЯ ЖЕМЧУЖИНА",
-    "tip": "СОВЕТ МЕСТНОГО",
-    "story": "ИСТОРИЯ"
+    "restaurant": "Любимый ресторан",
+    "spot": "Скрытая жемчужина",
+    "tip": "Совет местного",
+    "story": "История"
   },
   "actions": {
     "opening": "Открываю…",
-    "message": "💬 Сообщение",
-    "friend": "✓ Друг",
-    "requestSent": "⌛ Запрос отправлен",
-    "acceptRequest": "✓ Принять запрос",
+    "message": "Сообщение",
+    "friend": "Друг",
+    "requestSent": "Запрос отправлен",
+    "acceptRequest": "Принять запрос",
     "addFriend": "+ Друг",
     "removing": "Удаляю…",
     "unfriend": "Удалить из друзей",

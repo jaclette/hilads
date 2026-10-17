@@ -14,9 +14,9 @@
     "chill": "Chill"
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Neuling",
-    "regular": "😎 Stammgast",
-    "host": "👑 Legende"
+    "ghost": "Ghost",
+    "fresh": "Neuling",
+    "regular": "Stammgast",
+    "host": "Legende"
   }
 }

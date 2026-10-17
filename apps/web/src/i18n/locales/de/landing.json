@@ -6,33 +6,33 @@
     "storeGetItOn": "Jetzt bei"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} Person ist gerade unterwegs",
-    "peopleLive_other": "🔥 {{count}} Leute sind gerade unterwegs",
-    "events_one": "🎉 {{count}} Hi plan laufen",
-    "events_other": "🎉 {{count}} Hi plan laufen",
-    "hangouts_one": "🗣️ {{count}} Hi now aktiv",
-    "hangouts_other": "🗣️ {{count}} Hi now aktiv",
+    "peopleLive_one": "{{count}} Person ist gerade unterwegs",
+    "peopleLive_other": "{{count}} Leute sind gerade unterwegs",
+    "events_one": "{{count}} Hi plan laufen",
+    "events_other": "{{count}} Hi plan laufen",
+    "hangouts_one": "{{count}} Hi now aktiv",
+    "hangouts_other": "{{count}} Hi now aktiv",
     "replies_one": "{{count}} Antwort",
     "replies_other": "{{count}} Antworten",
     "pickCity": "Wähle eine Stadt\nund leg los",
     "locating": "› deine Stadt wird geortet...",
-    "browseCities": "Städte durchstöbern →",
+    "browseCities": "Städte durchstöbern",
     "yourName": "Dein Name",
     "namePlaceholder": "Sag Hallo als...",
     "tryAgain": "Erneut versuchen",
     "useLocation": "Stattdessen meinen Standort nutzen",
-    "joinCity": "{{city}} beitreten →",
-    "joinChat": "Chat beitreten →",
+    "joinCity": "{{city}} beitreten",
+    "joinChat": "Chat beitreten",
     "hint": "// anonym · sofortiger Zugang",
     "keepIdentity": "oder behalte deine Identität",
-    "createAccount": "✨ Konto erstellen",
+    "createAccount": "Konto erstellen",
     "logIn": "Anmelden",
     "authHint": "Behalte deinen Namen · schalte Profile frei · füge Freunde hinzu",
-    "challenges_one": "🔥 {{count}} offene Challenge",
-    "challenges_other": "🔥 {{count}} offene Challenges"
+    "challenges_one": "{{count}} offene Challenge",
+    "challenges_other": "{{count}} offene Challenges"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Sei der Local, der die Stadt am Laufen hält",
     "tagline": "Du kennst die Spots. Fordere Locals oder Reisende heraus, sie zu finden.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Bring deine Stadt zum Laufen"
   },
   "exploring": {
-    "badge": "🧭 Exploring",
+    "badge": "Exploring",
     "title": "Nimm lokale Challenges überall an",
     "tagline": "Wo immer du landest - nimm an, was die Locals gestartet haben.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Sie sind schon dabei. Komm dazu.",
     "screen3_invitation": "Einfach, oder? Du bist dran.",
     "screen4_invitation": "Kein Feed. Nur echte Treffen.",
-    "enterCity": "Komm nach {{city}} 🔥",
-    "enterChallenge": "Nimm die Challenge an 🔥",
-    "enterPicker": "Wähl deine Stadt 🔥",
+    "enterCity": "Komm nach {{city}}",
+    "enterChallenge": "Nimm die Challenge an",
+    "enterPicker": "Wähl deine Stadt",
     "swipeUp": "Nach oben wischen",
     "liveHeadline": "{{city}} ist gerade jetzt live.",
     "how": {

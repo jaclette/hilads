@@ -66,7 +66,7 @@
     "interestsHint": "- kies er maximaal 5"
   },
   "ambassador": {
-    "title": "Tips van de stad 👑",
+    "title": "Tips van de stad",
     "subtitle": "Worden op je profiel getoond als local legend.",
     "restaurant": "Favoriete restaurant",
     "restaurantPlaceholder": "Een plek waar je iedereen mee naartoe neemt",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Uploaden…",
     "saving": "Opslaan…",
-    "saved": "Opgeslagen ✓",
+    "saved": "Opgeslagen",
     "save": "Profiel opslaan"
   },
   "signOut": "Uitloggen",

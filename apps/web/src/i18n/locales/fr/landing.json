@@ -6,33 +6,33 @@
     "storeGetItOn": "Disponible sur"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} personne dans le coin en ce moment",
-    "peopleLive_other": "🔥 {{count}} personnes dans le coin en ce moment",
-    "events_one": "🎉 {{count}} Hi plan happening",
-    "events_other": "🎉 {{count}} Hi plan happening",
-    "hangouts_one": "🗣️ {{count}} Hi now active",
-    "hangouts_other": "🗣️ {{count}} Hi now active",
+    "peopleLive_one": "{{count}} personne dans le coin en ce moment",
+    "peopleLive_other": "{{count}} personnes dans le coin en ce moment",
+    "events_one": "{{count}} Hi plan happening",
+    "events_other": "{{count}} Hi plan happening",
+    "hangouts_one": "{{count}} Hi now active",
+    "hangouts_other": "{{count}} Hi now active",
     "replies_one": "{{count}} réponse",
     "replies_other": "{{count}} réponses",
     "pickCity": "Choisis une ville\net rejoins-la",
     "locating": "› localisation de ta ville...",
-    "browseCities": "Parcourir les villes →",
+    "browseCities": "Parcourir les villes",
     "yourName": "Ton nom",
     "namePlaceholder": "Dis bonjour en tant que...",
     "tryAgain": "Réessayer",
     "useLocation": "Utiliser ma position",
-    "joinCity": "Rejoindre {{city}} →",
-    "joinChat": "Rejoindre le chat →",
+    "joinCity": "Rejoindre {{city}}",
+    "joinChat": "Rejoindre le chat",
     "hint": "// anonyme · accès immédiat",
     "keepIdentity": "ou garde ton identité",
-    "createAccount": "✨ Créer un compte",
+    "createAccount": "Créer un compte",
     "logIn": "Se connecter",
     "authHint": "Garde ton nom · débloque les profils · ajoute des amis",
-    "challenges_one": "🔥 {{count}} défi en cours",
-    "challenges_other": "🔥 {{count}} défis en cours"
+    "challenges_one": "{{count}} défi en cours",
+    "challenges_other": "{{count}} défis en cours"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Sois le local qui fait vivre la ville",
     "tagline": "Tu connais les spots. Défie les locaux ou les voyageurs de les trouver.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Fais vivre ta ville"
   },
   "exploring": {
-    "badge": "🧭 Exploration",
+    "badge": "Exploration",
     "title": "Relève les défis d'une ville",
     "tagline": "Partout où tu poses tes valises, relève ce que les locaux ont lancé.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Ils y sont. <hi>Tu viens ?</hi>",
     "screen3_invitation": "Simple, non ? <hi>À toi de jouer.</hi>",
     "screen4_invitation": "Aucun feed. Juste des <hi>vraies rencontres.</hi>",
-    "enterCity": "Rejoins {{city}} 🔥",
-    "enterChallenge": "Je relève ce défi 🔥",
-    "enterPicker": "Choisis ta ville 🔥",
+    "enterCity": "Rejoins {{city}}",
+    "enterChallenge": "Je relève ce défi",
+    "enterPicker": "Choisis ta ville",
     "swipeUp": "Glisse vers le haut",
     "liveHeadline": "{{city}} vit en ce moment.",
     "how": {

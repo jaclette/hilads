@@ -2,9 +2,9 @@
   "title": "Cosa è successo",
   "filters": {
     "all": "Tutto",
-    "events": "🎉 Eventi",
-    "pulses": "🗣️ Ritrovi",
-    "challenges": "🔥 Sfide"
+    "events": "Eventi",
+    "pulses": "Ritrovi",
+    "challenges": "Sfide"
   },
   "range": {
     "recent": "Recenti",
@@ -18,11 +18,11 @@
     "apply": "Applica"
   },
   "public": "Pubblico",
-  "went_one": "🙌 {{count}} partecipante",
-  "went_other": "🙌 {{count}} partecipanti",
+  "went_one": "{{count}} partecipante",
+  "went_other": "{{count}} partecipanti",
   "hangoutTag": "Ritrovo",
-  "replies_one": "💬 {{count}} risposta",
-  "replies_other": "💬 {{count}} risposte",
+  "replies_one": "{{count}} risposta",
+  "replies_other": "{{count}} risposte",
   "noReplies": "Nessuna risposta",
   "error": "Impossibile caricare l'archivio",
   "retry": "Riprova",

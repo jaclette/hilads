@@ -6,7 +6,7 @@
     "sub": "Lalabas dito ang mga notification"
   },
   "loading": "Naglo-load…",
-  "seeAll": "Tingnan lahat ng notification →",
+  "seeAll": "Tingnan lahat ng notification",
   "prefs": {
     "title": "Mga preference sa notification",
     "mentionName": "Mga mention @",
@@ -15,9 +15,9 @@
     "newEventDesc": "Kapag may gumawa ng event sa iyong lungsod",
     "friendName": "Mga friend request",
     "friendDesc": "Kapag may nagpadala sa iyo ng friend request o tinanggap ang sa iyo",
-    "notesName": "Mga note ✨",
+    "notesName": "Mga note",
     "notesDesc": "Kapag may nag-iwan ng note sa iyong profile",
-    "profileViewName": "Mga profile view 👀",
+    "profileViewName": "Mga profile view",
     "profileViewDesc": "Kapag may tumingin sa iyong profile",
     "announcementName": "Mga anunsyo mula sa Hilads",
     "announcementDesc": "Paminsan-minsang update mula sa team",

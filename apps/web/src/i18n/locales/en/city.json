@@ -9,7 +9,7 @@
       "newUser": "🎉 {{nickname}} from {{city}} just joined Hilads",
       "challengeWon": "🏆 {{nickname}} from {{city}} won the challenge {{challenge}}"
     },
-    "quietCard": "Quiet here? {{count}} unread in World 🌍 — tap to open",
+    "quietCard": "Quiet here? {{count}} unread in World — tap to open",
     "heroEmpty": "Be the first to challenge a city",
     "heroEmptySub": "Launch a cross-city challenge",
     "leaderboard": "Leaderboard",
@@ -19,9 +19,9 @@
     "seeAll": "See all"
   },
   "inspiration": {
-    "heading": "💡 Hangout ideas",
+    "heading": "Hangout ideas",
     "sub": "What locals organise elsewhere - get inspired",
-    "openYours": "🔥 Open yours in {{city}}",
+    "openYours": "Open yours in {{city}}",
     "by": "by {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -61,10 +61,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} is live ✨",
+    "live": "{{city}} is live",
     "dismiss": "Dismiss",
     "body": "Real people, right now. Say hi, see who's around, or bring a friend in.",
-    "sayHi": "Say hi 👋",
+    "sayHi": "Say hi",
     "invite": "Invite friends"
   },
   "imageType": "Please select a JPEG, PNG, or WebP image.",
@@ -76,10 +76,10 @@
     "topCities": "Top cities right now",
     "cities": "Cities",
     "switchTitle": "Switch city",
-    "filterActive": "🔥 Most active",
-    "filterEvents": "🎉 Most Local Events",
-    "filterOnline": "🟢 Most online",
-    "filterChallenges": "⚡ Most challenges",
+    "filterActive": "Most active",
+    "filterEvents": "Most Local Events",
+    "filterOnline": "Most online",
+    "filterChallenges": "Most challenges",
     "challenges_one": "{{count}} challenge",
     "challenges_other": "{{count}} challenges",
     "members_one": "{{count}} member",
@@ -104,21 +104,21 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "public": "Public",
-    "activeNow": "● Active now",
+    "activeNow": "Active now",
     "repliesNew": "No replies yet - be first",
     "sayHi": "Say hi to {{name}}",
-    "sayHiGeneric": "Say hi 👋",
-    "hostWaiting": "Waiting for the first hi 👋",
-    "replies_one": "💬 {{count}} reply",
-    "replies_other": "💬 {{count}} replies",
-    "going_one": "🙌 {{count}} going",
-    "going_other": "🙌 {{count}} going",
+    "sayHiGeneric": "Say hi",
+    "hostWaiting": "Waiting for the first hi",
+    "replies_one": "{{count}} reply",
+    "replies_other": "{{count}} replies",
+    "going_one": "{{count}} going",
+    "going_other": "{{count}} going",
     "hostedBy": "Hosted by {{name}}",
     "groupHilads": "Hilads Local Events",
     "groupPublic": "Public Local Events",
-    "groupPublicTicket": "🎫 Public Local Events",
+    "groupPublicTicket": "Public Local Events",
     "createEvent": "Create Local Event",
-    "startHangout": "Start a hangout 🗣️",
+    "startHangout": "Start a hangout",
     "openPlace": "Open your place",
     "loadError": "Couldn't load events",
     "loadErrorSub": "Pull to retry later or create something new in {{city}}.",
@@ -131,7 +131,7 @@
     "noEventsSub": "Be the first to create one in {{city}}",
     "noHangoutsSub": "Start a hangout and get the city talking",
     "filterAll": "All",
-    "seeComing": "See what's coming 🔮",
+    "seeComing": "See what's coming",
     "seeHappened": "see what happened",
     "createNew": "Create new",
     "hiNowHint": "hang out now",
@@ -168,7 +168,7 @@
     "yourEvent": "Your event",
     "edit": "Edit",
     "join": "Join",
-    "joined": "Joined ✓",
+    "joined": "Joined",
     "here": "{{count}} here",
     "going_one": "{{count}} going",
     "going_other": "{{count}} going",
@@ -178,8 +178,8 @@
   "chatEmpty": {
     "beginning": "Beginning of conversation",
     "arriving": "People are arriving",
-    "firstChat": "Be the first to chat here 👇",
-    "firstHi": "Be the first to say hi 👇"
+    "firstChat": "Be the first to chat here",
+    "firstHi": "Be the first to say hi"
   },
   "create": {
     "title": "What's the move?",
@@ -200,14 +200,14 @@
     "challengeTypeHelp": "Crazy",
     "challengeTitleLabel": "Your challenge",
     "challengeTitlePlaceholder": "e.g. Bring me to your favorite hidden coffee spot",
-    "challengeCta": "Launch challenge 🔥",
+    "challengeCta": "Launch challenge",
     "challengeErrStart": "Failed to launch challenge"
   },
   "goingModal": {
     "going": "going",
     "inThisHangout": "in this hangout",
     "loading": "Loading…",
-    "empty": "No one yet - be the first to join! 🙌"
+    "empty": "No one yet - be the first to join!"
   },
   "nickname": {
     "label": "Nickname",
@@ -220,15 +220,15 @@
     "anonymous": "// anonymous · no sign-up required"
   },
   "prompt": {
-    "exploreText": "🔥 See what's happening now",
+    "exploreText": "See what's happening now",
     "exploreCta": "See what's happening",
-    "photoText": "📸 Share what's happening",
+    "photoText": "Share what's happening",
     "shoot": "Shoot",
-    "createEventText": "🎉 Got a plan tonight?",
+    "createEventText": "Got a plan tonight?",
     "createEventCta": "Create event",
-    "challengeIntroText": "🔥 New here? Learn how challenges work",
+    "challengeIntroText": "New here? Learn how challenges work",
     "challengeIntroCta": "Show me",
-    "installText": "✨ Add Hilads to your home screen\nNever miss what's happening in your city",
+    "installText": "Add Hilads to your home screen\nNever miss what's happening in your city",
     "installAdd": "Add",
     "installHow": "How"
   },
@@ -260,19 +260,19 @@
     "7": "🌆 Locals checking in"
   },
   "ownerPrompt": {
-    "text": "🔥 You started this event!",
+    "text": "You started this event!",
     "sub": "Make it even better - add a description, update the time, or share it.",
-    "edit": "✏️ Edit event"
+    "edit": "Edit event"
   },
   "feedNew": {
-    "event": "🎉 New event: {{title}}",
+    "event": "New event: {{title}}",
     "join": "Join",
     "replies_one": "{{count}} reply",
     "replies_other": "{{count}} replies",
-    "challengeLocals": "🔥 {{name}} challenges the locals: {{title}}",
-    "challengeExplorers": "🔥 {{name}} challenges the travelers: {{title}}",
-    "challengeCta": "View →",
-    "challengeValidated": "🏆 Challenge done! {{name}} validated \"{{title}}\".",
+    "challengeLocals": "{{name}} challenges the locals: {{title}}",
+    "challengeExplorers": "{{name}} challenges the travelers: {{title}}",
+    "challengeCta": "View",
+    "challengeValidated": "Challenge done! {{name}} validated \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} International challenge: {{title}}"
   },
   "replyPreview": {
@@ -285,12 +285,12 @@
   },
   "myEvent": {
     "live": "Live",
-    "recurring": "↻ Recurring",
+    "recurring": "Recurring",
     "upcoming": "Upcoming",
     "delete": "Delete event"
   },
   "arrivalsBar": {
-    "label": "✈️ Recent arrivals",
+    "label": "Recent arrivals",
     "sheetTitle": "Arrivals",
     "empty": "No arrivals yet"
   },

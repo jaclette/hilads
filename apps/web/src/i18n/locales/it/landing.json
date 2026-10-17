@@ -6,33 +6,33 @@
     "storeGetItOn": "Disponibile su"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} persona in giro proprio ora",
-    "peopleLive_other": "🔥 {{count}} persone in giro proprio ora",
-    "events_one": "🎉 {{count}} Hi plan in corso",
-    "events_other": "🎉 {{count}} Hi plan in corso",
-    "hangouts_one": "🗣️ {{count}} Hi now attivi",
-    "hangouts_other": "🗣️ {{count}} Hi now attivi",
+    "peopleLive_one": "{{count}} persona in giro proprio ora",
+    "peopleLive_other": "{{count}} persone in giro proprio ora",
+    "events_one": "{{count}} Hi plan in corso",
+    "events_other": "{{count}} Hi plan in corso",
+    "hangouts_one": "{{count}} Hi now attivi",
+    "hangouts_other": "{{count}} Hi now attivi",
     "replies_one": "{{count}} risposta",
     "replies_other": "{{count}} risposte",
     "pickCity": "Scegli una città\ne partecipa",
     "locating": "› localizzazione della tua città...",
-    "browseCities": "Esplora le città →",
+    "browseCities": "Esplora le città",
     "yourName": "Il tuo nome",
     "namePlaceholder": "Saluta come...",
     "tryAgain": "Riprova",
     "useLocation": "Usa la mia posizione",
-    "joinCity": "Partecipa a {{city}} →",
-    "joinChat": "Partecipa alla chat →",
+    "joinCity": "Partecipa a {{city}}",
+    "joinChat": "Partecipa alla chat",
     "hint": "// anonimo · accesso immediato",
     "keepIdentity": "o conserva la tua identità",
-    "createAccount": "✨ Crea un account",
+    "createAccount": "Crea un account",
     "logIn": "Accedi",
     "authHint": "Conserva il tuo nome · sblocca i profili · aggiungi amici",
-    "challenges_one": "🔥 {{count}} sfida aperta",
-    "challenges_other": "🔥 {{count}} sfide aperte"
+    "challenges_one": "{{count}} sfida aperta",
+    "challenges_other": "{{count}} sfide aperte"
   },
   "local": {
-    "badge": "🌍 Locale",
+    "badge": "Locale",
     "title": "Sii il locale che fa vivere la città",
     "tagline": "Conosci i posti. Sfida i locali o i viaggiatori a trovarli.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Fai vivere la tua città"
   },
   "exploring": {
-    "badge": "🧭 In esplorazione",
+    "badge": "In esplorazione",
     "title": "Accetta sfide locali ovunque",
     "tagline": "Ovunque atterri, accetta ciò che i locali hanno lanciato.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Ci sono già. Ti unisci?",
     "screen3_invitation": "Facile, no? Tocca a te.",
     "screen4_invitation": "Niente feed. Solo incontri veri.",
-    "enterCity": "Unisciti a {{city}} 🔥",
-    "enterChallenge": "Accetta questa sfida 🔥",
-    "enterPicker": "Scegli la tua città 🔥",
+    "enterCity": "Unisciti a {{city}}",
+    "enterChallenge": "Accetta questa sfida",
+    "enterPicker": "Scegli la tua città",
     "swipeUp": "Scorri verso l’alto",
     "liveHeadline": "{{city}} è viva in questo momento.",
     "how": {

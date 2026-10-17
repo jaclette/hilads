@@ -2,9 +2,9 @@
   "title": "สิ่งที่เกิดขึ้น",
   "filters": {
     "all": "ทั้งหมด",
-    "events": "🎉 กิจกรรม",
-    "pulses": "🗣️ นัดเจอ",
-    "challenges": "🔥 ชาเลนจ์"
+    "events": "กิจกรรม",
+    "pulses": "นัดเจอ",
+    "challenges": "ชาเลนจ์"
   },
   "range": {
     "recent": "ล่าสุด",
@@ -18,11 +18,11 @@
     "apply": "ใช้"
   },
   "public": "สาธารณะ",
-  "went_one": "🙌 {{count}} คนไป",
-  "went_other": "🙌 {{count}} คนไป",
+  "went_one": "{{count}} คนไป",
+  "went_other": "{{count}} คนไป",
   "hangoutTag": "นัดเจอ",
-  "replies_one": "💬 {{count}} การตอบกลับ",
-  "replies_other": "💬 {{count}} การตอบกลับ",
+  "replies_one": "{{count}} การตอบกลับ",
+  "replies_other": "{{count}} การตอบกลับ",
   "noReplies": "ไม่มีการตอบกลับ",
   "error": "โหลดคลังเก็บไม่ได้",
   "retry": "ลองอีกครั้ง",

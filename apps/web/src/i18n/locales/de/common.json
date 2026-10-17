@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Treffen",
   "publicEventsSection": "🎫 Öffentliche Events",
   "accountWelcome": {
-    "title": "Glückwunsch, {{username}}! 🎉",
-    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen 👇",
-    "f1": "🎉 Starte ein Treffen und bring sofort Leute zusammen",
-    "f2": "📅 Organisiere ein Event in deiner Stadt",
-    "f3": "💬 Schreib jedem eine private Nachricht",
-    "f4": "📍 Sieh live, wer in der Nähe ist",
-    "f5": "🤝 Vernetze dich mit Locals und Reisenden",
-    "fc1": "🔥 Fordere die Locals in deiner Stadt heraus",
-    "fc2": "🌍 Fordere eine andere Stadt weltweit heraus",
-    "cta": "Los geht's 🚀"
+    "title": "Glückwunsch, {{username}}!",
+    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen",
+    "f1": "Starte ein Treffen und bring sofort Leute zusammen",
+    "f2": "Organisiere ein Event in deiner Stadt",
+    "f3": "Schreib jedem eine private Nachricht",
+    "f4": "Sieh live, wer in der Nähe ist",
+    "f5": "Vernetze dich mit Locals und Reisenden",
+    "fc1": "Fordere die Locals in deiner Stadt heraus",
+    "fc2": "Fordere eine andere Stadt weltweit heraus",
+    "cta": "Los geht's"
   },
   "onboarding": {
     "skip": "Überspringen ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Challenge erstellen"
   },
   "share": {
-    "title": "Teile etwas 👀",
+    "title": "Teile etwas",
     "snap": "Mach ein Foto",
     "snapDesc": "Foto aufnehmen oder hochladen",
     "spot": "Teile deinen Ort",
@@ -96,7 +96,7 @@
     "hiNowDesc": "Jetzt Lust auf was? Sag es"
   },
   "locationPicker": {
-    "title": "Wo bist du? 👀",
+    "title": "Wo bist du?",
     "search": "Adresse oder Ort suchen",
     "moveHint": "Bewege die Karte zum Anpassen",
     "noResults": "Keine Orte gefunden",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Anhang hinzufügen",
     "emoji": "Emoji",
-    "placeholderCity": "Sag hallo zu deiner Stadt 👋",
-    "placeholderHangout": "Sag Bescheid, dass du dabei bist 🙌",
-    "placeholderEvent": "Chatte mit den Teilnehmern 🎉",
-    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp 🔥"
+    "placeholderCity": "Sag hallo zu deiner Stadt",
+    "placeholderHangout": "Sag Bescheid, dass du dabei bist",
+    "placeholderEvent": "Chatte mit den Teilnehmern",
+    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp"
   },
   "vibe": {
     "party": "Party",
@@ -148,8 +148,8 @@
     "thunder": "Gewitter"
   },
   "time": {
-    "happeningNow": "🎉 jetzt los",
-    "inMin": "🔥 in {{count}} Min.",
+    "happeningNow": "jetzt los",
+    "inMin": "in {{count}} Min.",
     "today": "Heute",
     "tomorrow": "Morgen",
     "yesterday": "Gestern",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "In meiner Stadt teilen",
   "shareToWorld": "In der Welt teilen",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Rangliste ansehen",
     "challenge": "Challenge ansehen",
-    "event": "🎉 Hi plan ansehen",
-    "topic": "🗣️ Hi now ansehen"
+    "event": "Hi plan ansehen",
+    "topic": "Hi now ansehen"
   },
   "tabs": {
     "today": "Heute",
@@ -190,6 +190,6 @@
     "a11y": "Zeigt {{scope}}. Tippen zum Wechseln"
   },
   "signUp": "Registrieren",
-  "settings": "EINSTELLUNGEN",
+  "settings": "Einstellungen",
   "firstLaunch": "Eine lokale Challenge pro Tag."
 }

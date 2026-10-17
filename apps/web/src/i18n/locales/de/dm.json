@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "Nachrichten konnten nicht geladen werden.",
     "beginning": "Anfang der Unterhaltung",
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Originalnachricht nicht verfügbar",
     "tapMaps": "Tippe, um in Maps zu öffnen",
     "composer": "Nachricht…",

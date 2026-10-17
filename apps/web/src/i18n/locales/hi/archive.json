@@ -2,9 +2,9 @@
   "title": "क्या हुआ था",
   "filters": {
     "all": "सभी",
-    "events": "🎉 इवेंट",
-    "pulses": "🗣️ मुलाक़ात",
-    "challenges": "🔥 चुनौतियाँ"
+    "events": "इवेंट",
+    "pulses": "मुलाक़ात",
+    "challenges": "चुनौतियाँ"
   },
   "range": {
     "recent": "हाल का",
@@ -18,11 +18,11 @@
     "apply": "लागू करें"
   },
   "public": "पब्लिक",
-  "went_one": "🙌 {{count}} गए",
-  "went_other": "🙌 {{count}} गए",
+  "went_one": "{{count}} गए",
+  "went_other": "{{count}} गए",
   "hangoutTag": "मुलाक़ात",
-  "replies_one": "💬 {{count}} जवाब",
-  "replies_other": "💬 {{count}} जवाब",
+  "replies_one": "{{count}} जवाब",
+  "replies_other": "{{count}} जवाब",
   "noReplies": "कोई जवाब नहीं",
   "error": "आर्काइव लोड नहीं हो सका",
   "retry": "फिर से कोशिश करें",

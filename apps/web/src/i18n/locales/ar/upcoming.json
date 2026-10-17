@@ -9,10 +9,10 @@
   "emptySub": "لا توجد فعاليات في هذا اليوم بعد.",
   "public": "عام",
   "going_zero": "🙌 لا أحد ذاهب",
-  "going_one": "🙌 شخص واحد ذاهب",
+  "going_one": "شخص واحد ذاهب",
   "going_two": "🙌 شخصان ذاهبان",
   "going_few": "🙌 {{count}} أشخاص ذاهبون",
   "going_many": "🙌 {{count}} شخصًا ذاهبًا",
-  "going_other": "🙌 {{count}} شخص ذاهب",
-  "liveNow": "🔥 مباشر الآن"
+  "going_other": "{{count}} شخص ذاهب",
+  "liveNow": "مباشر الآن"
 }

@@ -3,10 +3,10 @@
   "loading": "載入中…",
   "loadError": "無法載入個人資料。",
   "badgeMicro": {
-    "ghost": "只是逛逛 👀",
-    "fresh": "剛剛抵達 👶",
+    "ghost": "只是逛逛",
+    "fresh": "剛剛抵達",
     "regular": "常常出現",
-    "host": "讓事情發生 🔥"
+    "host": "讓事情發生"
   },
   "modes": {
     "local": "在地",
@@ -41,30 +41,30 @@
     "events": "Hi plan",
     "friends": "好友",
     "vibes": "Vibes",
-    "picks": "城市精選 👑",
+    "picks": "城市精選",
     "challenges": "挑戰"
   },
   "host": "主辦人",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "還沒有聚會",
     "events": "還沒有活動",
     "friends": "還沒有好友",
-    "challenges": "還沒有挑戰 - 發起一個 🔥"
+    "challenges": "還沒有挑戰 - 發起一個"
   },
   "vibesTab": {
     "score": "{{score}} vibe 分數",
     "basedOn_one": "依據 {{count}} 個 vibe",
     "basedOn_other": "依據 {{count}} 個 vibe",
-    "updateNote": "✏️ 更新你的留言（{{rating}}★）",
-    "leaveNote": "⭐ 留個言",
+    "updateNote": "更新你的留言（{{rating}}★）",
+    "leaveNote": "留個言",
     "placeholder": "說些好聽的話…（選填）",
     "cancel": "取消",
     "sending": "傳送中…",
-    "sendNote": "傳送留言 ✨",
+    "sendNote": "傳送留言",
     "notesLabel": "留言 · {{count}}",
     "emptyTitle": "還沒有留言",
-    "emptySub": "成為第一個留言的人 ✨"
+    "emptySub": "成為第一個留言的人"
   },
   "picks": {
     "restaurant": "最愛餐廳",
@@ -74,10 +74,10 @@
   },
   "actions": {
     "opening": "開啟中…",
-    "message": "💬 訊息",
-    "friend": "✓ 好友",
-    "requestSent": "⌛ 邀請已送出",
-    "acceptRequest": "✓ 接受邀請",
+    "message": "訊息",
+    "friend": "好友",
+    "requestSent": "邀請已送出",
+    "acceptRequest": "接受邀請",
     "addFriend": "+ 好友",
     "removing": "移除中…",
     "unfriend": "解除好友",

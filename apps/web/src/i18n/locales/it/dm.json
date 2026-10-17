@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "Impossibile caricare i messaggi.",
     "beginning": "Inizio della conversazione",
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Messaggio originale non disponibile",
     "tapMaps": "Tocca per aprire in Maps",
     "composer": "Messaggio…",

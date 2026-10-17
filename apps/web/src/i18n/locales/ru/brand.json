@@ -14,9 +14,9 @@
     "chill": "Chill"
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Новичок",
-    "regular": "😎 Свой",
-    "host": "👑 Легенда"
+    "ghost": "Ghost",
+    "fresh": "Новичок",
+    "regular": "Свой",
+    "host": "Легенда"
   }
 }

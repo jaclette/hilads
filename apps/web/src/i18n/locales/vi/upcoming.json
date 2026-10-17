@@ -8,7 +8,7 @@
   "emptyTitle": "Chưa có gì",
   "emptySub": "Chưa có sự kiện nào trong ngày này.",
   "public": "Công khai",
-  "going_other": "🙌 {{count}} tham gia",
-  "liveNow": "🔥 Trực tiếp",
-  "going_one": "🙌 {{count}} tham gia"
+  "going_other": "{{count}} tham gia",
+  "liveNow": "Trực tiếp",
+  "going_one": "{{count}} tham gia"
 }

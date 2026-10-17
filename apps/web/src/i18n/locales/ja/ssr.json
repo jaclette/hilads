@@ -7,7 +7,7 @@
     "aboutHeading": "Hiladsの使い方",
     "aboutBody": "街を選びます。ローカルや旅行者へのチャレンジを始めたり、ミートアップに参加したり、ハングアウトを探したり、Local Eventsを見つけたり。ここで築くほど、よりローカルになり、Most Localで上位を目指せます。",
     "citiesCta": "Hiladsのすべての街を見る",
-    "subhead": "🔥 訪れるどの街でもローカルになろう。"
+    "subhead": "訪れるどの街でもローカルになろう。"
   },
   "brand": "Hilads",
   "dateLocale": "ja-JP",
@@ -159,7 +159,7 @@
     "h1Tag": "チャレンジ",
     "audienceLocals": "{city} のローカル向け",
     "audienceExplorers": "{city} の旅行者向け",
-    "validatedBadge": "✓ 確認済み",
+    "validatedBadge": "確認済み",
     "openBadge": "オープン",
     "typeLabel": "タイプ:",
     "typeFood": "食",

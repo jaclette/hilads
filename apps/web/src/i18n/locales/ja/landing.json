@@ -6,33 +6,33 @@
     "storeGetItOn": "入手"
   },
   "join": {
-    "peopleLive_one": "🔥 今{{count}}人が集まっています",
-    "peopleLive_other": "🔥 今{{count}}人が集まっています",
-    "events_one": "🎉 {{count}} Hi plan 開催中",
-    "events_other": "🎉 {{count}} Hi plan 開催中",
-    "hangouts_one": "🗣️ {{count}} Hi now アクティブ",
-    "hangouts_other": "🗣️ {{count}} Hi now アクティブ",
+    "peopleLive_one": "今{{count}}人が集まっています",
+    "peopleLive_other": "今{{count}}人が集まっています",
+    "events_one": "{{count}} Hi plan 開催中",
+    "events_other": "{{count}} Hi plan 開催中",
+    "hangouts_one": "{{count}} Hi now アクティブ",
+    "hangouts_other": "{{count}} Hi now アクティブ",
     "replies_one": "{{count}}件の返信",
     "replies_other": "{{count}}件の返信",
     "pickCity": "街を選んで\n飛び込もう",
     "locating": "› あなたの街を特定中...",
-    "browseCities": "街を見る →",
+    "browseCities": "街を見る",
     "yourName": "あなたの名前",
     "namePlaceholder": "こんにちは、私は...",
     "tryAgain": "再試行",
     "useLocation": "代わりに現在地を使う",
-    "joinCity": "{{city}} に参加 →",
-    "joinChat": "チャットに参加 →",
+    "joinCity": "{{city}} に参加",
+    "joinChat": "チャットに参加",
     "hint": "// 匿名 · すぐにアクセス",
     "keepIdentity": "または自分の名前を残す",
-    "createAccount": "✨ アカウントを作成",
+    "createAccount": "アカウントを作成",
     "logIn": "ログイン",
     "authHint": "名前を保存 · プロフィールを解放 · 友達を追加",
-    "challenges_one": "🔥 {{count}}件のチャレンジ募集中",
-    "challenges_other": "🔥 {{count}}件のチャレンジ募集中"
+    "challenges_one": "{{count}}件のチャレンジ募集中",
+    "challenges_other": "{{count}}件のチャレンジ募集中"
   },
   "local": {
-    "badge": "🌍 ローカル",
+    "badge": "ローカル",
     "title": "街を動かすローカルになろう",
     "tagline": "君はスポットを知っている。ローカルや旅行者にそれを見つけるチャレンジを投げよう。",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "街を動かそう"
   },
   "exploring": {
-    "badge": "🧭 探索中",
+    "badge": "探索中",
     "title": "どの街でもローカルチャレンジを受ける",
     "tagline": "どこに降り立っても、ローカルが立てたものを受けよう。",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "もう集まってる。参加する？",
     "screen3_invitation": "簡単でしょ？あとはあなた次第。",
     "screen4_invitation": "フィードはなし。あるのはリアルな出会いだけ。",
-    "enterCity": "{{city}}に参加 🔥",
-    "enterChallenge": "このチャレンジに挑戦 🔥",
-    "enterPicker": "都市を選ぶ 🔥",
+    "enterCity": "{{city}}に参加",
+    "enterChallenge": "このチャレンジに挑戦",
+    "enterPicker": "都市を選ぶ",
     "swipeUp": "上にスワイプ",
     "liveHeadline": "{{city}}は今、盛り上がっています。",
     "how": {

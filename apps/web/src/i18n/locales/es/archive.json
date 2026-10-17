@@ -2,9 +2,9 @@
   "title": "Actividad pasada",
   "filters": {
     "all": "Todo",
-    "events": "🎉 Eventos",
-    "pulses": "🗣️ Quedadas",
-    "challenges": "🔥 Retos"
+    "events": "Eventos",
+    "pulses": "Quedadas",
+    "challenges": "Retos"
   },
   "range": {
     "recent": "Reciente",
@@ -18,11 +18,11 @@
     "apply": "Aplicar"
   },
   "public": "Público",
-  "went_one": "🙌 {{count}} asistió",
-  "went_other": "🙌 {{count}} asistieron",
+  "went_one": "{{count}} asistió",
+  "went_other": "{{count}} asistieron",
   "hangoutTag": "Quedada",
-  "replies_one": "💬 {{count}} respuesta",
-  "replies_other": "💬 {{count}} respuestas",
+  "replies_one": "{{count}} respuesta",
+  "replies_other": "{{count}} respuestas",
   "noReplies": "Sin respuestas",
   "error": "No se pudieron cargar los archivos",
   "retry": "Reintentar",

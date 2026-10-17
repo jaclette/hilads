@@ -16,17 +16,17 @@
     "detailsLabel": "Ajoute des détails",
     "optional": "(optionnel)",
     "detailsPlaceholder": "Donne un peu de contexte…",
-    "expiry": "⏱ Expire dans 8 h",
+    "expiry": "Expire dans 8 h",
     "saving": "Enregistrement…",
     "starting": "Lancement…",
     "saveChanges": "Enregistrer",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Une à la fois",
     "limitTitle": "Tu as déjà une sortie",
     "limitSub": "Tu ne peux avoir qu'une sortie à la fois. Va sur « {{title}} », ou supprime-la pour en lancer une nouvelle.",
-    "limitGo": "Aller à ma sortie →",
+    "limitGo": "Aller à ma sortie",
     "yourHangout": "ta sortie",
-    "geoHint": "📍 Active ta localisation pour voir qui est dans le coin maintenant — et que les gens autour repèrent ton Hi 👀🔥",
+    "geoHint": "Active ta localisation pour voir qui est dans le coin maintenant — et que les gens autour repèrent ton Hi",
     "geoRequired": "Un Hi now doit dire aux gens où te retrouver — active ta position pour continuer."
   },
   "deleteConfirm": "Supprimer cette sortie ? Cela y met fin pour tout le monde et c'est irréversible.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} est dans le coup",
     "countIn": "{{count}} dans cette sortie",
-    "seeAll": "Voir tout →"
+    "seeAll": "Voir tout"
   },
   "owner": {
-    "edit": "✏️ Modifier",
-    "delete": "🗑 Supprimer"
+    "edit": "Modifier",
+    "delete": "Supprimer"
   },
   "gated": {
     "title": "Sortie réservée aux membres",
@@ -70,7 +70,7 @@
     "exploring": "Exploration"
   },
   "reply": {
-    "photo": "📷 Photo",
+    "photo": "Photo",
     "unavailable": "Message d'origine indisponible"
   },
   "composer": {},

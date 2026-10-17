@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "无法加载消息。",
     "beginning": "对话开始",
-    "photo": "📷 照片",
+    "photo": "照片",
     "unavailable": "原始消息不可用",
     "tapMaps": "点按在地图中打开",
     "composer": "消息…",

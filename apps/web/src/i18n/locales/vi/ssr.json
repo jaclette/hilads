@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads hoạt động thế nào",
     "aboutBody": "Chọn thành phố của bạn. Khởi xướng một challenge cho người địa phương hoặc du khách, tham gia meetup, tìm hangout, hoặc khám phá Local Events. Càng xây dựng ở đây nhiều, bạn càng trở thành người địa phương - và càng lên cao trên Thổ địa.",
     "citiesCta": "Khám phá tất cả thành phố trên Hilads",
-    "subhead": "🔥 Trở thành người địa phương ở bất cứ thành phố nào bạn ghé thăm."
+    "subhead": "Trở thành người địa phương ở bất cứ thành phố nào bạn ghé thăm."
   },
   "_note": "Vietnamese SSR strings are DRAFTS - pending native review.",
   "brand": "Hilads",
@@ -160,7 +160,7 @@
     "h1Tag": "Thử thách",
     "audienceLocals": "Cho người địa phương tại {city}",
     "audienceExplorers": "Cho du khách tại {city}",
-    "validatedBadge": "✓ Đã xác nhận",
+    "validatedBadge": "Đã xác nhận",
     "openBadge": "Mở",
     "typeLabel": "Loại:",
     "typeFood": "Ăn uống",

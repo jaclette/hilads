@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 聚会灵感",
+    "heading": "聚会灵感",
     "sub": "看看别处的本地人组织了什么 - 获取灵感",
-    "openYours": "🔥 在 {{city}} 开你自己的",
+    "openYours": "在 {{city}} 开你自己的",
     "by": "来自 {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}}正活跃 ✨",
+    "live": "{{city}}正活跃",
     "dismiss": "关闭",
     "body": "真实的人，就在此刻。打个招呼、看看谁在附近，或带个朋友进来。",
-    "sayHi": "打个招呼 👋",
+    "sayHi": "打个招呼",
     "invite": "邀请好友"
   },
   "imageType": "请选择 JPEG、PNG 或 WebP 图片。",
@@ -57,10 +57,10 @@
     "topCities": "当前最活跃的城市",
     "cities": "城市",
     "switchTitle": "切换城市",
-    "filterActive": "🔥 最活跃",
-    "filterEvents": "🎉 活动最多",
-    "filterOnline": "🟢 在线最多",
-    "filterChallenges": "⚡ 最多挑战",
+    "filterActive": "最活跃",
+    "filterEvents": "活动最多",
+    "filterOnline": "在线最多",
+    "filterChallenges": "最多挑战",
     "challenges_one": "{{count}} 个挑战",
     "challenges_other": "{{count}} 个挑战",
     "members_one": "{{count}} 位成员",
@@ -81,18 +81,18 @@
     "hangoutTag": "聚会",
     "eventTag": "活动",
     "public": "公开",
-    "activeNow": "● 当前活跃",
+    "activeNow": "当前活跃",
     "repliesNew": "还没有回复 - 来做第一个",
-    "replies_one": "💬 {{count}} 条回复",
-    "replies_other": "💬 {{count}} 条回复",
-    "going_one": "🙌 {{count}} 人参加",
-    "going_other": "🙌 {{count}} 人参加",
+    "replies_one": "{{count}} 条回复",
+    "replies_other": "{{count}} 条回复",
+    "going_one": "{{count}} 人参加",
+    "going_other": "{{count}} 人参加",
     "hostedBy": "由 {{name}} 主持",
     "groupHilads": "Hilads 本地活动",
     "groupPublic": "公开本地活动",
-    "groupPublicTicket": "🎫 公开本地活动",
+    "groupPublicTicket": "公开本地活动",
     "createEvent": "创建本地活动",
-    "startHangout": "发起聚会 🗣️",
+    "startHangout": "发起聚会",
     "openPlace": "开放你的场地",
     "loadError": "无法加载活动",
     "loadErrorSub": "稍后下拉重试，或在{{city}}创建点新东西。",
@@ -105,7 +105,7 @@
     "noEventsSub": "来做{{city}}里第一个创建活动的人",
     "noHangoutsSub": "发起一个聚会，让全城聊起来",
     "filterAll": "全部",
-    "seeComing": "看看即将发生什么 🔮",
+    "seeComing": "看看即将发生什么",
     "seeHappened": "看看发生过什么",
     "createNew": "创建",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "向 {{name}} 打招呼",
-    "sayHiGeneric": "打个招呼 👋",
-    "hostWaiting": "等待第一声招呼 👋",
+    "sayHiGeneric": "打个招呼",
+    "hostWaiting": "等待第一声招呼",
     "hiNowHint": "现在一起玩",
     "hiLaterHint": "计划活动"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "你的活动",
     "edit": "编辑",
     "join": "加入",
-    "joined": "已加入 ✓",
+    "joined": "已加入",
     "here": "{{count}} 人在这里",
     "going_one": "{{count}} 人参加",
     "going_other": "{{count}} 人参加",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "对话的开始",
     "arriving": "大家正在陆续到来",
-    "firstChat": "来做这里第一个聊天的人 👇",
-    "firstHi": "来做第一个打招呼的人 👇"
+    "firstChat": "来做这里第一个聊天的人",
+    "firstHi": "来做第一个打招呼的人"
   },
   "create": {
     "title": "想做点什么？",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "疯狂",
     "challengeTitleLabel": "你的挑战",
     "challengeTitlePlaceholder": "例如，带我去你最喜欢的咖啡馆",
-    "challengeCta": "发起挑战 🔥",
+    "challengeCta": "发起挑战",
     "challengeErrStart": "无法发起挑战"
   },
   "goingModal": {
     "going": "人参加",
     "inThisHangout": "在这个聚会里",
     "loading": "加载中…",
-    "empty": "还没有人 - 来做第一个加入的人吧！🙌"
+    "empty": "还没有人 - 来做第一个加入的人吧！"
   },
   "nickname": {
     "label": "昵称",
@@ -201,15 +201,15 @@
     "anonymous": "// 匿名 · 无需注册"
   },
   "prompt": {
-    "exploreText": "🔥 看看现在正在发生什么",
+    "exploreText": "看看现在正在发生什么",
     "exploreCta": "看看正在发生什么",
-    "photoText": "📸 分享正在发生的事",
+    "photoText": "分享正在发生的事",
     "shoot": "拍照",
-    "createEventText": "🎉 今晚有计划吗？",
+    "createEventText": "今晚有计划吗？",
     "createEventCta": "创建活动",
-    "challengeIntroText": "🔥 新来的？看看挑战怎么玩",
+    "challengeIntroText": "新来的？看看挑战怎么玩",
     "challengeIntroCta": "看看",
-    "installText": "✨ 把 Hilads 添加到主屏幕\n绝不错过你城市里正在发生的事",
+    "installText": "把 Hilads 添加到主屏幕\n绝不错过你城市里正在发生的事",
     "installAdd": "添加",
     "installHow": "怎么做"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 本地人正在签到"
   },
   "ownerPrompt": {
-    "text": "🔥 这个活动是你发起的！",
+    "text": "这个活动是你发起的！",
     "sub": "让它更出色 - 加点描述、更新时间，或分享出去。",
-    "edit": "✏️ 编辑活动"
+    "edit": "编辑活动"
   },
   "feedNew": {
-    "event": "🎉 新活动：{{title}}",
+    "event": "新活动：{{title}}",
     "join": "加入",
     "replies_one": "{{count}} 条回复",
     "replies_other": "{{count}} 条回复",
-    "challengeLocals": "🔥 {{name}} 向本地人发起挑战：{{title}}",
-    "challengeExplorers": "🔥 {{name}} 向旅行者发起挑战：{{title}}",
-    "challengeCta": "查看 →",
-    "challengeValidated": "🏆 挑战完成！{{name}} 验证了 \"{{title}}\"。",
+    "challengeLocals": "{{name}} 向本地人发起挑战：{{title}}",
+    "challengeExplorers": "{{name}} 向旅行者发起挑战：{{title}}",
+    "challengeCta": "查看",
+    "challengeValidated": "挑战完成！{{name}} 验证了 \"{{title}}\"。",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} 国际挑战：{{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "正在进行",
-    "recurring": "↻ 定期",
+    "recurring": "定期",
     "upcoming": "即将开始",
     "delete": "删除活动"
   },
   "arrivalsBar": {
-    "label": "✈️ 最近到达",
+    "label": "最近到达",
     "sheetTitle": "到达",
     "empty": "暂无到达"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 来自{{city}}的 {{nickname}} 刚刚加入 Hilads",
       "challengeWon": "🏆 来自{{city}}的 {{nickname}} 赢得了挑战 {{challenge}}"
     },
-    "quietCard": "这里很安静？世界 里有 {{count}} 条未读 🌍 — 点击查看",
+    "quietCard": "这里很安静？世界 里有 {{count}} 条未读 — 点击查看",
     "heroEmpty": "成为第一个挑战城市的人",
     "heroEmptySub": "发起一个跨城市挑战",
     "leaderboard": "排行榜",

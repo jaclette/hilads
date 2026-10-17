@@ -2,9 +2,9 @@
   "title": "回顧",
   "filters": {
     "all": "全部",
-    "events": "🎉 活動",
-    "pulses": "🗣️ 聚會",
-    "challenges": "🔥 挑戰"
+    "events": "活動",
+    "pulses": "聚會",
+    "challenges": "挑戰"
   },
   "range": {
     "recent": "最近",
@@ -18,11 +18,11 @@
     "apply": "套用"
   },
   "public": "公開",
-  "went_one": "🙌 {{count}} 人去過",
-  "went_other": "🙌 {{count}} 人去過",
+  "went_one": "{{count}} 人去過",
+  "went_other": "{{count}} 人去過",
   "hangoutTag": "聚會",
-  "replies_one": "💬 {{count}} 則回覆",
-  "replies_other": "💬 {{count}} 則回覆",
+  "replies_one": "{{count}} 則回覆",
+  "replies_other": "{{count}} 則回覆",
   "noReplies": "沒有回覆",
   "error": "無法載入回顧",
   "retry": "重試",

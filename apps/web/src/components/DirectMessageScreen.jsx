@@ -538,7 +538,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                   setActionMsg(null)
                 }}
               >
-                {i18n.t('actionCopy', { ns: 'chat', defaultValue: '📋 Copy' })}
+                {i18n.t('actionCopy', { ns: 'chat', defaultValue: 'Copy' })}
               </button>
             )}
             {actionMsg.msg.content && !actionMsg.msg.content.startsWith('📍') && (actionMsg.msg.type ?? 'text') === 'text' && (
@@ -551,7 +551,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                   dmInputRef.current?.focus()
                 }}
               >
-                {i18n.t('actionEdit', { ns: 'chat', defaultValue: '✏️ Edit' })}
+                {i18n.t('actionEdit', { ns: 'chat', defaultValue: 'Edit' })}
               </button>
             )}
             <button
@@ -562,7 +562,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                 handleDelete(msg)
               }}
             >
-              {i18n.t('actionDelete', { ns: 'chat', defaultValue: '🗑️ Delete' })}
+              {i18n.t('actionDelete', { ns: 'chat', defaultValue: 'Delete' })}
             </button>
           </div>
         </div>

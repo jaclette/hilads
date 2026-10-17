@@ -66,7 +66,7 @@
     "interestsHint": "- 最多選 5 個"
   },
   "ambassador": {
-    "title": "城市推薦 👑",
+    "title": "城市推薦",
     "subtitle": "以在地達人的身分顯示在你的個人資料上。",
     "restaurant": "最愛的餐廳",
     "restaurantPlaceholder": "你總會帶朋友去的地方",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "上傳中…",
     "saving": "儲存中…",
-    "saved": "已儲存 ✓",
+    "saved": "已儲存",
     "save": "儲存個人資料"
   },
   "signOut": "登出",

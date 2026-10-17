@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Ajak orang ✨",
-    "linkCopied": "Tautan disalin ✨",
+    "bringPeople": "Ajak orang",
+    "linkCopied": "Tautan disalin",
     "vibeTitle": "Bagikan vibe ini",
     "eventAria": "Bagikan acara"
   },
@@ -16,7 +16,7 @@
     "cancel": "Batal",
     "deleting": "Menghapus…",
     "confirm": "Hapus",
-    "button": "🗑 Hapus acara"
+    "button": "Hapus acara"
   },
   "quickStart": "Mulai cepat",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Tanggal",
   "today": "Hari ini",
   "tomorrow": "Besok",
-  "todayHint": "Mengadakan hari ini memberimu visibilitas paling tinggi 🔥",
+  "todayHint": "Mengadakan hari ini memberimu visibilitas paling tinggi",
   "starts": "Mulai",
   "ends": "Berakhir",
   "repeat": "Ulangi",
@@ -79,9 +79,9 @@
     "saving": "Menyimpan…",
     "creating": "Membuat…",
     "saveChanges": "Simpan perubahan",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Setiap hari",

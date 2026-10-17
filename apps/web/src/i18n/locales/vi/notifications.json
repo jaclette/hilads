@@ -6,7 +6,7 @@
     "sub": "Thông báo sẽ xuất hiện ở đây"
   },
   "loading": "Đang tải…",
-  "seeAll": "Xem tất cả thông báo →",
+  "seeAll": "Xem tất cả thông báo",
   "prefs": {
     "title": "Tùy chọn thông báo",
     "mentionName": "Nhắc đến @",
@@ -15,9 +15,9 @@
     "newEventDesc": "Khi ai đó tạo sự kiện trong thành phố của bạn",
     "friendName": "Lời mời kết bạn",
     "friendDesc": "Khi ai đó gửi lời mời kết bạn hoặc chấp nhận lời mời của bạn",
-    "notesName": "Ghi chú ✨",
+    "notesName": "Ghi chú",
     "notesDesc": "Khi ai đó để lại ghi chú trên hồ sơ của bạn",
-    "profileViewName": "Lượt xem hồ sơ 👀",
+    "profileViewName": "Lượt xem hồ sơ",
     "profileViewDesc": "Khi ai đó xem hồ sơ của bạn",
     "announcementName": "Thông báo từ Hilads",
     "announcementDesc": "Đôi khi có cập nhật từ đội ngũ",

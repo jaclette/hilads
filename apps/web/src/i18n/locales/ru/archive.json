@@ -2,9 +2,9 @@
   "title": "Что было",
   "filters": {
     "all": "Всё",
-    "events": "🎉 События",
-    "pulses": "🗣️ Тусовки",
-    "challenges": "🔥 Челленджи"
+    "events": "События",
+    "pulses": "Тусовки",
+    "challenges": "Челленджи"
   },
   "range": {
     "recent": "Недавнее",
@@ -18,15 +18,15 @@
     "apply": "Применить"
   },
   "public": "Публичное",
-  "went_one": "🙌 {{count}} сходил",
+  "went_one": "{{count}} сходил",
   "went_few": "🙌 {{count}} сходили",
   "went_many": "🙌 {{count}} сходили",
-  "went_other": "🙌 {{count}} сходили",
+  "went_other": "{{count}} сходили",
   "hangoutTag": "Тусовка",
-  "replies_one": "💬 {{count}} ответ",
+  "replies_one": "{{count}} ответ",
   "replies_few": "💬 {{count}} ответа",
   "replies_many": "💬 {{count}} ответов",
-  "replies_other": "💬 {{count}} ответов",
+  "replies_other": "{{count}} ответов",
   "noReplies": "Нет ответов",
   "error": "Не удалось загрузить архив",
   "retry": "Повторить",

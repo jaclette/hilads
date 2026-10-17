@@ -8,9 +8,9 @@
   "emptyTitle": "Ничего не запланировано",
   "emptySub": "В этот день пока нет событий.",
   "public": "Публичное",
-  "going_one": "🙌 {{count}} участник",
+  "going_one": "{{count}} участник",
   "going_few": "🙌 {{count}} участника",
   "going_many": "🙌 {{count}} участников",
-  "going_other": "🙌 {{count}} участников",
-  "liveNow": "🔥 В эфире"
+  "going_other": "{{count}} участников",
+  "liveNow": "В эфире"
 }

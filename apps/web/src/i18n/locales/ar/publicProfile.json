@@ -3,10 +3,10 @@
   "loading": "جارٍ التحميل…",
   "loadError": "تعذّر تحميل الملف الشخصي.",
   "badgeMicro": {
-    "ghost": "مجرد تصفّح 👀",
-    "fresh": "وصل للتو 👶",
+    "ghost": "مجرد تصفّح",
+    "fresh": "وصل للتو",
     "regular": "يظهر كثيرًا",
-    "host": "يجعل الأمور تحدث 🔥"
+    "host": "يجعل الأمور تحدث"
   },
   "modes": {
     "local": "محلي",
@@ -41,7 +41,7 @@
     "events": "Hi plan",
     "friends": "الأصدقاء",
     "vibes": "Vibes",
-    "picks": "اختيارات المدينة 👑",
+    "picks": "اختيارات المدينة",
     "challenges": "التحديات"
   },
   "host": "المضيف",
@@ -50,7 +50,7 @@
     "hangouts": "لا توجد لقاءات بعد",
     "events": "لا توجد فعاليات بعد",
     "friends": "لا يوجد أصدقاء بعد",
-    "challenges": "لا توجد تحديات بعد - أطلق واحداً 🔥"
+    "challenges": "لا توجد تحديات بعد - أطلق واحداً"
   },
   "vibesTab": {
     "score": "درجة vibe تبلغ {{score}}",
@@ -60,15 +60,15 @@
     "basedOn_few": "بناءً على {{count}} vibes",
     "basedOn_many": "بناءً على {{count}} vibe",
     "basedOn_other": "بناءً على {{count}} vibe",
-    "updateNote": "✏️ حدّث ملاحظتك ({{rating}}★)",
-    "leaveNote": "⭐ اترك ملاحظة",
+    "updateNote": "حدّث ملاحظتك ({{rating}}★)",
+    "leaveNote": "اترك ملاحظة",
     "placeholder": "قل شيئًا لطيفًا… (اختياري)",
     "cancel": "إلغاء",
     "sending": "جارٍ الإرسال…",
-    "sendNote": "إرسال الملاحظة ✨",
+    "sendNote": "إرسال الملاحظة",
     "notesLabel": "الملاحظات · {{count}}",
     "emptyTitle": "لا توجد ملاحظات بعد",
-    "emptySub": "كن أول من يترك ملاحظة ✨"
+    "emptySub": "كن أول من يترك ملاحظة"
   },
   "picks": {
     "restaurant": "المطعم المفضّل",
@@ -78,10 +78,10 @@
   },
   "actions": {
     "opening": "جارٍ الفتح…",
-    "message": "💬 رسالة",
-    "friend": "✓ صديق",
-    "requestSent": "⌛ تم إرسال الطلب",
-    "acceptRequest": "✓ قبول الطلب",
+    "message": "رسالة",
+    "friend": "صديق",
+    "requestSent": "تم إرسال الطلب",
+    "acceptRequest": "قبول الطلب",
     "addFriend": "+ صديق",
     "removing": "جارٍ الإزالة…",
     "unfriend": "إلغاء الصداقة",

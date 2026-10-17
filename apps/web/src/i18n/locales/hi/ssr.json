@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads कैसे काम करता है",
     "aboutBody": "अपना शहर चुनिए। लोकल या यात्रियों के लिए challenge लीजिए, meetup में जुड़िए, hangout ढूँढिए, या Local Events खोजिए। जितना आप यहाँ बनाते हैं, उतने ही ज़्यादा लोकल बनते हैं - और Most Local में ऊँचाई पर पहुँचते हैं।",
     "citiesCta": "Hilads के सभी शहर देखो",
-    "subhead": "🔥 जिस भी शहर में जाएँ, वहाँ लोकल बनिए।"
+    "subhead": "जिस भी शहर में जाएँ, वहाँ लोकल बनिए।"
   },
   "brand": "Hilads",
   "dateLocale": "hi-IN",
@@ -159,7 +159,7 @@
     "h1Tag": "चैलेंज",
     "audienceLocals": "{city} के लोकल्स के लिए",
     "audienceExplorers": "{city} के यात्रियों के लिए",
-    "validatedBadge": "✓ वैलिडेटेड",
+    "validatedBadge": "वैलिडेटेड",
     "openBadge": "ओपन",
     "typeLabel": "टाइप:",
     "typeFood": "फ़ूड",

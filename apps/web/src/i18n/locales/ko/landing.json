@@ -6,33 +6,33 @@
     "storeGetItOn": "다운로드"
   },
   "join": {
-    "peopleLive_one": "🔥 지금 {{count}}명이 어울리고 있어요",
-    "peopleLive_other": "🔥 지금 {{count}}명이 어울리고 있어요",
-    "events_one": "🎉 {{count}} Hi plan 진행 중",
-    "events_other": "🎉 {{count}} Hi plan 진행 중",
-    "hangouts_one": "🗣️ {{count}} Hi now 활성",
-    "hangouts_other": "🗣️ {{count}} Hi now 활성",
+    "peopleLive_one": "지금 {{count}}명이 어울리고 있어요",
+    "peopleLive_other": "지금 {{count}}명이 어울리고 있어요",
+    "events_one": "{{count}} Hi plan 진행 중",
+    "events_other": "{{count}} Hi plan 진행 중",
+    "hangouts_one": "{{count}} Hi now 활성",
+    "hangouts_other": "{{count}} Hi now 활성",
     "replies_one": "답글 {{count}}개",
     "replies_other": "답글 {{count}}개",
     "pickCity": "도시를 골라\n바로 합류해요",
     "locating": "› 도시를 찾는 중...",
-    "browseCities": "도시 둘러보기 →",
+    "browseCities": "도시 둘러보기",
     "yourName": "이름",
     "namePlaceholder": "이렇게 인사해요...",
     "tryAgain": "다시 시도",
     "useLocation": "대신 내 위치 사용",
-    "joinCity": "{{city}} 참여하기 →",
-    "joinChat": "채팅 참여하기 →",
+    "joinCity": "{{city}} 참여하기",
+    "joinChat": "채팅 참여하기",
     "hint": "// 익명 · 즉시 접속",
     "keepIdentity": "또는 내 정체성 유지",
-    "createAccount": "✨ 계정 만들기",
+    "createAccount": "계정 만들기",
     "logIn": "로그인",
     "authHint": "이름 저장 · 프로필 잠금 해제 · 친구 추가",
-    "challenges_one": "🔥 진행 중인 챌린지 {{count}}개",
-    "challenges_other": "🔥 진행 중인 챌린지 {{count}}개"
+    "challenges_one": "진행 중인 챌린지 {{count}}개",
+    "challenges_other": "진행 중인 챌린지 {{count}}개"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "도시를 움직이는 로컬이 되어",
     "tagline": "넌 스폿을 알아. 로컬이나 여행자에게 찾아내라고 도전해.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "네 도시를 움직여"
   },
   "exploring": {
-    "badge": "🧭 Exploring",
+    "badge": "Exploring",
     "title": "어느 도시에서나 로컬 챌린지를 받아",
     "tagline": "어디에 도착하든, 로컬이 던진 것을 받아.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "이미 모여 있어. 함께할래?",
     "screen3_invitation": "간단하지? 이제 네 차례야.",
     "screen4_invitation": "피드는 없어. 진짜 만남만 있어.",
-    "enterCity": "{{city}} 참여하기 🔥",
-    "enterChallenge": "이 챌린지 도전하기 🔥",
-    "enterPicker": "도시 선택하기 🔥",
+    "enterCity": "{{city}} 참여하기",
+    "enterChallenge": "이 챌린지 도전하기",
+    "enterPicker": "도시 선택하기",
     "swipeUp": "위로 스와이프",
     "liveHeadline": "지금 {{city}}가 활발해요.",
     "how": {

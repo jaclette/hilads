@@ -2,9 +2,9 @@
   "title": "これまでの出来事",
   "filters": {
     "all": "すべて",
-    "events": "🎉 イベント",
-    "pulses": "🗣️ 集まり",
-    "challenges": "🔥 チャレンジ"
+    "events": "イベント",
+    "pulses": "集まり",
+    "challenges": "チャレンジ"
   },
   "range": {
     "recent": "最近",
@@ -18,11 +18,11 @@
     "apply": "適用"
   },
   "public": "公開",
-  "went_one": "🙌 {{count}}人が参加しました",
-  "went_other": "🙌 {{count}}人が参加しました",
+  "went_one": "{{count}}人が参加しました",
+  "went_other": "{{count}}人が参加しました",
   "hangoutTag": "集まり",
-  "replies_one": "💬 {{count}}件の返信",
-  "replies_other": "💬 {{count}}件の返信",
+  "replies_one": "{{count}}件の返信",
+  "replies_other": "{{count}}件の返信",
   "noReplies": "返信なし",
   "error": "アーカイブを読み込めませんでした",
   "retry": "再試行",

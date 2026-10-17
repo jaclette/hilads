@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 Идеи тусовок",
+    "heading": "Идеи тусовок",
     "sub": "Что устраивают локалы в других городах - вдохновляйся",
-    "openYours": "🔥 Запусти свою в {{city}}",
+    "openYours": "Запусти свою в {{city}}",
     "by": "от {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} в эфире ✨",
+    "live": "{{city}} в эфире",
     "dismiss": "Закрыть",
     "body": "Реальные люди прямо сейчас. Поздоровайся, посмотри, кто вокруг тебя, или приведи друга.",
-    "sayHi": "Поздоровайся 👋",
+    "sayHi": "Поздоровайся",
     "invite": "Пригласить друзей"
   },
   "imageType": "Выбери изображение JPEG, PNG или WebP.",
@@ -57,10 +57,10 @@
     "topCities": "Самые активные города сейчас",
     "cities": "Города",
     "switchTitle": "Сменить город",
-    "filterActive": "🔥 Самые активные",
-    "filterEvents": "🎉 Больше событий",
-    "filterOnline": "🟢 Больше всего онлайн",
-    "filterChallenges": "⚡ Больше всего челленджей",
+    "filterActive": "Самые активные",
+    "filterEvents": "Больше событий",
+    "filterOnline": "Больше всего онлайн",
+    "filterChallenges": "Больше всего челленджей",
     "challenges_one": "{{count}} челлендж",
     "challenges_other": "{{count}} челленджей",
     "members_one": "{{count}} участник",
@@ -81,22 +81,22 @@
     "hangoutTag": "Тусовка",
     "eventTag": "Событие",
     "public": "Публичное",
-    "activeNow": "● Активны сейчас",
+    "activeNow": "Активны сейчас",
     "repliesNew": "Пока нет ответов - будь первым",
-    "replies_one": "💬 {{count}} ответ",
+    "replies_one": "{{count}} ответ",
     "replies_few": "💬 {{count}} ответа",
     "replies_many": "💬 {{count}} ответов",
-    "replies_other": "💬 {{count}} ответов",
-    "going_one": "🙌 {{count}} участник",
+    "replies_other": "{{count}} ответов",
+    "going_one": "{{count}} участник",
     "going_few": "🙌 {{count}} участника",
     "going_many": "🙌 {{count}} участников",
-    "going_other": "🙌 {{count}} участников",
+    "going_other": "{{count}} участников",
     "hostedBy": "Организатор: {{name}}",
     "groupHilads": "Местные события Hilads",
     "groupPublic": "Публичные местные события",
-    "groupPublicTicket": "🎫 Публичные местные события",
+    "groupPublicTicket": "Публичные местные события",
     "createEvent": "Создать местное событие",
-    "startHangout": "Запустить тусовку 🗣️",
+    "startHangout": "Запустить тусовку",
     "openPlace": "Открой своё место",
     "loadError": "Не удалось загрузить события",
     "loadErrorSub": "Потяни, чтобы повторить позже, или создай что-то новое в городе {{city}}.",
@@ -109,7 +109,7 @@
     "noEventsSub": "Стань первым, кто создаст его в городе {{city}}",
     "noHangoutsSub": "Запусти тусовку и заставь город говорить",
     "filterAll": "Всё",
-    "seeComing": "Посмотри, что впереди 🔮",
+    "seeComing": "Посмотри, что впереди",
     "seeHappened": "посмотри, что было",
     "createNew": "Создать",
     "nowTag": "Now",
@@ -117,8 +117,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "Поздоровайся с {{name}}",
-    "sayHiGeneric": "Поздоровайся 👋",
-    "hostWaiting": "Ждём первое приветствие 👋",
+    "sayHiGeneric": "Поздоровайся",
+    "hostWaiting": "Ждём первое приветствие",
     "hiNowHint": "тусить сейчас",
     "hiLaterHint": "запланировать"
   },
@@ -153,7 +153,7 @@
     "yourEvent": "Твоё событие",
     "edit": "Изменить",
     "join": "Присоединиться",
-    "joined": "Присоединился ✓",
+    "joined": "Присоединился",
     "here": "{{count}} здесь",
     "going_one": "{{count}} участник",
     "going_few": "{{count}} участника",
@@ -165,8 +165,8 @@
   "chatEmpty": {
     "beginning": "Начало разговора",
     "arriving": "Люди подтягиваются",
-    "firstChat": "Стань первым, кто напишет здесь 👇",
-    "firstHi": "Стань первым, кто поздоровается 👇"
+    "firstChat": "Стань первым, кто напишет здесь",
+    "firstHi": "Стань первым, кто поздоровается"
   },
   "create": {
     "title": "Какой план?",
@@ -187,14 +187,14 @@
     "challengeTypeHelp": "Безумие",
     "challengeTitleLabel": "Твой челлендж",
     "challengeTitlePlaceholder": "напр. Отведи меня в своё любимое кафе",
-    "challengeCta": "Запустить челлендж 🔥",
+    "challengeCta": "Запустить челлендж",
     "challengeErrStart": "Не удалось запустить челлендж"
   },
   "goingModal": {
     "going": "идут",
     "inThisHangout": "на этой тусовке",
     "loading": "Загрузка…",
-    "empty": "Пока никого - присоединись первым! 🙌"
+    "empty": "Пока никого - присоединись первым!"
   },
   "nickname": {
     "label": "Ник",
@@ -207,15 +207,15 @@
     "anonymous": "// анонимно · без регистрации"
   },
   "prompt": {
-    "exploreText": "🔥 Посмотри, что происходит сейчас",
+    "exploreText": "Посмотри, что происходит сейчас",
     "exploreCta": "Посмотреть, что происходит",
-    "photoText": "📸 Поделись тем, что происходит",
+    "photoText": "Поделись тем, что происходит",
     "shoot": "Снять",
-    "createEventText": "🎉 Есть план на вечер?",
+    "createEventText": "Есть план на вечер?",
     "createEventCta": "Создать событие",
-    "challengeIntroText": "🔥 Новенький? Узнай, как работают челленджи",
+    "challengeIntroText": "Новенький? Узнай, как работают челленджи",
     "challengeIntroCta": "Показать",
-    "installText": "✨ Добавь Hilads на главный экран\nНикогда не пропускай то, что происходит в твоём городе",
+    "installText": "Добавь Hilads на главный экран\nНикогда не пропускай то, что происходит в твоём городе",
     "installAdd": "Добавить",
     "installHow": "Как"
   },
@@ -247,21 +247,21 @@
     "7": "🌆 Местные отмечаются"
   },
   "ownerPrompt": {
-    "text": "🔥 Ты запустил это событие!",
+    "text": "Ты запустил это событие!",
     "sub": "Сделай его ещё лучше - добавь описание, измени время или поделись им.",
-    "edit": "✏️ Изменить событие"
+    "edit": "Изменить событие"
   },
   "feedNew": {
-    "event": "🎉 Новое событие: {{title}}",
+    "event": "Новое событие: {{title}}",
     "join": "Присоединиться",
     "replies_one": "{{count}} ответ",
     "replies_few": "{{count}} ответа",
     "replies_many": "{{count}} ответов",
     "replies_other": "{{count}} ответов",
-    "challengeLocals": "🔥 {{name}} бросает вызов местным: {{title}}",
-    "challengeExplorers": "🔥 {{name}} бросает вызов путешественникам: {{title}}",
-    "challengeCta": "Смотреть →",
-    "challengeValidated": "🏆 Челлендж выполнен! {{name}} подтвердил «{{title}}».",
+    "challengeLocals": "{{name}} бросает вызов местным: {{title}}",
+    "challengeExplorers": "{{name}} бросает вызов путешественникам: {{title}}",
+    "challengeCta": "Смотреть",
+    "challengeValidated": "Челлендж выполнен! {{name}} подтвердил «{{title}}».",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Международный челлендж: {{title}}"
   },
   "replyPreview": {
@@ -274,12 +274,12 @@
   },
   "myEvent": {
     "live": "В эфире",
-    "recurring": "↻ Повторяющееся",
+    "recurring": "Повторяющееся",
     "upcoming": "Предстоящее",
     "delete": "Удалить событие"
   },
   "arrivalsBar": {
-    "label": "✈️ Недавние прибытия",
+    "label": "Недавние прибытия",
     "sheetTitle": "Прибытия",
     "empty": "Пока никто не пришёл"
   },
@@ -315,7 +315,7 @@
       "newUser": "🎉 {{nickname}} из {{city}} только что присоединился к Hilads",
       "challengeWon": "🏆 {{nickname}} из {{city}} выиграл челлендж {{challenge}}"
     },
-    "quietCard": "Тихо здесь? {{count}} непрочитанных в Мир 🌍 — нажми, чтобы открыть",
+    "quietCard": "Тихо здесь? {{count}} непрочитанных в Мир — нажми, чтобы открыть",
     "heroEmpty": "Стань первым, кто бросит вызов городу",
     "heroEmptySub": "Запусти межгородской челлендж",
     "leaderboard": "Рейтинг",

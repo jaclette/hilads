@@ -3,10 +3,10 @@
   "loading": "Laden…",
   "loadError": "Kon profiel niet laden.",
   "badgeMicro": {
-    "ghost": "Even rondkijken 👀",
-    "fresh": "Net geland 👶",
+    "ghost": "Even rondkijken",
+    "fresh": "Net geland",
     "regular": "Vaak van de partij",
-    "host": "Maakt het waar 🔥"
+    "host": "Maakt het waar"
   },
   "modes": {
     "local": "Local",
@@ -41,43 +41,43 @@
     "events": "Hi plan",
     "friends": "Vrienden",
     "vibes": "Vibes",
-    "picks": "Tips uit de stad 👑",
+    "picks": "Tips uit de stad",
     "challenges": "Challenges"
   },
   "host": "Host",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "Nog geen meetups",
     "events": "Nog geen evenementen",
     "friends": "Nog geen vrienden",
-    "challenges": "Nog geen challenges - lanceer er een 🔥"
+    "challenges": "Nog geen challenges - lanceer er een"
   },
   "vibesTab": {
     "score": "{{score}} vibe-score",
     "basedOn_one": "gebaseerd op {{count}} vibe",
     "basedOn_other": "gebaseerd op {{count}} vibes",
-    "updateNote": "✏️ Je notitie bijwerken ({{rating}}★)",
-    "leaveNote": "⭐ Een notitie achterlaten",
+    "updateNote": "Je notitie bijwerken ({{rating}}★)",
+    "leaveNote": "Een notitie achterlaten",
     "placeholder": "Zeg iets aardigs… (optioneel)",
     "cancel": "Annuleren",
     "sending": "Versturen…",
-    "sendNote": "Notitie versturen ✨",
+    "sendNote": "Notitie versturen",
     "notesLabel": "Notities · {{count}}",
     "emptyTitle": "Nog geen notities",
-    "emptySub": "Wees de eerste die een notitie achterlaat ✨"
+    "emptySub": "Wees de eerste die een notitie achterlaat"
   },
   "picks": {
-    "restaurant": "FAVORIETE RESTAURANT",
-    "spot": "VERBORGEN PARELTJE",
-    "tip": "LOKALE TIP",
-    "story": "VERHAAL"
+    "restaurant": "Favoriete restaurant",
+    "spot": "Verborgen pareltje",
+    "tip": "Lokale tip",
+    "story": "Verhaal"
   },
   "actions": {
     "opening": "Openen…",
-    "message": "💬 Bericht",
-    "friend": "✓ Vriend",
-    "requestSent": "⌛ Verzoek verstuurd",
-    "acceptRequest": "✓ Verzoek accepteren",
+    "message": "Bericht",
+    "friend": "Vriend",
+    "requestSent": "Verzoek verstuurd",
+    "acceptRequest": "Verzoek accepteren",
     "addFriend": "+ Vriend",
     "removing": "Verwijderen…",
     "unfriend": "Ontvrienden",

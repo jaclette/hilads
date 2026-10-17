@@ -6,33 +6,33 @@
     "storeGetItOn": "ดาวน์โหลดที่"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} คนกำลังออกมาเที่ยวตอนนี้",
-    "peopleLive_other": "🔥 {{count}} คนกำลังออกมาเที่ยวตอนนี้",
-    "events_one": "🎉 {{count}} Hi plan กำลังเกิดขึ้น",
-    "events_other": "🎉 {{count}} Hi plan กำลังเกิดขึ้น",
-    "hangouts_one": "🗣️ {{count}} Hi now ใช้งานอยู่",
-    "hangouts_other": "🗣️ {{count}} Hi now ใช้งานอยู่",
+    "peopleLive_one": "{{count}} คนกำลังออกมาเที่ยวตอนนี้",
+    "peopleLive_other": "{{count}} คนกำลังออกมาเที่ยวตอนนี้",
+    "events_one": "{{count}} Hi plan กำลังเกิดขึ้น",
+    "events_other": "{{count}} Hi plan กำลังเกิดขึ้น",
+    "hangouts_one": "{{count}} Hi now ใช้งานอยู่",
+    "hangouts_other": "{{count}} Hi now ใช้งานอยู่",
     "replies_one": "{{count}} ตอบกลับ",
     "replies_other": "{{count}} ตอบกลับ",
     "pickCity": "เลือกเมือง\nแล้วเข้าร่วม",
     "locating": "› กำลังค้นหาเมืองของคุณ...",
-    "browseCities": "เลือกดูเมืองต่างๆ →",
+    "browseCities": "เลือกดูเมืองต่างๆ",
     "yourName": "ชื่อของคุณ",
     "namePlaceholder": "ทักทายในชื่อ...",
     "tryAgain": "ลองอีกครั้ง",
     "useLocation": "ใช้ตำแหน่งของฉันแทน",
-    "joinCity": "เข้าร่วม {{city}} →",
-    "joinChat": "เข้าร่วมแชท →",
+    "joinCity": "เข้าร่วม {{city}}",
+    "joinChat": "เข้าร่วมแชท",
     "hint": "// ไม่ระบุตัวตน · เข้าถึงทันที",
     "keepIdentity": "หรือเก็บตัวตนของคุณไว้",
-    "createAccount": "✨ สร้างบัญชี",
+    "createAccount": "สร้างบัญชี",
     "logIn": "เข้าสู่ระบบ",
     "authHint": "เก็บชื่อของคุณ · ปลดล็อกโปรไฟล์ · เพิ่มเพื่อน",
-    "challenges_one": "🔥 ชาเลนจ์เปิดอยู่ {{count}} รายการ",
-    "challenges_other": "🔥 ชาเลนจ์เปิดอยู่ {{count}} รายการ"
+    "challenges_one": "ชาเลนจ์เปิดอยู่ {{count}} รายการ",
+    "challenges_other": "ชาเลนจ์เปิดอยู่ {{count}} รายการ"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "เป็นคนท้องถิ่นที่ขับเคลื่อนเมือง",
     "tagline": "คุณรู้จักสปอตต่างๆ ท้าทายคนท้องถิ่นหรือนักเดินทางให้หามันให้เจอ",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "ขับเคลื่อนเมืองของคุณ"
   },
   "exploring": {
-    "badge": "🧭 กำลังสำรวจ",
+    "badge": "กำลังสำรวจ",
     "title": "รับชาเลนจ์ท้องถิ่นได้ทุกเมือง",
     "tagline": "ไม่ว่าคุณจะลงจอดที่ไหน รับสิ่งที่คนท้องถิ่นเปิดไว้",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "พวกเขาอยู่กันแล้ว มาไหม?",
     "screen3_invitation": "ง่ายใช่ไหม? ตาคุณแล้ว",
     "screen4_invitation": "ไม่มีฟีด มีแค่การเจอกันจริง ๆ",
-    "enterCity": "เข้าร่วม{{city}} 🔥",
-    "enterChallenge": "รับความท้าทายนี้ 🔥",
-    "enterPicker": "เลือกเมืองของคุณ 🔥",
+    "enterCity": "เข้าร่วม{{city}}",
+    "enterChallenge": "รับความท้าทายนี้",
+    "enterPicker": "เลือกเมืองของคุณ",
     "swipeUp": "ปัดขึ้น",
     "liveHeadline": "{{city}}กำลังคึกคักตอนนี้",
     "how": {

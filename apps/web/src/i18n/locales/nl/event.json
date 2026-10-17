@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Mensen meenemen ✨",
-    "linkCopied": "Link gekopieerd ✨",
+    "bringPeople": "Mensen meenemen",
+    "linkCopied": "Link gekopieerd",
     "vibeTitle": "Deel deze vibe",
     "eventAria": "Evenement delen"
   },
@@ -16,7 +16,7 @@
     "cancel": "Annuleren",
     "deleting": "Verwijderen…",
     "confirm": "Verwijderen",
-    "button": "🗑 Evenement verwijderen"
+    "button": "Evenement verwijderen"
   },
   "quickStart": "Snel starten",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Datum",
   "today": "Vandaag",
   "tomorrow": "Morgen",
-  "todayHint": "Vandaag organiseren geeft je de meeste zichtbaarheid 🔥",
+  "todayHint": "Vandaag organiseren geeft je de meeste zichtbaarheid",
   "starts": "Begint",
   "ends": "Eindigt",
   "repeat": "Herhalen",
@@ -79,9 +79,9 @@
     "saving": "Opslaan…",
     "creating": "Maken…",
     "saveChanges": "Wijzigingen opslaan",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Elke dag",

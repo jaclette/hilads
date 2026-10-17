@@ -7,7 +7,7 @@
     "aboutHeading": "كيف يعمل Hilads",
     "aboutBody": "اختر مدينتك. أطلق challenge للمحليين أو المسافرين، انضم إلى meetup، اعثر على hangout، أو اكتشف Local Events. كلما بنيت هنا أكثر، أصبحت محليًا أكثر - وارتفعت في Most Local.",
     "citiesCta": "تصفّح كل مدن Hilads",
-    "subhead": "🔥 كن محليًا في أي مدينة تزورها."
+    "subhead": "كن محليًا في أي مدينة تزورها."
   },
   "brand": "Hilads",
   "dateLocale": "ar",
@@ -159,7 +159,7 @@
     "h1Tag": "تحدٍّ",
     "audienceLocals": "للمحليين في {city}",
     "audienceExplorers": "للمسافرين في {city}",
-    "validatedBadge": "✓ مُتحقق",
+    "validatedBadge": "مُتحقق",
     "openBadge": "مفتوح",
     "typeLabel": "النوع:",
     "typeFood": "طعام",

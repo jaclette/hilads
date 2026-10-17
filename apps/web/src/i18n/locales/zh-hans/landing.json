@@ -6,33 +6,33 @@
     "storeGetItOn": "获取"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} 人此刻正在出来玩",
-    "peopleLive_other": "🔥 {{count}} 人此刻正在出来玩",
-    "events_one": "🎉 {{count}} Hi plan 正在进行",
-    "events_other": "🎉 {{count}} Hi plan 正在进行",
-    "hangouts_one": "🗣️ {{count}} Hi now 进行中",
-    "hangouts_other": "🗣️ {{count}} Hi now 进行中",
+    "peopleLive_one": "{{count}} 人此刻正在出来玩",
+    "peopleLive_other": "{{count}} 人此刻正在出来玩",
+    "events_one": "{{count}} Hi plan 正在进行",
+    "events_other": "{{count}} Hi plan 正在进行",
+    "hangouts_one": "{{count}} Hi now 进行中",
+    "hangouts_other": "{{count}} Hi now 进行中",
     "replies_one": "{{count}} 条回复",
     "replies_other": "{{count}} 条回复",
     "pickCity": "选一座城市\n加入进来",
     "locating": "› 正在定位你的城市...",
-    "browseCities": "浏览城市 →",
+    "browseCities": "浏览城市",
     "yourName": "你的名字",
     "namePlaceholder": "用什么名字打招呼...",
     "tryAgain": "重试",
     "useLocation": "改用我的定位",
-    "joinCity": "加入 {{city}} →",
-    "joinChat": "加入聊天 →",
+    "joinCity": "加入 {{city}}",
+    "joinChat": "加入聊天",
     "hint": "// 匿名 · 即刻进入",
     "keepIdentity": "或保留你的身份",
-    "createAccount": "✨ 创建账号",
+    "createAccount": "创建账号",
     "logIn": "登录",
     "authHint": "保留你的名字 · 解锁个人资料 · 添加好友",
-    "challenges_one": "🔥 {{count}} 个进行中的挑战",
-    "challenges_other": "🔥 {{count}} 个进行中的挑战"
+    "challenges_one": "{{count}} 个进行中的挑战",
+    "challenges_other": "{{count}} 个进行中的挑战"
   },
   "local": {
-    "badge": "🌍 本地",
+    "badge": "本地",
     "title": "成为带动城市的本地人",
     "tagline": "你知道好去处。向本地人或旅行者发起挑战去找到它们。",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "带动你的城市"
   },
   "exploring": {
-    "badge": "🧭 探索中",
+    "badge": "探索中",
     "title": "在任何城市接受本地挑战",
     "tagline": "无论你落地哪里，接受本地人发起的挑战。",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "他们已经在了。一起来吗？",
     "screen3_invitation": "很简单吧？看你的了。",
     "screen4_invitation": "没有信息流。只有真实见面。",
-    "enterCity": "加入{{city}} 🔥",
-    "enterChallenge": "接受这个挑战 🔥",
-    "enterPicker": "选择你的城市 🔥",
+    "enterCity": "加入{{city}}",
+    "enterChallenge": "接受这个挑战",
+    "enterPicker": "选择你的城市",
     "swipeUp": "向上滑动",
     "liveHeadline": "{{city}}此刻正热闹。",
     "how": {

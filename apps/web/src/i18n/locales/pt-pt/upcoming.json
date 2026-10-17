@@ -8,7 +8,7 @@
   "emptyTitle": "Nada agendado",
   "emptySub": "Ainda não há eventos neste dia.",
   "public": "Público",
-  "going_one": "🙌 {{count}} participante",
-  "going_other": "🙌 {{count}} participantes",
-  "liveNow": "🔥 Ao vivo"
+  "going_one": "{{count}} participante",
+  "going_other": "{{count}} participantes",
+  "liveNow": "Ao vivo"
 }

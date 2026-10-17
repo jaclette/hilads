@@ -3,10 +3,10 @@
   "loading": "불러오는 중…",
   "loadError": "프로필을 불러올 수 없어요.",
   "badgeMicro": {
-    "ghost": "그냥 둘러보는 중 👀",
-    "fresh": "방금 도착 👶",
+    "ghost": "그냥 둘러보는 중",
+    "fresh": "방금 도착",
     "regular": "자주 나타나요",
-    "host": "일을 벌이는 사람 🔥"
+    "host": "일을 벌이는 사람"
   },
   "modes": {
     "local": "로컬",
@@ -41,30 +41,30 @@
     "events": "Hi plan",
     "friends": "친구",
     "vibes": "Vibes",
-    "picks": "City Picks 👑",
+    "picks": "City Picks",
     "challenges": "챌린지"
   },
   "host": "호스트",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "아직 모임이 없어요",
     "events": "아직 이벤트가 없어요",
     "friends": "아직 친구가 없어요",
-    "challenges": "아직 챌린지가 없어요 - 하나 시작하세요 🔥"
+    "challenges": "아직 챌린지가 없어요 - 하나 시작하세요"
   },
   "vibesTab": {
     "score": "vibe 점수 {{score}}",
     "basedOn_one": "vibe {{count}}개 기준",
     "basedOn_other": "vibe {{count}}개 기준",
-    "updateNote": "✏️ 노트 수정 ({{rating}}★)",
-    "leaveNote": "⭐ 노트 남기기",
+    "updateNote": "노트 수정 ({{rating}}★)",
+    "leaveNote": "노트 남기기",
     "placeholder": "좋은 말 한마디… (선택)",
     "cancel": "취소",
     "sending": "보내는 중…",
-    "sendNote": "노트 보내기 ✨",
+    "sendNote": "노트 보내기",
     "notesLabel": "노트 · {{count}}",
     "emptyTitle": "아직 노트가 없어요",
-    "emptySub": "가장 먼저 노트를 남겨보세요 ✨"
+    "emptySub": "가장 먼저 노트를 남겨보세요"
   },
   "picks": {
     "restaurant": "인생 맛집",
@@ -74,10 +74,10 @@
   },
   "actions": {
     "opening": "여는 중…",
-    "message": "💬 메시지",
-    "friend": "✓ 친구",
-    "requestSent": "⌛ 요청 보냄",
-    "acceptRequest": "✓ 요청 수락",
+    "message": "메시지",
+    "friend": "친구",
+    "requestSent": "요청 보냄",
+    "acceptRequest": "요청 수락",
     "addFriend": "+ 친구",
     "removing": "삭제하는 중…",
     "unfriend": "친구 삭제",

@@ -66,7 +66,7 @@
     "interestsHint": "- choisis-en jusqu'à 5"
   },
   "ambassador": {
-    "title": "Coups de cœur de la ville 👑",
+    "title": "Coups de cœur de la ville",
     "subtitle": "Affichés sur ton profil en tant que légende locale.",
     "restaurant": "Restaurant préféré",
     "restaurantPlaceholder": "Un endroit où tu emmènes toujours les gens",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Téléversement…",
     "saving": "Enregistrement…",
-    "saved": "Enregistré ✓",
+    "saved": "Enregistré",
     "save": "Enregistrer le profil"
   },
   "signOut": "Se déconnecter",

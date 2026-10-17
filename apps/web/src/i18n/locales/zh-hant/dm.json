@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "無法載入訊息。",
     "beginning": "對話開始",
-    "photo": "📷 相片",
+    "photo": "相片",
     "unavailable": "原始訊息無法使用",
     "tapMaps": "點一下在地圖中開啟",
     "composer": "訊息…",

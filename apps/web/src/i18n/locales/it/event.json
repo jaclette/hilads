@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Invita gente ✨",
-    "linkCopied": "Link copiato ✨",
+    "bringPeople": "Invita gente",
+    "linkCopied": "Link copiato",
     "vibeTitle": "Condividi questo vibe",
     "eventAria": "Condividi l'evento"
   },
@@ -16,7 +16,7 @@
     "cancel": "Annulla",
     "deleting": "Eliminazione…",
     "confirm": "Elimina",
-    "button": "🗑 Elimina l'evento"
+    "button": "Elimina l'evento"
   },
   "quickStart": "Avvio rapido",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Data",
   "today": "Oggi",
   "tomorrow": "Domani",
-  "todayHint": "Organizzare oggi ti dà la massima visibilità 🔥",
+  "todayHint": "Organizzare oggi ti dà la massima visibilità",
   "starts": "Inizio",
   "ends": "Fine",
   "repeat": "Ripeti",
@@ -79,9 +79,9 @@
     "saving": "Salvataggio…",
     "creating": "Creazione…",
     "saveChanges": "Salva",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Ogni giorno",

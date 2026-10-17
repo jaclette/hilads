@@ -16,17 +16,17 @@
     "detailsLabel": "新增詳細資訊",
     "optional": "（選填）",
     "detailsPlaceholder": "給點背景說明…",
-    "expiry": "⏱ 8 小時後自動到期",
+    "expiry": "8 小時後自動到期",
     "saving": "儲存中…",
     "starting": "開啟中…",
     "saveChanges": "儲存變更",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "一次一個",
     "limitTitle": "你已經有一個聚會了",
     "limitSub": "你一次只能開一個聚會。前往「{{title}}」，或將它刪除以開一個新的。",
-    "limitGo": "前往我的聚會 →",
+    "limitGo": "前往我的聚會",
     "yourHangout": "你的聚會",
-    "geoHint": "📍 打開定位，看看現在誰在附近——也讓周圍的人發現你的 Hi 👀🔥",
+    "geoHint": "打開定位，看看現在誰在附近——也讓周圍的人發現你的 Hi",
     "geoRequired": "Hi now 會告訴大家在哪裡找到你——開啟定位以繼續。"
   },
   "deleteConfirm": "刪除這個聚會？這會為所有人結束它，且無法復原。",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} 加入了",
     "countIn": "{{count}} 人在這個聚會",
-    "seeAll": "查看全部 →"
+    "seeAll": "查看全部"
   },
   "owner": {
-    "edit": "✏️ 編輯",
-    "delete": "🗑 刪除"
+    "edit": "編輯",
+    "delete": "刪除"
   },
   "gated": {
     "title": "僅限成員的聚會",
@@ -70,7 +70,7 @@
     "exploring": "探索中"
   },
   "reply": {
-    "photo": "📷 相片",
+    "photo": "相片",
     "unavailable": "原始訊息無法使用"
   },
   "composer": {},

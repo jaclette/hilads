@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Nongkrong",
   "publicEventsSection": "🎫 Acara publik",
   "accountWelcome": {
-    "title": "Selamat, {{username}}! 🎉",
-    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang 👇",
-    "f1": "🎉 Mulai nongkrong dan kumpulkan orang sekarang juga",
-    "f2": "📅 Adakan acara di kotamu",
-    "f3": "💬 Kirim pesan pribadi ke siapa saja",
-    "f4": "📍 Lihat siapa yang ada di dekatmu, langsung",
-    "f5": "🤝 Terhubung dengan warga lokal dan para pelancong",
-    "fc1": "🔥 Tantang warga lokal di kotamu",
-    "fc2": "🌍 Tantang kota lain di dunia",
-    "cta": "Ayo mulai 🚀"
+    "title": "Selamat, {{username}}!",
+    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang",
+    "f1": "Mulai nongkrong dan kumpulkan orang sekarang juga",
+    "f2": "Adakan acara di kotamu",
+    "f3": "Kirim pesan pribadi ke siapa saja",
+    "f4": "Lihat siapa yang ada di dekatmu, langsung",
+    "f5": "Terhubung dengan warga lokal dan para pelancong",
+    "fc1": "Tantang warga lokal di kotamu",
+    "fc2": "Tantang kota lain di dunia",
+    "cta": "Ayo mulai"
   },
   "onboarding": {
     "skip": "Lewati ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Buat tantangan"
   },
   "share": {
-    "title": "Bagikan sesuatu 👀",
+    "title": "Bagikan sesuatu",
     "snap": "Ambil foto",
     "snapDesc": "Ambil atau unggah foto",
     "spot": "Bagikan lokasimu",
@@ -96,7 +96,7 @@
     "hiNowDesc": "Lagi pengin ngapain sekarang? Bilang aja"
   },
   "locationPicker": {
-    "title": "Kamu di mana? 👀",
+    "title": "Kamu di mana?",
     "search": "Cari alamat atau tempat",
     "moveHint": "Geser peta untuk menyesuaikan",
     "noResults": "Tidak ada tempat ditemukan",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Tambahkan lampiran",
     "emoji": "Emoji",
-    "placeholderCity": "Sapa kotamu 👋",
-    "placeholderHangout": "Kasih tahu kamu ikutan 🙌",
-    "placeholderEvent": "Ngobrol sama yang datang 🎉",
-    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥"
+    "placeholderCity": "Sapa kotamu",
+    "placeholderHangout": "Kasih tahu kamu ikutan",
+    "placeholderEvent": "Ngobrol sama yang datang",
+    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu"
   },
   "vibe": {
     "party": "Pesta",
@@ -148,8 +148,8 @@
     "thunder": "badai petir"
   },
   "time": {
-    "happeningNow": "🎉 sedang berlangsung",
-    "inMin": "🔥 dalam {{count}} mnt",
+    "happeningNow": "sedang berlangsung",
+    "inMin": "dalam {{count}} mnt",
     "today": "Hari ini",
     "tomorrow": "Besok",
     "yesterday": "Kemarin",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Tantangan",
   "shareToCity": "Bagikan ke kotaku",
   "shareToWorld": "Bagikan ke World",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Lihat papan peringkat",
     "challenge": "Lihat challenge",
-    "event": "🎉 Lihat Hi plan",
-    "topic": "🗣️ Lihat Hi now"
+    "event": "Lihat Hi plan",
+    "topic": "Lihat Hi now"
   },
   "tabs": {
     "today": "Hari ini",
@@ -190,6 +190,6 @@
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
   "signUp": "Daftar",
-  "settings": "PENGATURAN",
+  "settings": "Pengaturan",
   "firstLaunch": "Satu challenge lokal setiap hari."
 }

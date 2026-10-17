@@ -3,10 +3,10 @@
   "loading": "Loading…",
   "loadError": "Could not load profile.",
   "badgeMicro": {
-    "ghost": "Just browsing 👀",
-    "fresh": "Just landed 👶",
+    "ghost": "Just browsing",
+    "fresh": "Just landed",
     "regular": "Shows up often",
-    "host": "Makes it happen 🔥"
+    "host": "Makes it happen"
   },
   "modes": {
     "local": "Local",
@@ -41,44 +41,44 @@
     "events": "Hi plan",
     "friends": "Friends",
     "vibes": "Vibes",
-    "picks": "City Picks 👑",
+    "picks": "City Picks",
     "challenges": "Challenges"
   },
   "host": "Host",
-  "live": "LIVE",
+  "live": "Live",
   "past": "Past",
   "empty": {
     "hangouts": "No hangouts yet",
     "events": "No events yet",
     "friends": "No friends yet",
-    "challenges": "No challenges yet - launch one 🔥"
+    "challenges": "No challenges yet - launch one"
   },
   "vibesTab": {
     "score": "{{score}} vibe score",
     "basedOn_one": "based on {{count}} vibe",
     "basedOn_other": "based on {{count}} vibes",
-    "updateNote": "✏️ Update your note ({{rating}}★)",
-    "leaveNote": "⭐ Leave a note",
+    "updateNote": "Update your note ({{rating}}★)",
+    "leaveNote": "Leave a note",
     "placeholder": "Say something nice… (optional)",
     "cancel": "Cancel",
     "sending": "Sending…",
-    "sendNote": "Send note ✨",
+    "sendNote": "Send note",
     "notesLabel": "Notes · {{count}}",
     "emptyTitle": "No notes yet",
-    "emptySub": "Be the first to leave a note ✨"
+    "emptySub": "Be the first to leave a note"
   },
   "picks": {
-    "restaurant": "FAVORITE RESTAURANT",
-    "spot": "HIDDEN GEM",
-    "tip": "LOCAL TIP",
-    "story": "STORY"
+    "restaurant": "Favorite restaurant",
+    "spot": "Hidden gem",
+    "tip": "Local tip",
+    "story": "Story"
   },
   "actions": {
     "opening": "Opening…",
-    "message": "💬 Message",
-    "friend": "✓ Friend",
-    "requestSent": "⌛ Request sent",
-    "acceptRequest": "✓ Accept request",
+    "message": "Message",
+    "friend": "Friend",
+    "requestSent": "Request sent",
+    "acceptRequest": "Accept request",
     "addFriend": "+ Friend",
     "removing": "Removing…",
     "unfriend": "Unfriend",

@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "ชวนคนมา ✨",
-    "linkCopied": "คัดลอกลิงก์แล้ว ✨",
+    "bringPeople": "ชวนคนมา",
+    "linkCopied": "คัดลอกลิงก์แล้ว",
     "vibeTitle": "แชร์ vibe นี้",
     "eventAria": "แชร์กิจกรรม"
   },
@@ -16,7 +16,7 @@
     "cancel": "ยกเลิก",
     "deleting": "กำลังลบ…",
     "confirm": "ลบ",
-    "button": "🗑 ลบกิจกรรม"
+    "button": "ลบกิจกรรม"
   },
   "quickStart": "เริ่มอย่างรวดเร็ว",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "วันที่",
   "today": "วันนี้",
   "tomorrow": "พรุ่งนี้",
-  "todayHint": "จัดวันนี้จะได้รับการมองเห็นมากที่สุด 🔥",
+  "todayHint": "จัดวันนี้จะได้รับการมองเห็นมากที่สุด",
   "starts": "เริ่ม",
   "ends": "สิ้นสุด",
   "repeat": "ทำซ้ำ",
@@ -79,9 +79,9 @@
     "saving": "กำลังบันทึก…",
     "creating": "กำลังสร้าง…",
     "saveChanges": "บันทึกการเปลี่ยนแปลง",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "ทุกวัน",

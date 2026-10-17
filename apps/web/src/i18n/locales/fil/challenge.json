@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "Mga matagumpay na challenge",
-    "title": "✨ Mga matagumpay na challenge",
+    "title": "Mga matagumpay na challenge",
     "allCities": "Lahat ng lungsod",
     "clearCity": "I-clear",
     "localTag": "Lokal",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "Tingnan lahat",
   "leaderboardCta": {
-    "title": "🏆 City leaderboard",
+    "title": "City leaderboard",
     "view": "Tingnan",
     "sub": "Maging una sa ranking - maglunsad at tapusin ang isang challenge"
   },
@@ -54,7 +54,7 @@
     "culture": "...tapos magkita tayo para pag-usapan 🎭",
     "help": "...tapos gumawa tayo ng kahit anong baliw na bagay 🤪"
   },
-  "createCta": "Ilunsad ang challenge 🔥",
+  "createCta": "Ilunsad ang challenge",
   "saveChanges": "I-save ang mga pagbabago",
   "errSave": "Hindi na-save",
   "errStart": "Hindi nailunsad ang challenge",
@@ -76,7 +76,7 @@
     "meetBadge": "Kita",
     "photosCount": "{{count}} larawan",
     "noOneJoined": "Wala pang sumasali",
-    "beFirst": "⚡ Mauna ka · +2",
+    "beFirst": "Mauna ka · +2",
     "daysLeft": "{{count}}d na lang",
     "lastDay": "Malapit nang mag-expire",
     "joinGroup": "Sumali sa challenge",
@@ -87,8 +87,8 @@
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
   "openBadge": "Bukas",
-  "forLocals": "🏠 Para sa mga local",
-  "forExplorers": "🧳 Para sa mga biyahero",
+  "forLocals": "Para sa mga local",
+  "forExplorers": "Para sa mga biyahero",
   "validation": {
     "label": "Paano i-validate?",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "Tanggalin",
   "shareCta": "Ibahagi",
   "shareInvite": "Sama sa challenge na 'to!",
-  "shareCopied": "Na-copy ang link ✓",
+  "shareCopied": "Na-copy ang link",
   "noun": "Challenge",
   "examples": {
     "label": "Walang idea? Tap mo",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "Hindi mahanap ang thread",
     "empty": "Ikaw ang maunang magsalita.",
-    "emptyIntl": "Mag-hi 👋 - kapag nakuha mo, padala ka ng 📸.",
+    "emptyIntl": "Mag-hi - kapag nakuha mo, padala ka ng litrato.",
     "cancel": {
       "creatorTitle": "Kanselahin ang pagsali na ito?",
       "acceptorTitle": "I-drop ang challenge na ito?",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Mag-propose ng petsa 📅",
+    "proposeCta": "Mag-propose ng petsa",
     "counterCta": "Counter-propose",
     "editCta": "Palitan ang petsa",
     "you": "ka",
@@ -220,9 +220,9 @@
     "tomorrow": "Bukas",
     "picker": {
       "title": "Kailan kayo magkikita?",
-      "whenLabel": "KAILAN",
-      "timeLabel": "ORAS",
-      "whereLabel": "SAAN (OPTIONAL)",
+      "whenLabel": "Kailan",
+      "timeLabel": "Oras",
+      "whereLabel": "Saan (optional)",
       "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
@@ -241,7 +241,7 @@
       "body": "Mama-mark ni {{name}} kung kumusta."
     },
     "approved": {
-      "title": "Tapos na ang challenge 🎉"
+      "title": "Tapos na ang challenge"
     },
     "rejected": {
       "title": "Sarado na ang challenge"
@@ -285,7 +285,7 @@
       "meetSoon": "See you on {{date}}",
       "creatorVerdict": "Kumusta kay {{name}}?",
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
-      "accomplished": "Tapos na ang challenge 🎉",
+      "accomplished": "Tapos na ang challenge",
       "closed": "Sarado na ang challenge",
       "submitProof": "Ipadala ang patunay",
       "waitingForProof": "Naghihintay ng patunay",
@@ -351,13 +351,13 @@
   },
   "byCreator": "ni {{name}}",
   "inspiration": {
-    "heading": "💡 Mga ideya ng challenge",
+    "heading": "Mga ideya ng challenge",
     "sub": "Kung ano ang nilulunsad ng mga local sa ibang lugar - magpa-inspire",
-    "firstLocal": "🌱 Maging unang local sa {{city}}",
+    "firstLocal": "Maging unang local sa {{city}}",
     "firstLocalSub": "Maglunsad ng challenge · tatanggapin ng mga dumarating na biyahero",
-    "reward": "Unang challenge · +10 🏆",
-    "launchFirst": "🔥 Ilunsad ang unang challenge",
-    "createYours": "🔥 Gawin ang sa iyo sa {{city}}",
+    "reward": "Unang challenge · +10",
+    "launchFirst": "Ilunsad ang unang challenge",
+    "createYours": "Gawin ang sa iyo sa {{city}}",
     "by": "ni {{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "Target na lungsod",
-    "targetCityAnywhere": "🌍 Kahit saan sa mundo",
+    "targetCityAnywhere": "Kahit saan sa mundo",
     "targetCityHint": "Pumili ng target city — hindi pa available ang \"Kahit saan sa mundo\".",
     "proofRequirementsLabel": "Ano ang dapat ipakita sa larawan?",
     "proofRequirementsPlaceholder": "hal. Ang pagkain sa liwanag ng araw, ikaw nasa frame",
-    "proofRequirementsHint": "Ang patunay ay isang larawan 📸. Nakikita ito ng kalahok bago magpasa - maging tiyak.",
+    "proofRequirementsHint": "Ang patunay ay isang larawan. Nakikita ito ng kalahok bago magpasa - maging tiyak.",
     "cityPicker": {
       "title": "Pumili ng target na lungsod",
       "searchPlaceholder": "Maghanap ng lungsod…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Pribado ang challenge na ito",
+      "title": "Pribado ang challenge na ito",
       "body": "Tanging ang gumawa at tumanggap lang ang makakakita ng usapan."
     }
   },
   "members": {
     "title": "Nasa channel",
     "countIn": "{{count}} sa channel",
-    "seeAll": "Tingnan lahat →",
+    "seeAll": "Tingnan lahat",
     "empty": "Wala pang sumali - ikaw ang mauna.",
     "kickCta": "Tanggalin",
     "kickAria": "Tanggalin si {{name}} sa channel",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Pampubliko",
-      "friends": "👯 Mga kaibigan",
-      "private": "🔒 Pribado"
+      "public": "Pampubliko",
+      "friends": "Mga kaibigan",
+      "private": "Pribado"
     },
     "label": "Sino ang makakakita nito?",
-    "public": "🌍 Pampubliko",
-    "friends": "👯 Mga kaibigan",
+    "public": "Pampubliko",
+    "friends": "Mga kaibigan",
     "publicHint": "Kahit sino sa lungsod ay makakakita at makakasali.",
     "friendsHint": "Ang mga kaibigan mo lang at mga inimbitahan ang makakakita.",
     "intlLocked": "Laging pampubliko ang mga international challenge.",
@@ -536,11 +536,11 @@
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top challengers"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top challengers"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "Hindi na-load ang leaderboard. I-pull para subukan ulit.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Ibahagi ang rank ko",
       "periodMonth": "ngayong buwan",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "Paano gumagana ang points",
-    "helpLabel": "🏆 Paano kumita ng points",
-    "title": "🏆 Paano gumagana ang challenges",
+    "helpLabel": "Paano kumita ng points",
+    "title": "Paano gumagana ang challenges",
     "intro": "Maliliit na points lang sa pag-join; ang malalaking points ay para sa totoong pagpunta o panalo. Walang kwenta ang puro join lang.",
     "colStep": "Hakbang",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "Pwedeng magbago ang mga numero habang ina-adjust namin ang laro.",
     "types": {
       "heading": "Dalawang uri ng challenge",
-      "local": "🏙️ Meet — tipunin ang grupo nang personal sa takdang oras + lugar. Lahat ng pumunta, malaki ang points.",
-      "international": "🌍 Photo challenge — lahat magsu-submit ng photo bago ang deadline; ang challenger ang pipili ng panalo."
+      "local": "Meet — tipunin ang grupo nang personal sa takdang oras + lugar. Lahat ng pumunta, malaki ang points.",
+      "international": "Photo challenge — lahat magsu-submit ng photo bago ang deadline; ang challenger ang pipili ng panalo."
     },
     "lifecycle": {
       "heading": "🔁 Paano natatapos",
       "body": "Ang challenger ang nagtatakda, sasali ang mga tao, at sa dulo ang challenger ang magva-validate — kung sino ang pumunta, o aling photo ang nanalo."
     },
-    "pointsHeading": "💯 Paano kumita ng points",
+    "pointsHeading": "Paano kumita ng points",
     "ways": {
       "join": "Sumali sa isang challenge",
       "create": "Gumawa ng challenge",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "puntos",
     "subtitle": {
-      "accepted": "Tinanggap ang challenge mo 🤝",
-      "date_locked": "Set na ang date - tara 🗓️",
-      "meetup": "Mission accomplished 🎉",
-      "debrief": "Mission accomplished 🎉",
-      "ghost": "Sa susunod ulit 👻",
-      "default": "Umaakyat ka sa ranking 🚀",
-      "meet_bonus": "Na-unlock ang meet bonus 🤝",
-      "challenge_created": "Naglunsad ka ng challenge 🎯"
+      "accepted": "Tinanggap ang challenge mo",
+      "date_locked": "Set na ang date - tara",
+      "meetup": "Mission accomplished",
+      "debrief": "Mission accomplished",
+      "ghost": "Sa susunod ulit",
+      "default": "Umaakyat ka sa ranking",
+      "meet_bonus": "Na-unlock ang meet bonus",
+      "challenge_created": "Naglunsad ka ng challenge"
     },
     "rank": {
       "city": "#{{rank}} sa {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} ang #{{rank}} sa mga lungsod",
       "citiesBeyond": "{{city}} labas sa top {{topN}} na lungsod"
     },
-    "cta": "Tara ⚡",
+    "cta": "Tara",
     "kindShort": {
       "accepted": "Tinanggap",
       "date_locked": "Set na ang date",
@@ -651,8 +651,8 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welcome! Mag-chat ka nang malaya, walang sign-up.",
-    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo →"
+    "title": "Welcome! Mag-chat ka nang malaya, walang sign-up.",
+    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "Nanalo si {{name}}",
-      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod 💪"
+      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod"
     },
     "present": {
       "title": "Dumalo ka!",

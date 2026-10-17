@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads ทำงานยังไง",
     "aboutBody": "เลือกเมืองของคุณ เปิดชาเลนจ์สำหรับคนท้องถิ่นหรือนักเดินทาง เข้าร่วม meetup หา hangout หรือค้นพบ Local Events ยิ่งสร้างที่นี่มากเท่าไร คุณก็ยิ่งกลายเป็นคนท้องถิ่นมากเท่านั้น และยิ่งขึ้นอันดับสูงใน Most Local",
     "citiesCta": "ดูเมืองทั้งหมดบน Hilads",
-    "subhead": "🔥 มาเป็นคนท้องถิ่นในทุกเมืองที่คุณไปเยือน"
+    "subhead": "มาเป็นคนท้องถิ่นในทุกเมืองที่คุณไปเยือน"
   },
   "brand": "Hilads",
   "dateLocale": "th-TH",
@@ -159,7 +159,7 @@
     "h1Tag": "ชาเลนจ์",
     "audienceLocals": "สำหรับคนท้องถิ่นใน {city}",
     "audienceExplorers": "สำหรับนักสำรวจใน {city}",
-    "validatedBadge": "✓ ยืนยันแล้ว",
+    "validatedBadge": "ยืนยันแล้ว",
     "openBadge": "เปิด",
     "typeLabel": "ประเภท:",
     "typeFood": "อาหาร",

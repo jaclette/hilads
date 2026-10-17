@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Quedadas",
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
-    "title": "¡Felicidades, {{username}}! 🎉",
-    "subtitle": "Tu cuenta está lista - esto es lo que puedes hacer ahora 👇",
-    "f1": "🎉 Crea una quedada y reúne a gente ahora mismo",
-    "f2": "📅 Organiza un evento en tu ciudad",
-    "f3": "💬 Envía un mensaje privado a quien quieras",
-    "f4": "📍 Mira quién anda cerca, en vivo",
-    "f5": "🤝 Conecta con locales y viajeros",
-    "fc1": "🔥 Reta a los locales de tu ciudad",
-    "fc2": "🌍 Reta a otra ciudad del mundo",
-    "cta": "¡Vamos! 🚀"
+    "title": "¡Felicidades, {{username}}!",
+    "subtitle": "Tu cuenta está lista - esto es lo que puedes hacer ahora",
+    "f1": "Crea una quedada y reúne a gente ahora mismo",
+    "f2": "Organiza un evento en tu ciudad",
+    "f3": "Envía un mensaje privado a quien quieras",
+    "f4": "Mira quién anda cerca, en vivo",
+    "f5": "Conecta con locales y viajeros",
+    "fc1": "Reta a los locales de tu ciudad",
+    "fc2": "Reta a otra ciudad del mundo",
+    "cta": "¡Vamos!"
   },
   "onboarding": {
     "skip": "Saltar ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Crear un reto"
   },
   "share": {
-    "title": "Comparte algo 👀",
+    "title": "Comparte algo",
     "snap": "Haz una foto",
     "snapDesc": "Haz o sube una foto",
     "spot": "Comparte tu sitio",
@@ -96,7 +96,7 @@
     "hiNowDesc": "¿Te apetece algo ahora mismo? Dilo"
   },
   "locationPicker": {
-    "title": "¿Dónde estás? 👀",
+    "title": "¿Dónde estás?",
     "search": "Busca una dirección o un lugar",
     "moveHint": "Mueve el mapa para ajustar",
     "noResults": "No se encontraron lugares",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Añadir un adjunto",
     "emoji": "Emoji",
-    "placeholderCity": "Saluda a tu ciudad 👋",
-    "placeholderHangout": "Diles que estás dentro 🙌",
-    "placeholderEvent": "Chatea con los asistentes 🎉",
-    "placeholderChallenge": "Anímalos o comparte tu tip 🔥"
+    "placeholderCity": "Saluda a tu ciudad",
+    "placeholderHangout": "Diles que estás dentro",
+    "placeholderEvent": "Chatea con los asistentes",
+    "placeholderChallenge": "Anímalos o comparte tu tip"
   },
   "vibe": {
     "party": "Fiesta",
@@ -148,8 +148,8 @@
     "thunder": "tormenta"
   },
   "time": {
-    "happeningNow": "🎉 ahora mismo",
-    "inMin": "🔥 en {{count}} min",
+    "happeningNow": "ahora mismo",
+    "inMin": "en {{count}} min",
     "today": "Hoy",
     "tomorrow": "Mañana",
     "yesterday": "Ayer",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Retos",
   "shareToCity": "Compartir en mi ciudad",
   "shareToWorld": "Compartir en el Mundo",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Ver la clasificación",
     "challenge": "Ver el reto",
-    "event": "🎉 Ver el Hi plan",
-    "topic": "🗣️ Ver el Hi now"
+    "event": "Ver el Hi plan",
+    "topic": "Ver el Hi now"
   },
   "tabs": {
     "today": "Hoy",
@@ -190,6 +190,6 @@
     "a11y": "Mostrando {{scope}}. Toca para cambiar"
   },
   "signUp": "Registrarme",
-  "settings": "AJUSTES",
+  "settings": "Ajustes",
   "firstLaunch": "Un challenge local al día."
 }

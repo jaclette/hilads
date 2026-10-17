@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Meetups",
   "publicEventsSection": "🎫 Openbare evenementen",
   "accountWelcome": {
-    "title": "Gefeliciteerd, {{username}}! 🎉",
-    "subtitle": "Je account is klaar - dit kun je nu doen 👇",
-    "f1": "🎉 Start een meetup en breng meteen mensen samen",
-    "f2": "📅 Organiseer een evenement in je stad",
-    "f3": "💬 Stuur iedereen een privébericht",
-    "f4": "📍 Zie live wie er in de buurt is",
-    "f5": "🤝 Maak contact met locals en reizigers",
-    "fc1": "🔥 Daag de locals in jouw stad uit",
-    "fc2": "🌍 Daag een andere stad wereldwijd uit",
-    "cta": "Let's go 🚀"
+    "title": "Gefeliciteerd, {{username}}!",
+    "subtitle": "Je account is klaar - dit kun je nu doen",
+    "f1": "Start een meetup en breng meteen mensen samen",
+    "f2": "Organiseer een evenement in je stad",
+    "f3": "Stuur iedereen een privébericht",
+    "f4": "Zie live wie er in de buurt is",
+    "f5": "Maak contact met locals en reizigers",
+    "fc1": "Daag de locals in jouw stad uit",
+    "fc2": "Daag een andere stad wereldwijd uit",
+    "cta": "Let's go"
   },
   "onboarding": {
     "skip": "Overslaan ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Maak een challenge"
   },
   "share": {
-    "title": "Deel iets 👀",
+    "title": "Deel iets",
     "snap": "Maak een foto",
     "snapDesc": "Maak of upload een foto",
     "spot": "Deel je plek",
@@ -96,7 +96,7 @@
     "hiNowDesc": "Nu zin in iets? Zeg het"
   },
   "locationPicker": {
-    "title": "Waar ben je? 👀",
+    "title": "Waar ben je?",
     "search": "Zoek een adres of plek",
     "moveHint": "Verschuif de kaart om aan te passen",
     "noResults": "Geen plekken gevonden",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Bijlage toevoegen",
     "emoji": "Emoji",
-    "placeholderCity": "Zeg hoi tegen je stad 👋",
-    "placeholderHangout": "Laat ze weten dat je erbij bent 🙌",
-    "placeholderEvent": "Chat met de aanwezigen 🎉",
-    "placeholderChallenge": "Moedig ze aan of deel je tip 🔥"
+    "placeholderCity": "Zeg hoi tegen je stad",
+    "placeholderHangout": "Laat ze weten dat je erbij bent",
+    "placeholderEvent": "Chat met de aanwezigen",
+    "placeholderChallenge": "Moedig ze aan of deel je tip"
   },
   "vibe": {
     "party": "Feest",
@@ -148,8 +148,8 @@
     "thunder": "onweer"
   },
   "time": {
-    "happeningNow": "🎉 nu bezig",
-    "inMin": "🔥 over {{count}} min",
+    "happeningNow": "nu bezig",
+    "inMin": "over {{count}} min",
     "today": "Vandaag",
     "tomorrow": "Morgen",
     "yesterday": "Gisteren",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Challenges",
   "shareToCity": "Deel in mijn stad",
   "shareToWorld": "Delen in de Wereld",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Bekijk het klassement",
     "challenge": "Bekijk de challenge",
-    "event": "🎉 Bekijk de Hi plan",
-    "topic": "🗣️ Bekijk de Hi now"
+    "event": "Bekijk de Hi plan",
+    "topic": "Bekijk de Hi now"
   },
   "tabs": {
     "today": "Vandaag",
@@ -190,6 +190,6 @@
     "a11y": "Toont {{scope}}. Tik om te wijzigen"
   },
   "signUp": "Aanmelden",
-  "settings": "INSTELLINGEN",
+  "settings": "Instellingen",
   "firstLaunch": "Eén lokale challenge per dag."
 }

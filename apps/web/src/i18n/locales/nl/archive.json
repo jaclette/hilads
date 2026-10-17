@@ -2,9 +2,9 @@
   "title": "Wat er gebeurd is",
   "filters": {
     "all": "Alles",
-    "events": "🎉 Evenementen",
-    "pulses": "🗣️ Meetups",
-    "challenges": "🔥 Challenges"
+    "events": "Evenementen",
+    "pulses": "Meetups",
+    "challenges": "Challenges"
   },
   "range": {
     "recent": "Recent",
@@ -18,11 +18,11 @@
     "apply": "Toepassen"
   },
   "public": "Openbaar",
-  "went_one": "🙌 {{count}} was erbij",
-  "went_other": "🙌 {{count}} waren erbij",
+  "went_one": "{{count}} was erbij",
+  "went_other": "{{count}} waren erbij",
   "hangoutTag": "Meetup",
-  "replies_one": "💬 {{count}} reactie",
-  "replies_other": "💬 {{count}} reacties",
+  "replies_one": "{{count}} reactie",
+  "replies_other": "{{count}} reacties",
   "noReplies": "Geen reacties",
   "error": "Kon het archief niet laden",
   "retry": "Opnieuw proberen",

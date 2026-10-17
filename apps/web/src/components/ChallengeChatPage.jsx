@@ -1591,10 +1591,10 @@ export default function ChallengeChatPage({
                 }}
               >
                 <span className="challenge-guest-welcome-text">
-                  {t('welcomeGuest.title', { defaultValue: '👋 Welcome! Chat freely here - no sign-up needed.' })}
+                  {t('welcomeGuest.title', { defaultValue: 'Welcome! Chat freely here - no sign-up needed.' })}
                 </span>
                 <span className="challenge-guest-welcome-cta">
-                  {t('welcomeGuest.cta', { defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
+                  {t('welcomeGuest.cta', { defaultValue: 'Want to take this challenge? Sign up in 3 seconds' })}
                 </span>
               </button>
               <button

@@ -52,7 +52,7 @@ export function ReplyPreview({ replyingTo, onCancel }) {
       <div className="reply-preview-body">
         <span className="reply-preview-name">{replyingTo.nickname}</span>
         <span className="reply-preview-text">
-          {replyingTo.type === 'image' ? t('reply.photo', { defaultValue: '📷 Photo' }) : (replyingTo.content || '-')}
+          {replyingTo.type === 'image' ? t('reply.photo', { defaultValue: 'Photo' }) : (replyingTo.content || '-')}
         </span>
       </div>
       <button type="button" className="reply-preview-close" onClick={onCancel} aria-label="Cancel reply">✕</button>
@@ -92,7 +92,7 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
         )}
         {onReply && (
           <button className="action-bubble-btn" onClick={() => { onClose(); onReply() }}>
-            {t('actionReply', { defaultValue: '↩ Reply' })}
+            {t('actionReply', { defaultValue: 'Reply' })}
           </button>
         )}
         {msg.content && (
@@ -100,7 +100,7 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
             className="action-bubble-btn"
             onClick={() => { navigator.clipboard?.writeText(msg.content).catch(() => {}); onClose() }}
           >
-            {t('actionCopy', { defaultValue: '📋 Copy' })}
+            {t('actionCopy', { defaultValue: 'Copy' })}
           </button>
         )}
         {msg.content && (
@@ -108,17 +108,17 @@ export function MessageActionBubble({ bubble, onClose, onReact, onReply, onEdit,
             className="action-bubble-btn"
             onClick={() => { openGoogleTranslate(msg.content, i18n.language); onClose() }}
           >
-            {t('actionTranslate', { defaultValue: '🌐 Translate' })}
+            {t('actionTranslate', { defaultValue: 'Translate' })}
           </button>
         )}
         {onEdit && (
           <button className="action-bubble-btn" onClick={() => { onClose(); onEdit() }}>
-            {t('actionEdit', { defaultValue: '✏️ Edit' })}
+            {t('actionEdit', { defaultValue: 'Edit' })}
           </button>
         )}
         {onDelete && (
           <button className="action-bubble-btn action-bubble-btn--danger" onClick={() => { onClose(); onDelete() }}>
-            {t('actionDelete', { defaultValue: '🗑 Delete' })}
+            {t('actionDelete', { defaultValue: 'Delete' })}
           </button>
         )}
       </div>

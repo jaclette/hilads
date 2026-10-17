@@ -3,10 +3,10 @@
   "loading": "Memuat…",
   "loadError": "Tidak bisa memuat profil.",
   "badgeMicro": {
-    "ghost": "Cuma lihat-lihat 👀",
-    "fresh": "Baru saja tiba 👶",
+    "ghost": "Cuma lihat-lihat",
+    "fresh": "Baru saja tiba",
     "regular": "Sering muncul",
-    "host": "Bikin sesuatu terjadi 🔥"
+    "host": "Bikin sesuatu terjadi"
   },
   "modes": {
     "local": "Local",
@@ -41,43 +41,43 @@
     "events": "Hi plan",
     "friends": "Teman",
     "vibes": "Vibes",
-    "picks": "Rekomendasi 👑",
+    "picks": "Rekomendasi",
     "challenges": "Tantangan"
   },
   "host": "Host",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "Belum ada nongkrong",
     "events": "Belum ada acara",
     "friends": "Belum ada teman",
-    "challenges": "Belum ada tantangan - luncurkan satu 🔥"
+    "challenges": "Belum ada tantangan - luncurkan satu"
   },
   "vibesTab": {
     "score": "skor vibe {{score}}",
     "basedOn_one": "berdasarkan {{count}} vibe",
     "basedOn_other": "berdasarkan {{count}} vibe",
-    "updateNote": "✏️ Perbarui catatanmu ({{rating}}★)",
-    "leaveNote": "⭐ Tinggalkan catatan",
+    "updateNote": "Perbarui catatanmu ({{rating}}★)",
+    "leaveNote": "Tinggalkan catatan",
     "placeholder": "Katakan sesuatu yang baik… (opsional)",
     "cancel": "Batal",
     "sending": "Mengirim…",
-    "sendNote": "Kirim catatan ✨",
+    "sendNote": "Kirim catatan",
     "notesLabel": "Catatan · {{count}}",
     "emptyTitle": "Belum ada catatan",
-    "emptySub": "Jadilah yang pertama meninggalkan catatan ✨"
+    "emptySub": "Jadilah yang pertama meninggalkan catatan"
   },
   "picks": {
-    "restaurant": "RESTORAN FAVORIT",
-    "spot": "PERMATA TERSEMBUNYI",
-    "tip": "TIP LOKAL",
-    "story": "CERITA"
+    "restaurant": "Restoran favorit",
+    "spot": "Permata tersembunyi",
+    "tip": "Tip lokal",
+    "story": "Cerita"
   },
   "actions": {
     "opening": "Membuka…",
-    "message": "💬 Pesan",
-    "friend": "✓ Teman",
-    "requestSent": "⌛ Permintaan terkirim",
-    "acceptRequest": "✓ Terima permintaan",
+    "message": "Pesan",
+    "friend": "Teman",
+    "requestSent": "Permintaan terkirim",
+    "acceptRequest": "Terima permintaan",
     "addFriend": "+ Teman",
     "removing": "Menghapus…",
     "unfriend": "Hapus teman",

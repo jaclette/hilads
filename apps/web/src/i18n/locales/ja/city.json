@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 集まりのアイデア",
+    "heading": "集まりのアイデア",
     "sub": "他の街のローカルが何を企画してるか見て - ヒントに",
-    "openYours": "🔥 {{city}} で自分のを開く",
+    "openYours": "{{city}} で自分のを開く",
     "by": "{{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}}はライブ中 ✨",
+    "live": "{{city}}はライブ中",
     "dismiss": "閉じる",
     "body": "今ここに本物の人がいます。挨拶したり、誰がいるか見たり、友達を連れてきたり。",
-    "sayHi": "挨拶する 👋",
+    "sayHi": "挨拶する",
     "invite": "友達を招待"
   },
   "imageType": "JPEG、PNG、またはWebP画像を選んでください。",
@@ -57,10 +57,10 @@
     "topCities": "今もっとも活発な街",
     "cities": "街",
     "switchTitle": "街を切り替える",
-    "filterActive": "🔥 もっとも活発",
-    "filterEvents": "🎉 イベントが多い",
-    "filterOnline": "🟢 オンラインが最多",
-    "filterChallenges": "⚡ チャレンジが多い順",
+    "filterActive": "もっとも活発",
+    "filterEvents": "イベントが多い",
+    "filterOnline": "オンラインが最多",
+    "filterChallenges": "チャレンジが多い順",
     "challenges_one": "チャレンジ{{count}}件",
     "challenges_other": "チャレンジ{{count}}件",
     "members_one": "メンバー{{count}}人",
@@ -81,18 +81,18 @@
     "hangoutTag": "集まり",
     "eventTag": "イベント",
     "public": "公開",
-    "activeNow": "● アクティブ",
+    "activeNow": "アクティブ",
     "repliesNew": "まだ返信はありません - 最初の一人に",
-    "replies_one": "💬 {{count}}件の返信",
-    "replies_other": "💬 {{count}}件の返信",
-    "going_one": "🙌 {{count}}人が参加",
-    "going_other": "🙌 {{count}}人が参加",
+    "replies_one": "{{count}}件の返信",
+    "replies_other": "{{count}}件の返信",
+    "going_one": "{{count}}人が参加",
+    "going_other": "{{count}}人が参加",
     "hostedBy": "{{name}}が主催",
     "groupHilads": "Hilads ローカルイベント",
     "groupPublic": "公開ローカルイベント",
-    "groupPublicTicket": "🎫 公開ローカルイベント",
+    "groupPublicTicket": "公開ローカルイベント",
     "createEvent": "ローカルイベントを作成",
-    "startHangout": "集まりを始める 🗣️",
+    "startHangout": "集まりを始める",
     "openPlace": "あなたのお店を開く",
     "loadError": "イベントを読み込めませんでした",
     "loadErrorSub": "あとでもう一度試すか、{{city}}で何か新しいものを作りましょう。",
@@ -105,7 +105,7 @@
     "noEventsSub": "{{city}}で最初の一つを作りましょう",
     "noHangoutsSub": "集まりを始めて街を盛り上げましょう",
     "filterAll": "すべて",
-    "seeComing": "これからの予定を見る 🔮",
+    "seeComing": "これからの予定を見る",
     "seeHappened": "これまでの出来事を見る",
     "createNew": "新規作成",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "{{name}}に挨拶しよう",
-    "sayHiGeneric": "挨拶しよう 👋",
-    "hostWaiting": "最初の挨拶を待っています 👋",
+    "sayHiGeneric": "挨拶しよう",
+    "hostWaiting": "最初の挨拶を待っています",
     "hiNowHint": "今すぐ集まる",
     "hiLaterHint": "予定を立てる"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "あなたのイベント",
     "edit": "編集",
     "join": "参加",
-    "joined": "参加済み ✓",
+    "joined": "参加済み",
     "here": "{{count}}人がここに",
     "going_one": "{{count}}人が参加",
     "going_other": "{{count}}人が参加",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "会話のはじまり",
     "arriving": "人が集まってきています",
-    "firstChat": "ここで最初にチャットしましょう 👇",
-    "firstHi": "最初に挨拶しましょう 👇"
+    "firstChat": "ここで最初にチャットしましょう",
+    "firstHi": "最初に挨拶しましょう"
   },
   "create": {
     "title": "何する？",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "クレイジー",
     "challengeTitleLabel": "あなたのチャレンジ",
     "challengeTitlePlaceholder": "例:お気に入りのカフェに連れて行って",
-    "challengeCta": "チャレンジ開始 🔥",
+    "challengeCta": "チャレンジ開始",
     "challengeErrStart": "チャレンジを開始できませんでした"
   },
   "goingModal": {
     "going": "参加",
     "inThisHangout": "この集まりに",
     "loading": "読み込み中…",
-    "empty": "まだ誰もいません - 最初の一人になろう！ 🙌"
+    "empty": "まだ誰もいません - 最初の一人になろう！"
   },
   "nickname": {
     "label": "ニックネーム",
@@ -201,15 +201,15 @@
     "anonymous": "// 匿名 · 登録不要"
   },
   "prompt": {
-    "exploreText": "🔥 今起きていることを見る",
+    "exploreText": "今起きていることを見る",
     "exploreCta": "今起きていることを見る",
-    "photoText": "📸 今起きていることをシェア",
+    "photoText": "今起きていることをシェア",
     "shoot": "撮影",
-    "createEventText": "🎉 今夜のプランある？",
+    "createEventText": "今夜のプランある？",
     "createEventCta": "イベントを作成",
-    "challengeIntroText": "🔥 はじめての方？チャレンジの仕組みを見てみよう",
+    "challengeIntroText": "はじめての方？チャレンジの仕組みを見てみよう",
     "challengeIntroCta": "見る",
-    "installText": "✨ Hiladsをホーム画面に追加\n街で起きていることを見逃さない",
+    "installText": "Hiladsをホーム画面に追加\n街で起きていることを見逃さない",
     "installAdd": "追加",
     "installHow": "方法"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 ローカルがチェックイン中"
   },
   "ownerPrompt": {
-    "text": "🔥 このイベントを始めました！",
+    "text": "このイベントを始めました！",
     "sub": "もっと良くしましょう - 説明を追加したり、時間を更新したり、シェアしたり。",
-    "edit": "✏️ イベントを編集"
+    "edit": "イベントを編集"
   },
   "feedNew": {
-    "event": "🎉 新しいイベント：{{title}}",
+    "event": "新しいイベント：{{title}}",
     "join": "参加",
     "replies_one": "{{count}}件の返信",
     "replies_other": "{{count}}件の返信",
-    "challengeLocals": "🔥 {{name}} がローカル向けにチャレンジ：{{title}}",
-    "challengeExplorers": "🔥 {{name}} が旅行者向けにチャレンジ：{{title}}",
-    "challengeCta": "見る →",
-    "challengeValidated": "🏆 チャレンジ達成！{{name}} が「{{title}}」を承認しました。",
+    "challengeLocals": "{{name}} がローカル向けにチャレンジ：{{title}}",
+    "challengeExplorers": "{{name}} が旅行者向けにチャレンジ：{{title}}",
+    "challengeCta": "見る",
+    "challengeValidated": "チャレンジ達成！{{name}} が「{{title}}」を承認しました。",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} 国際チャレンジ：{{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "ライブ中",
-    "recurring": "↻ 定期",
+    "recurring": "定期",
     "upcoming": "これから",
     "delete": "イベントを削除"
   },
   "arrivalsBar": {
-    "label": "✈️ 最近の到着",
+    "label": "最近の到着",
     "sheetTitle": "到着",
     "empty": "まだ到着なし"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 {{city}}の {{nickname}} が Hilads に参加しました",
       "challengeWon": "🏆 {{city}}の {{nickname}} がチャレンジ {{challenge}} に勝ちました"
     },
-    "quietCard": "静かですか？世界 に未読が {{count}} 件 🌍 — タップして開く",
+    "quietCard": "静かですか？世界 に未読が {{count}} 件 — タップして開く",
     "heroEmpty": "最初に都市へ挑戦しよう",
     "heroEmptySub": "都市間チャレンジを立てる",
     "leaderboard": "ランキング",

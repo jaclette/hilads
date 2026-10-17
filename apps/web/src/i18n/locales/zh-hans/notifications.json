@@ -6,7 +6,7 @@
     "sub": "通知会显示在这里"
   },
   "loading": "加载中…",
-  "seeAll": "查看所有通知 →",
+  "seeAll": "查看所有通知",
   "prefs": {
     "title": "通知偏好设置",
     "mentionName": "提及 @",
@@ -15,9 +15,9 @@
     "newEventDesc": "当有人在你所在的城市创建活动时",
     "friendName": "好友请求",
     "friendDesc": "当有人向你发送好友请求或接受你的请求时",
-    "notesName": "留言 ✨",
+    "notesName": "留言",
     "notesDesc": "当有人在你的个人资料上留言时",
-    "profileViewName": "资料访问 👀",
+    "profileViewName": "资料访问",
     "profileViewDesc": "当有人查看你的个人资料时",
     "announcementName": "来自 Hilads 的公告",
     "announcementDesc": "团队不定期的更新消息",

@@ -3,10 +3,10 @@
   "loading": "กำลังโหลด…",
   "loadError": "โหลดโปรไฟล์ไม่ได้",
   "badgeMicro": {
-    "ghost": "แค่มาดูเฉยๆ 👀",
-    "fresh": "เพิ่งมาถึง 👶",
+    "ghost": "แค่มาดูเฉยๆ",
+    "fresh": "เพิ่งมาถึง",
     "regular": "มาบ่อย",
-    "host": "ทำให้เกิดขึ้นได้ 🔥"
+    "host": "ทำให้เกิดขึ้นได้"
   },
   "modes": {
     "local": "คนท้องถิ่น",
@@ -41,7 +41,7 @@
     "events": "Hi plan",
     "friends": "เพื่อน",
     "vibes": "Vibes",
-    "picks": "ที่แนะนำในเมือง 👑",
+    "picks": "ที่แนะนำในเมือง",
     "challenges": "ชาเลนจ์"
   },
   "host": "เจ้าภาพ",
@@ -50,21 +50,21 @@
     "hangouts": "ยังไม่มีนัดเจอ",
     "events": "ยังไม่มีกิจกรรม",
     "friends": "ยังไม่มีเพื่อน",
-    "challenges": "ยังไม่มีชาเลนจ์ - เปิดสักอัน 🔥"
+    "challenges": "ยังไม่มีชาเลนจ์ - เปิดสักอัน"
   },
   "vibesTab": {
     "score": "คะแนน vibe {{score}}",
     "basedOn_one": "อ้างอิงจาก {{count}} vibe",
     "basedOn_other": "อ้างอิงจาก {{count}} vibes",
-    "updateNote": "✏️ แก้ไขโน้ตของคุณ ({{rating}}★)",
-    "leaveNote": "⭐ ฝากโน้ต",
+    "updateNote": "แก้ไขโน้ตของคุณ ({{rating}}★)",
+    "leaveNote": "ฝากโน้ต",
     "placeholder": "พูดอะไรดีๆ สักหน่อย… (ไม่บังคับ)",
     "cancel": "ยกเลิก",
     "sending": "กำลังส่ง…",
-    "sendNote": "ส่งโน้ต ✨",
+    "sendNote": "ส่งโน้ต",
     "notesLabel": "โน้ต · {{count}}",
     "emptyTitle": "ยังไม่มีโน้ต",
-    "emptySub": "เป็นคนแรกที่ฝากโน้ต ✨"
+    "emptySub": "เป็นคนแรกที่ฝากโน้ต"
   },
   "picks": {
     "restaurant": "ร้านอาหารโปรด",
@@ -74,10 +74,10 @@
   },
   "actions": {
     "opening": "กำลังเปิด…",
-    "message": "💬 ข้อความ",
-    "friend": "✓ เพื่อน",
-    "requestSent": "⌛ ส่งคำขอแล้ว",
-    "acceptRequest": "✓ ยอมรับคำขอ",
+    "message": "ข้อความ",
+    "friend": "เพื่อน",
+    "requestSent": "ส่งคำขอแล้ว",
+    "acceptRequest": "ยอมรับคำขอ",
     "addFriend": "+ เพื่อน",
     "removing": "กำลังลบ…",
     "unfriend": "เลิกเป็นเพื่อน",

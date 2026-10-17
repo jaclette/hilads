@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "메시지를 불러오지 못했어요.",
     "beginning": "대화의 시작",
-    "photo": "📷 사진",
+    "photo": "사진",
     "unavailable": "원본 메시지를 사용할 수 없어요",
     "tapMaps": "탭하여 지도에서 열기",
     "composer": "메시지…",

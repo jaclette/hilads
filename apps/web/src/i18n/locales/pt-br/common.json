@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Rolês",
   "publicEventsSection": "🎫 Eventos públicos",
   "accountWelcome": {
-    "title": "Parabéns, {{username}}! 🎉",
-    "subtitle": "Sua conta está pronta - veja o que você pode fazer agora 👇",
-    "f1": "🎉 Comece um rolê e junte a galera agora mesmo",
-    "f2": "📅 Organize um evento na sua cidade",
-    "f3": "💬 Mande uma mensagem privada para qualquer pessoa",
-    "f4": "📍 Veja quem está por perto, ao vivo",
-    "f5": "🤝 Conecte-se com locais e viajantes",
-    "fc1": "🔥 Desafie a galera da sua cidade",
-    "fc2": "🌍 Desafie outra cidade pelo mundo",
-    "cta": "Bora 🚀"
+    "title": "Parabéns, {{username}}!",
+    "subtitle": "Sua conta está pronta - veja o que você pode fazer agora",
+    "f1": "Comece um rolê e junte a galera agora mesmo",
+    "f2": "Organize um evento na sua cidade",
+    "f3": "Mande uma mensagem privada para qualquer pessoa",
+    "f4": "Veja quem está por perto, ao vivo",
+    "f5": "Conecte-se com locais e viajantes",
+    "fc1": "Desafie a galera da sua cidade",
+    "fc2": "Desafie outra cidade pelo mundo",
+    "cta": "Bora"
   },
   "onboarding": {
     "skip": "Pular ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Criar um desafio"
   },
   "share": {
-    "title": "Compartilhe algo 👀",
+    "title": "Compartilhe algo",
     "snap": "Tire uma foto",
     "snapDesc": "Tire ou envie uma foto",
     "spot": "Marque seu lugar",
@@ -96,7 +96,7 @@
     "hiNowDesc": "A fim de algo agora? Fala aí"
   },
   "locationPicker": {
-    "title": "Onde você está? 👀",
+    "title": "Onde você está?",
     "search": "Buscar um endereço ou lugar",
     "moveHint": "Mova o mapa para ajustar",
     "noResults": "Nenhum lugar encontrado",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Adicionar um anexo",
     "emoji": "Emoji",
-    "placeholderCity": "Manda um oi pra sua cidade 👋",
-    "placeholderHangout": "Avisa que você tá dentro 🙌",
-    "placeholderEvent": "Converse com quem vai 🎉",
-    "placeholderChallenge": "Torça por eles ou compartilhe sua dica 🔥"
+    "placeholderCity": "Manda um oi pra sua cidade",
+    "placeholderHangout": "Avisa que você tá dentro",
+    "placeholderEvent": "Converse com quem vai",
+    "placeholderChallenge": "Torça por eles ou compartilhe sua dica"
   },
   "vibe": {
     "party": "Festa",
@@ -148,8 +148,8 @@
     "thunder": "tempestade"
   },
   "time": {
-    "happeningNow": "🎉 acontecendo agora",
-    "inMin": "🔥 em {{count}} min",
+    "happeningNow": "acontecendo agora",
+    "inMin": "em {{count}} min",
     "today": "Hoje",
     "tomorrow": "Amanhã",
     "yesterday": "Ontem",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Desafios",
   "shareToCity": "Compartilhar na minha cidade",
   "shareToWorld": "Compartilhar no Mundo",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Ver o ranking",
     "challenge": "Ver o desafio",
-    "event": "🎉 Ver o Hi plan",
-    "topic": "🗣️ Ver o Hi now"
+    "event": "Ver o Hi plan",
+    "topic": "Ver o Hi now"
   },
   "tabs": {
     "today": "Hoje",
@@ -190,6 +190,6 @@
     "a11y": "Mostrando {{scope}}. Toque para trocar"
   },
   "signUp": "Cadastrar",
-  "settings": "CONFIGURAÇÕES",
+  "settings": "Configurações",
   "firstLaunch": "Um challenge local por dia."
 }

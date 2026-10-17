@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ 聚会",
   "publicEventsSection": "🎫 公开活动",
   "accountWelcome": {
-    "title": "恭喜你，{{username}}！🎉",
-    "subtitle": "你的账号已就绪——现在你可以这样玩 👇",
-    "f1": "🎉 发起一个聚会，立刻把大家聚到一起",
-    "f2": "📅 在你的城市组织一场活动",
-    "f3": "💬 给任何人发送私信",
-    "f4": "📍 实时查看附近有谁",
-    "f5": "🤝 结识本地人和旅行者",
-    "fc1": "🔥 向你城市里的人发起挑战",
-    "fc2": "🌍 向世界另一座城市发起挑战",
-    "cta": "出发吧 🚀"
+    "title": "恭喜你，{{username}}！",
+    "subtitle": "你的账号已就绪——现在你可以这样玩",
+    "f1": "发起一个聚会，立刻把大家聚到一起",
+    "f2": "在你的城市组织一场活动",
+    "f3": "给任何人发送私信",
+    "f4": "实时查看附近有谁",
+    "f5": "结识本地人和旅行者",
+    "fc1": "向你城市里的人发起挑战",
+    "fc2": "向世界另一座城市发起挑战",
+    "cta": "出发吧"
   },
   "onboarding": {
     "skip": "跳过 ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 创建挑战"
   },
   "share": {
-    "title": "分享点什么 👀",
+    "title": "分享点什么",
     "snap": "拍张照片",
     "snapDesc": "拍摄或上传照片",
     "spot": "分享你的位置",
@@ -96,7 +96,7 @@
     "hiNowDesc": "现在想做点什么？说出来"
   },
   "locationPicker": {
-    "title": "你在哪里？👀",
+    "title": "你在哪里？",
     "search": "搜索地址或地点",
     "moveHint": "移动地图进行调整",
     "noResults": "未找到地点",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "添加附件",
     "emoji": "Emoji",
-    "placeholderCity": "和你的城市打个招呼 👋",
-    "placeholderHangout": "告诉大家你来了 🙌",
-    "placeholderEvent": "和参加的人聊聊 🎉",
-    "placeholderChallenge": "为他们加油，或分享你的小贴士 🔥"
+    "placeholderCity": "和你的城市打个招呼",
+    "placeholderHangout": "告诉大家你来了",
+    "placeholderEvent": "和参加的人聊聊",
+    "placeholderChallenge": "为他们加油，或分享你的小贴士"
   },
   "vibe": {
     "party": "派对",
@@ -148,8 +148,8 @@
     "thunder": "雷阵雨"
   },
   "time": {
-    "happeningNow": "🎉 正在进行",
-    "inMin": "🔥 {{count}} 分钟后",
+    "happeningNow": "正在进行",
+    "inMin": "{{count}} 分钟后",
     "today": "今天",
     "tomorrow": "明天",
     "yesterday": "昨天",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 挑战",
   "shareToCity": "分享到我的城市",
   "shareToWorld": "分享到世界频道",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "查看排行榜",
     "challenge": "查看挑战",
-    "event": "🎉 查看 Hi plan",
-    "topic": "🗣️ 查看 Hi now"
+    "event": "查看 Hi plan",
+    "topic": "查看 Hi now"
   },
   "tabs": {
     "today": "今天",

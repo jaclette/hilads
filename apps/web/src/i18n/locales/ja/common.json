@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ 集まり",
   "publicEventsSection": "🎫 公開イベント",
   "accountWelcome": {
-    "title": "おめでとう、{{username}}さん！🎉",
-    "subtitle": "アカウントの準備ができました--今すぐできることはこちら 👇",
-    "f1": "🎉 集まりを立ち上げて、今すぐみんなを集めよう",
-    "f2": "📅 あなたの街でイベントを企画しよう",
-    "f3": "💬 だれにでもプライベートメッセージを送ろう",
-    "f4": "📍 近くにいる人をリアルタイムでチェック",
-    "f5": "🤝 地元の人や旅人とつながろう",
-    "fc1": "🔥 街の人たちにチャレンジしよう",
-    "fc2": "🌍 世界の別の街にチャレンジしよう",
-    "cta": "さあ行こう 🚀"
+    "title": "おめでとう、{{username}}さん！",
+    "subtitle": "アカウントの準備ができました--今すぐできることはこちら",
+    "f1": "集まりを立ち上げて、今すぐみんなを集めよう",
+    "f2": "あなたの街でイベントを企画しよう",
+    "f3": "だれにでもプライベートメッセージを送ろう",
+    "f4": "近くにいる人をリアルタイムでチェック",
+    "f5": "地元の人や旅人とつながろう",
+    "fc1": "街の人たちにチャレンジしよう",
+    "fc2": "世界の別の街にチャレンジしよう",
+    "cta": "さあ行こう"
   },
   "onboarding": {
     "skip": "スキップ ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 チャレンジを作る"
   },
   "share": {
-    "title": "何かをシェア 👀",
+    "title": "何かをシェア",
     "snap": "写真を撮る",
     "snapDesc": "写真を撮る、またはアップロード",
     "spot": "スポットをシェア",
@@ -96,7 +96,7 @@
     "hiNowDesc": "今なにかしたい？言ってみよう"
   },
   "locationPicker": {
-    "title": "今どこにいる？👀",
+    "title": "今どこにいる？",
     "search": "住所または場所を検索",
     "moveHint": "地図を動かして調整",
     "noResults": "場所が見つかりません",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "添付を追加",
     "emoji": "絵文字",
-    "placeholderCity": "街にあいさつしよう 👋",
-    "placeholderHangout": "参加するって伝えよう 🙌",
-    "placeholderEvent": "参加者と話そう 🎉",
-    "placeholderChallenge": "応援したり、コツを共有しよう 🔥"
+    "placeholderCity": "街にあいさつしよう",
+    "placeholderHangout": "参加するって伝えよう",
+    "placeholderEvent": "参加者と話そう",
+    "placeholderChallenge": "応援したり、コツを共有しよう"
   },
   "vibe": {
     "party": "パーティー",
@@ -148,8 +148,8 @@
     "thunder": "雷雨"
   },
   "time": {
-    "happeningNow": "🎉 開催中",
-    "inMin": "🔥 あと{{count}}分",
+    "happeningNow": "開催中",
+    "inMin": "あと{{count}}分",
     "today": "今日",
     "tomorrow": "明日",
     "yesterday": "昨日",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 チャレンジ",
   "shareToCity": "自分の街でシェア",
   "shareToWorld": "ワールドに共有",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "ランキングを見る",
     "challenge": "チャレンジを見る",
-    "event": "🎉 Hi plan を見る",
-    "topic": "🗣️ Hi now を見る"
+    "event": "Hi plan を見る",
+    "topic": "Hi now を見る"
   },
   "tabs": {
     "today": "今日",

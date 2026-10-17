@@ -6,33 +6,33 @@
     "storeGetItOn": "Dapatkan di"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} orang sedang nongkrong sekarang",
-    "peopleLive_other": "🔥 {{count}} orang sedang nongkrong sekarang",
-    "events_one": "🎉 {{count}} Hi plan berlangsung",
-    "events_other": "🎉 {{count}} Hi plan berlangsung",
-    "hangouts_one": "🗣️ {{count}} Hi now aktif",
-    "hangouts_other": "🗣️ {{count}} Hi now aktif",
+    "peopleLive_one": "{{count}} orang sedang nongkrong sekarang",
+    "peopleLive_other": "{{count}} orang sedang nongkrong sekarang",
+    "events_one": "{{count}} Hi plan berlangsung",
+    "events_other": "{{count}} Hi plan berlangsung",
+    "hangouts_one": "{{count}} Hi now aktif",
+    "hangouts_other": "{{count}} Hi now aktif",
     "replies_one": "{{count}} balasan",
     "replies_other": "{{count}} balasan",
     "pickCity": "Pilih kota\ndan gabung",
     "locating": "› mencari kotamu...",
-    "browseCities": "Jelajahi kota →",
+    "browseCities": "Jelajahi kota",
     "yourName": "Namamu",
     "namePlaceholder": "Sapa sebagai...",
     "tryAgain": "Coba lagi",
     "useLocation": "Gunakan lokasiku saja",
-    "joinCity": "Gabung {{city}} →",
-    "joinChat": "Gabung Chat →",
+    "joinCity": "Gabung {{city}}",
+    "joinChat": "Gabung Chat",
     "hint": "// anonim · akses instan",
     "keepIdentity": "atau pertahankan identitasmu",
-    "createAccount": "✨ Buat akun",
+    "createAccount": "Buat akun",
     "logIn": "Masuk",
     "authHint": "Simpan namamu · buka profil · tambah teman",
-    "challenges_one": "🔥 {{count}} tantangan terbuka",
-    "challenges_other": "🔥 {{count}} tantangan terbuka"
+    "challenges_one": "{{count}} tantangan terbuka",
+    "challenges_other": "{{count}} tantangan terbuka"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Jadilah warga lokal yang menggerakkan kota",
     "tagline": "Kamu tahu spot-spotnya. Tantang warga lokal atau pelancong untuk menemukannya.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Gerakkan kotamu"
   },
   "exploring": {
-    "badge": "🧭 Exploring",
+    "badge": "Exploring",
     "title": "Terima tantangan lokal di kota mana saja",
     "tagline": "Di mana pun kamu mendarat, terima apa yang diluncurkan warga lokal.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Mereka sudah di sana. Ikut, yuk?",
     "screen3_invitation": "Gampang, kan? Giliranmu.",
     "screen4_invitation": "Tanpa feed. Hanya pertemuan nyata.",
-    "enterCity": "Gabung ke {{city}} 🔥",
-    "enterChallenge": "Terima tantangan ini 🔥",
-    "enterPicker": "Pilih kotamu 🔥",
+    "enterCity": "Gabung ke {{city}}",
+    "enterChallenge": "Terima tantangan ini",
+    "enterPicker": "Pilih kotamu",
     "swipeUp": "Geser ke atas",
     "liveHeadline": "{{city}} lagi rame sekarang.",
     "how": {

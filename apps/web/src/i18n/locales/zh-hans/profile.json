@@ -66,7 +66,7 @@
     "interestsHint": "- 最多选 5 个"
   },
   "ambassador": {
-    "title": "城市推荐 👑",
+    "title": "城市推荐",
     "subtitle": "作为本地达人展示在你的个人资料上。",
     "restaurant": "最爱的餐厅",
     "restaurantPlaceholder": "你总会带人去的地方",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "上传中…",
     "saving": "保存中…",
-    "saved": "已保存 ✓",
+    "saved": "已保存",
     "save": "保存个人资料"
   },
   "signOut": "退出登录",

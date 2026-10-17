@@ -7,7 +7,7 @@
     "aboutHeading": "Paano gumagana ang Hilads",
     "aboutBody": "Pumili ng city. Mag-launch ng challenge para sa locals o travelers, sumali sa meetup, maghanap ng hangout, o tuklasin ang Local Events. Mas marami kang itinatayo dito, mas local ka na - at mas mataas ang puwesto mo sa Most Local.",
     "citiesCta": "I-browse lahat ng cities ng Hilads",
-    "subhead": "🔥 Maging local sa kahit anong city na bisitahin mo."
+    "subhead": "Maging local sa kahit anong city na bisitahin mo."
   },
   "brand": "Hilads",
   "dateLocale": "fil-PH",
@@ -159,7 +159,7 @@
     "h1Tag": "Challenge",
     "audienceLocals": "Para sa mga local ng {city}",
     "audienceExplorers": "Para sa mga biyahero sa {city}",
-    "validatedBadge": "✓ Validated",
+    "validatedBadge": "Validated",
     "openBadge": "Bukas",
     "typeLabel": "Uri:",
     "typeFood": "Pagkain",

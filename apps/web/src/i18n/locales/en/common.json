@@ -7,20 +7,20 @@
   },
   "nowTitle": "Now",
   "filterEvents": "🎉 Local Events",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "filterHangouts": "🗣️ Hangouts",
   "publicEventsSection": "🎫 Public Local Events",
   "accountWelcome": {
-    "title": "Congrats, {{username}}! 🎉",
-    "subtitle": "Your account is ready - here's what you can do now 👇",
-    "f1": "🎉 Start a hangout and gather people right now",
-    "f2": "📅 Organize an event in your city",
-    "f3": "💬 Send a private message to anyone",
-    "f4": "📍 See who's nearby, live",
-    "f5": "🤝 Connect with locals and travelers",
-    "fc1": "🔥 Challenge the locals in your city",
-    "fc2": "🌍 Challenge another city across the world",
-    "cta": "Let's go 🚀"
+    "title": "Congrats, {{username}}!",
+    "subtitle": "Your account is ready - here's what you can do now",
+    "f1": "Start a hangout and gather people right now",
+    "f2": "Organize an event in your city",
+    "f3": "Send a private message to anyone",
+    "f4": "See who's nearby, live",
+    "f5": "Connect with locals and travelers",
+    "fc1": "Challenge the locals in your city",
+    "fc2": "Challenge another city across the world",
+    "cta": "Let's go"
   },
   "onboarding": {
     "skip": "Skip ✕",
@@ -85,7 +85,7 @@
     "createCta": "🔥 Create a challenge"
   },
   "share": {
-    "title": "Share something 👀",
+    "title": "Share something",
     "snap": "Snap a photo",
     "snapDesc": "Take or upload a photo",
     "spot": "Drop your spot",
@@ -97,7 +97,7 @@
     "hiNowDesc": "Up for something right now? Say it"
   },
   "locationPicker": {
-    "title": "Where are you? 👀",
+    "title": "Where are you?",
     "search": "Search an address or place",
     "moveHint": "Move the map to adjust",
     "noResults": "No places found",
@@ -121,10 +121,10 @@
   "composer": {
     "attach": "Add attachment",
     "emoji": "Emoji",
-    "placeholderCity": "Say hi to your city 👋",
-    "placeholderHangout": "Let them know you're in 🙌",
-    "placeholderEvent": "Chat with attendees 🎉",
-    "placeholderChallenge": "Cheer them on, or share your tip 🔥"
+    "placeholderCity": "Say hi to your city",
+    "placeholderHangout": "Let them know you're in",
+    "placeholderEvent": "Chat with attendees",
+    "placeholderChallenge": "Cheer them on, or share your tip"
   },
   "vibe": {
     "party": "Party",
@@ -149,8 +149,8 @@
     "thunder": "thunderstorm"
   },
   "time": {
-    "happeningNow": "🎉 happening now",
-    "inMin": "🔥 in {{count}} min",
+    "happeningNow": "happening now",
+    "inMin": "in {{count}} min",
     "today": "Today",
     "tomorrow": "Tomorrow",
     "yesterday": "Yesterday",
@@ -171,8 +171,8 @@
   "shareCta": {
     "leaderboard": "See the leaderboard",
     "challenge": "See the challenge",
-    "event": "🎉 See the Hi plan",
-    "topic": "🗣️ See the Hi now"
+    "event": "See the Hi plan",
+    "topic": "See the Hi now"
   },
   "tabs": {
     "today": "Today",
@@ -190,6 +190,6 @@
     "a11y": "Showing {{scope}}. Tap to change"
   },
   "signUp": "Sign up",
-  "settings": "SETTINGS",
+  "settings": "Settings",
   "firstLaunch": "One local challenge a day."
 }

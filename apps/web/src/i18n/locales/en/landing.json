@@ -6,33 +6,33 @@
     "storeGetItOn": "Get it on"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} person hanging out right now",
-    "peopleLive_other": "🔥 {{count}} people hanging out right now",
-    "events_one": "🎉 {{count}} Hi plan happening",
-    "events_other": "🎉 {{count}} Hi plan happening",
-    "hangouts_one": "🗣️ {{count}} Hi now active",
-    "hangouts_other": "🗣️ {{count}} Hi now active",
+    "peopleLive_one": "{{count}} person hanging out right now",
+    "peopleLive_other": "{{count}} people hanging out right now",
+    "events_one": "{{count}} Hi plan happening",
+    "events_other": "{{count}} Hi plan happening",
+    "hangouts_one": "{{count}} Hi now active",
+    "hangouts_other": "{{count}} Hi now active",
     "replies_one": "{{count}} reply",
     "replies_other": "{{count}} replies",
     "pickCity": "Pick a city\nand jump in",
     "locating": "› locating your city...",
-    "browseCities": "Browse cities →",
+    "browseCities": "Browse cities",
     "yourName": "Your name",
     "namePlaceholder": "Say hi as...",
     "tryAgain": "Try again",
     "useLocation": "Use my location instead",
-    "joinCity": "Join {{city}} →",
-    "joinChat": "Join Chat →",
+    "joinCity": "Join {{city}}",
+    "joinChat": "Join Chat",
     "hint": "// anonymous · instant access",
     "keepIdentity": "or keep your identity",
-    "createAccount": "✨ Create account",
+    "createAccount": "Create account",
     "logIn": "Log in",
     "authHint": "Save your name · unlock profiles · add friends",
-    "challenges_one": "🔥 {{count}} open challenge",
-    "challenges_other": "🔥 {{count}} open challenges"
+    "challenges_one": "{{count}} open challenge",
+    "challenges_other": "{{count}} open challenges"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Be the local that runs the city",
     "tagline": "You know the spots. Challenge the locals or the travelers to find them.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Run your city"
   },
   "exploring": {
-    "badge": "🧭 Exploring",
+    "badge": "Exploring",
     "title": "Take on local challenges anywhere",
     "tagline": "Wherever you land, take on what locals built.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "They're already in. <hi>Join them.</hi>",
     "screen3_invitation": "Simple, right? <hi>Your move.</hi>",
     "screen4_invitation": "No feed. Just <hi>real meetups.</hi>",
-    "enterCity": "Join {{city}} 🔥",
-    "enterChallenge": "Take this challenge 🔥",
-    "enterPicker": "Choose your city 🔥",
+    "enterCity": "Join {{city}}",
+    "enterChallenge": "Take this challenge",
+    "enterPicker": "Choose your city",
     "swipeUp": "Swipe up",
     "liveHeadline": "{{city}} is live right now.",
     "how": {

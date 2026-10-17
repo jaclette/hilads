@@ -8,7 +8,7 @@
   "emptyTitle": "Nichts geplant",
   "emptySub": "An diesem Tag gibt es noch keine Events.",
   "public": "Öffentlich",
-  "going_one": "🙌 {{count}} dabei",
-  "going_other": "🙌 {{count}} dabei",
-  "liveNow": "🔥 Jetzt live"
+  "going_one": "{{count}} dabei",
+  "going_other": "{{count}} dabei",
+  "liveNow": "Jetzt live"
 }

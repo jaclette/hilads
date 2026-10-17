@@ -7,7 +7,7 @@
     "aboutHeading": "Como a Hilads funciona",
     "aboutBody": "Escolha sua cidade. Lance um challenge pra locais ou viajantes, entre num meetup, encontre um hangout, ou descubra Local Events. Quanto mais você constrói aqui, mais local você vira - e mais sobe em Most Local.",
     "citiesCta": "Explorar todas as cidades da Hilads",
-    "subhead": "🔥 Vire local em qualquer cidade que visitar."
+    "subhead": "Vire local em qualquer cidade que visitar."
   },
   "brand": "Hilads",
   "dateLocale": "pt-BR",
@@ -159,7 +159,7 @@
     "h1Tag": "Desafio",
     "audienceLocals": "Para locais de {city}",
     "audienceExplorers": "Para viajantes em {city}",
-    "validatedBadge": "✓ Validado",
+    "validatedBadge": "Validado",
     "openBadge": "Aberto",
     "typeLabel": "Tipo:",
     "typeFood": "Comida",

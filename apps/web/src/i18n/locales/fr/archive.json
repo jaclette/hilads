@@ -2,9 +2,9 @@
   "title": "Activité passée",
   "filters": {
     "all": "Tout",
-    "events": "🎉 Événements",
-    "pulses": "🗣️ Sorties",
-    "challenges": "🔥 Défis"
+    "events": "Événements",
+    "pulses": "Sorties",
+    "challenges": "Défis"
   },
   "range": {
     "recent": "Récent",
@@ -18,11 +18,11 @@
     "apply": "Appliquer"
   },
   "public": "Public",
-  "went_one": "🙌 {{count}} y était",
-  "went_other": "🙌 {{count}} y étaient",
+  "went_one": "{{count}} y était",
+  "went_other": "{{count}} y étaient",
   "hangoutTag": "Sortie",
-  "replies_one": "💬 {{count}} réponse",
-  "replies_other": "💬 {{count}} réponses",
+  "replies_one": "{{count}} réponse",
+  "replies_other": "{{count}} réponses",
   "noReplies": "Aucune réponse",
   "error": "Impossible de charger les archives",
   "retry": "Réessayer",

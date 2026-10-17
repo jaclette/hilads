@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 Mga ideya ng tambayan",
+    "heading": "Mga ideya ng tambayan",
     "sub": "Kung ano ang inoorganisa ng mga local sa ibang lugar - magpa-inspire",
-    "openYours": "🔥 Buksan ang sa iyo sa {{city}}",
+    "openYours": "Buksan ang sa iyo sa {{city}}",
     "by": "ni {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "Live na ang {{city}} ✨",
+    "live": "Live na ang {{city}}",
     "dismiss": "Isara",
     "body": "Tunay na tao, ngayon mismo. Mag-hi, tingnan kung sino ang nasa paligid, o mag-imbita ng kaibigan.",
-    "sayHi": "Mag-hi 👋",
+    "sayHi": "Mag-hi",
     "invite": "Mag-imbita ng kaibigan"
   },
   "imageType": "Pumili ng larawang JPEG, PNG, o WebP.",
@@ -57,10 +57,10 @@
     "topCities": "Pinaka-aktibong lungsod ngayon",
     "cities": "Mga Lungsod",
     "switchTitle": "Palitan ang lungsod",
-    "filterActive": "🔥 Pinaka-aktibo",
-    "filterEvents": "🎉 Most Local Events",
-    "filterOnline": "🟢 Pinakamaraming online",
-    "filterChallenges": "⚡ Pinakamaraming challenge",
+    "filterActive": "Pinaka-aktibo",
+    "filterEvents": "Most Local Events",
+    "filterOnline": "Pinakamaraming online",
+    "filterChallenges": "Pinakamaraming challenge",
     "challenges_one": "{{count}} challenge",
     "challenges_other": "{{count}} na challenge",
     "members_one": "{{count}} miyembro",
@@ -81,18 +81,18 @@
     "hangoutTag": "Tambayan",
     "eventTag": "Event",
     "public": "Public",
-    "activeNow": "● Aktibo ngayon",
+    "activeNow": "Aktibo ngayon",
     "repliesNew": "Wala pang tugon - maging una",
-    "replies_one": "💬 {{count}} tugon",
-    "replies_other": "💬 {{count}} tugon",
-    "going_one": "🙌 {{count}} sasama",
-    "going_other": "🙌 {{count}} sasama",
+    "replies_one": "{{count}} tugon",
+    "replies_other": "{{count}} tugon",
+    "going_one": "{{count}} sasama",
+    "going_other": "{{count}} sasama",
     "hostedBy": "Hino-host ni {{name}}",
     "groupHilads": "Hilads Local Events",
     "groupPublic": "Public Local Events",
-    "groupPublicTicket": "🎫 Public Local Events",
+    "groupPublicTicket": "Public Local Events",
     "createEvent": "Create Local Event",
-    "startHangout": "Magsimula ng tambayan 🗣️",
+    "startHangout": "Magsimula ng tambayan",
     "openPlace": "Buksan ang lugar mo",
     "loadError": "Hindi ma-load ang mga event",
     "loadErrorSub": "Subukan ulit mamaya o gumawa ng bago sa {{city}}.",
@@ -105,7 +105,7 @@
     "noEventsSub": "Maging una sa paggawa ng isa sa {{city}}",
     "noHangoutsSub": "Magsimula ng tambayan at pag-usapin ang lungsod",
     "filterAll": "Lahat",
-    "seeComing": "Tingnan ang paparating 🔮",
+    "seeComing": "Tingnan ang paparating",
     "seeHappened": "tingnan ang nangyari",
     "createNew": "Gumawa ng bago",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "Batiin si {{name}}",
-    "sayHiGeneric": "Mag-hi 👋",
-    "hostWaiting": "Hinihintay ang unang hi 👋",
+    "sayHiGeneric": "Mag-hi",
+    "hostWaiting": "Hinihintay ang unang hi",
     "hiNowHint": "lumabas ngayon",
     "hiLaterHint": "magplano ng event"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "Event mo",
     "edit": "I-edit",
     "join": "Sumali",
-    "joined": "Sumali na ✓",
+    "joined": "Sumali na",
     "here": "{{count}} narito",
     "going_one": "{{count}} sasama",
     "going_other": "{{count}} sasama",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "Simula ng usapan",
     "arriving": "Dumarating na ang mga tao",
-    "firstChat": "Maging una sa pag-chat dito 👇",
-    "firstHi": "Maging una sa pag-hi 👇"
+    "firstChat": "Maging una sa pag-chat dito",
+    "firstHi": "Maging una sa pag-hi"
   },
   "create": {
     "title": "Ano ang plano?",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "Baliw",
     "challengeTitleLabel": "Iyong challenge",
     "challengeTitlePlaceholder": "hal. Dalhin mo ako sa paborito mong coffee spot",
-    "challengeCta": "Ilunsad ang challenge 🔥",
+    "challengeCta": "Ilunsad ang challenge",
     "challengeErrStart": "Hindi nailunsad ang challenge"
   },
   "goingModal": {
     "going": "sasama",
     "inThisHangout": "sa tambayan na ito",
     "loading": "Naglo-load…",
-    "empty": "Wala pa - maging una sa pagsali! 🙌"
+    "empty": "Wala pa - maging una sa pagsali!"
   },
   "nickname": {
     "label": "Nickname",
@@ -201,15 +201,15 @@
     "anonymous": "// anonymous · walang sign-up na kailangan"
   },
   "prompt": {
-    "exploreText": "🔥 Tingnan kung ano ang nangyayari ngayon",
+    "exploreText": "Tingnan kung ano ang nangyayari ngayon",
     "exploreCta": "Tingnan ang nangyayari",
-    "photoText": "📸 Ibahagi kung ano ang nangyayari",
+    "photoText": "Ibahagi kung ano ang nangyayari",
     "shoot": "Kuha",
-    "createEventText": "🎉 May plano ka ba ngayong gabi?",
+    "createEventText": "May plano ka ba ngayong gabi?",
     "createEventCta": "Gumawa ng event",
-    "challengeIntroText": "🔥 Bago dito? Alamin paano gumagana ang challenges",
+    "challengeIntroText": "Bago dito? Alamin paano gumagana ang challenges",
     "challengeIntroCta": "Ipakita",
-    "installText": "✨ Idagdag ang Hilads sa home screen mo\nHuwag palampasin ang nangyayari sa lungsod mo",
+    "installText": "Idagdag ang Hilads sa home screen mo\nHuwag palampasin ang nangyayari sa lungsod mo",
     "installAdd": "Idagdag",
     "installHow": "Paano"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 Nagche-check in ang mga local"
   },
   "ownerPrompt": {
-    "text": "🔥 Sinimulan mo ang event na ito!",
+    "text": "Sinimulan mo ang event na ito!",
     "sub": "Gawing mas maganda pa - magdagdag ng description, i-update ang oras, o ibahagi ito.",
-    "edit": "✏️ I-edit ang event"
+    "edit": "I-edit ang event"
   },
   "feedNew": {
-    "event": "🎉 Bagong event: {{title}}",
+    "event": "Bagong event: {{title}}",
     "join": "Sumali",
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",
-    "challengeLocals": "🔥 Nag-challenge si {{name}} sa mga local: {{title}}",
-    "challengeExplorers": "🔥 Nag-challenge si {{name}} sa mga biyahero: {{title}}",
-    "challengeCta": "Tingnan →",
-    "challengeValidated": "🏆 Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
+    "challengeLocals": "Nag-challenge si {{name}} sa mga local: {{title}}",
+    "challengeExplorers": "Nag-challenge si {{name}} sa mga biyahero: {{title}}",
+    "challengeCta": "Tingnan",
+    "challengeValidated": "Tapos na ang challenge! Vinalidate ni {{name}} ang \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} International na challenge: {{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "Live",
-    "recurring": "↻ Recurring",
+    "recurring": "Recurring",
     "upcoming": "Paparating",
     "delete": "I-delete ang event"
   },
   "arrivalsBar": {
-    "label": "✈️ Mga bagong dating",
+    "label": "Mga bagong dating",
     "sheetTitle": "Mga dating",
     "empty": "Wala pang bagong dating"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 Kasasali lang ni {{nickname}} mula {{city}} sa Hilads",
       "challengeWon": "🏆 Napanalunan ni {{nickname}} mula {{city}} ang challenge {{challenge}}"
     },
-    "quietCard": "Tahimik dito? {{count}} hindi pa nababasa sa Mundo 🌍 — i-tap para buksan",
+    "quietCard": "Tahimik dito? {{count}} hindi pa nababasa sa Mundo — i-tap para buksan",
     "heroEmpty": "Maging una sa paghamon sa isang lungsod",
     "heroEmptySub": "Maglunsad ng cross-city challenge",
     "leaderboard": "Leaderboard",

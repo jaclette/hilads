@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 Meetup-ideeën",
+    "heading": "Meetup-ideeën",
     "sub": "Wat locals elders organiseren - doe inspiratie op",
-    "openYours": "🔥 Start die van jou in {{city}}",
+    "openYours": "Start die van jou in {{city}}",
     "by": "door {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} is live ✨",
+    "live": "{{city}} is live",
     "dismiss": "Sluiten",
     "body": "Echte mensen, nu meteen. Zeg hallo, kijk wie er om je heen is of neem een vriend mee.",
-    "sayHi": "Zeg hallo 👋",
+    "sayHi": "Zeg hallo",
     "invite": "Vrienden uitnodigen"
   },
   "imageType": "Kies een JPEG-, PNG- of WebP-afbeelding.",
@@ -57,10 +57,10 @@
     "topCities": "Meest actieve steden",
     "cities": "Steden",
     "switchTitle": "Stad wisselen",
-    "filterActive": "🔥 Meest actief",
-    "filterEvents": "🎉 Meeste evenementen",
-    "filterOnline": "🟢 Meeste online",
-    "filterChallenges": "⚡ Meeste challenges",
+    "filterActive": "Meest actief",
+    "filterEvents": "Meeste evenementen",
+    "filterOnline": "Meeste online",
+    "filterChallenges": "Meeste challenges",
     "challenges_one": "{{count}} challenge",
     "challenges_other": "{{count}} challenges",
     "members_one": "{{count}} lid",
@@ -81,18 +81,18 @@
     "hangoutTag": "Meetup",
     "eventTag": "Evenement",
     "public": "Openbaar",
-    "activeNow": "● Nu actief",
+    "activeNow": "Nu actief",
     "repliesNew": "Nog geen reacties - wees de eerste",
-    "replies_one": "💬 {{count}} reactie",
-    "replies_other": "💬 {{count}} reacties",
-    "going_one": "🙌 {{count}} deelnemer",
-    "going_other": "🙌 {{count}} deelnemers",
+    "replies_one": "{{count}} reactie",
+    "replies_other": "{{count}} reacties",
+    "going_one": "{{count}} deelnemer",
+    "going_other": "{{count}} deelnemers",
     "hostedBy": "Georganiseerd door {{name}}",
     "groupHilads": "Lokale evenementen van Hilads",
     "groupPublic": "Openbare lokale evenementen",
-    "groupPublicTicket": "🎫 Openbare lokale evenementen",
+    "groupPublicTicket": "Openbare lokale evenementen",
     "createEvent": "Lokaal evenement maken",
-    "startHangout": "Een meetup starten 🗣️",
+    "startHangout": "Een meetup starten",
     "openPlace": "Open je plek",
     "loadError": "Kon de evenementen niet laden",
     "loadErrorSub": "Probeer het later opnieuw of maak iets nieuws in {{city}}.",
@@ -105,7 +105,7 @@
     "noEventsSub": "Wees de eerste die er een maakt in {{city}}",
     "noHangoutsSub": "Start een meetup en breng de stad aan het praten",
     "filterAll": "Alles",
-    "seeComing": "Kijk wat eraan komt 🔮",
+    "seeComing": "Kijk wat eraan komt",
     "seeHappened": "kijk wat er gebeurd is",
     "createNew": "Nieuw maken",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "Zeg {{name}} gedag",
-    "sayHiGeneric": "Zeg gedag 👋",
-    "hostWaiting": "Wachten op de eerste begroeting 👋",
+    "sayHiGeneric": "Zeg gedag",
+    "hostWaiting": "Wachten op de eerste begroeting",
     "hiNowHint": "nu afspreken",
     "hiLaterHint": "een plan maken"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "Jouw evenement",
     "edit": "Bewerken",
     "join": "Meedoen",
-    "joined": "Meegedaan ✓",
+    "joined": "Meegedaan",
     "here": "{{count}} hier",
     "going_one": "{{count}} deelnemer",
     "going_other": "{{count}} deelnemers",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "Begin van het gesprek",
     "arriving": "Mensen komen binnen",
-    "firstChat": "Wees de eerste die hier chat 👇",
-    "firstHi": "Wees de eerste die hallo zegt 👇"
+    "firstChat": "Wees de eerste die hier chat",
+    "firstHi": "Wees de eerste die hallo zegt"
   },
   "create": {
     "title": "Wat gaan we doen?",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "Gek",
     "challengeTitleLabel": "Jouw challenge",
     "challengeTitlePlaceholder": "bv. Breng me naar je favoriete koffieplek",
-    "challengeCta": "Challenge starten 🔥",
+    "challengeCta": "Challenge starten",
     "challengeErrStart": "Challenge kon niet worden gestart"
   },
   "goingModal": {
     "going": "doen mee",
     "inThisHangout": "in deze meetup",
     "loading": "Laden…",
-    "empty": "Nog niemand - wees de eerste die meedoet! 🙌"
+    "empty": "Nog niemand - wees de eerste die meedoet!"
   },
   "nickname": {
     "label": "Bijnaam",
@@ -201,15 +201,15 @@
     "anonymous": "// anoniem · geen aanmelding nodig"
   },
   "prompt": {
-    "exploreText": "🔥 Kijk wat er nu gebeurt",
+    "exploreText": "Kijk wat er nu gebeurt",
     "exploreCta": "Kijk wat er gebeurt",
-    "photoText": "📸 Deel wat er gebeurt",
+    "photoText": "Deel wat er gebeurt",
     "shoot": "Foto",
-    "createEventText": "🎉 Heb je een plan vanavond?",
+    "createEventText": "Heb je een plan vanavond?",
     "createEventCta": "Evenement maken",
-    "challengeIntroText": "🔥 Nieuw hier? Ontdek challenges",
+    "challengeIntroText": "Nieuw hier? Ontdek challenges",
     "challengeIntroCta": "Tonen",
-    "installText": "✨ Voeg Hilads toe aan je beginscherm\nMis nooit meer wat er in je stad gebeurt",
+    "installText": "Voeg Hilads toe aan je beginscherm\nMis nooit meer wat er in je stad gebeurt",
     "installAdd": "Toevoegen",
     "installHow": "Hoe"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 Locals melden zich"
   },
   "ownerPrompt": {
-    "text": "🔥 Jij hebt dit evenement gestart!",
+    "text": "Jij hebt dit evenement gestart!",
     "sub": "Maak het nog beter - voeg een beschrijving toe, pas de tijd aan of deel het.",
-    "edit": "✏️ Evenement bewerken"
+    "edit": "Evenement bewerken"
   },
   "feedNew": {
-    "event": "🎉 Nieuw evenement: {{title}}",
+    "event": "Nieuw evenement: {{title}}",
     "join": "Meedoen",
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",
-    "challengeLocals": "🔥 {{name}} daagt de locals uit: {{title}}",
-    "challengeExplorers": "🔥 {{name}} daagt de reizigers uit: {{title}}",
-    "challengeCta": "Bekijk →",
-    "challengeValidated": "🏆 Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd.",
+    "challengeLocals": "{{name}} daagt de locals uit: {{title}}",
+    "challengeExplorers": "{{name}} daagt de reizigers uit: {{title}}",
+    "challengeCta": "Bekijk",
+    "challengeValidated": "Challenge volbracht! {{name}} heeft \"{{title}}\" gevalideerd.",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Internationale challenge: {{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "Live",
-    "recurring": "↻ Terugkerend",
+    "recurring": "Terugkerend",
     "upcoming": "Binnenkort",
     "delete": "Evenement verwijderen"
   },
   "arrivalsBar": {
-    "label": "✈️ Recente aankomsten",
+    "label": "Recente aankomsten",
     "sheetTitle": "Aankomsten",
     "empty": "Nog geen aankomsten"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 {{nickname}} uit {{city}} is net lid geworden van Hilads",
       "challengeWon": "🏆 {{nickname}} uit {{city}} won de challenge {{challenge}}"
     },
-    "quietCard": "Rustig hier? {{count}} ongelezen in Wereld 🌍 — tik om te openen",
+    "quietCard": "Rustig hier? {{count}} ongelezen in Wereld — tik om te openen",
     "heroEmpty": "Wees de eerste die een stad uitdaagt",
     "heroEmptySub": "Start een challenge tussen steden",
     "leaderboard": "Ranglijst",

@@ -6,7 +6,7 @@
     "sub": "Meldingen verschijnen hier"
   },
   "loading": "Laden…",
-  "seeAll": "Alle meldingen bekijken →",
+  "seeAll": "Alle meldingen bekijken",
   "prefs": {
     "title": "Meldingsvoorkeuren",
     "mentionName": "Vermeldingen @",
@@ -15,9 +15,9 @@
     "newEventDesc": "Wanneer iemand een evenement maakt in je stad",
     "friendName": "Vriendschapsverzoeken",
     "friendDesc": "Wanneer iemand je een vriendschapsverzoek stuurt of die van jou accepteert",
-    "notesName": "Notities ✨",
+    "notesName": "Notities",
     "notesDesc": "Wanneer iemand een notitie achterlaat op je profiel",
-    "profileViewName": "Profielweergaven 👀",
+    "profileViewName": "Profielweergaven",
     "profileViewDesc": "Wanneer iemand je profiel bekijkt",
     "announcementName": "Aankondigingen van Hilads",
     "announcementDesc": "Af en toe nieuws van het team",

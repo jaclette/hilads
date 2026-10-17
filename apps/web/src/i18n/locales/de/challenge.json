@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "Erfolgreiche Challenges",
-    "title": "✨ Erfolgreiche Challenges",
+    "title": "Erfolgreiche Challenges",
     "allCities": "Alle Städte",
     "clearCity": "Zurücksetzen",
     "localTag": "Lokal",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "Alle ansehen",
   "leaderboardCta": {
-    "title": "🏆 Stadt-Bestenliste",
+    "title": "Stadt-Bestenliste",
     "view": "Ansehen",
     "sub": "Sei der Erste im Ranking - starte und beende eine Challenge"
   },
@@ -54,7 +54,7 @@
     "culture": "...und wir treffen uns, um drüber zu reden 🎭",
     "help": "...und lass uns zusammen etwas Verrücktes machen 🤪"
   },
-  "createCta": "Challenge starten 🔥",
+  "createCta": "Challenge starten",
   "saveChanges": "Änderungen speichern",
   "errSave": "Speichern fehlgeschlagen",
   "errStart": "Challenge konnte nicht gestartet werden",
@@ -76,7 +76,7 @@
     "meetBadge": "Treffen",
     "photosCount": "{{count}} Fotos",
     "noOneJoined": "Noch niemand dabei",
-    "beFirst": "⚡ Sei der Erste · +2",
+    "beFirst": "Sei der Erste · +2",
     "daysLeft": "Noch {{count}} T",
     "lastDay": "Läuft bald ab",
     "joinGroup": "Der Challenge beitreten",
@@ -87,8 +87,8 @@
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",
-  "forLocals": "🏠 Für Locals",
-  "forExplorers": "🧳 Für Reisende",
+  "forLocals": "Für Locals",
+  "forExplorers": "Für Reisende",
   "validation": {
     "label": "Wie validieren?",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "Löschen",
   "shareCta": "Teilen",
   "shareInvite": "Nimm diese Challenge mit mir an!",
-  "shareCopied": "Link kopiert ✓",
+  "shareCopied": "Link kopiert",
   "noun": "Challenge",
   "examples": {
     "label": "Keine Ideen? Tipp eine an",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "Thread nicht gefunden",
     "empty": "Schreib die erste Nachricht.",
-    "emptyIntl": "Sag hi 👋 - schick ein 📸, wenn du's geschafft hast.",
+    "emptyIntl": "Sag hi - schick ein Foto, wenn du's geschafft hast.",
     "cancel": {
       "creatorTitle": "Diese Annahme abbrechen?",
       "acceptorTitle": "Diese Challenge fallen lassen?",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Termin vorschlagen 📅",
+    "proposeCta": "Termin vorschlagen",
     "counterCta": "Gegenvorschlag",
     "editCta": "Datum ändern",
     "you": "dir",
@@ -220,9 +220,9 @@
     "tomorrow": "Morgen",
     "picker": {
       "title": "Wann trefft ihr euch?",
-      "whenLabel": "WANN",
-      "timeLabel": "UHRZEIT",
-      "whereLabel": "WO (OPTIONAL)",
+      "whenLabel": "Wann",
+      "timeLabel": "Uhrzeit",
+      "whereLabel": "Wo (optional)",
       "wherePlaceholder": "z. B. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
@@ -241,7 +241,7 @@
       "body": "{{name}} bewertet gleich, wie es gelaufen ist."
     },
     "approved": {
-      "title": "Challenge gemeistert 🎉"
+      "title": "Challenge gemeistert"
     },
     "rejected": {
       "title": "Challenge beendet"
@@ -285,7 +285,7 @@
       "meetSoon": "Wir sehen uns am {{date}}",
       "creatorVerdict": "Wie war's mit {{name}}?",
       "acceptorWaitingVerdict": "Warten, bis {{name}} bestätigt",
-      "accomplished": "Challenge gemeistert 🎉",
+      "accomplished": "Challenge gemeistert",
       "closed": "Challenge beendet",
       "submitProof": "Beweis senden",
       "waitingForProof": "Warte auf den Beweis",
@@ -351,13 +351,13 @@
   },
   "byCreator": "von {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge-Ideen",
+    "heading": "Challenge-Ideen",
     "sub": "Was Locals woanders starten - lass dich inspirieren",
-    "firstLocal": "🌱 Sei der erste Local in {{city}}",
+    "firstLocal": "Sei der erste Local in {{city}}",
     "firstLocalSub": "Starte eine Challenge · ankommende Reisende nehmen sie an",
-    "reward": "Erste Challenge · +10 🏆",
-    "launchFirst": "🔥 Starte die erste Challenge",
-    "createYours": "🔥 Erstelle deine in {{city}}",
+    "reward": "Erste Challenge · +10",
+    "launchFirst": "Starte die erste Challenge",
+    "createYours": "Erstelle deine in {{city}}",
     "by": "von {{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "Zielstadt",
-    "targetCityAnywhere": "🌍 Überall auf der Welt",
+    "targetCityAnywhere": "Überall auf der Welt",
     "targetCityHint": "Wähl eine Zielstadt – „Überall auf der Welt“ ist noch nicht verfügbar.",
     "proofRequirementsLabel": "Was soll das Foto zeigen?",
     "proofRequirementsPlaceholder": "z.B. Das Gericht im Tageslicht, du im Bild",
-    "proofRequirementsHint": "Der Beweis ist ein Foto 📸. Der Teilnehmer sieht das vor dem Absenden - sei konkret.",
+    "proofRequirementsHint": "Der Beweis ist ein Foto. Der Teilnehmer sieht das vor dem Absenden - sei konkret.",
     "cityPicker": {
       "title": "Zielstadt wählen",
       "searchPlaceholder": "Stadt suchen…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Diese Challenge ist privat",
+      "title": "Diese Challenge ist privat",
       "body": "Nur Ersteller und Annehmer sehen das Gespräch."
     }
   },
   "members": {
     "title": "Im Kanal",
     "countIn": "{{count}} im Kanal",
-    "seeAll": "Alle anzeigen →",
+    "seeAll": "Alle anzeigen",
     "empty": "Noch niemand dabei - sei der Erste.",
     "kickCta": "Entfernen",
     "kickAria": "{{name}} aus dem Kanal entfernen",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Öffentlich",
-      "friends": "👯 Freunde",
-      "private": "🔒 Privat"
+      "public": "Öffentlich",
+      "friends": "Freunde",
+      "private": "Privat"
     },
     "label": "Wer kann das sehen?",
-    "public": "🌍 Öffentlich",
-    "friends": "👯 Freunde",
+    "public": "Öffentlich",
+    "friends": "Freunde",
     "publicHint": "Jeder in der Stadt kann sie sehen und annehmen.",
     "friendsHint": "Nur deine Freunde und Eingeladene können sie sehen.",
     "intlLocked": "Internationale Challenges sind immer öffentlich.",
@@ -536,11 +536,11 @@
     "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top Challenger"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top Challenger"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "Bestenliste konnte nicht geladen werden. Zum Erneutversuchen ziehen.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Meinen Rang teilen",
       "periodMonth": "diesen Monat",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "Wie Punkte vergeben werden",
-    "helpLabel": "🏆 So sammelst du Punkte",
-    "title": "🏆 So funktionieren Challenges",
+    "helpLabel": "So sammelst du Punkte",
+    "title": "So funktionieren Challenges",
     "intro": "Fürs Mitmachen gibt's kleine Funken – die großen Punkte fürs echte Auftauchen oder Gewinnen. Nur beizutreten lohnt sich nie.",
     "colStep": "Schritt",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "Die Zahlen können sich ändern, während wir das Spiel justieren.",
     "types": {
       "heading": "Zwei Arten von Challenge",
-      "local": "🏙️ Treffen — bring eine Gruppe an einem festen Ort und Zeitpunkt persönlich zusammen. Alle, die auftauchen, kassieren groß.",
-      "international": "🌍 Foto-Challenge — alle reichen vor dem Stichtag ein Foto ein; der Challenger kürt den Gewinner."
+      "local": "Treffen — bring eine Gruppe an einem festen Ort und Zeitpunkt persönlich zusammen. Alle, die auftauchen, kassieren groß.",
+      "international": "Foto-Challenge — alle reichen vor dem Stichtag ein Foto ein; der Challenger kürt den Gewinner."
     },
     "lifecycle": {
       "heading": "🔁 So wird's entschieden",
       "body": "Der Challenger steckt den Rahmen ab, andere machen mit, und am Ende bestätigt der Challenger – wer da war oder welches Foto gewonnen hat."
     },
-    "pointsHeading": "💯 So sammelst du Punkte",
+    "pointsHeading": "So sammelst du Punkte",
     "ways": {
       "join": "Einer Challenge beitreten",
       "create": "Eine Challenge erstellen",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "Punkte",
     "subtitle": {
-      "accepted": "Deine Challenge wurde angenommen 🤝",
-      "date_locked": "Termin bestätigt - los geht’s 🗓️",
-      "meetup": "Mission erfüllt 🎉",
-      "debrief": "Mission erfüllt 🎉",
-      "ghost": "Beim nächsten Mal klappt’s 👻",
-      "default": "Du steigst im Ranking 🚀",
-      "meet_bonus": "Treff-Bonus freigeschaltet 🤝",
-      "challenge_created": "Du hast eine Challenge gestartet 🎯"
+      "accepted": "Deine Challenge wurde angenommen",
+      "date_locked": "Termin bestätigt - los geht’s",
+      "meetup": "Mission erfüllt",
+      "debrief": "Mission erfüllt",
+      "ghost": "Beim nächsten Mal klappt’s",
+      "default": "Du steigst im Ranking",
+      "meet_bonus": "Treff-Bonus freigeschaltet",
+      "challenge_created": "Du hast eine Challenge gestartet"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} ist #{{rank}} unter den Städten",
       "citiesBeyond": "{{city}} außerhalb der Top {{topN}} der Städte"
     },
-    "cta": "Auf geht’s ⚡",
+    "cta": "Auf geht’s",
     "kindShort": {
       "accepted": "Angenommen",
       "date_locked": "Termin bestätigt",
@@ -651,8 +651,8 @@
     "total": "Gesamt: {{total}} Pkt."
   },
   "welcomeGuest": {
-    "title": "👋 Willkommen! Schreib einfach mit, ohne Anmeldung.",
-    "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden →"
+    "title": "Willkommen! Schreib einfach mit, ohne Anmeldung.",
+    "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} hat gewonnen",
-      "body": "Schönes Foto! Du hast {{points}} fürs Mitmachen bekommen — nächstes Mal klappt's 💪"
+      "body": "Schönes Foto! Du hast {{points}} fürs Mitmachen bekommen — nächstes Mal klappt's"
     },
     "present": {
       "title": "Du warst dabei!",

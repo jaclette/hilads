@@ -1,9 +1,9 @@
 {
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Mới",
-    "regular": "😎 Thành viên",
-    "host": "👑 Huyền thoại"
+    "ghost": "Ghost",
+    "fresh": "Mới",
+    "regular": "Thành viên",
+    "host": "Huyền thoại"
   },
   "now": "now",
   "myCity": "my city",

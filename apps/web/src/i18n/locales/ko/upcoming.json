@@ -8,7 +8,7 @@
   "emptyTitle": "예정된 일정 없음",
   "emptySub": "이 날에는 아직 이벤트가 없어요.",
   "public": "공개",
-  "going_one": "🙌 {{count}}명 참여",
-  "going_other": "🙌 {{count}}명 참여",
-  "liveNow": "🔥 지금 라이브"
+  "going_one": "{{count}}명 참여",
+  "going_other": "{{count}}명 참여",
+  "liveNow": "지금 라이브"
 }

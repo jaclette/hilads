@@ -2,9 +2,9 @@
   "title": "Hoạt động đã qua",
   "filters": {
     "all": "Tất cả",
-    "events": "🎉 Sự kiện",
-    "pulses": "🗣️ Tụ tập",
-    "challenges": "🔥 Thử thách"
+    "events": "Sự kiện",
+    "pulses": "Tụ tập",
+    "challenges": "Thử thách"
   },
   "range": {
     "recent": "Gần đây",
@@ -18,9 +18,9 @@
     "apply": "Áp dụng"
   },
   "public": "Công khai",
-  "went_other": "🙌 {{count}} đã tham gia",
+  "went_other": "{{count}} đã tham gia",
   "hangoutTag": "Tụ tập",
-  "replies_other": "💬 {{count}} trả lời",
+  "replies_other": "{{count}} trả lời",
   "noReplies": "Chưa có trả lời",
   "error": "Không thể tải kho lưu trữ",
   "retry": "Thử lại",
@@ -29,6 +29,6 @@
   "emptyWindowSub": "Không có sự kiện hay tụ tập nào trong khoảng này. Thử khoảng rộng hơn.",
   "loadMore": "Tải thêm",
   "loading": "Đang tải…",
-  "went_one": "🙌 {{count}} đã tham gia",
-  "replies_one": "💬 {{count}} trả lời"
+  "went_one": "{{count}} đã tham gia",
+  "replies_one": "{{count}} trả lời"
 }

@@ -16,17 +16,17 @@
     "detailsLabel": "Añade detalles",
     "optional": "(opcional)",
     "detailsPlaceholder": "Da un poco de contexto…",
-    "expiry": "⏱ Caduca en 8 h",
+    "expiry": "Caduca en 8 h",
     "saving": "Guardando…",
     "starting": "Lanzando…",
     "saveChanges": "Guardar",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Una a la vez",
     "limitTitle": "Ya tienes una quedada",
     "limitSub": "Solo puedes tener una quedada a la vez. Ve a «{{title}}» o elimínala para lanzar una nueva.",
-    "limitGo": "Ir a mi quedada →",
+    "limitGo": "Ir a mi quedada",
     "yourHangout": "tu quedada",
-    "geoHint": "📍 Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi 👀🔥",
+    "geoHint": "Activa la ubicación para ver quién está cerca ahora — y que la gente alrededor vea tu Hi",
     "geoRequired": "Un Hi now le dice a la gente dónde encontrarte — activa la ubicación para continuar."
   },
   "deleteConfirm": "¿Eliminar esta quedada? Esto la termina para todos y es irreversible.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} se apunta",
     "countIn": "{{count}} en esta quedada",
-    "seeAll": "Ver todo →"
+    "seeAll": "Ver todo"
   },
   "owner": {
-    "edit": "✏️ Editar",
-    "delete": "🗑 Eliminar"
+    "edit": "Editar",
+    "delete": "Eliminar"
   },
   "gated": {
     "title": "Quedada solo para miembros",
@@ -70,7 +70,7 @@
     "exploring": "Explorando"
   },
   "reply": {
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Mensaje original no disponible"
   },
   "composer": {},

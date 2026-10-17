@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "邀請大家 ✨",
-    "linkCopied": "連結已複製 ✨",
+    "bringPeople": "邀請大家",
+    "linkCopied": "連結已複製",
     "vibeTitle": "分享這個 vibe",
     "eventAria": "分享活動"
   },
@@ -16,7 +16,7 @@
     "cancel": "取消",
     "deleting": "刪除中…",
     "confirm": "刪除",
-    "button": "🗑 刪除活動"
+    "button": "刪除活動"
   },
   "quickStart": "快速開始",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "日期",
   "today": "今天",
   "tomorrow": "明天",
-  "todayHint": "今天主辦能獲得最高的曝光度 🔥",
+  "todayHint": "今天主辦能獲得最高的曝光度",
   "starts": "開始",
   "ends": "結束",
   "repeat": "重複",
@@ -79,9 +79,9 @@
     "saving": "儲存中…",
     "creating": "建立中…",
     "saveChanges": "儲存變更",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "每天",

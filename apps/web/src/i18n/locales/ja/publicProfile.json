@@ -3,10 +3,10 @@
   "loading": "読み込み中…",
   "loadError": "プロフィールを読み込めませんでした。",
   "badgeMicro": {
-    "ghost": "ちょっと見てるだけ 👀",
-    "fresh": "来たばかり 👶",
+    "ghost": "ちょっと見てるだけ",
+    "fresh": "来たばかり",
     "regular": "よく顔を出す",
-    "host": "場を盛り上げる 🔥"
+    "host": "場を盛り上げる"
   },
   "modes": {
     "local": "ローカル",
@@ -41,7 +41,7 @@
     "events": "Hi plan",
     "friends": "友達",
     "vibes": "Vibes",
-    "picks": "街のおすすめ 👑",
+    "picks": "街のおすすめ",
     "challenges": "チャレンジ"
   },
   "host": "ホスト",
@@ -50,21 +50,21 @@
     "hangouts": "まだ集まりはありません",
     "events": "まだイベントはありません",
     "friends": "まだ友達はいません",
-    "challenges": "まだチャレンジがありません - 立ち上げよう 🔥"
+    "challenges": "まだチャレンジがありません - 立ち上げよう"
   },
   "vibesTab": {
     "score": "vibeスコア {{score}}",
     "basedOn_one": "{{count}}件のvibeに基づく",
     "basedOn_other": "{{count}}件のvibesに基づく",
-    "updateNote": "✏️ ノートを編集（{{rating}}★）",
-    "leaveNote": "⭐ ノートを残す",
+    "updateNote": "ノートを編集（{{rating}}★）",
+    "leaveNote": "ノートを残す",
     "placeholder": "何か優しい一言を…（任意）",
     "cancel": "キャンセル",
     "sending": "送信中…",
-    "sendNote": "ノートを送信 ✨",
+    "sendNote": "ノートを送信",
     "notesLabel": "ノート · {{count}}",
     "emptyTitle": "まだノートはありません",
-    "emptySub": "最初のノートを残しましょう ✨"
+    "emptySub": "最初のノートを残しましょう"
   },
   "picks": {
     "restaurant": "お気に入りのレストラン",
@@ -74,10 +74,10 @@
   },
   "actions": {
     "opening": "開いています…",
-    "message": "💬 メッセージ",
-    "friend": "✓ 友達",
-    "requestSent": "⌛ リクエスト送信済み",
-    "acceptRequest": "✓ リクエストを承認",
+    "message": "メッセージ",
+    "friend": "友達",
+    "requestSent": "リクエスト送信済み",
+    "acceptRequest": "リクエストを承認",
     "addFriend": "+ 友達",
     "removing": "削除中…",
     "unfriend": "友達を解除",

@@ -66,7 +66,7 @@
     "interestsHint": "- 最大5つまで選択"
   },
   "ambassador": {
-    "title": "街のおすすめ 👑",
+    "title": "街のおすすめ",
     "subtitle": "ローカルレジェンドとしてプロフィールに表示されます。",
     "restaurant": "お気に入りのレストラン",
     "restaurantPlaceholder": "いつも人を連れて行く場所",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "アップロード中…",
     "saving": "保存中…",
-    "saved": "保存しました ✓",
+    "saved": "保存しました",
     "save": "プロフィールを保存"
   },
   "signOut": "ログアウト",

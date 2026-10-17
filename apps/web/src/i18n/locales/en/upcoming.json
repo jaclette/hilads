@@ -8,7 +8,7 @@
   "emptyTitle": "Nothing scheduled",
   "emptySub": "No events on this day yet.",
   "public": "Public",
-  "going_one": "🙌 {{count}} going",
-  "going_other": "🙌 {{count}} going",
-  "liveNow": "🔥 Live now"
+  "going_one": "{{count}} going",
+  "going_other": "{{count}} going",
+  "liveNow": "Live now"
 }

@@ -8,7 +8,7 @@
   "emptyTitle": "Niente in programma",
   "emptySub": "Ancora nessun evento in questo giorno.",
   "public": "Pubblico",
-  "going_one": "🙌 {{count}} partecipante",
-  "going_other": "🙌 {{count}} partecipanti",
-  "liveNow": "🔥 In diretta"
+  "going_one": "{{count}} partecipante",
+  "going_other": "{{count}} partecipanti",
+  "liveNow": "In diretta"
 }

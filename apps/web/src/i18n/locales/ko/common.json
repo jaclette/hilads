@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ 모임",
   "publicEventsSection": "🎫 공개 이벤트",
   "accountWelcome": {
-    "title": "축하해요, {{username}}님! 🎉",
-    "subtitle": "계정이 준비됐어요 - 지금 할 수 있는 것들을 확인해 보세요 👇",
-    "f1": "🎉 모임을 열어 지금 바로 사람들을 모아보세요",
-    "f2": "📅 당신의 도시에서 이벤트를 열어보세요",
-    "f3": "💬 누구에게나 개인 메시지를 보내보세요",
-    "f4": "📍 근처에 누가 있는지 실시간으로 확인하세요",
-    "f5": "🤝 현지인과 여행자들과 연결되세요",
-    "fc1": "🔥 우리 도시 사람들에게 챌린지를 걸어보세요",
-    "fc2": "🌍 세계 다른 도시에 챌린지를 걸어보세요",
-    "cta": "출발해요 🚀"
+    "title": "축하해요, {{username}}님!",
+    "subtitle": "계정이 준비됐어요 - 지금 할 수 있는 것들을 확인해 보세요",
+    "f1": "모임을 열어 지금 바로 사람들을 모아보세요",
+    "f2": "당신의 도시에서 이벤트를 열어보세요",
+    "f3": "누구에게나 개인 메시지를 보내보세요",
+    "f4": "근처에 누가 있는지 실시간으로 확인하세요",
+    "f5": "현지인과 여행자들과 연결되세요",
+    "fc1": "우리 도시 사람들에게 챌린지를 걸어보세요",
+    "fc2": "세계 다른 도시에 챌린지를 걸어보세요",
+    "cta": "출발해요"
   },
   "onboarding": {
     "skip": "건너뛰기 ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 챌린지 만들기"
   },
   "share": {
-    "title": "무언가 공유하기 👀",
+    "title": "무언가 공유하기",
     "snap": "사진 찍기",
     "snapDesc": "사진을 찍거나 업로드하세요",
     "spot": "내 위치 공유",
@@ -96,7 +96,7 @@
     "hiNowDesc": "지금 뭔가 하고 싶나요? 말해 보세요"
   },
   "locationPicker": {
-    "title": "지금 어디에 있나요? 👀",
+    "title": "지금 어디에 있나요?",
     "search": "주소 또는 장소 검색",
     "moveHint": "지도를 움직여 조정하세요",
     "noResults": "장소를 찾을 수 없어요",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "첨부 추가",
     "emoji": "이모지",
-    "placeholderCity": "도시에 인사해요 👋",
-    "placeholderHangout": "참여한다고 알려요 🙌",
-    "placeholderEvent": "참가자들과 이야기해요 🎉",
-    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥"
+    "placeholderCity": "도시에 인사해요",
+    "placeholderHangout": "참여한다고 알려요",
+    "placeholderEvent": "참가자들과 이야기해요",
+    "placeholderChallenge": "응원하거나 팁을 공유해요"
   },
   "vibe": {
     "party": "파티",
@@ -148,8 +148,8 @@
     "thunder": "뇌우"
   },
   "time": {
-    "happeningNow": "🎉 지금 진행 중",
-    "inMin": "🔥 {{count}}분 후",
+    "happeningNow": "지금 진행 중",
+    "inMin": "{{count}}분 후",
     "today": "오늘",
     "tomorrow": "내일",
     "yesterday": "어제",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 챌린지",
   "shareToCity": "내 도시에 공유",
   "shareToWorld": "월드에 공유",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "리더보드 보기",
     "challenge": "챌린지 보기",
-    "event": "🎉 Hi plan 보기",
-    "topic": "🗣️ Hi now 보기"
+    "event": "Hi plan 보기",
+    "topic": "Hi now 보기"
   },
   "tabs": {
     "today": "오늘",

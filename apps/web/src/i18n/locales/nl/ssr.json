@@ -7,7 +7,7 @@
     "aboutHeading": "Zo werkt Hilads",
     "aboutBody": "Kies je stad. Start een challenge voor locals of reizigers, sluit aan bij een meetup, vind een hangout, of ontdek Local Events. Hoe meer je hier opbouwt, hoe lokaler je wordt - en hoe hoger je klimt op Most Local.",
     "citiesCta": "Blader door alle Hilads-steden",
-    "subhead": "🔥 Word local in elke stad die je bezoekt."
+    "subhead": "Word local in elke stad die je bezoekt."
   },
   "brand": "Hilads",
   "dateLocale": "nl-NL",
@@ -159,7 +159,7 @@
     "h1Tag": "Challenge",
     "audienceLocals": "Voor locals van {city}",
     "audienceExplorers": "Voor reizigers in {city}",
-    "validatedBadge": "✓ Gevalideerd",
+    "validatedBadge": "Gevalideerd",
     "openBadge": "Open",
     "typeLabel": "Type:",
     "typeFood": "Eten",

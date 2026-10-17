@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "拉人来 ✨",
-    "linkCopied": "链接已复制 ✨",
+    "bringPeople": "拉人来",
+    "linkCopied": "链接已复制",
     "vibeTitle": "分享这个 vibe",
     "eventAria": "分享活动"
   },
@@ -16,7 +16,7 @@
     "cancel": "取消",
     "deleting": "删除中…",
     "confirm": "删除",
-    "button": "🗑 删除活动"
+    "button": "删除活动"
   },
   "quickStart": "快速开始",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "日期",
   "today": "今天",
   "tomorrow": "明天",
-  "todayHint": "今天举办能让你获得最高曝光 🔥",
+  "todayHint": "今天举办能让你获得最高曝光",
   "starts": "开始",
   "ends": "结束",
   "repeat": "重复",
@@ -79,9 +79,9 @@
     "saving": "保存中…",
     "creating": "创建中…",
     "saveChanges": "保存更改",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "每天",

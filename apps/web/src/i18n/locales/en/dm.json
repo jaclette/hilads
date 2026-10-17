@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "Could not load messages.",
     "beginning": "Beginning of conversation",
-    "photo": "📷 Photo",
+    "photo": "Photo",
     "unavailable": "Original message unavailable",
     "tapMaps": "Tap to open in maps",
     "composer": "Message…",

@@ -2,9 +2,9 @@
   "title": "Was passiert ist",
   "filters": {
     "all": "Alle",
-    "events": "🎉 Events",
-    "pulses": "🗣️ Treffen",
-    "challenges": "🔥 Challenges"
+    "events": "Events",
+    "pulses": "Treffen",
+    "challenges": "Challenges"
   },
   "range": {
     "recent": "Kürzlich",
@@ -18,11 +18,11 @@
     "apply": "Anwenden"
   },
   "public": "Öffentlich",
-  "went_one": "🙌 {{count}} war dabei",
-  "went_other": "🙌 {{count}} waren dabei",
+  "went_one": "{{count}} war dabei",
+  "went_other": "{{count}} waren dabei",
   "hangoutTag": "Treffen",
-  "replies_one": "💬 {{count}} Antwort",
-  "replies_other": "💬 {{count}} Antworten",
+  "replies_one": "{{count}} Antwort",
+  "replies_other": "{{count}} Antworten",
   "noReplies": "Keine Antworten",
   "error": "Das Archiv konnte nicht geladen werden",
   "retry": "Erneut versuchen",

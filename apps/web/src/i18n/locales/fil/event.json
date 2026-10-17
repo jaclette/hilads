@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Magdala ng mga tao ✨",
-    "linkCopied": "Nakopya ang link ✨",
+    "bringPeople": "Magdala ng mga tao",
+    "linkCopied": "Nakopya ang link",
     "vibeTitle": "Ibahagi ang vibe na ito",
     "eventAria": "Ibahagi ang event"
   },
@@ -16,7 +16,7 @@
     "cancel": "Kanselahin",
     "deleting": "Dine-delete…",
     "confirm": "I-delete",
-    "button": "🗑 I-delete ang event"
+    "button": "I-delete ang event"
   },
   "quickStart": "Mabilisang simula",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Petsa",
   "today": "Ngayon",
   "tomorrow": "Bukas",
-  "todayHint": "Pinakamalaking visibility ang makukuha mo kapag nag-host ngayon 🔥",
+  "todayHint": "Pinakamalaking visibility ang makukuha mo kapag nag-host ngayon",
   "starts": "Magsisimula",
   "ends": "Magtatapos",
   "repeat": "Ulitin",
@@ -79,9 +79,9 @@
     "saving": "Sine-save…",
     "creating": "Ginagawa…",
     "saveChanges": "I-save ang mga pagbabago",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Araw-araw",

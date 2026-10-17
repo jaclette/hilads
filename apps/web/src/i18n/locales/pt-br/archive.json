@@ -2,9 +2,9 @@
   "title": "O que rolou",
   "filters": {
     "all": "Tudo",
-    "events": "🎉 Eventos",
-    "pulses": "🗣️ Rolês",
-    "challenges": "🔥 Desafios"
+    "events": "Eventos",
+    "pulses": "Rolês",
+    "challenges": "Desafios"
   },
   "range": {
     "recent": "Recente",
@@ -18,11 +18,11 @@
     "apply": "Aplicar"
   },
   "public": "Público",
-  "went_one": "🙌 {{count}} foi",
-  "went_other": "🙌 {{count}} foram",
+  "went_one": "{{count}} foi",
+  "went_other": "{{count}} foram",
   "hangoutTag": "Rolê",
-  "replies_one": "💬 {{count}} resposta",
-  "replies_other": "💬 {{count}} respostas",
+  "replies_one": "{{count}} resposta",
+  "replies_other": "{{count}} respostas",
   "noReplies": "Sem respostas",
   "error": "Não foi possível carregar o histórico",
   "retry": "Tentar de novo",

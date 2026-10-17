@@ -3,10 +3,10 @@
   "loading": "Wird geladen…",
   "loadError": "Profil konnte nicht geladen werden.",
   "badgeMicro": {
-    "ghost": "Nur am Stöbern 👀",
-    "fresh": "Gerade gelandet 👶",
+    "ghost": "Nur am Stöbern",
+    "fresh": "Gerade gelandet",
     "regular": "Oft hier",
-    "host": "Macht's möglich 🔥"
+    "host": "Macht's möglich"
   },
   "modes": {
     "local": "Local",
@@ -41,43 +41,43 @@
     "events": "Hi plan",
     "friends": "Freunde",
     "vibes": "Vibes",
-    "picks": "Stadt-Tipps 👑",
+    "picks": "Stadt-Tipps",
     "challenges": "Challenges"
   },
   "host": "Gastgeber",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "Noch keine Treffen",
     "events": "Noch keine Events",
     "friends": "Noch keine Freunde",
-    "challenges": "Noch keine Challenges - starte eine 🔥"
+    "challenges": "Noch keine Challenges - starte eine"
   },
   "vibesTab": {
     "score": "{{score}} Vibe-Score",
     "basedOn_one": "basierend auf {{count}} Vibe",
     "basedOn_other": "basierend auf {{count}} Vibes",
-    "updateNote": "✏️ Aktualisiere deine Notiz ({{rating}}★)",
-    "leaveNote": "⭐ Hinterlasse eine Notiz",
+    "updateNote": "Aktualisiere deine Notiz ({{rating}}★)",
+    "leaveNote": "Hinterlasse eine Notiz",
     "placeholder": "Sag etwas Nettes… (optional)",
     "cancel": "Abbrechen",
     "sending": "Wird gesendet…",
-    "sendNote": "Notiz senden ✨",
+    "sendNote": "Notiz senden",
     "notesLabel": "Notizen · {{count}}",
     "emptyTitle": "Noch keine Notizen",
-    "emptySub": "Sei der Erste, der eine Notiz hinterlässt ✨"
+    "emptySub": "Sei der Erste, der eine Notiz hinterlässt"
   },
   "picks": {
-    "restaurant": "LIEBLINGSRESTAURANT",
-    "spot": "GEHEIMTIPP",
-    "tip": "LOKALER TIPP",
-    "story": "STORY"
+    "restaurant": "Lieblingsrestaurant",
+    "spot": "Geheimtipp",
+    "tip": "Lokaler Tipp",
+    "story": "Story"
   },
   "actions": {
     "opening": "Wird geöffnet…",
-    "message": "💬 Nachricht",
-    "friend": "✓ Freund",
-    "requestSent": "⌛ Anfrage gesendet",
-    "acceptRequest": "✓ Anfrage annehmen",
+    "message": "Nachricht",
+    "friend": "Freund",
+    "requestSent": "Anfrage gesendet",
+    "acceptRequest": "Anfrage annehmen",
     "addFriend": "+ Freund",
     "removing": "Wird entfernt…",
     "unfriend": "Entfernen",

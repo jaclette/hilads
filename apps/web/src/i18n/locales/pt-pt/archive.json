@@ -2,9 +2,9 @@
   "title": "O que aconteceu",
   "filters": {
     "all": "Tudo",
-    "events": "🎉 Eventos",
-    "pulses": "🗣️ Convívios",
-    "challenges": "🔥 Desafios"
+    "events": "Eventos",
+    "pulses": "Convívios",
+    "challenges": "Desafios"
   },
   "range": {
     "recent": "Recente",
@@ -18,11 +18,11 @@
     "apply": "Aplicar"
   },
   "public": "Público",
-  "went_one": "🙌 {{count}} foi",
-  "went_other": "🙌 {{count}} foram",
+  "went_one": "{{count}} foi",
+  "went_other": "{{count}} foram",
   "hangoutTag": "Convívio",
-  "replies_one": "💬 {{count}} resposta",
-  "replies_other": "💬 {{count}} respostas",
+  "replies_one": "{{count}} resposta",
+  "replies_other": "{{count}} respostas",
   "noReplies": "Sem respostas",
   "error": "Não foi possível carregar o arquivo",
   "retry": "Tentar novamente",

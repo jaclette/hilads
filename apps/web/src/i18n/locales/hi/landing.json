@@ -6,33 +6,33 @@
     "storeGetItOn": "पाएं"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} व्यक्ति अभी आसपास घूम रहा है",
-    "peopleLive_other": "🔥 {{count}} लोग अभी आसपास घूम रहे हैं",
-    "events_one": "🎉 {{count}} Hi plan चल रहे",
-    "events_other": "🎉 {{count}} Hi plan चल रहे",
-    "hangouts_one": "🗣️ {{count}} Hi now सक्रिय",
-    "hangouts_other": "🗣️ {{count}} Hi now सक्रिय",
+    "peopleLive_one": "{{count}} व्यक्ति अभी आसपास घूम रहा है",
+    "peopleLive_other": "{{count}} लोग अभी आसपास घूम रहे हैं",
+    "events_one": "{{count}} Hi plan चल रहे",
+    "events_other": "{{count}} Hi plan चल रहे",
+    "hangouts_one": "{{count}} Hi now सक्रिय",
+    "hangouts_other": "{{count}} Hi now सक्रिय",
     "replies_one": "{{count}} जवाब",
     "replies_other": "{{count}} जवाब",
     "pickCity": "एक शहर चुनें\nऔर शामिल हों",
     "locating": "› आपका शहर ढूंढ रहे हैं...",
-    "browseCities": "शहर देखें →",
+    "browseCities": "शहर देखें",
     "yourName": "आपका नाम",
     "namePlaceholder": "ऐसे हेलो कहें...",
     "tryAgain": "फिर से कोशिश करें",
     "useLocation": "इसके बजाय मेरी लोकेशन इस्तेमाल करें",
-    "joinCity": "{{city}} में शामिल हों →",
-    "joinChat": "चैट में शामिल हों →",
+    "joinCity": "{{city}} में शामिल हों",
+    "joinChat": "चैट में शामिल हों",
     "hint": "// गुमनाम · तुरंत एक्सेस",
     "keepIdentity": "या अपनी पहचान बनाए रखें",
-    "createAccount": "✨ अकाउंट बनाएं",
+    "createAccount": "अकाउंट बनाएं",
     "logIn": "लॉग इन करें",
     "authHint": "अपना नाम सेव करें · प्रोफ़ाइल अनलॉक करें · दोस्त जोड़ें",
-    "challenges_one": "🔥 {{count}} खुला चैलेंज",
-    "challenges_other": "🔥 {{count}} खुले चैलेंज"
+    "challenges_one": "{{count}} खुला चैलेंज",
+    "challenges_other": "{{count}} खुले चैलेंज"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "वो लोकल बनें जो शहर चलाता है",
     "tagline": "आप spots जानते हैं। लोकल्स या यात्रियों को उन्हें ढूँढने का चैलेंज दें।",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "अपने शहर को चलाएं"
   },
   "exploring": {
-    "badge": "🧭 Exploring",
+    "badge": "Exploring",
     "title": "कहीं भी लोकल चैलेंज स्वीकारें",
     "tagline": "आप जहाँ भी उतरें, लोकल्स ने जो लॉन्च किया है उसे स्वीकारें।",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "वे पहले से हैं। तुम आ रहे हो?",
     "screen3_invitation": "आसान है ना? अब तुम्हारी बारी।",
     "screen4_invitation": "कोई फीड नहीं। बस असली मुलाक़ातें।",
-    "enterCity": "{{city}} में जुड़ो 🔥",
-    "enterChallenge": "यह चैलेंज लो 🔥",
-    "enterPicker": "अपना शहर चुनो 🔥",
+    "enterCity": "{{city}} में जुड़ो",
+    "enterChallenge": "यह चैलेंज लो",
+    "enterPicker": "अपना शहर चुनो",
     "swipeUp": "ऊपर स्वाइप करो",
     "liveHeadline": "{{city}} अभी लाइव है।",
     "how": {

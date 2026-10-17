@@ -16,17 +16,17 @@
     "detailsLabel": "Thêm chi tiết",
     "optional": "(tùy chọn)",
     "detailsPlaceholder": "Cho thêm chút ngữ cảnh…",
-    "expiry": "⏱ Tự hết hạn sau 8 giờ",
+    "expiry": "Tự hết hạn sau 8 giờ",
     "saving": "Đang lưu…",
     "starting": "Đang tạo…",
     "saveChanges": "Lưu thay đổi",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Mỗi lần một cái",
     "limitTitle": "Bạn đã có một tụ tập",
     "limitSub": "Bạn chỉ có thể chạy một tụ tập cùng lúc. Vào “{{title}}”, hoặc xóa nó để tạo cái mới.",
-    "limitGo": "Đến tụ tập của tôi →",
+    "limitGo": "Đến tụ tập của tôi",
     "yourHangout": "tụ tập của bạn",
-    "geoHint": "📍 Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn 👀🔥",
+    "geoHint": "Bật vị trí để xem ai đang ở gần ngay bây giờ — và để mọi người quanh đây thấy Hi của bạn",
     "geoRequired": "Một Hi now cho mọi người biết chỗ gặp bạn — bật vị trí để tiếp tục."
   },
   "deleteConfirm": "Xóa tụ tập này? Việc này kết thúc nó cho mọi người và không thể hoàn tác.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} đã tham gia",
     "countIn": "{{count}} người trong tụ tập này",
-    "seeAll": "Xem tất cả →"
+    "seeAll": "Xem tất cả"
   },
   "owner": {
-    "edit": "✏️ Sửa",
-    "delete": "🗑 Xóa"
+    "edit": "Sửa",
+    "delete": "Xóa"
   },
   "gated": {
     "title": "Tụ tập chỉ dành cho thành viên",
@@ -70,7 +70,7 @@
     "exploring": "Đang khám phá"
   },
   "reply": {
-    "photo": "📷 Ảnh",
+    "photo": "Ảnh",
     "unavailable": "Tin nhắn gốc không khả dụng"
   },
   "composer": {},

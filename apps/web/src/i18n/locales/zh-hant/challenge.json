@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "成功的挑戰",
-    "title": "✨ 成功的挑戰",
+    "title": "成功的挑戰",
     "allCities": "所有城市",
     "clearCity": "清除",
     "localTag": "本地",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "查看全部",
   "leaderboardCta": {
-    "title": "🏆 城市排行榜",
+    "title": "城市排行榜",
     "view": "查看",
     "sub": "成為第一個上榜的人 - 發起並完成一個挑戰"
   },
@@ -54,7 +54,7 @@
     "culture": "……然後我們見面聊聊 🎭",
     "help": "……然後我們一起做點瘋狂的事 🤪"
   },
-  "createCta": "發起挑戰 🔥",
+  "createCta": "發起挑戰",
   "saveChanges": "儲存變更",
   "errSave": "儲存失敗",
   "errStart": "無法發起挑戰",
@@ -76,7 +76,7 @@
     "meetBadge": "見面",
     "photosCount": "{{count}} 張相片",
     "noOneJoined": "還沒有人加入",
-    "beFirst": "⚡ 搶先加入 · +2",
+    "beFirst": "搶先加入 · +2",
     "daysLeft": "還剩 {{count}} 天",
     "lastDay": "即將到期",
     "joinGroup": "加入挑戰",
@@ -87,8 +87,8 @@
   "statusInProgress": "挑戰進行中",
   "statusAccomplished": "挑戰搞定",
   "openBadge": "開放",
-  "forLocals": "🏠 給在地人",
-  "forExplorers": "🧳 給旅人",
+  "forLocals": "給在地人",
+  "forExplorers": "給旅人",
   "validation": {
     "label": "如何驗證？",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "刪除",
   "shareCta": "分享",
   "shareInvite": "和我一起接受這個挑戰！",
-  "shareCopied": "已複製連結 ✓",
+  "shareCopied": "已複製連結",
   "noun": "挑戰",
   "examples": {
     "label": "沒靈感？點一個用",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "找不到對話",
     "empty": "第一個說點什麼吧。",
-    "emptyIntl": "打個招呼 👋 - 搞定後丟張 📸 上來。",
+    "emptyIntl": "打個招呼 - 搞定後丟張照片上來。",
     "cancel": {
       "creatorTitle": "取消這次參與？",
       "acceptorTitle": "放棄這個挑戰？",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "提議一個日期 📅",
+    "proposeCta": "提議一個日期",
     "counterCta": "另提一個",
     "editCta": "改約時間",
     "you": "你",
@@ -241,7 +241,7 @@
       "body": "{{name}}會標記結果。"
     },
     "approved": {
-      "title": "挑戰完成 🎉"
+      "title": "挑戰完成"
     },
     "rejected": {
       "title": "挑戰已關閉"
@@ -285,7 +285,7 @@
       "meetSoon": "{{date}} 見",
       "creatorVerdict": "和 {{name}} 見面如何？",
       "acceptorWaitingVerdict": "等待 {{name}} 確認",
-      "accomplished": "挑戰完成 🎉",
+      "accomplished": "挑戰完成",
       "closed": "挑戰已關閉",
       "submitProof": "提交你的證據",
       "waitingForProof": "等待證據",
@@ -351,13 +351,13 @@
   },
   "byCreator": "由 {{name}} 發起",
   "inspiration": {
-    "heading": "💡 挑戰靈感",
+    "heading": "挑戰靈感",
     "sub": "看看別處的在地人發起了什麼 - 獲取靈感",
-    "firstLocal": "🌱 成為 {{city}} 的第一個在地人",
+    "firstLocal": "成為 {{city}} 的第一個在地人",
     "firstLocalSub": "發起一個挑戰 · 到來的旅人會來接受",
-    "reward": "首個挑戰 · +10 🏆",
-    "launchFirst": "🔥 發起第一個挑戰",
-    "createYours": "🔥 在 {{city}} 建立你的挑戰",
+    "reward": "首個挑戰 · +10",
+    "launchFirst": "發起第一個挑戰",
+    "createYours": "在 {{city}} 建立你的挑戰",
     "by": "來自 {{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "目標城市",
-    "targetCityAnywhere": "🌍 世界任何地方",
+    "targetCityAnywhere": "世界任何地方",
     "targetCityHint": "保留「任何地方」可觸達全球旅行者，或選擇一個城市定向。",
     "proofRequirementsLabel": "照片要拍到什麼？",
     "proofRequirementsPlaceholder": "例如：日光下的菜餚，本人入鏡",
-    "proofRequirementsHint": "證據是一張照片 📸。參與者提交前會看到這裡 - 寫得具體些。",
+    "proofRequirementsHint": "證據是一張照片。參與者提交前會看到這裡 - 寫得具體些。",
     "cityPicker": {
       "title": "選擇目標城市",
       "searchPlaceholder": "搜尋城市…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 這個挑戰是私密的",
+      "title": "這個挑戰是私密的",
       "body": "只有建立者和挑戰者能看到對話。"
     }
   },
   "members": {
     "title": "在頻道中",
     "countIn": "頻道中 {{count}} 人",
-    "seeAll": "查看全部 →",
+    "seeAll": "查看全部",
     "empty": "還沒有人加入 - 來當第一個吧。",
     "kickCta": "移除",
     "kickAria": "將 {{name}} 從頻道移除",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 公開",
-      "friends": "👯 朋友",
-      "private": "🔒 私密"
+      "public": "公開",
+      "friends": "朋友",
+      "private": "私密"
     },
     "label": "誰可以看到？",
-    "public": "🌍 公開",
-    "friends": "👯 好友",
+    "public": "公開",
+    "friends": "好友",
     "publicHint": "城市裡的任何人都能看到並接受。",
     "friendsHint": "只有你的好友和你邀請的人能看到。",
     "intlLocked": "國際挑戰一律公開。",
@@ -536,11 +536,11 @@
     "errSubmit": "評分送出失敗，請重試。"
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 頂尖挑戰者"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "頂尖挑戰者"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "載入排行榜失敗，下拉重試。",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "分享我的排名",
       "periodMonth": "本月",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "積分如何獲得",
-    "helpLabel": "🏆 如何賺取積分",
-    "title": "🏆 挑戰如何運作",
+    "helpLabel": "如何賺取積分",
+    "title": "挑戰如何運作",
     "intro": "加入只得一點小分；真正到場或獲勝才有大分。光刷加入毫無意義。",
     "colStep": "步驟",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "隨著我們調整玩法，分數可能會變化。",
     "types": {
       "heading": "兩種挑戰",
-      "local": "🏙️ 見面 — 在約定的時間和地點線下組隊集合。所有到場的人都能拿大分。",
-      "international": "🌍 照片挑戰 — 所有人在截止前提交照片；由發起人選出獲勝者。"
+      "local": "見面 — 在約定的時間和地點線下組隊集合。所有到場的人都能拿大分。",
+      "international": "照片挑戰 — 所有人在截止前提交照片；由發起人選出獲勝者。"
     },
     "lifecycle": {
       "heading": "🔁 如何收尾",
       "body": "發起人設定挑戰，大家加入，最後由發起人確認 —— 誰到場了，或哪張照片獲勝。"
     },
-    "pointsHeading": "💯 如何賺取積分",
+    "pointsHeading": "如何賺取積分",
     "ways": {
       "join": "加入挑戰",
       "create": "發起挑戰",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "積分",
     "subtitle": {
-      "accepted": "你的挑戰被接受了 🤝",
-      "date_locked": "時間敲定 - 出發 🗓️",
-      "meetup": "任務完成 🎉",
-      "debrief": "任務完成 🎉",
-      "ghost": "下次再來 👻",
-      "default": "你正在榜上攀升 🚀",
-      "meet_bonus": "見面獎勵解鎖 🤝",
-      "challenge_created": "你發起了一個挑戰 🎯"
+      "accepted": "你的挑戰被接受了",
+      "date_locked": "時間敲定 - 出發",
+      "meetup": "任務完成",
+      "debrief": "任務完成",
+      "ghost": "下次再來",
+      "default": "你正在榜上攀升",
+      "meet_bonus": "見面獎勵解鎖",
+      "challenge_created": "你發起了一個挑戰"
     },
     "rank": {
       "city": "{{city}} 第 {{rank}} 名",
@@ -633,7 +633,7 @@
       "cities": "{{city}} 在城市中排名第 {{rank}}",
       "citiesBeyond": "{{city}} 排在城市 {{topN}} 名之外"
     },
-    "cta": "出發 ⚡",
+    "cta": "出發",
     "kindShort": {
       "accepted": "已接受",
       "date_locked": "時間已敲定",
@@ -651,8 +651,8 @@
     "total": "總分： {{total}} 分"
   },
   "welcomeGuest": {
-    "title": "👋 歡迎！無需註冊即可暢聊。",
-    "cta": "想接下這個挑戰？3秒註冊 →"
+    "title": "歡迎！無需註冊即可暢聊。",
+    "cta": "想接下這個挑戰？3秒註冊"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} 贏了",
-      "body": "拍得不錯！參與就得 {{points}} — 下次再來挑戰 💪"
+      "body": "拍得不錯！參與就得 {{points}} — 下次再來挑戰"
     },
     "present": {
       "title": "你來了！",

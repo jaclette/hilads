@@ -6,33 +6,33 @@
     "storeGetItOn": "Kunin sa"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} tao ang nagta-tambay ngayon",
-    "peopleLive_other": "🔥 {{count}} tao ang nagta-tambay ngayon",
-    "events_one": "🎉 {{count}} Hi plan ngayon",
-    "events_other": "🎉 {{count}} Hi plan ngayon",
-    "hangouts_one": "🗣️ {{count}} Hi now aktibo",
-    "hangouts_other": "🗣️ {{count}} Hi now aktibo",
+    "peopleLive_one": "{{count}} tao ang nagta-tambay ngayon",
+    "peopleLive_other": "{{count}} tao ang nagta-tambay ngayon",
+    "events_one": "{{count}} Hi plan ngayon",
+    "events_other": "{{count}} Hi plan ngayon",
+    "hangouts_one": "{{count}} Hi now aktibo",
+    "hangouts_other": "{{count}} Hi now aktibo",
     "replies_one": "{{count}} tugon",
     "replies_other": "{{count}} tugon",
     "pickCity": "Pumili ng lungsod\nat sumali na",
     "locating": "› hinahanap ang lungsod mo...",
-    "browseCities": "Mag-browse ng mga lungsod →",
+    "browseCities": "Mag-browse ng mga lungsod",
     "yourName": "Pangalan mo",
     "namePlaceholder": "Kumustahin sila bilang...",
     "tryAgain": "Subukan ulit",
     "useLocation": "Gamitin na lang ang aking lokasyon",
-    "joinCity": "Sumali sa {{city}} →",
-    "joinChat": "Sumali sa Chat →",
+    "joinCity": "Sumali sa {{city}}",
+    "joinChat": "Sumali sa Chat",
     "hint": "// anonymous · instant access",
     "keepIdentity": "o panatilihin ang iyong identity",
-    "createAccount": "✨ Gumawa ng account",
+    "createAccount": "Gumawa ng account",
     "logIn": "Mag-log in",
     "authHint": "I-save ang pangalan mo · i-unlock ang mga profile · magdagdag ng kaibigan",
-    "challenges_one": "🔥 {{count}} bukas na challenge",
-    "challenges_other": "🔥 {{count}} bukas na challenge"
+    "challenges_one": "{{count}} bukas na challenge",
+    "challenges_other": "{{count}} bukas na challenge"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Maging ang local na nagpapakilos sa siyudad",
     "tagline": "Alam mo ang mga spot. I-challenge ang mga local o biyahero na hanapin ang mga ito.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Pakilusin ang siyudad mo"
   },
   "exploring": {
-    "badge": "🧭 Nag-e-explore",
+    "badge": "Nag-e-explore",
     "title": "Tanggapin ang mga local na challenge kahit saan",
     "tagline": "Saan ka man dumating, tanggapin ang mga in-launch ng mga local.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Nandoon na sila. Sali ka na.",
     "screen3_invitation": "Simple, di ba? Ikaw naman.",
     "screen4_invitation": "Walang feed. Puro totoong meetup.",
-    "enterCity": "Sumali sa {{city}} 🔥",
-    "enterChallenge": "Tanggapin ang challenge 🔥",
-    "enterPicker": "Piliin ang iyong lungsod 🔥",
+    "enterCity": "Sumali sa {{city}}",
+    "enterChallenge": "Tanggapin ang challenge",
+    "enterPicker": "Piliin ang iyong lungsod",
     "swipeUp": "I-swipe pataas",
     "liveHeadline": "Buhay na buhay ang {{city}} ngayon.",
     "how": {

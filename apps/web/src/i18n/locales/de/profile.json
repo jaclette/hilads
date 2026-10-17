@@ -66,7 +66,7 @@
     "interestsHint": "- wähle bis zu 5"
   },
   "ambassador": {
-    "title": "Tipps für die Stadt 👑",
+    "title": "Tipps für die Stadt",
     "subtitle": "Wird auf deinem Profil als Local Legend angezeigt.",
     "restaurant": "Lieblingsrestaurant",
     "restaurantPlaceholder": "Ein Ort, zu dem du immer alle mitnimmst",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Wird hochgeladen…",
     "saving": "Wird gespeichert…",
-    "saved": "Gespeichert ✓",
+    "saved": "Gespeichert",
     "save": "Profil speichern"
   },
   "signOut": "Abmelden",

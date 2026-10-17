@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "Bring people ✨",
-    "linkCopied": "Link copied ✨",
+    "bringPeople": "Bring people",
+    "linkCopied": "Link copied",
     "vibeTitle": "Share this vibe",
     "eventAria": "Share event"
   },
@@ -16,7 +16,7 @@
     "cancel": "Cancel",
     "deleting": "Deleting…",
     "confirm": "Delete",
-    "button": "🗑 Delete event"
+    "button": "Delete event"
   },
   "quickStart": "Quick start",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "Date",
   "today": "Today",
   "tomorrow": "Tomorrow",
-  "todayHint": "Hosting today gets you the most visibility 🔥",
+  "todayHint": "Hosting today gets you the most visibility",
   "starts": "Starts",
   "ends": "Ends",
   "repeat": "Repeat",
@@ -79,9 +79,9 @@
     "saving": "Saving…",
     "creating": "Creating…",
     "saveChanges": "Save changes",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "Every day",

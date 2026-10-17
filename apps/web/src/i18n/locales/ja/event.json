@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "人を集める ✨",
-    "linkCopied": "リンクをコピーしました ✨",
+    "bringPeople": "人を集める",
+    "linkCopied": "リンクをコピーしました",
     "vibeTitle": "この vibe をシェア",
     "eventAria": "イベントをシェア"
   },
@@ -16,7 +16,7 @@
     "cancel": "キャンセル",
     "deleting": "削除中…",
     "confirm": "削除",
-    "button": "🗑 イベントを削除"
+    "button": "イベントを削除"
   },
   "quickStart": "クイックスタート",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "日付",
   "today": "今日",
   "tomorrow": "明日",
-  "todayHint": "今日主催すると一番見てもらえます 🔥",
+  "todayHint": "今日主催すると一番見てもらえます",
   "starts": "開始",
   "ends": "終了",
   "repeat": "繰り返し",
@@ -79,9 +79,9 @@
     "saving": "保存中…",
     "creating": "作成中…",
     "saveChanges": "変更を保存",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "毎日",

@@ -3,10 +3,10 @@
   "loading": "Đang tải…",
   "loadError": "Không thể tải hồ sơ.",
   "badgeMicro": {
-    "ghost": "Chỉ ghé xem 👀",
-    "fresh": "Vừa mới đến 👶",
+    "ghost": "Chỉ ghé xem",
+    "fresh": "Vừa mới đến",
     "regular": "Thường xuyên xuất hiện",
-    "host": "Người tạo nên mọi thứ 🔥"
+    "host": "Người tạo nên mọi thứ"
   },
   "modes": {
     "local": "Người địa phương",
@@ -41,44 +41,44 @@
     "events": "Hi plan",
     "friends": "Bạn bè",
     "vibes": "Vibes",
-    "picks": "Gợi ý 👑",
+    "picks": "Gợi ý",
     "challenges": "Thử thách"
   },
   "host": "Chủ",
-  "live": "TRỰC TIẾP",
+  "live": "Trực tiếp",
   "past": "Đã qua",
   "empty": {
     "hangouts": "Chưa có tụ tập",
     "events": "Chưa có sự kiện",
     "friends": "Chưa có bạn bè",
-    "challenges": "Chưa có thử thách - hãy tung một cái 🔥"
+    "challenges": "Chưa có thử thách - hãy tung một cái"
   },
   "vibesTab": {
     "score": "điểm vibe {{score}}",
     "basedOn_other": "dựa trên {{count}} vibe",
-    "updateNote": "✏️ Cập nhật ghi chú của bạn ({{rating}}★)",
-    "leaveNote": "⭐ Để lại ghi chú",
+    "updateNote": "Cập nhật ghi chú của bạn ({{rating}}★)",
+    "leaveNote": "Để lại ghi chú",
     "placeholder": "Nói điều gì đó tử tế… (tùy chọn)",
     "cancel": "Hủy",
     "sending": "Đang gửi…",
-    "sendNote": "Gửi ghi chú ✨",
+    "sendNote": "Gửi ghi chú",
     "notesLabel": "Ghi chú · {{count}}",
     "emptyTitle": "Chưa có ghi chú",
-    "emptySub": "Hãy là người đầu tiên để lại ghi chú ✨",
+    "emptySub": "Hãy là người đầu tiên để lại ghi chú",
     "basedOn_one": "dựa trên {{count}} vibe"
   },
   "picks": {
-    "restaurant": "NHÀ HÀNG YÊU THÍCH",
-    "spot": "ĐỊA ĐIỂM ẨN",
-    "tip": "MẸO ĐỊA PHƯƠNG",
-    "story": "CÂU CHUYỆN"
+    "restaurant": "Nhà hàng yêu thích",
+    "spot": "Địa điểm ẩn",
+    "tip": "Mẹo địa phương",
+    "story": "Câu chuyện"
   },
   "actions": {
     "opening": "Đang mở…",
-    "message": "💬 Nhắn tin",
-    "friend": "✓ Bạn bè",
-    "requestSent": "⌛ Đã gửi lời mời",
-    "acceptRequest": "✓ Chấp nhận lời mời",
+    "message": "Nhắn tin",
+    "friend": "Bạn bè",
+    "requestSent": "Đã gửi lời mời",
+    "acceptRequest": "Chấp nhận lời mời",
     "addFriend": "+ Kết bạn",
     "removing": "Đang xóa…",
     "unfriend": "Hủy kết bạn",

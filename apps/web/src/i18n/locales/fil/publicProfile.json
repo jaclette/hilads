@@ -3,10 +3,10 @@
   "loading": "Naglo-load…",
   "loadError": "Hindi ma-load ang profile.",
   "badgeMicro": {
-    "ghost": "Nagbo-browse lang 👀",
-    "fresh": "Kakarating lang 👶",
+    "ghost": "Nagbo-browse lang",
+    "fresh": "Kakarating lang",
     "regular": "Madalas sumipot",
-    "host": "Siyang nagpapangyari 🔥"
+    "host": "Siyang nagpapangyari"
   },
   "modes": {
     "local": "Local",
@@ -41,43 +41,43 @@
     "events": "Hi plan",
     "friends": "Mga kaibigan",
     "vibes": "Vibes",
-    "picks": "City Picks 👑",
+    "picks": "City Picks",
     "challenges": "Mga challenge"
   },
   "host": "Host",
-  "live": "LIVE",
+  "live": "Live",
   "empty": {
     "hangouts": "Wala pang tambayan",
     "events": "Wala pang event",
     "friends": "Wala pang kaibigan",
-    "challenges": "Wala pang challenge - mag-launch ka 🔥"
+    "challenges": "Wala pang challenge - mag-launch ka"
   },
   "vibesTab": {
     "score": "{{score}} vibe score",
     "basedOn_one": "base sa {{count}} vibe",
     "basedOn_other": "base sa {{count}} vibes",
-    "updateNote": "✏️ I-update ang iyong note ({{rating}}★)",
-    "leaveNote": "⭐ Mag-iwan ng note",
+    "updateNote": "I-update ang iyong note ({{rating}}★)",
+    "leaveNote": "Mag-iwan ng note",
     "placeholder": "Magsabi ng maganda… (opsyonal)",
     "cancel": "Kanselahin",
     "sending": "Ipinapadala…",
-    "sendNote": "Ipadala ang note ✨",
+    "sendNote": "Ipadala ang note",
     "notesLabel": "Mga note · {{count}}",
     "emptyTitle": "Wala pang note",
-    "emptySub": "Maging una sa pag-iwan ng note ✨"
+    "emptySub": "Maging una sa pag-iwan ng note"
   },
   "picks": {
-    "restaurant": "PABORITONG RESTAURANT",
-    "spot": "HIDDEN GEM",
-    "tip": "LOCAL TIP",
-    "story": "KWENTO"
+    "restaurant": "Paboritong restaurant",
+    "spot": "Hidden gem",
+    "tip": "Local tip",
+    "story": "Kwento"
   },
   "actions": {
     "opening": "Binubuksan…",
-    "message": "💬 Mensahe",
-    "friend": "✓ Kaibigan",
-    "requestSent": "⌛ Naipadala na ang request",
-    "acceptRequest": "✓ Tanggapin ang request",
+    "message": "Mensahe",
+    "friend": "Kaibigan",
+    "requestSent": "Naipadala na ang request",
+    "acceptRequest": "Tanggapin ang request",
     "addFriend": "+ Kaibigan",
     "removing": "Tinatanggal…",
     "unfriend": "I-unfriend",

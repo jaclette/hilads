@@ -6,33 +6,33 @@
     "storeGetItOn": "Disponible en"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} persona por aquí ahora mismo",
-    "peopleLive_other": "🔥 {{count}} personas por aquí ahora mismo",
-    "events_one": "🎉 {{count}} Hi plan en curso",
-    "events_other": "🎉 {{count}} Hi plan en curso",
-    "hangouts_one": "🗣️ {{count}} Hi now activos",
-    "hangouts_other": "🗣️ {{count}} Hi now activos",
+    "peopleLive_one": "{{count}} persona por aquí ahora mismo",
+    "peopleLive_other": "{{count}} personas por aquí ahora mismo",
+    "events_one": "{{count}} Hi plan en curso",
+    "events_other": "{{count}} Hi plan en curso",
+    "hangouts_one": "{{count}} Hi now activos",
+    "hangouts_other": "{{count}} Hi now activos",
     "replies_one": "{{count}} respuesta",
     "replies_other": "{{count}} respuestas",
     "pickCity": "Elige una ciudad\ny únete",
     "locating": "› localizando tu ciudad...",
-    "browseCities": "Explorar ciudades →",
+    "browseCities": "Explorar ciudades",
     "yourName": "Tu nombre",
     "namePlaceholder": "Saluda como...",
     "tryAgain": "Reintentar",
     "useLocation": "Usar mi ubicación",
-    "joinCity": "Unirse a {{city}} →",
-    "joinChat": "Unirse al chat →",
+    "joinCity": "Unirse a {{city}}",
+    "joinChat": "Unirse al chat",
     "hint": "// anónimo · acceso inmediato",
     "keepIdentity": "o conserva tu identidad",
-    "createAccount": "✨ Crear una cuenta",
+    "createAccount": "Crear una cuenta",
     "logIn": "Iniciar sesión",
     "authHint": "Conserva tu nombre · desbloquea perfiles · añade amigos",
-    "challenges_one": "🔥 {{count}} reto abierto",
-    "challenges_other": "🔥 {{count}} retos abiertos"
+    "challenges_one": "{{count}} reto abierto",
+    "challenges_other": "{{count}} retos abiertos"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Sé el local que mueve la ciudad",
     "tagline": "Conoces los spots. Reta a los locales o viajeros a encontrarlos.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Mueve tu ciudad"
   },
   "exploring": {
-    "badge": "🧭 Explorando",
+    "badge": "Explorando",
     "title": "Acepta retos locales en cualquier ciudad",
     "tagline": "Donde sea que aterrices, acepta lo que los locales lanzaron.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Ya están dentro. Únete.",
     "screen3_invitation": "Fácil, ¿no? Te toca.",
     "screen4_invitation": "Sin feed. Solo encuentros reales.",
-    "enterCity": "Únete a {{city}} 🔥",
-    "enterChallenge": "Acepta este reto 🔥",
-    "enterPicker": "Elige tu ciudad 🔥",
+    "enterCity": "Únete a {{city}}",
+    "enterChallenge": "Acepta este reto",
+    "enterPicker": "Elige tu ciudad",
     "swipeUp": "Desliza hacia arriba",
     "liveHeadline": "{{city}} está en vivo ahora mismo.",
     "how": {

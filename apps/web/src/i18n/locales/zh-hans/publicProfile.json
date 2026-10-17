@@ -3,10 +3,10 @@
   "loading": "加载中…",
   "loadError": "无法加载个人资料。",
   "badgeMicro": {
-    "ghost": "只是逛逛 👀",
-    "fresh": "刚刚抵达 👶",
+    "ghost": "只是逛逛",
+    "fresh": "刚刚抵达",
     "regular": "经常出现",
-    "host": "让事情发生 🔥"
+    "host": "让事情发生"
   },
   "modes": {
     "local": "本地人",
@@ -41,7 +41,7 @@
     "events": "Hi plan",
     "friends": "好友",
     "vibes": "Vibes",
-    "picks": "城市推荐 👑",
+    "picks": "城市推荐",
     "challenges": "挑战"
   },
   "host": "主持人",
@@ -50,21 +50,21 @@
     "hangouts": "还没有聚会",
     "events": "还没有活动",
     "friends": "还没有好友",
-    "challenges": "还没有挑战 - 发起一个 🔥"
+    "challenges": "还没有挑战 - 发起一个"
   },
   "vibesTab": {
     "score": "{{score}} vibe 分",
     "basedOn_one": "基于 {{count}} 个 vibe",
     "basedOn_other": "基于 {{count}} 个 vibe",
-    "updateNote": "✏️ 更新你的留言（{{rating}}★）",
-    "leaveNote": "⭐ 留个言",
+    "updateNote": "更新你的留言（{{rating}}★）",
+    "leaveNote": "留个言",
     "placeholder": "说点好话吧…（可选）",
     "cancel": "取消",
     "sending": "发送中…",
-    "sendNote": "发送留言 ✨",
+    "sendNote": "发送留言",
     "notesLabel": "留言 · {{count}}",
     "emptyTitle": "还没有留言",
-    "emptySub": "来做第一个留言的人吧 ✨"
+    "emptySub": "来做第一个留言的人吧"
   },
   "picks": {
     "restaurant": "最爱的餐厅",
@@ -74,10 +74,10 @@
   },
   "actions": {
     "opening": "打开中…",
-    "message": "💬 消息",
-    "friend": "✓ 好友",
-    "requestSent": "⌛ 请求已发送",
-    "acceptRequest": "✓ 接受请求",
+    "message": "消息",
+    "friend": "好友",
+    "requestSent": "请求已发送",
+    "acceptRequest": "接受请求",
     "addFriend": "+ 好友",
     "removing": "移除中…",
     "unfriend": "删除好友",

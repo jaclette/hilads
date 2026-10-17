@@ -66,7 +66,7 @@
     "interestsHint": "- chọn tối đa 5"
   },
   "ambassador": {
-    "title": "Gợi ý của thành phố 👑",
+    "title": "Gợi ý của thành phố",
     "subtitle": "Hiển thị trên hồ sơ của bạn với tư cách huyền thoại địa phương.",
     "restaurant": "Nhà hàng yêu thích",
     "restaurantPlaceholder": "Nơi bạn luôn dẫn mọi người đến",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Đang tải lên…",
     "saving": "Đang lưu…",
-    "saved": "Đã lưu ✓",
+    "saved": "Đã lưu",
     "save": "Lưu hồ sơ"
   },
   "signOut": "Đăng xuất",

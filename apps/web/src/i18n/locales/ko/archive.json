@@ -2,9 +2,9 @@
   "title": "지난 활동",
   "filters": {
     "all": "전체",
-    "events": "🎉 이벤트",
-    "pulses": "🗣️ 모임",
-    "challenges": "🔥 챌린지"
+    "events": "이벤트",
+    "pulses": "모임",
+    "challenges": "챌린지"
   },
   "range": {
     "recent": "최근",
@@ -18,11 +18,11 @@
     "apply": "적용"
   },
   "public": "공개",
-  "went_one": "🙌 {{count}}명 참여함",
-  "went_other": "🙌 {{count}}명 참여함",
+  "went_one": "{{count}}명 참여함",
+  "went_other": "{{count}}명 참여함",
   "hangoutTag": "모임",
-  "replies_one": "💬 답글 {{count}}개",
-  "replies_other": "💬 답글 {{count}}개",
+  "replies_one": "답글 {{count}}개",
+  "replies_other": "답글 {{count}}개",
   "noReplies": "답글 없음",
   "error": "아카이브를 불러오지 못했어요",
   "retry": "다시 시도",

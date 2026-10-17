@@ -211,7 +211,7 @@ export default function ChallengeVersusCard({
               <span style={{ flex: 1 }} />
               <span role="button" tabIndex={0} className={`challenge-group-pill challenge-group-pill--first${c.is_campaign ? ' challenge-group-pill--campaign' : ''}`} onClick={acceptPill}>
                 {(() => {
-                  const label = t('card.beFirst', { defaultValue: '⚡ Be the first · +2' })
+                  const label = t('card.beFirst', { defaultValue: 'Be the first · +2' })
                   // Campaign = 2× points, so the join reward is +4, not +2.
                   return c.is_campaign ? label.replace('+2', '+4') : label
                 })()}

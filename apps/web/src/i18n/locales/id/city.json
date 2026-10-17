@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 Ide nongkrong",
+    "heading": "Ide nongkrong",
     "sub": "Apa yang diadakan warga lokal di tempat lain - cari inspirasi",
-    "openYours": "🔥 Buat punyamu di {{city}}",
+    "openYours": "Buat punyamu di {{city}}",
     "by": "oleh {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} sedang live ✨",
+    "live": "{{city}} sedang live",
     "dismiss": "Tutup",
     "body": "Orang sungguhan, sekarang juga. Sapa, lihat siapa yang ada di sekitar, atau ajak teman.",
-    "sayHi": "Sapa 👋",
+    "sayHi": "Sapa",
     "invite": "Undang teman"
   },
   "imageType": "Silakan pilih gambar JPEG, PNG, atau WebP.",
@@ -57,10 +57,10 @@
     "topCities": "Kota teraktif saat ini",
     "cities": "Kota",
     "switchTitle": "Ganti kota",
-    "filterActive": "🔥 Paling aktif",
-    "filterEvents": "🎉 Acara terbanyak",
-    "filterOnline": "🟢 Paling banyak online",
-    "filterChallenges": "⚡ Terbanyak tantangan",
+    "filterActive": "Paling aktif",
+    "filterEvents": "Acara terbanyak",
+    "filterOnline": "Paling banyak online",
+    "filterChallenges": "Terbanyak tantangan",
     "challenges_one": "{{count}} tantangan",
     "challenges_other": "{{count}} tantangan",
     "members_one": "{{count}} anggota",
@@ -81,18 +81,18 @@
     "hangoutTag": "Nongkrong",
     "eventTag": "Acara",
     "public": "Publik",
-    "activeNow": "● Aktif sekarang",
+    "activeNow": "Aktif sekarang",
     "repliesNew": "Belum ada balasan - jadilah yang pertama",
-    "replies_one": "💬 {{count}} balasan",
-    "replies_other": "💬 {{count}} balasan",
-    "going_one": "🙌 {{count}} ikut",
-    "going_other": "🙌 {{count}} ikut",
+    "replies_one": "{{count}} balasan",
+    "replies_other": "{{count}} balasan",
+    "going_one": "{{count}} ikut",
+    "going_other": "{{count}} ikut",
     "hostedBy": "Dipandu oleh {{name}}",
     "groupHilads": "Acara lokal Hilads",
     "groupPublic": "Acara lokal publik",
-    "groupPublicTicket": "🎫 Acara lokal publik",
+    "groupPublicTicket": "Acara lokal publik",
     "createEvent": "Buat acara lokal",
-    "startHangout": "Mulai nongkrong 🗣️",
+    "startHangout": "Mulai nongkrong",
     "openPlace": "Buka tempatmu",
     "loadError": "Tidak bisa memuat acara",
     "loadErrorSub": "Tarik untuk coba lagi nanti atau buat sesuatu yang baru di {{city}}.",
@@ -105,7 +105,7 @@
     "noEventsSub": "Jadilah yang pertama membuatnya di {{city}}",
     "noHangoutsSub": "Mulai nongkrong dan buat kota ramai bicara",
     "filterAll": "Semua",
-    "seeComing": "Lihat yang akan datang 🔮",
+    "seeComing": "Lihat yang akan datang",
     "seeHappened": "lihat apa yang terjadi",
     "createNew": "Buat baru",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "Sapa {{name}}",
-    "sayHiGeneric": "Sapa 👋",
-    "hostWaiting": "Menunggu sapaan pertama 👋",
+    "sayHiGeneric": "Sapa",
+    "hostWaiting": "Menunggu sapaan pertama",
     "hiNowHint": "nongkrong sekarang",
     "hiLaterHint": "rencanakan acara"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "Acaramu",
     "edit": "Edit",
     "join": "Gabung",
-    "joined": "Bergabung ✓",
+    "joined": "Bergabung",
     "here": "{{count}} di sini",
     "going_one": "{{count}} ikut",
     "going_other": "{{count}} ikut",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "Awal percakapan",
     "arriving": "Orang-orang mulai berdatangan",
-    "firstChat": "Jadilah yang pertama ngobrol di sini 👇",
-    "firstHi": "Jadilah yang pertama menyapa 👇"
+    "firstChat": "Jadilah yang pertama ngobrol di sini",
+    "firstHi": "Jadilah yang pertama menyapa"
   },
   "create": {
     "title": "Mau ngapain?",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "Gila",
     "challengeTitleLabel": "Tantanganmu",
     "challengeTitlePlaceholder": "mis. Ajak aku ke kafe favoritmu",
-    "challengeCta": "Luncurkan tantangan 🔥",
+    "challengeCta": "Luncurkan tantangan",
     "challengeErrStart": "Gagal meluncurkan tantangan"
   },
   "goingModal": {
     "going": "ikut",
     "inThisHangout": "di nongkrong ini",
     "loading": "Memuat…",
-    "empty": "Belum ada siapa-siapa - jadilah yang pertama gabung! 🙌"
+    "empty": "Belum ada siapa-siapa - jadilah yang pertama gabung!"
   },
   "nickname": {
     "label": "Nama panggilan",
@@ -201,15 +201,15 @@
     "anonymous": "// anonim · tidak perlu mendaftar"
   },
   "prompt": {
-    "exploreText": "🔥 Lihat apa yang terjadi sekarang",
+    "exploreText": "Lihat apa yang terjadi sekarang",
     "exploreCta": "Lihat apa yang terjadi",
-    "photoText": "📸 Bagikan apa yang terjadi",
+    "photoText": "Bagikan apa yang terjadi",
     "shoot": "Foto",
-    "createEventText": "🎉 Punya rencana malam ini?",
+    "createEventText": "Punya rencana malam ini?",
     "createEventCta": "Buat acara",
-    "challengeIntroText": "🔥 Baru di sini? Yuk lihat cara kerja tantangan",
+    "challengeIntroText": "Baru di sini? Yuk lihat cara kerja tantangan",
     "challengeIntroCta": "Lihat",
-    "installText": "✨ Tambahkan Hilads ke layar utamamu\nJangan pernah lewatkan apa yang terjadi di kotamu",
+    "installText": "Tambahkan Hilads ke layar utamamu\nJangan pernah lewatkan apa yang terjadi di kotamu",
     "installAdd": "Tambahkan",
     "installHow": "Caranya"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 Para local check-in"
   },
   "ownerPrompt": {
-    "text": "🔥 Kamu memulai acara ini!",
+    "text": "Kamu memulai acara ini!",
     "sub": "Bikin lebih baik lagi - tambahkan deskripsi, perbarui waktu, atau bagikan.",
-    "edit": "✏️ Edit acara"
+    "edit": "Edit acara"
   },
   "feedNew": {
-    "event": "🎉 Acara baru: {{title}}",
+    "event": "Acara baru: {{title}}",
     "join": "Gabung",
     "replies_one": "{{count}} balasan",
     "replies_other": "{{count}} balasan",
-    "challengeLocals": "🔥 {{name}} menantang warga lokal: {{title}}",
-    "challengeExplorers": "🔥 {{name}} menantang para pelancong: {{title}}",
-    "challengeCta": "Lihat →",
-    "challengeValidated": "🏆 Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
+    "challengeLocals": "{{name}} menantang warga lokal: {{title}}",
+    "challengeExplorers": "{{name}} menantang para pelancong: {{title}}",
+    "challengeCta": "Lihat",
+    "challengeValidated": "Tantangan selesai! {{name}} memvalidasi \"{{title}}\".",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} Tantangan internasional: {{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "Live",
-    "recurring": "↻ Berulang",
+    "recurring": "Berulang",
     "upcoming": "Akan datang",
     "delete": "Hapus acara"
   },
   "arrivalsBar": {
-    "label": "✈️ Kedatangan terkini",
+    "label": "Kedatangan terkini",
     "sheetTitle": "Kedatangan",
     "empty": "Belum ada kedatangan"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 {{nickname}} dari {{city}} baru saja bergabung dengan Hilads",
       "challengeWon": "🏆 {{nickname}} dari {{city}} memenangkan tantangan {{challenge}}"
     },
-    "quietCard": "Sepi di sini? {{count}} belum dibaca di Dunia 🌍 — ketuk untuk buka",
+    "quietCard": "Sepi di sini? {{count}} belum dibaca di Dunia — ketuk untuk buka",
     "heroEmpty": "Jadilah yang pertama menantang sebuah kota",
     "heroEmptySub": "Luncurkan tantangan antarkota",
     "leaderboard": "Papan peringkat",

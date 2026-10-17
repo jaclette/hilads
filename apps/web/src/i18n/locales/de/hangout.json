@@ -16,17 +16,17 @@
     "detailsLabel": "Details hinzufügen",
     "optional": "(optional)",
     "detailsPlaceholder": "Gib etwas Kontext…",
-    "expiry": "⏱ Läuft automatisch in 8 Std. ab",
+    "expiry": "Läuft automatisch in 8 Std. ab",
     "saving": "Wird gespeichert…",
     "starting": "Wird gestartet…",
     "saveChanges": "Änderungen speichern",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Eins nach dem anderen",
     "limitTitle": "Du hast bereits ein Treffen",
     "limitSub": "Du kannst nur ein Treffen gleichzeitig laufen lassen. Geh zu „{{title}}“ oder lösch es, um ein neues zu starten.",
-    "limitGo": "Zu meinem Treffen →",
+    "limitGo": "Zu meinem Treffen",
     "yourHangout": "dein Treffen",
-    "geoHint": "📍 Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi 👀🔥",
+    "geoHint": "Standort an, um zu sehen, wer gerade in der Nähe ist — und Leute um dich herum sehen dein Hi",
     "geoRequired": "Ein Hi now sagt anderen, wo sie dich treffen — aktiviere den Standort, um fortzufahren."
   },
   "deleteConfirm": "Dieses Treffen löschen? Das beendet es für alle und kann nicht rückgängig gemacht werden.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} ist dabei",
     "countIn": "{{count}} in diesem Treffen",
-    "seeAll": "Alle ansehen →"
+    "seeAll": "Alle ansehen"
   },
   "owner": {
-    "edit": "✏️ Bearbeiten",
-    "delete": "🗑 Löschen"
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
   },
   "gated": {
     "title": "Treffen nur für Mitglieder",
@@ -70,7 +70,7 @@
     "exploring": "Exploring"
   },
   "reply": {
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Originalnachricht nicht verfügbar"
   },
   "composer": {},

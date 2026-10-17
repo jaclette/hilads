@@ -2,9 +2,9 @@
   "title": "Ano ang nangyari",
   "filters": {
     "all": "Lahat",
-    "events": "🎉 Events",
-    "pulses": "🗣️ Tambayan",
-    "challenges": "🔥 Mga challenge"
+    "events": "Events",
+    "pulses": "Tambayan",
+    "challenges": "Mga challenge"
   },
   "range": {
     "recent": "Kamakailan",
@@ -18,11 +18,11 @@
     "apply": "I-apply"
   },
   "public": "Public",
-  "went_one": "🙌 {{count}} sumama",
-  "went_other": "🙌 {{count}} sumama",
+  "went_one": "{{count}} sumama",
+  "went_other": "{{count}} sumama",
   "hangoutTag": "Tambayan",
-  "replies_one": "💬 {{count}} tugon",
-  "replies_other": "💬 {{count}} tugon",
+  "replies_one": "{{count}} tugon",
+  "replies_other": "{{count}} tugon",
   "noReplies": "Walang tugon",
   "error": "Hindi ma-load ang archive",
   "retry": "Subukan ulit",

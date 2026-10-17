@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ Tụ tập",
   "publicEventsSection": "🎫 Sự kiện công khai",
   "accountWelcome": {
-    "title": "Chúc mừng, {{username}}! 🎉",
-    "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay 👇",
-    "f1": "🎉 Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
-    "f2": "📅 Tổ chức một sự kiện trong thành phố của bạn",
-    "f3": "💬 Gửi tin nhắn riêng cho bất kỳ ai",
-    "f4": "📍 Xem ai đang ở gần, theo thời gian thực",
-    "f5": "🤝 Kết nối với người địa phương và những người ưa khám phá",
-    "fc1": "🔥 Thách đấu người dân trong thành phố của bạn",
-    "fc2": "🌍 Thách đấu một thành phố khác trên thế giới",
-    "cta": "Bắt đầu thôi 🚀"
+    "title": "Chúc mừng, {{username}}!",
+    "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay",
+    "f1": "Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
+    "f2": "Tổ chức một sự kiện trong thành phố của bạn",
+    "f3": "Gửi tin nhắn riêng cho bất kỳ ai",
+    "f4": "Xem ai đang ở gần, theo thời gian thực",
+    "f5": "Kết nối với người địa phương và những người ưa khám phá",
+    "fc1": "Thách đấu người dân trong thành phố của bạn",
+    "fc2": "Thách đấu một thành phố khác trên thế giới",
+    "cta": "Bắt đầu thôi"
   },
   "onboarding": {
     "skip": "Bỏ qua ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 Tạo thử thách"
   },
   "share": {
-    "title": "Chia sẻ điều gì đó 👀",
+    "title": "Chia sẻ điều gì đó",
     "snap": "Chụp ảnh",
     "snapDesc": "Chụp hoặc tải ảnh lên",
     "spot": "Thả vị trí của bạn",
@@ -96,7 +96,7 @@
     "hiNowDesc": "Muốn làm gì đó ngay? Nói đi"
   },
   "locationPicker": {
-    "title": "Bạn đang ở đâu? 👀",
+    "title": "Bạn đang ở đâu?",
     "search": "Tìm địa chỉ hoặc địa điểm",
     "moveHint": "Di chuyển bản đồ để điều chỉnh",
     "noResults": "Không tìm thấy địa điểm",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "Thêm tệp đính kèm",
     "emoji": "Emoji",
-    "placeholderCity": "Chào thành phố của bạn 👋",
-    "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
-    "placeholderEvent": "Trò chuyện với người tham dự 🎉",
-    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥"
+    "placeholderCity": "Chào thành phố của bạn",
+    "placeholderHangout": "Báo với mọi người bạn tham gia",
+    "placeholderEvent": "Trò chuyện với người tham dự",
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn"
   },
   "vibe": {
     "party": "Tiệc tùng",
@@ -148,8 +148,8 @@
     "thunder": "giông bão"
   },
   "time": {
-    "happeningNow": "🎉 đang diễn ra",
-    "inMin": "🔥 sau {{count}} phút",
+    "happeningNow": "đang diễn ra",
+    "inMin": "sau {{count}} phút",
     "today": "Hôm nay",
     "tomorrow": "Ngày mai",
     "yesterday": "Hôm qua",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 Thử thách",
   "shareToCity": "Chia sẻ lên thành phố của tôi",
   "shareToWorld": "Chia sẻ lên Thế giới",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "Xem bảng xếp hạng",
     "challenge": "Xem thử thách",
-    "event": "🎉 Xem Hi plan",
-    "topic": "🗣️ Xem Hi now"
+    "event": "Xem Hi plan",
+    "topic": "Xem Hi now"
   },
   "tabs": {
     "today": "Hôm nay",
@@ -190,6 +190,6 @@
     "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
   },
   "signUp": "Đăng ký",
-  "settings": "CÀI ĐẶT",
+  "settings": "Cài đặt",
   "firstLaunch": "Mỗi ngày một challenge địa phương."
 }

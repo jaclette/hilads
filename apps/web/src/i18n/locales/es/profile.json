@@ -66,7 +66,7 @@
     "interestsHint": "- elige hasta 5"
   },
   "ambassador": {
-    "title": "Recomendaciones de la ciudad 👑",
+    "title": "Recomendaciones de la ciudad",
     "subtitle": "Se muestran en tu perfil como leyenda local.",
     "restaurant": "Restaurante favorito",
     "restaurantPlaceholder": "Un sitio al que siempre llevas a la gente",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Subiendo…",
     "saving": "Guardando…",
-    "saved": "Guardado ✓",
+    "saved": "Guardado",
     "save": "Guardar el perfil"
   },
   "signOut": "Cerrar sesión",

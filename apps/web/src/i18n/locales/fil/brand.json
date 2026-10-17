@@ -1,9 +1,9 @@
 {
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Bago",
-    "regular": "😎 Suki",
-    "host": "👑 Alamat"
+    "ghost": "Ghost",
+    "fresh": "Bago",
+    "regular": "Suki",
+    "host": "Alamat"
   },
   "now": "now",
   "myCity": "my city",

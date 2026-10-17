@@ -6,7 +6,7 @@
     "sub": "As notificações vão aparecer aqui"
   },
   "loading": "Carregando…",
-  "seeAll": "Ver todas as notificações →",
+  "seeAll": "Ver todas as notificações",
   "prefs": {
     "title": "Preferências de notificação",
     "mentionName": "Menções @",
@@ -15,9 +15,9 @@
     "newEventDesc": "Quando alguém cria um evento na sua cidade",
     "friendName": "Pedidos de amizade",
     "friendDesc": "Quando alguém te envia um pedido de amizade ou aceita o seu",
-    "notesName": "Notas ✨",
+    "notesName": "Notas",
     "notesDesc": "Quando alguém deixa uma nota no seu perfil",
-    "profileViewName": "Visitas ao seu perfil 👀",
+    "profileViewName": "Visitas ao seu perfil",
     "profileViewDesc": "Quando alguém visita o seu perfil",
     "announcementName": "Novidades da Hilads",
     "announcementDesc": "Atualizações ocasionais da equipe",

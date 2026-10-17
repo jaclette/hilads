@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "Défis réussis",
-    "title": "✨ Défis réussis",
+    "title": "Défis réussis",
     "allCities": "Toutes les villes",
     "clearCity": "Effacer",
     "localTag": "Local",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "Voir tout",
   "leaderboardCta": {
-    "title": "🏆 Classement de la ville",
+    "title": "Classement de la ville",
     "view": "Voir",
     "sub": "Sois le premier classé - lance et termine un défi"
   },
@@ -54,7 +54,7 @@
     "culture": "...et on se retrouve pour en parler 🎭",
     "help": "...et on fait un truc de fou ensemble 🤪"
   },
-  "createCta": "Lancer le défi 🔥",
+  "createCta": "Lancer le défi",
   "saveChanges": "Enregistrer",
   "errSave": "Impossible d'enregistrer",
   "errStart": "Impossible de lancer le défi",
@@ -76,7 +76,7 @@
     "meetBadge": "Meet",
     "photosCount": "{{count}} photos",
     "noOneJoined": "Personne n'a encore rejoint",
-    "beFirst": "⚡ Sois le premier · +2",
+    "beFirst": "Sois le premier · +2",
     "daysLeft": "{{count}}j restants",
     "lastDay": "Dernier jour",
     "joinGroup": "Rejoindre le défi",
@@ -87,8 +87,8 @@
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",
-  "forLocals": "🏠 Pour les locaux",
-  "forExplorers": "🧳 Pour les voyageurs",
+  "forLocals": "Pour les locaux",
+  "forExplorers": "Pour les voyageurs",
   "validation": {
     "label": "Comment valider ?",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "Supprimer",
   "shareCta": "Partager",
   "shareInvite": "Relève ce défi avec moi !",
-  "shareCopied": "Lien copié ✓",
+  "shareCopied": "Lien copié",
   "noun": "Défi",
   "examples": {
     "label": "Pas d’inspi ? Touche pour utiliser",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "Fil introuvable",
     "empty": "Dis bonjour 👋 et fixez une date pour vous retrouver.",
-    "emptyIntl": "Dis salut 👋 - lâche une 📸 quand t'y arrives.",
+    "emptyIntl": "Dis salut - lâche une photo quand t'y arrives.",
     "cancel": {
       "creatorTitle": "Annuler ce take-on ?",
       "acceptorTitle": "Laisser tomber ce défi ?",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Proposer une date 📅",
+    "proposeCta": "Proposer une date",
     "counterCta": "Contre-proposer",
     "editCta": "Changer la date",
     "you": "toi",
@@ -220,9 +220,9 @@
     "tomorrow": "Demain",
     "picker": {
       "title": "Quand vous voyez-vous ?",
-      "whenLabel": "QUAND",
-      "timeLabel": "HEURE",
-      "whereLabel": "OÙ (OPTIONNEL)",
+      "whenLabel": "Quand",
+      "timeLabel": "Heure",
+      "whereLabel": "Où (optionnel)",
       "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
@@ -241,7 +241,7 @@
       "body": "{{name}} va valider."
     },
     "approved": {
-      "title": "Défi relevé 🎉"
+      "title": "Défi relevé"
     },
     "rejected": {
       "title": "Défi clôturé"
@@ -285,7 +285,7 @@
       "meetSoon": "Rendez-vous le {{date}}",
       "creatorVerdict": "Comment ça s'est passé avec {{name}} ?",
       "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
-      "accomplished": "Défi relevé 🎉",
+      "accomplished": "Défi relevé",
       "closed": "Défi clôturé",
       "submitProof": "Envoie ta preuve",
       "waitingForProof": "En attente de la preuve",
@@ -351,13 +351,13 @@
   },
   "byCreator": "par {{name}}",
   "inspiration": {
-    "heading": "💡 Des idées de défis",
+    "heading": "Des idées de défis",
     "sub": "Ce que les locaux lancent ailleurs - inspire-toi",
-    "firstLocal": "🌱 Sois le premier local de {{city}}",
+    "firstLocal": "Sois le premier local de {{city}}",
     "firstLocalSub": "Lance un défi · les voyageurs qui arrivent le relèveront",
-    "reward": "Premier défi · +10 🏆",
-    "launchFirst": "🔥 Lancer le premier défi",
-    "createYours": "🔥 Crée le tien à {{city}}",
+    "reward": "Premier défi · +10",
+    "launchFirst": "Lancer le premier défi",
+    "createYours": "Crée le tien à {{city}}",
     "by": "par {{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "Ville cible",
-    "targetCityAnywhere": "🌍 N'importe où dans le monde",
+    "targetCityAnywhere": "N'importe où dans le monde",
     "targetCityHint": "Laisse « N'importe où » pour toucher tout le monde, ou choisis une ville pour cibler.",
     "proofRequirementsLabel": "Que doit montrer la photo ?",
     "proofRequirementsPlaceholder": "ex. Le plat à la lumière du jour, avec toi dans le cadre",
-    "proofRequirementsHint": "La preuve est une photo 📸. Le participant voit ça avant d’envoyer - sois précis.",
+    "proofRequirementsHint": "La preuve est une photo. Le participant voit ça avant d’envoyer - sois précis.",
     "cityPicker": {
       "title": "Choisis une ville cible",
       "searchPlaceholder": "Cherche une ville…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Ce défi est privé",
+      "title": "Ce défi est privé",
       "body": "Seuls le créateur et le preneur voient la conversation."
     }
   },
   "members": {
     "title": "Dans le canal",
     "countIn": "{{count}} dans le canal",
-    "seeAll": "Voir tout →",
+    "seeAll": "Voir tout",
     "empty": "Personne n'a encore rejoint - sois le premier.",
     "kickCta": "Retirer",
     "kickAria": "Retirer {{name}} du canal",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Public",
-      "friends": "👯 Amis",
-      "private": "🔒 Privé"
+      "public": "Public",
+      "friends": "Amis",
+      "private": "Privé"
     },
     "label": "Qui peut voir ça ?",
-    "public": "🌍 Public",
-    "friends": "👯 Amis",
+    "public": "Public",
+    "friends": "Amis",
     "publicHint": "Tout le monde dans la ville peut le voir et le relever.",
     "friendsHint": "Seuls tes amis et les personnes que tu invites peuvent le voir.",
     "intlLocked": "Les défis internationaux sont toujours publics.",
@@ -536,11 +536,11 @@
     "errSubmit": "Impossible d’envoyer la note. Réessaie."
   },
   "leaderboard": {
-    "title": "🏆 Les plus locaux",
+    "title": "Les plus locaux",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top challengers"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top challengers"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
     "neutral": "🏆 Les plus locaux",
-    "titleCity": "🏆 Le plus {{demonym}}",
+    "titleCity": "Le plus {{demonym}}",
     "share": {
       "cta": "Partager mon rang",
       "periodMonth": "ce mois-ci",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "Comment marchent les points",
-    "helpLabel": "🏆 Comment gagner des points",
-    "title": "🏆 Comment marchent les défis",
+    "helpLabel": "Comment gagner des points",
+    "title": "Comment marchent les défis",
     "intro": "De petites étincelles pour rejoindre ; les gros points pour vraiment venir ou gagner. Farmer les inscriptions ne sert à rien.",
     "colStep": "Étape",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "Les chiffres peuvent évoluer.",
     "types": {
       "heading": "Deux types de challenge",
-      "local": "🏙️ Rendez-vous — réunis un groupe en personne à une date + un lieu. Tous les présents gagnent gros.",
-      "international": "🌍 Défi photo — chacun envoie une photo avant la deadline ; le créateur choisit le gagnant."
+      "local": "Rendez-vous — réunis un groupe en personne à une date + un lieu. Tous les présents gagnent gros.",
+      "international": "Défi photo — chacun envoie une photo avant la deadline ; le créateur choisit le gagnant."
     },
     "lifecycle": {
       "heading": "Comment ça se résout",
       "body": "Le créateur cadre, les gens rejoignent, et le créateur valide à la fin — qui était présent, ou quelle photo a gagné."
     },
-    "pointsHeading": "💯 Comment gagner des points",
+    "pointsHeading": "Comment gagner des points",
     "ways": {
       "join": "Rejoindre un défi",
       "create": "Créer un challenge",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "points",
     "subtitle": {
-      "accepted": "Ton challenge a été accepté 🤝",
-      "date_locked": "Rendez-vous confirmé - on y va 🗓️",
-      "meetup": "Mission accomplie 🎉",
-      "debrief": "Mission accomplie 🎉",
-      "ghost": "Tu feras mieux la prochaine fois 👻",
-      "default": "Tu grimpes au classement 🚀",
-      "meet_bonus": "Bonus Rencontre débloqué 🤝",
-      "challenge_created": "Tu as lancé un défi 🎯"
+      "accepted": "Ton challenge a été accepté",
+      "date_locked": "Rendez-vous confirmé - on y va",
+      "meetup": "Mission accomplie",
+      "debrief": "Mission accomplie",
+      "ghost": "Tu feras mieux la prochaine fois",
+      "default": "Tu grimpes au classement",
+      "meet_bonus": "Bonus Rencontre débloqué",
+      "challenge_created": "Tu as lancé un défi"
     },
     "rank": {
       "city": "#{{rank}} à {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} est #{{rank}} parmi les villes",
       "citiesBeyond": "{{city}} hors du top {{topN}} des villes"
     },
-    "cta": "C’est parti ⚡",
+    "cta": "C’est parti",
     "kindShort": {
       "accepted": "Accepté",
       "date_locked": "Date confirmée",
@@ -651,8 +651,8 @@
     "total": "Total : {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Bienvenue ! Discute librement, pas besoin d'inscription.",
-    "cta": "Tu veux relever ce défi ? Inscription en 3 secondes →"
+    "title": "Bienvenue ! Discute librement, pas besoin d'inscription.",
+    "cta": "Tu veux relever ce défi ? Inscription en 3 secondes"
   },
   "group": {
     "meetLabel": "Quand & où",
@@ -739,7 +739,7 @@
     },
     "loser": {
       "title": "{{name}} a gagné",
-      "body": "Belle photo ! Tu as gagné {{points}} pour avoir participé — retente ta chance la prochaine fois 💪"
+      "body": "Belle photo ! Tu as gagné {{points}} pour avoir participé — retente ta chance la prochaine fois"
     },
     "present": {
       "title": "Tu étais là !",

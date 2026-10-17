@@ -30,7 +30,7 @@
   "thread": {
     "loadError": "Không thể tải tin nhắn.",
     "beginning": "Đầu cuộc trò chuyện",
-    "photo": "📷 Ảnh",
+    "photo": "Ảnh",
     "unavailable": "Tin nhắn gốc không khả dụng",
     "tapMaps": "Chạm để mở trong Maps",
     "composer": "Tin nhắn…",

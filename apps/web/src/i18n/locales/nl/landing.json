@@ -6,33 +6,33 @@
     "storeGetItOn": "Ontdek het op"
   },
   "join": {
-    "peopleLive_one": "🔥 {{count}} persoon hangt nu rond",
-    "peopleLive_other": "🔥 {{count}} mensen hangen nu rond",
-    "events_one": "🎉 {{count}} Hi plan bezig",
-    "events_other": "🎉 {{count}} Hi plan bezig",
-    "hangouts_one": "🗣️ {{count}} Hi now actief",
-    "hangouts_other": "🗣️ {{count}} Hi now actief",
+    "peopleLive_one": "{{count}} persoon hangt nu rond",
+    "peopleLive_other": "{{count}} mensen hangen nu rond",
+    "events_one": "{{count}} Hi plan bezig",
+    "events_other": "{{count}} Hi plan bezig",
+    "hangouts_one": "{{count}} Hi now actief",
+    "hangouts_other": "{{count}} Hi now actief",
     "replies_one": "{{count}} reactie",
     "replies_other": "{{count}} reacties",
     "pickCity": "Kies een stad\nen doe mee",
     "locating": "› je stad lokaliseren...",
-    "browseCities": "Steden bekijken →",
+    "browseCities": "Steden bekijken",
     "yourName": "Jouw naam",
     "namePlaceholder": "Zeg hallo als...",
     "tryAgain": "Opnieuw proberen",
     "useLocation": "Gebruik mijn locatie",
-    "joinCity": "Doe mee in {{city}} →",
-    "joinChat": "Meedoen aan chat →",
+    "joinCity": "Doe mee in {{city}}",
+    "joinChat": "Meedoen aan chat",
     "hint": "// anoniem · directe toegang",
     "keepIdentity": "of behoud je identiteit",
-    "createAccount": "✨ Account maken",
+    "createAccount": "Account maken",
     "logIn": "Inloggen",
     "authHint": "Bewaar je naam · ontgrendel profielen · voeg vrienden toe",
-    "challenges_one": "🔥 {{count}} open challenge",
-    "challenges_other": "🔥 {{count}} open challenges"
+    "challenges_one": "{{count}} open challenge",
+    "challenges_other": "{{count}} open challenges"
   },
   "local": {
-    "badge": "🌍 Local",
+    "badge": "Local",
     "title": "Wees de local die de stad maakt",
     "tagline": "Jij kent de spots. Daag locals of reizigers uit om ze te vinden.",
     "bullets": [
@@ -43,7 +43,7 @@
     "cta": "Maak je stad"
   },
   "exploring": {
-    "badge": "🧭 Verkennen",
+    "badge": "Verkennen",
     "title": "Ga overal lokale challenges aan",
     "tagline": "Waar je ook landt, doe mee aan wat locals hebben gelanceerd.",
     "bullets": [
@@ -115,9 +115,9 @@
     "screen2_invitation": "Ze zijn er al. Doe je mee?",
     "screen3_invitation": "Simpel, toch? Jouw beurt.",
     "screen4_invitation": "Geen feed. Alleen echte meetups.",
-    "enterCity": "Kom naar {{city}} 🔥",
-    "enterChallenge": "Doe deze uitdaging 🔥",
-    "enterPicker": "Kies je stad 🔥",
+    "enterCity": "Kom naar {{city}}",
+    "enterChallenge": "Doe deze uitdaging",
+    "enterPicker": "Kies je stad",
     "swipeUp": "Veeg omhoog",
     "liveHeadline": "{{city}} is nu live.",
     "how": {

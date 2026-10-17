@@ -3,10 +3,10 @@
   "loading": "A carregar…",
   "loadError": "Não foi possível carregar o perfil.",
   "badgeMicro": {
-    "ghost": "Só a dar uma vista de olhos 👀",
-    "fresh": "Acabado de chegar 👶",
+    "ghost": "Só a dar uma vista de olhos",
+    "fresh": "Acabado de chegar",
     "regular": "Aparece muitas vezes",
-    "host": "Faz acontecer 🔥"
+    "host": "Faz acontecer"
   },
   "modes": {
     "local": "Local",
@@ -41,43 +41,43 @@
     "events": "Hi plan",
     "friends": "Amigos",
     "vibes": "Vibes",
-    "picks": "Recomendações 👑",
+    "picks": "Recomendações",
     "challenges": "Desafios"
   },
   "host": "Anfitrião",
-  "live": "AO VIVO",
+  "live": "Ao vivo",
   "empty": {
     "hangouts": "Ainda não há convívios",
     "events": "Ainda não há eventos",
     "friends": "Ainda não há amigos",
-    "challenges": "Sem desafios ainda - lança um 🔥"
+    "challenges": "Sem desafios ainda - lança um"
   },
   "vibesTab": {
     "score": "pontuação vibe de {{score}}",
     "basedOn_one": "com base em {{count}} vibe",
     "basedOn_other": "com base em {{count}} vibes",
-    "updateNote": "✏️ Editar a tua nota ({{rating}}★)",
-    "leaveNote": "⭐ Deixar uma nota",
+    "updateNote": "Editar a tua nota ({{rating}}★)",
+    "leaveNote": "Deixar uma nota",
     "placeholder": "Diz algo simpático… (opcional)",
     "cancel": "Cancelar",
     "sending": "A enviar…",
-    "sendNote": "Enviar a nota ✨",
+    "sendNote": "Enviar a nota",
     "notesLabel": "Notas · {{count}}",
     "emptyTitle": "Ainda não há notas",
-    "emptySub": "Sê o primeiro a deixar uma nota ✨"
+    "emptySub": "Sê o primeiro a deixar uma nota"
   },
   "picks": {
-    "restaurant": "RESTAURANTE FAVORITO",
-    "spot": "JOIA ESCONDIDA",
-    "tip": "DICA LOCAL",
-    "story": "HISTÓRIA"
+    "restaurant": "Restaurante favorito",
+    "spot": "Joia escondida",
+    "tip": "Dica local",
+    "story": "História"
   },
   "actions": {
     "opening": "A abrir…",
-    "message": "💬 Mensagem",
-    "friend": "✓ Amigo",
-    "requestSent": "⌛ Pedido enviado",
-    "acceptRequest": "✓ Aceitar o pedido",
+    "message": "Mensagem",
+    "friend": "Amigo",
+    "requestSent": "Pedido enviado",
+    "acceptRequest": "Aceitar o pedido",
     "addFriend": "+ Amigo",
     "removing": "A remover…",
     "unfriend": "Remover amigo",

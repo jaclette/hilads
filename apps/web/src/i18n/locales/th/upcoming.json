@@ -8,7 +8,7 @@
   "emptyTitle": "ยังไม่มีอะไรในกำหนดการ",
   "emptySub": "ยังไม่มีกิจกรรมในวันนี้",
   "public": "สาธารณะ",
-  "going_one": "🙌 {{count}} คนเข้าร่วม",
-  "going_other": "🙌 {{count}} คนเข้าร่วม",
-  "liveNow": "🔥 สดตอนนี้"
+  "going_one": "{{count}} คนเข้าร่วม",
+  "going_other": "{{count}} คนเข้าร่วม",
+  "liveNow": "สดตอนนี้"
 }

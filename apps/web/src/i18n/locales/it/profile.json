@@ -66,7 +66,7 @@
     "interestsHint": "- scegline fino a 5"
   },
   "ambassador": {
-    "title": "Consigli della città 👑",
+    "title": "Consigli della città",
     "subtitle": "Mostrati sul tuo profilo come una leggenda locale.",
     "restaurant": "Ristorante preferito",
     "restaurantPlaceholder": "Un posto dove porti sempre la gente",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Caricamento…",
     "saving": "Salvataggio…",
-    "saved": "Salvato ✓",
+    "saved": "Salvato",
     "save": "Salva il profilo"
   },
   "signOut": "Esci",

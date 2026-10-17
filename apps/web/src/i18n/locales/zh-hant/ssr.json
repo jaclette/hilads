@@ -7,7 +7,7 @@
     "aboutHeading": "Hilads 怎麼用",
     "aboutBody": "選好你的城市。為在地人或旅行者發起一個 challenge、加入一個 meetup、找到一個 hangout，或發現 Local Events。在這裡建立越多，你就越在地 - 在 Most Local 上爬得越高。",
     "citiesCta": "瀏覽所有 Hilads 城市",
-    "subhead": "🔥 在你造訪的每一座城市成為在地人。"
+    "subhead": "在你造訪的每一座城市成為在地人。"
   },
   "brand": "Hilads",
   "dateLocale": "zh-Hant-TW",
@@ -159,7 +159,7 @@
     "h1Tag": "挑戰",
     "audienceLocals": "給 {city} 的在地人",
     "audienceExplorers": "給 {city} 的旅人",
-    "validatedBadge": "✓ 已驗證",
+    "validatedBadge": "已驗證",
     "openBadge": "開放",
     "typeLabel": "類型:",
     "typeFood": "美食",

@@ -1,7 +1,7 @@
 {
   "share": {
-    "bringPeople": "लोगों को लाएं ✨",
-    "linkCopied": "लिंक कॉपी हो गया ✨",
+    "bringPeople": "लोगों को लाएं",
+    "linkCopied": "लिंक कॉपी हो गया",
     "vibeTitle": "इस vibe को शेयर करें",
     "eventAria": "इवेंट शेयर करें"
   },
@@ -16,7 +16,7 @@
     "cancel": "रद्द करें",
     "deleting": "डिलीट हो रहा है…",
     "confirm": "हटाएं",
-    "button": "🗑 इवेंट हटाएं"
+    "button": "इवेंट हटाएं"
   },
   "quickStart": "क्विक स्टार्ट",
   "presets": {
@@ -43,7 +43,7 @@
   "date": "तारीख",
   "today": "आज",
   "tomorrow": "कल",
-  "todayHint": "आज होस्ट करने पर सबसे ज़्यादा विज़िबिलिटी मिलती है 🔥",
+  "todayHint": "आज होस्ट करने पर सबसे ज़्यादा विज़िबिलिटी मिलती है",
   "starts": "शुरू",
   "ends": "खत्म",
   "repeat": "दोहराएं",
@@ -79,9 +79,9 @@
     "saving": "सेव हो रहा है…",
     "creating": "बन रहा है…",
     "saveChanges": "बदलाव सेव करें",
-    "openSpot": "🎉 Hi plan",
-    "startEvent": "🎉 Hi plan",
-    "create": "🎉 Hi plan"
+    "openSpot": "Hi plan",
+    "startEvent": "Hi plan",
+    "create": "Hi plan"
   },
   "recur": {
     "everyday": "हर दिन",

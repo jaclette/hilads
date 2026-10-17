@@ -16,17 +16,17 @@
     "detailsLabel": "Adicionar detalhes",
     "optional": "(opcional)",
     "detailsPlaceholder": "Dê um pouco de contexto…",
-    "expiry": "⏱ Expira automaticamente em 8 h",
+    "expiry": "Expira automaticamente em 8 h",
     "saving": "Salvando…",
     "starting": "Começando…",
     "saveChanges": "Salvar alterações",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Um de cada vez",
     "limitTitle": "Você já tem um rolê",
     "limitSub": "Você pode ter um rolê de cada vez. Vá para “{{title}}” ou exclua para começar um novo.",
-    "limitGo": "Ir para o meu rolê →",
+    "limitGo": "Ir para o meu rolê",
     "yourHangout": "seu rolê",
-    "geoHint": "📍 Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi 👀🔥",
+    "geoHint": "Ative a localização pra ver quem está por perto agora — e deixe a galera ao redor ver seu Hi",
     "geoRequired": "Um Hi now diz às pessoas onde te encontrar — ative a localização para continuar."
   },
   "deleteConfirm": "Excluir este rolê? Isso encerra para todo mundo e não pode ser desfeito.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} está participando",
     "countIn": "{{count}} neste rolê",
-    "seeAll": "Ver todos →"
+    "seeAll": "Ver todos"
   },
   "owner": {
-    "edit": "✏️ Editar",
-    "delete": "🗑 Excluir"
+    "edit": "Editar",
+    "delete": "Excluir"
   },
   "gated": {
     "title": "Rolê só para membros",
@@ -70,7 +70,7 @@
     "exploring": "Explorando"
   },
   "reply": {
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Mensagem original indisponível"
   },
   "composer": {},

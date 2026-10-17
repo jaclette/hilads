@@ -10,16 +10,16 @@
   "filterHangouts": "🗣️ لقاءات",
   "publicEventsSection": "🎫 فعاليات عامة",
   "accountWelcome": {
-    "title": "تهانينا، {{username}}! 🎉",
-    "subtitle": "حسابك جاهز - إليك ما يمكنك فعله الآن 👇",
-    "f1": "🎉 ابدأ لقاءً واجمع الناس الآن",
-    "f2": "📅 نظّم فعالية في مدينتك",
-    "f3": "💬 أرسل رسالة خاصة لأي شخص",
-    "f4": "📍 شاهد من حولك، مباشرةً",
-    "f5": "🤝 تواصل مع السكان المحليين والمسافرين",
-    "fc1": "🔥 تحدَّ سكان مدينتك",
-    "fc2": "🌍 تحدَّ مدينة أخرى حول العالم",
-    "cta": "هيا بنا 🚀"
+    "title": "تهانينا، {{username}}!",
+    "subtitle": "حسابك جاهز - إليك ما يمكنك فعله الآن",
+    "f1": "ابدأ لقاءً واجمع الناس الآن",
+    "f2": "نظّم فعالية في مدينتك",
+    "f3": "أرسل رسالة خاصة لأي شخص",
+    "f4": "شاهد من حولك، مباشرةً",
+    "f5": "تواصل مع السكان المحليين والمسافرين",
+    "fc1": "تحدَّ سكان مدينتك",
+    "fc2": "تحدَّ مدينة أخرى حول العالم",
+    "cta": "هيا بنا"
   },
   "onboarding": {
     "skip": "تخطٍّ ✕",
@@ -84,7 +84,7 @@
     "createCta": "🔥 أنشئ تحديًا"
   },
   "share": {
-    "title": "شارك شيئًا 👀",
+    "title": "شارك شيئًا",
     "snap": "التقط صورة",
     "snapDesc": "التقط صورة أو ارفعها",
     "spot": "حدّد موقعك",
@@ -96,7 +96,7 @@
     "hiNowDesc": "بمزاج لشيء الآن؟ قلها"
   },
   "locationPicker": {
-    "title": "أين أنت؟ 👀",
+    "title": "أين أنت؟",
     "search": "ابحث عن عنوان أو مكان",
     "moveHint": "حرّك الخريطة للضبط",
     "noResults": "لم يتم العثور على أماكن",
@@ -120,10 +120,10 @@
   "composer": {
     "attach": "إضافة مرفق",
     "emoji": "Emoji",
-    "placeholderCity": "ألقِ التحيّة على مدينتك 👋",
-    "placeholderHangout": "أخبرهم أنك معهم 🙌",
-    "placeholderEvent": "تحدّث مع الحاضرين 🎉",
-    "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥"
+    "placeholderCity": "ألقِ التحيّة على مدينتك",
+    "placeholderHangout": "أخبرهم أنك معهم",
+    "placeholderEvent": "تحدّث مع الحاضرين",
+    "placeholderChallenge": "شجّعهم أو شارك نصيحتك"
   },
   "vibe": {
     "party": "حفلة",
@@ -148,8 +148,8 @@
     "thunder": "عاصفة رعدية"
   },
   "time": {
-    "happeningNow": "🎉 يحدث الآن",
-    "inMin": "🔥 خلال {{count}} دقيقة",
+    "happeningNow": "يحدث الآن",
+    "inMin": "خلال {{count}} دقيقة",
     "today": "اليوم",
     "tomorrow": "غدًا",
     "yesterday": "أمس",
@@ -167,12 +167,12 @@
   "filterChallenges": "🔥 التحديات",
   "shareToCity": "شارك في مدينتي",
   "shareToWorld": "المشاركة في العالم",
-  "hiLocalTitle": "👋 Hi Local",
+  "hiLocalTitle": "Hi Local",
   "shareCta": {
     "leaderboard": "عرض المتصدرين",
     "challenge": "عرض التحدي",
-    "event": "🎉 عرض Hi plan",
-    "topic": "🗣️ عرض Hi now"
+    "event": "عرض Hi plan",
+    "topic": "عرض Hi now"
   },
   "tabs": {
     "today": "اليوم",

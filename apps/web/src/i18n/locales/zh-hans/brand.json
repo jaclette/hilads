@@ -14,9 +14,9 @@
     "chill": "Chill"
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ 新人",
-    "regular": "😎 熟客",
-    "host": "👑 传奇"
+    "ghost": "Ghost",
+    "fresh": "新人",
+    "regular": "熟客",
+    "host": "传奇"
   }
 }

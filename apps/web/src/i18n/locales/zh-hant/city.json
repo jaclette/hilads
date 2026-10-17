@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 聚會靈感",
+    "heading": "聚會靈感",
     "sub": "看看別處的在地人辦了什麼 - 獲取靈感",
-    "openYours": "🔥 在 {{city}} 開你自己的",
+    "openYours": "在 {{city}} 開你自己的",
     "by": "來自 {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} 正熱鬧 ✨",
+    "live": "{{city}} 正熱鬧",
     "dismiss": "關閉",
     "body": "真實的人，就在此刻。打聲招呼、看看誰在附近，或帶個朋友一起來。",
-    "sayHi": "打招呼 👋",
+    "sayHi": "打招呼",
     "invite": "邀請好友"
   },
   "imageType": "請選擇 JPEG、PNG 或 WebP 圖片。",
@@ -57,10 +57,10 @@
     "topCities": "目前最熱門的城市",
     "cities": "城市",
     "switchTitle": "切換城市",
-    "filterActive": "🔥 最熱絡",
-    "filterEvents": "🎉 活動最多",
-    "filterOnline": "🟢 最多人上線",
-    "filterChallenges": "⚡ 最多挑戰",
+    "filterActive": "最熱絡",
+    "filterEvents": "活動最多",
+    "filterOnline": "最多人上線",
+    "filterChallenges": "最多挑戰",
     "challenges_one": "{{count}} 個挑戰",
     "challenges_other": "{{count}} 個挑戰",
     "members_one": "{{count}} 位成員",
@@ -81,18 +81,18 @@
     "hangoutTag": "聚會",
     "eventTag": "活動",
     "public": "公開",
-    "activeNow": "● 現在活躍",
+    "activeNow": "現在活躍",
     "repliesNew": "還沒有回覆 - 搶頭香",
-    "replies_one": "💬 {{count}} 則回覆",
-    "replies_other": "💬 {{count}} 則回覆",
-    "going_one": "🙌 {{count}} 人參加",
-    "going_other": "🙌 {{count}} 人參加",
+    "replies_one": "{{count}} 則回覆",
+    "replies_other": "{{count}} 則回覆",
+    "going_one": "{{count}} 人參加",
+    "going_other": "{{count}} 人參加",
     "hostedBy": "由 {{name}} 主辦",
     "groupHilads": "Hilads 在地活動",
     "groupPublic": "公開在地活動",
-    "groupPublicTicket": "🎫 公開在地活動",
+    "groupPublicTicket": "公開在地活動",
     "createEvent": "建立在地活動",
-    "startHangout": "發起聚會 🗣️",
+    "startHangout": "發起聚會",
     "openPlace": "開放你的場地",
     "loadError": "無法載入活動",
     "loadErrorSub": "稍後下拉重試，或在 {{city}} 建立新的內容。",
@@ -105,7 +105,7 @@
     "noEventsSub": "成為第一個在 {{city}} 建立活動的人",
     "noHangoutsSub": "發起一個聚會，讓整座城市聊起來",
     "filterAll": "全部",
-    "seeComing": "看看即將登場 🔮",
+    "seeComing": "看看即將登場",
     "seeHappened": "看看發生過什麼",
     "createNew": "新增",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "向 {{name}} 打招呼",
-    "sayHiGeneric": "打個招呼 👋",
-    "hostWaiting": "等待第一聲招呼 👋",
+    "sayHiGeneric": "打個招呼",
+    "hostWaiting": "等待第一聲招呼",
     "hiNowHint": "現在一起玩",
     "hiLaterHint": "計劃活動"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "你的活動",
     "edit": "編輯",
     "join": "加入",
-    "joined": "已加入 ✓",
+    "joined": "已加入",
     "here": "{{count}} 人在這裡",
     "going_one": "{{count}} 人參加",
     "going_other": "{{count}} 人參加",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "對話的開頭",
     "arriving": "大家陸續抵達",
-    "firstChat": "成為第一個在這裡聊天的人 👇",
-    "firstHi": "成為第一個打招呼的人 👇"
+    "firstChat": "成為第一個在這裡聊天的人",
+    "firstHi": "成為第一個打招呼的人"
   },
   "create": {
     "title": "想做點什麼？",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "瘋狂",
     "challengeTitleLabel": "你的挑戰",
     "challengeTitlePlaceholder": "例如，帶我去你最愛的咖啡館",
-    "challengeCta": "發起挑戰 🔥",
+    "challengeCta": "發起挑戰",
     "challengeErrStart": "無法發起挑戰"
   },
   "goingModal": {
     "going": "人參加",
     "inThisHangout": "在這個聚會裡",
     "loading": "載入中…",
-    "empty": "目前還沒有人 - 搶頭香吧！🙌"
+    "empty": "目前還沒有人 - 搶頭香吧！"
   },
   "nickname": {
     "label": "暱稱",
@@ -201,15 +201,15 @@
     "anonymous": "// 匿名 · 無需註冊"
   },
   "prompt": {
-    "exploreText": "🔥 看看現在發生什麼事",
+    "exploreText": "看看現在發生什麼事",
     "exploreCta": "看看發生什麼事",
-    "photoText": "📸 分享正在發生的事",
+    "photoText": "分享正在發生的事",
     "shoot": "拍照",
-    "createEventText": "🎉 今晚有計畫嗎？",
+    "createEventText": "今晚有計畫嗎？",
     "createEventCta": "建立活動",
-    "challengeIntroText": "🔥 新來的？看看挑戰怎麼玩",
+    "challengeIntroText": "新來的？看看挑戰怎麼玩",
     "challengeIntroCta": "看看",
-    "installText": "✨ 把 Hilads 加到你的主畫面\n絕不錯過你城市裡正在發生的事",
+    "installText": "把 Hilads 加到你的主畫面\n絕不錯過你城市裡正在發生的事",
     "installAdd": "新增",
     "installHow": "怎麼做"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 在地人陸續報到"
   },
   "ownerPrompt": {
-    "text": "🔥 你發起了這個活動！",
+    "text": "你發起了這個活動！",
     "sub": "讓它更棒 - 加上說明、更新時間，或分享出去。",
-    "edit": "✏️ 編輯活動"
+    "edit": "編輯活動"
   },
   "feedNew": {
-    "event": "🎉 新活動：{{title}}",
+    "event": "新活動：{{title}}",
     "join": "加入",
     "replies_one": "{{count}} 則回覆",
     "replies_other": "{{count}} 則回覆",
-    "challengeLocals": "🔥 {{name}} 向在地人發起挑戰：{{title}}",
-    "challengeExplorers": "🔥 {{name}} 向旅行者發起挑戰：{{title}}",
-    "challengeCta": "查看 →",
-    "challengeValidated": "🏆 挑戰完成！{{name}} 驗證了「{{title}}」。",
+    "challengeLocals": "{{name}} 向在地人發起挑戰：{{title}}",
+    "challengeExplorers": "{{name}} 向旅行者發起挑戰：{{title}}",
+    "challengeCta": "查看",
+    "challengeValidated": "挑戰完成！{{name}} 驗證了「{{title}}」。",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} 國際挑戰：{{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "進行中",
-    "recurring": "↻ 固定舉辦",
+    "recurring": "固定舉辦",
     "upcoming": "即將登場",
     "delete": "刪除活動"
   },
   "arrivalsBar": {
-    "label": "✈️ 最近抵達",
+    "label": "最近抵達",
     "sheetTitle": "抵達",
     "empty": "尚無抵達"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 來自{{city}}的 {{nickname}} 剛剛加入 Hilads",
       "challengeWon": "🏆 來自{{city}}的 {{nickname}} 贏得了挑戰 {{challenge}}"
     },
-    "quietCard": "這裡很安靜？世界 裡有 {{count}} 則未讀 🌍 — 點擊查看",
+    "quietCard": "這裡很安靜？世界 裡有 {{count}} 則未讀 — 點擊查看",
     "heroEmpty": "成為第一個挑戰城市的人",
     "heroEmptySub": "發起一個跨城市挑戰",
     "leaderboard": "排行榜",

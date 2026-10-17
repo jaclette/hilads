@@ -66,7 +66,7 @@
     "interestsHint": "- pilih maksimal 5"
   },
   "ambassador": {
-    "title": "Pilihan kota 👑",
+    "title": "Pilihan kota",
     "subtitle": "Ditampilkan di profilmu sebagai legenda lokal.",
     "restaurant": "Restoran favorit",
     "restaurantPlaceholder": "Tempat yang selalu kamu ajak orang ke sana",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "Mengunggah…",
     "saving": "Menyimpan…",
-    "saved": "Tersimpan ✓",
+    "saved": "Tersimpan",
     "save": "Simpan profil"
   },
   "signOut": "Keluar",

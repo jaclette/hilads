@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "成功したチャレンジ",
-    "title": "✨ 成功したチャレンジ",
+    "title": "成功したチャレンジ",
     "allCities": "すべての都市",
     "clearCity": "クリア",
     "localTag": "ローカル",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "すべて見る",
   "leaderboardCta": {
-    "title": "🏆 都市ランキング",
+    "title": "都市ランキング",
     "view": "見る",
     "sub": "最初にランクインしよう - チャレンジを出して完了させて"
   },
@@ -54,7 +54,7 @@
     "culture": "…そして会って話しましょう 🎭",
     "help": "…そして一緒に何かクレイジーなことをしよう 🤪"
   },
-  "createCta": "チャレンジ開始 🔥",
+  "createCta": "チャレンジ開始",
   "saveChanges": "変更を保存",
   "errSave": "保存できませんでした",
   "errStart": "チャレンジを開始できませんでした",
@@ -76,7 +76,7 @@
     "meetBadge": "会う",
     "photosCount": "{{count}}枚の写真",
     "noOneJoined": "まだ誰も参加していません",
-    "beFirst": "⚡ 最初の一人になろう · +2",
+    "beFirst": "最初の一人になろう · +2",
     "daysLeft": "残り{{count}}日",
     "lastDay": "まもなく終了",
     "joinGroup": "チャレンジに参加",
@@ -87,8 +87,8 @@
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",
-  "forLocals": "🏠 ローカル向け",
-  "forExplorers": "🧳 旅行者向け",
+  "forLocals": "ローカル向け",
+  "forExplorers": "旅行者向け",
   "validation": {
     "label": "どう認証する？",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "削除",
   "shareCta": "シェア",
   "shareInvite": "一緒にこのチャレンジを受けよう！",
-  "shareCopied": "リンクをコピーしました ✓",
+  "shareCopied": "リンクをコピーしました",
   "noun": "チャレンジ",
   "examples": {
     "label": "アイデアない？タップして使う",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "スレッドが見つかりません",
     "empty": "最初に何か書いてみよう。",
-    "emptyIntl": "ハロー 👋 - クリアしたら 📸 を送って。",
+    "emptyIntl": "ハロー - クリアしたら写真を送って。",
     "cancel": {
       "creatorTitle": "この参加をキャンセルしますか?",
       "acceptorTitle": "このチャレンジを辞退しますか?",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "日程を提案する 📅",
+    "proposeCta": "日程を提案する",
     "counterCta": "対案を出す",
     "editCta": "日付を変更",
     "you": "あなた",
@@ -241,7 +241,7 @@
       "body": "{{name}}さんが結果をつけます。"
     },
     "approved": {
-      "title": "チャレンジ達成 🎉"
+      "title": "チャレンジ達成"
     },
     "rejected": {
       "title": "チャレンジを終了しました"
@@ -285,7 +285,7 @@
       "meetSoon": "{{date}}に会いましょう",
       "creatorVerdict": "{{name}}さんとはどうでしたか?",
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
-      "accomplished": "チャレンジ達成 🎉",
+      "accomplished": "チャレンジ達成",
       "closed": "チャレンジを終了しました",
       "submitProof": "証拠を提出",
       "waitingForProof": "証拠待ち",
@@ -351,13 +351,13 @@
   },
   "byCreator": "{{name}} さん",
   "inspiration": {
-    "heading": "💡 チャレンジのアイデア",
+    "heading": "チャレンジのアイデア",
     "sub": "他の街のローカルが何を始めてるか見て - ヒントに",
-    "firstLocal": "🌱 {{city}} で最初のローカルになろう",
+    "firstLocal": "{{city}} で最初のローカルになろう",
     "firstLocalSub": "チャレンジを出そう · 来た旅行者が受けてくれる",
-    "reward": "最初のチャレンジ · +10 🏆",
-    "launchFirst": "🔥 最初のチャレンジを出す",
-    "createYours": "🔥 {{city}} で自分のを作る",
+    "reward": "最初のチャレンジ · +10",
+    "launchFirst": "最初のチャレンジを出す",
+    "createYours": "{{city}} で自分のを作る",
     "by": "{{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "ターゲットの街",
-    "targetCityAnywhere": "🌍 世界中どこでも",
+    "targetCityAnywhere": "世界中どこでも",
     "targetCityHint": "「どこでも」のままなら世界中の旅人に届く。街を選ぶと絞り込める。",
     "proofRequirementsLabel": "写真に何を写しますか？",
     "proofRequirementsPlaceholder": "例: 自然光で撮った料理、自分も写っているもの",
-    "proofRequirementsHint": "証拠は写真 📸 です。送信前に参加者がこれを見ます - 具体的に書いてください。",
+    "proofRequirementsHint": "証拠は写真です。送信前に参加者がこれを見ます - 具体的に書いてください。",
     "cityPicker": {
       "title": "ターゲットの街を選ぶ",
       "searchPlaceholder": "街を検索…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 このチャレンジは非公開です",
+      "title": "このチャレンジは非公開です",
       "body": "作成者と挑戦者だけが会話を見られます。"
     }
   },
   "members": {
     "title": "チャンネル内",
     "countIn": "{{count}}人がチャンネルにいます",
-    "seeAll": "すべて見る →",
+    "seeAll": "すべて見る",
     "empty": "まだ誰も参加していません - 最初の一人になろう。",
     "kickCta": "削除",
     "kickAria": "{{name}}をチャンネルから削除",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 公開",
-      "friends": "👯 友達",
-      "private": "🔒 非公開"
+      "public": "公開",
+      "friends": "友達",
+      "private": "非公開"
     },
     "label": "誰が見られますか？",
-    "public": "🌍 公開",
-    "friends": "👯 友達",
+    "public": "公開",
+    "friends": "友達",
     "publicHint": "街の誰もが見て参加できます。",
     "friendsHint": "あなたの友達と招待した人だけが見られます。",
     "intlLocked": "国際チャレンジは常に公開です。",
@@ -536,11 +536,11 @@
     "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 トップチャレンジャー"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "トップチャレンジャー"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "ランキングを読み込めませんでした。引いて再試行してください。",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "順位をシェア",
       "periodMonth": "今月",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "ポイントの仕組み",
-    "helpLabel": "🏆 ポイントの稼ぎ方",
-    "title": "🏆 チャレンジの仕組み",
+    "helpLabel": "ポイントの稼ぎ方",
+    "title": "チャレンジの仕組み",
     "intro": "参加には小さなポイント。大きなポイントは、実際に来たり勝ったりしたときに。参加だけ稼いでも意味はありません。",
     "colStep": "ステップ",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "ポイントはゲームの調整に合わせて変わることがあります。",
     "types": {
       "heading": "2種類のチャレンジ",
-      "local": "🏙️ ミート — 決めた日時と場所にグループで集まる。来た全員が大きく稼げる。",
-      "international": "🌍 写真チャレンジ — 全員が期限までに写真を提出し、出題者が勝者を選ぶ。"
+      "local": "ミート — 決めた日時と場所にグループで集まる。来た全員が大きく稼げる。",
+      "international": "写真チャレンジ — 全員が期限までに写真を提出し、出題者が勝者を選ぶ。"
     },
     "lifecycle": {
       "heading": "🔁 どう決まるか",
       "body": "出題者がチャレンジを設定し、みんなが参加し、最後に出題者が確認します — 誰が来たか、またはどの写真が勝ったか。"
     },
-    "pointsHeading": "💯 ポイントの稼ぎ方",
+    "pointsHeading": "ポイントの稼ぎ方",
     "ways": {
       "join": "チャレンジに参加する",
       "create": "チャレンジを作成する",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "ポイント",
     "subtitle": {
-      "accepted": "チャレンジが受けられました 🤝",
-      "date_locked": "日程が決まりました - 行こう 🗓️",
-      "meetup": "ミッション達成 🎉",
-      "debrief": "ミッション達成 🎉",
-      "ghost": "次回頑張ろう 👻",
-      "default": "ランキングを駆け上がってる 🚀",
-      "meet_bonus": "直接会うボーナス獲得 🤝",
-      "challenge_created": "チャレンジを作成しました 🎯"
+      "accepted": "チャレンジが受けられました",
+      "date_locked": "日程が決まりました - 行こう",
+      "meetup": "ミッション達成",
+      "debrief": "ミッション達成",
+      "ghost": "次回頑張ろう",
+      "default": "ランキングを駆け上がってる",
+      "meet_bonus": "直接会うボーナス獲得",
+      "challenge_created": "チャレンジを作成しました"
     },
     "rank": {
       "city": "{{city}}で {{rank}}位",
@@ -633,7 +633,7 @@
       "cities": "{{city}} は都市で #{{rank}} 位",
       "citiesBeyond": "{{city}} は都市トップ {{topN}} 圏外"
     },
-    "cta": "いこう ⚡",
+    "cta": "いこう",
     "kindShort": {
       "accepted": "参加",
       "date_locked": "日程確定",
@@ -651,8 +651,8 @@
     "total": "合計: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 ようこそ！登録なしで自由に話せます。",
-    "cta": "このチャレンジに挑戦したい？3秒で登録 →"
+    "title": "ようこそ！登録なしで自由に話せます。",
+    "cta": "このチャレンジに挑戦したい？3秒で登録"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} が優勝",
-      "body": "ナイスショット！参加で {{points}} 獲得 — 次はきっと勝てる 💪"
+      "body": "ナイスショット！参加で {{points}} 獲得 — 次はきっと勝てる"
     },
     "present": {
       "title": "参加しました！",

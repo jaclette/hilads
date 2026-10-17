@@ -1,8 +1,8 @@
 {
   "inspiration": {
-    "heading": "💡 ไอเดียนัดเจอ",
+    "heading": "ไอเดียนัดเจอ",
     "sub": "ดูว่าคนท้องถิ่นที่อื่นจัดอะไร - หาแรงบันดาลใจ",
-    "openYours": "🔥 เปิดของคุณใน {{city}}",
+    "openYours": "เปิดของคุณใน {{city}}",
     "by": "โดย {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -42,10 +42,10 @@
     }
   },
   "welcome": {
-    "live": "{{city}} กำลังสด ✨",
+    "live": "{{city}} กำลังสด",
     "dismiss": "ปิด",
     "body": "คนจริง ตอนนี้เลย ทักทาย ดูว่าใครอยู่แถวนี้ หรือชวนเพื่อนเข้ามา",
-    "sayHi": "ทักทาย 👋",
+    "sayHi": "ทักทาย",
     "invite": "ชวนเพื่อน"
   },
   "imageType": "กรุณาเลือกรูปภาพ JPEG, PNG หรือ WebP",
@@ -57,10 +57,10 @@
     "topCities": "เมืองยอดนิยมตอนนี้",
     "cities": "เมือง",
     "switchTitle": "เปลี่ยนเมือง",
-    "filterActive": "🔥 คึกคักที่สุด",
-    "filterEvents": "🎉 อีเวนต์มากที่สุด",
-    "filterOnline": "🟢 ออนไลน์มากที่สุด",
-    "filterChallenges": "⚡ ชาเลนจ์มากที่สุด",
+    "filterActive": "คึกคักที่สุด",
+    "filterEvents": "อีเวนต์มากที่สุด",
+    "filterOnline": "ออนไลน์มากที่สุด",
+    "filterChallenges": "ชาเลนจ์มากที่สุด",
     "challenges_one": "{{count}} ชาเลนจ์",
     "challenges_other": "{{count}} ชาเลนจ์",
     "members_one": "{{count}} สมาชิก",
@@ -81,18 +81,18 @@
     "hangoutTag": "นัดเจอ",
     "eventTag": "กิจกรรม",
     "public": "สาธารณะ",
-    "activeNow": "● ใช้งานอยู่ตอนนี้",
+    "activeNow": "ใช้งานอยู่ตอนนี้",
     "repliesNew": "ยังไม่มีการตอบกลับ - เป็นคนแรกสิ",
-    "replies_one": "💬 {{count}} การตอบกลับ",
-    "replies_other": "💬 {{count}} การตอบกลับ",
-    "going_one": "🙌 {{count}} คนเข้าร่วม",
-    "going_other": "🙌 {{count}} คนเข้าร่วม",
+    "replies_one": "{{count}} การตอบกลับ",
+    "replies_other": "{{count}} การตอบกลับ",
+    "going_one": "{{count}} คนเข้าร่วม",
+    "going_other": "{{count}} คนเข้าร่วม",
     "hostedBy": "จัดโดย {{name}}",
     "groupHilads": "อีเวนต์ในพื้นที่ของ Hilads",
     "groupPublic": "อีเวนต์สาธารณะในพื้นที่",
-    "groupPublicTicket": "🎫 อีเวนต์สาธารณะในพื้นที่",
+    "groupPublicTicket": "อีเวนต์สาธารณะในพื้นที่",
     "createEvent": "สร้างอีเวนต์ในพื้นที่",
-    "startHangout": "เริ่มนัดเจอ 🗣️",
+    "startHangout": "เริ่มนัดเจอ",
     "openPlace": "เปิดที่ของคุณ",
     "loadError": "โหลดกิจกรรมไม่ได้",
     "loadErrorSub": "ดึงเพื่อลองใหม่ภายหลัง หรือสร้างสิ่งใหม่ใน {{city}}",
@@ -105,7 +105,7 @@
     "noEventsSub": "เป็นคนแรกที่สร้างใน {{city}}",
     "noHangoutsSub": "เริ่มนัดเจอแล้วทำให้คนทั้งเมืองได้พูดคุยกัน",
     "filterAll": "ทั้งหมด",
-    "seeComing": "ดูสิ่งที่กำลังจะมา 🔮",
+    "seeComing": "ดูสิ่งที่กำลังจะมา",
     "seeHappened": "ดูสิ่งที่เกิดขึ้น",
     "createNew": "สร้างใหม่",
     "nowTag": "Now",
@@ -113,8 +113,8 @@
     "hiNow": "Hi now",
     "hiLater": "Hi plan",
     "sayHi": "ทักทาย {{name}}",
-    "sayHiGeneric": "ทักทาย 👋",
-    "hostWaiting": "กำลังรอคำทักทายแรก 👋",
+    "sayHiGeneric": "ทักทาย",
+    "hostWaiting": "กำลังรอคำทักทายแรก",
     "hiNowHint": "เจอกันตอนนี้",
     "hiLaterHint": "วางแผนกิจกรรม"
   },
@@ -149,7 +149,7 @@
     "yourEvent": "กิจกรรมของคุณ",
     "edit": "แก้ไข",
     "join": "เข้าร่วม",
-    "joined": "เข้าร่วมแล้ว ✓",
+    "joined": "เข้าร่วมแล้ว",
     "here": "{{count}} คนอยู่ที่นี่",
     "going_one": "{{count}} คนเข้าร่วม",
     "going_other": "{{count}} คนเข้าร่วม",
@@ -159,8 +159,8 @@
   "chatEmpty": {
     "beginning": "จุดเริ่มต้นของบทสนทนา",
     "arriving": "ผู้คนกำลังทยอยมา",
-    "firstChat": "เป็นคนแรกที่แชทที่นี่ 👇",
-    "firstHi": "เป็นคนแรกที่ทักทาย 👇"
+    "firstChat": "เป็นคนแรกที่แชทที่นี่",
+    "firstHi": "เป็นคนแรกที่ทักทาย"
   },
   "create": {
     "title": "จะทำอะไรดี?",
@@ -181,14 +181,14 @@
     "challengeTypeHelp": "บ้าๆ",
     "challengeTitleLabel": "ชาเลนจ์ของคุณ",
     "challengeTitlePlaceholder": "เช่น พาฉันไปคาเฟ่ที่คุณชอบ",
-    "challengeCta": "เริ่มชาเลนจ์ 🔥",
+    "challengeCta": "เริ่มชาเลนจ์",
     "challengeErrStart": "ไม่สามารถเริ่มชาเลนจ์ได้"
   },
   "goingModal": {
     "going": "เข้าร่วม",
     "inThisHangout": "ในนัดเจอนี้",
     "loading": "กำลังโหลด…",
-    "empty": "ยังไม่มีใคร - เป็นคนแรกที่เข้าร่วมสิ! 🙌"
+    "empty": "ยังไม่มีใคร - เป็นคนแรกที่เข้าร่วมสิ!"
   },
   "nickname": {
     "label": "ชื่อเล่น",
@@ -201,15 +201,15 @@
     "anonymous": "// ไม่ระบุตัวตน · ไม่ต้องสมัคร"
   },
   "prompt": {
-    "exploreText": "🔥 ดูว่ามีอะไรเกิดขึ้นตอนนี้",
+    "exploreText": "ดูว่ามีอะไรเกิดขึ้นตอนนี้",
     "exploreCta": "ดูว่ามีอะไรเกิดขึ้น",
-    "photoText": "📸 แชร์สิ่งที่กำลังเกิดขึ้น",
+    "photoText": "แชร์สิ่งที่กำลังเกิดขึ้น",
     "shoot": "ถ่าย",
-    "createEventText": "🎉 มีแผนคืนนี้ไหม?",
+    "createEventText": "มีแผนคืนนี้ไหม?",
     "createEventCta": "สร้างกิจกรรม",
-    "challengeIntroText": "🔥 มาใหม่? มาดูว่าชาเลนจ์ทำงานยังไง",
+    "challengeIntroText": "มาใหม่? มาดูว่าชาเลนจ์ทำงานยังไง",
     "challengeIntroCta": "ดูเลย",
-    "installText": "✨ เพิ่ม Hilads ลงหน้าจอหลักของคุณ\nไม่พลาดสิ่งที่เกิดขึ้นในเมืองของคุณ",
+    "installText": "เพิ่ม Hilads ลงหน้าจอหลักของคุณ\nไม่พลาดสิ่งที่เกิดขึ้นในเมืองของคุณ",
     "installAdd": "เพิ่ม",
     "installHow": "วิธี"
   },
@@ -241,19 +241,19 @@
     "7": "🌆 คนท้องถิ่นกำลังเช็กอิน"
   },
   "ownerPrompt": {
-    "text": "🔥 คุณเริ่มกิจกรรมนี้!",
+    "text": "คุณเริ่มกิจกรรมนี้!",
     "sub": "ทำให้ดียิ่งขึ้น - เพิ่มคำอธิบาย อัปเดตเวลา หรือแชร์มัน",
-    "edit": "✏️ แก้ไขกิจกรรม"
+    "edit": "แก้ไขกิจกรรม"
   },
   "feedNew": {
-    "event": "🎉 กิจกรรมใหม่: {{title}}",
+    "event": "กิจกรรมใหม่: {{title}}",
     "join": "เข้าร่วม",
     "replies_one": "{{count}} การตอบกลับ",
     "replies_other": "{{count}} การตอบกลับ",
-    "challengeLocals": "🔥 {{name}} ท้าทายคนท้องถิ่น: {{title}}",
-    "challengeExplorers": "🔥 {{name}} ท้าทายนักเดินทาง: {{title}}",
-    "challengeCta": "ดู →",
-    "challengeValidated": "🏆 ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
+    "challengeLocals": "{{name}} ท้าทายคนท้องถิ่น: {{title}}",
+    "challengeExplorers": "{{name}} ท้าทายนักเดินทาง: {{title}}",
+    "challengeCta": "ดู",
+    "challengeValidated": "ชาเลนจ์สำเร็จ! {{name}} ยืนยัน \"{{title}}\"",
     "challengeInternational": "{{fromFlag}} → {{toFlag}} ชาเลนจ์ระหว่างประเทศ: {{title}}"
   },
   "replyPreview": {
@@ -266,12 +266,12 @@
   },
   "myEvent": {
     "live": "สด",
-    "recurring": "↻ ประจำ",
+    "recurring": "ประจำ",
     "upcoming": "กำลังจะมาถึง",
     "delete": "ลบกิจกรรม"
   },
   "arrivalsBar": {
-    "label": "✈️ มาถึงล่าสุด",
+    "label": "มาถึงล่าสุด",
     "sheetTitle": "การมาถึง",
     "empty": "ยังไม่มีใครมาถึง"
   },
@@ -301,7 +301,7 @@
       "newUser": "🎉 {{nickname}} จาก{{city}} เพิ่งเข้าร่วม Hilads",
       "challengeWon": "🏆 {{nickname}} จาก{{city}} ชนะความท้าทาย {{challenge}}"
     },
-    "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน โลก 🌍 — แตะเพื่อเปิด",
+    "quietCard": "เงียบจัง? มี {{count}} ข้อความที่ยังไม่อ่านใน โลก — แตะเพื่อเปิด",
     "heroEmpty": "เป็นคนแรกที่ท้าทายเมือง",
     "heroEmptySub": "เริ่มความท้าทายข้ามเมือง",
     "leaderboard": "อันดับ",

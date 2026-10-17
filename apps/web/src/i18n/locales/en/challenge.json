@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "Success challenges",
-    "title": "✨ Success challenges",
+    "title": "Success challenges",
     "allCities": "All cities",
     "clearCity": "Clear",
     "localTag": "Local",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "See all",
   "leaderboardCta": {
-    "title": "🏆 City leaderboard",
+    "title": "City leaderboard",
     "view": "View",
     "sub": "Be the first ranked - launch and finish a challenge"
   },
@@ -54,7 +54,7 @@
     "culture": "...and we meet up to talk about it 🎭",
     "help": "...and let's do something wild together 🤪"
   },
-  "createCta": "Launch challenge 🔥",
+  "createCta": "Launch challenge",
   "saveChanges": "Save changes",
   "errSave": "Failed to save changes",
   "errStart": "Failed to launch challenge",
@@ -76,7 +76,7 @@
     "meetBadge": "Meet",
     "photosCount": "{{count}} photos",
     "noOneJoined": "No one has joined yet",
-    "beFirst": "⚡ Be the first · +2",
+    "beFirst": "Be the first · +2",
     "daysLeft": "{{count}}d left",
     "lastDay": "Expires soon",
     "joinGroup": "Join the challenge",
@@ -87,8 +87,8 @@
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",
   "openBadge": "Open",
-  "forLocals": "🏠 For locals",
-  "forExplorers": "🧳 For travelers",
+  "forLocals": "For locals",
+  "forExplorers": "For travelers",
   "validation": {
     "label": "How to validate?",
     "meet": {
@@ -114,17 +114,17 @@
   "deleteBtn": "Delete",
   "shareCta": "Share",
   "shareInvite": "Take on this challenge with me!",
-  "shareCopied": "Link copied ✓",
+  "shareCopied": "Link copied",
   "noun": "Challenge",
   "byCreator": "by {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge ideas",
+    "heading": "Challenge ideas",
     "sub": "What locals launch elsewhere - get inspired",
-    "firstLocal": "🌱 Be the first local in {{city}}",
+    "firstLocal": "Be the first local in {{city}}",
     "firstLocalSub": "Drop a challenge · arriving travelers will take it on",
-    "reward": "First challenge · +10 🏆",
-    "launchFirst": "🔥 Launch the first challenge",
-    "createYours": "🔥 Create yours in {{city}}",
+    "reward": "First challenge · +10",
+    "launchFirst": "Launch the first challenge",
+    "createYours": "Create yours in {{city}}",
     "by": "by {{name}} · {{city}}"
   },
   "examples": {
@@ -210,14 +210,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 This challenge is private",
+      "title": "This challenge is private",
       "body": "Only the creator and the taker can see the conversation."
     }
   },
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
-    "emptyIntl": "Say hi 👋 - drop a 📸 when you nail it.",
+    "emptyIntl": "Say hi - drop a photo when you nail it.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",
@@ -259,8 +259,8 @@
   },
   "scoringInfo": {
     "aria": "How points work",
-    "helpLabel": "🏆 How to earn points",
-    "title": "🏆 How challenges work",
+    "helpLabel": "How to earn points",
+    "title": "How challenges work",
     "intro": "Small sparks for joining; the big points for really showing up or winning. Farming joins is never worth it.",
     "colStep": "Step",
     "steps": {
@@ -275,14 +275,14 @@
     "footnote": "Numbers can change as we tune the game.",
     "types": {
       "heading": "Two kinds of challenge",
-      "local": "🏙️ Meet — gather a group in person at a set time + place. Everyone who shows up earns big.",
-      "international": "🌍 Photo challenge — everyone submits a photo before the deadline; the challenger picks the winner."
+      "local": "Meet — gather a group in person at a set time + place. Everyone who shows up earns big.",
+      "international": "Photo challenge — everyone submits a photo before the deadline; the challenger picks the winner."
     },
     "lifecycle": {
       "heading": "How it resolves",
       "body": "The challenger frames it, people join, and the challenger validates at the end — who was present, or which photo won."
     },
-    "pointsHeading": "💯 How you earn points",
+    "pointsHeading": "How you earn points",
     "ways": {
       "join": "Join a challenge",
       "create": "Create a challenge",
@@ -294,11 +294,11 @@
     "seeExamples": "See 3 real examples"
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top challengers"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top challengers"
     },
     "scope": {
       "city": "My city",
@@ -320,7 +320,7 @@
     },
     "errLoad": "Couldn't load the leaderboard. Pull to retry.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Share my rank",
       "periodMonth": "this month",
@@ -334,7 +334,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Propose a date 📅",
+    "proposeCta": "Propose a date",
     "counterCta": "Counter-propose",
     "editCta": "Change the date",
     "you": "you",
@@ -352,9 +352,9 @@
     "tomorrow": "Tomorrow",
     "picker": {
       "title": "When are you meeting?",
-      "whenLabel": "WHEN",
-      "timeLabel": "TIME",
-      "whereLabel": "WHERE (OPTIONAL)",
+      "whenLabel": "When",
+      "timeLabel": "Time",
+      "whereLabel": "Where (optional)",
       "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
@@ -373,7 +373,7 @@
       "body": "{{name}} will mark how it went."
     },
     "approved": {
-      "title": "Challenge accomplished 🎉"
+      "title": "Challenge accomplished"
     },
     "rejected": {
       "title": "Challenge closed"
@@ -418,7 +418,7 @@
       "creatorVerdict": "How did it go with {{name}}?",
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
       "rateMeetup": "Rate your meet-up with {{name}}",
-      "accomplished": "Challenge accomplished 🎉",
+      "accomplished": "Challenge accomplished",
       "closed": "Challenge closed",
       "submitProof": "Submit your proof",
       "waitingForProof": "Waiting for the proof",
@@ -497,16 +497,16 @@
   },
   "visibility": {
     "label": "Who can see this?",
-    "public": "🌍 Public",
-    "friends": "👯 Friends",
+    "public": "Public",
+    "friends": "Friends",
     "publicHint": "Anyone in the city can see and accept this.",
     "friendsHint": "Only your friends and people you invite can see this.",
     "intlLocked": "International challenges are always public.",
     "moderationBlocked": "Your text was flagged - please rephrase.",
     "badge": {
-      "public": "🌍 Public",
-      "friends": "👯 Friends",
-      "private": "🔒 Private"
+      "public": "Public",
+      "friends": "Friends",
+      "private": "Private"
     },
     "optin": {
       "title": "Heads up - this is public",
@@ -552,7 +552,7 @@
   "members": {
     "title": "In the channel",
     "countIn": "{{count}} in the channel",
-    "seeAll": "See all →",
+    "seeAll": "See all",
     "empty": "Nobody's joined yet - be the first.",
     "kickCta": "Remove",
     "kickAria": "Remove {{name}} from the channel",
@@ -581,11 +581,11 @@
   },
   "intl": {
     "targetCityLabel": "Target city",
-    "targetCityAnywhere": "🌍 Anywhere in the world",
+    "targetCityAnywhere": "Anywhere in the world",
     "targetCityHint": "Leave as Anywhere to reach travelers everywhere, or pick a city for a focused fan-out.",
     "proofRequirementsLabel": "What should the photo show?",
     "proofRequirementsPlaceholder": "e.g. The dish in daylight, with you in frame",
-    "proofRequirementsHint": "The proof is a photo 📸. The acceptor sees this before submitting - be specific.",
+    "proofRequirementsHint": "The proof is a photo. The acceptor sees this before submitting - be specific.",
     "cityPicker": {
       "title": "Pick a target city",
       "searchPlaceholder": "Search a city…",
@@ -628,14 +628,14 @@
   "scoreCelebration": {
     "unit": "points",
     "subtitle": {
-      "accepted": "Your challenge was accepted 🤝",
-      "date_locked": "Date locked - let’s go 🗓️",
-      "meetup": "Mission accomplished 🎉",
-      "debrief": "Mission accomplished 🎉",
-      "ghost": "Better luck next time 👻",
-      "default": "You’re climbing the ranks 🚀",
-      "meet_bonus": "Meet bonus unlocked 🤝",
-      "challenge_created": "You launched a challenge 🎯"
+      "accepted": "Your challenge was accepted",
+      "date_locked": "Date locked - let’s go",
+      "meetup": "Mission accomplished",
+      "debrief": "Mission accomplished",
+      "ghost": "Better luck next time",
+      "default": "You’re climbing the ranks",
+      "meet_bonus": "Meet bonus unlocked",
+      "challenge_created": "You launched a challenge"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -647,7 +647,7 @@
       "cities": "{{city}} is #{{rank}} among cities",
       "citiesBeyond": "{{city}} outside the top {{topN}} cities"
     },
-    "cta": "Let’s go ⚡",
+    "cta": "Let’s go",
     "kindShort": {
       "accepted": "Accepted",
       "date_locked": "Date locked",
@@ -665,8 +665,8 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welcome! Chat freely here - no sign-up needed.",
-    "cta": "Want to take this challenge? Sign up in 3 seconds →"
+    "title": "Welcome! Chat freely here - no sign-up needed.",
+    "cta": "Want to take this challenge? Sign up in 3 seconds"
   },
   "group": {
     "meetLabel": "When & where",
@@ -753,7 +753,7 @@
     },
     "loser": {
       "title": "{{name}} won",
-      "body": "Nice shot! You earned {{points}} for joining — take another shot next time 💪"
+      "body": "Nice shot! You earned {{points}} for joining — take another shot next time"
     },
     "present": {
       "title": "You showed up!",

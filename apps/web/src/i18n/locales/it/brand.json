@@ -1,9 +1,9 @@
 {
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Nuovo",
-    "regular": "😎 Habitué",
-    "host": "👑 Leggenda"
+    "ghost": "Ghost",
+    "fresh": "Nuovo",
+    "regular": "Habitué",
+    "host": "Leggenda"
   },
   "now": "now",
   "myCity": "my city",

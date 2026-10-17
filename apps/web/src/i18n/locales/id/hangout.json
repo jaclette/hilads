@@ -16,17 +16,17 @@
     "detailsLabel": "Tambahkan detail",
     "optional": "(opsional)",
     "detailsPlaceholder": "Beri sedikit konteks…",
-    "expiry": "⏱ Berakhir otomatis dalam 8 jam",
+    "expiry": "Berakhir otomatis dalam 8 jam",
     "saving": "Menyimpan…",
     "starting": "Memulai…",
     "saveChanges": "Simpan perubahan",
-    "startCta": "🗣️ Hi now",
+    "startCta": "Hi now",
     "limitHeader": "Satu per satu",
     "limitTitle": "Kamu sudah punya nongkrong",
     "limitSub": "Kamu hanya bisa menjalankan satu nongkrong dalam satu waktu. Ke “{{title}}”, atau hapus untuk memulai yang baru.",
-    "limitGo": "Ke nongkrong-ku →",
+    "limitGo": "Ke nongkrong-ku",
     "yourHangout": "nongkrong-mu",
-    "geoHint": "📍 Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu 👀🔥",
+    "geoHint": "Aktifkan lokasi untuk lihat siapa yang ada di dekatmu sekarang — biar orang sekitar lihat Hi kamu",
     "geoRequired": "Hi now memberi tahu orang di mana menemukanmu — aktifkan lokasi untuk lanjut."
   },
   "deleteConfirm": "Hapus nongkrong ini? Ini mengakhirinya untuk semua orang dan tidak bisa dibatalkan.",
@@ -36,11 +36,11 @@
   "members": {
     "oneIn": "{{name}} ikut",
     "countIn": "{{count}} di nongkrong ini",
-    "seeAll": "Lihat semua →"
+    "seeAll": "Lihat semua"
   },
   "owner": {
-    "edit": "✏️ Edit",
-    "delete": "🗑 Hapus"
+    "edit": "Edit",
+    "delete": "Hapus"
   },
   "gated": {
     "title": "Nongkrong khusus anggota",
@@ -70,7 +70,7 @@
     "exploring": "Exploring"
   },
   "reply": {
-    "photo": "📷 Foto",
+    "photo": "Foto",
     "unavailable": "Pesan asli tidak tersedia"
   },
   "composer": {},

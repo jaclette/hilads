@@ -66,7 +66,7 @@
     "interestsHint": "- 최대 5개 선택"
   },
   "ambassador": {
-    "title": "도시 추천 👑",
+    "title": "도시 추천",
     "subtitle": "로컬 레전드로서 프로필에 표시돼요.",
     "restaurant": "최애 맛집",
     "restaurantPlaceholder": "항상 사람들을 데려가는 곳",
@@ -107,7 +107,7 @@
   "save": {
     "uploading": "업로드하는 중…",
     "saving": "저장하는 중…",
-    "saved": "저장됨 ✓",
+    "saved": "저장됨",
     "save": "프로필 저장"
   },
   "signOut": "로그아웃",

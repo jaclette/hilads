@@ -1,7 +1,7 @@
 {
   "showcase": {
     "cta": "Geslaagde challenges",
-    "title": "✨ Geslaagde challenges",
+    "title": "Geslaagde challenges",
     "allCities": "Alle steden",
     "clearCity": "Wissen",
     "localTag": "Lokaal",
@@ -22,7 +22,7 @@
   "mostLocal": "Most Local",
   "seeAll": "Alles bekijken",
   "leaderboardCta": {
-    "title": "🏆 Stadklassement",
+    "title": "Stadklassement",
     "view": "Bekijk",
     "sub": "Wees de eerste in het klassement - start en voltooi een challenge"
   },
@@ -54,7 +54,7 @@
     "culture": "...en we spreken af om erover te praten 🎭",
     "help": "...en laten we samen iets geks doen 🤪"
   },
-  "createCta": "Challenge starten 🔥",
+  "createCta": "Challenge starten",
   "saveChanges": "Wijzigingen opslaan",
   "errSave": "Opslaan mislukt",
   "errStart": "Challenge kon niet worden gestart",
@@ -76,7 +76,7 @@
     "meetBadge": "Afspraak",
     "photosCount": "{{count}} foto's",
     "noOneJoined": "Nog niemand meegedaan",
-    "beFirst": "⚡ Wees de eerste · +2",
+    "beFirst": "Wees de eerste · +2",
     "daysLeft": "Nog {{count}} d",
     "lastDay": "Verloopt binnenkort",
     "joinGroup": "Meedoen aan de challenge",
@@ -87,8 +87,8 @@
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
   "openBadge": "Open",
-  "forLocals": "🏠 Voor locals",
-  "forExplorers": "🧳 Voor reizigers",
+  "forLocals": "Voor locals",
+  "forExplorers": "Voor reizigers",
   "validation": {
     "label": "Hoe valideren?",
     "meet": {
@@ -114,7 +114,7 @@
   "deleteBtn": "Verwijderen",
   "shareCta": "Delen",
   "shareInvite": "Doe deze challenge met me mee!",
-  "shareCopied": "Link gekopieerd ✓",
+  "shareCopied": "Link gekopieerd",
   "noun": "Challenge",
   "examples": {
     "label": "Geen ideeën? Tik er eentje aan",
@@ -176,7 +176,7 @@
   "thread": {
     "notFound": "Thread niet gevonden",
     "empty": "Wees de eerste die iets zegt.",
-    "emptyIntl": "Zeg hi 👋 - drop een 📸 als het gelukt is.",
+    "emptyIntl": "Zeg hi - drop een foto als het gelukt is.",
     "cancel": {
       "creatorTitle": "Deze deelname annuleren?",
       "acceptorTitle": "Deze challenge laten vallen?",
@@ -202,7 +202,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Stel een datum voor 📅",
+    "proposeCta": "Stel een datum voor",
     "counterCta": "Tegenvoorstel",
     "editCta": "Datum wijzigen",
     "you": "je",
@@ -220,9 +220,9 @@
     "tomorrow": "Morgen",
     "picker": {
       "title": "Wanneer zien jullie elkaar?",
-      "whenLabel": "WANNEER",
-      "timeLabel": "TIJD",
-      "whereLabel": "WAAR (OPTIONEEL)",
+      "whenLabel": "Wanneer",
+      "timeLabel": "Tijd",
+      "whereLabel": "Waar (optioneel)",
       "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix"
     },
     "err": {
@@ -241,7 +241,7 @@
       "body": "{{name}} geeft zo aan hoe het ging."
     },
     "approved": {
-      "title": "Challenge gehaald 🎉"
+      "title": "Challenge gehaald"
     },
     "rejected": {
       "title": "Challenge afgesloten"
@@ -285,7 +285,7 @@
       "meetSoon": "Tot {{date}}",
       "creatorVerdict": "Hoe ging het met {{name}}?",
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
-      "accomplished": "Challenge gehaald 🎉",
+      "accomplished": "Challenge gehaald",
       "closed": "Challenge afgesloten",
       "submitProof": "Stuur je bewijs",
       "waitingForProof": "Wachten op het bewijs",
@@ -351,13 +351,13 @@
   },
   "byCreator": "door {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge-ideeën",
+    "heading": "Challenge-ideeën",
     "sub": "Wat locals elders starten - doe inspiratie op",
-    "firstLocal": "🌱 Wees de eerste local in {{city}}",
+    "firstLocal": "Wees de eerste local in {{city}}",
     "firstLocalSub": "Start een challenge · reizigers die aankomen pakken hem op",
-    "reward": "Eerste challenge · +10 🏆",
-    "launchFirst": "🔥 Start de eerste challenge",
-    "createYours": "🔥 Maak die van jou in {{city}}",
+    "reward": "Eerste challenge · +10",
+    "launchFirst": "Start de eerste challenge",
+    "createYours": "Maak die van jou in {{city}}",
     "by": "door {{name}} · {{city}}"
   },
   "typeFilter": {
@@ -376,11 +376,11 @@
   },
   "intl": {
     "targetCityLabel": "Doelstad",
-    "targetCityAnywhere": "🌍 Waar dan ook ter wereld",
+    "targetCityAnywhere": "Waar dan ook ter wereld",
     "targetCityHint": "Kies een doelstad — \"Waar dan ook ter wereld\" is nog niet beschikbaar.",
     "proofRequirementsLabel": "Wat moet de foto laten zien?",
     "proofRequirementsPlaceholder": "bv. Het gerecht bij daglicht, met jou erbij",
-    "proofRequirementsHint": "Het bewijs is een foto 📸. De deelnemer ziet dit vóór het versturen - wees specifiek.",
+    "proofRequirementsHint": "Het bewijs is een foto. De deelnemer ziet dit vóór het versturen - wees specifiek.",
     "cityPicker": {
       "title": "Kies een doelstad",
       "searchPlaceholder": "Zoek een stad…",
@@ -441,14 +441,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Deze challenge is privé",
+      "title": "Deze challenge is privé",
       "body": "Alleen de maker en de uitvoerder zien het gesprek."
     }
   },
   "members": {
     "title": "In het kanaal",
     "countIn": "{{count}} in het kanaal",
-    "seeAll": "Toon alles →",
+    "seeAll": "Toon alles",
     "empty": "Nog niemand meegedaan - wees de eerste.",
     "kickCta": "Verwijderen",
     "kickAria": "{{name}} uit het kanaal verwijderen",
@@ -464,13 +464,13 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Openbaar",
-      "friends": "👯 Vrienden",
-      "private": "🔒 Privé"
+      "public": "Openbaar",
+      "friends": "Vrienden",
+      "private": "Privé"
     },
     "label": "Wie kan dit zien?",
-    "public": "🌍 Openbaar",
-    "friends": "👯 Vrienden",
+    "public": "Openbaar",
+    "friends": "Vrienden",
     "publicHint": "Iedereen in de stad kan dit zien en aannemen.",
     "friendsHint": "Alleen je vrienden en mensen die je uitnodigt kunnen dit zien.",
     "intlLocked": "Internationale challenges zijn altijd openbaar.",
@@ -536,11 +536,11 @@
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
-      "ranked": "🏆 #{{rank}}",
-      "rankedOver": "🏆 #100+",
-      "neutral": "🏆 Top-challengers"
+      "ranked": "#{{rank}}",
+      "rankedOver": "#100+",
+      "neutral": "Top-challengers"
     },
     "scope": {
       "city": "My city",
@@ -562,7 +562,7 @@
     },
     "errLoad": "Klassement laden lukte niet. Sleep om opnieuw te proberen.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Deel mijn positie",
       "periodMonth": "deze maand",
@@ -577,8 +577,8 @@
   },
   "scoringInfo": {
     "aria": "Hoe punten werken",
-    "helpLabel": "🏆 Zo verdien je punten",
-    "title": "🏆 Hoe challenges werken",
+    "helpLabel": "Zo verdien je punten",
+    "title": "Hoe challenges werken",
     "intro": "Kleine punten voor meedoen; de grote punten voor echt komen opdagen of winnen. Alleen maar meedoen levert nooit wat op.",
     "colStep": "Stap",
     "steps": {
@@ -593,14 +593,14 @@
     "footnote": "De cijfers kunnen veranderen terwijl we het spel finetunen.",
     "types": {
       "heading": "Twee soorten challenge",
-      "local": "🏙️ Meet — verzamel een groep in het echt op een vaste tijd + plek. Iedereen die komt opdagen verdient groot.",
-      "international": "🌍 Foto-challenge — iedereen stuurt voor de deadline een foto in; de challenger kiest de winnaar."
+      "local": "Meet — verzamel een groep in het echt op een vaste tijd + plek. Iedereen die komt opdagen verdient groot.",
+      "international": "Foto-challenge — iedereen stuurt voor de deadline een foto in; de challenger kiest de winnaar."
     },
     "lifecycle": {
       "heading": "🔁 Hoe het wordt beslist",
       "body": "De challenger stelt het op, mensen doen mee, en aan het eind bevestigt de challenger — wie er was, of welke foto won."
     },
-    "pointsHeading": "💯 Zo verdien je punten",
+    "pointsHeading": "Zo verdien je punten",
     "ways": {
       "join": "Meedoen aan een challenge",
       "create": "Een challenge maken",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "punten",
     "subtitle": {
-      "accepted": "Je challenge is geaccepteerd 🤝",
-      "date_locked": "Afspraak bevestigd - let’s go 🗓️",
-      "meetup": "Missie geslaagd 🎉",
-      "debrief": "Missie geslaagd 🎉",
-      "ghost": "Volgende keer beter 👻",
-      "default": "Je klimt in de ranglijst 🚀",
-      "meet_bonus": "Ontmoetingsbonus vrijgespeeld 🤝",
-      "challenge_created": "Je hebt een challenge gestart 🎯"
+      "accepted": "Je challenge is geaccepteerd",
+      "date_locked": "Afspraak bevestigd - let’s go",
+      "meetup": "Missie geslaagd",
+      "debrief": "Missie geslaagd",
+      "ghost": "Volgende keer beter",
+      "default": "Je klimt in de ranglijst",
+      "meet_bonus": "Ontmoetingsbonus vrijgespeeld",
+      "challenge_created": "Je hebt een challenge gestart"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} is #{{rank}} onder de steden",
       "citiesBeyond": "{{city}} buiten de top {{topN}} steden"
     },
-    "cta": "Go ⚡",
+    "cta": "Go",
     "kindShort": {
       "accepted": "Geaccepteerd",
       "date_locked": "Afspraak bevestigd",
@@ -651,8 +651,8 @@
     "total": "Totaal: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welkom! Praat vrij mee, geen account nodig.",
-    "cta": "Wil je deze challenge accepteren? Account in 3 seconden →"
+    "title": "Welkom! Praat vrij mee, geen account nodig.",
+    "cta": "Wil je deze challenge accepteren? Account in 3 seconden"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} won",
-      "body": "Mooie foto! Je verdiende {{points}} voor je deelname — volgende keer beter 💪"
+      "body": "Mooie foto! Je verdiende {{points}} voor je deelname — volgende keer beter"
     },
     "present": {
       "title": "Je was erbij!",

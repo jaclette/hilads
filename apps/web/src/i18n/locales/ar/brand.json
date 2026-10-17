@@ -14,9 +14,9 @@
     "chill": "Chill"
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ جديد",
-    "regular": "😎 من الطاقم",
-    "host": "👑 أسطورة"
+    "ghost": "Ghost",
+    "fresh": "جديد",
+    "regular": "من الطاقم",
+    "host": "أسطورة"
   }
 }
