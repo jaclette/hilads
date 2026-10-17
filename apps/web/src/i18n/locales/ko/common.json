@@ -190,5 +190,6 @@
     "a11y": "{{scope}} 보는 중. 눌러서 변경"
   },
   "signUp": "가입하기",
-  "settings": "설정"
+  "settings": "설정",
+  "firstLaunch": "하루에 하나, 로컬 challenge."
 }

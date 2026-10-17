@@ -70,7 +70,7 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWo
   const paused   = useRef(false)
 
   // +1 for the trailing How-it-works slide.
-  const total = items.length + 1
+  const total = items.length + (onHowItWorks ? 1 : 0)
 
   useEffect(() => {
     let alive = true
@@ -126,7 +126,8 @@ export default function ShowcaseHero({ onTry, onOpenProfile, onSeeAll, onHowItWo
         onPointerLeave={() => { paused.current = false }}
       >
         {items.map(it => <Slide key={it.id} item={it} onOpen={() => setPreview(it)} />)}
-        <HowItWorksSlide key="__howto__" onOpen={onHowItWorks} />
+        {/* No "how it works" slide once the tutorials are gone (W5): only with a handler. */}
+        {onHowItWorks && <HowItWorksSlide key="__howto__" onOpen={onHowItWorks} />}
       </div>
 
       {total > 1 && (

@@ -190,5 +190,6 @@
     "a11y": "{{scope}}を表示中。タップで変更"
   },
   "signUp": "登録する",
-  "settings": "設定"
+  "settings": "設定",
+  "firstLaunch": "1日1つのローカル challenge。"
 }

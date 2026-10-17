@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { fetchDailyCalendar, fetchDailySheet, fetchDailyToday, fetchSpotsNear } from '../../api'
 import { localizeCityName } from '../../i18n/cityName'
 import { track } from '../../lib/analytics'
@@ -48,6 +49,7 @@ export default function TodayScreen({ header }) {
     <div className="full-page full-page--tab today-page">
       <div className="tab-app-header">{header}</div>
       <div className="page-body today-body">
+        <FirstLaunchLine />
         <Ticket data={data} loading={loading} />
         <Week today={data} />
         <Top3 today={data} />
@@ -55,6 +57,26 @@ export default function TodayScreen({ header }) {
       </div>
     </div>
   )
+}
+
+const FIRST_LAUNCH_KEY = 'hilads_first_launch_line_seen'
+
+/**
+ * First launch (W5, SPEC 9.9): "One local challenge a day." on top of Today
+ * for a guest's first visit, never again. No tutorial.
+ */
+function FirstLaunchLine() {
+  const { t } = useTranslation('common')
+  const { account } = useDaily()
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    if (account) return
+    try {
+      if (localStorage.getItem(FIRST_LAUNCH_KEY) !== '1') { setShow(true); localStorage.setItem(FIRST_LAUNCH_KEY, '1') }
+    } catch { /* storage blocked: skip the line */ }
+  }, [account])
+  if (!show || account) return null
+  return <p className="first-launch">{t('firstLaunch')}</p>
 }
 
 function Ticket({ data, loading }) {

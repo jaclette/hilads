@@ -190,5 +190,6 @@
     "a11y": "يُعرض {{scope}}. اضغط للتغيير"
   },
   "signUp": "سجّل",
-  "settings": "الإعدادات"
+  "settings": "الإعدادات",
+  "firstLaunch": "challenge محلي واحد كل يوم."
 }

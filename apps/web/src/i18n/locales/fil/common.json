@@ -190,5 +190,6 @@
     "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
   },
   "signUp": "Mag-sign up",
-  "settings": "MGA SETTING"
+  "settings": "MGA SETTING",
+  "firstLaunch": "Isang local challenge bawat araw."
 }

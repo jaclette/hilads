@@ -1614,7 +1614,7 @@ export default function ChallengeChatPage({
               shared carousel mounted at App level; × → dismiss.
               Hidden for guests - the welcome banner above is their
               single CTA on entry. */}
-          {account?.id && showChallengeIntroBanner && (
+          {account?.id && showChallengeIntroBanner && onOpenChallengeIntro && (
             <div className="challenge-intro-banner">
               <button
                 type="button"

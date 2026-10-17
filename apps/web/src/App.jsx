@@ -59,10 +59,9 @@ import ThumbImg from './components/ThumbImg'
 import { ReactionPills, ReplyPreview, MessageActionBubble, CopyTranslateText } from './components/MessageActions'
 import ScoringInfoButton    from './components/ScoringInfoButton'
 import CreateChallengePage from './components/CreateChallengePage'
-import OnboardingCarousel from './components/OnboardingCarousel'
-import ChallengeIntroCarousel from './components/ChallengeIntroCarousel'
 import { Marquee } from './components/Marquee'
 import AuthScreen from './components/AuthScreen'
+import SignUpSheet from './components/SignUpSheet'
 import AccountWelcome from './components/AccountWelcome'
 import ForgotPasswordScreen from './components/ForgotPasswordScreen'
 import ResetPasswordScreen from './components/ResetPasswordScreen'
@@ -173,6 +172,14 @@ function parseDeepLink() {
  * visitor). conversations / notifications / friend-requests stay OFF this list
  * on purpose: they're personal surfaces that need a real account.
  */
+// Bare hilads.live/ (any locale) opens the app on Today, like the app (W5):
+// no stories landing. The landing stays for ad links (/c/…) and /join; a
+// ?auth=signup visit still goes to sign-up.
+function isBareHome(link) {
+  if (link !== null) return false
+  try { return !new URLSearchParams(window.location.search).get('auth') } catch { return true }
+}
+
 function isPublicEntryLink(link) {
   return !!link && [
     'city', 'event', 'topic', 'challenge', 'venue', 'past',
@@ -204,17 +211,6 @@ function parseSharedHiladsLink(content) {
   if ((mm = path.match(/^\/(?:t|topic)\/(?:[a-z0-9-]+-)?([a-f0-9]{16})$/i))) return { url, kind: 'topic', id: mm[1] }
   return null
 }
-
-// Did the visitor land directly on a content deep-link (/city, /event, /venue,
-// /topic, …) instead of entering through the landing page? Captured ONCE at page
-// load, before any client-side navigation, so it reflects the true ENTRY URL.
-// Used to suppress the first-time onboarding carousel for deep-linked visitors -
-// only landing-funnel visitors (entered on the root) should see it.
-// NB: we key on the entry URL, NOT document.referrer - in this SPA the
-// landing→city hop is a client-side transition (referrer never updates), and a
-// same-origin referrer (clicking a shared link while another hilads tab is open)
-// would wrongly re-show onboarding. Entry URL is the only reliable signal.
-const ENTRY_WAS_DEEP_LINK = parseDeepLink() !== null
 
 // Prefix an internal path with the active locale so navigation stays in the
 // localized cluster (Option A): from /fr/, an event link → /fr/event/…. The
@@ -258,45 +254,6 @@ function pushUrl(path) {
 // ── Guest gate copy ────────────────────────────────────────────────────────────
 // Centralised copy for every member-only action gate.
 // All gates share the same UI; only the copy changes.
-
-const GUEST_GATE_COPY = {
-  create_event: {
-    pageTitle: 'Create event',
-    emoji:     '🎉',
-    title:     "Ghosts can browse, but can't host.",
-    sub:       'Create an account to throw your own event and put your city on the map.',
-  },
-  view_profile: {
-    pageTitle: 'Profile',
-    emoji:     '👻',
-    title:     "Ghosts can browse, but profiles are for members.",
-    sub:       'Create an account to unlock profiles, connect with people, and build your city crew.',
-  },
-  join_hangout: {
-    pageTitle: 'Join a hangout',
-    emoji:     '🗣️',
-    title:     "Ghosts can browse, but can't join hangouts.",
-    sub:       'Sign up to join hangouts, save your name, and get notified when people want to meet.',
-  },
-  create_hangout: {
-    pageTitle: 'Start a hangout',
-    emoji:     '🗣️',
-    title:     "Ghosts can browse, but can't host.",
-    sub:       'Sign up to start a hangout, save your name, and get people to join you.',
-  },
-  create_challenge: {
-    pageTitle: 'Launch a challenge',
-    emoji:     '🔥',
-    title:     "Ghosts can browse, but can't challenge.",
-    sub:       'Sign up to launch a challenge for locals or travelers, and own its validation.',
-  },
-  accept_challenge: {
-    pageTitle: 'Accept a challenge',
-    emoji:     '🤝',
-    title:     'Sign up to take this challenge',
-    sub:       "Takes 3 seconds. You'll come right back to the challenge.",
-  },
-}
 
 function setPageMeta(title, description) {
   document.title = title
@@ -951,22 +908,6 @@ function markWelcomed(channelId) {
   } catch {}
 }
 
-// First-time onboarding carousel - "seen once" flag (guests only).
-// localStorage (not a cookie - not sent on every request). On a read error we
-// deliberately default to SHOWING it (better one extra view than a crash); an
-// in-memory fallback prevents a re-show in the same session if writes also fail.
-const ONBOARDING_KEY = 'hilads_onboarding_seen'
-let onboardingSeenMem = false
-function hasSeenOnboarding() {
-  if (onboardingSeenMem) return true
-  try { return localStorage.getItem(ONBOARDING_KEY) === '1' }
-  catch { return false } // unreadable storage → show once
-}
-function markOnboardingSeen() {
-  onboardingSeenMem = true
-  try { localStorage.setItem(ONBOARDING_KEY, '1') } catch {}
-}
-
 // Build the onlineUsers array for the sidebar/strip, marking the current user.
 // Users come from presenceSnapshot (keyed by sessionId).
 function buildOnlineUsers(users, mySessionId) {
@@ -1266,8 +1207,6 @@ export default function App() {
       if (local === 'light' || local === 'dark') updateProfile({ theme: local }).catch(() => {})
     }
   }, [account?.theme, account?.id])
-  const [showOnboarding, setShowOnboarding] = useState(false) // first-time guest carousel
-  const [showChallengeIntro, setShowChallengeIntro] = useState(false) // "how challenges work" carousel, opened from city-chat feed prompt
   const [showNotifications, setShowNotifications] = useState(false)
   const [showFriendRequests, setShowFriendRequests] = useState(false)
   const [notifUnreadCount, setNotifUnreadCount] = useState(0)
@@ -1277,19 +1216,6 @@ export default function App() {
   // their event today (preflight check), or when the POST returns the
   // `event_limit_reached` error code (race safety).
   const [showEventLimitReached, setShowEventLimitReached] = useState(false)
-
-  // First-time onboarding carousel - guests only, once. Fires AFTER the city
-  // channel is ready (so it overlays a loaded screen instead of blocking/
-  // flashing first paint). Registered users never trigger it (account guard);
-  // hasSeenOnboarding() keeps it from re-appearing on later visits.
-  useEffect(() => {
-    if (status !== 'ready' || account || hasSeenOnboarding()) return
-    // Entered on a content deep-link (typed/shared /city, /event, … URL) → skip
-    // onboarding entirely. It's only for visitors who arrived via the landing page.
-    if (ENTRY_WAS_DEEP_LINK) return
-    const t = setTimeout(() => setShowOnboarding(true), 350)
-    return () => clearTimeout(t)
-  }, [status, account])
 
   // ── /?auth=signup deep-link ─────────────────────────────────────────────────
   // The /join paid-traffic landing sends its "Sign up" CTA here so the visitor
@@ -1401,6 +1327,9 @@ export default function App() {
   const [challengeResultRefetchKey, setChallengeResultRefetchKey] = useState(0) // bumps on WS challenge_validated → group result reveal
   const [ratePromptRefetchKey,  setRatePromptRefetchKey]  = useState(0)     // bumps on WS rating_received (first rating)
   const [myCityRank,            setMyCityRank]            = useState(null)  // caller's monthly city rank - drives the 🏆 chip in renderCityHero
+  // Sign-up / sign-in opened from the sign-up sheet or a Sign up button (W5):
+  // above the current screen, so the guest is back where they were. { tab, action }
+  const [gateAuth, setGateAuth] = useState(null)
   const [guestGate, setGuestGate] = useState(null) // { reason: 'create_event' | 'view_profile' | ... }
 
   // ── Challenges feed pagination + type sub-filter ─────────────────────────
@@ -2234,7 +2163,7 @@ export default function App() {
             // Signed in but no saved city (signed up on another device/browser):
             // a public deep link must still resolve a city and join, or the URL
             // dead-ends on LandingPage exactly like the logged-out case did.
-            if (isPublicEntryLink(parseDeepLink()) && !guestAutoJoinedRef.current) {
+            if ((isPublicEntryLink(parseDeepLink()) || isBareHome(parseDeepLink())) && !guestAutoJoinedRef.current) {
               guestAutoJoinedRef.current = true
               setRehydrating(false)
               handleJoin(null)
@@ -2257,12 +2186,14 @@ export default function App() {
       // Auto-create a guest session in the background. LandingPage stays the
       // entry point only for direct hilads.live/ visits (the marketing path).
       const link = parseDeepLink()
-      if (isPublicEntryLink(link) && !guestAutoJoinedRef.current) {
+      if ((isPublicEntryLink(link) || isBareHome(link)) && !guestAutoJoinedRef.current) {
         guestAutoJoinedRef.current = true
         // handleJoin awaits locPromiseRef.current (already set by the deep-link
         // resolver effect above), creates the guest session, joins the
         // channel, flips status to 'ready'. The user never sees LandingPage.
-        handleJoin(null)
+        // Bare / (W5): a first visit joins the IP city like the landing's
+        // "Join" (featured = no GPS prompt); a returning guest rejoins theirs.
+        handleJoin(null, null, isBareHome(link) && !loadIdentity()?.channelId ? { featured: true } : null)
       }
     }
 
@@ -2692,18 +2623,6 @@ export default function App() {
       })
     }, 15000)
 
-    // challenge-intro: 8s, fires once per session. Drops a "How challenges
-    // work" pill in the feed; tapping it opens the dedicated carousel. Same
-    // ephemeral lifecycle as the other prompts (auto-fades, NOW pulse).
-    setTimeout(() => {
-      if (!activeRef.current || activeEventIdRef.current) return
-      if (promptsShownRef.current.has('challenge-intro')) return
-      setFeed(prev => {
-        promptsShownRef.current.add('challenge-intro')
-        return [...prev, { type: 'prompt', subtype: 'challenge-intro', id: `prompt-challenge-intro-${Date.now()}`, text: '🔥 New here? Learn how challenges work', cta: 'Show me' }]
-      })
-    }, 8000)
-
     // photo: 30s, only if low activity
     setTimeout(() => {
       if (!activeRef.current || activeEventIdRef.current) return
@@ -2746,8 +2665,6 @@ export default function App() {
     } else if (item.subtype === 'new-event') {
       const event = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
       if (event) handleSelectEvent(event)
-    } else if (item.subtype === 'challenge-intro') {
-      setShowChallengeIntro(true)
     }
   }
 
@@ -2770,10 +2687,8 @@ export default function App() {
       || item.type === 'topic'
       || item.type === 'challenge'
       || item.type === 'challenge_validated'
-      // 'install' and 'challenge-intro' are sticky prompts - install because
-      // the user might miss it on first reflow, challenge-intro because it's
-      // an explainer that should sit there until tapped.
-      || (item.type === 'prompt' && item.subtype !== 'install' && item.subtype !== 'challenge-intro')
+      // 'install' is a sticky prompt: the user might miss it on first reflow.
+      || (item.type === 'prompt' && item.subtype !== 'install')
       || (item.type === 'activity' && item.subtype === 'crowd')
   }
 
@@ -3997,7 +3912,7 @@ export default function App() {
           <button
             type="button"
             className="v3-signup"
-            onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true); setShowProfileDrawer(true) }}
+            onClick={() => setGateAuth({ tab: 'signup', action: 'header' })}
           >
             {t('signUp', { ns: 'common' })}
           </button>
@@ -5529,7 +5444,6 @@ export default function App() {
                 explore:           { text: t('prompt.exploreText'),       cta: t('prompt.exploreCta') },
                 photo:             { text: t('prompt.photoText'),         cta: t('prompt.shoot') },
                 'create-event':    { text: t('prompt.createEventText'),    cta: t('prompt.createEventCta') },
-                'challenge-intro': { text: t('prompt.challengeIntroText'), cta: t('prompt.challengeIntroCta') },
                 install:           { text: t('prompt.installText'),       cta: installPrompt.canUseNativePrompt ? t('prompt.installAdd') : t('prompt.installHow') },
               }[item.subtype]
               return (
@@ -6370,7 +6284,6 @@ export default function App() {
               onTry={creationClosed ? null : (item) => { setShowChallengesDrawer(false); tryShowcaseChallenge(item) }}
               onOpenProfile={(uid) => { setShowChallengesDrawer(false); openProfile(uid, '') }}
               onSeeAll={() => { setShowChallengesDrawer(false); setShowSuccessfulChallenges(true) }}
-              onHowItWorks={() => setShowChallengeIntro(true)}
             />
             {/* "How to earn points" helper - the challenges browser had no
                 scoring affordance (only the channel did). Labeled pill. */}
@@ -6954,8 +6867,8 @@ export default function App() {
           cityId={channelId}
           cityName={city}
           onSettings={() => setShowSettings(true)}
-          onSignUp={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}
-          onSignIn={() => { setShowAuthScreenTab('login'); setShowAuthScreen(true) }}
+          onSignUp={() => setGateAuth({ tab: 'signup', action: 'passport' })}
+          onSignIn={() => setGateAuth({ tab: 'login', action: 'passport' })}
           onOpen={(row) => {
             if (row === 'proposals') openDaily('proposals')
             else if (row === 'alltime') { setLeaderboardScope(channelId ? 'city' : 'world'); setLeaderboardPeriod('alltime'); setShowLeaderboard(true) }
@@ -7305,26 +7218,36 @@ export default function App() {
       )}
 
       {/* Guest gate - shown when a ghost user tries a member-only action */}
-      {guestGate && (() => {
-        const reason   = GUEST_GATE_COPY[guestGate.reason] ? guestGate.reason : 'view_profile'
-        const emoji    = GUEST_GATE_COPY[reason].emoji
-        const openAuth = () => { setGuestGate(null); setShowProfileDrawer(true); setShowAuthScreen(true) }
-        return (
-          <div className="full-page">
-            <div className="page-header">
-              <BackButton onClick={() => setGuestGate(null)} />
-              <span className="page-title">{t(`guestGate.${reason}.pageTitle`)}</span>
-            </div>
-            <div className="guest-gate">
-              <span className="guest-gate-emoji">{emoji}</span>
-              <h2 className="guest-gate-title">{t(`guestGate.${reason}.title`)}</h2>
-              <p className="guest-gate-sub">{t(`guestGate.${reason}.sub`)}</p>
-              <button className="modal-submit" onClick={openAuth}>{t('guestGate.createAccount')}</button>
-              <button className="modal-submit modal-submit--secondary" onClick={openAuth}>{t('guestGate.signIn')}</button>
-            </div>
-          </div>
-        )
-      })()}
+      {guestGate && (
+        <SignUpSheet
+          reason={guestGate.reason}
+          onClose={() => setGuestGate(null)}
+          onAuth={(tab, action) => { setGuestGate(null); setGateAuth({ tab, action }) }}
+        />
+      )}
+      {gateAuth && (
+        <div className="su-auth">
+          <AuthScreen
+            guestId={guest?.guestId}
+            guestNickname={nickname}
+            initialTab={gateAuth.tab}
+            onSuccess={(user, isSignup) => {
+              localStorage.setItem(AUTH_FLAG_KEY, '1')
+              accountRef.current = user
+              setAccount(user)
+              if (isSignup) setShowAccountWelcome(true)
+              identifyUser(user.id, { account_type: 'registered', username: user.display_name })
+              setAnalyticsContext({ is_guest: false, user_id: user.id, guest_id: null })
+              track('user_authenticated')
+              // Which gated action converted (W5, same event as the app).
+              track('guest_signup_completed', { action: gateAuth.action, method: isSignup ? 'signup' : 'signin' })
+              setGateAuth(null)
+            }}
+            onBack={() => setGateAuth(null)}
+            onForgotPassword={() => { setGateAuth(null); setShowForgotPassword(true) }}
+          />
+        </div>
+      )}
 
       {/* Create event - full-screen page */}
       {showCreateEvent && (
@@ -7524,7 +7447,6 @@ export default function App() {
           onDeleted={() => setActiveChallenge(null)}
           onShareToCity={shareToMyCity}
           onShareToWorld={shareToWorld}
-          onOpenChallengeIntro={() => setShowChallengeIntro(true)}
           onNeedAuth={(reason) => {
             // KEEP activeChallenge set so the challenge view stays mounted
             // underneath the guest-gate overlay (.full-page z-index:200).
@@ -7680,56 +7602,6 @@ export default function App() {
         bursts={reactionBursts}
         onDone={id => setReactionBursts(prev => prev.filter(b => b.id !== id))}
       />
-
-      {/* "How challenges work" carousel - opened from the city-chat feed
-          prompt. Independent of the first-time onboarding (which covers
-          general intro). Can be triggered any time. */}
-      {showChallengeIntro && (
-        <ChallengeIntroCarousel
-          onClose={() => setShowChallengeIntro(false)}
-          onCreateChallenge={() => {
-            // Close the carousel + open the create-challenge flow via
-            // the existing entry (guest gate, EventLimit, etc. all live
-            // there). A user who just learned the rules can launch their
-            // first challenge without backtracking through the city chat.
-            setShowChallengeIntro(false)
-            openCreateChallenge()
-          }}
-        />
-      )}
-
-      {/* First-time guest onboarding carousel (also re-openable via header "?").
-          The 4th screen has three CTAs that App-side state setters wire to
-          the relevant destinations - no router on web, so we hand the
-          component callbacks instead of routes. */}
-      {showOnboarding && (
-        <OnboardingCarousel
-          city={localizeCityName(city)}
-          onClose={() => {
-            markOnboardingSeen()
-            setShowOnboarding(false)
-          }}
-          onTakeChallenge={() => {
-            markOnboardingSeen()
-            setShowOnboarding(false)
-            goToChallengesTab()
-          }}
-          onHiNow={() => {
-            markOnboardingSeen()
-            setShowOnboarding(false)
-            setShowEventDrawer(true)
-          }}
-          onHiLater={() => {
-            markOnboardingSeen()
-            setShowOnboarding(false)
-            setShowEventDrawer(true)
-          }}
-          onLookAround={() => {
-            markOnboardingSeen()
-            setShowOnboarding(false)
-          }}
-        />
-      )}
 
       {/* One-time congrats screen, shown right after account creation (signup only). */}
       {showAccountWelcome && account && (

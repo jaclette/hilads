@@ -190,5 +190,6 @@
     "a11y": "Mostrando {{scope}}. Toque para trocar"
   },
   "signUp": "Cadastrar",
-  "settings": "CONFIGURAÇÕES"
+  "settings": "CONFIGURAÇÕES",
+  "firstLaunch": "Um challenge local por dia."
 }

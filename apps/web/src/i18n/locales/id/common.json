@@ -190,5 +190,6 @@
     "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
   },
   "signUp": "Daftar",
-  "settings": "PENGATURAN"
+  "settings": "PENGATURAN",
+  "firstLaunch": "Satu challenge lokal setiap hari."
 }

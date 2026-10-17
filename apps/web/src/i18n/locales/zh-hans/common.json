@@ -190,5 +190,6 @@
     "a11y": "正在显示{{scope}}。点按以更换"
   },
   "signUp": "注册",
-  "settings": "设置"
+  "settings": "设置",
+  "firstLaunch": "每天一个本地 challenge。"
 }

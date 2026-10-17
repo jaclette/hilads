@@ -190,5 +190,6 @@
     "a11y": "A mostrar {{scope}}. Toca para mudar"
   },
   "signUp": "Registar",
-  "settings": "DEFINIÇÕES"
+  "settings": "DEFINIÇÕES",
+  "firstLaunch": "Um challenge local por dia."
 }
