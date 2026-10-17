@@ -89,7 +89,11 @@
     "snapDesc": "写真を撮る、またはアップロード",
     "spot": "スポットをシェア",
     "spotDesc": "今いる場所をシェア",
-    "spotLoading": "現在地を取得しています…"
+    "spotLoading": "現在地を取得しています…",
+    "plan": "予定を作る",
+    "planDesc": "時間と場所を決めて、みんなを誘おう",
+    "hiNow": "Hi now",
+    "hiNowDesc": "今なにかしたい？言ってみよう"
   },
   "locationPicker": {
     "title": "今どこにいる？👀",

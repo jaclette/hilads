@@ -2475,3 +2475,13 @@ export function fetchSpotsNear({ lat, lng, cityId }) {
     lat: lat !== undefined ? lat.toFixed(4) : null, lng: lng !== undefined ? lng.toFixed(4) : null, cityId: cityNum(cityId),
   } })
 }
+
+/** GET /channels/{cityId}/people (V3-04): Hi now, tonight's plans, arrivals, here now; counts below `min` are null. */
+export function fetchPeopleCounts(cityId) {
+  return daily('GET', `/channels/${cityNum(cityId)}/people`)
+}
+
+/** Live vote state of up to 50 proofs (the chat's Daily cards), plus my votes left. */
+export function fetchDailyProofStates(ids) {
+  return daily('GET', '/daily/proofs/state', { params: { ids: ids.join(',') } })
+}

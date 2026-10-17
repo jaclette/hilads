@@ -89,7 +89,11 @@
     "snapDesc": "Maak of upload een foto",
     "spot": "Deel je plek",
     "spotDesc": "Deel je huidige locatie",
-    "spotLoading": "Je locatie ophalen…"
+    "spotLoading": "Je locatie ophalen…",
+    "plan": "Plan maken",
+    "planDesc": "Kies een tijd en een plek, anderen doen mee",
+    "hiNow": "Hi now",
+    "hiNowDesc": "Nu zin in iets? Zeg het"
   },
   "locationPicker": {
     "title": "Waar ben je? 👀",

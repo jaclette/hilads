@@ -4,11 +4,13 @@
  * Actions:
  *   📸 Snap the vibe     → onSnap() - triggers file input in parent
  *   📍 Drop where you at → onSpot() - geolocation + send location message
+ *   📅 Create a plan     → onPlan() - city Chat only (W3: plans are created here, as in the app)
+ *   👋 Hi now            → onHiNow() - city Chat only
  */
 
 import { useTranslation } from 'react-i18next'
 
-export default function ShareActionSheet({ onSnap, onSpot, onClose, spotLoading }) {
+export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onClose, spotLoading }) {
   const { t } = useTranslation('common')
   return (
     <>
@@ -34,6 +36,24 @@ export default function ShareActionSheet({ onSnap, onSpot, onClose, spotLoading 
               </span>
             </div>
           </button>
+          {onPlan && (
+            <button className="share-sheet-action" onClick={onPlan} disabled={spotLoading}>
+              <span className="share-sheet-action-icon">📅</span>
+              <div className="share-sheet-action-body">
+                <span className="share-sheet-action-label">{t('share.plan')}</span>
+                <span className="share-sheet-action-desc">{t('share.planDesc')}</span>
+              </div>
+            </button>
+          )}
+          {onHiNow && (
+            <button className="share-sheet-action" onClick={onHiNow} disabled={spotLoading}>
+              <span className="share-sheet-action-icon">👋</span>
+              <div className="share-sheet-action-body">
+                <span className="share-sheet-action-label">{t('share.hiNow')}</span>
+                <span className="share-sheet-action-desc">{t('share.hiNowDesc')}</span>
+              </div>
+            </button>
+          )}
         </div>
         <button className="share-sheet-cancel" onClick={onClose}>{t('cancel')}</button>
       </div>

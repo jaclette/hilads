@@ -20,5 +20,17 @@
   "photoSavePermTitle": "Cần quyền truy cập Ảnh",
   "photoSavePermBody": "Cho phép truy cập Ảnh để lưu hình.",
   "photoSavePermSettings": "Cho phép truy cập Ảnh trong Cài đặt để lưu hình.",
-  "actionTranslate": "🌐 Dịch"
+  "actionTranslate": "🌐 Dịch",
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} người đang muốn làm gì đó",
+    "going_one": "{{count}} người đi",
+    "going_other": "{{count}} người đi",
+    "arrivals_one": "{{count}} người đến tuần này",
+    "arrivals_other": "{{count}} người đến tuần này",
+    "nearby_one": "{{count}} người ở đây",
+    "nearby_other": "{{count}} người ở đây"
+  },
+  "shareCity": "Chia sẻ thành phố"
 }

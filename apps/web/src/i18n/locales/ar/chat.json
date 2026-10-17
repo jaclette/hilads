@@ -20,5 +20,29 @@
   "photoSavePermTitle": "مطلوب الوصول إلى الصور",
   "photoSavePermBody": "اسمح بالوصول إلى الصور لحفظها.",
   "photoSavePermSettings": "اسمح بالوصول إلى الصور من الإعدادات.",
-  "actionTranslate": "🌐 ترجمة"
+  "actionTranslate": "🌐 ترجمة",
+  "tabTitle": "الدردشة",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} أشخاص مستعدون لشيء الآن",
+    "going_zero": "لا أحد ذاهب",
+    "going_one": "شخص واحد ذاهب",
+    "going_two": "شخصان ذاهبان",
+    "going_few": "{{count}} ذاهبون",
+    "going_many": "{{count}} ذاهبًا",
+    "going_other": "{{count}} ذاهب",
+    "arrivals_zero": "لم يصل أحد هذا الأسبوع",
+    "arrivals_one": "وصل شخص هذا الأسبوع",
+    "arrivals_two": "وصل شخصان هذا الأسبوع",
+    "arrivals_few": "وصل {{count}} هذا الأسبوع",
+    "arrivals_many": "وصل {{count}} هذا الأسبوع",
+    "arrivals_other": "وصل {{count}} هذا الأسبوع",
+    "nearby_zero": "لا أحد هنا",
+    "nearby_one": "شخص واحد هنا",
+    "nearby_two": "شخصان هنا",
+    "nearby_few": "{{count}} هنا الآن",
+    "nearby_many": "{{count}} هنا الآن",
+    "nearby_other": "{{count}} هنا الآن"
+  },
+  "shareCity": "مشاركة المدينة"
 }

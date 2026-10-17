@@ -5,7 +5,7 @@ import i18n, { SUPPORTED, DEFAULT_LOCALE } from './i18n'
 import { localizeCityName } from './i18n/cityName'
 import { track, trackDeferred, identifyUser, setAnalyticsContext, resetAnalytics } from './lib/analytics'
 import { requestFeatureLocation } from './lib/gpsFeature'
-import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallenges, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext, fetchAppConfig } from './api'
+import { createGuestSession, resolveLocation, reverseGeocodeCountry, fetchMessages, fetchLeanMessages, sendMessage, fetchChannels, fetchMessageBadges, joinChannel, uploadImage, sendImageMessage, fetchEvents, fetchCityEvents, fetchCityTopics, fetchNowFeed, fetchUpcomingEvents, createTopic, fetchCityMembers, fetchCityAmbassadors, fetchEventMessages, sendEventMessage, sendEventImageMessage, fetchEventParticipants, fetchEventGoingList, toggleEventParticipation, authMe, authLogout, deleteAccount, createOrGetDirectConversation, fetchConversations, fetchConversationsUnread, markEventRead, fetchCityBySlug, fetchEventById, fetchTopicById, fetchChallengeById, fetchShowcaseItem, createChallenge, fetchCityChallenges, fetchChallengeInspiration, fetchEventInspiration, fetchUnreadCount, fetchMyEvents, deleteEvent, fetchUserEvents, fetchUserFriends, authForgotPassword, authValidateResetToken, authResetPassword, toggleChannelReaction, fetchCanCreateEvent, EventLimitReachedError, fetchHangoutParticipants, updateTopic, deleteTopic, setCurrentCity, editChannelMessage, deleteChannelMessage, editDmMessage, deleteDmMessage, fetchWorldMessages, sendWorldMessage, toggleWorldReaction, fetchWorldActivity, fetchWorldArrivals, fetchWorldChallengesAll, markChannelRead, fetchUnread, fetchQuietContext, fetchAppConfig, fetchDailyProofStates } from './api'
 import EventLimitReachedScreen from './components/EventLimitReachedScreen'
 import Lightbox from './components/Lightbox'
 import { ArrivalsBar, ArrivalsSheet } from './components/ArrivalsBar'
@@ -15,11 +15,14 @@ import ExampleEventCard from './components/ExampleEventCard'
 import EmptyCityChallenges from './components/EmptyCityChallenges'
 import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
+import { APP_STORE, PLAY_STORE, deviceStore } from './components/map/spotsShared'
 import TodayScreen from './components/today/TodayScreen'
 import ChallengeScreen from './components/daily/ChallengeScreen'
 import CalendarScreen from './components/daily/CalendarScreen'
 import { ProposeScreen, TwistScreen, ProposalsScreen } from './components/daily/ProposalScreens'
-import { DailyContext } from './components/daily/dailyShared'
+import { DailyContext, VoteButton, LocalPassBadge, seedStates } from './components/daily/dailyShared'
+import PeopleRow from './components/chat/PeopleRow'
+import DailyPinBar from './components/chat/DailyPinBar'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -717,8 +720,9 @@ function DailyFeedCard({ item, t, onOpen }) {
   if (item.subtype === 'daily_challenge') {
     if (!p.text) return null
     const by = p.proposedBy?.user ? (p.proposedBy.user.displayName || p.proposedBy.user.username || '') : null
+    const store = deviceStore()
     return (
-      <div className="feed-daily">
+      <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}>
         <div className="feed-daily-kicker">🔥 {t('daily.kicker')}</div>
         {p.theme?.name && <span className="feed-daily-theme">{DAILY_THEME_EMOJI[p.theme.key] || '•'} {p.theme.name}</span>}
         <div className="feed-daily-text">{p.text}</div>
@@ -729,7 +733,11 @@ function DailyFeedCard({ item, t, onOpen }) {
             : t('daily.proposedBy', { name: by })}</div>
         )}
         {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
-        <button type="button" className="feed-daily-cta" onClick={() => onOpen({ date: p.date ?? 'today' })}>{t('dc.cta', { ns: 'challenge' })}</button>
+        {/* Proofs are posted from the app (W2 decision): "Take it" opens the store. */}
+        <a className="feed-daily-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
+           onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }) }}>
+          {t('dc.takeIt', { ns: 'challenge' })}
+        </a>
         {time && <span className="feed-join-time">{time}</span>}
       </div>
     )
@@ -740,14 +748,21 @@ function DailyFeedCard({ item, t, onOpen }) {
     <div className="feed-daily feed-daily--proof">
       <div className="feed-daily-author">
         <strong>{name}</strong>
-        {p.user?.localPass && <span className="feed-daily-pass" title={t('daily.localPass')}>🎫</span>}
-        <span className="feed-daily-sub"> · {p.isLocal ? `🌍 ${t('daily.local')}` : `🧭 ${t('daily.traveler')}`}{p.city?.name ? ` · ${localizeCityName(p.city.name)}` : ''}</span>
+        {p.user?.localPass && <LocalPassBadge />}
+        <span className={`feed-daily-chip ${p.isLocal ? 'feed-daily-chip--local' : 'feed-daily-chip--traveler'}`}>
+          {p.isLocal ? t('daily.local') : t('daily.traveler')}
+        </span>
         {p.isEarly && <span className="feed-daily-early">⚡ {t('daily.early')}</span>}
       </div>
-      <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy" />
+      <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy"
+           onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
-      <div className="feed-daily-sub">🔥 {t('daily.kicker')} · {p.challengeText}</div>
-      <button type="button" className="feed-daily-cta feed-daily-cta--ghost" onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })}>{t('dc.map.seeProof', { ns: 'challenge' })}</button>
+      <div className="feed-daily-tags">
+        {p.spot && <span className="feed-daily-tag">📍 {p.spot.name}</span>}
+        {p.theme?.name && <span className="feed-daily-tag">{DAILY_THEME_EMOJI[p.theme.key] || '•'} {p.theme.name}</span>}
+        {p.city?.name && <span className="feed-daily-tag">{localizeCityName(p.city.name)}</span>}
+      </div>
+      {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" />}
       {time && <span className="feed-join-time">{time}</span>}
     </div>
   )
@@ -1014,7 +1029,6 @@ export default function App() {
   }, [])
   const [worldActivity, setWorldActivity] = useState(null) // { online, cities, crossCity }
   const [worldArrivals, setWorldArrivals] = useState([])   // global recent arrivals
-  const [worldChallenges, setWorldChallenges] = useState([]) // last 5 international challenges (hero carousel)
   const [worldChallengesAll, setWorldChallengesAll] = useState([]) // all international worldwide ("See all" / 🌍 Worldwide filter)
   const [showWorldArrivals, setShowWorldArrivals] = useState(false)
   const [quietCardOpen, setQuietCardOpen] = useState(false) // quiet-city → World nudge
@@ -1054,7 +1068,6 @@ export default function App() {
     const id = setInterval(() => {
       fetchWorldActivity().then(setWorldActivity).catch(() => {})
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
-      fetchWorldChallenges().then(setWorldChallenges).catch(() => {})
     }, 30000)
     return () => clearInterval(id)
   }, [channelScope])
@@ -1223,6 +1236,17 @@ export default function App() {
   const [showForgotPassword, setShowForgotPassword] = useState(false)
   const [resetPasswordToken, setResetPasswordToken] = useState(null) // non-null = show reset screen
   const [account, setAccount] = useState(null)        // null = guest, object = registered
+  // Live votes on the chat's Daily proof cards (W3): their payload carries no
+  // vote state, so fetch it for the cards on screen (the card's Vote button).
+  const dailyProofIdsKey = feed
+    .filter(i => i.subtype === 'daily_proof' && i.payload?.proofId)
+    .map(i => i.payload.proofId).slice(-50).join(',')
+  useEffect(() => {
+    if (!dailyProofIdsKey) return
+    fetchDailyProofStates(dailyProofIdsKey.split(','))
+      .then(r => seedStates(r.items, r.myVotes))
+      .catch(() => {})
+  }, [dailyProofIdsKey, account?.id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Reconcile the account's theme whenever it loads (authMe, sign-in, sign-up).
   // If the account has a saved theme, it's the cross-device source of truth →
@@ -4085,7 +4109,6 @@ export default function App() {
       } catch { /* realtime will populate */ }
       fetchWorldActivity().then(a => setWorldActivity(a)).catch(() => {})
       fetchWorldArrivals().then(setWorldArrivals).catch(() => {})
-      fetchWorldChallenges().then(setWorldChallenges).catch(() => {})
       if (guest?.guestId) markChannelRead('world', guest.guestId)
     } else {
       setCityUnread(0)
@@ -4943,38 +4966,6 @@ export default function App() {
 
   // Challenge hero (mobile city home). Combines the city's open-challenge count
   // with the viewer's rank; copy adapts to each state. English-only this phase.
-  function renderChallengeHero() {
-    // Zero-challenge cities lead with ACTION via the shared component (same
-    // one the challenge tab uses), never with "no challenges yet".
-    if (cityChallenges.length === 0) {
-      return (
-        <div className="ch-hero-empty-wrap">
-          {creationClosed
-            ? <AppMapCard onOpenMap={goToMapTab} city={localizeCityName(city)} placement="home" />
-            : <EmptyCityChallenges city={localizeCityName(city)} onCreate={openCreateChallenge} />}
-        </div>
-      )
-    }
-    const short = cityShortName(city)
-    let main, sub
-    if (myCityRank === null) {
-      main = t('cityHero.mainUnranked', { count: cityChallenges.length, city: short })
-      sub  = t('cityHero.subUnranked')
-    } else if (myCityRank === 1) {
-      main = t('cityHero.mainTop', { count: cityChallenges.length, city: short })
-      sub  = t('cityHero.subTop')
-    } else {
-      main = t('cityHero.mainRanked', { count: cityChallenges.length, rank: myCityRank, city: short })
-      sub  = t('cityHero.subRanked')
-    }
-    return (
-      <button type="button" className="ch-hero" onClick={goToChallengesTab} aria-label={main}>
-        <span className="ch-hero-main">{main}</span>
-        <span className="ch-hero-sub">{sub}</span>
-      </button>
-    )
-  }
-
   function renderCityHero(className = 'header-hero') {
     return (
       <div className={className}>
@@ -5035,7 +5026,18 @@ export default function App() {
         : activeEvent.guest_id === guest?.guestId)
     : false
 
+  // What the Daily screens, the chat's pinned challenge and its Daily cards need.
+  const dailyCtx = {
+    account, cityId: channelId, scope: channelScope,
+    openDaily,
+    openProfile: (id, name) => openProfile(id, name ?? ''),
+    // A spot (or the map) from Today / a proof: the Map tab, on that spot.
+    openSpot: (id) => { goToMapTab(); setMapSpotId(id ?? null) },
+    needAccount: (reason) => setGuestGate({ reason }),
+  }
+
   return (
+    <DailyContext.Provider value={dailyCtx}>
     <div className="chat-layout">
 
       {/* Android Play Store promo - renders only on Android non-installed visitors */}
@@ -5225,136 +5227,70 @@ export default function App() {
               {/* ── Mobile layout - new 3-section design, hidden on desktop ── */}
               <div className="header-new">
 
-                {/* The app's header: the city / World selector replaces the old
-                    channel toggle (W1). */}
-                {renderAppHeader()}
+                {/* The app's Chat header (W3, chat.html): "Chat", share the
+                    city, private messages; then the City / World switch.
+                    Tapping the active city changes city; unread counts on the
+                    other side. */}
+                <div className="chat-top">
+                  <h1 className="chat-title">{t('tabTitle', { ns: 'chat' })}</h1>
+                  {city && (
+                    <button type="button" className="v3-round" onClick={() => share(composeCityShare(city))} aria-label={t('shareCity', { ns: 'chat' })}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" /><polyline points="16 6 12 2 8 6" /><line x1="12" y1="2" x2="12" y2="15" />
+                      </svg>
+                    </button>
+                  )}
+                  {account && (
+                    <button type="button" className="v3-round" onClick={() => setShowConversations(true)} aria-label={t('header.messages')}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
+                      </svg>
+                      {hasAnyUnread && <span className="v3-dot" />}
+                    </button>
+                  )}
+                </div>
+                {city && (
+                  <div className="chat-scope" role="tablist">
+                    <button type="button" role="tab" aria-selected={channelScope === 'city'}
+                            className={`chat-scope-btn${channelScope === 'city' ? ' chat-scope-btn--on' : ''}`}
+                            onClick={() => (channelScope === 'world' ? switchScope('city') : openCityPicker())}>
+                      <span className="chat-scope-label">{localizeCityName(city)}</span>
+                      {channelScope === 'world' && cityUnread > 0 && <span className="chat-scope-badge">{cityUnread > 99 ? '99+' : cityUnread}</span>}
+                    </button>
+                    <button type="button" role="tab" aria-selected={channelScope === 'world'}
+                            className={`chat-scope-btn${channelScope === 'world' ? ' chat-scope-btn--on' : ''}`}
+                            onClick={() => switchScope('world')}>
+                      <span className="chat-scope-label">{t('world.tab')}</span>
+                      {channelScope === 'city' && worldUnread > 0 && <span className="chat-scope-badge">{worldUnread > 99 ? '99+' : worldUnread}</span>}
+                    </button>
+                  </div>
+                )}
 
               </div>
             </>
           )}
         </header>
 
-        {/* ── City home redesign: challenge HERO + secondary pills. Replaces
-            the old arrivals strip + activity pills. Hi locals = topics
-            (spontaneous), Hi later = events (planned); both → the Hi Local
-            feed. 0-count pills stay visible but greyed. ── */}
-        {city && channelScope === 'world' && (
-          <>
-            {worldChallenges.length > 0 ? (
-              <div className="ch-world-carousel" role="list">
-                {worldChallenges.map(ch => {
-                  const TH = { food: { a: '#FF7A3C', b: '#C24A38' }, place: { a: '#2DD4BF', b: '#0EA5E9' }, culture: { a: '#A78BFA', b: '#7C3AED' }, help: { a: '#F472B6', b: '#DB2777' } }
-                  const th = TH[ch.challenge_type] ?? { a: '#FF7A3C', b: '#C24A38' }
-                  const emoji = ({ food: '🍜', place: '📍', culture: '🎭', help: '🤪' }[ch.challenge_type] ?? '🔥')
-                  return (
-                    <button
-                      key={ch.id} type="button" className="ch-world-slide" role="listitem"
-                      style={{ background: `linear-gradient(150deg, ${th.a}33, ${th.b}1c)`, borderColor: `${th.a}aa`, boxShadow: `0 8px 26px ${th.a}30` }}
-                      onClick={() => openWorldChallenge(ch)}
-                    >
-                      <div className="ch-world-slide-head">
-                        {ch.creator_thumb_avatar_url ? (
-                          <img className="ch-world-slide-avatar" src={thumbUrl(ch.creator_thumb_avatar_url)} alt="" loading="lazy" style={{ boxShadow: `0 0 0 2px ${th.a}` }} />
-                        ) : (
-                          <span className="ch-world-slide-avatar ch-world-slide-avatar--letter" style={{ background: th.a, boxShadow: `0 0 0 2px ${th.a}` }}>{(ch.creator_display_name ?? '?')[0].toUpperCase()}</span>
-                        )}
-                        <span className="ch-world-slide-owner">{ch.creator_display_name ?? '—'}</span>
-                        <span className="ch-world-slide-type" style={{ background: th.a }}>{emoji} {t(`typeBadge.${ch.challenge_type}`, { ns: 'challenge', defaultValue: ch.challenge_type })}</span>
-                      </div>
-                      <Marquee text={ch.title} className="ch-world-slide-title" fadeColor="#181113" />
-                      <div className="ch-world-slide-foot">
-                        <span className="ch-world-slide-flags">
-                          <span className="ch-world-slide-place">{cityFlag(ch.country) || '🌍'}{ch.city ? ` ${localizeCityName(ch.city)}` : ''}</span>
-                          <span className="ch-world-slide-arrow">→</span>
-                          <span className="ch-world-slide-place">{cityFlag(ch.target_country) || '🌍'}{ch.target_city ? ` ${localizeCityName(ch.target_city)}` : ''}</span>
-                        </span>
-                      </div>
-                    </button>
-                  )
-                })}
-                <button type="button" className="ch-world-slide ch-world-seeall" onClick={goToWorldChallenges}>
-                  <span className="ch-world-seeall-icon" aria-hidden="true">🌍</span>
-                  <span className="ch-world-seeall-txt">{t('world.seeAll', { defaultValue: 'See all' })}</span>
-                  <span className="ch-world-seeall-arrow" aria-hidden="true">→</span>
-                </button>
-              </div>
-            ) : creationClosed ? (
-              <div className="ch-hero-empty-wrap"><AppMapCard onOpenMap={goToMapTab} placement="world" /></div>
-            ) : (
-              <button type="button" className="ch-world-hero ch-world-hero--empty" onClick={openCreateChallenge}>
-                <span className="ch-world-hero-emoji" aria-hidden="true">🔥</span>
-                <span className="ch-world-hero-main">{t('world.heroEmpty')}</span>
-                <span className="ch-world-hero-sub">{t('world.heroEmptySub')}</span>
-              </button>
-            )}
-            <div className="ch-pills">
-              <button
-                type="button"
-                className={`ch-pill${!worldArrivals.length ? ' ch-pill--muted' : ''}`}
-                onClick={() => setShowWorldArrivals(true)}
-                aria-label={t('world.arrivals', { count: worldArrivals.length })}
-              >
-                ✈️ {t('world.arrivals', { count: worldArrivals.length })}
-              </button>
-              <button
-                type="button"
-                className="ch-pill ch-pill--accent"
-                onClick={() => { setLeaderboardScope('world'); setShowLeaderboard(true) }}
-              >
-                🏆 {t('world.leaderboard')}
-              </button>
-            </div>
-          </>
+        {/* ── The app's Chat (W3, SPEC 9.6): the people row (only above the
+            threshold; World shows its arrivals from 3 on), then today's Daily
+            Challenge pinned in both scopes. ── */}
+        {city && channelScope === 'city' && channelId && (
+          <PeopleRow
+            cityId={channelId}
+            onHiNow={goToEventsTab}
+            onPlan={(id) => fetchEventById(id).then(d => { if (d?.event) handleSelectEvent(d.event) }).catch(() => {})}
+            onArrivals={() => setShowArrivalsSheet(true)}
+            onNearby={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
+          />
         )}
-        {city && channelScope === 'city' && (
-          <>
-            {renderChallengeHero()}
-            <div className="ch-pills">
-              {/* ≥2 present → live "N nearby". Otherwise the count would just be you,
-                  so show "N members" instead - but only if the city has ≥2 members;
-                  an empty/near-empty city shows no pill at all. */}
-              {(() => {
-                const online = onlineCount ?? 0
-                const showNearby  = online >= 2
-                const showMembers = !showNearby && (cityMemberCount ?? 0) >= 2
-                if (!showNearby && !showMembers) return null
-                return (
-                  <button
-                    type="button"
-                    className="ch-pill"
-                    onClick={() => { setShowPeopleDrawer(true); setViewingProfile(null) }}
-                    aria-label={showNearby ? t('header.onlineAria', { count: online }) : t('cityHero.members', { count: cityMemberCount ?? 0 })}
-                  >
-                    {showNearby
-                      ? `🟢 ${t('cityHero.nearby',  { count: online })}`
-                      : `👥 ${t('cityHero.members', { count: cityMemberCount ?? 0 })}`}
-                  </button>
-                )
-              })()}
-              {/* Recent arrivals pill (restored: it used to live in the city row,
-                  which the channel toggle now occupies). */}
-              {(() => { const arrivals = feed.filter(i => i.type === 'activity' && i.subtype === 'join').length; return (
-                <button
-                  type="button"
-                  className={`ch-pill${!arrivals ? ' ch-pill--muted' : ''}`}
-                  onClick={() => setShowArrivalsSheet(true)}
-                  aria-label={`${arrivals} recent arrivals`}
-                >
-                  ✈️ {t('cityHero.recent', { count: arrivals })}
-                </button>
-              ) })()}
-              {/* Hi now (topics) + Hi plan (events) merged into one "Hi plans" pill. */}
-              <button
-                type="button"
-                className={`ch-pill ch-pill--accent${!(topics.length + events.length) ? ' ch-pill--muted' : ''}`}
-                onClick={goToEventsTab}
-                aria-label={`${topics.length + events.length} Hi plans`}
-              >
-                🎉 {(topics.length + events.length) > 0 ? `${topics.length + events.length} ` : ''}Hi plans
-              </button>
-            </div>
-          </>
+        {city && channelScope === 'world' && worldArrivals.length >= 3 && (
+          <div className="people-row">
+            <button type="button" className="people-chip" onClick={() => setShowWorldArrivals(true)}>
+              {t('world.arrivals', { count: worldArrivals.length })}
+            </button>
+          </div>
         )}
+        {city && !activeEvent && <DailyPinBar key={`${channelScope}:${channelId}`} />}
 
         <div className="messages" ref={messagesContainerRef}>
           {channelScope === 'city' && quietCardOpen && (
@@ -5858,6 +5794,8 @@ export default function App() {
           <ShareActionSheet
             onSnap={() => { setShowShareSheet(false); fileInputRef.current?.click() }}
             onSpot={handleMySpot}
+            onPlan={channelScope === 'city' && !activeEvent ? () => { setShowShareSheet(false); openCreateEvent() } : undefined}
+            onHiNow={channelScope === 'city' && !activeEvent ? () => { setShowShareSheet(false); openCreateHangout() } : undefined}
             onClose={() => setShowShareSheet(false)}
             spotLoading={spotLoading}
           />
@@ -5929,14 +5867,7 @@ export default function App() {
 
       {/* ── Full-screen pages ─────────────────────────── */}
 
-      <DailyContext.Provider value={{
-        account, cityId: channelId, scope: channelScope,
-        openDaily,
-        openProfile: (id, name) => openProfile(id, name ?? ''),
-        // A spot (or the map) from Today / a proof: the Map tab, on that spot.
-        openSpot: (id) => { goToMapTab(); setMapSpotId(id ?? null) },
-        needAccount: (reason) => setGuestGate({ reason }),
-      }}>
+      <>
         {showToday && !showMap && !showProfileDrawer && (
           <TodayScreen header={renderAppHeader()} />
         )}
@@ -5951,7 +5882,7 @@ export default function App() {
           if (top.name === 'calendar')  return <CalendarScreen key={key} onBack={closeDaily} />
           return null
         })()}
-      </DailyContext.Provider>
+      </>
 
       {renderScopeSheet()}
 
@@ -7797,5 +7728,6 @@ export default function App() {
         />
       )}
     </div>
+    </DailyContext.Provider>
   )
 }

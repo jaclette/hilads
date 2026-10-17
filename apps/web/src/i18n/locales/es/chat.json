@@ -20,5 +20,17 @@
   "photoSavePermTitle": "Se necesita acceso a Fotos",
   "photoSavePermBody": "Permite el acceso a Fotos para guardar imágenes.",
   "photoSavePermSettings": "Permite el acceso a Fotos en Ajustes para guardar imágenes.",
-  "actionTranslate": "🌐 Traducir"
+  "actionTranslate": "🌐 Traducir",
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} personas con ganas de algo ahora",
+    "going_one": "{{count}} va",
+    "going_other": "{{count}} van",
+    "arrivals_one": "{{count}} llegó esta semana",
+    "arrivals_other": "{{count}} llegaron esta semana",
+    "nearby_one": "{{count}} aquí ahora",
+    "nearby_other": "{{count}} aquí ahora"
+  },
+  "shareCity": "Compartir la ciudad"
 }

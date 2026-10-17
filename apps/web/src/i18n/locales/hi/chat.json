@@ -20,5 +20,17 @@
   "photoSavePermTitle": "फ़ोटो एक्सेस ज़रूरी है",
   "photoSavePermBody": "इमेज सहेजने के लिए फ़ोटो एक्सेस की अनुमति दें।",
   "photoSavePermSettings": "इमेज सहेजने के लिए सेटिंग्स में फ़ोटो एक्सेस की अनुमति दें।",
-  "actionTranslate": "🌐 अनुवाद करें"
+  "actionTranslate": "🌐 अनुवाद करें",
+  "tabTitle": "चैट",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} लोग अभी कुछ करने को तैयार",
+    "going_one": "{{count}} जा रहा है",
+    "going_other": "{{count}} जा रहे हैं",
+    "arrivals_one": "इस हफ़्ते {{count}} आया",
+    "arrivals_other": "इस हफ़्ते {{count}} आए",
+    "nearby_one": "अभी {{count}} यहाँ",
+    "nearby_other": "अभी {{count}} यहाँ"
+  },
+  "shareCity": "शहर शेयर करें"
 }

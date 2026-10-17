@@ -90,7 +90,11 @@
     "snapDesc": "Take or upload a photo",
     "spot": "Drop your spot",
     "spotDesc": "Share your current spot",
-    "spotLoading": "Getting your location…"
+    "spotLoading": "Getting your location…",
+    "plan": "Create a plan",
+    "planDesc": "Pick a time and a place, others join",
+    "hiNow": "Hi now",
+    "hiNowDesc": "Up for something right now? Say it"
   },
   "locationPicker": {
     "title": "Where are you? 👀",

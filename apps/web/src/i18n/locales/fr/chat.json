@@ -20,5 +20,17 @@
   "photoSavePermTitle": "Accès aux photos requis",
   "photoSavePermBody": "Autorise l'accès aux photos pour enregistrer les images.",
   "photoSavePermSettings": "Autorise l'accès aux photos dans Réglages pour enregistrer les images.",
-  "actionTranslate": "🌐 Traduire"
+  "actionTranslate": "🌐 Traduire",
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} personnes partantes en ce moment",
+    "going_one": "{{count}} y va",
+    "going_other": "{{count}} y vont",
+    "arrivals_one": "{{count}} arrivé cette semaine",
+    "arrivals_other": "{{count}} arrivés cette semaine",
+    "nearby_one": "{{count}} ici maintenant",
+    "nearby_other": "{{count}} ici maintenant"
+  },
+  "shareCity": "Partager la ville"
 }

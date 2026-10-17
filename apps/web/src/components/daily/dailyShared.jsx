@@ -132,6 +132,13 @@ export function seedProofs(proofs, open) {
 }
 export function seedVotesLeft(n) { votesLeft = n; emit() }
 
+/** Seed from GET /daily/proofs/state (chat cards carry no vote state). */
+export function seedStates(items, myVotes) {
+  Object.entries(items || {}).forEach(([id, st]) => votes.set(id, { ...st }))
+  if (myVotes) votesLeft = myVotes.left
+  emit()
+}
+
 function useVotes() { useSyncExternalStore(subscribe, () => version) }
 
 /**

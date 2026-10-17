@@ -20,5 +20,17 @@
   "photoSavePermTitle": "ต้องการสิทธิ์เข้าถึง Photos",
   "photoSavePermBody": "อนุญาตการเข้าถึง Photos เพื่อบันทึกรูป",
   "photoSavePermSettings": "เปิดอนุญาตเข้าถึง Photos ในการตั้งค่า เพื่อบันทึกรูป",
-  "actionTranslate": "🌐 แปล"
+  "actionTranslate": "🌐 แปล",
+  "tabTitle": "แชท",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} คนอยากทำอะไรสักอย่างตอนนี้",
+    "going_one": "ไป {{count}} คน",
+    "going_other": "ไป {{count}} คน",
+    "arrivals_one": "มาถึงสัปดาห์นี้ {{count}} คน",
+    "arrivals_other": "มาถึงสัปดาห์นี้ {{count}} คน",
+    "nearby_one": "อยู่ที่นี่ {{count}} คน",
+    "nearby_other": "อยู่ที่นี่ {{count}} คน"
+  },
+  "shareCity": "แชร์เมือง"
 }

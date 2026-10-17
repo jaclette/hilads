@@ -89,7 +89,11 @@
     "snapDesc": "Prends ou importe une photo",
     "spot": "Partage ton spot",
     "spotDesc": "Partage ta position actuelle",
-    "spotLoading": "Localisation en cours…"
+    "spotLoading": "Localisation en cours…",
+    "plan": "Créer un plan",
+    "planDesc": "Choisis une heure et un lieu, les autres te rejoignent",
+    "hiNow": "Hi now",
+    "hiNowDesc": "Partant pour un truc maintenant ? Dis-le"
   },
   "locationPicker": {
     "title": "Où es-tu ? 👀",

@@ -20,5 +20,17 @@
   "photoSavePermTitle": "Kailangan ng pahintulot sa larawan",
   "photoSavePermBody": "Pahintulutan ang access sa larawan para makapag-save.",
   "photoSavePermSettings": "Payagan ang access sa larawan sa Settings para makapag-save.",
-  "actionTranslate": "🌐 Isalin"
+  "actionTranslate": "🌐 Isalin",
+  "tabTitle": "Chat",
+  "people": {
+    "hiNow": "Hi now",
+    "hiNowA11y": "{{count}} tao ang gustong gumawa ng kahit ano ngayon",
+    "going_one": "{{count}} pupunta",
+    "going_other": "{{count}} pupunta",
+    "arrivals_one": "{{count}} dumating ngayong linggo",
+    "arrivals_other": "{{count}} dumating ngayong linggo",
+    "nearby_one": "{{count}} narito ngayon",
+    "nearby_other": "{{count}} narito ngayon"
+  },
+  "shareCity": "Ibahagi ang lungsod"
 }

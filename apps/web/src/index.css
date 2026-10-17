@@ -23,7 +23,7 @@
   --text: #2A1C13;
   --muted: #6F5B4D;
   --muted2: #6F5B4D;
-  --mine-bg: #C9501A;
+  --mine-bg: #9C5F22;   /* the app's caramel: own messages (SPEC 9.11) */
   --other-bg: #F1E9DF;
   --bg2: #FFFFFF;
   --text-muted: #6F5B4D;
@@ -68,7 +68,7 @@
   --text: #ede9e5;
   --muted: #635650;
   --muted2: #968880;
-  --mine-bg: #8C3427;
+  --mine-bg: #C98A45;   /* caramel on dark */
   --other-bg: #1c1610;
   --bg2: #1a1614;
   --text-muted: #968880;
@@ -16652,3 +16652,44 @@ body.has-app-promo-banner .page-header {
 
 /* Cards in the Today / Daily columns keep their height (no flex squeeze). */
 .today-body > *, .dc-body > * { flex-shrink: 0; }
+
+/* ── Chat like the app (W3): header, City / World switch, people row, the
+   pinned Daily Challenge, Daily card chips. ─────────────────────────────── */
+.chat-top { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 0 8px; }
+.chat-title { flex: 1; margin: 0; font-size: 26px; font-weight: 800; color: var(--text); letter-spacing: -0.3px; }
+.chat-scope { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--surface2); }
+.chat-scope-btn { flex: 1; min-height: 40px; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; border-radius: 999px; background: transparent; font: inherit; font-size: 14px; font-weight: 700; color: var(--muted2); cursor: pointer; min-width: 0; }
+.chat-scope-btn--on { background: var(--surface); color: var(--text); box-shadow: 0 1px 4px rgba(28, 20, 14, 0.12); }
+.chat-scope-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-scope-badge { font-size: 11px; font-weight: 800; color: #fff; background: var(--primary); border-radius: 999px; padding: 1px 6px; }
+.people-row { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 8px 18px 2px; flex-shrink: 0; }
+.people-row::-webkit-scrollbar { display: none; }
+.people-chip { flex-shrink: 0; height: 44px; max-width: 260px; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font: inherit; font-size: 14px; color: var(--text); cursor: pointer; white-space: nowrap; }
+.people-chip--accent { background: var(--primary-tint); border-color: var(--primary-tint); color: var(--primary-on-tint); font-weight: 700; }
+.people-chip-title { overflow: hidden; text-overflow: ellipsis; }
+.people-chip-muted { color: var(--muted2); font-size: 13px; }
+.people-chip-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.pin-bar { display: flex; align-items: center; gap: 10px; margin: 8px 16px 2px; padding: 10px 10px 10px 14px; border-radius: 18px; border: 1.5px solid var(--line); background: var(--surface); cursor: pointer; flex-shrink: 0; }
+.pin-bar-icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 12px; background: var(--primary-tint); display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.pin-bar-body { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.pin-bar-kicker { font-size: 12px; font-weight: 700; color: var(--primary-text); }
+.pin-bar-text { font-size: 14px; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pin-bar-take { flex-shrink: 0; min-height: 36px; display: flex; align-items: center; padding: 0 14px; border-radius: 999px; background: var(--primary); color: #fff; font-size: 13px; font-weight: 800; text-decoration: none; }
+.feed-daily--clickable { cursor: pointer; }
+.feed-daily-photo { cursor: pointer; }
+.feed-daily-chip { font-size: 11px; font-weight: 700; border-radius: 999px; padding: 1px 8px; margin-left: 4px; }
+.feed-daily-chip--local { background: var(--local-bg); color: var(--local-text); }
+.feed-daily-chip--traveler { background: var(--traveler-bg); color: var(--traveler-text); }
+.feed-daily-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.feed-daily-tag { font-size: 12px; font-weight: 600; color: var(--text); background: var(--surface2); border-radius: 999px; padding: 2px 9px; }
+.feed-daily .dc-vote-wrap { margin-top: 4px; }
+
+/* The install banner on the V3 colors (it kept a hard-coded dark card). */
+.install-banner { background: var(--surface); border: 1.5px solid var(--line); box-shadow: 0 8px 24px rgba(28, 20, 14, 0.12); }
+.install-banner--compact { box-shadow: none; }
+.install-banner-title, .install-banner-compact-text { color: var(--text); }
+.install-banner-help { color: var(--muted2); }
+.install-banner-dismiss { color: var(--muted2); border-color: var(--line); background: transparent; }
+.install-banner-add { background: var(--primary); color: #fff; }
+/* Vote button keeps its size in cards. */
+.dc-vote-wrap { align-self: flex-start; }
