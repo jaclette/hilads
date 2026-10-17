@@ -47,6 +47,29 @@ final class Geocoder
     }
 
     /**
+     * Address search for the back office (Seed a spot): up to $limit matches
+     * with their full label, so the admin picks one and then fine-tunes the
+     * pin. Tries the address as typed, then the street without the house
+     * number. Empty on no match or any failure.
+     *
+     * @return array<int, array{label: string, lat: float, lng: float}>
+     */
+    public static function search(string $address, int $limit = 5, int $timeoutMs = 4000): array
+    {
+        $address = trim($address);
+        if ($address === '') {
+            return [];
+        }
+        foreach (self::buildQueries($address, null) as $query) {
+            $hits = self::query($query, null, $timeoutMs, $limit);
+            if ($hits !== []) {
+                return $hits;
+            }
+        }
+        return [];
+    }
+
+    /**
      * Candidate query strings, in priority order. The fallback drops the
      * house number and any ward/district components, keeping just the street
      * plus the city (e.g. "27 Ngô Đức Kế, Bến Nghé, District 1, HCMC" →
@@ -82,10 +105,21 @@ final class Geocoder
      */
     private static function queryOne(string $query, ?string $countryCode, int $timeoutMs): ?array
     {
+        $hit = self::query($query, $countryCode, $timeoutMs, 1)[0] ?? null;
+        return $hit !== null ? ['lat' => $hit['lat'], 'lng' => $hit['lng']] : null;
+    }
+
+    /**
+     * One Nominatim search: up to $limit hits (label, lat, lng), null island dropped.
+     *
+     * @return array<int, array{label: string, lat: float, lng: float}>
+     */
+    private static function query(string $query, ?string $countryCode, int $timeoutMs, int $limit): array
+    {
         $params = [
             'q'              => $query,
             'format'         => 'jsonv2',
-            'limit'          => 1,
+            'limit'          => max(1, min(10, $limit)),
             'addressdetails' => 0,
         ];
         if ($countryCode !== null && $countryCode !== '') {
@@ -108,25 +142,27 @@ final class Geocoder
         curl_close($ch);
 
         if ($body === false || $code !== 200) {
-            return null;
+            return [];
         }
 
         $data = json_decode($body, true);
-        if (!is_array($data) || count($data) === 0) {
-            return null;
+        if (!is_array($data)) {
+            return [];
         }
 
-        $lat = isset($data[0]['lat']) ? (float) $data[0]['lat'] : null;
-        $lng = isset($data[0]['lon']) ? (float) $data[0]['lon'] : null;
-        if ($lat === null || $lng === null) {
-            return null;
+        $hits = [];
+        foreach ($data as $row) {
+            if (!isset($row['lat'], $row['lon'])) {
+                continue;
+            }
+            [$lat, $lng] = [(float) $row['lat'], (float) $row['lon']];
+            // Reject the null island (0,0) - a common geocoder miss.
+            if ($lat === 0.0 && $lng === 0.0) {
+                continue;
+            }
+            $hits[] = ['label' => (string) ($row['display_name'] ?? ''), 'lat' => $lat, 'lng' => $lng];
         }
-        // Reject the null island (0,0) - a common geocoder miss.
-        if ($lat === 0.0 && $lng === 0.0) {
-            return null;
-        }
-
-        return ['lat' => $lat, 'lng' => $lng];
+        return $hits;
     }
 
     /** Sleep just enough to keep ≥1s between Nominatim requests, process-wide. */
