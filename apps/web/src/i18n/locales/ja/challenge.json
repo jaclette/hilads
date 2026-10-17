@@ -847,5 +847,15 @@
     "local": "ローカル",
     "morePhotos": "写真をもっと見る",
     "proofInApp": "アプリでプルーフを投稿"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "残り {{time}}",
+    "nextIn": "次の Daily Challenge まで {{time}}",
+    "nothingLive": "次の Daily Challenge はもうすぐです",
+    "cta": "challenge に参加する",
+    "twistIn": "{{city}} の Local Twist",
+    "early": "早割ボーナスは {{time}} まで",
+    "seeMine": "自分のプルーフを見る"
   }
 }

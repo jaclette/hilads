@@ -847,5 +847,15 @@
     "local": "Lokal",
     "morePhotos": "Foto lainnya",
     "proofInApp": "Posting buktimu di aplikasi"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "Sisa {{time}}",
+    "nextIn": "Daily Challenge berikutnya dalam {{time}}",
+    "nothingLive": "Daily Challenge berikutnya segera hadir",
+    "cta": "Ambil challenge-nya",
+    "twistIn": "Local Twist {{city}}",
+    "early": "Bonus cepat sampai {{time}}",
+    "seeMine": "Lihat buktimu"
   }
 }

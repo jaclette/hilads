@@ -847,5 +847,15 @@
     "local": "Local",
     "morePhotos": "More photos",
     "proofInApp": "Post your proof in the app"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "{{time}} left",
+    "nextIn": "Next Daily Challenge in {{time}}",
+    "nothingLive": "The next Daily Challenge is on its way",
+    "cta": "Take the challenge",
+    "twistIn": "{{city}} Local Twist",
+    "early": "Early bonus until {{time}}",
+    "seeMine": "See your proof"
   }
 }

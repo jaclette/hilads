@@ -169,5 +169,21 @@
     "challenge": "Xem thử thách",
     "event": "🎉 Xem Hi plan",
     "topic": "🗣️ Xem Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Hôm nay",
+    "map": "Bản đồ",
+    "chat": "Chat",
+    "passport": "Hộ chiếu"
+  },
+  "scope": {
+    "title": "Hiển thị",
+    "world": "Thế giới",
+    "pickCity": "Chọn thành phố",
+    "citySub": "Challenge, bằng chứng và spot của thành phố bạn",
+    "worldSub": "Bằng chứng và spot từ mọi thành phố",
+    "changeCity": "Đổi thành phố",
+    "a11y": "Đang hiển thị {{scope}}. Chạm để đổi"
+  },
+  "signUp": "Đăng ký"
 }

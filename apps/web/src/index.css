@@ -11,26 +11,37 @@
    consumed through var(), so a single flip re-themes the whole app. */
 :root,
 [data-theme="light"] {
-  --bg: #FBF6F0;
+  --bg: #FBF5EE;
   --surface: #FFFFFF;
   --surface2: #F3EAE0;
-  --border: #EADDD0;
-  --accent: #C24A38;
+  --border: #EADCCD;
+  --accent: #C9501A;
   --accent2: #9C5A1C;   /* deepened from #B87228 for AA text on white */
   --green: #17864C;     /* neon #3ddc84 fails on white; darkened for text/dots */
   --hot-dot: #FF7A3C;   /* fill / accent only — never text on white */
   --profile-dot: #7C4DE0;
-  --text: #241A12;
-  --muted: #6E5D4E;
-  --muted2: #6E5D4E;
-  --mine-bg: #C24A38;
+  --text: #2A1C13;
+  --muted: #6F5B4D;
+  --muted2: #6F5B4D;
+  --mine-bg: #C9501A;
   --other-bg: #F1E9DF;
   --bg2: #FFFFFF;
-  --text-muted: #6E5D4E;
-  --hot-text: #C24A38;  /* readable deep orange as text on cream */
+  --text-muted: #6F5B4D;
+  --hot-text: #C9501A;  /* readable deep orange as text on cream */
   --warning: #B45309;   /* amber as text on cream (Daily: Early badge) */
 
-  --separator: #EADDD0;
+  --separator: #EADCCD;
+  /* V3 tokens, same as the app (SPEC 9.11, apps/mobile constants.ts). */
+  --primary: #C9501A;
+  --primary-text: #C9501A;
+  --primary-tint: #FFE6D8;
+  --primary-on-tint: #8A3A12;
+  --line: #EADCCD;
+  --local-bg: #E3F0E8;
+  --local-text: #23603F;
+  --traveler-bg: #E4ECF7;
+  --traveler-text: #2F5E9E;
+  --gold: #B98A2E;
   --overlay-weak: rgba(28, 20, 14, 0.03);
   --overlay: rgba(28, 20, 14, 0.05);
   --overlay-strong: rgba(28, 20, 14, 0.08);
@@ -65,6 +76,16 @@
   --warning: #F5A524;   /* amber on dark */
 
   --separator: rgba(255, 255, 255, 0.08);
+  --primary: #D9622A;
+  --primary-text: #FF8A50;
+  --primary-tint: #3A2216;
+  --primary-on-tint: #FFB48A;
+  --line: #272018;
+  --local-bg: #12301F;
+  --local-text: #7FD9A4;
+  --traveler-bg: #17263A;
+  --traveler-text: #9DBDF0;
+  --gold: #D9AE52;
   --overlay-weak: rgba(255, 255, 255, 0.04);
   --overlay: rgba(255, 255, 255, 0.07);
   --overlay-strong: rgba(255, 255, 255, 0.12);
@@ -109,7 +130,7 @@ html, body, #root {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
 }
@@ -1546,7 +1567,7 @@ html, body, #root {
 .tab-app-header {
   padding: 1rem 1.125rem 0.75rem;
 }
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   /* Desktop keeps its own 3-zone header inside the city feed; this wrapper
      is only meaningful on the mobile viewport where tab drawers show. */
   .tab-app-header { display: none; }
@@ -1846,7 +1867,7 @@ html, body, #root {
 }
 
 /* Hide new mobile header on desktop */
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .header-new { display: none; }
 }
 
@@ -1882,7 +1903,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
 }
-@media (max-width: 767px) {
+@media all /* was (max-width: 767px): the web is always the phone layout */ {
   /* PR22 - lift the bottom-sheet above the fixed .bottom-nav. The members
      list ("3 in the channel") was clipping its last row behind the nav on
      mobile because .modal-overlay align-items:flex-end docks the panel at
@@ -1961,7 +1982,7 @@ html, body, #root {
   padding: 0.25rem 0.625rem;
 }
 
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .chat-header {
     padding: 0.625rem 1.25rem 0.75rem;
   }
@@ -2101,7 +2122,7 @@ html, body, #root {
   display: none;
 }
 
-@media (max-width: 767px) {
+@media all /* was (max-width: 767px): the web is always the phone layout */ {
   .chat-header {
     /* horizontal padding lives on .header-new children; only keep bottom pad */
     padding: 0 18px 12px;
@@ -6253,7 +6274,7 @@ img.pub-profile-avatar {
   font-weight: 400;
 }
 
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .online-sidebar {
     display: flex;
   }
@@ -7805,7 +7826,7 @@ img.pub-profile-avatar {
   border-radius: 3px;
 }
 
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .events-sidebar {
     display: flex;
   }
@@ -9432,7 +9453,7 @@ img.pub-profile-avatar {
   animation: slideUp 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@media (max-width: 767px) {
+@media all /* was (max-width: 767px): the web is always the phone layout */ {
   /* PR37 - generalize the PR22 lift to every .modal-panel on mobile. The
      fixed .bottom-nav has an opaque + blurred backdrop that visually
      covers the bottom of any panel docked at viewport edge (z-index 400
@@ -9447,7 +9468,7 @@ img.pub-profile-avatar {
   }
 }
 
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .modal-overlay {
     align-items: center;
   }
@@ -9778,7 +9799,7 @@ img.pub-profile-avatar {
   cursor: pointer;
   padding: 0 0.125rem;
 }
-@media (min-width: 768px) { .mention-nudge { bottom: 24px; } }
+@media not all /* was (min-width: 768px): no desktop layout any more */ { .mention-nudge { bottom: 24px; } }
 
 /* Online-guest mention - same pill, faint 👻 tint, not clickable (inert). */
 .msg-mention--guest {
@@ -10048,7 +10069,7 @@ img.pub-profile-avatar {
   right: 5px;
 }
 
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .header-side-control {
     display: none;
   }
@@ -11801,7 +11822,7 @@ img.dm-header-avatar {
   width: 100%;
   margin-top: 0.5rem;
 }
-@media (min-width: 600px) {
+@media (min-width: 600px) and (max-width: 767px) {
   .lp-steps { grid-template-columns: repeat(3, 1fr); gap: 1rem; }
 }
 
@@ -11858,7 +11879,7 @@ img.dm-header-avatar {
   border-radius: 18px;
   overflow: hidden;
 }
-@media (min-width: 600px) {
+@media (min-width: 600px) and (max-width: 767px) {
   .lp-stats-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
@@ -14223,7 +14244,7 @@ body.has-app-promo-banner .page-header {
    behind the nav. We push the panel up + give the inner content extra
    bottom padding so nothing overlaps even on devices where :has() isn't
    honoured by the browser. */
-@media (max-width: 767px) {
+@media all /* was (max-width: 767px): the web is always the phone layout */ {
   .modal-panel:has(.challenge-post-create),
   .modal-panel:has(.cpcm-title) {
     margin-bottom: calc(var(--mobile-tabbar-height) + env(safe-area-inset-bottom));
@@ -15003,7 +15024,7 @@ body.has-app-promo-banner .page-header {
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(56, 189, 248, 0.18);
   display: block;
 }
-@media (min-width: 880px) {
+@media not all /* was (min-width: 880px) */ {
   .lp-international-inner {
     flex-direction: row;
     align-items: center;
@@ -16385,10 +16406,96 @@ body.has-app-promo-banner .page-header {
 .wm-captions { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
 .wm-captions li { font-size: 0.92rem; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 0.625rem 0.75rem; }
 .wm-caption-by { color: var(--muted2); font-size: 0.8rem; }
-@media (min-width: 768px) {
+@media not all /* was (min-width: 768px): no desktop layout any more */ {
   .wm-photos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wm-sheet { left: auto; right: 1rem; width: 380px; }
 }
 .wm-me { display: block; width: 22px; height: 22px; border-radius: 50%; background: #2F80ED; border: 3px solid #fff; box-shadow: 0 0 0 6px rgba(47, 128, 237, 0.22), 0 2px 6px rgba(0, 0, 0, 0.25); }
 .wm-locate { position: absolute; right: 12px; top: 12px; z-index: 550; width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 10px rgba(36, 26, 18, 0.18); cursor: pointer; }
 .wm-notice { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); z-index: 560; max-width: calc(100% - 96px); background: var(--text); color: var(--bg); font-size: 0.85rem; font-weight: 600; padding: 0.5rem 0.875rem; border-radius: 12px; text-align: center; }
+
+/* ── Desktop: the app in a phone-width column (W1, web = the app) ──────────
+   The transform makes the column the containing block of every fixed screen
+   (full pages, tab bar, sheets), so they all stay inside it. */
+@media (min-width: 768px) {
+  html.app-shell { background: var(--surface2); }
+  html.app-shell body { background: var(--surface2); }
+  html.app-shell #root {
+    max-width: 480px;
+    margin: 0 auto;
+    height: 100dvh;
+    position: relative;
+    transform: translateZ(0);
+    overflow: hidden;
+    background: var(--bg);
+    box-shadow: 0 0 0 1px var(--line), 0 12px 48px rgba(28, 20, 14, 0.12);
+  }
+  html.app-shell .bottom-nav { left: 0; right: 0; transform: none; width: 100%; max-width: none; }
+}
+
+/* ── Tab bar like the app's (W1): 4 tabs, stroke icon over a label, the
+   active tab on a primary-tint pill. Overrides the older glowing tab bar. ── */
+.bottom-nav {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px;
+  border-radius: 0;
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  box-shadow: none;
+  padding: 8px 12px max(10px, env(safe-area-inset-bottom));
+}
+[data-theme="light"] .bottom-nav { box-shadow: none; }
+.bottom-nav-tab { gap: 2px; min-height: 56px; padding: 6px 4px; border-radius: 16px; color: var(--muted2); }
+.bottom-nav-tab::after { display: none; }
+.bottom-nav-tab.active,
+[data-theme="light"] .bottom-nav-tab.active { color: var(--primary-on-tint); background: var(--primary-tint); }
+.bottom-nav-tab.active .bottom-nav-icon { filter: none; }
+.bottom-nav-icon svg { width: 24px; height: 24px; }
+.bottom-nav-label { font-size: 12px; font-weight: 600; line-height: 1.2; text-transform: none; letter-spacing: 0; }
+.bottom-nav-tab.active .bottom-nav-label { font-weight: 700; }
+
+/* ── Today (W1): the Daily Challenge ticket, like the app (SPEC 9.3) ─────── */
+.today-body { padding: 0.75rem 1rem 1.5rem; display: flex; flex-direction: column; gap: 14px; }
+.today-ticket { background: var(--surface); border: 1.5px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: 0 8px 24px rgba(28, 20, 14, 0.06); }
+.today-ticket--loading { min-height: 180px; display: flex; align-items: center; justify-content: center; }
+.today-top { padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 10px; }
+.today-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.today-kicker { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.2px; color: var(--primary-text); text-transform: uppercase; }
+.today-chip { font-size: 0.8rem; font-weight: 700; color: var(--primary-on-tint); background: var(--primary-tint); border-radius: 999px; padding: 4px 10px; white-space: nowrap; }
+.today-text { font-size: 1.35rem; line-height: 1.3; font-weight: 800; color: var(--text); margin: 0; letter-spacing: -0.3px; }
+.today-meta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.today-meta { font-size: 0.85rem; color: var(--muted2); margin: 0; }
+.today-early { font-size: 0.8rem; font-weight: 700; color: var(--warning); }
+.today-perforation { height: 0; border-top: 2px dashed var(--line); margin: 0 14px; position: relative; }
+.today-bottom { padding: 14px 18px 18px; display: flex; flex-direction: column; gap: 12px; }
+.today-twist { display: flex; flex-direction: column; gap: 4px; }
+.today-twist-label { font-size: 0.78rem; font-weight: 700; color: var(--muted2); }
+.today-twist-text { font-size: 0.95rem; line-height: 1.45; color: var(--text); }
+.today-cta { min-height: 54px; display: flex; align-items: center; justify-content: center; border-radius: 16px; background: var(--primary); color: #fff; font-size: 1rem; font-weight: 800; text-decoration: none; }
+
+/* ── The app's header (W1): "Hi" mark, city / World selector, DM + bell or
+   Sign up. Used by Today, Chat and the tab screens. ─────────────────────── */
+.v3-header { display: flex; align-items: center; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 16px 10px; background: var(--bg); }
+.v3-mark { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 17px; letter-spacing: -0.3px; }
+.v3-scope { flex: 1; min-width: 0; height: 44px; display: flex; align-items: center; gap: 6px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; position: relative; }
+.v3-scope-label { flex: 1; min-width: 0; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v3-round { width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+.v3-dot { position: absolute; top: 7px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: var(--primary); border: 2px solid var(--surface); }
+.v3-signup { height: 44px; flex-shrink: 0; padding: 0 16px; border-radius: 999px; border: none; background: var(--primary); color: #fff; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.chat-header .header-new .v3-header { padding-left: 0; padding-right: 0; }
+.tab-app-header .v3-header { padding-left: 16px; padding-right: 16px; }
+.v3-sheet-wrap { position: fixed; inset: 0; z-index: 900; display: flex; flex-direction: column; justify-content: flex-end; }
+.v3-sheet-scrim { position: absolute; inset: 0; border: none; background: var(--scrim); cursor: pointer; }
+.v3-sheet { position: relative; background: var(--bg); border-radius: 24px 24px 0 0; padding: 10px 16px max(16px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; }
+.v3-sheet-grabber { align-self: center; width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin-bottom: 4px; }
+.v3-sheet-title { font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 4px; }
+.v3-scope-row { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 10px 14px; border-radius: 16px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.v3-scope-row--on { background: var(--primary-tint); border-color: var(--primary-tint); color: var(--primary-on-tint); }
+.v3-scope-row-icon { font-size: 20px; }
+.v3-scope-row-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.v3-scope-row-title { font-size: 15px; font-weight: 700; }
+.v3-scope-row-sub { font-size: 13px; color: var(--muted2); }
+.v3-scope-row--on .v3-scope-row-sub { color: inherit; opacity: 0.85; }
+
+/* W1: flat headers on the app ground, like the app. */
+.tab-app-header, .chat-header { background: var(--bg); }

@@ -847,5 +847,15 @@
     "local": "Local",
     "morePhotos": "Higit pang larawan",
     "proofInApp": "I-post ang proof mo sa app"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "{{time}} na lang",
+    "nextIn": "Susunod na Daily Challenge in {{time}}",
+    "nothingLive": "Parating na ang susunod na Daily Challenge",
+    "cta": "Gawin ang challenge",
+    "twistIn": "{{city}} Local Twist",
+    "early": "Early bonus hanggang {{time}}",
+    "seeMine": "Tingnan ang proof mo"
   }
 }

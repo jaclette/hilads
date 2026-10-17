@@ -847,5 +847,15 @@
     "local": "คนท้องถิ่น",
     "morePhotos": "ดูรูปเพิ่ม",
     "proofInApp": "โพสต์หลักฐานในแอป"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "เหลืออีก {{time}}",
+    "nextIn": "Daily Challenge ถัดไปในอีก {{time}}",
+    "nothingLive": "Daily Challenge ถัดไปกำลังมา",
+    "cta": "รับ challenge",
+    "twistIn": "Local Twist ของ {{city}}",
+    "early": "โบนัสความเร็วถึง {{time}}",
+    "seeMine": "ดูหลักฐานของคุณ"
   }
 }

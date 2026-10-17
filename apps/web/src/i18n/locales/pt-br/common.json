@@ -169,5 +169,21 @@
     "challenge": "Ver o desafio",
     "event": "🎉 Ver o Hi plan",
     "topic": "🗣️ Ver o Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Hoje",
+    "map": "Mapa",
+    "chat": "Chat",
+    "passport": "Passaporte"
+  },
+  "scope": {
+    "title": "Mostrar",
+    "world": "Mundo",
+    "pickCity": "Escolha uma cidade",
+    "citySub": "O challenge, as provas e os spots da sua cidade",
+    "worldSub": "Provas e spots de todas as cidades",
+    "changeCity": "Trocar de cidade",
+    "a11y": "Mostrando {{scope}}. Toque para trocar"
+  },
+  "signUp": "Cadastrar"
 }

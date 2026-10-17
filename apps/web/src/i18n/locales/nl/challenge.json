@@ -847,5 +847,15 @@
     "local": "Local",
     "morePhotos": "Meer foto's",
     "proofInApp": "Post je bewijs in de app"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "nog {{time}}",
+    "nextIn": "Volgende Daily Challenge over {{time}}",
+    "nothingLive": "De volgende Daily Challenge komt eraan",
+    "cta": "Doe de challenge",
+    "twistIn": "{{city}} Local Twist",
+    "early": "Vroegbonus tot {{time}}",
+    "seeMine": "Bekijk je bewijs"
   }
 }

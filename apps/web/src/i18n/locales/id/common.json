@@ -169,5 +169,21 @@
     "challenge": "Lihat challenge",
     "event": "🎉 Lihat Hi plan",
     "topic": "🗣️ Lihat Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Hari ini",
+    "map": "Peta",
+    "chat": "Chat",
+    "passport": "Paspor"
+  },
+  "scope": {
+    "title": "Tampilkan",
+    "world": "Dunia",
+    "pickCity": "Pilih kota",
+    "citySub": "Challenge, bukti, dan spot di kotamu",
+    "worldSub": "Bukti dan spot dari semua kota",
+    "changeCity": "Ganti kota",
+    "a11y": "Menampilkan {{scope}}. Ketuk untuk mengganti"
+  },
+  "signUp": "Daftar"
 }

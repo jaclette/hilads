@@ -847,5 +847,15 @@
     "local": "로컬",
     "morePhotos": "사진 더 보기",
     "proofInApp": "앱에서 인증 올리기"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "{{time}} 남음",
+    "nextIn": "다음 Daily Challenge까지 {{time}}",
+    "nothingLive": "다음 Daily Challenge가 곧 와요",
+    "cta": "challenge 참여하기",
+    "twistIn": "{{city}} Local Twist",
+    "early": "{{time}}까지 얼리 보너스",
+    "seeMine": "내 인증 보기"
   }
 }

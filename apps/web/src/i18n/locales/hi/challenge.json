@@ -847,5 +847,15 @@
     "local": "लोकल",
     "morePhotos": "और फ़ोटो",
     "proofInApp": "ऐप में अपना सबूत पोस्ट करो"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "{{time}} बाकी",
+    "nextIn": "अगला Daily Challenge {{time}} में",
+    "nothingLive": "अगला Daily Challenge आने वाला है",
+    "cta": "challenge लें",
+    "twistIn": "{{city}} का Local Twist",
+    "early": "{{time}} तक अर्ली बोनस",
+    "seeMine": "अपना सबूत देखें"
   }
 }

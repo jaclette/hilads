@@ -169,5 +169,21 @@
     "challenge": "查看挑戰",
     "event": "🎉 查看 Hi plan",
     "topic": "🗣️ 查看 Hi now"
-  }
+  },
+  "tabs": {
+    "today": "今天",
+    "map": "地圖",
+    "chat": "聊天",
+    "passport": "護照"
+  },
+  "scope": {
+    "title": "顯示",
+    "world": "世界",
+    "pickCity": "選擇城市",
+    "citySub": "你所在城市的 challenge、證明和地點",
+    "worldSub": "所有城市的證明和地點",
+    "changeCity": "更換城市",
+    "a11y": "正在顯示{{scope}}。點按以更換"
+  },
+  "signUp": "註冊"
 }

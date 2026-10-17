@@ -855,5 +855,15 @@
     "local": "محلي",
     "morePhotos": "المزيد من الصور",
     "proofInApp": "انشر إثباتك في التطبيق"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "متبقٍّ {{time}}",
+    "nextIn": "Daily Challenge التالي بعد {{time}}",
+    "nothingLive": "Daily Challenge التالي في الطريق",
+    "cta": "خُض الـ challenge",
+    "twistIn": "Local Twist في {{city}}",
+    "early": "مكافأة السرعة حتى {{time}}",
+    "seeMine": "عرض إثباتك"
   }
 }

@@ -2397,3 +2397,15 @@ export async function fetchSpot(id, offset = 0) {
   if (!res.ok) throw new Error('Failed to fetch spot')
   return res.json() // { spot, ranking, photos: { items, nextOffset }, captions }
 }
+
+// ── Daily Challenge (W2+: the web mirrors the app's Today) ──────────────────
+
+/** GET /daily/today: today's challenge, the city's Local Twist, my proof, streak… */
+export async function fetchDailyToday(cityId, locale) {
+  const q = new URLSearchParams()
+  if (cityId) q.set('cityId', String(cityId).replace(/^city_/, ''))
+  if (locale) q.set('locale', locale)
+  const res = await fetch(`${BASE}/daily/today?${q}`, { credentials: 'include' })
+  if (!res.ok) throw new Error('Failed to fetch today')
+  return res.json()
+}

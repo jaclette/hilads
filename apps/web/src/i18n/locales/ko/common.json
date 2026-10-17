@@ -169,5 +169,21 @@
     "challenge": "챌린지 보기",
     "event": "🎉 Hi plan 보기",
     "topic": "🗣️ Hi now 보기"
-  }
+  },
+  "tabs": {
+    "today": "오늘",
+    "map": "지도",
+    "chat": "채팅",
+    "passport": "여권"
+  },
+  "scope": {
+    "title": "보기",
+    "world": "전 세계",
+    "pickCity": "도시 선택",
+    "citySub": "내 도시의 challenge, 인증, 스팟",
+    "worldSub": "모든 도시의 인증과 스팟",
+    "changeCity": "도시 변경",
+    "a11y": "{{scope}} 보는 중. 눌러서 변경"
+  },
+  "signUp": "가입하기"
 }

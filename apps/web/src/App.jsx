@@ -15,6 +15,7 @@ import ExampleEventCard from './components/ExampleEventCard'
 import EmptyCityChallenges from './components/EmptyCityChallenges'
 import AppMapCard from './components/AppMapCard'
 import MapScreen from './components/map/MapScreen'
+import TodayScreen from './components/today/TodayScreen'
 import { createSocket } from './socket'
 import { cityFlag, EVENT_ICONS } from './cityMeta'
 import { badgeLabel } from './badgeMeta'
@@ -428,10 +429,27 @@ const NAV_ICON_PROPS = {
 
 // CHALLENGES tab - flame. Asymmetric flickering shape (à la Lucide) so it
 // reads as fire, not a water drop. Single path keeps the stroke clean.
-function NavIconEvents() {
+// The app's tab icons (Ionicons outline equivalents): today, map, chat, passport.
+function NavIconToday() {
   return (
     <svg {...NAV_ICON_PROPS}>
-      <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" />
+      <rect x="3" y="5" width="18" height="16" rx="3" /><path d="M3 10h18M8 3v4M16 3v4" />
+    </svg>
+  )
+}
+
+function NavIconChat() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z" />
+    </svg>
+  )
+}
+
+function NavIconPassport() {
+  return (
+    <svg {...NAV_ICON_PROPS}>
+      <rect x="5" y="3" width="14" height="18" rx="2.5" /><circle cx="12" cy="10" r="3" /><path d="M9 16h6" />
     </svg>
   )
 }
@@ -441,24 +459,6 @@ function NavIconMap() {
     <svg {...NAV_ICON_PROPS}>
       <path d="M9 4 3 6.5v13.5l6-2.5 6 2.5 6-2.5V4l-6 2.5L9 4z" />
       <path d="M9 4v13.5M15 6.5V20" />
-    </svg>
-  )
-}
-
-function NavIconCity() {
-  return (
-    <svg {...NAV_ICON_PROPS}>
-      {/* Building body */}
-      <path d="M6 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16" />
-      {/* Ground line */}
-      <line x1="4" y1="21" x2="20" y2="21" />
-      {/* Door */}
-      <path d="M10.5 21v-3a1.5 1.5 0 0 1 3 0v3" />
-      {/* Windows - two rows of two */}
-      <line x1="9"    y1="8"  x2="10.5" y2="8" />
-      <line x1="13.5" y1="8"  x2="15"   y2="8" />
-      <line x1="9"    y1="12" x2="10.5" y2="12" />
-      <line x1="13.5" y1="12" x2="15"   y2="12" />
     </svg>
   )
 }
@@ -476,47 +476,8 @@ function NavIconPeople() {
   )
 }
 
-function NavIconProfile() {
-  return (
-    <svg {...NAV_ICON_PROPS}>
-      {/* Head */}
-      <circle cx="12" cy="8" r="4" />
-      {/* Shoulders */}
-      <path d="M4 21a9 9 0 0 1 16 0" />
-    </svg>
-  )
-}
-
 // MY CITY tab - house (replaces the old building glyph).
-function NavIconHouse() {
-  return (
-    <svg {...NAV_ICON_PROPS}>
-      {/* Roof + walls */}
-      <path d="M3 11.5 12 4l9 7.5" />
-      <path d="M5 10v10h14V10" />
-      {/* Door */}
-      <path d="M10 20v-5a2 2 0 0 1 4 0v5" />
-    </svg>
-  )
-}
-
 // EVENTS tab - party popper.
-function NavIconParty() {
-  return (
-    <svg {...NAV_ICON_PROPS}>
-      {/* Cone */}
-      <path d="M3 21 8.5 8l7.5 7.5z" />
-      {/* Streamers / confetti */}
-      <path d="M14 6c1.2-1.2 3-1.2 4 0" strokeWidth="1.4" />
-      <path d="M16.5 3.5c.9-.9 2.4-.9 3.3 0" strokeWidth="1.4" />
-      <path d="M19 9c1-.3 1.8.5 1.5 1.5" strokeWidth="1.4" />
-      <circle cx="13" cy="12" r="0.6" />
-      <circle cx="20" cy="14" r="0.6" />
-      <circle cx="17.5" cy="18" r="0.6" />
-    </svg>
-  )
-}
-
 // ── Chat icons ────────────────────────────────────────────────────────────────
 
 function ImageIcon() {
@@ -1036,6 +997,10 @@ export default function App() {
   const [creationClosed, setCreationClosed] = useState(false)
   // Web map of spots (SPEC 9.5): a full screen, from the Map tab or the map card.
   const [showMap, setShowMap] = useState(false)
+  // Today, the home (W1, web = the app's 4 tabs): shown on entry unless the
+  // URL points at content (a city, an event, a challenge…), which opens Chat.
+  const [showToday, setShowToday] = useState(() => parseDeepLink() === null)
+  const [showScopeSheet, setShowScopeSheet] = useState(false)
   useEffect(() => {
     fetchAppConfig().then(c => setCreationClosed(!!c.challengeCreationClosed)).catch(() => {})
   }, [])
@@ -1049,6 +1014,10 @@ export default function App() {
   const worldJoinedRef  = useRef(false)
   const quietCardDismissedRef = useRef(false) // once per session
   useEffect(() => { channelScopeRef.current = channelScope }, [channelScope])
+  // Desktop shows the app in a phone-width column once inside (index.css).
+  useEffect(() => {
+    document.documentElement.classList.toggle('app-shell', status === 'ready')
+  }, [status])
   const [rehydrating, setRehydrating] = useState(() => !!localStorage.getItem(AUTH_FLAG_KEY))
   const [error, setError] = useState(null)
   const [city, setCity] = useState(() => loadIdentity()?.city ?? null)
@@ -3756,6 +3725,7 @@ export default function App() {
   // a stuck Topic/Challenge/Create page. Called from every goTo* handler.
   function dismissFullPageOverlays() {
     setShowMap(false)
+    setShowToday(false)
     setActiveTopic(null)
     setActiveChallenge(null)
     setShowCreateChallenge(false)
@@ -3867,6 +3837,18 @@ export default function App() {
     dismissFullPageOverlays()
     setShowEventDrawer(true)
   }
+  function goToTodayTab() {
+    setShowCityPicker(false)
+    setShowEventDrawer(false)
+    setShowChallengesDrawer(false)
+    setShowPeopleDrawer(false)
+    setShowProfileDrawer(false)
+    setShowConversations(false)
+    setShowNotifications(false)
+    setViewingProfile(null)
+    dismissFullPageOverlays()
+    setShowToday(true)
+  }
   function goToMapTab() {
     setShowCityPicker(false)
     setShowEventDrawer(false)
@@ -3933,73 +3915,85 @@ export default function App() {
   // Persistent across all 4 tabs (mobile viewport) so Notifications + Messages
   // stay one tap away from any screen. Share is MY-CITY-only and passed in via
   // withShare so it renders left of the DM icon on the home tab.
-  function renderAppHeader({ withShare = false } = {}) {
+  // The app's header (W1, SPEC 9.1): the "Hi" mark, the city / World selector
+  // (one choice for every tab), then private messages and the bell for
+  // members, or "Sign up" for guests.
+  function renderAppHeader() {
+    const otherUnread = channelScope === 'world' ? cityUnread > 0 : worldUnread > 0
+    const label = channelScope === 'world' ? t('scope.world', { ns: 'common' }) : (city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' }))
     return (
-      <div className="header-top-bar">
-        <div className="header-top-left">
-          {account ? (
-            <button
-              className={`header-icon-btn header-icon-btn--sm${notifUnreadCount > 0 ? ' header-icon-btn--unread' : ''}`}
-              onClick={() => setShowNotifications(true)}
-              aria-label="Notifications"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-              {notifUnreadCount > 0 && (
-                <span className="header-icon-badge">
-                  {notifUnreadCount > 9 ? '9+' : notifUnreadCount}
-                </span>
-              )}
-            </button>
-          ) : (
-            // Guests get a subtle "?" to re-open the intro carousel on demand.
-            <button
-              className="header-icon-btn header-icon-btn--sm"
-              onClick={() => setShowOnboarding(true)}
-              aria-label="How Hilads works"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-            </button>
-          )}
-        </div>
-        <div className="header-top-center">
-          <Logo variant="icon" size="md" />
-          <span className="header-brand-text">
-            <span className="header-brand-name">Hilads</span>
-            <span className="header-tagline">Become local. Anywhere.</span>
-          </span>
-        </div>
-        <div className="header-top-right">
-          {withShare && city && (
-            <button
-              className="header-icon-btn header-icon-btn--sm"
-              onClick={() => share(composeCityShare(city))}
-              aria-label="Share city"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-              </svg>
-            </button>
-          )}
-          {account && (
-            <button
-              className={`header-icon-btn header-icon-btn--sm${hasAnyUnread ? ' header-icon-btn--unread' : ''}`}
-              onClick={() => setShowConversations(true)}
-              aria-label="Messages"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              {hasAnyUnread && <span className="header-icon-badge header-icon-badge--dot" />}
-            </button>
-          )}
+      <div className="v3-header">
+        <span className="v3-mark" aria-hidden="true">Hi</span>
+        <button
+          type="button"
+          className="v3-scope"
+          onClick={() => setShowScopeSheet(true)}
+          aria-label={t('scope.a11y', { ns: 'common', scope: label })}
+        >
+          {channelScope === 'world' && <span aria-hidden="true">🌍</span>}
+          <span className="v3-scope-label">{label}</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+          {otherUnread && <span className="v3-dot" aria-hidden="true" />}
+        </button>
+        {account && (
+          <button type="button" className="v3-round" onClick={() => setShowConversations(true)} aria-label={t('header.messages')}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 2 11 13" /><path d="M22 2 15 22l-4-9-9-4 20-7z" />
+            </svg>
+            {hasAnyUnread && <span className="v3-dot" />}
+          </button>
+        )}
+        {account ? (
+          <button type="button" className="v3-round" onClick={() => setShowNotifications(true)} aria-label={t('header.notifications')}>
+            <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+            {notifUnreadCount > 0 && <span className="v3-dot" />}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="v3-signup"
+            onClick={() => { setShowAuthScreenTab('signup'); setShowAuthScreen(true); setShowProfileDrawer(true) }}
+          >
+            {t('signUp', { ns: 'common' })}
+          </button>
+        )}
+      </div>
+    )
+  }
+
+  // The scope sheet: my city, World, change city.
+  function renderScopeSheet() {
+    if (!showScopeSheet) return null
+    const pick = (scope) => {
+      setShowScopeSheet(false)
+      if (scope === 'city' && !city) { openCityPicker(); return }
+      switchScope(scope)
+    }
+    const Row = ({ icon, title, sub, active, onClick }) => (
+      <button type="button" className={`v3-scope-row${active ? ' v3-scope-row--on' : ''}`} onClick={onClick} aria-pressed={!!active}>
+        <span className="v3-scope-row-icon" aria-hidden="true">{icon}</span>
+        <span className="v3-scope-row-body">
+          <span className="v3-scope-row-title">{title}</span>
+          {sub && <span className="v3-scope-row-sub">{sub}</span>}
+        </span>
+        {active && <span aria-hidden="true">✓</span>}
+      </button>
+    )
+    return (
+      <div className="v3-sheet-wrap" role="dialog" aria-modal="true" aria-label={t('scope.title', { ns: 'common' })}>
+        <button type="button" className="v3-sheet-scrim" onClick={() => setShowScopeSheet(false)} aria-label={t('scope.title', { ns: 'common' })} />
+        <div className="v3-sheet">
+          <span className="v3-sheet-grabber" aria-hidden="true" />
+          <p className="v3-sheet-title">{t('scope.title', { ns: 'common' })}</p>
+          <Row icon="📍" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} sub={t('scope.citySub', { ns: 'common' })}
+               active={channelScope === 'city'} onClick={() => pick('city')} />
+          <Row icon="🌍" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
+               active={channelScope === 'world'} onClick={() => pick('world')} />
+          <Row icon="🔁" title={t('scope.changeCity', { ns: 'common' })} onClick={() => { setShowScopeSheet(false); openCityPicker() }} />
         </div>
       </div>
     )
@@ -5221,47 +5215,9 @@ export default function App() {
               {/* ── Mobile layout - new 3-section design, hidden on desktop ── */}
               <div className="header-new">
 
-                {/* Section 1: shared app header (Share is MY-CITY-only) */}
-                {renderAppHeader({ withShare: true })}
-
-                {/* Section 2: channel toggle - [📍 city] | [🌍 World]. The city
-                    side, when active, opens the city switcher (which city); when
-                    inactive it just returns to the city channel. Unread badges are
-                    symmetric: each side shows its own badge when the other is open. */}
-                {city && (
-                  <div className="ch-scope-toggle" role="tablist" aria-label={t('header.channels', { defaultValue: 'Channels' })}>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={channelScope === 'city'}
-                      className={`ch-scope-btn${channelScope === 'city' ? ' ch-scope-btn--active' : ''}`}
-                      onClick={() => { if (channelScope === 'world') switchScope('city'); else openCityPicker() }}
-                    >
-                      <span aria-hidden="true">{cityFlag(cityCountry)}</span>{' '}{localizeCityName(city)}
-                      {channelScope === 'city' && (
-                        <svg className="ch-scope-chevron" width="13" height="13" viewBox="0 0 24 24"
-                          fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      )}
-                      {channelScope === 'world' && cityUnread > 0 && (
-                        <span className="ch-scope-badge">{cityUnread > 99 ? '99+' : cityUnread}</span>
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      role="tab"
-                      aria-selected={channelScope === 'world'}
-                      className={`ch-scope-btn${channelScope === 'world' ? ' ch-scope-btn--active' : ''}`}
-                      onClick={() => switchScope('world')}
-                    >
-                      🌍 {t('world.tab')}
-                      {channelScope === 'city' && worldUnread > 0 && (
-                        <span className="ch-scope-badge">{worldUnread > 99 ? '99+' : worldUnread}</span>
-                      )}
-                    </button>
-                  </div>
-                )}
+                {/* The app's header: the city / World selector replaces the old
+                    channel toggle (W1). */}
+                {renderAppHeader()}
 
               </div>
             </>
@@ -5940,65 +5896,34 @@ export default function App() {
 
         {/* Bottom navigation - mobile only */}
         <nav className="bottom-nav" aria-label="Primary">
-          {/* MY CITY */}
-          <button
-            type="button"
-            className={`bottom-nav-tab${
-              !showEventDrawer && !showChallengesDrawer && !showCityPicker && !showPeopleDrawer &&
-              !showProfileDrawer && !showConversations && !showNotifications && !showMap
-                ? ' active' : ''
-            }`}
-            onClick={goToCityChannel}
-            aria-label="My city"
-          >
-            <span className="bottom-nav-icon"><NavIconHouse /></span>
-          </button>
-          {/* CHALLENGES */}
-          <button
-            type="button"
-            className={`bottom-nav-tab${showChallengesDrawer ? ' active' : ''}`}
-            onClick={goToChallengesTab}
-            aria-label="Challenges"
-          >
-            <span className="bottom-nav-icon"><NavIconEvents /></span>
-          </button>
-          {/* MAP of spots */}
-          <button
-            type="button"
-            className={`bottom-nav-tab${showMap ? ' active' : ''}`}
-            onClick={goToMapTab}
-            aria-label="Map"
-          >
-            <span className="bottom-nav-icon"><NavIconMap /></span>
-          </button>
-          {/* EVENTS */}
-          <button
-            type="button"
-            className={`bottom-nav-tab${showEventDrawer ? ' active' : ''}`}
-            onClick={goToEventsTab}
-            aria-label="Events"
-          >
-            <span
-              className={`bottom-nav-icon${nowTabPulsing ? ' bottom-nav-icon--now-pulse' : ''}`}
-              onAnimationEnd={() => setNowTabPulsing(false)}
-            >
-              <NavIconParty />
-              {nowTabDot && <span className="bottom-nav-now-dot" aria-hidden="true" />}
-            </span>
-          </button>
-          {/* PROFILE */}
-          <button
-            type="button"
-            className={`bottom-nav-tab${showProfileDrawer ? ' active' : ''}`}
-            onClick={goToMeTab}
-            aria-label="Profile"
-          >
-            <span className="bottom-nav-icon"><NavIconProfile /></span>
-          </button>
+          {(() => {
+            const onPassport = showProfileDrawer
+            const onChat = !showToday && !showMap && !onPassport && !showEventDrawer && !showChallengesDrawer &&
+              !showCityPicker && !showPeopleDrawer && !showConversations && !showNotifications
+            const tabs = [
+              { key: 'today',    active: showToday && !showMap && !onPassport, onClick: goToTodayTab,    Icon: NavIconToday },
+              { key: 'map',      active: showMap,                              onClick: goToMapTab,      Icon: NavIconMap },
+              { key: 'chat',     active: onChat,                               onClick: goToCityChannel, Icon: NavIconChat },
+              { key: 'passport', active: onPassport,                           onClick: goToMeTab,       Icon: NavIconPassport },
+            ]
+            return tabs.map(({ key, active, onClick, Icon }) => (
+              <button key={key} type="button" className={`bottom-nav-tab${active ? ' active' : ''}`} onClick={onClick}
+                      aria-current={active ? 'page' : undefined}>
+                <span className="bottom-nav-icon"><Icon /></span>
+                <span className="bottom-nav-label">{t(`tabs.${key}`, { ns: 'common' })}</span>
+              </button>
+            ))
+          })()}
         </nav>
       </div>
 
       {/* ── Full-screen pages ─────────────────────────── */}
+
+      {showToday && !showMap && !showProfileDrawer && (
+        <TodayScreen channelId={channelId} header={renderAppHeader()} />
+      )}
+
+      {renderScopeSheet()}
 
       {showMap && (
         <MapScreen

@@ -847,5 +847,15 @@
     "local": "Người địa phương",
     "morePhotos": "Thêm ảnh",
     "proofInApp": "Đăng bằng chứng trong app"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "còn {{time}}",
+    "nextIn": "Daily Challenge tiếp theo sau {{time}}",
+    "nothingLive": "Daily Challenge tiếp theo sắp tới rồi",
+    "cta": "Nhận challenge",
+    "twistIn": "Local Twist ở {{city}}",
+    "early": "Thưởng sớm đến {{time}}",
+    "seeMine": "Xem bằng chứng của bạn"
   }
 }

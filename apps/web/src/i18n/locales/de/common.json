@@ -169,5 +169,21 @@
     "challenge": "Challenge ansehen",
     "event": "🎉 Hi plan ansehen",
     "topic": "🗣️ Hi now ansehen"
-  }
+  },
+  "tabs": {
+    "today": "Heute",
+    "map": "Karte",
+    "chat": "Chat",
+    "passport": "Pass"
+  },
+  "scope": {
+    "title": "Anzeigen",
+    "world": "Welt",
+    "pickCity": "Stadt wählen",
+    "citySub": "Challenge, Beweise und Spots deiner Stadt",
+    "worldSub": "Beweise und Spots aus allen Städten",
+    "changeCity": "Stadt wechseln",
+    "a11y": "Zeigt {{scope}}. Tippen zum Wechseln"
+  },
+  "signUp": "Registrieren"
 }

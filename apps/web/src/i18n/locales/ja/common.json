@@ -169,5 +169,21 @@
     "challenge": "チャレンジを見る",
     "event": "🎉 Hi plan を見る",
     "topic": "🗣️ Hi now を見る"
-  }
+  },
+  "tabs": {
+    "today": "今日",
+    "map": "マップ",
+    "chat": "チャット",
+    "passport": "パスポート"
+  },
+  "scope": {
+    "title": "表示",
+    "world": "世界",
+    "pickCity": "都市を選ぶ",
+    "citySub": "あなたの都市の challenge、プルーフ、スポット",
+    "worldSub": "すべての都市のプルーフとスポット",
+    "changeCity": "都市を変更",
+    "a11y": "{{scope}}を表示中。タップで変更"
+  },
+  "signUp": "登録する"
 }

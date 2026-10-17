@@ -169,5 +169,21 @@
     "challenge": "Bekijk de challenge",
     "event": "🎉 Bekijk de Hi plan",
     "topic": "🗣️ Bekijk de Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Vandaag",
+    "map": "Kaart",
+    "chat": "Chat",
+    "passport": "Paspoort"
+  },
+  "scope": {
+    "title": "Tonen",
+    "world": "Wereld",
+    "pickCity": "Kies een stad",
+    "citySub": "De challenge, bewijzen en spots van jouw stad",
+    "worldSub": "Bewijzen en spots uit alle steden",
+    "changeCity": "Stad wijzigen",
+    "a11y": "Toont {{scope}}. Tik om te wijzigen"
+  },
+  "signUp": "Aanmelden"
 }

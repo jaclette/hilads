@@ -169,5 +169,21 @@
     "challenge": "Tingnan ang challenge",
     "event": "🎉 Tingnan ang Hi plan",
     "topic": "🗣️ Tingnan ang Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Ngayon",
+    "map": "Mapa",
+    "chat": "Chat",
+    "passport": "Pasaporte"
+  },
+  "scope": {
+    "title": "Ipakita",
+    "world": "Mundo",
+    "pickCity": "Pumili ng lungsod",
+    "citySub": "Ang challenge, mga proof at spot ng lungsod mo",
+    "worldSub": "Mga proof at spot mula sa lahat ng lungsod",
+    "changeCity": "Palitan ang lungsod",
+    "a11y": "Ipinapakita ang {{scope}}. I-tap para palitan"
+  },
+  "signUp": "Mag-sign up"
 }

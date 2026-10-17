@@ -847,5 +847,15 @@
     "local": "本地人",
     "morePhotos": "更多照片",
     "proofInApp": "在应用里发布你的证明"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "还剩 {{time}}",
+    "nextIn": "下一个 Daily Challenge 还有 {{time}}",
+    "nothingLive": "下一个 Daily Challenge 马上就来",
+    "cta": "接受 challenge",
+    "twistIn": "{{city}} Local Twist",
+    "early": "早鸟奖励截至 {{time}}",
+    "seeMine": "查看你的证明"
   }
 }

@@ -847,5 +847,15 @@
     "local": "Local",
     "morePhotos": "Mais fotos",
     "proofInApp": "Publica a tua prova na app"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "faltam {{time}}",
+    "nextIn": "Próximo Daily Challenge daqui a {{time}}",
+    "nothingLive": "O próximo Daily Challenge está a caminho",
+    "cta": "Aceita o challenge",
+    "twistIn": "Local Twist de {{city}}",
+    "early": "Bónus de rapidez até às {{time}}",
+    "seeMine": "Ver a tua prova"
   }
 }

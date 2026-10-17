@@ -851,5 +851,15 @@
     "local": "Местный",
     "morePhotos": "Ещё фото",
     "proofInApp": "Опубликуй доказательство в приложении"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "Осталось {{time}}",
+    "nextIn": "Следующий Daily Challenge через {{time}}",
+    "nothingLive": "Следующий Daily Challenge уже в пути",
+    "cta": "Принять challenge",
+    "twistIn": "Local Twist: {{city}}",
+    "early": "Бонус за скорость до {{time}}",
+    "seeMine": "Смотреть своё доказательство"
   }
 }

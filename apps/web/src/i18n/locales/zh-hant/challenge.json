@@ -847,5 +847,15 @@
     "local": "在地人",
     "morePhotos": "更多照片",
     "proofInApp": "在應用程式裡發布你的證明"
+  },
+  "today": {
+    "kicker": "Daily Challenge",
+    "timeLeft": "還剩 {{time}}",
+    "nextIn": "下一個 Daily Challenge 還有 {{time}}",
+    "nothingLive": "下一個 Daily Challenge 馬上就來",
+    "cta": "接受 challenge",
+    "twistIn": "{{city}} Local Twist",
+    "early": "早鳥獎勵至 {{time}}",
+    "seeMine": "查看你的證明"
   }
 }

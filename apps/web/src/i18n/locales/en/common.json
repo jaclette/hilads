@@ -169,5 +169,21 @@
     "challenge": "See the challenge",
     "event": "🎉 See the Hi plan",
     "topic": "🗣️ See the Hi now"
-  }
+  },
+  "tabs": {
+    "today": "Today",
+    "map": "Map",
+    "chat": "Chat",
+    "passport": "Passport"
+  },
+  "scope": {
+    "title": "Show",
+    "world": "World",
+    "pickCity": "Pick a city",
+    "citySub": "Your city's challenge, proofs and spots",
+    "worldSub": "Proofs and spots from every city",
+    "changeCity": "Change city",
+    "a11y": "Showing {{scope}}. Tap to change"
+  },
+  "signUp": "Sign up"
 }
