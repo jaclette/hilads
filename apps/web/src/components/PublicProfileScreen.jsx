@@ -60,7 +60,7 @@ function eventIcon(type) { return EVENT_ICONS[type] ?? '📌' }
 // Type emoji for challenge cards - mirrors the rest of the app.
 const CHALLENGE_TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
-export default function PublicProfileScreen({ userId, cityName, cityCountry, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge, onOpenLeaderboard }) {
+export default function PublicProfileScreen({ userId, account, guest, onBack, onSendDm, onViewProfile, onOpenLightbox, onOpenHangout, onOpenChallenge, onOpenLeaderboard }) {
   const { t } = useTranslation('publicProfile')
   const [user,       setUser]       = useState(null)
   const [events,     setEvents]     = useState([])
@@ -368,8 +368,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     {(user.badges ?? []).map(k => (
                       <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                     ))}
-                    {cityName && (
-                      <span className="pub-profile-meta-city">{cityFlag(cityCountry)} {localizeCityName(cityName)}</span>
+                    {user.currentCity && (
+                      <span className="pub-profile-meta-city">{cityFlag(user.currentCityCountry)} {localizeCityName(user.currentCity)}</span>
                     )}
                   </div>
                   {heroMicroKey && (
@@ -409,8 +409,8 @@ export default function PublicProfileScreen({ userId, cityName, cityCountry, acc
                     <span className="pub-profile-identity-card-title">{t(`modes.${mode}`)}</span>
                     <span className="pub-profile-identity-card-sub">
                       {mode === 'local'
-                        ? ((user.homeCity || cityName) ? t('modeSub.localIn', { city: localizeCityName(user.homeCity || cityName) }) : t('modeSub.local'))
-                        : (cityName ? t('modeSub.exploringIn', { city: localizeCityName(cityName) }) : t('modeSub.exploring'))}
+                        ? ((user.homeCity || user.currentCity) ? t('modeSub.localIn', { city: localizeCityName(user.homeCity || user.currentCity) }) : t('modeSub.local'))
+                        : (user.currentCity ? t('modeSub.exploringIn', { city: localizeCityName(user.currentCity) }) : t('modeSub.exploring'))}
                     </span>
                   </div>
                 )}

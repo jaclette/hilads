@@ -42,6 +42,8 @@ import { submitBlock } from '@/api/blocks';
 import { formatDateLabel } from '@/lib/messageTime';
 import { DailyProfileStats } from '@/features/daily/DailyProfileStats';
 import { VIBE_ICONS } from '@/features/profile/vibes';
+import { countryToFlag } from '@/lib/countryFlag';
+import { localizeCityName } from '@/i18n/cityName';
 
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
@@ -52,15 +54,6 @@ const BADGE_MICROCOPY: Record<string, string> = {
   local:   'Knows the city',
   host:    'Makes it happen 🔥',
 };
-
-// ── City flag ─────────────────────────────────────────────────────────────────
-
-function cityFlag(countryCode?: string): string {
-  if (!countryCode || countryCode.length !== 2) return '';
-  return [...countryCode.toUpperCase()]
-    .map(c => String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65))
-    .join('');
-}
 
 // ── Mode meta ─────────────────────────────────────────────────────────────────
 
@@ -107,7 +100,7 @@ export default function PublicProfileScreen() {
   const { t }   = useTranslation('publicProfile');
   const insets  = useSafeAreaInsets();
   const { id }  = useLocalSearchParams<{ id: string }>();
-  const { account, identity, city, addBlocked, removeBlocked } = useApp();
+  const { account, identity, addBlocked, removeBlocked } = useApp();
 
   const [user,         setUser]         = useState<PublicProfile | null>(null);
   const [events,       setEvents]       = useState<HiladsEvent[]>([]);
@@ -374,6 +367,9 @@ export default function PublicProfileScreen() {
 
   const name   = user?.displayName ?? '?';
   const isSelf = account?.id === id;
+  // The owner's last-geolocated city (not the viewer's).
+  const ownerCity = user?.currentCity ? localizeCityName(user.currentCity) : null;
+  const ownerFlag = countryToFlag(user?.currentCityCountry);
   // First badge that carries microcopy → a single sub-line under the meta row
   // (mirrors My Profile's vibe sub-line), instead of one caption per badge.
   const heroBadgeWithCopy = user?.badges?.find(b => BADGE_MICROCOPY[b]) ?? null;
@@ -444,9 +440,9 @@ export default function PublicProfileScreen() {
                     if (!meta) return null;
                     return <Chip key={badgeKey} label={t(`badge.${badgeKey}`, { ns: 'common', defaultValue: meta.label })} />;
                   })}
-                  {city ? (
+                  {ownerCity ? (
                     <Text style={styles.identityMetaCity} numberOfLines={1}>
-                      {cityFlag(city.country)}{cityFlag(city.country) ? ' ' : ''}{city.name}
+                      {ownerFlag ? `${ownerFlag} ` : ''}{ownerCity}
                     </Text>
                   ) : null}
                 </View>
@@ -486,8 +482,8 @@ export default function PublicProfileScreen() {
                     <Text style={styles.identityCardTitle}>{t(`mode.${user.mode}.label`, { ns: 'common' })}</Text>
                     <Text style={styles.identityCardSub}>
                       {user.mode === 'local'
-                        ? t('localIn', { city: user.homeCity ?? city?.name ?? t('thisCity') })
-                        : t('exploringIn', { city: city?.name ?? t('thisCity') })}
+                        ? t('localIn', { city: user.homeCity ?? ownerCity ?? t('thisCity') })
+                        : t('exploringIn', { city: ownerCity ?? t('thisCity') })}
                     </Text>
                   </View>
                 ) : null}

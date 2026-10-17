@@ -6772,8 +6772,6 @@ export default function App() {
       {viewingProfile && (
         <PublicProfileScreen
           userId={viewingProfile.userId}
-          cityName={city}
-          cityCountry={cityCountry}
           account={account}
           guest={guest}
           onOpenLeaderboard={openLeaderboardFromProfile}
