@@ -2,6 +2,7 @@ import { thumbUrl } from '../lib/imageThumb'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import IconPlus from './IconPlus'
+import Icon from './Icon'
 import EmojiPicker from './EmojiPicker'
 import SendButton from './SendButton'
 
@@ -80,12 +81,12 @@ export default function MessageComposer({
               onMouseDown={e => { e.preventDefault(); onMentionSelect?.(s) }}
             >
               {s.isHere
-                ? <span className="mention-option-avatar mention-option-avatar--initial">📢</span>
+                ? <span className="mention-option-avatar mention-option-avatar--initial"><Icon name="megaphone-outline" size={16} /></span>
                 : s.avatarUrl
                   ? <img className="mention-option-avatar" src={thumbUrl(s.thumbAvatarUrl ?? s.avatarUrl)} alt="" />
-                  : <span className="mention-option-avatar mention-option-avatar--initial">{s.isGuest ? '👻' : (s.displayName ?? '?')[0].toUpperCase()}</span>}
+                  : <span className="mention-option-avatar mention-option-avatar--initial">{s.isGuest ? <Icon name="person-outline" size={16} /> : (s.displayName ?? '?')[0].toUpperCase()}</span>}
               <span className="mention-option-handle">@{s.username}</span>
-              <span className="mention-option-name">{s.isHere ? s.displayName : s.isGuest ? '👻 Guest · online' : s.displayName}</span>
+              <span className="mention-option-name">{s.isHere ? s.displayName : s.isGuest ? 'Guest · online' : s.displayName}</span>
             </button>
           ))}
         </div>
@@ -120,9 +121,10 @@ export default function MessageComposer({
             type="button"
             className={`emoji-trigger${showEmoji ? ' emoji-trigger--active' : ''}`}
             title={t('composer.emoji')}
+            aria-label={t('composer.emoji')}
             onClick={onEmojiToggle}
           >
-            😊
+            <Icon name="happy-outline" size={20} style={{ color: 'var(--muted2)' }} />
           </button>
           {showEmoji && (
             <EmojiPicker onSelect={onEmojiSelect} onClose={onEmojiClose} />

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { thumbUrl } from '../lib/imageThumb'
+import Icon from './Icon'
 
 // Self-contained per-nickname hue for the letter-avatar fallback.
 const avatarHue = (name = '') => name.split('').reduce((a, c) => a + c.charCodeAt(0), 0) % 360
@@ -126,7 +127,7 @@ export function ArrivalsSheet({ open, arrivals, onClose, onTapUser, formatTime }
         <div className="arrivals-sheet-handle" />
         <div className="arrivals-sheet-header">
           <span className="arrivals-sheet-title">{t('arrivalsBar.sheetTitle')}</span>
-          <button type="button" className="arrivals-sheet-close" onClick={onClose} aria-label="Close">✕</button>
+          <button type="button" className="arrivals-sheet-close" onClick={onClose} aria-label="Close"><Icon name="close" size={18} /></button>
         </div>
         <div className="arrivals-sheet-list">
           {arrivals.length === 0 ? (

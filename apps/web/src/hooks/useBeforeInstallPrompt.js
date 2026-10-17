@@ -150,7 +150,7 @@ export default function useBeforeInstallPrompt() {
     ? 'Add Hilads to your home screen'
     : platform.isIOS && platform.isSafari
       ? 'Tap Share, then "Add to Home Screen"'
-      : 'Open browser menu → Add to Home Screen'
+      : 'Open your browser menu and choose Add to Home Screen'
 
   return {
     canUseNativePrompt,

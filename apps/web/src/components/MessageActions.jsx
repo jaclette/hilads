@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Icon from './Icon'
 
 /**
  * Shared chat message-interaction UI, used by EVERY web chat surface (city
@@ -55,7 +56,7 @@ export function ReplyPreview({ replyingTo, onCancel }) {
           {replyingTo.type === 'image' ? t('reply.photo', { defaultValue: 'Photo' }) : (replyingTo.content || '-')}
         </span>
       </div>
-      <button type="button" className="reply-preview-close" onClick={onCancel} aria-label="Cancel reply">✕</button>
+      <button type="button" className="reply-preview-close" onClick={onCancel} aria-label="Cancel reply"><Icon name="close" size={16} /></button>
     </div>
   )
 }

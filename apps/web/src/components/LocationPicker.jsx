@@ -14,6 +14,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet'
 import { useTranslation } from 'react-i18next'
+import Icon from './Icon'
 import 'leaflet/dist/leaflet.css'
 
 // ── Internal: captures map moveend and forwards center coords ─────────────────
@@ -170,7 +171,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
         {/* ── Header ── */}
         <div className="loc-picker-header">
           <span className="loc-picker-title">{t('locationPicker.title')}</span>
-          <button className="loc-picker-close" onClick={onClose} aria-label={t('locationPicker.close')}>✕</button>
+          <button className="loc-picker-close" onClick={onClose} aria-label={t('locationPicker.close')}><Icon name="close" size={20} /></button>
         </div>
 
         {/* ── Map ── */}
@@ -193,7 +194,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
           {/* ── Address search overlay ── */}
           <div className="loc-picker-search">
             <div className="loc-picker-search-box">
-              <span className="loc-picker-search-icon" aria-hidden="true">🔍</span>
+              <span className="loc-picker-search-icon" aria-hidden="true"><Icon name="search-outline" size={16} /></span>
               <input
                 className="loc-picker-search-input"
                 value={query}
@@ -207,7 +208,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
                   className="loc-picker-search-clear"
                   onClick={() => { setQuery(''); setHits([]); setSearched(false) }}
                   aria-label={t('locationPicker.clearSearch')}
-                >✕</button>
+                ><Icon name="close" size={16} /></button>
               )}
             </div>
             {(hits.length > 0 || (searched && !searching)) && (
@@ -218,7 +219,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
                     className="loc-picker-suggestion"
                     onClick={() => selectHit(hit)}
                   >
-                    📍 <span>{hit.label}</span>
+                    <Icon name="location-outline" size={16} /> <span>{hit.label}</span>
                   </button>
                 )) : (
                   <div className="loc-picker-no-results">{t('locationPicker.noResults')}</div>
@@ -228,7 +229,7 @@ export default function LocationPicker({ initialLat, initialLng, nickname, onCon
           </div>
 
           {/* Fixed pin - stays centered, map moves underneath */}
-          <div className="loc-picker-pin" aria-hidden="true">📍</div>
+          <div className="loc-picker-pin" aria-hidden="true" style={{ color: 'var(--primary)' }}><Icon name="location" size={36} style={{ display: 'block' }} /></div>
 
           {/* Drag hint */}
           <div className="loc-picker-hint">{t('locationPicker.moveHint')}</div>

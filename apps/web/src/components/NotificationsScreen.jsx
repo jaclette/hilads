@@ -8,6 +8,7 @@ import {
   updateNotificationPreferences,
 } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -19,21 +20,22 @@ function timeAgo(isoString) {
   return i18n.t('time.dAgo', { ns: 'common', count: Math.floor(diff / 86400) })
 }
 
+// Stroke icon per type (same as mobile NotifRow).
 const TYPE_ICONS = {
-  dm_message:              '💬',
-  event_message:           '🔥',
-  event_join:              '👥',
-  new_event:               '🔥',
-  mention:                 '💬',
-  channel_message:         '💬',
-  city_join:               '👋',
-  friend_request_received: '👋',
-  friend_request_accepted: '🎉',
-  friend_added:            '👋',  // legacy
-  vibe_received:           '✨',
-  profile_view:            '👀',
-  challenge_invitation:    '🔥',
-  challenge_takeon_request:'🤝',
+  dm_message:              'chatbubble-outline',
+  event_message:           'chatbox-outline',
+  event_join:              'people-outline',
+  new_event:               'flash-outline',
+  mention:                 'at-outline',
+  channel_message:         'chatbubbles-outline',
+  city_join:               'person-add-outline',
+  friend_request_received: 'person-add-outline',
+  friend_request_accepted: 'people-outline',
+  friend_added:            'person-add-outline',  // legacy
+  vibe_received:           'star-outline',
+  profile_view:            'eye-outline',
+  challenge_invitation:    'flame-outline',
+  challenge_takeon_request:'flame-outline',
 }
 
 // ── Toggle component ──────────────────────────────────────────────────────────
@@ -156,7 +158,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
           </div>
         ) : notifications.length === 0 ? (
           <div className="notif-empty">
-            <p className="notif-empty-icon">✨</p>
+            <p className="notif-empty-icon" style={{ color: 'var(--muted2)' }}><Icon name="notifications-outline" size={32} /></p>
             <p className="notif-empty-title">{t('empty.title')}</p>
             <p className="notif-empty-sub">{t('empty.sub')}</p>
           </div>
@@ -168,7 +170,7 @@ export default function NotificationsScreen({ onBack, onNavigate, onUnreadChange
                 className={`notif-row${n.is_read ? ' read' : ''}`}
                 onClick={() => handleClickNotif(n)}
               >
-                <span className="notif-icon">{TYPE_ICONS[n.type] ?? '🔔'}</span>
+                <span className="notif-icon" style={{ color: n.is_read ? 'var(--muted2)' : 'var(--primary-text)' }}><Icon name={TYPE_ICONS[n.type] ?? 'notifications-outline'} size={20} /></span>
                 <div className="notif-content">
                   <span className="notif-title">{n.title}</span>
                   {n.body && <span className="notif-body-text">{n.body}</span>}

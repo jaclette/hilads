@@ -120,5 +120,5 @@ export function getTimeLabel(unixTs, timezone, { withDay = false, withDate = fal
   const prefix = withDate ? eventDayPrefix(unixTs, timezone, true)
     : withDay ? eventDayPrefix(unixTs, timezone, false)
     : ''
-  return `🕐 ${prefix}${formatTime(unixTs, timezone)}`
+  return `${prefix}${formatTime(unixTs, timezone)}`
 }

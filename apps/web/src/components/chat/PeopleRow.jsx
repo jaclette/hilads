@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchPeopleCounts } from '../../api'
+import Icon from '../Icon'
 
 const REFRESH_MS = 60_000
 
@@ -27,7 +28,7 @@ export default function PeopleRow({ cityId, onHiNow, onPlan, onArrivals, onNearb
     chips.push(
       <button key="hinow" type="button" className="people-chip people-chip--accent" onClick={onHiNow}
               aria-label={t('people.hiNowA11y', { count: counts.hiNow })}>
-        👋 {t('people.hiNow')}
+        <Icon name="hand-left-outline" size={15} /> {t('people.hiNow')}
       </button>,
     )
   }

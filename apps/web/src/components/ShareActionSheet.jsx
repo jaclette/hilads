@@ -2,13 +2,15 @@
  * ShareActionSheet - bottom sheet for share actions in chat composers.
  *
  * Actions:
- *   📸 Snap the vibe     → onSnap() - triggers file input in parent
- *   📍 Drop where you at → onSpot() - geolocation + send location message
- *   📅 Create a plan     → onPlan() - city Chat only (W3: plans are created here, as in the app)
- *   👋 Hi now            → onHiNow() - city Chat only
+ *   Snap the vibe     → onSnap() - triggers file input in parent
+ *   Drop where you at → onSpot() - geolocation + send location message
+ *   Create a plan     → onPlan() - city Chat only (W3: plans are created here, as in the app)
+ *   Hi now            → onHiNow() - city Chat only
+ * Icons match the app's ShareSheet (camera / location / calendar / hand-left).
  */
 
 import { useTranslation } from 'react-i18next'
+import Icon from './Icon'
 
 export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onClose, spotLoading }) {
   const { t } = useTranslation('common')
@@ -19,15 +21,15 @@ export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onCl
         <p className="share-sheet-title">{t('share.title')}</p>
         <div className="share-sheet-actions">
           <button className="share-sheet-action" onClick={onSnap} disabled={spotLoading}>
-            <span className="share-sheet-action-icon">📸</span>
+            <span className="share-sheet-action-icon" style={{ color: 'var(--primary-text)' }}><Icon name="camera-outline" size={26} /></span>
             <div className="share-sheet-action-body">
               <span className="share-sheet-action-label">{t('share.snap')}</span>
               <span className="share-sheet-action-desc">{t('share.snapDesc')}</span>
             </div>
           </button>
           <button className="share-sheet-action" onClick={onSpot} disabled={spotLoading}>
-            <span className="share-sheet-action-icon">
-              {spotLoading ? <span className="share-sheet-spinner" /> : '📍'}
+            <span className="share-sheet-action-icon" style={{ color: 'var(--primary-text)' }}>
+              {spotLoading ? <span className="share-sheet-spinner" /> : <Icon name="location-outline" size={26} />}
             </span>
             <div className="share-sheet-action-body">
               <span className="share-sheet-action-label">{t('share.spot')}</span>
@@ -38,7 +40,7 @@ export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onCl
           </button>
           {onPlan && (
             <button className="share-sheet-action" onClick={onPlan} disabled={spotLoading}>
-              <span className="share-sheet-action-icon">📅</span>
+              <span className="share-sheet-action-icon" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={26} /></span>
               <div className="share-sheet-action-body">
                 <span className="share-sheet-action-label">{t('share.plan')}</span>
                 <span className="share-sheet-action-desc">{t('share.planDesc')}</span>
@@ -47,7 +49,7 @@ export default function ShareActionSheet({ onSnap, onSpot, onPlan, onHiNow, onCl
           )}
           {onHiNow && (
             <button className="share-sheet-action" onClick={onHiNow} disabled={spotLoading}>
-              <span className="share-sheet-action-icon">👋</span>
+              <span className="share-sheet-action-icon" style={{ color: 'var(--primary-text)' }}><Icon name="hand-left-outline" size={26} /></span>
               <div className="share-sheet-action-body">
                 <span className="share-sheet-action-label">{t('share.hiNow')}</span>
                 <span className="share-sheet-action-desc">{t('share.hiNowDesc')}</span>

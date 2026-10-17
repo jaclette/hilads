@@ -8,10 +8,6 @@ export const THEME_NAMES = {
   night_out: 'Night out', neighborhood: 'Neighborhood', traditions: 'Traditions',
 }
 
-export const THEME_EMOJI = {
-  language: '🗣️', street_food: '🍜', coffee: '☕', market: '🧺', night_out: '🌙', neighborhood: '🏘️', traditions: '🏮',
-}
-
 export const CITY_ZOOM = 14
 export const MIN_ZOOM  = 9
 

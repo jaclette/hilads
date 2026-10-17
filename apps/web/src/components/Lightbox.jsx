@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { mediaDownloadUrl } from '../api'
+import Icon from './Icon'
 
 /**
  * Shared photo lightbox - used by the channel/event/topic feed (App.jsx) and
@@ -121,7 +122,7 @@ export default function Lightbox({ url, onClose }) {
 
   return (
     <div className="lightbox-overlay" onClick={onClose}>
-      <button className="lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+      <button className="lightbox-close" onClick={onClose} aria-label="Close"><Icon name="close" size={22} /></button>
       <img
         src={url}
         className="lightbox-img"
@@ -135,7 +136,7 @@ export default function Lightbox({ url, onClose }) {
           onClick={handleDownload}
           disabled={!!busy}
         >
-          <span className="lightbox-btn-icon">⬇</span>
+          <span className="lightbox-btn-icon"><Icon name="download-outline" size={18} /></span>
           <span>{t('actionDownload', { defaultValue: 'Download' })}</span>
         </button>
         <button
@@ -144,7 +145,7 @@ export default function Lightbox({ url, onClose }) {
           onClick={handleShare}
           disabled={!!busy}
         >
-          <span className="lightbox-btn-icon">↗</span>
+          <span className="lightbox-btn-icon"><Icon name="share-outline" size={18} /></span>
           <span>{t('actionShare', { defaultValue: 'Share' })}</span>
         </button>
       </div>

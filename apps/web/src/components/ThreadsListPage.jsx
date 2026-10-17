@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchMyAcceptances, fetchRatePrompts } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
+import { CHALLENGE_TYPE_ICONS } from '../lib/icons'
 import RateSheet from './RateSheet'
 
 /**
@@ -13,8 +15,6 @@ import RateSheet from './RateSheet'
  * with `account`; tapping a row calls `onOpenChallenge(challenge)` which
  * routes to the challenge channel where the inline thread chat lives.
  */
-
-const TYPE_ICONS = { food: '🍜', place: '📍', culture: '🎭', help: '🤪' }
 
 const AVATAR_PALETTES = [
   ['#7c6aff', '#c084fc'], ['#ff6a9f', '#fb7185'], ['#22d3ee', '#38bdf8'],
@@ -69,7 +69,7 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
       <div className="full-page">
         <div className="page-header"><BackButton onClick={onBack} /><span className="page-title">{t('threads.title')}</span></div>
         <div className="page-body" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
-          <span style={{ fontSize: 48 }}>🔒</span>
+          <span style={{ color: 'var(--muted2)', display: 'inline-flex' }}><Icon name="lock-closed-outline" size={32} /></span>
           <h3 style={{ margin: 0 }}>{t('threads.guestGate.title')}</h3>
           <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{t('threads.guestGate.body')}</p>
         </div>
@@ -93,14 +93,14 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
           <div style={{ padding: 40, textAlign: 'center', color: 'var(--muted, #b3b3b3)' }}>…</div>
         ) : threads.length === 0 && !topPrompt ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40, gap: 12 }}>
-            <span style={{ fontSize: 48 }}>🤝</span>
+            <span style={{ color: 'var(--primary-text)', display: 'inline-flex' }}><Icon name="flame-outline" size={32} /></span>
             <h3 style={{ margin: 0 }}>{t('threads.empty.title')}</h3>
             <p style={{ color: 'var(--muted, #b3b3b3)', margin: 0 }}>{t('threads.empty.body')}</p>
           </div>
         ) : (
           <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
             {threads.map(thr => {
-              const icon = TYPE_ICONS[thr.challenge_type] ?? '🔥'
+              const icon = CHALLENGE_TYPE_ICONS[thr.challenge_type] ?? 'flame-outline'
               const cp = thr.counterparty
               const [c1, c2] = avatarColors(cp.displayName)
               const preview = thr.last_message_content
@@ -130,11 +130,11 @@ export default function ThreadsListPage({ account, socket, onBack, onOpenChallen
                     </span>
                     <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text, #fff)' }}>
-                        {thr.i_am_creator && <span style={{ color: '#FF7A3C', fontWeight: 800 }}>👑 </span>}
+                        {thr.i_am_creator && <span style={{ color: 'var(--primary-text)' }}><Icon name="ribbon-outline" size={14} />{' '}</span>}
                         {cp.displayName}
                       </span>
                       <span style={{ fontSize: 13, color: 'var(--muted, #b3b3b3)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {icon} {thr.challenge_title}
+                        <Icon name={icon} size={13} /> {thr.challenge_title}
                       </span>
                       <span style={{ fontSize: 13, color: 'var(--muted-2, #888)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {preview}
@@ -196,7 +196,7 @@ function RatePromptBanner({ prompt, extraCount, onClick, t }) {
           fontSize: 14, fontWeight: 800, color: 'var(--text, #fff)',
           overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
         }}>
-          <span style={{ color: '#FFC93C' }}>⭐ </span>
+          <span style={{ color: 'var(--gold)' }}><Icon name="star-outline" size={14} />{' '}</span>
           {t(titleKey, { name: cp.displayName })}
         </div>
         <div style={{

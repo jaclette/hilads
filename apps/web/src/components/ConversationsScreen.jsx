@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { fetchConversations, fetchNotificationPreferences, updateNotificationPreferences } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 
 // Toggle copied from NotificationsScreen so we don't introduce a shared
 // component for one usage. Kept identical so styling stays consistent.
@@ -131,7 +132,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
         {fetchError && (
           <div className="conv-empty">
-            <p className="conv-empty-icon">⚠️</p>
+            <p className="conv-empty-icon" style={{ color: 'var(--muted2)' }}><Icon name="cloud-offline-outline" size={32} /></p>
             <p className="conv-empty-title">{t('error.loadTitle')}</p>
             <p className="conv-empty-sub">{t('error.loadSub')}</p>
           </div>
@@ -139,7 +140,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
 
         {filteredEmpty && (
           <div className="conv-empty">
-            <p className="conv-empty-icon">{activeFilter === 'events' ? '🔥' : '💬'}</p>
+            <p className="conv-empty-icon" style={{ color: 'var(--muted2)' }}><Icon name={activeFilter === 'events' ? 'calendar-outline' : 'chatbubbles-outline'} size={32} /></p>
             <p className="conv-empty-title">
               {activeFilter === 'events' ? t('empty.eventsTitle') : t('empty.title')}
             </p>
@@ -198,7 +199,7 @@ export default function ConversationsScreen({ account, conversations, onConversa
                 className={`conv-row${ev.has_unread ? ' conv-row--unread' : ''}`}
                 onClick={() => onOpenEvent(ev)}
               >
-                <span className="conv-event-icon">🔥</span>
+                <span className="conv-event-icon" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={22} /></span>
                 <div className="conv-row-body">
                   <span className="conv-row-name">{ev.title}</span>
                   <span className="conv-row-preview">

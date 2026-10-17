@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import { fetchConversationMessages, sendConversationMessage, sendConversationImageMessage, markConversationRead, uploadImage, editDmMessage, deleteDmMessage } from '../api'
 import BackButton from './BackButton'
+import Icon from './Icon'
 import ShareActionSheet from './ShareActionSheet'
 import LocationPicker from './LocationPicker'
 import MessageComposer from './MessageComposer'
@@ -445,7 +446,7 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
                             className={`loc-bubble${isMe ? ' loc-bubble--me' : ''}${hasCoords ? ' loc-bubble--tappable' : ''}`}
                             onClick={mapsUrl ? () => window.open(mapsUrl, '_blank', 'noopener') : undefined}
                           >
-                            <span className="loc-bubble-icon">📍</span>
+                            <span className="loc-bubble-icon"><Icon name="location" size={22} /></span>
                             <div className="loc-bubble-body">
                               <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
                               {addr && <span className="loc-bubble-addr">{addr}</span>}
@@ -578,8 +579,9 @@ export default function DirectMessageScreen({ conversation, otherUser, account, 
             className="edit-preview-close"
             type="button"
             onClick={() => { setEditingMsg(null); setInput('') }}
+            aria-label={t('cancel', { ns: 'common', defaultValue: 'Cancel' })}
           >
-            ✕
+            <Icon name="close" size={16} />
           </button>
         </div>
       )}

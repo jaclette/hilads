@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Icon from './Icon'
 
 // Why this exists: Universal Links (iOS) / App Links (Android) open the native
 // app when a link is tapped from apps that hand the URL to the OS (Slack,
@@ -56,7 +57,7 @@ export default function OpenInAppBanner() {
     <div className="open-in-app">
       <span className="open-in-app-text">Continue in the Hilads app for the full experience</span>
       <a className="open-in-app-btn" href={appUrl}>Open app</a>
-      <button type="button" className="open-in-app-close" aria-label="Dismiss" onClick={() => setAppUrl('')}>✕</button>
+      <button type="button" className="open-in-app-close" aria-label="Dismiss" onClick={() => setAppUrl('')}><Icon name="close" size={16} /></button>
     </div>
   )
 }

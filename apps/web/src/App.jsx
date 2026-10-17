@@ -26,7 +26,9 @@ import { DailyContext, VoteButton, LocalPassBadge, seedStates } from './componen
 import PeopleRow from './components/chat/PeopleRow'
 import DailyPinBar from './components/chat/DailyPinBar'
 import { createSocket } from './socket'
-import { cityFlag, EVENT_ICONS } from './cityMeta'
+import { cityFlag } from './cityMeta'
+import Icon from './components/Icon'
+import { THEME_ICON, eventIcon, VIBE_ICONS, TOPIC_ICONS, CHALLENGE_TYPE_ICONS } from './lib/icons'
 import { badgeLabel } from './badgeMeta'
 import { getTimeLabel, getEventLocation, getEventMapsUrl, formatTime, eventSlug, osmPointUrl } from './eventUtils'
 import { haversineMeters, formatDistance } from './distance'
@@ -484,17 +486,17 @@ function MyEventRow({ event, cityTimezone, onSelect, onDelete }) {
   return (
     <div className="my-event-row">
       <button className="my-event-row-body" onClick={onSelect}>
-        <span className="my-event-title">{EVENT_ICONS[event.type] ?? '📌'} {event.title}</span>
+        <span className="my-event-title"><Icon name={eventIcon(event.type)} size={15} /> {event.title}</span>
         <span className="my-event-meta">
           {recur
             ? recur
-            : getTimeLabel(event.starts_at, cityTimezone || 'UTC') + (event.ends_at ? ` → ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : '')}
+            : getTimeLabel(event.starts_at, cityTimezone || 'UTC') + (event.ends_at ? ` – ${formatTime(event.ends_at, cityTimezone || 'UTC')}` : '')}
         </span>
         <span className={`my-event-badge${isLive ? ' my-event-badge--live' : (recur ? ' my-event-badge--recurring' : '')}`}>
           {isLive ? t('myEvent.live') : (recur ? t('myEvent.recurring') : t('myEvent.upcoming'))}
         </span>
       </button>
-      <button className="my-event-delete" onClick={onDelete} aria-label={t('myEvent.delete')}>✕</button>
+      <button className="my-event-delete" onClick={onDelete} aria-label={t('myEvent.delete')}><Icon name="close" size={16} /></button>
     </div>
   )
 }
@@ -525,16 +527,16 @@ function typingText(users, mySessionId, t) {
 
 // ── Vibe display ──────────────────────────────────────────────────────────────
 
-// Emoji + English fallback per vibe. The DISPLAY label is resolved at render
+// Icon + English fallback per vibe. The DISPLAY label is resolved at render
 // time by vibeLabel() from common.vibe.* (translated per locale, mirrors the
 // mobile app + profile.json). The English strings here are only the fallback.
 const VIBE_META = {
-  party:       { emoji: '🔥', label: 'Party' },
-  board_games: { emoji: '🎲', label: 'Board Games' },
-  coffee:      { emoji: '☕', label: 'Coffee' },
-  music:       { emoji: '🎧', label: 'Music' },
-  food:        { emoji: '🍜', label: 'Food' },
-  chill:       { emoji: '🧘', label: 'Chill' },
+  party:       { icon: VIBE_ICONS.party,       label: 'Party' },
+  board_games: { icon: VIBE_ICONS.board_games, label: 'Board Games' },
+  coffee:      { icon: VIBE_ICONS.coffee,      label: 'Coffee' },
+  music:       { icon: VIBE_ICONS.music,       label: 'Music' },
+  food:        { icon: VIBE_ICONS.food,        label: 'Food' },
+  chill:       { icon: VIBE_ICONS.chill,       label: 'Chill' },
 }
 
 // Localized vibe label. Uses the i18n singleton (not a hook) so it works from
@@ -545,8 +547,8 @@ function vibeLabel(vibe) {
 }
 
 const MODE_META = {
-  local:     { emoji: '🌍', label: 'Local'     },
-  exploring: { emoji: '🧭', label: 'Exploring' },
+  local:     { icon: 'location-outline', label: 'Local'     },
+  exploring: { icon: 'compass-outline',  label: 'Exploring' },
 }
 
 function messageKey(m) {
@@ -637,10 +639,8 @@ function dedupeWeather(items) {
 // there is exactly one active user per page session.
 const SELF_IDENTITY = { guestId: null, userId: null }
 
-// Weekly themes (V2-03): names are English content from the API; emoji here.
-const DAILY_THEME_EMOJI = {
-  language: '🗣️', street_food: '🍜', coffee: '☕', market: '🧺', night_out: '🌙', neighborhood: '🏘️', traditions: '🏮',
-}
+// Weekly themes (V2-03): names are English content from the API; the icon
+// per theme comes from THEME_ICON (lib/icons, same as mobile).
 
 // Daily Challenge card in the feed (read-only on web; the app holds the sheet
 // and the proof flow). The CTA goes to /today: the app opens on today's sheet
@@ -661,7 +661,7 @@ function DailyFeedCard({ item, t, onOpen }) {
     const shown = proofs.slice(0, 4)
     return (
       <div className="feed-daily feed-daily--proof">
-        <div className="feed-daily-kicker">📸 {t('daily.groupTitle', { n: count })}</div>
+        <div className="feed-daily-kicker"><Icon name="camera-outline" size={13} /> {t('daily.groupTitle', { n: count })}</div>
         {where && <div className="feed-daily-sub">{where}</div>}
         <div className="feed-daily-strip">
           {shown.map((e, i) => (
@@ -682,16 +682,16 @@ function DailyFeedCard({ item, t, onOpen }) {
     const store = deviceStore()
     return (
       <div className="feed-daily feed-daily--clickable" role="button" tabIndex={0} onClick={() => onOpen({ date: p.date ?? 'today' })}>
-        <div className="feed-daily-kicker">🔥 {t('daily.kicker')}</div>
-        {p.theme?.name && <span className="feed-daily-theme">{DAILY_THEME_EMOJI[p.theme.key] || '•'} {p.theme.name}</span>}
+        <div className="feed-daily-kicker"><Icon name="flame-outline" size={13} /> {t('daily.kicker')}</div>
+        {p.theme?.name && <span className="feed-daily-theme">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={13} />} {p.theme.name}</span>}
         <div className="feed-daily-text">{p.text}</div>
         {p.context && <div className="feed-daily-context">{p.context}</div>}
         {by && (
-          <div className="feed-daily-by">💡 {p.proposedBy.city?.name
+          <div className="feed-daily-by"><Icon name="bulb-outline" size={14} /> {p.proposedBy.city?.name
             ? t('daily.proposedByCity', { name: by, city: localizeCityName(p.proposedBy.city.name) })
             : t('daily.proposedBy', { name: by })}</div>
         )}
-        {p.twist?.text && <div className="feed-daily-twist">📍 {t('daily.localTwist')}: {p.twist.text}</div>}
+        {p.twist?.text && <div className="feed-daily-twist"><Icon name="location-outline" size={14} /> {t('daily.localTwist')}: {p.twist.text}</div>}
         {/* Proofs are posted from the app (W2 decision): "Take it" opens the store. */}
         <a className="feed-daily-cta" href={store === 'android' ? PLAY_STORE : APP_STORE} target="_blank" rel="noopener noreferrer"
            onClick={(e) => { e.stopPropagation(); track('web_today_take_clicked', { store: store ?? 'ios', surface: 'chat_card' }) }}>
@@ -711,14 +711,14 @@ function DailyFeedCard({ item, t, onOpen }) {
         <span className={`feed-daily-chip ${p.isLocal ? 'feed-daily-chip--local' : 'feed-daily-chip--traveler'}`}>
           {p.isLocal ? t('daily.local') : t('daily.traveler')}
         </span>
-        {p.isEarly && <span className="feed-daily-early">⚡ {t('daily.early')}</span>}
+        {p.isEarly && <span className="feed-daily-early"><Icon name="flash-outline" size={11} /> {t('daily.early')}</span>}
       </div>
       <img className="feed-daily-photo" src={p.thumbUrl || p.photoUrl} alt={p.caption || ''} loading="lazy"
            onClick={() => onOpen({ date: p.date ?? 'today', proofId: p.proofId ?? p.id })} />
       {p.caption && <div className="feed-daily-caption">{p.caption}</div>}
       <div className="feed-daily-tags">
-        {p.spot && <span className="feed-daily-tag">📍 {p.spot.name}</span>}
-        {p.theme?.name && <span className="feed-daily-tag">{DAILY_THEME_EMOJI[p.theme.key] || '•'} {p.theme.name}</span>}
+        {p.spot && <span className="feed-daily-tag"><Icon name="location-outline" size={12} /> {p.spot.name}</span>}
+        {p.theme?.name && <span className="feed-daily-tag">{THEME_ICON[p.theme.key] && <Icon name={THEME_ICON[p.theme.key]} size={12} />} {p.theme.name}</span>}
         {p.city?.name && <span className="feed-daily-tag">{localizeCityName(p.city.name)}</span>}
       </div>
       {p.proofId && <VoteButton proof={{ id: p.proofId, date: p.date, city: p.city }} variant="card" />}
@@ -1165,7 +1165,7 @@ export default function App() {
             key={i}
             className={`msg-mention msg-mention--guest${online ? '' : ' msg-mention--offline'}`}
             title={online ? undefined : 'This guest has left'}
-          >👻 @{seg.username}</span>
+          ><Icon name="person-outline" size={13} /> @{seg.username}</span>
         )
       }
       return <span key={i} className="msg-mention" onClick={e => { e.stopPropagation(); openProfile(seg.userId, seg.username) }}>@{seg.username}</span>
@@ -1721,7 +1721,7 @@ export default function App() {
           type: 'prompt',
           subtype: 'install',
           id: `prompt-install-${Date.now()}`,
-          text: '✨ Add Hilads to your home screen\nNever miss what\'s happening in your city',
+          text: 'Add Hilads to your home screen\nNever miss what\'s happening in your city',
           cta: installPrompt.canUseNativePrompt ? 'Add' : 'How'
         },
       ]
@@ -2619,7 +2619,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length > 0) return prev
         promptsShownRef.current.add('explore')
-        return [...prev, { type: 'prompt', subtype: 'explore', id: `prompt-explore-${Date.now()}`, text: '🔥 See what\'s happening now', cta: 'See what\'s happening' }]
+        return [...prev, { type: 'prompt', subtype: 'explore', id: `prompt-explore-${Date.now()}`, text: 'See what\'s happening now', cta: 'See what\'s happening' }]
       })
     }, 15000)
 
@@ -2630,7 +2630,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length >= 3) return prev
         promptsShownRef.current.add('photo')
-        return [...prev, { type: 'prompt', subtype: 'photo', id: `prompt-photo-${Date.now()}`, text: '📸 Share what\'s happening', cta: 'Shoot' }]
+        return [...prev, { type: 'prompt', subtype: 'photo', id: `prompt-photo-${Date.now()}`, text: 'Share what\'s happening', cta: 'Shoot' }]
       })
     }, 30000)
 
@@ -2641,7 +2641,7 @@ export default function App() {
       setFeed(prev => {
         if (prev.filter(m => m.type === 'message').length >= 3) return prev
         promptsShownRef.current.add('create-event')
-        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: '🎉 Got a plan tonight?', cta: 'Create event' }]
+        return [...prev, { type: 'prompt', subtype: 'create-event', id: `prompt-create-${Date.now()}`, text: 'Got a plan tonight?', cta: 'Create event' }]
       })
     }, 60000)
 
@@ -3886,7 +3886,7 @@ export default function App() {
           onClick={() => setShowScopeSheet(true)}
           aria-label={t('scope.a11y', { ns: 'common', scope: label })}
         >
-          {channelScope === 'world' && <span aria-hidden="true">🌍</span>}
+          {channelScope === 'world' && <Icon name="globe-outline" size={18} />}
           <span className="v3-scope-label">{label}</span>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <polyline points="6 9 12 15 18 9" />
@@ -3931,12 +3931,12 @@ export default function App() {
     }
     const Row = ({ icon, title, sub, active, onClick }) => (
       <button type="button" className={`v3-scope-row${active ? ' v3-scope-row--on' : ''}`} onClick={onClick} aria-pressed={!!active}>
-        <span className="v3-scope-row-icon" aria-hidden="true">{icon}</span>
+        <span className="v3-scope-row-icon" aria-hidden="true"><Icon name={icon} size={20} /></span>
         <span className="v3-scope-row-body">
           <span className="v3-scope-row-title">{title}</span>
           {sub && <span className="v3-scope-row-sub">{sub}</span>}
         </span>
-        {active && <span aria-hidden="true">✓</span>}
+        {active && <Icon name="checkmark" size={18} />}
       </button>
     )
     return (
@@ -3945,11 +3945,11 @@ export default function App() {
         <div className="v3-sheet">
           <span className="v3-sheet-grabber" aria-hidden="true" />
           <p className="v3-sheet-title">{t('scope.title', { ns: 'common' })}</p>
-          <Row icon="📍" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} sub={t('scope.citySub', { ns: 'common' })}
+          <Row icon="location-outline" title={city ? localizeCityName(city) : t('scope.pickCity', { ns: 'common' })} sub={t('scope.citySub', { ns: 'common' })}
                active={channelScope === 'city'} onClick={() => pick('city')} />
-          <Row icon="🌍" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
+          <Row icon="globe-outline" title={t('scope.world', { ns: 'common' })} sub={t('scope.worldSub', { ns: 'common' })}
                active={channelScope === 'world'} onClick={() => pick('world')} />
-          <Row icon="🔁" title={t('scope.changeCity', { ns: 'common' })} onClick={() => { setShowScopeSheet(false); openCityPicker() }} />
+          <Row icon="swap-horizontal-outline" title={t('scope.changeCity', { ns: 'common' })} onClick={() => { setShowScopeSheet(false); openCityPicker() }} />
         </div>
       </div>
     )
@@ -4854,7 +4854,7 @@ export default function App() {
   if (status === 'error') {
     return (
       <div className="screen center">
-        <p className="error-emoji">😬</p>
+        <p className="error-emoji" style={{ color: 'var(--muted2)' }}><Icon name="cloud-offline-outline" size={32} /></p>
         <p className="error-text">{error}</p>
         <button
           className="retry-btn"
@@ -5034,7 +5034,7 @@ export default function App() {
               </div>
               <div className="event-header-body">
                 {isMyEvent && (
-                  <span className="event-creator-badge">👑 {t('eventHeader.yourEvent')}</span>
+                  <span className="event-creator-badge"><Icon name="ribbon-outline" size={12} /> {t('eventHeader.yourEvent')}</span>
                 )}
                 <div className="event-header-title-row">
                   <CopyTranslateText as="h1" value={activeEvent.title} className="event-header-title" />
@@ -5044,7 +5044,7 @@ export default function App() {
                       onClick={() => setShowEditEvent(true)}
                       onAnimationEnd={() => setShowEditPulse(false)}
                     >
-                      ✏️ {t('eventHeader.edit')}
+                      <Icon name="create-outline" size={14} /> {t('eventHeader.edit')}
                     </button>
                   ) : (
                     <button
@@ -5057,7 +5057,7 @@ export default function App() {
                 </div>
                 <span className="event-meta-label">
                   {getTimeLabel(activeEvent.starts_at, cityTimezone || 'UTC', { withDate: !(activeEvent.recurrence_label || activeEvent.series_id) })}
-                  {activeEvent.ends_at ? ` → ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
+                  {activeEvent.ends_at ? ` – ${formatTime(activeEvent.ends_at, cityTimezone || 'UTC')}` : ''}
                   {` · ${t('eventHeader.here', { count: eventPresence[activeEvent.id] ?? 0 })} · `}
                   <button className="going-count-btn" onClick={handleOpenGoingModal}>
                     {t('eventHeader.going', { count: eventParticipants[activeEvent.id] ?? 0 })}
@@ -5068,10 +5068,10 @@ export default function App() {
                   const url = getEventMapsUrl(activeEvent)
                   if (url) return (
                     <a href={url} target="_blank" rel="noopener noreferrer" className="event-location">
-                      📍 {loc}
+                      <Icon name="location-outline" size={13} /> {loc}
                     </a>
                   )
-                  return <span className="event-location event-location--muted">📍 {loc ?? t('eventHeader.locationPending')}</span>
+                  return <span className="event-location event-location--muted"><Icon name="location-outline" size={13} /> {loc ?? t('eventHeader.locationPending')}</span>
                 })()}
                 {activeEvent.host_nickname && !isMyEvent && (
                   <span className="event-host">{t('eventHeader.hostedBy', { name: activeEvent.host_nickname })}</span>
@@ -5086,7 +5086,7 @@ export default function App() {
                 <div className="header-desktop-zone header-desktop-zone--left">
                   <div className="header-desktop-left">
                     <button className="change-city-btn" onClick={openCityPicker} title={t('header.switchCity')}>
-                      🌍 <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow">⌄</span>
+                      <Icon name="globe-outline" size={15} /> <span className="city-btn-name">{city || '…'}</span> <span className="city-btn-arrow"><Icon name="chevron-down" size={12} /></span>
                     </button>
                   </div>
                 </div>
@@ -5141,7 +5141,7 @@ export default function App() {
                         </button>
                       )}
                     </div>
-                    <span className="you-badge">👤 {activeNickname}</span>
+                    <span className="you-badge"><Icon name="person-outline" size={13} /> {activeNickname}</span>
                   </div>
                 </div>
               </div>
@@ -5239,7 +5239,7 @@ export default function App() {
           )}
           {feed.length === 0 && (
             <div className="empty">
-              <p className="empty-icon">{activeEvent ? '💬' : '🔥'}</p>
+              <p className="empty-icon" style={{ color: 'var(--primary-text)' }}><Icon name={activeEvent ? 'chatbubbles-outline' : 'flame-outline'} size={32} /></p>
               <p className="empty-title">
                 {activeEvent ? `${activeEvent.title}` : t('chatEmpty.arriving')}
               </p>
@@ -5360,6 +5360,7 @@ export default function App() {
               const ev = events.find(e => e.id === item.eventId) ?? cityEvents.find(e => e.id === item.eventId)
               return (
                 <div key={item.id} className={`feed-prompt${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
+                  <Icon name="calendar-outline" size={18} style={{ color: 'var(--primary-text)' }} />
                   <span className="feed-prompt-text">{item.title ? t('feedNew.event', { title: item.title }) : item.text}</span>
                   <button className="feed-prompt-btn" onClick={() => ev && handleSelectEvent(ev)}>{t('feedNew.join')}</button>
                 </div>
@@ -5386,6 +5387,7 @@ export default function App() {
               // Commit 2 brings it back with 1:1 semantics.
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--challenge${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
+                  <Icon name="flame-outline" size={18} style={{ color: 'var(--primary-text)' }} />
                   <span className="feed-prompt-text">
                     {t(textKey, {
                       name:  item.nickname,
@@ -5412,6 +5414,7 @@ export default function App() {
               const challenge = cityChallenges.find(c => c.id === item.challengeId)
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--challenge-validated${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
+                  <Icon name="trophy-outline" size={18} style={{ color: 'var(--local-text)' }} />
                   <span className="feed-prompt-text">{t('feedNew.challengeValidated', { name: item.nickname, title: item.title })}</span>
                   <button
                     className="feed-prompt-btn"
@@ -5430,7 +5433,8 @@ export default function App() {
               const repliesText = mc > 0 ? ` · ${t('feedNew.replies', { count: mc })}` : ''
               return (
                 <div key={item.id} className={`feed-prompt feed-prompt--topic${fadingIds.has(item.id) ? ' feed-prompt--exit' : ''}`}>
-                  <span className="feed-prompt-text">🗣️ {topic.title}{repliesText}</span>
+                  <Icon name="hand-left-outline" size={18} style={{ color: 'var(--primary-text)' }} />
+                  <span className="feed-prompt-text">{topic.title}{repliesText}</span>
                   <button
                     className="feed-prompt-btn feed-prompt-btn--topic"
                     onClick={() => openHangout(topic)}
@@ -5523,13 +5527,13 @@ export default function App() {
                       <span className="msg-author" style={{ color: c1 }}>{item.nickname}</span>
                       {channelScope === 'world'
                         ? (() => { const cc = item.country || (isMine ? cityCountry : null); return cc ? <span className="msg-flag">{cityFlag(cc)}</span> : null })()
-                        : (() => { const m = item.mode || (isMine ? account?.mode : null) || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}>{MODE_META[m].emoji} {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
+                        : (() => { const m = item.mode || (isMine ? account?.mode : null) || 'exploring'; return MODE_META[m] ? <span className={`msg-mode msg-mode--${m}`}><Icon name={MODE_META[m].icon} size={11} /> {t(`mode.${m}.label`, { ns: 'common' })}</span> : null; })()}
                       {item.contextBadge?.key === 'host' && (
                         <span className="badge-pill badge-pill--host">{badgeLabel(item.contextBadge.key)}</span>
                       )}
                       {/* Daily Challenge Local Pass of this city (city chats only). */}
                       {channelScope !== 'world' && item.localPass && (
-                        <span className="feed-daily-pass" title={t('daily.localPass')}>🎫</span>
+                        <span className="feed-daily-pass" title={t('daily.localPass')}><Icon name="ticket-outline" size={11} /></span>
                       )}
                     </div>
                   )}
@@ -5574,7 +5578,7 @@ export default function App() {
                             className={`loc-bubble${isMine ? ' loc-bubble--me' : ''}${hasCoords ? ' loc-bubble--tappable' : ''}`}
                             onClick={mapsUrl ? () => window.open(mapsUrl, '_blank', 'noopener') : undefined}
                           >
-                            <span className="loc-bubble-icon">📍</span>
+                            <span className="loc-bubble-icon"><Icon name="location" size={22} /></span>
                             <div className="loc-bubble-body">
                               <span className="loc-bubble-place">{line1.replace('📍 ', '')}</span>
                               {addr && <span className="loc-bubble-addr">{addr}</span>}
@@ -5592,7 +5596,7 @@ export default function App() {
                           >
                             <span className="msg-reply-quote-name">{item.replyTo.nickname}</span>
                             <span className="msg-reply-quote-text">
-                              {item.replyTo.type === 'image' ? '📷 Photo' : (item.replyTo.content || 'Original message unavailable')}
+                              {item.replyTo.type === 'image' ? <><Icon name="camera-outline" size={13} /> Photo</> : (item.replyTo.content || 'Original message unavailable')}
                             </span>
                           </div>
                         )}
@@ -5614,11 +5618,11 @@ export default function App() {
                               {shared ? (() => {
                                 const isCampaign = shared.kind === 'challenge' && shared.campaign
                                 const pill = isCampaign
-                                  ? (shared.scope === 'global' ? '🌍 All cities' : shared.scope === 'world' ? '🌍 World' : null)
+                                  ? (shared.scope === 'global' ? 'All cities' : shared.scope === 'world' ? 'World' : null)
                                   : null
                                 return (
                                   <>
-                                    {pill && <span className="campaign-scope-pill">{pill}</span>}
+                                    {pill && <span className="campaign-scope-pill"><Icon name="globe-outline" size={12} /> {pill}</span>}
                                     <a
                                       className={`shared-link-cta${isCampaign ? ' shared-link-cta--campaign' : ''}`}
                                       href={shared.url}
@@ -5734,8 +5738,9 @@ export default function App() {
               className="edit-preview-close"
               type="button"
               onClick={() => { setEditingMsg(null); setInput('') }}
+              aria-label={t('cancel', { ns: 'common', defaultValue: 'Cancel' })}
             >
-              ✕
+              <Icon name="close" size={16} />
             </button>
           </div>
         )}
@@ -5896,12 +5901,12 @@ export default function App() {
               className="back-to-location-btn"
               onClick={() => switchCity(geoChannelId, geoCity, geoTimezone ?? 'UTC', geoCountry)}
             >
-              <span className="back-to-location-icon">📍</span>
+              <span className="back-to-location-icon" style={{ color: 'var(--primary-text)' }}><Icon name="location-outline" size={20} /></span>
               <span className="back-to-location-text">
                 <span className="back-to-location-label">{t('picker.backToLocation')}</span>
                 <span className="back-to-location-sub">{geoCity}</span>
               </span>
-              <span className="back-to-location-arrow">→</span>
+              <span className="back-to-location-arrow"><Icon name="chevron-forward" size={18} /></span>
             </button>
           )}
           <div className="page-body">
@@ -5979,9 +5984,8 @@ export default function App() {
                 return a.starts_at - b.starts_at
               })
               const totalVisibleEvents = hiladsEvents.length + publicEvents.length
-              const CATEGORY_ICONS = { general: '🗣️', tips: '💡', food: '🍴', drinks: '🍺', help: '🙋', meetup: '👋' }
               const renderTopicRow = (topic) => {
-                const icon = CATEGORY_ICONS[topic.category] ?? '🗣️'
+                const icon = TOPIC_ICONS[topic.category] ?? TOPIC_ICONS.general
                 const replies = topic.message_count ?? 0
                 const isHost = (topic.created_by && topic.created_by === SELF_IDENTITY.userId)
                   || (topic.guest_id && topic.guest_id === SELF_IDENTITY.guestId)
@@ -5998,13 +6002,13 @@ export default function App() {
                 return (
                   <button key={topic.id} className="city-row event-row-card topic-row" style={{ cursor: 'pointer', textAlign: 'left' }} onClick={() => { setShowEventDrawer(false); openHangout(topic) }}>
                     <div className="er-header">
-                      <span className="er-title">{icon} {topic.title}</span>
-                      <span className="er-going er-going--now">🔥 {t('feed.nowTag')}</span>
+                      <span className="er-title"><Icon name={icon} size={15} /> {topic.title}</span>
+                      <span className="er-going er-going--now"><Icon name="flame-outline" size={12} /> {t('feed.nowTag')}</span>
                     </div>
                     <div className="er-badges">
                       {activeNow && <span className="now-active-badge">{t('feed.activeNow')}</span>}
                       {formatExpiresIn(topic.expires_at) && (
-                        <span className="city-row-current">⏱ {formatExpiresIn(topic.expires_at)}</span>
+                        <span className="city-row-current"><Icon name="hourglass-outline" size={12} /> {formatExpiresIn(topic.expires_at)}</span>
                       )}
                       <span className="city-row-current city-row-current--reply">
                         <Marquee
@@ -6021,7 +6025,7 @@ export default function App() {
                       <span className="er-location">{topic.description}</span>
                     )}
                     {meters !== undefined && (
-                      <span className="er-location">📍 {formatDistance(meters)}</span>
+                      <span className="er-location"><Icon name="location-outline" size={13} /> {formatDistance(meters)}</span>
                     )}
                     <AttendeeAvatars
                       preview={topic.participants_preview ?? []}
@@ -6041,28 +6045,28 @@ export default function App() {
                   >
                     <div className="er-header">
                       <span className="er-title">
-                        {EVENT_ICONS[event.event_type ?? event.type] ?? '📌'} {event.title}
+                        <Icon name={eventIcon(event.event_type ?? event.type)} size={15} /> {event.title}
                       </span>
                       {group === 'public'
                         ? <span className="er-going er-going--public">{t('feed.public')}</span>
-                        : <span className="er-going er-going--later">🎉 {t('feed.laterTag')}</span>}
+                        : <span className="er-going er-going--later"><Icon name="calendar-outline" size={12} /> {t('feed.laterTag')}</span>}
                     </div>
                     <div className="er-badges">
                       <span className="city-row-current">
                         {getTimeLabel(event.starts_at, tz, { withDay: true })}
-                        {event.ends_at ? ` → ${formatTime(event.ends_at, tz)}` : ''}
+                        {event.ends_at ? ` – ${formatTime(event.ends_at, tz)}` : ''}
                       </span>
                       {formatRecurrence(event) && (
-                        <span className="recur-badge">↻ {formatRecurrence(event)}</span>
+                        <span className="recur-badge"><Icon name="repeat-outline" size={12} /> {formatRecurrence(event)}</span>
                       )}
                       {going > 0 && <span className="city-row-current">{t('feed.going', { count: going })}</span>}
                     </div>
                     {(() => {
                       // NOW feed: show distance when we have it; otherwise the address.
                       const meters = distanceByEventId.get(event.id)
-                      if (meters !== undefined) return <span className="er-location">📍 {formatDistance(meters)}</span>
+                      if (meters !== undefined) return <span className="er-location"><Icon name="location-outline" size={13} /> {formatDistance(meters)}</span>
                       const loc = getEventLocation(event)
-                      return loc ? <span className="er-location">📍 {loc}</span> : null
+                      return loc ? <span className="er-location"><Icon name="location-outline" size={13} /> {loc}</span> : null
                     })()}
                     {event.host_nickname && (
                       <span className="er-host">{t('feed.hostedBy', { name: event.host_nickname })}</span>
@@ -6230,7 +6234,7 @@ export default function App() {
               className="hilocal-cta hilocal-cta--now hilocal-cta--stack"
               onClick={() => { setShowEventDrawer(false); openCreateHangout() }}
             >
-              <span className="hilocal-cta-main">🗣️ {t('feed.hiNow')}</span>
+              <span className="hilocal-cta-main"><Icon name="hand-left-outline" size={18} /> {t('feed.hiNow')}</span>
               <span className="hilocal-cta-sub">{t('feed.hiNowHint')}</span>
             </button>
             {/* Line 2: Hi later + See what's coming, side by side. */}
@@ -6239,7 +6243,7 @@ export default function App() {
                 className="hilocal-cta hilocal-cta--later hilocal-cta--stack"
                 onClick={() => { setShowEventDrawer(false); tryOpenCreateEvent({ fromDrawer: true }) }}
               >
-                <span className="hilocal-cta-main">🎉 {t('feed.hiLater')}</span>
+                <span className="hilocal-cta-main"><Icon name="calendar-outline" size={18} /> {t('feed.hiLater')}</span>
                 <span className="hilocal-cta-sub">{t('feed.hiLaterHint')}</span>
               </button>
               <button
@@ -6260,7 +6264,7 @@ export default function App() {
               setShowPastArchive(true)
             }}
           >
-            {t('feed.seeHappened')} →
+            {t('feed.seeHappened')}
           </button>
         </div>
       )}
@@ -6273,7 +6277,7 @@ export default function App() {
             {renderAppHeader()}
           </div>
           <div className="page-header">
-            <span className="page-title">🔥 {t('noun', { ns: 'challenge' })}</span>
+            <span className="page-title">{t('noun', { ns: 'challenge' })}</span>
           </div>
           <div className="page-body" ref={challengesBodyRef}>
             {/* Hero carousel of recent success challenges - auto-rotating
@@ -6299,7 +6303,7 @@ export default function App() {
                 className="challenge-my-cta"
                 onClick={() => { setShowChallengesDrawer(false); openProfile(account.id, '') }}
               >
-                🏆 {t('myChallenges.cta', { ns: 'challenge' })} →
+                <Icon name="trophy-outline" size={18} /> {t('myChallenges.cta', { ns: 'challenge' })} <Icon name="chevron-forward" size={16} />
               </button>
             )}
             {/* (The standalone "Success challenges" button was removed - the hero
@@ -6358,12 +6362,12 @@ export default function App() {
                 {/* Mode sub-filter - All / Local / International */}
                 <div className="challenge-type-chips" role="tablist" aria-label={t('modeFilter.label', { ns: 'challenge' })}>
                   {[
-                    { key: 'all',           emoji: '✨' },
-                    { key: 'special',       emoji: '⚡' },
-                    { key: 'local',         emoji: '🏙️' },
-                    { key: 'international', emoji: '🌐' },
-                    { key: 'worldwide',     emoji: '🌍' },
-                  ].map(({ key, emoji }) => (
+                    { key: 'all',           icon: 'sparkles-outline' },
+                    { key: 'special',       icon: 'flash-outline' },
+                    { key: 'local',         icon: 'business-outline' },
+                    { key: 'international', icon: 'airplane-outline' },
+                    { key: 'worldwide',     icon: 'globe-outline' },
+                  ].map(({ key, icon }) => (
                     <button
                       key={key}
                       type="button"
@@ -6375,7 +6379,7 @@ export default function App() {
                         if (key === 'worldwide') fetchWorldChallengesAll(60).then(setWorldChallengesAll).catch(() => {})
                       }}
                     >
-                      <span aria-hidden="true">{emoji}</span>
+                      <Icon name={icon} size={14} />
                       <span>{key === 'all'
                         ? t('modeFilter.all', { ns: 'challenge' })
                         : t(`mode.${key}`, { ns: 'challenge', defaultValue: key === 'worldwide' ? 'Worldwide' : key === 'special' ? 'Special' : key })}</span>
@@ -6385,12 +6389,12 @@ export default function App() {
                 {/* Type sub-filter - Food / Place / Culture / Help */}
                 <div className="challenge-type-chips" role="tablist" aria-label={t('typeFilter.label', { ns: 'challenge' })}>
                   {[
-                    { key: 'all',     emoji: '✨' },
-                    { key: 'food',    emoji: '🍜' },
-                    { key: 'place',   emoji: '📍' },
-                    { key: 'culture', emoji: '🎭' },
-                    { key: 'help',    emoji: '🤪' },
-                  ].map(({ key, emoji }) => (
+                    { key: 'all',     icon: 'sparkles-outline' },
+                    { key: 'food',    icon: CHALLENGE_TYPE_ICONS.food },
+                    { key: 'place',   icon: CHALLENGE_TYPE_ICONS.place },
+                    { key: 'culture', icon: CHALLENGE_TYPE_ICONS.culture },
+                    { key: 'help',    icon: CHALLENGE_TYPE_ICONS.help },
+                  ].map(({ key, icon }) => (
                     <button
                       key={key}
                       type="button"
@@ -6399,7 +6403,7 @@ export default function App() {
                       className={`challenge-type-chip${challengeTypeFilter === key ? ' challenge-type-chip--active' : ''}`}
                       onClick={() => setChallengeTypeFilter(key)}
                     >
-                      <span aria-hidden="true">{emoji}</span>
+                      <Icon name={icon} size={14} />
                       <span>{key === 'all'
                         ? t('typeFilter.all', { ns: 'challenge' })
                         : t(`tp.${key}`, { ns: 'challenge' })}</span>
@@ -6442,7 +6446,7 @@ export default function App() {
                 style={{ background: 'rgba(255,122,60,0.14)', color: '#FF7A3C', borderColor: 'rgba(255,122,60,0.30)' }}
                 onClick={() => { setShowChallengesDrawer(false); openCreateChallenge() }}
               >
-                🔥 {t('createCta', { ns: 'challenge' })}
+                <Icon name="flame-outline" size={18} /> {t('createCta', { ns: 'challenge' })}
               </button>
             </div>
           )}
@@ -6494,8 +6498,8 @@ export default function App() {
           { key: 'regular', label: badgeLabel('regular') },
           { key: 'host',    label: badgeLabel('host')    },
         ]
-        const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${vibeLabel(k)}` }))
-        const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, label: `${v.emoji} ${t(`mode.${k}.label`, { ns: 'common' })}` }))
+        const VIBE_FILTER_OPTIONS = Object.entries(VIBE_META).map(([k, v]) => ({ key: k, icon: v.icon, label: vibeLabel(k) }))
+        const MODE_FILTER_OPTIONS = Object.entries(MODE_META).map(([k, v]) => ({ key: k, icon: v.icon, label: t(`mode.${k}.label`, { ns: 'common' }) }))
 
         // Enrich HERE NOW users with badge/vibe from crew data (WS presence has no badges).
         // CityMember is now UserDTO with badges[], so we derive primaryBadge/contextBadge from it.
@@ -6558,7 +6562,7 @@ export default function App() {
                 </span>
                 <div className="people-drawer-meta">
                   {user.mode && MODE_META[user.mode] && (
-                    <span className={`vibe-badge vibe-badge--${user.mode}`}>{MODE_META[user.mode].emoji}</span>
+                    <span className={`vibe-badge vibe-badge--${user.mode}`}><Icon name={MODE_META[user.mode].icon} size={12} /></span>
                   )}
                   {user.primaryBadge
                     ? <span className={`badge-pill badge-pill--${user.primaryBadge.key}`}>{badgeLabel(user.primaryBadge.key)}</span>
@@ -6570,7 +6574,7 @@ export default function App() {
                     <span className={`badge-pill badge-pill--${user.contextBadge.key}`}>{badgeLabel(user.contextBadge.key)}</span>
                   )}
                   {user.vibe && VIBE_META[user.vibe] && (
-                    <span className="vibe-badge">{VIBE_META[user.vibe].emoji} {vibeLabel(user.vibe)}</span>
+                    <span className="vibe-badge"><Icon name={VIBE_META[user.vibe].icon} size={12} /> {vibeLabel(user.vibe)}</span>
                   )}
                 </div>
               </div>
@@ -6609,11 +6613,11 @@ export default function App() {
               <div className="people-drawer-content">
                 <span className="people-drawer-name">{m.displayName}</span>
                 <div className="people-drawer-meta">
-                  {m.mode && MODE_META[m.mode] && <span className={`vibe-badge vibe-badge--${m.mode}`}>{MODE_META[m.mode].emoji}</span>}
+                  {m.mode && MODE_META[m.mode] && <span className={`vibe-badge vibe-badge--${m.mode}`}><Icon name={MODE_META[m.mode].icon} size={12} /></span>}
                   {(m.badges ?? []).map(k => (
                     <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                   ))}
-                  {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {vibeLabel(m.vibe)}</span>}
+                  {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge"><Icon name={VIBE_META[m.vibe].icon} size={12} /> {vibeLabel(m.vibe)}</span>}
                 </div>
               </div>
             </div>
@@ -6638,7 +6642,7 @@ export default function App() {
                     <button key={opt.key}
                       className={`here-chip${filterBadge === opt.key ? ' here-chip--on' : ''}`}
                       onClick={() => setFilterBadge(v => v === opt.key ? null : opt.key)}
-                    >{opt.label}</button>
+                    >{opt.icon && <><Icon name={opt.icon} size={12} />{' '}</>}{opt.label}</button>
                   ))}
                 </div>
               </div>
@@ -6649,7 +6653,7 @@ export default function App() {
                     <button key={opt.key}
                       className={`here-chip${filterVibe === opt.key ? ' here-chip--on' : ''}`}
                       onClick={() => setFilterVibe(v => v === opt.key ? null : opt.key)}
-                    >{opt.label}</button>
+                    >{opt.icon && <><Icon name={opt.icon} size={12} />{' '}</>}{opt.label}</button>
                   ))}
                 </div>
               </div>
@@ -6660,7 +6664,7 @@ export default function App() {
                     <button key={opt.key}
                       className={`here-chip${filterMode === opt.key ? ` here-chip--on-${opt.key}` : ''}`}
                       onClick={() => setFilterMode(v => v === opt.key ? null : opt.key)}
-                    >{opt.label}</button>
+                    >{opt.icon && <><Icon name={opt.icon} size={12} />{' '}</>}{opt.label}</button>
                   ))}
                 </div>
               </div>
@@ -6685,7 +6689,7 @@ export default function App() {
               {legends.length > 0 && (
                 <>
                   <div className="here-section-header here-section-header--legends" style={{ marginTop: 20 }}>
-                    👑 {t('here.legends')}
+                    <Icon name="ribbon-outline" size={14} /> {t('here.legends')}
                     <span className="here-legends-hook">{t('here.legendsSub')}</span>
                   </div>
                   {legends.map(m => {
@@ -6706,11 +6710,11 @@ export default function App() {
                             {(m.badges ?? []).map(k => (
                               <span key={k} className={`badge-pill badge-pill--${k}`}>{badgeLabel(k)}</span>
                             ))}
-                            {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge">{VIBE_META[m.vibe].emoji} {vibeLabel(m.vibe)}</span>}
+                            {m.vibe && VIBE_META[m.vibe] && <span className="vibe-badge"><Icon name={VIBE_META[m.vibe].icon} size={12} /> {vibeLabel(m.vibe)}</span>}
                           </div>
                           {m.ambassadorPicks && (() => {
                             const first = m.ambassadorPicks.tip ?? m.ambassadorPicks.restaurant ?? m.ambassadorPicks.spot ?? m.ambassadorPicks.story
-                            return first ? <span className="legend-pick-preview">💡 {first}</span> : null
+                            return first ? <span className="legend-pick-preview"><Icon name="bulb-outline" size={12} /> {first}</span> : null
                           })()}
                         </div>
                       </div>
@@ -6721,7 +6725,7 @@ export default function App() {
 
               {/* ── Section 3: City crew ── */}
               <div className="here-section-header" style={{ marginTop: 20 }}>
-                🏙️ {t('here.cityCrew')}
+                <Icon name="people-outline" size={14} /> {t('here.cityCrew')}
               </div>
               {crewLoading && crewMembers.length === 0
                 ? <p className="here-section-empty">{t('loading', { ns: 'common' })}</p>
@@ -7168,9 +7172,9 @@ export default function App() {
           <div className="modal-panel going-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <span className="modal-title">
-                👥 {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} {membersNoun === 'in this hangout' ? t('goingModal.inThisHangout') : t('goingModal.going')}
+                <Icon name="people-outline" size={14} /> {goingList.length || (activeEvent && (eventParticipants[activeEvent.id] ?? 0))} {membersNoun === 'in this hangout' ? t('goingModal.inThisHangout') : t('goingModal.going')}
               </span>
-              <button className="going-modal-close" onClick={() => setShowGoingModal(false)}>✕</button>
+              <button className="going-modal-close" onClick={() => setShowGoingModal(false)} aria-label={t('close', { ns: 'common', defaultValue: 'Close' })}><Icon name="close" size={18} /></button>
             </div>
             <div className="going-modal-body">
               {goingListLoading ? (
@@ -7201,7 +7205,7 @@ export default function App() {
                           <div className="people-drawer-meta">
                             {badgeKey && <span className={`badge-pill badge-pill--${badgeKey}`}>{badgeLabel(badgeKey)}</span>}
                             {p.vibe && VIBE_META[p.vibe] && (
-                              <span className="vibe-badge">{VIBE_META[p.vibe].emoji} {vibeLabel(p.vibe)}</span>
+                              <span className="vibe-badge"><Icon name={VIBE_META[p.vibe].icon} size={12} /> {vibeLabel(p.vibe)}</span>
                             )}
                           </div>
                         )}
@@ -7369,12 +7373,12 @@ export default function App() {
                 openCreateChallenge()
               }}
             >
-              <span className="create-chooser-icon">🔥</span>
+              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="flame-outline" size={26} /></span>
               <span className="create-chooser-label">
                 <strong>{t('create.challengeTitle')}</strong>
                 <span>{t('create.challengeSub')}</span>
               </span>
-              <span className="create-chooser-arrow">→</span>
+              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
             </button>
             {HANGOUTS_ENABLED && (
             <button
@@ -7384,24 +7388,24 @@ export default function App() {
                 openCreateHangout()
               }}
             >
-              <span className="create-chooser-icon">🗣️</span>
+              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="hand-left-outline" size={26} /></span>
               <span className="create-chooser-label">
                 <strong>{t('create.hangoutTitle')}</strong>
                 <span>{t('create.hangoutSub')}</span>
               </span>
-              <span className="create-chooser-arrow">→</span>
+              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
             </button>
             )}
             <button
               className="create-chooser-option"
               onClick={() => { setShowCreateChooser(false); openCreateEvent() }}
             >
-              <span className="create-chooser-icon">🎉</span>
+              <span className="create-chooser-icon" style={{ color: 'var(--primary-text)' }}><Icon name="calendar-outline" size={26} /></span>
               <span className="create-chooser-label">
                 <strong>{t('create.eventTitle')}</strong>
                 <span>{t('create.eventSub')}</span>
               </span>
-              <span className="create-chooser-arrow">→</span>
+              <span className="create-chooser-arrow"><Icon name="chevron-forward" size={18} /></span>
             </button>
           </div>
         </div>
@@ -7588,7 +7592,7 @@ export default function App() {
       {/* Guest got @mentioned while online - discreet, non-blocking signup nudge. */}
       {mentionNudge && !account && (
         <div className="mention-nudge" role="status">
-          <span className="mention-nudge-text">👀 You're getting mentioned! Create an account so you never miss it.</span>
+          <span className="mention-nudge-text">You're getting mentioned! Create an account so you never miss it.</span>
           <button className="mention-nudge-btn" onClick={() => { setMentionNudge(false); setShowAuthScreenTab('signup'); setShowAuthScreen(true) }}>Sign up</button>
           <button className="mention-nudge-dismiss" onClick={() => setMentionNudge(false)} aria-label="Dismiss">×</button>
         </div>
