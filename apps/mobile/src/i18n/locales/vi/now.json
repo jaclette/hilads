@@ -14,9 +14,9 @@
   "hangoutTalk": "Tạo tụ tập và khiến cả thành phố trò chuyện",
   "startHangout": "Tạo tụ tập 🗣️",
   "inspiration": {
-    "heading": "💡 Ý tưởng tụ tập",
+    "heading": "Ý tưởng tụ tập",
     "sub": "Xem dân địa phương nơi khác tổ chức gì - lấy cảm hứng",
-    "openYours": "🔥 Tạo cái của bạn ở {{city}}",
+    "openYours": "Tạo cái của bạn ở {{city}}",
     "by": "bởi {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Tạo một thử thách",
     "challengeSub": "Người địa phương & du khách - kết nối qua một thử thách"
   },
-  "filterChallenges": "🔥 Thử thách",
+  "filterChallenges": "Thử thách",
   "challengesSection": "Thử thách",
   "seeAllChallenges": "Xem tất cả →",
   "noChallenges": "Chưa có thử thách nào",

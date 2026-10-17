@@ -1,22 +1,22 @@
 {
   "nowTitle": "الآن",
-  "filterEvents": "🎉 فعاليات محلية",
+  "filterEvents": "فعاليات محلية",
   "filterHangouts": "🗣️ لقاءات",
-  "publicEventsSection": "🎫 فعاليات عامة",
+  "publicEventsSection": "فعاليات عامة",
   "accountWelcome": {
-    "title": "تهانينا، {{username}}! 🎉",
-    "subtitle": "حسابك جاهز - إليك ما يمكنك فعله الآن 👇",
-    "f1": "🎉 ابدأ لقاءً واجمع الناس الآن",
-    "f2": "📅 نظّم فعالية في مدينتك",
-    "f3": "💬 أرسل رسالة خاصة لأي شخص",
-    "f4": "📍 شاهد من حولك، مباشرةً",
-    "f5": "🤝 تواصل مع السكان المحليين والمسافرين",
-    "fc1": "🔥 تحدَّ سكان مدينتك",
-    "fc2": "🌍 تحدَّ مدينة أخرى حول العالم",
-    "cta": "هيا بنا 🚀"
+    "title": "تهانينا، {{username}}!",
+    "subtitle": "حسابك جاهز - إليك ما يمكنك فعله الآن",
+    "f1": "ابدأ لقاءً واجمع الناس الآن",
+    "f2": "نظّم فعالية في مدينتك",
+    "f3": "أرسل رسالة خاصة لأي شخص",
+    "f4": "شاهد من حولك، مباشرةً",
+    "f5": "تواصل مع السكان المحليين والمسافرين",
+    "fc1": "تحدَّ سكان مدينتك",
+    "fc2": "تحدَّ مدينة أخرى حول العالم",
+    "cta": "هيا بنا"
   },
   "share": {
-    "title": "شارك شيئًا 👀",
+    "title": "شارك شيئًا",
     "snap": "التقط صورة",
     "snapDesc": "التقط صورة أو ارفعها",
     "spot": "حدّد موقعك",
@@ -28,7 +28,7 @@
     "hiNowDesc": "بمزاج لشيء الآن؟ قلها"
   },
   "locationPicker": {
-    "title": "أين أنت؟ 👀",
+    "title": "أين أنت؟",
     "search": "ابحث عن عنوان أو مكان",
     "moveHint": "حرّك الخريطة للضبط",
     "noResults": "لم يتم العثور على أماكن",
@@ -53,7 +53,7 @@
   "notifications": "الإشعارات",
   "messages": "الرسائل",
   "someone": "شخص ما",
-  "photoLabel": "📷 صورة",
+  "photoLabel": "صورة",
   "openSettings": "فتح الإعدادات",
   "composer": {
     "placeholderDefault": "اكتب رسالة…",
@@ -72,10 +72,10 @@
     "locPermSettings": "يُرجى تفعيل الموقع في الإعدادات ← Hilads ← الموقع.",
     "locNeededTitle": "الموقع مطلوب",
     "locNeededBody": "اسمح بالوصول إلى الموقع لمشاركة مكانك.",
-    "placeholderCity": "ألقِ التحيّة على مدينتك 👋",
-    "placeholderHangout": "أخبرهم أنك معهم 🙌",
-    "placeholderEvent": "تحدّث مع الحاضرين 🎉",
-    "placeholderChallenge": "شجّعهم أو شارك نصيحتك 🔥",
+    "placeholderCity": "ألقِ التحيّة على مدينتك",
+    "placeholderHangout": "أخبرهم أنك معهم",
+    "placeholderEvent": "تحدّث مع الحاضرين",
+    "placeholderChallenge": "شجّعهم أو شارك نصيحتك",
     "endedEvent": "انتهت هذه الفعالية",
     "closedChallenge": "هذا التحدي مغلق",
     "send": "إرسال",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ جديد",
-    "regular": "😎 من الطاقم",
-    "host": "👑 أسطورة"
+    "ghost": "Ghost",
+    "fresh": "جديد",
+    "regular": "من الطاقم",
+    "host": "أسطورة"
   },
   "vibe": {
     "party": "حفلة",
@@ -106,14 +106,14 @@
     "food": "طعام",
     "chill": "استرخاء"
   },
-  "live": "LIVE",
-  "activeNow": "● نشط الآن",
+  "live": "Live",
+  "activeNow": "نشط الآن",
   "replies_zero": "💬 لا ردود",
-  "replies_one": "💬 رد واحد",
+  "replies_one": "رد واحد",
   "replies_two": "💬 ردّان",
   "replies_few": "💬 {{count}} ردود",
   "replies_many": "💬 {{count}} ردًّا",
-  "replies_other": "💬 {{count}} رد",
+  "replies_other": "{{count}} رد",
   "noReplies": "لا ردود",
   "noRepliesFirst": "لا ردود بعد - كن أول من يرد",
   "weather": {
@@ -153,15 +153,15 @@
   "hiLocalTitle": "👋 Hi Local",
   "past": "السابقة",
   "sayHi": "ألقِ التحية على {{name}}",
-  "hostWaiting": "بانتظار أول تحية 👋",
+  "hostWaiting": "بانتظار أول تحية",
   "shareToCityError": "تعذّرت المشاركة في مدينتك. حاول مجددًا.",
   "shareToWorldError": "تعذّرت المشاركة في العالم. حاول مرة أخرى.",
   "placedBanner": "وضعناك في {{city}} — يمكنك تغييرها من الأعلى.",
   "shareCta": {
     "leaderboard": "عرض المتصدرين",
     "challenge": "عرض التحدي",
-    "event": "🎉 عرض Hi plan",
-    "topic": "🗣️ عرض Hi now"
+    "event": "عرض Hi plan",
+    "topic": "عرض Hi now"
   },
   "delete": "حذف",
   "deleteConversationTitle": "حذف المحادثة؟",

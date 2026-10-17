@@ -104,8 +104,8 @@
   "statusInProgress": "Challenge ongoing",
   "statusAccomplished": "Challenge tapos",
   "openBadge": "Bukas",
-  "forLocals": "🏠 Para sa mga local",
-  "forExplorers": "🧳 Para sa mga biyahero",
+  "forLocals": "Para sa mga local",
+  "forExplorers": "Para sa mga biyahero",
   "validation": {
     "label": "Paano i-validate?",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "Hindi mahanap ang thread",
     "empty": "Ikaw ang maunang magsalita.",
-    "emptyIntl": "Mag-hi 👋 - kapag nakuha mo, padala ka ng 📸.",
+    "emptyIntl": "Mag-hi - kapag nakuha mo, padala ka ng litrato.",
     "cancel": {
       "creatorTitle": "Kanselahin ang pagsali na ito?",
       "acceptorTitle": "I-drop ang challenge na ito?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Mag-propose ng petsa 📅",
+    "proposeCta": "Mag-propose ng petsa",
     "counterCta": "Counter-propose",
     "editCta": "Palitan ang petsa",
     "you": "ka",
@@ -237,13 +237,13 @@
     "tomorrow": "Bukas",
     "picker": {
       "title": "Kailan kayo magkikita?",
-      "whenLabel": "KAILAN",
-      "timeLabel": "START TIME",
-      "whereLabel": "SAAN (OPTIONAL)",
+      "whenLabel": "Kailan",
+      "timeLabel": "Start time",
+      "whereLabel": "Saan (optional)",
       "wherePlaceholder": "hal. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Ibang petsa",
       "otherTime": "Ibang oras",
-      "endTimeLabel": "END TIME",
+      "endTimeLabel": "End time",
       "endAfterStart": "Ang end time ay dapat pagkatapos ng start."
     },
     "err": {
@@ -262,7 +262,7 @@
       "body": "Mama-mark ni {{name}} kung kumusta."
     },
     "approved": {
-      "title": "Tapos na ang challenge 🎉"
+      "title": "Tapos na ang challenge"
     },
     "rejected": {
       "title": "Sarado na ang challenge"
@@ -306,7 +306,7 @@
       "meetSoon": "See you on {{date}}",
       "creatorVerdict": "Kumusta kay {{name}}?",
       "acceptorWaitingVerdict": "Hinihintay si {{name}} mag-confirm",
-      "accomplished": "Tapos na ang challenge 🎉",
+      "accomplished": "Tapos na ang challenge",
       "closed": "Sarado na ang challenge",
       "submitProof": "Ipadala ang patunay",
       "waitingForProof": "Naghihintay ng patunay",
@@ -373,7 +373,7 @@
   },
   "byCreator": "ni {{name}}",
   "inspiration": {
-    "heading": "💡 Mga ideya ng challenge",
+    "heading": "Mga ideya ng challenge",
     "sub": "Kung ano ang nilulunsad ng mga local sa ibang lugar - magpa-inspire",
     "firstLocal": "🌱 Maging unang local sa {{city}}",
     "firstLocalSub": "Maglunsad ng challenge · tatanggapin ng mga dumarating na biyahero",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Pribado ang challenge na ito",
+      "title": "Pribado ang challenge na ito",
       "body": "Tanging ang gumawa at tumanggap lang ang makakakita ng usapan."
     }
   },
   "members": {
     "title": "Nasa channel",
     "countIn": "{{count}} sa channel",
-    "seeAll": "Tingnan lahat →",
+    "seeAll": "Tingnan lahat",
     "empty": "Wala pang sumali - ikaw ang mauna.",
     "kickCta": "Tanggalin",
     "kickAria": "Tanggalin si {{name}} sa channel",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Pampubliko",
-      "friends": "👯 Mga kaibigan",
-      "private": "🔒 Pribado"
+      "public": "Pampubliko",
+      "friends": "Mga kaibigan",
+      "private": "Pribado"
     },
     "label": "Sino ang makakakita nito?",
     "public": "🌍 Pampubliko",
@@ -532,7 +532,7 @@
     "errSubmit": "Hindi na-submit ang rating mo. Subukan ulit."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "Maghanap ng mga lungsod…",
       "empty": "Walang tumutugmang lungsod."
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Ibahagi ang rank ko",
       "periodMonth": "ngayong buwan",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "puntos",
     "subtitle": {
-      "accepted": "Tinanggap ang challenge mo 🤝",
-      "date_locked": "Set na ang date - tara 🗓️",
-      "meetup": "Mission accomplished 🎉",
-      "debrief": "Mission accomplished 🎉",
-      "ghost": "Sa susunod ulit 👻",
-      "default": "Umaakyat ka sa ranking 🚀",
-      "meet_bonus": "Na-unlock ang meet bonus 🤝",
-      "challenge_created": "Naglunsad ka ng challenge 🎯"
+      "accepted": "Tinanggap ang challenge mo",
+      "date_locked": "Set na ang date - tara",
+      "meetup": "Mission accomplished",
+      "debrief": "Mission accomplished",
+      "ghost": "Sa susunod ulit",
+      "default": "Umaakyat ka sa ranking",
+      "meet_bonus": "Na-unlock ang meet bonus",
+      "challenge_created": "Naglunsad ka ng challenge"
     },
     "rank": {
       "city": "#{{rank}} sa {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} ang #{{rank}} sa mga lungsod",
       "citiesBeyond": "{{city}} labas sa top {{topN}} na lungsod"
     },
-    "cta": "Tara ⚡",
+    "cta": "Tara",
     "kindShort": {
       "accepted": "Tinanggap",
       "date_locked": "Set na ang date",
@@ -651,8 +651,8 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welcome! Mag-chat ka nang malaya, walang sign-up.",
-    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo →"
+    "title": "Welcome! Mag-chat ka nang malaya, walang sign-up.",
+    "cta": "Gusto kunin ang challenge na ito? Mag-sign up sa 3 segundo"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "Nanalo si {{name}}",
-      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod 💪"
+      "body": "Magandang kuha! Kumita ka ng {{points}} sa pagsali — subukan ulit sa susunod"
     },
     "present": {
       "title": "Dumalo ka!",
@@ -737,7 +737,7 @@
     "checkPhotos": "Tingnan ang {{count}} larawan"
   },
   "leaveTakeon": {
-    "pill": "🚪 Umalis",
+    "pill": "Umalis",
     "confirmTitle": "Aalis sa challenge na ito?",
     "confirmBody": "Babalik sa zero ang timeline at mabubuksan muli ang challenge para sa iba. Hindi na maibabalik.",
     "confirmCta": "Umalis",

@@ -14,9 +14,9 @@
   "hangoutTalk": "Mulai nongkrong dan buat kota ramai",
   "startHangout": "Mulai nongkrong 🗣️",
   "inspiration": {
-    "heading": "💡 Ide nongkrong",
+    "heading": "Ide nongkrong",
     "sub": "Apa yang diadakan warga lokal di tempat lain - cari inspirasi",
-    "openYours": "🔥 Buat punyamu di {{city}}",
+    "openYours": "Buat punyamu di {{city}}",
     "by": "oleh {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Luncurkan tantangan",
     "challengeSub": "Local & pelancong - terhubung lewat tantangan"
   },
-  "filterChallenges": "🔥 Tantangan",
+  "filterChallenges": "Tantangan",
   "challengesSection": "Tantangan",
   "seeAllChallenges": "Lihat semua →",
   "noChallenges": "Belum ada tantangan",

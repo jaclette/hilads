@@ -14,9 +14,9 @@
   "hangoutTalk": "Lance une sortie et fais parler la ville",
   "startHangout": "Lancer une sortie 🗣️",
   "inspiration": {
-    "heading": "💡 Des idées de sorties",
+    "heading": "Des idées de sorties",
     "sub": "Ce que les locaux organisent ailleurs - inspire-toi",
-    "openYours": "🔥 Ouvre le tien à {{city}}",
+    "openYours": "Ouvre le tien à {{city}}",
     "by": "par {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -26,7 +26,7 @@
   "noCitySub": "Choisis une ville pour voir ce qui se passe.",
   "browseCities": "Parcourir les villes",
   "filterAll": "Tout",
-  "filterChallenges": "🔥 Défis",
+  "filterChallenges": "Défis",
   "challengesSection": "Défis",
   "seeAllChallenges": "Voir tout →",
   "noChallenges": "Aucun défi pour l'instant",

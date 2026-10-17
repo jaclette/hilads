@@ -14,9 +14,9 @@
   "hangoutTalk": "เริ่มนัดเจอแล้วทำให้คนทั้งเมืองพูดถึง",
   "startHangout": "เริ่มนัดเจอ 🗣️",
   "inspiration": {
-    "heading": "💡 ไอเดียนัดเจอ",
+    "heading": "ไอเดียนัดเจอ",
     "sub": "ดูว่าคนท้องถิ่นที่อื่นจัดอะไร - หาแรงบันดาลใจ",
-    "openYours": "🔥 เปิดของคุณใน {{city}}",
+    "openYours": "เปิดของคุณใน {{city}}",
     "by": "โดย {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "เริ่มชาเลนจ์",
     "challengeSub": "คนท้องถิ่นและนักเดินทาง - เชื่อมต่อกันผ่านชาเลนจ์"
   },
-  "filterChallenges": "🔥 ชาเลนจ์",
+  "filterChallenges": "ชาเลนจ์",
   "challengesSection": "ชาเลนจ์",
   "seeAllChallenges": "ดูทั้งหมด →",
   "noChallenges": "ยังไม่มีชาเลนจ์",

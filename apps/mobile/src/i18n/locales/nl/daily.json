@@ -180,7 +180,7 @@
     "withdrawBody": "Je kunt opnieuw voorstellen tot de voorstellen sluiten.",
     "status": {
       "pending": "In beoordeling",
-      "picked": "Gekozen 🎉",
+      "picked": "Gekozen",
       "not_picked": "Niet gekozen"
     },
     "statusHint": {

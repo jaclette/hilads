@@ -14,9 +14,9 @@
   "hangoutTalk": "Start a hangout and get the city talking",
   "startHangout": "Start a hangout 🗣️",
   "inspiration": {
-    "heading": "💡 Hangout ideas",
+    "heading": "Hangout ideas",
     "sub": "What locals organise elsewhere - get inspired",
-    "openYours": "🔥 Open yours in {{city}}",
+    "openYours": "Open yours in {{city}}",
     "by": "by {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -30,7 +30,7 @@
   "noCitySub": "Pick a city to see what's happening.",
   "browseCities": "Browse cities",
   "filterAll": "All",
-  "filterChallenges": "🔥 Challenges",
+  "filterChallenges": "Challenges",
   "challengesSection": "Challenges",
   "seeAllChallenges": "See all →",
   "noChallenges": "No challenges yet",

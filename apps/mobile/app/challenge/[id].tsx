@@ -1721,10 +1721,10 @@ export default function ChallengeChatScreen() {
                   accessibilityRole="button"
                 >
                   <Text style={styles.guestWelcomeText} numberOfLines={2}>
-                    {i18n.t('welcomeGuest.title', { ns: 'challenge', defaultValue: '👋 Welcome! Chat freely here - no sign-up needed.' })}
+                    {i18n.t('welcomeGuest.title', { ns: 'challenge', defaultValue: 'Welcome! Chat freely here - no sign-up needed.' })}
                   </Text>
                   <Text style={styles.guestWelcomeCta} numberOfLines={2}>
-                    {i18n.t('welcomeGuest.cta', { ns: 'challenge', defaultValue: 'Want to take this challenge? Sign up in 3 seconds →' })}
+                    {i18n.t('welcomeGuest.cta', { ns: 'challenge', defaultValue: 'Want to take this challenge? Sign up in 3 seconds' })}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity

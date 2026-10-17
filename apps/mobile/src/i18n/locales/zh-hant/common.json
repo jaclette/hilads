@@ -1,22 +1,22 @@
 {
   "nowTitle": "現在",
-  "filterEvents": "🎉 在地活動",
+  "filterEvents": "在地活動",
   "filterHangouts": "🗣️ 聚會",
-  "publicEventsSection": "🎫 公開活動",
+  "publicEventsSection": "公開活動",
   "accountWelcome": {
-    "title": "恭喜你，{{username}}！🎉",
-    "subtitle": "你的帳號已就緒——現在你可以這樣玩 👇",
-    "f1": "🎉 發起一個聚會，立刻把大家聚到一起",
-    "f2": "📅 在你的城市組織一場活動",
-    "f3": "💬 給任何人發送私訊",
-    "f4": "📍 即時查看附近有誰",
-    "f5": "🤝 結識在地人和旅行者",
-    "fc1": "🔥 向你城市裡的人發起挑戰",
-    "fc2": "🌍 向世界另一座城市發起挑戰",
-    "cta": "出發吧 🚀"
+    "title": "恭喜你，{{username}}！",
+    "subtitle": "你的帳號已就緒——現在你可以這樣玩",
+    "f1": "發起一個聚會，立刻把大家聚到一起",
+    "f2": "在你的城市組織一場活動",
+    "f3": "給任何人發送私訊",
+    "f4": "即時查看附近有誰",
+    "f5": "結識在地人和旅行者",
+    "fc1": "向你城市裡的人發起挑戰",
+    "fc2": "向世界另一座城市發起挑戰",
+    "cta": "出發吧"
   },
   "share": {
-    "title": "分享點什麼 👀",
+    "title": "分享點什麼",
     "snap": "拍張照片",
     "snapDesc": "拍攝或上傳照片",
     "spot": "分享你的位置",
@@ -28,7 +28,7 @@
     "hiNowDesc": "現在想做點什麼？說出來"
   },
   "locationPicker": {
-    "title": "你在哪裡？👀",
+    "title": "你在哪裡？",
     "search": "搜尋地址或地點",
     "moveHint": "移動地圖進行調整",
     "noResults": "找不到地點",
@@ -53,7 +53,7 @@
   "notifications": "通知",
   "messages": "訊息",
   "someone": "某人",
-  "photoLabel": "📷 照片",
+  "photoLabel": "照片",
   "openSettings": "開啟設定",
   "composer": {
     "placeholderDefault": "傳個訊息…",
@@ -72,10 +72,10 @@
     "locPermSettings": "請在設定 → Hilads → 位置中開啟定位。",
     "locNeededTitle": "需要位置資訊",
     "locNeededBody": "請允許存取位置，才能分享你的地點。",
-    "placeholderCity": "和你的城市打個招呼 👋",
-    "placeholderHangout": "告訴大家你來了 🙌",
-    "placeholderEvent": "和參加的人聊聊 🎉",
-    "placeholderChallenge": "為他們加油，或分享你的小提示 🔥",
+    "placeholderCity": "和你的城市打個招呼",
+    "placeholderHangout": "告訴大家你來了",
+    "placeholderEvent": "和參加的人聊聊",
+    "placeholderChallenge": "為他們加油，或分享你的小提示",
     "endedEvent": "此活動已結束",
     "closedChallenge": "此挑戰已關閉",
     "send": "傳送",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ 新人",
-    "regular": "😎 熟客",
-    "host": "👑 傳奇"
+    "ghost": "Ghost",
+    "fresh": "新人",
+    "regular": "熟客",
+    "host": "傳奇"
   },
   "vibe": {
     "party": "派對",
@@ -106,10 +106,10 @@
     "food": "美食",
     "chill": "放鬆"
   },
-  "live": "LIVE",
-  "activeNow": "● 目前活躍",
-  "replies_one": "💬 {{count}} 則回覆",
-  "replies_other": "💬 {{count}} 則回覆",
+  "live": "Live",
+  "activeNow": "目前活躍",
+  "replies_one": "{{count}} 則回覆",
+  "replies_other": "{{count}} 則回覆",
   "noReplies": "沒有回覆",
   "noRepliesFirst": "還沒有回覆 - 當第一個",
   "weather": {
@@ -149,15 +149,15 @@
   "hiLocalTitle": "👋 Hi Local",
   "past": "已結束",
   "sayHi": "向 {{name}} 打招呼",
-  "hostWaiting": "等待第一聲招呼 👋",
+  "hostWaiting": "等待第一聲招呼",
   "shareToCityError": "無法分享到你的城市，請重試。",
   "shareToWorldError": "無法分享到世界頻道，請重試。",
   "placedBanner": "已把你放在{{city}} —— 可在上方變更。",
   "shareCta": {
     "leaderboard": "查看排行榜",
     "challenge": "查看挑戰",
-    "event": "🎉 查看 Hi plan",
-    "topic": "🗣️ 查看 Hi now"
+    "event": "查看 Hi plan",
+    "topic": "查看 Hi now"
   },
   "delete": "刪除",
   "deleteConversationTitle": "刪除對話？",

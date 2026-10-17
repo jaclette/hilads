@@ -393,6 +393,7 @@ export default function EventDetailScreen() {
               <Button
                 variant="secondary"
                 size="sm"
+                icon="create-outline"
                 label={t('edit')}
                 onPress={() => router.push(`/event/${event.id}/edit` as never)}
                 accessibilityLabel={t('editEvent')}

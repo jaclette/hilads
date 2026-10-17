@@ -104,8 +104,8 @@
   "statusInProgress": "チャレンジ進行中",
   "statusAccomplished": "チャレンジ達成",
   "openBadge": "オープン",
-  "forLocals": "🏠 ローカル向け",
-  "forExplorers": "🧳 旅行者向け",
+  "forLocals": "ローカル向け",
+  "forExplorers": "旅行者向け",
   "validation": {
     "label": "どう認証する？",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "スレッドが見つかりません",
     "empty": "最初に何か書いてみよう。",
-    "emptyIntl": "ハロー 👋 - クリアしたら 📸 を送って。",
+    "emptyIntl": "ハロー - クリアしたら写真を送って。",
     "cancel": {
       "creatorTitle": "この参加をキャンセルしますか?",
       "acceptorTitle": "このチャレンジを辞退しますか?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "日程を提案する 📅",
+    "proposeCta": "日程を提案する",
     "counterCta": "対案を出す",
     "editCta": "日付を変更",
     "you": "あなた",
@@ -262,7 +262,7 @@
       "body": "{{name}}さんが結果をつけます。"
     },
     "approved": {
-      "title": "チャレンジ達成 🎉"
+      "title": "チャレンジ達成"
     },
     "rejected": {
       "title": "チャレンジを終了しました"
@@ -306,7 +306,7 @@
       "meetSoon": "{{date}}に会いましょう",
       "creatorVerdict": "{{name}}さんとはどうでしたか?",
       "acceptorWaitingVerdict": "{{name}}さんの確認を待っています",
-      "accomplished": "チャレンジ達成 🎉",
+      "accomplished": "チャレンジ達成",
       "closed": "チャレンジを終了しました",
       "submitProof": "証拠を提出",
       "waitingForProof": "証拠待ち",
@@ -373,7 +373,7 @@
   },
   "byCreator": "{{name}} さん",
   "inspiration": {
-    "heading": "💡 チャレンジのアイデア",
+    "heading": "チャレンジのアイデア",
     "sub": "他の街のローカルが何を始めてるか見て - ヒントに",
     "firstLocal": "🌱 {{city}} で最初のローカルになろう",
     "firstLocalSub": "チャレンジを出そう · 来た旅行者が受けてくれる",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 このチャレンジは非公開です",
+      "title": "このチャレンジは非公開です",
       "body": "作成者と挑戦者だけが会話を見られます。"
     }
   },
   "members": {
     "title": "チャンネル内",
     "countIn": "{{count}}人がチャンネルにいます",
-    "seeAll": "すべて見る →",
+    "seeAll": "すべて見る",
     "empty": "まだ誰も参加していません - 最初の一人になろう。",
     "kickCta": "削除",
     "kickAria": "{{name}}をチャンネルから削除",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 公開",
-      "friends": "👯 友達",
-      "private": "🔒 非公開"
+      "public": "公開",
+      "friends": "友達",
+      "private": "非公開"
     },
     "label": "誰が見られますか？",
     "public": "🌍 公開",
@@ -532,7 +532,7 @@
     "errSubmit": "評価を送信できませんでした。もう一度お試しください。"
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "都市を検索…",
       "empty": "一致する都市がありません。"
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "順位をシェア",
       "periodMonth": "今月",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "ポイント",
     "subtitle": {
-      "accepted": "チャレンジが受けられました 🤝",
-      "date_locked": "日程が決まりました - 行こう 🗓️",
-      "meetup": "ミッション達成 🎉",
-      "debrief": "ミッション達成 🎉",
-      "ghost": "次回頑張ろう 👻",
-      "default": "ランキングを駆け上がってる 🚀",
-      "meet_bonus": "直接会うボーナス獲得 🤝",
-      "challenge_created": "チャレンジを作成しました 🎯"
+      "accepted": "チャレンジが受けられました",
+      "date_locked": "日程が決まりました - 行こう",
+      "meetup": "ミッション達成",
+      "debrief": "ミッション達成",
+      "ghost": "次回頑張ろう",
+      "default": "ランキングを駆け上がってる",
+      "meet_bonus": "直接会うボーナス獲得",
+      "challenge_created": "チャレンジを作成しました"
     },
     "rank": {
       "city": "{{city}}で {{rank}}位",
@@ -633,7 +633,7 @@
       "cities": "{{city}} は都市で #{{rank}} 位",
       "citiesBeyond": "{{city}} は都市トップ {{topN}} 圏外"
     },
-    "cta": "いこう ⚡",
+    "cta": "いこう",
     "kindShort": {
       "accepted": "参加",
       "date_locked": "日程確定",
@@ -651,8 +651,8 @@
     "total": "合計: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 ようこそ！登録なしで自由に話せます。",
-    "cta": "このチャレンジに挑戦したい？3秒で登録 →"
+    "title": "ようこそ！登録なしで自由に話せます。",
+    "cta": "このチャレンジに挑戦したい？3秒で登録"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} が優勝",
-      "body": "ナイスショット！参加で {{points}} 獲得 — 次はきっと勝てる 💪"
+      "body": "ナイスショット！参加で {{points}} 獲得 — 次はきっと勝てる"
     },
     "present": {
       "title": "参加しました！",
@@ -737,7 +737,7 @@
     "checkPhotos": "{{count}}枚の写真を見る"
   },
   "leaveTakeon": {
-    "pill": "🚪 退出",
+    "pill": "退出",
     "confirmTitle": "このチャレンジから退出しますか？",
     "confirmBody": "進行状況はゼロに戻り、チャレンジは他の人に再び開放されます。元に戻せません。",
     "confirmCta": "退出",

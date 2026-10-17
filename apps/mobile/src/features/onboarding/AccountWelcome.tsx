@@ -1,6 +1,6 @@
 /**
  * AccountWelcome - one-time congrats screen shown right after a user creates an
- * account (not on login). Friendly, emoji-forward, easy to dismiss (✕ or CTA).
+ * account (not on login). Friendly, easy to dismiss (close button or CTA).
  * Driven by the global `showAccountWelcome` flag (set in sign-up.tsx).
  */
 
@@ -24,14 +24,14 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation('common');
 
-  const features = [
-    t('accountWelcome.fc1'),   // local challenge — the primary action
-    t('accountWelcome.fc2'),   // international challenge
-    t('accountWelcome.f1'),
-    t('accountWelcome.f2'),
-    t('accountWelcome.f3'),
-    t('accountWelcome.f4'),
-    t('accountWelcome.f5'),
+  const features: { icon: React.ComponentProps<typeof Ionicons>['name']; text: string }[] = [
+    { icon: 'flame-outline',       text: t('accountWelcome.fc1') },   // local challenge — the primary action
+    { icon: 'globe-outline',       text: t('accountWelcome.fc2') },   // international challenge
+    { icon: 'chatbubbles-outline', text: t('accountWelcome.f1') },
+    { icon: 'calendar-outline',    text: t('accountWelcome.f2') },
+    { icon: 'chatbubble-outline',  text: t('accountWelcome.f3') },
+    { icon: 'location-outline',    text: t('accountWelcome.f4') },
+    { icon: 'people-outline',      text: t('accountWelcome.f5') },
   ];
 
   return (
@@ -52,7 +52,10 @@ export function AccountWelcome({ visible, username, onClose }: Props) {
 
           <View style={styles.features}>
             {features.map((f, i) => (
-              <Card key={i} style={styles.feature}><Text style={styles.featureText}>{f}</Text></Card>
+              <Card key={i} style={styles.feature}>
+                <Ionicons name={f.icon} size={20} color={colors.primaryText} />
+                <Text style={styles.featureText}>{f.text}</Text>
+              </Card>
             ))}
           </View>
         </ScrollView>
@@ -76,7 +79,7 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   title: { fontSize: 26, fontWeight: '800', color: c.text, textAlign: 'center', letterSpacing: -0.5 },
   subtitle: { fontSize: FontSizes.md, color: c.muted, textAlign: 'center', marginBottom: Spacing.sm },
   features: { alignSelf: 'stretch', gap: Spacing.md, marginTop: Spacing.sm },
-  feature: { paddingVertical: 14, paddingHorizontal: 16 },
-  featureText: { fontSize: FontSizes.md, fontWeight: '500', color: c.text, lineHeight: 24 },
+  feature: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16 },
+  featureText: { flex: 1, fontSize: FontSizes.md, fontWeight: '500', color: c.text, lineHeight: 24 },
   footer: { paddingHorizontal: Spacing.xl, paddingTop: Spacing.md },
 });

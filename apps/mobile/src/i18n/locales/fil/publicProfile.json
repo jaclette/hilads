@@ -5,19 +5,19 @@
   "loadError": "Hindi ma-load ang profile.",
   "goBack": "Bumalik",
   "microcopy": {
-    "ghost": "Tumitingin lang 👀",
-    "fresh": "Kararating lang 👶",
+    "ghost": "Tumitingin lang",
+    "fresh": "Kararating lang",
     "regular": "Madalas dumalo",
     "local": "Kilala ang lungsod",
-    "host": "Siya ang nagpapagana 🔥"
+    "host": "Siya ang nagpapagana"
   },
   "vibeCaption": {
-    "party": "Lagi nang handa mag-party 🎉",
+    "party": "Lagi nang handa mag-party",
     "board_games": "Board Games gabi-gabi",
     "coffee": "Pinakamagagandang usapan habang nagkakape",
-    "music": "Ang buhay ay isang playlist 🎶",
+    "music": "Ang buhay ay isang playlist",
     "food": "Kain muna, tanong mamaya",
-    "chill": "Chill lang lagi 😌"
+    "chill": "Chill lang lagi"
   },
   "localIn": "Local sa {{city}}",
   "exploringIn": "Nag-eeksplora sa {{city}}",
@@ -25,7 +25,7 @@
   "from": "Mula sa",
   "age": "Edad",
   "tabFriends": "Mga Kaibigan",
-  "tabPicks": "Mga Pick sa Lungsod 👑",
+  "tabPicks": "Mga Pick sa Lungsod",
   "noHangouts": "Wala pang tambayan",
   "noEvents": "Wala pang event",
   "noFriends": "Wala pang kaibigan",
@@ -33,18 +33,18 @@
   "vibeScore": "{{score}} vibe score",
   "vibeBasis_one": "batay sa {{count}} vibe",
   "vibeBasis_other": "batay sa {{count}} vibes",
-  "updateNote": "✏️ I-update ang iyong note ({{rating}}★)",
-  "leaveNote": "⭐ Mag-iwan ng note",
+  "updateNote": "I-update ang iyong note ({{rating}}★)",
+  "leaveNote": "Mag-iwan ng note",
   "vibePlaceholder": "Magsabi ng maganda… (opsyonal)",
-  "sendNote": "Ipadala ang note ✨",
+  "sendNote": "Ipadala ang note",
   "sending": "Ipinapadala…",
   "noNotesTitle": "Wala pang note",
-  "noNotesSub": "Maging una para mag-iwan ng note ✨",
+  "noNotesSub": "Maging una para mag-iwan ng note",
   "picks": {
-    "restaurant": "PABORITONG RESTAURANT",
-    "spot": "TAGONG TAMBAYAN",
-    "tip": "LOCAL TIP",
-    "story": "KWENTO"
+    "restaurant": "Paboritong restaurant",
+    "spot": "Tagong tambayan",
+    "tip": "Local tip",
+    "story": "Kwento"
   },
   "message": "Mensahe",
   "friend": "Kaibigan",
@@ -66,7 +66,7 @@
   "blocking": "Bina-block…",
   "ghostName": "Ghost",
   "visiting": "Bumibisita sa {{city}}",
-  "ghostNote": "Lumulutang dito bilang Ghost 👻",
+  "ghostNote": "Lumulutang dito bilang Ghost",
   "tabChallenges": "Mga Challenge",
   "noChallenges": "Walang challenge pa",
   "tabVibes": "Vibes"

@@ -14,9 +14,9 @@
   "hangoutTalk": "एक मुलाक़ात शुरू करें और शहर को बातों में लगाएं",
   "startHangout": "एक मुलाक़ात शुरू करें 🗣️",
   "inspiration": {
-    "heading": "💡 मुलाक़ात के आइडिया",
+    "heading": "मुलाक़ात के आइडिया",
     "sub": "दूसरी जगहों के लोकल क्या आयोजित करते हैं - प्रेरणा लें",
-    "openYours": "🔥 {{city}} में अपना खोलो",
+    "openYours": "{{city}} में अपना खोलो",
     "by": "{{name}} · {{city}} द्वारा",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "चैलेंज लॉन्च करें",
     "challengeSub": "लोकल्स और यात्रियों - एक चैलेंज से जुड़ें"
   },
-  "filterChallenges": "🔥 चैलेंजेस",
+  "filterChallenges": "चैलेंजेस",
   "challengesSection": "चैलेंजेस",
   "seeAllChallenges": "सब देखें →",
   "noChallenges": "अभी कोई चैलेंज नहीं",

@@ -85,8 +85,8 @@
   "statusInProgress": "Challenge in progress",
   "statusAccomplished": "Challenge nailed",
   "openBadge": "Open",
-  "forLocals": "🏠 For locals",
-  "forExplorers": "🧳 For travelers",
+  "forLocals": "For locals",
+  "forExplorers": "For travelers",
   "validation": {
     "label": "How to validate?",
     "meet": {
@@ -116,7 +116,7 @@
   "noun": "Challenge",
   "byCreator": "by {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge ideas",
+    "heading": "Challenge ideas",
     "sub": "What locals launch elsewhere - get inspired",
     "firstLocal": "🌱 Be the first local in {{city}}",
     "firstLocalSub": "Drop a challenge · arriving travelers will take it on",
@@ -239,7 +239,7 @@
     "errGeneric": "Couldn't hop in - try again."
   },
   "leaveTakeon": {
-    "pill": "🚪 Leave",
+    "pill": "Leave",
     "confirmTitle": "Leave this challenge?",
     "confirmBody": "The timeline resets to zero and the challenge reopens for others. This can't be undone.",
     "confirmCta": "Leave",
@@ -254,14 +254,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 This challenge is private",
+      "title": "This challenge is private",
       "body": "Only the creator and the taker can see the conversation."
     }
   },
   "members": {
     "title": "In the channel",
     "countIn": "{{count}} in the channel",
-    "seeAll": "See all →",
+    "seeAll": "See all",
     "empty": "Nobody's joined yet - be the first.",
     "kickCta": "Remove",
     "kickAria": "Remove {{name}} from the channel",
@@ -286,7 +286,7 @@
   "thread": {
     "notFound": "Thread not found",
     "empty": "Be the first to say something.",
-    "emptyIntl": "Say hi 👋 - drop a 📸 when you nail it.",
+    "emptyIntl": "Say hi - drop a photo when you nail it.",
     "cancel": {
       "creatorTitle": "Cancel this take-on?",
       "acceptorTitle": "Drop this challenge?",
@@ -345,7 +345,7 @@
     "errSubmit": "Couldn't submit your rating. Try again."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -375,7 +375,7 @@
       "empty": "No cities match."
     },
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Share my rank",
       "periodMonth": "this month",
@@ -389,7 +389,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Propose a date 📅",
+    "proposeCta": "Propose a date",
     "counterCta": "Counter-propose",
     "editCta": "Change the date",
     "you": "you",
@@ -407,11 +407,11 @@
     "tomorrow": "Tomorrow",
     "picker": {
       "title": "When are you meeting?",
-      "whenLabel": "WHEN",
-      "timeLabel": "START TIME",
-      "endTimeLabel": "END TIME",
+      "whenLabel": "When",
+      "timeLabel": "Start time",
+      "endTimeLabel": "End time",
       "endAfterStart": "End time must be after start.",
-      "whereLabel": "WHERE (OPTIONAL)",
+      "whereLabel": "Where (optional)",
       "wherePlaceholder": "e.g. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Other date",
       "otherTime": "Other time"
@@ -432,7 +432,7 @@
       "body": "{{name}} will mark how it went."
     },
     "approved": {
-      "title": "Challenge accomplished 🎉"
+      "title": "Challenge accomplished"
     },
     "rejected": {
       "title": "Challenge closed"
@@ -477,7 +477,7 @@
       "creatorVerdict": "How did it go with {{name}}?",
       "acceptorWaitingVerdict": "Waiting for {{name}} to confirm",
       "rateMeetup": "Rate your meet-up with {{name}}",
-      "accomplished": "Challenge accomplished 🎉",
+      "accomplished": "Challenge accomplished",
       "closed": "Challenge closed",
       "submitProof": "Submit your proof",
       "waitingForProof": "Waiting for the proof",
@@ -560,9 +560,9 @@
     "public": "🌍 Public",
     "friends": "👯 Friends",
     "badge": {
-      "public": "🌍 Public",
-      "friends": "👯 Friends",
-      "private": "🔒 Private"
+      "public": "Public",
+      "friends": "Friends",
+      "private": "Private"
     },
     "publicHint": "Anyone in the city can see and accept this.",
     "friendsHint": "Only your friends and people you invite can see this.",
@@ -627,14 +627,14 @@
   "scoreCelebration": {
     "unit": "points",
     "subtitle": {
-      "accepted": "Your challenge was accepted 🤝",
-      "date_locked": "Date locked - let’s go 🗓️",
-      "meetup": "Mission accomplished 🎉",
-      "debrief": "Mission accomplished 🎉",
-      "ghost": "Better luck next time 👻",
-      "default": "You’re climbing the ranks 🚀",
-      "meet_bonus": "Meet bonus unlocked 🤝",
-      "challenge_created": "You launched a challenge 🎯"
+      "accepted": "Your challenge was accepted",
+      "date_locked": "Date locked - let’s go",
+      "meetup": "Mission accomplished",
+      "debrief": "Mission accomplished",
+      "ghost": "Better luck next time",
+      "default": "You’re climbing the ranks",
+      "meet_bonus": "Meet bonus unlocked",
+      "challenge_created": "You launched a challenge"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -646,7 +646,7 @@
       "cities": "{{city}} is #{{rank}} among cities",
       "citiesBeyond": "{{city}} outside the top {{topN}} cities"
     },
-    "cta": "Let’s go ⚡",
+    "cta": "Let’s go",
     "kindShort": {
       "accepted": "Accepted",
       "date_locked": "Date locked",
@@ -664,8 +664,8 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welcome! Chat freely here - no sign-up needed.",
-    "cta": "Want to take this challenge? Sign up in 3 seconds →"
+    "title": "Welcome! Chat freely here - no sign-up needed.",
+    "cta": "Want to take this challenge? Sign up in 3 seconds"
   },
   "group": {
     "meetLabel": "When & where",
@@ -752,7 +752,7 @@
     },
     "loser": {
       "title": "{{name}} won",
-      "body": "Nice shot! You earned {{points}} for joining — take another shot next time 💪"
+      "body": "Nice shot! You earned {{points}} for joining — take another shot next time"
     },
     "present": {
       "title": "You showed up!",

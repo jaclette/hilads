@@ -178,7 +178,7 @@
     "withdrawBody": "截止前你可以重新提议。",
     "status": {
       "pending": "审核中",
-      "picked": "已选中 🎉",
+      "picked": "已选中",
       "not_picked": "未选中"
     },
     "statusHint": {

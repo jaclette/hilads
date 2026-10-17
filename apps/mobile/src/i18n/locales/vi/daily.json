@@ -178,7 +178,7 @@
     "withdrawBody": "Bạn có thể đề xuất lại cho đến khi đóng.",
     "status": {
       "pending": "Đang duyệt",
-      "picked": "Được chọn 🎉",
+      "picked": "Được chọn",
       "not_picked": "Không được chọn"
     },
     "statusHint": {

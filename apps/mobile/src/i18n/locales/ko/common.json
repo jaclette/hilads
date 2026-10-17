@@ -1,22 +1,22 @@
 {
   "nowTitle": "지금",
-  "filterEvents": "🎉 로컬 이벤트",
+  "filterEvents": "로컬 이벤트",
   "filterHangouts": "🗣️ 모임",
-  "publicEventsSection": "🎫 공개 이벤트",
+  "publicEventsSection": "공개 이벤트",
   "accountWelcome": {
-    "title": "축하해요, {{username}}님! 🎉",
-    "subtitle": "계정이 준비됐어요 - 지금 할 수 있는 것들을 확인해 보세요 👇",
-    "f1": "🎉 모임을 열어 지금 바로 사람들을 모아보세요",
-    "f2": "📅 당신의 도시에서 이벤트를 열어보세요",
-    "f3": "💬 누구에게나 개인 메시지를 보내보세요",
-    "f4": "📍 근처에 누가 있는지 실시간으로 확인하세요",
-    "f5": "🤝 현지인과 여행자들과 연결되세요",
-    "fc1": "🔥 우리 도시 사람들에게 챌린지를 걸어보세요",
-    "fc2": "🌍 세계 다른 도시에 챌린지를 걸어보세요",
-    "cta": "출발해요 🚀"
+    "title": "축하해요, {{username}}님!",
+    "subtitle": "계정이 준비됐어요 - 지금 할 수 있는 것들을 확인해 보세요",
+    "f1": "모임을 열어 지금 바로 사람들을 모아보세요",
+    "f2": "당신의 도시에서 이벤트를 열어보세요",
+    "f3": "누구에게나 개인 메시지를 보내보세요",
+    "f4": "근처에 누가 있는지 실시간으로 확인하세요",
+    "f5": "현지인과 여행자들과 연결되세요",
+    "fc1": "우리 도시 사람들에게 챌린지를 걸어보세요",
+    "fc2": "세계 다른 도시에 챌린지를 걸어보세요",
+    "cta": "출발해요"
   },
   "share": {
-    "title": "무언가 공유하기 👀",
+    "title": "무언가 공유하기",
     "snap": "사진 찍기",
     "snapDesc": "사진을 찍거나 업로드하세요",
     "spot": "내 위치 공유",
@@ -28,7 +28,7 @@
     "hiNowDesc": "지금 뭔가 하고 싶나요? 말해 보세요"
   },
   "locationPicker": {
-    "title": "지금 어디에 있나요? 👀",
+    "title": "지금 어디에 있나요?",
     "search": "주소 또는 장소 검색",
     "moveHint": "지도를 움직여 조정하세요",
     "noResults": "장소를 찾을 수 없어요",
@@ -53,7 +53,7 @@
   "notifications": "알림",
   "messages": "메시지",
   "someone": "누군가",
-  "photoLabel": "📷 사진",
+  "photoLabel": "사진",
   "openSettings": "설정 열기",
   "composer": {
     "placeholderDefault": "메시지를 남겨보세요…",
@@ -72,10 +72,10 @@
     "locPermSettings": "설정 → Hilads → 위치에서 위치를 켜 주세요.",
     "locNeededTitle": "위치가 필요해요",
     "locNeededBody": "내 자리를 공유하려면 위치 접근을 허용해 주세요.",
-    "placeholderCity": "도시에 인사해요 👋",
-    "placeholderHangout": "참여한다고 알려요 🙌",
-    "placeholderEvent": "참가자들과 이야기해요 🎉",
-    "placeholderChallenge": "응원하거나 팁을 공유해요 🔥",
+    "placeholderCity": "도시에 인사해요",
+    "placeholderHangout": "참여한다고 알려요",
+    "placeholderEvent": "참가자들과 이야기해요",
+    "placeholderChallenge": "응원하거나 팁을 공유해요",
     "endedEvent": "이 이벤트는 종료되었어요",
     "closedChallenge": "이 챌린지는 종료되었어요",
     "send": "보내기",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ 새내기",
-    "regular": "😎 단골",
-    "host": "👑 전설"
+    "ghost": "Ghost",
+    "fresh": "새내기",
+    "regular": "단골",
+    "host": "전설"
   },
   "vibe": {
     "party": "파티",
@@ -106,10 +106,10 @@
     "food": "맛집",
     "chill": "칠"
   },
-  "live": "LIVE",
-  "activeNow": "● 지금 활동 중",
-  "replies_one": "💬 답글 {{count}}개",
-  "replies_other": "💬 답글 {{count}}개",
+  "live": "Live",
+  "activeNow": "지금 활동 중",
+  "replies_one": "답글 {{count}}개",
+  "replies_other": "답글 {{count}}개",
   "noReplies": "답글 없음",
   "noRepliesFirst": "아직 답글이 없어요 - 첫 번째가 되어보세요",
   "weather": {
@@ -149,15 +149,15 @@
   "hiLocalTitle": "👋 Hi Local",
   "past": "지난",
   "sayHi": "{{name}}님에게 인사하기",
-  "hostWaiting": "첫 인사를 기다리는 중 👋",
+  "hostWaiting": "첫 인사를 기다리는 중",
   "shareToCityError": "도시에 공유하지 못했어요. 다시 시도해 주세요.",
   "shareToWorldError": "월드에 공유하지 못했어요. 다시 시도해 주세요.",
   "placedBanner": "{{city}}(으)로 설정했어요 — 위에서 바꿀 수 있어요.",
   "shareCta": {
     "leaderboard": "리더보드 보기",
     "challenge": "챌린지 보기",
-    "event": "🎉 Hi plan 보기",
-    "topic": "🗣️ Hi now 보기"
+    "event": "Hi plan 보기",
+    "topic": "Hi now 보기"
   },
   "delete": "삭제",
   "deleteConversationTitle": "대화를 삭제할까요?",

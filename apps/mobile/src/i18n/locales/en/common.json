@@ -1,23 +1,23 @@
 {
   "nowTitle": "Now",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "Local Events",
   "hiLocalTitle": "👋 Hi Local",
   "filterHangouts": "🗣️ Hangouts",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "Public Local Events",
   "accountWelcome": {
-    "title": "Congrats, {{username}}! 🎉",
-    "subtitle": "Your account is ready - here's what you can do now 👇",
-    "f1": "🎉 Start a hangout and gather people right now",
-    "f2": "📅 Organize an event in your city",
-    "f3": "💬 Send a private message to anyone",
-    "f4": "📍 See who's nearby, live",
-    "f5": "🤝 Connect with locals and travelers",
-    "fc1": "🔥 Challenge the locals in your city",
-    "fc2": "🌍 Challenge another city across the world",
-    "cta": "Let's go 🚀"
+    "title": "Congrats, {{username}}!",
+    "subtitle": "Your account is ready - here's what you can do now",
+    "f1": "Start a hangout and gather people right now",
+    "f2": "Organize an event in your city",
+    "f3": "Send a private message to anyone",
+    "f4": "See who's nearby, live",
+    "f5": "Connect with locals and travelers",
+    "fc1": "Challenge the locals in your city",
+    "fc2": "Challenge another city across the world",
+    "cta": "Let's go"
   },
   "share": {
-    "title": "Share something 👀",
+    "title": "Share something",
     "snap": "Snap a photo",
     "snapDesc": "Take or upload a photo",
     "spot": "Drop your spot",
@@ -29,7 +29,7 @@
     "hiNowDesc": "Up for something right now? Say it"
   },
   "locationPicker": {
-    "title": "Where are you? 👀",
+    "title": "Where are you?",
     "search": "Search an address or place",
     "moveHint": "Move the map to adjust",
     "noResults": "No places found",
@@ -55,7 +55,7 @@
   "notifications": "Notifications",
   "messages": "Messages",
   "someone": "Someone",
-  "photoLabel": "📷 Photo",
+  "photoLabel": "Photo",
   "openSettings": "Open Settings",
   "composer": {
     "placeholderDefault": "Drop a message…",
@@ -76,14 +76,14 @@
     "locPermSettings": "Please enable location in Settings → Hilads → Location.",
     "locNeededTitle": "Location needed",
     "locNeededBody": "Allow location access to share your spot.",
-    "placeholderCity": "Say hi to your city 👋",
-    "placeholderHangout": "Let them know you're in 🙌",
-    "placeholderEvent": "Chat with attendees 🎉",
-    "placeholderChallenge": "Cheer them on, or share your tip 🔥",
+    "placeholderCity": "Say hi to your city",
+    "placeholderHangout": "Let them know you're in",
+    "placeholderEvent": "Chat with attendees",
+    "placeholderChallenge": "Cheer them on, or share your tip",
     "send": "Send",
     "emoji": "Emoji"
   },
-  "modeHeading": "MODE",
+  "modeHeading": "Mode",
   "mode": {
     "local": {
       "label": "Local",
@@ -95,10 +95,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Fresh",
-    "regular": "😎 Crew",
-    "host": "👑 Legend"
+    "ghost": "Ghost",
+    "fresh": "Fresh",
+    "regular": "Crew",
+    "host": "Legend"
   },
   "vibe": {
     "party": "Party",
@@ -108,15 +108,15 @@
     "food": "Food",
     "chill": "Chill"
   },
-  "live": "LIVE",
-  "past": "PAST",
-  "activeNow": "● Active now",
-  "replies_one": "💬 {{count}} reply",
-  "replies_other": "💬 {{count}} replies",
+  "live": "Live",
+  "past": "Past",
+  "activeNow": "Active now",
+  "replies_one": "{{count}} reply",
+  "replies_other": "{{count}} replies",
   "noReplies": "No replies",
   "noRepliesFirst": "No replies yet - be first",
   "sayHi": "Say hi to {{name}}",
-  "hostWaiting": "Waiting for the first hi 👋",
+  "hostWaiting": "Waiting for the first hi",
   "weather": {
     "clear": "clear skies",
     "sunnyHot": "gorgeous out",
@@ -156,8 +156,8 @@
   "shareCta": {
     "leaderboard": "See the leaderboard",
     "challenge": "See the challenge",
-    "event": "🎉 See the Hi plan",
-    "topic": "🗣️ See the Hi now"
+    "event": "See the Hi plan",
+    "topic": "See the Hi now"
   },
   "delete": "Delete",
   "deleteConversationTitle": "Delete conversation?",

@@ -1,22 +1,22 @@
 {
   "nowTitle": "Jetzt",
-  "filterEvents": "🎉 Lokale Events",
+  "filterEvents": "Lokale Events",
   "filterHangouts": "🗣️ Treffen",
-  "publicEventsSection": "🎫 Öffentliche Events",
+  "publicEventsSection": "Öffentliche Events",
   "accountWelcome": {
-    "title": "Glückwunsch, {{username}}! 🎉",
-    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen 👇",
-    "f1": "🎉 Starte ein Treffen und bring sofort Leute zusammen",
-    "f2": "📅 Organisiere ein Event in deiner Stadt",
-    "f3": "💬 Schreib jedem eine private Nachricht",
-    "f4": "📍 Sieh live, wer in der Nähe ist",
-    "f5": "🤝 Vernetze dich mit Locals und Reisenden",
-    "fc1": "🔥 Fordere die Locals in deiner Stadt heraus",
-    "fc2": "🌍 Fordere eine andere Stadt weltweit heraus",
-    "cta": "Los geht's 🚀"
+    "title": "Glückwunsch, {{username}}!",
+    "subtitle": "Dein Konto ist bereit - das kannst du jetzt machen",
+    "f1": "Starte ein Treffen und bring sofort Leute zusammen",
+    "f2": "Organisiere ein Event in deiner Stadt",
+    "f3": "Schreib jedem eine private Nachricht",
+    "f4": "Sieh live, wer in der Nähe ist",
+    "f5": "Vernetze dich mit Locals und Reisenden",
+    "fc1": "Fordere die Locals in deiner Stadt heraus",
+    "fc2": "Fordere eine andere Stadt weltweit heraus",
+    "cta": "Los geht's"
   },
   "share": {
-    "title": "Teile etwas 👀",
+    "title": "Teile etwas",
     "snap": "Mach ein Foto",
     "snapDesc": "Foto aufnehmen oder hochladen",
     "spot": "Teile deinen Ort",
@@ -28,7 +28,7 @@
     "hiNowDesc": "Jetzt Lust auf was? Sag es"
   },
   "locationPicker": {
-    "title": "Wo bist du? 👀",
+    "title": "Wo bist du?",
     "search": "Adresse oder Ort suchen",
     "moveHint": "Bewege die Karte zum Anpassen",
     "noResults": "Keine Orte gefunden",
@@ -53,7 +53,7 @@
   "notifications": "Benachrichtigungen",
   "messages": "Nachrichten",
   "someone": "Jemand",
-  "photoLabel": "📷 Foto",
+  "photoLabel": "Foto",
   "openSettings": "Einstellungen öffnen",
   "composer": {
     "placeholderDefault": "Schreib eine Nachricht…",
@@ -72,16 +72,16 @@
     "locPermSettings": "Bitte aktiviere den Standort in Einstellungen → Hilads → Standort.",
     "locNeededTitle": "Standort erforderlich",
     "locNeededBody": "Erlaube den Standortzugriff, um deinen Spot zu teilen.",
-    "placeholderCity": "Sag hallo zu deiner Stadt 👋",
-    "placeholderHangout": "Sag Bescheid, dass du dabei bist 🙌",
-    "placeholderEvent": "Chatte mit den Teilnehmern 🎉",
-    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp 🔥",
+    "placeholderCity": "Sag hallo zu deiner Stadt",
+    "placeholderHangout": "Sag Bescheid, dass du dabei bist",
+    "placeholderEvent": "Chatte mit den Teilnehmern",
+    "placeholderChallenge": "Feuere sie an oder teile deinen Tipp",
     "endedEvent": "Dieses Event ist vorbei",
     "closedChallenge": "Diese Challenge ist geschlossen",
     "send": "Senden",
     "emoji": "Emojis"
   },
-  "modeHeading": "MODUS",
+  "modeHeading": "Modus",
   "mode": {
     "local": {
       "label": "Local",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Neuling",
-    "regular": "😎 Stammgast",
-    "host": "👑 Legende"
+    "ghost": "Ghost",
+    "fresh": "Neuling",
+    "regular": "Stammgast",
+    "host": "Legende"
   },
   "vibe": {
     "party": "Party",
@@ -106,10 +106,10 @@
     "food": "Essen",
     "chill": "Chillen"
   },
-  "live": "LIVE",
-  "activeNow": "● Jetzt aktiv",
-  "replies_one": "💬 {{count}} Antwort",
-  "replies_other": "💬 {{count}} Antworten",
+  "live": "Live",
+  "activeNow": "Jetzt aktiv",
+  "replies_one": "{{count}} Antwort",
+  "replies_other": "{{count}} Antworten",
   "noReplies": "Keine Antworten",
   "noRepliesFirst": "Noch keine Antworten - sei der Erste",
   "weather": {
@@ -147,17 +147,17 @@
   "shareToCity": "In meiner Stadt teilen",
   "shareToWorld": "In der Welt teilen",
   "hiLocalTitle": "👋 Hi Local",
-  "past": "VORBEI",
+  "past": "Vorbei",
   "sayHi": "Sag {{name}} Hallo",
-  "hostWaiting": "Warten auf das erste Hallo 👋",
+  "hostWaiting": "Warten auf das erste Hallo",
   "shareToCityError": "Konnte nicht in deiner Stadt geteilt werden. Versuch's nochmal.",
   "shareToWorldError": "Teilen in der Welt fehlgeschlagen. Versuch es nochmal.",
   "placedBanner": "Wir haben dich in {{city}} platziert — oben änderbar.",
   "shareCta": {
     "leaderboard": "Rangliste ansehen",
     "challenge": "Challenge ansehen",
-    "event": "🎉 Hi plan ansehen",
-    "topic": "🗣️ Hi now ansehen"
+    "event": "Hi plan ansehen",
+    "topic": "Hi now ansehen"
   },
   "delete": "Löschen",
   "deleteConversationTitle": "Unterhaltung löschen?",

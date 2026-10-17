@@ -1,22 +1,22 @@
 {
   "nowTitle": "今",
-  "filterEvents": "🎉 ローカルイベント",
+  "filterEvents": "ローカルイベント",
   "filterHangouts": "🗣️ 集まり",
-  "publicEventsSection": "🎫 公開イベント",
+  "publicEventsSection": "公開イベント",
   "accountWelcome": {
-    "title": "おめでとう、{{username}}さん！🎉",
-    "subtitle": "アカウントの準備ができました--今すぐできることはこちら 👇",
-    "f1": "🎉 集まりを立ち上げて、今すぐみんなを集めよう",
-    "f2": "📅 あなたの街でイベントを企画しよう",
-    "f3": "💬 だれにでもプライベートメッセージを送ろう",
-    "f4": "📍 近くにいる人をリアルタイムでチェック",
-    "f5": "🤝 地元の人や旅人とつながろう",
-    "fc1": "🔥 街の人たちにチャレンジしよう",
-    "fc2": "🌍 世界の別の街にチャレンジしよう",
-    "cta": "さあ行こう 🚀"
+    "title": "おめでとう、{{username}}さん！",
+    "subtitle": "アカウントの準備ができました--今すぐできることはこちら",
+    "f1": "集まりを立ち上げて、今すぐみんなを集めよう",
+    "f2": "あなたの街でイベントを企画しよう",
+    "f3": "だれにでもプライベートメッセージを送ろう",
+    "f4": "近くにいる人をリアルタイムでチェック",
+    "f5": "地元の人や旅人とつながろう",
+    "fc1": "街の人たちにチャレンジしよう",
+    "fc2": "世界の別の街にチャレンジしよう",
+    "cta": "さあ行こう"
   },
   "share": {
-    "title": "何かをシェア 👀",
+    "title": "何かをシェア",
     "snap": "写真を撮る",
     "snapDesc": "写真を撮る、またはアップロード",
     "spot": "スポットをシェア",
@@ -28,7 +28,7 @@
     "hiNowDesc": "今なにかしたい？言ってみよう"
   },
   "locationPicker": {
-    "title": "今どこにいる？👀",
+    "title": "今どこにいる？",
     "search": "住所または場所を検索",
     "moveHint": "地図を動かして調整",
     "noResults": "場所が見つかりません",
@@ -53,7 +53,7 @@
   "notifications": "通知",
   "messages": "メッセージ",
   "someone": "誰か",
-  "photoLabel": "📷 写真",
+  "photoLabel": "写真",
   "openSettings": "設定を開く",
   "composer": {
     "placeholderDefault": "メッセージを送ろう…",
@@ -72,10 +72,10 @@
     "locPermSettings": "設定 → Hilads → 位置情報 で位置情報を有効にしてください。",
     "locNeededTitle": "位置情報が必要です",
     "locNeededBody": "今いる場所をシェアするには位置情報へのアクセスを許可してください。",
-    "placeholderCity": "街にあいさつしよう 👋",
-    "placeholderHangout": "参加するって伝えよう 🙌",
-    "placeholderEvent": "参加者と話そう 🎉",
-    "placeholderChallenge": "応援したり、コツを共有しよう 🔥",
+    "placeholderCity": "街にあいさつしよう",
+    "placeholderHangout": "参加するって伝えよう",
+    "placeholderEvent": "参加者と話そう",
+    "placeholderChallenge": "応援したり、コツを共有しよう",
     "endedEvent": "このイベントは終了しました",
     "closedChallenge": "このチャレンジは終了しました",
     "send": "送信",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ 新人",
-    "regular": "😎 常連",
-    "host": "👑 伝説"
+    "ghost": "Ghost",
+    "fresh": "新人",
+    "regular": "常連",
+    "host": "伝説"
   },
   "vibe": {
     "party": "パーティー",
@@ -106,10 +106,10 @@
     "food": "グルメ",
     "chill": "チル"
   },
-  "live": "LIVE",
-  "activeNow": "● アクティブ",
-  "replies_one": "💬 {{count}}件の返信",
-  "replies_other": "💬 {{count}}件の返信",
+  "live": "Live",
+  "activeNow": "アクティブ",
+  "replies_one": "{{count}}件の返信",
+  "replies_other": "{{count}}件の返信",
   "noReplies": "返信なし",
   "noRepliesFirst": "まだ返信なし - 最初の返信をしよう",
   "weather": {
@@ -149,15 +149,15 @@
   "hiLocalTitle": "👋 Hi Local",
   "past": "過去",
   "sayHi": "{{name}}に挨拶しよう",
-  "hostWaiting": "最初の挨拶を待っています 👋",
+  "hostWaiting": "最初の挨拶を待っています",
   "shareToCityError": "街に共有できませんでした。もう一度お試しください。",
   "shareToWorldError": "ワールドに共有できませんでした。もう一度お試しください。",
   "placedBanner": "{{city}}に設定しました — 上部で変更できます。",
   "shareCta": {
     "leaderboard": "ランキングを見る",
     "challenge": "チャレンジを見る",
-    "event": "🎉 Hi plan を見る",
-    "topic": "🗣️ Hi now を見る"
+    "event": "Hi plan を見る",
+    "topic": "Hi now を見る"
   },
   "delete": "削除",
   "deleteConversationTitle": "会話を削除しますか？",

@@ -1,22 +1,22 @@
 {
   "nowTitle": "Bây giờ",
-  "filterEvents": "🎉 Sự kiện địa phương",
+  "filterEvents": "Sự kiện địa phương",
   "filterHangouts": "🗣️ Tụ tập",
-  "publicEventsSection": "🎫 Sự kiện công khai",
+  "publicEventsSection": "Sự kiện công khai",
   "accountWelcome": {
-    "title": "Chúc mừng, {{username}}! 🎉",
-    "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay 👇",
-    "f1": "🎉 Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
-    "f2": "📅 Tổ chức một sự kiện trong thành phố của bạn",
-    "f3": "💬 Gửi tin nhắn riêng cho bất kỳ ai",
-    "f4": "📍 Xem ai đang ở gần, theo thời gian thực",
-    "f5": "🤝 Kết nối với người địa phương và những người ưa khám phá",
-    "fc1": "🔥 Thách đấu người dân trong thành phố của bạn",
-    "fc2": "🌍 Thách đấu một thành phố khác trên thế giới",
-    "cta": "Bắt đầu thôi 🚀"
+    "title": "Chúc mừng, {{username}}!",
+    "subtitle": "Tài khoản của bạn đã sẵn sàng - đây là những gì bạn có thể làm ngay",
+    "f1": "Mở một buổi tụ tập và rủ mọi người ngay bây giờ",
+    "f2": "Tổ chức một sự kiện trong thành phố của bạn",
+    "f3": "Gửi tin nhắn riêng cho bất kỳ ai",
+    "f4": "Xem ai đang ở gần, theo thời gian thực",
+    "f5": "Kết nối với người địa phương và những người ưa khám phá",
+    "fc1": "Thách đấu người dân trong thành phố của bạn",
+    "fc2": "Thách đấu một thành phố khác trên thế giới",
+    "cta": "Bắt đầu thôi"
   },
   "share": {
-    "title": "Chia sẻ điều gì đó 👀",
+    "title": "Chia sẻ điều gì đó",
     "snap": "Chụp ảnh",
     "snapDesc": "Chụp hoặc tải ảnh lên",
     "spot": "Thả vị trí của bạn",
@@ -28,7 +28,7 @@
     "hiNowDesc": "Muốn làm gì đó ngay? Nói đi"
   },
   "locationPicker": {
-    "title": "Bạn đang ở đâu? 👀",
+    "title": "Bạn đang ở đâu?",
     "search": "Tìm địa chỉ hoặc địa điểm",
     "moveHint": "Di chuyển bản đồ để điều chỉnh",
     "noResults": "Không tìm thấy địa điểm",
@@ -53,7 +53,7 @@
   "notifications": "Thông báo",
   "messages": "Tin nhắn",
   "someone": "Ai đó",
-  "photoLabel": "📷 Ảnh",
+  "photoLabel": "Ảnh",
   "openSettings": "Mở cài đặt",
   "composer": {
     "placeholderDefault": "Gửi một tin nhắn…",
@@ -74,14 +74,14 @@
     "locPermSettings": "Vui lòng bật vị trí trong Cài đặt → Hilads → Vị trí.",
     "locNeededTitle": "Cần vị trí",
     "locNeededBody": "Cho phép truy cập vị trí để chia sẻ vị trí của bạn.",
-    "placeholderCity": "Chào thành phố của bạn 👋",
-    "placeholderHangout": "Báo với mọi người bạn tham gia 🙌",
-    "placeholderEvent": "Trò chuyện với người tham dự 🎉",
-    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn 🔥",
+    "placeholderCity": "Chào thành phố của bạn",
+    "placeholderHangout": "Báo với mọi người bạn tham gia",
+    "placeholderEvent": "Trò chuyện với người tham dự",
+    "placeholderChallenge": "Cổ vũ họ, hoặc chia sẻ mẹo của bạn",
     "send": "Gửi",
     "emoji": "Biểu tượng cảm xúc"
   },
-  "modeHeading": "CHẾ ĐỘ",
+  "modeHeading": "Chế độ",
   "mode": {
     "local": {
       "label": "Địa phương",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Mới",
-    "regular": "😎 Thành viên",
-    "host": "👑 Huyền thoại"
+    "ghost": "Ghost",
+    "fresh": "Mới",
+    "regular": "Thành viên",
+    "host": "Huyền thoại"
   },
   "vibe": {
     "party": "Tiệc tùng",
@@ -106,10 +106,10 @@
     "food": "Ẩm thực",
     "chill": "Thư giãn"
   },
-  "live": "TRỰC TIẾP",
-  "past": "ĐÃ QUA",
-  "activeNow": "● Đang hoạt động",
-  "replies_other": "💬 {{count}} trả lời",
+  "live": "Trực tiếp",
+  "past": "Đã qua",
+  "activeNow": "Đang hoạt động",
+  "replies_other": "{{count}} trả lời",
   "noReplies": "Chưa có trả lời",
   "noRepliesFirst": "Chưa có trả lời - hãy là người đầu tiên",
   "weather": {
@@ -149,15 +149,15 @@
   "shareToCityError": "Không thể chia sẻ lên thành phố. Thử lại.",
   "shareToWorldError": "Không thể chia sẻ lên Thế giới. Thử lại.",
   "hiLocalTitle": "👋 Hi Local",
-  "replies_one": "💬 {{count}} trả lời",
+  "replies_one": "{{count}} trả lời",
   "sayHi": "Chào {{name}}",
-  "hostWaiting": "Đang chờ lời chào đầu tiên 👋",
+  "hostWaiting": "Đang chờ lời chào đầu tiên",
   "placedBanner": "Bạn được đặt ở {{city}} — có thể đổi ở phía trên.",
   "shareCta": {
     "leaderboard": "Xem bảng xếp hạng",
     "challenge": "Xem thử thách",
-    "event": "🎉 Xem Hi plan",
-    "topic": "🗣️ Xem Hi now"
+    "event": "Xem Hi plan",
+    "topic": "Xem Hi now"
   },
   "delete": "Xóa",
   "deleteConversationTitle": "Xóa cuộc trò chuyện?",

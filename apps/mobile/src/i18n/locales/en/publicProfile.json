@@ -6,19 +6,19 @@
   "loadError": "Could not load profile.",
   "goBack": "Go back",
   "microcopy": {
-    "ghost": "Just browsing 👀",
-    "fresh": "Just landed 👶",
+    "ghost": "Just browsing",
+    "fresh": "Just landed",
     "regular": "Shows up often",
     "local": "Knows the city",
-    "host": "Makes it happen 🔥"
+    "host": "Makes it happen"
   },
   "vibeCaption": {
-    "party": "Always down to party 🎉",
+    "party": "Always down to party",
     "board_games": "Game night, every night",
     "coffee": "Best conversations over coffee",
-    "music": "Life is a playlist 🎶",
+    "music": "Life is a playlist",
     "food": "Eats first, questions later",
-    "chill": "Easy vibes only 😌"
+    "chill": "Easy vibes only"
   },
   "localIn": "Local in {{city}}",
   "exploringIn": "Exploring {{city}}",
@@ -26,7 +26,7 @@
   "from": "From",
   "age": "Age",
   "tabFriends": "Friends",
-  "tabPicks": "City Picks 👑",
+  "tabPicks": "City Picks",
   "noChallenges": "No challenges yet",
   "noHangouts": "No hangouts yet",
   "noEvents": "No events yet",
@@ -35,18 +35,18 @@
   "vibeScore": "{{score}} vibe score",
   "vibeBasis_one": "based on {{count}} vibe",
   "vibeBasis_other": "based on {{count}} vibes",
-  "updateNote": "✏️ Update your note ({{rating}}★)",
-  "leaveNote": "⭐ Leave a note",
+  "updateNote": "Update your note ({{rating}}★)",
+  "leaveNote": "Leave a note",
   "vibePlaceholder": "Say something nice… (optional)",
-  "sendNote": "Send note ✨",
+  "sendNote": "Send note",
   "sending": "Sending…",
   "noNotesTitle": "No notes yet",
-  "noNotesSub": "Be the first to leave a note ✨",
+  "noNotesSub": "Be the first to leave a note",
   "picks": {
-    "restaurant": "FAVORITE RESTAURANT",
-    "spot": "HIDDEN GEM",
-    "tip": "LOCAL TIP",
-    "story": "STORY"
+    "restaurant": "Favorite restaurant",
+    "spot": "Hidden gem",
+    "tip": "Local tip",
+    "story": "Story"
   },
   "message": "Message",
   "friend": "Friend",
@@ -68,6 +68,6 @@
   "blocking": "Blocking…",
   "ghostName": "Ghost",
   "visiting": "Visiting {{city}}",
-  "ghostNote": "Floating around as a ghost 👻",
+  "ghostNote": "Floating around as a ghost",
   "tabVibes": "Vibes"
 }

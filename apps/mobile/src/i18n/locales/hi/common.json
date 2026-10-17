@@ -1,22 +1,22 @@
 {
   "nowTitle": "अभी",
-  "filterEvents": "🎉 लोकल इवेंट",
+  "filterEvents": "लोकल इवेंट",
   "filterHangouts": "🗣️ मुलाक़ात",
-  "publicEventsSection": "🎫 सार्वजनिक इवेंट",
+  "publicEventsSection": "सार्वजनिक इवेंट",
   "accountWelcome": {
-    "title": "बधाई हो, {{username}}! 🎉",
-    "subtitle": "आपका अकाउंट तैयार है - अब आप ये कर सकते हैं 👇",
-    "f1": "🎉 एक मुलाक़ात शुरू करें और अभी लोगों को इकट्ठा करें",
-    "f2": "📅 अपने शहर में एक इवेंट आयोजित करें",
-    "f3": "💬 किसी को भी निजी संदेश भेजें",
-    "f4": "📍 देखें कौन आसपास है, लाइव",
-    "f5": "🤝 लोकल और यात्रियों से जुड़ें",
-    "fc1": "🔥 अपने शहर के लोगों को चैलेंज दो",
-    "fc2": "🌍 दुनिया के किसी और शहर को चैलेंज दो",
-    "cta": "चलिए शुरू करें 🚀"
+    "title": "बधाई हो, {{username}}!",
+    "subtitle": "आपका अकाउंट तैयार है - अब आप ये कर सकते हैं",
+    "f1": "एक मुलाक़ात शुरू करें और अभी लोगों को इकट्ठा करें",
+    "f2": "अपने शहर में एक इवेंट आयोजित करें",
+    "f3": "किसी को भी निजी संदेश भेजें",
+    "f4": "देखें कौन आसपास है, लाइव",
+    "f5": "लोकल और यात्रियों से जुड़ें",
+    "fc1": "अपने शहर के लोगों को चैलेंज दो",
+    "fc2": "दुनिया के किसी और शहर को चैलेंज दो",
+    "cta": "चलिए शुरू करें"
   },
   "share": {
-    "title": "कुछ शेयर करें 👀",
+    "title": "कुछ शेयर करें",
     "snap": "फ़ोटो खींचें",
     "snapDesc": "फ़ोटो खींचें या अपलोड करें",
     "spot": "अपनी जगह शेयर करें",
@@ -28,7 +28,7 @@
     "hiNowDesc": "अभी कुछ करने का मन है? बताओ"
   },
   "locationPicker": {
-    "title": "आप कहाँ हैं? 👀",
+    "title": "आप कहाँ हैं?",
     "search": "पता या जगह खोजें",
     "moveHint": "समायोजित करने के लिए मानचित्र को हिलाएँ",
     "noResults": "कोई जगह नहीं मिली",
@@ -53,7 +53,7 @@
   "notifications": "नोटिफ़िकेशन",
   "messages": "मैसेज",
   "someone": "कोई",
-  "photoLabel": "📷 फ़ोटो",
+  "photoLabel": "फ़ोटो",
   "openSettings": "सेटिंग्स खोलें",
   "composer": {
     "placeholderDefault": "कोई मैसेज भेजें…",
@@ -72,16 +72,16 @@
     "locPermSettings": "कृपया Settings → Hilads → Location में लोकेशन चालू करें।",
     "locNeededTitle": "लोकेशन चाहिए",
     "locNeededBody": "अपनी जगह शेयर करने के लिए लोकेशन ऐक्सेस की अनुमति दें।",
-    "placeholderCity": "अपने शहर को हाय कहिए 👋",
-    "placeholderHangout": "बताइए कि आप शामिल हैं 🙌",
-    "placeholderEvent": "जाने वालों से बात कीजिए 🎉",
-    "placeholderChallenge": "हौसला बढ़ाइए या अपना टिप शेयर कीजिए 🔥",
+    "placeholderCity": "अपने शहर को हाय कहिए",
+    "placeholderHangout": "बताइए कि आप शामिल हैं",
+    "placeholderEvent": "जाने वालों से बात कीजिए",
+    "placeholderChallenge": "हौसला बढ़ाइए या अपना टिप शेयर कीजिए",
     "endedEvent": "यह इवेंट ख़त्म हो गया",
     "closedChallenge": "यह चैलेंज बंद है",
     "send": "भेजो",
     "emoji": "इमोजी"
   },
-  "modeHeading": "MODE",
+  "modeHeading": "Mode",
   "mode": {
     "local": {
       "label": "Local",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ नया",
-    "regular": "😎 नियमित",
-    "host": "👑 दिग्गज"
+    "ghost": "Ghost",
+    "fresh": "नया",
+    "regular": "नियमित",
+    "host": "दिग्गज"
   },
   "vibe": {
     "party": "पार्टी",
@@ -106,10 +106,10 @@
     "food": "खाना",
     "chill": "चिल"
   },
-  "live": "LIVE",
-  "activeNow": "● अभी ऐक्टिव",
-  "replies_one": "💬 {{count}} जवाब",
-  "replies_other": "💬 {{count}} जवाब",
+  "live": "Live",
+  "activeNow": "अभी ऐक्टिव",
+  "replies_one": "{{count}} जवाब",
+  "replies_other": "{{count}} जवाब",
   "noReplies": "कोई जवाब नहीं",
   "noRepliesFirst": "अभी कोई जवाब नहीं - पहले आप बनें",
   "weather": {
@@ -149,15 +149,15 @@
   "hiLocalTitle": "👋 Hi Local",
   "past": "बीते",
   "sayHi": "{{name}} को नमस्ते कहिए",
-  "hostWaiting": "पहले नमस्ते का इंतज़ार 👋",
+  "hostWaiting": "पहले नमस्ते का इंतज़ार",
   "shareToCityError": "आपके शहर में साझा नहीं कर सके। फिर कोशिश करें।",
   "shareToWorldError": "World में शेयर नहीं हो सका। फिर से कोशिश करें।",
   "placedBanner": "हमने तुम्हें {{city}} में रखा — ऊपर से बदल सकते हो।",
   "shareCta": {
     "leaderboard": "लीडरबोर्ड देखें",
     "challenge": "चैलेंज देखें",
-    "event": "🎉 Hi plan देखें",
-    "topic": "🗣️ Hi now देखें"
+    "event": "Hi plan देखें",
+    "topic": "Hi now देखें"
   },
   "delete": "हटाएँ",
   "deleteConversationTitle": "बातचीत हटाएँ?",

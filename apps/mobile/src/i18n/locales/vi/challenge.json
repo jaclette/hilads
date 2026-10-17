@@ -104,8 +104,8 @@
   "statusInProgress": "Thử thách đang diễn ra",
   "statusAccomplished": "Thử thách hoàn thành",
   "openBadge": "Mở",
-  "forLocals": "🏠 Cho người địa phương",
-  "forExplorers": "🧳 Cho du khách",
+  "forLocals": "Cho người địa phương",
+  "forExplorers": "Cho du khách",
   "validation": {
     "label": "Xác minh kiểu nào?",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "Không tìm thấy thread",
     "empty": "Hãy là người đầu tiên nói gì đó.",
-    "emptyIntl": "Chào nhé 👋 - xong rồi thì gửi 📸 nhé.",
+    "emptyIntl": "Chào nhé - xong rồi thì gửi ảnh nhé.",
     "cancel": {
       "creatorTitle": "Huỷ tham gia này?",
       "acceptorTitle": "Bỏ challenge này?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Đề xuất ngày 📅",
+    "proposeCta": "Đề xuất ngày",
     "counterCta": "Đề xuất lại",
     "editCta": "Đổi ngày",
     "you": "bạn",
@@ -237,13 +237,13 @@
     "tomorrow": "Ngày mai",
     "picker": {
       "title": "Khi nào gặp nhau?",
-      "whenLabel": "KHI NÀO",
-      "timeLabel": "GIỜ BẮT ĐẦU",
-      "whereLabel": "Ở ĐÂU (TÙY CHỌN)",
+      "whenLabel": "Khi nào",
+      "timeLabel": "Giờ bắt đầu",
+      "whereLabel": "Ở đâu (tùy chọn)",
       "wherePlaceholder": "vd. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Ngày khác",
       "otherTime": "Giờ khác",
-      "endTimeLabel": "GIỜ KẾT THÚC",
+      "endTimeLabel": "Giờ kết thúc",
       "endAfterStart": "Giờ kết thúc phải sau giờ bắt đầu."
     },
     "err": {
@@ -262,7 +262,7 @@
       "body": "{{name}} sẽ đánh dấu kết quả."
     },
     "approved": {
-      "title": "Đã hoàn thành thử thách 🎉"
+      "title": "Đã hoàn thành thử thách"
     },
     "rejected": {
       "title": "Thử thách đã đóng"
@@ -306,7 +306,7 @@
       "meetSoon": "Hẹn gặp lúc {{date}}",
       "creatorVerdict": "Buổi gặp với {{name}} thế nào?",
       "acceptorWaitingVerdict": "Đang chờ {{name}} xác nhận",
-      "accomplished": "Đã hoàn thành thử thách 🎉",
+      "accomplished": "Đã hoàn thành thử thách",
       "closed": "Thử thách đã đóng",
       "submitProof": "Gửi bằng chứng",
       "waitingForProof": "Chờ bằng chứng",
@@ -373,7 +373,7 @@
   },
   "byCreator": "của {{name}}",
   "inspiration": {
-    "heading": "💡 Ý tưởng thử thách",
+    "heading": "Ý tưởng thử thách",
     "sub": "Xem dân địa phương nơi khác tạo gì - lấy cảm hứng",
     "firstLocal": "🌱 Hãy là người địa phương đầu tiên ở {{city}}",
     "firstLocalSub": "Tạo một thử thách · du khách đến sẽ nhận",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Thử thách này riêng tư",
+      "title": "Thử thách này riêng tư",
       "body": "Chỉ người tạo và người nhận thấy được cuộc trò chuyện."
     }
   },
   "members": {
     "title": "Trong kênh",
     "countIn": "{{count}} người trong kênh",
-    "seeAll": "Xem tất cả →",
+    "seeAll": "Xem tất cả",
     "empty": "Chưa có ai tham gia - hãy là người đầu tiên.",
     "kickCta": "Xoá",
     "kickAria": "Xoá {{name}} khỏi kênh",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Công khai",
-      "friends": "👯 Bạn bè",
-      "private": "🔒 Riêng tư"
+      "public": "Công khai",
+      "friends": "Bạn bè",
+      "private": "Riêng tư"
     },
     "label": "Ai xem được?",
     "public": "🌍 Công khai",
@@ -532,7 +532,7 @@
     "errSubmit": "Không gửi được đánh giá. Thử lại nhé."
   },
   "leaderboard": {
-    "title": "🏆 Thổ địa",
+    "title": "Thổ địa",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -558,7 +558,7 @@
     },
     "errLoad": "Không tải được bảng xếp hạng. Kéo để thử lại.",
     "neutral": "🏆 Thổ địa",
-    "titleCity": "🏆 Thổ địa {{demonym}}",
+    "titleCity": "Thổ địa {{demonym}}",
     "cityPicker": {
       "searchPlaceholder": "Tìm thành phố…",
       "empty": "Không có thành phố nào khớp."
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "điểm",
     "subtitle": {
-      "accepted": "Challenge của bạn đã được nhận 🤝",
-      "date_locked": "Đã chốt lịch - đi thôi 🗓️",
-      "meetup": "Nhiệm vụ hoàn thành 🎉",
-      "debrief": "Nhiệm vụ hoàn thành 🎉",
-      "ghost": "May mắn lần sau 👻",
-      "default": "Bạn đang leo bảng xếp hạng 🚀",
-      "meet_bonus": "Mở khóa thưởng gặp mặt 🤝",
-      "challenge_created": "Bạn đã tạo một thử thách 🎯"
+      "accepted": "Challenge của bạn đã được nhận",
+      "date_locked": "Đã chốt lịch - đi thôi",
+      "meetup": "Nhiệm vụ hoàn thành",
+      "debrief": "Nhiệm vụ hoàn thành",
+      "ghost": "May mắn lần sau",
+      "default": "Bạn đang leo bảng xếp hạng",
+      "meet_bonus": "Mở khóa thưởng gặp mặt",
+      "challenge_created": "Bạn đã tạo một thử thách"
     },
     "rank": {
       "city": "#{{rank}} tại {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} đứng #{{rank}} trong các thành phố",
       "citiesBeyond": "{{city}} ngoài top {{topN}} thành phố"
     },
-    "cta": "Đi thôi ⚡",
+    "cta": "Đi thôi",
     "kindShort": {
       "accepted": "Đã nhận",
       "date_locked": "Đã chốt lịch",
@@ -651,8 +651,8 @@
     "total": "Tổng: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
-    "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây →"
+    "title": "Chào bạn! Trò chuyện thoải mái, không cần đăng ký.",
+    "cta": "Muốn nhận thử thách này? Đăng ký trong 3 giây"
   },
   "group": {
     "meetLabel": "Khi nào & ở đâu",
@@ -739,7 +739,7 @@
     },
     "loser": {
       "title": "{{name}} đã thắng",
-      "body": "Ảnh đẹp đấy! Bạn nhận {{points}} vì đã tham gia — thử lại lần sau nhé 💪"
+      "body": "Ảnh đẹp đấy! Bạn nhận {{points}} vì đã tham gia — thử lại lần sau nhé"
     },
     "present": {
       "title": "Bạn đã có mặt!",
@@ -786,7 +786,7 @@
     "help": "VD: Thách tôi làm điều gì đó điên rồ 🤪"
   },
   "leaveTakeon": {
-    "pill": "🚪 Rời đi",
+    "pill": "Rời đi",
     "confirmTitle": "Rời thử thách này?",
     "confirmBody": "Tiến trình sẽ về 0 và thử thách mở lại cho người khác. Không thể hoàn tác.",
     "confirmCta": "Rời đi",

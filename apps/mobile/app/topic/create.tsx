@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Alert, Linking } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 import { requestFeatureLocation } from '@/lib/geoFeature';
 import { useApp } from '@/context/AppContext';
 import { createTopic, updateTopic } from '@/api/topics';
 import { ApiError } from '@/api/client';
 import { Border, FontSizes, Spacing, Radius, type ThemeColors } from '@/constants';
-import { useThemedStyles } from '@/context/ThemeContext';
+import { useThemedStyles, useTheme } from '@/context/ThemeContext';
 import { Button, EmptyState, Screen, ScreenHeader, TextField } from '@/ui';
 
 type TopicCategory = 'general' | 'tips' | 'food' | 'drinks' | 'help' | 'meetup';
@@ -16,6 +17,7 @@ const CATEGORIES: TopicCategory[] = ['general', 'tips', 'food', 'drinks', 'help'
 
 export default function CreateTopicScreen() {
   const styles = useThemedStyles(makeStyles);
+  const { colors } = useTheme();
 
   const router   = useRouter();
   const { t } = useTranslation('hangout');
@@ -129,8 +131,9 @@ export default function CreateTopicScreen() {
         {/* Geo explainer - why turning on location matters. */}
         {!editId ? (
           <View style={styles.geoHint}>
+            <Ionicons name="location-outline" size={18} color={colors.primaryText} />
             <Text style={styles.geoHintText}>
-              {t('geoHint', { defaultValue: '📍 Turn on location to see who’s around right now — and let nearby people catch your Hi 👀🔥' })}
+              {t('geoHint', { defaultValue: 'Turn on location to see who’s around right now — and let nearby people catch your Hi' })}
             </Text>
           </View>
         ) : null}
@@ -154,8 +157,8 @@ const makeStyles = (c: ThemeColors) => StyleSheet.create({
   body:        { flex: 1 },
   bodyContent: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xl * 2 },
   expiryNote:  { fontSize: FontSizes.sm, fontWeight: '500', color: c.muted, textAlign: 'center' },
-  geoHint:     { paddingVertical: 12, paddingHorizontal: 14,
+  geoHint:     { flexDirection: 'row', alignItems: 'flex-start', gap: 10, paddingVertical: 12, paddingHorizontal: 14,
                  borderRadius: Radius.card, borderWidth: Border, borderColor: c.line, backgroundColor: c.bg2 },
-  geoHintText: { fontSize: FontSizes.sm, fontWeight: '600', color: c.text, lineHeight: 19 },
+  geoHintText: { flex: 1, fontSize: FontSizes.sm, fontWeight: '600', color: c.text, lineHeight: 19 },
   errorText:   { fontSize: FontSizes.sm, fontWeight: '600', color: c.red, textAlign: 'center' },
 });

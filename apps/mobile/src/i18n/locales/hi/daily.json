@@ -180,7 +180,7 @@
     "withdrawBody": "सुझाव बंद होने तक आप फिर से सुझा सकते हैं।",
     "status": {
       "pending": "समीक्षा में",
-      "picked": "चुना गया 🎉",
+      "picked": "चुना गया",
       "not_picked": "नहीं चुना गया"
     },
     "statusHint": {

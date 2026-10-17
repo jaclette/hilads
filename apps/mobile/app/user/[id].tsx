@@ -48,29 +48,29 @@ import { localizeCityName } from '@/i18n/cityName';
 // ── Badge microcopy ────────────────────────────────────────────────────────────
 
 const BADGE_MICROCOPY: Record<string, string> = {
-  ghost:   'Just browsing 👀',
-  fresh:   'Just landed 👶',
+  ghost:   'Just browsing',
+  fresh:   'Just landed',
   regular: 'Shows up often',
   local:   'Knows the city',
-  host:    'Makes it happen 🔥',
+  host:    'Makes it happen',
 };
 
 // ── Mode meta ─────────────────────────────────────────────────────────────────
 
-const MODE_META: Record<string, { emoji: string; label: string }> = {
-  local:     { emoji: '🌍', label: 'Local'     },
-  exploring: { emoji: '🧭', label: 'Exploring' },
+const MODE_META: Record<string, { label: string }> = {
+  local:     { label: 'Local'     },
+  exploring: { label: 'Exploring' },
 };
 
 // ── Vibe meta ─────────────────────────────────────────────────────────────────
 
-const VIBE_META: Record<string, { emoji: string; label: string; caption: string }> = {
-  party:       { emoji: '🔥', label: 'Party',       caption: 'Always down to party 🎉'        },
-  board_games: { emoji: '🎲', label: 'Board Games', caption: 'Game night, every night'        },
-  coffee:      { emoji: '☕', label: 'Coffee',       caption: 'Best conversations over coffee' },
-  music:       { emoji: '🎧', label: 'Music',        caption: 'Life is a playlist 🎶'          },
-  food:        { emoji: '🍜', label: 'Food',         caption: 'Eats first, questions later'    },
-  chill:       { emoji: '🧘', label: 'Chill',        caption: 'Easy vibes only 😌'             },
+const VIBE_META: Record<string, { label: string; caption: string }> = {
+  party:       { label: 'Party',       caption: 'Always down to party'           },
+  board_games: { label: 'Board Games', caption: 'Game night, every night'        },
+  coffee:      { label: 'Coffee',       caption: 'Best conversations over coffee' },
+  music:       { label: 'Music',        caption: 'Life is a playlist'             },
+  food:        { label: 'Food',         caption: 'Eats first, questions later'    },
+  chill:       { label: 'Chill',        caption: 'Easy vibes only'                },
 };
 
 // EventPill + eventIcon + formatEventTime live in

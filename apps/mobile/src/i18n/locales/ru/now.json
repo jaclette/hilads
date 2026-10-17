@@ -14,9 +14,9 @@
   "hangoutTalk": "Запусти тусовку и разговори город",
   "startHangout": "Запустить тусовку 🗣️",
   "inspiration": {
-    "heading": "💡 Идеи тусовок",
+    "heading": "Идеи тусовок",
     "sub": "Что устраивают локалы в других городах - вдохновляйся",
-    "openYours": "🔥 Запусти свою в {{city}}",
+    "openYours": "Запусти свою в {{city}}",
     "by": "от {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Запустить челлендж",
     "challengeSub": "Местные и путешественники - соединяйтесь через челлендж"
   },
-  "filterChallenges": "🔥 Челленджи",
+  "filterChallenges": "Челленджи",
   "challengesSection": "Челленджи",
   "seeAllChallenges": "Смотреть все →",
   "noChallenges": "Пока нет челленджей",

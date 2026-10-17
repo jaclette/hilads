@@ -14,9 +14,9 @@
   "hangoutTalk": "Lancia un ritrovo e fai parlare la città",
   "startHangout": "Lancia un ritrovo 🗣️",
   "inspiration": {
-    "heading": "💡 Idee per ritrovi",
+    "heading": "Idee per ritrovi",
     "sub": "Cosa organizzano i local altrove - lasciati ispirare",
-    "openYours": "🔥 Crea il tuo a {{city}}",
+    "openYours": "Crea il tuo a {{city}}",
     "by": "di {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Lancia una sfida",
     "challengeSub": "Local & viaggiatori - connettetevi attraverso una sfida"
   },
-  "filterChallenges": "🔥 Sfide",
+  "filterChallenges": "Sfide",
   "challengesSection": "Sfide",
   "seeAllChallenges": "Vedi tutte →",
   "noChallenges": "Nessuna sfida ancora",

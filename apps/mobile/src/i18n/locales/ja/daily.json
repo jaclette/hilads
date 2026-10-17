@@ -180,7 +180,7 @@
     "withdrawBody": "締め切りまでは再提案できます。",
     "status": {
       "pending": "審査中",
-      "picked": "選ばれました 🎉",
+      "picked": "選ばれました",
       "not_picked": "選ばれませんでした"
     },
     "statusHint": {

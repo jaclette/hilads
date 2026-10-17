@@ -5,19 +5,19 @@
   "loadError": "Tidak bisa memuat profil.",
   "goBack": "Kembali",
   "microcopy": {
-    "ghost": "Cuma lihat-lihat 👀",
-    "fresh": "Baru sampai 👶",
+    "ghost": "Cuma lihat-lihat",
+    "fresh": "Baru sampai",
     "regular": "Sering muncul",
     "local": "Kenal kotanya",
-    "host": "Bikin sesuatu terjadi 🔥"
+    "host": "Bikin sesuatu terjadi"
   },
   "vibeCaption": {
-    "party": "Selalu siap pesta 🎉",
+    "party": "Selalu siap pesta",
     "board_games": "Malam board game, tiap malam",
     "coffee": "Obrolan terbaik ditemani kopi",
-    "music": "Hidup itu sebuah playlist 🎶",
+    "music": "Hidup itu sebuah playlist",
     "food": "Makan dulu, tanya belakangan",
-    "chill": "Santai aja 😌"
+    "chill": "Santai aja"
   },
   "localIn": "Lokal di {{city}}",
   "exploringIn": "Menjelajahi {{city}}",
@@ -25,7 +25,7 @@
   "from": "Dari",
   "age": "Usia",
   "tabFriends": "Teman",
-  "tabPicks": "Rekomendasi Kota 👑",
+  "tabPicks": "Rekomendasi Kota",
   "noHangouts": "Belum ada nongkrong",
   "noEvents": "Belum ada acara",
   "noFriends": "Belum ada teman",
@@ -33,18 +33,18 @@
   "vibeScore": "{{score}} vibe score",
   "vibeBasis_one": "berdasarkan {{count}} vibe",
   "vibeBasis_other": "berdasarkan {{count}} vibe",
-  "updateNote": "✏️ Perbarui catatanmu ({{rating}}★)",
-  "leaveNote": "⭐ Tinggalkan catatan",
+  "updateNote": "Perbarui catatanmu ({{rating}}★)",
+  "leaveNote": "Tinggalkan catatan",
   "vibePlaceholder": "Bilang sesuatu yang baik… (opsional)",
-  "sendNote": "Kirim catatan ✨",
+  "sendNote": "Kirim catatan",
   "sending": "Mengirim…",
   "noNotesTitle": "Belum ada catatan",
-  "noNotesSub": "Jadilah yang pertama meninggalkan catatan ✨",
+  "noNotesSub": "Jadilah yang pertama meninggalkan catatan",
   "picks": {
-    "restaurant": "RESTORAN FAVORIT",
-    "spot": "PERMATA TERSEMBUNYI",
-    "tip": "TIP LOKAL",
-    "story": "CERITA"
+    "restaurant": "Restoran favorit",
+    "spot": "Permata tersembunyi",
+    "tip": "Tip lokal",
+    "story": "Cerita"
   },
   "message": "Pesan",
   "friend": "Teman",
@@ -66,7 +66,7 @@
   "blocking": "Memblokir…",
   "ghostName": "Ghost",
   "visiting": "Berkunjung ke {{city}}",
-  "ghostNote": "Melayang-layang sebagai Ghost 👻",
+  "ghostNote": "Melayang-layang sebagai Ghost",
   "tabChallenges": "Tantangan",
   "noChallenges": "Belum ada tantangan",
   "tabVibes": "Vibes"

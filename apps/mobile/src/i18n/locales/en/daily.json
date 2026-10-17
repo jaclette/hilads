@@ -180,7 +180,7 @@
     "withdrawBody": "You can propose again until proposals close.",
     "status": {
       "pending": "In review",
-      "picked": "Picked 🎉",
+      "picked": "Picked",
       "not_picked": "Not picked"
     },
     "statusHint": {

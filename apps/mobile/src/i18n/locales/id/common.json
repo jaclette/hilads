@@ -1,22 +1,22 @@
 {
   "nowTitle": "Sekarang",
-  "filterEvents": "🎉 Acara lokal",
+  "filterEvents": "Acara lokal",
   "filterHangouts": "🗣️ Nongkrong",
-  "publicEventsSection": "🎫 Acara publik",
+  "publicEventsSection": "Acara publik",
   "accountWelcome": {
-    "title": "Selamat, {{username}}! 🎉",
-    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang 👇",
-    "f1": "🎉 Mulai nongkrong dan kumpulkan orang sekarang juga",
-    "f2": "📅 Adakan acara di kotamu",
-    "f3": "💬 Kirim pesan pribadi ke siapa saja",
-    "f4": "📍 Lihat siapa yang ada di dekatmu, langsung",
-    "f5": "🤝 Terhubung dengan warga lokal dan para pelancong",
-    "fc1": "🔥 Tantang warga lokal di kotamu",
-    "fc2": "🌍 Tantang kota lain di dunia",
-    "cta": "Ayo mulai 🚀"
+    "title": "Selamat, {{username}}!",
+    "subtitle": "Akunmu sudah siap - ini yang bisa kamu lakukan sekarang",
+    "f1": "Mulai nongkrong dan kumpulkan orang sekarang juga",
+    "f2": "Adakan acara di kotamu",
+    "f3": "Kirim pesan pribadi ke siapa saja",
+    "f4": "Lihat siapa yang ada di dekatmu, langsung",
+    "f5": "Terhubung dengan warga lokal dan para pelancong",
+    "fc1": "Tantang warga lokal di kotamu",
+    "fc2": "Tantang kota lain di dunia",
+    "cta": "Ayo mulai"
   },
   "share": {
-    "title": "Bagikan sesuatu 👀",
+    "title": "Bagikan sesuatu",
     "snap": "Ambil foto",
     "snapDesc": "Ambil atau unggah foto",
     "spot": "Bagikan lokasimu",
@@ -28,7 +28,7 @@
     "hiNowDesc": "Lagi pengin ngapain sekarang? Bilang aja"
   },
   "locationPicker": {
-    "title": "Kamu di mana? 👀",
+    "title": "Kamu di mana?",
     "search": "Cari alamat atau tempat",
     "moveHint": "Geser peta untuk menyesuaikan",
     "noResults": "Tidak ada tempat ditemukan",
@@ -53,7 +53,7 @@
   "notifications": "Notifikasi",
   "messages": "Pesan",
   "someone": "Seseorang",
-  "photoLabel": "📷 Foto",
+  "photoLabel": "Foto",
   "openSettings": "Buka Pengaturan",
   "composer": {
     "placeholderDefault": "Tulis pesan…",
@@ -72,16 +72,16 @@
     "locPermSettings": "Aktifkan lokasi di Pengaturan → Hilads → Lokasi.",
     "locNeededTitle": "Perlu lokasi",
     "locNeededBody": "Izinkan akses lokasi untuk membagikan tempatmu.",
-    "placeholderCity": "Sapa kotamu 👋",
-    "placeholderHangout": "Kasih tahu kamu ikutan 🙌",
-    "placeholderEvent": "Ngobrol sama yang datang 🎉",
-    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu 🔥",
+    "placeholderCity": "Sapa kotamu",
+    "placeholderHangout": "Kasih tahu kamu ikutan",
+    "placeholderEvent": "Ngobrol sama yang datang",
+    "placeholderChallenge": "Dukung mereka, atau bagi tipsmu",
     "endedEvent": "Acara ini sudah berakhir",
     "closedChallenge": "Tantangan ini sudah ditutup",
     "send": "Kirim",
     "emoji": "Emoji"
   },
-  "modeHeading": "MODE",
+  "modeHeading": "Mode",
   "mode": {
     "local": {
       "label": "Local",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Baru",
-    "regular": "😎 Langganan",
-    "host": "👑 Legenda"
+    "ghost": "Ghost",
+    "fresh": "Baru",
+    "regular": "Langganan",
+    "host": "Legenda"
   },
   "vibe": {
     "party": "Pesta",
@@ -106,10 +106,10 @@
     "food": "Makanan",
     "chill": "Santai"
   },
-  "live": "LIVE",
-  "activeNow": "● Aktif sekarang",
-  "replies_one": "💬 {{count}} balasan",
-  "replies_other": "💬 {{count}} balasan",
+  "live": "Live",
+  "activeNow": "Aktif sekarang",
+  "replies_one": "{{count}} balasan",
+  "replies_other": "{{count}} balasan",
   "noReplies": "Belum ada balasan",
   "noRepliesFirst": "Belum ada balasan - jadilah yang pertama",
   "weather": {
@@ -147,17 +147,17 @@
   "shareToCity": "Bagikan ke kotaku",
   "shareToWorld": "Bagikan ke World",
   "hiLocalTitle": "👋 Hi Local",
-  "past": "LAMPAU",
+  "past": "Lampau",
   "sayHi": "Sapa {{name}}",
-  "hostWaiting": "Menunggu sapaan pertama 👋",
+  "hostWaiting": "Menunggu sapaan pertama",
   "shareToCityError": "Gagal berbagi ke kotamu. Coba lagi.",
   "shareToWorldError": "Gagal membagikan ke World. Coba lagi.",
   "placedBanner": "Kami menempatkanmu di {{city}} — bisa diubah di atas.",
   "shareCta": {
     "leaderboard": "Lihat papan peringkat",
     "challenge": "Lihat challenge",
-    "event": "🎉 Lihat Hi plan",
-    "topic": "🗣️ Lihat Hi now"
+    "event": "Lihat Hi plan",
+    "topic": "Lihat Hi now"
   },
   "delete": "Hapus",
   "deleteConversationTitle": "Hapus percakapan?",

@@ -5,19 +5,19 @@
   "loadError": "Impossibile caricare il profilo.",
   "goBack": "Indietro",
   "microcopy": {
-    "ghost": "Solo di passaggio 👀",
-    "fresh": "Appena arrivato 👶",
+    "ghost": "Solo di passaggio",
+    "fresh": "Appena arrivato",
     "regular": "Viene spesso",
     "local": "Conosce la città",
-    "host": "Fa succedere le cose 🔥"
+    "host": "Fa succedere le cose"
   },
   "vibeCaption": {
-    "party": "Sempre pronto a far festa 🎉",
+    "party": "Sempre pronto a far festa",
     "board_games": "Serata giochi, ogni sera",
     "coffee": "Le migliori chiacchierate davanti a un caffè",
-    "music": "La vita è una playlist 🎶",
+    "music": "La vita è una playlist",
     "food": "Prima si mangia, poi si parla",
-    "chill": "Solo buone vibe 😌"
+    "chill": "Solo buone vibe"
   },
   "localIn": "Local a {{city}}",
   "exploringIn": "Esplora {{city}}",
@@ -25,7 +25,7 @@
   "from": "Da",
   "age": "Età",
   "tabFriends": "Amici",
-  "tabPicks": "Consigli 👑",
+  "tabPicks": "Consigli",
   "noHangouts": "Ancora nessun ritrovo",
   "noEvents": "Ancora nessun evento",
   "noFriends": "Ancora nessun amico",
@@ -33,18 +33,18 @@
   "vibeScore": "{{score}} di punteggio vibe",
   "vibeBasis_one": "basato su {{count}} vibe",
   "vibeBasis_other": "basato su {{count}} vibes",
-  "updateNote": "✏️ Modifica la tua nota ({{rating}}★)",
-  "leaveNote": "⭐ Lascia una nota",
+  "updateNote": "Modifica la tua nota ({{rating}}★)",
+  "leaveNote": "Lascia una nota",
   "vibePlaceholder": "Dì qualcosa di carino… (facoltativo)",
-  "sendNote": "Invia la nota ✨",
+  "sendNote": "Invia la nota",
   "sending": "Invio in corso…",
   "noNotesTitle": "Ancora nessuna nota",
-  "noNotesSub": "Sii il primo a lasciare una nota ✨",
+  "noNotesSub": "Sii il primo a lasciare una nota",
   "picks": {
-    "restaurant": "RISTORANTE PREFERITO",
-    "spot": "PERLA NASCOSTA",
-    "tip": "CONSIGLIO LOCAL",
-    "story": "STORIA"
+    "restaurant": "Ristorante preferito",
+    "spot": "Perla nascosta",
+    "tip": "Consiglio local",
+    "story": "Storia"
   },
   "message": "Messaggio",
   "friend": "Amico",
@@ -66,7 +66,7 @@
   "blocking": "Blocco in corso…",
   "ghostName": "Ghost",
   "visiting": "In visita a {{city}}",
-  "ghostNote": "Fluttua qui come un Ghost 👻",
+  "ghostNote": "Fluttua qui come un Ghost",
   "tabChallenges": "Sfide",
   "noChallenges": "Nessuna sfida ancora",
   "tabVibes": "Vibes"

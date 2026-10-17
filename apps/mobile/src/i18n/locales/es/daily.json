@@ -180,7 +180,7 @@
     "withdrawBody": "Puedes proponer otra hasta que cierren las propuestas.",
     "status": {
       "pending": "En revisión",
-      "picked": "Elegido 🎉",
+      "picked": "Elegido",
       "not_picked": "No elegido"
     },
     "statusHint": {

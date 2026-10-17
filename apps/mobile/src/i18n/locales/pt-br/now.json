@@ -14,9 +14,9 @@
   "hangoutTalk": "Comece um rolê e faça a cidade falar",
   "startHangout": "Começar um rolê 🗣️",
   "inspiration": {
-    "heading": "💡 Ideias de rolês",
+    "heading": "Ideias de rolês",
     "sub": "O que os locais organizam em outros lugares - se inspire",
-    "openYours": "🔥 Crie o seu em {{city}}",
+    "openYours": "Crie o seu em {{city}}",
     "by": "por {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Lançar um desafio",
     "challengeSub": "Locais & viajantes - conectem-se através de um desafio"
   },
-  "filterChallenges": "🔥 Desafios",
+  "filterChallenges": "Desafios",
   "challengesSection": "Desafios",
   "seeAllChallenges": "Ver todos →",
   "noChallenges": "Nenhum desafio ainda",

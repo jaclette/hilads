@@ -14,9 +14,9 @@
   "hangoutTalk": "Magsimula ng tambayan at pag-usapin ang lungsod",
   "startHangout": "Magsimula ng tambayan 🗣️",
   "inspiration": {
-    "heading": "💡 Mga ideya ng tambayan",
+    "heading": "Mga ideya ng tambayan",
     "sub": "Kung ano ang inoorganisa ng mga local sa ibang lugar - magpa-inspire",
-    "openYours": "🔥 Buksan ang sa iyo sa {{city}}",
+    "openYours": "Buksan ang sa iyo sa {{city}}",
     "by": "ni {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Maglunsad ng challenge",
     "challengeSub": "Mga local & biyahero - magkonekta sa pamamagitan ng challenge"
   },
-  "filterChallenges": "🔥 Mga Challenge",
+  "filterChallenges": "Mga Challenge",
   "challengesSection": "Mga Challenge",
   "seeAllChallenges": "Tingnan lahat →",
   "noChallenges": "Walang challenge pa",

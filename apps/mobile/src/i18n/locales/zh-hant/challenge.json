@@ -104,8 +104,8 @@
   "statusInProgress": "挑戰進行中",
   "statusAccomplished": "挑戰搞定",
   "openBadge": "開放",
-  "forLocals": "🏠 給在地人",
-  "forExplorers": "🧳 給旅人",
+  "forLocals": "給在地人",
+  "forExplorers": "給旅人",
   "validation": {
     "label": "如何驗證？",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "找不到對話",
     "empty": "第一個說點什麼吧。",
-    "emptyIntl": "打個招呼 👋 - 搞定後丟張 📸 上來。",
+    "emptyIntl": "打個招呼 - 搞定後丟張照片上來。",
     "cancel": {
       "creatorTitle": "取消這次參與？",
       "acceptorTitle": "放棄這個挑戰？",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "提議一個日期 📅",
+    "proposeCta": "提議一個日期",
     "counterCta": "另提一個",
     "editCta": "改約時間",
     "you": "你",
@@ -262,7 +262,7 @@
       "body": "{{name}}會標記結果。"
     },
     "approved": {
-      "title": "挑戰完成 🎉"
+      "title": "挑戰完成"
     },
     "rejected": {
       "title": "挑戰已關閉"
@@ -306,7 +306,7 @@
       "meetSoon": "{{date}} 見",
       "creatorVerdict": "和 {{name}} 見面如何？",
       "acceptorWaitingVerdict": "等待 {{name}} 確認",
-      "accomplished": "挑戰完成 🎉",
+      "accomplished": "挑戰完成",
       "closed": "挑戰已關閉",
       "submitProof": "提交你的證據",
       "waitingForProof": "等待證據",
@@ -373,7 +373,7 @@
   },
   "byCreator": "由 {{name}} 發起",
   "inspiration": {
-    "heading": "💡 挑戰靈感",
+    "heading": "挑戰靈感",
     "sub": "看看別處的在地人發起了什麼 - 獲取靈感",
     "firstLocal": "🌱 成為 {{city}} 的第一個在地人",
     "firstLocalSub": "發起一個挑戰 · 到來的旅人會來接受",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 這個挑戰是私密的",
+      "title": "這個挑戰是私密的",
       "body": "只有建立者和挑戰者能看到對話。"
     }
   },
   "members": {
     "title": "在頻道中",
     "countIn": "頻道中 {{count}} 人",
-    "seeAll": "查看全部 →",
+    "seeAll": "查看全部",
     "empty": "還沒有人加入 - 來當第一個吧。",
     "kickCta": "移除",
     "kickAria": "將 {{name}} 從頻道移除",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 公開",
-      "friends": "👯 朋友",
-      "private": "🔒 私密"
+      "public": "公開",
+      "friends": "朋友",
+      "private": "私密"
     },
     "label": "誰可以看到？",
     "public": "🌍 公開",
@@ -532,7 +532,7 @@
     "errSubmit": "評分送出失敗，請重試。"
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "搜尋城市…",
       "empty": "沒有符合的城市。"
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "分享我的排名",
       "periodMonth": "本月",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "積分",
     "subtitle": {
-      "accepted": "你的挑戰被接受了 🤝",
-      "date_locked": "時間敲定 - 出發 🗓️",
-      "meetup": "任務完成 🎉",
-      "debrief": "任務完成 🎉",
-      "ghost": "下次再來 👻",
-      "default": "你正在榜上攀升 🚀",
-      "meet_bonus": "見面獎勵解鎖 🤝",
-      "challenge_created": "你發起了一個挑戰 🎯"
+      "accepted": "你的挑戰被接受了",
+      "date_locked": "時間敲定 - 出發",
+      "meetup": "任務完成",
+      "debrief": "任務完成",
+      "ghost": "下次再來",
+      "default": "你正在榜上攀升",
+      "meet_bonus": "見面獎勵解鎖",
+      "challenge_created": "你發起了一個挑戰"
     },
     "rank": {
       "city": "{{city}} 第 {{rank}} 名",
@@ -633,7 +633,7 @@
       "cities": "{{city}} 在城市中排名第 {{rank}}",
       "citiesBeyond": "{{city}} 排在城市 {{topN}} 名之外"
     },
-    "cta": "出發 ⚡",
+    "cta": "出發",
     "kindShort": {
       "accepted": "已接受",
       "date_locked": "時間已敲定",
@@ -651,8 +651,8 @@
     "total": "總分： {{total}} 分"
   },
   "welcomeGuest": {
-    "title": "👋 歡迎！無需註冊即可暢聊。",
-    "cta": "想接下這個挑戰？3秒註冊 →"
+    "title": "歡迎！無需註冊即可暢聊。",
+    "cta": "想接下這個挑戰？3秒註冊"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} 贏了",
-      "body": "拍得不錯！參與就得 {{points}} — 下次再來挑戰 💪"
+      "body": "拍得不錯！參與就得 {{points}} — 下次再來挑戰"
     },
     "present": {
       "title": "你來了！",
@@ -737,7 +737,7 @@
     "checkPhotos": "查看這 {{count}} 張相片"
   },
   "leaveTakeon": {
-    "pill": "🚪 離開",
+    "pill": "離開",
     "confirmTitle": "離開這個挑戰？",
     "confirmBody": "進度將歸零，挑戰將重新向他人開放。此操作無法復原。",
     "confirmCta": "離開",

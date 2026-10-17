@@ -14,9 +14,9 @@
   "hangoutTalk": "ابدأ لقاءً واجعل المدينة تتحدّث",
   "startHangout": "ابدأ لقاءً 🗣️",
   "inspiration": {
-    "heading": "💡 أفكار لقاءات",
+    "heading": "أفكار لقاءات",
     "sub": "ما الذي ينظّمه السكان المحليون في أماكن أخرى - استلهم",
-    "openYours": "🔥 افتح خاصتك في {{city}}",
+    "openYours": "افتح خاصتك في {{city}}",
     "by": "بواسطة {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "أطلق تحديًا",
     "challengeSub": "محليون ومستكشفون - اتصلوا عبر تحدٍّ"
   },
-  "filterChallenges": "🔥 التحديات",
+  "filterChallenges": "التحديات",
   "challengesSection": "التحديات",
   "seeAllChallenges": "عرض الكل →",
   "noChallenges": "لا توجد تحديات بعد",

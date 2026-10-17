@@ -5,19 +5,19 @@
   "loadError": "プロフィールを読み込めませんでした。",
   "goBack": "戻る",
   "microcopy": {
-    "ghost": "見てるだけ 👀",
-    "fresh": "着いたばかり 👶",
+    "ghost": "見てるだけ",
+    "fresh": "着いたばかり",
     "regular": "よく来ています",
     "local": "街をよく知っています",
-    "host": "場を作る人 🔥"
+    "host": "場を作る人"
   },
   "vibeCaption": {
-    "party": "いつでもパーティーに乗り気 🎉",
+    "party": "いつでもパーティーに乗り気",
     "board_games": "毎晩がボードゲームの夜",
     "coffee": "最高の会話はコーヒーと一緒に",
-    "music": "人生は一つのプレイリスト 🎶",
+    "music": "人生は一つのプレイリスト",
     "food": "まずは食べる、話はあとで",
-    "chill": "ゆるいチルだけ 😌"
+    "chill": "ゆるいチルだけ"
   },
   "localIn": "{{city}}の地元民",
   "exploringIn": "{{city}}を探索中",
@@ -25,7 +25,7 @@
   "from": "出身",
   "age": "年齢",
   "tabFriends": "友達",
-  "tabPicks": "街のおすすめ 👑",
+  "tabPicks": "街のおすすめ",
   "noHangouts": "まだ集まりはありません",
   "noEvents": "まだイベントはありません",
   "noFriends": "まだ友達はいません",
@@ -33,13 +33,13 @@
   "vibeScore": "vibe スコア {{score}}",
   "vibeBasis_one": "{{count}}件の vibe に基づく",
   "vibeBasis_other": "{{count}}件の vibe に基づく",
-  "updateNote": "✏️ ノートを更新する（{{rating}}★）",
-  "leaveNote": "⭐ ノートを残す",
+  "updateNote": "ノートを更新する（{{rating}}★）",
+  "leaveNote": "ノートを残す",
   "vibePlaceholder": "何か素敵なことを…（任意）",
-  "sendNote": "ノートを送信 ✨",
+  "sendNote": "ノートを送信",
   "sending": "送信中…",
   "noNotesTitle": "まだノートはありません",
-  "noNotesSub": "最初のノートを残しましょう ✨",
+  "noNotesSub": "最初のノートを残しましょう",
   "picks": {
     "restaurant": "お気に入りのレストラン",
     "spot": "隠れた名所",
@@ -66,7 +66,7 @@
   "blocking": "ブロック中…",
   "ghostName": "Ghost",
   "visiting": "{{city}}に訪問中",
-  "ghostNote": "Ghostとして漂っています 👻",
+  "ghostNote": "Ghostとして漂っています",
   "tabChallenges": "チャレンジ",
   "noChallenges": "まだチャレンジはありません",
   "tabVibes": "Vibes"

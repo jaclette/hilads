@@ -14,9 +14,9 @@
   "hangoutTalk": "Começa um convívio e põe a cidade a falar",
   "startHangout": "Começar um convívio 🗣️",
   "inspiration": {
-    "heading": "💡 Ideias de convívios",
+    "heading": "Ideias de convívios",
     "sub": "O que os locais organizam noutros sítios - inspira-te",
-    "openYours": "🔥 Cria o teu em {{city}}",
+    "openYours": "Cria o teu em {{city}}",
     "by": "por {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Lançar um desafio",
     "challengeSub": "Locais & viajantes - liguem-se através de um desafio"
   },
-  "filterChallenges": "🔥 Desafios",
+  "filterChallenges": "Desafios",
   "challengesSection": "Desafios",
   "seeAllChallenges": "Ver todos →",
   "noChallenges": "Sem desafios ainda",

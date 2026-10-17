@@ -178,7 +178,7 @@
     "withdrawBody": "คุณเสนอใหม่ได้จนกว่าจะปิดรับ",
     "status": {
       "pending": "กำลังตรวจ",
-      "picked": "ถูกเลือก 🎉",
+      "picked": "ถูกเลือก",
       "not_picked": "ไม่ถูกเลือก"
     },
     "statusHint": {

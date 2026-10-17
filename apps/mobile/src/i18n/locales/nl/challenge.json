@@ -104,8 +104,8 @@
   "statusInProgress": "Challenge bezig",
   "statusAccomplished": "Challenge geflikt",
   "openBadge": "Open",
-  "forLocals": "🏠 Voor locals",
-  "forExplorers": "🧳 Voor reizigers",
+  "forLocals": "Voor locals",
+  "forExplorers": "Voor reizigers",
   "validation": {
     "label": "Hoe valideren?",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "Thread niet gevonden",
     "empty": "Wees de eerste die iets zegt.",
-    "emptyIntl": "Zeg hi 👋 - drop een 📸 als het gelukt is.",
+    "emptyIntl": "Zeg hi - drop een foto als het gelukt is.",
     "cancel": {
       "creatorTitle": "Deze deelname annuleren?",
       "acceptorTitle": "Deze challenge laten vallen?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Stel een datum voor 📅",
+    "proposeCta": "Stel een datum voor",
     "counterCta": "Tegenvoorstel",
     "editCta": "Datum wijzigen",
     "you": "je",
@@ -237,13 +237,13 @@
     "tomorrow": "Morgen",
     "picker": {
       "title": "Wanneer zien jullie elkaar?",
-      "whenLabel": "WANNEER",
-      "timeLabel": "BEGINTIJD",
-      "whereLabel": "WAAR (OPTIONEEL)",
+      "whenLabel": "Wanneer",
+      "timeLabel": "Begintijd",
+      "whereLabel": "Waar (optioneel)",
       "wherePlaceholder": "bv. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Andere datum",
       "otherTime": "Andere tijd",
-      "endTimeLabel": "EINDTIJD",
+      "endTimeLabel": "Eindtijd",
       "endAfterStart": "Eindtijd moet na begintijd liggen."
     },
     "err": {
@@ -262,7 +262,7 @@
       "body": "{{name}} geeft zo aan hoe het ging."
     },
     "approved": {
-      "title": "Challenge gehaald 🎉"
+      "title": "Challenge gehaald"
     },
     "rejected": {
       "title": "Challenge afgesloten"
@@ -306,7 +306,7 @@
       "meetSoon": "Tot {{date}}",
       "creatorVerdict": "Hoe ging het met {{name}}?",
       "acceptorWaitingVerdict": "Wachten tot {{name}} bevestigt",
-      "accomplished": "Challenge gehaald 🎉",
+      "accomplished": "Challenge gehaald",
       "closed": "Challenge afgesloten",
       "submitProof": "Stuur je bewijs",
       "waitingForProof": "Wachten op het bewijs",
@@ -373,7 +373,7 @@
   },
   "byCreator": "door {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge-ideeën",
+    "heading": "Challenge-ideeën",
     "sub": "Wat locals elders starten - doe inspiratie op",
     "firstLocal": "🌱 Wees de eerste local in {{city}}",
     "firstLocalSub": "Start een challenge · reizigers die aankomen pakken hem op",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Deze challenge is privé",
+      "title": "Deze challenge is privé",
       "body": "Alleen de maker en de uitvoerder zien het gesprek."
     }
   },
   "members": {
     "title": "In het kanaal",
     "countIn": "{{count}} in het kanaal",
-    "seeAll": "Toon alles →",
+    "seeAll": "Toon alles",
     "empty": "Nog niemand meegedaan - wees de eerste.",
     "kickCta": "Verwijderen",
     "kickAria": "{{name}} uit het kanaal verwijderen",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Openbaar",
-      "friends": "👯 Vrienden",
-      "private": "🔒 Privé"
+      "public": "Openbaar",
+      "friends": "Vrienden",
+      "private": "Privé"
     },
     "label": "Wie kan dit zien?",
     "public": "🌍 Openbaar",
@@ -532,7 +532,7 @@
     "errSubmit": "Kon je beoordeling niet versturen. Probeer opnieuw."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "Steden zoeken…",
       "empty": "Geen stad gevonden."
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Deel mijn positie",
       "periodMonth": "deze maand",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "punten",
     "subtitle": {
-      "accepted": "Je challenge is geaccepteerd 🤝",
-      "date_locked": "Afspraak bevestigd - let’s go 🗓️",
-      "meetup": "Missie geslaagd 🎉",
-      "debrief": "Missie geslaagd 🎉",
-      "ghost": "Volgende keer beter 👻",
-      "default": "Je klimt in de ranglijst 🚀",
-      "meet_bonus": "Ontmoetingsbonus vrijgespeeld 🤝",
-      "challenge_created": "Je hebt een challenge gestart 🎯"
+      "accepted": "Je challenge is geaccepteerd",
+      "date_locked": "Afspraak bevestigd - let’s go",
+      "meetup": "Missie geslaagd",
+      "debrief": "Missie geslaagd",
+      "ghost": "Volgende keer beter",
+      "default": "Je klimt in de ranglijst",
+      "meet_bonus": "Ontmoetingsbonus vrijgespeeld",
+      "challenge_created": "Je hebt een challenge gestart"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} is #{{rank}} onder de steden",
       "citiesBeyond": "{{city}} buiten de top {{topN}} steden"
     },
-    "cta": "Go ⚡",
+    "cta": "Go",
     "kindShort": {
       "accepted": "Geaccepteerd",
       "date_locked": "Afspraak bevestigd",
@@ -651,8 +651,8 @@
     "total": "Totaal: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Welkom! Praat vrij mee, geen account nodig.",
-    "cta": "Wil je deze challenge accepteren? Account in 3 seconden →"
+    "title": "Welkom! Praat vrij mee, geen account nodig.",
+    "cta": "Wil je deze challenge accepteren? Account in 3 seconden"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} won",
-      "body": "Mooie foto! Je verdiende {{points}} voor je deelname — volgende keer beter 💪"
+      "body": "Mooie foto! Je verdiende {{points}} voor je deelname — volgende keer beter"
     },
     "present": {
       "title": "Je was erbij!",
@@ -737,7 +737,7 @@
     "checkPhotos": "Bekijk de {{count}} foto's"
   },
   "leaveTakeon": {
-    "pill": "🚪 Verlaten",
+    "pill": "Verlaten",
     "confirmTitle": "Deze challenge verlaten?",
     "confirmBody": "De tijdlijn gaat terug naar nul en de challenge opent weer voor anderen. Dit kan niet ongedaan worden gemaakt.",
     "confirmCta": "Verlaten",

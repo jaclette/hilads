@@ -180,7 +180,7 @@
     "withdrawBody": "Kamu bisa mengusulkan lagi sampai usulan ditutup.",
     "status": {
       "pending": "Ditinjau",
-      "picked": "Terpilih 🎉",
+      "picked": "Terpilih",
       "not_picked": "Tidak terpilih"
     },
     "statusHint": {

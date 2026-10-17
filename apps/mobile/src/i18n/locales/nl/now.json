@@ -14,9 +14,9 @@
   "hangoutTalk": "Start een meetup en breng de stad aan het praten",
   "startHangout": "Start een meetup 🗣️",
   "inspiration": {
-    "heading": "💡 Meetup-ideeën",
+    "heading": "Meetup-ideeën",
     "sub": "Wat locals elders organiseren - doe inspiratie op",
-    "openYours": "🔥 Start die van jou in {{city}}",
+    "openYours": "Start die van jou in {{city}}",
     "by": "door {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Start een challenge",
     "challengeSub": "Locals & reizigers - verbind via een challenge"
   },
-  "filterChallenges": "🔥 Challenges",
+  "filterChallenges": "Challenges",
   "challengesSection": "Challenges",
   "seeAllChallenges": "Alles bekijken →",
   "noChallenges": "Nog geen challenges",

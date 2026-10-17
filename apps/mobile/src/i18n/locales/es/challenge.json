@@ -104,8 +104,8 @@
   "statusInProgress": "Reto en curso",
   "statusAccomplished": "Reto conseguido",
   "openBadge": "Abierto",
-  "forLocals": "🏠 Para locales",
-  "forExplorers": "🧳 Para viajeros",
+  "forLocals": "Para locales",
+  "forExplorers": "Para viajeros",
   "validation": {
     "label": "¿Cómo validar?",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "Hilo no encontrado",
     "empty": "Sé el primero en decir algo.",
-    "emptyIntl": "Saluda 👋 - manda una 📸 cuando lo logres.",
+    "emptyIntl": "Saluda - manda una foto cuando lo logres.",
     "cancel": {
       "creatorTitle": "¿Cancelar esta participación?",
       "acceptorTitle": "¿Dejar este reto?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Proponer una fecha 📅",
+    "proposeCta": "Proponer una fecha",
     "counterCta": "Contraproponer",
     "editCta": "Cambiar la fecha",
     "you": "Tú",
@@ -237,13 +237,13 @@
     "tomorrow": "Mañana",
     "picker": {
       "title": "¿Cuándo os veis?",
-      "whenLabel": "CUÁNDO",
-      "timeLabel": "HORA DE INICIO",
-      "whereLabel": "DÓNDE (OPCIONAL)",
+      "whenLabel": "Cuándo",
+      "timeLabel": "Hora de inicio",
+      "whereLabel": "Dónde (opcional)",
       "wherePlaceholder": "ej. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Otra fecha",
       "otherTime": "Otra hora",
-      "endTimeLabel": "HORA DE FIN",
+      "endTimeLabel": "Hora de fin",
       "endAfterStart": "La hora de fin debe ser posterior al inicio."
     },
     "err": {
@@ -262,7 +262,7 @@
       "body": "{{name}} va a marcar cómo fue."
     },
     "approved": {
-      "title": "Reto cumplido 🎉"
+      "title": "Reto cumplido"
     },
     "rejected": {
       "title": "Reto cerrado"
@@ -306,7 +306,7 @@
       "meetSoon": "Nos vemos el {{date}}",
       "creatorVerdict": "¿Cómo fue con {{name}}?",
       "acceptorWaitingVerdict": "Esperando a que {{name}} confirme",
-      "accomplished": "Reto cumplido 🎉",
+      "accomplished": "Reto cumplido",
       "closed": "Reto cerrado",
       "submitProof": "Envía tu prueba",
       "waitingForProof": "Esperando la prueba",
@@ -373,7 +373,7 @@
   },
   "byCreator": "por {{name}}",
   "inspiration": {
-    "heading": "💡 Ideas de retos",
+    "heading": "Ideas de retos",
     "sub": "Lo que lanzan los locales en otros lados - inspírate",
     "firstLocal": "🌱 Sé el primer local en {{city}}",
     "firstLocalSub": "Lanza un reto · los viajeros que llegan lo aceptarán",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Este reto es privado",
+      "title": "Este reto es privado",
       "body": "Solo el creador y quien lo acepta pueden ver la conversación."
     }
   },
   "members": {
     "title": "En el canal",
     "countIn": "{{count}} en el canal",
-    "seeAll": "Ver todo →",
+    "seeAll": "Ver todo",
     "empty": "Aún nadie se ha unido - sé el primero.",
     "kickCta": "Eliminar",
     "kickAria": "Eliminar a {{name}} del canal",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Público",
-      "friends": "👯 Amigos",
-      "private": "🔒 Privado"
+      "public": "Público",
+      "friends": "Amigos",
+      "private": "Privado"
     },
     "label": "¿Quién puede ver esto?",
     "public": "🌍 Público",
@@ -532,7 +532,7 @@
     "errSubmit": "No se pudo enviar tu valoración. Inténtalo de nuevo."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "Buscar ciudades…",
       "empty": "Ninguna ciudad coincide."
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Compartir mi rango",
       "periodMonth": "este mes",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "puntos",
     "subtitle": {
-      "accepted": "Aceptaron tu reto 🤝",
-      "date_locked": "Cita confirmada - ¡vamos! 🗓️",
-      "meetup": "¡Misión cumplida! 🎉",
-      "debrief": "¡Misión cumplida! 🎉",
-      "ghost": "¡Suerte la próxima! 👻",
-      "default": "¡Estás escalando posiciones! 🚀",
-      "meet_bonus": "¡Bonus de quedada desbloqueado! 🤝",
-      "challenge_created": "Lanzaste un reto 🎯"
+      "accepted": "Aceptaron tu reto",
+      "date_locked": "Cita confirmada - ¡vamos!",
+      "meetup": "¡Misión cumplida!",
+      "debrief": "¡Misión cumplida!",
+      "ghost": "¡Suerte la próxima!",
+      "default": "¡Estás escalando posiciones!",
+      "meet_bonus": "¡Bonus de quedada desbloqueado!",
+      "challenge_created": "Lanzaste un reto"
     },
     "rank": {
       "city": "#{{rank}} en {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} es #{{rank}} entre las ciudades",
       "citiesBeyond": "{{city}} fuera del top {{topN}} de ciudades"
     },
-    "cta": "¡Vamos! ⚡",
+    "cta": "¡Vamos!",
     "kindShort": {
       "accepted": "Aceptado",
       "date_locked": "Cita confirmada",
@@ -651,8 +651,8 @@
     "total": "Total: {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 ¡Bienvenido! Charla libremente, sin registro.",
-    "cta": "¿Quieres aceptar este reto? Regístrate en 3 segundos →"
+    "title": "¡Bienvenido! Charla libremente, sin registro.",
+    "cta": "¿Quieres aceptar este reto? Regístrate en 3 segundos"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} ganó",
-      "body": "¡Buena foto! Ganaste {{points}} por participar — inténtalo de nuevo la próxima 💪"
+      "body": "¡Buena foto! Ganaste {{points}} por participar — inténtalo de nuevo la próxima"
     },
     "present": {
       "title": "¡Viniste!",
@@ -737,7 +737,7 @@
     "checkPhotos": "Mira las {{count}} fotos"
   },
   "leaveTakeon": {
-    "pill": "🚪 Salir",
+    "pill": "Salir",
     "confirmTitle": "¿Salir de este reto?",
     "confirmBody": "La línea de tiempo vuelve a cero y el reto se reabre para otros. No se puede deshacer.",
     "confirmCta": "Salir",

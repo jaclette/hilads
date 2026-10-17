@@ -5,19 +5,19 @@
   "loadError": "تعذّر تحميل الملف الشخصي.",
   "goBack": "رجوع",
   "microcopy": {
-    "ghost": "مجرد تصفّح 👀",
-    "fresh": "وصل للتو 👶",
+    "ghost": "مجرد تصفّح",
+    "fresh": "وصل للتو",
     "regular": "يظهر كثيرًا",
     "local": "يعرف المدينة",
-    "host": "يجعل الأمور تحدث 🔥"
+    "host": "يجعل الأمور تحدث"
   },
   "vibeCaption": {
-    "party": "دائمًا مستعد للحفلة 🎉",
+    "party": "دائمًا مستعد للحفلة",
     "board_games": "ليلة ألعاب الطاولة، كل ليلة",
     "coffee": "أفضل الأحاديث على فنجان قهوة",
-    "music": "الحياة قائمة تشغيل 🎶",
+    "music": "الحياة قائمة تشغيل",
     "food": "نأكل أولًا، ونسأل لاحقًا",
-    "chill": "أجواء استرخاء فقط 😌"
+    "chill": "أجواء استرخاء فقط"
   },
   "localIn": "محلي في {{city}}",
   "exploringIn": "يستكشف {{city}}",
@@ -25,7 +25,7 @@
   "from": "من",
   "age": "العمر",
   "tabFriends": "الأصدقاء",
-  "tabPicks": "اختيارات المدينة 👑",
+  "tabPicks": "اختيارات المدينة",
   "noHangouts": "لا توجد لقاءات بعد",
   "noEvents": "لا توجد فعاليات بعد",
   "noFriends": "لا يوجد أصدقاء بعد",
@@ -37,13 +37,13 @@
   "vibeBasis_few": "بناءً على {{count}} vibes",
   "vibeBasis_many": "بناءً على {{count}} vibe",
   "vibeBasis_other": "بناءً على {{count}} vibes",
-  "updateNote": "✏️ حدّث ملاحظتك ({{rating}}★)",
-  "leaveNote": "⭐ اترك ملاحظة",
+  "updateNote": "حدّث ملاحظتك ({{rating}}★)",
+  "leaveNote": "اترك ملاحظة",
   "vibePlaceholder": "قل شيئًا لطيفًا… (اختياري)",
-  "sendNote": "إرسال الملاحظة ✨",
+  "sendNote": "إرسال الملاحظة",
   "sending": "جارٍ الإرسال…",
   "noNotesTitle": "لا توجد ملاحظات بعد",
-  "noNotesSub": "كن أول من يترك ملاحظة ✨",
+  "noNotesSub": "كن أول من يترك ملاحظة",
   "picks": {
     "restaurant": "المطعم المفضل",
     "spot": "جوهرة خفية",
@@ -70,7 +70,7 @@
   "blocking": "جارٍ الحظر…",
   "ghostName": "Ghost",
   "visiting": "يزور {{city}}",
-  "ghostNote": "يتجوّل هنا كـ Ghost 👻",
+  "ghostNote": "يتجوّل هنا كـ Ghost",
   "tabChallenges": "التحديات",
   "noChallenges": "لا توجد تحديات بعد",
   "tabVibes": "Vibes"

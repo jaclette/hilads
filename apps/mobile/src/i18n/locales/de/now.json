@@ -14,9 +14,9 @@
   "hangoutTalk": "Starte ein Treffen und bring die Stadt zum Reden",
   "startHangout": "Treffen starten 🗣️",
   "inspiration": {
-    "heading": "💡 Treffen-Ideen",
+    "heading": "Treffen-Ideen",
     "sub": "Was Locals woanders organisieren - lass dich inspirieren",
-    "openYours": "🔥 Starte dein eigenes in {{city}}",
+    "openYours": "Starte dein eigenes in {{city}}",
     "by": "von {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "Challenge starten",
     "challengeSub": "Locals & Reisende - verbindet euch durch eine Challenge"
   },
-  "filterChallenges": "🔥 Challenges",
+  "filterChallenges": "Challenges",
   "challengesSection": "Challenges",
   "seeAllChallenges": "Alle ansehen →",
   "noChallenges": "Noch keine Challenges",

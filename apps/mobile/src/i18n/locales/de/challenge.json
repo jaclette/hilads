@@ -104,8 +104,8 @@
   "statusInProgress": "Challenge läuft",
   "statusAccomplished": "Challenge gerockt",
   "openBadge": "Offen",
-  "forLocals": "🏠 Für Locals",
-  "forExplorers": "🧳 Für Reisende",
+  "forLocals": "Für Locals",
+  "forExplorers": "Für Reisende",
   "validation": {
     "label": "Wie validieren?",
     "meet": {
@@ -193,7 +193,7 @@
   "thread": {
     "notFound": "Thread nicht gefunden",
     "empty": "Schreib die erste Nachricht.",
-    "emptyIntl": "Sag hi 👋 - schick ein 📸, wenn du's geschafft hast.",
+    "emptyIntl": "Sag hi - schick ein Foto, wenn du's geschafft hast.",
     "cancel": {
       "creatorTitle": "Diese Annahme abbrechen?",
       "acceptorTitle": "Diese Challenge fallen lassen?",
@@ -219,7 +219,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Termin vorschlagen 📅",
+    "proposeCta": "Termin vorschlagen",
     "counterCta": "Gegenvorschlag",
     "editCta": "Datum ändern",
     "you": "dir",
@@ -237,13 +237,13 @@
     "tomorrow": "Morgen",
     "picker": {
       "title": "Wann trefft ihr euch?",
-      "whenLabel": "WANN",
-      "timeLabel": "STARTZEIT",
-      "whereLabel": "WO (OPTIONAL)",
+      "whenLabel": "Wann",
+      "timeLabel": "Startzeit",
+      "whereLabel": "Wo (optional)",
       "wherePlaceholder": "z. B. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Anderes Datum",
       "otherTime": "Andere Zeit",
-      "endTimeLabel": "ENDZEIT",
+      "endTimeLabel": "Endzeit",
       "endAfterStart": "Endzeit muss nach der Startzeit liegen."
     },
     "err": {
@@ -262,7 +262,7 @@
       "body": "{{name}} bewertet gleich, wie es gelaufen ist."
     },
     "approved": {
-      "title": "Challenge gemeistert 🎉"
+      "title": "Challenge gemeistert"
     },
     "rejected": {
       "title": "Challenge beendet"
@@ -306,7 +306,7 @@
       "meetSoon": "Wir sehen uns am {{date}}",
       "creatorVerdict": "Wie war's mit {{name}}?",
       "acceptorWaitingVerdict": "Warten, bis {{name}} bestätigt",
-      "accomplished": "Challenge gemeistert 🎉",
+      "accomplished": "Challenge gemeistert",
       "closed": "Challenge beendet",
       "submitProof": "Beweis senden",
       "waitingForProof": "Warte auf den Beweis",
@@ -373,7 +373,7 @@
   },
   "byCreator": "von {{name}}",
   "inspiration": {
-    "heading": "💡 Challenge-Ideen",
+    "heading": "Challenge-Ideen",
     "sub": "Was Locals woanders starten - lass dich inspirieren",
     "firstLocal": "🌱 Sei der erste Local in {{city}}",
     "firstLocalSub": "Starte eine Challenge · ankommende Reisende nehmen sie an",
@@ -466,14 +466,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Diese Challenge ist privat",
+      "title": "Diese Challenge ist privat",
       "body": "Nur Ersteller und Annehmer sehen das Gespräch."
     }
   },
   "members": {
     "title": "Im Kanal",
     "countIn": "{{count}} im Kanal",
-    "seeAll": "Alle anzeigen →",
+    "seeAll": "Alle anzeigen",
     "empty": "Noch niemand dabei - sei der Erste.",
     "kickCta": "Entfernen",
     "kickAria": "{{name}} aus dem Kanal entfernen",
@@ -489,9 +489,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Öffentlich",
-      "friends": "👯 Freunde",
-      "private": "🔒 Privat"
+      "public": "Öffentlich",
+      "friends": "Freunde",
+      "private": "Privat"
     },
     "label": "Wer kann das sehen?",
     "public": "🌍 Öffentlich",
@@ -532,7 +532,7 @@
     "errSubmit": "Bewertung konnte nicht gesendet werden. Versuch’s nochmal."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -562,7 +562,7 @@
       "searchPlaceholder": "Städte suchen…",
       "empty": "Keine Stadt gefunden."
     },
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "share": {
       "cta": "Meinen Rang teilen",
       "periodMonth": "diesen Monat",
@@ -614,14 +614,14 @@
   "scoreCelebration": {
     "unit": "Punkte",
     "subtitle": {
-      "accepted": "Deine Challenge wurde angenommen 🤝",
-      "date_locked": "Termin bestätigt - los geht’s 🗓️",
-      "meetup": "Mission erfüllt 🎉",
-      "debrief": "Mission erfüllt 🎉",
-      "ghost": "Beim nächsten Mal klappt’s 👻",
-      "default": "Du steigst im Ranking 🚀",
-      "meet_bonus": "Treff-Bonus freigeschaltet 🤝",
-      "challenge_created": "Du hast eine Challenge gestartet 🎯"
+      "accepted": "Deine Challenge wurde angenommen",
+      "date_locked": "Termin bestätigt - los geht’s",
+      "meetup": "Mission erfüllt",
+      "debrief": "Mission erfüllt",
+      "ghost": "Beim nächsten Mal klappt’s",
+      "default": "Du steigst im Ranking",
+      "meet_bonus": "Treff-Bonus freigeschaltet",
+      "challenge_created": "Du hast eine Challenge gestartet"
     },
     "rank": {
       "city": "#{{rank}} in {{city}}",
@@ -633,7 +633,7 @@
       "cities": "{{city}} ist #{{rank}} unter den Städten",
       "citiesBeyond": "{{city}} außerhalb der Top {{topN}} der Städte"
     },
-    "cta": "Auf geht’s ⚡",
+    "cta": "Auf geht’s",
     "kindShort": {
       "accepted": "Angenommen",
       "date_locked": "Termin bestätigt",
@@ -651,8 +651,8 @@
     "total": "Gesamt: {{total}} Pkt."
   },
   "welcomeGuest": {
-    "title": "👋 Willkommen! Schreib einfach mit, ohne Anmeldung.",
-    "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden →"
+    "title": "Willkommen! Schreib einfach mit, ohne Anmeldung.",
+    "cta": "Willst du die Challenge annehmen? Registrierung in 3 Sekunden"
   },
   "result": {
     "winner": {
@@ -661,7 +661,7 @@
     },
     "loser": {
       "title": "{{name}} hat gewonnen",
-      "body": "Schönes Foto! Du hast {{points}} fürs Mitmachen bekommen — nächstes Mal klappt's 💪"
+      "body": "Schönes Foto! Du hast {{points}} fürs Mitmachen bekommen — nächstes Mal klappt's"
     },
     "present": {
       "title": "Du warst dabei!",
@@ -737,7 +737,7 @@
     "checkPhotos": "Sieh dir die {{count}} Fotos an"
   },
   "leaveTakeon": {
-    "pill": "🚪 Verlassen",
+    "pill": "Verlassen",
     "confirmTitle": "Diese Challenge verlassen?",
     "confirmBody": "Der Verlauf wird auf null zurückgesetzt und die Challenge öffnet sich wieder für andere. Kann nicht rückgängig gemacht werden.",
     "confirmCta": "Verlassen",

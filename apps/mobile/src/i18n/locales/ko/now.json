@@ -14,9 +14,9 @@
   "hangoutTalk": "모임을 시작해 도시가 이야기하게 하세요",
   "startHangout": "모임 시작하기 🗣️",
   "inspiration": {
-    "heading": "💡 모임 아이디어",
+    "heading": "모임 아이디어",
     "sub": "다른 도시 로컬들이 뭘 여는지 보기 - 영감 얻기",
-    "openYours": "🔥 {{city}}에서 내 것 열기",
+    "openYours": "{{city}}에서 내 것 열기",
     "by": "{{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "챌린지 시작",
     "challengeSub": "로컬과 여행자 - 챌린지로 연결"
   },
-  "filterChallenges": "🔥 챌린지",
+  "filterChallenges": "챌린지",
   "challengesSection": "챌린지",
   "seeAllChallenges": "전체 보기 →",
   "noChallenges": "아직 챌린지가 없어요",

@@ -14,9 +14,9 @@
   "hangoutTalk": "發起一個聚會，讓城市熱絡起來",
   "startHangout": "發起聚會 🗣️",
   "inspiration": {
-    "heading": "💡 聚會靈感",
+    "heading": "聚會靈感",
     "sub": "看看別處的在地人辦了什麼 - 獲取靈感",
-    "openYours": "🔥 在 {{city}} 開你自己的",
+    "openYours": "在 {{city}} 開你自己的",
     "by": "來自 {{name}} · {{city}}",
     "hangout": "Hi now",
     "event": "Hi plan"
@@ -41,7 +41,7 @@
     "challengeLabel": "發起挑戰",
     "challengeSub": "在地人和旅人 - 透過一個挑戰連結"
   },
-  "filterChallenges": "🔥 挑戰",
+  "filterChallenges": "挑戰",
   "challengesSection": "挑戰",
   "seeAllChallenges": "查看全部 →",
   "noChallenges": "尚無挑戰",

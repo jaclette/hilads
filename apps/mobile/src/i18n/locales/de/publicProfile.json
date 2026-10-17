@@ -5,19 +5,19 @@
   "loadError": "Profil konnte nicht geladen werden.",
   "goBack": "Zurück",
   "microcopy": {
-    "ghost": "Nur am Stöbern 👀",
-    "fresh": "Gerade gelandet 👶",
+    "ghost": "Nur am Stöbern",
+    "fresh": "Gerade gelandet",
     "regular": "Kommt oft vorbei",
     "local": "Kennt die Stadt",
-    "host": "Bringt es ins Rollen 🔥"
+    "host": "Bringt es ins Rollen"
   },
   "vibeCaption": {
-    "party": "Immer für eine Party zu haben 🎉",
+    "party": "Immer für eine Party zu haben",
     "board_games": "Spieleabend, jeden Abend",
     "coffee": "Die besten Gespräche bei einem Kaffee",
-    "music": "Das Leben ist eine Playlist 🎶",
+    "music": "Das Leben ist eine Playlist",
     "food": "Erst essen, dann reden",
-    "chill": "Nur entspannte Vibes 😌"
+    "chill": "Nur entspannte Vibes"
   },
   "localIn": "Local in {{city}}",
   "exploringIn": "Erkundet {{city}}",
@@ -25,7 +25,7 @@
   "from": "Aus",
   "age": "Alter",
   "tabFriends": "Freunde",
-  "tabPicks": "Empfehlungen 👑",
+  "tabPicks": "Empfehlungen",
   "noHangouts": "Noch keine Treffen",
   "noEvents": "Noch keine Events",
   "noFriends": "Noch keine Freunde",
@@ -33,18 +33,18 @@
   "vibeScore": "{{score}} Vibe-Score",
   "vibeBasis_one": "basierend auf {{count}} Vibe",
   "vibeBasis_other": "basierend auf {{count}} Vibes",
-  "updateNote": "✏️ Bearbeite deine Notiz ({{rating}}★)",
-  "leaveNote": "⭐ Hinterlasse eine Notiz",
+  "updateNote": "Bearbeite deine Notiz ({{rating}}★)",
+  "leaveNote": "Hinterlasse eine Notiz",
   "vibePlaceholder": "Sag etwas Nettes… (optional)",
-  "sendNote": "Notiz senden ✨",
+  "sendNote": "Notiz senden",
   "sending": "Wird gesendet…",
   "noNotesTitle": "Noch keine Notizen",
-  "noNotesSub": "Sei der Erste, der eine Notiz hinterlässt ✨",
+  "noNotesSub": "Sei der Erste, der eine Notiz hinterlässt",
   "picks": {
-    "restaurant": "LIEBLINGSRESTAURANT",
-    "spot": "GEHEIMTIPP",
-    "tip": "LOCAL-TIPP",
-    "story": "STORY"
+    "restaurant": "Lieblingsrestaurant",
+    "spot": "Geheimtipp",
+    "tip": "Local-Tipp",
+    "story": "Story"
   },
   "message": "Nachricht",
   "friend": "Freund",
@@ -66,7 +66,7 @@
   "blocking": "Wird blockiert…",
   "ghostName": "Ghost",
   "visiting": "Zu Besuch in {{city}}",
-  "ghostNote": "Schwebt hier als Ghost umher 👻",
+  "ghostNote": "Schwebt hier als Ghost umher",
   "tabChallenges": "Challenges",
   "noChallenges": "Noch keine Challenges",
   "tabVibes": "Vibes"

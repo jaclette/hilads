@@ -180,7 +180,7 @@
     "withdrawBody": "Puwede kang magmungkahi ulit hangga't bukas pa.",
     "status": {
       "pending": "Sinusuri",
-      "picked": "Napili 🎉",
+      "picked": "Napili",
       "not_picked": "Hindi napili"
     },
     "statusHint": {

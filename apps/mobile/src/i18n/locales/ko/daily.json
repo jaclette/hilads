@@ -178,7 +178,7 @@
     "withdrawBody": "마감 전까지 다시 제안할 수 있어요.",
     "status": {
       "pending": "검토 중",
-      "picked": "선택됨 🎉",
+      "picked": "선택됨",
       "not_picked": "선택되지 않음"
     },
     "statusHint": {

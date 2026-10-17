@@ -1,22 +1,22 @@
 {
   "nowTitle": "Ngayon",
-  "filterEvents": "🎉 Local Events",
+  "filterEvents": "Local Events",
   "filterHangouts": "🗣️ Tambayan",
-  "publicEventsSection": "🎫 Public Local Events",
+  "publicEventsSection": "Public Local Events",
   "accountWelcome": {
-    "title": "Congrats, {{username}}! 🎉",
-    "subtitle": "Ready na ang account mo - eto ang pwede mong gawin ngayon 👇",
-    "f1": "🎉 Mag-start ng tambayan at tipunin ang mga tao ngayon din",
-    "f2": "📅 Mag-organize ng event sa city mo",
-    "f3": "💬 Magpadala ng private message kahit kanino",
-    "f4": "📍 Tingnan kung sino ang malapit, live",
-    "f5": "🤝 Makipag-connect sa mga local at biyahero",
-    "fc1": "🔥 I-challenge ang mga local sa city mo",
-    "fc2": "🌍 I-challenge ang ibang city sa mundo",
-    "cta": "Tara na 🚀"
+    "title": "Congrats, {{username}}!",
+    "subtitle": "Ready na ang account mo - eto ang pwede mong gawin ngayon",
+    "f1": "Mag-start ng tambayan at tipunin ang mga tao ngayon din",
+    "f2": "Mag-organize ng event sa city mo",
+    "f3": "Magpadala ng private message kahit kanino",
+    "f4": "Tingnan kung sino ang malapit, live",
+    "f5": "Makipag-connect sa mga local at biyahero",
+    "fc1": "I-challenge ang mga local sa city mo",
+    "fc2": "I-challenge ang ibang city sa mundo",
+    "cta": "Tara na"
   },
   "share": {
-    "title": "Magbahagi ng kahit ano 👀",
+    "title": "Magbahagi ng kahit ano",
     "snap": "Kumuha ng litrato",
     "snapDesc": "Kumuha o mag-upload ng litrato",
     "spot": "I-drop ang iyong lugar",
@@ -28,7 +28,7 @@
     "hiNowDesc": "Gusto mo bang gumawa ng kahit ano ngayon? Sabihin mo"
   },
   "locationPicker": {
-    "title": "Nasaan ka? 👀",
+    "title": "Nasaan ka?",
     "search": "Maghanap ng address o lugar",
     "moveHint": "Igalaw ang mapa para i-adjust",
     "noResults": "Walang nahanap na lugar",
@@ -53,7 +53,7 @@
   "notifications": "Mga notification",
   "messages": "Mga mensahe",
   "someone": "May isang tao",
-  "photoLabel": "📷 Larawan",
+  "photoLabel": "Larawan",
   "openSettings": "Buksan ang Mga setting",
   "composer": {
     "placeholderDefault": "Mag-iwan ng mensahe…",
@@ -72,16 +72,16 @@
     "locPermSettings": "Paki-enable ang lokasyon sa Mga setting → Hilads → Location.",
     "locNeededTitle": "Kailangan ng lokasyon",
     "locNeededBody": "Payagan ang access sa lokasyon para i-share ang spot mo.",
-    "placeholderCity": "Mag-hi sa city mo 👋",
-    "placeholderHangout": "Sabihin na sasali ka 🙌",
-    "placeholderEvent": "Mag-chat sa mga papasok 🎉",
-    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo 🔥",
+    "placeholderCity": "Mag-hi sa city mo",
+    "placeholderHangout": "Sabihin na sasali ka",
+    "placeholderEvent": "Mag-chat sa mga papasok",
+    "placeholderChallenge": "I-cheer sila, o ibahagi ang tip mo",
     "endedEvent": "Tapos na ang event na ito",
     "closedChallenge": "Sarado na ang challenge na ito",
     "send": "Ipadala",
     "emoji": "Emoji"
   },
-  "modeHeading": "MODE",
+  "modeHeading": "Mode",
   "mode": {
     "local": {
       "label": "Local",
@@ -93,10 +93,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Bago",
-    "regular": "😎 Suki",
-    "host": "👑 Alamat"
+    "ghost": "Ghost",
+    "fresh": "Bago",
+    "regular": "Suki",
+    "host": "Alamat"
   },
   "vibe": {
     "party": "Party",
@@ -106,10 +106,10 @@
     "food": "Pagkain",
     "chill": "Chill"
   },
-  "live": "LIVE",
-  "activeNow": "● Active ngayon",
-  "replies_one": "💬 {{count}} tugon",
-  "replies_other": "💬 {{count}} tugon",
+  "live": "Live",
+  "activeNow": "Active ngayon",
+  "replies_one": "{{count}} tugon",
+  "replies_other": "{{count}} tugon",
   "noReplies": "Walang tugon",
   "noRepliesFirst": "Wala pang tugon - mauna ka",
   "weather": {
@@ -147,17 +147,17 @@
   "shareToCity": "Ibahagi sa aking lungsod",
   "shareToWorld": "I-share sa World",
   "hiLocalTitle": "👋 Hi Local",
-  "past": "NAKARAAN",
+  "past": "Nakaraan",
   "sayHi": "Batiin si {{name}}",
-  "hostWaiting": "Hinihintay ang unang hi 👋",
+  "hostWaiting": "Hinihintay ang unang hi",
   "shareToCityError": "Hindi na-share sa lungsod mo. Subukan ulit.",
   "shareToWorldError": "Hindi na-share sa World. Subukan ulit.",
   "placedBanner": "Inilagay ka namin sa {{city}} — mababago mo ito sa itaas.",
   "shareCta": {
     "leaderboard": "Tingnan ang leaderboard",
     "challenge": "Tingnan ang challenge",
-    "event": "🎉 Tingnan ang Hi plan",
-    "topic": "🗣️ Tingnan ang Hi now"
+    "event": "Tingnan ang Hi plan",
+    "topic": "Tingnan ang Hi now"
   },
   "delete": "Tanggalin",
   "deleteConversationTitle": "Tanggalin ang usapan?",

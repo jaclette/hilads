@@ -1,22 +1,22 @@
 {
   "nowTitle": "Maintenant",
-  "filterEvents": "🎉 Événements locaux",
+  "filterEvents": "Événements locaux",
   "filterHangouts": "🗣️ Sorties",
-  "publicEventsSection": "🎫 Événements publics",
+  "publicEventsSection": "Événements publics",
   "accountWelcome": {
-    "title": "Bravo, {{username}} ! 🎉",
-    "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant 👇",
-    "f1": "🎉 Lance une sortie et rassemble du monde tout de suite",
-    "f2": "📅 Organise un événement dans ta ville",
-    "f3": "💬 Envoie un message privé à qui tu veux",
-    "f4": "📍 Vois qui est dans le coin, en direct",
-    "f5": "🤝 Connecte-toi avec les locaux et les voyageurs",
-    "fc1": "🔥 Lance un défi aux gens de ta ville",
-    "fc2": "🌍 Défie une autre ville dans le monde",
-    "cta": "C'est parti 🚀"
+    "title": "Bravo, {{username}} !",
+    "subtitle": "Ton compte est prêt - voici ce que tu peux faire maintenant",
+    "f1": "Lance une sortie et rassemble du monde tout de suite",
+    "f2": "Organise un événement dans ta ville",
+    "f3": "Envoie un message privé à qui tu veux",
+    "f4": "Vois qui est dans le coin, en direct",
+    "f5": "Connecte-toi avec les locaux et les voyageurs",
+    "fc1": "Lance un défi aux gens de ta ville",
+    "fc2": "Défie une autre ville dans le monde",
+    "cta": "C'est parti"
   },
   "share": {
-    "title": "Partage quelque chose 👀",
+    "title": "Partage quelque chose",
     "snap": "Prends une photo",
     "snapDesc": "Prends ou importe une photo",
     "spot": "Partage ton spot",
@@ -28,7 +28,7 @@
     "hiNowDesc": "Partant pour un truc maintenant ? Dis-le"
   },
   "locationPicker": {
-    "title": "Où es-tu ? 👀",
+    "title": "Où es-tu ?",
     "search": "Rechercher une adresse ou un lieu",
     "moveHint": "Déplace la carte pour ajuster",
     "noResults": "Aucun lieu trouvé",
@@ -54,7 +54,7 @@
   "notifications": "Notifications",
   "messages": "Messages",
   "someone": "Quelqu'un",
-  "photoLabel": "📷 Photo",
+  "photoLabel": "Photo",
   "openSettings": "Ouvrir les réglages",
   "composer": {
     "placeholderDefault": "Écris un message…",
@@ -75,14 +75,14 @@
     "locPermSettings": "Active la localisation dans Réglages → Hilads → Position.",
     "locNeededTitle": "Position nécessaire",
     "locNeededBody": "Autorise l'accès à ta position pour partager ton spot.",
-    "placeholderCity": "Dis bonjour à ta ville 👋",
-    "placeholderHangout": "Dis-leur que tu es là 🙌",
-    "placeholderEvent": "Discute avec les participants 🎉",
-    "placeholderChallenge": "Encourage-les ou donne ton astuce 🔥",
+    "placeholderCity": "Dis bonjour à ta ville",
+    "placeholderHangout": "Dis-leur que tu es là",
+    "placeholderEvent": "Discute avec les participants",
+    "placeholderChallenge": "Encourage-les ou donne ton astuce",
     "send": "Envoyer",
     "emoji": "Émojis"
   },
-  "modeHeading": "MODE",
+  "modeHeading": "Mode",
   "mode": {
     "local": {
       "label": "Local",
@@ -94,10 +94,10 @@
     }
   },
   "badge": {
-    "ghost": "👻 Ghost",
-    "fresh": "✨ Nouveau",
-    "regular": "😎 Habitué",
-    "host": "👑 Légende"
+    "ghost": "Ghost",
+    "fresh": "Nouveau",
+    "regular": "Habitué",
+    "host": "Légende"
   },
   "vibe": {
     "party": "Fête",
@@ -107,11 +107,11 @@
     "food": "Cuisine",
     "chill": "Détente"
   },
-  "live": "EN DIRECT",
-  "past": "PASSÉ",
-  "activeNow": "● Actif maintenant",
-  "replies_one": "💬 {{count}} réponse",
-  "replies_other": "💬 {{count}} réponses",
+  "live": "En direct",
+  "past": "Passé",
+  "activeNow": "Actif maintenant",
+  "replies_one": "{{count}} réponse",
+  "replies_other": "{{count}} réponses",
   "noReplies": "Pas de réponses",
   "noRepliesFirst": "Pas encore de réponses - sois le premier",
   "weather": {
@@ -152,12 +152,12 @@
   "shareToWorldError": "Impossible de partager sur le Monde. Réessaie.",
   "hiLocalTitle": "👋 Hi Local",
   "sayHi": "Dis bonjour à {{name}}",
-  "hostWaiting": "En attente du premier bonjour 👋",
+  "hostWaiting": "En attente du premier bonjour",
   "shareCta": {
     "leaderboard": "Voir le classement",
     "challenge": "Voir le défi",
-    "event": "🎉 Voir le Hi plan",
-    "topic": "🗣️ Voir le Hi now"
+    "event": "Voir le Hi plan",
+    "topic": "Voir le Hi now"
   },
   "delete": "Supprimer",
   "deleteConversationTitle": "Supprimer la conversation ?",

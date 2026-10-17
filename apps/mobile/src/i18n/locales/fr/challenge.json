@@ -85,8 +85,8 @@
   "statusInProgress": "Défi en cours",
   "statusAccomplished": "Défi relevé",
   "openBadge": "Ouvert",
-  "forLocals": "🏠 Pour les locaux",
-  "forExplorers": "🧳 Pour les voyageurs",
+  "forLocals": "Pour les locaux",
+  "forExplorers": "Pour les voyageurs",
   "validation": {
     "label": "Comment valider ?",
     "meet": {
@@ -174,7 +174,7 @@
   "thread": {
     "notFound": "Fil introuvable",
     "empty": "Dis bonjour 👋 et propose une date pour vous voir.",
-    "emptyIntl": "Dis salut 👋 - lâche une 📸 quand t'y arrives.",
+    "emptyIntl": "Dis salut - lâche une photo quand t'y arrives.",
     "cancel": {
       "creatorTitle": "Annuler ce take-on ?",
       "acceptorTitle": "Laisser tomber ce défi ?",
@@ -218,7 +218,7 @@
     }
   },
   "schedule": {
-    "proposeCta": "Proposer une date 📅",
+    "proposeCta": "Proposer une date",
     "counterCta": "Contre-proposer",
     "editCta": "Changer la date",
     "you": "toi",
@@ -236,13 +236,13 @@
     "tomorrow": "Demain",
     "picker": {
       "title": "Quand vous voyez-vous ?",
-      "whenLabel": "QUAND",
-      "timeLabel": "HEURE DE DÉBUT",
-      "whereLabel": "OÙ (OPTIONNEL)",
+      "whenLabel": "Quand",
+      "timeLabel": "Heure de début",
+      "whereLabel": "Où (optionnel)",
       "wherePlaceholder": "ex. Le Comptoir, 17 rue de la Paix",
       "otherDate": "Autre date",
       "otherTime": "Autre heure",
-      "endTimeLabel": "HEURE DE FIN",
+      "endTimeLabel": "Heure de fin",
       "endAfterStart": "L’heure de fin doit être après le début."
     },
     "err": {
@@ -261,7 +261,7 @@
       "body": "{{name}} va valider."
     },
     "approved": {
-      "title": "Défi relevé 🎉"
+      "title": "Défi relevé"
     },
     "rejected": {
       "title": "Défi clôturé"
@@ -305,7 +305,7 @@
       "meetSoon": "Rendez-vous le {{date}}",
       "creatorVerdict": "Comment ça s'est passé avec {{name}} ?",
       "acceptorWaitingVerdict": "En attente de la validation de {{name}}",
-      "accomplished": "Défi relevé 🎉",
+      "accomplished": "Défi relevé",
       "closed": "Défi clôturé",
       "submitProof": "Envoie ta preuve",
       "waitingForProof": "En attente de la preuve",
@@ -372,7 +372,7 @@
   },
   "byCreator": "par {{name}}",
   "inspiration": {
-    "heading": "💡 Des idées de défis",
+    "heading": "Des idées de défis",
     "sub": "Ce que les locaux lancent ailleurs - inspire-toi",
     "firstLocal": "🌱 Sois le premier local de {{city}}",
     "firstLocalSub": "Lance un défi · les voyageurs qui arrivent le relèveront",
@@ -465,14 +465,14 @@
   },
   "lock": {
     "private": {
-      "title": "🔒 Ce défi est privé",
+      "title": "Ce défi est privé",
       "body": "Seuls le créateur et le preneur voient la conversation."
     }
   },
   "members": {
     "title": "Dans le canal",
     "countIn": "{{count}} dans le canal",
-    "seeAll": "Voir tout →",
+    "seeAll": "Voir tout",
     "empty": "Personne n'a encore rejoint - sois le premier.",
     "kickCta": "Retirer",
     "kickAria": "Retirer {{name}} du canal",
@@ -488,9 +488,9 @@
   },
   "visibility": {
     "badge": {
-      "public": "🌍 Public",
-      "friends": "👯 Amis",
-      "private": "🔒 Privé"
+      "public": "Public",
+      "friends": "Amis",
+      "private": "Privé"
     },
     "label": "Qui peut voir ça ?",
     "public": "🌍 Public",
@@ -531,7 +531,7 @@
     "errSubmit": "Impossible d’envoyer la note. Réessaie."
   },
   "leaderboard": {
-    "title": "🏆 Most Local",
+    "title": "Most Local",
     "chip": {
       "ranked": "🏆 #{{rank}}",
       "rankedOver": "🏆 #100+",
@@ -557,7 +557,7 @@
     },
     "errLoad": "Impossible de charger le classement. Tire pour réessayer.",
     "neutral": "🏆 Most Local",
-    "titleCity": "🏆 Most {{demonym}}",
+    "titleCity": "Most {{demonym}}",
     "cityPicker": {
       "searchPlaceholder": "Rechercher des villes…",
       "empty": "Aucune ville ne correspond."
@@ -613,14 +613,14 @@
   "scoreCelebration": {
     "unit": "points",
     "subtitle": {
-      "accepted": "Ton challenge a été accepté 🤝",
-      "date_locked": "Rendez-vous confirmé - on y va 🗓️",
-      "meetup": "Mission accomplie 🎉",
-      "debrief": "Mission accomplie 🎉",
-      "ghost": "Tu feras mieux la prochaine fois 👻",
-      "default": "Tu grimpes au classement 🚀",
-      "meet_bonus": "Bonus Rencontre débloqué 🤝",
-      "challenge_created": "Tu as lancé un défi 🎯"
+      "accepted": "Ton challenge a été accepté",
+      "date_locked": "Rendez-vous confirmé - on y va",
+      "meetup": "Mission accomplie",
+      "debrief": "Mission accomplie",
+      "ghost": "Tu feras mieux la prochaine fois",
+      "default": "Tu grimpes au classement",
+      "meet_bonus": "Bonus Rencontre débloqué",
+      "challenge_created": "Tu as lancé un défi"
     },
     "rank": {
       "city": "#{{rank}} à {{city}}",
@@ -632,7 +632,7 @@
       "cities": "{{city}} est #{{rank}} parmi les villes",
       "citiesBeyond": "{{city}} hors du top {{topN}} des villes"
     },
-    "cta": "C’est parti ⚡",
+    "cta": "C’est parti",
     "kindShort": {
       "accepted": "Accepté",
       "date_locked": "Date confirmée",
@@ -650,8 +650,8 @@
     "total": "Total : {{total}} pts"
   },
   "welcomeGuest": {
-    "title": "👋 Bienvenue ! Discute librement, pas besoin d'inscription.",
-    "cta": "Tu veux relever ce défi ? Inscription en 3 secondes →"
+    "title": "Bienvenue ! Discute librement, pas besoin d'inscription.",
+    "cta": "Tu veux relever ce défi ? Inscription en 3 secondes"
   },
   "group": {
     "meetLabel": "Quand & où",
@@ -738,7 +738,7 @@
     },
     "loser": {
       "title": "{{name}} a gagné",
-      "body": "Belle photo ! Tu as gagné {{points}} pour avoir participé — retente ta chance la prochaine fois 💪"
+      "body": "Belle photo ! Tu as gagné {{points}} pour avoir participé — retente ta chance la prochaine fois"
     },
     "present": {
       "title": "Tu étais là !",
@@ -785,7 +785,7 @@
     "help": "ex. Mets-moi au défi de faire un truc de fou 🤪"
   },
   "leaveTakeon": {
-    "pill": "🚪 Quitter",
+    "pill": "Quitter",
     "confirmTitle": "Quitter ce défi ?",
     "confirmBody": "La progression revient à zéro et le défi rouvre pour les autres. Action irréversible.",
     "confirmCta": "Quitter",

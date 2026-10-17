@@ -224,6 +224,7 @@ export default function EditEventScreen() {
           <Button label={t('saveChanges')} onPress={handleSave} loading={submitting} disabled={deleting} />
           <Button
             variant="danger"
+            icon="trash-outline"
             label={t('deleteBtn')}
             onPress={handleDelete}
             loading={deleting}

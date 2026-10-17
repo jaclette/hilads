@@ -6,19 +6,19 @@
   "loadError": "Impossible de charger le profil.",
   "goBack": "Retour",
   "microcopy": {
-    "ghost": "Juste de passage 👀",
-    "fresh": "Vient d'arriver 👶",
+    "ghost": "Juste de passage",
+    "fresh": "Vient d'arriver",
     "regular": "Vient souvent",
     "local": "Connaît la ville",
-    "host": "Fait bouger les choses 🔥"
+    "host": "Fait bouger les choses"
   },
   "vibeCaption": {
-    "party": "Toujours partant pour faire la fête 🎉",
+    "party": "Toujours partant pour faire la fête",
     "board_games": "Soirée jeux, tous les soirs",
     "coffee": "Les meilleures discussions autour d'un café",
-    "music": "La vie est une playlist 🎶",
+    "music": "La vie est une playlist",
     "food": "On mange d'abord, on discute après",
-    "chill": "Que des vibes tranquilles 😌"
+    "chill": "Que des vibes tranquilles"
   },
   "localIn": "Local à {{city}}",
   "exploringIn": "Explore {{city}}",
@@ -26,7 +26,7 @@
   "from": "De",
   "age": "Âge",
   "tabFriends": "Amis",
-  "tabPicks": "Coups de cœur 👑",
+  "tabPicks": "Coups de cœur",
   "noChallenges": "Pas encore de défi",
   "noHangouts": "Pas encore de sortie",
   "noEvents": "Pas encore d'événement",
@@ -35,18 +35,18 @@
   "vibeScore": "{{score}} en score vibe",
   "vibeBasis_one": "basé sur {{count}} vibe",
   "vibeBasis_other": "basé sur {{count}} vibes",
-  "updateNote": "✏️ Modifie ta note ({{rating}}★)",
-  "leaveNote": "⭐ Laisse une note",
+  "updateNote": "Modifie ta note ({{rating}}★)",
+  "leaveNote": "Laisse une note",
   "vibePlaceholder": "Dis quelque chose de sympa… (optionnel)",
-  "sendNote": "Envoyer la note ✨",
+  "sendNote": "Envoyer la note",
   "sending": "Envoi…",
   "noNotesTitle": "Pas encore de notes",
-  "noNotesSub": "Sois le premier à laisser une note ✨",
+  "noNotesSub": "Sois le premier à laisser une note",
   "picks": {
-    "restaurant": "RESTAURANT PRÉFÉRÉ",
-    "spot": "PÉPITE CACHÉE",
-    "tip": "ASTUCE LOCALE",
-    "story": "HISTOIRE"
+    "restaurant": "Restaurant préféré",
+    "spot": "Pépite cachée",
+    "tip": "Astuce locale",
+    "story": "Histoire"
   },
   "message": "Message",
   "friend": "Ami",
@@ -68,6 +68,6 @@
   "blocking": "Blocage…",
   "ghostName": "Fantôme",
   "visiting": "En visite à {{city}}",
-  "ghostNote": "Flotte dans le coin comme un fantôme 👻",
+  "ghostNote": "Flotte dans le coin comme un fantôme",
   "tabVibes": "Vibes"
 }
