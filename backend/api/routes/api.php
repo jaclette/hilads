@@ -6290,7 +6290,7 @@ $router->add('POST', '/api/v1/events/{eventId}/messages', function (array $param
     try {
         $eventForNotif = EventRepository::findById($eventId);
         $eventTitle    = is_array($eventForNotif) ? ($eventForNotif['title'] ?? 'event') : 'event';
-        $bodyPreview   = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
+        $bodyPreview   = $type === 'image' ? 'Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
         NotificationRepository::notifyEventParticipants(
             $eventId,
             $senderUserId,
@@ -6638,7 +6638,7 @@ $router->add('POST', '/api/v1/channels/{channelId}/messages', function (array $p
     // MobilePushService applies a 5-minute cooldown per recipient per channel.
     try {
         $msgCityChannelId = "city_{$channelId}";
-        $msgPreview       = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
+        $msgPreview       = $type === 'image' ? 'Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
         // @here: a registered member tags the whole city. Fan out to every
         // active city MEMBER (not just whoever's online), instead of the normal
         // online-only ping. Guests can't @here (anti-spam); the city_here type
@@ -7042,7 +7042,7 @@ $router->add('POST', '/api/v1/conversations/{conversationId}/messages', function
     $otherStmt->execute([$conversationId, $user['id']]);
     $otherUserId = $otherStmt->fetchColumn();
     if ($otherUserId) {
-        $preview = $type === 'image' ? '📸 Sent an image' : mb_substr($content, 0, 100);
+        $preview = $type === 'image' ? 'Sent an image' : mb_substr($content, 0, 100);
         NotificationRepository::create(
             $otherUserId,
             'dm_message',
@@ -7727,7 +7727,7 @@ $router->add('POST', '/api/v1/topics/{topicId}/messages', function (array $param
         }
         $topicForNotif = TopicRepository::findById($topicId);
         $topicTitle    = is_array($topicForNotif) ? ($topicForNotif['title'] ?? 'topic') : 'topic';
-        $bodyPreview   = $type === 'image' ? '📸 Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
+        $bodyPreview   = $type === 'image' ? 'Sent an image' : mb_substr((string) ($content ?? ''), 0, 100);
         NotificationRepository::notifyTopicSubscribers(
             $topicId,
             $senderUserId,
@@ -13844,7 +13844,7 @@ $router->add('POST', '/api/v1/challenges/{challengeId}/messages', function (arra
         $chForNotif = ChallengeRepository::findByIdUnchecked($challengeId);
         $chTitle    = is_array($chForNotif) ? ($chForNotif['title'] ?? '') : '';
         $titleLine  = $chTitle !== '' ? ($nickname . ' in ' . $chTitle) : $nickname;
-        $bodyPreview = $type === 'image' ? '📸 Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
+        $bodyPreview = $type === 'image' ? 'Sent an image' : mb_substr((string)($content ?? ''), 0, 100);
         NotificationRepository::notifyChallengeChannelMessage(
             $challengeId,
             $senderUserId,

@@ -88,7 +88,7 @@ class ConversationRepository
             LEFT JOIN users u ON u.id = cp2.user_id AND u.deleted_at IS NULL
             LEFT JOIN LATERAL (
                 SELECT
-                    CASE WHEN type = 'image' THEN '📸 Image' ELSE content END AS content,
+                    CASE WHEN type = 'image' THEN 'Image' ELSE content END AS content,
                     created_at,
                     sender_id
                 FROM conversation_messages
